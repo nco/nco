@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.1.1.1 1998-08-18 05:35:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.2 1998-08-18 16:56:14 zender Exp $
 
 MY_BIN_DIR := ../bin
 MY_BLD_DIR := ../bld
@@ -300,9 +300,12 @@ ifeq ($(C_ONLY),Y)
  CPPFLAGS += -DC_ONLY
 endif
 
-all: obj_dir lib_dir libnco ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted
+all: bin_dir obj_dir lib_dir libnco ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted
 # .PHONY tells make to remake the following non-file targets 
 .PHONY: all clean distclean debug 
+
+bin_dir :
+	- if test -d $(MY_BIN_DIR); then echo ; else mkdir $(MY_BIN_DIR); fi
 
 obj_dir :
 	- if test -d $(MY_OBJ_DIR); then echo ; else mkdir $(MY_OBJ_DIR); fi
