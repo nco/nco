@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.100 2000-10-02 06:05:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.101 2000-10-16 07:07:02 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -1736,10 +1736,11 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
 
      Many sysadmins do not make /tmp large enough for huge temporary data files 
      tempnam(), however, allows $TMPDIR or drc to be set to override /tmp
-     Thus we use tempnam()
+     We tried tempnam() but as of 20001010 GCC 2.96 this causes a warning: "the use of `tempnam' is dangerous, better use `mkstemp'"
    */
     char *fl_out_tmp_sys; /* System-generated unique temporary filename */
-    fl_out_tmp_sys=(char *)tempnam(NULL,NULL);
+    /*    fl_out_tmp_sys=(char *)tempnam(NULL,NULL);*/
+    fl_out_tmp_sys=(char *)mkstemp(fl_out);
     if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: fl_out_open() reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",prg_nm_get(),(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
   } /* endif dbg */
 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.80 2000-10-09 17:03:29 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.81 2000-10-16 07:07:01 zender Exp $ 
 
 *************
 NCO Wish list
@@ -127,7 +127,6 @@ with nco_dst.pl
 sudo root screws up permissions in obj/bin directories of user
 178. Make _FillValue behave same as missing_value
 179. add netCDF to required packages list in RPM build
-180. Allow ncrename to rename attribute of single variable only
 181. Split up nc_utl.c into smaller files
 182. Add -L switch to print license terms
 183. Figure out why makeinfo nco.texi fails

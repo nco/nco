@@ -1,12 +1,81 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.31 2000-09-26 21:48:31 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.32 2000-10-16 07:07:01 zender Exp $
 
 # Purpose: NCO test battery
 
-# Create T42-size test field named one, which is identically 1.0 in foo.nc
+function usage()
+{
+    echo >&2 "Usage: $(basename $0) ncra | ncea | ncwa | ncflint | ncdiff | net"
+
+}
+
+START=0
+NCWA=0
+NCRA=0
+NCEA=0
+NCFLINT=0
+NCDIFF=0
+NET=0
+
+if [ $# -eq 0 ]
+then
+    START=1
+    NCWA=1
+    NCRA=1
+    NCEA=1
+    NCFLINT=1
+    NCDIFF=1
+    NET=1
+else 
+    
+    while [ $# -gt 0 ]
+    do
+	case $1 in
+	ncwa)
+	    NCWA=1
+	    shift
+	    ;;
+	ncra)
+	    NCRA=1
+	    shift
+	    ;;
+	ncea)
+	    NCEA=1
+	    shift
+	    ;;
+	ncflint)
+	    NCFLINT=1
+	    shift
+	    ;;
+	ncdiff)
+	    NCDIFF=1
+	    shift
+	    ;;
+	net)
+	    NET=1
+	    shift
+	    ;;
+	    
+	  *)
+	    usage 
+	    exit 0
+	    ;;
+       esac
+    done 
+    
+fi    
+
+
+
+# T42-size test field named one, which is identically 1.0 in foo.nc
 cd ../data 2> foo.tst
 printf "NCO Test Suite:\n"
+
+
+if [ "$START" = 1 ]
+then
+
 # ncks -O -v PS,gw /fs/cgd/csm/input/atm/SEP1.T42.0596.nc ~/nco/data/nco_tst.nc
 # Subtract PS from itself gives zero valued array
 ncdiff -O -v PS nco_tst.nc nco_tst.nc foo.nc 2>> foo.tst
@@ -24,8 +93,12 @@ ncks -A -C -v gw nco_tst.nc foo.nc 2>> foo.tst
 ncrename -O -v negative_one,zero foo.nc 2>> foo.tst
 # Get rid of working file
 /bin/rm -f foo2.nc 2>> foo.tst
+fi # end start
+
 
 # Average test field
+if [ "$NCWA" = 1 ]
+then
 ncwa -O -a lat,lon -w gw foo.nc foo2.nc
 avg=`ncks -C -H -s "%f" -v one foo2.nc`
 echo "ncwa 1: normalize by denominator: 1.0 =?= $avg" 
@@ -151,7 +224,6 @@ echo "ncwa 32: avg would overflow without dbl_prc patch: 17000S =?= $avg"
 ncwa -O -y ttl -v val_max_max_sht in.nc foo.nc 2>>foo.tst
 avg=`ncks -C -H -s "%d" -v val_max_max_sht foo.nc`
 echo "ncwa 33: ttl would overflow without dbl_prc patch, wraps anyway: -31536S =?= $avg" 
-
 ncwa -O -y min -a lat -v lat -w gw in.nc foo.nc 2>>foo.tst
 avg=`ncks -C -H -s "%g" -v lat foo.nc`
 echo "ncwa 34: min with weights: -900 =?= $avg" 
@@ -159,7 +231,10 @@ echo "ncwa 34: min with weights: -900 =?= $avg"
 ncwa -O -y max -a lat -v lat -w gw in.nc foo.nc 2>>foo.tst
 avg=`ncks -C -H -s "%g" -v lat foo.nc`
 echo "ncwa 35: max with weights: 900 =?= $avg" 
+fi  # end ncwa
 
+if [ "$NCRA" = 1 ]
+then
 ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
 echo "ncra 1: record mean of long across two files: 5 =?= $avg" 
@@ -188,6 +263,8 @@ ncra -O -y rms -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
 echo "ncra 7: record rms of float with double missing values across two files: 5.385164807 =?= $avg"
 
+
+
 ncrcat -O -v rec_var_flt_mss_val_dbl in.nc in.nc foo1.nc 2>> foo.tst
 ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo2.nc 2>> foo.tst
 ncwa -O -a time foo2.nc foo2.nc 2>> foo.tst
@@ -195,7 +272,11 @@ ncdiff -O -v rec_var_flt_mss_val_dbl foo1.nc foo2.nc foo2.nc 2>> foo.tst
 ncra -O -y rms -v rec_var_flt_mss_val_dbl foo2.nc foo2.nc 2>> foo.tst
 avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo2.nc`
 echo "ncra 8: record sdn of float with double missing values across two files: 2 =?= $avg"
+fi #end ncra
 
+
+if [ "$NCEA" = 1 ]
+then
 ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
 echo "ncea 1: ensemble mean of long across two files: 5 =?= $avg" 
@@ -211,7 +292,10 @@ echo "ncea 3: ensemble min of float across two files: 2 =?= $avg"
 ncea -O -C -v pck in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v pck foo.nc`
 echo "ncea 4: scale factor + add_offset packing/unpacking: 3 =?= $avg" 
+fi # end ncea
 
+if [ "$NCDIFF" = 1 ]
+then
 ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v mss_val foo.nc`
 echo "ncdiff 1: difference with missing value attribute: 1.0e36 =?= $avg" 
@@ -219,17 +303,23 @@ echo "ncdiff 1: difference with missing value attribute: 1.0e36 =?= $avg"
 ncdiff -O -d lon,0 -v no_mss_val in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%f" -v no_mss_val foo.nc`
 echo "ncdiff 2: difference without missing value attribute: 0 =?= $avg" 
+fi # end ncdiff
 
+if [ "$NCFLINT" = 1 ]
+then
 ncflint -O -w 3,-2 -v one in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v one foo.nc`
-echo "ncflint 1: identity weighting (3-2=1): 1.0 =?= $avg" 
+echo "ncflint 1: identity weighting: 1.0 =?= $avg" 
 
 ncrename -O -v zero,foo in.nc foo1.nc 2>> foo.tst
 ncrename -O -v one,foo in.nc foo2.nc 2>> foo.tst
 ncflint -O -i foo,0.5 -v two foo1.nc foo2.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v two foo.nc`
 echo "ncflint 2: identity interpolation: 2.0 =?= $avg" 
+fi #end ncflint
 
+if [ "$NET" = 1 ]
+then
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
 ncks -O -v one -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
@@ -257,5 +347,6 @@ mv in_tmp.nc in.nc
 ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v lon foo.nc 2>> foo.tst`
 echo "nco 5: HTTP/DODS protocol: 0 =?= $avg (Will fail if not compiled on Linux with 'make DODS=Y')" 
+fi #end net
 
 

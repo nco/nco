@@ -1,7 +1,13 @@
+2000-10-15  Charlie Zender  <zender@uci.edu>
+
+	* Implemented Henry's ncrename and nco_tst patches: Former
+	allows renaming of attribute for a single variable, latter cleans
+	up nco_tst.sh and allows easier function-specific testing.
+
 2000-10-01  Charlie Zender  <zender@uci.edu>
 
 	* Cast results of sqrt() to LHS type to eliminate new gcc 2.96
-	warnings. g++ 2.96 is less forgiving than gcc 2.96.
+	warnings. g++ 2.96 is less forgiving than gcc 2.2
 
 	* Fixed some miscast missing values in arithmetic routines for
 	doubles, shorts, and longs. Odd that I had not noticed these

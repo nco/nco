@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.65 2000-09-30 04:02:09 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.66 2000-10-16 07:07:01 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -137,7 +137,9 @@ instructions for helping the NCO project.
 capabilities based on <tt>scale_factor</tt> and <tt>add_offset</tt> convention
 <li><b>NCO 1.2.3</b>, in beta-testing: Add user-configurable multi-threaded
 capability to arithmetic-intensive operators <tt>ncwa</tt>, <tt>ncea</tt>, and <tt>ncra</tt></li>
-<li><b>NCO 1.2.2</b>, done, not released: Allow weights with <tt>ncwa</tt> in min/max/ttl operations</li>
+<li><b>NCO 1.2.2</b>, done, not released: Allow weights with
+<tt>ncwa</tt> in min/max/ttl operations. 
+<tt>ncrename</tt> can now work on specific variables rather than whole file</li>
 <li><b>NCO 1.2.1</b>, <a href="./nco_news.shtml#20000828">20000828</a>: Added type-conversion of integers to floating point before
 arithmetic, fixed broken <tt>-v</tt> option</li>
 <li><b>NCO 1.2</b>, <a href="./nco_news.shtml#20000730">20000730</a>: Added non-linear operations <tt>ncra/ncea</tt> and <tt>ncwa</tt>:

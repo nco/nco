@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.68 2000-10-15 21:11:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.69 2000-10-16 07:07:01 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -274,6 +274,20 @@ Charlie Zender@*
 @noindent
 May 1997@*
 Boulder, Colorado@*
+
+@ignore
+I suppose a major version change entitles me to write another Foreword.
+In the last five years a lot of work has been done refining NCO.
+NCO is now an honest-to-goodness open source project.
+It appears to be much healthier for it.
+@sp 1
+@noindent
+Charlie Zender@*
+@sp 1
+@noindent
+October 2000@*
+Irvine, California@*
+@end ignore
 
 @node Summary, Introduction, Foreword, Top
 @unnumbered Summary
