@@ -75,6 +75,9 @@
 /* Define to 1 if compiler finds external `expf' function */
 #undef HAVE_EXPF
 
+/* Define to 1 if compiler finds external `fabsf' function */
+#undef HAVE_FABSF
+
 /* Define to 1 if you have the `floor' function. */
 #undef HAVE_FLOOR
 
@@ -382,6 +385,9 @@
 
 /* Define to 1 if compiler needs external `expf' function */
 #undef NEED_EXPF
+
+/* Define to 1 if compiler needs external `fabsf' function */
+#undef NEED_FABSF
 
 /* Define to 1 if compiler needs external `floorf' function */
 #undef NEED_FLOORF
