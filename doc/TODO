@@ -57,6 +57,7 @@ valid workaround.
 NC_CHAR have a record dimension causes core dumps or other problems.
 i.e., LSM variable timecom caused subtle ncra problems for a while.
 112. Use strtol and strtod instead of atol and atof
+113. Rethink normalization switch options in ncwa
 ************************************************************************
 End NCO Wish list
 ************************************************************************

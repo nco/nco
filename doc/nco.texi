@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.8 1998-12-03 15:37:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.9 1998-12-04 04:56:41 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -3212,15 +3212,15 @@ weight $w_i =0.0$ as well).
 @node Normalization,  , Masking condition, ncwa netCDF Weighted Averager
 @unnumberedsubsec Normalization
 @cindex normalization
-@code{ncwa} has three switches which control the normalization of the
+@code{ncwa} has one switch which controls the normalization of the
 averages appearing in the @var{output-file}.
-The first normalization option, @samp{-N}, prevents @code{ncwa} from
-dividing the weighted sum of the variable (the numerator in the
-averaging expression) by the weighted sum of the weights (the
-denominator in the averaging expression). 
+Option @samp{-N} prevents @code{ncwa} from dividing the weighted sum of
+the variable (the numerator in the averaging expression) by the weighted
+sum of the weights (the denominator in the averaging expression). 
 Thus @samp{-N} tells @code{ncwa} to return just the numerator of the
 above expression. 
 
+@ignore
 The second normalization option tells @code{ncwa} to multiply the
 weighted average the variable (given by the averaging expression)
 by the tally, @var{M}.
@@ -3231,22 +3231,17 @@ The third normalization option is equivalent to specifying the first two
 options simultaneously. 
 In other words this option causes @code{ncwa} to return @var{M} times
 the numerator of the generic averaging expression.  
+With these normalization options, @code{ncwa} can compute sophisticated
+averages (and integrals) from the command line.
+@end ignore
 
 In summary, @code{ncwa} performs simple arithmetic averages by default.
 @code{ncwa} also handles values matching the variable's
 @code{missing_value} attribute correctly.
 Moreover, @code{ncwa} understands how to manipulate user-specified
 weights, masks, and normalization options.
-Using all of these options, one can compute sophisticated averages (and  
-integrals) from the command line.
-
-Option @samp{-N} turns off all normalization (tally and weight). 
-This causes the numerators in the above expressions to appear in the
-output files.
-Option @samp{-n} normalizes by tally but not by weight. 
-Option @samp{-W} normalizes by weight but not by tally.
-Various sums and integrals can be computed by disabling the default
-normalizations. 
+With these options, @code{ncwa} can compute sophisticated averages (and
+integrals) from the command line. 
 
 @noindent
 EXAMPLES

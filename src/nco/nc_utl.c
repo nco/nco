@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.10 1998-12-03 05:40:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.11 1998-12-04 04:56:41 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -4319,7 +4319,7 @@ usg_prn(void)
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-i var,val] [-l path] [-n ...] [-O] [-p path] [-R] [-r] [-v ...] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc out.nc\n");
     break;
   case ncwa:
-    opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M val] [-N] [-n] [-O] [-o op_type] [-p path] [-R] [-r] [-v ...] [-W] [-w wgt] [-x] in.nc out.nc\n");
+    opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M val] [-N] [-O] [-o op_type] [-p path] [-R] [-r] [-v ...] [-w wgt] [-x] in.nc out.nc\n");
     break;
   case ncap:
     opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-m mask] [-M val] [-o op_type] [-O] [-p path] [-R] [-r] [-v ...] [-w wgt] [-x] in.nc out.nc\n");
@@ -4371,9 +4371,9 @@ usg_prn(void)
     if(prg == ncwa) (void)fprintf(stdout,"-m mask\t\tMasking variable name\n");
     if(prg == ncks) (void)fprintf(stdout,"-m\t\tPrint variable metadata\n");
   } /* end if */ 
-  if(strstr(opt_sng,"-N")) (void)fprintf(stdout,"-N\t\tNo normalization (by tally or weight)\n");
+  if(strstr(opt_sng,"-N")) (void)fprintf(stdout,"-N\t\tNo normalization\n");
   if(strstr(opt_sng,"-n")){
-    if(prg == ncwa) (void)fprintf(stdout,"-n\t\tNormalize by tally but not weight\n");
+    /*    if(prg == ncwa) (void)fprintf(stdout,"-n\t\tNormalize by tally but not weight\n");*/
     if(prg != ncwa) (void)fprintf(stdout,"-n nbr_files,[nbr_numeric_chars[,increment]] NINTAP-style abbreviation of file list\n");
   } /* end if */
   if(strstr(opt_sng,"-o")) (void)fprintf(stdout,"-o op_type\tRelational operator for masking (eq,ne,ge,le,gt,lt)\n");
@@ -4387,7 +4387,7 @@ usg_prn(void)
     if(prg == ncrename) (void)fprintf(stdout,"-v old_var,new_var Variable's old and new names\n");
     if(prg != ncrename) (void)fprintf(stdout,"-v var1[,var2[...]] Variables to process\n");
   } /* end if */
-  if(strstr(opt_sng,"-W")) (void)fprintf(stdout,"-W\t\tNormalize by weight but not tally\n");
+  /*  if(strstr(opt_sng,"-W")) (void)fprintf(stdout,"-W\t\tNormalize by weight but not tally\n");*/
   if(strstr(opt_sng,"-w")){
     if(prg == ncwa) (void)fprintf(stdout,"-w wgt\t\tWeighting variable name\n");
     if(prg == ncflint) (void)fprintf(stdout,"-w wgt_1[,wgt_2] Weight(s) of file(s)\n");

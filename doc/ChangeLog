@@ -1,3 +1,12 @@
+1998-12-03  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Tagged and released this as nco1_1_15
+
+	* Disabled ncwa -n and -W normalization options until I think of
+	better way to implement them. Changed -N option to cause ncwa to
+	divide by the denominator or not. Disable corresponding tests in
+	nco_tst.sh (tests #2 and #3).
+
 1998-12-02  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Changed ncwa to default to weighting coordinates just like

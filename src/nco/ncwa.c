@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.9 1998-12-03 15:37:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.10 1998-12-04 04:56:41 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -8,6 +8,9 @@
 
 /* Purpose: Compute averages of specified hyperslabs of specfied variables
    in a single input netCDF file and output them to a single file. */
+
+/* NB: As of 98/12/02, -n and -W switches were deactivated but code left in place
+   while I rethink the normalization switches */ 
 
 /* Usage:
    ncwa -O -a lon /home/zender/nc/nco/data/in.nc foo.nc
@@ -49,8 +52,10 @@ main(int argc,char **argv)
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */ 
-  bool NORMALIZE_BY_TALLY=True;
-  bool NORMALIZE_BY_WEIGHT=True;
+  bool NRM_BY_DNM=True; /* Option N */ 
+  bool MULTIPLY_BY_TALLY=False; /* Not currently implemented */ 
+  bool NORMALIZE_BY_TALLY=True; /* Not currently implemented */ 
+  bool NORMALIZE_BY_WEIGHT=True; /* Not currently implemented */ 
   bool WGT_MSK_CRD_VAR=True; /* Option I */ 
 
   char **dim_avg_lst_in; /* Option a */ 
@@ -68,8 +73,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncwa.c,v 1.9 1998-12-03 15:37:30 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.9 $";
+  char rcs_Id[]="$Id: ncwa.c,v 1.10 1998-12-04 04:56:41 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.10 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -193,6 +198,7 @@ main(int argc,char **argv)
       msk_val=atof(optarg);
       break;
     case 'N':
+      NRM_BY_DNM=False;
       NORMALIZE_BY_TALLY=False;
       NORMALIZE_BY_WEIGHT=False;
       break;
@@ -519,12 +525,7 @@ main(int argc,char **argv)
       /* var_prc_out[idx]->val holds numerator of averaging expression documented in NCO User's Guide 
 	 Denominator is also tricky due to sundry normalization options 
 	 These logical switches are VERY tricky---be careful modifying them */
-      if(!NORMALIZE_BY_TALLY && !NORMALIZE_BY_WEIGHT){
-	; /* No normalization of numerator at all---we are done */ 
-      }else if(NORMALIZE_BY_TALLY && !NORMALIZE_BY_WEIGHT){
-	/* Normalize by tally only and forget about weights */ 
-	(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
-      }else if(wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
+      if(NRM_BY_DNM && wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	if(msk_nm != NULL){
 	  /* Must mask weight in same fashion as variable was masked */ 
 	  /* Ensure wgt_out has a missing value */ 
@@ -538,15 +539,20 @@ main(int argc,char **argv)
 	/* Average weight over specified dimensions (tally array is set here) */ 
 	wgt_out=var_avg(wgt_out,dim_avg,nbr_dim_avg);
 	if(MULTIPLY_BY_TALLY){
+	  /* Currently this is not implemented */ 
 	  /* Multiply numerator (weighted sum of variable) by tally 
 	     We deviously accomplish this by dividing the denominator by tally */ 
 	  (void)var_normalize(wgt_out->type,wgt_out->sz,wgt_out->has_mss_val,wgt_out->mss_val,wgt_out->tally,wgt_out->val);
 	} /* endif */ 
-	if(NORMALIZE_BY_TALLY && NORMALIZE_BY_WEIGHT){
-	  /* Divide by denominator */ 
-	  /* This constructs the default weighted average */ 
-	  (void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_out->val,var_prc_out[idx]->val);
-	} /* endif */ 
+	/* Divide by denominator */ 
+	/* This constructs the default weighted average */ 
+	(void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_out->val,var_prc_out[idx]->val);
+      }else if(NRM_BY_DNM){
+	/* Normalize by tally only and forget about weights */ 
+	(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+      }else if(!NRM_BY_DNM){
+	/* No normalization required, we are done */ 
+	;
       }else{
 	(void)fprintf(stdout,"%s: ERROR Unforeseen logical branch in main()\n",prg_nm);
 	exit(EXIT_FAILURE);
