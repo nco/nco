@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.86 2003-07-30 21:58:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.87 2003-11-14 13:24:27 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -77,7 +77,7 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
   (void)strcpy(var->nm,var_nm);
   var->tally=(long *)nco_malloc(var->sz*sizeof(long));
   (void)nco_zero_long(var->sz,var->tally);
-  var->val.vp=(void *)nco_malloc(var->sz*nco_typ_lng(var->type));
+  /* var->val.vp=(void *)nco_malloc(var->sz*nco_typ_lng(var->type));  variable malloced later in nco_var_get */
   /* Retrieve variable values from disk into memory */
   (void)nco_var_get(fl_id,var);
   /* (void)nco_var_free(var_nm);*/
