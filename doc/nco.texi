@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.43 2000-04-05 21:41:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.44 2000-05-09 05:15:04 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1478,15 +1478,16 @@ results are unpredictable.
 The relative magnitude of @var{min} and @var{max} indicate to the
 operator whether to expect a @dfn{wrapped coordinate}
 (@pxref{Wrapped coordinates}), such as longitude.
-When @math{@var{min} > @var{max}} NCO expects the coordinate to be
+If @math{@var{min} > @var{max}}, the NCO expects the coordinate to be
 wrapped, and a warning message will be printed.
 When this occurs, NCO selects all values outside the domain
 [@math{@var{max} < @var{min}}], i.e., all the values exclusive of the
 values which would have been selected if @var{min} and @var{max} were
 swapped. 
 If this seems confusing, test your command on just the coordinate
-variables with @code{ncks}, and then examine the output (also with
-@code{ncks}) to ensure NCO selected the hyperslab you expected.
+variables with @code{ncks}, and then examine the output to ensure NCO
+selected the hyperslab you expected (coordinate wrapping is only
+supported by @code{ncks}). 
 
 Because of the way wrapped coordinates are interpreted, it is very
 important to make sure you always specify hyperslabs in the
@@ -1499,9 +1500,10 @@ The distinction is crucial to understand because the points selected by,
 e.g., @code{-d longitude,50.,340.}, are exactly the complement of the
 points selected by @code{-d longitude,340.,50.}.
 
-Not specifying this option is equivalent to specifying full ranges of
-all dimensions. 
-This option may be specified more than once.
+Not specifying any hyperslab option is equivalent to specifying full
+ranges of all dimensions. 
+This option may be specified more than once in a single command 
+(each hyperslabed dimension requires its own @code{-d} option).
 
 @node Wrapped coordinates, Stride, Hyperslabs, Common features
 @section Wrapped coordinates
