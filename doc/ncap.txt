@@ -1,0 +1,45 @@
+ncap functionality:
+
+The specification of user-defined fields is as follows:
+
+ncap -v wind=u^2+v^2 in.nc out.nc
+
+ncap -v "wind=u^2+v^2" in.nc out.nc
+ncap -v "wind=newvar(2,3,2)" in.nc out.nc
+ncap -v "wind=newvar(2,3,2)" in.nc out.nc
+
+The grammar will look for u and v in the symbol table first, then in the input file.
+
+Priorities
+
+1. Get ncap -v "foo=one" in.nc in.nc working. This should locate the
+variable named "one" in in.nc and append it to the same file under the
+name "foo".
+
+The question is whether to define as netCDF vars all tokens that are
+numbers, or simply leave them as numbers. It makes sense to
+define all tokens as netCDF vars on input, i.e., turn all tokens
+matching the float rule into netCDF scalars. Then use
+var_conform_dim() and var_conform_type() prior to each arithmetic
+operation. 
+
+This raises the question of what to name these scalars in the symbol
+table, i.e., how do we look up the scalar variable 3.1415? these names
+can, of course, be automatically generated (XJQ001, XJQ002, ...) but
+we should be able to determine whether the arithmetic operation is
+numeric-numeric, numeric-netCDF, or netCDF-netCDF from the syntax.
+Much time could be saved on operations of type numeric-numeric and
+numeric-netCDF if we wrote a new suite of binary operators that
+worked on numeric-netCDF pairs, rather than netCDF-netCDF pairs.
+
+When input token is a NAME that is not a function, and this NAME is on
+the RHS of a statement, and this NAME does not yet have a pointer to a
+netCDF variable associated with it (i.e., it is the first reference to
+this NAME) then we need to look in the input file for a variable
+corresponding to NAME. 
+
+For better efficiency, should change scanner patterns to include a
+new token type, the BINARY_OP, so that a single function can be used
+to process all binary operations. The BINARY_OP function should
+replace the separate actions for '+', '-', '*', etc.
+
