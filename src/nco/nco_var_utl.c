@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.56 2004-08-17 05:03:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.57 2004-09-03 06:28:10 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -771,7 +771,8 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
  var_sct * const * const var, /* I/O [sct] Variables to be defined in output file */
  const int nbr_var, /* I [nbr] Number of variables to be defined */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_ncl), /* I [sct] Dimensions included in output file */
- const int nbr_dmn_ncl) /* I [nbr] Number of dimensions in list */
+ const int nbr_dmn_ncl, /* I [nbr] Number of dimensions in list */
+ const int nco_pck_typ) /* I [enm] Packing type */
 {
   /* Purpose: Define variables in output file, copy their attributes */
 
@@ -836,7 +837,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	 ncap [un-]packing precedes nco_var_dfn() call, sets var->type appropriately */
       if(prg_id == ncap) typ_out=var[idx]->type;
     }else{
-      /* Non-arithmetic operators leave things along by default
+      /* Non-arithmetic operators leave things alone by default
 	 ncpdq first modifies var_out->type, then calls nco_var_dfn(), then [un-]packs */
       typ_out=var[idx]->type;
     } /* endif arithmetic operator */
@@ -917,12 +918,18 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 
     /* Do not copy packing attributes "scale_factor" and "add_offset" 
        if variable is packed in input file and unpacked in output file 
-       However, arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
+       Arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
        Currently ncap calls nco_var_dfn() only for fixed variables, so handle exception with ncap-specific condition */
     /* Copy exising packing attributes, if any, unless... */
     if(nco_is_rth_opr(prg_id) && /* ...operator is arithmetic... */
        prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
        var[idx]->xrf->pck_dsk) /* ...and variable is packed in input file... */
+      PCK_ATT_CPY=False;
+
+    /* Do not copy packing attributres when unpacking variables 
+       ncpdq is currently only operator that passes values other than nco_pck_nil */
+    if(prg_id == ncpdq && /* ...operator is ncpdq... */
+       nco_pck_typ == nco_pck_upk) /* ...and variable will be _unpacked_ ... */
       PCK_ATT_CPY=False;
 
     /* Recall that:

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.144 2004-08-14 21:00:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.145 2004-09-03 06:28:10 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char *msk_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val, op_typ_rlt */
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.144 2004-08-14 21:00:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.144 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.145 2004-09-03 06:28:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.145 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -560,7 +560,7 @@ main(int argc,char **argv)
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
 
   /* Define variables in output file, copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out,nco_pck_nil);
 
   /* Add new missing values to output file while in define mode */
   if(msk_nm != NULL){

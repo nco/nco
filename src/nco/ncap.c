@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.135 2004-08-16 04:13:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.136 2004-09-03 06:28:09 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.135 2004-08-16 04:13:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.135 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.136 2004-09-03 06:28:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.136 $";
   const char * const opt_sng="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -638,7 +638,7 @@ main(int argc,char **argv)
   
   /* Why not call this with var_fix? */
   /* Define non-processed vars */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_nil);
   
   (void)nco_enddef(out_id);
   

@@ -39,7 +39,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.50 2004-06-29 05:02:55 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.51 2004-09-03 06:28:08 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -119,7 +119,7 @@ variables:
 
 	short pck;
 	pck:long_name = "Packed scalar variable";
-	pck:note = "Packed value is 1s, unpacked is 2.0d0*1s + 1.0d0 = 3.0d0.";
+	pck:note = "Original packed value was 1s with scale_factor = 2.0d and add_offset = 1.0d. Unpacked value should be 3.0 = 2.0d*1s + 1.0d. NCO algorithms would pack this variable as scale_factor = 0.0d and add_offset = 3.0d.";
 	pck:scale_factor = 2.0d;
 	pck:add_offset = 1.0d;
 
@@ -131,7 +131,7 @@ variables:
 
 	double upk;
 	upk:long_name = "Unpacked scalar variable";
-	upk:note = "Unpacked value is 3.0d0, upk=unpack(pck)= 2.0d0*1s + 1.0d0 = 3.0d0. Packing this variable should create an NC_SHORT scalar = 0s with packing attribute add_offset=3.0d";
+	upk:note = "Unpacked value is 3.0d0, upk=unpack(pck)= 2.0d0*1s + 1.0d0 = 3.0d0. Packing this variable should create an NC_SHORT scalar = 0s with packing attribute add_offset=3.0d and either no scale_factor (ncap) or scale_factor = 0.0d (ncpdq).";
 
 	double upk_arr(lon);
 	upk_arr:long_name = "Unpacked array";

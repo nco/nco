@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.78 2004-08-14 21:00:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.79 2004-09-03 06:28:09 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -85,8 +85,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.78 2004-08-14 21:00:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.78 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.79 2004-09-03 06:28:09 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.79 $";
   const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:rRv:x-:";
 
   dmn_sct *rec_dmn;
@@ -405,7 +405,7 @@ main(int argc,char **argv)
   } /* end if */
 
   /* Define variables in output file, copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_nil);
 
   /* Turn off default filling behavior to enhance efficiency */
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);

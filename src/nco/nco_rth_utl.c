@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.17 2004-07-19 22:16:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.18 2004-09-03 06:28:10 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -56,6 +56,7 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
 {
   /* Purpose: Process '-y' command line argument
      Convert user-specified string to enumerated operation type */
+  const char fnc_nm[]="nco_op_typ_get()"; /* [sng] Function name */
   char *prg_nm; /* [sng] Program name */
   int prg_id; /* [enm] Program ID */
 
@@ -64,15 +65,16 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
 
   if(nco_op_sng == NULL){
     /* If nco_op_typ_get() is called when user-specified option string is NULL, 
-       then operation may be specified by program name itself */
+       then operation type may be implied by program name itself */
     if(!strcmp(prg_nm,"ncadd")) return nco_op_add;
+    if(!strcmp(prg_nm,"ncbo")) return nco_op_sbt;
     if(!strcmp(prg_nm,"ncdiff")) return nco_op_sbt;
     if(!strcmp(prg_nm,"ncsub")) return nco_op_sbt;
     if(!strcmp(prg_nm,"ncsubtract")) return nco_op_sbt;
     if(!strcmp(prg_nm,"ncmult")) return nco_op_mlt;
     if(!strcmp(prg_nm,"ncmultiply")) return nco_op_mlt;
     if(!strcmp(prg_nm,"ncdivide")) return nco_op_dvd;
-    (void)fprintf(stderr,"%s: ERROR nco_op_typ_get() reports empty user-specified operation string in conjunction with unknown or ambiguous executable name %s\n",prg_nm,prg_nm);
+    (void)fprintf(stderr,"%s: ERROR %s reports empty user-specified operation string in conjunction with unknown or ambiguous executable name %s\n",prg_nm,fnc_nm,prg_nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
@@ -91,7 +93,7 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
   if(!strcmp(nco_op_sng,"dvd") || !strcmp(nco_op_sng,"/") || !strcmp(nco_op_sng,"divide") || !strcmp(nco_op_sng,"division")) return nco_op_dvd;
   if(!strcmp(nco_op_sng,"mlt") || !strcmp(nco_op_sng,"*") || !strcmp(nco_op_sng,"mult") || !strcmp(nco_op_sng,"multiply") || !strcmp(nco_op_sng,"multiplication")) return nco_op_mlt;
 
-  (void)fprintf(stderr,"%s: ERROR nco_op_typ_get() reports unknown user-specified operation type %s\n",prg_nm,nco_op_sng);
+  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified operation type %s\n",prg_nm,fnc_nm,nco_op_sng);
   (void)fprintf(stderr,"%s: HINT Valid operation type (op_typ) choices:\n",prg_nm);
   if(prg_id == ncbo) (void)fprintf(stderr,"addition: add,+,addition\nsubtration: sbt,-,dff,diff,sub,subtract,subtraction\nmultiplication: mlt,*,mult,multiply,multiplication\ndivision: dvd,/,divide,division\n"); else (void)fprintf(stderr,"min,max,ttl,total,sqrt,sqravg,avgsqr,rms,rmssdn");
   nco_exit(EXIT_FAILURE);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.18 2004-08-16 04:13:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.19 2004-09-03 06:28:10 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -44,6 +44,10 @@ enum nco_pck_typ{ /* [enm] Packing type */
 extern "C" {
 #endif /* __cplusplus */
 
+void 
+nco_dfl_case_pck_typ_err /* [fnc] Print error and exit for illegal switch(nco_pck_typ) case */
+(void);
+
 nc_type /* O [enm] Type to pack variable to */
 nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */
 (const nc_type nc_typ_in); /* I [enm] Type of input variable */
@@ -72,6 +76,12 @@ nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
  var_sct *var); /* I/O [sct] Variable */
   
 var_sct * /* O [sct] Packed variable */
+nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to disk */
+(const int out_id, /* I [id] netCDF output file ID */
+ var_sct *var, /* I/O [sct] Variable to be packed */
+ const int nco_pck_typ); /* [enm] Packing operation type */
+
+var_sct * /* O [sct] Packed variable */
 nco_var_pck /* [fnc] Pack variable in memory */
 (var_sct *var, /* I/O [sct] Variable to be packed */
  const nc_type typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
@@ -81,11 +91,10 @@ var_sct * /* O [sct] Unpacked variable */
 nco_var_upk /* [fnc] Unpack variable in memory */
 (var_sct * const var); /* I/O [sct] Variable to be unpacked */
 
-var_sct * /* O [sct] Packed variable */
-nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to disk */
-(const int out_id, /* I [id] netCDF output file ID */
- var_sct *var, /* I/O [sct] Variable to be packed */
- const int nco_pck_typ); /* [enm] Packing operation type */
+void
+nco_var_upk_swp /* [fnc] Unpack var_in into var_out */
+(const var_sct * const var_in, /* I [sct] Variable to unpack */
+ var_sct * const var_out); /* I/O [sct] Variable to unpack into */
 
 #ifdef __cplusplus
 } /* end extern "C" */

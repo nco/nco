@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.68 2004-08-31 16:39:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.69 2004-09-03 06:28:10 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -321,12 +321,8 @@ nco_usg_prn(void)
   default: nco_dfl_case_prg_id_err(); break;
   } /* end switch */
   
-  /* Public service announcements */
-  (void)fprintf(stdout,"NCO homepage is http://nco.sf.net\n");
-  (void)fprintf(stdout,"On-line User's Guide for %s is http://nco.sf.net/nco.html#%s\n",prg_nm_get(),prg_nm_get());
-  (void)fprintf(stdout,"Post questions, suggestions, patches at http://sf.net/projects/nco\n");
-
   /* We now have command-specific command line option string */
+  (void)fprintf(stdout,"%s command line options cheat-sheet:\n",prg_nm_get());
   (void)fprintf(stdout,"%s %s\n",prg_nm_get(),opt_sng);
 
   if(strstr(opt_sng,"-A")) (void)fprintf(stdout,"-A, --apn, --append\tAppend to existing output file, if any\n");
@@ -404,8 +400,17 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"[out.nc]")) (void)fprintf(stdout,"[out.nc]\t\tOutput file name (or use -o switch)\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/
 
-  /* Free the space holding the string */
+  /* Free the space holding option string */
   opt_sng=(char *)nco_free(opt_sng);
+
+  /* Public service announcements */
+  (void)fprintf(stdout,"Where to find more help on %s and/or NCO:\n",prg_nm_get());
+  (void)fprintf(stdout,"1. User's Guide/Reference Manual: http://nco.sf.net#RTFM\n");
+  (void)fprintf(stdout,"2. On-line reference manual for %s: http://nco.sf.net/nco.html#%s\n",prg_nm_get(),prg_nm_get());
+  (void)fprintf(stdout,"3. UNIX man page: \'man %s\'\n",prg_nm_get());
+  (void)fprintf(stdout,"4. Known problems: http://nco.sf.net#Bugs\n");
+  (void)fprintf(stdout,"5. Help Forum: http://sourceforge.net/forum/forum.php?forum_id=9830\n");
+  (void)fprintf(stdout,"Post questions, suggestions, patches at http://sf.net/projects/nco\n");
 
 } /* end nco_usg_prn() */
 

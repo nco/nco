@@ -1,3 +1,7 @@
+2004-09-02  Charlie Zender  <zender@uci.edu>
+
+	* Finished implementing packing types: all_new, all_xst, upk 
+
 2004-09-01  Charlie Zender  <zender@uci.edu>
 
 	* Worked on re-packing already packed variables. Almost working.
