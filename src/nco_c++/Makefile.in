@@ -93,19 +93,19 @@ am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
 path_to_ncgen = @path_to_ncgen@
-lib_LTLIBRARIES = libnco_cxx.la
+lib_LTLIBRARIES = libnco_c++.la
 
 HEADERS_SRC = libnco_c++.hh nco_dmn.hh nco_hgh.hh nco_var.hh \
 nco_att.hh nco_fl.hh nco_utl.hh
 
 
-libnco_cxx_la_SOURCES = nco_att.cc nco_dmn.cc nco_fl.cc nco_hgh.cc nco_utl.cc nco_var.cc $(HEADERS_SRC)
+libnco_c___la_SOURCES = nco_att.cc nco_dmn.cc nco_fl.cc nco_hgh.cc nco_utl.cc nco_var.cc $(HEADERS_SRC)
 
 check_PROGRAMS = tst
 
 tst_SOURCES = tst.cc
 
-tst_LDADD = -lnco_cxx
+tst_LDADD = -lnco_c++
 
 TESTS = tst
 subdir = src/nco_c++
@@ -114,12 +114,12 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(lib_LTLIBRARIES)
 
-libnco_cxx_la_LDFLAGS =
-libnco_cxx_la_LIBADD =
+libnco_c___la_LDFLAGS =
+libnco_c___la_LIBADD =
 am__objects_1 =
-am_libnco_cxx_la_OBJECTS = nco_att.lo nco_dmn.lo nco_fl.lo nco_hgh.lo \
+am_libnco_c___la_OBJECTS = nco_att.lo nco_dmn.lo nco_fl.lo nco_hgh.lo \
 	nco_utl.lo nco_var.lo $(am__objects_1)
-libnco_cxx_la_OBJECTS = $(am_libnco_cxx_la_OBJECTS)
+libnco_c___la_OBJECTS = $(am_libnco_c___la_OBJECTS)
 check_PROGRAMS = tst$(EXEEXT)
 am_tst_OBJECTS = tst.$(OBJEXT)
 tst_OBJECTS = $(am_tst_OBJECTS)
@@ -150,9 +150,9 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-DIST_SOURCES = $(libnco_cxx_la_SOURCES) $(tst_SOURCES)
+DIST_SOURCES = $(libnco_c___la_SOURCES) $(tst_SOURCES)
 DIST_COMMON = README ChangeLog INSTALL Makefile.am Makefile.in TODO
-SOURCES = $(libnco_cxx_la_SOURCES) $(tst_SOURCES)
+SOURCES = $(libnco_c___la_SOURCES) $(tst_SOURCES)
 
 all: all-am
 
@@ -191,8 +191,8 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-libnco_cxx.la: $(libnco_cxx_la_OBJECTS) $(libnco_cxx_la_DEPENDENCIES) 
-	$(CXXLINK) -rpath $(libdir) $(libnco_cxx_la_LDFLAGS) $(libnco_cxx_la_OBJECTS) $(libnco_cxx_la_LIBADD) $(LIBS)
+libnco_c++.la: $(libnco_c___la_OBJECTS) $(libnco_c___la_DEPENDENCIES) 
+	$(CXXLINK) -rpath $(libdir) $(libnco_c___la_LDFLAGS) $(libnco_c___la_OBJECTS) $(libnco_c___la_LIBADD) $(LIBS)
 
 clean-checkPROGRAMS:
 	@list='$(check_PROGRAMS)'; for p in $$list; do \

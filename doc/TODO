@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.172 2002-08-28 07:21:45 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.173 2002-08-31 00:18:51 rorik Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -14,7 +14,6 @@ Autoconf-build items:
 11. Use autoconf standard for VERSION, HOSTNAME, USER
 12. Pass GNU architecture-OS "triplet", e.g., alphaev56-unknown-linux-gnu, as, e.g., -DGNU_TRP='${GNU_TRP}' so executable can print $GNU_TRP as diagnostic
 14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, I18N, _LIBINTL_H, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
-15. Change libnco_cxx back to libnco_c++ once autotools allow +'s in names
 16. Convert nco_fl_utl.c code to use #ifdef HAVE_MKSTEMP...
 #ifndef CRAY
     fl_out_hnd=mkstemp(fl_out_tmp_sys);
