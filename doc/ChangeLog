@@ -1,3 +1,7 @@
+2000-09-18  Charlie Zender  <zender@uci.edu>
+
+	* Got OpenMP compiling but not completely working on ncwa under IRIX
+
 2000-08-31  Charlie Zender  <zender@uci.edu>
 
 	* Changed handling of netCDF convetions to search for

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.75 2000-08-29 20:56:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.76 2000-09-18 23:38:06 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires: GNU Make. AT&T Make will not understand this.
@@ -389,6 +389,9 @@ C++ := c++
 CC := cc
 # spoof SGI64
 CPPFLAGS += -DSGI64 -I$(NETCDF_INC)
+ifdef OMP
+ CPPFLAGS := -I$(MIPSPRO_SGI)/usr/include $(CPPFLAGS)
+endif
 FC := f77
 LD := ld
 LDFLAGS += -64 -mips4 $(TMP_LDFLAGS) $(TMP_LIBS) -lm
