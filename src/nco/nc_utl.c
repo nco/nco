@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.111 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.112 2001-10-02 06:02:20 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -5525,7 +5525,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
   int idx_xcl;
   int var_op_typ[NC_MAX_VARS];
 
-  nc_type var_type=int_CEWI;
+  nc_type var_type=NC_NAT; /* NC_NAT present in netcdf.h version netCDF 3.5+ */
 
   var_sct **var_fix;
   var_sct **var_fix_out;
@@ -6207,10 +6207,10 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->nm=NULL;
   var->id=-1;
   var->nc_id=-1;
-  var->type=-1; /* Type of variable in RAM */ /* fxm: should use nc_type enum */
-  var->typ_dsk=-1; /* Type of variable on disk */ /* fxm: should use nc_type enum */
-  var->typ_pck=-1; /* Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
-  var->typ_upk=-1; /* Type of variable when unpacked (expanded) (in memory) */
+  var->type=NC_NAT; /* Type of variable in RAM */ /* fxm: should use nc_type enum */
+  var->typ_dsk=NC_NAT; /* Type of variable on disk */ /* fxm: should use nc_type enum */
+  var->typ_pck=NC_NAT; /* Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+  var->typ_upk=NC_NAT; /* Type of variable when unpacked (expanded) (in memory) */
   var->is_rec_var=False;
   var->is_crd_var=False;
   var->sz=1L;

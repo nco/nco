@@ -1,5 +1,13 @@
 2001-10-01  Charlie Zender  <zender@uci.edu>
 
+	* Return (int)0 instead of (int)NULL from nco_typ_lng()
+	to avoid g++ warnings
+
+	* Initialize nc_type variables with new netCDF 3.5 token NC_NAT
+	This requires building NCO > 2.0.1 with netCDF >= 3.5
+	This change also permits successful builds with g++ again, which
+	complained about initializing nc_type with non nc_type enums
+	
 	* cvs tag -c nco-2_0_1
 	Changes since nco-2_0_0:
 	Cleaner separation of netCDF wrappers into nco_netcdf.c,.h

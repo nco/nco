@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.1 2001-10-01 23:17:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.2 2001-10-02 06:02:20 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -39,6 +39,10 @@
 
 #ifndef NCO_H /* Contents have not yet been inserted in current source file */
 #define NCO_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 /* NCO uses native type nco_long to store variables of type NC_INT */
 typedef long nco_long;
@@ -353,6 +357,7 @@ typedef struct var_sct_tag{ /* var_sct */
    Prototypes without descriptive variable names were written before ANSI C compilers were widely available and should be migrated to include arguments names and comments
    Specifying extern is redundant (functions are extern by default) but Emacs highlights them in a nice shade of lavender :-)
    fxm: TODO 210 Break into sourcefile specific headers, e.g., csz.h, pck.h... */
+
 extern bool arm_inq(int);
 extern bool ncar_csm_inq(int);
 extern char **fl_lst_mk(char **,int,int,int *,char **);
@@ -531,8 +536,8 @@ nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to
 (var_sct *var, /* I/O [sct] Variable to be packed */
  int nco_pck_typ); /* [enm] Packing operation type */
 
+#ifdef __cplusplus
+} /* end extern "C" */
+#endif /* __cplusplus */
+
 #endif /* NCO_H */
-
-
-
-

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.27 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.28 2001-10-02 06:02:20 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -93,8 +93,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.27 2001-10-01 23:09:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.27 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.28 2001-10-02 06:02:20 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.28 $";
   
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dmn_rnm_lst=NULL_CEWI;
@@ -397,12 +397,9 @@ main(int argc,char **argv)
 rnm_sct *
 prs_rnm_lst(int nbr_rnm,char **rnm_arg)
 {
-  /* Routine to set the old_nm, new_nm elements of 
-     a rename structure. This routine merely fills the 
-     rename structure and does not attempt to validate 
-     the presence of the variables in the input netCDF file. */
-
-  void usg_prn(void);
+  /* Routine to set old_nm, new_nm elements of a rename structure
+     This routine merely fills rename structure and does not attempt to validate 
+     presence of variables in input netCDF file. */
 
   rnm_sct *rnm_lst;
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.32 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.33 2001-10-02 06:02:20 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.32 2001-10-01 23:09:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.32 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.33 2001-10-02 06:02:20 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.33 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -480,13 +480,14 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 	for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],(char **)NULL); 
 	
 	/* Copy and typecast entire array of values, using implicit coercion rules of C */
+	/* 20011001: Use explicit coercion rules to quiet C++ compiler warnings */
 	switch(aed_lst[idx].type){
-	case NC_FLOAT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.fp[lmn]=val_arg_dbl[lmn];} break; 
-	case NC_DOUBLE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.dp[lmn]=val_arg_dbl[lmn];} break; 
-	case NC_INT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.lp[lmn]=val_arg_dbl[lmn];} break; 
-	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=val_arg_dbl[lmn];} break; 
-	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=val_arg_dbl[lmn];} break; 
-	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=val_arg_dbl[lmn];} break; 
+	case NC_FLOAT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.fp[lmn]=(float)val_arg_dbl[lmn];} break; 
+	case NC_DOUBLE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.dp[lmn]=(double)val_arg_dbl[lmn];} break; 
+	case NC_INT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.lp[lmn]=(long)val_arg_dbl[lmn];} break; 
+	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=(short)val_arg_dbl[lmn];} break; 
+	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=(unsigned char)val_arg_dbl[lmn];} break; 
+	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=(signed char)val_arg_dbl[lmn];} break; 
 	default: nco_dfl_case_nctype_err(); break;
 	} /* end switch */
 	

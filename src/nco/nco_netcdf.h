@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.3 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.4 2001-10-02 06:02:20 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -49,6 +49,10 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
+
+#ifdef __cplusplus
+extern "C" {
+#endif /* __cplusplus */
 
 /* Definitions */
 /* nco_fl_typ provides hooks for accessing non-netCDF files with nco_* routines */
@@ -118,5 +122,9 @@ extern int nco_rename_att(int ,int ,const char *,const char *);
 extern int nco_del_att(int ,int ,const char *);
 extern int nco_put_att(int , int , const char *, nc_type ,long , void *);
 extern int nco_get_att(int , int , const char *,void *,nc_type );
+
+#ifdef __cplusplus
+} /* end extern "C" */
+#endif /* __cplusplus */
 
 #endif /* NCO_NETCDF_H */

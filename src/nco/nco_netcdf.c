@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.4 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.5 2001-10-02 06:02:20 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -94,7 +94,7 @@ nco_typ_lng(nc_type nco_typ)
   } /* end switch */ 
   
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
-  return (int)NULL;
+  return (int)0;
 } /* end nco_typ_lng() */ 
 
 void 

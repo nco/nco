@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.97 2001-09-11 06:06:18 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.98 2001-10-02 06:02:20 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -338,7 +338,7 @@ ifneq (,$(findstring LINUX,${PVM_ARCH}))
 C++ := g++
 # 19980517: As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
 #CC := gcc -ansi
-CC := gcc
+CC := g++
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
 CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -Di386 -I${NETCDF_INC}
 FC := g77
