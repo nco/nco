@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.44 2000-08-29 20:57:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.45 2000-08-31 17:58:20 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -117,6 +117,14 @@ enum lmt_typ{
   lmt_crd_val, /* 0 */
   lmt_dmn_idx /* 1 */
 }; /* end lmt_typ enum */
+
+enum nco_pck_typ{
+  nco_pck_all_xst_att, /* 0, Pack all variables, keeping existing packing attributes if any */
+  nco_pck_all_new_att, /* 1, Pack all variables, always generating new packing attributes */
+  nco_pck_xst_xst_att, /* 2, Pack existing packed variables, keeping existing packing attributes if any */
+  nco_pck_xst_new_att, /* 3, Pack existing packed variables, always generating new packing attributes */
+  nco_pck_upk /* 4, Unpack all packed variables */
+}; /* end nco_pck_typ enum */
 
 enum nco_op_typ{
   nco_op_avg,
@@ -269,7 +277,9 @@ typedef struct dmn_sct_tag{
   struct dmn_sct_tag *xrf; /* Cross-reference to associated dimension structure (usually the structure for the dimension on output) */
 } dmn_sct;
 
-/* NB: Each member of var_sct structure should be initialized to default in var_dfl_set() */
+/* Each member of var_sct structure should be initialized to default in var_dfl_set()
+   Each pointer member of var_sct structure should be freed in var_free()
+   Each pointer member of var_sct structure should be copied in var_dup() */
 typedef struct var_sct_tag{
   char *nm; /* Variable name */
   int id; /* Variable ID */
@@ -295,13 +305,14 @@ typedef struct var_sct_tag{
   ptr_unn val; /* Buffer to hold hyperslab */
   long *tally; /* Number of valid operations performed so far */
   struct var_sct_tag *xrf; /* Cross-reference to associated variable structure (usually the structure for the variable on output) */
-  int is_pck; /* Variable is packed on disk (scale_factor, add_offset, or both attributes exist) */
+  int pck_dsk; /* Variable is packed on disk (valid scale_factor, add_offset, or both attributes exist) */
+  int pck_ram; /* Variable is packed in memory (valid scale_factor, add_offset, or both attributes exist) */
   int has_scl_fct; /* Valid scale_factor attribute exists */
   int has_add_fst; /* Valid add_offset attribute exists */
-  ptr_unn scl_fct; /* Value of scale_factor attribute, if any (scl_fct stored in this structure must be same type as unpacked variable) */
-  ptr_unn add_fst; /* Value of add_offset attribute, if any (add_fst stored in this structure must be same type as unpacked variable) */
-  nc_type typ_pck; /* Type of variable when packed (on disk) */
-  nc_type typ_xpn; /* Type of variable when unpacked (expanded) (in memory) */
+  ptr_unn scl_fct; /* Value of scale_factor attribute of type typ_upk */
+  ptr_unn add_fst; /* Value of add_offset attribute of type typ_upk */
+  nc_type typ_pck; /* Type of variable when packed (on disk). typ_pck = typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+  nc_type typ_upk; /* Type of variable when unpacked (expanded) (in memory) */
 } var_sct;
 
 /* Note: Fortran functions are deprecated as of NCO 1.2, will be removed unless volunteer takes over their maintenance */
@@ -464,8 +475,8 @@ extern void usg_prn(void);
 extern void val_conform_type(nc_type,ptr_unn,nc_type,ptr_unn);
 extern void var_add(nc_type,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
 extern void var_avg_reduce_ttl(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
-extern void var_avg_reduce_min(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
-extern void var_avg_reduce_max(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
+extern void var_avg_reduce_min(nc_type,long,long,int,ptr_unn,ptr_unn,ptr_unn);
+extern void var_avg_reduce_max(nc_type,long,long,int,ptr_unn,ptr_unn,ptr_unn);
 extern void var_copy(nc_type,long,ptr_unn,ptr_unn);
 extern void var_dfn(int,char *,int,var_sct **,int,dmn_sct **,int);
 extern void var_dmn_xrf(var_sct *);
@@ -474,8 +485,8 @@ extern void var_get(int,var_sct *);
 extern void var_lst_convert(int,nm_id_sct *,int,dmn_sct **,int,var_sct ***,var_sct ***);
 extern void var_lst_divide(var_sct **,var_sct **,int,bool,dmn_sct **,int,var_sct ***,var_sct ***,int *,var_sct ***,var_sct ***,int *);
 extern void var_mask(nc_type,long,int,ptr_unn,double,int,ptr_unn,ptr_unn);
-extern void var_max(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
-extern void var_min(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
+extern void var_max_bnr(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
+extern void var_min_bnr(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
 extern void var_multiply(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
 extern void nco_opr_drv(int,int,var_sct *, var_sct * );
 extern void var_normalize(nc_type,long,int,ptr_unn,long *,ptr_unn);
@@ -508,27 +519,38 @@ nco_cnv_var_typ_dsk  /* [fnc] Revert variable to previous type */
 (var_sct *var); /* I [sct] Variable to be reverted */
 
 extern bool /* O [flg] Variable is packed */
-is_var_pck /* [fnc] Check whether variable is packed */
+pck_dsk_inq /* [fnc] Check whether variable is packed */
 (int nc_id, /* I [idx] netCDF file ID */
  var_sct *var); /* I/O [sct] Variable */
 
 extern var_sct * /* O [sct] Unpacked variable */
-var_upk /* [fnc] Unpack variable */
+var_upk /* [fnc] Unpack variable in memory */
 (var_sct *var); /* I/O [sct] Variable to be unpacked */
 
-extern int /* [enm] Return code */
+extern int /* O [enm] Return code */
 var_dfl_set /* [fnc] Set defaults for each member of variable structure */
 (var_sct *var); /* [sct] Pointer to variable strucutre to initialize to defaults */
 
-extern var_sct * /* [sct] Output netCDF variable structure representing val */
+extern var_sct * /* O [sct] Output netCDF variable structure representing val */
 scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
 (val_unn val, /* I [frc] Scalar value to turn into netCDF variable */
  nc_type val_typ); /* I [enm] netCDF type of value */
 
-extern var_sct * /* [sct] Output netCDF variable structure representing value */
+extern var_sct * /* O [sct] Output netCDF variable structure representing value */
 scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO variable */
-(void *vp, /* I [frc] Pointer to scalar value to turn into netCDF variable */
+(ptr_unn val_ptr_unn, /* I [unn] Pointer union to scalar value to turn into netCDF variable */
  nc_type val_typ); /* I [enm] netCDF type of pointer/value */
+
+var_sct * /* O [sct] Packed variable */
+var_pck /* [fnc] Pack variable in memory */
+(var_sct *var, /* I/O [sct] Variable to be packed */
+ nc_type typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+ bool USE_EXISTING_PCK); /* I [flg] Use existing packing scale_factor and add_offset */
+
+double /* O [frc] Double precision representation of var->val.?p[0] */
+ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar double */
+(ptr_unn val, /* I [sct] Pointer union to variable values */
+ nc_type type); /* I [enm] Type of values pointed to by pointer union */
 
 #endif /* NC_H */
 

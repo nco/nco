@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.28 2000-08-29 20:56:01 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.29 2000-08-31 17:58:11 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -199,6 +199,10 @@ echo "ncea 2: ensemble mean with missing values across two files: 1.0e36 =?= $av
 ncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v rec_var_flt_mss_val_dbl foo.nc`
 echo "ncea 3: ensemble min of float across two files: 2 =?= $avg" 
+
+ncea -O -C -v pck in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%e" -v pck foo.nc`
+echo "ncea 4: scale factor + add_offset packing/unpacking: 3 =?= $avg" 
 
 ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v mss_val foo.nc`

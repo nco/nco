@@ -14,8 +14,16 @@
 // msrcp -period 365 in.nc mss:/ZENDER/tmp/h0003.nc
 // msrcp -period 365 in.nc mss:/ZENDER/tmp/h0004.nc
 
-// NB: Changing the values of the variables below, especially the coordinate 
+// Changing the values of the variables below, especially the coordinate 
 // variables, may affect the outcome of the test script nco_tst.sh.
+
+// Data constants in CDL:
+// byte: 'a'
+// char: "a"
+// short: 1s
+// int: 1 (no decimal point)
+// float: 1.f (decimal point is required, f is required to distinguish from double)
+// double: 1.0, 1.d, 1.0e-20 (decimal point is required, d is not required)
 
 // NCL usage:
 // id_in=addfile("/home/zender/nco/data/in.nc","r")
@@ -29,7 +37,7 @@ variables:
 	:convention = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.23 2000-08-29 20:57:42 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.24 2000-08-31 17:58:12 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -75,6 +83,7 @@ variables:
 
 	short pck;
 	pck:long_name = "Packed scalar variable";
+	pck:note = "Packed value is 1s, unpacked is 2.0d0*1s + 1.0d0 = 3.0d0";
 	pck:scale_factor = 2.0d;
 	pck:add_offset = 1.0d;
 

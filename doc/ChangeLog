@@ -1,4 +1,12 @@
+2000-08-30  Charlie Zender  <zender@uci.edu>
+
+	* Updated var_dup(), var_free() to handle scl_fct.vp, add_fst.vp,
+	srd. That's right, these routines were not handling srd pointer
+	correctly.
+
 2000-08-29  Charlie Zender  <zender@uci.edu>
+
+	* Removed tally array from var_avg_reduce_max/min() routines
 
 	* Added some clarifications to memory handling in the manual, and
 	additional examples provoked by John Sheldon's GFDL netCDF

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.40 2000-08-29 20:57:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.41 2000-08-31 17:58:20 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -98,8 +98,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.40 2000-08-29 20:57:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.40 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.41 2000-08-31 17:58:20 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.41 $";
   char *nco_op_typ_sng=NULL_CEWI; /* Operation type */
   
   dmn_sct **dim;
@@ -341,14 +341,6 @@ main(int argc,char **argv)
   /* Copy variable data for non-processed variables */
   (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 
-  if(dbg_lvl_get() == 3){
-    /* Packing/Unpacking */
-    for(idx=0;idx<nbr_var_prc;idx++){
-      (void)is_var_pck(in_id,var_prc[idx]);
-      if (var_prc[idx]->is_pck) var_prc[idx]=var_upk(var_prc[idx]);
-    } /* end loop over idx */
-  } /* endif debug */
-
   /* Close first input netCDF file */
   (void)ncclose(in_id);
   
@@ -524,6 +516,11 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Revert to original type if required */
       var_prc_out[idx]=nco_cnv_var_typ_dsk(var_prc_out[idx]);
+      if(dbg_lvl_get() == 3){
+	/* Packing/Unpacking */
+	if(var_prc_out[idx]->xrf->pck_dsk && !var_prc_out[idx]->xrf->pck_ram) var_prc_out[idx]=var_pck(var_prc_out[idx],NC_SHORT,False);
+	/* fxm: must write/overwrite scale_factor and add_offset attributes */
+      } /* endif debug */
       if(var_prc_out[idx]->nbr_dim == 0){
 	(void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp);
       }else{ /* end if variable is a scalar */
@@ -531,8 +528,7 @@ main(int argc,char **argv)
 	if(prg == ncra) var_prc_out[idx]->cnt[0]=1L;
 	(void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp);
       } /* end if variable is an array */
-      (void)free(var_prc_out[idx]->val.vp);
-      var_prc_out[idx]->val.vp=NULL;
+      (void)free(var_prc_out[idx]->val.vp); var_prc_out[idx]->val.vp=NULL;
     } /* end loop over idx */
   } /* end if */
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.90 2000-08-29 20:57:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.91 2000-08-31 17:58:20 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -995,6 +995,8 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
   
   /* Type in memory begins as same type as on disk */
   var->type=var->typ_dsk; /* Type of variable in RAM */
+  /* Type of packed data on disk */
+  var->typ_pck=var->type;  /* Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
 
   /* Refresh number of attributes and missing value attribute, if any */
   var->has_mss_val=mss_val_get(var->nc_id,var);
@@ -1029,6 +1031,13 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
 
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
+
+  if(dbg_lvl_get() == 3){
+    if(prg_get() == ncra || prg_get() == ncea){
+      /* Packing/Unpacking */
+      (void)pck_dsk_inq(nc_id,var);
+    } /* endif arithemetic operator with packing capability */
+  } /* endif debug */
 
   return var;
 } /* end var_fll() */
@@ -2198,6 +2207,18 @@ var_dup(var_sct *var)
     var_dup->end=(long *)nco_malloc(var_dup->nbr_dim*sizeof(long));
     (void)memcpy((void *)(var_dup->end),(void *)(var->end),var_dup->nbr_dim*sizeof(var->end[0]));
   } /* end if */
+  if(var->srd != NULL){
+    var_dup->srd=(long *)nco_malloc(var_dup->nbr_dim*sizeof(long));
+    (void)memcpy((void *)(var_dup->srd),(void *)(var->srd),var_dup->nbr_dim*sizeof(var->srd[0]));
+  } /* end if */
+  if(var->scl_fct.vp != NULL){
+    var_dup->scl_fct.vp=(void *)nco_malloc(nctypelen(var_dup->typ_upk));
+    (void)memcpy((void *)(var_dup->scl_fct.vp),(void *)(var->scl_fct.vp),nctypelen(var_dup->typ_upk));
+  } /* end if */
+  if(var->add_fst.vp != NULL){
+    var_dup->add_fst.vp=(void *)nco_malloc(nctypelen(var_dup->typ_upk));
+    (void)memcpy((void *)(var_dup->add_fst.vp),(void *)(var->add_fst.vp),nctypelen(var_dup->typ_upk));
+  } /* end if */
 
   return var_dup;
 
@@ -2229,9 +2250,8 @@ var_get(int nc_id,var_sct *var)
    var_sct *var: I pointer to variable structure
  */
 {
-  /* Purpose: Allocate and retrieve given variable hyperslab from disk into memory */
-
-  /* This is probably where scale_factor and add_offset unpacking should be done */
+  /* Purpose: Allocate and retrieve given variable hyperslab from disk into memory
+     If variable is packed on disk then inquire about scale_factor and add_offset */
 
   if((var->val.vp=(void *)malloc(var->sz*nctypelen(var->typ_dsk))) == NULL){
     (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in var_get()\n",prg_nm_get(),var->sz,nctypelen(var->type));
@@ -2246,6 +2266,13 @@ var_get(int nc_id,var_sct *var)
   /* Type in memory is now same as type on disk */
   var->type=var->typ_dsk; /* Type of variable in RAM */
   
+  if(dbg_lvl_get() == 3){
+    if(prg_get() == ncra || prg_get() == ncea){
+      /* Packing/Unpacking */
+      if(var->pck_dsk) var=var_upk(var);
+    } /* endif arithemetic operator with packing capability */
+  } /* endif debug */
+
 } /* end var_get() */
 
 var_sct *
@@ -2618,7 +2645,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
   
   /* Simple error-checking and diagnostics */
   if(dbg_lvl_get() > 2){
-    (void)fprintf(stderr,"%s: WARNING Converting variable %s from type %s to %s\n",prg_nm_get(),var_in->nm,nco_typ_sng(var_in_type),nco_typ_sng(var_out_type));
+    (void)fprintf(stderr,"%s: DEBUG Converting variable %s from type %s to type %s\n",prg_nm_get(),var_in->nm,nco_typ_sng(var_in_type),nco_typ_sng(var_out_type));
   } /* end if */
   
   /* Move the current var values to swap location */
@@ -3044,10 +3071,10 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
        This is where tally array is actually set */
     switch(nco_op_typ){
     case nco_op_max:
-      (void)var_avg_reduce_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
+      (void)var_avg_reduce_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
       break;
     case nco_op_min:
-      (void)var_avg_reduce_min(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
+      (void)var_avg_reduce_min(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
       break;
     case nco_op_avg: /* Operations: Previous=none, Current=sum, Next=normalize and root */
     case nco_op_sqravg: /* Operations: Previous=none, Current=sum, Next=normalize and square */
@@ -3093,7 +3120,11 @@ var_free(var_sct *var)
   if(var->srt != NULL){(void)free(var->srt); var->srt=NULL;}
   if(var->end != NULL){(void)free(var->end); var->end=NULL;}
   if(var->cnt != NULL){(void)free(var->cnt); var->cnt=NULL;}
+  if(var->srd != NULL){(void)free(var->srd); var->srd=NULL;}
+  if(var->scl_fct.vp != NULL){(void)free(var->scl_fct.vp); var->scl_fct.vp=NULL;}
+  if(var->add_fst.vp != NULL){(void)free(var->add_fst.vp); var->add_fst.vp=NULL;}
 
+  /* Free structure pointer only after all dynamic elements of structure have been freed */
   (void)free(var);
 
   return NULL;
@@ -3151,15 +3182,15 @@ arm_base_time_get(int nc_id)
 } /* end arm_base_time_get */
 
 void
-var_max(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
-     /* 
-	nc_type type: I netCDF type of operands
-	long sz: I size (in elements) of operands
-	int has_mss_val: I flag for missing values
-	ptr_unn mss_val: I value of missing value
-	ptr_unn op1: I values of first operand
-	ptr_unn op2: I/O values of second operand on input, values of maximium on output
-     */
+var_max_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+/* 
+   nc_type type: I netCDF type of operands
+   long sz: I size (in elements) of operands
+   int has_mss_val: I flag for missing values
+   ptr_unn mss_val: I value of missing value
+   ptr_unn op1: I values of first operand
+   ptr_unn op2: I/O values of second operand on input, values of maximium on output
+*/
 {
   /* Routine to find maximium value(s) of the two operands
      and store result in second operand. Operands are assumed to have conforming
@@ -3241,10 +3272,10 @@ var_max(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
     /* Do nothing */
     break;
   } /* end switch */
-} /* end var_max() */
+} /* end var_max_bnr() */
 
 void
-var_min(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+var_min_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
   nc_type type: I netCDF type of operands
   long sz: I size (in elements) of operands
@@ -3332,7 +3363,7 @@ var_min(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
     /* Do nothing */
     break;
   } /* end switch */
-} /* end var_min() */
+} /* end var_min_bnr() */
 
 void
 var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
@@ -4019,16 +4050,15 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 } /* end var_avg_reduce_ttl() */
 
 void
-var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
+var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
   nc_type type: I netCDF type of operands
   long sz_op1: I size (in elements) of op1
   long sz_op2: I size (in elements) of op2
   int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
-  long *tally: I/O counter space
   ptr_unn op1: I values of first operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2))
-  ptr_unn op2: O values resulting from averaging each block of input operand
+  ptr_unn op2: O minimum value of each block of input operand
  */
 {
   /* Routine to find minium values in each contiguous block of first operand and place
@@ -4194,8 +4224,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	blk_off=idx_op2*sz_blk;
 	op2.lp[idx_op2]=op1.lp[blk_off];
 	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.lp[idx_op2] > op1.lp[blk_off+idx_blk])op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
-	tally[idx_op2]=sz_blk;
+	  if(op2.lp[idx_op2] > op1.lp[blk_off+idx_blk]) op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
@@ -4205,7 +4234,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
 	  if(op1.lp[idx_op1] != mss_val_lng){
-	    if(!flg_mss || op2.lp[idx_op2] > op1.lp[idx_op1])op2.lp[idx_op2]=op1.lp[idx_op1];
+	    if(!flg_mss || op2.lp[idx_op2] > op1.lp[idx_op1]) op2.lp[idx_op2]=op1.lp[idx_op1];
 	    flg_mss= True;
 	  } /* end if */
 	} /* end loop over idx_blk */
@@ -4309,16 +4338,15 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 } /* end var_avg_reduce_min() */
 
 void
-var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
+var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
   nc_type type: I netCDF type of operands
   long sz_op1: I size (in elements) of op1
   long sz_op2: I size (in elements) of op2
   int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
-  long *tally: I/O counter space
   ptr_unn op1: I values of first operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2))
-  ptr_unn op2: O values resulting from averaging each block of input operand
+  ptr_unn op2: O maximum value of each block of input operand
  */
 {
   /* Routine to find maximium values in each contiguous block of first operand and place
@@ -4485,8 +4513,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	blk_off=idx_op2*sz_blk;
 	op2.lp[idx_op2]=op1.lp[blk_off];
 	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
-	  if(op2.lp[idx_op2] < op1.lp[blk_off+idx_blk])op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
-	tally[idx_op2]=sz_blk;
+	  if(op2.lp[idx_op2] < op1.lp[blk_off+idx_blk]) op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
@@ -4496,7 +4523,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
 	  if(op1.lp[idx_op1] != mss_val_lng){
-	    if(!flg_mss || op2.lp[idx_op2] < op1.lp[idx_op1])op2.lp[idx_op2]=op1.lp[idx_op1];
+	    if(!flg_mss || op2.lp[idx_op2] < op1.lp[idx_op1]) op2.lp[idx_op2]=op1.lp[idx_op1];
 	    flg_mss= True;
 	  } /* end if */
 	} /* end loop over idx_blk */
@@ -4613,12 +4640,12 @@ nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
   case nco_op_min: /* Minimum */
     /* On first loop, simply copy variables from var_prc to var_prc_out */
     if(cnt == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else	  
-      (void)var_min(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
+      (void)var_min_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;
   case nco_op_max: /* Maximium */
     /* On first loop, simply copy variables from var_prc to var_prc_out */
     if(cnt == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else
-      (void)var_max(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
+      (void)var_max_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;	
   case nco_op_avg: /* Average */
   case nco_op_sqrt: /* Squareroot will produce the squareroot of the mean */
@@ -5033,8 +5060,12 @@ zero_long(long sz,long *op1)
   /* Routine to zero value of first operand and store result in first operand. */
 
   long idx;
-
-  for(idx=0;idx<sz;idx++) op1[idx]=0L;
+  if(op1 != NULL){
+    for(idx=0;idx<sz;idx++) op1[idx]=0L;
+  }else{
+    (void)fprintf(stdout,"%s: ERROR zero_long() asked to zero NULL pointer\n",prg_nm_get());
+    exit(EXIT_FAILURE);
+  } /* endif */
 
 } /* end zero_long() */
 
@@ -6121,8 +6152,10 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->nm=NULL;
   var->id=-1;
   var->nc_id=-1;
-  var->type=-1; /* Type of variable in RAM */
-  var->typ_dsk=-1; /* Type of variable on disk */
+  var->type=-1; /* Type of variable in RAM */ /* fxm: should use nc_type enum */
+  var->typ_dsk=-1; /* Type of variable on disk */ /* fxm: should use nc_type enum */
+  var->typ_pck=-1; /* Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+  var->typ_upk=-1; /* Type of variable when unpacked (expanded) (in memory) */
   var->is_rec_var=False;
   var->is_crd_var=False;
   var->sz=1L;
@@ -6141,6 +6174,14 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->srt=(long *)NULL;
   var->end=(long *)NULL;
   var->srd=(long *)NULL;
+
+  /* Members related to packing */
+  var->has_scl_fct=False; /* [flg] Valid scale_factor attribute exists */
+  var->has_add_fst=False; /* [flg] Valid add_offset attribute exists */
+  var->pck_dsk=False; /* [flg] Variable is packed on disk */
+  var->pck_ram=False; /* [flg] Variable is packed in memory */
+  var->scl_fct.vp=NULL; /* [ptr] Value of scale_factor attribute, if any */
+  var->add_fst.vp=NULL; /* [ptr] Value of add_offset attribute, if any */
 
   return rcd; /* [enm] Return code */
 } /* end var_dfl_set() */
@@ -6186,26 +6227,29 @@ scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
      calls, scl_ptr_mk_var(), then passes back the result */
 
   var_sct *var;
-  void *val_ptr=NULL; /* [ptr] void pointer to value */
+  ptr_unn val_ptr_unn; /* [ptr] void pointer to value */
   
   switch(val_typ){
-  case NC_FLOAT: val_ptr=(void *)(&val.f); break; 
-  case NC_DOUBLE: val_ptr=(void *)(&val.d); break; 
-  case NC_LONG: val_ptr=(void *)(&val.l); break;
-  case NC_SHORT: val_ptr=(void *)(&val.s); break;
-  case NC_CHAR: val_ptr=(void *)(&val.c); break;
-  case NC_BYTE: val_ptr=(void *)(&val.b); break;
+  case NC_FLOAT: val_ptr_unn.fp=&val.f; break; 
+  case NC_DOUBLE: val_ptr_unn.dp=&val.d; break; 
+  case NC_LONG: val_ptr_unn.lp=&val.l; break;
+  case NC_SHORT: val_ptr_unn.sp=&val.s; break;
+  case NC_CHAR: val_ptr_unn.cp=&val.c; break;
+  case NC_BYTE: val_ptr_unn.bp=&val.b; break;
   } /* end switch */
 
-  var=scl_ptr_mk_var(val_ptr,val_typ);
+  /* Un-typecast pointer to values after access */
+  (void)cast_nctype_void(val_typ,&val_ptr_unn);
+
+  var=scl_ptr_mk_var(val_ptr_unn,val_typ);
 
   return var;
 } /* end scl_mk_var() */
 
-var_sct * /* [sct] Output netCDF variable structure representing value */
+var_sct * /* [sct] Output NCO variable structure representing value */
 scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO variable */
-(void *val_ptr, /* I [frc] Pointer to scalar value to turn into netCDF variable */
- nc_type val_typ) /* I [enm] netCDF type of pointer/value */
+(ptr_unn val_ptr_unn, /* I [unn] Pointer union to scalar value to turn into netCDF variable */
+ nc_type val_typ) /* I [enm] netCDF type of existing pointer/value */
 {
   /* Purpose: Convert void pointer to scalar of any type into NCO variable
      Routine duplicates many functions of var_fll() 
@@ -6224,11 +6268,43 @@ scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO vari
   var->nm=(char *)strdup(var_nm);
   var->nbr_dim=0;
   var->type=val_typ;
-  /* fxm: Really necessary to allocate new space here? Why not just use val_ptr? */
+  /* It is necessary to allocate new space here so that the variable can eventually be deleted 
+     and the associated memory free()'d */
+  /* free(val_ptr_unn.vp) is unpredictable since val_ptr_unn may point to constant data, e.g.,
+     a constant in scl_mk_var */
   var->val.vp=(void *)nco_malloc(nctypelen(var->type));
 
   /* Copy value into variable structure */
-  (void)memcpy((void *)var->val.vp,val_ptr,nctypelen(var->type)); 
+  (void)memcpy((void *)var->val.vp,val_ptr_unn.vp,nctypelen(var->type)); 
 
   return var;
 } /* end scl_ptr_mk_var() */
+
+double /* O [frc] Double precision representation of var->val.?p[0] */
+ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar double */
+(ptr_unn val, /* I [sct] Pointer union to variable values */
+ nc_type type) /* I [enm] Type of values pointed to by pointer union */
+{
+  /* Purpose: Return first element of NCO variable converted to a scalar double */
+
+  double scl_dbl; /* [sct] Double precision value of scale_factor */
+
+  ptr_unn ptr_unn_scl_dbl; /* [unn] Pointer union to double precision value of first element */
+
+  /* Variable must be in memory already */
+  if(val.vp == NULL){ 
+    (void)fprintf(stdout,"%s: ERROR ptr_unn_2_scl_dbl() called with empty val.vp\n",prg_nm_get());
+    exit(EXIT_FAILURE);
+  } /* endif */
+  
+  /* Valid memory address exists */
+  ptr_unn_scl_dbl.vp=(void *)nco_malloc(nctypelen(NC_DOUBLE)); /* [unn] Pointer union to double precision value of first element */
+  (void)val_conform_type(type,val,NC_DOUBLE,ptr_unn_scl_dbl);
+  scl_dbl=ptr_unn_scl_dbl.dp[0];
+  if(ptr_unn_scl_dbl.vp != NULL){(void)free(ptr_unn_scl_dbl.vp); ptr_unn_scl_dbl.vp=NULL;}
+
+  return scl_dbl;
+
+} /* end ptr_unn_2_scl_dbl() */
+
+
