@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.46 2002-05-12 16:32:06 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.47 2002-05-15 06:58:00 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -87,18 +87,63 @@
      If on RHS then return attribute value or variable struture
      Initialize to false, change to true if token is '=', false is token is ';' */
   static bool RHS=False; /* [flg] Is lexer on RHS of '=' sign? */
+
+  /* Headers necessary for INCLUDE state */
+#define NCO_MAX_NCL_DPT 10
+  YY_BUFFER_STATE ncl_stk[NCO_MAX_NCL_DPT];
+  int ncl_dpt_crr=0; /* [nbr] Depth of current #include file */
 %}
 
-/* Handle C comments LMB92 p. 172, p. 43
-   The %x defines an exclusive start state for CCOMMENT
-   When CCOMMENT state is active, other rules do not match
-   NB: State names may not contain hyphens */
-%x CCOMMENT LHS_SUBSCRIPT RHS_SUBSCRIPT
+/* %x defines exclusive start states <stt>
+   Once state <stt> is active, other rules do not match until initial state is restored
+   NB: State names may not contain hyphens
+   CCOMMENT: Handle C comments LMB92 p. 172, p. 43
+   INCLUDE: Read in #include file (from example in flex manpage)
+   LHS_SUBSCRIPT: Left Hand Side subscripts (currently LHS casting)
+   RHS_SUBSCRIPT: Right Hand Side subscripts (currently not used) */
+%x CCOMMENT INCLUDE LHS_SUBSCRIPT RHS_SUBSCRIPT
 
 /* Following sections after %% are lexer rules
    Each rule is regular expression followed by C-code for action
    If token matches regular expression then C-code is executed */
 %%
+
+\#include {
+  /* INCLUDE is exclusive start state for obtaining #include filename */
+  BEGIN INCLUDE;
+} /* end include */
+<INCLUDE>[ \t]* /* Eat whitespace */
+<INCLUDE>[^ \t\n]+ {
+  /* Get include file name */
+  if(ncl_dpt_crr >= NCO_MAX_NCL_DPT){
+    (void)fprintf(stderr,"%s: ERROR Includes nested too deeply",prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+  if(dbg_lvl_get() >= 0) (void)fprintf(stderr,"%s: WARNING Reading #include'd file %s, descending from nesting depth %d to depth %d\n",prg_nm_get(),yytext,ncl_dpt_crr,ncl_dpt_crr+1);
+  ncl_stk[ncl_dpt_crr++]=YY_CURRENT_BUFFER; 
+  if((yyin=fopen(yytext,"r")) == NULL){
+    (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),yytext);
+    nco_exit(EXIT_FAILURE);
+  } /* endif error */
+
+  /* Read from new file--this does NOT change start condition */
+  yy_switch_to_buffer(yy_create_buffer(yyin,YY_BUF_SIZE));
+  
+  /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
+  BEGIN INITIAL;
+
+} /* end enter #include file */
+
+<<EOF>> {
+  /* Emerge from #include file if nested, else exit lexer */
+  if(dbg_lvl_get() >= 0) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from nesting depth %d to depth %d\n",prg_nm_get(),ncl_dpt_crr,ncl_dpt_crr-1);
+  if(--ncl_dpt_crr < 0){
+    yyterminate(); /* Emerged from first level, exit lexer */
+  }else{
+    yy_delete_buffer(YY_CURRENT_BUFFER);
+    yy_switch_to_buffer(ncl_stk[ncl_dpt_crr]);
+  } /* endelse */
+} /* end <EOF> */
 
 "/*" {
    /* CCOMMENT is exclusive start state for C comments LMB92 p. 172
@@ -145,8 +190,8 @@
   (void)sng_ascii_trn(bfr);
   lval_ptr->sng=strdup(bfr);       
   if(dbg_lvl_get() > 3){
-    printf("Lexing string: %s\n",yytext);
-    printf("Made   string: %s\n",lval_ptr->sng);
+    (void)fprintf(stderr,"Lexing string: %s\n",yytext);
+    (void)fprintf(stderr,"Made   string: %s\n",lval_ptr->sng);
   } /* endif */
   return SNG;
 } /* end quoted strings */
@@ -166,7 +211,7 @@
   /* Float */
   float flt_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a float %s\n",yytext); 
-  if (sscanf((char*)yytext,"%e",&flt_tkn) != 1){
+  if(sscanf((char*)yytext,"%e",&flt_tkn) != 1){
     sprintf(err_sng,"#Bad float: %s",yytext);
     yyerror(err_sng);
     return EPROVOKE;
@@ -199,7 +244,7 @@
   if(sscanf((char*)yytext,"%hd",&sht_tkn) != 1){
     sprintf(err_sng,"Bad short constant: %s",(char*)yytext);
     yyerror(err_sng);
-  }
+  } /* endif err */
   lval_ptr->scv.val.s=sht_tkn;
   lval_ptr->scv.type=NC_SHORT;
   return SCV;
@@ -213,7 +258,7 @@
     sprintf(err_sng,"#Bad byte: %s",yytext);
     yyerror(err_sng);
     return EPROVOKE;
-  }
+  } /* endif err */
   if(byt_tkn < -128 || byt_tkn > 127){
     lval_ptr->scv.val.l=byt_tkn;
     lval_ptr->scv.type=NC_INT;
@@ -525,7 +570,7 @@ unpack/[ ]*\( {return UNPACK;}
   
   if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Lexer creating LHS cast template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),prs_arg->var_LHS->nm,prs_arg->var_LHS->nbr_dim,prs_arg->var_LHS->sz);
   
-  if(0){ /* Remove some compiler warning messages */
+  if(0){ /* Remove some compiler warning messages CEWI */
     /* Following two statements remove "defined but not used" messages in lex.yy.c */
     (void)yyunput((int)NULL,(char *)NULL);
     (void)yy_flex_realloc((void *)NULL,(size_t)NULL);
@@ -604,20 +649,19 @@ ncap_initial_scan
      list c: Variables of attributes on LHS which are present in input file
      list d: */
   
-  /* 20020510: ncap_initial_scan() was in ncap_utl() but g++ (not gcc) would barf
-     g++ complained that since YYSTYPE is defined in ncap.tab.h,
+  /* 20020510: ncap_initial_scan() was in ncap_utl.c but g++ (not gcc) would barf
+     g++ complains that since YYSTYPE is defined in ncap.tab.h,
      it is an error to call external function (yylex()) that uses this type
-     Placing routine in ncap.l ensures it has access to yylex() prototype,
-     and to YYSTYPE definition.
-     Since ncap_initial_scan() does call yylex() it is stylistically acceptable
-     to keep this routine in ncap.l
+     Although the error is somewhat bogus, there is some merit to it
+     Placing routine in ncap.l gives routine access to yylex() prototype and YYSTYPE
+     Since ncap_initial_scan() does call yylex(), it may reside in ncap.l
      To move routine to other file, #define NCAP_INITIAL_SCAN_NOT_IN_NCAP_L */
 #undef NCAP_INITIAL_SCAN_NOT_IN_NCAP_L
 #ifdef NCAP_INITIAL_SCAN_NOT_IN_NCAP_L
   /* Get YYSTYPE prior to calling scanner */
 #include "ncap.tab.h" /* ncap.tab.h is produced from ncap.y by parser generator */
 
-  extern FILE *yyin; /* [fnc] File handle for script file */
+  extern FILE *yyin; /* [fl] File handle for script file */
   extern int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg); /* [fnc] Scanner entrypoint */
   
 /* Following declaration gets rid of implicit declaration compiler warning
@@ -715,7 +759,9 @@ ncap_initial_scan
       if(n_lst_t >0) (void)var_lst_free(lst_t,n_lst_t);
       break;
     default: 
-      (void)fprintf(stderr,"%s: WARNING Token type %d not handled in ncap_initial_scan()\n",prg_nm_get(),tkn_crr);
+      /* Tokens that fall through are perfectly safe and normal
+	 Tokens values 1--256 are ASCII characters, values > 256 defined in yy.tab.h */
+      if(dbg_lvl_get() >= 5)(void)fprintf(stderr,"%s: DEBUG Token type %d not handled in ncap_initial_scan()\n",prg_nm_get(),tkn_crr);
       break;
     } /* end switch */
   } /* end while */
