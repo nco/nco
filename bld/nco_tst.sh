@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.18 2000-06-26 10:34:40 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.19 2000-06-30 22:15:11 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -119,7 +119,7 @@ mv in_tmp.nc in.nc
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
 ncks -O -v one -p goldhill.cgd.ucar.edu:/home/zender/nco/data -l ./ in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
-echo "nco 2: scp/rcp protocol: 1 =?= $avg" 
+echo "nco 2: scp/rcp protocol: 1 =?= $avg (Will fail if no remote access to goldhill.cgd.ucar.edu)" 
 mv in_tmp.nc in.nc
 
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
@@ -131,13 +131,11 @@ mv in_tmp.nc in.nc
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
 ncks -O -v one -p http://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
-echo "nco 1: HTTP protocol: 1 =?= $avg (Will fail until HTTP implemented)" 
+echo "nco 4: HTTP protocol: 1 =?= $avg (Will fail until HTTP implemented)" 
 mv in_tmp.nc in.nc
 
-/bin/rm -f foo.nc;mv in.nc in_tmp.nc;
-ncrcat -O -n 2,4 -d lat,-15.,15. -d lon,120.,130. -d time,355,370 -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc 2>> foo.tst
-avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
-echo "nco 4: HTTP/DODS protocol: 1 =?= $avg (Will fail if not compiled on Linux with 'make DODS=Y')" 
-mv in_tmp.nc in.nc
+ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%e" -v lon foo.nc 2>> foo.tst`
+echo "nco 5: HTTP/DODS protocol: 0 =?= $avg (Will fail if not compiled on Linux with 'make DODS=Y')" 
 
 
