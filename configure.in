@@ -146,6 +146,8 @@ case $host in
   *-*-aix*)  CFLAGS="$CFLAGS -q64"
              LDFLAGS="$LDFLAGS -q64"
              AR_FLAGS="$AR_FLAGS -X 64"
+             NM="$NM -X 64"
+             NM_FLAGS="$NM_FLAGS -X 64"
 	     ;;
   *-*-irix*) case $CC in
                gcc) CFLAGS="$CFLAGS -mabi=64"
