@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.452 2005-03-12 21:46:57 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.453 2005-03-15 07:50:47 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -275,14 +275,14 @@ nco468. Make -H toggle variable printing so ncks -M only prints metadata
 nco469. Use default _FillValue e.g., NC_FILL_FLOAT, or values from <limits.h>, <float.h>?
 nco474. Incorporate alternative "chunking" for ncrcat when data are one-dimensional, to avoid high disk/network access incurred by retrieving one float at a time
 nco477. Make default to copy but not to print associated coordinate variables
-nco479. netCDF/L  from Loci: http://loci.cs.utk.edu/modules.php?name=News&file=article&sid=40
+nco479. netCDF/L from Loci: http://loci.cs.utk.edu/modules.php?name=News&file=article&sid=40
 nco480. Add boxcar averaging option (average in groups of n records) to ncra
 nco482. Remove return's from void functions dated 20050109 once gcc-3.4.2 behavior fixed or gcc upgraded on i386 platforms
 nco483. Compiling with ABORT_ON_ERROR and calling without an option dumps core
         Fix so inputting 0 filenames merely prints usage, does not abort?
-nco484. Change -H to -P in ncks? (more intuitive, though ncpdq uses -P for packing)
 nco485. Add md5sum hash functionality to ncks
-nco486. 
+nco486. Make sure ncks -q/-Q behaves as intended
+nco487. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
