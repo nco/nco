@@ -1,5 +1,15 @@
-char *
-cvs_vrs_prs()
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.2 2002-05-05 19:35:25 zender Exp $ */
+
+/* Purpose: Software configuration management */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_scm.h" /* Software configuration management */
+
+char * /* O [sng] CVS version string */
+cvs_vrs_prs(void) /* [fnc] Return CVS version string */
 {
   /* Purpose: Return CVS version string */
   bool dly_snp;
@@ -124,10 +134,11 @@ cvs_vrs_prs()
 } /* end cvs_vrs_prs() */
 
 void
-copyright_prn(char *CVS_Id,char *CVS_Revision)
-/* char *CVS_Id: I [sng] CVS identification string
-   char *CVS_Revision: I [sng] CVS revision string */
+copyright_prn /* [fnc] Print copyright notice */
+(const char * const CVS_Id, /* I [sng] CVS identification string */
+ const char * const CVS_Revision) /* I [sng] CVS revision string */
 {
+  /* Purpose: Print copyright notice */
   char *date_cvs; /* Date this file was last modified */
   char *vrs_rcs; /* Version of this file, e.g., 1.213 */
   char *vrs_cvs; /* Version according to CVS release tag */
@@ -189,9 +200,9 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
 } /* end copyright_prn() */
 
 char * /* O [sng] Mnemonic that describes current NCO version */
-nmn_get()
+nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic that describes current NCO version */
-  return "Fern's song";
+  return "Templeton's song";
 } /* end nmn_get() */
 

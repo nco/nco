@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.26 2002-05-05 17:53:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.27 2002-05-05 19:35:25 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -339,13 +339,10 @@ extern "C" {
      fxm: TODO 210 Break into sourcefile specific headers, e.g., csz.h, pck.h... */
   
   extern char *cmd_ln_sng(int,char **);
-  extern char *cvs_vrs_prs();
-  extern char *nmn_get(void);
   extern char *prg_nm_get(void);
   extern int sng_ascii_trn(char *);
   extern int prg_get(void);
   extern nco_long FORTRAN_newdate(nco_long *,int *);
-  extern nco_long newdate(nco_long,int);
   extern nm_id_sct *var_lst_add_crd(int,int,int,nm_id_sct *,int *);
   extern nm_id_sct *var_lst_ass_crd_add(int,nm_id_sct *,int *);
   extern nm_id_sct *var_lst_crd_xcl(int,int,nm_id_sct *,int *);
@@ -370,7 +367,6 @@ extern "C" {
   extern void FORTRAN_subtract_real(long *,int *,float *,float *,float *);
   extern void cast_nctype_void(nc_type,ptr_unn *);
   extern void cast_void_nctype(nc_type,ptr_unn *);
-  extern void copyright_prn(char *,char *);
   extern void hst_att_cat(int,char *);
   extern void val_conform_type(nc_type,ptr_unn,nc_type,ptr_unn);
   extern void var_add(nc_type,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
