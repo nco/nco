@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.196 2003-01-03 02:26:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.197 2003-01-08 08:11:55 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -61,6 +61,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 34. Make parse errors always print current line to terminal rather than silently failing
 36. cygwin builds of ncap.l and netcdf fail because of dependence on syslimits.h. non-kludge fix may require updated gcc and mingw packages
 37. Implement float function definitions in nco_rth_flt as inline to improve speed for MACOSX builds (inline is OK in C99 but will it break C89?)
+38. Finish dimension-reducing operations (min/max/avg)
 
 Highest priority NCO-wide items that You can help with:
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
