@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.75 2001-10-16 00:40:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.76 2001-11-01 00:47:43 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -1344,7 +1344,7 @@ nco_openmp_ini() /* [fnc] Set up OpenMP multi-threading environment */
   /* Disable threading on a per-program basis */
   /* ncrcat is extremely I/O intensive 
      Maximum efficiency when one thread reads from input file while other writes to output file */
-  if(strstr(prg_nm_get(),"ncrcat")) thr_nbr_max_fsh=2;
+  if(strstr(prg_nm_get(),"ncrcat")) thr_nbr_max_fsh=1;
 
   thr_nbr_max=omp_get_max_threads(); /* [nbr] Maximum number of threads system/user allow program to use */
   if(thr_nbr_max > thr_nbr_max_fsh){
