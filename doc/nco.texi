@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.173 2003-08-26 22:30:32 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.174 2003-08-27 22:58:50 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -79,11 +79,11 @@ Octave TeXInfo manual is a good example of clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 2.8.1
-@set doc-edition 2.8.1
+@set nco-edition 2.8.2
+@set doc-edition 2.8.2
 @set copyright-years 1995--2003
 @set update-year 2003
-@set update-date 15 August 2003
+@set update-date 27 August 2003
 @set update-month August 2003
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -316,7 +316,7 @@ Thanks espcially to Jan Polcher, Keith Lindsay, Arlindo da Silva, John
 Sheldon, and William Weibel for stimulating suggestions and correspondence.
 Your encouragment motivated me to complete the @cite{NCO User's Guide}.
 So if you like @acronym{NCO}, send me a note!
-I should mention that @acronym{NCO} is not connected to or officially
+@w{I should} mention that @acronym{NCO} is not connected to or officially
 endorsed by Unidata, @acronym{ACD}, @acronym{ASP}, @acronym{CGD}, or
 Nike.@* 
 @sp 1
@@ -826,7 +826,7 @@ Post your help request to the
 
 If you think you are using the right command, but @acronym{NCO} is
 misbehaving, then you might have found a bug. 
-A core dump, sementation violation, or incorrect numerical answers is
+@w{A core} dump, sementation violation, or incorrect numerical answers is
 always considered a high priority bug.
 How do you simplify a problem that may be revealing a bug?
 Cut out extraneous variables, dimensions, and metadata from the
@@ -970,7 +970,7 @@ interactive keyboard input.
 
 @node Appending, Addition Subtraction Division Multiplication and Interpolation, Output files, Strategies
 @section Appending variables to a file
-A frequently useful operation is adding variables from one file to
+@w{A frequently} useful operation is adding variables from one file to
 another. 
 @cindex concatenation
 @cindex appending variables
@@ -1009,7 +1009,7 @@ the results of the operation in the existing @var{output-file},
 @section Addition Subtraction Division Multiplication and Interpolation
 
 Users comfortable with @acronym{NCO} semantics may find it easier to
-perform some simple mathematical operations in @acronym{NCO} rather than
+perform some simple mathematical operations in @acronym{NCO} rather than 
 higher level languages. 
 @command{ncbo} (@pxref{ncbo netCDF Binary Operator}) does file
 addition, subtraction, multiplication, division, and broadcasting. 
@@ -1021,6 +1021,7 @@ operations from the command line.
 @node Averaging vs. Concatenating, Large numbers of input files, Addition Subtraction Division Multiplication and Interpolation, Strategies
 @section Averagers vs. Concatenators
 
+@cindex symbolic links
 The most frequently used operators of @acronym{NCO} are probably the
 averagers and concatenators.
 Because there are so many permutations of averaging (e.g., across files,
@@ -1095,7 +1096,7 @@ Then @code{ncecat 85?.nc 85_ens.nc} glues the individual realizations
 together into the single file, @file{85_ens.nc}. 
 If an input variable was dimensioned [@code{lat},@code{lon}], it will
 have dimensions [@code{record},@code{lat},@code{lon}] in the output file.
-A restriction of @command{ncecat} is that the hyperslabs of the
+@w{A restriction} of @command{ncecat} is that the hyperslabs of the
 processed variables must be the same from file to file.
 Normally this means all the input files are the same size, and contain 
 data on different realizations of the same variables.
@@ -1181,9 +1182,10 @@ When this occurs, the @acronym{ANSI} C-standard @code{argc}-@code{argv}
 method of passing arguments from the calling shell to a C-program (i.e.,
 an @acronym{NCO} operator) breaks down.}, then the following strategy
 has proven useful to specify the input filenames to @acronym{NCO}. 
+@cindex symbolic links
 Write a script that creates symbolic links between the irregular input
-filenames and a set of regular, arithmetic filenames that @samp{-n
-@var{loop}} switch understands.
+filenames and a set of regular, arithmetic filenames that 
+@samp{-n @var{loop}} switch understands.
 The @acronym{NCO} operator will then succeed at automatically generating
 the filnames with the @samp{-n @var{loop}} option (which circumvents any 
 @acronym{OS} and shell limits on command line size).
@@ -1240,7 +1242,7 @@ current status to the terminal through the @var{stderr} facility.
 Using @samp{-D} does not slow the operators down. 
 Choose a @var{debug-level} @w{between 1} @w{and 3} for most situations,
 e.g., @code{ncea -D 2 85.nc 86.nc 8586.nc}.
-A full description of how to estimate the actual amount of memory the
+@w{A full} description of how to estimate the actual amount of memory the
 multi-file @acronym{NCO} operators consume is given in 
 @ref{Memory usage}. 
 
@@ -1630,7 +1632,7 @@ Long options: @samp{--pth}, @samp{--path}, @samp{--lcl}, @samp{--local}@*
 @end cartouche
 All @acronym{NCO} operators can retrieve files from remote sites as well 
 as from the local file system.
-A remote site can be an anonymous @acronym{FTP} server, a machine on
+@w{A remote} site can be an anonymous @acronym{FTP} server, a machine on
 which the user has @command{rcp} or @command{scp} privileges, or
 @acronym{NCAR}'s Mass Storage System (@acronym{MSS}).  
 To access a file via an anonymous @acronym{FTP} server, supply the
@@ -1823,7 +1825,7 @@ Long options: @samp{--variable}, @samp{--exclude} or @samp{--xcl}@*
 @end cartouche
 Variable subsetting is implemented with the @samp{-v
 @var{var}[,@dots{}]} and @samp{-x} options. 
-A list of variables to extract is specified following the @samp{-v}
+@w{A list} of variables to extract is specified following the @samp{-v}
 option, e.g., @samp{-v time,lat,lon}.
 Not using the @samp{-v} option is equivalent to specifying all
 variables.  
@@ -1989,17 +1991,17 @@ Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 Short options: @samp{-d}@*
 Long options: @samp{--dimension}, @samp{--dmn}@*
 @end cartouche
-A @dfn{hyperslab} is a subset of a variable's data.
+@w{A @dfn{hyperslab}} is a subset of a variable's data.
 The coordinates of a hyperslab are specified with the @code{-d
 @var{dim},[@var{min}][,[@var{max}]]} short option (or with the
 @samp{--dimension} or @samp{--dmn} long options). 
 The bounds of the hyperslab to be extracted are specified by the
 associated @var{min} and @var{max} values. 
-A half-open range is specified by omitting either the @var{min} or
+@w{A half}-open range is specified by omitting either the @var{min} or
 @var{max} parameter but including the separating comma. 
 The unspecified limit is interpreted as the maximum or minimum value in 
 the unspecified direction.  
-A cross-section at a specific coordinate is extracted by specifying only
+@w{A cross}-section at a specific coordinate is extracted by specifying only
 the @var{min} limit and omitting a trailing comma. 
 Dimensions not mentioned are passed with no reduction in range.
 The dimensionality of variables is not reduced (in the case of a
@@ -2077,13 +2079,13 @@ Long options: @samp{--dimension}, @samp{--dmn}@*
 @end cartouche
 In late 2002, @command{ncks} added support for specifying a
 @dfn{multislab} for any variable.
-A multislab is a union of one or more hyperslabs 
+@w{A multislab} is a union of one or more hyperslabs 
 which is specified by chaining together hyperslab commands, i.e.,
 @kbd{-d} options (@pxref{Hyperslabs}).
 This allows multislabs to overcome some restraints which limit
 hyperslabs.
 
-A single @kbd{-d} option can only specify a contiguous and/or regularly 
+@w{A single} @kbd{-d} option can only specify a contiguous and/or regularly 
 spaced multi-dimensional array of data. 
 Multislabs are constructed from multiple @kbd{-d} options and may
 therefore have non-regularly spaced arrays.
@@ -2128,7 +2130,7 @@ algorithm will obtain the intended values.
 Specifying redundant ranges is not encouraged, but may be useful on
 occasion and will not result in unintended consequences.
 
-A final example shows the real power of multislabs.
+@w{A final} example shows the real power of multislabs.
 Suppose the @var{Q} variable contains three dimensional arrays of
 distinct chemical constituents in no particular order.
 We are interested in the NOy species in a certain geographic range. 
@@ -2314,7 +2316,7 @@ Availability: @command{ncks}@*
 Short options: @samp{-d}@*
 Long options: @samp{--dimension}, @samp{--dmn}@*
 @end cartouche
-A @dfn{wrapped coordinate} is a coordinate whose values increase or
+@w{A @dfn{wrapped coordinate}} is a coordinate whose values increase or
 decrease monotonically (nothing unusual so far), but which represents a
 dimension that ends where it begins (i.e., wraps around on itself).
 Longitude (i.e., degrees on a circle) is a familiar example of a wrapped
@@ -2385,8 +2387,9 @@ hyperslab, while @command{ncra} and @command{ncrcat} suport the
 @var{stride} argument only for the record dimension.
 The @var{stride} is the spacing between consecutive points in a
 hyperslab. 
-A @var{stride} @w{of 1} means pick all the elements of the hyperslab, but a
-@var{stride} @w{of 2} means skip every other element, etc.
+@w{A @var{stride}} @w{of 1} means pick all the elements of the
+hyperslab, but a @var{stride} @w{of 2} means skip every other element,
+etc. 
 Using the @var{stride} option with @command{ncra} and @command{ncrcat} makes
 it possible, for instance, to average or concatenate regular intervals
 across multi-file input data sets.
@@ -3131,7 +3134,7 @@ operator on files adhering to this convention
 The @acronym{CSM} convention recommends @code{time} be stored in the format
 @var{time} since @var{base_time}, e.g., the @code{units} attribute of
 @code{time} might be @samp{days since 1992-10-8 15:15:42.5 -6:00}. 
-A problem with this format occurs when using @command{ncrcat} to
+@w{A problem} with this format occurs when using @command{ncrcat} to
 concatenate multiple files together, each with a different
 @var{base_time}. 
 That is, any @code{time} values from files following the first file to
@@ -3214,7 +3217,7 @@ variable, it will also contain the @code{time} coordinate.
 @cindex @code{history} attribute
 @cindex global attributes
 @cindex attributes, global
-A short message is added to the @code{history} global attribute whenever
+@w{A short} message is added to the @code{history} global attribute whenever
 these @acronym{ARM}-specific procedures are executed.
 
 @node Operator version,  , ARM Conventions, Common features
@@ -3415,7 +3418,7 @@ Last dimension is most rapidly varying;
 @cindex assignment statement
 @cindex semi-colon
 @cindex @code{;} (end of statement)
-A semi-colon @samp{;} indicates the end of an assignment statement.
+@w{A semi}-colon @samp{;} indicates the end of an assignment statement.
 @item Comments
 @cindex comments
 @cindex @code{/*...*/} (comment)
@@ -3786,9 +3789,9 @@ and are indicated with an asterisk
 of these functions.
 These functions normally operate on netCDF variables of type NC_DOUBLE
 without having to perform intrinsic conversions.
-For example, ANSI compilers provide @code{sin} for the sine of C-type
+For example, @acronym{ANSI} compilers provide @code{sin} for the sine of C-type
 @code{double} variables. 
-The ANSI standard does not require, but many compilers provide,
+The @acronym{ANSI} standard does not require, but many compilers provide,
 an extended set of mathematical functions that apply to single
 (@code{float}) and quadruple (@code{long double}) precision variables. 
 Using these functions (e.g., @code{sinf} for @code{float}, 
@@ -4018,7 +4021,7 @@ There are two very important and useful exceptions to this rule.
 The value of @var{var_nm} can also be used to direct @command{ncatted} to
 edit global attributes, or to repeat the editing operation for every
 variable in a file.
-A value of @var{var_nm} of ``global'' indicates that @var{att_nm} refers
+@w{A value} of @var{var_nm} of ``global'' indicates that @var{att_nm} refers
 to a global attribute, rather than a particular variable's attribute.
 This is the method @command{ncatted} supports for editing global
 attributes.
@@ -4297,8 +4300,10 @@ long options @samp{--op_typ} or @samp{--operation}).
 @cindex @code{-y @var{op_typ}}
 @cindex @code{--operation @var{op_typ}}
 @cindex @code{--op_typ @var{op_typ}}
-The valid binary operations for @command{ncbo}, their definitions, and
-corresponding values of the @var{op_typ} key are: 
+@cindex alternate invocations
+The valid binary operations for @command{ncbo}, their definitions, 
+corresponding values of the @var{op_typ} key, and alternate invocations
+are:  
 @table @dfn
 @item Addition
 @c Internal operation code: @{nco_op_add}@*
@@ -4327,10 +4332,10 @@ Care should be taken when using the shortest form of key values,
 i.e., @samp{+}, @samp{-}, @samp{*}, @samp{/}.
 Some of these single characters may have special meanings to the shell
 @cindex naked characters
-@footnote{A naked (i.e., unprotected or unquoted) @samp{*} is a wildcard
-character.  
-A naked @samp{-} may interpretedconfuse command line parser.
-@samp{+} and @samp{/} are relatively harmless.}.
+@footnote{@w{A naked} (i.e., unprotected or unquoted) @samp{*} is a
+wildcard character.  
+@w{A naked} @samp{-} may confuse the command line parser.
+@w{A naked} @samp{+} and @samp{/} are relatively harmless.}.
 @cindex Bash shell
 They should be protected from the shell by placing them in quotes so
 that the shell does not attempt to interpret (glob) them 
@@ -4346,37 +4351,56 @@ and @samp{--op_typ=/}}.
 @cindex quotes
 For example, the following commands are equivalent
 @example
-ncbo --op_typ=* 1.nc 2.nc 3.nc # Dangerous? (shell may attempt globbing)
+ncbo --op_typ=* 1.nc 2.nc 3.nc # Dangerous (shell may try to glob)
 ncbo --op_typ='*' 1.nc 2.nc 3.nc # Safe ('*' protected from shell)
 ncbo --op_typ="*" 1.nc 2.nc 3.nc # Safe ('*' protected from shell)
 ncbo --op_typ=mlt 1.nc 2.nc 3.nc
 ncbo --op_typ=mult 1.nc 2.nc 3.nc
 ncbo --op_typ=multiply 1.nc 2.nc 3.nc
 ncbo --op_typ=multiplication 1.nc 2.nc 3.nc
-ncmult 1.nc 2.nc 3.nc # First use ln -s ncbo ncmult
-ncmultiply 1.nc 2.nc 3.nc # First use ln -s ncbo ncmult
+ncmult 1.nc 2.nc 3.nc # First do 'ln -s ncbo ncmult'
+ncmultiply 1.nc 2.nc 3.nc # First do 'ln -s ncbo ncmultiply'
 @end example
 No particular argument or invocation form is preferred.
 Users are encouraged to use the forms which are most intuitive to them.
 
-Normally, an operation type must be specified with @samp{-y} or
-@command{ncbo} will fail.
-Exceptions to this rule may be created to suit that tastes of 
-your particular site.
+@cindex @command{alias}
+@cindex @command{ln -s}
+@cindex symbolic links
+Normally, an operation type must be specified with @samp{-y} (equivalent
+to @samp{--op_typ}) or @command{ncbo} will fail.
+Exceptions to this rule may be created to suit your particular tastes,
+or the site's policy.
 For many years, @command{ncdiff} was the main binary file operator.
 As a result, many users prefer to continue invoking @command{ncdiff}
 rather than memorizing a new command (@samp{ncbo -y @var{sbt}}) which
-behaves identically to the old @command{ncdiff} command.
-The is much to be said for the simplicity of @command{ncdiff}.
+behaves identically to the original @command{ncdiff} command.
 However, from a software maintenance standpoint, maintaining a distinct 
-executable for each binary operation (e.g., @code{ncadd}) is untenable. 
+executable for each binary operation (e.g., @code{ncadd}) is untenable,
+and a single executable, @command{ncbo}, is desirable.
+The decision was made to automatically symbolically link
+@command{ncdiff} to @command{ncbo} to maintain backward compatibility.  
+Thus @command{ncdiff} is called an @dfn{alternate invocation} of
+@command{ncbo}. 
+@command{ncbo} supports additional alternate invocations should users
+and system adminitrators decide to use them. 
+The procedure to do so is simple.
+For example, to use @samp{ncadd} instead of @samp{ncbo --op_typ=add}, 
+simply create a symbolic link from @command{ncbo} to @command{ncadd}
+@footnote{The command to do this is @samp{ln -s -f ncbo ncadd}}.
+The alternatate invocations supported for each operation type are listed
+above. 
+Alternatively, users may always define @samp{ncadd} as an @dfn{alias} to 
+@samp{ncbo --op_typ=add}
+@footnote{The command to do this is @samp{alias ncadd='ncbo --op_typ=add'}}.
 
-@command{ncbo} subtracts variables in @var{file_2} from the corresponding
-variables (those with the same name) in @var{file_1} and stores the
-results in @var{file_3}. 
+@command{ncbo} operates (e.g., adds) variables in @var{file_2} with the
+corresponding variables (those with the same name) in @var{file_1} and
+stores the results in @var{file_3}. 
 @cindex broadcasting variables
 Variables in @var{file_2} are @dfn{broadcast} to conform to the
-corresponding variable in @var{file_1} if necessary.  
+corresponding variable in @var{file_1} if necessary, but the reverse is
+not true.
 Broadcasting a variable means creating data in non-existing dimensions
 from the data in existing dimensions.
 For example, a two dimensional variable in @var{file_2} can be
@@ -4386,8 +4410,11 @@ dimensional variable (of the same name) in @code{file_1}.
 This functionality allows the user to compute anomalies from the mean.
 Note that variables in @var{file_1} are @emph{not} broadcast to conform
 to the dimensions in @var{file_2}. 
+In the future, we will broadcast variables in @var{file_1}, if necessary
+to conform to their counterparts in @var{file_2}.
+@c TODO #268
 @cindex rank
-Thus, @command{ncbo}, the number of dimensions, or @dfn{rank}, of any
+Thus, presently, the number of dimensions, or @dfn{rank}, of any
 processed variable in @var{file_1} must be greater than or equal to the
 rank of the same variable in @var{file_2}. 
 Furthermore, the size of all dimensions common to both @var{file_1} and
@@ -4415,10 +4442,13 @@ variables.}.
 In this case the input files to @command{ncbo}, @var{file_1} and
 @var{file_2}, will have unequally sized @code{time} dimensions which
 causes @command{ncbo} to fail.
-To prevent this from occuring, use @command{ncwa} to remove the @code{time}
-dimension from @var{file_2}.
-An example is given below.
+To prevent this from occuring, use @command{ncwa} to remove the
+@code{time} dimension from @var{file_2}.
+See the example below.
 
+@cindex coordinate variable 
+@cindex @code{NC_BYTE}
+@cindex @code{NC_CHAR}
 @command{ncbo} will never difference coordinate variables or variables of
 type @code{NC_CHAR} or @code{NC_BYTE}. 
 This ensures that coordinates like (e.g., latitude and longitude) are
@@ -4459,7 +4489,7 @@ ncwa -O -a time 85.nc 85.nc
 The second command, @command{ncwa}, gets rid of the @code{time} dimension
 of @w{size 1} that @command{ncra} left in @file{85.nc}. 
 Now none of the variables in @file{85.nc} has a @code{time} dimension.
-A quicker way to accomplish this is to use @command{ncwa} from the
+@w{A quicker} way to accomplish this is to use @command{ncwa} from the
 beginning:  
 @example
 ncwa -a time 85_0112.nc 85.nc
@@ -4476,7 +4506,7 @@ gridpoint.
 
 Say we wish to compute the monthly gridpoint anomalies from the zonal
 annual mean. 
-A @dfn{zonal mean} is a quantity that has been averaged over the
+@w{A @dfn{zonal mean}} is a quantity that has been averaged over the
 longitudinal (or @var{x}) direction.
 First we use @command{ncwa} to average over longitudinal direction
 @code{lon}, creating @file{85_x.nc}, the zonal mean of @file{85.nc}. 
@@ -4667,7 +4697,7 @@ Then @code{ncecat 85?.nc 85_ens.nc} glues the individual realizations
 together into the single file, @file{85_ens.nc}. 
 If an input variable was dimensioned [@code{lat},@code{lon}], it will have
 dimensions [@code{record},@code{lat},@code{lon}] in the output file.
-A restriction of @command{ncecat} is that the hyperslabs of the processed
+@w{A restriction} of @command{ncecat} is that the hyperslabs of the processed
 variables must be the same from file to file.
 Normally this means all the input files are the same size, and contain
 data on different realizations of the same variables.

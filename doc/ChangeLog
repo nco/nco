@@ -1,5 +1,7 @@
 2003-08-27  Charlie Zender  <zender@uci.edu>
 
+	* Improve ncbo documentation
+
 	* cvs tag -c nco-2_8_1
 	Changes since nco-2_8_0: variable wildcarding
 
@@ -13,9 +15,8 @@
 
 2003-08-20 Henry Butowsky <henryb@ntlworld>
 
-	* Rolled out varriable wildcarding to all operators
-	  configure script checks for presence of regular
-	  expressions lib regex.h
+	* Rolled out variable wildcarding to all operators.
+	  Configure script checks for presence of regular expressions lib regex.h
 
 2003-08-16  Charlie Zender  <zender@uci.edu>
 

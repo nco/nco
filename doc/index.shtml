@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.153 2003-08-26 22:30:32 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.154 2003-08-27 22:58:50 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -323,14 +323,13 @@ tend to lag the current distribution by many months, if not years:
 
 <ul>
 <!--
-<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.8.0</a></li>
+<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.8.1</a></li>
 -->
 <a href="http://www.debian.org">Debian GNU/Linux</a>-compatible systems: 
-<li><a href="src/nco_2.8.0-1_i386.deb">nco_2.8.0-1_i386.deb</a> (<!--#fsize file="src/nco_2.8.0-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, no documentation (install with <tt>apt-get install nco</tt>)</li>
-<li><a href="src/nco-doc_2.8.0-1_all.deb">nco-doc_2.8.0-1_all.deb</a> (<!--#fsize file="src/nco-doc_2.8.0-1_all.deb"-->): Pre-built documentation, all architectures (install with <tt>apt-get install nco-doc</tt>)</li>
-<li><a href="src/nco_2.8.0-1.dsc">nco_2.8.0-1.dsc</a> (<!--#fsize file="src/nco_2.8.0-1.dsc"-->): Description</li>
-<li><a href="src/nco_2.8.0-1.tar.gz">nco_2.8.0-1.tar.gz</a> (<!--#fsize file="src/nco_2.8.0-1.tar.gz"-->): Gzipped Source Tarball</li>
-<li><a href="src/nco_2.8.0-1_i386.changes">nco_2.8.0-1_i386.changes</a> (<!--#fsize file="src/nco_2.8.0-1.changes"-->): Changes</li>
+<li><a href="src/nco_2.8.1-1_i386.deb">nco_2.8.1-1_i386.deb</a> (<!--#fsize file="src/nco_2.8.1-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
+<li><a href="src/nco_2.8.1-1.dsc">nco_2.8.1-1.dsc</a> (<!--#fsize file="src/nco_2.8.1-1.dsc"-->): Description</li>
+<li><a href="src/nco_2.8.1-1.tar.gz">nco_2.8.1-1.tar.gz</a> (<!--#fsize file="src/nco_2.8.1-1.tar.gz"-->): Gzipped Source Tarball</li>
+<li><a href="src/nco_2.8.1-1_i386.changes">nco_2.8.1-1_i386.changes</a> (<!--#fsize file="src/nco_2.8.1-1.changes"-->): Changes</li>
 </ul>
 
 <ul>
