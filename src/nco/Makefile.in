@@ -143,7 +143,7 @@ nco_cln_utl.h nco_dmn_utl.h nco_netcdf.h nco_scm.h nco_getopt.h
 
 
 lib_LTLIBRARIES = libnco.la
-libnco_la_SOURCES = nco_att_utl.c nco_bnr.c nco_cln_utl.c nco_cnf_dmn.c \
+libnco_la_SOURCES = nco_malloc.c nco_att_utl.c nco_bnr.c nco_cln_utl.c nco_cnf_dmn.c \
 nco_cnf_typ.c nco_cnv_arm.c nco_rth_flt.c ${NCO_GETOPT} \
 nco_cnv_csm.c nco_ctl.c nco_dbg.c nco_dmn_utl.c nco_fl_utl.c nco_lmt.c \
 nco_lst_utl.c nco_mmr.c nco_msa.c nco_mss_val.c nco_netcdf.c nco_omp.c nco_pck.c \
@@ -165,15 +165,15 @@ libnco_la_LIBADD =
 @NCO_NEED_GETOPT_LONG_TRUE@am__objects_1 = nco_getopt.lo
 @NCO_NEED_GETOPT_LONG_FALSE@am__objects_1 =
 am__objects_2 =
-am_libnco_la_OBJECTS = nco_att_utl.lo nco_bnr.lo nco_cln_utl.lo \
-	nco_cnf_dmn.lo nco_cnf_typ.lo nco_cnv_arm.lo nco_rth_flt.lo \
-	$(am__objects_1) nco_cnv_csm.lo nco_ctl.lo nco_dbg.lo \
-	nco_dmn_utl.lo nco_fl_utl.lo nco_lmt.lo nco_lst_utl.lo \
-	nco_mmr.lo nco_msa.lo nco_mss_val.lo nco_netcdf.lo nco_omp.lo \
-	nco_pck.lo nco_prn.lo nco_rec_var.lo nco_rth_utl.lo \
-	nco_scl_utl.lo nco_scm.lo nco_sng_utl.lo nco_var_avg.lo \
-	nco_var_lst.lo nco_var_rth.lo nco_var_scv.lo nco_var_utl.lo \
-	$(am__objects_2)
+am_libnco_la_OBJECTS = nco_malloc.lo nco_att_utl.lo nco_bnr.lo \
+	nco_cln_utl.lo nco_cnf_dmn.lo nco_cnf_typ.lo nco_cnv_arm.lo \
+	nco_rth_flt.lo $(am__objects_1) nco_cnv_csm.lo nco_ctl.lo \
+	nco_dbg.lo nco_dmn_utl.lo nco_fl_utl.lo nco_lmt.lo \
+	nco_lst_utl.lo nco_mmr.lo nco_msa.lo nco_mss_val.lo \
+	nco_netcdf.lo nco_omp.lo nco_pck.lo nco_prn.lo nco_rec_var.lo \
+	nco_rth_utl.lo nco_scl_utl.lo nco_scm.lo nco_sng_utl.lo \
+	nco_var_avg.lo nco_var_lst.lo nco_var_rth.lo nco_var_scv.lo \
+	nco_var_utl.lo $(am__objects_2)
 libnco_la_OBJECTS = $(am_libnco_la_OBJECTS)
 @BUILD_NCAP_TRUE@bin_PROGRAMS = ncap$(EXEEXT) ncatted$(EXEEXT) \
 @BUILD_NCAP_TRUE@	ncdiff$(EXEEXT) ncecat$(EXEEXT) \
@@ -243,7 +243,8 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/nco_dbg.Plo ./$(DEPDIR)/nco_dmn_utl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/nco_fl_utl.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/nco_getopt.Plo ./$(DEPDIR)/nco_lmt.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/nco_lst_utl.Plo ./$(DEPDIR)/nco_mmr.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_lst_utl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_malloc.Plo ./$(DEPDIR)/nco_mmr.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/nco_msa.Plo ./$(DEPDIR)/nco_mss_val.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/nco_netcdf.Plo ./$(DEPDIR)/nco_omp.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/nco_pck.Plo ./$(DEPDIR)/nco_prn.Plo \
@@ -408,6 +409,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_getopt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_lmt.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_lst_utl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_malloc.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_mmr.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_msa.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_mss_val.Plo@am__quote@
