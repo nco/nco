@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.35 2002-09-05 07:04:10 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.36 2002-09-05 21:56:31 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -11,7 +11,7 @@ ALPHA
 CRAY
 FREEBSD		N(10)
 LINUX como	N(11)	
-LINUX gcc/g++	Y	N/A				Y	Y
+LINUX gcc/g++	Y	N/A	N(12)			Y	Y
 LINUX icc	Y	N/A				Y	Y
 LINUXALPHA	Y					Y	Y
 LINUXPPC	Y					Y	N(9)
@@ -34,6 +34,7 @@ Footnotes to summary table:
 09. tst fails to find in.nc
 10. Major problems with make script
 11. Comeau (correctly) insists strdup(), strcasecmp() are not ANSI standard
+12. C++ version problems in linking DODS libraries
 -----------------------------------------------------------------------
 
 Default installation procedure for system-wide installation,
@@ -151,6 +152,14 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
+
+gcc/g++ DODS:
+export GNU_TRP='i686-pc-linux-gnu'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+LDFLAGS=-L/usr/local/DODS/lib NETCDF_INC=/usr/local/DODS/include NETCDF_LIB=/usr/local/DODS/lib ./configure --enable-dods --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 gcc/g++ cygwin:
 export GNU_TRP='i686-pc-cygwin'

@@ -1,7 +1,7 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.165 2002-09-04 15:36:22 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.166 2002-09-05 21:56:33 zender Exp $ -*-makefile-*-
 
-# Purpose: GNUMakefile for NCO module nco
-# Requires GNU make. AT&T make will not process this file.
+# Purpose: GNU Makefile for NCO module nco
+# Requires GNU Make. AT&T Make will not process this file.
 # scp ~/nco/bld/Makefile goldhill.cgd.ucar.edu:nco/bld
 
 # Usage: 
@@ -101,17 +101,19 @@ endif # endif VRS_SNG
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
 CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}'
 
-ifeq ($(DODS),Y)
+ifeq (${DODS},Y)
 # Build NCO as DODS-enabled clients
+# fxm: DODS bloats executables, should automatically enable stripping
+# http://www.unidata.ucar.edu/packages/dods/user/guide-html/guide_28.html
 ifndef DODS_ROOT
 # Directory containing libdap++.a, libnc-dods.a
  DODS_ROOT := /usr/local/DODS
 endif
- NC_LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib
+ NC_LDFLAGS := -L${DODS_ROOT}/lib -L${DODS_ROOT}/packages-3.1.1/lib
  NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
 # Get netCDF from DODS version
- NETCDF_INC=$(DODS_ROOT)/include
- NETCDF_LIB=$(DODS_ROOT)/lib
+ NETCDF_INC=${DODS_ROOT}/include
+ NETCDF_LIB=${DODS_ROOT}/lib
 else
 # Build NCO straight, without DODS
  NC_LDFLAGS := -L${NETCDF_LIB}
@@ -882,7 +884,7 @@ endif
 # Link to DODS libraries first, see DODS User's Guide
 # Currently this is invoked by using 'make DODS=Y' on the command
 # NB: Yes, nc-dods, dap++ must be linked twice!
-ifeq ($(DODS),Y)
+ifeq (${DODS},Y)
 ifneq (${CC},g++)
 # -lstdc++ automatically linked by g++, must add by hand for others
  LDFLAGS := ${LDFLAGS} -lstdc++
@@ -1132,8 +1134,8 @@ dbg:
 	@printf "CPP_PTH = ${CPP_PTH}\n"
 	@printf "CPP_TKN = ${CPP_TKN}\n"
 	@printf "DBG = ${DBG}\n"
-	@printf "DODS = $(DODS)\n"
-	@printf "DODS_ROOT = $(DODS_ROOT)\n"
+	@printf "DODS = ${DODS}\n"
+	@printf "DODS_ROOT = ${DODS_ROOT}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"
 	@printf "HDF5 = $(HDF5)\n"

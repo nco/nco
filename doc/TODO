@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.179 2002-09-05 17:58:07 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.180 2002-09-05 21:56:33 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -15,6 +15,7 @@ Autoconf-build items:
 14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, I18N, _LIBINTL_H, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
 17. Fix CXX valarray to work on AIX
 18. Autoconf workarounds for strdup(), strcasecmp() (#234, 235 below)
+19. DODS linkage appears broken on Linux
 
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
