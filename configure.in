@@ -1,9 +1,9 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.111 2005-03-12 00:16:44 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.112 2005-03-24 20:48:34 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
 
-# Copyright (C) 2003--2004 Charlie Zender and Rorik Peterson
+# Copyright (C) 2003--2005 Charlie Zender and Rorik Peterson
 # This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
 # See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
 
@@ -21,7 +21,7 @@
 
 # Process file with autoconf to produce configure script
 # (package name,version,bug-report-address,tarball name)
-AC_INIT([NCO netCDF Operators],[2.9.9],[help@nco.sf.net],[nco])
+AC_INIT([NCO netCDF Operators],[3.0.0],[help@nco.sf.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT

@@ -1,3 +1,9 @@
+nco (3.0.0-1) unstable; urgency=low
+
+  *  1. ncap bugfix 2. Add benchmarking	3. libnco_c++ implements nco_var_puta()
+
+ -- Charlie Zender <zender@uci.edu>  Thu, 24 Mar 2005 12:46:10 -0800
+
 nco (2.9.9-1) unstable; urgency=low
 
   * 1. ncbo threading 2. ncpdq -P packing

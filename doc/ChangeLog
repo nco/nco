@@ -1,3 +1,9 @@
+2005-03-24  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-3_0_0
+	Changes since nco-2_9_9: 1. ncap bugfix 2. Add benchmarking
+	3. libnco_c++ implements nco_var_puta()
+
 2005-03-23  Charlie Zender  <zender@uci.edu>
 
 	* Fix gaping memory leak in ncap_var_stretch()

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.277 2005-03-23 01:44:19 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.278 2005-03-24 20:48:48 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -93,7 +93,7 @@ little money, click on the PayPal button:
 <h2>NCO News &amp; Announcements</h2>
 
 <ul>
-<li>September&nbsp;7, 2004: NCO 2.9.9 released&mdash;<tt>ncpdq</tt> now packs data quietly</li>
+<li>September&nbsp;7, 2004: NCO 3.0.0 released&mdash;<tt>ncpdq</tt> now packs data quietly</li>
 
 <li>August&nbsp;21, 2004:
 <a href="http://www.nsf.gov">National Science Foundation (NSF)</a>
@@ -398,19 +398,19 @@ Simply hit return when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>2.9.9</tt> (which is
-tagged as <tt>nco-2_9_9</tt> due to CVS rules) into local directory
-<tt>nco-2.9.9</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -r nco-2_9_9 -d nco-2.9.9 nco</tt></p>
+This command retrieves and places NCO version <tt>3.0.0</tt> (which is
+tagged as <tt>nco-3_0_0</tt> due to CVS rules) into local directory
+<tt>nco-3.0.0</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -r nco-3_0_0 -d nco-3.0.0 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-2_9_9</tt>) and the development version is that the
+(e.g., <tt>nco-3_0_0</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>2.9.9</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>3.0.0</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -437,15 +437,15 @@ testing and porting of NCO on the
 <h3><a href="http://www.debian.org">Debian GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.9.9</a></li>
+<li><a href="http://www.debian.org">Debian</a> GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-3.0.0</a></li>
 -->
 <a href="http://packages.debian.org/unstable/math/nco.html">Debian GNU/Linux homepage for NCO</a>.
 <a href="http://www.debian.org">debs</a> by Rorik Peterson and Charlie Zender:
-<li><a href="src/nco_2.9.9-1_i386.deb">nco_2.9.9-1_i386.deb</a> (<!--#fsize file="src/nco_2.9.9-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
-<li><a href="src/nco_2.9.9-1.dsc">nco_2.9.9-1.dsc</a> (<!--#fsize file="src/nco_2.9.9-1.dsc"-->): Description</li>
-<li><a href="src/nco_2.9.9-1.tar.gz">nco_2.9.9-1.tar.gz</a> (<!--#fsize file="src/nco_2.9.9-1.tar.gz"-->): Gzipped Source Tarball</li>
+<li><a href="src/nco_3.0.0-1_i386.deb">nco_3.0.0-1_i386.deb</a> (<!--#fsize file="src/nco_3.0.0-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
+<li><a href="src/nco_3.0.0-1.dsc">nco_3.0.0-1.dsc</a> (<!--#fsize file="src/nco_3.0.0-1.dsc"-->): Description</li>
+<li><a href="src/nco_3.0.0-1.tar.gz">nco_3.0.0-1.tar.gz</a> (<!--#fsize file="src/nco_3.0.0-1.tar.gz"-->): Gzipped Source Tarball</li>
 <li><a
-href="src/nco_2.9.9-1_i386.changes">nco_2.9.9-1_i386.changes</a> (<!--#fsize file="src/nco_2.9.9-1.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
+href="src/nco_3.0.0-1_i386.changes">nco_3.0.0-1_i386.changes</a> (<!--#fsize file="src/nco_3.0.0-1.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
 </ul>
 
 <a name="redhat"></a>
