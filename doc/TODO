@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.237 2003-10-12 05:14:36 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.238 2003-10-16 20:46:16 rorik Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -233,7 +233,6 @@ Permission denied
 268. ncbo: use ncap var_cnf_dmn() technique so fl_1 fl_2 broadcast interchangeably
 270. Automate uploading of tagged .deb builds to ftp://ftp.debian.org
 272. Does ncks -A fl_1.nc fl_2.nc work when files have no dimensions in common?
-273. make 'make distclean' remove ncap_lex.c ncap_yacc.c ncap_yacc.h
 274. 
 ************************************************************************
 End NCO Wish list
