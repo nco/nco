@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.43 2003-11-26 23:16:01 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.44 2003-12-04 02:32:42 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.4 are ready. 
 
@@ -12,6 +12,7 @@ Charlie
 
 Bug-fixes:
 1. make install works on Solaris. Used to die with symlinks. (Rorik)
+2. Changing attribute values with ncap works as advertised (Henry)
 
 Feature changes:
 1. 

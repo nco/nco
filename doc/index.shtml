@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.179 2003-12-02 02:10:22 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.180 2003-12-04 02:32:42 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -197,8 +197,8 @@ Tarballs and RPMs are only rarely uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.8.5</b>: (<i>In progress</i>) <tt>make install</tt> works on Solaris, 
-<li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (broke in 2.7.3, <b>upgrade highly recommended</b>), <tt>ncap</tt> peak memory usage reduced still more, support for AMD Opteron x86-64 architecture
+<li><b>NCO 2.8.5</b>: (<i>In progress</i>) Solaris <tt>make install</tt> works, <tt>ncap</tt> changes attribute values correctly
+<li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (<a href="#bug_idx_hyp">broke in 2.7.3</a>, <b><i>upgrade highly recommended</i></b>), <tt>ncap</tt> peak memory usage reduced still more, support for AMD Opteron x86-64 architecture
 <li><b>NCO 2.8.3</b>: Fix big <tt>ncap</tt> memory leak, fix regressions, remove scary packing warnings</li>
 <li><b>NCO 2.8.2</b>: <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly, improve error diagnostics</li>
 <li><b>NCO 2.8.1</b>: <a href="./nco.html#wildcarding">&ldquo;Variable wildcarding&rdquo;</a>&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators</li>
@@ -447,6 +447,7 @@ Users at NCAR should try the <i>supported</i> executables in
 <h2>Known Problems with NCO and/or netCDF:</h2>
 
 <ul>
+<a name="bug_idx_hyp"></a>
 <li><b>Index-based hyperslab problems:</b>
 NCO versions 2.7.3&mdash;2.8.3 have a nasty bug that cause
 index-based hyperslabs, e.g., <tt>-d lat,1,</tt> to 
@@ -493,6 +494,7 @@ The gory details of the failed (and successful) builds are in the
 <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>.
 </li>
 
+<a name="bug_DODS"></a>
 <li><b>Build problems with DODS:</b>
 NCO links with the
 <a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> netCDF
