@@ -1,5 +1,8 @@
 2002-09-14  Charlie Zender  <zender@uci.edu>
 
+	* Added esoteric math functions to MACOSX using float<-->double
+	coercion method
+
 	* Implement compatibility strdup() and strcasecmp()
 	Comeau should now work but have not tested it
 
