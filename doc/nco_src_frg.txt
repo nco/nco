@@ -1,11 +1,11 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.15 2000-07-13 18:33:06 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.16 2000-07-28 18:41:42 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
 Project Full Name:  NCO netCDF Operators
 Project Unix Name:  nco
 CVS Server:         cvs.nco.sourceforge.net
-Shell/Web Server:   nco.sourceforge.net
+Shell/Web Server:   nco.sourceforge.net:/home/users/zender
 		    nco.sourceforge.net:/home/groups/nco
 Project Websites:   http://nco.sourceforge.net
 		    http://sourceforge.net/projects/nco
@@ -16,11 +16,22 @@ CVS:		    Anonymous check out:
 		    cvs -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco login 
 		    cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco
 		    Developer check out (note absence of pserver protocol allows ssh to be used)
-		    cvs -z3 -dzender@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco 
+		    cvs -z3 -dzender@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco
 		    export CVS_RSH=ssh 
 		    export CVSROOT=zender@cvs.nco.sourceforge.net:/cvsroot/nco
-		    Daily tarballs of entire CVS tree for mirroring:
+		    Checkouts inside sourceforge firewall:
+		    cvs -dzender@cvs1:/cvsroot/nco co -kk nco
+Daily tarballs of entire CVS tree for mirroring:
 		    http://cvs.sourceforge.net/cvstarballs/nco-cvsroot.tar.gz
+
+Building group NCO: 
+export MY_BIN_DIR='/home/groups/nco/nco/bin'
+export MY_LIB_DIR='/home/groups/nco/nco/lib'
+export MY_OBJ_DIR='/home/groups/nco/nco/obj'
+export NETCDF_INC='/home/groups/nco/include'
+export NETCDF_LIB='/home/groups/nco/lib/LINUX'
+cd /home/groups/nco/nco/bld;make;cd -
+export PATH="${PATH}\:/home/groups/nco/nco/bin"
 
 The purpose of this project is to create and improve tools for data
 analysis by using Open Source development strategy. The starting
