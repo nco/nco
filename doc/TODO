@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.82 2000-10-28 01:26:41 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.83 2000-11-27 18:33:32 zender Exp $ 
 
 *************
 NCO Wish list
@@ -134,6 +134,13 @@ sudo root screws up permissions in obj/bin directories of user
 189. Verify ncrcat multithreading works, produced "not a netCDF file error" once
 190. Make typ_pck et al. use nc_type enum or something sane for default
 191. Create short man pages for each operator which point user to info pages or online manual
+192. ncdiff will sometimes subtract files of incommensurate sizes without complaint
+ncks -O -v one_dmn_rec_var -d time,0,1 in.nc foo1.nc
+ncks -O -v one_dmn_rec_var -d time,0,2 in.nc foo2.nc
+ncdiff -O foo1.nc foo2.nc foo3.nc
+This may make sense, e.g., for 1-D record variables of different lengths, but not for multidimensional variables
+Former case should print warning, latter case should exit with error
+193. Convert dimension sizes from type "long int" to type "size_t"?
 ************************************************************************
 End NCO Wish list
 ************************************************************************

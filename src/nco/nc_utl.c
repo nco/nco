@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.106 2000-11-26 06:41:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.107 2000-11-27 18:33:33 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -1603,15 +1603,13 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
   
 } /* end var_lst_ass_crd_add() */
 
-nm_id_sct *
-lst_heapsort(nm_id_sct *lst,int nbr_lst,bool ALPHABETIZE_OUTPUT)
-     /* 
-	nm_id_sct *lst: current list (destroyed)
-	int nbr_lst: I number of members in list
-	bool ALPHABETIZE_OUTPUT): whether to alphabetize extraction list
-	nm_id_sct lst_heapsort(): O list
-     */
+nm_id_sct * /* O [sct] Sorted output list */
+lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
+(nm_id_sct *lst, /* I/O [sct] Current list (destroyed) */
+ int nbr_lst, /* I [nbr] number of members in list */
+ bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
 {
+  /* Purpose: Sort extraction lists numerically or alphabetically */
   int *srt_idx; /* List to store sorted key map */
   int idx; /* Counting index */
   nm_id_sct *lst_tmp; /* Temporary copy of original extraction list */
@@ -1620,16 +1618,20 @@ lst_heapsort(nm_id_sct *lst,int nbr_lst,bool ALPHABETIZE_OUTPUT)
   lst_tmp=(nm_id_sct *)nco_malloc(nbr_lst*sizeof(nm_id_sct));
   (void)memcpy((void *)lst_tmp,(void *)lst,nbr_lst*sizeof(nm_id_sct));
   
-  /* NB: indexx employs "one-based" arrays */
+  /* indexx() and relative assume "one-based" arrays 
+     Use pointer arithmetic to spoof zero-based arrays, i.e.,
+     xtr_nm[0] in calling routine becomes xtr_nm[1] in sorting routine  */
   if(ALPHABETIZE_OUTPUT){
-    /* Alphabetize list by variable name. Easiest to read */
+    /* Alphabetize list by variable name
+       This produces easy-to-read screen output with ncks */
     char **xtr_nm;
     xtr_nm=(char **)nco_malloc(nbr_lst*sizeof(char *));
     for(idx=0;idx<nbr_lst;idx++) xtr_nm[idx]=lst[idx].nm;
     (void)index_alpha(nbr_lst,xtr_nm-1,srt_idx-1);
     (void)free(xtr_nm);
   }else{
-    /* Heapsort the list by ID. Fastest I/O */
+    /* Heapsort the list by variable ID 
+       This theoretically allows the fastest I/O when creating output file */
     int *xtr_id;
     xtr_id=(int *)nco_malloc(nbr_lst*sizeof(int));
     for(idx=0;idx<nbr_lst;idx++) xtr_id[idx]=lst[idx].id;
@@ -1637,7 +1639,8 @@ lst_heapsort(nm_id_sct *lst,int nbr_lst,bool ALPHABETIZE_OUTPUT)
     (void)free(xtr_id);
   } /* end else */
 
-  /* NB: indexx employs "one-based" arrays */
+  /* indexx and relatives employ "one-based" arrays 
+     Thus min(srt_idx) == 1 and max(srt_idx) == nbr_lst */
   for(idx=0;idx<nbr_lst;idx++){
     lst[idx].id=lst_tmp[srt_idx[idx]-1].id;
     lst[idx].nm=lst_tmp[srt_idx[idx]-1].nm;

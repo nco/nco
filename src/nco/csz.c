@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.64 2000-10-24 01:22:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.65 2000-11-27 18:33:33 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -837,15 +837,16 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 
 } /* end fl_mk_lcl() */
 
-/* indexx() is from Numerical Recipes. It computes an index table which 
-   sorts the input array into ascending order. I have made the arrin argument 
-   and the local variable q integers for netCDF purposes. */
-/* NB: Many Numerical Recipes routines, including this one, employ "one-based" arrays */
 void indexx(int n,int *arrin,int *indx)
 /*     int n,indx[];*/
 /*     float arrin[];*/
 /*     int arrin[];*/
 {
+  /* Purpose: Sort an array of integers
+     Based on indexx() from Numerical Recipes
+     Routine computes an index table which sorts input array into ascending order
+     I made arrin argument and local variable q integers for netCDF purposes
+     Routine assumes "one-based" arrays */
   int l,j,ir,indxt,i;
 /*  float q;*/
   int q;
@@ -879,8 +880,9 @@ void indexx(int n,int *arrin,int *indx)
 } /* end indexx() */
 
 void index_alpha(int n,char **arrin,int *indx)
-     /* This is indexx() from Numerical recipes hacked to alphabetize a list of strings */
 {
+/* Purpose: Sort input array alphanumerically
+   This is indexx() from Numerical recipes hacked to alphabetize a list of strings */
   int l,j,ir,indxt,i;
 /*  float q;*/
   char *q;
