@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.207 2003-03-13 18:49:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.208 2003-03-17 03:16:38 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -229,6 +229,8 @@ Command executes but in.hdf is full of screwy values
 250. make ncks refuse to print strings formatted with %s unless they contain NUL-terminator. This will avoid segfaults like
 ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 251. Does ncks -B correctly write packed variables in binary format?
+252. Replace sections in nco.texi with new MSA output style
+253. Sift through numerous files in ~/nco/nco-2.7.3/debian, edit important ones
 ************************************************************************
 End NCO Wish list
 ************************************************************************

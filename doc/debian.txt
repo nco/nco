@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.1 2003-03-15 06:17:49 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.2 2003-03-17 03:16:38 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -6,10 +6,14 @@
 Debian:		    http://packages.debian.org/unstable/math/nco.html
 Gentoo:		    http://gentoo-stable.iq-computing.de/browse?type=version&category=app-sci&package=nco&version=2.2.0
 
-0. Bible for new maintainers packaging .deb's: ~/nco/debian/maint-guide.en.ps
+Rod02 is Bible for packaging .deb's: /data/zender/tmp/maint-guide.en.pdf
+Questions on procedure go to Debian Mentors <debian-mentors@lists.debian.org> 
 
-1. Install Debian packages required to build new packages
+0. Install Debian packages required to build new packages
 apt-get install dh-make debhelper devscripts fakeroot gnupg debian-policy developers-reference
+
+1. Create ~/nco/debian directory to hold Debian configuration files
+   Following files were
 
 2. Debian build procedure recommends placing entire package source in
    subdirectory of main package. 
@@ -25,24 +29,42 @@ tar cvzf ./nco/nco.tar.gz ./nco/*
 cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-2.7.3
 /bin/rm nco.tar.gz;tar cvzf nco-2.7.3.tar.gz ./nco-2.7.3/*
 cd ~/nco/nco-2.7.3
-dh_make -e zender@uci.edu -f ../nco-2.7.3.tar.gz # Create Debian package template
-... # Edit files in ~/nco/debian
+dh_make -e zender@uci.edu -f ../nco-2.7.3.tar.gz
 
     2.2 The preceding steps created template debian files for a .deb,
     Those files now reside in ~/nco/debian.
-    They are checked into the CVS repository of the main distribution
+    They are now checked into the CVS repository of the main distribution
+    Step 2 only needs to be performed once per package
+    Now that the Debian template files are a part of the upstream
+    directory, future work consists of building the Debian packages
 
-3. 
-cd ~/nco/nco-2.7.3
-dpkg-buildpackage -rfakeroot # Build .deb package
+3. Build new .deb package
 
-# Create Debian tree from nco_2.2.0-3.dsc nco_2.2.0-3.orig.tar.gz, nco_2.2.0-3.diff.gz 
-dpkg-source -x nco_2.2.0-3.dsc
-# Previous dpkg-source command is functionally equivalent to following
-# Apply Debian diff to original source to produce Debian source
-cd /data/zender;/bin/rm -r nco-2.2.0.orig nco-2.2.0 
-tar xvzf nco_2.2.0.orig.tar.gz # Untar original source
-cp -r nco-2.2.0.orig nco-2.2.0 # Create destination for patches
-patch -p0 < nco_2.2.0-3.diff # Patch destination with Debian diff
+   3.1 First, remove detritus including *.gz files in parent directory
+   from previous build
+
+   cd ~/nco;/bin/rm *.gz
+   cd ~/nco/nco-2.7.3;
+   dpkg-buildpackage -rfakeroot > foo 2>&1
+
+4. Find out which packages new package needs for building
+   From Rod02 p. 14
+
+   strace -f -o /tmp/log ./configure
+   for x in `dpkg -S ${grep open /tmp/log | perl -pe 's!.* open\(\"([^\"]*).*!$1}
+
+5. Going backwards: How to create the Debian tarball source given
+the distributed Debian files, nco_X.Y.Z-3.dsc nco_X.Y.Z-3.orig.tar.gz,
+and nco_X.Y.Z-3.diff.gz  
+
+dpkg-source -x nco_X.Y.Z-3.dsc
+
+This dpkg-source command is functionally equivalent to applying the
+Debian diff to the original source to produce Debian source:
+
+cd /data/zender;/bin/rm -r nco-X.Y.Z.orig nco-X.Y.Z 
+tar xvzf nco_X.Y.Z.orig.tar.gz # Untar original source
+cp -r nco-X.Y.Z.orig nco-X.Y.Z # Create destination for patches
+patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
 
 

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.147 2003-03-13 18:49:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.148 2003-03-17 03:16:38 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1827,6 +1827,7 @@ ncra -F -d time,6,8 85.nc 85_JJA.nc
 Printing variable @var{three_dmn_var} in file @file{in.nc} first with
 @w{C indexing} conventions, then with Fortran indexing conventions
 results in the following output formats: 
+@c fxm: replace with new MSA output style
 @example
 % ncks -H -v three_dmn_var in.nc
 % lat[0]=-90 lev[0]=1000 lon[0]=-180 three_dmn_var[0]=0 
@@ -4461,6 +4462,7 @@ and, values, if any, of all of the variables dimensions.
 The dimension and variable indices refer to the location of the
 corresponding data element with respect to the variable as stored on
 disk (i.e., not the hyperslab).
+@c fxm: replace with new MSA output style
 @example
 % ncks -H -C -v three_dmn_var in.nc
 lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
@@ -4473,6 +4475,7 @@ lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23
 @end example
 Printing the same variable with the @samp{-F} option shows the same
 variable indexed with Fortran conventions
+@c fxm: replace with new MSA output style
 @example
 % ncks -F -H -C -v three_dmn_var in.nc
 lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0 
@@ -4485,6 +4488,7 @@ since these indices are relative to the full variable (as stored in the
 input file), and the input file has not changed.
 However, if the hypserslab is saved to an output file and those values
 are printed, the indices will change:
+@c fxm: replace with new MSA output style
 @example
 % ncks -H -d lat,90.0 -d lev,1000.0 -v three_dmn_var in.nc out.nc
 lat[1]=90 lev[2]=1000 lon[0]=0 three_dmn_var[20]=20 
@@ -4572,6 +4576,7 @@ default notations.
 Next print @code{three_dmn_var} as an un-annotated text column.
 Then print @code{three_dmn_var} signed with very high precision.
 Finally, print @code{three_dmn_var} as a comma-separated list.
+@c fxm: replace with new MSA output style
 @example
 % ncks -H -C -v three_dmn_var in.nc
 lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
