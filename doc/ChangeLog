@@ -2343,3 +2343,8 @@ Wed Mar 26 21:13:09 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
 Thu Feb  8 23:01:04 MST 1996  Charlie Zender  <zender@ncar.ucar.edu>
 
 	* First internal CGD release of operator set known as ncz-0.9
+
+Sat May 15 23:01:04 MST 1993  Charlie Zender  <zender@ncar.ucar.edu>
+
+	* First RCS snapshot of ncks.c in directory nc.
+	ncks.c began life as c_template.c
