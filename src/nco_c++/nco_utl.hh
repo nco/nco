@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.3 2002-08-24 06:08:05 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.4 2002-09-02 06:51:47 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface utilities for netCDF routines
 
@@ -21,6 +21,7 @@
 #include <string> // Standard C++ string class
 
 // Standard C headers
+#include <cstdlib> // abort, exit, getopt, malloc, strtod, strtol
 
 // 3rd party vendors
 #include <netcdf.h> // netCDF C interface

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.5 2002-08-11 06:09:51 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.6 2002-09-02 06:51:47 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -425,7 +425,9 @@ nco_put_var // [fnc] Write variable to netCDF file
   const int dmn_nbr(nco_inq_varndims(nc_id,var_id));
   int rcd; // O [enm] Return success code
   if(dmn_nbr == 0){
-    rcd=nc_put_var1_long(nc_id,var_id,NULL,&(const_cast<long &>(var_val)));
+    size_t srt_dmn_0=0; // Faster than initializing a valarray
+    const size_t *srt_dmn_0_ptr(&srt_dmn_0);
+    rcd=nc_put_var1_long(nc_id,var_id,srt_dmn_0_ptr,&(const_cast<long &>(var_val)));
   }else{
     // Default starting index is 0
     std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(dmn_nbr));

@@ -1,6 +1,9 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.2 2002-08-22 05:05:08 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.3 2002-09-02 06:51:47 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
+
+# Usage:
+# cd ~/nco/src/nco_c++;make -f Makefile.old dpn_cln cln all
 
 # In rule 
 # foobar.o : foo.c bar.c
@@ -336,12 +339,14 @@ endif
 
 # Works on LINUX and LINUXALPHA and FREEBSD
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
-C++ ?= g++
+#C++ ?= g++
+C++ := como
 #C++ ?= /usr/local/gcc/bin/g++
 #C++ := icc
 #C++ := insure
 #CC := /usr/local/gcc/bin/gcc -ansi
-CC := gcc -ansi
+CC := como -c99
+#CC := gcc -ansi
 #CC := icc
 #CC := insure
 CPP := ${C++}
@@ -359,6 +364,26 @@ LDFLAGS += -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf
 LEX := flex
 LINT := lint
 YACC := bison
+# Comeau C Compiler
+ifeq (${C++},como)
+ CFLAGS := 
+ CPPFLAGS := ${CPP_TKN} -DHAVE_INLINE
+ CPPFLAGS += -I${COMOROOT}/libcomo -I${COMOROOT}/libcomo/cnames ${CPP_PTH} -I${NETCDF_INC}
+ LDFLAGS := ${COMOROOT}/libcomo/libcomo.a ${LDFLAGS}
+ifeq (${OPTS},O)
+ CFLAGS += -O
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ CFLAGS +=
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g
+endif
+ C++FLAGS := ${CFLAGS}
+endif # endif Comeau C Compiler
 # GNU Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
  CFLAGS := -Wall -Wno-unused-variable
@@ -384,7 +409,7 @@ ifeq (${OPTS},X)
  CFLAGS += -g -O
 endif
  C++FLAGS := ${CFLAGS}
-endif
+endif # endif GNU Compiler Collection
 # Intel (Kai) C Compiler
 ifeq (${CC},icc)
  CFLAGS := 
@@ -402,7 +427,7 @@ ifeq (${OPTS},X)
  CFLAGS += -g
 endif
  C++FLAGS := ${CFLAGS}
-endif
+endif # endif Intel (Kai) C Compiler
 # Intel (Kai) Fortran Compiler
 ifeq (${FC},ifc)
 # -e95 issues warnings for non-standard fortran
@@ -428,7 +453,7 @@ endif
 ifeq (${OPTS},X)
  FFLAGS += -g -C -e95
 endif
-endif
+endif # endif Intel (Kai) Fortran Compiler
 # Portland Group Fortran Compiler
 ifeq (${FC},pgf90)
  FFLAGS := -Mextend -Mnosecond_underscore -byteswapio -Mrecursive -Mdalign -Ktrap=fp
@@ -448,7 +473,7 @@ endif
 ifeq (${OPTS},X)
  FFLAGS += -g -Mbounds
 endif
-endif
+endif # endif Portland Group Fortran Compiler
 # G77 Fortran compiler
 ifeq (${FC},g77)
  FFLAGS := -ffixed-line-length-132 -fno-second-underscore
@@ -464,7 +489,7 @@ endif
 ifeq (${OPTS},X)
  FFLAGS := -g -O -fdebug-kludge -fbounds-check
 endif
-endif
+endif # endif G77 Fortran compiler
 ifeq (${OMP},Y)
  CFLAGS += ${OMP_FLG}
  FFLAGS += ${OMP_FLG}

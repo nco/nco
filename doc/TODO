@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.173 2002-08-31 00:18:51 rorik Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.174 2002-09-02 06:51:47 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -52,13 +52,12 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 18. Do not presume math float functions (e.g., tanf) exist. Use HAVE_COSF from autoconf to search for each float function. Use double functions when float functions are unavailable.
 19. Make all binary operators handle ordering of operands consistently, e.g., divide(1,2)=1/2 not 2/1
 20. Print out contents of each non-comment statement when dbg_lvl==1
-21. Add two-argument functions like fmodf to ncap_sym_init()
-24. AIX compilation fails with missing symbols for float math functions cosf()...
+21. Add two-argument functions like fmodf to ncap_sym_init() (using va_args?)
 25. Turn arbitrarily fixed size array tokens NCAP_ATT_LST_NBR_MAX, NCAP_SPT_NBR_MAX into dynamically allocatable arrays
-26. Make sym_tbl_nbr dynamic
-27. Write and implement ncap_var_var_pow(), currently only ncap_var_att_pow() and ncap_att_att_pow work
+26. Make sym_tbl_nbr dynamic by implementing sym_add(), sym_rm() functions or linked list
+27. Write and implement ncap_var_var_pow(), currently only ncap_var_att_pow() and ncap_att_att_pow() work
 28. Make provision for pack() and unpack() to copy all attributes except scale_factor and add_offset from disk into new variable on disk?
-29. Rewrite nco_var_pck() to use var_scv() arithmetic operations
+29. Rewrite nco_var_pck() to use var_scv() arithmetic operations rather than more complex var_var() operations
 30. Allow -S to specify multiple input scripts to be sequentially parsed
 31. Put globals fl_spt_crr,ncl_dpt_crr,ln_nbr_crr in prs_arg or remove fl_spt from it
 32. Need filename expander and $NCO_DATA_PATH handling so #include's may be generic
@@ -228,7 +227,6 @@ Command executes but in.hdf is full of screwy values
 230. Keep track of type of missing_value field in variable structure for reasons described in nco_cnf_var_typ()/nco_cnv_mss_val_typ()
 232. Warn when arithmetic operators encounter packed variables?
 233. Makefile.old rule for make tst appears broken for long ftp rule
-234. ncra fails tst 2.6, 2.7: appears to round mean of packed values to int precision
 ************************************************************************
 End NCO Wish list
 ************************************************************************

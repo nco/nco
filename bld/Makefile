@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.160 2002-08-27 19:09:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.161 2002-09-02 06:51:46 zender Exp $ -*-makefile-*-
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -427,12 +427,14 @@ endif
 
 # Works on LINUX, LINUXALPHA, and FREEBSD
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
+C++ := como
 #C++ := g++
 #C++ := icc
 #C++ := insure
 # fxm: 19980517: As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
+CC := como --c99
 #CC := g++
-CC := gcc
+#CC := gcc
 #CC := icc
 #CC := insure
 CPP := ${CC}
@@ -447,7 +449,28 @@ endif
 LEX := flex
 LINT := lint
 YACC := bison
-ifeq (${CC},gcc)
+# Comeau C Compiler
+ifeq (${C++},como)
+ CFLAGS := 
+ CPPFLAGS := ${CPP_TKN} -DHAVE_INLINE
+ CPPFLAGS += -I${COMOROOT}/libcomo -I${COMOROOT}/libcomo/cnames ${CPP_PTH} -I${NETCDF_INC}
+ LDFLAGS += ${COMOROOT}/libcomo/libcomo.a
+ifeq (${OPTS},O)
+ CFLAGS += -O
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ CFLAGS +=
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g
+endif
+ C++FLAGS := ${CFLAGS}
+endif # endif Comeau C Compiler
+# GNU Compiler Collection
+ifneq (${null},$(findstring gcc,${CC}))
  CFLAGS := -Wall
 # Compilation flags for numerical routines recommended by GSL 0.9 manual, p. 370
 # CFLAGS += -ansi -Werror -W -Wmissing-prototypes -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -Dinline= -g -O4
@@ -471,7 +494,7 @@ ifeq (${OPTS},X)
  LDFLAGS += /usr/local/lib/ccmalloc-gcc.o -L/usr/local/lib -lccmalloc -ldl
 endif
  C++FLAGS := ${CFLAGS}
-endif
+endif # endif GNU Compiler Collection
 # Intel (Kai) C Compiler
 ifeq (${CC},icc)
  CFLAGS := 
@@ -489,7 +512,7 @@ ifeq (${OPTS},X)
  CFLAGS += -g -inline_debug_info
 endif
  C++FLAGS := ${CFLAGS}
-endif
+endif # endif Intel (Kai) C Compiler
 # Intel (Kai) Fortran Compiler
 ifeq (${FC},ifc)
 # -e95 issues warnings for non-standard fortran
@@ -515,7 +538,7 @@ endif
 ifeq (${OPTS},X)
  FFLAGS += -g -C -e95
 endif
-endif
+endif # endif Intel (Kai) Fortran Compiler
 # Portland Group Fortran Compiler
 ifeq (${FC},pgf90)
  FFLAGS := -Mextend -Mnosecond_underscore -byteswapio -Mrecursive -Mdalign -Ktrap=fp
@@ -535,7 +558,7 @@ endif
 ifeq (${OPTS},X)
  FFLAGS += -g -Mbounds
 endif
-endif
+endif # endif Portland Group Fortran Compiler
 # G77 Fortran compiler
 ifeq (${FC},g77)
  FFLAGS := -ffixed-line-length-132 -fno-second-underscore
@@ -551,7 +574,7 @@ endif
 ifeq (${OPTS},X)
  FFLAGS := -g -O -fdebug-kludge -fbounds-check
 endif
-endif
+endif # endif G77 Fortran compiler
 ifeq (${OMP},Y)
  CFLAGS += ${OMP_FLG}
  FFLAGS += ${OMP_FLG}

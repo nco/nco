@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.hh,v 1.2 2002-02-12 07:33:33 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.hh,v 1.3 2002-09-02 06:51:47 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF attribute routines
 
@@ -24,6 +24,7 @@
 
 // Personal headers
 #include <nco_utl.hh> // C++ interface utilities for netCDF routines
+#include <nco_var.hh> // C++ interface to netCDF variable routines
 
 // Typedefs
 

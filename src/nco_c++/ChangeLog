@@ -1,3 +1,9 @@
+2002-09-01  Charlie Zender  <zender@uci.edu>
+
+	* Fix errors flagged by Comeau como compiler:
+	1. Include cstdlib to get std::exit, std::abort
+	2. Initialize size_t *, int * with real pointers not NULL
+
 2002-08-23  Charlie Zender  <zender@uci.edu>
 
 	* SGI IRIX CC does not support std::exit nor have cstdlib, so

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.cc,v 1.2 2002-02-12 07:33:33 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.cc,v 1.3 2002-09-02 06:51:47 zender Exp $ 
 
 // Implementation (declaration) of C++ interface to netCDF attribute routines
 
@@ -55,7 +55,7 @@ nco_put_att // [fnc] Create attribute
   // Purpose: Wrapper for nco_put_att<float>()
   const size_t att_sz(1);
   //  int rcd=nco_put_att(nc_id,var_id,att_nm,att_sz,&(const_cast<float &>(att_val)),att_typ);
-  float foo_val(att_val);
+  // float foo_val(att_val);
   // int rcd=nco_put_att(nc_id,var_id,att_nm,att_sz,&foo_val,att_typ);
   int rcd=nc_put_att_float(nc_id,var_id,att_nm.c_str(),att_typ,att_sz,&(const_cast<float &>(att_val)));
   return rcd;
