@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.260 2004-09-08 17:56:18 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.261 2004-09-10 16:08:34 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -217,23 +217,46 @@ in the
 <a href="http://www.nsf.gov/home/cise">Directorate for Computer and Information Science and Engineering (CISE)</a>.
 NCO development was completely voluntary and without institutional
 support from its inception until September 2004.
-This new NSF support will dramatically change the scale and pace of
+Hence this NSF support will dramatically change the scale and pace of
 NCO/SDO development&mdash;stay tuned.</p>
 
-<p>With three years of funding likely, we are recruiting talent to work
-full-time on specific areas of SDO, alongside our current and future
-volunteers.
+<p>The project provides the human and technical resources to analyze,
+design, and implement novel advanced methods for distributed 
+data analysis and reduction (DDRA) of geophysical data.
+These powerful methods will be &ldquo;grid-enabled&rdquo;, and we will
+demonstrate their efficacy with analyses of distributed climate prediction datasets.
+On the human side, we are recruiting talent to work full-time on
+specific areas of SDO, alongside our current and future volunteers.
 We seek a
 <a href="http://dust.ess.uci.edu/hire/prg_anl_03_adv.pdf">full-time programmer</a> 
 to help design, implement, and release major code changes.
 We seek a
 <a href="http://dust.ess.uci.edu/hire/sdn_grd_02_adv.pdf">graduate student researcher</a> 
-to analyze, design, and implement novel advanced methods for distributed
-data analysis and reduction (DDRA) of geophysical data.
-These powerful methods will be &ldquo;grid-enabled&rdquo;, and we will
-demonstrate their efficacy with analyses of distributed climate prediction datasets.  
+to pursue innovative Ph.D. research in using 
+<a href="http://www.mpi-forum.org">distributed memory</a>, 
+<a href="http://www.openmp.org">shared memory</a>, and 
+<a href="http://opendap.org">client-server</a> software
+technologies to improve DDRA of climate datasets.
 Contact us if you are seriously interested in tackling these
-problems on a full-time, part-time, or pay-per-feature basis.  
+problems on a full-time, part-time, or pay-per-feature basis.</p>
+
+<p>On the institutional and hardware side, this project connects the
+<a href="http://www.ess.uci.edu/esmf">Earth System Modeling Facility</a> (ESMF)
+to the
+<a href="http://www.calit2.net">California Institute for Telecommunications and Information Technology</a> (Cal-IT2)
+<a href="http://www.optiputer.net">OptIPuter</a> at the
+<a href="http://sdsc.ucsd.edu">San Diego Supercomputer Center</a>.
+These supercomputers will dedicate a TB of storage each to
+<a href="http://www.opendap.org">OPeNDAP</a>-served climate simulation
+datasets for DDRA.
+Once the proof-of-concept SDO DDRA is complete, we will attempt a DDRA 
+intercomparison of the internationally distributed
+<a href="http://www.ccsm.ucar.edu/experiments/ccsm3.0">global climate change simulations</a>
+that reside on the 
+<a href="http://www.earthsystemgrid.org">Earth System Grid</a>.
+We expect our analyses to yield otherwise undiscovered patterns among
+different climate prediction scenarios for the same model, and among
+different climate models. 
 We will soon implement a better mechanism to update users on our plans and progress towards the proposal's objectives.
 The URL 
 <a href="http://nco.sf.net#prp_sei"><tt>http://nco.sf.net#prp_sei</tt></a> 
@@ -250,7 +273,7 @@ The information in your endorsement will be used to create supplementary documen
 Yes, we are funded to optimize and &ldquo;grid-enable&rdquo; NCO.
 There are still many desirable and unexplored methods for distributed data analysis
 and reduction (DDRA) that would benefit geosciences.
-For example, have you tried analysing multiple NASA satellite datasets in HDF5 format?
+For example, have you tried analyzing multiple NASA satellite datasets in HDF5 format?
 Need I say more? 
 If you send an endorsement, remember to include (at least) your Name, Title, and Institutional affiliation in the body.</p>
 </ul>
@@ -267,7 +290,7 @@ Instead, retrieve all recently tagged versions
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO/SDO 3.1.x</b>: (<i>Future plans</i>) MPI-Grid
-<li><b>NCO 3.0.0</b>: (<i>In progress</i>) NCO stabilization, <tt>ncks</tt> tweaks
+<li><b>NCO 3.0.0</b>: (<i>In progress</i>) NCO stabilization, <tt>ncks</tt> tweaks, improve <tt>missing_value</tt> handling in packing 
 <li><b>NCO 2.9.9</b>: <tt>ncpdq</tt> packs/unpacks entire files, <tt>ncbo</tt> is threaded
 <li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released, <tt>ncwa --msk_sng</tt> consolidated mask switch, C99 compiler required
 <li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>nco_input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS), write <tt>nco_openmp_thread_number</tt> attribute

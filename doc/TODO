@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.424 2004-09-09 01:14:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.425 2004-09-10 16:08:34 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -267,8 +267,10 @@ nco453. Re-think handling of dangling pointers in nco_pck_val()?
 nco454. ncpdq: Combine nco_pck_map,nco_pck_typ into new nco_pck_sct to avoid proliferation of argument passing
 nco457. ncpdq: missing_value is not converted to variable type when variable is not packed three_dmn_var_dbl. How to reconcile with nco427?
 nco461. Always plenty of great ideas for new NCO functionality in http://tinyurl.com/6pzqd
-nco462. ncpdq: pack/unpack missing_data just like variable data? The reason I did not do this originally is because I did not want the missing_value to contribute to the dynamic range of values which need packing. Since my missing_values are always huge (1.0e36), packing missing_values would greatly diminish the precision of the valid packed data.
-nco463. 
+nco462. ncpdq: pack/unpack missing_data just like variable data? The reason I did not do this originally is because I did not want the missing_value to contribute to the dynamic range of values which need packing. Since my missing_values are always huge (1.0e36), packing missing_values would greatly diminish the precision of the valid packed data. Best solution appears to be to check if missing_value distorts valid_range, and, if so, pack missing_value to default value of packed type.
+nco463. add optional scale_factor, add_offset arguments to ncap pack()?
+nco464. ncpdq: convert missing_value to packed type
+nco465. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
