@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.12 2003-11-21 18:53:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.13 2003-11-26 02:06:48 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -242,23 +242,23 @@ nco_mmr_stt /* [fnc] Track memory statistics */
   switch(nco_mmr_typ){
   case nco_mmr_calloc:
     mll_nbr++; /* [nbr] Number of malloc() invocations */
-    mmr_mll_ttl+=sz; /* [B] Total memory malloc()'d */
-    mmr_net_crr+=sz; /* [B] Net memory currently allocated */
+    mmr_mll_ttl+=sz_lng; /* [B] Total memory malloc()'d */
+    mmr_net_crr+=sz_lng; /* [B] Net memory currently allocated */
     break;
   case nco_mmr_free:
     fre_nbr++; /* [nbr] Number of free() invocations */
-    mmr_fre_ttl-=sz; /* [B] Total memory free()'d */
-    mmr_net_crr-=sz; /* [B] Net memory currently allocated */
+    mmr_fre_ttl-=sz_lng; /* [B] Total memory free()'d */
+    mmr_net_crr-=sz_lng; /* [B] Net memory currently allocated */
     break;
   case nco_mmr_malloc:
     mll_nbr++; /* [nbr] Number of malloc() invocations */
-    mmr_mll_ttl+=sz; /* [B] Total memory malloc()'d */
-    mmr_net_crr+=sz; /* [B] Net memory currently allocated */
+    mmr_mll_ttl+=sz_lng; /* [B] Total memory malloc()'d */
+    mmr_net_crr+=sz_lng; /* [B] Net memory currently allocated */
     break;
   case nco_mmr_realloc:
     mll_nbr++; /* [nbr] Number of malloc() invocations */
-    mmr_mll_ttl+=sz; /* [B] Total memory malloc()'d */
-    mmr_net_crr+=sz; /* [B] Net memory currently allocated */
+    mmr_mll_ttl+=sz_lng; /* [B] Total memory malloc()'d */
+    mmr_net_crr+=sz_lng; /* [B] Net memory currently allocated */
     break;
   default: 
     nco_exit(EXIT_FAILURE);

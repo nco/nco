@@ -1,5 +1,7 @@
 2003-11-25  Charlie Zender  <zender@uci.edu>
 
+	* Squelch "declared but never referenced" warnings on IRIX in nco_utl.cc
+
 	* cvs tag -c nco-2_8_4
 	Changes since nco-2_8_3: Fix index-based hyperslab bug, reduce
 	ncap memory usage to 2*sizeof(var) for binary operations

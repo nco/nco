@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.7 2003-01-16 09:26:55 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.8 2003-11-26 02:06:48 zender Exp $ 
 
 // Implementation (declaration) of C++ interface utilities for netCDF routines
 
@@ -249,6 +249,7 @@ nco_get_xtype // [fnc] Determine external netCDF type
      Algorithm assumes internal representation is IEEE
      Thus algorithm fails for Crays, where native float is 8 B (double precision) */
   float flt_foo=var_val; // CEWI
+  flt_foo++; // Squelch "declared but never referenced" warnings
   return NC_FLOAT;
 } // end nco_get_xtype()
 
@@ -260,6 +261,7 @@ nco_get_xtype // [fnc] Determine external netCDF type
      Algorithm assumes internal representation is IEEE
      Thus algorithm fails for Crays, where native float is 8 B (double precision) */
   double dbl_foo=var_val; // CEWI
+  dbl_foo++; // Squelch "declared but never referenced" warnings
   return NC_DOUBLE;
 } // end nco_get_xtype()
 
