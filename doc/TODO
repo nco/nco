@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.124 2002-02-12 05:25:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.125 2002-02-19 00:40:10 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -53,9 +53,10 @@ sudo root screws up permissions in obj/bin directories of user
 178. Make _FillValue behave same as missing_value
 179. add netCDF to required packages list in RPM build
 191. Create short man pages for each operator which point user to info pages or online manual
+212. Ensure structures are always passed by reference (default is pass by value)
+213. Implement "const" in all applicable prototypes (may improve speed)
 
 Remaining items of lesser priority:
-
 28. Use var.nc_id as file ID from now on and rewrite old routines to do so
 32. Implement packing with scale_factor and add_offset
 50. Allow user-specified scalar weights to ncwa
@@ -195,7 +196,7 @@ Command executes but in.hdf is full of screwy values
 that regression testing is easier. Perhaps nco_tst.sh should be rewritten in Perl or Python 
 to accomplish this.
 203. Perform I/O timing tests with NCO 1.3.x vs NCO 1.2.x to see if netCDF3 interface really speeds up I/O
-204. Update user's guide to reflect new netCDF 3.x API
+204. Update User's guide to reflect new netCDF 3.x API
 206. Add example NCO script, such as dst.sh, to doc directory
 207. Bug on Linux. Core dump converting datesec,date from NC_INT to NC_DOUBLE:
 ncwa -D 5 -O -a time,lat,lon -w gw $DATA/dstccm34/dstccm34_1990.nc $DATA/dstccm34/dstccm34_1990_xy.nc
@@ -203,9 +204,6 @@ This is a subtle memory bug which disappears when -w gw removed,
 or variable list is made more specific, or MALLOC_CHECK_=1 is used
 209. Add rules to make MANIFEST and automaticlally update Sourceforge download area
 210. Break nco.h into system-specific headers, csz.h, pck.h...
-211. Replace -1 by NC_GLOBAL where appropriate, especially in ncatted.c
-212. Ensure structures are always passed by reference (default is pass by value)
-213. Implement "const" types in all applicable headers (may improve speed)
 214. Disable threads > 1 on SGI temporarily because thread #0 is doing all the work, why?
 215. var_conform_dim() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
 216. Use %z for printing size_t rather than casting to long (is %z portable?)
@@ -213,8 +211,9 @@ or variable list is made more specific, or MALLOC_CHECK_=1 is used
 219. Sourceforge FTP nco.tar.gz link appears broken
 ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 220. Modify network code in csz.c so gcc -ansi works (fix resolv.h structures) 
-221. Add option to strip executables
+221. Add Makefile option to strip executables (STR=Y)
 222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
+223. texi2dvi nco.texi works on old RHL not on RHL 7.2
 ************************************************************************
 End NCO Wish list
 ************************************************************************
