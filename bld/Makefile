@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.138 2002-05-18 19:59:29 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.139 2002-05-18 20:16:49 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -865,6 +865,8 @@ bin: ${MDL_BIN_TRG}
 binclean: bin_cln
 bin_cln: 
 	rm -f ${MDL_BIN}
+strip: 
+	- printf "Before stripping...\n";ls -l ${MDL_BIN};strip ${MDL_BIN};printf "After stripping...\n";ls -l ${MDL_BIN}
 # Targets in bld
 buildclean: bld_cln
 bld_cln:
