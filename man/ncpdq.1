@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.7 2004-09-07 04:31:18 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.8 2004-09-07 19:50:14 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncpdq 
 .\" Usage:
 .\" nroff -man ~/nco/man/ncpdq.1
@@ -27,11 +27,14 @@ ncpdq [-A] [-a
 .IR path ]
 [-R] [-r] 
 [-t 
-.IR thr_nbr ] [-v 
+.IR thr_nbr ] 
+[-v 
 .IR var [,...]]
 [-x] 
-.I input-file [
-.I output-file ]
+.IR input-file
+[
+.IR output-file
+]
 .SH DESCRIPTION
 .PP
 .B ncpdq
@@ -39,7 +42,8 @@ packs or re-shapes variables in
 .I input-file
 and stores them in 
 .I output-file.
-The high level packing instructions are encoded in the 
+Which variables to pack/unpack are determined by the packing policy 
+encoded in the 
 .IR pck_plc 
 argument to the 
 .BR -P
@@ -52,6 +56,21 @@ options are
 .IR xst_new, 
 and
 .IR upk.
+The numeric type of variable to pack or re-pack a variable to is
+determined by the packing map encoded in the 
+.IR pck_map
+argument to the 
+.BR -M
+switch.
+Valid 
+.IR pck_map
+options are
+.IR dwn_one,
+.IR flt_byt,
+.IR flt_sht,
+.IR hgh_byt,
+and
+.IR hgh_sht.
 
 .B ncpdq 
 re-shapes variables in 
@@ -81,7 +100,7 @@ The specified re-ordering will fail if it requires creating more than
 one record dimension amongst all the output variables.
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.7 2004-09-07 04:31:18 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.8 2004-09-07 19:50:14 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

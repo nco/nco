@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.48 2004-09-07 05:46:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.49 2004-09-07 19:50:14 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -666,7 +666,6 @@ nco_var_pck /* [fnc] Pack variable in memory */
     /* Create double precision missing_value for use in min/max arithmetic */
     if(var->has_mss_val){
       ptr_unn_mss_val_dbl.vp=(void *)nco_malloc(nco_typ_lng((nc_type)NC_DOUBLE));
-      /* fxm nco422: packing rec_var_dbl_mss_val_dbl_pck with all_new, xst_new causes valgrind memory error here in val_cnf_typ() routine. Probably because missing_value already converted to double? */
       (void)nco_val_cnf_typ(var->type,var->mss_val,(nc_type)NC_DOUBLE,ptr_unn_mss_val_dbl);
     } /* endif has_mss_val */
 
