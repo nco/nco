@@ -1,8 +1,8 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.7 2002-08-24 07:27:41 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.8 2003-01-16 09:26:55 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF variable routines
 
-/* Copyright (C) 2001--2002 Charlie Zender
+/* Copyright (C) 2001--2003 Charlie Zender
    This software is distributed under the terms of the GNU General Public License
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 

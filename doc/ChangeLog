@@ -1,8 +1,15 @@
-2003-01-08  Charlie Zender  <zender@uci.edu>
+2003-01-14  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_7_1
 	Changes since nco-2_7_0: long options on all platforms, including
 	non-glibc. 
+
+	* Updated nco_c++ build instructions and documentation to refer to
+	Makefile.old
+
+	* Changed copyright end year to 2003
+
+2003-01-08  Charlie Zender  <zender@uci.edu>
 
 	* Rorik added conditional compilation of Sittler's getopt_long() 
 	where necessary, removed *_GETOPT_LONG tokens from all source code.
