@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.91 2002-08-28 13:18:27 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.92 2002-08-29 14:38:38 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -89,8 +89,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.91 2002-08-28 13:18:27 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.91 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.92 2002-08-29 14:38:38 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.92 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -179,9 +179,9 @@ main(int argc,char **argv)
   var_sct **var_out;
   var_sct **var_prc;
   var_sct **var_prc_out;
+
+  aed_sct **att_lst=NULL;
   
-#define NCAP_ATT_LST_NBR_MAX 500 /* fxm: Arbitrary size, should be dynamic */
-  aed_sct *att_lst[NCAP_ATT_LST_NBR_MAX]; /* Structure filled in by yyparse(), contains attributes to write to disk */
   prs_sct prs_arg; /* [sct] Global information required in parser routines */
   
   /* Start clock and save command line */ 
@@ -399,7 +399,7 @@ main(int argc,char **argv)
   prs_arg.in_id=in_id; /* [id] Input data file ID */
   prs_arg.fl_out=fl_out; /* [sng] Output data file */
   prs_arg.out_id=out_id; /* [id] Output data file ID */
-  prs_arg.att_lst=att_lst; /* [sct] Attributes in script */
+  prs_arg.att_lst=&att_lst; /* [sct] Attributes in script */
   prs_arg.nbr_att=&nbr_att; /* [nbr] Number of attributes in script */
   prs_arg.dmn_in=dmn_in; /* [dmn_in] List of all dimensions in input */
   prs_arg.nbr_dmn_in=nbr_dmn_in; /* [nbr] Number of  dimensions in input */
@@ -469,10 +469,8 @@ main(int argc,char **argv)
 
     /* make a list of vars of new attributes whose parent var is ONLY in
        the input file */
-   xtr_lst = nco_att_lst_mk(in_id,out_id,att_lst,nbr_att,&nbr_xtr);
+    xtr_lst = nco_att_lst_mk(in_id,out_id,att_lst,nbr_att,&nbr_xtr);
   }
-
-
     /* Find dims associated with xtr_ lst */
     /* Write to O only new dims
     /* Add apropriate co-ordinate vars to extraction list 
@@ -518,34 +516,33 @@ main(int argc,char **argv)
     /* All dims for all vars are now in output    */
     /* Need to add co-ordinate vars to extraction list */
     /* if PROCESS_ALL_COORDINATES then the associated DIM needs to written to output */
-
-    for(idx=0; idx <nbr_dmn_in ; idx++){
-      if(!dmn_in[idx]->is_crd_dmn) continue;
+    if(PROCESS_ASSOCIATED_COORDINATES){
+      for(idx=0; idx <nbr_dmn_in ; idx++){
+        if(!dmn_in[idx]->is_crd_dmn) continue;
       
-      if(PROCESS_ALL_COORDINATES && !dmn_in[idx]->xrf) {
+        if(PROCESS_ALL_COORDINATES && !dmn_in[idx]->xrf) {
 
-        /* add dim to output list dmn_out */
-        dmn_new = nco_dmn_out_grow((void *)&prs_arg);
-        *dmn_new = nco_dmn_dpl(dmn_in[idx]);
-        (void)nco_dmn_xrf(*dmn_new,dmn_in[idx]);
-	/* write dim to output */
-	(void)nco_dmn_dfn(fl_out,out_id,dmn_new,1);
-      }
-      /* now add co-odinate var to the extraction list */
-      if((PROCESS_ALL_COORDINATES ||  PROCESS_ASSOCIATED_COORDINATES) && dmn_in[idx]->xrf){
-      
-	for(jdx =0 ; jdx < nbr_xtr ; jdx ++)
-	  if(!strcmp(xtr_lst[jdx].nm , dmn_in[idx]->nm)) break;
-        if( jdx == nbr_xtr){
-          xtr_lst =(nm_id_sct *)nco_realloc(xtr_lst, (nbr_xtr+1)*sizeof(nm_id_sct));     
-          xtr_lst[nbr_xtr].nm = strdup(dmn_in[idx]->nm);
-          xtr_lst[nbr_xtr++].id = dmn_in[idx]->cid;
+          /* add dim to output list dmn_out */
+          dmn_new = nco_dmn_out_grow((void *)&prs_arg);
+          *dmn_new = nco_dmn_dpl(dmn_in[idx]);
+          (void)nco_dmn_xrf(*dmn_new,dmn_in[idx]);
+	  /* write dim to output */
+	  (void)nco_dmn_dfn(fl_out,out_id,dmn_new,1);
         }
-          
-      }     
-    }/* for idx */	      
-     
-    /* now subtract list a again (it may contain re-defined co-ordinates !!!) */
+      /* now add co-odinate var to the extraction list, the dim has already been output */
+       if(dmn_in[idx]->xrf) {
+	 for(jdx =0 ; jdx < nbr_xtr ; jdx++)
+	  if(!strcmp(xtr_lst[jdx].nm , dmn_in[idx]->nm)) break;
+         if( jdx != nbr_xtr) continue;
+         /* if co-ords not on list then add it to extraction list */
+         xtr_lst =(nm_id_sct *)nco_realloc(xtr_lst, (nbr_xtr+1)*sizeof(nm_id_sct));     
+         xtr_lst[nbr_xtr].nm = strdup(dmn_in[idx]->nm);
+         xtr_lst[nbr_xtr++].id = dmn_in[idx]->cid;
+       }  
+      }/* for idx */	      
+    } /* if */ 
+  
+  /* now subtract list a again (it may contain re-defined co-ordinates !!!) */
   if(nbr_xtr >0) xtr_lst = nco_var_lst_sub(xtr_lst, &nbr_xtr,xtr_lst_a,nbr_lst_a);
 
     /* sort extraction list for faster I/O */
@@ -585,10 +582,9 @@ main(int argc,char **argv)
   /* Now write out new attributes possibly overwriting old ones */
   for(idx=0; idx < nbr_att ; idx++){
     rcd=nco_inq_varid_flg(out_id,att_lst[idx]->var_nm,&var_id);
-    if(rcd == NC_NOERR){
-      att_lst[idx]->mode=aed_overwrite;
-      (void)nco_aed_prc(out_id,var_id,*att_lst[idx]);
-    } /* end if */
+    if(rcd != NC_NOERR) continue;
+    att_lst[idx]->mode=aed_overwrite;
+    (void)nco_aed_prc(out_id,var_id,*att_lst[idx]);
   } /* end for */
   
   /* Take output file out of define mode */
