@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.8 2002-09-09 03:40:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.9 2002-09-09 04:14:07 zender Exp $ */
 
 /* Purpose: CSM conventions */
 
@@ -47,8 +47,7 @@ nco_ncar_csm_inq /* O [fnc] Check if file obeys CSM conventions */
 void
 nco_ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
 (const int nc_id, /* I [id] netCDF file ID */
- /* VLT_CST_CST_FNC(var_sct,var), *//* I/O [sct] Variables in output file */
- var_sct const * const *var, /* I/O [sct] Variables in output file */
+ X_CST_PTR_CST_PTR_Y(var_sct,var), /* I/O [sct] Variables in output file */
  const int nbr_var) /* I [nbr] Number of variables in list */
 {
   /* Purpose: Fix date variable in averaged CSM files */

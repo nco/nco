@@ -1,6 +1,16 @@
+2002-09-08  Charlie Zender  <zender@uci.edu>
+
+	* Implemented pre-processor macros CST_X_PTR_CST_PTR_CST_Y,
+	X_CST_PTR_CST_PTR_Y to be as const-correct as possible for the
+	language the source code is treated as. If treated as C++, full
+	const-correct prototypes are implemented, else if treated as C,
+	a const is dropped here or there to make things compile
+	warning-free. Fixes TODO #213.
+
 2002-09-06  Charlie Zender  <zender@uci.edu>
 
-	* Clean up ncap section of nco.texi, polish documentation builds
+	* Clean up ncap section of nco.texi, polish documentation builds,
+	add XML, txt formats from makeinfo
 
 	* Fixed nco.texi problems, generating docs at compile farm
 

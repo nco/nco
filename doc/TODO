@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.182 2002-09-09 03:40:00 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.183 2002-09-09 04:14:06 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -77,7 +77,6 @@ Highest priority NCO-wide items that You can help with:
 179. add netCDF to required packages list in RPM build
 191. Create short man pages for each operator which point user to info pages or online manual
 212. Ensure structures are always passed by reference (default is pass by value)
-213. Implement macro to spit out "const var_type * const var_nm" for C++ compilers and "const var_type *var_nm" (or "var_type * const var_nm") for ANSI-C compilers. This will remove compiler warning messages for ANSI-strict C99 conformance.
 220. Modify network code in nco_fl_utl.c so gcc -ansi works (obsolete resolv.h structures and use whatever is more standard these days) 
 
 Remaining items of lesser priority:

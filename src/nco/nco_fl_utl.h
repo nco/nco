@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.8 2002-09-09 03:40:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.9 2002-09-09 04:14:07 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -67,7 +67,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
 char ** /* O [sng] List of user-specified filenames */
 nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments */
-(CST_CST_CST_FNC(char,argv), /* I [sng] Argument list */
+(CST_X_PTR_CST_PTR_CST_Y(char,argv), /* I [sng] Argument list */
  const int argc, /* I [nbr] Argument count */
  int arg_crr, /* I [idx] Index of current argument */
  int * const nbr_fl, /* O [nbr] Number of files in input file list */
@@ -80,7 +80,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
  int * const nbr_fl, /* I/O [nbr] number of files to be processed */
  char * const * const fl_lst_in, /* I [sng] User-specified filenames */
  const int nbr_abb_arg, /* I [nbr] Number of abbreviation arguments */
- CST_CST_CST_FNC(char,fl_lst_abb), /* I [sng] NINTAP-style arguments, if any */
+ CST_X_PTR_CST_PTR_CST_Y(char,fl_lst_abb), /* I [sng] NINTAP-style arguments, if any */
  const char * const fl_pth); /* I [sng] Path prefix for files in fl_lst_in */
 
 char * /* O [sng] Name of temporary file actually opened */

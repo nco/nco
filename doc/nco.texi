@@ -1,11 +1,10 @@
 \input texinfo @c -*-texinfo-*- 
 @c 19980817: TeX-based systems (texi2dvi, texi2dvi --pdf) require texinfo.tex
 @c Hypertext systems (texi2html, makeinfo) do not require texinfo.tex
-\input thumbpdf.sty
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.120 2002-09-09 03:40:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.121 2002-09-09 04:14:06 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 

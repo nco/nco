@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.7 2002-09-09 03:40:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.8 2002-09-09 04:14:07 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -39,7 +39,7 @@ nm_id_sct * /* O [sct] Variable extraction list */
 nco_var_lst_mk /* [fnc] Create variable extraction list */
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
- CST_CST_CST_FNC(char,var_lst_in), /* I [sng] User-specified list of variable names */
+ CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names */
  const bool PROCESS_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */
 
@@ -74,7 +74,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */
  const bool NCAR_CSM_FORMAT, /* I [flg] File adheres to NCAR CSM conventions */
- CST_CST_CST_FNC(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
+ CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl, /* I [nbr] Number of excluded dimensions */
  var_sct *** const var_fix_ptr, /* O [sct] Fixed-variables (input file) */
  var_sct *** const var_fix_out_ptr, /* O [sct] Fixed-variables (output file) */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.44 2002-09-09 03:40:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.45 2002-09-09 04:14:07 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -25,11 +25,11 @@
    C89 and C99 compilers will use version as type-safe as possible without */
 /* fxm: This is incomplete and needs to be extended and applied to all source */
 #ifdef __cplusplus
-#define CST_CST_CST_FNC(x,y) const x * const * const y
-#define VLT_CST_CST_FNC(x,y) x * const * const y
+#define CST_X_PTR_CST_PTR_CST_Y(x,y) const x * const * const y
+#define X_CST_PTR_CST_PTR_Y(x,y) x const * const * y
 #else /* !__cplusplus */
-#define CST_CST_CST_FNC(x,y) x * const * const y
-#define VLT_CST_CST_FNC(x,y) x * const * const y
+#define CST_X_PTR_CST_PTR_CST_Y(x,y) x * const * const y
+#define X_CST_PTR_CST_PTR_Y(x,y) x * const * y
 #endif /* !__cplusplus */
 
 #ifdef __cplusplus
