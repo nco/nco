@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.4 2002-06-07 04:25:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.5 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -26,26 +26,26 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
   case nco_op_min: /* Minimum */
     /* On first loop, simply copy variables from var_prc to var_prc_out */
     if(idx_rec == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else	  
-      (void)var_min_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
+      (void)nco_var_min_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;
   case nco_op_max: /* Maximium */
     /* On first loop, simply copy variables from var_prc to var_prc_out */
     if(idx_rec == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else
-      (void)var_max_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
+      (void)nco_var_max_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;	
   case nco_op_avg: /* Average */
   case nco_op_sqrt: /* Squareroot will produce the squareroot of the mean */
   case nco_op_ttl: /* Total */
   case nco_op_sqravg: /* Square of the mean */
-    (void)var_add(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)nco_var_add(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   case nco_op_rms: /* Root mean square */
   case nco_op_rmssdn: /* Root mean square normalized by N-1 */
   case nco_op_avgsqr: /* Mean square */
     /* Square values in var_prc first */
-    var_multiply(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc->val);
+    nco_var_multiply(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc->val);
     /* Sum the squares */
-    (void)var_add(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)nco_var_add(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   } /* end switch */
 } /* end nco_opr_drv() */
@@ -70,7 +70,7 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
 } /* end nco_op_typ_get() */
 
 int /* O [enm] Relational operation */
-op_prs_rlt /* [fnc] Convert Fortran abbreviation for relational operator into NCO operation key */
+nco_op_prs_rlt /* [fnc] Convert Fortran abbreviation for relational operator into NCO operation key */
 (const char * const op_sng) /* I [sng] Fortran representation of relational operator */
 {
   /* Purpose: Convert Fortran abbreviation for relational operator into NCO operation key */
@@ -89,13 +89,13 @@ op_prs_rlt /* [fnc] Convert Fortran abbreviation for relational operator into NC
   }else if(!strcmp(op_sng,"ge")){
     return nco_op_ge;
   }else{
-    (void)fprintf(stdout,"%s: ERROR %s not registered in op_prs_rlt()\n",prg_nm_get(),op_sng);
+    (void)fprintf(stdout,"%s: ERROR %s not registered in nco_op_prs_rlt()\n",prg_nm_get(),op_sng);
     nco_exit(EXIT_FAILURE);
   } /* end else */
 
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
   return 1;
-} /* end op_prs_rlt() */
+} /* end nco_op_prs_rlt() */
 
 void
 vec_set /* [fnc] Fill every value of first operand with value of second operand */
@@ -137,7 +137,7 @@ vec_set /* [fnc] Fill every value of first operand with value of second operand 
 } /* end vec_set() */
 
 void
-zero_long /* [fnc] Zero all values of long array */
+nco_zero_long /* [fnc] Zero all values of long array */
 (const long sz, /* I [nbr] Size (in elements) of operand */
  long * const op1) /* I/O [nbr] Array to be zeroed */
 {
@@ -147,9 +147,9 @@ zero_long /* [fnc] Zero all values of long array */
   if(op1 != NULL){
     for(idx=0;idx<sz;idx++) op1[idx]=0L;
   }else{
-    (void)fprintf(stdout,"%s: ERROR zero_long() asked to zero NULL pointer\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR nco_zero_long() asked to zero NULL pointer\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
-} /* end zero_long() */
+} /* end nco_zero_long() */
 

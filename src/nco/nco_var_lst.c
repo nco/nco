@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.7 2002-05-12 06:12:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.8 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -9,7 +9,7 @@
 #include "nco_var_lst.h" /* Variable list utilities */
 
 nm_id_sct * /* O [sct] Variable extraction list */
-var_lst_mk /* [fnc] Create variable extraction list */
+nco_var_lst_mk /* [fnc] Create variable extraction list */
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  const char * const * const var_lst_in, /* I [sng] User-specified list of variable names */
@@ -31,7 +31,7 @@ var_lst_mk /* [fnc] Create variable extraction list */
       xtr_lst[idx].nm=(char *)strdup(var_lst_in[idx]);
       rcd=nco_inq_varid_flg(nc_id,xtr_lst[idx].nm,&xtr_lst[idx].id);
       if(rcd != NC_NOERR){
-	(void)fprintf(stdout,"%s: ERROR var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),xtr_lst[idx].nm);
+	(void)fprintf(stdout,"%s: ERROR nco_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),xtr_lst[idx].nm);
 	err_flg=True;
       } /* endif */
     } /* end loop over idx */
@@ -56,10 +56,10 @@ var_lst_mk /* [fnc] Create variable extraction list */
 
   return xtr_lst;
 
-} /* end var_lst_mk() */
+} /* end nco_var_lst_mk() */
 
 nm_id_sct * /* O [sct] Extraction list */
-var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
+nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 (const int nc_id, /* I netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current exclusion list (destroyed) */
@@ -106,10 +106,10 @@ var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
   xcl_lst=(nm_id_sct *)nco_free(xcl_lst);
   
   return xtr_lst;
-} /* end var_lst_xcl() */
+} /* end nco_var_lst_xcl() */
 
 nm_id_sct * /* O [sct] Extraction list */
-var_lst_add_crd /* [fnc] Add all coordinates to extraction list */
+nco_var_lst_add_crd /* [fnc] Add all coordinates to extraction list */
 (const int nc_id, /* I [id] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  const int nbr_dim, /* I [nbr] Number of dimensions in input file */
@@ -152,7 +152,7 @@ var_lst_add_crd /* [fnc] Add all coordinates to extraction list */
   
   return xtr_lst;
   
-} /* end var_lst_add_crd() */
+} /* end nco_var_lst_add_crd() */
 
 void
 var_lst_convert /* [fnc] Make variable structure list from variable name ID list */
@@ -177,8 +177,8 @@ var_lst_convert /* [fnc] Make variable structure list from variable name ID list
 
   /* Fill in variable structure list for all extracted variables */
   for(idx=0;idx<nbr_xtr;idx++){
-    var[idx]=var_fll(nc_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
-    var_out[idx]=var_dpl(var[idx]);
+    var[idx]=nco_var_fll(nc_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
+    var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
@@ -189,7 +189,7 @@ var_lst_convert /* [fnc] Make variable structure list from variable name ID list
 } /* end var_lst_convert() */
 
 void
-var_lst_divide /* [fnc] Divide input lists into output lists */
+nco_var_lst_divide /* [fnc] Divide input lists into output lists */
 (var_sct * const * const var, /* I [sct] Variable list (input file) */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */
@@ -352,5 +352,5 @@ var_lst_divide /* [fnc] Divide input lists into output lists */
   if(*nbr_var_prc > 0) *var_prc_ptr=(var_sct **)nco_realloc(var_prc,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_ptr=NULL;
   if(*nbr_var_prc > 0) *var_prc_out_ptr=(var_sct **)nco_realloc(var_prc_out,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_out_ptr=NULL;
 
-} /* end var_lst_divide */
+} /* end nco_var_lst_divide */
 

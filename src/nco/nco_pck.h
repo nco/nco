@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.3 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.4 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -54,13 +54,13 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
  var_sct *var); /* I/O [sct] Variable */
   
   var_sct * /* O [sct] Packed variable */
-  var_pck /* [fnc] Pack variable in memory */
+  nco_var_pck /* [fnc] Pack variable in memory */
   (var_sct *var, /* I/O [sct] Variable to be packed */
    const nc_type typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
    const bool USE_EXISTING_PCK); /* I [flg] Use existing packing scale_factor and add_offset */
 
   var_sct * /* O [sct] Unpacked variable */
-  var_upk /* [fnc] Unpack variable in memory */
+  nco_var_upk /* [fnc] Unpack variable in memory */
   (var_sct * const var); /* I/O [sct] Variable to be unpacked */
 
   var_sct * /* O [sct] Packed variable */

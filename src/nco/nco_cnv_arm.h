@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.h,v 1.2 2002-05-07 08:00:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.h,v 1.3 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: ARM conventions */
 
@@ -39,7 +39,7 @@ arm_time_mk /* [fnc] Return time corresponding to current time offset */
  const double time_offset); /* I [s] Current time offset */
 
 void
-arm_time_install /* [fnc] Add time variable to concatenated ARM files */
+nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 (const int nc_id, /* I [id] netCDF file ID */
  const nco_long base_time_srt); /* I [s] base_time of first input file */
 

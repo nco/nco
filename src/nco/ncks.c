@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.61 2002-06-10 02:33:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.62 2002-06-16 05:12:03 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.61 2002-06-10 02:33:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.61 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.62 2002-06-16 05:12:03 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.62 $";
   
   extern char *optarg;
   
@@ -134,7 +134,7 @@ main(int argc,char **argv)
   time_t clock;
 
   /* Start the clock and save the command line */ 
-  cmd_ln=cmd_ln_sng(argc,(const char **)argv);
+  cmd_ln=nco_cmd_ln_sng(argc,(const char **)argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   fl_bnr=(char *)strdup("ncks.bnr");
@@ -227,15 +227,15 @@ main(int argc,char **argv)
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   
   /* Make uniform list of user-specified dimension limits */
-  lmt=lmt_prs(lmt_nbr,lmt_arg);
+  lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   
   /* Parse filename */
-  fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */
   nco_open(fl_in,NC_NOWRITE,&in_id);
   
@@ -243,44 +243,44 @@ main(int argc,char **argv)
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&nbr_glb_att,&rec_dmn_id);
   
   /* Form initial extraction list from user input */
-  xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
+  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
 
   /* Change included variables to excluded variables */
-  if(EXCLUDE_INPUT_LIST) xtr_lst=var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
+  if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
 
   /* Add all coordinate variables to extraction list */
-  if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
+  if(PROCESS_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
 
   /* Make sure coordinates associated extracted variables are also on extraction list */
-  if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
+  if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
   /* Sort extraction list alphabetically or by variable ID */
-  if(nbr_xtr > 1) xtr_lst=lst_srt(xtr_lst,nbr_xtr,ALPHABETIZE_OUTPUT);
+  if(nbr_xtr > 1) xtr_lst=nco_lst_srt(xtr_lst,nbr_xtr,ALPHABETIZE_OUTPUT);
     
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
+  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
   
   if(fl_out != NULL){
     int out_id;  
 
     /* Open output file */
-    fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
     
     /* Copy global attributes */
-    (void)att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
+    (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
     
     /* Catenate timestamped command line to "history" global attribute */
-    if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
+    if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
 
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
       
       /* Define variable in output file */
-      if(lmt_nbr > 0) var_out_id=cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt,lmt_nbr); else var_out_id=cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);
+      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt,lmt_nbr); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);
       /* Copy variable's attributes */
-      (void)att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id);
+      (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id);
     } /* end loop over idx */
 
     /* Turn off default filling behavior to enhance efficiency */
@@ -296,14 +296,14 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_xtr;idx++){
       if(dbg_lvl > 2 && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
-      if(lmt_nbr > 0) (void)cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
+      if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
     } /* end loop over idx */
     
     /* [fnc] Close unformatted binary data file */
     if(NCO_BNR_WRT) (void)nco_bnr_close(fp_bnr,fl_bnr);
 
     /* Close output file and move it from temporary to permanent location */
-    (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
+    (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
 
   } /* end if fl_out != NULL */
   
@@ -338,8 +338,8 @@ main(int argc,char **argv)
   nco_close(in_id);
   
   /* Remove local copy of file */
-  if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
+  if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
 
-  Exit_gracefully();
+  nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

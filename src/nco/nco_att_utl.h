@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.4 2002-05-07 08:00:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.5 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -33,18 +33,18 @@ extern "C" {
 #endif /* __cplusplus */
 
 void
-aed_prc /* [fnc] Process a single attribute edit on a single variable */
+nco_aed_prc /* [fnc] Process a single attribute edit on a single variable */
 (const int nc_id, /* I [id] Input netCDF file ID */
  const int var_id, /* I [id] ID of variable on which to perform attribute editing */
  const aed_sct aed); /* I [id] Structure containing information necessary to edit */
 
 void 
-hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
+nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
  const char * const hst_sng); /* I [sng] String to add to history attribute */
 
 void 
-att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF file */
+nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF file */
 (const int in_id, /* I [id] netCDF input-file ID */
  const int out_id, /* I [id] netCDF output-file ID */
  const int var_in_id, /* I [id] netCDF input-variable ID */

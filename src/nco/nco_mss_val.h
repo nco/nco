@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.2 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.3 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -30,7 +30,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 ptr_unn /* O [sct] Default missing value for type type */
-mss_val_mk /* [fnc] Return default missing value for type type */
+nco_mss_val_mk /* [fnc] Return default missing value for type type */
 (const nc_type type); /* I [enm] netCDF type of operand */
 
 void

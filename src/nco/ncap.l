@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.58 2002-06-10 02:33:23 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.59 2002-06-16 05:12:03 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -615,7 +615,7 @@ unpack/[ ]*\( {return UNPACK;}
   
   /* Copy arbitrary value into variable 
      Placing a uniform value in variable should be unnecessary since variable
-     is intended for use solely as dimensional template for var_conform_dim() 
+     is intended for use solely as dimensional template for nco_var_conform_dim() 
      Nevertheless, copy 1.0 into value for safety */
   { /* Change scope to define convenience variables which reduce dereferencing */
     long var_sz; /* [nbr] Number of elements in variable */
@@ -866,8 +866,8 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
       /* Add dimensions defined in LHS subscripts */
       lst_t=lst_d;
       lst_t_nbr=lst_t_nbr;
-      lst_d=var_lst_add(lst_d,&lst_d_nbr,lval.sbs_lst->lst,lval.sbs_lst->nbr);          
-      if(lst_t_nbr >0) (void)var_lst_free(lst_t,lst_t_nbr);
+      lst_d=nco_var_lst_add(lst_d,&lst_d_nbr,lval.sbs_lst->lst,lval.sbs_lst->nbr);
+      if(lst_t_nbr >0) (void)nco_var_lst_free(lst_t,lst_t_nbr);
       break;
     default: 
       /* Tokens that fall through are perfectly safe and normal

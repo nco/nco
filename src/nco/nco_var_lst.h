@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.3 2002-05-07 08:56:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.4 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -32,7 +32,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 nm_id_sct * /* O [sct] Variable extraction list */
-var_lst_mk /* [fnc] Create variable extraction list */
+nco_var_lst_mk /* [fnc] Create variable extraction list */
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  const char * const * const var_lst_in, /* I [sng] User-specified list of variable names */
@@ -40,14 +40,14 @@ var_lst_mk /* [fnc] Create variable extraction list */
  int * const nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */
 
 nm_id_sct * /* O [sct] Extraction list */
-var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
+nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 (const int nc_id, /* I netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current exclusion list (destroyed) */
  int * const nbr_xtr); /* I/O [nbr] Number of variables in exclusion/extraction list */
 
 nm_id_sct * /* O [sct] Extraction list */
-var_lst_add_crd /* [fnc] Add all coordinates to extraction list */
+nco_var_lst_add_crd /* [fnc] Add all coordinates to extraction list */
 (const int nc_id, /* I [id] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  const int nbr_dim, /* I [nbr] Number of dimensions in input file */
@@ -65,7 +65,7 @@ var_lst_convert /* [fnc] Make variable structure list from variable name ID list
  var_sct *** const var_out_ptr); /* O [sct] Duplicate variable list (for output file) */
 
 void
-var_lst_divide /* [fnc] Divide input lists into output lists */
+nco_var_lst_divide /* [fnc] Divide input lists into output lists */
 (var_sct * const * const var, /* I [sct] Variable list (input file) */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.3 2002-05-12 00:24:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.4 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -26,7 +26,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 char * /* O [sng] Parsed command line */
-cmd_ln_sng /* [fnc] Re-construct command line from arguments */
+nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */
 (const int argc, /* I [nbr] Argument count */
  const char * const * const argv); /* I [sng] Command line argument values */
  /* char **argv); *//* I [sng] Command line argument values */

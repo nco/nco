@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.5 2002-05-07 08:34:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.6 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Scalar utilities */
 
@@ -13,7 +13,7 @@ scl_dbl_mk_var /* [fnc] Convert scalar double into netCDF variable */
 (const double val) /* I [frc] Double precision value to turn into netCDF variable */
 {
   /* Purpose: Convert scalar double into netCDF variable
-     Routine duplicates most functions of var_fll() 
+     Routine duplicates most functions of nco_var_fll() 
      Both functions should share as much initialization code as possible */
 
   static char *var_nm="Internally generated variable";
@@ -72,7 +72,7 @@ scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO vari
  const nc_type val_typ) /* I [enm] netCDF type of existing pointer/value */
 {
   /* Purpose: Convert void pointer to scalar of any type into NCO variable
-     Routine duplicates many functions of var_fll() 
+     Routine duplicates many functions of nco_var_fll() 
      Both functions should share as much initialization code as possible */
 
   static char *var_nm="Internally generated variable";

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.69 2002-06-10 02:33:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.70 2002-06-16 05:12:04 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -79,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.69 2002-06-10 02:33:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.69 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.70 2002-06-16 05:12:04 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.70 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -139,7 +139,7 @@ main(int argc,char **argv)
 #endif /* not _LIBINTL_H */
 
   /* Start the clock and save the command line */
-  cmd_ln=cmd_ln_sng(argc,argv);
+  cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
 
@@ -219,17 +219,17 @@ main(int argc,char **argv)
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
 
   /* Make uniform list of user-specified dimension limits */
-  if(lmt_nbr > 0) lmt=lmt_prs(lmt_nbr,lmt_arg);
+  if(lmt_nbr > 0) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   
   /* Make netCDF errors fatal and print the diagnostic */ 
       
   /* Parse filename */
-  fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
@@ -237,43 +237,43 @@ main(int argc,char **argv)
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
   
   /* Form initial extraction list from user input */
-  xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
+  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
 
   /* Change included variables to excluded variables */
-  if(EXCLUDE_INPUT_LIST) xtr_lst=var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
+  if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
 
   /* Add all coordinate variables to extraction list */
-  if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
+  if(PROCESS_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
 
   /* Make sure coordinates associated extracted variables are also on extraction list */
-  if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
+  if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
   /* Remove record coordinate, if any, from extraction list */
-  if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
+  if(False) xtr_lst=nco_var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
 
   /* Sort extraction list by variable ID for fastest I/O */
-  if(nbr_xtr > 1) xtr_lst=lst_srt(xtr_lst,nbr_xtr,False);
+  if(nbr_xtr > 1) xtr_lst=nco_lst_srt(xtr_lst,nbr_xtr,False);
   
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
+  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
 
   /* Find dimensions associated with variables to be extracted */
-  dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
+  dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
   /* Fill in dimension structure for all extracted dimensions */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
+  for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   
   /* Merge hyperslab limit information into dimension structures */
-  if(lmt_nbr > 0) (void)dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
+  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
 
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
-    dmn_out[idx]=dmn_dpl(dim[idx]);
-    (void)dmn_xrf(dim[idx],dmn_out[idx]); 
+    dmn_out[idx]=nco_dmn_dpl(dim[idx]);
+    (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
   } /* end loop over idx */
 
   /* Create stand-alone limit structure just for record dimension */
@@ -283,11 +283,11 @@ main(int argc,char **argv)
       if(nbr_fl == 1)(void)fprintf(stdout,gettext("%s: HINT Use ncks instead of %s\n"),prg_nm_get(),prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* endif */
-    lmt_rec=lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_STYLE);
+    lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_STYLE);
   } /* endif */
 
   /* Is this an NCAR CSM-format history tape? */
-  NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
+  NCAR_CSM_FORMAT=nco_ncar_csm_inq(in_id);
 
   /* Is this an ARM-format data file? */
   ARM_FORMAT=arm_inq(in_id);
@@ -297,29 +297,29 @@ main(int argc,char **argv)
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
-    var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
-    var_out[idx]=var_dpl(var[idx]);
+    var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
+    var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
-  fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
 
   /* Copy global attributes */
-  (void)att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
   
   /* Catenate time-stamped command line to "history" global attribute */
-  if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
+  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
 
   /* Define dimensions in output file */
-  (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
+  (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
   /* Define variables in output file, and copy their attributes */
-  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,NULL,0);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,NULL,0);
 
   /* Turn off default filling behavior to enhance efficiency */
   (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -328,10 +328,10 @@ main(int argc,char **argv)
   (void)nco_enddef(out_id);
   
   /* Zero start vectors for all output variables */
-  (void)var_srt_zero(var_out,nbr_xtr);
+  (void)nco_var_srt_zero(var_out,nbr_xtr);
 
   /* Copy variable data for non-processed variables */
-  (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
+  (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 
   /* Close first input netCDF file */
   (void)nco_close(in_id);
@@ -344,9 +344,9 @@ main(int argc,char **argv)
     } /* endif */
     if(prg == ncra || prg == ncea){
       var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));
-      (void)zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
+      (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
       var_prc_out[idx]->val.vp=(void *)nco_malloc(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
-      (void)var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
+      (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
     } /* end if */
   } /* end loop over idx */
   
@@ -356,24 +356,24 @@ main(int argc,char **argv)
   /* Loop over input files */
   for(idx_fl=0;idx_fl<nbr_fl;idx_fl++){
     /* Parse filename */
-    if(idx_fl != 0) fl_in=fl_nm_prs(fl_in,idx_fl,(int *)NULL,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
+    if(idx_fl != 0) fl_in=nco_fl_nm_prs(fl_in,idx_fl,(int *)NULL,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
     if(dbg_lvl > 0) (void)fprintf(stderr,gettext("\nInput file %d is %s; "),idx_fl,fl_in);
     /* Make sure file is on local system and is readable or die trying */
-    if(idx_fl != 0) fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
+    if(idx_fl != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
     if(dbg_lvl > 0) (void)fprintf(stderr,gettext("local file %s:\n"),fl_in);
     rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
     /* Variables may have different IDs and missing_values in each file */
-    for(idx=0;idx<nbr_var_prc;idx++) (void)var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+    for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 
     /* Each file can have a different number of records to process */
-    if(prg == ncra || prg == ncrcat) (void)lmt_evl(in_id,&lmt_rec,idx_rec_out,FORTRAN_STYLE); /* Routine is thread-unsafe */
+    if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,&lmt_rec,idx_rec_out,FORTRAN_STYLE); /* Routine is thread-unsafe */
     
     /* Is this an ARM-format data file? */
     if(ARM_FORMAT) base_time_crr=arm_base_time_get(in_id); /* Routine is thread-unsafe */
 
     /* Perform various error-checks on input file */
-    if(False) (void)fl_cmp_err_chk();
+    if(False) (void)nco_fl_cmp_err_chk();
 
     if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
       /* Loop over each record in current file */
@@ -392,7 +392,7 @@ main(int argc,char **argv)
 	  var_prc[idx]->end[0]=idx_rec;
 	  var_prc[idx]->cnt[0]=1L;
 	  /* Retrieve variable from disk into memory */
-	  (void)var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+	  (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 	  
 	  if(prg == ncra){
 	    /* Convert char, short, long, int types to doubles before arithmetic */
@@ -400,7 +400,7 @@ main(int argc,char **argv)
 	    /* Output variable type is "sticky" so only convert on first record */
 	    if(idx_rec_out == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	    /* Convert var_prc to type of var_prc_out in case type of variable on disk has changed */
-	    var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
+	    var_prc[idx]=nco_var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
 	    /* Perform arithmetic operations: avg, min, max, ttl, ... */
 	    nco_opr_drv(idx_rec_out,nco_op_typ,var_prc_out[idx],var_prc[idx]);
 	  } /* end if ncra */
@@ -445,14 +445,14 @@ main(int argc,char **argv)
 	if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	if(dbg_lvl > 0) (void)fflush(stderr);
 	/* Retrieve variable from disk into memory */
-	(void)var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+	(void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 	
 	/* Convert char, short, long, int types to doubles before arithmetic */
 	var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
 	/* Output variable type is "sticky" so only convert on first record */
 	if(idx_fl == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	/* Convert var_prc to type of var_prc_out in case type of variable on disk has changed */
-	var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
+	var_prc[idx]=nco_var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
 	/* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: idx_fl not idx_rec_out! */
 	nco_opr_drv(idx_fl,nco_op_typ,var_prc_out[idx],var_prc[idx]);
 	
@@ -467,7 +467,7 @@ main(int argc,char **argv)
     nco_close(in_id);
     
     /* Dispose local copy of file */
-    if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
+    if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
 
   } /* end loop over idx_fl */
   
@@ -483,10 +483,10 @@ main(int argc,char **argv)
       case nco_op_sqravg: /* Normalize sum by tally to create mean */
       case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
       case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
-	(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	(void)nco_var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
 	break;
       case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
-	(void)var_normalize_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	(void)nco_var_normalize_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
 	break;
       case nco_op_min: /* Minimum is already in buffer, do nothing */
       case nco_op_max: /* Maximum is already in buffer, do nothing */
@@ -499,10 +499,10 @@ main(int argc,char **argv)
       case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
       case nco_op_rmssdn: /* Take root of sdn mean of sum of squares to create root mean square for sdn */
       case nco_op_sqrt: /* Take root of mean to create root mean */
-	(void)var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);
+	(void)nco_var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);
 	break;
       case nco_op_sqravg: /* Square mean to create square of the mean (for sdn) */
-	(void)var_multiply(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
+	(void)nco_var_multiply(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
 	break;
       default:
 	break;
@@ -512,10 +512,10 @@ main(int argc,char **argv)
   } /* end if */
   
   /* Manually fix YYMMDD date which was mangled by averaging */
-  if(NCAR_CSM_FORMAT && prg == ncra) (void)ncar_csm_date(out_id,var_out,nbr_xtr);
+  if(NCAR_CSM_FORMAT && prg == ncra) (void)nco_ncar_csm_date(out_id,var_out,nbr_xtr);
   
   /* Add time variable to output file */
-  if(ARM_FORMAT && prg == ncrcat) (void)arm_time_install(out_id,base_time_srt);
+  if(ARM_FORMAT && prg == ncrcat) (void)nco_arm_time_install(out_id,base_time_srt);
   
   /* Copy averages to output file and free averaging buffers */
   if(prg == ncra || prg == ncea){
@@ -536,8 +536,8 @@ main(int argc,char **argv)
   } /* end if */
   
   /* Close output file and move it from temporary to permanent location */
-  (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
+  (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
-  Exit_gracefully();
+  nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

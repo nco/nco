@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.75 2002-06-10 02:33:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.76 2002-06-16 05:12:03 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -84,8 +84,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.75 2002-06-10 02:33:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.75 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.76 2002-06-16 05:12:03 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.76 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -161,7 +161,7 @@ main(int argc,char **argv)
   prs_sct prs_arg; /* [sct] Global information required in parser routines */
   
   /* Start clock and save command line */ 
-  cmd_ln=cmd_ln_sng(argc,argv);
+  cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
@@ -283,15 +283,15 @@ main(int argc,char **argv)
   assert(sym_idx == sym_tbl_nbr);
  
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   
   /* Make uniform list of user-specified dimension limits */
-  if(lmt_nbr > 0) lmt=lmt_prs(lmt_nbr,lmt_arg);
+  if(lmt_nbr > 0) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   
   /* Parse filename */
-  fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
@@ -328,10 +328,10 @@ main(int argc,char **argv)
 
   if(PROCESS_ALL_VARS){
     /* Form initial extraction list from user input */
-    xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
-    if(nbr_lst_b > 0) xtr_lst=var_lst_sub(xtr_lst,&nbr_xtr,xtr_lst_b,nbr_lst_b);
+    xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
+    if(nbr_lst_b > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&nbr_xtr,xtr_lst_b,nbr_lst_b);
     /* Copy list for later */
-    xtr_lst_2=var_lst_copy(xtr_lst,nbr_xtr);
+    xtr_lst_2=nco_var_lst_copy(xtr_lst,nbr_xtr);
     nbr_xtr_2=nbr_xtr;
   } /* end if PROCESS_ALL_VARS */
   
@@ -344,91 +344,91 @@ main(int argc,char **argv)
        xtr_lst_2=list_c + coordinate variables - list_b */
     
     /* Add list c to extraction list */
-    if(nbr_lst_c > 0) xtr_lst=var_lst_add(xtr_lst,&nbr_xtr,xtr_lst_c,nbr_lst_c);
+    if(nbr_lst_c > 0) xtr_lst=nco_var_lst_add(xtr_lst,&nbr_xtr,xtr_lst_c,nbr_lst_c);
     
     /* Add list a to extraction list */
-    if(nbr_lst_a > 0) xtr_lst=var_lst_add(xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
+    if(nbr_lst_a > 0) xtr_lst=nco_var_lst_add(xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
     
     /* Add all coordinate variables to extraction list */
-    if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
+    if(PROCESS_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
     
     /* Make sure coordinates associated extracted variables are also on extraction list */
-    if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
+    if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
     
     /* Create list of coordinate variables */
     if(nbr_xtr > 0 && (PROCESS_ALL_COORDINATES || PROCESS_ASSOCIATED_COORDINATES)){
       nbr_xtr_2=nbr_xtr;
-      xtr_lst_2=var_lst_copy(xtr_lst,nbr_xtr);
+      xtr_lst_2=nco_var_lst_copy(xtr_lst,nbr_xtr);
       
       /* Add dimensions defined in LHS subscripts */
-      if(nbr_lst_d > 0) xtr_lst_2=var_lst_add(xtr_lst_2,&nbr_xtr_2,xtr_lst_d,nbr_lst_d); 
+      if(nbr_lst_d > 0) xtr_lst_2=nco_var_lst_add(xtr_lst_2,&nbr_xtr_2,xtr_lst_d,nbr_lst_d); 
       
       /* Creat list of coordinates only */
-      xtr_lst_2=ncap_var_lst_crd_make(in_id,xtr_lst_2,&nbr_xtr_2);
+      xtr_lst_2=nco_var_lst_crd_make(in_id,xtr_lst_2,&nbr_xtr_2);
     } /* endif */
     
     /* Add list_c to new list */
-    if(nbr_lst_c > 0) xtr_lst_2=var_lst_add(xtr_lst_2,&nbr_xtr_2,xtr_lst_c,nbr_lst_c);
+    if(nbr_lst_c > 0) xtr_lst_2=nco_var_lst_add(xtr_lst_2,&nbr_xtr_2,xtr_lst_c,nbr_lst_c);
     
     /* Subtract list_b from this list */   
-    if(nbr_lst_b > 0) xtr_lst_2=var_lst_sub(xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
+    if(nbr_lst_b > 0) xtr_lst_2=nco_var_lst_sub(xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
   } /* end if PROCESS_ALL_VARS */
   
   /* Sort extraction list by variable ID for fastest I/O */
-  if(nbr_xtr > 1) xtr_lst=lst_srt(xtr_lst,nbr_xtr,False);
-  if(nbr_xtr_2 > 1) xtr_lst_2=lst_srt(xtr_lst_2,nbr_xtr_2,False);
+  if(nbr_xtr > 1) xtr_lst=nco_lst_srt(xtr_lst,nbr_xtr,False);
+  if(nbr_xtr_2 > 1) xtr_lst_2=nco_lst_srt(xtr_lst_2,nbr_xtr_2,False);
   
   /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
+  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
   
   /* Find dimensions associated with variables to be extracted */
-  dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
+  dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
   
   /* Add list d */
-  if(nbr_lst_d > 0) dmn_lst=var_lst_add(dmn_lst,&nbr_dmn_xtr,xtr_lst_d,nbr_lst_d);  
+  if(nbr_lst_d > 0) dmn_lst=nco_var_lst_add(dmn_lst,&nbr_dmn_xtr,xtr_lst_d,nbr_lst_d);  
   
   /* Fill in dimension structure for all extracted dimensions */
   dmn=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++) dmn[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
+  for(idx=0;idx<nbr_dmn_xtr;idx++) dmn[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   
   /* Merge hyperslab limit information into dimension structures */
-  if(lmt_nbr > 0) (void)dmn_lmt_mrg(dmn,nbr_dmn_xtr,lmt,lmt_nbr);
+  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dmn,nbr_dmn_xtr,lmt,lmt_nbr);
   
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
-    dmn_out[idx]=dmn_dpl(dmn[idx]);
-    (void)dmn_xrf(dmn[idx],dmn_out[idx]); 
+    dmn_out[idx]=nco_dmn_dpl(dmn[idx]);
+    (void)nco_dmn_xrf(dmn[idx],dmn_out[idx]); 
   } /* end loop over idx */
   
   /* Is this an NCAR CSM-format history tape? */
-  NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
+  NCAR_CSM_FORMAT=nco_ncar_csm_inq(in_id);
   
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr_2*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr_2*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr_2;idx++){
-    var[idx]=var_fll(in_id,xtr_lst_2[idx].id,xtr_lst_2[idx].nm,dmn,nbr_dmn_xtr);
-    var_out[idx]=var_dpl(var[idx]);
+    var[idx]=nco_var_fll(in_id,xtr_lst_2[idx].id,xtr_lst_2[idx].nm,dmn,nbr_dmn_xtr);
+    var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
   
-  /* NB: ncap is not suited for var_lst_divide() */
+  /* NB: ncap is not suited for nco_var_lst_divide() */
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)var_lst_divide(var,var_out,nbr_xtr_2,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_divide(var,var_out,nbr_xtr_2,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
   /* Open output file */
-  fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
   
   /* Copy global attributes */
-  (void)att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
   
   /* Catenate time-stamped command line to "history" global attribute */
-  if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
+  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
   
   /* Define dimensions in output file */
-  (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
+  (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
   
   (void)nco_enddef(out_id); 
 
@@ -484,8 +484,8 @@ main(int argc,char **argv)
   rcd=yyparse((void *)&prs_arg);
 
   rcd=nco_redef(out_id);
-  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr_2,(dmn_sct **)NULL,0);
-  /* (void)var_dfn(in_id,fl_out,out_id,var_fix,nbr_var_fix,(dmn_sct **)NULL,0); */
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr_2,(dmn_sct **)NULL,0);
+  /* (void)nco_var_dfn(in_id,fl_out,out_id,var_fix,nbr_var_fix,(dmn_sct **)NULL,0); */
   
   /* Turn off default filling behavior to enhance efficiency */
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -494,8 +494,8 @@ main(int argc,char **argv)
   rcd=nco_enddef(out_id);
   
   /* Copy variable data for non-processed variables */
-  (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
-  /* (void)var_val_cpy(in_id,out_id,var_out,nbr_xtr_2); */
+  (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
+  /* (void)nco_var_val_cpy(in_id,out_id,var_out,nbr_xtr_2); */
   
   (void)nco_redef(out_id);
   /* Copy new attributes overwriting old ones */
@@ -503,7 +503,7 @@ main(int argc,char **argv)
     rcd=nco_inq_varid_flg(out_id,att_lst[idx]->var_nm,&var_id);
     if(rcd == NC_NOERR){
       att_lst[idx]->mode=aed_overwrite;
-      (void)aed_prc(out_id,var_id,*att_lst[idx]);
+      (void)nco_aed_prc(out_id,var_id,*att_lst[idx]);
     } /* end if */
   } /* end for */
   
@@ -512,11 +512,11 @@ main(int argc,char **argv)
   rcd=nco_close(in_id);
   
   /* Remove local copy of file */
-  if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
+  if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
   
   /* Close output file and move it from temporary to permanent location */
-  (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
+  (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
-  Exit_gracefully();
+  nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

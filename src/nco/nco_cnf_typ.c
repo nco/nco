@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.5 2002-06-07 05:53:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.6 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -78,7 +78,7 @@ nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before
      This routine is usually called 
      Remember to convert back after weighting and arithmetic are complete! */
 
-  if(var->type != NC_FLOAT && var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=var_conform_type((nc_type)NC_DOUBLE,var);
+  if(var->type != NC_FLOAT && var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=nco_var_conform_type((nc_type)NC_DOUBLE,var);
   
   return var;
 } /* nco_typ_cnv_rth() */
@@ -89,13 +89,13 @@ nco_cnv_var_typ_dsk  /* [fnc] Revert variable to on-disk type */
 {
   /* Purpose: Revert variable to on-disk type */
   
-  if(var->type != var->typ_dsk) var=var_conform_type(var->typ_dsk,var);
+  if(var->type != var->typ_dsk) var=nco_var_conform_type(var->typ_dsk,var);
   
   return var;
 } /* nco_cnv_var_typ_dsk() */
 
 var_sct * /* O [sct] Pointer to variable structure of type var_out_typ */
-var_conform_type /* [fnc] Return copy of input variable typecast to desired type */
+nco_var_conform_type /* [fnc] Return copy of input variable typecast to desired type */
 (const nc_type var_out_typ, /* I [enm] Type to convert variable structure to */
  var_sct *var_in) /* I/O [enm] Pointer to variable structure (may be destroyed) */
 {
@@ -225,7 +225,7 @@ var_conform_type /* [fnc] Return copy of input variable typecast to desired type
   
   return var_out;
   
-} /* end var_conform_type() */
+} /* end nco_var_conform_type() */
 
 void
 val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
@@ -394,10 +394,10 @@ ncap_var_retype /* [fnc] Promote variable to higher common precision */
   /* Purpose: Convert variable, if necessary, so variables are of same type */
   if(var_1->type == var_2->type) return var_1->type;
   if(var_1->type > var_2->type){
-    var_2=var_conform_type(var_1->type,var_2);
+    var_2=nco_var_conform_type(var_1->type,var_2);
     return var_1->type;
   }else{
-    var_1=var_conform_type(var_2->type,var_1);
+    var_1=nco_var_conform_type(var_2->type,var_1);
     return var_2->type;
   } /* endif */
 } /* end ncap_var_retype */
@@ -436,7 +436,7 @@ ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if n
     (void)scv_conform_type((*var)->type,scv); 
     return (*var)->type;
   }else{
-    *var=var_conform_type(scv->type,*var);
+    *var=nco_var_conform_type(scv->type,*var);
     return scv->type;
   } /* endif */
 

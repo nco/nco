@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.5 2002-06-07 05:53:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.6 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -10,9 +10,9 @@
 
 /* Notes on packing/unpacking:
    Routines in this file must be used in correct order:
-   pck_dsk_inq(): called first, e.g., in var_fll(), before var_prc copied to var_prc_out
-   var_upk(): called in data retrieval routine, e.g., in var_get()
-   var_pck(): called just before writing output file, e.g., in main()
+   pck_dsk_inq(): called first, e.g., in nco_var_fll(), before var_prc copied to var_prc_out
+   nco_var_upk(): called in data retrieval routine, e.g., in nco_var_get()
+   nco_var_pck(): called just before writing output file, e.g., in main()
    Bookkeeping hassle is keeping flags in var_prc synchronized with flags in var_prc_out
 
    From netCDF User's Guide:
@@ -109,12 +109,12 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 } /* end pck_dsk_inq() */
 
 var_sct * /* O [sct] Unpacked variable */
-var_upk /* [fnc] Unpack variable in memory */
+nco_var_upk /* [fnc] Unpack variable in memory */
 (var_sct *var) /* I/O [sct] Variable to be unpacked */
 {
   /* Threads: Routine is thread-unsafe */
   /* Purpose: Unpack variable
-     Routine is inverse of var_pck(): var_upk[var_pck(var)]=var */
+     Routine is inverse of nco_var_pck(): nco_var_upk[nco_var_pck(var)]=var */
 
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
@@ -123,7 +123,7 @@ var_upk /* [fnc] Unpack variable in memory */
   if(!var->pck_ram) return var;
 
   /* Routine should be called with variable already in memory */
-  if(var->val.vp == NULL) (void)fprintf(stdout,"%s: ERROR var_upk() called with empty var->val.vp\n",prg_nm_get());
+  if(var->val.vp == NULL) (void)fprintf(stdout,"%s: ERROR nco_var_upk() called with empty var->val.vp\n",prg_nm_get());
 
   /* Packed variables are guaranteed to have both scale_factor and add_offset
      The scale factor is guaranteed to be of type NC_FLOAT or NC_DOUBLE and of size 1 (a scalar) */
@@ -135,7 +135,7 @@ var_upk /* [fnc] Unpack variable in memory */
     (void)nco_get_att(var->nc_id,var->id,scl_fct_sng,var->scl_fct.vp,var->typ_upk);
     scl_fct_scv=ptr_unn_2_scv(var->typ_upk,var->scl_fct);
     /* Convert var to type of scale_factor for expansion */
-    var=var_conform_type(scl_fct_scv.type,var);
+    var=nco_var_conform_type(scl_fct_scv.type,var);
     /* Multiply var by scale_factor */
     (void)var_scv_multiply(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
   } /* endif has_scl_fct */
@@ -146,7 +146,7 @@ var_upk /* [fnc] Unpack variable in memory */
     (void)nco_get_att(var->nc_id,var->id,add_fst_sng,var->add_fst.vp,var->typ_upk);
     add_fst_scv=ptr_unn_2_scv(var->typ_upk,var->add_fst);
     /* Convert var to type of scale_factor for expansion */
-    var=var_conform_type(add_fst_scv.type,var);
+    var=nco_var_conform_type(add_fst_scv.type,var);
     /* Add add_offset to var */
     (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
   } /* endif has_add_fst */
@@ -167,16 +167,16 @@ var_upk /* [fnc] Unpack variable in memory */
 
   return var;
   
-} /* end var_upk() */
+} /* end nco_var_upk() */
 
 var_sct * /* O [sct] Packed variable */
-var_pck /* [fnc] Pack variable in memory */
+nco_var_pck /* [fnc] Pack variable in memory */
 (var_sct *var, /* I/O [sct] Variable to be packed */
  const nc_type typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
  const bool USE_EXISTING_PCK) /* I [flg] Use existing packing scale_factor and add_offset */
 {
   /* Purpose: Pack variable 
-     Routine is inverse of var_upk(): var_pck[var_upk(var)]=var 
+     Routine is inverse of nco_var_upk(): nco_var_pck[nco_var_upk(var)]=var 
      Currently routine outputs same variable structure as given on input
      In other words, output structure may be neglected as all changes are made 
      to input structure */
@@ -188,13 +188,13 @@ var_pck /* [fnc] Pack variable in memory */
   if(var->pck_ram) return var;
 
   /* Routine should be called with variable already in memory */
-  if(var->val.vp == NULL) (void)fprintf(stdout,"%s: ERROR var_pck() called with empty var->val.vp\n",prg_nm_get());
+  if(var->val.vp == NULL) (void)fprintf(stdout,"%s: ERROR nco_var_pck() called with empty var->val.vp\n",prg_nm_get());
   
   /* Packed type must be NC_CHAR or NC_SHORT */
-  if(typ_pck != NC_CHAR && typ_pck != NC_SHORT) (void)fprintf(stdout,"%s: ERROR var_pck() called with invalid packed type typ_pck = %s, \n",prg_nm_get(),nco_typ_sng(typ_pck));
+  if(typ_pck != NC_CHAR && typ_pck != NC_SHORT) (void)fprintf(stdout,"%s: ERROR nco_var_pck() called with invalid packed type typ_pck = %s, \n",prg_nm_get(),nco_typ_sng(typ_pck));
 
   /* Source type must be NC_INT, NC_FLOAT, or NC_DOUBLE */
-  if(var->type == NC_SHORT || var->type == NC_CHAR || var->type == NC_BYTE) (void)fprintf(stdout,"%s: ERROR var_pck() called with invalid source type var->type = %s, \n",prg_nm_get(),nco_typ_sng(var->type));
+  if(var->type == NC_SHORT || var->type == NC_CHAR || var->type == NC_BYTE) (void)fprintf(stdout,"%s: ERROR nco_var_pck() called with invalid source type var->type = %s, \n",prg_nm_get(),nco_typ_sng(var->type));
 
   if(USE_EXISTING_PCK){
     /* Assume var->scl_fct.vp and var->add_fst.vp are already in memory from pck_dsk_inq() */
@@ -243,27 +243,27 @@ var_pck /* [fnc] Pack variable in memory */
     ptr_unn_max.vp=(void *)nco_malloc(nco_typ_lng(var->type));
 
     /* Find minimum and maximum values in data */
-    (void)var_avg_reduce_max(var->type,var->sz,1L,var->has_mss_val,var->mss_val,var->val,ptr_unn_min);
-    (void)var_avg_reduce_min(var->type,var->sz,1L,var->has_mss_val,var->mss_val,var->val,ptr_unn_max);
+    (void)nco_var_avg_reduce_max(var->type,var->sz,1L,var->has_mss_val,var->mss_val,var->val,ptr_unn_min);
+    (void)nco_var_avg_reduce_min(var->type,var->sz,1L,var->has_mss_val,var->mss_val,var->val,ptr_unn_max);
 
     /* Convert to NC_DOUBLE before 0.5*(min+max) operation */
     min_var=scl_ptr_mk_var(ptr_unn_min,var->type);
-    min_var=var_conform_type((nc_type)NC_DOUBLE,min_var);
+    min_var=nco_var_conform_type((nc_type)NC_DOUBLE,min_var);
     max_var=scl_ptr_mk_var(ptr_unn_max,var->type);
-    max_var=var_conform_type((nc_type)NC_DOUBLE,max_var);
+    max_var=nco_var_conform_type((nc_type)NC_DOUBLE,max_var);
     /* Copy max_var for use in scale_factor computation */
-    max_var_dpl=var_dpl(max_var);
+    max_var_dpl=nco_var_dpl(max_var);
     hlf_var=scl_mk_var(hlf_unn,NC_DOUBLE); /* [sct] NCO variable for value one half */
 
     if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: %s: min_var = %g, max_var = %g\n",prg_nm_get(),var->nm,min_var->val.dp[0],max_var->val.dp[0]);
 
     /* add_offset is 0.5*(min+max) */
-    if(var->tally == NULL) (void)fprintf(stdout,"%s: ERROR var->tally==NULL in var_pck(), no room for incrementing tally while in var_add()\n",prg_nm_get());
+    if(var->tally == NULL) (void)fprintf(stdout,"%s: ERROR var->tally==NULL in nco_var_pck(), no room for incrementing tally while in nco_var_add()\n",prg_nm_get());
     /* max_var->val is overridden with add_offset answers, no longer valid as max_var */
-    (void)var_add((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,var->tally,min_var->val,max_var->val);
-    (void)var_multiply((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,hlf_var->val,max_var->val);
+    (void)nco_var_add((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,var->tally,min_var->val,max_var->val);
+    (void)nco_var_multiply((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,hlf_var->val,max_var->val);
     /* Reset tally buffer to zero for any subsequent arithmetic */
-    (void)zero_long(var->sz,var->tally);
+    (void)nco_zero_long(var->sz,var->tally);
     /* Contents of max_var are actually add_offset */
     (void)val_conform_type((nc_type)NC_DOUBLE,max_var->val,var->type,var->add_fst);
 
@@ -283,12 +283,12 @@ var_pck /* [fnc] Pack variable in memory */
        If max-min = 0 then variable is constant value so scale_factor=0.0 and add_offset=var
        If max-min > ndrv then precision is worse than 1.0
        If max-min < ndrv then precision is better than 1.0 */
-    (void)var_subtract((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,min_var->val,max_var_dpl->val);
+    (void)nco_var_subtract((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,min_var->val,max_var_dpl->val);
     /* max-min is currently stored in max_var_dpl */
     max_mns_min_dbl=ptr_unn_2_scl_dbl(max_var_dpl->val,max_var_dpl->type); 
 
     if(max_mns_min_dbl != 0.0){
-      (void)var_divide((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,ndrv_var->val,max_var_dpl->val);
+      (void)nco_var_divide((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,ndrv_var->val,max_var_dpl->val);
       /* Contents of max_var_dpl are actually scale_factor */
       (void)val_conform_type((nc_type)NC_DOUBLE,max_var_dpl->val,var->type,var->scl_fct);
     }else{
@@ -296,7 +296,7 @@ var_pck /* [fnc] Pack variable in memory */
       zero_var=scl_mk_var(zero_unn,var->type); /* [sct] NCO variable for value 0.0 */
       /* Set scale_factor to 0.0 */
       (void)memcpy(var->scl_fct.vp,zero_var->val.vp,nco_typ_lng(var->type));
-      if(zero_var != NULL) zero_var=var_free(zero_var);
+      if(zero_var != NULL) zero_var=nco_var_free(zero_var);
       /* Set add_offset to variable value */
       (void)memcpy(var->add_fst.vp,var->val.vp,nco_typ_lng(var->type));
     } /* end else */
@@ -306,11 +306,11 @@ var_pck /* [fnc] Pack variable in memory */
     ptr_unn_max.vp=nco_free(ptr_unn_max.vp);
 
     /* Free variables */
-    if(min_var != NULL) min_var=var_free(min_var);
-    if(max_var != NULL) max_var=var_free(max_var);
-    if(max_var_dpl != NULL) max_var_dpl=var_free(max_var_dpl);
-    if(hlf_var != NULL) hlf_var=var_free(hlf_var);
-    if(ndrv_var != NULL) ndrv_var=var_free(ndrv_var);
+    if(min_var != NULL) min_var=nco_var_free(min_var);
+    if(max_var != NULL) max_var=nco_var_free(max_var);
+    if(max_var_dpl != NULL) max_var_dpl=nco_var_free(max_var_dpl);
+    if(hlf_var != NULL) hlf_var=nco_var_free(hlf_var);
+    if(ndrv_var != NULL) ndrv_var=nco_var_free(ndrv_var);
 
     /* Do not bother creating superfluous scale_factor (0.0 or 1.0) or add_offset (0.0) */
     scl_fct_dbl=ptr_unn_2_scl_dbl(var->scl_fct,var->type); 
@@ -324,7 +324,7 @@ var_pck /* [fnc] Pack variable in memory */
   /* Create double precision value of scale_factor for diagnostics */
   if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
     scl_fct_dbl=ptr_unn_2_scl_dbl(var->scl_fct,var->type); 
-    if(scl_fct_dbl == 0.0) (void)fprintf(stdout,"%s: WARNING var_pck() reports scl_fct_dbl = 0.0\n",prg_nm_get());
+    if(scl_fct_dbl == 0.0) (void)fprintf(stdout,"%s: WARNING nco_var_pck() reports scl_fct_dbl = 0.0\n",prg_nm_get());
   } /* endif */
   
   /* Create double precision value of add_offset for diagnostics */
@@ -366,7 +366,7 @@ var_pck /* [fnc] Pack variable in memory */
 
   /* Convert variable to user-specified packed type
      This is where var->type is changed from original to packed type */
-  var=var_conform_type(typ_pck,var);
+  var=nco_var_conform_type(typ_pck,var);
 
   if(dbg_lvl_get() >=3){
     (void)fprintf(stderr,"%s: PACKING Packed %s\n",prg_nm_get(),var->nm);
@@ -375,7 +375,7 @@ var_pck /* [fnc] Pack variable in memory */
 
   return var;
   
-} /* end var_pck() */
+} /* end nco_var_pck() */
 
 var_sct * /* O [sct] Packed variable */
 nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to disk */
@@ -403,7 +403,7 @@ nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to
   } /* end switch */
 
   /* Pack variable */
-  if(var->xrf->pck_dsk && !var->xrf->pck_ram) var=var_pck(var,var->typ_pck,USE_EXISTING_PCK);
+  if(var->xrf->pck_dsk && !var->xrf->pck_ram) var=nco_var_pck(var,var->typ_pck,USE_EXISTING_PCK);
 
   /* Write/overwrite scale_factor and add_offset attributes */
   if(var->pck_ram){ /* Variable is packed in memory */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.8 2002-06-09 01:11:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.9 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -9,7 +9,7 @@
 #include "nco_att_utl.h" /* Attribute utilities */
 
 void
-aed_prc /* [fnc] Process a single attribute edit on a single variable */
+nco_aed_prc /* [fnc] Process a single attribute edit on a single variable */
 (const int nc_id, /* I [id] Input netCDF file ID */
  const int var_id, /* I [id] ID of variable on which to perform attribute editing */
  const aed_sct aed) /* I [id] Structure containing information necessary to edit */
@@ -95,9 +95,9 @@ aed_prc /* [fnc] Process a single attribute edit on a single variable */
     var->cnt=dmn_sz;
     var->srt=dmn_srt;
       
-    /* Place var_get() code inline since var struct is not truly complete */
+    /* Place nco_var_get() code inline since var struct is not truly complete */
     if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes in aed_prc()\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes in nco_aed_prc()\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
       nco_exit(EXIT_FAILURE); 
     } /* end if */
     if(var->sz > 1){
@@ -112,7 +112,7 @@ aed_prc /* [fnc] Process a single attribute edit on a single variable */
 
     /* Sanity check */
     if(var->has_mss_val == False){
-      (void)fprintf(stdout,"%s: ERROR \"missing_value\" attribute does not exist in aed_prc()\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: ERROR \"missing_value\" attribute does not exist in nco_aed_prc()\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
@@ -204,10 +204,10 @@ aed_prc /* [fnc] Process a single attribute edit on a single variable */
     break;
   } /* end switch */
   
-} /* end aed_prc() */
+} /* end nco_aed_prc() */
 
 void 
-att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF file */
+nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF file */
 (const int in_id, /* I [id] netCDF input-file ID */
  const int out_id, /* I [id] netCDF output-file ID */
  const int var_in_id, /* I [id] netCDF input-variable ID */
@@ -248,10 +248,10 @@ att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF file *
     (void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
 
   } /* end loop over attributes */
-} /* end att_cpy() */
+} /* end nco_att_cpy() */
 
 void 
-hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
+nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
  const char * const hst_sng) /* I [sng] String to add to history attribute */
 {
@@ -326,5 +326,5 @@ hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   history_crr=(char *)nco_free(history_crr);
   history_new=(char *)nco_free(history_new);
 
-} /* end hst_att_cat() */
+} /* end nco_hst_att_cat() */
 

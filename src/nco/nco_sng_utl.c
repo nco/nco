@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.5 2002-05-12 00:24:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.6 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -9,7 +9,7 @@
 #include "nco_sng_utl.h" /* String utilities */
 
 char * /* O [sng] Parsed command line */
-cmd_ln_sng /* [fnc] Re-construct command line from arguments */
+nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */
 (const int argc, /* I [nbr] Argument count */
  const char * const * const argv) /* I [sng] Command line argument values */
  /* char **argv) *//* I [sng] Command line argument values */
@@ -36,7 +36,7 @@ cmd_ln_sng /* [fnc] Re-construct command line from arguments */
   } /* end else */
 
   return cmd_ln; /* [sng] Parsed command line */
-} /* end cmd_ln_sng() */
+} /* end nco_cmd_ln_sng() */
 
 int /* O [nbr] Number of escape sequences translated */
 sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII bytes */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.5 2002-05-07 08:52:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.6 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -42,7 +42,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 void
-fl_cp /* [fnc] Copy first file to second */
+nco_fl_cp /* [fnc] Copy first file to second */
 (const char * const fl_src, /* I [sng] Name of source file to copy */
  const char * const fl_dst); /* I [sng] Name of destination file */
 
@@ -52,17 +52,17 @@ fl_mv /* [fnc] Move first file to second */
  const char * const fl_dst); /* I [sng] Name of destination file */
 
 void 
-fl_rm /* [fnc] Remove file */
+nco_fl_rm /* [fnc] Remove file */
 (char *fl_nm); /* I [sng] File to be removed */
 
 char * /* O [sng] Filename of locally available file */
-fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
+nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 (char *fl_nm, /* I/O [sng] Current filename, if any (destroyed) */
  const char * const fl_pth_lcl, /* I [sng] Local storage area for files retrieved from remote locations */
  int * const FILE_RETRIEVED_FROM_REMOTE_LOCATION); /* O [flg] File was retrieved from remote location */
 
 char ** /* O [sng] List of user-specified filenames */
-fl_lst_mk /* [fnc] Create file list from command line positional arguments */
+nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments */
 (const char * const * const argv, /* I [sng] Argument list */
  const int argc, /* I [nbr] Argument count */
  int arg_crr, /* I [idx] Index of current argument */
@@ -70,7 +70,7 @@ fl_lst_mk /* [fnc] Create file list from command line positional arguments */
  char ** const fl_out); /* O [sng] Name of output file */
 
 char * /* O [sng] Name of file to retrieve */
-fl_nm_prs /* [fnc] Construct file name from input arguments */
+nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
 (char *fl_nm, /* I/O [sng] Current filename, if any */
  const int fl_nbr, /* I [nbr] Ordinal index of file in input file list */
  int * const nbr_fl, /* I/O [nbr] number of files to be processed */
@@ -80,20 +80,20 @@ fl_nm_prs /* [fnc] Construct file name from input arguments */
  const char * const fl_pth); /* I [sng] Path prefix for files in fl_lst_in */
 
 char * /* O [sng] Name of temporary file actually opened */
-fl_out_open /* [fnc] Open output file subject to availability and user input */
+nco_fl_out_open /* [fnc] Open output file subject to availability and user input */
 (const char * const fl_out, /* I [sng] Name of file to open */
  const bool FORCE_APPEND, /* I [flg] Append to existing file, if any */
  const bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
  int * const out_id); /* O [id] File ID */
 
 void
-fl_out_cls /* [fnc] Close temporary output file, move it to permanent output file */
+nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output file */
 (const char * const fl_out, /* I [sng] Name of permanent output file */
  const char * const fl_out_tmp, /* I [sng] Name of temporary output file to close and move to permanent output file */
  const int nc_id); /* I [id] file ID of fl_out_tmp */
 
 void
-fl_cmp_err_chk(void); /* [fnc] Perform error checking on file */
+nco_fl_cmp_err_chk(void); /* [fnc] Perform error checking on file */
 
 #ifdef __cplusplus
 } /* end extern "C" */

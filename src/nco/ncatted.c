@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.43 2002-05-14 00:57:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.44 2002-06-16 05:12:03 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -140,8 +140,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.43 2002-05-14 00:57:45 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.43 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.44 2002-06-16 05:12:03 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.44 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -161,7 +161,7 @@ main(int argc,char **argv)
   time_t clock;
 
   /* Start the clock and save the command line */ 
-  cmd_ln=cmd_ln_sng(argc,argv);
+  cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
@@ -209,7 +209,7 @@ main(int argc,char **argv)
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   if(fl_out != NULL) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=fl_lst_in[0];
 
   if(nbr_aed == 0){
@@ -224,9 +224,9 @@ main(int argc,char **argv)
   /* We now have the final list of attributes to edit. */
   
   /* Parse filename */
-  fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
 
   if(OUTPUT_TO_NEW_NETCDF_FILE){
 
@@ -256,7 +256,7 @@ main(int argc,char **argv)
     
     /* Copy input file to output file, then search through output, editing attributes along the way.
        This avoids possible XDR translation performance penalty of copying each variable with netCDF. */
-    (void)fl_cp(fl_in,fl_out);
+    (void)nco_fl_cp(fl_in,fl_out);
 
   } /* end if */
 
@@ -276,20 +276,20 @@ main(int argc,char **argv)
       if(!strcmp(aed_lst[idx].var_nm,"global")) aed_lst[idx].id=NC_GLOBAL; else (void)nco_inq_varid(nc_id,aed_lst[idx].var_nm,&aed_lst[idx].id);
 
       /* Edit attribute */
-      (void)aed_prc(nc_id,aed_lst[idx].id,aed_lst[idx]);
+      (void)nco_aed_prc(nc_id,aed_lst[idx].id,aed_lst[idx]);
 
     }else{ /* var_nm == NULL */
       /* Perform operation for every variable for which it makes sense */
       
       /* Edit attribute for every variable */
-      for(idx_var=0;idx_var<nbr_var_fl;idx_var++) (void)aed_prc(nc_id,idx_var,aed_lst[idx]);
+      for(idx_var=0;idx_var<nbr_var_fl;idx_var++) (void)nco_aed_prc(nc_id,idx_var,aed_lst[idx]);
 
     } /* end else var_nm == NULL */
 
   } /* end loop over idx */
   
   /* Catenate the timestamped command line to the "history" global attribute */
-  if(HISTORY_APPEND) (void)hst_att_cat(nc_id,cmd_ln);
+  if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
   
   /* Take file out of define mode */
   (void)nco_enddef(nc_id);
@@ -298,10 +298,10 @@ main(int argc,char **argv)
   nco_close(nc_id);
   
   /* Remove local copy of file */
-  if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
+  if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
 
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
-  Exit_gracefully();
+  nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
 

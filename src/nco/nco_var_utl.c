@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.13 2002-06-09 01:11:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.14 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -9,7 +9,7 @@
 #include "nco_var_utl.h" /* Variable utilities */
 
 int /* O [id] Output file variable ID */
-cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
+nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
  const int rec_dmn_id, /* I [id] Input file record dimension ID  */
@@ -82,10 +82,10 @@ cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   dmn_out_id=(int *)nco_free(dmn_out_id);
   
   return var_out_id;
-} /* end cpy_var_dfn() */
+} /* end nco_cpy_var_dfn() */
 
 int /* O [id] Output file variable ID */
-cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
+nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
  const int rec_dmn_id, /* I [id] Input file record dimension ID  */
@@ -166,10 +166,10 @@ cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   dmn_out_id=(int *)nco_free(dmn_out_id);
   
   return var_out_id;
-} /* end cpy_var_dfn_lmt() */
+} /* end nco_cpy_var_dfn_lmt() */
 
 void
-cpy_var_val /* [fnc] Copy variable data from input to output file */
+nco_cpy_var_val /* [fnc] Copy variable data from input to output file */
 (int in_id, /* I [id] netCDF input file ID */
  int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
@@ -262,10 +262,10 @@ cpy_var_val /* [fnc] Copy variable data from input to output file */
   /* Free the space that held variable */
   void_ptr=nco_free(void_ptr);
 
-} /* end cpy_var_val() */
+} /* end nco_cpy_var_val() */
 
 void
-cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
+nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
@@ -488,7 +488,7 @@ cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
 	  case NC_CHAR:
 	  case NC_BYTE:
 	  default:
-	    (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in cpy_var_val_lmt()\n",prg_nm_get(),var_type);
+	    (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in nco_cpy_var_val_lmt()\n",prg_nm_get(),var_type);
 	    nco_exit(EXIT_FAILURE);
 	    break;
 	  } /* end switch */
@@ -539,10 +539,10 @@ cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
   /* Free space that held variable */
   void_ptr=nco_free(void_ptr);
 
-} /* end cpy_var_val_lmt() */
+} /* end nco_cpy_var_val_lmt() */
 
 var_sct * /* O [sct] Copy of input variable */
-var_dpl /* [fnc] Duplicate input variable */
+nco_var_dpl /* [fnc] Duplicate input variable */
 (const var_sct * const var) /* I [sct] Variable to duplicate */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
@@ -563,7 +563,7 @@ var_dpl /* [fnc] Duplicate input variable */
   /* Deep copy dyamically allocated arrays currently defined in original */
   if(var->val.vp != NULL){
     if((var_cpy->val.vp=(void *)malloc(var_cpy->sz*nco_typ_lng(var_cpy->type))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes for value buffer for variable %s in var_dpl()\n",prg_nm_get(),var_cpy->sz,nco_typ_lng(var_cpy->type),var_cpy->nm);
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes for value buffer for variable %s in nco_var_dpl()\n",prg_nm_get(),var_cpy->sz,nco_typ_lng(var_cpy->type),var_cpy->nm);
       nco_exit(EXIT_FAILURE); 
     } /* end if */
     (void)memcpy((void *)(var_cpy->val.vp),(void *)(var->val.vp),var_cpy->sz*nco_typ_lng(var_cpy->type));
@@ -614,10 +614,10 @@ var_dpl /* [fnc] Duplicate input variable */
 
   return var_cpy;
 
-} /* end var_dpl() */
+} /* end nco_var_dpl() */
 
 void
-var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
+nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
 (const int nc_id, /* I [id] netCDF file ID */
  var_sct *var) /* I [sct] Variable to get */
 {
@@ -626,7 +626,7 @@ var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
      If variable is packed on disk then inquire about scale_factor and add_offset */
 
   if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->typ_dsk))) == NULL){
-    (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes in var_get()\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
+    (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes in nco_var_get()\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
     nco_exit(EXIT_FAILURE); 
   } /* end if */
 
@@ -641,7 +641,7 @@ var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
     } /* end else */
   } /* end OpenMP critical */
 
-  /* Packing properties of variable obtained from pck_dsk_inq() call in var_fll() */
+  /* Packing properties of variable obtained from pck_dsk_inq() call in nco_var_fll() */
 
   /* Type in memory is now same as type on disk */
   var->type=var->typ_dsk; /* Type of variable in RAM */
@@ -653,18 +653,18 @@ var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
-      if(var->pck_dsk) var=var_upk(var);
+      if(var->pck_dsk) var=nco_var_upk(var);
     } /* endif debug */
   } /* endif arithmetic operator */
 
-} /* end var_get() */
+} /* end nco_var_get() */
 
 void
 nco_xrf_dmn /* [fnc] Switch pointers to dimension structures so var->dim points to var->dim->xrf */
 (var_sct * const var) /* I [sct] Variable to manipulate */
 {
   /* Purpose: Switch pointers to dimension structures so var->dim points to var->dim->xrf.
-     Routine makes dim element of variable structure from var_dpl() refer to counterparts
+     Routine makes dim element of variable structure from nco_var_dpl() refer to counterparts
      of dimensions directly associated with variable it was duplicated from */
   
   int idx;
@@ -686,7 +686,7 @@ nco_xrf_var /* [fnc] Make xrf elements of variable structures point to eachother
 } /* end nco_xrf_var() */
 
 var_sct * /* O [sct] Pointer to free'd variable */
-var_free /* [fnc] Free all memory associated with variable structure */
+nco_var_free /* [fnc] Free all memory associated with variable structure */
 (var_sct *var) /* I [sct] Variable to free */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
@@ -712,7 +712,7 @@ var_free /* [fnc] Free all memory associated with variable structure */
 
   return NULL;
 
-} /* end var_free */
+} /* end nco_var_free() */
 
 int /* O [enm] Return code */
 var_dfl_set /* [fnc] Set defaults for each member of variable structure */
@@ -733,7 +733,7 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->typ_upk=NC_NAT; /* Type of variable when unpacked (expanded) (in memory) */
   var->is_rec_var=False;
   var->is_crd_var=False;
-  /* Size of 1 is assumed in var_fll() */
+  /* Size of 1 is assumed in nco_var_fll() */
   var->sz=1L;
   var->sz_rec=1L;
   var->cid=-1;
@@ -775,7 +775,7 @@ var_copy /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2 */
 } /* end var_copy() */
 
 void
-var_dfn /* [fnc] Define variables and write their attributes to output file */
+nco_var_dfn /* [fnc] Define variables and write their attributes to output file */
 (const int in_id, /* I [enm] netCDF input-file ID */
  const char * const fl_out, /* I [sng] Name of output file */
  const int out_id, /* I [enm] netCDF output-file ID */
@@ -811,7 +811,7 @@ var_dfn /* [fnc] Define variables and write their attributes to output file */
     /* If variable has not been defined, define it */
     if(rcd != NC_NOERR){
       
-      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of output dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_dfn() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
+      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of output dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, nco_var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, nco_var_dfn() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
       if(dmn_ncl != NULL || prg_get() == ncwa){
 	int nbr_var_dim=0;
 	int idx_ncl;
@@ -888,13 +888,13 @@ var_dfn /* [fnc] Define variables and write their attributes to output file */
 #endif /* not FALSE */
 
     /* var refers to output variable structure, var->xrf refers to input variable structure */
-    (void)att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id);
+    (void)nco_att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id);
   } /* end loop over idx */
   
-} /* end var_dfn() */
+} /* end nco_var_dfn() */
 
 void
-var_val_cpy /* [fnc] Copy variables data from input to output file */
+nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
 (const int in_id, /* I [enm] netCDF file ID */
  const int out_id, /* I [enm] netCDF output file ID */
  var_sct ** const var, /* I/O [sct] Variables to copy to output file */
@@ -917,10 +917,10 @@ var_val_cpy /* [fnc] Copy variables data from input to output file */
     var[idx]->val.vp=nco_free(var[idx]->val.vp); var[idx]->xrf->val.vp=var[idx]->val.vp=NULL;
   } /* end loop over idx */
 
-} /* end var_val_cpy() */
+} /* end nco_var_val_cpy() */
 
 nm_id_sct * /* O [sct] List with coordinate excluded */
-var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
+nco_var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
 (const int nc_id, /* I [id] netCDF file ID */
  const int dmn_id, /* I [id] Dimension ID of coordinate to remove from extraction list */
  nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
@@ -963,10 +963,10 @@ var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
   
   return xtr_lst;
   
-} /* end var_lst_crd_xcl() */
+} /* end nco_var_lst_crd_xcl() */
 
 nm_id_sct * /* O [sct] Extraction list */
-var_lst_ass_crd_add /* [fnc] Add coordinates associated extracted variables to extraction list */
+nco_var_lst_ass_crd_add /* [fnc] Add coordinates associated extracted variables to extraction list */
 (const int nc_id, /* I netCDF file ID */
  nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
  int * const nbr_xtr) /* I/O number of variables in current extraction list */
@@ -1022,10 +1022,10 @@ var_lst_ass_crd_add /* [fnc] Add coordinates associated extracted variables to e
   
   return xtr_lst;
   
-} /* end var_lst_ass_crd_add() */
+} /* end nco_var_lst_ass_crd_add() */
 
 var_sct * /* O [sct] Variable structure */
-var_fll /* [fnc] Allocate variable structure and fill with metadata */
+nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
 (const int nc_id, /* I [id] netCDF file ID */
  const int var_id, /* I [id] variable ID */
  const char * const var_nm, /* I [sng] Variable name */
@@ -1116,16 +1116,16 @@ var_fll /* [fnc] Allocate variable structure and fill with metadata */
   (void)pck_dsk_inq(nc_id,var);
 
   return var;
-} /* end var_fll() */
+} /* end nco_var_fll() */
 
 void
-var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
+nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
 (const int nc_id, /* I [id] netCDF input-file ID */
  var_sct * const var) /* I/O [sct] Variable to update */
 {
   /* Threads: Routine contains thread-unsafe calls protected by critical regions */
   /* Purpose: Update variable ID, number of dimensions, and missing_value attribute for given variable
-     var_refresh() is called in file loop in multi-file operators because each new file may have 
+     nco_var_refresh() is called in file loop in multi-file operators because each new file may have 
      different variable ID and missing_value for same variable.
      This is necessary, for example, if a computer model runs for awhile on one machine, e.g., SGI,
      and then the run is restarted on another, e.g., Cray. 
@@ -1154,10 +1154,10 @@ var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
     var->has_mss_val=mss_val_get(var->nc_id,var);
   } /* end OpenMP critical */
 
-} /* end var_refresh() */
+} /* end nco_var_refresh() */
 
 void
-var_srt_zero /* [fnc] Zero srt array of variable structure */
+nco_var_srt_zero /* [fnc] Zero srt array of variable structure */
 (var_sct ** const var, /* I [sct] Variables whose srt arrays will be zeroed */
  const int nbr_var) /* I [nbr] Number of structures in variable structure list */
 {
@@ -1170,4 +1170,4 @@ var_srt_zero /* [fnc] Zero srt array of variable structure */
     for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++)
       var[idx]->srt[idx_dmn]=0L;
 
-} /* end var_srt_zero() */
+} /* end nco_var_srt_zero() */

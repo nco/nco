@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.6 2002-06-10 02:33:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.7 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -85,7 +85,7 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
  const bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */
 
 nm_id_sct * /* O [sct] Sorted output list */
-lst_srt /* [fnc] Sort input list numerically or alphabetically */
+nco_lst_srt /* [fnc] Sort input list numerically or alphabetically */
 (nm_id_sct * const lst, /* I/O [sct] Current list (destroyed) */
  const int nbr_lst, /* I [nbr] number of members in list */
  const bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */

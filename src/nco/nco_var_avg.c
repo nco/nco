@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.8 2002-06-07 06:44:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.9 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -9,7 +9,7 @@
 #include "nco_var_avg.h" /* Average variables */
 
 var_sct * /* O [sct] Partially (non-normalized) reduced variable */
-var_avg /* [fnc] reduce given variable over specified dimensions */
+nco_var_avg /* [fnc] reduce given variable over specified dimensions */
 (var_sct *var, /* I/O [sct] Variable to reduce (e.g., average) (destroyed) */
  dmn_sct * const * const dim, /* I [sct] Dimensions over which to reduce variable */
  const int nbr_dim, /* I [sct] Number of dimensions to reduce variable over */
@@ -20,15 +20,15 @@ var_avg /* [fnc] reduce given variable over specified dimensions */
      "Reduce" means to reduce the rank of variable by performing an arithmetic operation
      The default operation is to average, but nco_op_typ can also be min, max, etc.
      The input variable structure is destroyed and the routine returns the resized, partially reduced variable
-     For some operations, such as min, max, ttl, the variable returned by var_avg() is complete and need not be further processed
+     For some operations, such as min, max, ttl, the variable returned by nco_var_avg() is complete and need not be further processed
      But to complete the averaging operation, the output variable must be normalized by its tally array
-     In other words, var_normalize() should be called subsequently if normalization is desired
-     Normalization is not done internally to var_avg() in order to allow the user more flexibility
+     In other words, nco_var_normalize() should be called subsequently if normalization is desired
+     Normalization is not done internally to nco_var_avg() in order to allow the user more flexibility
   */ 
 
   /* Create output variable as a duplicate of the input variable, except for dimensions which are to be averaged over */
 
-  /* var_avg() overwrites contents, if any, of tally array with number of valid reduction operations */
+  /* nco_var_avg() overwrites contents, if any, of tally array with number of valid reduction operations */
 
   /* There are three variables to keep track of in this routine, their abbreviations are:
      var: Input variable (already hyperslabbed)
@@ -56,7 +56,7 @@ var_avg /* [fnc] reduce given variable over specified dimensions */
   var_sct *fix;
 
   /* Copy basic attributes of input variable into output (averaged) variable */
-  fix=var_dpl(var);
+  fix=nco_var_dpl(var);
   (void)nco_xrf_var(fix,var->xrf);
 
   /* Create lists of averaging and fixed dimensions (in order of their appearance 
@@ -135,7 +135,7 @@ var_avg /* [fnc] reduce given variable over specified dimensions */
   if(nbr_dmn_fix > 0) fix->end=(long *)nco_realloc(fix->end,nbr_dmn_fix*sizeof(long)); else fix->end=NULL;
   
   /* If product of sizes of all averaging dimensions is 1, input and output value arrays should be identical 
-     Since var->val was already copied to fix->val by var_dpl() at the beginning
+     Since var->val was already copied to fix->val by nco_var_dpl() at the beginning
      of this routine, only one task remains, to set fix->tally appropriately. */
   if(avg_sz == 1L){
     long *fix_tally;
@@ -187,7 +187,7 @@ var_avg /* [fnc] reduce given variable over specified dimensions */
     var_cp=(char *)var->val.vp;
     var_sz=var->sz;
     
-    /* Reuse the existing value buffer (it is of size var_sz, created by var_dpl())*/
+    /* Reuse the existing value buffer (it is of size var_sz, created by nco_var_dpl())*/
     avg_val=fix->val;
     avg_cp=(char *)avg_val.vp;
     /* Create a new value buffer for output (averaged) size */
@@ -196,8 +196,8 @@ var_avg /* [fnc] reduce given variable over specified dimensions */
     fix->tally=(long *)nco_realloc(fix->tally,fix_sz*sizeof(long));
 
     /* Re-initialize value and tally arrays */
-    (void)zero_long(fix_sz,fix->tally);
-    (void)var_zero(fix->type,fix_sz,fix->val);
+    (void)nco_zero_long(fix_sz,fix->tally);
+    (void)nco_var_zero(fix->type,fix_sz,fix->val);
   
     /* Compute map for each dimension of variable */
     for(idx=0;idx<nbr_dmn_var;idx++) dmn_var_map[idx]=1L;
@@ -247,10 +247,10 @@ var_avg /* [fnc] reduce given variable over specified dimensions */
        This is where tally array is actually set */
     switch(nco_op_typ){
     case nco_op_max:
-      (void)var_avg_reduce_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
+      (void)nco_var_avg_reduce_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
       break;
     case nco_op_min:
-      (void)var_avg_reduce_min(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
+      (void)nco_var_avg_reduce_min(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,avg_val,fix->val);
       break;
     case nco_op_avg: /* Operations: Previous=none, Current=sum, Next=normalize and root */
     case nco_op_sqravg: /* Operations: Previous=none, Current=sum, Next=normalize and square */
@@ -259,7 +259,7 @@ var_avg /* [fnc] reduce given variable over specified dimensions */
     case nco_op_rmssdn: /* Operations: Previous=square, Current=sum, Next=normalize and root */
     case nco_op_ttl: /* Operations: Previous=none, Current=sum, Next=none */
     default:
-      (void)var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  		
+      (void)nco_var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  		
       break;
     } /* end case */
 
@@ -268,16 +268,16 @@ var_avg /* [fnc] reduce given variable over specified dimensions */
   } /* end if avg_sz != 1 */
   
   /* Free input variable */
-  var=var_free(var);
+  var=nco_var_free(var);
   dmn_avg=(dmn_sct **)nco_free(dmn_avg);
   dmn_fix=(dmn_sct **)nco_free(dmn_fix);
 
   /* Return averaged variable */
   return fix;
-} /* end var_avg() */
+} /* end nco_var_avg() */
 
 void
-var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
+nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */
@@ -292,12 +292,12 @@ var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
      result in corresponding element in second operand. 
      Currently arithmetic operation performed is summation of elements in op1
      Input operands are assumed to have conforming types, but not dimensions or sizes
-     var_avg_reduce() knows nothing about dimensions
+     nco_var_avg_reduce() knows nothing about dimensions
      Routine is one dimensional array operator acting serially on each element of input buffer op1
      Calling rouine knows exactly how rank of output, op2, is reduced from rank of input
      Routine only does summation rather than averaging in order to remain flexible
-     Operations which require normalization, e.g., averaging, must call var_normalize() 
-     or var_divide() to divide sum set in this routine by tally set in this routine. */
+     Operations which require normalization, e.g., averaging, must call nco_var_normalize() 
+     or nco_var_divide() to divide sum set in this routine by tally set in this routine. */
 
   /* Each operation has GNUC and non-GNUC blocks:
      GNUC: Utilize (non-ANSI-compliant) compiler support for local automatic arrays
@@ -542,10 +542,10 @@ var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end var_avg_reduce_ttl() */
+} /* end nco_var_avg_reduce_ttl() */
 
 void
-var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2 */
+nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2 */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */
@@ -558,10 +558,10 @@ var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2
      result in corresponding element in second operand. Operands are assumed to have
      conforming types, but not dimensions or sizes. */
 
-  /* var_avg_reduce_min() is derived from var_avg_reduce_ttl()
+  /* nco_var_avg_reduce_min() is derived from nco_var_avg_reduce_ttl()
      Routines are very similar but tallies are not incremented
-     See var_avg_reduce_ttl() for more algorithmic documentation
-     var_avg_reduce_max() is derived from var_avg_reduce_min() */
+     See nco_var_avg_reduce_ttl() for more algorithmic documentation
+     nco_var_avg_reduce_max() is derived from nco_var_avg_reduce_min() */
 
 #ifndef __GNUC__
   long idx_op1;
@@ -822,10 +822,10 @@ var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_avg_reduce_min() */
+} /* end nco_var_avg_reduce_min() */
 
 void
-var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2 */
+nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2 */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */
@@ -838,10 +838,10 @@ var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2
      result in corresponding element in second operand. Operands are assumed to have
      conforming types, but not dimensions or sizes. */
 
-  /* var_avg_reduce_min() is derived from var_avg_reduce_ttl()
+  /* nco_var_avg_reduce_min() is derived from nco_var_avg_reduce_ttl()
      Routines are very similar but tallies are not incremented
-     See var_avg_reduce_ttl() for more algorithmic documentation
-     var_avg_reduce_max() is derived from var_avg_reduce_min() */
+     See nco_var_avg_reduce_ttl() for more algorithmic documentation
+     nco_var_avg_reduce_max() is derived from nco_var_avg_reduce_min() */
 
 #ifndef __GNUC__
   long idx_op1;
@@ -1102,4 +1102,4 @@ var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end var_avg_reduce_max() */
+} /* end nco_var_avg_reduce_max() */

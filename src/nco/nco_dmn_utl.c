@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.4 2002-06-07 05:53:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.5 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -9,7 +9,7 @@
 #include "nco_dmn_utl.h" /* Dimension utilities */
 
 void
-dmn_dfn /* [fnc] Define dimensions in output file */
+nco_dmn_dfn /* [fnc] Define dimensions in output file */
 (const char * const fl_nm, /* I [sng] Name of output file */
  const int nc_id, /* I [id] netCDF output file ID */
  dmn_sct ** const dmn, /* I [sct] Dimension structures to be defined in output file */
@@ -37,10 +37,10 @@ dmn_dfn /* [fnc] Define dimensions in output file */
     } /* end if */
   } /* end loop over idx */
   
-} /* end dmn_dfn() */
+} /* end nco_dmn_dfn() */
 
 dmn_sct * /* O [sct] copy of input dimension structure */
-dmn_dpl /* [fnc] Duplicate input dimension structure */
+nco_dmn_dpl /* [fnc] Duplicate input dimension structure */
 (const dmn_sct * const dmn) /* I [sct] Dimension structure to duplicate */
 {
   /* Purpose: nco_malloc() and return duplicate of input dmn_sct */
@@ -56,10 +56,10 @@ dmn_dpl /* [fnc] Duplicate input dimension structure */
 
   return dmn_cpy;
 
-} /* end dmn_dpl() */
+} /* end nco_dmn_dpl() */
 
 dmn_sct * /* O [sct] Output dimension structure */
-dmn_fll /* [fnc] Create and return completed dmn_sct */
+nco_dmn_fll /* [fnc] Create and return completed dmn_sct */
 (const int nc_id, /* I [id] netCDF input file ID*/
  const int dmn_id, /* I [id] Dimension ID */
  const char * const dmn_nm) /* I [sng] Dimension name */
@@ -103,10 +103,10 @@ dmn_fll /* [fnc] Create and return completed dmn_sct */
   dmn->srd=1L;
   
   return dmn;
-} /* end dmn_fll() */
+} /* end nco_dmn_fll() */
 
 void
-dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension structures */
+nco_dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension structures */
 (dmn_sct ** const dmn, /* I [sct] Dimension structures to modify */
  const int nbr_dmn, /* I [nbr] Number of dimension structures in structure list */
  const lmt_sct * const lmt, /* I [sct] Dimension limit information */
@@ -130,10 +130,10 @@ dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension structures
       } /* end if */
     } /* end loop over lmt_idx */
   } /* end loop over dmn */
-} /* end dmn_lmt_mrg() */
+} /* end nco_dmn_lmt_mrg() */
 
 nm_id_sct * /* O [sct] List of dimensions associated with input variable list */
-dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input variable list */
+nco_dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input variable list */
 (const int nc_id, /* I [id] netCDF input-file ID */
  const nm_id_sct * const var, /* I [sct] Variable list */
  const int nbr_var, /* I [nbr] Number of variables in list */
@@ -203,10 +203,10 @@ dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input var
   
   return dmn;
 
-} /* end dmn_lst_ass_var() */
+} /* end nco_dmn_lst_ass_var() */
 
 nm_id_sct * /* O [sct] Dimension list */
-dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
+nco_dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
 (const int nc_id, /* I [id] netCDF file ID */
  const char * const * const dmn_lst_in, /* I [sng] User-specified list of dimension names */
  const int nbr_dmn) /* I [nbr] Total number of dimensions in list */
@@ -224,10 +224,10 @@ dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
   } /* end loop over idx */
   
   return dmn_lst;
-} /* end dmn_lst_mk() */
+} /* end nco_dmn_lst_mk() */
 
 void
-dmn_xrf  /* [fnc] Crossreference xrf elements of dimension structures */
+nco_dmn_xrf  /* [fnc] Crossreference xrf elements of dimension structures */
 (dmn_sct * const dmn_1, /* I/O [sct] Dimension structure */
  dmn_sct * const dmn_2) /* I/O [sct] Dimension structure */
 {
@@ -236,5 +236,5 @@ dmn_xrf  /* [fnc] Crossreference xrf elements of dimension structures */
   dmn_1->xrf=dmn_2;
   dmn_2->xrf=dmn_1;
 
-} /* end dmn_xrf() */
+} /* end nco_dmn_xrf() */
 

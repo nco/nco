@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.40 2002-06-10 04:48:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.41 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -249,8 +249,8 @@ extern "C" {
   } dmn_sct; /* end dmn_sct_tag */
   
   /* Each member of var_sct structure should be initialized to default in var_dfl_set()
-     Each pointer member of var_sct structure should be freed in var_free()
-     Each pointer member of var_sct structure should be copied in var_dpl() */
+     Each pointer member of var_sct structure should be freed in nco_var_free()
+     Each pointer member of var_sct structure should be copied in nco_var_dpl() */
   /* Variable structure */
   typedef struct var_sct_tag{ /* var_sct */
     char *nm; /* [sng] Variable name */

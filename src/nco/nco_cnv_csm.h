@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.3 2002-05-12 01:01:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.4 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: CSM conventions */
 
@@ -30,11 +30,11 @@ extern "C" {
 #endif /* __cplusplus */
 
 bool /* O [flg] File obeys CSM conventions */
-ncar_csm_inq /* O [fnc] Check if file obeys CSM conventions */
+nco_ncar_csm_inq /* O [fnc] Check if file obeys CSM conventions */
 (const int nc_id); /* I [id] netCDF file ID */
 
 void
-ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
+nco_ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
 (const int nc_id, /* I [id] netCDF file ID */
  var_sct const * const *var, /* I/O [sct] Variables in output file */
  const int nbr_var); /* I [nbr] Number of variables in list */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.49 2002-06-10 02:33:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.50 2002-06-16 05:12:03 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -59,7 +59,7 @@
    ncks -H -m foo3.nc
    ncks -H -m foo4.nc
 
-   Test var_conform_dim:
+   Test nco_var_conform_dim:
    ncks -O -v scalar_var in.nc foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; ncdiff -O -v four_dmn_rec_var in.nc foo.nc foo2.nc
  */
 
@@ -89,8 +89,8 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool MUST_CONFORM=True; /* Must var_conform_dim() find truly conforming variables? */
-  bool DO_CONFORM; /* Did var_conform_dim() find truly conforming variables? */
+  bool MUST_CONFORM=True; /* Must nco_var_conform_dim() find truly conforming variables? */
+  bool DO_CONFORM; /* Did nco_var_conform_dim() find truly conforming variables? */
   bool NCAR_CSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.49 2002-06-10 02:33:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.49 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.50 2002-06-16 05:12:03 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.50 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -159,7 +159,7 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
   
   /* Start the clock and save the command line */ 
-  cmd_ln=cmd_ln_sng(argc,argv);
+  cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
@@ -223,18 +223,18 @@ main(int argc,char **argv)
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   
   /* Make uniform list of user-specified dimension limits */
-  lmt=lmt_prs(lmt_nbr,lmt_arg);
+  lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   
   
   /* Parse filename */
   idx_fl=0;
-  fl_in=fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",idx_fl,fl_in);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
@@ -242,40 +242,40 @@ main(int argc,char **argv)
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,(int *)NULL);
   
   /* Form initial extraction list from user input */
-  xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
+  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
 
   /* Change included variables to excluded variables */
-  if(EXCLUDE_INPUT_LIST) xtr_lst=var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
+  if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
 
   /* Add all coordinate variables to extraction list */
-  if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
+  if(PROCESS_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
 
   /* Make sure coordinates associated extracted variables are also on extraction list */
-  if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
+  if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
   /* Sort extraction list by variable ID for fastest I/O */
-  if(nbr_xtr > 1) xtr_lst=lst_srt(xtr_lst,nbr_xtr,False);
+  if(nbr_xtr > 1) xtr_lst=nco_lst_srt(xtr_lst,nbr_xtr,False);
     
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
+  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
   
   /* Find dimensions associated with variables to be extracted */
-  dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
+  dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
   /* Fill in dimension structure for all extracted dimensions */
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
+  for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   
   /* Merge hyperslab limit information into dimension structures */
-  if(lmt_nbr > 0) (void)dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
+  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
 
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
-    dmn_out[idx]=dmn_dpl(dim[idx]);
-    (void)dmn_xrf(dim[idx],dmn_out[idx]); 
+    dmn_out[idx]=nco_dmn_dpl(dim[idx]);
+    (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
   } /* end loop over idx */
 
   if(dbg_lvl > 3){
@@ -283,35 +283,35 @@ main(int argc,char **argv)
   } /* end if */
   
   /* Is this an NCAR CSM-format history tape? */
-  NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
+  NCAR_CSM_FORMAT=nco_ncar_csm_inq(in_id);
 
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
-    var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
-    var_out[idx]=var_dpl(var[idx]);
+    var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
+    var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
-  fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
 
   /* Copy global attributes */
-  (void)att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
   
   /* Catenate time-stamped command line to "history" global attribute */
-  if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
+  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
 
   /* Define dimensions in output file */
-  (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
+  (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
   /* Define variables in output file, and copy their attributes */
-  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,NULL,0);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,NULL,0);
 
   /* Turn off default filling behavior to enhance efficiency */
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -320,10 +320,10 @@ main(int argc,char **argv)
   (void)nco_enddef(out_id);
   
   /* Zero start vectors for all output variables */
-  (void)var_srt_zero(var_out,nbr_xtr);
+  (void)nco_var_srt_zero(var_out,nbr_xtr);
 
   /* Copy variable data for non-processed variables */
-  (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
+  (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 
   /* The code for ncdiff() has been similar to ncea() (and ncra()) wherever possible
      The major differences occur where performance would otherwise suffer
@@ -348,16 +348,16 @@ main(int argc,char **argv)
   idx_fl=1;
 
   /* Parse filename */
-  fl_in=fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",idx_fl,fl_in);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id_2);
   fl_in_2=fl_in;
   
   /* Perform various error-checks on input file */
-  if(False) (void)fl_cmp_err_chk();
+  if(False) (void)nco_fl_cmp_err_chk();
 
   /* Loop over each differenced variable */
   for(idx=0;idx<nbr_var_prc;idx++){
@@ -367,19 +367,19 @@ main(int argc,char **argv)
     /* Initialize mss_val flag */
     has_mss_val=False;
 
-    (void)var_refresh(in_id_1,var_prc[idx]);
+    (void)nco_var_refresh(in_id_1,var_prc[idx]);
     has_mss_val=has_mss_val || var_prc[idx]->has_mss_val; 
-    (void)var_get(in_id_1,var_prc[idx]);
+    (void)nco_var_get(in_id_1,var_prc[idx]);
     
     /* Save output variable ID from being overwritten in refresh call */
     var_prc[idx]->id=var_prc_out[idx]->id;
-    (void)var_refresh(in_id_2,var_prc_out[idx]);
+    (void)nco_var_refresh(in_id_2,var_prc_out[idx]);
 
     /* Assume var1 and var2 conform if they are same rank */
     if(var_prc_out[idx]->nbr_dim == var_prc[idx]->nbr_dim){
       nc_type var_type;
       int var_id;
-      /* Routine var_refresh() does not set type for var_prc_out, do so manually */
+      /* Routine nco_var_refresh() does not set type for var_prc_out, do so manually */
       (void)nco_inq_varid(in_id_2,var_prc_out[idx]->nm,&var_id);
       (void)nco_inq_vartype(in_id_2,var_id,&var_type);
       var_prc_out[idx]->type=var_type;
@@ -398,7 +398,7 @@ main(int argc,char **argv)
       /* Temporarily set srt vector to account for hyperslabs while reading */
       lp=var_prc_out[idx]->srt;
       var_prc_out[idx]->srt=var_prc[idx]->srt;
-      (void)var_get(in_id_2,var_prc_out[idx]);
+      (void)nco_var_get(in_id_2,var_prc_out[idx]);
       /* Reset srt vector to zeros for eventual output */
       var_prc_out[idx]->srt=lp;
     }else{
@@ -406,14 +406,14 @@ main(int argc,char **argv)
       int var_id; /* [id] Variable ID */
       
       /* var1 and var2 have differing numbers of dimensions so make var2 conform to var1 */
-      var_prc_out[idx]=var_free(var_prc_out[idx]);
+      var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
       (void)nco_inq_varid(in_id_2,var_prc[idx]->nm,&var_id);
-      var_prc_out[idx]=var_fll(in_id_2,var_id,var_prc[idx]->nm,dim,nbr_dmn_xtr);
-      (void)var_get(in_id_2,var_prc_out[idx]);
+      var_prc_out[idx]=nco_var_fll(in_id_2,var_id,var_prc[idx]->nm,dim,nbr_dmn_xtr);
+      (void)nco_var_get(in_id_2,var_prc_out[idx]);
       
       /* Pass dummy pointer so we do not lose track of original */
-      var_tmp=var_conform_dim(var_prc[idx],var_prc_out[idx],var_tmp,MUST_CONFORM,&DO_CONFORM);
-      var_prc_out[idx]=var_free(var_prc_out[idx]);
+      var_tmp=nco_var_conform_dim(var_prc[idx],var_prc_out[idx],var_tmp,MUST_CONFORM,&DO_CONFORM);
+      var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
       var_prc_out[idx]=var_tmp;
     } /* end else */
     
@@ -423,13 +423,13 @@ main(int argc,char **argv)
     if(var_prc_out[idx]->type != var_prc[idx]->type){
       (void)fprintf(stderr,"%s: WARNING Input variables do not conform in type:\nFile 1 = %s variable %s has type %s\nFile 2 = %s variable %s has type %s\nFile 3 = %s variable %s will have type %s\n",prg_nm,fl_in_1,var_prc[idx]->nm,nco_typ_sng(var_prc[idx]->type),fl_in_2,var_prc_out[idx]->nm,nco_typ_sng(var_prc_out[idx]->type),fl_out,var_prc[idx]->nm,nco_typ_sng(var_prc[idx]->type));
     }  /* endif different type */
-    var_prc_out[idx]=var_conform_type(var_prc[idx]->type,var_prc_out[idx]);
+    var_prc_out[idx]=nco_var_conform_type(var_prc[idx]->type,var_prc_out[idx]);
 
     /* The mss_val in fl_1, if any, overrides mss_val in fl_2 */
     if(has_mss_val) mss_val=var_prc[idx]->mss_val; else mss_val=var_prc_out[idx]->mss_val;
     has_mss_val=has_mss_val || var_prc_out[idx]->has_mss_val; 
     
-    (void)var_subtract(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val);
+    (void)nco_var_subtract(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val);
     
     var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
     
@@ -449,13 +449,13 @@ main(int argc,char **argv)
   nco_close(in_id_2);
 
   /* Close output file and move it from temporary to permanent location */
-  (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
+  (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
   /* Remove local copy of file */
-  if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in_1);
-  if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in_2);
+  if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_1);
+  if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in_2);
   
   if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
-  Exit_gracefully();
+  nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.9 2002-06-05 22:39:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.10 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -9,7 +9,7 @@
 #include "nco_fl_utl.h" /* File manipulation */
 
 void
-fl_cp /* [fnc] Copy first file to second */
+nco_fl_cp /* [fnc] Copy first file to second */
 (const char * const fl_src, /* I [sng] Name of source file to copy */
  const char * const fl_dst) /* I [sng] Name of destination file */
 {
@@ -26,12 +26,12 @@ fl_cp /* [fnc] Copy first file to second */
   (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
   rcd=system(cp_cmd);
   if(rcd == -1){
-    (void)fprintf(stdout,"%s: ERROR fl_cp() is unable to execute cp command \"%s\"\n",prg_nm_get(),cp_cmd);
+    (void)fprintf(stdout,"%s: ERROR nco_fl_cp() is unable to execute cp command \"%s\"\n",prg_nm_get(),cp_cmd);
     nco_exit(EXIT_FAILURE); 
   } /* end if */
   cp_cmd=(char *)nco_free(cp_cmd);
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
-} /* end fl_cp() */
+} /* end nco_fl_cp() */
 
 void
 fl_mv /* [fnc] Move first file to second */
@@ -59,7 +59,7 @@ fl_mv /* [fnc] Move first file to second */
 } /* end fl_mv() */
 
 void 
-fl_rm /* [fnc] Remove file */
+nco_fl_rm /* [fnc] Remove file */
 (char *fl_nm) /* I [sng] File to be removed */
 {
   /* Purpose: Remove specified file from local system */
@@ -76,10 +76,10 @@ fl_rm /* [fnc] Remove file */
   if(rcd == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",prg_nm_get(),fl_nm);
 
   rm_cmd=(char *)nco_free(rm_cmd);
-} /* end fl_rm() */
+} /* end nco_fl_rm() */
 
 char ** /* O [sng] List of user-specified filenames */
-fl_lst_mk /* [fnc] Create file list from command line positional arguments */
+nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments */
 (const char * const * const argv, /* I [sng] Argument list */
  const int argc, /* I [nbr] Argument count */
  int arg_crr, /* I [idx] Index of current argument */
@@ -166,10 +166,10 @@ fl_lst_mk /* [fnc] Create file list from command line positional arguments */
 
   return fl_lst_in;
 
-} /* end fl_lst_mk() */
+} /* end nco_fl_lst_mk() */
 
 char * /* O [sng] Filename of locally available file */
-fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
+nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 (char *fl_nm, /* I/O [sng] Current filename, if any (destroyed) */
  const char * const fl_pth_lcl, /* I [sng] Local storage area for files retrieved from remote locations */
  int * const FILE_RETRIEVED_FROM_REMOTE_LOCATION) /* O [flg] File was retrieved from remote location */
@@ -549,10 +549,10 @@ fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   /* Return local filename */
   return(fl_nm_lcl);
 
-} /* end fl_mk_lcl() */
+} /* end nco_fl_mk_lcl() */
 
 char * /* O [sng] Name of file to retrieve */
-fl_nm_prs /* [fnc] Construct file name from input arguments */
+nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
 (char *fl_nm, /* I/O [sng] Current filename, if any */
  const int fl_nbr, /* I [nbr] Ordinal index of file in input file list */
  int * const nbr_fl, /* I/O [nbr] number of files to be processed */
@@ -668,10 +668,10 @@ fl_nm_prs /* [fnc] Construct file name from input arguments */
 
   /* Return new filename */
   return(fl_nm);
-} /* end fl_nm_prs() */
+} /* end nco_fl_nm_prs() */
 
 char * /* O [sng] Name of temporary file actually opened */
-fl_out_open /* [fnc] Open output file subject to availability and user input */
+nco_fl_out_open /* [fnc] Open output file subject to availability and user input */
 (const char * const fl_out, /* I [sng] Name of file to open */
  const bool FORCE_APPEND, /* I [flg] Append to existing file, if any */
  const bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
@@ -719,7 +719,7 @@ fl_out_open /* [fnc] Open output file subject to availability and user input */
   fl_out_tmp_lng=strlen(fl_out)+1L+strlen(tmp_sng_1)+strlen(pid_sng)+1L+strlen(prg_nm_get())+1L+strlen(tmp_sng_2)+1L;
   fl_out_tmp=(char *)nco_malloc(fl_out_tmp_lng*sizeof(char));
   (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,prg_nm_get(),tmp_sng_2);
-  if(dbg_lvl_get() > 5) (void)fprintf(stdout,"%s: fl_out_open() reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
+  if(dbg_lvl_get() > 5) (void)fprintf(stdout,"%s: nco_fl_out_open() reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
   rcd=stat(fl_out_tmp,&stat_sct);
 
   /* Free temporary memory */
@@ -747,7 +747,7 @@ fl_out_open /* [fnc] Open output file subject to availability and user input */
     fl_out_tmp_sys=strcat(fl_out_tmp_sys,"XXXXXX");
     fl_out_hnd=mkstemp(fl_out_tmp_sys);
     fl_out_hnd=fl_out_hnd; /* Removes compiler warning on SGI */
-    if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: fl_out_open() reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",prg_nm_get(),(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
+    if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: nco_fl_out_open() reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",prg_nm_get(),(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
   } /* endif dbg */
 
   /* If temporary file already exists, prompt user to remove temporary files and exit */
@@ -766,7 +766,7 @@ fl_out_open /* [fnc] Open output file subject to availability and user input */
     if(prg_get() == ncrename){
       /* ncrename is different because a single filename is allowed without question */
       /* Incur expense of copying current file to temporary file */
-      (void)fl_cp(fl_out,fl_out_tmp);
+      (void)nco_fl_cp(fl_out,fl_out_tmp);
       rcd=nco_open(fl_out_tmp,NC_WRITE,out_id); 
       (void)nco_redef(*out_id);
       return fl_out_tmp;
@@ -782,7 +782,7 @@ fl_out_open /* [fnc] Open output file subject to availability and user input */
     
     if(FORCE_APPEND){
       /* Incur expense of copying current file to temporary file */
-      (void)fl_cp(fl_out,fl_out_tmp);
+      (void)nco_fl_cp(fl_out,fl_out_tmp);
       rcd=nco_open(fl_out_tmp,NC_WRITE,out_id); 
       (void)nco_redef(*out_id);
       return fl_out_tmp;
@@ -813,7 +813,7 @@ fl_out_open /* [fnc] Open output file subject to availability and user input */
       break;
     case 'a':
       /* Incur expense of copying current file to temporary file */
-      (void)fl_cp(fl_out,fl_out_tmp);
+      (void)nco_fl_cp(fl_out,fl_out_tmp);
       rcd=nco_open(fl_out_tmp,NC_WRITE,out_id); 
       (void)nco_redef(*out_id);
       break;
@@ -826,10 +826,10 @@ fl_out_open /* [fnc] Open output file subject to availability and user input */
   
   return fl_out_tmp;
   
-} /* end fl_out_open() */
+} /* end nco_fl_out_open() */
 
 void
-fl_out_cls /* [fnc] Close temporary output file, move it to permanent output file */
+nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output file */
 (const char * const fl_out, /* I [sng] Name of permanent output file */
  const char * const fl_out_tmp, /* I [sng] Name of temporary output file to close and move to permanent output file */
  const int nc_id) /* I [id] file ID of fl_out_tmp */
@@ -839,17 +839,17 @@ fl_out_cls /* [fnc] Close temporary output file, move it to permanent output fil
 
   rcd=nco_close(nc_id);
   if(rcd != NC_NOERR){
-    (void)fprintf(stdout,"%s: ERROR fl_out_cls() is unable to ncclose() file %s\n",prg_nm_get(),fl_out_tmp);
+    (void)fprintf(stdout,"%s: ERROR nco_fl_out_cls() is unable to ncclose() file %s\n",prg_nm_get(),fl_out_tmp);
     nco_exit(EXIT_FAILURE); 
   } /* end if */
   
   (void)fl_mv(fl_out_tmp,fl_out);
 
-} /* end fl_out_cls() */
+} /* end nco_fl_out_cls() */
 
 void
-fl_cmp_err_chk(void) /* [fnc] Perform error checking on file */
+nco_fl_cmp_err_chk(void) /* [fnc] Perform error checking on file */
 {
   /* Purpose: Perform error checking on file */
-} /* end fl_cmp_err_chk() */
+} /* end nco_fl_cmp_err_chk() */
 

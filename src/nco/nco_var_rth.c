@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.8 2002-06-07 15:10:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.9 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -9,7 +9,7 @@
 #include "nco_var_rth.h" /* Variable arithmetic */
 
 void
-var_abs(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1)
+nco_var_abs(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1)
      /* 
 	const nc_type type: I netCDF type of operands
 	const long sz: I size (in elements) of operands
@@ -87,10 +87,10 @@ var_abs(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,p
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_abs() */
+} /* end nco_var_abs() */
 
 void
-var_add(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
+nco_var_add(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
 /* 
   const nc_type type: I netCDF type of operands
   const long sz: I size (in elements) of operands
@@ -192,10 +192,10 @@ var_add(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,l
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end var_add() */
+} /* end nco_var_add() */
 
 void
-var_add_no_tally(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+nco_var_add_no_tally(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* const nc_type type: I [type] netCDF type of operands
   const long sz: I [nbr] Size (in elements) of operands
   const int has_mss_val: I [flg] Flag for missing values
@@ -270,10 +270,10 @@ var_add_no_tally(const nc_type type,const long sz,const int has_mss_val,ptr_unn 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_add_no_tally() */
+} /* end nco_var_add_no_tally() */
 
 void
-var_subtract(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+nco_var_subtract(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
   const nc_type type: I [type] netCDF type of operands
   const long sz: I [nbr] Size (in elements) of operands
@@ -350,10 +350,10 @@ var_subtract(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_subtract() */
+} /* end nco_var_subtract() */
 
 void
-var_multiply(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+nco_var_multiply(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
      /* 
 	const nc_type type: I netCDF type of operands
 	const long sz: I size (in elements) of operands
@@ -431,10 +431,10 @@ var_multiply(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_multiply() */
+} /* end nco_var_multiply() */
 
 void
-var_divide(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+nco_var_divide(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
   const nc_type type: I netCDF type of operands
   const long sz: I size (in elements) of operands
@@ -512,10 +512,10 @@ var_divide(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_va
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_divide() */
+} /* end nco_var_divide() */
 
 void
-var_min_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+nco_var_min_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
   const nc_type type: I netCDF type of operands
   const long sz: I size (in elements) of operands
@@ -604,10 +604,10 @@ var_min_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
     break;
   default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
-} /* end var_min_bnr() */
+} /* end nco_var_min_bnr() */
 
 void
-var_max_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+nco_var_max_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
    const nc_type type: I netCDF type of operands
    const long sz: I size (in elements) of operands
@@ -698,10 +698,10 @@ var_max_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
     break;
   default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
-} /* end var_max_bnr() */
+} /* end nco_var_max_bnr() */
 
 void
-var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
+nco_var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
 /* 
   const nc_type type: I netCDF type of operands
   const long sz: I size (in elements) of operands
@@ -802,10 +802,10 @@ var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end var_sqrt() */
+} /* end nco_var_sqrt() */
 
 void
-var_normalize(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
+nco_var_normalize(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
 /* 
   const nc_type type: I netCDF type of operand
   const long sz: I size (in elements) of operand
@@ -872,10 +872,10 @@ var_normalize(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end var_normalize() */
+} /* end nco_var_normalize() */
 
 void
-var_normalize_sdn(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
+nco_var_normalize_sdn(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
 /* 
   const nc_type type: I netCDF type of operand
   const long sz: I size (in elements) of operand
@@ -890,7 +890,7 @@ var_normalize_sdn(const nc_type type,const long sz,const int has_mss_val,ptr_unn
 
   /* Normalization is currently defined as op1:=op1/(--tally) */  
 
-  /* var_normalize_sdn() is based on var_normalize() and algorithms should be kept consistent with eachother */
+  /* nco_var_normalize_sdn() is based on nco_var_normalize() and algorithms should be kept consistent with eachother */
 
   long idx;
 
@@ -943,10 +943,10 @@ var_normalize_sdn(const nc_type type,const long sz,const int has_mss_val,ptr_unn
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end of var_normalize_sdn */
+} /* end of nco_var_normalize_sdn */
 
 void
-var_mask(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,const double op1,const int op_typ_rlt,ptr_unn op2,ptr_unn op3)
+nco_var_mask(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,const double op1,const int op_typ_rlt,ptr_unn op2,ptr_unn op3)
 /* 
   const nc_type type: I netCDF type of operand op3
   const long sz: I size (in elements) of operand op3
@@ -1062,10 +1062,10 @@ var_mask(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,
   /* It is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end var_mask() */
+} /* end nco_var_mask() */
 
 void
-var_zero(const nc_type type,const long sz,ptr_unn op1)
+nco_var_zero(const nc_type type,const long sz,ptr_unn op1)
 /* 
   const nc_type type: I netCDF type of operand
   const long sz: I size (in elements) of operand
@@ -1104,5 +1104,5 @@ var_zero(const nc_type type,const long sz,ptr_unn op1)
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end var_zero() */
+} /* end nco_var_zero() */
 

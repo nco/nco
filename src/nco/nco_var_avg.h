@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.h,v 1.3 2002-05-07 08:34:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.h,v 1.4 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -32,14 +32,14 @@ extern "C" {
 #endif /* __cplusplus */
 
 var_sct * /* O [sct] Partially (non-normalized) reduced variable */
-var_avg /* [fnc] reduce given variable over specified dimensions */
+nco_var_avg /* [fnc] reduce given variable over specified dimensions */
 (var_sct *var, /* I/O [sct] Variable to reduce (e.g., average) (destroyed) */
  dmn_sct * const * const dim, /* I [sct] Dimensions over which to reduce variable */
  const int nbr_dim, /* I [sct] Number of dimensions to reduce variable over */
  const int nco_op_typ); /* I [enm] Operation type, default is average */
 
 void
-var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
+nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */
@@ -50,7 +50,7 @@ var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
  ptr_unn op2); /* O [sct] Sum of each block of op1 */
 
 void
-var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2 */
+nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2 */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */
@@ -60,7 +60,7 @@ var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2
  ptr_unn op2); /* O [sct] Minimum of each block of op1 */
 
 void
-var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2 */
+nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2 */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */

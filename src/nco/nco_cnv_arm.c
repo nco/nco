@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.2 2002-05-12 06:12:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.3 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: ARM conventions */
 
@@ -63,7 +63,7 @@ arm_time_mk /* [fnc] Return time corresponding to current time offset */
 } /* end arm_time_mk() */
 
 void
-arm_time_install /* [fnc] Add time variable to concatenated ARM files */
+nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 (const int nc_id, /* I [id] netCDF file ID */
  const nco_long base_time_srt) /* I [s] base_time of first input file */
 {
@@ -89,7 +89,7 @@ arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   /* Find time_offset variable */
   rcd=nco_inq_varid_flg(nc_id,"time_offset",&time_offset_id);
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"time_offset\", exiting arm_time_install()...\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"time_offset\", exiting nco_arm_time_install()...\n",prg_nm_get());
     return;
   } /* endif */
 
@@ -124,7 +124,7 @@ arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   (void)nco_put_att(nc_id,time_id,"long_name",NC_CHAR,strlen(att_long_name)+1,(void *)att_long_name);
 
   /* Catenate time-stamped reminder onto "history" global attribute */
-  (void)hst_att_cat(nc_id,"ncrcat added variable time=base_time+time_offset");
+  (void)nco_hst_att_cat(nc_id,"ncrcat added variable time=base_time+time_offset");
 
   /* Take file out of define mode */
   (void)nco_enddef(nc_id);
@@ -135,7 +135,7 @@ arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   /* Free time_offset buffer */
   time_offset=(double *)nco_free(time_offset);
 
-} /* end arm_time_install */
+} /* end nco_arm_time_install */
 
 nco_long /* O [s] Value of base_time variable */
 arm_base_time_get /* [fnc] Get base_time variable from ARM file */

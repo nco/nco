@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.5 2002-06-07 05:53:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.6 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -9,15 +9,15 @@
 #include "nco_lmt.h" /* Hyperslab limits */
 
 lmt_sct /* [sct] Limit structure for dimension */
-lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
+nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
 (const int nc_id, /* I [idx] netCDF file ID */
  const int dmn_id, /* I [idx] ID of dimension for this limit structure */
- const lmt_sct * const lmt, /* I [sct] Array of limit structures from lmt_evl() */
+ const lmt_sct * const lmt, /* I [sct] Array of limit structures from nco_lmt_evl() */
  int lmt_nbr, /* I [nbr] Number of limit structures */
  const bool FORTRAN_STYLE) /* I [flg] Hyperslab indices obey Fortran convention */
 {
   /* Purpose: Create stand-alone limit structure just for given dimension 
-     lmt_sct_mk() is called by ncra() to generate limit structure for record dimension */
+     nco_lmt_sct_mk() is called by ncra() to generate limit structure for record dimension */
   
   int idx;
   int rcd; /* [rcd] Return code */
@@ -64,7 +64,7 @@ lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
     rcd=nco_inq_dim_flg(nc_id,dmn_id,dmn_nm,&cnt);
 
     if(rcd == NC_EBADDIM){
-      (void)fprintf(stdout,"%s: ERROR attempting to find non-existent dimension with id = %d in lmt_sct_mk()\n",prg_nm_get(),dmn_id);
+      (void)fprintf(stdout,"%s: ERROR attempting to find non-existent dimension with id = %d in nco_lmt_sct_mk()\n",prg_nm_get(),dmn_id);
       nco_exit(EXIT_FAILURE);
     } /* end if */
 		
@@ -72,14 +72,14 @@ lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
     lmt_dim.srd_sng=NULL;
     /* Generate min and max strings to look as if user had specified them
        Adjust accordingly if FORTRAN_STYLE was requested for other dimensions
-       These sizes will later be decremented in lmt_evl() where all information
+       These sizes will later be decremented in nco_lmt_evl() where all information
        is converted internally to C based indexing representation.
-       Ultimately this problem arises because I want lmt_evl() to think the
+       Ultimately this problem arises because I want nco_lmt_evl() to think the
        user always did specify this dimension's hyperslab.
        Otherwise, problems arise when FORTRAN_STYLE is specified by the user 
        along with explicit hypersalbs for some dimensions excluding the record
        dimension.
-       Then, when lmt_sct_mk() creates the record dimension structure, it must
+       Then, when nco_lmt_sct_mk() creates the record dimension structure, it must
        be created consistently with the FORTRAN_STYLE flag for the other dimensions.
        In order to do that, I must fill in the max_sng, min_sng, and srd_sng
        arguments with strings as if they had been read from the keyboard.
@@ -89,7 +89,7 @@ lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
     /* Decrement cnt to C index value if necessary */
     if(!FORTRAN_STYLE) cnt--; 
     if(cnt < 0L){
-      (void)fprintf(stdout,"%s: cnt < 0 in lmt_sct_mk()\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: cnt < 0 in nco_lmt_sct_mk()\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* end if */
     /* cnt < 10 covers negative numbers and SIGFPE from log10(cnt==0) 
@@ -107,12 +107,12 @@ lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
   
   return lmt_dim;
   
-} /* end lmt_sct_mk() */
+} /* end nco_lmt_sct_mk() */
 
 void
-lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
+nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
 (int nc_id, /* I [idx] netCDF file ID */
- lmt_sct *lmt_ptr, /* I/O [sct] Structure from lmt_prs() or from lmt_sct_mk() to hold dimension limit information */
+ lmt_sct *lmt_ptr, /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
  long cnt_crr, /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
  bool FORTRAN_STYLE) /* I [flg] Hyperslab indices obey Fortran convention */
 {
@@ -433,18 +433,18 @@ lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
     
     /* Specifying stride alone, but not min or max, is legal, e.g., -d time,,,2
        Thus is_usr_spc_lmt may be True, even though one or both of min_sng, max_sng is NULL
-       Furthermore, both min_sng and max_sng are artifically created by lmt_sct_mk()
+       Furthermore, both min_sng and max_sng are artifically created by nco_lmt_sct_mk()
        for record dimensions when the user does not explicitly specify limits.
        In this case, min_sng_and max_sng are non-NULL though no limits were specified
        In fact, min_sng and max_sng are set to the minimum and maximum string
        values of the first file processed.
        However, we can tell if these strings were artificially generated because 
-       lmt_sct_mk() sets the is_usr_spc_lmt flag to False in such cases.
-       Subsequent files may have different numbers of records, but lmt_sct_mk()
+       nco_lmt_sct_mk() sets the is_usr_spc_lmt flag to False in such cases.
+       Subsequent files may have different numbers of records, but nco_lmt_sct_mk()
        is only called once.
        Thus we must update min_idx and max_idx here for each file
        This causes min_idx and max_idx to be out of sync with min_sng and max_sng, 
-       which are only set in lmt_sct_mk() for the first file.
+       which are only set in nco_lmt_sct_mk() for the first file.
        In hindsight, artificially generating min_sng and max_sng may be a bad idea
     */
     /* Following logic is messy, but hard to simplify */
@@ -491,7 +491,7 @@ lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
       /* Allow for possibility initial files are superfluous in multi-file hyperslab */
       if(rec_dmn_and_mlt_fl_opr && cnt_crr == 0L && lmt.min_idx >= dmn_sz+lmt.rec_skp_nsh_spf) flg_no_data=True;
       
-      /* Initialize rec_skp_vld_prv to 0L on first call to lmt_evl() 
+      /* Initialize rec_skp_vld_prv to 0L on first call to nco_lmt_evl() 
 	 This is necessary due to intrinsic hysterisis of rec_skp_vld_prv
 	 rec_skp_vld_prv is used only by multi-file operators
 	 rec_skp_vld_prv counts records skipped at end of previous valid file
@@ -724,7 +724,7 @@ lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
   *lmt_ptr=lmt;
 
   if(dbg_lvl_get() == 5){
-    (void)fprintf(stderr,"Dimension hyperslabber lmt_evl() diagnostics:\n");
+    (void)fprintf(stderr,"Dimension hyperslabber nco_lmt_evl() diagnostics:\n");
     (void)fprintf(stderr,"Dimension name = %s\n",lmt.nm);
     (void)fprintf(stderr,"Limit type is %s\n",(min_lmt_typ == lmt_crd_val) ? "coordinate value" : "zero-based dimension index");
     (void)fprintf(stderr,"Limit %s user-specified\n",(lmt.is_usr_spc_lmt) ? "is" : "is not");
@@ -754,10 +754,10 @@ lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
     if(prg_id != ncks) (void)fprintf(stderr,"HINT: If operation fails, try hyperslabbing wrapped dimension using ncks instead of %s\n",prg_nm_get());
   } /* end dbg */
 
-} /* end lmt_evl() */
+} /* end nco_lmt_evl() */
 
 lmt_sct * /* O [sct] Structure with user-specified strings for min and max limits */
-lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */
+nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */
 (const int lmt_nbr, /* I [nbr] number of dimensions with limits */
  char * const * const lmt_arg) /* I [sng] list of user-specified dimension limits */
 {
@@ -826,5 +826,5 @@ lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */
 
   return lmt;
 
-} /* end lmt_prs() */
+} /* end nco_lmt_prs() */
 

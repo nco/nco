@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.3 2002-05-07 08:34:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.4 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -34,22 +34,22 @@ extern "C" {
 #endif /* __cplusplus */
 
 void
-lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
+nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
 (int nc_id, /* I [idx] netCDF file ID */
- lmt_sct *lmt_ptr, /* I/O [sct] Structure from lmt_prs() or from lmt_sct_mk() to hold dimension limit information */
+ lmt_sct *lmt_ptr, /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
  long cnt_crr, /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
  bool FORTRAN_STYLE); /* I [flg] Hyperslab indices obey Fortran convention */
 
 lmt_sct * /* O [sct] Structure with user-specified strings for min and max limits */
-lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */
+nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */
 (const int lmt_nbr, /* I [nbr] number of dimensions with limits */
  char * const * const lmt_arg); /* I [sng] list of user-specified dimension limits */
 
 lmt_sct /* [sct] Limit structure for dimension */
-lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
+nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
 (const int nc_id, /* I [idx] netCDF file ID */
  const int dmn_id, /* I [idx] ID of dimension for this limit structure */
- const lmt_sct * const lmt, /* I [sct] Array of limit structures from lmt_evl() */
+ const lmt_sct * const lmt, /* I [sct] Array of limit structures from nco_lmt_evl() */
  int lmt_nbr, /* I [nbr] Number of limit structures */
  const bool FORTRAN_STYLE); /* I [flg] Hyperslab indices obey Fortran convention */
 

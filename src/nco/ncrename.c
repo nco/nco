@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.36 2002-06-07 04:25:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.37 2002-06-16 05:12:04 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -89,8 +89,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.36 2002-06-07 04:25:19 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.36 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.37 2002-06-16 05:12:04 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.37 $";
   
   extern char *optarg;
   
@@ -113,7 +113,7 @@ main(int argc,char **argv)
   time_t clock;
 
   /* Start the clock and save the command line */ 
-  cmd_ln=cmd_ln_sng(argc,argv);
+  cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
@@ -169,7 +169,7 @@ main(int argc,char **argv)
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   if(fl_out != NULL) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=fl_lst_in[0];
 
   if(nbr_var_rnm == 0 && nbr_att_rnm == 0 && nbr_dmn_rnm == 0){
@@ -186,9 +186,9 @@ main(int argc,char **argv)
   /* We now have the final list of variables, dimensions, and attributes to rename. */
   
   /* Parse filename */
-  fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
-  fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
+  fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
 
   if(OUTPUT_TO_NEW_NETCDF_FILE){
 
@@ -227,7 +227,7 @@ main(int argc,char **argv)
     /* Copy input file to output file and then search through
        the output, changing names as you go. This avoids the possible XDR translation
        performance penalty of copying each variable with netCDF. */
-    (void)fl_cp(fl_in,fl_out);
+    (void)nco_fl_cp(fl_in,fl_out);
 
   } /* end if */
   
@@ -364,7 +364,7 @@ main(int argc,char **argv)
   }/* end if */
   
   /* Catenate the timestamped command line to the "history" global attribute */
-  if(HISTORY_APPEND) (void)hst_att_cat(nc_id,cmd_ln);
+  if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
   
   /* Take file out of define mode */
   (void)nco_enddef(nc_id);
@@ -373,9 +373,9 @@ main(int argc,char **argv)
   nco_close(nc_id);
   
   /* Remove local copy of file */
-  if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
+  if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
 
-  Exit_gracefully();
+  nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
 

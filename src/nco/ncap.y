@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.66 2002-06-13 11:07:05 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.67 2002-06-16 05:12:03 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -128,11 +128,11 @@ stmt_lst:
 stmt_lst stmt ';' {
   /* Purpose: Actions to be performed at end-of-statement go here */
   /* Clean up from and exit LHS_cst mode */
-  (void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);
+  (void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);
 } /* end stmt ';' */
-| stmt_lst error ';' {(void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);}
-| stmt ';' {(void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);}
-| error ';' {(void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);}
+| stmt_lst error ';' {(void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);}
+| stmt ';' {(void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);}
+| error ';' {(void)nco_var_free_wrp(&((prs_sct *)prs_arg)->var_LHS);}
 /* Catch most errors then read up to next semi-colon */
 ; /* end stmt_lst */
 
@@ -223,7 +223,7 @@ PRINT '(' var_xpr ')' ';' {
   } /* endif */
   $1.var_nm=(char *)nco_free($1.var_nm);
   $1.att_nm=(char *)nco_free($1.att_nm);
-  (void)var_free($3); 
+  (void)nco_var_free($3); 
 } /* end out_att_xpr '=' var_xpr */
 | out_var_xpr '=' var_xpr 
 {
@@ -241,7 +241,7 @@ PRINT '(' var_xpr ')' ';' {
     (void)yyerror(err_sng);
   } /* end else */
   $1=(char *)nco_free($1);
-  (void)var_free($3);
+  (void)nco_var_free($3);
 } /* end out_var_xpr '=' var_xpr */
 | out_var_xpr '=' scv_xpr
 {
@@ -276,7 +276,7 @@ PRINT '(' var_xpr ')' ';' {
     } /* endif LHS_cst */
     
     (void)ncap_var_write(var,(prs_sct *)prs_arg);
-    (void)var_free(var);
+    (void)nco_var_free(var);
     if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   } /* endif */
@@ -301,7 +301,7 @@ PRINT '(' var_xpr ')' ';' {
     var->type=NC_CHAR;
     (void)cast_nctype_void((nc_type)NC_CHAR,&var->val);
     (void)ncap_var_write(var,(prs_sct *)prs_arg);
-    (void)var_free(var);
+    (void)nco_var_free(var);
     if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   } /* endelse */
@@ -444,21 +444,21 @@ var_xpr: /* var_xpr results from RHS action which involves a var_xpr, i.e.,
 	    OP var, var OP var, var OP att, att OP var */
 var_xpr '+' var_xpr { 
   $$=ncap_var_var_add($1,$3); 
-  var_free($1);
-  var_free($3);
+  nco_var_free($1);
+  nco_var_free($3);
 }
 | var_xpr '+' scv_xpr {
   $$=ncap_var_scv_add($1,$3);
-  var_free($1);
+  nco_var_free($1);
 }            
 | scv_xpr '+' var_xpr {
   $$=ncap_var_scv_add($3,$1);
-  var_free($3);
+  nco_var_free($3);
 }            
 | var_xpr '-' var_xpr { 
   $$=ncap_var_var_sub($1,$3);
-  var_free($1); 
-  var_free($3);
+  nco_var_free($1); 
+  nco_var_free($3);
 }
 | scv_xpr '-' var_xpr { 
   var_sct *var1;
@@ -468,78 +468,78 @@ var_xpr '+' var_xpr {
   (void)scv_conform_type($3->type,&minus);
   var1=ncap_var_scv_sub($3,$1);
   $$=ncap_var_scv_multiply(var1,minus);
-  var_free(var1);
-  var_free($3);
+  nco_var_free(var1);
+  nco_var_free($3);
 }
 | var_xpr '-' scv_xpr {
   $$=ncap_var_scv_sub($1,$3);
-  var_free($1);
+  nco_var_free($1);
 }
 | var_xpr '*' var_xpr {
   $$=ncap_var_var_multiply($1,$3); 
-  var_free($1); var_free($3); 
+  nco_var_free($1); nco_var_free($3); 
 }
 | var_xpr '*' scv_xpr {
   $$=ncap_var_scv_multiply($1,$3);
-  var_free($1);
+  nco_var_free($1);
 }
 | var_xpr '%' scv_xpr {
   $$=ncap_var_scv_modulus($1,$3);
-  var_free($1);
+  nco_var_free($1);
 }
 | scv_xpr '*' var_xpr {
   $$=ncap_var_scv_multiply($3,$1);
-  var_free($3);
+  nco_var_free($3);
 }
 | var_xpr '/' var_xpr {
   $$=ncap_var_var_divide($3,$1); /* NB: Ordering is important */
-  var_free($1); var_free($3); 
+  nco_var_free($1); nco_var_free($3); 
 }
 | var_xpr '/' scv_xpr {
   $$=ncap_var_scv_divide($1,$3);
-  var_free($1);
+  nco_var_free($1);
 }
 | var_xpr '^' scv_xpr {
   $$=ncap_var_scv_power($1,$3);
-  var_free($1);
+  nco_var_free($1);
 }
 | POWER '(' var_xpr ',' scv_xpr ')' {
   $$=ncap_var_scv_power($3,$5);
-  var_free($3);
+  nco_var_free($3);
 }
 | '-' var_xpr %prec UMINUS { 
   scv_sct minus;
   minus.val.b=-1;
   minus.type=NC_BYTE;
   $$=ncap_var_scv_multiply($2,minus);
-  var_free($2);      
+  nco_var_free($2);      
 }
 | '+' var_xpr %prec UMINUS {
   $$=$2;
 }
 | ABS '(' var_xpr ')' {
   $$=ncap_var_abs($3);
-  var_free($3);
+  nco_var_free($3);
 } /* end ABS */
 | RDC '(' var_xpr ')' {
   $$=ncap_var_abs($3);
   /* fxm Finish avg,min,max,ttl */
-  /* $$=var_avg($3,dim,dmn_nbr,nco_op_typ); */
-  /* if(prs_arg->nco_op_typ == nco_op_avg) (void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val); */
+  /* $$=nco_var_avg($3,dim,dmn_nbr,nco_op_typ); */
+  /* if(prs_arg->nco_op_typ == nco_op_avg) (void)nco_var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val); */
   (void)fprintf(stderr,"%s: WARNING RDC tokens not implemented yet\n",prg_nm_get());
-  /* $3 is freed in var_avg() */
+  /* $3 is freed in nco_var_avg() */
 } /* end ABS */
 | PACK '(' var_xpr ')' {
   /* Packing variable does not create duplicate so DO NOT free $3 */
-  $$=var_pck($3,NC_SHORT,False);
+  $$=nco_var_pck($3,NC_SHORT,False);
 } /* end PACK */
 | UNPACK '(' var_xpr ')' {
   /* Unpacking variable does not create duplicate so DO NOT free $3 */
-  $$=var_upk($3);
+  $$=nco_var_upk($3);
 } /* end UNPACK */
 | FUNCTION '(' var_xpr ')' {
   $$=ncap_var_function($3,$1);
-  var_free($3);
+  nco_var_free($3);
 }  
 | '(' var_xpr ')' {
   $$=$2;
@@ -623,13 +623,13 @@ yyerror /* [fnc] Print error/warning/info messages generated by parser */
 } /* end yyerror() */
 
 void 
-nco_var_free /* [fnc] Safely free variable */
+nco_var_free_wrp /* [fnc] Safely free variable */
 (var_sct **var) /* I/O [sct] Variable */
 {
   /* Purpose: Safely free variable
-     Routine is wrapper for var_free() that simplifies code in calling routine */
-  if(*var != NULL) *var=var_free(*var);
-} /* end nco_var_free() */
+     Routine is wrapper for nco_var_free() that simplifies code in calling routine */
+  if(*var != NULL) *var=nco_var_free(*var);
+} /* end nco_var_free_wrp() */
 
 nodeType * /* O [unn] Syntax tree node */
 opr_ctl /* [fnc] Operation controller function Nie02 opr() */

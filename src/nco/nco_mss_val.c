@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.2 2002-05-05 03:48:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.3 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -9,7 +9,7 @@
 #include "nco_mss_val.h" /* Missing value utilities */
 
 ptr_unn /* O [sct] Default missing value for type type */
-mss_val_mk /* [fnc] Return default missing value for type type */
+nco_mss_val_mk /* [fnc] Return default missing value for type type */
 (const nc_type type) /* I [enm] netCDF type of operand */
 {
   /* Threads: Routine is thread safe and makes no unsafe routines */
@@ -37,7 +37,7 @@ mss_val_mk /* [fnc] Return default missing value for type type */
   
   return mss_val;
 
-} /* end mss_val_mk() */
+} /* end nco_mss_val_mk() */
   
 void
 mss_val_cp /* [fnc] Copy missing value from var1 to var2 */

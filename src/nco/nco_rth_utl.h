@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.3 2002-06-07 04:25:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.h,v 1.4 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -46,7 +46,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
  const var_sct * const var_prc); /* I [sct] Variable in input file */
 
 int /* O [enm] Relational operation */
-op_prs_rlt /* [fnc] Convert Fortran abbreviation for relational operator into NCO operation key */
+nco_op_prs_rlt /* [fnc] Convert Fortran abbreviation for relational operator into NCO operation key */
 (const char * const op_sng); /* I [sng] Fortran representation of relational operator */
 
 void
@@ -57,7 +57,7 @@ vec_set /* [fnc] Fill every value of first operand with value of second operand 
  const double op2); /* I [frc] Value to fill vector with */
 
 void
-zero_long /* [fnc] Zero all values of long array */
+nco_zero_long /* [fnc] Zero all values of long array */
 (const long sz, /* I [nbr] Size (in elements) of operand */
  long * const op1); /* I/O [nbr] Array to be zeroed */
 

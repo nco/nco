@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.10 2002-06-07 05:53:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.11 2002-06-16 05:12:04 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -37,14 +37,14 @@ extern "C" {
 #endif /* __cplusplus */
 
   int  /* O [id] Outputfile variable ID */
-  cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
+  nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
    const int rec_dmn_id, /* I [id] Input file record dimension ID  */
    const char * const var_nm); /* I [sng] Input variable name */
 
   int /* O [id] Output file variable ID */
-  cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
+  nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
    const int rec_dmn_id, /* I [id] Input file record dimension ID  */
@@ -53,7 +53,7 @@ extern "C" {
    const int lmt_nbr); /* I [nbr] Number of hyperslab limits */
 
   void
-  cpy_var_val /* [fnc] Copy variable data from input to output file */
+  nco_cpy_var_val /* [fnc] Copy variable data from input to output file */
   (int in_id, /* I [id] netCDF input file ID */
    int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
@@ -61,7 +61,7 @@ extern "C" {
    char *var_nm); /* I [sng] Variable name */
 
   void
-  cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
+  nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
@@ -82,7 +82,7 @@ extern "C" {
   (var_sct * const var); /* I [sct] Variable strucutre to initialize to defaults */
 
   void
-  var_dfn /* [fnc] Define variables and write their attributes to output file */
+  nco_var_dfn /* [fnc] Define variables and write their attributes to output file */
   (const int in_id, /* I [enm] netCDF input-file ID */
    const char * const fl_out, /* I [sng] Name of output file */
    const int out_id, /* I [enm] netCDF output-file ID */
@@ -92,11 +92,11 @@ extern "C" {
    const int nbr_dmn_ncl); /* I [nbr] Number of dimensions in list */
   
   var_sct * /* O [sct] Copy of input variable */
-  var_dpl /* [fnc] Duplicate input variable */
+  nco_var_dpl /* [fnc] Duplicate input variable */
   (const var_sct * const var); /* I [sct] Variable to duplicate */
   
   var_sct * /* O [sct] Variable structure */
-  var_fll /* [fnc] Allocate variable structure and fill with metadata */
+  nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   (const int nc_id, /* I [id] netCDF file ID */
    const int var_id, /* I [id] variable ID */
    const char * const var_nm, /* I [sng] Variable name */
@@ -104,39 +104,39 @@ extern "C" {
    const int nbr_dim); /* I [nbr] Number of dimensions in list */
   
   var_sct * /* O [sct] Pointer to free'd variable */
-  var_free /* [fnc] Free all memory associated with variable structure */
+  nco_var_free /* [fnc] Free all memory associated with variable structure */
   (var_sct *var); /* I [sct] Variable to free */
   
   void
-  var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
+  nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
   (const int nc_id, /* I [id] netCDF file ID */
    var_sct *var); /* I [sct] Variable to get */
   
   nm_id_sct * /* O [sct] List with coordinate excluded */
-  var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
+  nco_var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
   (const int nc_id, /* I [id] netCDF file ID */
    const int dmn_id, /* I [id] Dimension ID of coordinate to remove from extraction list */
    nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
    int * const nbr_xtr); /* I/O [nbr] Number of variables in extraction list */
   
   nm_id_sct * /* O [sct] Extraction list */
-  var_lst_ass_crd_add /* [fnc] Add coordinates associated extracted variables to extraction list */
+  nco_var_lst_ass_crd_add /* [fnc] Add coordinates associated extracted variables to extraction list */
   (const int nc_id, /* I netCDF file ID */
    nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
    int * const nbr_xtr); /* I/O number of variables in current extraction list */
   
   void
-  var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
+  nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
   (const int nc_id, /* I [id] netCDF input-file ID */
    var_sct * const var); /* I/O [sct] Variable to update */
   
   void
-  var_srt_zero /* [fnc] Zero srt array of variable structure */
+  nco_var_srt_zero /* [fnc] Zero srt array of variable structure */
   (var_sct ** const var, /* I [sct] Variables whose srt arrays will be zeroed */
    const int nbr_var); /* I [nbr] Number of structures in variable structure list */
   
   void
-  var_val_cpy /* [fnc] Copy variables data from input to output file */
+  nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
   (const int in_id, /* I [enm] netCDF file ID */
    const int out_id, /* I [enm] netCDF output file ID */
    var_sct ** const var, /* I/O [sct] Variables to copy to output file */
