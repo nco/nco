@@ -1,3 +1,7 @@
+2000-04-18  Charlie Zender  <zender@uci.edu>
+
+	* Added ncra ncea to RPM
+
 2000-03-22  Charlie Zender  <zender@uci.edu>
 
 	* Added code to prevent malloc'ing 0 bytes because, although it
