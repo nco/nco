@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.119 2002-09-14 18:23:26 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.120 2002-09-14 18:25:00 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -173,7 +173,8 @@ tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>,
 fails on my development system (due to antiquated RedHat
 <tt>texinfo</tt> software, of all things!)
 Retrieve these versions <a name="#Download">using CVS</a>.
-<li><b>NCO 2.6.3</b>, Not packaged: Mac OS X builds work seamlessly
+<li><b>NCO 2.6.3</b>, Not packaged: Mac OS X builds work seamlessly,
+documentation fixed
 <li><b>NCO 2.6.2</b>, Not packaged: Major improvements in autotools
 support, <tt>ncap</tt> supports user-defined dimensions
 <li><b>NCO 2.6.1</b>, Not packaged: Minor fix to unpacking support

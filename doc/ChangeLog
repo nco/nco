@@ -3,7 +3,7 @@
 	* cvs tag -c nco-2_6_3
 	Changes since nco-2_6_2: 
 	Numerous build improvments and removal of PVM_ARCH ifdefs
-	MACOSX builds with bld/Makefile
+	MACOSX builds with bld/Makefile, documentation fixes
 
 	* MACOSX builds appear to work
 
