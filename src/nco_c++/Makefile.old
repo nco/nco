@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.1 2002-08-20 07:40:23 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.2 2002-08-22 05:05:08 zender Exp $
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -217,7 +217,7 @@ CPPFLAGS := ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC} -I/usr/local/include
 FC := xlf90
 FFLAGS := -NS2000 -qfixed=132
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf
 LDFLAGS += -lxlf90 # Required for linking Fortran objects
 LEX := lex
 LINT := lint
@@ -271,7 +271,7 @@ FFLAGS := -c ${OMP_FLG} -automatic -fpe3
 FIXEDFLAGS := -extend_source
 FREEFLAGS := -DHIDE_SHR_MSG -free
 LD := ld
-LDFLAGS += ${OMP_FLG} -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += ${OMP_FLG} -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf
 LEX := flex
 LINT := lint
 YACC := bison
@@ -305,7 +305,7 @@ CPP := cpp
 CPPFLAGS += ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf
 LDFLAGS += -L/lib -lf
 LEX := lex
 LINT := lint
@@ -355,7 +355,7 @@ else # LINUXALPHA
  FC := g77
 endif
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf
 LEX := flex
 LINT := lint
 YACC := bison
@@ -483,7 +483,7 @@ CC := gcc
 CPPFLAGS += ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90 -cpp
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf
 LEX := flex
 LINT := lint
 YACC := bison
@@ -564,7 +564,7 @@ FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
 LD := ld
-LDFLAGS := -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf -lsunmath -lsocket -lnsl
+LDFLAGS := -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf -lsunmath -lsocket -lnsl
 LDFLAGS += -lF77 -lM77 -lresolv
 LEX := lex
 LINT := lint
@@ -597,7 +597,7 @@ CPP := cpp-2
 CPPFLAGS += ${CPP_TKN} -Di386 ${CPP_PTH} -I${NETCDF_INC}
 FC := g77-2
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf
 LDFLAGS += 
 LEX := flex
 LINT := lint
@@ -623,7 +623,7 @@ endif
 # endif LINUX
 
 # Define any remaining variables
-libnco_c++ := ${MY_LIB_DIR}/libnco_c++
+libnco_c++ := ${MY_LIB_DIR}/libnco_cxx
 
 # Default targets
 all: ${MDL_BIN_TRG} inc lib dat

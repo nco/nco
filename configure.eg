@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.5 2002-08-20 18:13:06 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.6 2002-08-22 05:05:07 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -15,7 +15,7 @@ OSF1
 -----------------------------------------------------------------------
 Footnotes to summary table:
 01. Try with CXX that supports valarray
-02. Unable to find libnetcdf.a
+02. Fails to find getopt.h, gamma()
 -----------------------------------------------------------------------
 
 Recommended/current ./configure invocation, alphabetized by pvmgetarch:
@@ -27,8 +27,9 @@ General comments on AIX: Unable to find netcdf installation
 zender@bb0001en:/fs/cgd/home0/zender/nco$ pvmgetarch;uname -a
 AIX
 AIX bb0001en 3 4 000117924C00
-zender@bb0001en:~/nco$ CC='xlc_r' CXX='xlC' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man
-checking target system type..powerpc-ibm-aix4.3.3.0
+powerpc-ibm-aix4.3.3.0
+
+CC='xlc' CXX='xlC' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.foo 2>&1
 
 Old build examples:
 For ABI=32:
@@ -187,7 +188,8 @@ General comments on LINUX:
 zender@dust:~/nco$ pvmgetarch;uname -a
 LINUX
 Linux dust.ps.uci.edu 2.4.19-pre8 #1 SMP Wed May 8 10:16:29 PDT 2002 i686 unknown
-zender@dust:~/nco$ ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man
+./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.foo 2>&1
+
 Old build example:
 gcc  -DLINUX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='dust.ps.uci.edu' -DUSER='zender' -Di386 -I/usr/local/include -U_OPENMP -Wall -O -c ../src/nco/nco_att_utl.c -o /home/zender/obj/LINUX/nco_att_utl.o
 New build example:
@@ -216,8 +218,9 @@ General comments on LINUXALPHA: Tested platform needs newer g++
 zender@ess1:/usr/home/zender/nco$ pvmgetarch;uname -a
 LINUXALPHA
 Linux ess1.ps.uci.edu 2.2.15 #1 Thu May 18 17:22:29 EDT 2000 alpha unknown
-zender@dust:~/nco$ ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man
-checking build system type... alphaev56-unknown-linux-gnu
+alphaev56-unknown-linux-gnu
+
+./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.foo 2>&1
 
 Old build example:
 New build example:
@@ -232,8 +235,9 @@ General comments on SGIMP64: Found netcdf.h, unable to link to libnetcdf.a
 zender@krein:~/nco$ pvmgetarch;uname -a
 SGIMP64
 IRIX64 krein 6.5 10100655 IP27 mips
-zender@krein:~/nco$  CC='cc' CXX='CC -LANG:std' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man
-checking build system type... mips-sgi-irix6.5
+mips-sgi-irix6.5
+
+CC='cc' CXX='CC -LANG:std' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.foo 2>&1
 
 Old build example: (Default is ABI64 on this platform)
 cc  -DSGIMP64 -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='krein.math.uci.edu' -DUSER='zender' -I/usr/local/include -U_OPENMP -64 -mips4 -O2 -c ../src/nco/nco_att_utl.c -o /home/ess/zender/zender/obj/SGIMP64/nco_att_utl.o
