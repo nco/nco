@@ -13,3 +13,4 @@ tst_SOURCES = tst.cc
 tst_LDADD = -lnco_c++
 
 TESTS = tst
+

@@ -45,8 +45,8 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-BUILD_NCAP_FALSE = @BUILD_NCAP_FALSE@
-BUILD_NCAP_TRUE = @BUILD_NCAP_TRUE@
+BUILD_YACC_SOURCE_FALSE = @BUILD_YACC_SOURCE_FALSE@
+BUILD_YACC_SOURCE_TRUE = @BUILD_YACC_SOURCE_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -157,6 +157,7 @@ target_os = @target_os@
 target_vendor = @target_vendor@
 info_TEXINFOS = nco.texi
 EXTRA_DIST = nco.pdf nco.ps nco.html VERSION
+CLEANFILES = nco.info* nco.html
 
 # our own additions for NCO; they may be supported by automake later on
 html_docs = nco.html
@@ -322,6 +323,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f $(CONFIG_CLEAN_FILES)

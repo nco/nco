@@ -1,7 +1,13 @@
-if BUILD_NCAP 
-  NCAP=ncap
+if BUILD_YACC_SOURCE
+  NCAP=ncap 
 else
-  NCAP=
+  NCAP= 
+endif 
+
+if BUILD_YACC_SOURCE
+  NCWA=ncwa
+else
+  NCWA=
 endif 
 
 if TEST_DODS
@@ -16,8 +22,7 @@ else
   NCO_GETOPT=
 endif
 
-bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa
-
+bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ${NCWA} 
 AM_YFLAGS = -d
 
 ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l 
@@ -47,7 +52,8 @@ ncra_LDADD = libnco.la
 ncrename_SOURCES = ncrename.c
 ncrename_LDADD = libnco.la
 
-ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.y
+# ncwa also requires ncap_yacc.y, but that should already be built with ncap
+ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.o
 ncwa_LDADD = libnco.la
 
 HEADER_SRC = libnco.h nco_cnf_dmn.h nco_fl_utl.h nco_omp.h nco_sng_utl.h \

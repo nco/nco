@@ -45,8 +45,8 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-BUILD_NCAP_FALSE = @BUILD_NCAP_FALSE@
-BUILD_NCAP_TRUE = @BUILD_NCAP_TRUE@
+BUILD_YACC_SOURCE_FALSE = @BUILD_YACC_SOURCE_FALSE@
+BUILD_YACC_SOURCE_TRUE = @BUILD_YACC_SOURCE_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -155,8 +155,11 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-@BUILD_NCAP_TRUE@NCAP = ncap
-@BUILD_NCAP_FALSE@NCAP = 
+@BUILD_YACC_SOURCE_FALSE@NCAP = 
+@BUILD_YACC_SOURCE_TRUE@NCAP = ncap 
+@BUILD_YACC_SOURCE_FALSE@NCWA = 
+
+@BUILD_YACC_SOURCE_TRUE@NCWA = ncwa
 @TEST_DODS_FALSE@DODS_TESTS = 
 
 @TEST_DODS_TRUE@DODS_TESTS = test2.sh
@@ -164,8 +167,7 @@ target_vendor = @target_vendor@
 
 @NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT = nco_getopt.c
 
-bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa
-
+bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ${NCWA} 
 AM_YFLAGS = -d
 
 ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l 
@@ -195,7 +197,8 @@ ncra_LDADD = libnco.la
 ncrename_SOURCES = ncrename.c
 ncrename_LDADD = libnco.la
 
-ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.y
+# ncwa also requires ncap_yacc.y, but that should already be built with ncap
+ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.o
 ncwa_LDADD = libnco.la
 
 HEADER_SRC = libnco.h nco_cnf_dmn.h nco_fl_utl.h nco_omp.h nco_sng_utl.h \
@@ -263,14 +266,15 @@ am_libnco_la_OBJECTS = nco_att_utl.lo nco_bnr.lo nco_cln_utl.lo \
 	nco_var_lst.lo nco_var_rth.lo nco_var_scv.lo nco_var_utl.lo \
 	$(am__objects_2)
 libnco_la_OBJECTS = $(am_libnco_la_OBJECTS)
-@BUILD_NCAP_TRUE@bin_PROGRAMS = ncap$(EXEEXT) ncatted$(EXEEXT) \
-@BUILD_NCAP_TRUE@	ncbo$(EXEEXT) ncecat$(EXEEXT) ncflint$(EXEEXT) \
-@BUILD_NCAP_TRUE@	ncks$(EXEEXT) ncpdq$(EXEEXT) ncra$(EXEEXT) \
-@BUILD_NCAP_TRUE@	ncrename$(EXEEXT) ncwa$(EXEEXT)
-@BUILD_NCAP_FALSE@bin_PROGRAMS = ncatted$(EXEEXT) ncbo$(EXEEXT) \
-@BUILD_NCAP_FALSE@	ncecat$(EXEEXT) ncflint$(EXEEXT) \
-@BUILD_NCAP_FALSE@	ncks$(EXEEXT) ncpdq$(EXEEXT) ncra$(EXEEXT) \
-@BUILD_NCAP_FALSE@	ncrename$(EXEEXT) ncwa$(EXEEXT)
+@BUILD_YACC_SOURCE_TRUE@bin_PROGRAMS = ncap$(EXEEXT) ncatted$(EXEEXT) \
+@BUILD_YACC_SOURCE_TRUE@	ncbo$(EXEEXT) ncecat$(EXEEXT) \
+@BUILD_YACC_SOURCE_TRUE@	ncflint$(EXEEXT) ncks$(EXEEXT) \
+@BUILD_YACC_SOURCE_TRUE@	ncpdq$(EXEEXT) ncra$(EXEEXT) \
+@BUILD_YACC_SOURCE_TRUE@	ncrename$(EXEEXT) ncwa$(EXEEXT)
+@BUILD_YACC_SOURCE_FALSE@bin_PROGRAMS = ncatted$(EXEEXT) ncbo$(EXEEXT) \
+@BUILD_YACC_SOURCE_FALSE@	ncecat$(EXEEXT) ncflint$(EXEEXT) \
+@BUILD_YACC_SOURCE_FALSE@	ncks$(EXEEXT) ncpdq$(EXEEXT) \
+@BUILD_YACC_SOURCE_FALSE@	ncra$(EXEEXT) ncrename$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_ncap_OBJECTS = ncap_utl.$(OBJEXT) ncap.$(OBJEXT) ncap_yacc.$(OBJEXT) \
@@ -310,8 +314,7 @@ am_ncrename_OBJECTS = ncrename.$(OBJEXT)
 ncrename_OBJECTS = $(am_ncrename_OBJECTS)
 ncrename_DEPENDENCIES = libnco.la
 ncrename_LDFLAGS =
-am_ncwa_OBJECTS = ncwa.$(OBJEXT) ncap_utl.$(OBJEXT) ncap_lex.$(OBJEXT) \
-	ncap_yacc.$(OBJEXT)
+am_ncwa_OBJECTS = ncwa.$(OBJEXT) ncap_utl.$(OBJEXT) ncap_lex.$(OBJEXT)
 ncwa_OBJECTS = $(am_ncwa_OBJECTS)
 ncwa_DEPENDENCIES = libnco.la
 ncwa_LDFLAGS =
@@ -468,11 +471,6 @@ ncra$(EXEEXT): $(ncra_OBJECTS) $(ncra_DEPENDENCIES)
 ncrename$(EXEEXT): $(ncrename_OBJECTS) $(ncrename_DEPENDENCIES) 
 	@rm -f ncrename$(EXEEXT)
 	$(LINK) $(ncrename_LDFLAGS) $(ncrename_OBJECTS) $(ncrename_LDADD) $(LIBS)
-ncap_yacc.h: ncap_yacc.c
-	@if test ! -f $@; then \
-	  rm -f ncap_yacc.c; \
-	  $(MAKE) ncap_yacc.c; \
-	else :; fi
 ncwa$(EXEEXT): $(ncwa_OBJECTS) $(ncwa_DEPENDENCIES) 
 	@rm -f ncwa$(EXEEXT)
 	$(LINK) $(ncwa_LDFLAGS) $(ncwa_OBJECTS) $(ncwa_LDADD) $(LIBS)
@@ -566,7 +564,24 @@ distclean-compile:
 	$(SHELL) $(YLWRAP) `test -f '$<' || echo '$(srcdir)/'`$< $(LEX_OUTPUT_ROOT).c $@ -- $(LEXCOMPILE)
 
 .y.c:
-	$(SHELL) $(YLWRAP) `test -f '$<' || echo '$(srcdir)/'`$< y.tab.c $@ y.tab.h $*.h y.output $*.output -- $(YACCCOMPILE)
+	$(YACCCOMPILE) `test -f '$<' || echo '$(srcdir)/'`$<
+	if test -f y.tab.h; then \
+	  to=`echo "$*_H" | sed \
+                -e 'y/abcdefghijklmnopqrstuvwxyz/ABCDEFGHIJKLMNOPQRSTUVWXYZ/' \
+                -e 's/[^ABCDEFGHIJKLMNOPQRSTUVWXYZ]/_/g'`; \
+	  sed "/^#/ s/Y_TAB_H/$$to/g" y.tab.h >$*.ht; \
+	  rm -f y.tab.h; \
+	  if cmp -s $*.ht $*.h; then \
+	    rm -f $*.ht ;\
+	  else \
+	    mv $*.ht $*.h; \
+	  fi; \
+	fi
+	if test -f y.output; then \
+	  mv y.output $*.output; \
+	fi
+	sed '/^#/ s|y\.tab\.c|$@|' y.tab.c >$@t && mv $@t $@
+	rm -f y.tab.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
