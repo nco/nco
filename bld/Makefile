@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.15 1998-12-18 21:43:27 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.16 1999-01-13 01:13:52 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -73,6 +73,36 @@ $(MY_OBJ_DIR)/%.o : %.c
 
 # The first LDFLAGS is for typical C programs with netCDF, math, and networking
 # The second LDFLAGS enables C/Fortran linking
+
+ifeq ($(PVM_ARCH),ALPHA)
+NETCDF_INC := /usr/local/include
+NETCDF_LIB := /usr/local/lib
+C++ := g++
+CC := gcc
+# NB: Hack to make ALPHA look like LINUX (g77 + gcc + g++)
+CPPFLAGS := -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
+FC := g77
+FFLAGS := -ffixed-line-length-132
+LD := ld
+LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += 
+LEX := flex
+LINT := lint
+YACC := bison
+ifeq ($(OPTS),O)
+ CFLAGS := -O
+ FFLAGS += -O
+endif
+ifeq ($(OPTS),D)
+ CFLAGS := -g
+ FFLAGS += -g
+endif
+$(MY_OBJ_DIR)/%.o : %.F
+	$(FC) -c $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
+$(MY_OBJ_DIR)/%.o : %.f
+	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
+endif
+
 ifeq ($(PVM_ARCH),CRAY)
 NETCDF_INC := /usr/local/include
 NETCDF_LIB := /usr/local/lib
