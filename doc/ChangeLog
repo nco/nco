@@ -1,7 +1,9 @@
-2003-08-21  Charlie Zender  <zender@uci.edu>
+2003-08-27  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_8_1
 	Changes since nco-2_8_0: variable wildcarding
+
+2003-08-21  Charlie Zender  <zender@uci.edu>
 
 	* Quote backslash character with backslash in nco_var_lst.c
 

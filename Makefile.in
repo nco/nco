@@ -87,8 +87,6 @@ MAINTAINER_MODE_FALSE = @MAINTAINER_MODE_FALSE@
 MAINTAINER_MODE_TRUE = @MAINTAINER_MODE_TRUE@
 MAKEINFO = @MAKEINFO@
 NCO_CXX = @NCO_CXX@
-NCO_HAVE_REGEX_FUNCTIONALITY_FALSE = @NCO_HAVE_REGEX_FUNCTIONALITY_FALSE@
-NCO_HAVE_REGEX_FUNCTIONALITY_TRUE = @NCO_HAVE_REGEX_FUNCTIONALITY_TRUE@
 NCO_NEED_GETOPT_LONG_FALSE = @NCO_NEED_GETOPT_LONG_FALSE@
 NCO_NEED_GETOPT_LONG_TRUE = @NCO_NEED_GETOPT_LONG_TRUE@
 NETCDF_INC = @NETCDF_INC@
@@ -172,8 +170,8 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 DIST_COMMON = Makefile.am Makefile.in acinclude.m4 aclocal.m4 \
 	autobld/config.guess autobld/config.sub autobld/depcomp \
 	autobld/install-sh autobld/ltmain.sh autobld/missing \
-	autobld/mkinstalldirs autobld/texinfo.tex config.guess \
-	config.h.in config.sub configure configure.in
+	autobld/mkinstalldirs autobld/texinfo.tex config.h.in configure \
+	configure.in
 DIST_SUBDIRS = $(SUBDIRS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
