@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.31 1999-12-06 18:55:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.32 1999-12-14 22:39:31 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -26,8 +26,8 @@
 #include <resolv.h>             /* Internet structures for _res */
 #endif
 
-/* I'm only keeping these netCDF include files around because i'm worried that the
-   function prototypes in nc.h are needed here. Eventually the prototypes for these
+/* I'm only keeping these netCDF include files around because I'm worried that 
+   function prototypes in nc.h are needed here. Eventually prototypes for these
    routines should be broken into separate files, like csz.h... */ 
 #include <netcdf.h>             /* netCDF def'ns */
 #include "nc.h"                 /* netCDF operator universal def'ns */
@@ -319,12 +319,12 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
   /* Free any old filename space */ 
   if(fl_nm != NULL) (void)free(fl_nm);
 
-  /* Construct the filename from NINTAP-style arguments and the input name  */ 
+  /* Construct filename from NINTAP-style arguments and input name */
   if(fl_lst_abb != NULL){
     if(FIRST_INVOCATION){
       int fl_nm_sfx_len=0;
       
-      /* Parse the abbreviation list analogously to CCM Processor ICP "NINTAP" */ 
+      /* Parse abbreviation list analogously to CCM Processor ICP "NINTAP" */
       if(nbr_fl != NULL) *nbr_fl=atoi(fl_lst_abb[0]);
       
       if(nbr_abb_arg > 1){
@@ -351,17 +351,17 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
 	fl_nm_nbr_min=1;
       } /* end if */
       
-      /* Is there a .nc suffix? */ 
-      if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-3,".nc",3) == 0){
+      /* Is there a .nc, .cdf, .hdf, or .hd5 suffix? */ 
+      if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-3,".nc",3) == 0) 
 	fl_nm_sfx_len=3;
-      } /* end if */
-      
-      /* Is there a .cdf suffix? */ 
-      if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".cdf",4) == 0){
+      else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".cdf",4) == 0)
 	fl_nm_sfx_len=4;
-      } /* end if */
+      else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".hdf",4) == 0)
+	fl_nm_sfx_len=4;
+      else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".hd5",4) == 0)
+	fl_nm_sfx_len=4;
       
-      /* Initialize static information useful for future invocations  */ 
+      /* Initialize static information useful for future invocations */
       fl_nm_1st_dgt=fl_lst_in[0]+strlen(fl_lst_in[0])-fl_nm_nbr_dgt-fl_nm_sfx_len;
       fl_nm_nbr_sng=(char *)malloc((fl_nm_nbr_dgt+1)*sizeof(char));
       fl_nm_nbr_sng=strncpy(fl_nm_nbr_sng,fl_nm_1st_dgt,fl_nm_nbr_dgt);
@@ -369,14 +369,14 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
       fl_nm_nbr_crr=atoi(fl_nm_nbr_sng);
       (void)sprintf(fl_nm_nbr_sng_fmt,"%%0%dd",fl_nm_nbr_dgt);
 
-      /* The first filename is always specified on the command line anyway... */ 
+      /* First filename is always specified on command line anyway... */ 
       fl_nm=(char *)strdup(fl_lst_in[0]);
 
       /* Set flag that this routine has already been invoked at least once */ 
       FIRST_INVOCATION=False;
 
     }else{ /* end if FIRST_INVOCATION */
-      /* Create the current filename from the previous filename */ 
+      /* Create current filename from previous filename */ 
       fl_nm_nbr_crr+=fl_nm_nbr_ncr;
       if(fl_nm_nbr_max) 
 	if(fl_nm_nbr_crr > fl_nm_nbr_max) 
@@ -389,13 +389,13 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
     fl_nm=(char *)strdup(fl_lst_in[fl_nbr]);
   } /* end if no abbreviation list */
   
-  /* Prepend the path prefix */ 
+  /* Prepend path prefix */ 
   if(fl_pth != NULL){
     char *fl_nm_stub;
 
     fl_nm_stub=fl_nm;
 
-    /* Allocate enough room for the joining slash '/' and the terminating NULL */ 
+    /* Allocate enough room for joining slash '/' and terminating NUL */ 
     fl_nm=(char *)malloc((strlen(fl_nm_stub)+strlen(fl_pth)+2)*sizeof(char));
     (void)strcpy(fl_nm,fl_pth);
     (void)strcat(fl_nm,"/");
@@ -405,7 +405,7 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
     (void)free(fl_nm_stub);
   } /* end if */
 
-  /* Return the new filename */ 
+  /* Return new filename */ 
   return(fl_nm);
 } /* end fl_nm_prs() */ 
 
@@ -504,7 +504,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       char *fl_nm_lcl_tmp;
       
       fl_nm_lcl_tmp=fl_nm_lcl;
-      /* Allocate enough room for the joining slash '/' and the terminating NULL */ 
+      /* Allocate enough room for the joining slash '/' and the terminating NUL */ 
       fl_nm_lcl=(char *)malloc((strlen(fl_pth_lcl)+strlen(fl_nm_stub)+2)*sizeof(char));
       (void)strcpy(fl_nm_lcl,fl_pth_lcl);
       (void)strcat(fl_nm_lcl,"/");
@@ -620,6 +620,9 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     } /* end if */
 
     /* Otherwise, a single colon preceded by a period in the filename unambiguously signals to use rcp or scp */
+    /* Determining whether to try scp instead of rcp is difficult
+       Ideally, NCO would test remote machine for rcp/scp priveleges with a system command like, e.g., "ssh echo ok"
+    */
     if(rmt_cmd == NULL){
       if((cln_ptr=strchr(fl_nm_rmt,':')))
 	if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
@@ -666,7 +669,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     fl_nm_stub=strrchr(fl_nm_lcl,'/')+1;
     /* Construct the local storage filepath name */ 
     fl_pth_lcl_len=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1;
-    /* Allocate enough room for the terminating NULL */ 
+    /* Allocate enough room for the terminating NUL */ 
     fl_pth_lcl_tmp=(char *)malloc((fl_pth_lcl_len+1)*sizeof(char));
     (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_len);
     fl_pth_lcl_tmp[fl_pth_lcl_len]='\0';
@@ -678,7 +681,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     rcd=stat(fl_pth_lcl_tmp,&stat_sct);
     /* If not, then create the local filepath */
     if(rcd != 0){
-      /* Allocate enough room for joining space ' ' and terminating NULL */
+      /* Allocate enough room for joining space ' ' and terminating NUL */
       cmd_sys=(char *)malloc((strlen(cmd_mkdir)+fl_pth_lcl_len+2)*sizeof(char));
       (void)strcpy(cmd_sys,cmd_mkdir);
       (void)strcat(cmd_sys," ");
@@ -697,7 +700,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     /* Free local path space, if any */ 
     if(fl_pth_lcl_tmp != NULL) (void)free(fl_pth_lcl_tmp);
 
-    /* Allocate enough room for joining space ' ' and terminating NULL */ 
+    /* Allocate enough room for joining space ' ' and terminating NUL */ 
     cmd_sys=(char *)malloc((strlen(rmt_cmd->fmt)-rmt_cmd->nbr_fmt_char+strlen(fl_nm_lcl)+strlen(fl_nm_rmt)+2)*sizeof(char));
     if(rmt_cmd->file_order == lcl_rmt){
       (void)sprintf(cmd_sys,rmt_cmd->fmt,fl_nm_lcl,fl_nm_rmt);
@@ -1127,13 +1130,13 @@ fl_rm(char *fl_nm)
    char *fl_nm: I file to be removed
  */ 
 {
-  /* Routine to remove the specified file from the local system */ 
+  /* Purpose: Remove specified file from local system */ 
 
   int rcd;
   char rm_cmd_sys_dep[]="rm -f";
   char *rm_cmd;
   
-  /* Remember to add one for the space and one for the terminating NULL character */ 
+  /* Remember to add one for the space and one for the terminating NUL character */ 
   rm_cmd=(char *)malloc((strlen(rm_cmd_sys_dep)+1+strlen(fl_nm)+1)*sizeof(char));
   (void)sprintf(rm_cmd,"%s %s",rm_cmd_sys_dep,fl_nm);
 
@@ -1144,4 +1147,89 @@ fl_rm(char *fl_nm)
   (void)free(rm_cmd);
 
 } /* end fl_rm() */ 
+
+int
+sng_ascii_trn(char *sng)
+     /* 
+	char *sng: I/O [sng] String to process
+	int sng_ascii_trn: O [nbr] Number of escape sequences translated
+     */
+{
+  /* Purpose: Replace any C language '\X' escape codes in a string into ASCII bytes 
+     Return the number of escape sequences found and actually translated
+     This should be the same as the number of bytes by which the string length has shrunk
+     For example, the consecutive characters "\n" are translated into ASCII '\n' = 10 which diminishes the string length by 1
+     Function works for an arbitrary number of escape codes in the input string
+     The escape sequence for NUL itself, \0, causes a warning and is not translated
+     Input string must be NUL-terminated or NULL
+     Translation is done in place, so if the original string is required, it should be copied prior to calling sng_ascii_trn()
+     This procedure can only diminish, not lengthen, the size of the input string
+     Therefore it may safely be performed in place without the need to operate on a copy of the string
+     The address pointed to by sng does not change, but the memory at that address is altered
+     when characters are "moved to the left" if C language escape sequences are embedded.
+     Thus the length of the string may shrink
+   */ 
+
+  bool trn_flg; /* Translate this escape sequence */
+
+  char *backslash_ptr; /* [ptr] Pointer to backslash character */
+  char backslash_chr='\\'; /* [chr] Backslash character */
+
+  int esc_sqn_nbr=0; /* Number of escape sequences found */
+  int trn_nbr=0; /* Number of escape sequences translated */
+  
+  /* ncatted allows character attributes of 0 length
+     Such "strings" do not even have a NUL-terminator and so may not safely be tested by strchr() */
+  if(sng == NULL) return trn_nbr;
+  
+  /* C language '\X' escape codes are always preceded by a backslash */
+  /* Check if control codes are embedded once before entering loop */ 
+  backslash_ptr=strchr(sng,backslash_chr);
+
+  while(backslash_ptr != NULL){
+    /* Default is to translate this escape sequence */
+    trn_flg=True;
+    /* Replace backslash character by corresponding control code */ 
+    switch(*(backslash_ptr+1)){ /* man ascii:Oct   Dec   Hex   Char \X  */
+    case 'a':	*backslash_ptr='\a'; break; /* 007   7     07    BEL '\a' Bell */
+    case 'b':	*backslash_ptr='\b'; break; /* 010   8     08    BS  '\b' Backspace */
+    case 'f':	*backslash_ptr='\f'; break; /* 014   12    0C    FF  '\f' Formfeed */
+    case 'n':	*backslash_ptr='\n'; break; /* 012   10    0A    LF  '\n' Linefeed */
+    case 'r':	*backslash_ptr='\r'; break; /* 015   13    0D    CR  '\r' Carriage return */
+    case 't':	*backslash_ptr='\t'; break; /* 011   9     09    HT  '\t' Horizontal tab */
+    case 'v':	*backslash_ptr='\v'; break; /* 013   11    0B    VT  '\v' Vertical tab */
+    case '\\': *backslash_ptr='\\'; break; /* 134   92    5C    \   '\\' */
+    case '\?': *backslash_ptr='\?'; break; /*  */
+    case '\'': *backslash_ptr='\''; break; /*  */
+    case '\"': *backslash_ptr='\"'; break; /*  */
+      /* Do not translate \0 to NUL since this would erase the rest of the string */
+    case '0':	
+      /* Do not translate \0 to NUL since this would make the rest of the string invisible to all string functions */
+      /* *backslash_ptr='\0'; */ /* 000   0     00    NUL '\0' */
+      (void)fprintf(stderr,"%s: WARNING C language escape code %.2s found in string, not translating to NUL since this would make the rest of the string invisible to all string functions\n",prg_nm_get(),backslash_ptr);
+      trn_flg=False;
+      break;
+    default: 
+      (void)fprintf(stderr,"%s: WARNING No ASCII equivalent to possible C language escape code %.2s so no action taken\n",prg_nm_get(),backslash_ptr);
+      trn_flg=False;
+      break;
+    } /* end switch */ 
+    if(trn_flg){
+      /* Get rid of character after backslash character */ 
+      (void)memmove(backslash_ptr+1,backslash_ptr+2,(strlen(backslash_ptr+2)+1)*sizeof(char));
+      /* Count translations performed */ 
+      trn_nbr++;
+    } /* end if */
+    /* Look for next backslash starting at character following current escape sequence (but remember that not all escape sequences are translated) */
+    if (trn_flg) backslash_ptr=strchr(backslash_ptr+1,backslash_chr); else backslash_ptr=strchr(backslash_ptr+2,backslash_chr);
+    /* Count escape sequences */ 
+    esc_sqn_nbr++;
+  } /* end if */ 
+
+  /* Usually there are no escape codes and sng still equals input value */ 
+  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG sng_ascii_trn() Found %d C-language escape sequences, translated %d of them\n",prg_nm_get(),esc_sqn_nbr,trn_nbr);
+
+  return trn_nbr;
+
+} /* end sng_ascii_trn() */ 
 

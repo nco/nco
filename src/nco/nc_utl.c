@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.40 1999-12-06 18:55:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.41 1999-12-14 22:39:32 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -1871,7 +1871,7 @@ hst_att_cat(int out_id,char *hst_sng)
   }else{ 
     /* history global attribute currently exists */
   
-    /* NB: the ncattinq() call, unlike strlen(), counts the terminating NULL for stored NC_CHAR arrays */ 
+    /* NB: the ncattinq() call, unlike strlen(), counts the terminating NUL for stored NC_CHAR arrays */ 
     (void)ncattinq(out_id,NC_GLOBAL,"history",&att_typ,&att_sz);
     if(att_typ != NC_CHAR){
       (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s. Therefore current command line will not be appended to %s in output file.\n",prg_nm_get(),att_nm,nc_type_nm(att_typ),nc_type_nm(NC_CHAR),att_nm);
@@ -2080,9 +2080,9 @@ var_get(int nc_id,var_sct *var)
    var_sct *var: I pointer to variable structure
  */ 
 {
-  /* Routine to allocate and retrieve the given variable hyperslab from disk memory */ 
+  /* Purpose: Allocate and retrieve given variable hyperslab from disk into memory */
 
-  /* This is probably where scale_factor and add_offset unpacking should be done */ 
+  /* This is probably where scale_factor and add_offset unpacking should be done */
 
   if((var->val.vp=(void *)malloc(var->sz*nctypelen(var->type))) == NULL){
     (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in var_get()\n",prg_nm_get(),var->sz,nctypelen(var->type));
@@ -2441,7 +2441,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
    var_sct *var_conform_type(): O point to variable structure of type var_out_type
 */
 {
-  /* Routine to typecast and copy the values of the variable to the desired type */ 
+  /* Purpose: Return a copy of the input variable typecast to a desired type */ 
 
   long idx;
   long sz;
@@ -2453,7 +2453,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
 
   var_sct *var_out;
 
-  /* Do the types already match? */ 
+  /* Do types of variable AND its missing value already match? */ 
   if(var_in->type == var_out_type) return var_in;
 
   var_out=var_in;
@@ -2465,10 +2465,10 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     (void)fprintf(stderr,"%s: WARNING Converting variable %s from type %s to %s\n",prg_nm_get(),var_in->nm,nc_type_nm(var_in_type),nc_type_nm(var_out_type));
   } /* end if */
   
-  /* Move the current var values to a swap location */ 
+  /* Move the current var values to swap location */ 
   val_in=var_in->val;
   
-  /* Allocate space for the type-conforming values */ 
+  /* Allocate space for type-conforming values */ 
   var_out->type=var_out_type;
   var_out->val.vp=(void *)malloc(var_out->sz*nctypelen(var_out->type));
   
@@ -2476,11 +2476,11 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
   sz=var_out->sz;
   val_out=var_out->val;
   
-  /* Copy and typecast the missing_value attribute, if any */ 
+  /* Copy and typecast missing_value attribute, if any */ 
   if(var_out->has_mss_val){
     ptr_unn var_in_mss_val;
 
-    /* NB: The sequence of the following commands is important (copy before overwriting!) */ 
+    /* Sequence of following commands is important (copy before overwriting!) */
     var_in_mss_val=var_out->mss_val;
     var_out->mss_val.vp=(void *)malloc(nctypelen(var_out->type));
     (void)val_conform_type(var_in_type,var_in_mss_val,var_out_type,var_out->mss_val);
@@ -2488,7 +2488,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     (void)free(var_in_mss_val.vp);
   } /* end if */
 
-  /* Typecast the pointer to the values before access */ 
+  /* Typecast pointer to values before access */ 
   (void)cast_void_nctype(var_in->type,&val_in);
   (void)cast_void_nctype(var_out->type,&var_out->val);
   
@@ -2576,7 +2576,7 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
 
   /* It is assumed that val_out points to enough space (one element of type type_out) to hold the output */
 
-  /* Typecast the pointer to the values before access */ 
+  /* Typecast pointer to values before access */ 
   (void)cast_void_nctype(type_in,&val_in);
   (void)cast_void_nctype(type_out,&val_out);
   
@@ -2980,24 +2980,24 @@ arm_base_time_get(int nc_id)
 void
 var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: I netCDF type of the operands
-  long sz: I size (in elements) of the operands
+  nc_type type: I netCDF type of operands
+  long sz: I size (in elements) of operands
   int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   ptr_unn op1: I values of first operand
   ptr_unn op2: I/O values of second operand on input, values of product on output
  */ 
 {
-  /* Routine to multiply the value of the first operand by the value of the second operand 
-     and store the result in the second operand. The operands are assumed to have conforming
-     dimensions, and to both be of the specified type. The operands' values are 
+  /* Routine to multiply value of first operand by value of second operand 
+     and store result in second operand. Operands are assumed to have conforming
+     dimensions, and to both be of the specified type. Operands' values are 
      assumed to be in memory already. */ 
   
   /* Division is currently defined as op2:=op1*op2 */   
 
   long idx;
   
-  /* Typecast the pointer to the values before access */ 
+  /* Typecast pointer to values before access */ 
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
@@ -3055,7 +3055,7 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     break;
   } /* end switch */ 
 
-  /* NB: it is not neccessary to un-typecast the pointers to the values after access 
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */ 
   
 } /* end var_multiply() */ 
@@ -3063,24 +3063,24 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
 void
 var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: I netCDF type of the operands
-  long sz: I size (in elements) of the operands
+  nc_type type: I netCDF type of operands
+  long sz: I size (in elements) of operands
   int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   ptr_unn op1: I values of first operand
   ptr_unn op2: I/O values of second operand on input, values of ratio on output
  */ 
 {
-  /* Routine to divide the value of the first operand by the value of the second operand 
-     and store the result in the second operand. The operands are assumed to have conforming
-     dimensions, and to both be of the specified type. The operands' values are 
+  /* Routine to divide value of first operand by value of second operand 
+     and store result in second operand. Operands are assumed to have conforming
+     dimensions, and to both be of specified type. Operands' values are 
      assumed to be in memory already. */ 
 
   /* Division is currently defined as op2:=op2/op1 */   
 
   long idx;
   
-  /* Typecast the pointer to the values before access */ 
+  /* Typecast pointer to values before access */ 
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
@@ -3138,7 +3138,7 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
     break;
   } /* end switch */ 
 
-  /* NB: it is not neccessary to un-typecast the pointers to the values after access 
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */ 
   
 } /* end var_divide() */ 
@@ -3146,8 +3146,8 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
 void
 var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: I netCDF type of the operands
-  long sz: I size (in elements) of the operands
+  nc_type type: I netCDF type of operands
+  long sz: I size (in elements) of operands
   int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   long *tally: I/O counter space
@@ -3155,16 +3155,16 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
   ptr_unn op2: I/O values of second operand on input, values of sum on output
  */ 
 {
-  /* Routine to add the value of the first operand to the value of the second operand 
-     and store the result in the second operand. The operands are assumed to have conforming
-     dimensions, and be of the specified type. The operands' values are 
+  /* Routine to add value of first operand to value of second operand 
+     and store result in second operand. Operands are assumed to have conforming
+     dimensions, and be of the specified type. Operands' values are 
      assumed to be in memory already. */ 
 
   /* Addition is currently defined as op2:=op1+op2 */
 
   long idx;
 
-  /* Typecast the pointer to the values before access */ 
+  /* Typecast pointer to values before access */ 
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
@@ -3246,7 +3246,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
     break;
   } /* end switch */ 
 
-  /* NB: it is not neccessary to un-typecast the pointers to the values after access 
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */ 
 
 } /* end var_add() */ 
@@ -3254,7 +3254,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 void
 var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: I netCDF type of the operands
+  nc_type type: I netCDF type of operands
   long sz_op1: I size (in elements) of op1
   long sz_op2: I size (in elements) of op2
   int has_mss_val: I flag for missing values
@@ -3264,8 +3264,8 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
   ptr_unn op2: O values resulting from averaging each block of input operand
  */ 
 {
-  /* Routine to average the value of each contiguous block of the first operand and place the
-     value in the corresponding element in the second operand. The operands are assumed to have 
+  /* Routine to average values in each contiguous block of first operand and place
+     result in corresponding element in second operand. Operands are assumed to have
      conforming types, but not dimensions or sizes. */
 
 #ifndef __GNUC__
@@ -3286,7 +3286,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 
   sz_blk=sz_op1/sz_op2;
 
-  /* Typecast the pointer to the values before access */ 
+  /* Typecast pointer to values before access */ 
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
@@ -3513,7 +3513,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
     break;
   } /* end switch */ 
   
-  /* NB: it is not neccessary to un-typecast the pointers to the values after access 
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */ 
 
 } /* end var_avg_reduce() */ 
@@ -3521,22 +3521,22 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 void
 var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
 /* 
-  nc_type type: I netCDF type of the operand
-  long sz: I size (in elements) of the operand
+  nc_type type: I netCDF type of operand
+  long sz: I size (in elements) of operand
   int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   long *tally: I counter space
-  ptr_unn op1: I/O values of first operand on input, the normalized result on output
+  ptr_unn op1: I/O values of first operand on input, normalized result on output
  */ 
 {
-  /* Routine to normalize the value of the first operand by the count in the tally array 
-     and store the result in the first operand. */
+  /* Normalize value of first operand by count in tally array 
+     and store result in first operand. */
 
   /* Normalization is currently defined as op1:=op1/tally */   
 
   long idx;
 
-  /* Typecast the pointer to the values before access */ 
+  /* Typecast pointer to values before access */ 
   (void)cast_void_nctype(type,&op1);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
 
@@ -3593,7 +3593,7 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
     break;
   } /* end switch */ 
 
-  /* NB: it is not neccessary to un-typecast the pointers to the values after access 
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */ 
 
 } /* end var_normalize() */ 
@@ -3601,17 +3601,17 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
 ptr_unn
 mss_val_mk(nc_type type)
 /* 
-  nc_type type: I netCDF type of the operand
-  ptr_unn mss_val_mk(): O ptr_unn containing the default missing value for type type
+  nc_type type: I netCDF type of operand
+  ptr_unn mss_val_mk(): O ptr_unn containing default missing value for type type
  */ 
 {
-  /* Routine to return a pointer union containing the default missing value for type type */
+  /* Routine to return a pointer union containing default missing value for type type */
 
   ptr_unn mss_val;
 
   mss_val.vp=(void *)malloc(nctypelen(type));
 
-  /* Typecast the pointer to the values before access */ 
+  /* Typecast pointer to values before access */ 
   (void)cast_void_nctype(type,&mss_val);
 
   switch(type){
@@ -3623,7 +3623,7 @@ mss_val_mk(nc_type type)
   case NC_BYTE: *mss_val.bp=FILL_BYTE; break;
   } /* end switch */ 
 
-  /* Un-typecast the pointer to the values after access */
+  /* Un-typecast pointer to values after access */
   (void)cast_nctype_void(type,&mss_val);
   
   return mss_val;
@@ -3638,10 +3638,10 @@ mss_val_cp(var_sct *var1,var_sct *var2)
   mss_val_cp(): 
  */ 
 {
-  /* Routine to copy the missing value from var1 to var2
+  /* Routine to copy missing value from var1 to var2
      On exit, var2 contains has_mss_val, and mss_val identical to var1
-     The type of mss_val in var2 will agree with the type of var2
-     This maintains the assumed consistency between type of variable and
+     Type of mss_val in var2 will agree with type of var2
+     This maintains assumed consistency between type of variable and
      type of mss_val in all var_sct's
    */
 
@@ -3665,18 +3665,18 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
   ptr_unn mss_val: I value of missing value
   double op1: I Target value against which mask field will be compared (i.e., argument of -M)
   int op_type: I type of relationship to test for between op2 and op1
-  ptr_unn op2: I Value of the mask field
-  ptr_unn op3: I/O values of second operand on input, the masked values on output
+  ptr_unn op2: I Value of mask field
+  ptr_unn op3: I/O values of second operand on input, masked values on output
  */ 
 {
-  /* Routine to mask the third operand by the second operand. Wherever the second operand does not 
-     equal the first operand the third operand will be set to its missing value. */
+  /* Routine to mask third operand by second operand. Wherever second operand does not 
+     equal first operand the third operand will be set to its missing value. */
 
   /* Masking is currently defined as if(op2 !op_type op1) then op3:=mss_val */   
 
   long idx;
 
-  /* Typecast the pointer to the values before access */ 
+  /* Typecast pointer to values before access */ 
   (void)cast_void_nctype(type,&op2);
   (void)cast_void_nctype(type,&op3);
   if(has_mss_val){
@@ -3750,7 +3750,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     break;
   } /* end switch */ 
 
-  /* It is not neccessary to un-typecast the pointers to the values after access 
+  /* It is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */ 
 
 } /* end var_mask() */ 
@@ -3758,16 +3758,16 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
 void
 var_zero(nc_type type,long sz,ptr_unn op1)
 /* 
-  nc_type type: I netCDF type of the operand
-  long sz: I size (in elements) of the operand
+  nc_type type: I netCDF type of operand
+  long sz: I size (in elements) of operand
   ptr_unn op1: I values of first operand
  */ 
 {
-  /* Routine to zero the value of the first operand and store the result in the second operand. */
+  /* Routine to zero value of first operand and store result in second operand. */
 
   long idx;
 
-  /* Typecast the pointer to the values before access */ 
+  /* Typecast pointer to values before access */ 
   (void)cast_void_nctype(type,&op1);
 
   switch(type){
@@ -3791,7 +3791,7 @@ var_zero(nc_type type,long sz,ptr_unn op1)
     break;
   } /* end switch */ 
 
-  /* NB: it is not neccessary to un-typecast the pointers to the values after access 
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */ 
 
 } /* end var_zero() */ 
@@ -3799,17 +3799,17 @@ var_zero(nc_type type,long sz,ptr_unn op1)
 void
 vec_set(nc_type type,long sz,ptr_unn op1,double op2)
 /* 
-  nc_type type: I netCDF type of the operand
-  long sz: I size (in elements) of the operand
+  nc_type type: I netCDF type of operand
+  long sz: I size (in elements) of operand
   ptr_unn op1: I values of first operand
   double op2: I value to fill vector with
  */ 
 {
-  /* Routine to fill every value of the first operand with the value of the second operand */
+  /* Routine to fill every value of first operand with value of second operand */
 
   long idx;
 
-  /* Typecast the pointer to the values before access */ 
+  /* Typecast pointer to values before access */ 
   (void)cast_void_nctype(type,&op1);
 
   switch(type){
@@ -3833,7 +3833,7 @@ vec_set(nc_type type,long sz,ptr_unn op1,double op2)
     break;
   } /* end switch */ 
 
-  /* NB: it is not neccessary to un-typecast the pointers to the values after access 
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */ 
 
 } /* end vec_set() */ 
@@ -3841,11 +3841,11 @@ vec_set(nc_type type,long sz,ptr_unn op1,double op2)
 void
 zero_long(long sz,long *op1)
 /* 
-  long sz: I size (in elements) of the operand
+  long sz: I size (in elements) of operand
   long *op1: I values of first operand
  */ 
 {
-  /* Routine to zero the value of the first operand and store the result in the first operand. */
+  /* Routine to zero value of first operand and store result in first operand. */
 
   long idx;
 
@@ -3856,24 +3856,24 @@ zero_long(long sz,long *op1)
 void
 var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: I netCDF type of the operands
-  long sz: I size (in elements) of the operands
+  nc_type type: I netCDF type of operands
+  long sz: I size (in elements) of operands
   int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   ptr_unn op1: I values of first operand
   ptr_unn op2: I/O values of second operand on input, values of difference on output
  */ 
 {
-  /* Routine to difference the value of the first operand from the value of the second operand 
-     and store the result in the second operand. The operands are assumed to have conforming
-     dimensions, and be of the specified type. The operands' values are 
+  /* Routine to difference value of first operand from value of second operand 
+     and store result in second operand. Operands are assumed to have conforming
+     dimensions, and be of specified type. Operands' values are 
      assumed to be in memory already. */ 
 
   /* Subtraction is currently defined as op2:=op2-op1 */ 
 
   long idx;
 
-  /* Typecast the pointer to the values before access */ 
+  /* Typecast pointer to values before access */ 
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
@@ -3931,7 +3931,7 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     break;
   } /* end switch */ 
   
-  /* NB: it is not neccessary to un-typecast the pointers to the values after access 
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */ 
   
 } /* end var_subtract() */ 
@@ -3940,10 +3940,10 @@ bool
 ncar_csm_inq(int nc_id)
 /*  
    int nc_id: I netCDF file ID
-   bool ncar_csm_inq(): O whether the file is an NCAR CSM history tape
+   bool ncar_csm_inq(): O whether file is an NCAR CSM history tape
 */
 {
-  /* Routine to check whether the file adheres to NCAR CSM history tape format */
+  /* Routine to check whether file adheres to NCAR CSM history tape format */
 
   bool NCAR_CSM=False;
 
@@ -3954,7 +3954,7 @@ ncar_csm_inq(int nc_id)
 
   nc_type att_typ;
 
-  /* Look for the signature of an NCAR CSM format file */ 
+  /* Look for signature of an NCAR CSM format file */ 
   ncopts=0; 
   rcd=ncattinq(nc_id,NC_GLOBAL,"convention",&att_typ,&att_sz);
   ncopts=NC_VERBOSE | NC_FATAL; 
@@ -3979,7 +3979,7 @@ ncar_csm_date(int nc_id,var_sct **var,int nbr_var)
 	int nbr_var: I number of structures in variable structure list
 	*/
 {
-  /* Routine to fix the date variable in averaged CSM files */ 
+  /* Routine to fix date variable in averaged CSM files */ 
   char wrn_sng[1000];
 
   int day;

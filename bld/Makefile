@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.47 1999-12-06 19:35:44 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.48 1999-12-14 22:39:29 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -27,6 +27,11 @@ MY_DPN_DIR := $(MY_OBJ_DIR)
 MY_SRC_DIR := ../src/nco
 ifndef OPTS
  OPTS := O
+endif
+ifdef OMP
+ CPPFLAGS := -DOMP
+ CFLAGS := -mp -mpio
+ LDFLAGS := -mp
 endif
 ifndef USE_FORTRAN_ARITHMETIC
 # Whether or not to use Fortran arithmetic routines
@@ -186,21 +191,21 @@ ifeq ($(PVM_ARCH),ALPHA)
 C++ := g++
 CC := gcc
 # NB: Hack to make ALPHA look like LINUX (g77 + gcc + g++)
-CPPFLAGS := -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
+CPPFLAGS += -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
 FC := g77
 FFLAGS := -ffixed-line-length-132
 LD := ld
-LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 LDFLAGS += 
 LEX := flex
 LINT := lint
 YACC := bison
 ifeq ($(OPTS),O)
- CFLAGS := -O
+ CFLAGS += -O
  FFLAGS += -O
 endif
 ifeq ($(OPTS),D)
- CFLAGS := -g
+ CFLAGS += -g
  FFLAGS += -g
 endif
 endif
@@ -209,10 +214,10 @@ ifeq ($(PVM_ARCH),CRAY)
 C++ := g++
 CC := cc
 CPP := cpp
-CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
+CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f90
 LD := ld
-LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -L/lib -lf
 endif
@@ -220,15 +225,15 @@ LEX := lex
 LINT := lint
 YACC := yacc
 ifeq ($(OPTS),O)
- CFLAGS := -O
+ CFLAGS += -O
  FFLAGS = -N 132
 endif
 ifeq ($(OPTS),D)
- CFLAGS := -g
+ CFLAGS += -g
  FFLAGS = -g -N 132
 endif
 ifeq ($(OPTS),X)
- CFLAGS := -g -N 132
+ CFLAGS += -g -N 132
  FFLAGS = -g -N 132 -e i
 endif
 # 97/10/21 Added -P to suppress #line # directives on Fortran files
@@ -248,10 +253,10 @@ C++ := g++
 #CC := gcc -ansi
 CC := gcc
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := -D$(PVM_ARCH) -Di386 -I$(NETCDF_INC)
+CPPFLAGS += -D$(PVM_ARCH) -Di386 -I$(NETCDF_INC)
 FC := g77
 LD := ld
-LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
 endif
@@ -260,16 +265,16 @@ LINT := lint
 YACC := bison
 ifeq ($(CC),gcc)
 ifeq ($(OPTS),O)
- CFLAGS := -O -Wall
+ CFLAGS += -O -Wall
 endif
 ifeq ($(OPTS),D)
- CFLAGS := -g -Wall
+ CFLAGS += -g -Wall
 endif
 ifeq ($(OPTS),R)
- CFLAGS := -Wall
+ CFLAGS += -Wall
 endif
 ifeq ($(OPTS),X)
- CFLAGS := -g -O -Wall
+ CFLAGS += -g -O -Wall
 endif
  C++FLAGS := $(CFLAGS)
 endif
@@ -307,10 +312,10 @@ ifeq ($(PVM_ARCH),RS6K)
 C++ := g++
 CC := gcc -ansi
 CPP := /lib/cpp -P
-CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
+CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := xlf
 LD := ld
-LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -lxlf90 -lxlf
 endif
@@ -318,13 +323,13 @@ LEX := lex
 LINT := lint
 YACC := yacc
 ifeq ($(OPTS),O)
- CFLAGS := -O2
+ CFLAGS += -O2
  CPP := $(CPP) $(CPPFLAGS)
  PREPROCESS.F := $(CPP) $(CPPFLAGS)
  FFLAGS := -O -NS2000 -qfixed=132
 endif
 ifeq ($(OPTS),D)
- CFLAGS := -g
+ CFLAGS += -g
  CPP := $(CPP) $(CPPFLAGS)
  PREPROCESS.F := $(CPP) $(CPPFLAGS)
  FFLAGS := -g -NS2000 -qfixed=132
@@ -339,10 +344,10 @@ endif
 ifeq ($(PVM_ARCH),SGI5)
 C++ := g++
 CC := gcc -ansi
-CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
+CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f77
 LD := ld
-LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -lF77 -lI77 -lU77 -lftn
 endif
@@ -350,11 +355,11 @@ LEX := lex
 LINT := lint
 YACC := yacc
 ifeq ($(OPTS),O)
- CFLAGS := -O2
+ CFLAGS += -O2
  FFLAGS := -O2 -e -Nl99 -extend_source
 endif
 ifeq ($(OPTS),D)
- CFLAGS := -g
+ CFLAGS += -g
  FFLAGS := -g -e -Nl99 -extend_source
 endif
 endif
@@ -362,10 +367,10 @@ endif
 ifeq ($(PVM_ARCH),SGI64)
 C++ := c++
 CC := cc
-CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
+CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f77
 LD := ld
-LDFLAGS := -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
 endif
@@ -373,19 +378,19 @@ LEX := flex
 LINT := lint
 YACC := bison
 ifeq ($(OPTS),O)
- CFLAGS := -64 -mips4 -O2
+ CFLAGS += -64 -mips4 -O2
  FFLAGS := -64 -mips4 -O2 -extend_source
 endif
 ifeq ($(OPTS),R)
- CFLAGS := -64 -mips4
+ CFLAGS += -64 -mips4
  FFLAGS := -64 -mips4 -extend_source
 endif
 ifeq ($(OPTS),D)
- CFLAGS := -64 -mips4 -g
+ CFLAGS += -64 -mips4 -g
  FFLAGS := -64 -mips4 -g -extend_source
 endif
 ifeq ($(OPTS),X)
- CFLAGS := -64 -mips4 -g -trapuv
+ CFLAGS += -64 -mips4 -g -trapuv
  FFLAGS := -64 -mips4 -g -extend_source -check_bounds -trapuv
 # 1998/08/20: Using range checking results in unresolved symbol errors unless linking to this library
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
@@ -398,10 +403,10 @@ ifeq ($(PVM_ARCH),SGIMP64)
 C++ := c++
 CC := cc
 # spoof SGI64
-CPPFLAGS := -DSGI64 -I$(NETCDF_INC)
+CPPFLAGS += -DSGI64 -I$(NETCDF_INC)
 FC := f77
 LD := ld
-LDFLAGS := -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
 endif
@@ -409,19 +414,19 @@ LEX := flex
 LINT := lint
 YACC := bison
 ifeq ($(OPTS),O)
- CFLAGS := -64 -mips4 -O2
+ CFLAGS += -64 -mips4 -O2
  FFLAGS := -64 -mips4 -O2 -extend_source
 endif
 ifeq ($(OPTS),R)
- CFLAGS := -64 -mips4
+ CFLAGS += -64 -mips4
  FFLAGS := -64 -mips4 -extend_source
 endif
 ifeq ($(OPTS),D)
- CFLAGS := -64 -mips4 -g
+ CFLAGS += -64 -mips4 -g
  FFLAGS := -64 -mips4 -g -extend_source
 endif
 ifeq ($(OPTS),X)
- CFLAGS := -64 -mips4 -g -trapuv
+ CFLAGS += -64 -mips4 -g -trapuv
  FFLAGS := -64 -mips4 -g -extend_source -check_bounds -trapuv
 # 1998/08/20: Using range checking results in unresolved symbol errors unless linking to this library
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
@@ -433,10 +438,10 @@ endif
 ifeq ($(PVM_ARCH),SUN4)
 C++ := g++
 CC := acc
-CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
+CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f77
 LD := ld
-LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -cg92 -L/opt/SUNWspro/SC3.0/lib/cg92 -lF77 -lM77
 endif
@@ -445,11 +450,11 @@ LEX := lex
 LINT := lint
 YACC := yacc
 ifeq ($(OPTS),O)
- CFLAGS := -O2
+ CFLAGS += -O2
  FFLAGS := -fast -e -Nl99
 endif
 ifeq ($(OPTS),D)
- CFLAGS := -g
+ CFLAGS += -g
  FFLAGS := -g -e -Nl99
 endif
 endif
@@ -457,10 +462,10 @@ endif
 ifeq ($(PVM_ARCH),SUN4SOL2)
 C++ := g++
 CC := gcc -ansi
-CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
+CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f77
 LD := ld
-LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lsunmath -lsocket -lnsl -lm
+LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lsunmath -lsocket -lnsl -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -lF77 -lM77
 endif
@@ -469,15 +474,15 @@ LEX := lex
 LINT := lint
 YACC := yacc
 ifeq ($(OPTS),O)
- CFLAGS := -O2
+ CFLAGS += -O2
  FFLAGS := -O -e
 endif
 ifeq ($(OPTS),D)
- CFLAGS := -g
+ CFLAGS += -g
  FFLAGS := -g -e
 endif
 ifeq ($(OPTS),X)
- CFLAGS := -g 
+ CFLAGS += -g 
  FFLAGS := -g -e
 # NB: 1998/06/01 -C (range-checking) is not supported by Sun f90
 ifeq ($(FC),f77)
@@ -490,10 +495,10 @@ ifeq ($(PVM_ARCH),SUNMP)
 C++ := g++
 #CC := gcc -ansi -pedantic
 CC := gcc 
-CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
+CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f77
 LD := ld
-LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lsunmath -lthread -lsocket -lnsl -lm
+LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lsunmath -lthread -lsocket -lnsl -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -lF77 -lM77
 endif
@@ -502,15 +507,15 @@ LEX := flex
 LINT := lint
 YACC := bison
 ifeq ($(OPTS),O)
- CFLAGS := -O2
+ CFLAGS += -O2
  FFLAGS := -fast -e
 endif
 ifeq ($(OPTS),D)
- CFLAGS := -g
+ CFLAGS += -g
  FFLAGS := -g -e
 endif
 ifeq ($(OPTS),X)
- CFLAGS := -g 
+ CFLAGS += -g 
  FFLAGS := -g -e
 # NB: 1998/06/01 -C (range-checking) is not supported by Sun f90
 ifeq ($(FC),f77)
@@ -523,10 +528,10 @@ ifeq ($(PVM_ARCH),WIN32)
 C++ := g++
 CC := gcc -ansi
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := -D$(PVM_ARCH) -Di386 -I$(NETCDF_INC)
+CPPFLAGS += -D$(PVM_ARCH) -Di386 -I$(NETCDF_INC)
 FC := g77
 LD := ld
-LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
 endif
@@ -534,10 +539,10 @@ LEX := flex
 LINT := lint
 YACC := bison
 ifeq ($(OPTS),O)
- CFLAGS := -O
+ CFLAGS += -O
 endif
 ifeq ($(OPTS),D)
- CFLAGS := -g
+ CFLAGS += -g
 endif
 $(MY_OBJ_DIR)/%.o : %.F
 	$(FC) -c $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<

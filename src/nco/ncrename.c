@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.11 1999-12-06 18:10:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.12 1999-12-14 22:39:34 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -58,8 +58,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.11 1999-12-06 18:10:02 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.11 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.12 1999-12-14 22:39:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.12 $";
   
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dim_rnm_lst=NULL_CEWI;
@@ -85,7 +85,7 @@ main(int argc,char **argv)
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock);
   
-  /* Get the program name and set the enum for the program (e.g., prg=ncra) */
+  /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
@@ -99,7 +99,7 @@ main(int argc,char **argv)
       att_rnm_arg[nbr_att_rnm]=optarg;
       nbr_att_rnm++;
       break;
-    case 'D': /* The debugging level.  Default is 0. */
+    case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=atoi(optarg);
       break;
     case 'd': /* Copy argument for later processing */ 
@@ -109,19 +109,19 @@ main(int argc,char **argv)
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
-    case 'l': /* Get local path prefix for storing files retrieved from remote file system */
+    case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
       break;
-    case 'p': /* Get the path prefix */
+    case 'p': /* Common file path */
       fl_pth=optarg;
       break;
-    case 'R': /* Toggle the removal of remotely-retrieved-files after processing. Default is True */
+    case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
-    case 'r': /* Print the CVS program info and copyright notice */
+    case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nc_lib_vrs_prn();
       exit(EXIT_SUCCESS);

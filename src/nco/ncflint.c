@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.15 1999-12-06 18:10:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.16 1999-12-14 22:39:34 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -71,8 +71,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */ 
-  char CVS_Id[]="$Id: ncflint.c,v 1.15 1999-12-06 18:10:01 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.15 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.16 1999-12-14 22:39:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.16 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -127,7 +127,7 @@ main(int argc,char **argv)
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock);
   
-  /* Get the program name and set the enum for the program (e.g., prg=ncra) */
+  /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
@@ -137,7 +137,7 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'C': /* Add to extraction list any coordinates associated with variables to be extracted? */ 
+    case 'C': /* Extraction list should include all coordinates associated with extracted variables? */ 
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':
@@ -150,7 +150,7 @@ main(int argc,char **argv)
       lmt_arg[nbr_lmt]=(char *)strdup(optarg);
       nbr_lmt++;
       break;
-    case 'F': /* Toggle the style of printing out arrays. Default is C-style. */
+    case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_STYLE=!FORTRAN_STYLE;
       break;
     case 'h': /* Toggle appending to history global attribute */
@@ -169,24 +169,24 @@ main(int argc,char **argv)
       CMD_LN_NTP_VAR=True;
       CMD_LN_NTP_WGT=False;
       break;
-    case 'l': /* Get local path prefix for storing files retrieved from remote file system */
+    case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
       break;
-    case 'p': /* Get the path prefix */
+    case 'p': /* Common file path */
       fl_pth=optarg;
       break;
-    case 'R': /* Toggle the removal of remotely-retrieved-files after processing. Default is True */
+    case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
-    case 'r': /* Print the CVS program info and copyright notice */
+    case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nc_lib_vrs_prn();
       exit(EXIT_SUCCESS);
       break;
-    case 'v': /* Assemble the list of variables to extract/exclude */ 
+    case 'v': /* Variables to extract/exclude */ 
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
     case 'w':
@@ -205,7 +205,7 @@ main(int argc,char **argv)
       } /* end else */ 
       CMD_LN_NTP_WGT=True;
       break;
-    case 'x': /* Exclude rather than extract the variables specified with -v */
+    case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
     default: /* Print proper usage */

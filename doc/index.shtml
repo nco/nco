@@ -1,12 +1,14 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.28 1999-12-06 18:14:09 zender Exp $ >
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.29 1999-12-14 22:39:31 zender Exp $
 
-<! Purpose: NCO homepage >
+Purpose: NCO homepage
 
-<! Usage: >
-<! http://www.cgd.ucar.edu/cms/nco/index.shtml >
-<! file:/home/zender/nc/nco/doc/index.shtml >
-<! /bin/cp -f ~/nc/nco/doc/index.shtml /web/web-data/cms/nco/index.shtml >
-<! rcp -p ~/nc/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml >
+Usage:
+http://www.cgd.ucar.edu/cms/nco/index.shtml
+file:/home/zender/nc/nco/doc/index.shtml
+/bin/cp -f ~/nc/nco/doc/index.shtml /web/web-data/cms/nco/index.shtml
+rcp -p ~/nc/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml
+scp -p ~/nc/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml
+-->
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
@@ -151,6 +153,12 @@ User's Guide</A>. </P>
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
 
+<P>1999/12/14: 
+Added feature to <TT>ncatted</TT> so that C-language escape sequences
+may be used in editing character attributes. 
+Text formatting of attributes now supports <TT>\n</TT>, <TT>\t</TT>,
+and all other <TT>printf</TT>-style sequences.
+
 <P>1999/12/06: 
 Fixed bug in <TT>ncatted</TT> so that character-valued attributes
 (strings) may contain commas, and be of zero length.
@@ -289,7 +297,7 @@ as having been fixed in the latest revision.
 
 <DT><A NAME="NCAR"></A></DT>
 <H2>Using NCO at NCAR</H2>
-<P>NCO is built at UCI and distributed from NCAR.
+<P>NCO is built at UC Irvine and distributed from NCAR.
 User's of UCI and NCAR machines should take advantage of pre-built,
 up-to-date NCO executables. 
 The NCO executables are maintained in many different locations at NCAR:
@@ -300,7 +308,7 @@ The NCO executables are maintained in many different locations at NCAR:
 <DD>SCD Blackforest (AIX 4.0): /home/blackforest/zender/bin/AIX</DD>
 <DD>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</DD>
 <DD>SCD Ute (IRIX 6.5): /home/ute/zender/bin/SGIMP64</DD>
-and at two locations at UCI:
+<br>and at two locations at UCI:
 <DD>ESS dust.ps.uci.edu (Linux 2.2.5): /home/zender/bin/LINUX</DD>
 <DD>ESS krein.math.uci.edu (IRIX 6.5): /home/zender/zender/bin/SGIMP64</DD>
 
@@ -309,7 +317,7 @@ and at two locations at UCI:
 <DT><A NAME="Bugs"></A></DT>
 <H2>Known Problems with NCO and/or netCDF:</H2>
 <H1>NCO problems on SGI machines?</H1>
-<P>The netCDF 3.3.x distribution suffers from unpredictable and weird behavior on SGI machines (apparently related to NFS-mounted partitions).
+<P>The netCDF 3.3.x distribution suffers from unpredictable behavior on SGI machines (possibly related to NFS-mounted partitions).
 As a result, NCO operators, especially <TT>ncwa</TT>, may core dump unless you upgrade to the new netCDF3.4.x distribution.
 NCAR machines have all been upgraded to netCDF3.4+.
 All users of NCO on SGI64 machines at other institutions are urged to upgrade to netCDF3.4.x which is available from URL <A HREF="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z</A>.</P>
@@ -342,7 +350,7 @@ As of NCO 1.1.38, this is the default.
 <HR></P>
 Address questions and comments about NCO to Charlie Zender, 
 <ADDRESS>
-<A HREF="mailto:zender@ncar.ucar.edu">zender@ncar.ucar.edu</A>
+<A HREF="mailto:zender@uci.edu">zender@uci.edu</A>
 </ADDRESS>
 
 </BODY>

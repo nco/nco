@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.37 1999-12-08 23:40:54 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.38 1999-12-14 22:39:30 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -89,8 +89,13 @@ nc_utl.c:fl_out_open() line 1635 on ute.ucar.edu with command
 ncrcat -O in.nc ho.F1.vegAS.moni01.nc
 This must be an IRIX error or a file name length malloc error
 133. nco_tst.sh sometimes fails when ftp'ing nco_tst.nc to blackforest but not babyblue, why?
-134. Noticed problem on CRAY with ncra test #2, averaging float whose
-missing value is double
+134. Problem on CRAY with ncra test #2, averaging float whose
+missing value is double:
+ncra -O -C -v rec_var_flt_mss_val_dbl in.nc foo.nc;ncks -H foo.nc
+ncra -O -C -d time,0,1 -v rec_var_flt_mss_val_dbl in.nc foo.nc ; ncks -H foo.nc
+Not too worried about this since it is Cray specific, 
+Maybe 1.0e36d does not convert to 1.0e36f on Crays?
+135. Implement OpenMP support around variable loops in ncwa
 ************************************************************************
 End NCO Wish list
 ************************************************************************

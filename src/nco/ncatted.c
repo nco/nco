@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.14 1999-12-06 18:55:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.15 1999-12-14 22:39:33 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -9,6 +9,10 @@
 /* Purpose: Add, create, delete, or overwrite attributes in a netCDF file. */
 
 /* Usage:
+
+   Use C language escape sequences:
+   ncatted -D 3 -h -a history,global,o,c,"String\tformatting\tfor\nDennis" in.nc ; ncks -M in.nc
+   ncatted -D 3 -h -a history,global,o,c,'\a\b\f\n\r\t\v\\\?\0' in.nc ; ncks -M in.nc
 
    Append to existing string:
    ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three." in.nc foo.nc
@@ -103,8 +107,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.14 1999-12-06 18:55:49 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.14 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.15 1999-12-14 22:39:33 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.15 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -128,7 +132,7 @@ main(int argc,char **argv)
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock);
   
-  /* Get the program name and set the enum for the program (e.g., prg=ncra) */
+  /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
@@ -142,25 +146,25 @@ main(int argc,char **argv)
       aed_arg[nbr_aed]=optarg;
       nbr_aed++;
       break;
-    case 'D': /* The debugging level.  Default is 0. */
+    case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=atoi(optarg);
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
-    case 'l': /* Get local path prefix for storing files retrieved from remote file system */
+    case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
       break;
-    case 'p': /* Get the path prefix */
+    case 'p': /* Common file path */
       fl_pth=optarg;
       break;
-    case 'R': /* Toggle the removal of remotely-retrieved-files after processing. Default is True */
+    case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
-    case 'r': /* Print the CVS program info and copyright notice */
+    case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nc_lib_vrs_prn();
       exit(EXIT_SUCCESS);
@@ -416,6 +420,9 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 	lmn_nbr=1L;
       } /* endif arg_nbr > idx_att_val_arg+1 */
       
+      /* Replace any C language '\X' escape codes with ASCII bytes */
+      if(aed_lst[idx].type == NC_CHAR) (void)sng_ascii_trn(arg_lst[idx_att_val_arg]);
+
       /* Set size of current aed structure */ 
       if(aed_lst[idx].type == NC_CHAR){
 	/* Include NUL-terminator in string length */ 
@@ -597,7 +604,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     (void)val_conform_type(att_typ,var->mss_val,var->type,mss_val_crr);
     (void)val_conform_type(aed.type,aed.val,var->type,mss_val_new);
 
-    /* Typecast the pointer to the values before access */ 
+    /* Typecast pointer to values before access */ 
     (void)cast_void_nctype(var->type,&var_val);
     (void)cast_void_nctype(var->type,&mss_val_crr);
     (void)cast_void_nctype(var->type,&mss_val_new);

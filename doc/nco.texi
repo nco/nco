@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.35 1999-12-08 23:40:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.36 1999-12-14 22:39:31 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -13,7 +13,7 @@ C-c C-u C-a	texinfo-all-menus-update
 C-c C-u C-e	texinfo-every-node-update
 
 Usage: 
-texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o $DATA/ps/nco.ps nco.dvi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco
+cd ~/nc/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o $DATA/ps/nco.ps nco.dvi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 texi2html -monolithic -verbose nco.texi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco
 cd $DATA/ps;gzip --force nco.ps;scp -p nco.ps.gz www.cgd.ucar.edu:/web/web-data/cms/nco
 texi2dvi nco.texi 
@@ -635,7 +635,11 @@ statistical packages, and are often more suitable for archival and
 dissemination to the scientific community.
 NCO performs a suite of operations useful in manipulating data from the
 primary to the second level state.
-Higher level interpretive languages (e.g., IDL, Yorick, Matlab, NCL),
+@cindex NCL
+@cindex Perl
+@cindex Yorick
+Higher level interpretive languages (e.g., IDL, Yorick, Matlab, NCL,
+Perl, Python),
 and lower level compiled languages (e.g., C, Fortran) can always perform
 any task performed by NCO, but often with more overhead.
 NCO, on the other hand, is limited to a much smaller set of arithmetic
@@ -1122,12 +1126,38 @@ the entire set of filenames
 @cindex files, multiple
 This option is only available with the @dfn{multi-file operators}:
 @code{ncra}, @code{ncrcat}, @code{ncea}, and @code{ncecat}.
-Multi-file operators process an arbitrary number of @var{input-files}. 
-The syntax of @code{-n 5,2,1 85.nc} tells NCO to construct five (5)
-filenames identical to @file{85.nc} except that the final two (2) digits
-are a numeric suffix to be incremented by one (1) for each successive file.  
-The @file{.nc} and @file{.cdf} suffixes, if present, are not counted
-toward the two digit numeric suffix.
+By definition, multi-file operators are able to process an arbitrary
+number of @var{input-files}.
+This option is very useful for abbreviating lists of filenames
+representable as
+@var{alphanumeric_prefix}+@var{numeric_suffix}+@file{.}+@var{filetype}
+where @var{alphanumeric_prefix} is a string of arbitrary length and
+composition, @var{numeric_suffix} is a fixed width field of digits, and
+@var{filetype} is a standard filetype indicator. 
+For example, in the file @file{ccm3_h0001.nc}, we have
+@var{alphanumeric_prefix} = @file{ccm3_h}, @var{numeric_suffix} =
+@file{0001}, and @var{filetype} = @file{nc}.
+
+NCO is able to decode lists of such filenames encoded using the
+@samp{-n} option. 
+The simpler (3-argument) @samp{-n} usage takes the form 
+@code{-n @var{file_number},@var{digit_number},@var{numeric_increment}}
+where @var{file_number} is the number of files, @var{digit_number} is
+the fixed number of numeric digits comprising the @var{numeric_suffix},
+and @var{numeric_increment} is the constant, integer-valued difference
+between the @var{numeric_suffix} of any two consecutive files.
+The value of @var{alphanumeric_prefix} is taken from the input file,
+which serves as a template for decoding the filenames.
+In the example above, the encoding @code{-n 5,2,1} along with the input
+file name @file{85.nc} tells NCO to
+construct five (5) filenames identical to the template @file{85.nc}
+except that the final two (2) digits are a numeric suffix to be
+incremented by one (1) for each successive file.
+Currently @var{filetype} may be either be empty, @file{nc},
+@file{cdf}, @file{hdf}, or @file{hd5}. 
+If present, these @var{filetype} suffixes (and the preceding @file{.})
+are ignored by NCO as it uses the @samp{-n} arguments to locate,
+evaluate, and compute the @var{numeric_suffix} component of filenames.  
 
 @cindex wrapped filenames
 Recently the @samp{-n} option has been extended to allow convenient
@@ -1135,6 +1165,13 @@ specification of filenames with ``circular'' characteristics.
 This means it is now possible for NCO to automatically generate
 filenames which increment regularly until a specified maximum value, and
 then wrap back to begin again at a specified minimum value. 
+The corresponding @samp{-n} usage becomes more complex, taking one or
+two additional arguments for a total of four or five, respectively: 
+@code{-n
+@var{file_number},@var{digit_number},@var{numeric_increment}[,@var{numeric_max}[,@var{numeric_min}]]}
+where @var{numeric_max}, if present, is the maximum integer-value of 
+@var{numeric_suffix} and @var{numeric_min}, if present, is the minimum
+integer-value of @var{numeric_suffix}.
 Consider, for example, the problem of specifying non-consecutive input
 files where the filename suffixes end with the month index.  
 In climate modeling it is common to create summertime and wintertime
@@ -1151,11 +1188,11 @@ suffice to specify consecutive months (@code{06, 07, 08}) which do not
 The second example shows how to use the optional fourth and fifth
 elements of the @samp{-n} option to specify a wrap value to NCO.
 The fourth argument to @samp{-n}, if present, specifies the maximum
-integer value of the numeric suffix. 
+integer value of @var{numeric_suffix}.
 In this case the maximum value is 12, and will be formatted as @file{12}
 in the filename string. 
 The fifth argument to @samp{-n}, if present, specifies the minimum
-integer value of the numeric suffix. 
+integer value of @var{numeric_suffix}.
 The default minimum filename suffix is 1, which is formatted as
 @file{01} in this case.   
 Thus the second and third examples have the same effect, that is, they
@@ -1955,6 +1992,8 @@ quickly and painlessly as possible.
 Furthermore, @code{ncatted} allows each editing operation to be applied
 to every variable in a file, thus saving you time when you want to
 change attribute conventions throughout a file.
+@code{ncatted} interprets character attributes as strings which is very
+useful, but can lead to unexpected results.
 
 @cindex @code{history} attribute
 @cindex @code{-h}
@@ -2124,6 +2163,29 @@ The quotes are strictly unnecessary around @var{att_val} except
 when @var{att_val} contains characters which would confuse the calling
 shell, such as spaces, commas, and wildcard characters. 
 
+@cindex Perl
+NCO processing of NC_CHAR attributes is a bit like Perl in that
+it attempts to do you want by default (but this can sometimes cause
+unexpected results).
+@cindex @code{printf()}
+@cindex @code{\n} (linefeed)
+@cindex @code{\t} (horizontal tab)
+If the @var{att_type} is NC_CHAR, e.g., then the argument
+is interpreted as a string and may contain C-language escape sequences
+for formatting.
+These escape sequences will be translated and stored in the appropriate
+ASCII equivalent code.
+The most frequently used C-language escape sequences are @code{\n} (for
+linefeed) and @code{\t} (for horizontal tab).
+This feature allows editing of formatted text attributes.
+Note that the NUL character @code{\0} which terminates C language
+strings is assumed and need not be explicitly specified.
+If @code{\0} is input, it will not be translated (because it would
+terminate the string).
+Because of these context-sensitive rules, if wish to use an attribute of
+type NC_CHAR to store data, rather than text strings, you should use
+@code{ncatted} with care.
+
 @noindent
 EXAMPLES
 
@@ -2132,6 +2194,7 @@ Append the string "Data version 2.0.\n" to the global attribute
 @example
 ncatted -O -a history,global,a,c,"Data version 2.0\n" in.nc 
 @end example
+Note the use of embedded C language @code{printf()}-style escape sequences.
 
 Change the value of the @code{long_name} attribute for variable @code{T}
 from whatever it currently is to "temperature":
@@ -2795,8 +2858,10 @@ This displays all the metadata pertaining to each variable, one variable
 at at time.
 
 @cindex @code{-s}
+@cindex @code{printf()}
 @item -s @var{format}
-String format for text output. Accepts C @code{printf()} formats.
+String format for text output. Accepts C language escape sequences and
+@code{printf()} formats. 
 
 @cindex @code{-u}
 @item -u 
@@ -2833,6 +2898,9 @@ Of course the internal storage of variable in a netCDF file should be
 transparent to the user, but there are cases when alphabetizing a file 
 is useful (see description of @code{-a} switch).
 
+@cindex @code{printf()}
+@cindex @code{\n} (linefeed)
+@cindex @code{\t} (horizontal tab)
 Print variable @code{three_dim_var} from file @file{in.nc} with
 default notations. 
 Next print @code{three_dim_var} as an un-annotated text column.

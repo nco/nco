@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.20 1999-12-06 18:55:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.21 1999-12-14 22:39:32 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -222,7 +222,7 @@ typedef struct var_sct_tag{
   long sz_rec; /* number of elements in one record of hyperslab */ 
   int nbr_att; /* number of attributes */ 
   int has_mss_val; /* is there a missing_value attribute? */ 
-  ptr_unn mss_val; /* value of the missing_value attribute, if any (mss_val as stored in this structure must be of same type as the variable) */ 
+  ptr_unn mss_val; /* value of missing_value attribute, if any (mss_val stored in this structure must be same type as variable) */ 
   int cid; /* Dimension ID of the associated coordinate, if any */ 
   char fmt[5]; /* hint for printf()-style formatting */ 
   dim_sct **dim; /* pointers to full dimension structures */ 
@@ -323,6 +323,7 @@ extern char *nmn_get(void);
 extern char *prg_nm_get(void);
 extern char *prg_prs(char *,int *);
 extern char *sng_lst_prs(char **,const long, const char *);
+extern int sng_ascii_trn(char *);
 extern dim_sct *dim_dup(dim_sct *);
 extern dim_sct *dim_fll(int,int,char *);
 extern double arm_time_mk(int,double);

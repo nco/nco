@@ -1,3 +1,10 @@
+1999-12-14  Charlie Zender  <zender@dust.ps.uci.edu>
+
+	* Tagged this as nco1_1_43
+
+	* Added support for C-language escape sequences to ncatted
+	Moved all this code from ncks to new sng_ascii_trn() function
+
 1999-12-06  Charlie Zender  <zender@dust.ps.uci.edu>
 
 	* Tagged this as nco1_1_42

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.15 1999-12-06 18:10:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.16 1999-12-14 22:39:34 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -16,6 +16,7 @@
    ncks -v var1 in.nc foo.nc
    ncks -H -C -v three_dim_var -d lon,3,0 in.nc
    ncks -p /ZENDER/tmp -l /data/zender/tmp h0001.nc foo.nc
+   ncks -s "%+16.10f\n" -H -C -v three_dim_var in.nc
    */ 
 
 /* Standard header files */
@@ -74,8 +75,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.15 1999-12-06 18:10:01 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.15 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.16 1999-12-14 22:39:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.16 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -104,7 +105,7 @@ main(int argc,char **argv)
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock);
   
-  /* Get the program name and set the enum for the program (e.g., prg=ncra) */
+  /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
@@ -117,13 +118,13 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'C': /* Add to extraction list any coordinates associated with variables to be extracted? */ 
+    case 'C': /* Extraction list should include all coordinates associated with extracted variables? */ 
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c': /* Add all coordinates to the extraction list? */ 
       PROCESS_ALL_COORDINATES=True;
       break;
-    case 'D': /* The debugging level.  Default is 0. */
+    case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=atoi(optarg);
       break;
     case 'd': /* Copy argument for later processing */ 
@@ -136,7 +137,7 @@ main(int argc,char **argv)
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
-    case 'l': /* Get local path prefix for storing files retrieved from remote file system */
+    case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
     case 'm': /* Print variable metadata to screen */
@@ -148,16 +149,16 @@ main(int argc,char **argv)
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
       break;
-    case 'F': /* Toggle the style of printing out arrays. Default is C-style. */
+    case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_STYLE=!FORTRAN_STYLE;
       break;
-    case 'p': /* Get the path prefix */
+    case 'p': /* Common file path */
       fl_pth=optarg;
       break;
-    case 'R': /* Toggle the removal of remotely-retrieved-files after processing. Default is True */
+    case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
-    case 'r': /* Print the CVS program info and copyright notice */
+    case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nc_lib_vrs_prn();
       exit(EXIT_SUCCESS);
@@ -168,10 +169,10 @@ main(int argc,char **argv)
     case 'u': /* Turn on the printing of dimensional units. */
       PRINT_DIMENSIONAL_UNITS=!PRINT_DIMENSIONAL_UNITS;
       break;
-    case 'v': /* Assemble the list of variables to extract/exclude */ 
+    case 'v': /* Variables to extract/exclude */ 
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
-    case 'x': /* Exclude rather than extract the variables specified with -v */
+    case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
     default: /* Print proper usage */
@@ -400,7 +401,7 @@ prn_att(int in_id,int var_id)
     (void)ncattget(in_id,var_id,att[idx].nm,att[idx].val.vp);
     (void)fprintf(stdout,"%s attribute %i: %s, size = %i %s, value = ",src_sng,idx,att[idx].nm,att_sz,nc_type_nm(att[idx].type));
     
-    /* Typecast the pointer to the values before access */ 
+    /* Typecast pointer to values before access */ 
     (void)cast_void_nctype(att[idx].type,&att[idx].val);
 
     (void)strcpy(dlm_sng,", ");
@@ -1245,39 +1246,12 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int nbr_lmt,char *dlm_sng,bo
     } /* end if */
   } /* end if */
 
-  /* Print out what we've learned */ 
+  /* Print what we've learned */ 
   if(dlm_sng != NULL){
-    char *dlm_sng_tmp;
-    char *backslash_ptr;
+    /* Replace any C language '\X' escape codes with ASCII bytes */
+    (void)sng_ascii_trn(dlm_sng);
 
-    dlm_sng_tmp=(char *)strdup(dlm_sng);
-    backslash_ptr=strchr(dlm_sng_tmp,'\\');
-    if(backslash_ptr != NULL){
-      /* Replace backslash character by corresponding control code */ 
-      switch(*(backslash_ptr+1)){
-      case 'a':	*backslash_ptr='\a'; break;
-      case 'b':	*backslash_ptr='\b'; break;
-      case 'f':	*backslash_ptr='\f'; break;
-      case 'n':	*backslash_ptr='\n'; break;
-      case 'r':	*backslash_ptr='\r'; break;
-      case 't':	*backslash_ptr='\t'; break;
-      case 'v':	*backslash_ptr='\v'; break;
-      case '\\': *backslash_ptr='\\'; break;
-      case '\?': *backslash_ptr='\?'; break;
-      case '\'': *backslash_ptr='\''; break;
-      case '\"': *backslash_ptr='\"'; break;
-      default: 
-	(void)fprintf(stderr,"%s: WARNING %2s not supported in a delimiter string\n",prg_nm_get(),backslash_ptr);
-	break;
-      } /* end switch */ 
-      /* Get rid of character after backslash character */ 
-      (void)memmove(dlm_sng_tmp,dlm_sng_tmp,(backslash_ptr-dlm_sng_tmp)*sizeof(char));
-      (void)memmove(backslash_ptr+1,backslash_ptr+2,(strlen(backslash_ptr+2)+1)*sizeof(char));
-    } /* end if */ 
-    /* Assign local copy of dlm_sng to dlm_sng_tmp */ 
-    dlm_sng=dlm_sng_tmp;
-
-    /* We assume the -s argument (dlm_sng) formats the entire string.
+    /* Assume the -s argument (dlm_sng) formats the entire string
        Otherwise, one could assume the field will be printed with format type_fmt_sng(var.type),
        and the user is only allowed to affect the text in between the fields. 
        This would be accomplished with the following: */ 
@@ -1294,8 +1268,6 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int nbr_lmt,char *dlm_sng,bo
       } /* end switch */ 
     } /* end loop over element */
 
-    /* Free local copy of input dlm_sng */
-    (void)free(dlm_sng);
   } /* end if */
 
   if(var.nbr_dim == 0 && dlm_sng == NULL){ 

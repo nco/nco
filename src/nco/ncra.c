@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.16 1999-12-06 18:10:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.17 1999-12-14 22:39:34 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -67,8 +67,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.16 1999-12-06 18:10:02 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.16 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.17 1999-12-14 22:39:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.17 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -119,7 +119,7 @@ main(int argc,char **argv)
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock);
 
-  /* Get the program name and set the enum for the program (e.g., prg=ncra) */
+  /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
@@ -129,26 +129,26 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'C': /* Add to extraction list any coordinates associated with variables to be extracted? */ 
+    case 'C': /* Extraction list should include all coordinates associated with extracted variables? */ 
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':
       PROCESS_ALL_COORDINATES=True;
       break;
-    case 'D': /* The debugging level.  Default is 0. */
+    case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=atoi(optarg);
       break;
     case 'd': /* Copy argument for later processing */ 
       lmt_arg[nbr_lmt]=(char *)strdup(optarg);
       nbr_lmt++;
       break;
-    case 'F': /* Toggle the style of printing out arrays. Default is C-style. */
+    case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_STYLE=!FORTRAN_STYLE;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
-    case 'l': /* Get local path prefix for storing files retrieved from remote file system */
+    case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
     case 'n': /* Get the NINTAP-style abbreviation of files to average */ 
@@ -162,21 +162,21 @@ main(int argc,char **argv)
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
       break;
-    case 'p': /* Get the path prefix */
+    case 'p': /* Common file path */
       fl_pth=optarg;
       break;
-    case 'R': /* Toggle the removal of remotely-retrieved-files after processing. Default is True */
+    case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
-    case 'r': /* Print the CVS program info and copyright notice */
+    case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nc_lib_vrs_prn();
       exit(EXIT_SUCCESS);
       break;
-    case 'v': /* Assemble the list of variables to extract/exclude */ 
+    case 'v': /* Variables to extract/exclude */ 
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
-    case 'x': /* Exclude rather than extract the variables specified with -v */
+    case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
     default: /* Print proper usage */
@@ -350,16 +350,16 @@ main(int argc,char **argv)
 	for(idx=0;idx<nbr_var_prc;idx++){
 	  if(dbg_lvl > 2) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
 	  if(dbg_lvl > 0) (void)fflush(stderr);
-	  /* Update the hyperslab start indices to the current record for each variable */ 
+	  /* Update hyperslab start indices to current record for each variable */
 	  var_prc[idx]->srt[0]=idx_rec;
 	  var_prc[idx]->end[0]=idx_rec;
 	  var_prc[idx]->cnt[0]=1L;
 	  /* Retrieve the variable values from disk into memory */ 
 	  (void)var_get(in_id,var_prc[idx]);
-	  /* Tally the variable by summing current value with the running total */ 
+	  /* Tally variable by summing current value with running total */ 
 	  if(prg == ncra) var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
 	  if(prg == ncra) (void)var_add(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc[idx]->val,var_prc_out[idx]->val);
-	  /* Append the current record to the output file */ 
+	  /* Append current record to output file */ 
 	  if(prg == ncrcat){
 	    var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=idx_rec_out;
 	    var_prc_out[idx]->cnt[0]=1L;
@@ -369,7 +369,7 @@ main(int argc,char **argv)
 	  } /* end if ncrcat */ 
 	  /* Make sure record coordinate, if any, is monotonic */ 
 	  if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,idx_rec_out);
-	  /* Free the current input buffer */
+	  /* Free current input buffer */
 	  (void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
 	} /* end loop over variables */
 	idx_rec_out++;
@@ -415,7 +415,7 @@ main(int argc,char **argv)
     } /* end loop over idx */
   } /* end if */
   
-  /* Manually fix the YYMMDD date which was mangled by averaging */ 
+  /* Manually fix YYMMDD date which was mangled by averaging */ 
   if(NCAR_CSM_FORMAT && prg == ncra) (void)ncar_csm_date(out_id,var_out,nbr_xtr);
   
   /* Add time variable to output file */ 
@@ -428,7 +428,7 @@ main(int argc,char **argv)
 	(void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp);
       }else{ /* end if variable is a scalar */ 
 	
-	/* The size of the record dimension is 1 in the output file */ 
+	/* Size of record dimension is 1 in output file */ 
 	if(prg == ncra) var_prc_out[idx]->cnt[0]=1L;
 	
 	(void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp);

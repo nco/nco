@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.26 1999-12-06 18:10:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.27 1999-12-14 22:39:35 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -31,6 +31,11 @@
 /* #include <assert.h> */            /* assert() debugging macro */ 
 /* #include <errno.h> */             /* errno */
 /* #include <malloc.h>    */         /* malloc() stuff */
+
+/* 3rd party vendors */
+#ifdef OMP /* OpenMP */
+#include <omp.h> /* OpenMP pragmas */
+#endif /* endif OpenMP */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
@@ -73,8 +78,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.26 1999-12-06 18:10:02 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.26 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.27 1999-12-14 22:39:35 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.27 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -131,7 +136,7 @@ main(int argc,char **argv)
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock);
   
-  /* Get the program name and set the enum for the program (e.g., prg=ncra) */
+  /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
@@ -142,17 +147,17 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'a':
-      /* Get list of dimensions over which to average hyperslab */
+      /* Dimensions over which to average hyperslab */
       dim_avg_lst_in=lst_prs(optarg,",",&nbr_dim_avg);
       break;
-    case 'C': /* Add to extraction list any coordinates associated with variables to be extracted? */ 
+    case 'C': /* Extraction list should include all coordinates associated with extracted variables? */ 
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':
       PROCESS_ALL_COORDINATES=True;
       break;
     case 'D':
-      /* The debugging level.  Default is 0. */
+      /* Debugging level. Default is 0. */
       dbg_lvl=atoi(optarg);
       break;
     case 'd':
@@ -161,7 +166,7 @@ main(int argc,char **argv)
       nbr_lmt++;
       break;
     case 'F':
-      /* Toggle the style of printing out arrays. Default is C-style. */
+      /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_STYLE=!FORTRAN_STYLE;
       break;
     case 'h': /* Toggle appending to history global attribute */
@@ -171,7 +176,7 @@ main(int argc,char **argv)
       WGT_MSK_CRD_VAR=!WGT_MSK_CRD_VAR;
       break;
     case 'l':
-      /* Get local path prefix for storing files retrieved from remote file system */
+      /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
     case 'm':
@@ -200,21 +205,21 @@ main(int argc,char **argv)
       op_type=op_prs(optarg);
       break;
     case 'p':
-      /* Get the path prefix */
+      /* Common file path */
       fl_pth=optarg;
       break;
     case 'R':
-      /* Toggle the removal of remotely-retrieved-files after processing. Default is True */
+      /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
     case 'r':
-      /* Print the CVS program info and copyright notice */
+      /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nc_lib_vrs_prn();
        exit(EXIT_SUCCESS);
       break;
     case 'v':
-      /* Assemble the list of variables to extract/exclude */ 
+      /* Variables to extract/exclude */ 
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
     case 'W':
@@ -223,11 +228,11 @@ main(int argc,char **argv)
       exit(EXIT_FAILURE);
       break;
     case 'w':
-      /* The name of the variable to use as a weight in the averaging.  Default is none */
+      /* Variable to use as weight in averaging.  Default is none */
       wgt_nm=optarg;
       break;
     case 'x':
-      /* Exclude rather than extract the variables specified with -v */
+      /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
     case '?':
@@ -481,7 +486,10 @@ main(int argc,char **argv)
       (void)var_get(in_id,msk);
     } /* end if */
 
-    /* Process all variables in the current file */ 
+#ifdef OMP /* OpenMP */
+    (void)fprintf(stderr,"%s: WARNING Attempting OpenMP Parallelization...\n");
+#pragma omp parallel for
+    /* Process all variables in current file */ 
     for(idx=0;idx<nbr_var_prc;idx++){
       if(dbg_lvl > 0) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
@@ -627,6 +635,7 @@ main(int argc,char **argv)
       var_prc_out[idx]->val.vp=NULL;
       
     } /* end loop over idx */
+#endif /* endif OpenMP */
     
     /* Free weights and masks */ 
     if(wgt != NULL) wgt=var_free(wgt);
