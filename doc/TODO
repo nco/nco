@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.116 2002-01-28 02:09:38 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.117 2002-01-28 02:19:07 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -25,7 +25,6 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 334
 cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
   The indicated argument is incompatible with the corresponding formal parameter.
         __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
-ld64: WARNING 15 : Multiply defined:(err_sng) in /home/ess/zender/zender/obj/SGIMP64/ncap.tab.o and /home/ess/zender/zender/obj/SGIMP64/ncap_lex.o (2nd definition ignored).
 9. Add outer loop over files so script may apply to each file
 
 Top priority items You can help with:

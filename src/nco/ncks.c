@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.49 2002-01-23 09:24:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.50 2002-01-28 02:15:05 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.49 2002-01-23 09:24:14 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.49 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.50 2002-01-28 02:15:05 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.50 $";
   
   extern char *optarg;
   
@@ -132,7 +132,6 @@ main(int argc,char **argv)
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nbr_fl=0;
   int opt;
-  int rcd; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
     
   lmt_sct *lmt;
@@ -237,7 +236,7 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */
-  rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
+  nco_open(fl_in,NC_NOWRITE,&in_id);
   
   /* Get number of variables, dimensions, and global attributes in file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&nbr_glb_att,&rec_dmn_id);
@@ -284,7 +283,7 @@ main(int argc,char **argv)
     } /* end loop over idx */
 
     /* Turn off default filling behavior to enhance efficiency */
-    rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+    nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
   
     /* Take output file out of define mode */
     (void)nco_enddef(out_id);
@@ -775,7 +774,6 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
   int nbr_dim;
   int nbr_dmn_in;
   int nbr_dmn_out;
-  int rcd; /* [rcd] Return code */
   int var_in_id;
   int var_out_id;
 
@@ -794,8 +792,8 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
   void *void_ptr;
 
   /* Get var_id for requested variable from both files */
-  rcd=nco_inq_varid(in_id,var_nm,&var_in_id);
-  rcd=nco_inq_varid(out_id,var_nm,&var_out_id);
+  nco_inq_varid(in_id,var_nm,&var_in_id);
+  nco_inq_varid(out_id,var_nm,&var_out_id);
   
   /* Get type and number of dimensions for variable */
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);

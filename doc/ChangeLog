@@ -1,6 +1,8 @@
 2002-01-27  Charlie Zender  <zender@uci.edu>
 
-	* Remove redundant err_sng definition, make 
+	* cvs tag -c nco-2_1_2
+	Changes since nco-2_1_1: ncap warning cleanups, icc conformance,
+	plug most non-ncap leaks detected by insure++
 
 	* Move yylex() so only called once in ncap_initial_scan()
 
