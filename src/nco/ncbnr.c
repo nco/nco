@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbnr.c,v 1.2 2003-08-01 07:04:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbnr.c,v 1.3 2003-08-02 06:12:34 zender Exp $ */
 
 /* ncbnr -- netCDF binary operator */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *opt_sng;
   char *time_bfr_srt;
-  char CVS_Id[]="$Id: ncbnr.c,v 1.2 2003-08-01 07:04:07 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.2 $";
+  char CVS_Id[]="$Id: ncbnr.c,v 1.3 2003-08-02 06:12:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.3 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -481,14 +481,13 @@ main(int argc,char **argv)
     /* Perform specified binary operation */
     switch(nco_op_typ){
     case nco_op_add: /* [enm] Add file_1 to file_2 */
-      (void)nco_var_add(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val);
+      (void)nco_var_add(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val); break;
     case nco_op_mlt: /* [enm] Multiply file_1 by file_2 */
-      (void)nco_var_mlt(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val);
+      (void)nco_var_mlt(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val); break;
     case nco_op_dvd: /* [enm] Divide file_1 by file_2 */
-      (void)nco_var_dvd(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val);
+      (void)nco_var_dvd(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val); break;
     case nco_op_sbt: /* [enm] Subtract file_2 from file_1 */
-      (void)nco_var_sbt(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val);
-      break;
+      (void)nco_var_sbt(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val); break;
     default: /* Other defined nco_op_typ values are valid for ncra(), ncrcat(), ncwa(), not ncbnr() */
       (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in binary operation\n",prg_nm);
       nco_exit(EXIT_FAILURE);

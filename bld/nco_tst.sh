@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.57 2003-08-01 07:04:07 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.58 2003-08-02 06:12:33 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -375,7 +375,31 @@ fi # end ncbnr
 
 if [ "${NCDIFF}" = 1 ]; then
 ${MY_BIN_DIR}/ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
-avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v mss_val foo.nc`
+avgother help options)
+zender@elnino:~/nco/bld$  repository
+bash: repository: command not found
+zender@elnino:~/nco/bld$         diff         Show differences between revisions
+diff: extra operand
+diff: Try `diff --help' for more information.
+zender@elnino:~/nco/bld$         edit         Get ready to edit a watched file
+        commit       Check files into the repository
+        diff         Show differences between revisions
+        edit         Get ready to edit a watched file
+        editors      See who is editing a watched file
+        export       Export sources from CVS, similar to checkout
+        history      Show repository access history
+        import       Import sources into CVS, using vendor branches
+        init         Create a CVS repository if it doesn't exist
+        log          Print out history information for files
+        login        Prompt for password for authenticating server
+        logout       Removes entry in .cvspass for remote repository
+        pserver      Password server mode
+        rannotate    Show last revision where each line of module was modified
+        rdiff        Create 'patch' format diffs between releases
+        release      Indicate that a Module is no longer in use
+        remove       Remove an entry from the repository
+        rlog         Print out history information for a module
+        rtag         Add a sym=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v mss_val foo.nc`
 echo "ncdiff 1: difference with missing value attribute: 1.0e36 =?= ${avg}" 
 
 ${MY_BIN_DIR}/ncdiff -O -d lon,0 -v no_mss_val in.nc in.nc foo.nc 2>> foo.tst
