@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.266 2004-10-05 01:39:03 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.267 2004-10-07 23:13:46 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -81,9 +81,10 @@ little money, click on the PayPal button:
 <li><a href="#Download">Download/CVS NCO Software</a></li>
 <li><a href="#RTFM">Documentation and User's Guide</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
-<li><a href="#NCAR">Using NCO at UCI, NCAR, and SDSC</a></li>
 <li><a href="#FAQ">FAQ</a></li>
+<li><a href="#NCAR">Using NCO at UCI, NCAR, and other HPCCs</a></li>
 <li><a href="#Bugs">Common NCO Build/Run Problems</a></li>
+<li><a href="#Contacting Us">Contacting us</a></li>
 </ul>
 <hr>
 
@@ -518,10 +519,14 @@ fixes we currently have in mind for NCO.</li>
 <hr></p>
 
 <dt><a name="FAQ"></a></dt>
-<h2>FAQ:</h2>
+<h2>FAQ: Frequently Asked Questions</h2>
 <p>These questions show up almost as frequently as my mother.
 But they are more predictable:
 <ul>
+<li><i>I still have questions, how do I contact the NCO project?</i>
+The NCO project has various Q&amp;A and discussion forums described
+<a href="#Contacting Us">below</a>.  
+</li>
 <li><i>Where can I find prebuilt NCO executables?</i>
 Pre-built executables of some versions of NCO for the operating
 systems <a href="#Download">described above</a> (Debian GNU/Linux,
@@ -548,20 +553,11 @@ Subscribe to the
 mailing list. 
 This list is for NCO-related announcements, not for questions.
 <tt>nco-announce</tt> is very low volume, averaging one message every few months.</li>
-<li><i>Where should I ask my questions on how to use NCO?</i>
-On the <a href="http://sf.net/forum/forum.php?forum_id=9830">Help</a> site.
-</li>
-<li><i>Where should I post suggestions/comments on NCO features and usage?</i>
-On the <a href="http://sf.net/forum/forum.php?forum_id=9829">Discussion</a> site.
-</li>
-<li><i>Where are NCO development and bug-squashing discussed?</i>
-At the <a href="http://sf.net/forum/forum.php?forum_id=9831">Developer</a>
-site.</li>
 </ul>
 <hr></p>
 
 <dt><a name="NCAR"></a></dt>
-<h2>Using NCO at UCI, NCAR, and SDSC</h2>
+<h2>Using NCO at UCI, NCAR, and other High Performance Computing Centers (HPCCs)</h2>
 <p>Users at UC Irvine, NCAR, and SDSC <i>may</i> find pre-built,
 <i>almost</i> up-to-date NCO executables in the following locations.
 These executables are <i>unsupported</i> and are almost
@@ -808,6 +804,25 @@ Bug-fixes:
 </li>
 </ul>
 <p><hr></p>
+
+<dt><a name="Contacting Us"></a></dt>
+<h2>Contacting Us:</h2>
+<p>Contact us through one of these forums so other users can benefit
+from and contribute to our exchange.
+Let us know how NCO is working for you&mdash;we'd like to hear.
+Have you browsed the forums to see if your question/comment has been reported before?
+<ul>
+<li><i>Where should I ask my questions on how to use NCO?</i>
+On the <a href="http://sf.net/forum/forum.php?forum_id=9830">Help</a> site.
+</li>
+<li><i>Where should I post suggestions/comments on NCO features and usage?</i>
+On the <a href="http://sf.net/forum/forum.php?forum_id=9829">Discussion</a> site.
+</li>
+<li><i>Where are NCO development and bug-squashing discussed?</i>
+At the <a href="http://sf.net/forum/forum.php?forum_id=9831">Developer</a>
+site.</li>
+</ul>
+<hr></p>
 
 <a href="http://sf.net"><img src="http://sf.net/sflogo.php?group_id=3331&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo"></a>
 
