@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.462 2005-03-28 00:26:18 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.463 2005-03-28 01:25:08 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -205,7 +205,6 @@ nco323. Collect all past ANNOUNCE files and place in reverse chronological order
 nco324. Add release date to "Version Summary" section on homepage
 nco326. Add manual override of writing *tmp* file for intermediate results?
 nco328. Ability to reverse specified dimensions (use negative stride?)
-nco329. Ability to re-order dimensions nco_var_dmn_rdr()
 nco333. Clean up preprocessor symbols with cd ~/nco/src/nco;ifnames *.c
 nco334. Same as nco354. 
 nco335. ncflint: implement interpolation/mss_val algorithms two and three as options?
@@ -218,7 +217,6 @@ nco344. Create sophisticated etags regular expressions for change version number
 ************** Important ***************************
 nco345. OpenMP implementation in ncwa core dumps on AIX ESMF: wgt_avg problem?
 ncwa -D 5 -O -C -a wvl -v ss_co_alb ${DATA_MIE}/mie/mie_1.nc ${DATA_MIE}/mie/foo_avg_1.nc    
-nco346. Add LFS documentation to nco.texi
 nco351. Ask Jim Edwards to fix make test rtld errors on AIX with OpenMP Related to nco352. 
 nco352. Probably related to 351: OpenMP directive must appear in main() or ldd will not associate /usr/lib/libxlsmp.a(smprt_64.o) with executable so rtld errors occur on AIX
 ************** Important ***************************
@@ -234,21 +232,19 @@ nco362. reduce memory during run by free()'ing var_fix[idx],var_fix_out[idx],var
 nco363. ncpdq: document netCDF limitations in nco.texi
 nco367. fix ncwa list collapse errors. Unfortunately ncwa uses dim_avg_lst after it is collapsed
 nco375. Do something more consistent with: nco_exit(EXIT_FAILURE)
-nco379. ncpdq: Add packing/unpacking capabilities
 nco385. ncpdq: dynamically allocate arrays in nco_var_dmn_rdr_mtd(), nco_var_dmn_rdr_val()?
 nco386. Remove purely diagnostic arrays from nco_var_dmn_rdr_mtd(), nco_var_dmn_rdr_val()?
 nco389. ncpdq: Single dimension in re-order list with no negative sign is always identity transformation, warn? exit?
 nco390. ncpdq: make -a optional? (all switches are optional in all other operators)
 nco392. OpenMP: thread main loop of ncatted
 nco393. OpenMP: thread main loop of ncflint
-nco394. strdup() all system-owned memory so var_free() can free strings
 nco395. ncpdq: document rdr shr lists
 nco396. free() memory at end of each operator
 nco397. make ncpack symbolic link to ncpdq? Re-order/pack are completely independent yet need same structure of program
 nco402. Leave alone [un-]packing of fixed variables in arithmetic operators
         See notes about this in nco_var_dfn()
 nco404. Does Ersoy's XML stylesheet nco.css work?
-nco406. Add advantages/disadvantages of NCO (compared to e.g., ANTS) description
+nco406. Add advantages/disadvantages of NCO (compared to e.g., ANTS) description?
 nco408. How to get new SDO tasks done? How to advertise pay-per-feature requests? How to evaluate responses? GNOME has something similar
 nco421. ncpdq: Make packing offer to move missing value to inside range
 nco425. ncpdq: Make unpacking offer to unpack missing value to preserve its usefulness
@@ -273,7 +269,6 @@ nco464. ncpdq: convert missing_value to packed type
         ncpdq -O -C -U -v mss_val ~/foo.nc ~/foo_upk.nc
         ncks -C -m -H ~/foo_upk.nc
 nco467. Keep track of CDO "Climate Data Operators" http://www.mpimet.mpg.de/~cdo/
-nco468. Make -H toggle variable printing so ncks -M only prints metadata 
 nco469. Use default _FillValue e.g., NC_FILL_FLOAT, or values from <limits.h>, <float.h>?
 nco474. Incorporate alternative "chunking" for ncrcat when data are one-dimensional, to avoid high disk/network access incurred by retrieving one float at a time
 nco477. Make default to copy but not to print associated coordinate variables
@@ -291,7 +286,8 @@ nco488. ncatted: Deleting global attributes doesn't work unless 'global' specifi
         ncatted -a Conventions,global,d,, in.nc foo.nc (works)
 nco490. regression in ncwa when freeing var->nm in nco_var_free():
         ncwa -D 2 -O -a lat -w gw ~/nco/data/in.nc ~/foo.nc
-nco493. 
+nco493. Finish implementation of lst_1D_to_2D()
+nco494. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
