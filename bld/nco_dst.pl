@@ -28,7 +28,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.50 2000-03-06 08:04:46 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.51 2000-03-07 22:32:01 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -64,9 +64,12 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-03-06 08:04:46 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.50 2000-03-06 08:04:46 zender Exp $';
-my $CVS_Revision='$Revision: 1.50 $';
+my $CVS_Date='$Date: 2000-03-07 22:32:01 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.51 2000-03-07 22:32:01 zender Exp $';
+my $CVS_Revision='$Revision: 1.51 $';
+my $CVSROOT='$CVSROOT'; # CVS repository
+my $HOME=$ENV{'HOME'};
+my $HOST=$ENV{'HOST'};
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
 my $bld=$False; # Option bld; Whether to rebuild netCDF distribution
 my $cp_cmd='cp -p -f'; # Command that behaves like cp
@@ -114,7 +117,13 @@ if($data_nm eq ''){$data_nm='/data/'.$usr_nm;}
 my $dst_pth_pfx=$data_nm; # Parent of build directory
 if($dst_pth_pfx eq $HOME){die "$prg_nm: ERROR \$dst_pth_pfx eq $dst_pth_pfx";} # This could be disastrous
 if($rm_cmd =~ m/( -r)|( -R)|( --recursive)/){die "$prg_nm: ERROR Dangerous setting \$rm_cmd eq $rm_cmd";} # This would be disastrous
-my $CVSROOT=':ext:'.$usr_nm.'@goldhill.cgd.ucar.edu:/home/zender/cvs'; # CVS repository
+if($HOST =~ m/cgd\.ucar\.edu/ || $HOST =~ m/sanitas/ || $HOST =~ m/goldhill/ || $HOST =~ m/dataproc/){
+# CVS 1.10 has a bug where 'cvs -d :ext:user@host:repositorypath export -kkv -r revision_tag module' fails
+# Workaround: Export from a machine cross-mounted to /fs/cgd so that :ext:user@host is not necessary
+    $CVSROOT='/home/zender/cvs'; # CVS repository
+}else{
+    $CVSROOT=':ext:'.$usr_nm.'@goldhill.cgd.ucar.edu:/home/zender/cvs'; # CVS repository
+} # endif CVSROOT
 
 $prg_dsc='NCO distribution maker'; # Program description
 ($prg_nm,$prg_vrs)=$CVS_Id =~ /: (.+).pl,v ([\d.]+)/; # Program name and version
@@ -219,7 +228,8 @@ if($bld){
     }else{
 	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -r $vrs_tag -d $dst_pth_bld nco"); # Export
     } # endelse
-    cmd_prc("printf $dst_vrs > $dst_pth_bld/doc/VERSION"); # Stamp version in VERSION file
+    cmd_prc("printf $dst_vrs > $dst_pth_bld/doc/VERSION"); # Stamp version in VERSION file in exported files
+    cmd_prc("printf $dst_vrs > $usr_nm/nc/nco/doc/VERSION"); # Stamp version in VERSION file in development directory
 #    cmd_prc("ln -s $dst_pth_bld/bld/nco.spec $dst_pth_bld/bld/nco-$dst_vrs.spec"); # Stamp version in VERSION file
     
 # Make sure documentation files are up to date

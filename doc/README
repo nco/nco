@@ -1,16 +1,20 @@
-$Header: /data/zender/nco_20150216/nco/doc/README,v 1.4 2000-03-06 04:04:39 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.5 2000-03-07 22:32:01 zender Exp $ -*-text-*-
+
+# Purpose: NCO README file
 
 What is NCO?
-The netCDF Operators, or NCO, is a suite of programs known as
+The netCDF Operators, or NCO, are a suite of programs known as
 operators. The operators facilitate manipulation and analysis of
-scientific data in netCDF or HDF format
-(http://www.unidata.ucar.edu/packages/netcdf and
-http://hdf.ncsa.uiuc.edu, respectively).  Each NCO operator (e.g.,
+self-describing data stored in the netCDF or HDF formats, which are
+freely available (http://www.unidata.ucar.edu/packages/netcdf and
+http://hdf.ncsa.uiuc.edu, respectively). Each NCO operator (e.g., 
 ncks) takes netCDF or HDF input file(s), performs an operation (e.g.,
 averaging, hyperslabbing, or renaming), and outputs a processed netCDF
-file.  The NCO User's Guide illustrates their use with examples from
-the field of climate modeling and analysis. The NCO homepage is 
-http://www.cgd.ucar.edu/cms/nco.
+file. Although most users of netCDF and HDF data are involved in
+scientific research, these data formats, and thus NCO, are generic and
+are equally useful in fields like finance. The NCO User's Guide
+illustrates NCO use with examples from the field of climate modeling
+and analysis. The NCO homepage is http://www.cgd.ucar.edu/cms/nco.
 
 Installation:
 First, note that NCO does not use ./configure to build.

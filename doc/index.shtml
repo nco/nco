@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.37 2000-03-06 09:07:45 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.38 2000-03-07 22:32:01 zender Exp $
 
 Purpose: NCO homepage
 
@@ -54,20 +54,24 @@ scp -p ~/nc/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.sht
 <DT><A NAME="Definition"></A></DT>
 <H2>What is NCO?</H2>
 
-<P>The netCDF Operators, or NCO, is a suite of programs known as <B>operators</B>.
+<P>The netCDF Operators, or NCO, are a suite of programs known as <B>operators</B>.
 Each operator is a standalone, command line program which is executed at
 the UNIX (or NT) shell-level like, e.g., <TT>ls</TT> or <TT>mkdir</TT>.
-The operators take netCDF file(s) as input, perform an operation (e.g.,
-averaging, hyperslabbing, or renaming), and produce a netCDF file as output.
+The operators take netCDF or HDF files as input, then perform an
+operation (e.g., averaging, hyperslabbing, or metadata manipulation)
+and produce a netCDF file as output. 
 The operators are primarily designed to aid manipulation and analysis of
-scientific data, and the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO
-User's Guide</A> illustrates their use with examples from the field of
-climate modeling and analysis. </P>
+gridded scientific data, and the 
+<A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO User's
+Guide</A> 
+illustrates their use with examples from the field of climate modeling
+and analysis.</P> 
 
 <P>The operators are as general as netCDF itself: there are no restrictions
 on the contents of the netCDF file(s) used as input.
-The internal routines of NCO are completely dynamic which means that NCO imposes no 
-limit on the number of dimensions, sizes of variables, files etc.
+The internal routines of NCO are completely dynamic which means that
+NCO imposes no limit on the number of dimensions, sizes of variables,
+files etc. 
 NCO is designed to be used both interactively and with large batch jobs.
 There are plenty of command line (i.e., runtime) options, but the defaults
 settings are often sufficient for everyday needs.</P>
@@ -78,10 +82,9 @@ Guide</A> for details.</p>
 
 <P>NCO has probably already been built and tested on your operating system
 (AIX, IRIX, Linux, SunOS, Solaris, Tru64, UNICOS, and Windows NT).
-The current set of
-operators is given below. For a thorough description of each operator,
-please read the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO
-User's Guide</A>. </P>
+The current set of operators is given below. For a thorough
+description of each operator, please read the 
+<A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO User's Guide</A>. </P>
 
 <TABLE BORDER=1 CELLSPACING=10 CELLPADDING=0 >
 <CAPTION></CAPTION>
@@ -153,6 +156,10 @@ User's Guide</A>. </P>
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
 
+<P>2000/03/05: 
+Source and prebuilt binary executable <a href="http://www.rpm.org">RPM</a>s for NCO are now available for  
+<A HREF="#Download">download</A>. 
+
 <P>2000/01/26: 
 Fixed longstanding NCO bug which caused infrequent but unpredictable
 core dumps on machines with PIDs longer than 6 digits, e.g., all
@@ -220,13 +227,12 @@ See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> for 
 <HR></P>
 
 <DT><A NAME="Download"></A></DT>
-<H2>Download complete NCO distributions</H2>
+<H2>Download NCO distributions</H2>
 
-<p>Source distributions: 
-<p>Tarball format <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz">nco.tar.gz</a> (430 Kb compressed tar-file)
-<p>Source <a href="http://www.rpm.org">RPM</a> <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco--.src.rpm">nco--.src.rpm</a> (492 Kb)
-<p>Prebuilt binary distributions:
-<a href="http://www.rpm.org">RPM</a> for Redhat Linux 6.1 on Intel <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco--.i386.rpm">nco--.i386.rpm</a> (526 Kb)
+<p>Complete source and documentation in tarball format: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz">nco.tar.gz</a> (430 Kb compressed tar-file)
+<p>Complete source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco-1.1.46-1.src.rpm">nco-1.1.46-1.src.rpm</a> (492 Kb SRPM)
+
+<p>Those running Linux on Redhat 6.1-compatible Intel systems, should try the prebuilt binary executable <a href="http://www.rpm.org">RPM</a>: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco-1.1.46-1.i386.rpm">nco-1.1.46-1.i386.rpm</a> (526 Kb RPM)
 
 <P>Source distributions include complete NCO documentation (<I>User's
 Guide</I>) in Postscript, HTML, DVI, TeXinfo, and Info formats. These formats

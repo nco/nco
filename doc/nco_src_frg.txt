@@ -1,0 +1,23 @@
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.1 2000-03-07 22:32:02 zender Exp $ -*-text-*-
+
+# Purpose: Information used on Sourceforge site
+
+The purpose of this project is to create and improve tools for data
+analysis by using an Open Source development strategy. This starting
+point of this project is the NCO software suite, a relatively mature
+software package which requires new ideas, features, and contributors
+in order to stay useful.
+
+The netCDF Operators, or NCO, are a suite of programs known as
+operators. The operators facilitate manipulation and analysis of
+self-describing data stored in the netCDF or HDF formats, which are
+freely available (http://www.unidata.ucar.edu/packages/netcdf and
+http://hdf.ncsa.uiuc.edu, respectively). Each NCO operator (e.g., 
+ncks) takes netCDF or HDF input file(s), performs an operation (e.g.,
+averaging, hyperslabbing, or renaming), and outputs a processed netCDF
+file. Although most users of netCDF and HDF data are involved in
+scientific research, these data formats, and thus NCO, are generic and
+are equally useful in fields like finance. The NCO User's Guide
+illustrates NCO use with examples from the field of climate modeling
+and analysis. The NCO homepage is currently 
+http://www.cgd.ucar.edu/cms/nco.

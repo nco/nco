@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.58 2000-03-06 08:36:40 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.59 2000-03-07 22:32:00 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -26,7 +26,8 @@ MY_INC_DIR :=
 MY_DPN_DIR := $(MY_OBJ_DIR)
 MY_SRC_DIR := ../src/nco
 ifndef NCO_VRS
- NCO_VRS := $(shell cat $(MY_DOC_DIR)/VERSION) # Used for RPM building
+# Used for RPM building
+ NCO_VRS := $(shell cat $(MY_DOC_DIR)/VERSION)
 endif
 ifndef OPTS
  OPTS := O
@@ -104,6 +105,10 @@ MDL_BLD_SRC := $(addprefix $(MY_BLD_DIR)/,Makefile nco_dst.pl nco_tst.sh) # `mak
 MDL_NCAP_SRC := $(addprefix $(MY_SRC_DIR)/,ncap.y ncap.l ncap.h) # `make tags' includes these files
 MDL_NCAP_TRG := ncap.tab.c ncap.tab.h ncap_lex.c # `make ncap' creates these files
 MDL_NCAP := $(addprefix $(MY_SRC_DIR)/,$(MDL_NCAP_TRG)) # `make distclean' removes these files
+
+# RPM variables
+MDL_RPM_NST_NM := $(shell rpm -qa | grep nco-) # Name of installed package
+MDL_RPM_PRV_NM := $(shell rpm -qp ) # Name of package provided by specified RPM
 
 # Redefine default C and C++ pattern rules
 $(MY_OBJ_DIR)/%.o : %.c
@@ -586,14 +591,18 @@ rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges
 	cd /usr/src/redhat/SPECS; \
 	rpm -ba nco-$(NCO_VRS).spec;
 
-rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges
-	- if test -f /usr/src/redhat/SOURCES/nco-$(NCO_VRS).tar.gz; then printf "" ; else $(MY_BIN_DIR)/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-$(NCO_VRS).tar.gz; fi
+rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=1.1.46 rpmnet
+	- if test -f /usr/src/redhat/SOURCES/nco-$(NCO_VRS).tar.gz; then printf "Using existing nco-$(NCO_VRS).tar.gz\n" ; else $(MY_BIN_DIR)/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-$(NCO_VRS).tar.gz; fi
 	/bin/rm -f /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SOURCES; \
 	tar xvzf nco-$(NCO_VRS).tar.gz ./nco-$(NCO_VRS)/bld/nco.spec; \
 	mv ./nco-$(NCO_VRS)/bld/nco.spec /usr/src/redhat/SPECS/nco.spec; \
 	cd /usr/src/redhat/SPECS; \
-	rpm -ba nco.spec;
+	rpm -ba nco.spec; \
+	scp /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm zender@ftp.cgd.ucar.edu:/ftp/pub/zender/nco
+
+rpm_cln:
+	rpm --erase $(MDL_RPM_NST_NM)
 
 # Targets in dat
 data:	dat
@@ -680,6 +689,7 @@ dbg:
 	printf "LEX = $(LEX)\n"
 	printf "USE_FORTRAN_ARITHMETIC = $(USE_FORTRAN_ARITHMETIC)\n"
 	printf "NCO_VRS = $(NCO_VRS)\n"
+	printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
 distclean: dst_cln
 dst_cln: cln bin_cln doc_cln lib_cln
 	cd $(MY_BLD_DIR); rm -f *~
