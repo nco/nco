@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.83 2000-11-03 19:11:21 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.84 2000-11-03 19:19:19 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires: GNU Make. AT&T Make will not understand this.
@@ -586,6 +586,7 @@ all: dir lib $(MDL_BIN_TRG) data
 # Target directories which may not exist
 dir: bin_dir obj_dir lib_dir
 bin_dir:
+# Compaq ALPHA complains about -install
 #	-install -d $(MY_BIN_DIR)
 	-mkdir -p $(MY_BIN_DIR)
 lib_dir:

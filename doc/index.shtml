@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.68 2000-10-28 01:26:41 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.69 2000-11-03 19:19:19 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -126,6 +126,7 @@ instructions for helping the NCO project.
 <ul>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code now supports multithreading with OpenMP-compliant compilers</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code contains working packing and unpacking primitives</li>
+<li>NCO is available on <tt>prospect.ucar.edu</tt>
 <li><a href="./nco_news.shtml"> Full text of past NCO announcements</a></li>
 </ul>
 <hr></p>
@@ -216,6 +217,7 @@ fixes we currently have in mind for NCO.</li>
 <tt>/contrib/bin</tt>, <tt>/home/dataproc/zender/bin/SGIMP64</tt></li>
 <li>SCD <tt>blackforest.ucar.edu</tt> (AIX 4.0): <tt>/home/blackforest/zender/bin/AIX</tt></li>
 <li>SCD <tt>ouray.ucar.edu</tt> (UNICOS 10.0.0): <tt>/home/ouray0/zender/bin/CRAY</tt></li>
+<li>SCD <tt>prospect.ucar.edu</tt> (OSF1 5.0): <tt>/home/prospect/zender/bin/ALPHA</tt></li>
 <li>SCD <tt>ute.ucar.edu</tt> and <tt>utefe.ucar.edu</tt> (IRIX 6.5): <tt>/home/ute/zender/bin/SGIMP64</tt></li>
 <li>ESS <tt>dust.ps.uci.edu</tt> (Linux 2.2.16): <tt>/home/zender/bin/LINUX</tt></li>
 <li>ESS <tt>ess1.ps.uci.edu</tt> (Linux 2.2.15): <tt>/home/zender/bin/LINUXALPHA</tt></li>
