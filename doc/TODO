@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.183 2002-09-09 04:14:06 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.184 2002-09-09 05:53:14 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -205,9 +205,8 @@ Command executes but in.hdf is full of screwy values
 199. Internationalize (i18n) NCO with gettext()
 202. Make nco_tst.sh somehow summarize its own errors, e.g., "Total errors reported = 12" so that regression testing is easier. Perhaps nco_tst.sh should be rewritten in Perl or Python to accomplish this.
 203. Perform I/O timing tests with NCO 1.3.x vs NCO 1.2.x to see if netCDF3 interface really speeds up I/O
-204. Update User's guide to reflect new netCDF 3.x API
-206. Add example NCO script, such as dst.sh, to doc directory
-209. Add rules to make MANIFEST and automaticlally update Sourceforge download area
+206. Add sample NCO script, such as dst.sh, to doc directory
+209. Add rules to make MANIFEST and automagically update Sourceforge download area
 214. Disable threads > 1 on SGI temporarily because thread #0 is doing all the work, why?
 215. nco_var_cnf_dmn() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
 218. Fix all leaks etc. enumerated in insure.txt
@@ -222,7 +221,6 @@ Command executes but in.hdf is full of screwy values
 233. Makefile.old rule for make tst appears broken for long ftp rule
 234. Replace strcasecmp() with ANSI standard calls (multiple strcmp()?)
 235. Replace strdup() with ANSI standard calls (malloc(),memcpy()?)
-236. makeinfo nco.texi breaks in ncap section.
 237. Break down nco.texi into bite-size chunks, e.g., one file per section
 ************************************************************************
 End NCO Wish list

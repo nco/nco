@@ -1,5 +1,5 @@
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.75 2002-09-03 06:15:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.76 2002-09-09 05:53:15 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1027,6 +1027,5 @@ ncap_var_stretch /* [fnc] Stretch variables */
   /* Variables now conform */
   return DO_CONFORM;
 } /* end ncap_var_stretch() */
-
 
 

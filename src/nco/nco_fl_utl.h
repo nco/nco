@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.9 2002-09-09 04:14:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.10 2002-09-09 05:53:15 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -30,7 +30,7 @@
 #ifndef WIN32
 #include <arpa/nameser.h> /* needed for _res */
 #include <resolv.h> /* Internet structures for _res */
-#endif
+#endif /* !WIN32 */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
