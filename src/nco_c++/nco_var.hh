@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.3 2002-02-12 07:33:33 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.4 2002-08-11 05:46:34 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF variable routines
 
@@ -198,6 +198,13 @@ nco_put_var // [fnc] Write variable to netCDF file
  const int &var_id, // I [id] Variable ID
  const double * const &var_val); // I [frc] Variable value
 // end nco_put_var<double *>() prototype
+
+int // O [enm] Return success code
+nco_put_var // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const long double * const &var_val); // I [frc] Variable value
+// end nco_put_var<long double *>() prototype
 
 int // O [enm] Return success code
 nco_put_var // [fnc] Write variable to netCDF file

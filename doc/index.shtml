@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.104 2002-08-11 00:58:32 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.105 2002-08-11 05:46:33 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -143,6 +143,8 @@ instructions for helping the NCO project.
 <dt><a name="News"></a></dt>
 <h2>NCO News & Announcements</h2>
 <ul>
+<li>Developer code has fully integrated <b>autoconf</b>/<b>libtool</b>
+build procedure</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS
 Repository</a> code allows <b>ncap</b> to unpack variables stored
 with <tt>scale_factor</tt> and <tt>add_offset</tt> convention</li>

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.3 2002-02-12 07:33:33 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.4 2002-08-11 05:46:34 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -301,6 +301,24 @@ nco_put_var // [fnc] Write variable to netCDF file
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<double *>");
   return rcd;
 } // end nco_put_var<double *>()
+
+int // O [enm] Return success code
+nco_put_var // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const long double * const &var_val) // I [frc] Variable value
+{
+  // Purpose: Wrapper for nc_put_var_double()
+  const size_t var_sz(nco_inq_varsz(nc_id,var_id)); // [nbr] Number of elements
+  double *var_val_dbl=new double[var_sz]; // [frc] Double precision values
+  for(size_t lmn_idx=0;lmn_idx<var_sz;lmn_idx++){
+    var_val_dbl[lmn_idx]=var_val[lmn_idx];
+  } // end loop over idx
+  int rcd=nc_put_var_double(nc_id,var_id,var_val_dbl);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<long double *>");
+  delete []var_val_dbl;
+  return rcd;
+} // end nco_put_var<long double *>()
 
 int // O [enm] Return success code
 nco_put_var // [fnc] Write variable to netCDF file

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.2 2002-02-12 07:33:33 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.3 2002-08-11 05:46:34 zender Exp $ 
 
 // Implementation (declaration) of C++ interface utilities for netCDF routines
 
@@ -72,7 +72,7 @@ nco_inq_varsz // [fnc] Compute size of variable
     rcd=nco_inq_dimlen(nc_id,dmn_id[dmn_idx],dmn_sz);
     var_sz*=dmn_sz; // [nbr] Variable size
   } // end loop over dmn
-  delete[]dmn_id; // [id] Dimension IDs
+  delete []dmn_id; // [id] Dimension IDs
   return rcd;
 } // end nco_inq_varsz()
 
