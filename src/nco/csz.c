@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.74 2001-10-16 00:36:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.75 2001-10-16 00:40:39 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -1057,7 +1057,7 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
 #define XTKN2SNG(x) #x
 #define TKN2SNG(x) XTKN2SNG(x)
   const char date_cpp[]=__DATE__; /* [sng] Date from C pre-processor */
-  const char time_cpp[]=__TIME__; /* [sng] Time from C pre-processor */
+  /*  const char time_cpp[]=__TIME__; *//* [sng] Time from C pre-processor */
   const char vrs_cpp[]=TKN2SNG(VERSION); /* [sng] Version from C pre-processor */
   const char hst_cpp[]=TKN2SNG(HOSTNAME); /* [sng] Hostname from C pre-processor */
   const char usr_cpp[]=TKN2SNG(USER); /* [sng] Hostname from C pre-processor */
