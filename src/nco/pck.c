@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.17 2002-04-25 06:47:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.18 2002-04-25 06:47:52 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -129,7 +129,7 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
     var->typ_upk=scl_fct_typ; /* Type of variable when unpacked (expanded) (in memory) */
     if(is_arithmetic_operator(prg_get()) || dbg_lvl_get() > 2){
       (void)fprintf(stderr,"%s: PACKING Variable %s is type %s packed into type %s\n",prg_nm_get(),var->nm,nco_typ_sng(var->typ_upk),nco_typ_sng(var->typ_dsk));
-      (void)fprintf(stderr,"%s: WARNING Packed variables are not yet handled correctly, be careful with results\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: WARNING Packed variables are not yet unpacked automatically, be careful with results\n",prg_nm_get());
     } /* endif print packing information */
   } /* endif */
 
