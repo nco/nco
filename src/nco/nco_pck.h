@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.4 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.5 2002-08-20 05:58:39 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -9,8 +9,8 @@
 /* Usage:
    #include "nco_pck.h" *//* Packing and unpacking variables */
 
-#ifndef PCK_H
-#define PCK_H
+#ifndef NCO_PCK_H
+#define NCO_PCK_H
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
@@ -73,4 +73,4 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 } /* end extern "C" */
 #endif /* __cplusplus */
 
-#endif /* PCK_H */
+#endif /* NCO_PCK_H */

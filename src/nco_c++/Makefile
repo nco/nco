@@ -77,7 +77,7 @@ OBJEXT = o
 PACKAGE = nco
 RANLIB = ranlib
 STRIP = strip
-VERSION = 2.0.0
+VERSION = 2.5.6
 YACC = bison -y
 path_to_ncgen = /usr/local/bin/ncgen
 
@@ -102,8 +102,8 @@ LTLIBRARIES =  $(lib_LTLIBRARIES)
 
 
 DEFS = -DHAVE_CONFIG_H -I. -I$(srcdir) -I../..
-CPPFLAGS = -I/usr/local/include 
-LDFLAGS = -L/usr/local/lib 
+CPPFLAGS = -I/usr/local/include  -I/usr/local/include
+LDFLAGS = -L/usr/local/lib  -L/usr/local/lib
 LIBS = -lm -lnetcdf 
 libnco_cxx_la_LDFLAGS = 
 libnco_cxx_la_LIBADD = 
