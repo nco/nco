@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.34 2004-09-07 21:10:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.35 2004-09-08 00:42:30 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -53,8 +53,8 @@ enum nco_pck_map{ /* [enm] Packing conversion map */
 			  [NC_DOUBLE,NC_FLOAT,NC_INT,NC_SHORT]->NC_CHAR, [NC_CHAR,NC_BYTE]->unaltered */
   nco_pck_map_hgh_byt, /* 3 [enm] Pack higher precision types to NC_BYTE, pack nothing else
 			  [NC_DOUBLE,NC_FLOAT,NC_INT,NC_SHORT]->NC_BYTE, [NC_CHAR,NC_BYTE]->unaltered */
-  nco_pck_map_dwn_one, /* 4 [enm] Convert each type of each size to type of next size down
-			  NC_DOUBLE->NC_INT, [NC_FLOAT,NC_INT]->NC_SHORT, [NC_CHAR,NC_BYTE]->unaltered */
+  nco_pck_map_nxt_lsr, /* 4 [enm] Convert each type of each size to type of next size down
+			  NC_DOUBLE->NC_INT, [NC_FLOAT,NC_INT]->NC_SHORT, NC_SHORT->NC_BYTE, [NC_CHAR,NC_BYTE]->unaltered */
   nco_pck_map_flt_sht, /* 5 [enm] Pack floating precision types to NC_SHORT, pack nothing else
 			  [NC_DOUBLE,NC_FLOAT]->NC_SHORT, [NC_INT,NC_SHORT,NC_CHAR,NC_BYTE]->unaltered */
   nco_pck_map_flt_chr, /* 6 [enm] Pack floating precision types to NC_CHAR, pack nothing else

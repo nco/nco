@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.74 2004-09-07 19:50:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.75 2004-09-08 00:42:29 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -361,7 +361,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-M")){
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-M, --msk_val, --mask-value, --mask_value mask_val\tMasking value (default is 1.0)\n");
     if(prg_lcl == ncks) (void)fprintf(stdout,"-M, --Mtd, --Metadata\tPrint global metadata\n");
-    if(prg_lcl == ncpdq) (void)fprintf(stdout,"-M, --pck_map, --map pck_map\tPack map [dwn_one,flt_byt,flt_sht,hgh_byt,hgh_sht]\n");
+    if(prg_lcl == ncpdq) (void)fprintf(stdout,"-M, --pck_map, --map pck_map\tPack map [flt_sht,flt_byt,hgh_sht,hgh_byt,nxt_lsr]\n");
   } /* end if */
   if(strstr(opt_sng,"-m")){
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-m, --msk_nm, --msk_var, --mask-variable, --mask_variable mask_var\tMasking variable name\n");

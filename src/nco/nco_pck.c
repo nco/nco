@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.50 2004-09-07 20:55:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.51 2004-09-08 00:42:29 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -34,8 +34,8 @@ nco_pck_map_sng_get /* [fnc] Convert packing map enum to string */
     return "hgh_chr";
   case nco_pck_map_hgh_byt:
     return "hgh_byt";
-  case nco_pck_map_dwn_one:
-    return "dwn_one";
+  case nco_pck_map_nxt_lsr:
+    return "nxt_lsr";
   case nco_pck_map_flt_sht:
     return "flt_sht";
   case nco_pck_map_flt_chr:
@@ -150,8 +150,8 @@ nco_pck_map_get /* [fnc] Convert user-specified packing map to key */
   if(!strcmp(nco_pck_map_sng,"pck_map_hgh_chr")) return nco_pck_map_hgh_chr;
   if(!strcmp(nco_pck_map_sng,"hgh_byt")) return nco_pck_map_hgh_byt;
   if(!strcmp(nco_pck_map_sng,"pck_map_hgh_byt")) return nco_pck_map_hgh_byt;
-  if(!strcmp(nco_pck_map_sng,"dwn_one")) return nco_pck_map_dwn_one;
-  if(!strcmp(nco_pck_map_sng,"pck_map_dwn_one")) return nco_pck_map_dwn_one;
+  if(!strcmp(nco_pck_map_sng,"nxt_lsr")) return nco_pck_map_nxt_lsr;
+  if(!strcmp(nco_pck_map_sng,"pck_map_nxt_lsr")) return nco_pck_map_nxt_lsr;
   if(!strcmp(nco_pck_map_sng,"flt_sht")) return nco_pck_map_flt_sht;
   if(!strcmp(nco_pck_map_sng,"pck_map_flt_sht")) return nco_pck_map_flt_sht;
   if(!strcmp(nco_pck_map_sng,"flt_chr")) return nco_pck_map_flt_chr;
@@ -176,6 +176,10 @@ nco_pck_plc_get /* [fnc] Convert user-specified packing policy to key */
   prg_nm=prg_nm_get(); /* [sng] Program name */
 
   if(nco_pck_plc_sng == NULL){
+    if(!strcmp(prg_nm,"ncpdq")){
+      (void)fprintf(stdout,"%s: INFO %s reports %s invoked without explicit packing or dimension permutation options. Defaulting to packing policy \"all_new\".\n",prg_nm,fnc_nm,prg_nm);
+      return nco_pck_plc_all_new_att;
+    } /* endif */
     if(!strcmp(prg_nm,"ncpack")) return nco_pck_plc_all_new_att;
     if(!strcmp(prg_nm,"ncunpack")) return nco_pck_plc_upk;
     (void)fprintf(stderr,"%s: ERROR %s reports empty user-specified packing string in conjunction with unknown or ambiguous executable name %s\n",prg_nm,fnc_nm,prg_nm);
@@ -261,13 +265,13 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
     break;
-  case nco_pck_map_dwn_one:
+  case nco_pck_map_nxt_lsr:
     switch(nc_typ_in){ 
     case NC_DOUBLE: nc_typ_pck_out_tmp=NC_INT; nco_pck_plc_alw=True; break; 
     case NC_FLOAT: 
     case NC_INT: 
       nc_typ_pck_out_tmp=NC_SHORT; nco_pck_plc_alw=True; break;
-    case NC_SHORT: nc_typ_pck_out_tmp=NC_CHAR; nco_pck_plc_alw=True; break;
+    case NC_SHORT: nc_typ_pck_out_tmp=NC_BYTE; nco_pck_plc_alw=True; break;
     case NC_CHAR: 
     case NC_BYTE: 
       nc_typ_pck_out_tmp=nc_typ_in; nco_pck_plc_alw=False; break;
@@ -863,7 +867,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     /* Dupe var_scv_sub() into subtracting missing values when all values are missing */
     if(PURE_MSS_VAL_FLD){
       has_mss_val_tmp=False;
-      (void)fprintf(stdout,"%s: WARNING %s reports variable %s is completely missing_value = %g, i.e., there are no valid values\n",prg_nm_get(),fnc_nm,var->nm,add_fst_dbl);
+      (void)fprintf(stdout,"%s: INFO %s reports variable %s is completely missing_value = %g. Why do you store variables with no valid values?\n",prg_nm_get(),fnc_nm,var->nm,add_fst_dbl);
     } /* !PURE_MSS_VAL_FLD */
     (void)var_scv_sub(var->type,var->sz,has_mss_val_tmp,var->mss_val,var->val,&add_fst_scv);
   } /* endif */

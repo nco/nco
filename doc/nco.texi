@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.274 2004-09-07 04:50:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.275 2004-09-08 00:42:25 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4463,6 +4463,7 @@ supports packing and unpacking.
 @cindex unpacking
 @cindex @code{add_offset}
 @cindex @code{scale_factor}
+@cindex @code{missing_value}
 @cindex @command{pack(x)}
 @cindex @command{unpack(x)}
 @table @code
@@ -4475,9 +4476,12 @@ to store.
 The packed variable is stored (usually) as type @code{NC_SHORT}
 with the two attributes required to unpack the variable,
 @code{scale_factor} and @code{add_offset}, stored at the original
-precision of the variable.
-Let @var{min} and @var{max} be the minimum and maximum values of
-@var{x}. 
+(unpacked) precision of the variable
+@footnote{Although not a part of the standard, @acronym{NCO} enforces
+the policy that the @code{missing_value} attribute, if any, of a packed
+variable is also stored at the original precision.}.
+Let @var{min} and @var{max} be the minimum and maximum values 
+@w{of @var{x}.} 
 @tex
 $$
 \rm
@@ -4536,11 +4540,14 @@ $$
 When @code{scale_factor} and @code{add_offset} are used for packing, the
 associated variable (containing the packed data) is typically of type
 @code{byte} or @code{short}, whereas the unpacked values are intended to
-be of type @code{float} or @code{double}. 
-An attribute's @code{scale_factor} and @code{add_offset} should both be
-of the type intended for the unpacked data, e.g., @code{float} or
-@code{double}. 
+be of type @code{int}, @code{float}, or @code{double}. 
+An attribute's @code{scale_factor} and @code{add_offset} and
+@code{missing_value}, if any, should all be of the type intended for the
+unpacked data, i.e., @code{int}, @code{float} or @code{double}. 
 @end table
+One useful feature of (lossy) netCDF packing algorithm is that
+additional, loss-less packing algorithms perform well on top of it. 
+
 @unnumberedsubsec Type Conversion Functions
 These intrinsic functions allow @command{ncap} to convert variables on
 disk among the available types supported by netCDF.
@@ -6630,26 +6637,29 @@ dimension permutation, but not both, when invoked.
 @command{ncpdq} is optimized to perform these actions in a parallel
 fashion with a minimum of time and memory.
 The @dfn{pdq} may stand for ``Permute Dimensions Quickly'', 
-``Pack Data Quietly'', or other uses we have not dreamed of yet.
+``Pack Data Quietly'', ``Pillory Dan Quayle'', or other silly uses.
 
 @cindex @code{add_offset}
 @cindex @code{scale_factor}
 @cindex @command{ncap}
+@cindex packing policy
 @unnumberedsubsec Packing and Unpacking Functions
 The @command{ncpdq} packing (and unpacking) algorithms are described 
-@ref{Intrinsic functions}, and are also implemented in @command{ncap}.
+in @ref{Intrinsic functions}, and are also implemented in
+@command{ncap}. 
 @command{ncpdq} extends the functionality of these algorithms by 
-providing high level controls which allow users to pack (and unpack) 
-entire files.
+providing high level control of the @dfn{packing policy} so that
+users can pack (and unpack) entire files consistently with one command. 
+@cindex @var{pck_plc}
 @cindex @code{-P @var{pck_plc}}
 @cindex @code{--pck_plc @var{pck_plc}}
 @cindex @code{--pack_policy @var{pck_plc}}
-For the finest-grained control, the user specifies the desired packing
-functionality with the @samp{-P} switch (or its long option equivalents,
-@samp{--pck_plc} and @samp{--pack_policy}) and its @var{pck_plc} argument,
-which currently takes one of three values:@*  
+The user specifies the desired packing policy with the @samp{-P} switch
+(or its long option equivalents, @samp{--pck_plc} and
+@samp{--pack_policy}) and its @var{pck_plc} argument.
+Four packing policies are currently implemented:@*   
 @table @dfn
-@item Packing (and Re-Packing) Variables
+@item Packing (and Re-Packing) Variables [@emph{default}]
 Definition: Pack unpacked variables, re-pack packed variables@*
 Alternate invocation: @code{ncpack}@*
 @var{pck_plc} key values: @samp{all_new}, @samp{pck_all_new_att}@*
@@ -6672,13 +6682,13 @@ Multiple equivalent options are provided to satisfy disparate needs
 and tastes of @acronym{NCO} users working with scripts and from the
 command line.
 
-To reduce required memorization of these complex switches, 
-@command{ncpdq} may also be invoked via a synonym which implies
-a frequently used option, or with switches that imply 
-frequently used options.
-@command{ncpack} is a synonym for @command{ncpdq} and behaves the same
-in all respects except that @command{ncpack} implicitly assumes a
-packing policy request of @samp{pck_all_new_att}.  
+To reduce required memorization of these complex policy switches, 
+@command{ncpdq} may also be invoked via a synonym or with switches
+that imply a particular policy.
+@command{ncpack} is a synonym for @command{ncpdq} and behaves the same 
+in all respects.
+Both @command{ncpdq} and @command{ncpack} assume a default packing
+policy request of @samp{all_new}.
 Hence @command{ncpack} may be invoked without any @samp{-P} switch,
 unlike @command{ncpdq}.
 Similarly, @command{ncunpack} is a synonym for @command{ncpdq} 
@@ -6697,7 +6707,7 @@ The following commands are equivalent for packing:
 @code{ncpdq -P all_new}, @code{ncpdq --pck_plc=all_new}, and
 @code{ncpack}.
 The following commands are equivalent for unpacking:
-@code{ncpdq -P upk}, @code{ncpdq --pck_plc=unpack}, @code{ncpdq -U},   
+@code{ncpdq -P upk}, @code{ncpdq -U}, @code{ncpdq --pck_plc=unpack}, 
 and @code{ncunpack}.
 Equivalent commands for other packing policies, e.g., @samp{all_xst}, 
 follow by analogy. 
@@ -6709,6 +6719,89 @@ and recommendations discussed in the secion on @command{ncbo} synonyms
 (@pxref{ncbo netCDF Binary Operator}).
 That is, symbolic links must exist from the synonym to @command{ncpdq},
 or else the user must define an @command{alias}.
+
+@cindex packing map
+@cindex @var{pck_map}
+@cindex @code{-M @var{pck_map}}
+@cindex @code{--pck_map @var{pck_map}}
+@cindex @code{--map @var{pck_map}}
+The @command{ncpdq} packing algorithms must know to which type
+particular types of input variables are to be packed.
+The correspondence between the input variable type and the output,
+packed type, is called the @dfn{packing map}.
+The user specifies the desired packing map with the @samp{-M} switch
+(or its long option equivalents, @samp{--pck_map} and
+@samp{--map}) and its @var{pck_map} argument.
+Five packing maps are currently implemented:@*
+@cindex @samp{hgh_sht}
+@cindex @samp{hgh_byt}
+@cindex @samp{flt_sht}
+@cindex @samp{flt_byt}
+@cindex @samp{nxt_lsr}
+@cindex @code{NC_DOUBLE}
+@cindex @code{NC_FLOAT}
+@cindex @code{NC_INT}
+@cindex @code{NC_SHORT}
+@cindex @code{NC_CHAR}
+@cindex @code{NC_BYTE}
+@table @dfn
+@item Pack Floating Precisions to @code{NC_SHORT} [@emph{default}]
+Definition: Pack floating precision types to @code{NC_SHORT}@*
+Map: Pack [@code{NC_DOUBLE},@code{NC_FLOAT}] to @code{NC_SHORT}@*
+Types copied instead of packed: [@code{NC_INT},@code{NC_SHORT},@code{NC_CHAR},@code{NC_BYTE}]@*
+@var{pck_map} key values: @samp{flt_sht}, @samp{pck_map_flt_sht}@*
+@item Pack Floating Precisions to @code{NC_BYTE}
+Definition: Pack floating precision types to @code{NC_BYTE}@*
+Map: Pack [@code{NC_DOUBLE},@code{NC_FLOAT}] to @code{NC_BYTE}@* 
+Types copied instead of packed: [@code{NC_INT},@code{NC_SHORT},@code{NC_CHAR},@code{NC_BYTE}]@*
+@var{pck_map} key values: @samp{flt_byt}, @samp{pck_map_flt_byt}@*
+@item Pack Higher Precisions to @code{NC_SHORT}
+Definition: Pack higher precision types to @code{NC_SHORT}@*
+Map: 
+Pack [@code{NC_DOUBLE},@code{NC_FLOAT},@code{NC_INT}] to @code{NC_SHORT}@*
+Types copied instead of packed: [@code{NC_SHORT},@code{NC_CHAR},@code{NC_BYTE}]@*
+@var{pck_map} key values: @samp{hgh_sht}, @samp{pck_map_hgh_sht}@*
+@item Pack Higher Precisions to @code{NC_BYTE}
+Definition: Pack higher precision types to @code{NC_BYTE}@*
+Map: 
+Pack [@code{NC_DOUBLE},@code{NC_FLOAT},@code{NC_INT},@code{NC_SHORT}] to @code{NC_BYTE}@*
+Types copied instead of packed: [@code{NC_CHAR},@code{NC_BYTE}]@*
+@var{pck_map} key values: @samp{hgh_byt}, @samp{pck_map_hgh_byt}@*
+@item Pack to Next Lesser Precision
+Definition: Pack each type to type of next lesser size@*
+Map: Pack @code{NC_DOUBLE} to @code{NC_INT}. 
+Pack [@code{NC_FLOAT},@code{NC_INT}] to @code{NC_SHORT}.
+Pack @code{NC_SHORT} to @code{NC_BYTE}.@*
+Types copied instead of packed: [@code{NC_CHAR},@code{NC_BYTE}]@*
+@var{pck_map} key values: @samp{nxt_lsr}, @samp{pck_map_nxt_lsr}@*
+@end table
+@noindent
+The default @samp{all_new} packing policy with the default
+@samp{flt_sht} packing map reduces the typical @code{NC_FLOAT}-dominated
+file size by @w{about 50%.}
+@samp{flt_byt} packing reduces an @code{NC_DOUBLE}-dominated file by
+@w{about 87%.} 
+
+@cindex @var{missing_value}
+@cindex @code{missing_value}
+@cindex @code{NUL}
+The netCDF packing algorithm (@pxref{Intrinsic functions}) is
+lossy---once packed, the exact original data cannot be recovered without
+a full backup. 
+Hence users should be aware of some packing caveats:
+First, the interaction of packing and data equal to the
+@var{missing_value} is complex.
+Test the @code{missing_value} behavior by performing a pack/unpack cycle 
+to ensure data that are missing @emph{stay} missing and data that are
+not misssing do not join the Air National Guard and go missing.
+This may lead you to elect a new @var{missing_value}.
+Second, @code{ncpdq} actually allows packing into @code{NC_CHAR} (with,
+e.g., @samp{flt_chr}).
+However, the intrinsic conversion of @code{signed char} to higher
+precision types is tricky so for values equal to zero, i.e.,
+@code{NUL}. 
+Hence packing to @code{NC_CHAR} is not documented or advertised.  
+Pack into @code{NC_BYTE} (with, e.g., @samp{flt_byt}) instead.
 
 @unnumberedsubsec Dimension Permutation
 @command{ncpdq} re-shapes variables in @var{input-file} by re-ordering
@@ -6844,19 +6937,34 @@ EXAMPLES
 Pack and unpack all variables in file @file{in.nc} and store the results
 in @file{out.nc}:  
 @example
-ncpdq -P all_new in.nc out.nc # Same as ncpack in.nc out.nc
+ncpdq in.nc out.nc # Same as ncpack in.nc out.nc
+ncpdq -P all_new -M flt_sht in.nc out.nc # Defaults
 ncpdq -P all_xst in.nc out.nc
 ncpdq -P upk in.nc out.nc # Same as ncunpack in.nc out.nc
+ncpdq -U in.nc out.nc # Same as ncunpack in.nc out.nc
 @end example
-The first command packs any unpacked variable in the input file.
-It also unpacks and then re-packs every packed variable in the input 
-file. 
-The second command only packs unpacked variables in the input file.
-If a variable is already packed, the second command copies it unchanged
+The first two commands pack any unpacked variable in the input file.
+They also unpack and then re-pack every packed variable.
+The third command only packs unpacked variables in the input file.
+If a variable is already packed, the third command copies it unchanged
 to the output file. 
-The third command unpacks any packed variable in the input file.
-If a variable is not packed, the third command copies it unchanged
-to the output file. 
+The fourth and fifth commands unpack any packed variables.
+If a variable is not packed, the third command copies it unchanged.
+
+The previous examples all utilized the default packing map.
+Suppose you wish to archive all data that are currently unpacked 
+into a form which only preserves 256 distinct values.
+Then you could specify the packing map @var{pck_map} as @samp{hgh_byt}
+and the packing policy @var{pck_plc} as @samp{all_xst}:
+@example
+ncpdq -P all_xst -M hgh_byt in.nc out.nc
+@end example
+@cindex appending variables
+@cindex @samp{-A}
+@cindex @samp{-v}
+Many different packing maps may be used to construct a given file 
+by performing the packing on subsets of variables (e.g., with @samp{-v}) 
+and using the append feature with @samp{-A} (@pxref{Appending}).
 
 Re-order file @file{in.nc} so that the dimension @code{lon} always
 precedes the dimension @code{lat} and store the results in

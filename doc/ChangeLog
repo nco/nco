@@ -3,6 +3,11 @@
 	* cvs tag -c nco-2_9_9
 	Changes since nco-2_9_8: 1. ncbo threading 2. ncpdq -P packing
 
+	* Finish packing map documentation. Ready to release.
+
+	* Cause ncpdq in.nc out.nc to default to pck_plc=all_new rather
+	than aborting
+
 	* Re-arrange debugging info verbosity levels to be sane
 
 	* Fix erroneous triggering of PURE_MSS_VAL_FLD in nco_var_pck()

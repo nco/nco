@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.420 2004-09-07 19:50:13 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.421 2004-09-08 00:42:25 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -257,7 +257,7 @@ nco426. ncpdq: Make packing offer to pack missing value to the packed type to pr
 nco427. ncpdq, ncra: Fix pck_dbg problems in nco_var_get() which automatically down-convert missing value to typ_dsk. How to reconcile with nco457?
 nco441. Packing NC_DOUBLE->NC_CHAR, NC_INT->NC_CHAR, or
    NC_SHORT->NC_CHAR and then unpacking, places 0.0
-        instead of 1.0 in first element, why?
+        instead of 1.0 in first element, why? implicit conversion of NUL byte when value = 0.
         ncpdq -D 5 -O -C -P all_new -M flt_chr -v three_dmn_var_dbl ~/nco/data/in.nc ~/foo.nc
         ncks -m -H -v three_dmn_var_dbl ~/foo.nc
         ncpdq -D 3 -O -C -P upk ~/foo.nc ~/foo_upk.nc
@@ -266,9 +266,6 @@ nco450. Run ncra on two multiple record files with packed variables and look for
 nco453. Re-think handling of dangling pointers in nco_pck_val()?
 nco454. ncpdq: Combine nco_pck_map,nco_pck_typ into new nco_pck_sct to avoid proliferation of argument passing
 nco457. ncpdq: missing_value is not converted to variable type when variable is not packed three_dmn_var_dbl. How to reconcile with nco427?
-nco459. ncpdq: Down-conversion usually erroneously triggers warning message that variable is PURE_MSS_VAL_FLD in nco_var_pck() whenever field has missing_value attribute
-        ncpdq -D 5 -O -C -P all_new -M flt_byt -v three_dmn_var_dbl ~/nco/data/in.nc ~/foo.nc
-        WARNING nco_var_pck() reports variable three_dmn_var_dbl is completely missing_value = 1, i.e., there are no valid values
 nco460. 
 
 ncap-specific items:
