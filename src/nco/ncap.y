@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.30 2002-01-25 07:58:36 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.31 2002-01-25 08:23:56 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -97,7 +97,7 @@ char err_sng[200]; /* Error string for short error messages */
    Convention is to make token names all uppercase, and non-terminals lowercase */
 
 /* Define YYSTYPE union (type of lex variable yylval value)
-   This specifies all possible data type for semantic values */
+   This specifies all possible data types for semantic values */
 %union{
   char *str;
   char *output_var;

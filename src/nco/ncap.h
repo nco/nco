@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.21 2002-01-25 07:58:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.22 2002-01-25 08:23:56 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -100,7 +100,7 @@ extern var_sct *ncap_var_attribute_multiply(var_sct *,parse_sct);
 extern var_sct *ncap_var_attribute_power(var_sct *,parse_sct);
 extern var_sct *ncap_var_attribute_sub(var_sct *,parse_sct);
 extern var_sct *ncap_var_function(var_sct *,sym_sct *);
-extern var_sct *ncap_var_init(char*,prs_sct*);
+extern var_sct *ncap_var_init(char*,prs_sct *);
 extern var_sct *ncap_var_var_add(var_sct *var_1,var_sct *var_2);
 extern var_sct *ncap_var_var_multiply(var_sct *var_1,var_sct *var_2);
 extern var_sct *ncap_var_var_divide(var_sct *var_1,var_sct *var_2);

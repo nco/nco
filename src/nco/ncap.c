@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.51 2002-01-25 08:10:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.52 2002-01-25 08:23:56 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.51 2002-01-25 08:10:24 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.51 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.52 2002-01-25 08:23:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.52 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -186,8 +186,8 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   
-  aed_sct *att_lst[att_lst_max]; /* Structure filled out by yyparse , contains attributes to write to disk */
-  prs_sct prs_arg;
+  aed_sct *att_lst[att_lst_max]; /* Structure filled in by yyparse(), contains attributes to write to disk */
+  prs_sct prs_arg; /* [sct] Global information required in parser routines */
   
   /* Start clock and save command line */ 
   cmd_ln=cmd_ln_sng(argc,argv);
@@ -196,13 +196,10 @@ main(int argc,char **argv)
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
-  
 
   /* Parse command line arguments */
-  
   opt_sng="ACcD:d:Fhl:n:Op:r:s:S:v";
-  
-  while( (opt=getopt(argc,argv,opt_sng))!= EOF){
+  while((opt=getopt(argc,argv,opt_sng)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
@@ -245,7 +242,6 @@ main(int argc,char **argv)
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
-
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
@@ -323,7 +319,7 @@ main(int argc,char **argv)
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
-  /* Pass information parser may need in prs_arg rather than global variables */
+  /* Pass information parser may need in prs_arg rather than in global variables */
   prs_arg.fl_in=fl_in;
   prs_arg.in_id=in_id;
   prs_arg.fl_out=NULL;
@@ -346,27 +342,23 @@ main(int argc,char **argv)
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
   rcd=nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
-  
 
-  if(PROCESS_ALL_VARS) {  
+  if(PROCESS_ALL_VARS){
      /* Form initial extraction list from user input */
      xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
      if(nbr_lst_b>0) xtr_lst=var_lst_sub(in_id,xtr_lst,&nbr_xtr,xtr_lst_b,nbr_lst_b);
-    
-    /* copy list for later */
+    /* Copy list for later */
     xtr_lst_2=var_lst_copy(xtr_lst,nbr_xtr);
     nbr_xtr_2=nbr_xtr;
-  }
+  } /* end if PROCESS_ALL_VARS */
 
   if(!PROCESS_ALL_VARS){
+    /* Create two lists of variables
+       xtr_lst: Used to find dimensions
+       xtr_lst_2: Actual variable extraction list     
 
-    /* We create two lists of vars xtr_lst : to be used to find the dimensions
-                                 xtr_lst_2 : The extract list     
-
-       xtr_lst = list a + list c + co_ordinate vars 
-       xtr_lst_2 = list c + co-ordinate vars - list b 
-           
-    */          
+       xtr_lst = list_a + list_c + co_ordinate variables 
+       xtr_lst_2 = list_c + coordinate variables - list_b */
        
     /* Add list c to extraction list */
    if(nbr_lst_c>0) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_c,nbr_lst_c);
@@ -380,22 +372,21 @@ main(int argc,char **argv)
   /* Make sure coordinates associated extracted variables are also on extraction list */
    if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
    
-   /* now make a list of just co-ordinate vars */
-   if(nbr_xtr >0 && (PROCESS_ALL_COORDINATES || PROCESS_ASSOCIATED_COORDINATES)) {
+   /* Create list coordinate vars */
+   if(nbr_xtr > 0 && (PROCESS_ALL_COORDINATES || PROCESS_ASSOCIATED_COORDINATES)){
      nbr_xtr_2=nbr_xtr;
      xtr_lst_2=ncap_var_lst_crd_make(in_id,xtr_lst,&nbr_xtr_2);
-   } 
-   /* now add list c to the new list */
+   } /* endif */
+
+   /* Add list_c to new list */
    if(nbr_lst_c>0) xtr_lst_2=var_lst_add(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_c,nbr_lst_c);
    
-   /* now subtract list b from this list */   
+   /* Subtract list_b from this list */   
    if(nbr_lst_b > 0) xtr_lst_2=var_lst_sub(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
-  }/* end if */
+  } /* end if PROCESS_ALL_VARS */
 
-  /* Finally, heapsort extraction list by variable ID for fastest I/O */
+  /* Heapsort extraction lists by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
-  
-  /* Finally, heapsort extraction list by variable ID for fastest I/O */
   if(nbr_xtr_2 > 1) xtr_lst_2=lst_heapsort(xtr_lst_2,nbr_xtr_2,False);
   
   /* Find coordinate/dimension values associated with user-specified limits */
