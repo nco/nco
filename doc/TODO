@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.438 2004-11-05 23:56:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.439 2004-11-06 01:15:52 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -345,7 +345,9 @@ bld39. Fix autoconf build warnings (from including ncap_yacc in ncwa?):
 Makefile:472: warning: overriding commands for target `ncap_yacc.h'
 Makefile:440: warning: ignoring old commands for target `ncap_yacc.h'
 bld40. Automate splicing trailer ~/nco/doc/man_end.txt to man pages
-bld41.
+bld41.Add configure check for libssl functionality, if not found (Fedora) to explicitly adding libssl
+bld42. 
+
 
 ************************************************************************
 End NCO Wish list

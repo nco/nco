@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.47 2004-10-16 21:32:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.48 2004-11-06 01:15:56 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -54,7 +54,11 @@ nco_fl_info_get /* [fnc] Determine canonical filename and properties */
 
   /* Is file a symbolic link? */
   rcd=lstat(fl_nm_lcl,&stat_sct);
+#ifndef NECSX
   if(rcd != -1 && S_ISLNK(stat_sct.st_mode)){
+#else /* NECSX */ 
+  if(rcd != -1 && ((stat_sct.st_mode & S_IFMT) == S_ISLNK)){ /* fxm: This is BSD not POSIX */
+#endif /* NECSX */ 
 #if (defined HAVE_CANONICALIZE_FILE_NAME) && 0
     /* 20040619: Function prototype is not found (perhaps due to aggressive standard switches) by NCO, althouth configure.in finds it */
     /* Remember to free() fl_nm_cnc after using it */

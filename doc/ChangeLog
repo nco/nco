@@ -1,5 +1,7 @@
 2004-11-05  Charlie Zender <zender@dust.ps.uci.edu>
 
+	* Use S_IFLNK instead of S_ISLNK for NEC SX in nco_fl_utl.c
+
 	* Change test -e to more restrictive test -f in configure.in.
 	Makes sense and allows NEC SX to build.
 

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.270 2004-11-05 23:56:26 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.271 2004-11-06 01:15:53 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -682,6 +682,15 @@ All recent NCO versions build with autotools on Solaris 2.7+.
 The most common problem with building on Solaris with
 <tt>cc</tt>/<tt>CC</tt> is that <tt>bison</tt> may be out-of-date.
 Install an up-to-date <tt>bison</tt> (e.g., 1.875+).
+</li>
+
+<a name="bld_sx"></a>
+<li><i>NEC SX build problems:</i>
+NEC&nbsp;SX does not understand the <tt>S_ISLNK</tt> macro, 
+preferring instead the (non-POSIX) <tt>S_IFLNK</tt> macro.
+This macro appears in the file <tt>nco_fl_utl.c</tt>.
+The patch I wrote for this may be broken.
+Will someone with NEC&nbsp;SX please send us a working patch?
 </li>
 </ul>
 
