@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.2 2004-07-27 19:47:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.3 2004-07-28 05:45:28 zender Exp $ */
 
 /* ncpdq -- netCDF pack, dimension, questioner */
 
@@ -94,8 +94,8 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.2 2004-07-27 19:47:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.2 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.3 2004-07-28 05:45:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.3 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:Rrt:v:xz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -408,7 +408,7 @@ main(int argc,char **argv)
   } /* dmn_rdr_nbr <= 0 */
 
   /* Make list of user-specified dimension re-orders */
-  if(dmn_rdr_nbr > 0) dmn_rdr=nco_prs_rdr_lst(dmn_rdr,dmn_rdr_lst_in,dmn_rdr_nbr);
+  if(False) dmn_rdr=nco_prs_rdr_lst(dmn_rdr,dmn_rdr_lst_in,dmn_rdr_nbr);
 
   /* Determine and set new dimensionality for each processed variable */
   DO_DIMENSIONALITY_ONLY=True; /* I [flg] Determine and set new dimensionality then return */
@@ -418,7 +418,7 @@ main(int argc,char **argv)
     if(False) var_prc_out[idx]=nco_var_dmn_rdr(var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,DO_DIMENSIONALITY_ONLY,DO_REORDER_ONLY,DO_WHOLE_SHEBANG);
   } /* end loop over idx */
 
-  /* Next call will re-order and store each processed variable (and is threaded) */
+  /* Next call re-orders and stores each processed variable (and is threaded) */
   DO_DIMENSIONALITY_ONLY=False; /* I [flg] Determine and set new dimensionality then return */
   DO_REORDER_ONLY=True; /* I [flg] Re-order data (dimensionality already set) */
   DO_WHOLE_SHEBANG=False; /* I [flg] Determine and set new dimensionality then re-order data */
@@ -459,7 +459,7 @@ main(int argc,char **argv)
      firstprivate(): 
      shared(): 
      private(): */
-#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,dmn_rdr,dmn_rdr_nbr,fp_stderr,fp_stdout,in_id,nbr_var_prc,out_id,prg_nm,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx) shared(DO_DIMENSIONALITY_ONLY,DO_REORDER_ONLY,DO_WHOLE_SHEBANG,dbg_lvl,dmn_rdr,dmn_rdr_nbr,fp_stderr,fp_stdout,in_id,nbr_var_prc,out_id,prg_nm,rcd,var_prc,var_prc_out)
 #endif /* not _OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
