@@ -1,4 +1,4 @@
-	# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.194 2002-12-02 16:22:58 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.195 2002-12-11 15:38:19 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
