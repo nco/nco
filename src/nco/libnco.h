@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.20 2002-05-06 06:51:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.21 2002-05-08 08:00:15 zender Exp $ */
 
 /* Purpose: Prototypes, typedefs, and global variables for libcsm_c++ */
 
@@ -20,6 +20,7 @@
 
 /* Library headers */
 #include "nco_att_utl.h" /* Attribute utilities */
+#include "nco_bnr.h" /* Binary write utilities */
 #include "nco_cln_utl.h" /* Calendar utilities */
 #include "nco_cnf_dmn.h" /* Conform dimensions */
 #include "nco_cnf_typ.h" /* Conform variable types */

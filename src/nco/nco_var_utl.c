@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.6 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.7 2002-05-08 08:00:15 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -172,6 +172,7 @@ void
 cpy_var_val /* [fnc] Copy variable data from input to output file */
 (int in_id, /* I [id] netCDF input file ID */
  int out_id, /* I [id] netCDF output file ID */
+ FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  char *var_nm) /* I [sng] Variable name */
 {
   /* Purpose: Copy variable data from input netCDF file to output netCDF file
@@ -264,6 +265,7 @@ void
 cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
+ FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  char *var_nm, /* I [sng] Variable name */
  const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
  const int lmt_nbr) /* I [nbr] Number of hyperslab limits */
@@ -368,13 +370,13 @@ cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
   } /* end if */
 
   /* Copy variable */
-  if(nbr_dim==0){ /* copy scalar */
+  if(nbr_dim==0){ /* Copy scalar */
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
-  }else if(!WRP){ /* copy contiguous array */
+  }else if(!WRP){ /* Copy contiguous array */
     if(!SRD) nco_get_vara(in_id,var_in_id,dmn_in_srt,dmn_cnt,void_ptr,var_type); else nco_get_varm(in_id,var_in_id,dmn_in_srt,dmn_cnt,dmn_srd,(long *)NULL,void_ptr,var_type);
     nco_put_vara(out_id,var_out_id,dmn_out_srt,dmn_cnt,void_ptr,var_type);
-  }else if(WRP){ /* copy wrapped array */
+  }else if(WRP){ /* Copy wrapped array */
     int dmn_idx;
     int lmt_idx;
     
@@ -428,7 +430,7 @@ cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
 	      greatest_srd_multiplier_1st_hyp_slb=(dmn_sz[dmn_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd;
 	      last_good_idx_1st_hyp_slb=lmt[lmt_idx].srt+lmt[lmt_idx].srd*greatest_srd_multiplier_1st_hyp_slb;
 	      left_over_idx_1st_hyp_slb=dmn_sz[dmn_idx]-last_good_idx_1st_hyp_slb-1L;
-	      /*	      first_good_idx_2nd_hyp_slb=(last_good_idx_1st_hyp_slb+lmt[lmt_idx].srd)%dmn_sz[dmn_idx];*/ /* Variable is unused but instructive anyway */
+	      /* first_good_idx_2nd_hyp_slb=(last_good_idx_1st_hyp_slb+lmt[lmt_idx].srd)%dmn_sz[dmn_idx];*/ /* Variable is unused but instructive anyway */
 	      dmn_in_srt_2[dmn_idx]=lmt[lmt_idx].srd-left_over_idx_1st_hyp_slb-1L;
 	    }else{ /* !SRD */
 	      dmn_in_srt_2[dmn_idx]=0L;
@@ -450,7 +452,7 @@ cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
     } /* end if dbg */
 
     if(False){
-      /* If this is a coordinate variable, perform a monotonicity check */
+      /* If coordinate variable, perform monotonicity check */
       bool CRD=False;
       bool MNT=False;
 
@@ -468,7 +470,7 @@ cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
 	if(!strcmp(dmn_nm,var_nm)) CRD=True; else CRD=False;
       } /* end if */      
       
-      if(CRD && MNT){ /* If this is a wrapped coordinate then apply monotonicity filter if requested */
+      if(CRD && MNT){ /* If requested, apply monotonicity filter to wrapped coordinate */
 	(void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_type);
 	/* Convert coordinate to double */
 	for(idx=0;idx<var_sz;idx++){
@@ -498,12 +500,12 @@ cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_type);
       (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,void_ptr,var_type);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_type);
-    }else{
+    }else{ /* SRD */
       (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,dmn_srd,(long *)NULL,void_ptr,var_type);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_type);
       (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,dmn_srd,(long *)NULL,void_ptr,var_type);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_type);
-    } /* end else */
+    } /* end else SRD */
     
     dmn_in_srt_1=nco_free(dmn_in_srt_1);
     dmn_in_srt_2=nco_free(dmn_in_srt_2);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.2 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.3 2002-05-08 08:00:15 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -395,7 +395,7 @@ prn_var_val_lmt /* [fnc] Print variable data */
 	unit_sng[(att_sz+1)*nco_typ_lng(att_typ)-1]='\0';
       } /* end if */
     } /* end if */
-  } /* end if */
+  } /* end if PRINT_DIMENSIONAL_UNITS */
 
   if(dlm_sng != NULL){
     /* Print each element with user-supplied formatting code */
@@ -421,7 +421,7 @@ prn_var_val_lmt /* [fnc] Print variable data */
       } /* end switch */
     } /* end loop over element */
 
-  } /* end if */
+  } /* end if dlm_sng */
 
   if(var.nbr_dim == 0 && dlm_sng == NULL){ 
     /* Variable is a scalar, byte, or character */

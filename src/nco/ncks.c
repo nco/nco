@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.55 2002-05-06 03:39:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.56 2002-05-08 08:00:15 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -81,6 +81,7 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
+  bool NCO_BNR_WRT=False; /* [flg] Write binary file */
   bool OUTPUT_DATA=False; /* Option H */
   bool OUTPUT_VARIABLE_METADATA=False; /* Option m */
   bool OUTPUT_GLOBAL_METADATA=False; /* Option M */
@@ -98,13 +99,14 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_sng;
+  char fl_bnr[]="/home/zender/nco/data/foo.bnr"; /* [sng] Unformatted binary output file */
   char *fl_out;
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.55 2002-05-06 03:39:55 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.55 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.56 2002-05-08 08:00:15 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.56 $";
   
   extern char *optarg;
   
@@ -138,7 +140,7 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="aACcD:d:FHhl:MmOp:qrRs:uv:x";
+  opt_sng="aABCcD:d:FHhl:MmOp:qrRs:uv:x";
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
     switch(opt){
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */
@@ -146,6 +148,9 @@ main(int argc,char **argv)
       break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
+      break;
+    case 'B': /* Toggle NCO_BNR_WRT */
+      NCO_BNR_WRT=!NCO_BNR_WRT;
       break;
     case 'C': /* Extraction list should include all coordinates associated with extracted variables? */
       PROCESS_ASSOCIATED_COORDINATES=False;
@@ -259,7 +264,7 @@ main(int argc,char **argv)
     /* Copy global attributes */
     (void)att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
     
-    /* Catenate the timestamped command line to the "history" global attribute */
+    /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
 
     for(idx=0;idx<nbr_xtr;idx++){
@@ -277,13 +282,19 @@ main(int argc,char **argv)
     /* Take output file out of define mode */
     (void)nco_enddef(out_id);
     
+    /* [fnc] Open unformatted binary data file for writing */
+    if(NCO_BNR_WRT) fp_bnr=nco_bnr_open(fl_bnr);
+
     /* Copy variable data */
     for(idx=0;idx<nbr_xtr;idx++){
       if(dbg_lvl > 2) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
-      if(lmt_nbr > 0) (void)cpy_var_val_lmt(in_id,out_id,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)cpy_var_val(in_id,out_id,xtr_lst[idx].nm);
+      if(lmt_nbr > 0) (void)cpy_var_val_lmt(in_id,out_id,xtr_lst[idx].nm,lmt,lmt_nbr,fp_bnr); else (void)cpy_var_val(in_id,out_id,xtr_lst[idx].nm,fp_bnr);
     } /* end loop over idx */
     
+    /* [fnc] Close unformatted binary data file */
+    if(NCO_BNR_WRT) (void)nco_bnr_close(fp_bnr,fl_bnr);
+
     /* Close output file and move it from temporary to permanent location */
     (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
 

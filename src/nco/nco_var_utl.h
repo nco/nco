@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.6 2002-05-07 08:00:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.7 2002-05-08 08:00:15 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -55,12 +55,14 @@ extern "C" {
   cpy_var_val /* [fnc] Copy variable data from input to output file */
   (int in_id, /* I [id] netCDF input file ID */
    int out_id, /* I [id] netCDF output file ID */
-   char *var_nm); /* I [sng] Variable name */
+   FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
+   char *var_nm) /* I [sng] Variable name */
 
   void
   cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
+   FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
    char *var_nm, /* I [sng] Variable name */
    const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
    const int lmt_nbr); /* I [nbr] Number of hyperslab limits */

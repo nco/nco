@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.21 2002-05-07 08:34:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.22 2002-05-08 08:00:15 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -195,7 +195,7 @@ int
 nco_create(const char *fl_nm,int cmode,int *nc_id)
 {
   /* Purpose: Wrapper for nc_create() */
-  int rcd=NC_NOERR ;
+  int rcd=NC_NOERR;
   int fl_in_typ=nco_fl_typ_nc; /* [enm] File format */
   if(fl_in_typ == nco_fl_typ_nc){
     rcd=nc_create(fl_nm,cmode,nc_id);
