@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.143 2002-06-05 19:06:31 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.144 2002-06-06 00:03:38 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -260,14 +260,10 @@ else
  CPP_DFN += -U_OPENMP
  FC := xlf95
 endif # endif OMP
-AR := ar -X 64
 C++ := xlC
 # -qmaxmem=num Limit amount of memory used by space intensive optimizations to <num> kilobytes
 # -qlanglvl=extended: Allow C++ constructs in C, keeps xlc from dying on type ** prototypes
-# 20020605: Change to 64 bit mode by default
-# -q64: Select 64-bit compiler mode (required for accessing large files)
-# -warn64: Warn on possible long-to-integer or pointer-to-integer truncation
-CFLAGS := -qmaxmem=8192 -qlanglvl=extended -q64 -qwarn64
+CFLAGS := -qmaxmem=8192 -qlanglvl=extended
 CPP := xlc -c -qlanglvl=extended
 CPPFLAGS := ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC}
 FFLAGS := ${OMP_FLG} -qmaxmem=-1 -qarch=auto -qspillsize=2500
@@ -275,7 +271,7 @@ FIXEDFLAGS := -qsuffix=f=f:cpp=F -qfixed=132
 FREEFLAGS := -qsuffix=f=f90:cpp=F90
 LD := ld
 # 20020422: -lC links to AIX C++ library which contains float intrinsics cosf()...
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -q64 -lm -lC
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm -lC
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 #LDFLAGS += -lxlf90 -lxlf
 endif
@@ -291,6 +287,22 @@ ifeq (${OPTS},D)
  CFLAGS += -g
  FFLAGS := -g -NS2000 -qfixed=132
 endif
+ifeq (${OPTS},X)
+# -qflttrap generates instructions for floating point exceptions
+# -qidirfirst uses headers found in -I directories first
+# -qlonglong allow long long integers
+# -qmakedep creates .d file
+# -qhalt=e stop compiler if error severity equals or exceeds i, w, e, s, u
+ CFLAGS += -g -qflttrap -qidirfirst -qlonglong -qwarn64 -qcheck=all -qhalt=s
+ FFLAGS += -g
+endif
+# -q64: Select 64-bit compiler mode (required for accessing large files)
+# -qwarn64: Warn on possible long-to-integer or pointer-to-integer truncation
+ifeq (${ADR},64)
+ AR := ar -X 64
+ CFLAGS += -q64
+ LDFLAGS += -q64 
+endif # endif ADR
 # Additional flags for AIX:
 # -M Generate information to be included in a "make" description file; output goes to .u file
 # -c Do not send object files to the linkage editor
