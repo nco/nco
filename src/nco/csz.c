@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.1.1.1 1998-08-18 05:35:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.2 1998-08-18 16:56:50 zender Exp $ */
 
 /* (c) Copyright 1995 University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -738,6 +738,94 @@ void indexx(int n,int *arrin,int *indx)
   }
 } /* end indexx() */ 
 
+char *
+cvs_vrs_prs()
+{
+  /* Purpose: Return CVS version string */ 
+  char *cvs_mjr_vrs_sng=NULL;
+  char *cvs_mnr_vrs_sng=NULL;
+  char *cvs_nm_ptr=NULL;
+  char *cvs_nm_sng=NULL;
+  char *cvs_pch_vrs_sng=NULL;
+  char *cvs_vrs_sng=NULL;
+  char *dlr_ptr=NULL;
+  char *usc_1_ptr=NULL;
+  char *usc_2_ptr=NULL;
+  char cvs_Name[]="$Name: not supported by cvs2svn $"; 
+
+  int cvs_nm_sng_len;
+  int cvs_vrs_sng_len;
+  int cvs_mjr_vrs_len;
+  int cvs_mnr_vrs_len;
+  int cvs_pch_vrs_len;
+  
+  long cvs_mjr_vrs=-1L;
+  long cvs_mnr_vrs=-1L;
+  long cvs_pch_vrs=-1L;
+
+  /* cvs_nm_sng is, e.g., "nco1_1" */ 
+  dlr_ptr=strstr(cvs_Name," $");
+  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
+  cvs_nm_ptr=strstr(cvs_Name,"$Name: ");
+  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports cvs_nm_ptr == NULL\n",prg_nm_get());
+  cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-7);
+  cvs_nm_sng=(char *)malloc(cvs_nm_sng_len+1);
+  strncpy(cvs_nm_sng,cvs_Name+7,cvs_nm_sng_len);
+  cvs_nm_sng[cvs_nm_sng_len]='\0';
+
+  /* cvs_vrs_sng is, e.g., "1.1" */ 
+  usc_1_ptr=strstr(cvs_nm_sng,"_");
+  if(usc_1_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports usc_1_ptr == NULL\n",prg_nm_get());
+  cvs_mjr_vrs_len=usc_1_ptr-cvs_nm_sng-3; /* 3 is strlen("nco") */ 
+  usc_2_ptr=strstr(usc_1_ptr+1,"_");
+  cvs_mjr_vrs_sng=(char *)malloc(cvs_mjr_vrs_len+1);
+  cvs_mjr_vrs_sng=strncpy(cvs_mjr_vrs_sng,cvs_nm_sng+3,cvs_mjr_vrs_len); /* 3 is strlen("nco") */
+  cvs_mjr_vrs_sng[cvs_mjr_vrs_len]='\0';
+  cvs_mjr_vrs=strtol(cvs_mjr_vrs_sng,(char **)NULL,10);
+  if(usc_2_ptr == NULL){
+    cvs_mnr_vrs_len=cvs_nm_sng_len-cvs_mjr_vrs_len-1;
+    cvs_pch_vrs_len=0;
+    cvs_vrs_sng_len=cvs_mjr_vrs_len+1+cvs_mnr_vrs_len;
+  }else{
+    cvs_mnr_vrs_len=usc_2_ptr-usc_1_ptr-1;
+    cvs_pch_vrs_len=cvs_nm_sng_len-cvs_mjr_vrs_len-1-cvs_mnr_vrs_len-1;
+    cvs_vrs_sng_len=cvs_mjr_vrs_len+1+cvs_mnr_vrs_len+1+cvs_pch_vrs_len;
+  } /* end else */ 
+  cvs_mnr_vrs_sng=(char *)malloc(cvs_mnr_vrs_len+1);
+  cvs_mnr_vrs_sng=strncpy(cvs_mnr_vrs_sng,usc_1_ptr+1,cvs_mnr_vrs_len);
+  cvs_mnr_vrs_sng[cvs_mnr_vrs_len]='\0';
+  cvs_mnr_vrs=strtol(cvs_mnr_vrs_sng,(char **)NULL,10);
+
+  cvs_pch_vrs_sng=(char *)malloc(cvs_pch_vrs_len+1);
+  cvs_pch_vrs_sng[cvs_pch_vrs_len]='\0';
+  cvs_vrs_sng=(char *)malloc(cvs_vrs_sng_len+1);
+  if(usc_2_ptr != NULL){
+    cvs_pch_vrs_sng=strncpy(cvs_pch_vrs_sng,usc_2_ptr+1,cvs_pch_vrs_len);
+    cvs_pch_vrs=strtol(cvs_pch_vrs_sng,(char **)NULL,10);
+    (void)sprintf(cvs_vrs_sng,"%li.%li.%li",cvs_mjr_vrs,cvs_mnr_vrs,cvs_pch_vrs);
+  }else{
+    (void)sprintf(cvs_vrs_sng,"%li.%li",cvs_mjr_vrs,cvs_mnr_vrs);
+  }/* end else */ 
+
+  if(dbg_lvl_get() == 4){
+    (void)fprintf(stderr,"NCO version %s\n",cvs_vrs_sng);
+    (void)fprintf(stderr,"cvs_nm_sng %s\n",cvs_nm_sng);
+    (void)fprintf(stderr,"cvs_mjr_vrs_sng %s\n",cvs_mjr_vrs_sng);
+    (void)fprintf(stderr,"cvs_mnr_vrs_sng %s\n",cvs_mnr_vrs_sng);
+    (void)fprintf(stderr,"cvs_pch_vrs_sng %s\n",cvs_pch_vrs_sng);
+    (void)fprintf(stderr,"cvs_mjr_vrs %li\n",cvs_mjr_vrs);
+    (void)fprintf(stderr,"cvs_mnr_vrs %li\n",cvs_mnr_vrs);
+    (void)fprintf(stderr,"cvs_pch_vrs %li\n",cvs_pch_vrs);
+  } /* endif dbg */ 
+
+  (void)free(cvs_mjr_vrs_sng);
+  (void)free(cvs_mnr_vrs_sng);
+  (void)free(cvs_pch_vrs_sng);
+  (void)free(cvs_nm_sng);
+
+  return cvs_vrs_sng;
+} /* end cvs_vrs_prs() */ 
+
 void
 nc_lib_vrs_prn()
 {
@@ -757,20 +845,18 @@ nc_lib_vrs_prn()
   /* As of netCDF 3.4, nc_inq_libvers() returned strings such as "3.4 of May 16 1998 14:06:16 $" */   
   of_ptr=strstr(lib_sng," of ");
   if(of_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports of_ptr == NULL\n",prg_nm_get());
-  dlr_ptr=strstr(lib_sng," $");
-  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
-
   vrs_sng_len=(int)(of_ptr-lib_sng);
   vrs_sng=(char *)malloc(vrs_sng_len+1);
   strncpy(vrs_sng,lib_sng,vrs_sng_len);
   vrs_sng[vrs_sng_len]='\0';
 
+  dlr_ptr=strstr(lib_sng," $");
+  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
   nst_sng_len=(int)(dlr_ptr-of_ptr-4); /* 4 is the length of " of " */ 
   nst_sng=(char *)malloc(nst_sng_len+1);
   strncpy(nst_sng,of_ptr+4,nst_sng_len); /* 4 is the length of " of " */ 
   nst_sng[nst_sng_len]='\0';
 
-  (void)fprintf(stderr,"NCO version $Name: not supported by cvs2svn $\n",vrs_sng,nst_sng);
   (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",vrs_sng,nst_sng);
   (void)fprintf(stdout,"NCO homepage URL is http://www.cgd.ucar.edu/cms/nco\n");
 
@@ -788,6 +874,7 @@ copyright_prn(char *rcs_Id,char *rcs_Revision)
 {
   char *date_sng;
   char *ver_sng;
+  char *cvs_vrs_sng;
 
   int date_sng_len;
   int ver_sng_len;
@@ -802,8 +889,11 @@ copyright_prn(char *rcs_Id,char *rcs_Revision)
   (void)strncpy(ver_sng,strchr(rcs_Revision,':')+2,ver_sng_len);
   ver_sng[ver_sng_len]='\0';
 
-  (void)fprintf(stderr,"%s %s (%s) Copyright 1995--1998 University Corporation for Atmospheric Research\n",prg_nm_get(),ver_sng,date_sng);
+  cvs_vrs_sng=cvs_vrs_prs();
+
+  (void)fprintf(stderr,"NCO version %s %s version %s (%s)\nCopyright 1995--1998 University Corporation for Atmospheric Research\n",cvs_vrs_sng,prg_nm_get(),ver_sng,date_sng);
   (void)free(ver_sng);
+  (void)free(cvs_vrs_sng);
 } /* end copyright_prn() */
 
 void
