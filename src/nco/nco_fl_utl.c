@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.41 2004-06-22 03:52:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.42 2004-06-27 18:05:41 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -924,7 +924,6 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     char *rcd_fgets=NULL; /* Return code from fgets */
 #define USR_RPL_MAX_LNG 10 /* [nbr] Maximum length for user reply */
 #define USR_RPL_MAX_NBR 10 /* [nbr] Maximum number of chances for user to reply */
-    int cnv_nbr; /* [nbr] Number of scanf conversions performed this scan */
     char usr_rpl[USR_RPL_MAX_LNG];
     int usr_rpl_int;
     short nbr_itr=0;
@@ -944,6 +943,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
     /* Ensure one exit condition for each valid switch in following case statement */
     while(strcasecmp(usr_rpl,"o") && strcasecmp(usr_rpl,"a") && strcasecmp(usr_rpl,"e")){
+      /* int cnv_nbr; *//* [nbr] Number of scanf conversions performed this scan */
       if(nbr_itr++ > USR_RPL_MAX_NBR){
 	(void)fprintf(stdout,"\n%s: ERROR %hd failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
 	nco_exit(EXIT_FAILURE);
@@ -951,9 +951,10 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       if(nbr_itr > 1) (void)fprintf(stdout,"%s: ERROR Invalid response.\n",prg_nm_get());
       (void)fprintf(stdout,"%s: %s exists---`o'verwrite, `a'ppend/replace, or `e'xit (o/a/e)? ",prg_nm_get(),fl_out);
       (void)fflush(stdout);
-      /* fgets() reads (at most one less than USR_RPL_MAX_LNG) to first newline or EOF */
-      /*      rcd_fgets=fgets(usr_rpl,USR_RPL_MAX_LNG,stdin);*/
-      while((cnv_nbr=fscanf(stdin,"%9s",usr_rpl)) != EOF) continue;
+      /*       fgets() reads (at most one less than USR_RPL_MAX_LNG) to first newline or EOF */
+      rcd_fgets=fgets(usr_rpl,USR_RPL_MAX_LNG,stdin);
+      /*       fscanf() reads ... */
+      /*      while((cnv_nbr=fscanf(stdin,"%9s",usr_rpl)) != EOF) continue;*/
       /*      while((rcd_fgets=fgets(usr_rpl,USR_RPL_MAX_LNG,stdin)) == NULL){*/
 	/*	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read \"%s\" while waiting for non-NULL on stdin...\n",prg_nm_get(),(rcd_fgets == NULL) ? "NULL" : usr_rpl);*/
       /*      continue;}*/
