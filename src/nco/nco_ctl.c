@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.53 2004-07-06 05:40:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.54 2004-07-09 17:00:26 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -124,7 +124,7 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
   /* Configuration option tokens must be consistent among configure.in, bld/Makefile, and nco_ctl.c
      Arrange tokens alphabetically by first word in English text description */
-  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nDODS/OpenDAP clients\t%s\thttp://nco.sf.net/nco.html#DODS\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nLarge File Support\t%s\thttp://nco.sf.net/nco.html#lfs\nOpenMP threading\t%s\thttp://nco.sf.net/nco.html#omp (alpha testing)\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
+  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nDODS/OpenDAP clients\t%s\thttp://nco.sf.net/nco.html#DODS\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nLarge File Support\t%s\thttp://nco.sf.net/nco.html#lfs\nOpenMP threading\t%s\thttp://nco.sf.net/nco.html#omp (beta testing)\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
 #if defined(ENABLE_DEBUG_CUSTOM) && (ENABLE_DEBUG_CUSTOM)
 		"Yes",
 #else /* !ENABLE_DEBUG_CUSTOM */
