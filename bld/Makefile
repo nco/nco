@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.246 2004-06-24 00:30:17 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.247 2004-06-29 07:38:04 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -736,7 +736,9 @@ endif
 endif # endif Intel (Kai) Fortran Compiler
 # Portland Group C++ Compiler
 ifeq (${C++},pgCC)
- CFLAGS := 
+# Enable Large File Support (LFS) by default
+ CFLAGS := -Mlfs
+ LDFLAGS += -Mlfs
  OMP_FLG := -mp
 ifeq (${OPTS},D)
  CFLAGS += -g
@@ -754,7 +756,7 @@ endif
 endif # endif Portland Group C++ Compiler
 # Portland Group Fortran Compiler
 ifeq (${FC},pgf90)
- FFLAGS := -Mextend -Mnosecond_underscore -byteswapio -Mrecursive -Mdalign -Ktrap=fp
+ FFLAGS := -Mextend -Mnosecond_underscore -byteswapio -Mrecursive -Mdalign -Ktrap=fp -Mlfs
  OMP_FLG := -mp
 ifeq (${PRC},D)
  FFLAGS += -Mr8 -Mi4
