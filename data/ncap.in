@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.4 2001-12-28 19:25:05 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.5 2001-12-28 19:57:05 zender Exp $
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 // Format of a valid ncap script:
 // C++ comment syntax
@@ -13,8 +13,8 @@ a1 = hyam;
 a2 = P0;
 a3 = hybm;
 a4 = PS;
-//a5 = hyam*P0;
-//a6 = hybm*PS;
+a5 = hyam*P0;
+a6 = hybm*PS;
 a1@a1 = global@history;
 a1@julian_day = global@julian_day;
 //prs_mdp = P0*hyam + hybm*PS; // Fails because prs_mdp gets wrong rank

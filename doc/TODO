@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.102 2001-10-28 23:05:35 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.103 2001-12-28 19:57:05 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -6,6 +6,36 @@ Numbers were assigned in chronological order
 About 15 high priority items are shown first, then another ~100 items
 ******************************************************************************
 
+ncap-specific items:
+1. Attribute parsing of global attributes appears broken
+2. Fix parsing of mixed-rank expressions
+3. Fix foloowing mixed unsigned char * and char * warnings in ncap.l, ncap.y:
+cc-1164 cc: WARNING File = ../src/nco/ncap.l, Line = 293
+  Argument of type "unsigned char *" is incompatible with parameter of type
+          "const char *".
+                strncpy(lvalp->str,ptr_aed->val.cp,ptr_aed->sz);
+                                   ^
+cc-1164 cc: WARNING File = ../src/nco/ncap.l, Line = 321
+  Argument of type "unsigned char *" is incompatible with parameter of type
+          "const char *".
+                    strncpy(lvalp->str,val.cp,att_sz);
+                                       ^
+cc-1515 cc: WARNING File = ../src/nco/ncap.y, Line = 182
+  A value of type "char *" cannot be assigned to an entity of type
+          "unsigned char *".
+                    ptr_aed->val.cp = (char *)nco_malloc((slen+1)*nco_typ_lng(NC_CHAR));
+                                    ^
+cc-1164 cc: WARNING File = ../src/nco/ncap.y, Line = 183
+  Argument of type "unsigned char *" is incompatible with parameter of type
+          "char *".
+                    strcpy(ptr_aed->val.cp,yyvsp[0].str);
+                           ^
+
+cc-1515 cc: WARNING File = ../src/nco/ncap.y, Line = 279
+  A value of type "char *" cannot be assigned to an entity of type
+          "unsigned char *".
+                     var->val.cp=strdup(yyvsp[0].str);
+                                ^
 Top priority items You can help with:
 41. Use GNU getopt_long()
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables

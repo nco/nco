@@ -1,7 +1,7 @@
  %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.17 2001-12-28 19:25:06 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.18 2001-12-28 19:57:05 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -49,20 +49,20 @@
   */
 
 /* Standard header files */
-#include <math.h>               /* sin cos cos sin 3.14159 */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */
-#include <string.h>             /* strcmp. . . */
-#include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <netcdf.h>             /* netCDF definitions */
-#include "nco.h"                 /* NCO definitions */
-#include "nco_netcdf.h"         /* netCDF3 wrapper calls */
-#include "ncap.h"               /* symbol table definition */
+#include <math.h> /* sin cos cos sin 3.14159 */
+#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <string.h> /* strcmp. . . */
+#include <stdio.h> /* stderr, FILE, NULL, etc. */
+#include <netcdf.h> /* netCDF definitions */
+#include "nco.h" /* NCO definitions */
+#include "nco_netcdf.h" /* netCDF3 wrapper calls */
+#include "ncap.h" /* symbol table definition */
 
-/* define a an ATTRIBUTE to contain a -1 */ 
+/* define an ATTRIBUTE to contain a -1 */ 
 
 /* Turn on parser debugging option (bison man p. 85) */
 #define YYDEBUG 1
-int yydebug=0;
+int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 
 /* Turns on more verbose errors than just plain "parse error" when yyerror() is called by parser */
 #define YYERROR_VERBOSE 1
@@ -73,12 +73,12 @@ int yydebug=0;
 
 #define YYPARSE_PARAM prs_arg
 #define YYLEX_PARAM prs_arg 
- int rcd; /* [enm] Return value for function calls */
+int rcd; /* [enm] Return value for function calls */
 
-extern long int line_number;        /* Current line number. Incremented in ncap.l */
-extern char *fl_spt_global;        /* Global vaiable for the instruction file */
+extern long int line_number; /* Current line number. Incremented in ncap.l */
+extern char *fl_spt_global; /* Global variable for instruction file */
 
-char errstr[200];                  /* Error string for short error messages */
+char errstr[200]; /* Error string for short error messages */
 /* End C declarations section */
 %}
 /* Begin parser declaration section */
@@ -137,16 +137,16 @@ program:           statement_list
 statement_list:     statement_list statement ';'
                   | statement_list error ';'
                   | statement ';'
-                  | error ';'  /* catches most errors then reads up to the next ; */ 
+                  | error ';'  /* catches most errors then reads up to the next ; */
                   ;
 
 statement:     out_att_exp '=' att_exp
                 { 
-		  int index; 
+		  int aed_idx; 
                   aed_sct *ptr_aed;
                   
-		  index=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
-                  ptr_aed=((prs_sct*)prs_arg)->att_lst[index];                               
+		  aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
+                  ptr_aed=((prs_sct*)prs_arg)->att_lst[aed_idx];                               
                   ptr_aed->val = ncap_attribute_2_ptr_unn($3);
                   ptr_aed->type=$3.type;
 		  ptr_aed->sz = 1L;
@@ -170,13 +170,13 @@ statement:     out_att_exp '=' att_exp
                 }
               | out_att_exp '=' string_exp 
                 {
-	 	  int index; 
+	 	  int aed_idx; 
                   int slen;
                   aed_sct *ptr_aed;
                   
                   slen =strlen($3);
-		  index=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
-                  ptr_aed=((prs_sct*)prs_arg)->att_lst[index];
+		  aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
+                  ptr_aed=((prs_sct*)prs_arg)->att_lst[aed_idx];
                   ptr_aed->type=NC_CHAR;
                   ptr_aed->sz = (long)((slen+1)*nco_typ_lng(NC_CHAR));
                   ptr_aed->val.cp = (char *)nco_malloc((slen+1)*nco_typ_lng(NC_CHAR));
@@ -191,13 +191,13 @@ statement:     out_att_exp '=' att_exp
                 }
               | out_att_exp '=' var_exp
                 { 
-                  /* Its OK to store 0 dimensional variables in an attribute */ 
-                  int index;
+                  /* It is OK to store 0 dimensional variables in an attribute */ 
+                  int aed_idx;
                   aed_sct *ptr_aed;
 
                   if( $3->nbr_dim < 2  ){
-                    index=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
-                    ptr_aed=((prs_sct*)prs_arg)->att_lst[index];
+                    aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
+                    ptr_aed=((prs_sct*)prs_arg)->att_lst[aed_idx];
                     ptr_aed->sz = $3->sz;
                     ptr_aed->type= $3->type;
                     ptr_aed->val.vp = (void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
@@ -384,8 +384,8 @@ string_exp:    string_exp '+' string_exp {
 	       
                char buf[150];
               	      
-              /* format string according to info in string exp */
-              /* Its up to the user to work out which format corresponds with which type */
+              /* Format string according to string expression */
+              /* User decides which format corresponds to which type */
               switch ($3.type){
                 case  NC_DOUBLE: sprintf(buf,$5,$3.val.d); break;
                 case  NC_FLOAT:  sprintf(buf,$5,$3.val.f); break;
@@ -499,7 +499,7 @@ ncap_aed_lookup(char *var_nm,char *att_nm,aed_sct **att_lst,int *nbr_att, bool u
   
   for(i=0; i < *nbr_att ; i++)
     if (!strcmp(att_lst[i]->att_nm,att_nm) && !strcmp(att_lst[i]->var_nm,var_nm)) {
-      /* Free up the memory if we are doing an update */
+      /* Free memory if we are doing an update */
         if(update) free(att_lst[i]->val.vp);   
         return i;
       } /* end if */
@@ -517,17 +517,16 @@ ncap_aed_lookup(char *var_nm,char *att_nm,aed_sct **att_lst,int *nbr_att, bool u
 int
 yyerror(char *sng)
 {
-  /* Use eprokoke_skip  to skip an error message after we have sent an error */
-  /* message from yylex --  stop the provoked error message from yyparse     */
+  /* Use eprokoke_skip  to skip error message after sending error */
+  /* message from yylex --  stop provoked error message from yyparse */
   /* being printed */                           
 
   static bool eprovoke_skip;
   
   //if(eprovoke_skip) { eprovoke_skip = False ; return 0;} 
-  (void)fprintf(stderr,
-           "%s: %s line %ld  %s\n",prg_nm_get(), fl_spt_global,line_number,sng);
+  (void)fprintf(stderr,"%s: %s line %ld  %s\n",prg_nm_get(),fl_spt_global,line_number,sng);
   
-  if( sng[0]== '#' ) eprovoke_skip=True;
+  if(sng[0] == '#') eprovoke_skip=True;
   eprovoke_skip=eprovoke_skip; /* Do nothing except avoid compiler warnings */
   return 0;
 } /* end yyerror() */

@@ -199,7 +199,7 @@
 
 	* fixed ncrename problem. There was a typo error
 	  in nco_rename_var ( it was calling itself) This
-	  is the third such error in nco_netcdf.c . 
+	  is the third such error in nco_netcdf.c. 
 	  
 2001-03-02  Charlie Zender  <zender@uci.edu>
 
