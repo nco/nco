@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.203 2003-01-31 06:07:00 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.204 2003-02-08 02:25:29 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -62,12 +62,13 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 37. Implement float function definitions in nco_rth_flt as inline to improve speed for MACOSX builds (inline is OK in C99 but will it break C89?)
 38. Finish dimension-reducing operations (min/max/avg)
 41. Make ncap function prototypes consistent with rest of NCO
+42. Add switch allowing derived variable to take on all attributes of specified variable
 
 Highest priority NCO-wide items that You can help with:
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
 95. Handle CCM "time since..." conversions in ncrcat (use Unidata udunits)?
 97. Add x_op=average... attributes to averagers for ncar_csm
-124. Use `install' program and mkdir -p
+124. Use `install' program and mkdir -p in bld/Makefile method
 128. Ensure target 'dir' is made before *.d dependency files 
 150. Fully automate RPM production, e.g., 'make rpm' should build rpms and upload to redhat.com
 152. Change make or nco_dst.pl to add docs to /usr/doc in RPM
@@ -224,6 +225,8 @@ Command executes but in.hdf is full of screwy values
 244. Get builds working on testdrive.hp.com
 245. Eliminate all instances of passing naked constants
 246. Deprecate USE_FORTRAN_ARITHMETIC from Makefile
+247. Automate .deb builds
+248. Merge downstream Debian mods by Brian Mays into main tree
 ************************************************************************
 End NCO Wish list
 ************************************************************************
