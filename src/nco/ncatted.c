@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.12 1999-10-18 05:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.13 1999-12-06 18:10:00 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -12,6 +12,9 @@
 
    Append to existing string:
    ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three." in.nc foo.nc
+
+   Append to existing string with internal delimiter characters (commas):
+   ncatted -D 5 -O -a char_att,att_var,a,c,"appended a comma, and three more commas,,," in.nc foo.nc
 
    Append to existing float:
    ncatted -D 5 -O -a float_att,att_var,a,f,74 in.nc foo.nc
@@ -100,8 +103,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.12 1999-10-18 05:07:47 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.12 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.13 1999-12-06 18:10:00 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.13 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -135,7 +138,7 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'a': /* Copy the argument for later processing */ 
+    case 'a': /* Copy argument for later processing */ 
       aed_arg[nbr_aed]=optarg;
       nbr_aed++;
       break;
@@ -145,7 +148,7 @@ main(int argc,char **argv)
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
-    case 'l': /* Get the local path prefix for storing files retrieved from the remote file system */
+    case 'l': /* Get local path prefix for storing files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
@@ -168,7 +171,7 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
   
-  /* Process the positional arguments and fill in the filenames */
+  /* Process positional arguments and fill in filenames */
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   if(fl_out != NULL) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=fl_lst_in[0];
 
@@ -183,7 +186,7 @@ main(int argc,char **argv)
 
   /* We now have the final list of attributes to edit. */
   
-  /* Parse the filename */ 
+  /* Parse filename */ 
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure the file is on the local system and is readable or die trying */ 
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
@@ -275,15 +278,14 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
  */ 
 {
   /* Routine to set name, type, size, and value elements of a comma separated list of attribute info. 
-     This routine merely evaluates the syntax of the input expressions and  
-     does not attempt to validate attributes or variables against those present in the input netCDF file. */ 
+     This routine merely evaluates syntax of input expressions but does not validate attributes or variables against those present in input netCDF file. */ 
 
   /* Options are:
      -a att_nm,var_nm,mode,att_typ,att_val (modifies attribute att_nm for the single variable var_nm)
 
      -a att_nm,,mode,att_typ,att_val (modifies attribute att_nm for every variable in the file)
-     If option -a is given with var_nm = NULL, then var_nm is expanded into every variable name in the file.
-     Thus the attribute editing operation will be performed on every variable in the file.
+     If option -a is given with var_nm = NULL, then var_nm is expanded into every variable name in the file
+     Thus the attribute editing operation is performed on every variable in the file.
 
      mode,att_nm,att_typ,att_val (modifies global attribute att_nm for the file)
      This option may be combined with modes -a, -c, -d, or -o to specify 
@@ -315,7 +317,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 
   char **arg_lst;
 
-  char *dlm=",";
+  char *dlm_sng=",";
 
   aed_sct *aed_lst;
 
@@ -329,14 +331,14 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
   for(idx=0;idx<nbr_aed;idx++){
 
     /* Attribute edit specifications are processed as a normal text list. */ 
-    arg_lst=lst_prs(aed_arg[idx],dlm,&arg_nbr);
+    arg_lst=lst_prs(aed_arg[idx],dlm_sng,&arg_nbr);
 
     /* Check syntax */ 
     if(
        arg_nbr < 5 || /* Need more info */ 
        arg_lst[0] == NULL || /*  att_nm not specified */ 
        arg_lst[2] == NULL || /*  mode not specified */ 
-       (*(arg_lst[2]) != 'd' && (arg_lst[3] == NULL || arg_lst[idx_att_val_arg] == NULL)) || /* att_typ and att_val must be specified when mode is not delete */ 
+       (*(arg_lst[2]) != 'd' && (arg_lst[3] == NULL || (arg_lst[idx_att_val_arg] == NULL && *(arg_lst[3]) != 'c'))) || /* att_typ and att_val must be specified when mode is not delete, except that att_val = "" is valid for character type */ 
        False){
       (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s\n",prg_nm_get(),aed_arg[idx]);
       exit(EXIT_FAILURE);
@@ -361,7 +363,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
     aed_lst[idx].att_nm=arg_lst[0];
     aed_lst[idx].var_nm=arg_lst[1];
 
-    /* Debug XXX: these switches should be changed to string comparisons someday */ 
+    /* fxm: These switches should be changed to string comparisons someday */ 
     /* Set mode of current aed structure */ 
     /* Convert single letter code to mode enum */ 
     /*    if(!strstr("append",arg_lst[2])){aed_lst[idx].mode=aed_append;
@@ -401,47 +403,60 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 	break;
       } /* end switch */ 
       
-    /* Set size of current aed structure */ 
-    if(aed_lst[idx].type == NC_CHAR){
-      /* Include the NUL terminator in the string length */ 
-      aed_lst[idx].sz=strlen(arg_lst[idx_att_val_arg])+1;
-    }else{
-      /* For numeric types, the number of elements is determined by the number of delimiters */ 
-      aed_lst[idx].sz=arg_nbr-idx_att_val_arg;
-    } /* end else */ 
-
-    /* Set value of the current aed structure */ 
-    if(aed_lst[idx].type == NC_CHAR){
-      aed_lst[idx].val.cp=(signed char *)arg_lst[idx_att_val_arg];
-    }else{
-      double *val_arg_dbl;
-
-      long lmn;
-
-      val_arg_dbl=(double *)malloc(aed_lst[idx].sz*sizeof(double));
-      aed_lst[idx].val.vp=(void *)malloc(aed_lst[idx].sz*nctypelen(aed_lst[idx].type));
-
-      for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],(char **)NULL); 
-
-      /* Copy and typecast the entire array of values, using the implicit coercion rules of C */ 
-      switch(aed_lst[idx].type){
-      case NC_FLOAT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.fp[lmn]=val_arg_dbl[lmn];} break; 
-      case NC_DOUBLE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.dp[lmn]=val_arg_dbl[lmn];} break; 
-      case NC_LONG: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.lp[lmn]=val_arg_dbl[lmn];} break; 
-      case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=val_arg_dbl[lmn];} break; 
-      case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=val_arg_dbl[lmn];} break; 
-      case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=val_arg_dbl[lmn];} break; 
-      } /* end switch */ 
-
-      /* Free array used to hold double values */ 
-      if(val_arg_dbl != NULL) (void)free(val_arg_dbl);
-    } /* end else */ 
-    /* Un-typecast pointer to values after access */ 
-    (void)cast_nctype_void(aed_lst[idx].type,&aed_lst[idx].val);
-
+      /* Reassemble string list values which inadvertently contain delimiters */
+      if(aed_lst[idx].type == NC_CHAR && arg_nbr > idx_att_val_arg+1){
+	/* Number of elements which must be concatenated into single string value */
+	long lmn_nbr;
+	lmn_nbr=arg_nbr-idx_att_val_arg; 
+	(void)fprintf(stdout,"%s: WARNING NC_CHAR (string) attribute is embedded with %li literal element delimiters (\"%s\"), reassembling...\n",prg_nm_get(),lmn_nbr-1L,dlm_sng);
+	/* Rewrite list, splicing in original delimiter string */
+	arg_lst[idx_att_val_arg]=sng_lst_prs(arg_lst+idx_att_val_arg,lmn_nbr,dlm_sng);
+	/* Keep bookkeeping straight, just in case */
+	arg_nbr=idx_att_val_arg+1L;
+	lmn_nbr=1L;
+      } /* endif arg_nbr > idx_att_val_arg+1 */
+      
+      /* Set size of current aed structure */ 
+      if(aed_lst[idx].type == NC_CHAR){
+	/* Include NUL-terminator in string length */ 
+	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0 : strlen(arg_lst[idx_att_val_arg])+1;
+      }else{
+	/* Number of elements of numeric types is determined by number of delimiters */ 
+	aed_lst[idx].sz=arg_nbr-idx_att_val_arg;
+      } /* end else */ 
+      
+      /* Set value of current aed structure */ 
+      if(aed_lst[idx].type == NC_CHAR){
+	aed_lst[idx].val.cp=(signed char *)arg_lst[idx_att_val_arg];
+      }else{
+	double *val_arg_dbl;
+	
+	long lmn;
+	
+	val_arg_dbl=(double *)malloc(aed_lst[idx].sz*sizeof(double));
+	aed_lst[idx].val.vp=(void *)malloc(aed_lst[idx].sz*nctypelen(aed_lst[idx].type));
+	
+	for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],(char **)NULL); 
+	
+	/* Copy and typecast entire array of values, using implicit coercion rules of C */
+	switch(aed_lst[idx].type){
+	case NC_FLOAT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.fp[lmn]=val_arg_dbl[lmn];} break; 
+	case NC_DOUBLE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.dp[lmn]=val_arg_dbl[lmn];} break; 
+	case NC_LONG: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.lp[lmn]=val_arg_dbl[lmn];} break; 
+	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=val_arg_dbl[lmn];} break; 
+	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=val_arg_dbl[lmn];} break; 
+	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=val_arg_dbl[lmn];} break; 
+	} /* end switch */ 
+	
+	/* Free array used to hold double values */ 
+	if(val_arg_dbl != NULL) (void)free(val_arg_dbl);
+      } /* end else */ 
+      /* Un-typecast pointer to values after access */ 
+      (void)cast_nctype_void(aed_lst[idx].type,&aed_lst[idx].val);
+      
     } /* end if mode is not delete */ 
   } /* end loop over aed */
-
+  
   if(dbg_lvl == 5){
     for(idx=0;idx<nbr_aed;idx++){
       (void)fprintf(stderr,"aed_lst[%d].att_nm = %s\n",idx,aed_lst[idx].att_nm);
@@ -453,35 +468,35 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
       (void)fprintf(stderr,"aed_lst[%d].mode = %i\n",idx,aed_lst[idx].mode);
     } /* end loop over idx */
   } /* end debug */
-
- return aed_lst;
-
+  
+  return aed_lst;
+  
 } /* end prs_aed_lst() */ 
 
 
 void
 aed_prc(int nc_id,int var_id,aed_sct aed)
-/* 
-   int nc_id: input netCDF file ID
-   int var_id: input ID of variable on which to perform attribute editing 
-   aed_sct aed: input structure containing information necessary to edit
- */ 
+     /* 
+	int nc_id: input netCDF file ID
+	int var_id: input ID of variable on which to perform attribute editing 
+	aed_sct aed: input structure containing information necessary to edit
+     */ 
 {
   /* Routine to perform a single attribute edit on a single variable */ 
-
+  
   /* If var_id == NC_GLOBAL ( = -1) then a global attribute will be edited */
-
+  
   char var_nm[MAX_NC_NAME];
-
+  
   /* fxm: netCDF 2 specifies att_sz should be type int, netCDF 3 uses size_t */ 
   int att_sz;
   int nbr_att;
   int rcd;
-
+  
   nc_type att_typ;
-
+  
   void *att_val_new=NULL;
-
+  
   if(var_id == NC_GLOBAL){
     /* Get the number of global attributes for the file */
     (void)ncinquire(nc_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);

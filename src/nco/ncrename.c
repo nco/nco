@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.10 1999-10-18 05:07:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.11 1999-12-06 18:10:02 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -58,8 +58,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.10 1999-10-18 05:07:49 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.10 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.11 1999-12-06 18:10:02 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.11 $";
   
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dim_rnm_lst=NULL_CEWI;
@@ -95,21 +95,21 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'a': /* Copy the argument for later processing */ 
+    case 'a': /* Copy argument for later processing */ 
       att_rnm_arg[nbr_att_rnm]=optarg;
       nbr_att_rnm++;
       break;
     case 'D': /* The debugging level.  Default is 0. */
       dbg_lvl=atoi(optarg);
       break;
-    case 'd': /* Copy the argument for later processing */ 
+    case 'd': /* Copy argument for later processing */ 
       dim_rnm_arg[nbr_dim_rnm]=optarg;
       nbr_dim_rnm++;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
-    case 'l': /* Get the local path prefix for storing files retrieved from the remote file system */
+    case 'l': /* Get local path prefix for storing files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
@@ -126,7 +126,7 @@ main(int argc,char **argv)
       (void)nc_lib_vrs_prn();
       exit(EXIT_SUCCESS);
       break;
-    case 'v': /* Copy the argument for later processing */ 
+    case 'v': /* Copy argument for later processing */ 
       var_rnm_arg[nbr_var_rnm]=optarg;
       nbr_var_rnm++;
       break;
@@ -136,7 +136,7 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
   
-  /* Process the positional arguments and fill in the filenames */
+  /* Process positional arguments and fill in filenames */
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   if(fl_out != NULL) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=fl_lst_in[0];
 
@@ -153,7 +153,7 @@ main(int argc,char **argv)
 
   /* We now have the final list of variables, dimensions, and attributes to rename. */
   
-  /* Parse the filename */ 
+  /* Parse filename */ 
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure the file is on the local system and is readable or die trying */ 
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.29 1999-10-18 01:14:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.30 1999-12-06 18:09:59 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -119,7 +119,7 @@ lmt_prs(int nbr_lmt,char **lmt_arg)
 
   char **arg_lst;
 
-  char *dlm=",";
+  char *dlm_sng=",";
 
   lmt_sct *lmt;
 
@@ -131,7 +131,7 @@ lmt_prs(int nbr_lmt,char **lmt_arg)
   for(idx=0;idx<nbr_lmt;idx++){
 
     /* Hyperslab specifications are processed as a normal text list */ 
-    arg_lst=lst_prs(lmt_arg[idx],dlm,&arg_nbr);
+    arg_lst=lst_prs(lmt_arg[idx],dlm_sng,&arg_nbr);
 
     /* Check syntax */ 
     if(
@@ -172,25 +172,69 @@ lmt_prs(int nbr_lmt,char **lmt_arg)
 
 } /* end lmt_prs() */ 
 
+char *
+sng_lst_prs(char **sng_lst,const long lmn_nbr, const char *dlm_sng)
+/* 
+   const char **sng_lst: I List of pointers to strings to join together
+   const char *dlm_sng: I delimiter string to use as glue
+   const long lmn_nbr: O number of strings in list
+   char *sng_lst_prs: O Concatenated string formed by joining all input strings
+ */ 
+{
+  /* Routine takes a list of strings and joins them together into one string
+     Elements of input list should all be NUL-terminated strings
+     Element with the value NULL, will be interpreted as strings of zero length
+  */ 
+
+  char *sng; /* Output string */ 
+
+  int dlm_len;
+  long lmn;
+  long sng_sz=0L; /* NB: sng_sz get incremented */
+
+  if(lmn_nbr == 1L) return sng_lst[0];
+
+  /* Delimiter must be NUL-terminated (a string) so strlen() works */ 
+  if(dlm_sng == NULL){
+    (void)fprintf(stdout,"%s: ERROR sng_lst_prs() reports delimiter string is NULL\n",prg_nm_get());
+    exit(EXIT_FAILURE);
+  } /* end if */
+  dlm_len=strlen(dlm_sng); 
+
+  /* List elements must be NUL-terminated (strings) so strlen() works */ 
+  for(lmn=0L;lmn<lmn_nbr;lmn++) sng_sz+=(sng_lst[lmn] == NULL) ? 0L : strlen(sng_lst[lmn])+dlm_len;
+  /* Add one for NULL byte */
+  sng=(char *)malloc(sizeof(char)*(sng_sz+1));
+  /* NUL-terminate string for safety */
+  sng[0]='\0';
+  for(lmn=0L;lmn<lmn_nbr;lmn++){
+    /* List elements must be NUL-terminated (strings) so strcat() works */ 
+    sng=(sng_lst[lmn] == NULL) ? sng : strcat(sng,sng_lst[lmn]);
+    if(lmn != lmn_nbr-1 && dlm_len != 0) sng=strcat(sng,dlm_sng);
+  } /* end loop over lmn */
+
+  return sng;
+} /* end lst_prs() */ 
+
 char **
-lst_prs(char *sng_in,const char *dlm,int *nbr_lst)
+lst_prs(char *sng_in,const char *dlm_sng,int *nbr_lst)
 /* 
    char *sng_in: I/O delimited argument list (delimiters are changed to NULL on output)
-   const char *dlm: I delimiter
+   const char *dlm_sng: I delimiter string
    int *nbr_lst: O number of elements in list
    char **lst_prs: O array of list elements
  */ 
 {
   /* Routine creates a list of strings from a given string and an arbitrary delimiter */ 
 
-  /* The number of members of the list is always one more than the number of delimiters, e.g.,
+  /* Number of list members is always one more than number of delimiters, e.g.,
      foo,,3, has 4 arguments: "foo", "", "3" and "".
-     A delimiter without an argument is valid syntax, meaning choose the default argument.
-     Therefore a storage convention is necessary to indicate the default argument was selected.
-     Either NULL or '\0' can be used without required the use of an additional flag. 
-     NULL can not be printed, but is useful as a logical flag since it's value is False. 
-     On the other hand, '\0', the empty string, can be printed but is not as useful as a flag. 
-     Currently, NCO implements the former convention, where default selections are set to NULL.
+     A delimiter without an argument is valid syntax to indicate the default argument
+     Therefore a storage convention is necessary to indicate the default argument was selected
+     Either NULL or '\0' can be used without requiring the use of an additional flag
+     NULL can not be printed, but is useful as a logical flag since it's value is False
+     On the other hand, '\0', the empty string, can be printed but is not as useful as a flag
+     Currently, NCO implements the former convention, where default selections are set to NULL
    */
     
   char **lst;
@@ -199,7 +243,8 @@ lst_prs(char *sng_in,const char *dlm,int *nbr_lst)
   int dlm_len;
   int idx;
 
-  dlm_len=strlen(dlm);
+  /* Delimiter must be NUL-terminated (a string) so we may find its length */ 
+  dlm_len=strlen(dlm_sng); 
 
   /* Do not increment actual sng_in pointer while searching for delimiters---increment a dummy pointer instead. */ 
   sng_in_ptr=sng_in; 
@@ -208,7 +253,7 @@ lst_prs(char *sng_in,const char *dlm,int *nbr_lst)
   *nbr_lst=1;
 
   /* Count list members */ 
-  while((sng_in_ptr=strstr(sng_in_ptr,dlm))){
+  while((sng_in_ptr=strstr(sng_in_ptr,dlm_sng))){
     sng_in_ptr+=dlm_len;
     (*nbr_lst)++;
   } /* end while */ 
@@ -218,7 +263,7 @@ lst_prs(char *sng_in,const char *dlm,int *nbr_lst)
   sng_in_ptr=sng_in; 
   lst[0]=sng_in;
   idx=0;
-  while((sng_in_ptr=strstr(sng_in_ptr,dlm))){
+  while((sng_in_ptr=strstr(sng_in_ptr,dlm_sng))){
     /* NULL terminate previous arg */ 
     *sng_in_ptr='\0';
     sng_in_ptr+=dlm_len;
@@ -561,7 +606,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 	host_nm_rmt=fl_nm_rmt+6;
 	/* The filename begins right after the slash */ 
 	fl_nm_rmt=strstr(fl_nm_rmt+6,"/")+1;
-	/* NULL-terminate the hostname */
+	/* NUL-terminate the hostname */
 	*(fl_nm_rmt-1)='\0';
 	
 	/* Subtract the four characters replaced by new strings, and add one for the NULL byte */ 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.15 1999-10-18 05:07:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.16 1999-12-06 18:10:02 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -67,8 +67,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.15 1999-10-18 05:07:49 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.15 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.16 1999-12-06 18:10:02 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.16 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -129,7 +129,7 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'C': /* Add to the extraction list any coordinates associated with variables to be extracted? */ 
+    case 'C': /* Add to extraction list any coordinates associated with variables to be extracted? */ 
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':
@@ -138,7 +138,7 @@ main(int argc,char **argv)
     case 'D': /* The debugging level.  Default is 0. */
       dbg_lvl=atoi(optarg);
       break;
-    case 'd': /* Copy the argument for later processing */ 
+    case 'd': /* Copy argument for later processing */ 
       lmt_arg[nbr_lmt]=(char *)strdup(optarg);
       nbr_lmt++;
       break;
@@ -148,7 +148,7 @@ main(int argc,char **argv)
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
-    case 'l': /* Get the local path prefix for storing files retrieved from the remote file system */
+    case 'l': /* Get local path prefix for storing files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
     case 'n': /* Get the NINTAP-style abbreviation of files to average */ 
@@ -186,16 +186,16 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
   
-  /* Process the positional arguments and fill in the filenames */
+  /* Process positional arguments and fill in filenames */
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
 
-  /* Make a uniform list of the user-specified dimension limits */ 
+  /* Make uniform list of user-specified dimension limits */ 
   if(nbr_lmt > 0) lmt=lmt_prs(nbr_lmt,lmt_arg);
   
   /* Make netCDF errors fatal and print the diagnostic */   
   ncopts=NC_VERBOSE | NC_FATAL; 
   
-  /* Parse the filename */ 
+  /* Parse filename */ 
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure the file is on the local system and is readable or die trying */ 
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
@@ -261,7 +261,7 @@ main(int argc,char **argv)
   ARM_FORMAT=arm_inq(in_id);
   if(ARM_FORMAT) base_time_srt=arm_base_time_get(in_id);
 
-  /* Fill in the variable structure list for all the extracted variables */ 
+  /* Fill in variable structure list for all extracted variables */ 
   var=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
@@ -322,7 +322,7 @@ main(int argc,char **argv)
   
   /* Loop over the input files */ 
   for(idx_fl=0;idx_fl<nbr_fl;idx_fl++){
-    /* Parse the filename */ 
+    /* Parse filename */ 
     if(idx_fl != 0) fl_in=fl_nm_prs(fl_in,idx_fl,(int *)NULL,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
     if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",idx_fl,fl_in);
     /* Make sure the file is on the local system and is readable or die trying */ 

@@ -1,3 +1,24 @@
+1999-12-06  Charlie Zender  <zender@dust.ps.uci.edu>
+
+	* Tagged this as nco1_1_42
+
+	* Fixed so that consecutive delimiter strings work,
+	e.g., ncatted -O -a history,global,o,c,"hi,,,hi" in.nc
+
+1999-12-04  Charlie Zender  <zender@dust.ps.uci.edu>
+
+	* Fixed bug where ncatted neglected string values after first
+	comma, e.g., would drop ", NCAR" from test attribute in
+	ncatted -O -h -a test,global,o,c,"NREL, NCAR" in.nc
+	because the new attribute value followed the comma delimiter used
+	internally by ncatted to delimit list elements
+	
+	* Fixed so that setting strings to zero length with ncatted works,
+	e.g., ncatted -O -a history,global,o,c,"" in.nc
+
+	* Fixed attribute printing of lists in ncks: terminal delimiter is
+	no longer appended
+
 1999-11-02  Charlie Zender  <zender@dust.ps.uci.edu>
 
 	* Fixed some problems with AIX build environment, switched to
@@ -110,7 +131,7 @@
 	and ncrcat, e.g. ncks, causes problems with wrapped and wrapped
 	stride limits. One line fix to lmt_evl() restored old lmt_evl()
 	dim_idx code to all operators except ncra and ncrcat. The new
-	lmt_evl() code is simply will not (and should not) handle wrapped
+	lmt_evl() code simply will not (and should not) handle wrapped
 	coordinates for the record dimension in multi-file operators. 
 	
 1999-05-11  Charlie Zender  <zender@z.ppp.ucar.edu>

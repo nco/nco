@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.14 1999-10-18 05:07:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.15 1999-12-06 18:10:01 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -74,8 +74,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.14 1999-10-18 05:07:48 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.14 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.15 1999-12-06 18:10:01 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.15 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -117,7 +117,7 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'C': /* Add to the extraction list any coordinates associated with variables to be extracted? */ 
+    case 'C': /* Add to extraction list any coordinates associated with variables to be extracted? */ 
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c': /* Add all coordinates to the extraction list? */ 
@@ -126,7 +126,7 @@ main(int argc,char **argv)
     case 'D': /* The debugging level.  Default is 0. */
       dbg_lvl=atoi(optarg);
       break;
-    case 'd': /* Copy the argument for later processing */ 
+    case 'd': /* Copy argument for later processing */ 
       lmt_arg[nbr_lmt]=(char *)strdup(optarg);
       nbr_lmt++;
       break;
@@ -181,16 +181,16 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
   
-  /* Process the positional arguments and fill in the filenames */
+  /* Process positional arguments and fill in filenames */
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   
-  /* Make a uniform list of the user-specified dimension limits */ 
+  /* Make uniform list of user-specified dimension limits */ 
   lmt=lmt_prs(nbr_lmt,lmt_arg);
   
   /* Make netCDF errors fatal and print the diagnostic */   
   ncopts=NC_VERBOSE | NC_FATAL; 
 
-  /* Parse the filename */ 
+  /* Parse filename */ 
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure the file is on the local system and is readable or die trying */ 
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
@@ -363,14 +363,15 @@ prn_att(int in_id,int var_id)
      If var_id == NC_GLOBAL ( = -1) the global attributes are printed,
      otherwise the variable's attributes are printed. */
 
+  att_sct *att=NULL_CEWI;
+
   char dlm_sng[3];
   char src_sng[MAX_NC_NAME];
 
   int att_lmn;
+  int att_sz;
   int idx;
   int nbr_att;
-
-  att_sct *att=NULL_CEWI;
 
   if(var_id == NC_GLOBAL){
     /* Get the number of global attributes for the file */
@@ -386,43 +387,46 @@ prn_att(int in_id,int var_id)
     
   /* Get the attributes' names, types, lengths, and values */
   for(idx=0;idx<nbr_att;idx++){
-    
+
     att[idx].nm=(char *)malloc(MAX_NC_NAME*sizeof(char));
     (void)ncattname(in_id,var_id,idx,att[idx].nm);
     (void)ncattinq(in_id,var_id,att[idx].nm,&att[idx].type,&att[idx].sz);
 
-    /* Allocate enough space to hold the attribute */ 
-    att[idx].val.vp=(void *)malloc(att[idx].sz*nctypelen(att[idx].type));
+    /* Copy value to avoid indirection in loop over att_sz */
+    att_sz=att[idx].sz;
+
+    /* Allocate enough space to hold attribute */
+    att[idx].val.vp=(void *)malloc(att_sz*nctypelen(att[idx].type));
     (void)ncattget(in_id,var_id,att[idx].nm,att[idx].val.vp);
-    (void)fprintf(stdout,"%s attribute %i: %s, size = %i %s, value = ",src_sng,idx,att[idx].nm,att[idx].sz,nc_type_nm(att[idx].type));
+    (void)fprintf(stdout,"%s attribute %i: %s, size = %i %s, value = ",src_sng,idx,att[idx].nm,att_sz,nc_type_nm(att[idx].type));
     
     /* Typecast the pointer to the values before access */ 
     (void)cast_void_nctype(att[idx].type,&att[idx].val);
 
-    if(att[idx].sz > 1L) (void)strcpy(dlm_sng,", "); else (void)strcpy(dlm_sng,"");
+    (void)strcpy(dlm_sng,", ");
     switch(att[idx].type){
     case NC_FLOAT:
-      for(att_lmn=0;att_lmn<att[idx].sz;att_lmn++) (void)fprintf(stdout,"%g%s",att[idx].val.fp[att_lmn],dlm_sng);
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%g%s",att[idx].val.fp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_DOUBLE:
-      for(att_lmn=0;att_lmn<att[idx].sz;att_lmn++) (void)fprintf(stdout,"%g%s",att[idx].val.dp[att_lmn],dlm_sng);
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%g%s",att[idx].val.dp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_SHORT:
-      for(att_lmn=0;att_lmn<att[idx].sz;att_lmn++) (void)fprintf(stdout,"%hi%s",att[idx].val.sp[att_lmn],dlm_sng);
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%hi%s",att[idx].val.sp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_LONG:
-      for(att_lmn=0;att_lmn<att[idx].sz;att_lmn++) (void)fprintf(stdout,"%li%s",(long)att[idx].val.lp[att_lmn],dlm_sng);
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%li%s",(long)att[idx].val.lp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_CHAR:
-      for(att_lmn=0;att_lmn<att[idx].sz;att_lmn++){
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++){
         char char_foo;
 
-	/* Assume \0 is a string terminator and don't print it out. */
+	/* Assume \0 is a string terminator and do not print it */
 	if((char_foo=att[idx].val.cp[att_lmn]) != '\0') (void)fprintf(stdout,"%c",char_foo);
       } /* end loop over element */ 
       break;
     case NC_BYTE:
-      for(att_lmn=0;att_lmn<att[idx].sz;att_lmn++) (void)fprintf(stdout,"%c",att[idx].val.bp[att_lmn]);
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%c",att[idx].val.bp[att_lmn]);
       break;
     } /* end switch */ 
     (void)fprintf(stdout,"\n");

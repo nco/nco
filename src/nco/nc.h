@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.18 1999-11-02 22:50:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.19 1999-12-06 18:09:59 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -322,6 +322,7 @@ extern char *nc_type_nm(nc_type);
 extern char *nmn_get(void);
 extern char *prg_nm_get(void);
 extern char *prg_prs(char *,int *);
+extern char *sng_lst_prs(char **,const long, const char *);
 extern dim_sct *dim_dup(dim_sct *);
 extern dim_sct *dim_fll(int,int,char *);
 extern double arm_time_mk(int,double);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.13 1999-11-02 22:50:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.14 1999-12-06 18:10:00 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.13 1999-11-02 22:50:18 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.13 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.14 1999-12-06 18:10:00 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.14 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -190,7 +190,7 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'C': /* Add to the extraction list any coordinates associated with variables to be extracted? */ 
+    case 'C': /* Add to extraction list any coordinates associated with variables to be extracted? */ 
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':
@@ -199,7 +199,7 @@ main(int argc,char **argv)
     case 'D': /* The debugging level.  Default is 0. */
       dbg_lvl=atoi(optarg);
       break;
-    case 'd': /* Copy the argument for later processing */ 
+    case 'd': /* Copy argument for later processing */ 
       lmt_arg[nbr_lmt]=(char *)strdup(optarg);
       nbr_lmt++;
       break;
@@ -209,7 +209,7 @@ main(int argc,char **argv)
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
-    case 'l': /* Get the local path prefix for storing files retrieved from the remote file system */
+    case 'l': /* Get local path prefix for storing files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
     case 'n': /* Get the NINTAP-style abbreviation of files to average */ 
@@ -262,13 +262,13 @@ main(int argc,char **argv)
     (void)fprintf(stderr,"\n");
   } /* end if */ 
 
-  /* Process the positional arguments and fill in the filenames */
+  /* Process positional arguments and fill in filenames */
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
 
-  /* Make a uniform list of the user-specified dimension limits */ 
+  /* Make uniform list of user-specified dimension limits */ 
   if(nbr_lmt > 0) lmt=lmt_prs(nbr_lmt,lmt_arg);
   
-  /* Parse the filename */ 
+  /* Parse filename */ 
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure the file is on the local system and is readable or die trying */ 
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
@@ -322,7 +322,7 @@ main(int argc,char **argv)
   /* Is this an NCAR CSM-format history tape? */
   NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
 
-  /* Fill in the variable structure list for all the extracted variables */ 
+  /* Fill in variable structure list for all extracted variables */ 
   var=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){

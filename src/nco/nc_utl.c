@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.38 1999-10-18 05:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.39 1999-12-06 18:10:00 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -1010,7 +1010,7 @@ mss_val_get(int nc_id,var_sct *var)
     mss_tmp.vp=(void *)malloc(att_len);
     (void)ncattget(var->nc_id,var->id,att_nm,mss_tmp.vp);
     if(att_typ == NC_CHAR){
-      /* NULL-terminate the missing value string */
+      /* NUL-terminate the missing value string */
       if(mss_tmp.cp[att_len-1] != '\0'){
 	att_len++;
 	mss_tmp.vp=(void *)realloc(mss_tmp.vp,att_len);
@@ -1359,7 +1359,7 @@ lmt_dim_mk(int nc_id,int dim_id,lmt_sct *lmt,int nbr_lmt,bool FORTRAN_STYLE)
     /* cnt < 10 covers negative numbers and SIGFPE from log10(cnt==0) 
        Adding 1 is required for cnt=10,100,1000... */
     if(cnt < 10L) max_sng_sz=1; else max_sng_sz=1+(int)ceil(log10((double)cnt));
-    /* Add one for the NULL byte */
+    /* Add one for NULL byte */
     lmt_dim.max_sng=(char *)malloc(sizeof(char)*(max_sng_sz+1));
     (void)sprintf(lmt_dim.max_sng,"%ld",cnt);
     if(FORTRAN_STYLE){
@@ -1861,8 +1861,16 @@ hst_att_cat(int out_id,char *hst_sng)
       return;
     } /* end if */
 
-    history_crr=(char *)malloc(att_sz*sizeof(char));
-    (void)ncattget(out_id,NC_GLOBAL,"history",(void *)history_crr);
+    if(att_sz > 0){
+      history_crr=(char *)malloc(att_sz*sizeof(char));
+      (void)ncattget(out_id,NC_GLOBAL,"history",(void *)history_crr);
+    }else{
+      /* History attribute exists but has size of zero */
+      history_crr=(char *)malloc(sizeof(char));
+      /* Turn it into a null string so strlen(history_crr) = 0 */
+      history_crr[0]='\0';
+    } /* end else */
+
     /* Add 4 for formatting characters */ 
     history_new=(char *)malloc((strlen(history_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4)*sizeof(char));
     (void)sprintf(history_new,"%s: %s\n%s",time_stamp_sng,hst_sng,history_crr);
@@ -4145,7 +4153,7 @@ var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dim_sct **dim,int nbr_d
   var=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
 
-  /* Fill in the variable structure list for all the extracted variables */ 
+  /* Fill in variable structure list for all extracted variables */ 
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(nc_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dim_xtr);
     var_out[idx]=var_dup(var[idx]);
@@ -4575,7 +4583,7 @@ usg_prn(void)
     opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M val] [-N] [-O] [-o op_type] [-p path] [-R] [-r] [-v ...] [-w wgt] [-x] in.nc out.nc\n");
     break;
   case ncap:
-    opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-m mask] [-M val] [-o op_type] [-O] [-p path] [-R] [-r] [-v ...] [-w wgt] [-x] in.nc out.nc\n");
+    opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-m mask] [-M val] [-o op_type] [-O] [-p path] [-R] [-r] [-s] [-S] [-v ...] [-w wgt] [-x] in.nc out.nc\n");
     break;
   case ncks:
     opt_sng=(char *)strdup("[-A] [-a] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-O] [-p path] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [out.nc]\n");
@@ -4618,7 +4626,7 @@ usg_prn(void)
   if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I \t\tDo not weight or mask coordinate variables\n");
   if(strstr(opt_sng,"-l")) (void)fprintf(stdout,"-l path\t\tLocal storage path for remotely-retrieved files\n");
   if(strstr(opt_sng,"-M")){
-    if(prg == ncwa) (void)fprintf(stdout,"-M val\t\tMasking value (default is 1.)\n");
+    if(prg == ncwa) (void)fprintf(stdout,"-M val\t\tMasking value (default is 1.0)\n");
     if(prg == ncks) (void)fprintf(stdout,"-M\t\tPrint global metadata\n");
   } /* end if */ 
   if(strstr(opt_sng,"-m")){
@@ -4635,7 +4643,11 @@ usg_prn(void)
   if(strstr(opt_sng,"-p")) (void)fprintf(stdout,"-p path\t\tPath prefix for all input filenames\n");
   if(strstr(opt_sng,"-R")) (void)fprintf(stdout,"-R\t\tRetain remotely-retrieved files after use\n");
   if(strstr(opt_sng,"-r")) (void)fprintf(stdout,"-r\t\tProgram version and copyright notice\n");
-  if(strstr(opt_sng,"-s")) (void)fprintf(stdout,"-s format\tString format for text output\n");
+  if(strstr(opt_sng,"-s")){
+    if(prg != ncap) (void)fprintf(stdout,"-s format\tString format for text output\n");
+    if(prg == ncap) (void)fprintf(stdout,"-s algebra\tAlgebraic command string defining a single output variable\n");
+  } /* end if */
+  if(strstr(opt_sng,"-S")) (void)fprintf(stdout,"-S fl_cmd\tScript file containing multiple algebraic commands\n");
   if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u\t\tUnits of variables, if any, will be printed\n");
   if(strstr(opt_sng,"-v")){
     if(prg == ncrename) (void)fprintf(stdout,"-v old_var,new_var Variable's old and new names\n");

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.25 1999-10-18 06:02:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.26 1999-12-06 18:10:02 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -73,8 +73,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.25 1999-10-18 06:02:00 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.25 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.26 1999-12-06 18:10:02 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.26 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -142,10 +142,10 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'a':
-      /* Get the list dimensions over which to average the hyperslab */ 
+      /* Get list of dimensions over which to average hyperslab */
       dim_avg_lst_in=lst_prs(optarg,",",&nbr_dim_avg);
       break;
-    case 'C': /* Add to the extraction list any coordinates associated with variables to be extracted? */ 
+    case 'C': /* Add to extraction list any coordinates associated with variables to be extracted? */ 
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':
@@ -156,7 +156,7 @@ main(int argc,char **argv)
       dbg_lvl=atoi(optarg);
       break;
     case 'd':
-      /* Copy the argument for later processing */ 
+      /* Copy argument for later processing */ 
       lmt_arg[nbr_lmt]=(char *)strdup(optarg);
       nbr_lmt++;
       break;
@@ -171,15 +171,15 @@ main(int argc,char **argv)
       WGT_MSK_CRD_VAR=!WGT_MSK_CRD_VAR;
       break;
     case 'l':
-      /* Get the local path prefix for storing files retrieved from the remote file system */
+      /* Get local path prefix for storing files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
     case 'm':
-      /* The name of the variable to use as a mask in the averaging.  Default is none */
+      /* Name of variable to use as mask in averaging.  Default is none */
       msk_nm=optarg;
       break;
     case 'M':
-      /* The only good data will be when the mask has this value. Default is 1. */
+      /* Good data defined by relation to mask value. Default is 1. */
       msk_val=atof(optarg);
       break;
     case 'N':
@@ -241,16 +241,16 @@ main(int argc,char **argv)
   /* Ensure we do not attempt to normalize by non-existent weight */ 
   if(wgt_nm == NULL) NORMALIZE_BY_WEIGHT=False;
 
-  /* Process the positional arguments and fill in the filenames */
+  /* Process positional arguments and fill in filenames */
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
 
-  /* Make a uniform list of the user-specified dimension limits */ 
+  /* Make uniform list of user-specified dimension limits */ 
   lmt=lmt_prs(nbr_lmt,lmt_arg);
   
   /* Make netCDF errors fatal and print the diagnostic */   
   ncopts=NC_VERBOSE | NC_FATAL; 
   
-  /* Parse the filename */ 
+  /* Parse filename */ 
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure the file is on the local system and is readable or die trying */ 
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
@@ -376,7 +376,7 @@ main(int argc,char **argv)
   /* Is this an NCAR CSM-format history tape? */
   NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
 
-  /* Fill in the variable structure list for all the extracted variables */ 
+  /* Fill in variable structure list for all extracted variables */ 
   var=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
@@ -443,7 +443,7 @@ main(int argc,char **argv)
   
   /* Loop over the input files */ 
   for(idx_fl=0;idx_fl<nbr_fl;idx_fl++){
-    /* Parse the filename */ 
+    /* Parse filename */ 
     if(idx_fl != 0) fl_in=fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
     if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",idx_fl,fl_in);
     /* Make sure the file is on the local system and is readable or die trying */ 
@@ -596,7 +596,7 @@ main(int argc,char **argv)
 	/* Divide numerator by denominator */ 
 	/* Diagnose problem #116 before it core dumps */ 
 	if(var_prc_out[idx]->sz == 1 && var_prc_out[idx]->type == NC_LONG && var_prc_out[idx]->val.lp[0] == 0){
-	  (void)fprintf(stdout,"%s: ERROR Denominator weight = 0. Problem described in TODO #116\n%s: HINT A possible workaround is to remove variable \"%s\" from file\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
+	  (void)fprintf(stdout,"%s: ERROR Denominator weight = 0. Problem described in TODO #116\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
 	} /* end if */ 
 	/* This constructs the default weighted average */ 
 	(void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);

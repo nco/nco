@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.35 1999-10-18 06:01:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.36 1999-12-06 18:09:58 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -74,14 +74,20 @@ to be checking whether tally == 0 before checking whether op2 == mss_val
 123. Add scp protocol to fl_get()
 124. Use `install' program and mkdir -p
 125. Fix install on Cray
-126. Fix install on Blackforest
+126. Fix nco_dst.pl install for Babyblue/Blackforest
 127. Make mss: signal retrieval from NCAR mass store
 128. Ensure target 'dir' is made before *.d dependency files 
 129. ncwa -D 5 -O -a lon -v one foo.nc foo2.nc dumps core on ute in
 nco_tst.sh. Appears to be hitting a malloc error deep in netCDF
 library ncclose() when called in nc_utl:fl_out_cls() at end of
 program. 
-
+130. Cleanup build procedure on IBM SP clusters. Currently leaves
+compiler residue in bld directory
+131. Add some tests for ncra to nco_tst.sh
+132. ncrcat core dumps in malloc deep in nccreate call at 
+nc_utl.c:fl_out_open() line 1635 on ute.ucar.edu with command 
+ncrcat -O in.nc ho.F1.vegAS.moni01.nc
+This must be an IRIX error or a file name length malloc error
 ************************************************************************
 End NCO Wish list
 ************************************************************************

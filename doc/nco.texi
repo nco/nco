@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.33 1999-10-15 18:01:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.34 1999-12-06 18:09:59 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -49,9 +49,9 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.1.39
-@set doc-edition 1.1.39
-@set copyright-years 1995, 1996, 1997, 1998, 1999
+@set nco-edition 1.1.41
+@set doc-edition 1.1.41
+@set NCAR-copyright-years 1995, 1996, 1997, 1998, 1999
 @set UC-copyright-years 1999
 @set update-year 1999
 @set update-date 3 October 1999
@@ -135,8 +135,11 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @c Include the Distribution inside the titlepage so that headings are turned off. 
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} @value{copyright-years} University Corporation
-for Atmospheric Research. 
+Copyright @copyright{} @value{NCAR-copyright-years} University
+Corporation for Atmospheric Research. 
+
+Portions copyright @copyright{} @value{UC-copyright-years} Regents of
+the University of California.
 
 @sp 2
 This is the first edition of the @cite{NCO User's Guide},@*
@@ -579,6 +582,12 @@ implemented in NCO to eliminate all netCDF 3.x calls.
 If, at compilation time, @code{NETCDF2_ONLY} is defined, then NCO will
 not use any netCDF 3.x calls and the resulting NCO operators should work
 with HDF files. 
+Note that there are multiple versions of HDF.
+Currently HDF version 4.x supports netCDF 2.x and thus NCO.
+HDF version 5.x became available in 1999, but did not support netCDF
+(or, for that matter, Fortran) as of December 1999.
+Support for netCDF 3.x in HDF 5.x is being worked on and we will attempt
+to convert NCO to netCDF 3.x once this is complete.
 
 @node Reporting bugs,  , netCDF 2.x vs. 3.x, Introduction
 @section Reporting bugs
@@ -2099,13 +2108,21 @@ The specification of @var{att_type} is optional in @dfn{Delete} mode.
 The value of @var{att_val} is what you want to change attribute
 @var{att_nm} to contain.
 The specification of @var{att_val} is optional in @dfn{Delete} mode.
-@var{att_val} may be a single value or one-dimensional array of elements
-of type @code{att_type}.
-When specifying an array of values, enclose @var{att_val} in quotes,
-e.g., @code{-a levels,T,o,s,"1,2,3,4"}. 
-Quotes are unnecessary around @var{att_val} unless @var{att_val}
-contains characters which would confuse the calling shell, such as
-spaces, commas, and wildcard characters. 
+Attribute values for all types besides NC_CHAR must have an attribute
+length of at least one.
+Thus @var{att_val} may be a single value or one-dimensional array of
+elements of type @code{att_type}.
+If the @var{att_val} is not set or is set to empty space,
+and the @var{att_type} is NC_CHAR, e.g., @code{-a units,T,o,c,""} or 
+@code{-a units,T,o,c,}, then the corresponding attribute is set to 
+have zero length.
+When specifying an array of values, it is safest to enclose
+@var{att_val} in double or single quotes, e.g., 
+@code{-a levels,T,o,s,"1,2,3,4"} or   
+@code{-a levels,T,o,s,'1,2,3,4'}.
+The quotes are strictly unnecessary around @var{att_val} except 
+when @var{att_val} contains characters which would confuse the calling
+shell, such as spaces, commas, and wildcard characters. 
 
 @noindent
 EXAMPLES
@@ -3143,12 +3160,14 @@ ncrename -v p,pressure -v .t,temperature in.nc
  
 @cindex global attributes
 @cindex attributes, global
+@cindex @code{_FillValue} attribute
+@cindex @code{missing_value} attribute
 Create netCDF @file{out.nc} identical to @file{in.nc} except the attribute
-@code{long_name} is changed to @code{title} (in all variables for
-which it appears) and the global attribute @code{Zaire} is changed to
+@code{_FillValue} is changed to @code{missing_value} (in all variables
+which possess it) and the global attribute @code{Zaire} is changed to
 @code{Congo}:  
 @example
-ncrename -a long_name,title -a Zaire,Congo in.nc out.nc 
+ncrename -a _FillValue,missing_value -a Zaire,Congo in.nc out.nc 
 @end example
 
 @page

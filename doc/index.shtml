@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.26 1999-10-18 01:14:32 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.27 1999-12-06 18:09:58 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
@@ -14,7 +14,8 @@
    <TITLE>NCO Homepage</TITLE>
    <META NAME="GENERATOR" CONTENT="Mozilla/3.04Gold (X11; I; Linux 2.0.0 i686) [Netscape]">
    <META NAME="Author" CONTENT="Charles S. Zender">
-   <META NAME="Keywords" CONTENT="NCO Homepage, netCDF, netCDF operator, GCM, scientific data">
+   <META NAME="Keywords" CONTENT="NCO Homepage, netCDF, netCDF
+   operator, GCM, HDF, scientific data">
 </HEAD>
 <BODY TEXT="#000000" BGCOLOR="#FFF8DC" LINK="#0000FF" VLINK="#008080" ALINK="#FF0000">
 
@@ -69,8 +70,12 @@ NCO is designed to be used both interactively and with large batch jobs.
 There are plenty of command line (i.e., runtime) options, but the defaults
 settings are often sufficient for everyday needs.</P>
 
+<p>NCO also works on <a href="http://hdf.ncsa.uiuc.edu">HDF</a> files.
+See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO User's
+Guide</A> for details.</p> 
+
 <P>NCO has probably already been built and tested on your operating system
-(SunOS, Solaris, Linux, IRIX, UNICOS, and Windows NT).
+(AIX, IRIX, Linux, SunOS, Solaris, Tru64, UNICOS, and Windows NT).
 The current set of
 operators is given below. For a thorough description of each operator,
 please read the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO
@@ -206,6 +211,8 @@ See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> for 
 <P>1999/07/03: 
 <TT>ncatted</TT> now replaces missing values of variables whose
 <IT>missing_value</IT> attribute is changed.
+The feature was added in response to problems users were having of
+comparing files produced on different machines.
 When the internal floating point representation of a missing value, 
 e.g., 1.0e36, differs between machines then netCDF files produced
 on those machines will have incompatible missing values.
@@ -277,15 +284,20 @@ as having been fixed in the latest revision.
 
 <DT><A NAME="NCAR"></A></DT>
 <H2>Using NCO at NCAR</H2>
-<P>NCO is built and maintained at NCAR, and so user's of NCAR machines should take advantage of pre-built, up-to-date NCO executables.
+<P>NCO is built at UCI and distributed from NCAR.
+User's of UCI and NCAR machines should take advantage of pre-built,
+up-to-date NCO executables. 
 The NCO executables are maintained in many different locations at NCAR:
 <DD>ACD dust.acd.ucar.edu (Linux 2.2.5): /gs/zender/bin/LINUX</DD>
-<DD>ACD garcia.acd.ucar.edu (Digital OSF1): /usr/local/bin</DD>
+<DD>ACD garcia.acd.ucar.edu (Compaq Tru64): /usr/local/bin</DD>
 <DD>CGD network (Solaris 2.6): /contrib/bin</DD>
 <DD>CGD/SCD Dataproc (IRIX 6.5): /contrib/bin</DD>
-<DD>SCD Blackforest (AIX): /home/blackforest/zender/bin/AIX</DD>
+<DD>SCD Blackforest (AIX 4.0): /home/blackforest/zender/bin/AIX</DD>
 <DD>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</DD>
 <DD>SCD Ute (IRIX 6.5): /home/ute/zender/bin/SGIMP64</DD>
+and at two locations at UCI:
+<DD>ESS dust.ps.uci.edu (Linux 2.2.5): /home/zender/bin/LINUX</DD>
+<DD>ESS krein.math.uci.edu (IRIX 6.5): /home/zender/zender/bin/SGIMP64</DD>
 
 <HR></P>
 
