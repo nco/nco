@@ -1,7 +1,7 @@
  %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.25 2002-01-13 09:23:40 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.26 2002-01-14 18:07:56 hmb Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -491,6 +491,7 @@ var_exp: var_exp '+' var_exp {
 }
 | VAR { 
   $$=ncap_var_init($1,((prs_sct*)prs_arg));
+  if ( $$==(var_sct*)NULL ) YYERROR;
 }
 ;
 /* End Rules section */
