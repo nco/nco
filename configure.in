@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.77 2004-03-12 00:34:43 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.78 2004-03-12 00:44:31 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -367,6 +367,7 @@ if test "${enable_udunits}" != 'no'; then
     fi
 # When empty, utInit() uses environment variable UDUNITS_PATH, if any (see nco_lmt.c)
 # Thus UDUNITS_DAT need not be known at compile time
+    AC_ARG_VAR([UDUNITS_PATH],Location of UDUnits database 'udunits.dat' (run-time variable))
 # Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file 
     AC_CHECK_FILE([$nco_udunits_dat],[AC_DEFINE_UNQUOTED([UDUNITS_DAT],["$nco_udunits_dat"],[Location of UDUnits data file])])
 fi

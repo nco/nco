@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.40 2004-03-11 07:18:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.41 2004-03-12 00:44:33 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -131,11 +131,11 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #else /* !ENABLE_OPTIMIZE_CUSTOM */
 		"No",
 #endif /* !ENABLE_OPTIMIZE_CUSTOM */
-#if defined(HAVE_LIBUDUNITS) && (HAVE_LIBUDUNITS)
+#if defined(ENABLE_UDUNITS) && (ENABLE_UDUNITS)
 		"Yes",
-#else /* !HAVE_LIBUDUNITS */
+#else /* !ENABLE_UDUNITS */
 		"No",
-#endif /* !HAVE_LIBUDUNITS */
+#endif /* !ENABLE_UDUNITS */
 #if defined(NCO_HAVE_REGEX_FUNCTIONALITY) && (NCO_HAVE_REGEX_FUNCTIONALITY)
 		"Yes",
 #else /* !NCO_HAVE_REGEX_FUNCTIONALITY */

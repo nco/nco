@@ -1,5 +1,8 @@
 2004-03-11  Charlie Zender  <zender@uci.edu>
 
+	* Re-do UDUnits logic in configure.in to ignore broken UDUnits
+	installations and build successfully (with UDUnits, of course).
+
 	* Print variable names when writes and reads fail in nco_c++
 
 2004-03-10  Charlie Zender  <zender@uci.edu>
