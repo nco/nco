@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.78 2000-09-19 20:25:36 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.79 2000-09-21 21:48:49 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires: GNU Make. AT&T Make will not understand this.
@@ -41,11 +41,6 @@ endif
 # endif LINUX
 ifndef OPTS
  OPTS := O
-endif
-ifdef OMP
- CPPFLAGS := -DOMP
- CFLAGS := -mp -mpio
- LDFLAGS := -mp
 endif
 ifndef USE_FORTRAN_ARITHMETIC
 # Whether or not to use Fortran arithmetic routines
@@ -388,13 +383,14 @@ ifneq (,$(findstring SGI,$(PVM_ARCH)))
 C++ := c++
 CC := cc
 # spoof SGI64
-CPPFLAGS += -DSGI64 -I$(NETCDF_INC)
-ifdef OMP
+CPPFLAGS += -D_OPENMP -DSGI64 -I$(NETCDF_INC)
+# SGIs like dataproc keep omp.h in special location determined by module MIPSpro
+ifdef $(MIPSPRO_SGI)
  CPPFLAGS := -I$(MIPSPRO_SGI)/usr/include $(CPPFLAGS)
 endif
 FC := f77
 LD := ld
-LDFLAGS += -64 -mips4 $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += -64 -mp -mips4 $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
 endif
@@ -402,19 +398,19 @@ LEX := flex
 LINT := lint
 YACC := bison
 ifeq ($(OPTS),O)
- CFLAGS += -64 -mips4 -O2
+ CFLAGS += -64 -mips4 -O2 -mp -mpio
  FFLAGS := -64 -mips4 -O2 -extend_source
 endif
 ifeq ($(OPTS),R)
- CFLAGS += -64 -mips4
+ CFLAGS += -64 -mips4 -mp -mpio
  FFLAGS := -64 -mips4 -extend_source
 endif
 ifeq ($(OPTS),D)
- CFLAGS += -64 -mips4 -g
+ CFLAGS += -64 -mips4 -g -mp -mpio
  FFLAGS := -64 -mips4 -g -extend_source
 endif
 ifeq ($(OPTS),X)
- CFLAGS += -64 -mips4 -g -trapuv
+ CFLAGS += -64 -mips4 -g -trapuv -mp -mpio
  FFLAGS := -64 -mips4 -g -extend_source -check_bounds -trapuv
 # 1998/08/20: Using range checking results in unresolved symbol errors unless linking to this library
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.61 2000-09-21 16:36:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.62 2000-09-21 21:48:49 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -64,9 +64,9 @@
 
 /* 3rd party vendors */
 #include <netcdf.h>             /* netCDF definitions */
-#ifdef OMP /* OpenMP */
+#ifdef _OPENMP
 #include <omp.h> /* OpenMP pragmas */
-#endif /* not OMP */
+#endif /* not _OPENMP */
 
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.61 2000-09-21 16:36:15 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.61 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.62 2000-09-21 21:48:49 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.62 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -546,7 +546,7 @@ main(int argc,char **argv)
     if(dbg_lvl > 0) rcd+=nco_omp_ini();
 
   /* 
-     cd ~/nco/bld;make OPTS=D OMP=1;cd -
+     cd ~/nco/bld;make OPTS=D;cd -
      cd ~/nco/data;ncwa -D 1 -O in.nc foo.nc 2>&1 | m;cd -
 
      cd ~/nco/data
@@ -578,7 +578,7 @@ main(int argc,char **argv)
      firstprivate(): msk_out and wgt_out must be NULL on first call to var_conform_dim()
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(msk_out,wgt_out) private(idx,DO_CONFORM_MSK,DO_CONFORM_WGT,wgt_avg) shared(nbr_var_prc,dbg_lvl,var_prc,var_prc_out,in_id,nco_op_typ,msk_nm,WGT_MSK_CRD_VAR,MUST_CONFORM,msk_val,op_typ_rlt,wgt_nm,dmn_avg,nbr_dmn_avg,NRM_BY_DNM,out_id,wgt,msk,MULTIPLY_BY_TALLY,prg_nm rcd)
+#pragma omp parallel for firstprivate(msk_out,wgt_out) private(idx,DO_CONFORM_MSK,DO_CONFORM_WGT,wgt_avg) shared(nbr_var_prc,dbg_lvl,var_prc,var_prc_out,in_id,nco_op_typ,msk_nm,WGT_MSK_CRD_VAR,MUST_CONFORM,msk_val,op_typ_rlt,wgt_nm,dmn_avg,nbr_dmn_avg,NRM_BY_DNM,out_id,wgt,msk,MULTIPLY_BY_TALLY,prg_nm,rcd)
 #endif /* not _OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
@@ -721,6 +721,7 @@ main(int argc,char **argv)
 	case nco_op_min: /* Minimum is already in buffer, do nothing */
 	case nco_op_max: /* Maximum is already in buffer, do nothing */	
 	case nco_op_ttl: /* Total is already in buffer, do nothing */	
+	  break;
 	default:
 	  (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in weighted normalization\n",prg_nm);
 	  break;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.46 2000-09-21 16:36:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.47 2000-09-21 21:48:49 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -68,9 +68,9 @@
 
 /* 3rd party vendors */
 #include <netcdf.h>             /* netCDF definitions */
-#ifdef OMP /* OpenMP */
+#ifdef _OPENMP
 #include <omp.h> /* OpenMP pragmas */
-#endif /* not OMP */
+#endif /* not _OPENMP */
 
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.46 2000-09-21 16:36:15 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.46 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.47 2000-09-21 21:48:49 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.47 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
