@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.114 2001-10-28 23:05:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.115 2001-11-02 17:18:30 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -961,7 +961,9 @@ var_refresh(int nc_id,var_sct *var)
      NCO is one of the only tool I know of which makes all of this transparent to the user
      Thus this capability is very important to maintain
    */
+#ifdef _OPENMP
   int rcd=NC_NOERR; /* [rcd] Return code */
+#endif /* _OPENMP */
 
   /* Refresh variable ID */
   var->nc_id=nc_id;
@@ -3156,11 +3158,10 @@ arm_base_time_get(int nc_id)
 {
   /* Routine to check whether file adheres to ARM time format */
   int base_time_id;
-  int rcd=NC_NOERR; /* [rcd] Return code */
 
   nco_long base_time;
 
-  rcd=nco_inq_varid(nc_id,"base_time",&base_time_id);
+  (void)nco_inq_varid(nc_id,"base_time",&base_time_id);
   (void)nco_get_var1(nc_id,base_time_id,0L,&base_time,NC_INT);
 
   return base_time;
@@ -5578,7 +5579,6 @@ dmn_lst_mk(int nc_id,char **dmn_lst_in,int nbr_dim)
  */
 {
   int idx;
-  int rcd=NC_NOERR; /* [rcd] Return code */
 
   nm_id_sct *dmn_lst;
   
@@ -5586,7 +5586,7 @@ dmn_lst_mk(int nc_id,char **dmn_lst_in,int nbr_dim)
   for(idx=0;idx<nbr_dim;idx++){
     /* See if requested dimension is in input file */
     dmn_lst[idx].nm=dmn_lst_in[idx];
-    rcd=nco_inq_dimid(nc_id,dmn_lst[idx].nm,&dmn_lst[idx].id);
+    (void)nco_inq_dimid(nc_id,dmn_lst[idx].nm,&dmn_lst[idx].id);
   } /* end loop over idx */
   
   return dmn_lst;
