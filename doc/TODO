@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.290 2004-03-02 07:54:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.291 2004-03-02 08:09:33 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -206,7 +206,7 @@ nco317. Understand stack memory problem. ulimits? compiler switches?
 nco318. Solve stack memory problem and benchmark vs. ANSI code branch
 nco319. Is Rorik's patch to nco_typ_cnv_rth() for ncwa a kludge or permanent?
 nco320. How to do TeX-like hyphens in TeXInfo?
-nco321. 
+nco321. Do not promote NC_FLOAT to NC_DOUBLE in ncra/ncea
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
