@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/src/nco_c++/TODO,v 1.1 2002-01-11 23:20:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/src/nco_c++/TODO,v 1.2 2002-08-24 00:02:21 zender Exp $
 
 Purpose: Task list for libnco_c++.a
 
@@ -14,6 +14,7 @@ Required:
 9. Implement native short, char, byte versions of all routines
 10. Code cleanup
 11. Place code in public CVS archive, presumably as new module for NCO project on Sourceforge
+12. Better std::exit for SGI
 
 Ideas for extra features:
 1. Support valarrays everywhere

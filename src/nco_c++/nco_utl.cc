@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.4 2002-08-23 23:58:24 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.5 2002-08-24 00:02:21 zender Exp $ 
 
 // Implementation (declaration) of C++ interface utilities for netCDF routines
 
@@ -46,7 +46,11 @@ nco_err_exit // [fnc] Lookup, print netCDF error message, exit
 #ifdef ABORT_ON_ERROR
     std::abort(); // [fnc] Produce core dump
 #else
+#ifndef SGIMP64 // fxm: SGI IRIX CC does not support std::exit nor have cstdlib
     std::exit(EXIT_FAILURE); // [fnc] Exit nicely
+#else SGIMP64
+    exit(EXIT_FAILURE); // [fnc] Exit nicely
+#endif // endif SGI
 #endif // !ABORT_ON_ERROR
   } // endif error
 } // end nco_err_exit()
@@ -226,7 +230,11 @@ nco_dfl_case_nctype_err(void) // [fnc] Handle illegal nc_type references
 #ifdef ABORT_ON_ERROR
   std::abort(); // [fnc] Produce core dump
 #else
-  std::exit(EXIT_FAILURE); // [fnc] Exit nicely
+#ifndef SGIMP64 // fxm: SGI IRIX CC does not support std::exit nor have cstdlib
+    std::exit(EXIT_FAILURE); // [fnc] Exit nicely
+#else SGIMP64
+    exit(EXIT_FAILURE); // [fnc] Exit nicely
+#endif // endif SGI
 #endif // !ABORT_ON_ERROR
 
 } // end nco_dfl_case_nctype_err()
