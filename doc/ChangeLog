@@ -1,5 +1,11 @@
 2002-02-24  Charlie Zender  <zender@uci.edu>
 
+	* Removed ncap_lex.c ncap.tab.c ncap.tab.h because they are not
+	portable across platforms so it is best to let these be generated
+	on user's machine until portable x-platform versions can be 
+	generated. Immediate problem is that IRIX and Linux versions
+	are interfering with eachother.
+
 	* ncap -r does not require argument
 
 2002-02-18  Charlie Zender  <zender@uci.edu>
