@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.49 2002-01-22 08:54:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.50 2002-01-25 07:58:36 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -86,15 +86,20 @@
 #include "nco_netcdf.h"  /* neCDF wrapper functions */
 #include "ncap.h" /* ncap-specific definitions */
 
-long int ln_nbr_crr; /* [cnt] Line number incremented in ncap.l */
+/* Global variables */
+long ln_nbr_crr; /* [cnt] Line number incremented in ncap.l */
 char *fl_spt_glb; /* [fl] Script file */
 
 int 
 main(int argc,char **argv)
 {
   extern int yyparse (void *); /* Prototype here as in bison.simple to avoid compiler warning */
+/* Following declaration gets rid of implicit declaration compiler warning
+   It is a condensation of the lexer declaration from lex.yy.c:
+   YY_BUFFER_STATE yy_scan_string YY_PROTO(( yyconst char *yy_str )); */
+  extern int yy_scan_string(const char *);
   
-  extern FILE *yyin;
+  extern FILE *yyin; /* [fl] Input script file */
   
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
@@ -114,7 +119,7 @@ main(int argc,char **argv)
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *spt_arg[73];
+  char *spt_arg[73]; /* fxm: turn arbitrary size into pre-processor token */
   char *spt_arg_cat=NULL;
   char *opt_sng;
   char *fl_out;
@@ -122,8 +127,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.49 2002-01-22 08:54:46 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.49 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.50 2002-01-25 07:58:36 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.50 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -152,12 +157,12 @@ main(int argc,char **argv)
   int opt;
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int slen;
+  int sng_lng;
   int var_id;
-  int spt_arg_len=int_CEWI;
+  int spt_arg_lng=int_CEWI;
   int nbr_att=0; /* [nbr] Size of att_lst */ 
   
-  const int att_lst_max=500;
+  const int att_lst_max=500; /* fxm: turn arbitrary size into pre-processor token */
   
   sym_sct **sym_tbl; /* [fnc] Function table for float and double functions */
   int sym_tbl_nbr; /* [nbr] Size of symbol table */
@@ -270,15 +275,15 @@ main(int argc,char **argv)
   
   /* Append ";\n" to command-script arguments, then concatenate them */
   for(idx=0;idx<nbr_spt;idx++){
-    slen=strlen(spt_arg[idx]);
+    sng_lng=strlen(spt_arg[idx]);
     if(idx == 0){
-      spt_arg_cat=(char *)nco_malloc(slen+3);
+      spt_arg_cat=(char *)nco_malloc(sng_lng+3);
       strcpy(spt_arg_cat,spt_arg[idx]);
       strcat(spt_arg_cat,";\n");
-      spt_arg_len=slen+3;
+      spt_arg_lng=sng_lng+3;
     }else{
-      spt_arg_len+=slen+2;
-      spt_arg_cat=(char *)nco_realloc(spt_arg_cat,spt_arg_len);
+      spt_arg_lng+=sng_lng+2;
+      spt_arg_cat=(char *)nco_realloc(spt_arg_cat,spt_arg_lng);
       strcat(spt_arg_cat,spt_arg[idx]);
       strcat(spt_arg_cat,";\n");
     } /* end else */
@@ -297,7 +302,12 @@ main(int argc,char **argv)
   sym_tbl[sym_idx++]=ncap_sym_init("log",log,logf);
   sym_tbl[sym_idx++]=ncap_sym_init("log10",log10,log10f);
   sym_tbl[sym_idx++]=ncap_sym_init("sqrt",sqrt,sqrtf);
+#ifndef SGIMP64
+  /* SGI does not define gammaf */
+  sym_tbl_nbr--;
+#else /* not SGIMP64 */
   sym_tbl[sym_idx++]=ncap_sym_init("gamma",gamma,gammaf);
+#endif /* not SGIMP64 */
   assert(sym_idx == sym_tbl_nbr);
  
   /* Process positional arguments and fill in filenames */
@@ -313,11 +323,7 @@ main(int argc,char **argv)
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
-  /* Create three lists of variables:
-     list a variables on RHS of an = sign
-     list b variables on LHS
-     list c variables of attributes on LHS
-     All variables are present in input file */
+  /* Pass information parser may need in prs_arg rather than global variables */
   prs_arg.fl_in=fl_in;
   prs_arg.in_id=in_id;
   prs_arg.fl_out=NULL;
@@ -327,10 +333,15 @@ main(int argc,char **argv)
   prs_arg.nbr_att=&nbr_att;
   prs_arg.dmn=dmn;
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
-  prs_arg.sym_tbl= sym_tbl;
-  prs_arg.sym_tbl_nbr = sym_tbl_nbr;
+  prs_arg.sym_tbl=sym_tbl;
+  prs_arg.sym_tbl_nbr=sym_tbl_nbr;
   prs_arg.initial_scan=True;
   
+  /* Create three lists of variables:
+     list a variables on RHS of = sign
+     list b variables on LHS
+     list c variables of attributes on LHS
+     All variables are present in input file */
   (void)ncap_initial_scan(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c, &nbr_lst_c);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
@@ -451,6 +462,8 @@ main(int argc,char **argv)
   prs_arg.sym_tbl_nbr=sym_tbl_nbr;
   prs_arg.initial_scan=False;
   
+  /* Initialize line counter */
+  ln_nbr_crr=1; /* [cnt] Line number incremented in ncap.l */
   if(fl_spt == NULL){
     /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0){
@@ -463,10 +476,10 @@ main(int argc,char **argv)
     if(dbg_lvl > 0){
       for(idx=0;idx<nbr_spt;idx++) (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
     } /* endif debug */
+
+    /* Run parser on command line scripts */
     fl_spt_glb="Command-line arguments";
-    ln_nbr_crr=1; /* [cnt] Line number incremented in ncap.l */
     yy_scan_string(spt_arg_cat);
-    rcd=yyparse((void *)&prs_arg);
 
   }else{ /* ...endif command-line scripts, begin script file... */
 
@@ -475,11 +488,13 @@ main(int argc,char **argv)
       (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt);
       exit(EXIT_FAILURE);
     } /* end if */
-    /* Invoke parser on script file */
+
+    /* Copy script file name to global variable */
     fl_spt_glb=fl_spt;
-    ln_nbr_crr=1; /* [cnt] Line number incremented in ncap.l */
-    rcd=yyparse((void *)&prs_arg);
   } /* end else */
+
+  /* Invoke parser */
+  rcd=yyparse((void *)&prs_arg);
 
   rcd=nco_redef(out_id);
   (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr_2,(dmn_sct **)NULL,0);

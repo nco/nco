@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.36 2002-01-22 20:43:37 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.37 2002-01-25 07:58:36 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -191,13 +191,13 @@ ncap_var_var_add(var_sct *var_1,var_sct *var_2)
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=var_dpl(var_2);
   (void)ncap_var_conform_dim(&var_1,&var_nsw);
-  /* There is a bug in var_add. The missings values are not carried over to var_nsw the result
-     when var_1->has_mss_val is true */
-  if(var_1->has_mss_val) {
+  /* There is a bug in var_add. missing_value are not carried over to var_nsw 
+     in the result when var_1->has_mss_val is true */
+  if(var_1->has_mss_val){
     (void)var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_nsw->val);
-  } else {
+  }else{
     (void)var_add(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->tally,var_1->val,var_nsw->val);
-  }
+  } /* end if */
   return var_nsw;
 } /* end ncap_var_var_add() */
 
@@ -1258,17 +1258,18 @@ ncap_initial_scan
 
   extern FILE *yyin;
   extern int yylex(YYSTYPE *,prs_sct *);
-  /* Following declaration gets rid of implicit declaration compiler warning
-     It is a condensation of the lexer declaration from lex.yy.c:
-     YY_BUFFER_STATE yy_scan_string YY_PROTO(( yyconst char *yy_str )); */
-  extern int yy_scan_string(char *);
   
+/* Following declaration gets rid of implicit declaration compiler warning
+   It is a condensation of the lexer declaration from lex.yy.c:
+   YY_BUFFER_STATE yy_scan_string YY_PROTO(( yyconst char *yy_str )); */
+  extern int yy_scan_string(const char *);
+
   bool match;
   
   char *var_nm;  
 
   int var_idx;
-  int itoken;
+  int tkn_crr; /* [tkn] Current token */
   int n_lst_a=0;
   int n_lst_b=0;
   int n_lst_c=0;
@@ -1291,14 +1292,15 @@ ncap_initial_scan
   } /* endif input from script */
   
   /* Obtain first token from lexer */
-  itoken=yylex(&lvalp,prs_arg);
+  tkn_crr=yylex(&lvalp,prs_arg);
   
-  while(itoken != 0){
-    switch (itoken){
+  while(tkn_crr != 0){
+    switch (tkn_crr){
     case IGNORE: break; /* Do nothing  */
     case ATTRIBUTE: break; /* Do nothing  */
     case EPROVOKE: break; /* Do nothing */
     case VAR: 
+      /* Search for RHS variables in input file */
       var_nm=lvalp.vara;
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
@@ -1309,9 +1311,10 @@ ncap_initial_scan
 	else lst_a=(nm_id_sct *)nco_realloc(lst_a,((n_lst_a+1)*sizeof(nm_id_sct)));
 	lst_a[n_lst_a].nm=strdup(var_nm);
 	lst_a[n_lst_a++].id=var_id;
-      } /* endif variable is in input file */
+      } /* endif RHS variable is in input file */
       break; 
     case OUT_VAR: 
+      /* Search for LHS variables in input file */
       var_nm=lvalp.output_var;
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
@@ -1324,21 +1327,23 @@ ncap_initial_scan
 	lst_b[n_lst_b++].id=var_id;
       } /* endif LHS variable is in input file */
       break;
-    case OUT_ATT:       var_nm=lvalp.att.var_nm;     
+    case OUT_ATT:
+      /* Search for LHS attribute's parent variable in input file */
+      var_nm=lvalp.att.var_nm;     
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
 	for(var_idx=0;var_idx<n_lst_c;var_idx++)
-	  if(!strcmp(lst_c[var_idx].nm,var_nm)){ match=True; break; }
+	  if(!strcmp(lst_c[var_idx].nm,var_nm)){match=True; break;}
 	if(match) break;
 	if(n_lst_c == 0) lst_c=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	else lst_c=(nm_id_sct *)nco_realloc(lst_c,((n_lst_c+1)*sizeof(nm_id_sct)));
 	lst_c[n_lst_c].nm=strdup(var_nm);
 	lst_c[n_lst_c++].id=var_id;
-      }
+      } /* endif LHS attribute's parent variable is in input file  */
       break;
     default: break;
     } /* end switch */
-    itoken=yylex(&lvalp,prs_arg);
+    tkn_crr=yylex(&lvalp,prs_arg);
   } /* end while */
   
   if(n_lst_a>0){*xtr_lst_a=lst_a;*nbr_lst_a=n_lst_a;}

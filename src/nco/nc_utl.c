@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.123 2002-01-23 09:24:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.124 2002-01-25 07:58:36 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -1814,7 +1814,7 @@ void
 var_copy(nc_type var_typ,long sz,ptr_unn op1,ptr_unn op2)
 {
   /* Purpose: Copy hyperslab variables of type var_typ from op1 to op2
-     Assumes memory area in op2 has already been malloced */
+     Assumes memory area in op2 has already been malloc()'d */
   (void)memcpy((void *)(op2.vp),(void *)(op1.vp),sz*nco_typ_lng(var_typ));
 } /* end var_copy() */
 

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.26 2002-01-22 08:54:46 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.27 2002-01-25 07:58:36 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -145,7 +145,7 @@
   /* Replace C-language escape codes with actual byte values */
   (void)sng_ascii_trn(bfr);
   lvalp->str=strdup(bfr);       
-  if( dbg_lvl_get() > 1){
+  if(dbg_lvl_get() > 1){
     printf("Lexing string: %s\n",yytext);
     printf("Made   string: %s\n",lvalp->str);
   } /* endif */
@@ -415,9 +415,9 @@ pow/[ ]*\( {return POWER;}
   
   /* This variable now has a private dimension list, dmn
      Dimension list holds, in order, dimensions user wants output to have
-     Global dimension in prs_sct holds list all disk variable dimensions
-     Use this local dimension list (defined on LHS) to cast all ranks on RHS 
-     Casting first expression on RHS is just as good */
+     Global dimension in prs_sct holds list of all disk variable dimensions
+     Use this local LHS dimension list to cast all leaves on RHS 
+     Casting first expression on RHS is not sufficient (e.g., prs_mdp) */
   if(RHS){
     (void)fprintf(stderr,"ERROR: Found hyperslab (subscripted) variable on RHS\n");
     lvalp->vara=var_nm;
@@ -428,7 +428,7 @@ pow/[ ]*\( {return POWER;}
     return(OUT_VAR);
   } /* end else */
 
-  if(0){ /* Attempt to remove compier warning messages */
+  if(0){ /* Remove some compiler warning messages */
     /* Following two statements remove "defined but not used" messages in lex.yy.c */
     (void)yyunput((int)NULL,(char *)NULL);
     (void)yy_flex_realloc((void *)NULL,(size_t)NULL);
@@ -463,7 +463,7 @@ pow/[ ]*\( {return POWER;}
 
 . {
   /* Everything not parsed by above falls through to here */
-  return  yytext[0];
+  return yytext[0];
 }
 
 %%

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.29 2002-01-23 04:08:34 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.30 2002-01-25 07:58:36 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -76,10 +76,13 @@ int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 #define YYLEX_PARAM prs_arg 
 int rcd; /* [enm] Return value for function calls */
 
-extern long int ln_nbr_crr; /* Current line number. Incremented in ncap.l */
-extern char *fl_spt_glb; /* Global variable for script file */
+/* Global variables */
+extern long ln_nbr_crr; /* [cnt] Line number incremented in ncap.l */
+extern char *fl_spt_glb; /* [fl] Script file */
 
+/* File scope variables */
 char err_sng[200]; /* Error string for short error messages */
+
 /* End C declarations section */
 %}
 /* Begin parser declaration section */
@@ -93,7 +96,8 @@ char err_sng[200]; /* Error string for short error messages */
    Examples of terminal symbols, or tokens, are NAME, NUMBER
    Convention is to make token names all uppercase, and non-terminals lowercase */
 
-/* Define YYSTYPE union (type of lex variable yylval value) */
+/* Define YYSTYPE union (type of lex variable yylval value)
+   This specifies all possible data type for semantic values */
 %union{
   char *str;
   char *output_var;
@@ -104,7 +108,9 @@ char err_sng[200]; /* Error string for short error messages */
   var_sct *var;
 } /* end YYSTYPE union (type of yylval value) */
 
-/* Tell parser which kind of values each token takes */
+/* Tell parser which kind of values each token takes
+   Token name (traditionally in all caps) becomes #define directive in parser
+   so we can refer to token name rather than token's numeric code */
 %token <str> STRING
 %token <attribute> ATTRIBUTE
 %token <vara> VAR
@@ -113,19 +119,19 @@ char err_sng[200]; /* Error string for short error messages */
 %token <sym> FUNCTION
 %token POWER ABS ATOSTR IGNORE EPROVOKE
 
+/* "type" declaration sets type for non-terminal symbols which otherwise need no declaration */
 %type <attribute> att_exp
 %type <str> string_exp
 %type <var> var_exp
 %type <output_var> out_var_exp
 %type <att> out_att_exp
 
+/* "left", "right", and "nonassoc" perform same function as "token" and,
+   in addition, specify associativity and relative precedense of symbols */
 %left '+' '-'
 %left '*' '/' '%'
 %right '^'
 %nonassoc UMINUS
-
-/* "type" declaration sets type for non-terminal symbols which otherwise need no declaration */
-/*%type <val_double> xpr*/
 
 /* End parser declaration section */
 %%
@@ -196,11 +202,11 @@ statement: out_att_exp '=' att_exp {
   int aed_idx;
   aed_sct *ptr_aed;
   
-  if($3->nbr_dim < 2 ){
+  if($3->nbr_dim < 2){
     aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->att_lst,((prs_sct *)prs_arg)->nbr_att,True);
     ptr_aed=((prs_sct *)prs_arg)->att_lst[aed_idx];
     ptr_aed->sz=$3->sz;
-    ptr_aed->type= $3->type;
+    ptr_aed->type=$3->type;
     ptr_aed->val.vp=(void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
     (void)var_copy(ptr_aed->type,ptr_aed->sz,$3->val,ptr_aed->val);
     /* cast_nctype_void($3->type,&ptr_aed->val); */
@@ -209,7 +215,7 @@ statement: out_att_exp '=' att_exp {
   }else{
     (void)sprintf(err_sng,"Warning: Cannot store in attribute %s@%s a variable with dimension %d",$1.var_nm,$1.att_nm,$3->nbr_dim);
     (void)yyerror(err_sng);
-  }
+  } /* endif */
   (void)free($1.var_nm);
   (void)free($1.att_nm);
   (void)var_free($3); 
