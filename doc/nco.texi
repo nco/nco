@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.197 2004-01-06 18:54:19 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.198 2004-01-09 02:03:29 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2051,24 +2051,6 @@ crunching finishes.
 The advantages of this are obvious if you are examining small parts of
 large files stored at remote locations.
 
-Note that the remote retrieval features of @acronym{NCO} can be used to
-retrieve @emph{any} file, including non-netCDF files, via @command{SSH},
-anonymous @acronym{FTP}, or @command{msrcp}.
-Often this method is quicker than using a browser, or running an
-@acronym{FTP} session from a shell window yourself.
-For example, say you want to obtain a @acronym{JPEG} file from a weather
-server. 
-@example
-ncks -p ftp://weather.edu/pub/pix/jpeg -l ./ storm.jpg
-@end example
-@noindent
-In this example, @command{ncks} automatically performs an anonymous
-@acronym{FTP} login to the remote machine and retrieves the specified
-file. 
-When @command{ncks} attempts to read the local copy of @file{storm.jpg}
-as a netCDF file, it fails and exits, leaving  @file{storm.jpg} in
-the current directory.
-
 @html
 <a name="rtn"></a> <!-- http://nco.sf.net/nco.html#rtn -->
 @end html
@@ -2096,6 +2078,45 @@ repeats.
 In cases where it is useful to keep the remotely-retrieved files on the
 local file system after processing, the automatic removal feature may be 
 disabled by specifying @samp{-R} on the command line.
+
+@cindex @acronym{FTP}
+@cindex @acronym{SSH}
+@cindex @acronym{msrcp}
+Note that the remote retrieval features of @acronym{NCO} can always be
+used to retrieve @emph{any} file, including non-netCDF files, via
+@command{SSH}, anonymous @acronym{FTP}, or @command{msrcp}.
+Often this method is quicker than using a browser, or running an
+@acronym{FTP} session from a shell window yourself.
+For example, say you want to obtain a @acronym{JPEG} file from a weather
+server. 
+@example
+ncks -R -p ftp://weather.edu/pub/pix/jpeg -l ./ storm.jpg
+@end example
+@noindent
+In this example, @command{ncks} automatically performs an anonymous
+@acronym{FTP} login to the remote machine and retrieves the specified
+file. 
+When @command{ncks} attempts to read the local copy of @file{storm.jpg}
+as a netCDF file, it fails and exits, leaving  @file{storm.jpg} in
+the current directory.
+
+@cindex @acronym{DODS}
+If your @acronym{NCO} is @acronym{DODS}-enabled (@pxref{DODS}), then
+you may use @acronym{NCO} to retrieve any files (including netCDF,
+@acronym{HDF}, etc.) served by a @acronym{DODS} server to your local
+machine. 
+For example, 
+@example
+ncks -R -l ./ -p \
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
+pres.sfc.1969.nc
+@end example
+Note that @acronym{NCO} is never the preffered way to transport files
+from remote machines.
+For large jobs, that is best handled by @acronym{FTP}, @acronym{SSH},
+or @command{wget}.
+It may occasionally be useful to use @acronym{NCO} to transfer files
+when your other preferred methods are not available locally.
 
 @html
 <a name="var"></a> <!-- http://nco.sf.net/nco.html#var -->
