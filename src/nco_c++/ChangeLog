@@ -2,7 +2,7 @@
 
 	* Announce on netcdf list
 
-	* cvs tag -c nco_c++-0_1_3 ~/nco/src/nco_c++ c++ mie
+	* cvs tag -c nco_c++-0_1_3
 
 	* Remove now duplicated in.cdl and modify Makefile paths to know
 	about NCO directory structure
