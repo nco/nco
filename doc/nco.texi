@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.132 2002-12-02 16:23:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.133 2002-12-13 23:38:28 rorik Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1217,6 +1217,7 @@ feature is automatic and cannot be controlled by the user.
 @noindent
 Availability: All operators@*
 Key switches: @samp{-n}, @samp{-p}@*
+Long options: @samp{--nintap}, @samp{--path}@*
 @end cartouche
 It is important that the user be able to specify multiple input files
 without tediously typing in each by its full name. 
@@ -1348,7 +1349,8 @@ automatically generate, in order, the filenames @file{85_12.nc},
 @cartouche
 @noindent
 Availability: All operators@*
-Key switches: @samp{-p}, @samp{-l}, @samp{-R}@*
+Key switches: @samp{-p}, @samp{-l}@*
+Long options: @samp{--path}, @samp{--local}@*
 @end cartouche
 All @acronym{NCO} operators can retrieve files from remote sites as well as the
 local file system.
@@ -1506,6 +1508,7 @@ the current directory.
 @noindent
 Availability: All operators@*
 Key switches: @samp{-R}@*
+Long options: @samp{--keep}@*
 @end cartouche
 In order to conserve local file system space, files retrieved from
 remote locations are automatically deleted from the local file system
@@ -1529,6 +1532,7 @@ Availability: (@command{ncap}), @command{ncdiff}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
 Key switches: @samp{-v}, @samp{-x}@*
+Long options: @samp{--variable}, @samp{--exclude}@*
 @end cartouche
 Variable subsetting is implemented with the @samp{-v @var{var}[,@dots{}]} and
 @samp{-x} options. 
@@ -1562,6 +1566,7 @@ Availability: @command{ncap}, @command{ncdiff}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks},  @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
 Key switches: @samp{-C}, @samp{-c}@*
+Long options: @samp{--nocoords}, @samp{--coords}@*
 @end cartouche
 By default, coordinates variables associated with any variable appearing
 in the @var{output-file} will also appear in the @var{output-file}, even
@@ -1592,6 +1597,7 @@ Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
 @command{ncwa}@* 
 Key switches: @samp{-F}@*
+Long options: @samp{--fortran}@*
 @end cartouche
 By default, @acronym{NCO} uses C-style (0-based) indices for all I/O.
 The @samp{-F} switch tells @acronym{NCO} to switch to reading and writing with
@@ -1630,6 +1636,7 @@ Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
 @command{ncwa}@* 
 Key switches: @samp{-d}@*
+Long options: @samp{--dimension}@*
 @end cartouche
 A @dfn{hyperslab} is a subset of a variable's data.
 The coordinates of a hyperslab are specified with the @code{-d
@@ -1714,6 +1721,7 @@ This option may be specified more than once in a single command
 @noindent
 Availability: @command{ncks}@*
 Key switches: @samp{-d}@*
+Long options: @samp{--dimension}@*
 @end cartouche
 A @dfn{wrapped coordinate} is a coordinate whose values increase or
 decrease monotonically (nothing unusual so far), but which represents a
@@ -1777,6 +1785,7 @@ values (@pxref{Hyperslabs}).
 @noindent
 Availability: @command{ncks}, @command{ncra}, @command{ncrcat}@*
 Key switches: @samp{-d}@*
+Long options: @samp{--dimension}@*
 @end cartouche
 @command{ncks} offers support for specifying a @dfn{stride} for any
 hyperslab, while @command{ncra} and @command{ncrcat} suport the @var{stride}
@@ -1973,6 +1982,7 @@ Suffice it to say that, in all known cases, @acronym{NCO} does ``the right thing
 @noindent
 Availability: @command{ncra},@command{ncea},@command{ncwa}@*
 Key switches: @samp{-y}@*
+Long options: @samp{--math}@*
 @end cartouche
 @noindent
 The @samp{-y @var{op_typ}} switch allows specification of many different
@@ -2408,6 +2418,7 @@ will have the value @var{n} when converted to an integer.
 @noindent
 Availability: All operators@*
 Key switches: @samp{-O}, @samp{-A}@*
+Long options: @samp{--overwrite}, @samp{--append}@*
 @end cartouche
 If the @var{output-file} specified for a command is a pre-existing file,
 then the operator will prompt the user whether to overwrite (erase) the
@@ -2435,6 +2446,7 @@ interactive keyboard input.
 @noindent
 Availability: All operators@*
 Key switches: @samp{-h}@*
+Long options: @samp{--history}@*
 @end cartouche
 All operators automatically append a @code{history} global attribute to
 any file they modify or create.
@@ -2590,6 +2602,7 @@ these @acronym{ARM}-specific procedures are executed.
 @noindent
 Availability: All operators@*
 Key switches: @samp{-r}@*
+Long options: @samp{--revision} or @samp{--version}@*
 @end cartouche
 All operators can be told to print their internal version number and
 copyright notice and then quit with the @samp{-r} switch.
@@ -2659,7 +2672,7 @@ documentation for recent capabilities is the @file{ChangeLog} file.
 @command{ncap} arithmetically processes a netCDF file.
 @cindex script file
 The processing instructions are contained either in the NCO script file 
-@file{fl.nco} or in a sequence of command line arguments.
+@file{fl.nco} or in a sequence of command line arguments.  The options @samp{-s} or @samp{--script} are used for in-line scripts and @samp{-S} or @samp{--file} are used to indicate the filename containing the scripting commands.
 @command{ncap} was written to perform arbitrary albebraic
 transformations of data and archive the results as easily as possible.
 @cindex derived fields
@@ -3119,7 +3132,7 @@ information.
 @xref{Missing values}, for more information.
 
 The key to mastering @command{ncatted} is understanding the meaning of the
-structure describing the attribute modification, @var{att_dsc}.
+structure describing the attribute modification, @var{att_dsc} specified by the required option @samp{-a} or @samp{--attribute}.
 Each @var{att_dsc} contains five elements, which makes using
 @command{ncatted} somewhat complicated, but powerful.
 The @var{att_dsc} argument structure contains five arguments in the
@@ -3943,7 +3956,7 @@ like @command{ncdump}, but with these differences:
 @command{ncks} prints data in a tabular format intended to be easy to
 search for the data you want, one datum per screen line, with all
 dimension subscripts and coordinate values (if any) preceding the datum.
-Option @samp{-s} allows the user the format the data using C-style
+Option @samp{-s} or @samp{--string} allows the user the format the data using C-style
 format strings.
 
 Options @samp{-a}, @samp{-F}, @samp{-H}, @samp{-M}, @samp{-m},
@@ -4046,7 +4059,7 @@ Features common to many operators are described in
 @cindex alphabetize output
 @cindex sort alphabetically
 @cindex @code{-a}
-@item -a 
+@item -a
 Do not alphabetize extracted fields. 
 By default, the specified output variables are extracted, printed, and
 written to disk in alphabetical order.
@@ -4055,20 +4068,19 @@ variables.
 Specifying @code{-a} results in the variables being extracted, printed,
 and written to disk in the order in which they were saved in the input
 file.
-Thus @code{-a} retains the original ordering of the variables.
+Thus @code{-a} retains the original ordering of the variables.  Also @samp{--alphabetize}.
 
 @cindex binary format
 @cindex @code{-B}
-@item -B @file{binary-file}
+@item -B @file{file}
 Activate native machine binary output writing to the default binary
 file, @file{ncks.bnr}. 
-The @code{-B} switch is redundant when the @code{-b} @file{binary-file} 
-option is specified, and native binary output will be directed to
-@file{binary-file}. 
+The @code{-B} switch is redundant when the @code{-b} @file{file} 
+option is specified, and native binary output will be directed to the binary file @file{file}. Also @samp{--binary}.
 
 @cindex @code{-b}
-@item -b @file{binary-file}
-Activate native machine binary output writing to file @file{binary-file}.
+@item -b @file{file}
+Activate native machine binary output writing to binary file @file{file}.  Also @samp{--binary}.
 
 @cindex stride
 @item -d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]
@@ -4077,7 +4089,7 @@ For a complete description of the @var{stride} argument, @xref{Stride}.
 
 @cindex @code{-H}
 @item -H 
-Print data to screen.
+Print data to screen, and is also activated using @samp{--here}.
 Unless otherwise specified (with @code{-s}), each element of the data
 hyperslab is printed on a separate line containing the names, indices,
 and, values, if any, of all of the variables dimensions.
@@ -4124,13 +4136,13 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 @cindex @code{-M}
 @item -M
 Print to screen the global metadata describing the file.
-This includes file summary information and global attributes. 
+This includes file summary information and global attributes. Also @samp{--Meta}.
 
 @cindex @code{-m}
 @item -m
 Print variable metadata to screen (similar to @code{ncdump -h}). 
 This displays all metadata pertaining to each variable, one variable
-at a time.
+at a time. Also @samp{--meta}.
 
 @cindex @code{-q}
 @item -q 
@@ -4138,21 +4150,20 @@ Toggle printing of dimension indices and coordinate values when printing
 arrays. 
 The name of each variable will appear flush left in the output.
 This is useful when trying to locate specific variables when displaying
-many variables with different dimensions.
-The mnemonic for this option is "quiet".
+many variables with different dimensions.  Also @samp{--quiet}.
 
 @cindex @code{-s}
 @cindex @code{printf()}
 @cindex C language
 @item -s @var{format}
 String format for text output. Accepts C language escape sequences and
-@code{printf()} formats. 
+@code{printf()} formats.   Also @samp{--string}.
 
 @cindex @code{-u}
 @cindex @code{units}
 @item -u 
 Accompany the printing of a variable's values with its @code{units}
-attribute, if any.
+attribute, if any.  Also @samp{--units}.
 
 @end table
 
@@ -4991,7 +5002,9 @@ Excellent bug reports
 @node General Index,  , Contributing, Top
 @unnumbered General Index
 
-@printindex fn
+@syncodeindex fn cp
+@printindex cp
+
 @c Print the tables of contents
 @contents
 
