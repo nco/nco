@@ -1,3 +1,7 @@
+1999-02-25  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Added partial diagnostic message and workaround for TODO #116
+
 1999-01-29  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Added nco_dst.pl to distribution

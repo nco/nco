@@ -62,6 +62,7 @@ i.e., LSM variable timecom caused subtle ncra problems for a while.
 115. When the sum of the denominator in ncwa (i.e., the sum of the weight) is zero, SIGFPE will result 
 116. Weighting an integer by a float causes weight to be converted to integer first, so that weighting, e.g., nlons by gw, will cause zero in denominator since all gw's convert to integer value of 0. This causes core dumps with, e.g., 
 ncwa -O -a lat -w gw foo.nc foo2.nc
+Thus the best fix for #116 is to implement #81 ASAP
 ************************************************************************
 End NCO Wish list
 ************************************************************************
