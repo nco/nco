@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile,v 1.10 2002-05-30 18:30:33 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile,v 1.11 2002-06-22 00:54:56 zender Exp $
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -337,8 +337,10 @@ endif
 # Works on LINUX and LINUXALPHA and FREEBSD
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
 C++ ?= g++
+#C++ ?= /usr/local/gcc/bin/g++
 #C++ := icc
 #C++ := insure
+#CC := /usr/local/gcc/bin/gcc -ansi
 CC := gcc -ansi
 #CC := icc
 #CC := insure
