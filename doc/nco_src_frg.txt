@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.58 2003-11-16 22:01:58 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.59 2003-11-16 22:45:43 zender Exp $ -*-text-*-
 
 # Purpose: Potpurri of Sourceforge information for NCO netCDF Operators project
 
@@ -62,8 +62,9 @@ mkdir -f -p ${HOME}/lib/${GNU_TRP}
 cd ~;tar xvzf netcdf-3.5.1-beta10.tar.Z
 cd ~/netcdf-3.5.1-beta10/src
 make distclean
-CPPFLAGS='-Df2cFortran' FC='g77' ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --libdir=${HOME}/lib/${GNU_TRP}
+CPPFLAGS='-Df2cFortran' CFLAGS='-fPIC' FC='g77' ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --libdir=${HOME}/lib/${GNU_TRP}
 make;make install
+cd ~/lib;mv -f libnetcdf_c++.a libnetcdf.a ${GNU_TRP}
 
 # Compile Farm startup
 alias bsrc="source ${HOME}/.bashrc"

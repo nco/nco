@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.65 2003-11-16 22:06:21 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.66 2003-11-16 22:45:42 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -17,7 +17,7 @@ LINUX como	N(11)
 LINUX gcc/g++	Y	N/A	N(12)			Y	Y
 LINUX icc	Y	N/A				Y	Y
 LINUXALPHA	Y					Y	Y
-LINUXAMD64		N(15)						
+LINUXAMD64		Y					N(16)	
 LINUXPPC	Y					Y	N(9)
 LINUXSPARC64	Y					Y	Y
 MACOSX		Y					Y(14)	Y(14)
@@ -43,7 +43,7 @@ This is defined in /opt/SUNWspro/lib/libCrun.so but not found
 12. C++ version problems in linking DODS libraries
 13. gcc 3.2.1 problem with /usr/include/sys/stat.h in nco_fl_utl.h
 14. g++ 2.95 (Darwin 5.5) does not have <valarray>, so the c++ library will not be built; g++ version 3.1 (Darwin 6.8) does. That is all we have tested.
-15. shared library link problem 
+16. ERROR User does not have read permission for ../../data/nco_tst.nc, or file does not exist
 -----------------------------------------------------------------------
 
 Default installation procedure for system-wide installation,
@@ -282,7 +282,7 @@ End LINUX
 
 ************************************************************************
 Start LINUXAMD
-Status: Unknown
+Status: Appears to work. Make sure to compile netCDF with CFLAGS+='-fPIC'
 ************************************************************************
 zender@amd64-linux1:~/nco/bld$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUXAMD64

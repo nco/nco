@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.170 2003-11-16 22:01:58 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.171 2003-11-16 22:45:43 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -179,16 +179,9 @@ monetary donations on NCO development:
 <dt><a name="News"></a></dt>
 <h2>NCO News & Announcements</h2>
 <ul>
+<li>As of 2.8.3, <a href="./nco.html#ncap"><tt>ncap</tt></a> consumes significantly less memory than before.
 <li>New &ldquo;binary&rdquo; operator <a href="./nco.html#ncbo"><tt>ncbo</tt></a> does file addition, subtraction, multiplication, and division
-<li><tt>ncap</tt> adds user-invokable type conversion functions
-<tt>char()</tt>, <tt>short()</tt>, <tt>int()</tt>, <tt>float()</tt>,
-<tt>double()</tt>.</li>
-<li><tt>ncra</tt> versions <tt>2.4.x&ndash;2.5.5</tt> handled multifile
-averages of low precision (<tt>int, char</tt>) data incorrectly if
-the data had a <tt>missing_value</tt>. 
-Under these conditions, this bug could result in incorrect values.
-Thanks to Martin Dix for pointing this out.
-User's of this feature should definitely upgrade to <tt>2.5.6+</tt>.</li>
+<li><tt>ncap</tt> adds user-invokable type conversion functions <tt>char()</tt>, <tt>short()</tt>, <tt>int()</tt>, <tt>float()</tt>, <tt>double()</tt>.</li>
 <li><tt>libnco_c++</tt> reads into and writes from type <tt>long double</tt></li>
 <li><a href="./nco_news.shtml"> Full text of past NCO announcements</a></li>
 </ul>
