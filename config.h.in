@@ -486,7 +486,7 @@
 #undef TM_IN_SYS_TIME
 
 /* Location of UDUnits data file */
-#undef UDUNITS_DAT
+#undef UDUNITS_PATH
 
 /* User */
 #undef USER

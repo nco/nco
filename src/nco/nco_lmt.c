@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.29 2004-08-14 21:00:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.30 2004-08-20 22:24:32 rorik Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -844,14 +844,14 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   nc_type att_typ; /* [enm] Atttribute type, probably NC_CHAR */
   utUnit udu_sct_in,udu_sct_out; /* Unidata units structure */
   
-#ifdef UDUNITS_DAT
-  /* UDUNITS_DAT macro expands to where autoconf found database file */
-  rcd=utInit(UDUNITS_DAT);
-#else /* !UDUNITS_DAT */
+#ifdef UDUNITS_PATH
+  /* UDUNITS_PATH macro expands to where autoconf found database file */
+  rcd=utInit(UDUNITS_PATH);
+#else /* !UDUNITS_PATH */
   /* When empty, utInit() uses environment variable UDUNITS_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
   rcd=utInit("");
-#endif /* !UDUNITS_DAT */
+#endif /* !UDUNITS_PATH */
   if(rcd != 0){
     (void)fprintf(stdout,"Failed to initialize UDUnits library\n");
     return 1;
