@@ -1,9 +1,15 @@
+2001-12-31  Charlie Zender  <zender@uci.edu>
+
+	* More ncap.* cleanup. Alter some variable names to conform to
+	rest of NCO.
+
 2001-12-29  Charlie Zender  <zender@uci.edu>
 
-	* Succeeded in building ncap on SGI, Alpha, and Sun machines
-	All of these machines have bison installed.
+	* Succeeded in building ncap on 64 bit machines: SGI, Alpha, Sun
+	All of these machines have bison installed
+	Some of these builds require building getopt.o separately
 	Build fails on IBM because yacc does not understand pure_parser
-
+	
 2001-12-28  Charlie Zender  <zender@uci.edu>
 
 	* More CEWI initializations

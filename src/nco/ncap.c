@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.42 2001-12-29 18:18:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.43 2002-01-01 00:18:55 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -85,7 +85,7 @@
 #endif /* not AIX */
 #endif /* not LINUX */
 
-long int line_number; /* Line number incremented in ncap.l */
+long int ln_nbr_crr; /* Line number incremented in ncap.l */
 char *fl_spt_global; /* instructions file */
 
 int 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.42 2001-12-29 18:18:38 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.42 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.43 2002-01-01 00:18:55 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.43 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -287,22 +287,21 @@ main(int argc,char **argv)
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
-  /* Create three lists of variables    */
-  /* list a variables on the RHS of an = sign    */
-  /* list b variables on the LHS                 */
-  /* list c variables of attributes on the LHS   */
-  /* All the variables are present in the input file */
-  
+  /* Create three lists of variables:
+     list a variables on RHS of an = sign
+     list b variables on LHS
+     list c variables of attributes on LHS
+     All variables are present in input file */
   prs_arg.fl_in=fl_in;
   prs_arg.in_id=in_id;
   prs_arg.fl_out=NULL;
   prs_arg.out_id=-1;
-  prs_arg.fl_spt = fl_spt;
-  prs_arg.att_lst = att_lst;
-  prs_arg.nbr_att =&nbr_att;
+  prs_arg.fl_spt=fl_spt;
+  prs_arg.att_lst=att_lst;
+  prs_arg.nbr_att=&nbr_att;
   prs_arg.dmn=dmn;
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
-  prs_arg.initial_scan = True;
+  prs_arg.initial_scan=True;
   
   (void)ncap_initial_scan(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c, &nbr_lst_c);
   
@@ -315,11 +314,11 @@ main(int argc,char **argv)
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
   
-  /* now add list c to the extraction list  */
-  if( nbr_lst_c >0)  xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_c,nbr_lst_c);
+  /* Add list c to extraction list */
+  if(nbr_lst_c>0) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_c,nbr_lst_c);
   
-  /* now add list a to the extraction list   */
-  if( nbr_lst_a >0 ) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
+  /* Add list a to extraction list */
+  if(nbr_lst_a>0) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
   
   /* Add all coordinate variables to extraction list */
   if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
@@ -334,18 +333,17 @@ main(int argc,char **argv)
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
   
   
-  /* Make a copy of the list for later */
-  xtr_lst_2 = var_lst_copy(xtr_lst,nbr_xtr);
-  nbr_xtr_2 = nbr_xtr;
+  /* Copy list for later */
+  xtr_lst_2=var_lst_copy(xtr_lst,nbr_xtr);
+  nbr_xtr_2=nbr_xtr;
   
-  /* now subtract  list a from the copied list   */
-  if( nbr_lst_a >0 ) xtr_lst_2=var_lst_sub(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_a,nbr_lst_a);
-  /* New subtract list b  */
-  if( nbr_lst_b >0)  xtr_lst_2=var_lst_sub(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
+  /* Subtract list a from copied list */
+  if(nbr_lst_a>0) xtr_lst_2=var_lst_sub(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_a,nbr_lst_a);
+  /* Subtract list b */
+  if(nbr_lst_b>0) xtr_lst_2=var_lst_sub(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
   
   /* Finally, heapsort extraction list by variable ID for fastest I/O */
   if(nbr_xtr_2 > 1) xtr_lst_2=lst_heapsort(xtr_lst_2,nbr_xtr_2,False);
-  
   
   /* Find coordinate/dimension values associated with user-specified limits */
   for(idx=0;idx<lmt_nbr;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
@@ -369,7 +367,6 @@ main(int argc,char **argv)
   
   /* Is this an NCAR CSM-format history tape? */
   NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
-  
   
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr_2*sizeof(var_sct *));
@@ -413,12 +410,12 @@ main(int argc,char **argv)
   prs_arg.in_id=in_id;
   prs_arg.fl_out=fl_out;
   prs_arg.out_id=out_id;
-  prs_arg.fl_spt = fl_spt;
-  prs_arg.att_lst = att_lst;
+  prs_arg.fl_spt=fl_spt;
+  prs_arg.att_lst=att_lst;
   prs_arg.nbr_att =&nbr_att;
   prs_arg.dmn=dmn_out;
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
-  prs_arg.initial_scan = False;
+  prs_arg.initial_scan=False;
   
   if(fl_spt == NULL){
     if(nbr_spt == 0){
@@ -426,11 +423,11 @@ main(int argc,char **argv)
       exit(EXIT_FAILURE);
     } /* end if */
     
-    if(dbg_lvl > 0) 
-      for(idx = 0 ; idx< nbr_spt ;idx ++)
+    if(dbg_lvl > 0)
+      for(idx=0;idx<nbr_spt;idx++)
 	(void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
-    fl_spt_global = "Arg";
-    line_number = 1;
+    fl_spt_global="Arg";
+    ln_nbr_crr=1;
     yy_scan_string(spt_arg_cat);
     rcd=yyparse((void *)&prs_arg);
   }else{
@@ -440,23 +437,23 @@ main(int argc,char **argv)
       exit(EXIT_FAILURE);
     } /* end if */
     /* Invoke parser on script file */
-    fl_spt_global = fl_spt;
-    line_number=1;
+    fl_spt_global=fl_spt;
+    ln_nbr_crr=1;
     rcd=yyparse((void *)&prs_arg);
   } /* end else */
   /* Define dimensions in output file */
-  rcd = nco_redef(out_id);
+  rcd=nco_redef(out_id);
   
   /* Copy new attributes overwriting old ones */
-  for( idx =0 ; idx < nbr_att ; idx++) {
-    rcd = nco_inq_varid_flg(out_id ,att_lst[idx]->var_nm,&var_id);
-    if( rcd == NC_NOERR) {
-      att_lst[idx]->mode = aed_overwrite;
+  for(idx=0;idx<nbr_att;idx++){
+    rcd=nco_inq_varid_flg(out_id,att_lst[idx]->var_nm,&var_id);
+    if(rcd == NC_NOERR){
+      att_lst[idx]->mode=aed_overwrite;
       (void)aed_prc(out_id,var_id,*att_lst[idx]);
     } /* end if */
   } /* end for */
   
-  rcd = nco_enddef(out_id);
+  rcd=nco_enddef(out_id);
   /* Close input netCDF file */
   rcd=nco_close(in_id);
   
@@ -468,5 +465,4 @@ main(int argc,char **argv)
   
   Exit_gracefully();
   return EXIT_SUCCESS;
-  
 } /* end main() */

@@ -1,7 +1,7 @@
  %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.21 2001-12-29 18:18:38 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.22 2002-01-01 00:18:55 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -75,10 +75,10 @@ int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 #define YYLEX_PARAM prs_arg 
 int rcd; /* [enm] Return value for function calls */
 
-extern long int line_number; /* Current line number. Incremented in ncap.l */
+extern long int ln_nbr_crr; /* Current line number. Incremented in ncap.l */
 extern char *fl_spt_global; /* Global variable for script file */
 
-char errstr[200]; /* Error string for short error messages */
+char err_sng[200]; /* Error string for short error messages */
 /* End C declarations section */
 %}
 /* Begin parser declaration section */
@@ -151,8 +151,8 @@ statement:     out_att_exp '=' att_exp
                   ptr_aed->type=$3.type;
 		  ptr_aed->sz = 1L;
 		  (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
-                  (void)sprintf(errstr,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->fl_out);
-		  (void)yyerror(errstr);
+                  (void)sprintf(err_sng,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->fl_out);
+		  (void)yyerror(err_sng);
                  if(dbg_lvl_get() > 1) {
                   (void)fprintf(stderr,"Saving in array attribute %s@%s=",$1.var_nm,$1.att_nm);
                   
@@ -183,8 +183,8 @@ statement:     out_att_exp '=' att_exp
                   strcpy(ptr_aed->val.cp,$3);
                   (void)cast_nctype_void(NC_CHAR,&ptr_aed->val);    
 
-                 (void)sprintf(errstr,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
-                 (void)yyerror(errstr);
+                 (void)sprintf(err_sng,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
+                 (void)yyerror(err_sng);
                  (void)free($1.var_nm);
                  (void)free($1.att_nm);
                  (void)free($3);
@@ -203,11 +203,11 @@ statement:     out_att_exp '=' att_exp
                     ptr_aed->val.vp = (void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
 		    (void)var_copy(ptr_aed->type,ptr_aed->sz,$3->val,ptr_aed->val);
                     //cast_nctype_void($3->type,&ptr_aed->val);
-                    (void)sprintf(errstr,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
-                    (void)yyerror(errstr); 
+                    (void)sprintf(err_sng,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
+                    (void)yyerror(err_sng); 
 		  }else{
-                   (void)sprintf(errstr,"Warning: Cannot store in attribute %s@%s a variable with dimension %d",$1.var_nm,$1.att_nm,$3->nbr_dim );
-                  (void)yyerror(errstr);
+                   (void)sprintf(err_sng,"Warning: Cannot store in attribute %s@%s a variable with dimension %d",$1.var_nm,$1.att_nm,$3->nbr_dim );
+                  (void)yyerror(err_sng);
                   }
 		  
 		  (void)free($1.var_nm);
@@ -222,12 +222,12 @@ statement:     out_att_exp '=' att_exp
                   /* check to see if variable is already in output file */
                   rcd = nco_inq_varid_flg(((prs_sct*)prs_arg)->out_id,$3->nm,&var_id);
                   if( rcd == NC_NOERR ) {
-                   (void)sprintf(errstr,"Warning: Variable %s has aleady been saved in %s", $3->nm,((prs_sct*)prs_arg)->fl_out);
-                   (void)yyerror(errstr);                                   
+                   (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s", $3->nm,((prs_sct*)prs_arg)->fl_out);
+                   (void)yyerror(err_sng);                                   
                   }else{  
                     (void)ncap_var_write($3,(prs_sct*)prs_arg);
-                    (void)sprintf(errstr,"Saving variable %s to %s", $3->nm,((prs_sct*)prs_arg)->fl_out);
-                    (void)yyerror(errstr);
+                    (void)sprintf(err_sng,"Saving variable %s to %s", $3->nm,((prs_sct*)prs_arg)->fl_out);
+                    (void)yyerror(err_sng);
 		  } /* end else */
 		  (void)free($1);
                   (void)var_free($3);
@@ -239,8 +239,8 @@ statement:     out_att_exp '=' att_exp
                   var_sct *var;
                   rcd = nco_inq_varid_flg(((prs_sct*)prs_arg)->out_id,$1,&var_id);
                   if( rcd == NC_NOERR ) {
-                   (void)sprintf(errstr,"Warning: Variable %s has aleady been saved in %s", $1,((prs_sct*)prs_arg)->fl_out);
-		   (void)yyerror(errstr);
+                   (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s", $1,((prs_sct*)prs_arg)->fl_out);
+		   (void)yyerror(err_sng);
                   }else{  
 	    	   
                    var = (var_sct*)calloc(1,sizeof(var_sct));
@@ -252,9 +252,9 @@ statement:     out_att_exp '=' att_exp
                    var->type = $3.type;
                    (void)ncap_var_write(var,(prs_sct*)prs_arg);
                    (void)var_free(var);
-                   (void)sprintf(errstr,"Saving variable %s to %s", $1,((prs_sct*)prs_arg)->fl_out);
+                   (void)sprintf(err_sng,"Saving variable %s to %s", $1,((prs_sct*)prs_arg)->fl_out);
 
-                   (void)yyerror(errstr);
+                   (void)yyerror(err_sng);
 		   }
 		  (void)free($1);
 
@@ -268,8 +268,8 @@ statement:     out_att_exp '=' att_exp
                   rcd = nco_inq_varid_flg(((prs_sct*)prs_arg)->out_id,$1,&var_id);
                   if( rcd == NC_NOERR ) {
                               
-                  (void)sprintf(errstr,"Warning: Variable %s has aleady been saved in %s", $1,((prs_sct*)prs_arg)->fl_out);
-                  (void)yyerror(errstr);  
+                  (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s", $1,((prs_sct*)prs_arg)->fl_out);
+                  (void)yyerror(err_sng);  
                   }else{  
                    var = (var_sct*)calloc(1,sizeof(var_sct));
 		   var->nm = strdup($1);
@@ -281,8 +281,8 @@ statement:     out_att_exp '=' att_exp
                    (void)cast_nctype_void(NC_CHAR,&var->val);
                    (void)ncap_var_write(var,(prs_sct*)prs_arg);
                    (void)var_free(var);
-                   (void)sprintf(errstr,"Saving variable %s to %s", $1,((prs_sct*)prs_arg)->fl_out);
-                   (void)yyerror(errstr);
+                   (void)sprintf(err_sng,"Saving variable %s to %s", $1,((prs_sct*)prs_arg)->fl_out);
+                   (void)yyerror(err_sng);
 		   }
 		  (void)free($1);
                   (void)free($3);
@@ -524,7 +524,7 @@ yyerror(char *sng)
   static bool eprovoke_skip;
   
   //if(eprovoke_skip) { eprovoke_skip = False ; return 0;} 
-  (void)fprintf(stderr,"%s: %s line %ld  %s\n",prg_nm_get(),fl_spt_global,line_number,sng);
+  (void)fprintf(stderr,"%s: %s line %ld  %s\n",prg_nm_get(),fl_spt_global,ln_nbr_crr,sng);
   
   if(sng[0] == '#') eprovoke_skip=True;
   eprovoke_skip=eprovoke_skip; /* Do nothing except avoid compiler warnings */
