@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.30 2001-05-08 01:36:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.31 2001-10-01 23:09:51 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -63,9 +63,9 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
 #include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
-/* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
+/* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
-#include "nc.h" /* NCO definitions */
+#include "nco.h" /* NCO definitions */
 
 int 
 main(int argc,char **argv)
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.30 2001-05-08 01:36:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.30 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.31 2001-10-01 23:09:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.31 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -215,7 +215,7 @@ main(int argc,char **argv)
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
-      (void)nc_lib_vrs_prn();
+      (void)nco_lib_vrs_prn();
       exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */

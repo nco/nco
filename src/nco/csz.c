@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.71 2001-08-06 15:44:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.72 2001-10-01 23:09:51 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -63,11 +63,11 @@
 #endif /* not _OPENMP */
 
 /* I'm only keeping these netCDF include files around because I'm worried that 
-   function prototypes in nc.h are needed here. Eventually prototypes for these
+   function prototypes in nco.h are needed here. Eventually prototypes for these
    routines should be broken into separate files, like csz.h... */
 #include <netcdf.h> /* netCDF definitions */
 #include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
-#include "nc.h" /* netCDF operator definitions */
+#include "nco.h" /* netCDF operator definitions */
 
 #ifndef bool
 #define bool int
@@ -1037,43 +1037,6 @@ cvs_vrs_prs()
 
   return cvs_vrs_sng;
 } /* end cvs_vrs_prs() */
-
-void
-nc_lib_vrs_prn()
-{
-  /* Purpose: Print netCDF library version */
-
-  char *lib_sng;
-  char *nst_sng;
-  char *vrs_sng;
-  char *of_ptr;
-  char *dlr_ptr;
-
-  int vrs_sng_len;
-  int nst_sng_len;
-
-  /* As of netCDF 3.4, nc_inq_libvers() returned strings such as "3.4 of May 16 1998 14:06:16 $" */  
-  lib_sng=(char *)strdup(nc_inq_libvers());
-  of_ptr=strstr(lib_sng," of ");
-  if(of_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports of_ptr == NULL\n",prg_nm_get());
-  vrs_sng_len=(int)(of_ptr-lib_sng);
-  vrs_sng=(char *)nco_malloc(vrs_sng_len+1);
-  strncpy(vrs_sng,lib_sng,vrs_sng_len);
-  vrs_sng[vrs_sng_len]='\0';
-
-  dlr_ptr=strstr(lib_sng," $");
-  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
-  nst_sng_len=(int)(dlr_ptr-of_ptr-4); /* 4 is the length of " of " */
-  nst_sng=(char *)nco_malloc(nst_sng_len+1);
-  strncpy(nst_sng,of_ptr+4,nst_sng_len); /* 4 is the length of " of " */
-  nst_sng[nst_sng_len]='\0';
-
-  (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",vrs_sng,nst_sng);
-  (void)free(vrs_sng);
-  (void)free(lib_sng);
-  (void)free(nst_sng);
-  (void)fprintf(stdout,"NCO homepage URL is http://nco.sourceforge.net\n");
-} /* end nc_lib_vrs_prn() */
 
 void
 copyright_prn(char *CVS_Id,char *CVS_Revision)

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.41 2001-05-08 01:36:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.42 2001-10-01 23:09:51 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -69,9 +69,9 @@
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
 
-/* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
+/* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
-#include "nc.h"                 /* NCO definitions */
+#include "nco.h"                 /* NCO definitions */
 #include "nco_netcdf.h"			/* netcdf3.x wrappers */
 
 int 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.41 2001-05-08 01:36:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.41 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.42 2001-10-01 23:09:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.42 $";
   
   extern char *optarg;
   
@@ -202,7 +202,7 @@ main(int argc,char **argv)
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
-      (void)nc_lib_vrs_prn();
+      (void)nco_lib_vrs_prn();
       exit(EXIT_SUCCESS);
       break;
     case 's': /* User specified delimiter string for printed output */
@@ -364,7 +364,7 @@ type_fmt_sng(nc_type type)
     /* Formats useful in printing byte data as decimal notation */
     /*    return "%u";*/
     return "%hhi"; /* Takes unsigned char as arg and prints 0..255 */
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
@@ -474,7 +474,7 @@ prn_att(int in_id,int var_id)
     case NC_BYTE:
       for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%c",att[idx].val.bp[att_lmn]);
       break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } /* end switch */
     (void)fprintf(stdout,"\n");
     
@@ -1324,7 +1324,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
       case NC_INT: (void)fprintf(stdout,dlm_sng,var.val.lp[lmn]); break;
       case NC_CHAR: (void)fprintf(stdout,dlm_sng,var.val.cp[lmn]); break;
       case NC_BYTE: (void)fprintf(stdout,dlm_sng,var.val.bp[lmn]); break;
-      default: dfl_case_nctype_err(); break;
+      default: nco_dfl_case_nctype_err(); break;
       } /* end switch */
     } /* end loop over element */
 
@@ -1344,7 +1344,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
       (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
       break;
     case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng); break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } /* end switch */
   } /* end if variable is a scalar, byte, or character */
 
@@ -1447,7 +1447,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
 	      case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.lp[crd_idx_crr]); break;
 	      case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]); break;
 	      case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
-	      default: dfl_case_nctype_err(); break;
+	      default: nco_dfl_case_nctype_err(); break;
 	      } /* end switch */
 	    }else{ /* if dimension is not a coordinate... */
 	      (void)sprintf(dmn_sng,"%%s%c%%li%c ",arr_lft_dlm,arr_rgt_dlm);
@@ -1494,7 +1494,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
       case NC_INT: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.lp[lmn],unit_sng); break;
       case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.cp[lmn],unit_sng); break;
       case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,idx_crr,(unsigned char)var.val.bp[lmn],unit_sng); break;
-      default: dfl_case_nctype_err(); break;
+      default: nco_dfl_case_nctype_err(); break;
       } /* end switch */
     } /* end loop over element */
   } /* end if variable is an array, not a scalar */

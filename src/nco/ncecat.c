@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.26 2001-05-08 01:36:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.27 2001-10-01 23:09:51 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -53,9 +53,9 @@
 /* #include <errno.h> */            /* errno */
 /* #include <malloc.h>    */        /* malloc() stuff */
 
-/* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
+/* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
-#include "nc.h"                 /* NCO definitions */
+#include "nco.h"                 /* NCO definitions */
 
 int 
 main(int argc,char **argv)
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.26 2001-05-08 01:36:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.26 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.27 2001-10-01 23:09:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.27 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -182,7 +182,7 @@ main(int argc,char **argv)
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
-      (void)nc_lib_vrs_prn();
+      (void)nco_lib_vrs_prn();
       exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */

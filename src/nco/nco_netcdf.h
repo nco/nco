@@ -1,6 +1,6 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.2 2001-05-08 01:38:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.3 2001-10-01 23:09:51 zender Exp $ */
 
-/* Purpose: Typedefs and global variables for NCO netCDF operators */
+/* Purpose: Wrappers for netCDF 3.X C-library */
 
 /* Copyright (C) 1995--2001 Charlie Zender
 
@@ -37,6 +37,32 @@
    Irvine, CA 92697-3100
  */
 
+/* Usage: */
+/* #include "nco_netcdf.h" *//* Wrappers for netCDF 3.X C-library */
+
+#ifndef NCO_NETCDF_H /* Contents have not yet been inserted in current source file */
+#define NCO_NETCDF_H
+
+/* Standard header files */
+#include <stdio.h> /* stderr, FILE, NULL, printf */
+#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
+
+/* 3rd party vendors */
+#include <netcdf.h> /* netCDF definitions */
+
+/* Definitions */
+/* nco_fl_typ provides hooks for accessing non-netCDF files with nco_* routines */
+enum nco_fl_typ{ /* [enm] File type */
+  nco_fl_typ_nc, /* 0, netCDF file */
+  nco_fl_typ_hd5 /* 1, HDF5 file */
+}; /* end nco_fl_typ enum */
+
+/* Utility Routines */
+extern void nco_err_exit(int,char *);
+extern void nco_dfl_case_nctype_err(void);
+extern int nco_typ_lng(nc_type);
+
+/* File Routines */
 extern int nco_create(const char *,int  );
 extern int nco_open(const char *,int  );
 extern int nco_redef(int);
@@ -50,6 +76,7 @@ extern int nco_inq_nvars(int , int *);
 extern int nco_inq_natts(int , int *);
 extern int nco_inq_unlimdim(int , int *);
 
+/* Dimension Routines */
 extern int nco_def_dim(int ,const char *, long ,int * );
 extern int nco_inq_dimid(int , char *);
 extern int nco_inq_dimid_flg(int , char *);
@@ -59,18 +86,7 @@ extern int nco_inq_dimname(int , int , char *);
 extern int nco_inq_dimlen(int , int ,long *);
 extern int nco_rename_dim(int , int , const char * );
 
-extern int nco_inq_att(int ,int ,const char *, nc_type *,long *);
-extern int nco_inq_att_flg(int ,int ,const char *, nc_type *,long *);
-extern int nco_inq_attid(int ,int ,const char *,int *);
-extern int nco_inq_atttype(int ,int ,const char *, nc_type *); 
-extern int nco_inq_attlen(int ,int ,const char *, long *); 
-extern int nco_inq_attname(int ,int ,int ,char *); 
-extern int nco_copy_att(int ,int ,const char *,int ,int );
-extern int nco_rename_att(int ,int ,const char *,const char *); 
-extern int nco_del_att(int ,int ,const char *);
-extern int nco_put_att(int , int , const char *, nc_type ,long , void *);
-extern int nco_get_att(int , int , const char *,void *,nc_type );
-
+/* Variable Routines */
 extern int nco_def_var(int , const char *,nc_type , int , int *, int *);
 extern int nco_inq_var(int , int, char *, nc_type *, int *, int *, int *);
 extern int nco_inq_varid(int , char *);
@@ -90,8 +106,17 @@ extern int nco_put_vara(int , int , const long *,const long *, void *, nc_type )
 extern int nco_get_varm(int , int , const long *,const long *,const long *,const long *, void *, nc_type );
 extern int nco_put_varm(int , int , const long *,const long *,const long *,const long *, void *, nc_type );
 
-extern int nco_typ_lng(nc_type);
- 
+/* Attribute Routines */
+extern int nco_inq_att(int ,int ,const char *, nc_type *,long *);
+extern int nco_inq_att_flg(int ,int ,const char *, nc_type *,long *);
+extern int nco_inq_attid(int ,int ,const char *,int *);
+extern int nco_inq_atttype(int ,int ,const char *, nc_type *); 
+extern int nco_inq_attlen(int ,int ,const char *, long *); 
+extern int nco_inq_attname(int ,int ,int ,char *); 
+extern int nco_copy_att(int ,int ,const char *,int ,int );
+extern int nco_rename_att(int ,int ,const char *,const char *); 
+extern int nco_del_att(int ,int ,const char *);
+extern int nco_put_att(int , int , const char *, nc_type ,long , void *);
+extern int nco_get_att(int , int , const char *,void *,nc_type );
 
-
-
+#endif /* NCO_NETCDF_H */

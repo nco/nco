@@ -1,3 +1,26 @@
+2001-10-01  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_0_1
+	Changes since nco-2_0_0:
+	Cleaner separation of netCDF wrappers into nco_netcdf.c,.h
+	Appearance of error messages slightly changed since prg_nm_get()
+	no longer invoked by wrappers
+
+	* ncap uses nco netCDF3 interface
+
+        * Structure nco_netcdf.h as standard library header
+        
+	* Forbid multiple includes of nco_netcdf.h
+
+        * Changed nc.h to nco.h for namespace consistency
+
+        * Removed prg_nm_get() from all nco wrappers so wrappers have
+	no external dependencies
+
+	* Changed nc_err_exit() to nco_err_exit()
+
+	* Removed superfluous headers from nco_netcdf.c
+
 2001-08-10  Charlie Zender  <zender@uci.edu>
 
 	* Changed storage location of remotely accessible in.nc to

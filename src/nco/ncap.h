@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.8 2001-05-08 01:36:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.9 2001-10-01 23:09:51 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -60,7 +60,7 @@ extern sym_sct *scalar_mk_sym(double val);
 extern var_sct *ncap_var_add(var_sct *var_1,var_sct *var_2);
 extern int ncap_write_var(int,var_sct *);
 extern int yyerror(char *sng);
-extern void nc_lib_vrs_prn();
+extern void nco_lib_vrs_prn();
 
 #endif /* NCAP_H */
 

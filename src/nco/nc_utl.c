@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.110 2001-08-27 16:33:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.111 2001-10-01 23:09:51 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -57,7 +57,7 @@
 #endif /* not _OPENMP */
 
 /* Personal headers */
-#include "nc.h" /* netCDF operator universal def'ns */
+#include "nco.h" /* netCDF operator universal def'ns */
 
 char *
 nco_typ_sng(nc_type type)
@@ -178,7 +178,7 @@ cast_void_nctype(nc_type type,ptr_unn *ptr)
   case NC_BYTE:
     ptr->bp=(signed char *)ptr->vp;
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 } /* end cast_void_nctype() */
 
@@ -210,7 +210,7 @@ cast_nctype_void(nc_type type,ptr_unn *ptr)
   case NC_BYTE:
     ptr->vp=(void *)ptr->bp;
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
 } /* end cast_nctype_void() */
@@ -374,7 +374,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       case NC_SHORT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.sp[idx];} break;
       case NC_CHAR: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.cp[idx];} break;
       case NC_BYTE: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.bp[idx];} break;
-      default: dfl_case_nctype_err(); break;
+      default: nco_dfl_case_nctype_err(); break;
       } /* end switch */
 
       /* Un-typecast pointer to values after access */
@@ -2752,7 +2752,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.bp[idx];} break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_DOUBLE:
     switch(var_in_type){
@@ -2762,7 +2762,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.bp[idx];} break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_INT:
     switch(var_in_type){
@@ -2772,7 +2772,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.bp[idx];} break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_SHORT:
     switch(var_in_type){
@@ -2782,7 +2782,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.bp[idx];} break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_CHAR:
     switch(var_in_type){
@@ -2792,7 +2792,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.bp[idx];} break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_BYTE:
     switch(var_in_type){
@@ -2802,9 +2802,9 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.bp[idx];} break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
   
   /* Un-typecast pointer to values after access */
@@ -2847,7 +2847,7 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
     case NC_SHORT: *val_out.fp=*val_in.sp; break;
     case NC_CHAR: *val_out.fp=strtod((const char *)val_in.cp,(char **)NULL); break;
     case NC_BYTE: *val_out.fp=*val_in.bp; break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_DOUBLE:
     switch(type_in){
@@ -2857,7 +2857,7 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
     case NC_SHORT: *val_out.dp=*val_in.sp; break;
     case NC_CHAR: *val_out.dp=strtod((const char *)val_in.cp,(char **)NULL); break;
     case NC_BYTE: *val_out.dp=*val_in.bp; break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_INT:
     switch(type_in){
@@ -2867,7 +2867,7 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
     case NC_SHORT: *val_out.lp=*val_in.sp; break;
     case NC_CHAR: *val_out.lp=(long)strtod((const char *)val_in.cp,(char **)NULL); break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_BYTE: *val_out.lp=*val_in.bp; break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_SHORT:
     switch(type_in){
@@ -2877,7 +2877,7 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
     case NC_SHORT: *val_out.sp=*val_in.sp; break;
     case NC_CHAR: *val_out.sp=(short)strtod((const char *)val_in.cp,(char **)NULL); break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_BYTE: *val_out.sp=*val_in.bp; break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_CHAR:
     switch(type_in){
@@ -2887,7 +2887,7 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
     case NC_SHORT: *val_out.cp=*val_in.sp; break;
     case NC_CHAR: *val_out.cp=*val_in.cp; break;
     case NC_BYTE: *val_out.cp=*val_in.bp; break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } break;
   case NC_BYTE:
     switch(type_in){
@@ -2897,9 +2897,9 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
     case NC_SHORT: *val_out.bp=*val_in.sp; break;
     case NC_CHAR: *val_out.bp=*val_in.cp; break;
     case NC_BYTE: *val_out.bp=*val_in.bp; break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
   
   /* NB: There is no need to un-typecast input pointers because they were passed by
@@ -3349,7 +3349,7 @@ var_max_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 } /* end var_max_bnr() */
 
@@ -3441,7 +3441,7 @@ var_min_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 } /* end var_min_bnr() */
 
@@ -3526,7 +3526,7 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -3615,7 +3615,7 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -3728,7 +3728,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -3840,7 +3840,7 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -3911,7 +3911,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     case NC_INT: mss_val_lng=*mss_val.lp; break;
     case NC_BYTE: mss_val_byt=*mss_val.bp; break;
     case NC_CHAR: mss_val_chr=*mss_val.cp; break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } /* end switch */
   } /* endif */
 #endif /* USE_FORTRAN_ARITHMETIC */
@@ -4125,7 +4125,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     /* Do nothing except avoid compiler warnings */
     mss_val_byt=mss_val_byt;
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -4186,7 +4186,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     case NC_INT: mss_val_lng=*mss_val.lp; break;
     case NC_BYTE: mss_val_byt=*mss_val.bp; break;
     case NC_CHAR: mss_val_chr=*mss_val.cp; break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } /* end switch */
   } /* endif */
   
@@ -4410,7 +4410,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     /* Do nothing except avoid compiler warnings */
     mss_val_byt=mss_val_byt;
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end  switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -4472,7 +4472,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     case NC_INT: mss_val_lng=*mss_val.lp; break;
     case NC_BYTE: mss_val_byt=*mss_val.bp; break;
     case NC_CHAR: mss_val_chr=*mss_val.cp; break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
     } /* end switch */
   } /* endif */
   
@@ -4696,7 +4696,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     /* Do nothing except avoid compiler warnings */
     mss_val_byt=mss_val_byt;
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end  switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -4812,7 +4812,7 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -4883,7 +4883,7 @@ var_normalize_sdn(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tal
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -4915,7 +4915,7 @@ mss_val_mk(nc_type type)
   case NC_SHORT: *mss_val.sp=NC_FILL_SHORT; break;
   case NC_CHAR: *mss_val.cp=NC_FILL_CHAR; break;
   case NC_BYTE: *mss_val.bp=NC_FILL_BYTE; break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* Un-typecast pointer to values after access */
@@ -5045,7 +5045,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (signed char)op1) op3.bp[idx]=*mss_val.bp; break;
     } /* end switch */
     break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* It is not neccessary to un-typecast pointers to values after access 
@@ -5087,7 +5087,7 @@ var_zero(nc_type type,long sz,ptr_unn op1)
   case NC_BYTE:
     /* Do nothing */
     break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -5130,7 +5130,7 @@ vec_set(nc_type type,long sz,ptr_unn op1,double op2)
   case NC_BYTE:
     /* Do nothing */
     break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -5235,7 +5235,7 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
   case NC_BYTE:
     /* Do nothing */
     break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -5714,7 +5714,7 @@ rec_crd_chk(var_sct *var,char *fl_in,char *fl_out,long idx_rec,long idx_rec_out)
   case NC_SHORT: rec_crd_val_crr=var->val.sp[0]; break;
   case NC_CHAR: rec_crd_val_crr=var->val.cp[0]; break;
   case NC_BYTE: rec_crd_val_crr=var->val.bp[0]; break;
-    default: dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
   
   if(idx_rec_out > 1){
@@ -6291,7 +6291,7 @@ scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
   case NC_SHORT: val_ptr_unn.sp=&val.s; break;
   case NC_CHAR: val_ptr_unn.cp=&val.c; break;
   case NC_BYTE: val_ptr_unn.bp=&val.b; break;
-  default: dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* Un-typecast pointer to values after access */
@@ -6363,26 +6363,40 @@ ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar dou
 
 } /* end ptr_unn_2_scl_dbl() */
 
-void 
-dfl_case_nctype_err(void)
+void
+nco_lib_vrs_prn()
 {
-  /* Purpose: Convenience routine for printing error and exiting when
-     switch(nctype) statement receives an illegal default case
-     NCO emits warnings when compiled by GCC with -DNETCDF2_ONLY since, 
-     apparently, there are a whole bunch of things besides numeric
-     types in the old nctype enum and gcc warns about enums that are
-     not exhaustively considered in switch() statements. 
-     All these default statements can be removed with netCDF3 interface
-     so perhaps these should be surrounded with #ifdef NETCDF2_ONLY
-     constructs, but they actually do make sense for netCDF3 as well
-     so I have implemented a uniform error function, dfl_case_nctype_err(), 
-     to be called by all routines which emit errors only when compiled with
-     NETCDF2_ONLY.
-     This makes the behavior easy to modify or remove in the future.
+  /* Purpose: Print netCDF library version */
 
-     Placing this in its own routine also has the virtue of saving many lines 
-     of code since this function is used in many many switch() statements. */
+  char *lib_sng;
+  char *nst_sng;
+  char *vrs_sng;
+  char *of_ptr;
+  char *dlr_ptr;
 
-  (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal.\nNot handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype defintion is braindead in netCDF2). Exiting...",prg_nm_get());
-  exit(EXIT_FAILURE);
-} /* end dfl_case_nctype_err() */
+  int vrs_sng_len;
+  int nst_sng_len;
+
+  /* As of netCDF 3.4, nc_inq_libvers() returned strings such as "3.4 of May 16 1998 14:06:16 $" */  
+  lib_sng=(char *)strdup(nc_inq_libvers());
+  of_ptr=strstr(lib_sng," of ");
+  if(of_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nco_lib_vrs_prn() reports of_ptr == NULL\n",prg_nm_get());
+  vrs_sng_len=(int)(of_ptr-lib_sng);
+  vrs_sng=(char *)nco_malloc(vrs_sng_len+1);
+  strncpy(vrs_sng,lib_sng,vrs_sng_len);
+  vrs_sng[vrs_sng_len]='\0';
+
+  dlr_ptr=strstr(lib_sng," $");
+  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nco_lib_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
+  nst_sng_len=(int)(dlr_ptr-of_ptr-4); /* 4 is the length of " of " */
+  nst_sng=(char *)nco_malloc(nst_sng_len+1);
+  strncpy(nst_sng,of_ptr+4,nst_sng_len); /* 4 is the length of " of " */
+  nst_sng[nst_sng_len]='\0';
+
+  (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",vrs_sng,nst_sng);
+  (void)free(vrs_sng);
+  (void)free(lib_sng);
+  (void)free(nst_sng);
+  (void)fprintf(stdout,"NCO homepage URL is http://nco.sourceforge.net\n");
+} /* end nco_lib_vrs_prn() */
+

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.12 2001-05-08 01:36:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.13 2001-10-01 23:09:51 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -45,7 +45,7 @@
 
 #include <netcdf.h>             /* netCDF definitions */
 #include "nco_netcdf.h"         /* netCDF3.0 wrapper functions */
-#include "nc.h"                 /* netCDF operator universal def'ns */
+#include "nco.h"                 /* netCDF operator universal def'ns */
 #include <assert.h>             /* assert() debugging macro */
 
 /* Notes on packing/unpacking:

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.59 2001-05-28 23:48:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.60 2001-10-01 23:09:51 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -37,8 +37,8 @@
    Irvine, CA 92697-3100
  */
 
-#ifndef NC_H /* Contents have not yet been inserted in current source file */
-#define NC_H
+#ifndef NCO_H /* Contents have not yet been inserted in current source file */
+#define NCO_H
 
 /* NCO uses native type nco_long to store variables of type NC_INT */
 typedef long nco_long;
@@ -109,13 +109,13 @@ enum{ /* [enm] Attribute editor mode */
   aed_overwrite
 }; /* end enum */
 
-enum{ /* [enm] Relational operator for masking */
+enum nco_rlt_opr{ /* [enm] Arithmetic relations (comparisons) for masking */
   nco_op_eq, /* Equality */
-  nco_op_ne, 
-  nco_op_lt,
-  nco_op_gt,
-  nco_op_le,
-  nco_op_ge
+  nco_op_ne, /* Inequality */
+  nco_op_lt, /* Less than */
+  nco_op_gt, /* Greater than */
+  nco_op_le, /* Less than or equal to */
+  nco_op_ge /* Greater than or equal to */
 }; /* end enum */
 
 enum lmt_typ{ /* [enm] Limit type */
@@ -406,7 +406,6 @@ extern var_sct *var_conform_type(nc_type,var_sct *);
 extern var_sct *var_dpl(var_sct *);
 extern var_sct *var_fll(int,int,char *,dmn_sct **,int);
 extern var_sct *var_free(var_sct *);
-extern void dfl_case_nctype_err(void);
 extern void Exit_gracefully(void);
 extern void FORTRAN_add_double_precision(long *,int *,double *,long *,double *,double *);
 extern void FORTRAN_add_real(long *,int *,float *,long *,float *,float *);
@@ -438,8 +437,7 @@ extern void index_alpha(int,char **,int *);
 extern void indexx(int,int *,int *);
 extern void lmt_evl(int,lmt_sct *,long,bool);
 extern void mss_val_cp(var_sct *,var_sct *);
-extern void nc_lib_vrs_prn(void);
-extern void nc_err_exit(int,char *);
+extern void nco_lib_vrs_prn(void);
 extern void ncar_csm_date(int,var_sct **,int);
 extern void *nco_malloc(size_t size);
 extern void *nco_realloc(void *ptr, size_t size);
@@ -538,7 +536,7 @@ nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to
 (var_sct *var, /* I/O [sct] Variable to be packed */
  int nco_pck_typ); /* [enm] Packing operation type */
 
-#endif /* NC_H */
+#endif /* NCO_H */
 
 
 

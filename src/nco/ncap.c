@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.29 2001-09-24 11:28:03 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.30 2001-10-01 23:09:51 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -71,10 +71,9 @@ lex.yy.c:1060: warning: `yyunput' defined but not used
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
 
-/* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
+/* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
-#include "nc.h" /* NCO definitions */
-#include "nco_netcdf.h"			/* netcdf3.x wrappers */
+#include "nco.h" /* NCO definitions */
 #include "ncap.h" /* ncap-specific definitions */
 
 #ifdef LINUX
@@ -136,8 +135,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.29 2001-09-24 11:28:03 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.29 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.30 2001-10-01 23:09:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.30 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -281,7 +280,7 @@ main(int argc,char **argv)
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
-      (void)nc_lib_vrs_prn();
+      (void)nco_lib_vrs_prn();
       exit(EXIT_SUCCESS);
       break;
     case 's': /* Copy command script for later processing */

@@ -1,5 +1,5 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.9 2001-05-08 01:36:03 zender Exp $ -*-C-*- */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.10 2001-10-01 23:09:51 zender Exp $ -*-C-*- */
 
   /* Purpose: Token generator for ncap parser */
 
@@ -55,7 +55,7 @@
 #include <netcdf.h>             /* netCDF definitions */
 
   /* Headers specific to this program */
-#include "nc.h"                 /* NCO definitions */
+#include "nco.h"                 /* NCO definitions */
 #include "ncap.h"               /* symbol table definition */
 #include "ncap.tab.h"           /* symbol definitions from parser */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.68 2001-05-08 01:36:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.69 2001-10-01 23:09:51 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -66,9 +66,9 @@
 #include <netcdf.h> /* netCDF definitions */
 #include "nco_netcdf.h" /*netCDF 3.0 wrapper functions */
 
-/* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
+/* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
-#include "nc.h" /* NCO definitions */
+#include "nco.h" /* NCO definitions */
 
 int 
 main(int argc,char **argv)
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.68 2001-05-08 01:36:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.68 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.69 2001-10-01 23:09:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.69 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -258,7 +258,7 @@ main(int argc,char **argv)
     case 'r':
       /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
-      (void)nc_lib_vrs_prn();
+      (void)nco_lib_vrs_prn();
        exit(EXIT_SUCCESS);
       break;
     case 'v':
@@ -658,7 +658,7 @@ main(int argc,char **argv)
 	  case NC_SHORT: mss_val_dbl=wgt_avg->mss_val.sp[0]; break;
 	  case NC_CHAR: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
 	  case NC_BYTE: mss_val_dbl=wgt_avg->mss_val.bp[0]; break;
-	  default: dfl_case_nctype_err(); break;
+	  default: nco_dfl_case_nctype_err(); break;
 	  } /* end switch */
 	  /* Second mask wgt_avg where variable is missing value */
 	  (void)var_mask(wgt_avg->type,wgt_avg->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,mss_val_dbl,nco_op_ne,var_prc[idx]->val,wgt_avg->val);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.54 2001-07-20 20:30:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.55 2001-10-01 23:09:51 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -83,9 +83,9 @@
 #endif /* _LIBINTL_H */
 
 /* Personal headers */
-/* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
+/* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
-#include "nc.h" /* NCO definitions */
+#include "nco.h" /* NCO definitions */
 
 int 
 main(int argc,char **argv)
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.54 2001-07-20 20:30:04 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.54 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.55 2001-10-01 23:09:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.55 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -233,7 +233,7 @@ main(int argc,char **argv)
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
-      (void)nc_lib_vrs_prn();
+      (void)nco_lib_vrs_prn();
       exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */
