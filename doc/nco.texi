@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.150 2003-03-18 18:15:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.151 2003-03-19 07:27:55 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -25,6 +25,10 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @url{}: Uniform resource locator, e.g., @url{http://nco.sf.net}
 @var{}: Metasyntactic variable, e.g., @var{}
 @w{}: Unbreakable text, e.g., @w{of 1}
+
+Use '@:', after periods, questions marks, exclamation marks, or colons
+that do not end sentences
+Use '@.', '@!', and `@?' to end sentences that end with single capital letters
 
 After editing any hyperlink locations, use 
 C-c C-u C-a	texinfo-all-menus-update
@@ -65,14 +69,44 @@ http://www.gnu.ai.mit.edu/copyleft/fdl.html
 
 @end ignore
 
+@c [idx] Index
+@macro idx {}
+i
+@end macro
+@c [m s-1] Meridional wind speed
+@macro wndmrd {}
+v
+@end macro
+@c [m s-1] Zonal wind speed
+@macro wndznl {}
+u
+@end macro
+@macro xxx {}
+x
+@end macro
 @tex
 % Define TeX macros to roughly correspond to LaTeX style files
-\def\dfr{d} % [frc] Math differential
-\def\me{e} % [frc] Math e
-\def\mi{i} % [frc] Math i
-\def\mpi{\pi} % [frc] Math pi
-\def\tm{t} % [s] Time
-\def\xxx{x} % [ltr] x
+% Use \gdef instead of \def to make definition persistent across TeX blocks
+% These should be consistent with any TeXInfo macros
+\gdef\dfr{d} % [frc] Math differential
+\gdef\idx{i} % [idx] Index
+\gdef\iii{i} % [idx] i
+\gdef\jjj{j} % [idx] j
+\gdef\lmnidx{i} % [idx] Element index
+\gdef\outnbr{J} % [nbr] Number of elements in output hyperslab
+\gdef\lmnnbr{N} % [nbr] Number of elements in input hyperslab
+\gdef\tllnbr{M} % [nbr] Tally (number of valid elements in input hyperslab)
+\gdef\me{e} % [frc] Math e
+\gdef\mi{i} % [frc] Math i
+\gdef\mpi{\pi} % [frc] Math pi
+\gdef\mskflg{m} % [flg] Mask flag
+\gdef\mssflg{\mu} % [flg] Missing value flag
+\gdef\tm{t} % [s] Time
+\gdef\wgt{w} % [frc] Weight
+\gdef\wndmrd{v} % [m s-1] Meridional wind speed
+\gdef\wndznl{u} % [m s-1] Zonal wind speed
+\gdef\xxx{x} % [ltr] x
+\gdef\yyy{y} % [ltr] y
 @end tex
 
 @c Start of header
@@ -447,7 +481,7 @@ compiling with @w{C compilers} including those from
 @cindex @command{icc}
 @cindex @command{xlC}
 @cindex @command{xlc}
-@acronym{GNU} (@samp{gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE} -Wall)
+@acronym{GNU} (@samp{gcc -std=c99 -pedantic -D_BSD_SOURCE} -Wall)
 @footnote{
 The @samp{_BSD_SOURCE} token is required on some Linux platforms where 
 @command{gcc} dislikes the network header files like
@@ -494,16 +528,16 @@ These are nice features of the 1999 @acronym{ISO} C-standard called C99.
 necessary. 
 Certain branches in the code are required to satisfy the native
 @acronym{SGI} and SunOS @w{C compilers}, which are strictly @acronym{ANSI} 
-C89 compliant, and cannot benefit from the C99 features.
-However, the C99 features are supported and by the @acronym{GNU},
-@acronym{UNICOS}, Solaris, and @acronym{AIX} compilers.
+C89 compliant, and cannot benefit from C99 features.
+However, C99 features are fully supported by the @acronym{GNU},
+@acronym{UNICOS}, Solaris, and @acronym{AIX} compilers. 
 
 The most time-intensive portion of @acronym{NCO} execution is spent in
 arithmetic operations, e.g., multiplication, averaging, subtraction.
 Until August, 1999, these operations were performed in Fortran by
 default.  
-This was a design decision based on the speed of Fortran-based object
-code vs. C-based object code in late 1994.
+This was a design decision made in late 1994 based on the speed of
+Fortran-based object code vs.@: C-based object code.
 Since 1994 native @w{C compilers} have improved their vectorization
 capabilities and it has become advantageous to replace all Fortran 
 subroutines with @w{C subroutines}.
@@ -517,17 +551,19 @@ to @w{@acronym{ANSI} C} when compiled with the @acronym{GNU} compiler
 collection, @acronym{GCC}. 
 
 As of July 2000 and @acronym{NCO} version 1.2, @acronym{NCO} no longer
-supports performing arithmetic operations in Fortran to improve speed.
+supports performing arithmetic operations in Fortran.
+We decided to sacrifice executable speed for code maintainability
+Since no objective statistics were ever performed to quantify 
+the difference in speed between the Fortran and @w{C code},
+the performance penalty incurred by this decision is unknown.
 Supporting Fortran involves maintaining two sets of routines for every
 arithmetic operation. 
-The @code{USE_FORTRAN_ARITHMETIC} flag is retained in the
-@file{Makefile} and the file containing the Fortran code,
-@file{nc_fortran.F}, is still distributed with @acronym{NCO} in case a
-volunteer decides to resurrect them. 
-If you would like to volunteer to maintain @file{nc_fortran.F} please 
+The @code{USE_FORTRAN_ARITHMETIC} flag is still retained in the
+@file{Makefile}.
+The file containing the Fortran code, @file{nco_fortran.F}, has been
+deprecated but can be resurrected if a volunteer comes forward.
+If you would like to volunteer to maintain @file{nco_fortran.F} please 
 contact me. 
-Otherwise the Fortran hooks will be completely removed in the next major
-release. 
 
 @ignore
 It is still possible to request Fortran routines to perform arithmetic
@@ -647,7 +683,7 @@ As a final remedy, you can reinstall @acronym{NCO} with all operators statically
 linked.  
 
 @node netCDF 2.x vs. 3.x, Help and Bug reports, Libraries, Introduction
-@section netCDF 2.x vs. 3.x
+@section netCDF 2.x vs.@: 3.x
 @cindex netCDF 2.x
 @cindex netCDF 3.x
 netCDF version 2.x was released in 1993.
@@ -724,12 +760,12 @@ eager for HDF5 to complete their netCDF 3.x support.
 @cindex features, requesting
 We generally receive three categories of mail from user's: requests for
 help, bug reports, and requests for new features.
-Notes saying the equivalent of "Hey, @acronym{NCO} continues to work great
-and it saves me more time everyday than it took to write this note" are
-a distant fourth.
+Notes saying the equivalent of "Hey, @acronym{NCO} continues to work
+great and it saves me more time everyday than it took to write this
+note" are a distant fourth.
 There is a different protocol for each type of request.
-Our request is that you communicate with the project via @acronym{NCO} Project 
-Forums.
+Our request is that you communicate with the project via @acronym{NCO}
+Project Forums.
 Before posting to the @acronym{NCO} forums described below, you might
 first @uref{https://sourceforge.net/account/register.php, register}
 your name and email address with SourceForge.org or else all of your
@@ -737,8 +773,8 @@ postings will be attributed to "nobody".
 Once registered you may choose to "monitor" any forum and to receive
 (or not) email when there are any postings.
 
-If you would like @acronym{NCO} to include a new feature, first check to see
-if that feature is already on the 
+If you would like @acronym{NCO} to include a new feature, first check to
+see if that feature is already on the 
 @uref{file:./TODO, TODO} list.
 If it is, please consider implementing that feature yourself and sending
 us the patch!
@@ -756,8 +792,8 @@ can do is simplify the problem to a manageable size and report it}.
 The first thing to do is to make sure you are running the latest
 publicly released version of @acronym{NCO}.  
 
-Once you have read the manual, if you are still unable to get @acronym{NCO}
-to perform a documented function, write help request.
+Once you have read the manual, if you are still unable to get
+@acronym{NCO} to perform a documented function, write help request.
 Follow the same procedure as described below for reporting bugs
 (after all, it might be a bug).
 That is, describe what you are trying to do, and include the complete
@@ -765,8 +801,8 @@ commands (with @samp{-D 5}), error messages, and version of NCO.
 Post your help request to the 
 @uref{http://sourceforge.net/forum/forum.php?forum_id=9830, NCO Help forum}.
 
-If you think you are using the right command, but @acronym{NCO} is misbehaving,
-then you might have found a bug. 
+If you think you are using the right command, but @acronym{NCO} is
+misbehaving, then you might have found a bug. 
 A core dump, sementation violation, or incorrect numerical answers is
 always considered a high priority bug.
 How do you simplify a problem that may be revealing a bug?
@@ -813,24 +849,24 @@ averages.
 These second level data may become the inputs to graphical and
 statistical packages, and are often more suitable for archival and
 dissemination to the scientific community.
-@acronym{NCO} performs a suite of operations useful in manipulating data from the
-primary to the second level state.
+@acronym{NCO} performs a suite of operations useful in manipulating data
+from the primary to the second level state.
 @cindex @acronym{NCL}
 @cindex @acronym{IDL}
 @cindex Perl
 @cindex Yorick
 Higher level interpretive languages (e.g., @acronym{IDL}, Yorick,
 Matlab, @acronym{NCL}, Perl, Python),
-and lower level compiled languages (e.g., C, Fortran) can always perform
+and lower level compiled languages (e.g., C, Fortran) can always perform 
 any task performed by @acronym{NCO}, but often with more overhead.
 NCO, on the other hand, is limited to a much smaller set of arithmetic
 and metadata operations than these full blown languages.
 
-Another goal has been to implement enough command line switches so that
+Another goal has been to implement enough command line switches so that 
 frequently used sequences of these operators can be executed from a
 shell script or batch file.
-Finally, @acronym{NCO} was written to consume the absolute minimum amount of
-system memory required to perform a given job.
+Finally, @acronym{NCO} was written to consume the absolute minimum
+amount of system memory required to perform a given job.
 The arithmetic operators are extremely efficient; their exact memory
 usage is detailed in @ref{Memory usage}.
 
@@ -840,14 +876,15 @@ usage is detailed in @ref{Memory usage}.
 @cindex @acronym{NCAR}
 @cindex @acronym{GCM}
 
-@acronym{NCO} was developed at @acronym{NCAR} to aid analysis and manipulation of
-datasets produced by General Circulation Models (@acronym{GCM}s). 
+@acronym{NCO} was developed at @acronym{NCAR} to aid analysis and
+manipulation of datasets produced by General Circulation Models
+(@acronym{GCM}s).  
 Datasets produced by @acronym{GCM}s share many features with all gridded
 scientific datasets and so provide a useful paradigm for the explication
 of the @acronym{NCO} operator set.
-Examples in this manual use a @acronym{GCM} paradigm because latitude, longitude,
-time, temperature and other fields related to our natural environment
-are as easy to visualize for the layman as the expert.
+Examples in this manual use a @acronym{GCM} paradigm because latitude,
+longitude, time, temperature and other fields related to our natural
+environment are as easy to visualize for the layman as the expert.
 
 @node Output files, Appending, Climate model paradigm, Strategies
 @section Temporary output files 
@@ -871,16 +908,16 @@ When the operator completes its task with no fatal errors, the temporary
 output file is moved to the user-specified @var{output-file}.
 Note the construction of a temporary output file uses more disk space
 than just overwriting existing files ``in place'' (because there may be
-two copies of the same file on disk until the @acronym{NCO} operation successfully
-concludes and the temporary output file overwrites the existing
-@var{output-file}).  
+two copies of the same file on disk until the @acronym{NCO} operation
+successfully concludes and the temporary output file overwrites the
+existing @var{output-file}).  
 @cindex performance
 @cindex operator speed
 @cindex speed
 @cindex execution time
 Also, note this feature increases the execution time of the operator
 by approximately the time it takes to copy the @var{output-file}.
-Finally, note this feature allows the @var{output-file} to be the same
+Finally, note this feature allows the @var{output-file} to be the same 
 as the @var{input-file} without any danger of ``overlap''.
 
 @cindex overwriting files
@@ -893,8 +930,8 @@ existing @var{output-file}, attempt to append to it, or abort the
 operation. 
 However, in processing large amounts of data, too many interactive
 questions can be a curse to productivity.
-Therefore @acronym{NCO} also implements two ways to override its own safety
-features, the @samp{-O} and @samp{-A} switches.
+Therefore @acronym{NCO} also implements two ways to override its own
+safety features, the @samp{-O} and @samp{-A} switches.
 Specifying @samp{-O} tells the operator to overwrite any existing
 @var{output-file} without prompting the user interactively.
 Specifying @samp{-A} tells the operator to attempt to append to any
@@ -915,17 +952,18 @@ terminology @dfn{merging} @footnote{The terminology @dfn{merging} is
 reserved for an (unwritten) operator which replaces hyperslabs of a
 variable in one file with hyperslabs of the same variable from another 
 file} or @dfn{pasting}. 
-Appending is often confused with what @acronym{NCO} calls @dfn{concatenation}.
-In @acronym{NCO}, concatenation refers to splicing a variable along the record
-dimension. 
+Appending is often confused with what @acronym{NCO} calls
+@dfn{concatenation}. 
+In @acronym{NCO}, concatenation refers to splicing a variable along the
+record dimension. 
 Appending, on the other hand, refers to adding variables from one file
 to another
 @footnote{Yes, the terminology is confusing. 
 By all means mail me if you think of a better nomenclature.
 Should @acronym{NCO} use @dfn{paste} instead of @dfn{append}?
 }. 
-In this sense, @command{ncks} can append variables from one file to another
-file. 
+In this sense, @command{ncks} can append variables from one file to
+another file. 
 This capability is invoked by naming two files on the command line,
 @var{input-file} and @var{output-file}. 
 When @var{output-file} already exists, the user is prompted whether to
@@ -941,9 +979,9 @@ the results of the operation in the existing @var{output-file},
 @node Addition Subtraction Multiplication and Interpolation, Averaging vs. Concatenating, Appending, Strategies
 @section Addition Subtraction Multiplication and Interpolation
 
-Users comfortable with @acronym{NCO} semantics may find it easier to perform
-some simple mathematical operations in @acronym{NCO} rather than higher level
-languages. 
+Users comfortable with @acronym{NCO} semantics may find it easier to
+perform some simple mathematical operations in @acronym{NCO} rather than
+higher level languages. 
 @command{ncdiff} (@pxref{ncdiff netCDF Differencer}) can be used for
 subtraction and broadcasting. 
 @command{ncflint} (@pxref{ncflint netCDF File Interpolator}) can be used 
@@ -954,8 +992,8 @@ operations at the command line.
 @node Averaging vs. Concatenating, Large numbers of input files, Addition Subtraction Multiplication and Interpolation, Strategies
 @section Averagers vs. Concatenators
 
-The most frequently used operators of @acronym{NCO} are probably the averagers and
-concatenators.
+The most frequently used operators of @acronym{NCO} are probably the
+averagers and concatenators.
 Because there are so many permutations of averaging (e.g., across files,
 within a file, over the record dimension, over other dimensions, with or
 without weights and masks) and of concatenating (across files, along the
@@ -963,20 +1001,20 @@ record dimension, along other dimensions), there are currently no fewer
 than five operators which tackle these two purposes: @command{ncra},
 @command{ncea}, @command{ncwa}, @command{ncrcat}, and @command{ncecat}. 
 These operators do share many capabilities @footnote{Currently
-@command{ncea} and @command{ncrcat} are symbolically linked to the @command{ncra}
-executable, which behaves slightly differently based on its invocation
-name (i.e., @samp{argv[0]}). 
+@command{ncea} and @command{ncrcat} are symbolically linked to the
+@command{ncra} executable, which behaves slightly differently based on
+its invocation name (i.e., @samp{argv[0]}). 
 These three operators share the same source code, but merely have
 different inner loops.}, but each has its unique specialty.
 Two of these operators, @command{ncrcat} and @command{ncecat}, are for
 concatenating hyperslabs across files. 
-The other two operators, @command{ncra} and @command{ncea}, are for averaging
-hyperslabs across files 
+The other two operators, @command{ncra} and @command{ncea}, are for
+averaging hyperslabs across files 
 @footnote{The third averaging operator, @command{ncwa}, is the most
 sophisticated averager in @acronym{NCO}. 
 However, @command{ncwa} is in a different class than @command{ncra} and
-@command{ncea} because it can only operate on a single file per invocation
-(as opposed to multiple files).   
+@command{ncea} because it can only operate on a single file per
+invocation (as opposed to multiple files).   
 On that single file, however, @command{ncwa} provides a richer set of 
 averaging options---including weighting, masking, and broadcasting.}.  
 First, let's describe the concatenators, then the averagers. 
@@ -1015,9 +1053,9 @@ their data are all fixed length.
 For example, the files may not be conceptually sequential, but rather
 members of the same group, or @dfn{ensemble}. 
 Members of an ensemble may have no reason to contain a record dimension.
-@command{ncecat} will create a new record dimension (named @var{record} by
-default) with which to glue together the individual files into the single
-ensemble file.
+@command{ncecat} will create a new record dimension (named @var{record}
+by default) with which to glue together the individual files into the
+single ensemble file.
 If @command{ncecat} is used on files which contain an existing record
 dimension, that record dimension will be converted into a fixed length
 dimension of the same name and a new record dimension will be created. 
@@ -1025,14 +1063,14 @@ Consider five realizations, @file{85a.nc}, @file{85b.nc}, @dots{}
 @file{85e.nc} of 1985 predictions from the same climate model.
 Then @code{ncecat 85?.nc 85_ens.nc} glues the individual realizations
 together into the single file, @file{85_ens.nc}. 
-If an input variable was dimensioned [@code{lat},@code{lon}], it will have
-dimensions [@code{record},@code{lat},@code{lon}] in the output file.
-A restriction of @command{ncecat} is that the hyperslabs of the processed
-variables must be the same from file to file.
-Normally this means all the input files are the same size, and contain
+If an input variable was dimensioned [@code{lat},@code{lon}], it will
+have dimensions [@code{record},@code{lat},@code{lon}] in the output file.
+A restriction of @command{ncecat} is that the hyperslabs of the
+processed variables must be the same from file to file.
+Normally this means all the input files are the same size, and contain 
 data on different realizations of the same variables.
-@xref{ncecat netCDF Ensemble Concatenator}, for a complete description of
-@command{ncecat}. 
+@xref{ncecat netCDF Ensemble Concatenator}, for a complete description
+of @command{ncecat}. 
 
 Note that @command{ncrcat} cannot concatenate fixed-length variables,
 whereas @command{ncecat} can concatenate both fixed-length and record
@@ -1054,19 +1092,19 @@ from multiple files.
 @command{ncra} performs a simple arithmetic average over the record
 dimension of all the input files, with each record having an equal
 weight in the average. 
-@command{ncea} performs a simple arithmetic average of all the input files,
-with each file having an equal weight in the average. 
+@command{ncea} performs a simple arithmetic average of all the input
+files, with each file having an equal weight in the average. 
 Note that @command{ncra} cannot average fixed-length variables,
 but @command{ncea} can average both fixed-length and record variables.  
 To conserve system memory, use @command{ncra} rather than
-@command{ncea} where possible (e.g., if each @var{input-file} is one record
-long). 
-The file output from @command{ncea} will have the same dimensions (meaning 
-dimension names as well as sizes) as the input hyperslabs  
-(@pxref{ncea netCDF Ensemble Averager}, for a complete description of
+@command{ncea} where possible (e.g., if each @var{input-file} is one
+record long). 
+The file output from @command{ncea} will have the same dimensions
+(meaning dimension names as well as sizes) as the input hyperslabs  
+(@pxref{ncea netCDF Ensemble Averager}, for a complete description of 
 @command{ncea}).  
 The file output from @command{ncra} will have the same dimensions as
-the input hyperslabs except for the record dimension, which will have a 
+the input hyperslabs except for the record dimension, which will have a  
 size @w{of 1} (@pxref{ncra netCDF Record Averager}, for a complete
 description of @command{ncra}). 
 
@@ -1078,8 +1116,9 @@ description of @command{ncra}).
 Since no other operators have this ability, the description of
 interpolation is given fully on the @command{ncflint} reference page
 (@pxref{ncflint netCDF File Interpolator}). 
-Note that this capability also allows @command{ncflint} to linearly rescale
-any data in a netCDF file, e.g., to convert between differing units.
+Note that this capability also allows @command{ncflint} to linearly
+rescale any data in a netCDF file, e.g., to convert between differing
+units. 
 
 @node Large numbers of input files, Large files and Memory, Averaging vs. Concatenating, Strategies
 @section Working with large numbers of input files
@@ -1089,34 +1128,34 @@ any data in a netCDF file, e.g., to convert between differing units.
 Occasionally one desires to digest (i.e., concatenate or average)
 hundreds or thousands of input files.
 One brave user, for example, recently created a five year time-series of
-satellite observations by using @command{ncecat} to join thousands of daily
-data files together.
-Unfotunately, data archives (e.g., @acronym{NASA EOSDIS}) are unlikely to
-distribute netCDF files conveniently named in a format the @samp{-n
+satellite observations by using @command{ncecat} to join thousands of
+daily data files together.
+Unfotunately, data archives (e.g., @acronym{NASA EOSDIS}) are unlikely
+to distribute netCDF files conveniently named in a format the @samp{-n
 @var{loop}} switch (which automatically generates arbitrary numbers of
 input filenames) understands. 
 If there is not a simple, arithmetic pattern to the input filenames
 (e.g., @file{h00001.nc}, @file{h00002.nc}, @dots{} @file{h90210.nc}) 
 then the @samp{-n @var{loop}} switch is useless.
-Moreover, when the input files are so numerous that the input filenames
-are too lengthy (when strung together as a single argument) to be passed
+Moreover, when the input files are so numerous that the input filenames 
+are too lengthy (when strung together as a single argument) to be passed 
 by the calling shell to the @acronym{NCO} operator 
 @footnote{The exact length which exceeds the operating system internal
 limit for command line lengths varies from @acronym{OS} to @acronym{OS}
 and from shell to shell.  
-@acronym{GNU} @code{bash} may not have any arbitrary fixed limits to the size of
-command line arguments. 
+@acronym{GNU} @code{bash} may not have any arbitrary fixed limits to the
+size of command line arguments. 
 Many @acronym{OS}s cannot handle command line arguments longer than a
 few thousand characters.
-When this occurs, the @acronym{ANSI} C-standard @code{argc}-@code{argv}
+When this occurs, the @acronym{ANSI} C-standard @code{argc}-@code{argv} 
 method of passing arguments from the calling shell to a C-program (i.e.,
 an @acronym{NCO} operator) breaks down.}, then the following strategy
 has proven useful to specify the input filenames to @acronym{NCO}. 
 Write a script that creates symbolic links between the irregular input
 filenames and a set of regular, arithmetic filenames that @samp{-n
 @var{loop}} switch understands.
-The @acronym{NCO} operator will then succeed at automatically generating the
-filnames with the @samp{-n @var{loop}} option (which circumvents any
+The @acronym{NCO} operator will then succeed at automatically generating
+the filnames with the @samp{-n @var{loop}} option (which circumvents any 
 @acronym{OS} and shell limits on command line size).
 You can remove the symbolic links once the operator completes its task. 
 
@@ -1126,16 +1165,16 @@ You can remove the symbolic links once the operator completes its task.
 
 @dfn{Large files} are those files that are comparable in size to the
 amount of memory (@acronym{RAM}) in your computer.
-Many users of @acronym{NCO} work with files larger than 100 Mb.
+Many users of @acronym{NCO} work with files larger than @w{100 MB}.
 Files this large not only push the current edge of storage technology, 
 they present special problems for programs which attempt to access the  
 entire file at once, such as @command{ncea}, and @command{ncecat}.
 @cindex swap space
-If you need to work with a 300 Mb file on a machine with only 32 Mb of
-memory then you will need large amounts of swap space (virtual
-memory on disk) and @acronym{NCO} will work slowly, or else
+If you need to work with a @w{300 MB} file on a machine with only 
+@w{32 MB} of memory then you will need large amounts of swap space
+(virtual memory on disk) and @acronym{NCO} will work slowly, or else 
 @acronym{NCO} will fail. 
-There is no easy solution for this and the best strategy is to work on a
+There is no easy solution for this and the best strategy is to work on a 
 machine with massive amounts of memory and swap space.
 @cindex server
 @cindex @acronym{UNICOS}
@@ -1143,7 +1182,7 @@ machine with massive amounts of memory and swap space.
 That is, if your local machine has problems working with large files,
 try running @acronym{NCO} from a more powerful machine, such as a
 network server.  
-Certain machine architectures, e.g., Cray @acronym{UNICOS}, have special
+Certain machine architectures, e.g., Cray @acronym{UNICOS}, have special 
 commands which allow one to increase the amount of interactive memory.
 @cindex @code{ilimit}
 @cindex @code{core dump}
@@ -1169,21 +1208,22 @@ This is accomplished by supplying a number greater @w{than 0} to the
 When the @var{debug-level} is nonzero, the operators report their
 current status to the terminal through the @var{stderr} facility.
 Using @samp{-D} does not slow the operators down. 
-Choose a @var{debug-level} @w{between 1} @w{and 3} for most situations, e.g.,
-@code{ncea -D 2 85.nc 86.nc 8586.nc}.
+Choose a @var{debug-level} @w{between 1} @w{and 3} for most situations,
+e.g., @code{ncea -D 2 85.nc 86.nc 8586.nc}.
 A full description of how to estimate the actual amount of memory the
-multi-file @acronym{NCO} operators consume is given in @ref{Memory usage}. 
+multi-file @acronym{NCO} operators consume is given in 
+@ref{Memory usage}. 
 
 @node Memory usage, Operator limitations, Large files and Memory, Strategies
 @section Approximate @acronym{NCO} memory requirements
 @cindex memory requirements
 
 The multi-file operators currently comprise the record operators,
-@command{ncra} and @command{ncrcat}, and the ensemble operators, @command{ncea}
-and @command{ncecat}, 
-The record operators require @emph{much less} memory than the ensemble
+@command{ncra} and @command{ncrcat}, and the ensemble operators,
+@command{ncea} and @command{ncecat}. 
+The record operators require @emph{much less} memory than the ensemble 
 operators. 
-This is because the record operators are designed to operate on a single
+This is because the record operators are designed to operate on a single 
 record of a file at a time, while the ensemble operators must retrieve
 an entire variable at a time into memory.
 Let @math{MS} be the peak sustained memory demand of an operator,
@@ -1213,7 +1253,7 @@ The operators have the following memory requirements:
 @command{ncflint} requires @math{MS <= 2VT}.
 Note that only variables which are processed, i.e., averaged or
 concatenated, contribute to @math{MS}.
-Memory is never allocated to hold variables which do not appear in the
+Memory is never allocated to hold variables which do not appear in the 
 output file (@pxref{Variable subsetting}). 
 
 @node Operator limitations,  , Memory usage, Strategies
@@ -1251,9 +1291,9 @@ implemented.
 @item
 @cindex Yorick
 Some random access operations on large files on certain architectures
-(e.g., 400 Mb on @acronym{UNICOS}) are @emph{much} slower with these operators
-than with similar operations performed using languages that bypass the
-netCDF interface (e.g., Yorick).  
+(e.g., @w{400 MB} on @acronym{UNICOS}) are @emph{much} slower with these 
+operators than with similar operations performed using languages that
+bypass the netCDF interface (e.g., Yorick).  
 The cause for this is not understood at present.
 @end enumerate
 
@@ -1362,7 +1402,7 @@ The long option form makes scripts more self documenting and less error
 prone.  
 Often long options are named after the source code variable whose value 
 they carry.
-Second, the equals sign @kbd{=} joins the key (i.e., @var{long_name}) to  
+Second, the equals sign @kbd{=} joins the key (i.e., @var{long_name}) to   
 the value in an uninterruptible text block. 
 Experience shows that users are less likely to mis-parse commands when
 restricted to this form.
@@ -1435,7 +1475,7 @@ ncra 8[56789].nc 8589.nc
 ncra -p @var{input-path} 85.nc 86.nc 87.nc 88.nc 89.nc 8589.nc
 ncra -n 5,2,1 85.nc 8589.nc
 @end example
-The first method (explicitly specifying all filenames) works by brute
+The first method (explicitly specifying all filenames) works by brute 
 force. 
 The second method relies on the operating system shell to @dfn{glob}
 (expand) the @dfn{regular expression} @code{8[56789].nc}.
@@ -1601,10 +1641,10 @@ The first example will work verbatim on your system if your system is
 connected to the Internet and is not behind a firewall.
 The second example will work on your system if you have @command{rcp}
 or @command{scp} access to the machine @code{dust.ess.uci.edu}.
-The third example will work from @acronym{NCAR} computers with local access to 
-the @command{msrcp}, @command{msread}, or @command{nrnet} commands.
-The fourth command will work if your local version of @acronym{NCO} was built with
-@acronym{DODS} capability (@pxref{DODS}).
+The third example will work from @acronym{NCAR} computers with local
+access to  the @command{msrcp}, @command{msread}, or @command{nrnet} commands.
+The fourth command will work if your local version of @acronym{NCO} was
+built with @acronym{DODS} capability (@pxref{DODS}).
 The above commands can be rewritten using the @samp{-p @var{input-path}}
 option as follows: 
 @cindex @code{-p @var{input-path}}
@@ -1625,21 +1665,22 @@ Using @samp{-p} is recommended because it clearly separates the
 When @var{input-path} is not explicitly specified using @samp{-p},
 @acronym{NCO} internally generates an @var{input-path} from the first
 input filename.  
-The automatically generated @var{input-path} is constructed by stripping
+The automatically generated @var{input-path} is constructed by stripping 
 the input filename of everything following the final @samp{/} character
 (i.e., removing the stub).
-The @samp{-l @var{output-path}} option tells @acronym{NCO} where to store the
-remotely retrieved file and the output file.
+The @samp{-l @var{output-path}} option tells @acronym{NCO} where to
+store the remotely retrieved file and the output file.
 Often the path to a remotely retrieved file is quite different than the
 path on the local machine where you would like to store the file.
 If @samp{-l} is not specified then @acronym{NCO} internally generates an
 @var{output-path} by simply setting @var{output-path} equal to
 @var{input-path} stripped of any machine names.
-If @samp{-l} is not specified and the remote file resides on the @acronym{NCAR} 
-@acronym{MSS} system, then the leading character of @var{input-path}, @samp{/}, is
-also stripped from @var{output-path}.
-Specifying @var{output-path} as @samp{-l ./} tells @acronym{NCO} to store the
-remotely retrieved file and the output file in the current directory.
+If @samp{-l} is not specified and the remote file resides on the
+@acronym{NCAR} @acronym{MSS} system, then the leading character of
+@var{input-path}, @samp{/}, is also stripped from @var{output-path}.
+Specifying @var{output-path} as @samp{-l ./} tells @acronym{NCO} to
+store the remotely retrieved file and the output file in the current
+directory. 
 Note that @samp{-l .} is equivalent to @samp{-l ./} though the latter is
 recommended as it is syntactically more clear.
 
@@ -1653,34 +1694,37 @@ recommended as it is syntactically more clear.
 @cindex HTTP protocol
 @cindex @env{DODS_ROOT}
 @cindex Distributed Oceanographic Data System
-The Distributed Oceanographic Data System (@acronym{DODS}) provides replacements
-for common data interface libraries like netCDF.
-The @acronym{DODS} versions of these libraries implement network transparent
-access to data using the HTTP protocol.
-@acronym{NCO} may be @acronym{DODS}-enabled by linking @acronym{NCO} to the @acronym{DODS} libraries.
+The Distributed Oceanographic Data System (@acronym{DODS}) provides
+replacements for common data interface libraries like netCDF.
+The @acronym{DODS} versions of these libraries implement network
+transparent access to data using the HTTP protocol.
+@acronym{NCO} may be @acronym{DODS}-enabled by linking @acronym{NCO} to
+the @acronym{DODS} libraries. 
 @cindex @file{Makefile}
-Examples of how to do this are given in the @acronym{DODS} documentation and 
-in the @file{Makefile} distributed with @acronym{NCO}.
-Building @acronym{NCO} with @code{make DODS=Y} adds the (non-intuitive) commands
-to link to the @acronym{DODS} libraries installed in the @env{$DODS_ROOT}
-directory. 
+Examples of how to do this are given in the @acronym{DODS} documentation
+and in the @file{Makefile} distributed with @acronym{NCO}.
+Building @acronym{NCO} with @code{make DODS=Y} adds the (non-intuitive)
+commands to link to the @acronym{DODS} libraries installed in the
+@env{$DODS_ROOT} directory. 
 You will probably need to visit the 
 @uref{http://www.unidata.ucar.edu/packages/dods, DODS Homepage}
 to learn which libraries to obtain and link to for the
 @acronym{DODS}-enabled @acronym{NCO} executables.
 
-Once @acronym{NCO} is @acronym{DODS}-enabled the operators are @acronym{DODS} clients. 
-All @acronym{DODS} clients have network transparent access to any files controlled
-by a @acronym{DODS} server. 
+Once @acronym{NCO} is @acronym{DODS}-enabled the operators are
+@acronym{DODS} clients.  
+All @acronym{DODS} clients have network transparent access to any files
+controlled by a @acronym{DODS} server. 
 Simply specify the path to the file in @acronym{URL} notation
 @example
 ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/
 Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc
 @end example
 @noindent
-@acronym{NCO} operates on these remote files without having to transfer the
-files to the local disk.  
-@acronym{DODS} causes all the I/O to appear to @acronym{NCO} as if the files were local.
+@acronym{NCO} operates on these remote files without having to transfer
+the files to the local disk.  
+@acronym{DODS} causes all the I/O to appear to @acronym{NCO} as if the
+files were local. 
 Only the required data (e.g., the variable or hyperslab specified) are
 transferred over the network. 
 The advantages of this are obvious if you are examining small parts of
@@ -1689,15 +1733,17 @@ large files stored at remote locations.
 Note that the remote retrieval features of @acronym{NCO} can be used to
 retrieve @emph{any} file, including non-netCDF files, via @command{SSH},
 anonymous @acronym{FTP}, or @command{msrcp}.
-Often this method is quicker than using a browser, or running an @acronym{FTP}
-session from a shell window yourself.
-For example, say you want to obtain a @acronym{JPEG} file from a weather server.
+Often this method is quicker than using a browser, or running an
+@acronym{FTP} session from a shell window yourself.
+For example, say you want to obtain a @acronym{JPEG} file from a weather
+server. 
 @example
 ncks -p ftp://weather.edu/pub/pix/jpeg -l ./ storm.jpg
 @end example
 @noindent
-In this example, @command{ncks} automatically performs an anonymous @acronym{FTP}
-login to the remote machine and retrieves the specified file.
+In this example, @command{ncks} automatically performs an anonymous
+@acronym{FTP} login to the remote machine and retrieves the specified
+file. 
 When @command{ncks} attempts to read the local copy of @file{storm.jpg}
 as a netCDF file, it fails and exits, leaving  @file{storm.jpg} in
 the current directory.
@@ -1716,15 +1762,15 @@ Short options: @samp{-R}@*
 Long options: @samp{--retain}@*
 @end cartouche
 In order to conserve local file system space, files retrieved from
-remote locations are automatically deleted from the local file system
+remote locations are automatically deleted from the local file system 
 once they have been processed.
-Many @acronym{NCO} operators were constructed to work with numerous large (e.g.,
-200 Mb) files. 
+Many @acronym{NCO} operators were constructed to work with numerous
+large (e.g., @w{200 MB}) files. 
 Retrieval of multiple files from remote locations is done serially. 
 Each file is retrieved, processed, then deleted before the cycle
 repeats.  
 In cases where it is useful to keep the remotely-retrieved files on the
-local file system after processing, the automatic removal feature may be
+local file system after processing, the automatic removal feature may be 
 disabled by specifying @samp{-R} on the command line.
 
 @node Variable subsetting, Coordinate variables, File retention, Common features
@@ -1783,8 +1829,8 @@ in the @var{output-file} will also appear in the @var{output-file}, even
 if they are not explicitly specified, e.g., with the @samp{-v} switch.
 Thus variables with a latitude coordinate @code{lat} always carry the
 values of @code{lat} with them into the @var{output-file}.
-This feature can be disabled with @samp{-C}, which causes @acronym{NCO} to not
-automatically add coordinates to the variables appearing in the
+This feature can be disabled with @samp{-C}, which causes @acronym{NCO}
+to not automatically add coordinates to the variables appearing in the
 @var{output-file}. 
 However, using @samp{-C} does not preclude the user from including some
 coordinates in the output files simply by explicitly selecting the
@@ -1815,7 +1861,7 @@ The @samp{-F} switch tells @acronym{NCO} to switch to reading and
 writing with Fortran index conventions.
 In Fortran, indices begin counting @w{from 1} (rather @w{than 0}), and
 dimensions are ordered from fastest varying to slowest varying.
-Consider a file @file{85.nc} containing 12 months of data in the record
+Consider a file @file{85.nc} containing 12 months of data in the record 
 dimension @code{time}.
 The following hyperslab operations produce identical results, a
 June-July-August average of the data:
@@ -1860,7 +1906,7 @@ The bounds of the hyperslab to be extracted are specified by the
 associated @var{min} and @var{max} values. 
 A half-open range is specified by omitting either the @var{min} or
 @var{max} parameter but including the separating comma. 
-The unspecified limit is interpreted as the maximum or minimum value in
+The unspecified limit is interpreted as the maximum or minimum value in 
 the unspecified direction.  
 A cross-section at a specific coordinate is extracted by specifying only
 the @var{min} limit and omitting a trailing comma. 
@@ -1879,7 +1925,7 @@ The coordinate value for a cross-section is the coordinate-variable
 value closest to the specified value and must lie within the range or
 coordinate-variable values. 
 
-Coordinate values should be specified using real notation with a decimal
+Coordinate values should be specified using real notation with a decimal 
 point required in the value, whereas dimension indices are specified
 using integer notation without a decimal point. 
 This convention serves only to differentiate coordinate values from
@@ -1890,7 +1936,7 @@ values (with decimal points) or dimension indices (no decimal points).
 
 @cindex @code{NC_BYTE}
 @cindex @code{NC_CHAR}
-User-specified coordinate limits are promoted to double precision values
+User-specified coordinate limits are promoted to double precision values 
 while searching for the indices which bracket the range. 
 Thus, hyperslabs on coordinates of type @code{NC_BYTE} and
 @code{NC_CHAR} are computed numerically rather than lexically, so the
@@ -1947,12 +1993,12 @@ which is specified by chaining together hyperslab commands, i.e.,
 This allows multislabs to overcome some restraints which limit
 hyperslabs.
 
-A single @kbd{-d} option can only specify a contiguous and/or regularly
+A single @kbd{-d} option can only specify a contiguous and/or regularly 
 spaced multi-dimensional array of data. 
 Multislabs are constructed from multiple @kbd{-d} options and may
 therefore have non-regularly spaced arrays.
 For example, suppose it is desired to operate on all longitudes
-between from 10.0--20.0 and from 80.0--90.0 degrees.
+from 10.0 to 20.0 and from 80.0 to 90.0 degrees.
 The combined range of longitudes is not selectable in a single 
 hyperslab specfication of the form 
 @samp{-d @var{lon},@var{min},@var{max}} or  
@@ -2338,140 +2384,154 @@ See the printed manual for complete documentation.
 @end ifinfo
 
 @tex
-The masked, weighted average of a variable $x$ can be generally
+The masked, weighted average of a variable $\xxx$ can be generally
 represented as
 $$
-\bar x_{j} = {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x_{i} \over \sum_{i =
-1}^{i = N} \mu_{i} m_{i} w_{i}} 
+\bar \xxx_{\jjj} = {\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx}
+\mskflg_{\idx} \wgt_{\idx} \xxx_{\idx} \over
+\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx} \mskflg_{\idx} \wgt_{\idx}}  
 $$
-where $\bar x_{j}$ is the $j$'th element of the output hyperslab, $x_{i}$ is
-the $i$'th element of the input hyperslab, $\mu_{i}$ is~1 unless $x_{i}$
-equals the missing value, $m_{i}$ is~1 unless $x_{i}$ is masked, and $w_{i}$
-is the weight.  
+where $\bar \xxx_{\jjj}$ is the $\jjj$'th element of the output
+hyperslab, $\xxx_{\idx}$ is the $\idx$'th element of the input
+hyperslab, $\mssflg_{\idx}$ is~1 unless $\xxx_{\idx}$ equals the missing  
+value, $\mskflg_{\idx}$ is~1 unless $\xxx_{\idx}$ is masked, and
+$\wgt_{\idx}$ is the weight.  
 This formiddable looking formula represents a simple weighted average
 whose bells and whistles are all explained below. 
-It is not early to note, however, that when $\mu_{i} = m_{i} = w_{i} = 1$, the
+It is not early to note, however, that when 
+$\mssflg_{\idx} = \mskflg_{\idx} = \wgt_{\idx} = 1$, the 
 generic averaging expression above reduces to a simple arithmetic
-average. 
-Furthermore, $m_{i} = w_{i} = 1$ for all operators besides @command{ncwa}, but
-these variables are included in the discussion below for completeness
-and for possible future use in other operators.
+average.  
+Furthermore, $\mskflg_{\idx} = \wgt_{\idx} = 1$ for all operators
+besides @command{ncwa}, but these variables are included in the
+discussion below for completeness and for possible future use in other 
+operators. 
 
-The size $J$ of the output hyperslab for a given variable is the product
-of all the dimensions of the input variable which are not averaged over.
-The size $N$ of the input hyperslab contributing to each $\bar x_{j}$ is
-simply the product of the sizes of all dimensions which are averaged
-over (i.e., dimensions specified with @samp{-a}). 
-Thus $N$ is the number of input elements which @emph{potentially}
+The size $\outnbr$ of the output hyperslab for a given variable is the
+product of all the dimensions of the input variable which are not
+averaged over. 
+The size $\lmnnbr$ of the input hyperslab contributing to each 
+$\bar \xxx_{\jjj}$ is simply the product of the sizes of all dimensions
+which are averaged over (i.e., dimensions specified with @samp{-a}).  
+Thus $\lmnnbr$ is the number of input elements which @emph{potentially} 
 contribute to each output element.
-An input element $x_{i}$ contributes to the output element $x_{j}$ except
-in two conditions:  
+An input element $\xxx_{\idx}$ contributes to the output element
+$\xxx_{\jjj}$ except in two conditions:  
 @cindex missing values
 @enumerate
-@item $x_{i}$ equals the @var{missing value} (@pxref{Missing values}) for the
-variable. 
-@item $x_{i}$ is located at a point where the masking condition
+@item $\xxx_{\idx}$ equals the @var{missing value} (@pxref{Missing
+values}) for the variable. 
+@item $\xxx_{\idx}$ is located at a point where the masking condition 
 (@pxref{Masking condition}) is false.
 @end enumerate
-Points $x_{i}$ in either of these two categories do not contribute to
-$x_{j}$, they are ignored.
+Points $\xxx_{\idx}$ in either of these two categories do not contribute 
+to $\xxx_{\jjj}$, they are ignored.
 We now define these criteria more rigorously.
 
-Each~$x_{i}$ has an associated Boolean weight~$\mu_{i}$ whose value is~0
-or~1 (false or true). 
-The value of~$\mu_{i}$ is~1 (true) unless $x_{i}$ equals the @var{missing
-value} (@pxref{Missing values}) for the variable.
-Thus, for a variable with no @code{missing_value} attribute, $\mu_{i}$~is
-always~1.
-All @acronym{NCO} arithmetic operators (@command{ncdiff}, @command{ncra},
-@command{ncea}, @command{ncflint}, @command{ncwa}) treat missing values
-analogously. 
+Each~$\xxx_{\idx}$ has an associated Boolean weight~$\mssflg_{\idx}$
+whose value is~0 or~1 (false or true). 
+The value of~$\mssflg_{\idx}$ is~1 (true) unless $\xxx_{\idx}$ equals
+the @var{missing value} (@pxref{Missing values}) for the variable. 
+Thus, for a variable with no @code{missing_value} attribute,
+$\mssflg_{\idx}$~is always~1.
+All @acronym{NCO} arithmetic operators (@command{ncdiff},
+@command{ncra}, @command{ncea}, @command{ncflint}, @command{ncwa}) treat  
+missing values analogously. 
 
 Besides (weighted) averaging, @command{ncwa}, @command{ncra}, and
 @command{ncea} also compute some common non-linear operations which may
 be specified with the @samp{-y} switch (@pxref{Operation Types}).
 The other rank-reducing operations are simple variations of the generic
 weighted mean described above.
-The total value of~$x$ (@code{-y ttl}) is 
+The total value of~$\xxx$ (@code{-y ttl}) is 
 $$
-\bar x_{j} = \sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x_{i} 
+\bar \xxx_{\jjj} = \sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx}
+\mskflg_{\idx} \wgt_{\idx} \xxx_{\idx}  
 $$
 Note that the total is the same as the numerator of the mean
-of~$x$, and may also be obtained in @command{ncwa} by using the @samp{-N}
-switch (@pxref{ncwa netCDF Weighted Averager}).
+of~$\xxx$, and may also be obtained in @command{ncwa} by using the
+@samp{-N} switch (@pxref{ncwa netCDF Weighted Averager}).
 
-The minimum value of~$x$ (@code{-y min}) is 
+The minimum value of~$\xxx$ (@code{-y min}) is 
 $$
-\bar x_{j} = \min [ \mu_1 m_1 w_1 x_1, \mu_2 m_2 w_2 x_2, \ldots, \mu_N
-m_N w_N x_N ] 
+\bar \xxx_{\jjj} = \min [ \mssflg_{1} \mskflg_{1} \wgt_{1} \xxx_{1},
+\mssflg_{2} \mskflg_{2} \wgt_{2} \xxx_{2}, \ldots, \mssflg_{\lmnnbr} 
+\mskflg_{\lmnnbr} \wgt_{\lmnnbr} \xxx_{\lmnnbr} ] 
 $$
-Analogously, the maximum value of~$x$ (@code{-y max}) is 
+Analogously, the maximum value of~$\xxx$ (@code{-y max}) is 
 $$
-\bar x_{j} = \max [ \mu_1 m_1 w_1 x_1, \mu_2 m_2 w_2 x_2, \ldots, \mu_N
-m_N w_N x_N ] 
+\bar \xxx_{\jjj} = \max [ \mssflg_{1} \mskflg_{1} \wgt_{1} \xxx_{1},
+\mssflg_{2} \mskflg_{2} \wgt_{2} \xxx_{2}, \ldots, \mssflg_{\lmnnbr} 
+\mskflg_{\lmnnbr} \wgt_{\lmnnbr} \xxx_{\lmnnbr} ] 
 $$
 Thus the minima and maxima are determined after any weights are applied.
 
-The square of the mean value of~$x$ (@code{-y sqravg}) is 
+The square of the mean value of~$\xxx$ (@code{-y sqravg}) is 
 $$
-\bar x_{j} = \left( {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x_{i} \over \sum_{i =
-1}^{i = N} \mu_{i} m_{i} w_{i}} \right)^2
+\bar \xxx_{\jjj} = \left( {\sum_{\idx=1}^{\idx=\lmnnbr}
+\mssflg_{\idx} \mskflg_{\idx} \wgt_{\idx} \xxx_{\idx} \over
+\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx} \mskflg_{\idx} \wgt_{\idx}} 
+\right)^{2}    
 $$
-The mean of the sum of squares of~$x$ (@code{-y avgsqr}) is 
+The mean of the sum of squares of~$\xxx$ (@code{-y avgsqr}) is 
 $$
-\bar x_{j} = {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x^2_{i} \over \sum_{i =
-1}^{i = N} \mu_{i} m_{i} w_{i}}
+\bar \xxx_{\jjj} = {\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx}
+\mskflg_{\idx} \wgt_{\idx} \xxx^{2}_{\idx} \over
+\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx} \mskflg_{\idx} \wgt_{\idx}} 
 $$
-If $x$ represents a deviation from the mean of another variable, $x_{i} =
-y_{i} - \bar{y}$ (possibly created by @command{ncdiff} in a previous step),
-then applying @code{avgsqr} to $x$ computes the approximate variance of
-$y$. 
-Computing the true variance of~$y$ requires subtracting~1 from the
+If $\xxx$ represents a deviation from the mean of another variable,
+$\xxx_{\idx} = \yyy_{\idx} - \bar{\yyy}$ (possibly created by
+@command{ncdiff} in a previous step), then applying @code{avgsqr} to
+$\xxx$ computes the approximate variance of $\yyy$. 
+Computing the true variance of~$\yyy$ requires subtracting~1 from the
 denominator, discussed below.
 For a large sample size however, the two results will be nearly
 indistinguishable. 
 
-The root mean square of~$x$ (@code{-y rms}) is 
+The root mean square of~$\xxx$ (@code{-y rms}) is 
 $$
-\bar x_{j} = \sqrt{ {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x^2_{i} \over \sum_{i =
-1}^{i = N} \mu_{i} m_{i} w_{i}} }
+\bar \xxx_{\jjj} = \sqrt{ {\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx}
+\mskflg_{\idx} \wgt_{\idx} x^{2}_{\idx} \over
+\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx} \mskflg_{\idx} \wgt_{\idx}}} 
 $$
 Thus @code{rms} simply computes the squareroot of the quantity computed
 by @code{avgsqr}.
 
-The root mean square of~$x$ with standard-deviation-like normalization
-(@code{-y rmssdn}) is implemented as follows.
+The root mean square of~$\xxx$ with standard-deviation-like
+normalization (@code{-y rmssdn}) is implemented as follows.
 When weights are not specified, this function is the same as the root
-mean square of~$x$ except one is subtracted from the sum in the
+mean square of~$\xxx$ except one is subtracted from the sum in the
 denominator 
 $$
-\bar x_{j} = \sqrt{ {\sum_{i = 1}^{i = N} \mu_{i} m_{i} x^2_{i} \over -1 + 
-\sum_{i = 1}^{i = N} \mu_{i} m_{i}} }
+\bar \xxx_{\jjj} = \sqrt{ {\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx} 
+\mskflg_{\idx} x^{2}_{\idx} \over -1 + \sum_{\idx=1}^{\idx=\lmnnbr}
+\mssflg_{\idx} \mskflg_{\idx}} } 
 $$
-If $x$ represents the deviation from the mean of another variable, 
-$x_{i} = y_{i} - \bar{y}$, then applying @code{rmssdn} to $x$ computes the
-standard deviation of~$y$.
+If $\xxx$ represents the deviation from the mean of another variable, 
+$\xxx_{\idx} = \yyy_{\idx} - \bar{\yyy}$, then applying @code{rmssdn} to
+$\xxx$ computes the standard deviation of~$\yyy$.
 In this case the $-1$ in the denominator compensates for the degree of
-freedom already used in computing $\bar{y}$ in the numerator.
+freedom already used in computing $\bar{\yyy}$ in the numerator.
 Consult a statistics book for more details.
 
 When weights are specified it is unclear how to compensate for this
 extra degree of freedom.
-Weighting the numerator and denominator of the above by $w_{i}$ and
-subtracting one from the denominator is only appropriate when all the  
-weights are~1.0.
+Weighting the numerator and denominator of the above by $\wgt_{\idx}$
+and subtracting one from the denominator is only appropriate when all
+the weights are~1.0.
 When the weights are arbitrary (e.g., Gaussian weights), subtracting one 
 from the sum in the denominator does not necessarily remove one degree
 of freedom. 
 Therefore when @code{-y rmssdn} is requested and weights are specified,
 @command{ncwa} actually implements the @code{rms} procedure.
-@command{ncea} and @command{ncra}, which do not allow weights to be specified,
-always implement the @code{rmssdn} procedure when asked.
+@command{ncea} and @command{ncra}, which do not allow weights to be
+specified, always implement the @code{rmssdn} procedure when asked.
 
-The square root of the mean of~$x$ (@code{-y sqrt}) is 
+The square root of the mean of~$\xxx$ (@code{-y sqrt}) is 
 $$
-\bar x_{j} = \sqrt{ {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x_{i} \over \sum_{i =
-1}^{i = N} \mu_{i} m_{i} w_{i}} }
+\bar \xxx_{\jjj} = \sqrt{ {\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx}
+\mskflg_{\idx} \wgt_{\idx} \xxx_{\idx} \over
+\sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx} \mskflg_{\idx} \wgt_{\idx}}}  
 $$
 @end tex
 The definitions of some of these operations are not universally useful.
@@ -2479,8 +2539,8 @@ Mostly they were chosen to facilitate standard statistical
 computations within the @acronym{NCO} framework.
 We are open to redefining and or adding to the above. 
 If you are interested in having other statistical quantities
-defined in @acronym{NCO} please contact the @acronym{NCO} project (@pxref{Help and Bug
-reports}).  
+defined in @acronym{NCO} please contact the @acronym{NCO} project
+(@pxref{Help and Bug reports}).  
 
 @noindent
 EXAMPLES
@@ -2664,16 +2724,17 @@ and finally writes the result to disk.
 The result written to disk may not be what you expect, because of
 incommensurate ranges represented by different types, and because of
 (lack of) rounding.
-First, continuing the example given above, the average (e.g., @samp{-y avg})
-of @code{17000s} and @code{17000s} is written to disk as @code{17000s}.
-The type conversion feature of @acronym{NCO} makes this possible since the
-arithmetic and intermediate values are stored as @code{NC_DOUBLE}s,
+First, continuing the example given above, the average (e.g., 
+@samp{-y avg}) of @code{17000s} and @code{17000s} is written to disk as
+@code{17000s}. 
+The type conversion feature of @acronym{NCO} makes this possible since
+the arithmetic and intermediate values are stored as @code{NC_DOUBLE}s,
 i.e., @code{34000.0d} and only the final result must be represented
 as an @code{NC_SHORT}.
-Without the type conversion feature of @acronym{NCO}, the average would have
-been garbage (albeit predictable garbage near @code{-15768s}). 
+Without the type conversion feature of @acronym{NCO}, the average would
+have been garbage (albeit predictable garbage near @code{-15768s}). 
 Similarly, the total (e.g., @samp{-y ttl}) of @code{17000s} and
-@code{17000s} written to disk is garbage (actually @code{-31536s}) since
+@code{17000s} written to disk is garbage (actually @code{-31536s}) since 
 the final result (the true total) of @math{34000} is outside the range
 of type @code{NC_SHORT}.  
 
@@ -2869,11 +2930,12 @@ processed, you must use @command{ncrename} to rename them first.
 Availability: @command{ncrcat}@*
 Short options: None@*
 @end cartouche
-@command{ncrcat} has been programmed to recognize @acronym{ARM} (Atmospheric
-Radiation Measurement Program) data files.
-If you do not work with @acronym{ARM} data then you may skip this section.
-@acronym{ARM} data files store time information in two variables, a scalar,
-@code{base_time}, and a record variable, @code{time_offset}.
+@command{ncrcat} has been programmed to recognize @acronym{ARM}
+(Atmospheric Radiation Measurement Program) data files.
+If you do not work with @acronym{ARM} data then you may skip this
+section. 
+@acronym{ARM} data files store time information in two variables, a
+scalar, @code{base_time}, and a record variable, @code{time_offset}.
 Subtle but serious problems can arise when these type of files are
 just blindly concatenated.
 Therefore @command{ncrcat} has been specially programmed to be able to
@@ -3392,35 +3454,36 @@ argument, although a trailing semi-colon @samp{;} is always allowed.
 However, semi-colons are required to separate individual assignment
 statements chained together as a single @samp{-s} argument. 
 
-This example uses @code{ncap} to compute the covariance of two variables.
-Let the variables @var{u} and @var{v} be the horizontal wind components.
+This example uses @code{ncap} to compute the covariance of two
+variables. 
+Let the variables @var{@wndznl{}} and @var{@wndmrd{}} be the horizontal 
+wind components. 
 @cindex covariance
-The @dfn{covariance} of @var{u} and @var{v} is defined as the time mean
-product of the deviations of @var{u} and @var{v} from their respective
-time means.
+The @dfn{covariance} of @var{@wndznl{}} and @var{@wndmrd{}} is defined
+as the time mean product of the deviations of @var{@wndznl{}} and
+@var{@wndmrd{}} from their respective time means.
 Symbolically, the covariance 
 @set flg
 @tex
-\def\dfr{d} % [frc] Math differential
-\def\me{e} % [frc] Math e
-\def\mi{i} % [frc] Math i
-\def\mpi{\pi} % [frc] Math pi
-\def\tm{t} % [s] Time
-\def\xxx{x} % [ltr] x
-$[u^{\prime} v^{\prime}] = [uv]-[u][v]$ where $[\xxx]$ denotes the 
-time-average of~$\xxx$,
-$[x] \equiv {1 \over \tau} \int_{\tm=0}^{\tm=\tau}
-\xxx(\tm) \,\dfr\tm$ and $\xxx^{\prime}$ @clear flg 
+$[\wndznl^{\prime} \wndmrd^{\prime}] =
+[\wndznl\wndmrd]-[\wndznl][\wndmrd]$ where $[\xxx]$ denotes the
+time-average of~$\xxx$, 
+$[\xxx] \equiv {1 \over \tau} \int_{\tm=0}^{\tm=\tau} \xxx(\tm) \,\dfr\tm$
+and $\xxx^{\prime}$ 
+@clear flg 
 @end tex
 @ifinfo
-@math{[@var{u'v'}] = [@var{uv}]-[@var{u}][@var{v}]} where @math{[@var{x}]}
-denotes the time-average of @math{@var{x}} and @math{@var{x'}}
+@math{[@var{@wndznl{}'@wndmrd{}'}] =
+[@var{@wndznl{}@wndmrd{}}]-[@var{@wndznl{}}][@var{@wndmrd{}}]} 
+where @math{[@var{@xxx{}}]} denotes the time-average of
+@math{@var{@xxx{}}} and @math{@var{@xxx{}'}} 
 @clear flg
 @end ifinfo
 @ifset flg
 @c texi2html does not like @math{}
-[@var{u'v'}] = [@var{uv}]-[@var{u}][@var{v}] where [x] denotes the
-time-average of @var{x} and @var{x'}
+[@var{@wndznl{}'@wndmrd{}'}] =
+[@var{@wndznl{}@wndmrd{}}]-[@var{@wndznl{}}][@var{@wndmrd{}}] where
+[@xxx{}] denotes the time-average of @var{@xxx{}} and @var{@xxx{}'}
 @clear flg
 @end ifset
 denotes the deviation from the time-mean. 
@@ -4435,7 +4498,8 @@ variables.
 Specifying @code{-a} results in the variables being extracted, printed,
 and written to disk in the order in which they were saved in the input
 file.
-Thus @code{-a} retains the original ordering of the variables.  Also @samp{--alphabetize}.
+Thus @code{-a} retains the original ordering of the variables.
+Also @samp{--alphabetize}.
 
 @cindex binary format
 @cindex @code{-B}
@@ -4443,12 +4507,16 @@ Thus @code{-a} retains the original ordering of the variables.  Also @samp{--alp
 Activate native machine binary output writing to the default binary
 file, @file{ncks.bnr}. 
 The @code{-B} switch is redundant when the @code{-b} @file{file} 
-option is specified, and native binary output will be directed to the binary file @file{file}. Also @samp{--binary}.
+option is specified, and native binary output will be directed to the
+binary file @file{file}.
+Also @samp{--binary}.
 Writing packed variables in binary format is not supported.
 
 @cindex @code{-b}
 @item -b @file{file}
-Activate native machine binary output writing to binary file @file{file}.  Also @samp{--binary}.
+Activate native machine binary output writing to binary file
+@file{file}.
+Also @samp{--binary}.
 Writing packed variables in binary format is not supported.
 
 @cindex stride
@@ -4510,13 +4578,15 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 @cindex @code{-M}
 @item -M
 Print to screen the global metadata describing the file.
-This includes file summary information and global attributes. Also @samp{--Meta}.
+This includes file summary information and global attributes.
+Also @samp{--Meta}.
 
 @cindex @code{-m}
 @item -m
 Print variable metadata to screen (similar to @code{ncdump -h}). 
 This displays all metadata pertaining to each variable, one variable
-at a time. Also @samp{--meta}.
+at a time.
+Also @samp{--meta}.
 
 @cindex @code{-q}
 @item -q 
@@ -4524,7 +4594,8 @@ Toggle printing of dimension indices and coordinate values when printing
 arrays. 
 The name of each variable will appear flush left in the output.
 This is useful when trying to locate specific variables when displaying
-many variables with different dimensions.  Also @samp{--quiet}.
+many variables with different dimensions.
+Also @samp{--quiet}.
 
 @cindex @code{-s}
 @cindex @code{--string}
@@ -4541,7 +4612,8 @@ Equivalently @samp{--string}, @samp{--format}, or @samp{--fmt}.
 @cindex @code{--units}
 @item -u 
 Accompany the printing of a variable's values with its @code{units}
-attribute, if any.  Also @samp{--units}.
+attribute, if any.
+Also @samp{--units}.
 
 @end table
 
@@ -5124,16 +5196,17 @@ is given above (@pxref{Operation Types}).
 @subsection Masking condition
 @cindex masking condition
 @tex
-Each $x_{i}$ also has an associated masking weight~$m_{i}$ whose value is~0
-or~1 (false or true).
-The value of~$m_{i}$ is always~1 unless a @var{mask\_var} is specified (with
+Each $\xxx_{\idx}$ also has an associated masking
+weight~$\mskflg_{\idx}$ whose value is~0 or~1 (false or true).
+The value of~$\mskflg_{\idx}$ is always~1 unless a @var{mask\_var} is
+specified (with 
 @samp{-m}).
 As noted above, @var{mask\_var} is broadcast, if possible, to conform 
 to the variable being averaged.  
-In this case, the value of~$m_{i}$ depends on the @dfn{masking
+In this case, the value of~$\mskflg_{\idx}$ depends on the @dfn{masking
 condition}. 
-As expected, $m_{i} = 1$ when the masking condition is @dfn{true} and
-$m_{i} = 0$ otherwise.   
+As expected, $\mskflg_{\idx} = 1$ when the masking condition is
+@dfn{true} and $\mskflg_{\idx} = 0$ otherwise.   
 @end tex
 
 The masking condition has the syntax @math{@var{mask_var}}
@@ -5173,7 +5246,7 @@ Thus for the @var{i}'th element of the hyperslab to be averaged,
 the masking condition is 
 @set flg
 @tex
-{\it mask$_{i}$ condition mask\_val}.
+{\it mask$_{\idx}$ condition mask\_val}.
 @clear flg
 @end tex
 @ifinfo
@@ -5187,34 +5260,34 @@ the masking condition is
 @end ifset
 
 @tex
-Each~$x_{i}$ is also associated with an additional weight~$w_{i}$ whose
+Each~$\xxx_{\idx}$ is also associated with an additional weight~$\wgt_{\idx}$ whose
 value may be user-specified.
-The value of~$w_{i}$ is identically~1 unless the user specifies a
+The value of~$\wgt_{\idx}$ is identically~1 unless the user specifies a
 weighting variable @var{weight} (with @samp{-w}, @samp{--weight}, or
 @samp{--wgt\_var}). 
-In this case, the value of~$w_{i}$ is determined by the @var{weight}
+In this case, the value of~$\wgt_{\idx}$ is determined by the @var{weight}
 variable in the @var{input-file}. 
 As noted above, @var{weight} is broadcast, if possible, to conform 
 to the variable being averaged.  
 
-$M$ is the number of input elements $x_{i}$ which actually
-contribute to output element $x_{j}$.
-$M$ is also known as the @dfn{tally} and is defined as 
+$\tllnbr$ is the number of input elements $\xxx_{\idx}$ which actually
+contribute to output element $\xxx_{\jjj}$.
+$\tllnbr$ is also known as the @dfn{tally} and is defined as 
 $$
-M = \sum_{i=1}^{i=N} \mu_{i} m_{i} 
+\tllnbr = \sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx} \mskflg_{\idx} 
 $$
-$M$ is identical to the denominator of the generic averaging expression
-except for the omission of the weight $w_{i}$.
-Thus $M = N$ whenever no input points are missing values or are masked. 
+$\tllnbr$ is identical to the denominator of the generic averaging expression
+except for the omission of the weight $\wgt_{\idx}$.
+Thus $\tllnbr = \lmnnbr$ whenever no input points are missing values or are masked. 
 Whether an element contributes to the output, and thus increments
-$M$ by one, has more to do with the above two criteria (missing value
+$\tllnbr$ by one, has more to do with the above two criteria (missing value
 and masking) than with the numeric value of the element per se.
-For example, $x_{i}=0.0$ does contribute to $x_{j}$ (assuming the
-@code{missing_value} attribute is not 0.0 and location $i$ is not
+For example, $\xxx_{\idx}=0.0$ does contribute to $\xxx_{\jjj}$ (assuming the
+@code{missing_value} attribute is not~0.0 and location $\idx$ is not
 masked). 
-The value $x_{i}=0.0$ will not change the numerator of the generic
+The value $\xxx_{\idx}=0.0$ will not change the numerator of the generic
 averaging expression, but it will change the denominator (unless its
-weight $w_{i}=0.0$ as well).
+weight $\wgt_{\idx}=0.0$ as well).
 @end tex
 
 @node Normalization,  , Masking condition, ncwa netCDF Weighted Averager

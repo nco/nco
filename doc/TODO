@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.208 2003-03-17 03:16:38 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.209 2003-03-19 07:27:55 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -231,6 +231,7 @@ ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 251. Does ncks -B correctly write packed variables in binary format?
 252. Replace sections in nco.texi with new MSA output style
 253. Sift through numerous files in ~/nco/nco-2.7.3/debian, edit important ones
+254. Macros inside macros do not appear to work in info, e.g., @var{@wndznl{}}
 ************************************************************************
 End NCO Wish list
 ************************************************************************

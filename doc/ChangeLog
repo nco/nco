@@ -1,5 +1,11 @@
 2003-03-18  Charlie Zender  <zender@uci.edu>
 
+	* General honing of nco.texi
+
+	* Implemented TeX and TeXInfo macros to keep math variables
+	consistent with LaTeX sources. Mostly successful, except Info
+	does not like macros inside or macros, e.g., @var{@wndznl{}}
+
 	* cvs tag -c nco-2_7_2
 	Changes since nco-2_7_1: disk-based, MSA printing indices work
 
