@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.21 1999-05-11 08:01:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.22 1999-06-01 04:38:28 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2680,13 +2680,15 @@ Features common to many operators are described in
 @cindex sort alphabetically
 @cindex @code{-a}
 @item -a 
-Alphabetize extracted fields. 
-By default, the specified output variables are extracted in the order in
-which they are saved in the input file.
-Specifying @code{-a} results in the variables being extracted
-alphabetically. 
-This option makes long output lists easier to search for particular
+Do not alphabetize extracted fields. 
+By default, the specified output variables are extracted, printed, and
+written to disk in alphabetical order.
+This tends to make long output lists easier to search for particular
 variables. 
+Specifying @code{-a} results in the variables being extracted, printed,
+and written to disk in the order in which they were saved in the input
+file.
+Thus @code{-a} retains the original ordering of the variables.
 
 @cindex stride
 @item -d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]
@@ -2766,8 +2768,7 @@ two variables @code{time} and @code{pressure}.
 
 Create netCDF @file{out.nc} containing all variables from file @file{in.nc}. 
 Restrict the dimensions of these variables to a hyperslab. 
-Alphabetize (with @code{-a}) and print (with @code{-H}) the hyperslabs
-to the screen for good measure.  
+Print (with @code{-H}) the hyperslabs to the screen for good measure.  
 The specified hyperslab is: the fifth value in dimension @code{time}; the
 half-open range @math{@var{lat} > 0.} in coordinate @code{lat}; the
 half-open range @math{@var{lon} < 330.} in coordinate @code{lon}; the
@@ -2777,7 +2778,7 @@ Note that limits applied to coordinate values are specified with a
 decimal point, and limits applied to dimension indices do not have a
 decimal point (@xref{Hyperslabs}): 
 @example
-ncks -a -H -d time,5 -d lat,,0. -d lon,330., -d band,.3,.5 
+ncks -H -d time,5 -d lat,,0. -d lon,330., -d band,.3,.5 
 -d lev,1000. in.nc out.nc 
 @end example
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.8 1999-05-13 03:06:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.9 1999-06-01 04:38:29 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -74,8 +74,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char RCS_Id[]="$Id: ncks.c,v 1.8 1999-05-13 03:06:03 zender Exp $"; 
-  char RCS_Revision[]="$Revision: 1.8 $";
+  char RCS_Id[]="$Id: ncks.c,v 1.9 1999-06-01 04:38:29 zender Exp $"; 
+  char RCS_Revision[]="$Revision: 1.9 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -221,7 +221,7 @@ main(int argc,char **argv)
   /* Make sure all coordinates associated with each of the variables to be extracted is also on the list */ 
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
-  /* Finally, heapsort the extraction list by variable ID for fastest I/O */ 
+  /* Heapsort extraction list alphabetically or by variable ID */ 
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,ALPHABETIZE_OUTPUT);
     
   /* We now have the final list of variables to extract. Phew. */
