@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.13 2000-07-06 16:32:33 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.14 2000-07-11 18:21:34 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -46,9 +46,20 @@ make NETCDF_LIB=/home/groups/nco/lib/LINUX NETCDF_INC=/home/groups/nco/include
 To make a new release of NCO on SourceForge:
 ncftpput -V download.sourceforge.net /incoming nco-1.1.48.tar.gz
 
-Mailing lists:
-List: nco-announce@lists.sourceforge.net
-Administrations: http://lists.sourceforge.net/mailman/admin/nco-announce
-Administrative password: 37c16d97c238be00
-Subscriber info: Send message with "help" in it to nco-announce-request@lists.sourceforge.net
+Mailing lists nco-announce:
+Web page for users:
+http://lists.sourceforge.net/mailman/listinfo/nco-announce
+
+Address for posting:
+nco-announce@lists.sourceforge.net
+
+Subscriber info, Send message with "help" in it to 
+nco-announce-request@lists.sourceforge.net
+
+Subscription page for changing password, options, etc:
+http://lists.sourceforge.net/mailman/options/nco-announce/zender@uci.edu
+
+List administration:
+http://lists.sourceforge.net/mailman/admin/nco-announce
+
 

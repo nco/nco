@@ -2,7 +2,7 @@
 
 // Usage:
 // ncgen -b -o in.nc in.cdl
-// ncgen -b -o $HOME/nc/nco/data/in.nc $HOME/nc/nco/data/in.cdl
+// ncgen -b -o $HOME/nco/data/in.nc $HOME/nco/data/in.cdl
 // mswrite -t 365 in.nc /ZENDER/tmp/in.nc
 // mswrite -t 365 in.nc /ZENDER/tmp/h0001.nc
 // mswrite -t 365 in.nc /ZENDER/tmp/h0002.nc
@@ -18,7 +18,7 @@
 // variables, may affect the outcome of the test script nco_tst.sh.
 
 // NCL usage:
-// id_in=addfile("/home/zender/nc/nco/data/in.nc","r")
+// id_in=addfile("/home/zender/nco/data/in.nc","r")
 // print(id_in)
 // list_filevars(id_in)
 
@@ -29,7 +29,7 @@ variables:
 	:convention = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.16 2000-04-05 21:41:51 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.17 2000-07-11 18:21:34 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);

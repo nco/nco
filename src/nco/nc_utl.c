@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.73 2000-07-09 19:06:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.74 2000-07-11 18:21:34 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -2806,10 +2806,10 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim)
 
   /* NB: var_avg() overwrites the contents, if any, of the tally array with the number of valid averaging operations */ 
 
-  /* Their are three variables to keep track of in this routine, their abbreviations are:
-     var: the input variable
-     avg: a hyperslab of var that gets averaged
-     fix: the output (averaged) variable
+  /* There are three variables to keep track of in this routine, their abbreviations are:
+     var: Input variable (already hyperslabbed)
+     avg: A contiguous arrangement of all elements of var that contribute to a single element of fix (a quasi-hyperslab)
+     fix: Output (averaged) variable
    */ 
 
   dmn_sct **dmn_avg;
@@ -3022,7 +3022,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim)
     
     /* Input data are now sorted and stored (in avg_val) in blocks (of length avg_sz)
        in the same order as the blocks' average values will appear in the output buffer. 
-       An averaging routine can take advantage of this by casting avg-val to a two dimensional
+       An averaging routine can take advantage of this by casting avg_val to a two dimensional
        variable and averaging over the inner dimension. 
        This is where the tally array is actually set. */ 
     (void)var_avg_reduce(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
@@ -3601,9 +3601,23 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
   ptr_unn op2: O values resulting from averaging each block of input operand
  */ 
 {
-  /* Routine to average values in each contiguous block of first operand and place
-     result in corresponding element in second operand. Operands are assumed to have
-     conforming types, but not dimensions or sizes. */
+  /* Purpose: Perform arithmetic operation on values in each contiguous block of first operand and place
+     result in corresponding element in second operand. 
+     Currently the arithmetic operation performed is a simple summation of the elements in op1
+     Inpute operands are assumed to have conforming types, but not dimensions or sizes
+     var_avg_reduce() knows nothing about dimensions, it is purely a one dimensional array operator
+     acting serially on each element of the input buffer op1.
+     The calling rouine knows exactly how the rank of the output, op2, is reduced from the rank of the input
+     This routine currently only does summing rathering than averaging in order to remain flexible
+     It is expected that operations which require normalization, e.g., averaging, will call var_normalize() 
+     or var_divide() to divide the sum set in this routine by the tally set in this routine. */
+
+  /* There is a GNUC, a non-GNUC, and a Fortran block for each operation
+     GNUC: Utilize (non-ANSI compliant) GNUC ability to dynamically declare multi-dimensional 
+     buffers with variable dimensions.
+     This results in more elegent loop structure and, theoretically, in faster performance
+     non-GNUC: Fully ANSI compliant structure
+     Fortran: Same structure as GNUC blocks */
 
 #ifndef __GNUC__
   long blk_off;
