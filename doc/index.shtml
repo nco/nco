@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.165 2003-11-10 19:01:23 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.166 2003-11-14 16:55:22 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -205,6 +205,7 @@ Tarballs are only uploaded to SourceForge, and RPMs are only
 generated, for those releases marked &ldquo;Packaged&rdquo;.
 Retrieve these versions <a name="#Download">using CVS</a> or from 
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
+<li><b>NCO 2.8.3</b> (<i>in progress</i>), Remove scary packing warnings
 <li><b>NCO 2.8.2</b>, <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly, improve error diagnostics
 <li><b>NCO 2.8.1</b>, <a href="./nco.html#wildcarding">&ldquo;Variable wildcarding&rdquo;</a>&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators
 <li><b>NCO 2.8.0</b>, New &ldquo;binary&rdquo; operator <a href="./nco.html#ncbo"><tt>ncbo</tt></a>, obsoletes <tt>ncdiff</tt>, Debian integration
