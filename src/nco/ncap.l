@@ -1,5 +1,5 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.24 2002-01-17 08:45:35 zender Exp $ -*-C-*- */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.25 2002-01-19 20:05:09 hmb Exp $ -*-C-*- */
 
   /* Purpose: Token generator for ncap parser */
 
@@ -325,7 +325,7 @@ pow/[ ]*\(     {return POWER;}
   
 } /* End attributes. Phew! */
 
-[A-Za-z_][A-Za-z0-9_]*\[([A-Za-z_][A-Za-z0-9_]*,?)*\] {
+[A-Za-z_][A-Za-z0-9_]*[ ]*\[[^\]\n]*[\]\n] {
   /* Recognize subscripted (hyperslabbed) variables
      Hyperslabbed variables for now indicated with square brackets
      Using square brackets so development does not break functions
