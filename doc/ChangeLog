@@ -1,5 +1,7 @@
 2005-01-09  Charlie Zender  <zender@uci.edu>
 
+	* Remove -Wmissing-prototypes from g++ options
+
 	* Fixed g++-3.4.2 prototype warnings with nco_c++
 
 	* Added return to about five void functions to squelch erroneous
