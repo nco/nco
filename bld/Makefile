@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.263 2004-09-23 20:05:23 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.264 2004-11-05 23:56:26 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -119,7 +119,7 @@ endif # endif VRS_SNG
 # These tokens should not be altered by hand
 
 # NB: CPP_TKN is recursively expanded variable, define only when components are ready
-CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR
+CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}' -DNCO_ABORT_ON_ERROR -DNC_64BIT_OFFSET='0'
 
 ifeq (${DODS},Y)
 # Build NCO as DODS-enabled clients

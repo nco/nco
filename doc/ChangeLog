@@ -1,3 +1,12 @@
+2004-11-05  Charlie Zender <zender@dust.ps.uci.edu>
+
+	* Change test -e to more restrictive test -f in configure.in.
+	Makes sense and allows NEC SX to build.
+
+	* Add docs on how to build NCO >= 3.0.0 with netCDF < 3.6 to homepage
+
+	* Change so ncks in.nc out.nc does not print global metadata
+
 2004-10-16  Charlie Zender  <zender@uci.edu>
 
 	* Add -Z, --64-bit-offset switch for FORCE_64BIT_FST mode

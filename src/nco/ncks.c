@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.110 2004-10-16 21:32:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.111 2004-11-05 23:56:27 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -107,8 +107,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.110 2004-10-16 21:32:37 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.110 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.111 2004-11-05 23:56:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.111 $";
   const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -406,7 +406,7 @@ main(int argc,char **argv)
     if(PRN_VAR_DATA_TGL) PRN_VAR_DATA=False; else PRN_VAR_DATA=True;
     if(PRN_VAR_METADATA_TGL) PRN_VAR_METADATA=False; else PRN_VAR_METADATA=True;
     if(var_lst_in == NULL) PRN_GLB_METADATA=True;
-    if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=!PRN_VAR_METADATA;
+    if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=!PRN_GLB_METADATA;
   }else{
     if(PRN_VAR_DATA_TGL) PRN_VAR_DATA=True; else PRN_VAR_DATA=False;
     if(PRN_VAR_METADATA_TGL) PRN_VAR_METADATA=True; else PRN_VAR_METADATA=False;

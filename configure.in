@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.102 2004-09-04 05:22:20 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.103 2004-11-05 23:56:24 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -77,7 +77,7 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_LIBTOOL
 
-AM_CONDITIONAL(BUILD_YACC_SOURCE,[test "${YACC}" != "yacc" || test -e "src/nco/ncap_yacc.c"])
+AM_CONDITIONAL(BUILD_YACC_SOURCE,[test "${YACC}" != "yacc" || test -f "src/nco/ncap_yacc.c"])
 
 # Disable maintainer-only options in generated Makefiles unless flag
 # --enable-maintainer-mode is given at configure time
@@ -655,13 +655,13 @@ if test "${path_to_ncgen}"; then
     AC_MSG_NOTICE(Creating sample netCDF data files for self-tests)
     ${path_to_ncgen} -b -o data/in.nc data/in.cdl
     for fl in 85.nc 86.nc 87.nc 88.nc 89.nc h0001.nc h0002.nc h0003.nc; do
-	if (test -e data/${fl}); then
+	if (test -f data/${fl}); then
 	    printf ""
 	else
 	    ${LN_S} in.nc data/${fl};
 	fi
     done
-    if (test -e src/nco_c++/in.nc); then
+    if (test -f src/nco_c++/in.nc); then
 	printf ""
     else
 	${LN_S} ../../data/in.nc src/nco_c++/in.nc
