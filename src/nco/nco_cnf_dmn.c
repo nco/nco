@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.28 2004-08-03 17:06:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.29 2004-08-03 18:22:15 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -456,9 +456,11 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   dmn_out_nbr=var_out->nbr_dim;
 
   /* Initialize default correspondence and record dimension in case early return desired */
-  for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
-    dmn_idx_out_in[dmn_in_idx]=dmn_in_idx;
   if(var_out->is_rec_var) rec_dmn_nm_out=var_in->dim[0]->nm;
+  for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
+    dmn_idx_out_in[dmn_in_idx]=dmn_in_idx;
+    dmn_rvr_in[dmn_in_idx]=False;
+  } /* end if */
 
   /* Scalars and 1-D variables are never altered by dimension re-ordering */
   if(dmn_in_nbr <= 1) return rec_dmn_nm_out;
@@ -468,13 +470,15 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   
   /* Initialize dimension maps to missing_value to aid debugging */
   if(dbg_lvl_get() > 0){
+    for(dmn_rdr_idx=0;dmn_rdr_idx<dmn_rdr_nbr;dmn_rdr_idx++)
+      dmn_idx_rdr_in[dmn_rdr_idx]=idx_err;
+    for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
+      dmn_idx_out_in[dmn_out_idx]=idx_err;
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
-      dmn_idx_out_in[dmn_in_idx]=idx_err;
-      dmn_idx_in_rdr[dmn_in_idx]=idx_err;
       dmn_idx_in_shr[dmn_in_idx]=idx_err;
-      dmn_idx_rdr_in[dmn_in_idx]=idx_err;
-      dmn_idx_shr_rdr[dmn_in_idx]=idx_err;
-      dmn_idx_shr_in[dmn_in_idx]=idx_err;
+      dmn_idx_in_rdr[dmn_in_idx]=idx_err;
+      dmn_idx_shr_rdr[dmn_in_idx]=idx_err; /* fxm: initialize up to dmn_shr_nbr */
+      dmn_idx_shr_in[dmn_in_idx]=idx_err; /* fxm: initialize up to dmn_shr_nbr */
     } /* end loop over dmn_in */
   } /* end if dbg */
   
@@ -496,6 +500,10 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     } /* end loop over dmn_in */
   } /* end loop over dmn_rdr */
   
+  /* Map permanent list of reversed dimensions to input variable */
+  for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++)
+    dmn_rvr_in[dmn_idx_shr_in[dmn_shr_idx]]=dmn_rvr_rdr[dmn_idx_shr_rdr[dmn_shr_idx]];
+
   if(dbg_lvl_get() > 3){
     (void)fprintf(stdout,"%s: DEBUG %s variable %s shares %d of its %d dimensions with the %d dimensions in the re-order list\n",prg_nm_get(),fnc_nm,var_in->nm,dmn_shr_nbr,var_in->nbr_dim,dmn_rdr_nbr);
     (void)fprintf(stdout,"shr_idx\tshr_in\tshr_rdr\n");

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.355 2004-08-03 17:06:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.356 2004-08-03 18:22:14 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -239,7 +239,8 @@ nco366. ncpdq: Use ncwa technique to put non-dmn_rdr variables in var_fix rather
 nco367. fix ncwa list collapse errors once bug found in pcpdq. Unfortunately ncwa uses dim_avg_lst after it is collapsed
 nco369. make sure strcmp is used for comparison, rather than strstr
 nco370. ncpdq man page for Debian
-nco371. 
+nco371. fix broken ncwa---due to nco_avg "fixes" made in last four days?
+nco372. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
