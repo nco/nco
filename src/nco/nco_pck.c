@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.16 2003-11-20 21:36:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.17 2003-11-22 01:26:48 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -112,7 +112,7 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
     var->typ_upk=scl_fct_typ; /* [enm] Type of variable when unpacked (expanded) (in memory) */
     if(is_rth_opr(prg_get()) && dbg_lvl_get() > 2){
       (void)fprintf(stderr,"%s: PACKING Variable %s is type %s packed into type %s\n",prg_nm_get(),var->nm,nco_typ_sng(var->typ_upk),nco_typ_sng(var->typ_dsk));
-      (void)fprintf(stderr,"%s: DEBUG Packed variables processed by all arithmetic operators are unpacked automatically, and then stored in the unpacked state. If you wish to repack them, use, e.g., ncap -s \"foo=pack(foo);\" in.nc in.nc\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: DEBUG Packed variables processed by all arithmetic operators are unpacked automatically, and then stored unpacke in the output file. If you wish to repack them in the output file, use, e.g., ncap -O -s \"foo=pack(foo);\" out.nc out.nc\n",prg_nm_get());
     } /* endif print packing information */
   }else{
     /* Variable is not packed since neither scale factor nor add_offset exist

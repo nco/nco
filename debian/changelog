@@ -1,3 +1,9 @@
+nco (2.8.3.5-1) unstable; urgency=low
+
+  * Special version halfway to 2.8.4 for ncap bugtesting
+
+ -- Charlie Zender <zender@ashes.ess.uci.edu>  Fri, 21 Nov 2003 14:47:14 -0800
+
 nco (2.8.3-1) unstable; urgency=low
 
   * Fix ncap memory leak, nco_tst.sh regressions
