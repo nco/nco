@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.109 2002-09-05 17:33:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.110 2002-09-05 17:58:07 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -255,7 +255,7 @@ Reference manual for all operators
 * ncrename netCDF Renamer::     
 * ncwa netCDF Weighted Averager::  
 
-Features specific to @code{ncap}
+Scripting Mathematical Processing with @code{ncap}
 
 * Intrinsic mathematical functions::  
 
@@ -2686,7 +2686,7 @@ Rather, the @samp{-v} switch takes no arguments and indicates
 that @command{ncap} should output @emph{only} user-defined variables.
 @command{ncap} does not accept or understand the @var{-x} switch.
 
-@subsection Features specific to @code{ncap}
+@subsection Scripting Mathematical Processing with @code{ncap}
 @menu
 * Intrinsic mathematical functions::  
 @end menu

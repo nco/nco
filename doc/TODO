@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.178 2002-09-05 07:04:11 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.179 2002-09-05 17:58:07 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -223,6 +223,8 @@ Command executes but in.hdf is full of screwy values
 233. Makefile.old rule for make tst appears broken for long ftp rule
 234. Replace strcasecmp() with ANSI standard calls (multiple strcmp()?)
 235. Replace strdup() with ANSI standard calls (malloc(),memcpy()?)
+236. makeinfo nco.texi breaks in ncap section.
+237. Break down nco.texi into bite size chunks, e.g., one file per section
 ************************************************************************
 End NCO Wish list
 ************************************************************************
