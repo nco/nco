@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.5 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.6 2002-09-09 03:40:00 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -208,7 +208,7 @@ nco_dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input
 nm_id_sct * /* O [sct] Dimension list */
 nco_dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
 (const int nc_id, /* I [id] netCDF file ID */
- const char * const * const dmn_lst_in, /* I [sng] User-specified list of dimension names */
+ CST_CST_CST_FNC(char,dmn_lst_in), /* I [sng] User-specified list of dimension names */
  const int nbr_dmn) /* I [nbr] Total number of dimensions in list */
 {
   /* Purpose:  */

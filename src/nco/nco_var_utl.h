@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.12 2002-09-03 01:19:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.13 2002-09-09 03:40:00 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -92,7 +92,7 @@ extern "C" {
    const int out_id, /* I [enm] netCDF output-file ID */
    var_sct * const * const var, /* I/O [sct] Variables to be defined in output file */
    const int nbr_var, /* I [nbr] Number of variables to be defined */
-   const dmn_sct * const * const dmn_ncl, /* I [sct] Dimensions included in output file */
+   CST_CST_CST_FNC(dmn_sct,dmn_ncl), /* I [sct] Dimensions included in output file */
    const int nbr_dmn_ncl); /* I [nbr] Number of dimensions in list */
   
   var_sct * /* O [sct] Copy of input variable */

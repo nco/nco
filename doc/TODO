@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.181 2002-09-06 07:24:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.182 2002-09-09 03:40:00 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -105,7 +105,7 @@ ncks -C -O -v one_dmn_rec_var in.nc foo.nc
 ncks -C -A -v three_dmn_rec_var in.nc foo.nc
 ncdump foo.nc
 105. Add easy-to-read tabular display option for file contents for ncks
-106. Add switch to keep degenerate dimensions with ncwa
+106. Add switch to keep degenerate dimensions with ncwa, remove them from ncra
 109. Change copyright printing so order is NCO vrs, netCDF vrs, URL, Copyright
 111. Investigate whether using ncwa to average files where variables of type 
 NC_CHAR have a record dimension causes core dumps or other problems.
@@ -153,8 +153,7 @@ Perhaps double quotes around former and single quotes around latter
 146. Allow proxies for coordinate variables so that, e.g., hyperslabs
 may be specified for "date" even though "time" is the coordinate. 
 Proxies must be one dimensional and monotonic, of course.
-147. Use builtin mkstemp() so file is built in fast
-directory rather than, say, NFS-mounted directory like /fs/cgd
+147. Use builtin mkstemp() so file is built in fast directory rather than, say, NFS-mounted directory like /fs/cgd  
 148. Put in more useful error diagnostics for Schweitzer's data holes
 These only appear in ncra/ncrcat because ncks treats same hyperslab as a wrap!
 Must define a consistent convention here
@@ -182,7 +181,6 @@ is non-unity.
 166. Document 'make test' so people know it exists and use it
 167. Improve/redesign test suite so it is more comprehensive and easier to add to
 169. Merge TODO into sourceforge Task manager and bug manager as appropriate
-170. rgn.sh appears to cause core dump over some ocean basins?
 173. Add switch to ncra which allows user to remove degenerate time dimension from result
 174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
 176. Replace Bison, Flex components of ncap with smaller C++ parser
@@ -226,7 +224,7 @@ Command executes but in.hdf is full of screwy values
 234. Replace strcasecmp() with ANSI standard calls (multiple strcmp()?)
 235. Replace strdup() with ANSI standard calls (malloc(),memcpy()?)
 236. makeinfo nco.texi breaks in ncap section.
-237. Break down nco.texi into bite size chunks, e.g., one file per section
+237. Break down nco.texi into bite-size chunks, e.g., one file per section
 ************************************************************************
 End NCO Wish list
 ************************************************************************

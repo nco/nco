@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.4 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.5 2002-09-09 03:40:00 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -28,7 +28,7 @@ extern "C" {
 char * /* O [sng] Parsed command line */
 nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */
 (const int argc, /* I [nbr] Argument count */
- const char * const * const argv); /* I [sng] Command line argument values */
+ CST_CST_CST_FNC(char,argv)); /* I [sng] Command line argument values */
  /* char **argv); *//* I [sng] Command line argument values */
 
 int /* O [nbr] Number of escape sequences translated */

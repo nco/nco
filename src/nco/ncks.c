@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.65 2002-09-03 01:19:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.66 2002-09-09 03:40:00 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.65 2002-09-03 01:19:54 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.65 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.66 2002-09-09 03:40:00 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.66 $";
   
   extern char *optarg;
   
@@ -138,7 +138,7 @@ main(int argc,char **argv)
   time_t clock;
 
   /* Start the clock and save the command line */ 
-  cmd_ln=nco_cmd_ln_sng(argc,(const char **)argv);
+  cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   fl_bnr=(char *)strdup("ncks.bnr");

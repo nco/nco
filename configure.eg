@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.36 2002-09-05 21:56:31 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.37 2002-09-09 03:39:59 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -32,7 +32,7 @@ Footnotes to summary table:
 07. Error making ncap_yacc.c
 08. Fails to build ncap because cannot find float math functions ncap TODO#18
 09. tst fails to find in.nc
-10. Major problems with make script
+10. Major problems with configure script and permissions on installed files
 11. Comeau (correctly) insists strdup(), strcasecmp() are not ANSI standard
 12. C++ version problems in linking DODS libraries
 -----------------------------------------------------------------------
@@ -121,7 +121,7 @@ FREEBSD
 FreeBSD usf-cf-x86-freebsd-1 4.6-STABLE FreeBSD 4.6-STABLE #9: Tue Aug 20 12:33:16 PDT 2002     root@usf-cf-x86-freebsd-1:/usr/obj/usr/src/sys/GENERIC  i386
 
 gcc/g++:
-export GNU_TRP='i386-unknown-freebsd4.6'
+export GNU_TRP='i386-unknown-freebsd4.7'
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo

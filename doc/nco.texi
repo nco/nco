@@ -1,10 +1,11 @@
 \input texinfo @c -*-texinfo-*- 
 @c 19980817: TeX-based systems (texi2dvi, texi2dvi --pdf) require texinfo.tex
 @c Hypertext systems (texi2html, makeinfo) do not require texinfo.tex
+\input thumbpdf.sty
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.119 2002-09-07 06:16:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.120 2002-09-09 03:40:00 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -265,8 +266,8 @@ itself.
 @section Availability
 @cindex @acronym{NCO} availability
 @cindex source code
-The complete @acronym{NCO} source distribution is currently distributed as a
-@dfn{compressed tarfile} from
+The complete @acronym{NCO} source distribution is currently distributed
+as a @dfn{compressed tarfile} from
 @uref{http://sourceforge.net/projects/nco}
 and 
 @uref{ftp://dust.ps.uci.edu/pub/zender/nco/nco.tar.gz}.
@@ -338,10 +339,18 @@ This tests incorporates an image using the @code{@@image} command.
 @cindex portability
 @cindex installation
 @acronym{NCO} has been successfully ported and tested and is known to
-work on the following platforms: 
-@acronym{GNU}/Linux, SunOS 4.1.x, Solaris 2.x, @acronym{IRIX} 5.x and
-6.x (including 64-bit architectures), @acronym{UNICOS} 8.x--10.x,
-@acronym{AIX} 4.x, @acronym{DEC OSF}, NEC Super-UX 10.x, all MS Windows.
+work on the following 32 and 64 bit platforms: 
+@c alphabetize by OS name
+@acronym{IBM AIX} 4.x, 5.x,
+FreeBSD 4.x, 
+@acronym{GNU}/Linux 2.x, LinuxPPC, LinuxAlpha, LinuxSparc64,
+@acronym{SGI IRIX} 5.x and 6.x,
+Mac OS X, 
+@acronym{NEC} Super-UX 10.x, 
+@acronym{DEC OSF}, 
+Sun SunOS 4.1.x, Solaris 2.x, 
+@acronym{Cray UNICOS} 8.x--10.x,
+all MS Windows.
 If you port the code to a new operating system, please send me a note
 and any patches you required.
 
@@ -675,6 +684,7 @@ dissemination to the scientific community.
 @acronym{NCO} performs a suite of operations useful in manipulating data from the
 primary to the second level state.
 @cindex @acronym{NCL}
+@cindex @acronym{IDL}
 @cindex Perl
 @cindex Yorick
 Higher level interpretive languages (e.g., @acronym{IDL}, Yorick,
@@ -713,9 +723,9 @@ are as easy to visualize for the layman as the expert.
 @cindex error tolerance
 @cindex safeguards
 @cindex temporary output files
-@acronym{NCO} operators are designed to be reasonably fault tolerant, so that
-if there is a system failure or the user aborts the operation (e.g.,
-with @kbd{C-c}), then no data is lost. 
+@acronym{NCO} operators are designed to be reasonably fault tolerant, so
+that if there is a system failure or the user aborts the operation (e.g.,
+with @kbd{C-c}), then no data are lost. 
 The user-specified @var{output-file} is only created upon successful
 completion of the operation  
 @footnote{The @command{ncrename} operator is an exception to this rule.
@@ -867,7 +877,7 @@ file to file.
 @command{ncrcat}. 
 
 However, suppose the annual files have no record variable, and thus
-their data is all fixed length. 
+their data are all fixed length. 
 @cindex ensemble
 @cindex climate model
 For example, the files may not be conceptually sequential, but rather
@@ -1664,7 +1674,7 @@ defined to be zero.
 Halfway around the globe, the longitude is 180 degrees East (or West). 
 Continuing eastward, longitude increases to 360 degrees East at
 Greenwich. 
-The longitude values of most geophysical data is either in the range
+The longitude values of most geophysical data are either in the range
 [0,360), or [-180,180).
 In either case, the Westernmost and Easternmost longitudes are
 numerically separated by 360 degrees, but represent contiguous regions
@@ -1812,8 +1822,9 @@ them to behave incorrectly if the @var{missing_value} = @samp{0.0} for a
 variable to be averaged.
 The workaround for this bug is to change @var{missing_value} to anything
 besides zero.}.
-The @emph{only} way @acronym{NCO} recognizes that a variable @emph{may} contain
-missing data is if the variable has a @code{missing_value} attribute.
+The @emph{only} way @acronym{NCO} recognizes that a variable @emph{may}
+contain missing data is if the variable has a @code{missing_value}
+attribute. 
 In this case, any elements of the variable which are numerically equal
 to the @var{missing_value} are treated as missing data.
 
@@ -1857,7 +1868,7 @@ Note the @var{missing_value} comparison inflicts a performance penalty
 on the operator.
 Arithmetic processing of variables which contain the
 @code{missing_value} attribute always incurs this penalty, even when
-none of the data is missing.
+none of the data are missing.
 Conversely, arithmetic processing of variables which do not contain the
 @code{missing_value} attribute never incurs this penalty.
 In other words, do not attach a @code{missing_value} attribute to a
@@ -3888,7 +3899,7 @@ When naming conflicts exists between the two files, data in
 @var{output-file} is usually overwritten by the corresponding data from
 @var{input-file}.  
 Thus it is recommended that the user backup @var{output-file} in case
-valuable data is accidentally overwritten.
+valuable data are accidentally overwritten.
 
 If @var{output-file} exists, the user will be queried whether to
 @dfn{overwrite}, @dfn{append}, or @dfn{exit} the @command{ncks} call

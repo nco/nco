@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.43 2002-08-21 11:47:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.44 2002-09-09 03:40:00 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -20,10 +20,22 @@
 
 /* Personal headers */
 
+/* Encapsulate C++ const usage in C99-safe macro 
+   C++ compilers will use type-safe version
+   C89 and C99 compilers will use version as type-safe as possible without */
+/* fxm: This is incomplete and needs to be extended and applied to all source */
+#ifdef __cplusplus
+#define CST_CST_CST_FNC(x,y) const x * const * const y
+#define VLT_CST_CST_FNC(x,y) x * const * const y
+#else /* !__cplusplus */
+#define CST_CST_CST_FNC(x,y) x * const * const y
+#define VLT_CST_CST_FNC(x,y) x * const * const y
+#endif /* !__cplusplus */
+
 #ifdef __cplusplus
 /* Use C-bindings so C++-compiled and C-compiled libraries are compatible */
 extern "C" {
-#endif /* __cplusplus */
+#endif /* !__cplusplus */
 
 /* NCO uses native type nco_long to store variables of type NC_INT */
   typedef long nco_long;
@@ -294,6 +306,6 @@ extern "C" {
 
 #ifdef __cplusplus
 } /* end extern "C" */
-#endif /* __cplusplus */
+#endif /* !__cplusplus */
 
 #endif /* NCO_H */
