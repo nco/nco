@@ -1,3 +1,9 @@
+nco (2.9.1-1) unstable; urgency=low
+
+  * prp_sei, fix ncwa unpacking bug
+
+ -- Charlie Zender <zender@ashes.ess.uci.edu>  Thu,  4 Mar 2004 17:03:18 -0800
+
 nco (2.9.0-1) unstable; urgency=low
 
   * CF convention behaves like CSM, ncap corner cases, workaround GCC stack limitation
