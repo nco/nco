@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.78 2001-05-08 05:26:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.79 2001-05-22 14:36:14 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -13,17 +13,16 @@ C-c C-u C-a	texinfo-all-menus-update
 C-c C-u C-e	texinfo-every-node-update
 
 Usage: 
-cd ~/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi; ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf;scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
-texi2html -monolithic -verbose nco.texi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco
-cd $DATA/ps;gzip --force nco.ps;scp -p nco.ps.gz www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
+cd ~/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi
+texi2html -monolithic -verbose nco.texi
 texi2dvi nco.texi 
-texi2dvi --pdf nco.texi # Fails with \command macro in section headings
+texi2dvi --pdf nco.texi
 makeinfo nco.texi 
 texi2html -monolithic -verbose nco.texi 
 dvips -o nco.ps nco.dvi 
 ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
-cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.ps nco.info* nco.ps nco.pdf nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
-cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.ps nco.info* nco.ps nco.pdf www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
+cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
+cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 
 Copyright (C) 1995--2001 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
