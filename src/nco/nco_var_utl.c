@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.5 2002-05-06 06:37:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.6 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -442,7 +442,7 @@ cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
       } /* end loop over lmt */
     } /* end loop over dim */
     
-    if(dbg_lvl >= 5){
+    if(dbg_lvl_get() >= 5){
       (void)fprintf(stderr,"\nvar = %s\n",var_nm);
       (void)fprintf(stderr,"dim\tcnt\tsrtin1\tcnt1\tsrtout1\tsrtin2\tcnt2\tsrtout2\n");
       for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++) (void)fprintf(stderr,"%d\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t%ld\t\n",dmn_idx,dmn_cnt[dmn_idx],dmn_in_srt_1[dmn_idx],dmn_cnt_1[dmn_idx],dmn_out_srt_1[dmn_idx],dmn_in_srt_2[dmn_idx],dmn_cnt_2[dmn_idx],dmn_out_srt_2[dmn_idx]);
@@ -602,7 +602,7 @@ var_dpl /* [fnc] Duplicate input variable */
 void
 var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
 (const int nc_id, /* I [id] netCDF file ID */
- var_sct * const var) /* I [sct] Variable to get */
+ var_sct *var) /* I [sct] Variable to get */
 {
   /* Threads: Routine contains thread-unsafe calls protected by critical regions */
   /* Purpose: Allocate and retrieve given variable hyperslab from disk into memory
@@ -762,7 +762,7 @@ var_dfn /* [fnc] Define variables and write their attributes to output file */
 (const int in_id, /* I [enm] netCDF input-file ID */
  const char * const fl_out, /* I [sng] Name of output file */
  const int out_id, /* I [enm] netCDF output-file ID */
- const var_sct ** const var, /* I [sct] Variables to be defined in output file */
+ var_sct * const * const var, /* I/O [sct] Variables to be defined in output file */
  const int nbr_var, /* I [nbr] Number of variables to be defined */
  const dmn_sct ** const dmn_ncl, /* I [sct] Dimensions included in output file */
  const int nbr_dmn_ncl) /* I [nbr] Number of dimensions in list */
@@ -823,7 +823,7 @@ var_dfn /* [fnc] Define variables and write their attributes to output file */
       (void)fprintf(stderr,"%s: WARNING Using existing definition of variable \"%s\" in %s\n",prg_nm_get(),var[idx]->nm,fl_out);
     } /* end if */
 
-    /* Always copy all attributes of a variable except in cases where packing/unpacking is involved
+    /* Copy all attributes except in cases where packing/unpacking is involved
 
        0. Variable is unpacked on input, unpacked on output
        --> Copy all attributes
@@ -1032,7 +1032,7 @@ var_fll /* [fnc] Allocate variable structure and fill with metadata */
   (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
 
   /* Fill in known fields */
-  var->nm=var_nm;
+  var->nm=(char *)strdup(var_nm);
   var->id=var_id;
   var->nc_id=nc_id;
 

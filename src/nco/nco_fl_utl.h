@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.2 2002-05-05 02:55:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.3 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -13,6 +13,7 @@
 #define NCO_FL_UTL_H
 
 /* Standard header files */
+#include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp. . . */
@@ -33,6 +34,8 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_ctl.h" /* Program flow control functions */
+#include "nco_mmr.h" /* Memory management */
 
 #ifdef __cplusplus
 extern "C" {
@@ -57,7 +60,7 @@ fl_nm_prs /* [fnc] Construct file name from input arguments */
 (char *fl_nm, /* I/O [sng] Current filename, if any */
  const int fl_nbr, /* I [nbr] Ordinal index of file in input file list */
  int * const nbr_fl, /* I/O [nbr] number of files to be processed */
- const char ** const fl_lst_in, /* I [sng] User-specified filenames */
+ char * const * const fl_lst_in, /* I [sng] User-specified filenames */
  const int nbr_abb_arg, /* I [nbr] Number of abbreviation arguments */
  const char ** const fl_lst_abb, /* I [sng] NINTAP-style arguments, if any */
  const char * const fl_pth); /* I [sng] Path prefix for files in fl_lst_in */
@@ -70,7 +73,7 @@ fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
 char ** /* O [sng] List of user-specified filenames */
 fl_lst_mk /* [fnc] Create file list from command line positional arguments */
-(const char ** const argv, /* I [sng] Argument list */
+(const char * const * const argv, /* I [sng] Argument list */
  const int argc, /* I [nbr] Argument count */
  const int arg_crr, /* I [idx] Index of current argument */
  int * const nbr_fl, /* O [nbr] Number of files in input file list */

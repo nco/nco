@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.3 2002-05-06 06:37:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.4 2002-05-07 08:00:07 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -23,10 +23,10 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_mss_val.h" /* Missing value utilities */
-#include "nco_cnf_typ.h" /* Conform variable types */
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.4 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.5 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -12,7 +12,7 @@ nm_id_sct * /* O [sct] Variable extraction list */
 var_lst_mk /* [fnc] Create variable extraction list */
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
- const char ** const var_lst_in, /* I [sng] User-specified list of variable names */
+ const char * const * const var_lst_in, /* I [sng] User-specified list of variable names */
  const bool PROCESS_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
 {
@@ -28,7 +28,7 @@ var_lst_mk /* [fnc] Create variable extraction list */
     xtr_lst=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
      
     for(idx=0;idx<*nbr_xtr;idx++){
-      xtr_lst[idx].nm=var_lst_in[idx];
+      xtr_lst[idx].nm=(char *)strdup(var_lst_in[idx]);
       rcd=nco_inq_varid_flg(nc_id,xtr_lst[idx].nm,&xtr_lst[idx].id);
       if(rcd != NC_NOERR){
 	(void)fprintf(stdout,"%s: ERROR var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),xtr_lst[idx].nm);
@@ -159,7 +159,7 @@ var_lst_convert /* [fnc] Make variable structure list from variable name ID list
 (const int nc_id, /* I [enm] netCDF file ID */
  nm_id_sct *xtr_lst, /* I [sct] Current extraction list (destroyed) */
  const int nbr_xtr, /* I [nbr] Number of variables in input file */
- const dmn_sct ** const dim, /* I [sct] Dimensions associated with input variable list */
+ dmn_sct * const * const dim, /* I [sct] Dimensions associated with input variable list */
  const int nbr_dmn_xtr, /* I [nbr] Number of dimensions in list  */
  var_sct *** const var_ptr, /* O [sct] Variable list (for input file) */
  var_sct *** const var_out_ptr) /* O [sct] Duplicate variable list (for output file) */
@@ -190,17 +190,17 @@ var_lst_convert /* [fnc] Make variable structure list from variable name ID list
 
 void
 var_lst_divide /* [fnc] Divide input lists into output lists */
-(const var_sct ** const var, /* I [sct] Variable list (input file) */
- const var_sct ** const var_out, /* I [sct] Variable list (output file) */
+(var_sct * const * const var, /* I [sct] Variable list (input file) */
+ var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */
  const bool NCAR_CSM_FORMAT, /* I [flg] File adheres to NCAR CSM conventions */
  const dmn_sct ** const dmn_xcl, /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl, /* I [nbr] Number of excluded dimensions */
- const var_sct ***var_fix_ptr, /* O [sct] Fixed-variables (input file) */
- const var_sct ***var_fix_out_ptr, /* O [sct] Fixed-variables (output file) */
+ var_sct *** const var_fix_ptr, /* O [sct] Fixed-variables (input file) */
+ var_sct *** const var_fix_out_ptr, /* O [sct] Fixed-variables (output file) */
  int * const nbr_var_fix, /* O [nbr] Number of fixed variables */
- const var_sct ***var_prc_ptr, /* O [sct] Processed-variables (input file) */
- const var_sct ***var_prc_out_ptr, /* O [sct] Processed-variables (output file) */
+ var_sct *** const var_prc_ptr, /* O [sct] Processed-variables (input file) */
+ var_sct *** const var_prc_out_ptr, /* O [sct] Processed-variables (output file) */
  int * const nbr_var_prc) /* O [nbr] Number of processed variables */
 {
   /* Purpose: Divide two input lists into output lists based on program type */

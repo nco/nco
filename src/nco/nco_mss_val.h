@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.1 2002-05-05 03:48:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.2 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -22,6 +22,8 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_cnf_typ.h" /* Conform variable types */
+#include "nco_mmr.h" /* Memory management */
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.1 2002-05-05 02:55:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.2 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -13,6 +13,7 @@
 #define NCO_LMT_H
 
 /* Standard header files */
+#include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp. . . */
@@ -23,6 +24,10 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_cnf_typ.h" /* Conform variable types */
+#include "nco_ctl.h" /* Program flow control functions */
+#include "nco_lst_utl.h" /* List utilities */
+#include "nco_mmr.h" /* Memory management */
 
 #ifdef __cplusplus
 extern "C" {

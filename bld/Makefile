@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.128 2002-05-06 06:51:27 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.129 2002-05-07 08:00:05 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -821,37 +821,37 @@ obj_dir:
 # Targets in bin
 .PHONY:  ncra ncatted ncks ncwa ncecat ncdiff ncflint ncrename
 ncra:   ${MY_BIN_DIR}/ncra
-${MY_BIN_DIR}/ncra:	lib ${MY_OBJ_DIR}/ncra.o
+${MY_BIN_DIR}/ncra:	${MY_OBJ_DIR}/ncra.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 	cd ${MY_BIN_DIR}; rm -f ncea; ln -f -s ncra ncea
 	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -f -s ncra ncrcat
 ncatted:   ${MY_BIN_DIR}/ncatted
-${MY_BIN_DIR}/ncatted:	lib ${MY_OBJ_DIR}/ncatted.o
+${MY_BIN_DIR}/ncatted:	${MY_OBJ_DIR}/ncatted.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncks:   ${MY_BIN_DIR}/ncks
-${MY_BIN_DIR}/ncks:	lib ${MY_OBJ_DIR}/ncks.o
+${MY_BIN_DIR}/ncks:	${MY_OBJ_DIR}/ncks.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncwa:   ${MY_BIN_DIR}/ncwa
-${MY_BIN_DIR}/ncwa:	lib ${MY_OBJ_DIR}/ncwa.o
+${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncecat:   ${MY_BIN_DIR}/ncecat
-${MY_BIN_DIR}/ncecat:	lib ${MY_OBJ_DIR}/ncecat.o
+${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncdiff:   ${MY_BIN_DIR}/ncdiff
-${MY_BIN_DIR}/ncdiff:	lib ${MY_OBJ_DIR}/ncdiff.o
+${MY_BIN_DIR}/ncdiff:	${MY_OBJ_DIR}/ncdiff.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncflint:   ${MY_BIN_DIR}/ncflint
-${MY_BIN_DIR}/ncflint:	lib ${MY_OBJ_DIR}/ncflint.o
+${MY_BIN_DIR}/ncflint:	${MY_OBJ_DIR}/ncflint.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncrename:   ${MY_BIN_DIR}/ncrename
-${MY_BIN_DIR}/ncrename:	lib ${MY_OBJ_DIR}/ncrename.o
+${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 bin: ${MDL_BIN_TRG}
@@ -955,7 +955,6 @@ ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/ncap_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_rth_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_scl_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_scm.o) \
-	${libnco}.a(${MY_OBJ_DIR}/nco_scv_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_sng_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_var_avg.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_var_lst.o) \

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.4 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.5 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -83,7 +83,7 @@ fl_nm_prs /* [fnc] Construct file name from input arguments */
 (char *fl_nm, /* I/O [sng] Current filename, if any */
  const int fl_nbr, /* I [nbr] Ordinal index of file in input file list */
  int * const nbr_fl, /* I/O [nbr] number of files to be processed */
- const char ** const fl_lst_in, /* I [sng] User-specified filenames */
+ char * const * const fl_lst_in, /* I [sng] User-specified filenames */
  const int nbr_abb_arg, /* I [nbr] Number of abbreviation arguments */
  const char ** const fl_lst_abb, /* I [sng] NINTAP-style arguments, if any */
  const char * const fl_pth) /* I [sng] Path prefix for files in fl_lst_in */
@@ -582,7 +582,7 @@ fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
 char ** /* O [sng] List of user-specified filenames */
 fl_lst_mk /* [fnc] Create file list from command line positional arguments */
-(const char ** const argv, /* I [sng] Argument list */
+(const char * const * const argv, /* I [sng] Argument list */
  const int argc, /* I [nbr] Argument count */
  const int arg_crr, /* I [idx] Index of current argument */
  int * const nbr_fl, /* O [nbr] Number of files in input file list */
@@ -622,8 +622,8 @@ fl_lst_mk /* [fnc] Create file list from command line positional arguments */
       nco_exit(EXIT_FAILURE);
     } /* end if */
     fl_lst_in=(char **)nco_malloc(sizeof(char *));
-    fl_lst_in[(*nbr_fl)++]=argv[arg_crr++];
-    if(arg_crr == argc-1) *fl_out=argv[arg_crr]; else *fl_out=NULL;
+    fl_lst_in[(*nbr_fl)++]=(char *)strdup(argv[arg_crr++]);
+    if(arg_crr == argc-1) *fl_out=(char *)strdup(argv[arg_crr]); else *fl_out=NULL;
     return fl_lst_in;
     /*    break;*//* NB: putting break after return in case statement causes warning on SGI cc */
   case ncdiff:
@@ -658,13 +658,13 @@ fl_lst_mk /* [fnc] Create file list from command line positional arguments */
 
   /* Fill in file list and output file */
   fl_lst_in=(char **)nco_malloc((argc-arg_crr-1)*sizeof(char *));
-  while(arg_crr < argc-1) fl_lst_in[(*nbr_fl)++]=argv[arg_crr++];
+  while(arg_crr < argc-1) fl_lst_in[(*nbr_fl)++]=(char *)strdup(argv[arg_crr++]);
   if(*nbr_fl == 0){
     (void)fprintf(stdout,"%s: ERROR Must specify input filename.\n",prg_nm_get());
     (void)nco_usg_prn();
     nco_exit(EXIT_FAILURE);
   } /* end if */
-  *fl_out=argv[argc-1];
+  *fl_out=(char *)strdup(argv[argc-1]);
 
   return fl_lst_in;
 

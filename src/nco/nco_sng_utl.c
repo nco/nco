@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.3 2002-05-05 19:52:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.4 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -11,7 +11,7 @@
 char * /* O [sng] Parsed command line */
 cmd_ln_sng /* [fnc] Re-construct command line from arguments */
 (const int argc, /* I [nbr] Argument count */
- const char ** const argv) /* I [sng] Command line argument values */
+ const char * const * const argv) /* I [sng] Command line argument values */
 {
   /* Purpose: Re-construct command line from argument list and number */
   char *cmd_ln; /* [sng] Parsed command line */
@@ -39,7 +39,7 @@ cmd_ln_sng /* [fnc] Re-construct command line from arguments */
 
 int /* O [nbr] Number of escape sequences translated */
 sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII bytes */
-(char *sng) /* I/O [sng] String to process */
+(char * const sng) /* I/O [sng] String to process */
 {
   /* Purpose: Replace C language '\X' escape codes in string with ASCII bytes 
      Return number of escape sequences found and actually translated

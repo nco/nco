@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.2 2002-05-06 06:37:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.3 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -22,6 +22,10 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_cnf_typ.h" /* Conform variable types */
+#include "nco_ctl.h" /* Program flow control functions */
+#include "nco_mmr.h" /* Memory management */
+#include "nco_sng_utl.h" /* String utilities */
 
 #ifdef __cplusplus
 extern "C" {
@@ -47,7 +51,7 @@ prn_var_val_lmt /* [fnc] Print variable data */
  const char * const var_nm, /* I [sng] Variable name */
  const lmt_sct * const lmt, /* I [sct] Dimension limits */
  const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
- const char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
+ char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
  const bool FORTRAN_STYLE, /* I [flg] Hyperslab indices obey Fortran convention */
  const bool PRINT_DIMENSIONAL_UNITS, /* I [flg] Print units attribute, if any */
  const bool PRN_DMN_IDX_CRD_VAL); /* I [flg] Print dimension/coordinate indices/values */

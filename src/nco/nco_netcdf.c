@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.19 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.20 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -35,11 +35,11 @@
 
 /* Utility routines not defined by netCDF library, but useful in working with it */
 void 
-nco_err_exit
+nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
 (int rcd, /* I [enm] netCDF error code */ 
  char *msg) /* I [sng] supplemental error message */
 {
-  /* Purpose: Print netCDF error message, routine name, and exit 
+  /* Purpose: Print netCDF error message, routine name, then exit
      Routine is called by all wrappers when a fatal error is encountered
      msg variable allows wrapper to pass more descriptive information than 
      is contained in the netCDF-defined error message.
@@ -52,7 +52,8 @@ nco_err_exit
 } /* end nco_err_exit() */
 
 int
-nco_typ_lng(nc_type nco_typ) 
+nco_typ_lng /* [fnc]   */
+(nc_type nco_typ) 
 { 
   /* Purpose: Return native size of specified netCDF type
      Routine is used to determine memory required to store variables in RAM */
@@ -77,7 +78,8 @@ nco_typ_lng(nc_type nco_typ)
 } /* end nco_typ_lng() */ 
 
 char *
-nco_typ_sng(nc_type type)
+nco_typ_sng /* [fnc]   */
+(nc_type type)
 /*  
    nc_type type: I [enm] netCDF type
    char *nco_typ_sng(): O [sng] string describing type
@@ -104,7 +106,8 @@ nco_typ_sng(nc_type type)
 } /* end nco_typ_sng() */
 
 char *
-c_type_nm(nc_type type)
+c_type_nm /* [fnc]   */
+(nc_type type)
 /*  
    nc_type type: I netCDF type
    char *c_type_nm(): O string describing type
@@ -133,7 +136,8 @@ c_type_nm(nc_type type)
 } /* end c_type_nm() */
 
 char *
-fortran_type_nm(nc_type type)
+fortran_type_nm /* [fnc]   */
+(nc_type type)
 /*  
    nc_type type: I netCDF type
    char *fortran_type_nm(): O string describing type
@@ -162,7 +166,7 @@ fortran_type_nm(nc_type type)
 } /* end fortran_type_nm() */
 
 void 
-nco_dfl_case_nctype_err(void)
+nco_dfl_case_nctype_err(void) /* [fnc]   */
 {
   /* Purpose: Convenience routine for printing error and exiting when
      switch(nctype) statement receives an illegal default case
@@ -462,21 +466,18 @@ nco_inq_var(int nc_id,int var_id,char *var_nm,nc_type *var_typ,int *dmn_nbr,int 
 } /* end nco_inq_var */
 
 int 
-nco_inq_varid(int nc_id,char *var_nm,int *var_id)
+nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id)
 {
   /* Purpose: Wrapper for nc_inq_varid() */
   int rcd=NC_NOERR;
   rcd=nc_inq_varid(nc_id,var_nm,var_id);
-  if(rcd == NC_ENOTVAR){
-    (void)fprintf(stdout,"ERROR nco_inq_varid() reports requested variable \"%s\" is not in input file\n",var_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* endif */
+  if(rcd == NC_ENOTVAR) (void)fprintf(stdout,"ERROR nco_inq_varid() reports requested variable \"%s\" is not in input file\n",var_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varid");
   return rcd;
 } /* end nco_inq_varid */
 
 int 
-nco_inq_varid_flg(int nc_id,char *var_nm,int *var_id)
+nco_inq_varid_flg(const int nc_id,const char * const var_nm,int * const var_id)
 {
   /* Purpose: Wrapper for nc_inq_varid_flg() which does not require success */
   int rcd=NC_NOERR;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.2 2002-05-05 01:27:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.3 2002-05-07 08:00:07 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -56,7 +56,7 @@ dmn_dpl /* [fnc] Duplicate input dimension structure */
 } /* end dmn_dpl() */
 
 dmn_sct * /* O [sct] Output dimension structure */
-dmn_fll /* [fnc] Create and return a completed dmn_sct */
+dmn_fll /* [fnc] Create and return completed dmn_sct */
 (const int nc_id, /* I [id] netCDF input file ID*/
  const int dmn_id, /* I [id] Dimension ID */
  const char * const dmn_nm) /* I [sng] Dimension name */
@@ -70,7 +70,7 @@ dmn_fll /* [fnc] Create and return a completed dmn_sct */
   
   dim=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
   
-  dim->nm=dmn_nm;
+  dim->nm=(char *)strdup(dmn_nm);
   dim->id=dmn_id;
   dim->nc_id=nc_id;
   dim->xrf=NULL;
@@ -205,7 +205,7 @@ dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input var
 nm_id_sct * /* O [sct] Dimension list */
 dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
 (const int nc_id, /* I [id] netCDF file ID */
- const char ** const dmn_lst_in, /* I [sng] User-specified list of dimension names */
+ const char * const * const dmn_lst_in, /* I [sng] User-specified list of dimension names */
  const int nbr_dim) /* I [nbr] Total number of dimensions in list */
 {
   /* Purpose:  */
@@ -216,7 +216,7 @@ dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
   dmn_lst=(nm_id_sct *)nco_malloc(nbr_dim*sizeof(nm_id_sct));
   for(idx=0;idx<nbr_dim;idx++){
     /* See if requested dimension is in input file */
-    dmn_lst[idx].nm=dmn_lst_in[idx];
+    dmn_lst[idx].nm=(char *)strdup(dmn_lst_in[idx]);
     (void)nco_inq_dimid(nc_id,dmn_lst[idx].nm,&dmn_lst[idx].id);
   } /* end loop over idx */
   

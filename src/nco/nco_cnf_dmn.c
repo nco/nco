@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.3 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.4 2002-05-07 08:00:07 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -11,16 +11,18 @@
 var_sct * /* O [sct] Pointer to conforming variable structure */
 var_conform_dim /* [fnc] Stretch second variable to match dimensions of first variable */
 (const var_sct * const var, /* I [ptr] Pointer to variable structure to serve as template */
- const var_sct * const wgt, /* I [ptr] Pointer to variable structure to make conform to var */
+ var_sct * const wgt, /* I [ptr] Pointer to variable structure to make conform to var */
  var_sct *wgt_crr, /* I/O [ptr] pointer to existing conforming variable structure, if any (destroyed when does not conform to var) */
  const bool MUST_CONFORM, /* I [flg] Must wgt and var must conform? */
  bool *DO_CONFORM) /* O [flg] Did wgt and var conform? */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* fxm: TODO 226. See if xrf in var_conform_dim() is really necessary, if not, remove it and make wgt arg const var_sct * const */
+
   /* Purpose: Stretch second variable to match dimensions of first variable
      Dimensions in var which are not in wgt will be present in wgt_out, with values
      replicated from existing dimensions in wgt.
-     By default, wgt's dimensions must be a subset of var's dimensions (MUST_CONFORM=true)
+     By default, wgt's dimensions must be subset of var's dimensions (MUST_CONFORM=true)
      If it is permissible for wgt not to conform to var then set MUST_CONFORM=false before calling this routine
      In this case when wgt and var do not conform then then var_conform_dim sets *DO_CONFORM=False and returns a copy of var with all values set to 1.0
      The calling procedure can then decide what to do with the output

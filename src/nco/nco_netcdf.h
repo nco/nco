@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.9 2002-05-02 06:08:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.10 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -31,71 +31,71 @@ enum nco_fl_typ{ /* [enm] File type */
 }; /* end nco_fl_typ enum */
 
 /* Utility Routines */
-extern void nco_err_exit(int,char *);
-extern char *nco_typ_sng(nc_type);
-extern char *c_type_nm(nc_type);
-extern char *fortran_type_nm(nc_type);
-extern void nco_dfl_case_nctype_err(void);
-extern int nco_typ_lng(nc_type);
+void nco_err_exit(int,char *);
+char *nco_typ_sng(nc_type);
+char *c_type_nm(nc_type);
+char *fortran_type_nm(nc_type);
+void nco_dfl_case_nctype_err(void);
+int nco_typ_lng(nc_type);
 
 /* File Routines */
-extern int nco_create(const char *,int,int *);
-extern int nco_open(const char *,int,int *);
-extern int nco_redef(int);
-extern int nco_enddef(int);
-extern int nco_sync(int);
-extern int nco_set_fill(int,int,int *);
-extern int nco_abort(int);
-extern int nco_close(int);
-extern int nco_inq(int,int *,int *,int *,int *);
-extern int nco_inq_ndims(int,int *);
-extern int nco_inq_nvars(int,int *);
-extern int nco_inq_natts(int,int *);
-extern int nco_inq_unlimdim(int,int *);
+int nco_create(const char *,int,int *);
+int nco_open(const char *,int,int *);
+int nco_redef(int);
+int nco_enddef(int);
+int nco_sync(int);
+int nco_set_fill(int,int,int *);
+int nco_abort(int);
+int nco_close(int);
+int nco_inq(int,int *,int *,int *,int *);
+int nco_inq_ndims(int,int *);
+int nco_inq_nvars(int,int *);
+int nco_inq_natts(int,int *);
+int nco_inq_unlimdim(int,int *);
 
 /* Dimension Routines */
-extern int nco_def_dim(int,const char *,long,int *);
-extern int nco_inq_dimid(int,char *,int *);
-extern int nco_inq_dimid_flg(int,char *,int *);
-extern int nco_inq_dim(int,int,char *,long *);
-extern int nco_inq_dim_flg(int,int,char *,long *);
-extern int nco_inq_dimname(int,int,char *);
-extern int nco_inq_dimlen(int,int,long *);
-extern int nco_rename_dim(int,int,const char *);
+int nco_def_dim(int,const char *,long,int *);
+int nco_inq_dimid(int,char *,int *);
+int nco_inq_dimid_flg(int,char *,int *);
+int nco_inq_dim(int,int,char *,long *);
+int nco_inq_dim_flg(int,int,char *,long *);
+int nco_inq_dimname(int,int,char *);
+int nco_inq_dimlen(int,int,long *);
+int nco_rename_dim(int,int,const char *);
 
 /* Variable Routines */
-extern int nco_def_var(int,const char *,nc_type,int,int *,int *);
-extern int nco_inq_var(int,int,char *,nc_type *,int *,int *,int *);
-extern int nco_inq_varid(int,char *,int *);
-extern int nco_inq_varid_flg(int,char *,int *);
-extern int nco_inq_varname(int,int,char *);
-extern int nco_inq_vartype(int,int,nc_type *);
-extern int nco_inq_varndims(int,int,int *);
-extern int nco_inq_vardimid(int,int,int *);
-extern int nco_inq_varnatts(int,int,int *);
-extern int nco_rename_var(int,int,const char *);
-extern int nco_copy_var(int,int,int);
+int nco_def_var(int,const char *,nc_type,int,int *,int *);
+int nco_inq_var(int,int,char *,nc_type *,int *,int *,int *);
+int nco_inq_varid(const int,const char * const,int * const);
+int nco_inq_varid_flg(const int,const char * const,int * const);
+int nco_inq_varname(int,int,char *);
+int nco_inq_vartype(int,int,nc_type *);
+int nco_inq_varndims(int,int,int *);
+int nco_inq_vardimid(int,int,int *);
+int nco_inq_varnatts(int,int,int *);
+int nco_rename_var(int,int,const char *);
+int nco_copy_var(int,int,int);
 
-extern int nco_get_var1(int,int,const long *,void *,nc_type);
-extern int nco_put_var1(int,int,const long *,void *,nc_type);
-extern int nco_get_vara(int,int,const long *,const long *,void *,nc_type);
-extern int nco_put_vara(int,int,const long *,const long *,void *,nc_type);
-extern int nco_get_varm(int,int,const long *,const long *,const long *,const long *,void *,nc_type);
-extern int nco_put_varm(int,int,const long *,const long *,const long *,const long *,void *,nc_type);
+int nco_get_var1(int,int,const long *,void *,nc_type);
+int nco_put_var1(int,int,const long *,void *,nc_type);
+int nco_get_vara(int,int,const long *,const long *,void *,nc_type);
+int nco_put_vara(int,int,const long *,const long *,void *,nc_type);
+int nco_get_varm(int,int,const long *,const long *,const long *,const long *,void *,nc_type);
+int nco_put_varm(int,int,const long *,const long *,const long *,const long *,void *,nc_type);
 
 /* Attribute Routines */
-extern int nco_inq_att(int,int,const char *,nc_type *,long *);
-extern int nco_inq_att_flg(int,int,const char *,nc_type *,long *);
-extern int nco_inq_attid(int,int,const char *,int *);
-extern int nco_inq_attid_flg(int,int,const char *,int *);
-extern int nco_inq_atttype(int,int,const char *,nc_type *); 
-extern int nco_inq_attlen(int,int,const char *,long *); 
-extern int nco_inq_attname(int,int,int,char *); 
-extern int nco_copy_att(int,int,const char *,int,int);
-extern int nco_rename_att(int,int,const char *,const char *); 
-extern int nco_del_att(int,int,const char *);
-extern int nco_put_att(int,int,const char *,nc_type,long,void *);
-extern int nco_get_att(int,int,const char *,void *,nc_type);
+int nco_inq_att(int,int,const char *,nc_type *,long *);
+int nco_inq_att_flg(int,int,const char *,nc_type *,long *);
+int nco_inq_attid(int,int,const char *,int *);
+int nco_inq_attid_flg(int,int,const char *,int *);
+int nco_inq_atttype(int,int,const char *,nc_type *); 
+int nco_inq_attlen(int,int,const char *,long *); 
+int nco_inq_attname(int,int,int,char *); 
+int nco_copy_att(int,int,const char *,int,int);
+int nco_rename_att(int,int,const char *,const char *); 
+int nco_del_att(int,int,const char *);
+int nco_put_att(int,int,const char *,nc_type,long,void *);
+int nco_get_att(int,int,const char *,void *,nc_type);
 
 #ifdef __cplusplus
 } /* end extern "C" */

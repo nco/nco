@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.5 2002-05-06 06:37:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.6 2002-05-07 08:00:07 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -18,9 +18,12 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
+#include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_mmr.h" /* Memory management */
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,12 +32,12 @@ extern "C" {
 void
 cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
 (const nc_type type, /* I [enm] netCDF type to cast void pointer to */
- ptr_unn const *ptr); /* I/O [ptr] Pointer to pointer union whose vp element will be cast to type type*/
+ ptr_unn * const ptr); /* I/O [ptr] Pointer to pointer union whose vp element will be cast to type type*/
 
 void
 cast_nctype_void /* [fnc] Cast generic pointer in ptr_unn structure from type type to type void */
 (const nc_type type, /* I [enm] netCDF type of pointer */
- ptr_unn const *ptr); /* I/O pointer to pointer union which to cast from type type to type void */
+ ptr_unn * const ptr); /* I/O pointer to pointer union which to cast from type type to type void */
 
 var_sct * /* O [var] Variable after (possible) conversion */
 nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
@@ -48,7 +51,7 @@ nco_cnv_var_typ_dsk  /* [fnc] Revert variable to on-disk type */
 var_sct * /* O [sct] Pointer to variable structure of type var_out_type */
 var_conform_type /* [fnc] Return copy of input variable typecast to desired type */
 (const nc_type var_out_type, /* I [enm] Type to convert variable structure to */
- var_sct const *var_in); /* I/O [enm] Pointer to variable structure (may be destroyed) */
+ var_sct *var_in); /* I/O [enm] Pointer to variable structure (may be destroyed) */
 
 void
 val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
@@ -60,12 +63,12 @@ val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
 int /* O [enm] Dummy return */
 scv_conform_type /* [fnc] Convert scalar attribute to typ_new using C implicit coercion */
 (const nc_type typ_new, /* I [enm] Type to convert scv_old to */
- scv_sct const *scv_old); /* I/O [sct] Scalar value to convert */
+ scv_sct * const scv_old); /* I/O [sct] Scalar value to convert */
 
 nc_type /* O [enm] Highest precision of input variables */
 ncap_var_retype /* [fnc] Promote variable to higher common precision */
-(var_sct * const var_1, /* I/O [sct] Variable */
- var_sct * const var_2); /* I/O [sct] Variable */
+(var_sct *var_1, /* I/O [sct] Variable */
+ var_sct *var_2); /* I/O [sct] Variable */
 
 nc_type /* O [enm] Highest precision of arguments */
 ncap_scv_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if necessary */

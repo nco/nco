@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.1 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.2 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -232,7 +232,7 @@ prn_var_val_lmt /* [fnc] Print variable data */
  const char * const var_nm, /* I [sng] Variable name */
  const lmt_sct * const lmt, /* I [sct] Dimension limits */
  const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
- const char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
+ char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
  const bool FORTRAN_STYLE, /* I [flg] Hyperslab indices obey Fortran convention */
  const bool PRINT_DIMENSIONAL_UNITS, /* I [flg] Print units attribute, if any */
  const bool PRN_DMN_IDX_CRD_VAL) /* I [flg] Print dimension/coordinate indices/values */
@@ -240,8 +240,6 @@ prn_var_val_lmt /* [fnc] Print variable data */
   /* Purpose: Print variable data 
      Routine truncates dimensions of printed output variable in accord with user-specified limits
      fxm: routine does not correctly print hyperslabs which are wrapped, or which use a non-unity stride */
-
-  extern char *type_fmt_sng(nc_type);
 
   bool SRD=False; /* Stride is non-unity */
   bool WRP=False; /* Coordinate is wrapped */
@@ -574,7 +572,7 @@ prn_var_val_lmt /* [fnc] Print variable data */
 	  (void)sprintf(var_sng,"%%s%c%%li--%%li%c='%s' %%s",arr_lft_dlm,arr_rgt_dlm,dmn_sng);
 	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+dmn_cnt[var.nbr_dim-1]-1L,var.val.cp+lmn,unit_sng);
 	} /* endif */
-	if(dbg_lvl >= 6)(void)fprintf(stdout,"DEBUG: format string used for chars is dmn_sng = %s, var_sng = %s\n",dmn_sng,var_sng); 
+	if(dbg_lvl_get() >= 6)(void)fprintf(stdout,"DEBUG: format string used for chars is dmn_sng = %s, var_sng = %s\n",dmn_sng,var_sng); 
 	/* Newline separates consecutive values within given variable */
 	(void)fprintf(stdout,"\n");
 	(void)fflush(stdout);

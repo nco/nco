@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.3 2002-05-06 03:31:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.4 2002-05-07 08:00:07 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -11,7 +11,7 @@
 void
 cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
 (const nc_type type, /* I [enm] netCDF type to cast void pointer to*/
- ptr_unn const *ptr) /* I/O [ptr] Pointer to pointer union whose vp element will be cast to type type*/
+ ptr_unn * const ptr) /* I/O [ptr] Pointer to pointer union whose vp element will be cast to type type*/
 {
   /* Purpose: Cast generic pointer in ptr_unn structure from type void to output netCDF type */
   switch(type){
@@ -40,7 +40,7 @@ cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
 void
 cast_nctype_void /* [fnc] Cast generic pointer in ptr_unn structure from type type to type void */
 (const nc_type type, /* I [enm] netCDF type of pointer */
- ptr_unn const *ptr) /* I/O pointer to pointer union which to cast from type type to type void */
+ ptr_unn * const ptr) /* I/O pointer to pointer union which to cast from type type to type void */
 {
   /* Cast generic pointer in ptr_unn structure from type type to type void */
   switch(type){
@@ -97,7 +97,7 @@ nco_cnv_var_typ_dsk  /* [fnc] Revert variable to on-disk type */
 var_sct * /* O [sct] Pointer to variable structure of type var_out_type */
 var_conform_type /* [fnc] Return copy of input variable typecast to desired type */
 (const nc_type var_out_type, /* I [enm] Type to convert variable structure to */
- var_sct const *var_in) /* I/O [enm] Pointer to variable structure (may be destroyed) */
+ var_sct *var_in) /* I/O [enm] Pointer to variable structure (may be destroyed) */
 {
   /* Threads: Routine is thread safe and makes no unsafe routines */
   /* Purpose: Return copy of input variable typecast to desired type */
@@ -318,7 +318,7 @@ val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
 int /* O [enm] Dummy return */
 scv_conform_type /* [fnc] Convert scalar attribute to typ_new using C implicit coercion */
 (const nc_type typ_new, /* I [enm] Type to convert scv_old to */
- scv_sct const *scv_old) /* I/O [sct] Scalar value to convert */
+ scv_sct * const scv_old) /* I/O [sct] Scalar value to convert */
 {
   /* Purpose: Convert scalar attribute to typ_new using C implicit coercion */
   nc_type typ_old=scv_old->type;
@@ -388,8 +388,8 @@ scv_conform_type /* [fnc] Convert scalar attribute to typ_new using C implicit c
 
 nc_type /* O [enm] Highest precision of input variables */
 ncap_var_retype /* [fnc] Promote variable to higher common precision */
-(var_sct * const var_1, /* I/O [sct] Variable */
- var_sct * const var_2) /* I/O [sct] Variable */
+(var_sct *var_1, /* I/O [sct] Variable */
+ var_sct *var_2) /* I/O [sct] Variable */
 {
   /* Purpose: Convert variable, if necessary, so variables are of same type */
   if(var_1->type == var_2->type) return var_1->type;

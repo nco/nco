@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.2 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.3 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -21,6 +21,8 @@
 #include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
 
 /* Personal headers */
+#include "nco.h" /* NCO definitions */
+#include "nco_ctl.h" /* Program flow control functions */
 
 #ifdef __cplusplus
 extern "C" {

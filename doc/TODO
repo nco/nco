@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.139 2002-05-02 06:56:41 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.140 2002-05-07 08:00:07 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -214,6 +214,7 @@ ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 223. texi2dvi nco.texi works on old RHL not on RHL 7.2
 224. Copy var_nm from command line so program, not system, owns memory. Then modify var_free() to release var_nm structure member
 225. Pass aed by reference in aed_prc()
+226. See if xrf in var_conform_dim() is really necessary, if not, remove it and make wgt arg const var_sct * const
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.1 2002-05-05 01:27:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.2 2002-05-07 08:00:07 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -14,9 +14,7 @@
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
-#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp. . . */
-#include <unistd.h> /* POSIX stuff */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -24,6 +22,7 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_mmr.h" /* Memory management */
 
 #ifdef __cplusplus
 extern "C" {
@@ -41,7 +40,7 @@ dmn_dpl /* [fnc] Duplicate input dimension structure */
 (const dmn_sct * const dim); /* I [sct] Dimension structure to duplicate */
 
 dmn_sct * /* O [sct] Output dimension structure */
-dmn_fll /* [fnc] Create and return a completed dmn_sct */
+dmn_fll /* [fnc] Create and return completed dmn_sct */
 (const int nc_id, /* I [id] netCDF input file ID*/
  const int dmn_id, /* I [id] Dimension ID */
  const char * const dmn_nm); /* I [sng] Dimension name */
@@ -56,7 +55,7 @@ dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension structures
 nm_id_sct * /* O [sct] Dimension list */
 dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
 (const int nc_id, /* I [id] netCDF file ID */
- const char ** const dmn_lst_in, /* I [sng] User-specified list of dimension names */
+ const char * const * const dmn_lst_in, /* I [sng] User-specified list of dimension names */
  const int nbr_dim); /* I [nbr] Total number of dimensions in list */
 
 nm_id_sct * /* O [sct] List of dimensions associated with input variable list */

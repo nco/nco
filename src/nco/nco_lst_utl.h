@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.2 2002-05-06 06:51:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.3 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -31,9 +31,9 @@ extern "C" {
 
 char * /* O [sng] Concatenated string formed by joining all input strings */
 sng_lst_prs /* [fnc] Join list of strings together into one string */
-(const char ** const sng_lst, /* I [sng] List of pointers to strings to join together */
+(const char * const * const sng_lst, /* I [sng] List of pointers to strings to join together */
  const long lmn_nbr, /* O [nbr] Number of strings in list */
- const char *dlm_sng); /* I [sng] delimiter string to use as glue */
+ const char * const dlm_sng); /* I [sng] delimiter string to use as glue */
 
 char ** /* O [sng] Array of list elements */
 lst_prs /* [fnc] Create list of strings from given string and arbitrary delimiter */

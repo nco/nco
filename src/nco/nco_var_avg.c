@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.3 2002-05-05 20:48:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.4 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -11,7 +11,7 @@
 var_sct * /* O [sct] Partially (non-normalized) reduced variable */
 var_avg /* [fnc] reduce given variable over specified dimensions */
 (var_sct *var, /* I/O [sct] Variable to reduce (e.g., average) (destroyed) */
- const dmn_sct ** const dim, /* I [sct] Dimensions over which to reduce variable */
+ dmn_sct * const * const dim, /* I [sct] Dimensions over which to reduce variable */
  const int nbr_dim, /* I [sct] Number of dimensions to reduce variable over */
  const int nco_op_typ) /* I [enm] Operation type, default is average */
 {
@@ -73,6 +73,9 @@ var_avg /* [fnc] reduce given variable over specified dimensions */
   for(idx=0;idx<nbr_dmn_var;idx++){
     for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
       if(var->dmn_id[idx] == dim[idx_dmn]->id){
+	/* Although structures in dim are never altered, linking them into
+	   dmn_avg list makes them vulnerable to manipulation and forces 
+	   dim to lose const protection in prototype */
 	dmn_avg[nbr_dmn_avg]=dim[idx_dmn];
 	idx_avg_var[nbr_dmn_avg]=idx;
 	/*	idx_var_avg[idx]=nbr_dmn_avg;*/ /* Variable is unused but instructive anyway */
@@ -272,3 +275,840 @@ var_avg /* [fnc] reduce given variable over specified dimensions */
   /* Return averaged variable */
   return fix;
 } /* end var_avg() */
+
+void
+var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const long sz_op1, /* I [nbr] Size (in elements) of op1 */
+ const long sz_op2, /* I [nbr] Size (in elements) of op2 */
+ const int has_mss_val, /* I [flg] Operand has missing values */
+ const ptr_unn mss_val, /* I [sct] Missing value */
+ long * const tally, /* I/O [nbr] Tally buffer */
+ const ptr_unn op1, /* I [sct] Operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2)) */
+ ptr_unn op2) /* O [sct] Sum of each block of op1 */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Sum values in each contiguous block of first operand and place
+     result in corresponding element in second operand. 
+     Currently arithmetic operation performed is summation of elements in op1
+     Input operands are assumed to have conforming types, but not dimensions or sizes
+     var_avg_reduce() knows nothing about dimensions
+     Routine is one dimensional array operator acting serially on each element of input buffer op1
+     Calling rouine knows exactly how rank of output, op2, is reduced from rank of input
+     Routine only does summation rather than averaging in order to remain flexible
+     Operations which require normalization, e.g., averaging, must call var_normalize() 
+     or var_divide() to divide sum set in this routine by tally set in this routine. */
+
+  /* Each operation has GNUC and non-GNUC blocks:
+     GNUC: Utilize (non-ANSI-compliant) compiler support for local automatic arrays
+     This results in more elegent loop structure and, theoretically, in faster performance
+     non-GNUC: Fully ANSI-compliant structure
+     Fortran: Support deprecated */
+
+#ifndef __GNUC__
+  long blk_off;
+  long idx_op1;
+#endif /* !__GNUC__ */
+  long idx_op2;
+  long idx_blk;
+  long sz_blk;
+  double mss_val_dbl=double_CEWI;
+  float mss_val_flt=float_CEWI;
+  unsigned char mss_val_chr;
+  signed char mss_val_byt;
+  nco_long mss_val_lng=nco_long_CEWI;
+  short mss_val_sht=short_CEWI;
+
+  sz_blk=sz_op1/sz_op2;
+
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  (void)cast_void_nctype(type,&op2);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+
+  if(has_mss_val){
+    switch(type){
+    case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
+    case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
+    case NC_SHORT: mss_val_sht=*mss_val.sp; break;
+    case NC_INT: mss_val_lng=*mss_val.lp; break;
+    case NC_BYTE: mss_val_byt=*mss_val.bp; break;
+    case NC_CHAR: mss_val_chr=*mss_val.cp; break;
+    default: nco_dfl_case_nctype_err(); break;
+    } /* end switch */
+  } /* endif */
+
+  switch(type){
+  case NC_FLOAT:
+#ifndef __GNUC__
+    /* ANSI-compliant branch */
+    if(!has_mss_val){ 
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1.fp[blk_off+idx_blk];
+	tally[idx_op2]=sz_blk;
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.fp[idx_op1] != mss_val_flt){
+	    op2.fp[idx_op2]+=op1.fp[idx_op1];
+	    tally[idx_op2]++;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      float op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nco_typ_lng(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+	  tally[idx_op2]=sz_blk;
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_flt){
+	      op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+	      tally[idx_op2]++;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_flt;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_DOUBLE:
+#ifndef __GNUC__
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.dp[idx_op2]+=op1.dp[blk_off+idx_blk];
+	tally[idx_op2]=sz_blk;
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.dp[idx_op1] != mss_val_dbl){
+	    op2.dp[idx_op2]+=op1.dp[idx_op1];
+	    tally[idx_op2]++;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(tally[idx_op2] == 0L) op2.dp[idx_op2]=mss_val_dbl;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      double op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nco_typ_lng(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.dp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+	  tally[idx_op2]=sz_blk;
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
+	      op2.dp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+	      tally[idx_op2]++;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(tally[idx_op2] == 0L) op2.dp[idx_op2]=mss_val_dbl;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_INT:
+#ifndef __GNUC__
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.lp[idx_op2]+=op1.lp[blk_off+idx_blk];
+	tally[idx_op2]=sz_blk;
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.lp[idx_op1] != mss_val_lng){
+	    op2.lp[idx_op2]+=op1.lp[idx_op1];
+	    tally[idx_op2]++;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(tally[idx_op2] == 0L) op2.lp[idx_op2]=mss_val_lng;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      long op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.lp),sz_op1*nco_typ_lng(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.lp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+	  tally[idx_op2]=sz_blk;
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_lng){
+	      op2.lp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+	      tally[idx_op2]++;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(tally[idx_op2] == 0L) op2.lp[idx_op2]=mss_val_lng;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_SHORT:
+#ifndef __GNUC__
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.sp[idx_op2]+=op1.sp[blk_off+idx_blk];
+	tally[idx_op2]=sz_blk;
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.sp[idx_op1] != mss_val_sht){
+	    op2.sp[idx_op2]+=op1.sp[idx_op1];
+	    tally[idx_op2]++;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_sht;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      short op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.sp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+	  tally[idx_op2]=sz_blk;
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_sht){
+	      op2.sp[idx_op2]+=op1_2D[idx_op2][idx_blk];
+	      tally[idx_op2]++;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_sht;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_CHAR:
+    /* Do nothing except avoid compiler warnings */
+    mss_val_chr=mss_val_chr;
+    break;
+  case NC_BYTE:
+    /* Do nothing except avoid compiler warnings */
+    mss_val_byt=mss_val_byt;
+    break;
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+
+} /* end var_avg_reduce_ttl() */
+
+void
+var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2 */
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const long sz_op1, /* I [nbr] Size (in elements) of op1 */
+ const long sz_op2, /* I [nbr] Size (in elements) of op2 */
+ const int has_mss_val, /* I [flg] Operand has missing values */
+ const ptr_unn mss_val, /* I [sct] Missing value */
+ const ptr_unn op1, /* I [sct] Operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2)) */
+ ptr_unn op2) /* O [sct] Minimum of each block of op1 */
+{
+  /* Purpose: Find minimum value of each contiguous block of first operand and place
+     result in corresponding element in second operand. Operands are assumed to have
+     conforming types, but not dimensions or sizes. */
+
+  /* var_avg_reduce_min() is derived from var_avg_reduce_ttl()
+     Routines are very similar but tallies are not incremented
+     See var_avg_reduce_ttl() for more algorithmic documentation
+     var_avg_reduce_max() is derived from var_avg_reduce_min() */
+
+#ifndef __GNUC__
+  long blk_off;
+  long idx_op1;
+#endif /* !__GNUC__ */
+  long idx_op2;
+  long idx_blk;
+  long sz_blk;
+
+  double mss_val_dbl=double_CEWI;
+  float mss_val_flt=float_CEWI;
+  nco_long mss_val_lng=nco_long_CEWI;
+  short mss_val_sht=short_CEWI;
+  unsigned char mss_val_chr;
+  signed char mss_val_byt;
+  
+  bool flg_mss=False;
+  
+  sz_blk=sz_op1/sz_op2;
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  (void)cast_void_nctype(type,&op2);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  if(has_mss_val){
+    switch(type){
+    case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
+    case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
+    case NC_SHORT: mss_val_sht=*mss_val.sp; break;
+    case NC_INT: mss_val_lng=*mss_val.lp; break;
+    case NC_BYTE: mss_val_byt=*mss_val.bp; break;
+    case NC_CHAR: mss_val_chr=*mss_val.cp; break;
+    default: nco_dfl_case_nctype_err(); break;
+    } /* end switch */
+  } /* endif */
+  
+  switch(type){
+  case NC_FLOAT:
+    
+#ifndef __GNUC__
+    /* ANSI-compliant branch */
+    if(!has_mss_val){ 
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.fp[idx_op2]=op1.fp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.fp[idx_op2] > op1.fp[blk_off+idx_blk]) op2.fp[idx_op2]=op1.fp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.fp[idx_op1] != mss_val_flt) {
+	    if(!flg_mss || op2.fp[idx_op2] > op1.fp[idx_op1]) op2.fp[idx_op2]=op1.fp[idx_op1];
+	    flg_mss=True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      float op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nco_typ_lng(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.fp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.fp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_flt) {
+	      if(!flg_mss || op2.fp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    
+    break;
+  case NC_DOUBLE:
+    
+#ifndef __GNUC__
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.dp[idx_op2]=op1.dp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.dp[idx_op2] > op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.dp[idx_op1] != mss_val_dbl) {
+	    if(!flg_mss || (op2.dp[idx_op2] > op1.dp[idx_op1])) op2.dp[idx_op2]=op1.dp[idx_op1];
+	    flg_mss=True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      double op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nco_typ_lng(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.dp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.dp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk] ;
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
+	      if(!flg_mss || (op2.dp[idx_op2] > op1_2D[idx_op2][idx_blk])) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk];	    
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_INT:
+#ifndef __GNUC__
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.lp[idx_op2]=op1.lp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.lp[idx_op2] > op1.lp[blk_off+idx_blk]) op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.lp[idx_op1] != mss_val_lng){
+	    if(!flg_mss || op2.lp[idx_op2] > op1.lp[idx_op1]) op2.lp[idx_op2]=op1.lp[idx_op1];
+	    flg_mss= True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      long op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.lp),sz_op1*nco_typ_lng(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.lp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.lp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_lng){
+	      if(!flg_mss || op2.lp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_SHORT:
+#ifndef __GNUC__
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.sp[idx_op2]=op1.sp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.sp[idx_op2] > op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.sp[idx_op1] != mss_val_sht){
+	    if(!flg_mss || op2.sp[idx_op2] > op1.sp[idx_op1]) op2.sp[idx_op2]=op1.sp[idx_op1];
+	    flg_mss=True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.sp[idx_op2]=mss_val_sht;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      short op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.sp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_sht){
+	      if(!flg_mss  || op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.sp[idx_op2]=mss_val_sht;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_CHAR:
+    /* Do nothing except avoid compiler warnings */
+    mss_val_chr=mss_val_chr;
+    break;
+  case NC_BYTE:
+    /* Do nothing except avoid compiler warnings */
+    mss_val_byt=mss_val_byt;
+    break;
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end  switch */
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+  
+} /* end var_avg_reduce_min() */
+
+void
+var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2 */
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const long sz_op1, /* I [nbr] Size (in elements) of op1 */
+ const long sz_op2, /* I [nbr] Size (in elements) of op2 */
+ const int has_mss_val, /* I [flg] Operand has missing values */
+ const ptr_unn mss_val, /* I [sct] Missing value */
+ const ptr_unn op1, /* I [sct] Operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2)) */
+ ptr_unn const op2) /* O [sct] Maximum of each block of op1 */
+{
+  /* Purpose: Find maximum value of each contiguous block of first operand and place
+     result in corresponding element in second operand. Operands are assumed to have
+     conforming types, but not dimensions or sizes. */
+
+  /* var_avg_reduce_min() is derived from var_avg_reduce_ttl()
+     Routines are very similar but tallies are not incremented
+     See var_avg_reduce_ttl() for more algorithmic documentation
+     var_avg_reduce_max() is derived from var_avg_reduce_min() */
+
+#ifndef __GNUC__
+  long blk_off;
+  long idx_op1;
+#endif /* !__GNUC__ */
+  long idx_op2;
+  long idx_blk;
+  long sz_blk;
+  
+  double mss_val_dbl=double_CEWI;
+  float mss_val_flt=float_CEWI;
+  nco_long mss_val_lng=nco_long_CEWI;
+  short mss_val_sht=short_CEWI;
+  unsigned char mss_val_chr;
+  signed char mss_val_byt;
+  
+  bool flg_mss=False;
+  
+  sz_blk=sz_op1/sz_op2;
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  (void)cast_void_nctype(type,&op2);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  if(has_mss_val){
+    switch(type){
+    case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
+    case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
+    case NC_SHORT: mss_val_sht=*mss_val.sp; break;
+    case NC_INT: mss_val_lng=*mss_val.lp; break;
+    case NC_BYTE: mss_val_byt=*mss_val.bp; break;
+    case NC_CHAR: mss_val_chr=*mss_val.cp; break;
+    default: nco_dfl_case_nctype_err(); break;
+    } /* end switch */
+  } /* endif */
+  
+  switch(type){
+  case NC_FLOAT:
+    
+#ifndef __GNUC__
+    /* ANSI-compliant branch */
+    if(!has_mss_val){ 
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.fp[idx_op2]=op1.fp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.fp[idx_op2] < op1.fp[blk_off+idx_blk]) op2.fp[idx_op2]=op1.fp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.fp[idx_op1] != mss_val_flt) {
+	    if(!flg_mss || op2.fp[idx_op2] < op1.fp[idx_op1]) op2.fp[idx_op2]=op1.fp[idx_op1];
+	    flg_mss=True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      float op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nco_typ_lng(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.fp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.fp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_flt) {
+	      if(!flg_mss || op2.fp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    
+    break;
+  case NC_DOUBLE:
+    
+#ifndef __GNUC__
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.dp[idx_op2]=op1.dp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.dp[idx_op2] < op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.dp[idx_op1] != mss_val_dbl) {
+	    if(!flg_mss || (op2.dp[idx_op2] < op1.dp[idx_op1])) op2.dp[idx_op2]=op1.dp[idx_op1];
+	    flg_mss=True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      double op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nco_typ_lng(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.dp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.dp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk] ;
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
+	      if(!flg_mss || (op2.dp[idx_op2] < op1_2D[idx_op2][idx_blk])) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk];	    
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_INT:
+#ifndef __GNUC__
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.lp[idx_op2]=op1.lp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.lp[idx_op2] < op1.lp[blk_off+idx_blk]) op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.lp[idx_op1] != mss_val_lng){
+	    if(!flg_mss || op2.lp[idx_op2] < op1.lp[idx_op1]) op2.lp[idx_op2]=op1.lp[idx_op1];
+	    flg_mss= True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      long op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.lp),sz_op1*nco_typ_lng(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.lp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.lp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_lng){
+	      if(!flg_mss || op2.lp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_SHORT:
+#ifndef __GNUC__
+    /* ANSI-compliant branch */
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.sp[idx_op2]=op1.sp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.sp[idx_op2] < op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.sp[idx_op1] != mss_val_sht){
+	    if(!flg_mss || op2.sp[idx_op2] < op1.sp[idx_op1]) op2.sp[idx_op2]=op1.sp[idx_op1];
+	    flg_mss=True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.sp[idx_op2]=mss_val_sht;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
+    if(True){
+      short op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nco_typ_lng(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.sp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_sht){
+	      if(!flg_mss  || op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.sp[idx_op2]=mss_val_sht;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */
+    break;
+  case NC_CHAR:
+    /* Do nothing except avoid compiler warnings */
+    mss_val_chr=mss_val_chr;
+    break;
+  case NC_BYTE:
+    /* Do nothing except avoid compiler warnings */
+    mss_val_byt=mss_val_byt;
+    break;
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end  switch */
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+
+} /* end var_avg_reduce_max() */

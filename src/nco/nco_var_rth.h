@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.2 2002-05-06 03:31:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.3 2002-05-07 08:00:08 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -22,6 +22,8 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_cnf_typ.h" /* Conform variable types */
+#include "nco_ctl.h" /* Program flow control functions */
 
 #ifdef __cplusplus
 extern "C" {
@@ -29,9 +31,6 @@ extern "C" {
 
   void var_add(nc_type,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
   void var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2);
-  void var_avg_reduce_ttl(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
-  void var_avg_reduce_min(nc_type,long,long,int,ptr_unn,ptr_unn,ptr_unn);
-  void var_avg_reduce_max(nc_type,long,long,int,ptr_unn,ptr_unn,ptr_unn);
   void var_divide(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
   void var_mask(nc_type,long,int,ptr_unn,double,int,ptr_unn,ptr_unn);
   void var_max_bnr(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.5 2002-05-06 06:37:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.6 2002-05-07 08:00:09 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -26,6 +26,10 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_att_utl.h" /* Attribute utilities */
+#include "nco_ctl.h" /* Program flow control functions */
+#include "nco_mmr.h" /* Memory management */
+#include "nco_pck.h" /* Packing and unpacking variables */
 
 #ifdef __cplusplus
 extern "C" {
@@ -77,7 +81,7 @@ extern "C" {
   (const int in_id, /* I [enm] netCDF input-file ID */
    const char * const fl_out, /* I [sng] Name of output file */
    const int out_id, /* I [enm] netCDF output-file ID */
-   const var_sct ** const var, /* I [sct] Variables to be defined in output file */
+   var_sct * const * const var, /* I/O [sct] Variables to be defined in output file */
    const int nbr_var, /* I [nbr] Number of variables to be defined */
    const dmn_sct ** const dmn_ncl, /* I [sct] Dimensions included in output file */
    const int nbr_dmn_ncl); /* I [nbr] Number of dimensions in list */
@@ -101,7 +105,7 @@ extern "C" {
   void
   var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
   (const int nc_id, /* I [id] netCDF file ID */
-   var_sct * const var); /* I [sct] Variable to get */
+   var_sct *var); /* I [sct] Variable to get */
   
   nm_id_sct * /* O [sct] List with coordinate excluded */
   var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
