@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.357 2004-08-04 18:08:55 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.358 2004-08-04 18:15:10 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -20,7 +20,6 @@ nco152. Change make or nco_dst.pl to add docs to /usr/doc in RPM
 nco164. Spiff up NCO homepage web page (Logo?)
 nco165. Create Makefile dependency to do 'make dir' if lib, obj, bin directories do not exist
 nco178. Make _FillValue behave same as missing_value
-nco191. Create short man page for ncap which points user to info pages or online manual
 nco212. Ensure structures are always passed by reference (default is pass by value)
 nco312. Make TODO list more legible (change to, e.g., Emacs list/outline mode, LaTeX, Wiki?) 
 nco313. Redo TODO subject categorization by discriminating based on skills required to tackle. Initial cateogorization might be e.g., autotools, bison, C, C++, Debian, flex, HTML, Perl, RPM, www, TeXInfo
@@ -238,10 +237,9 @@ nco365. Add ncpdq tests to nco_tst.pl
 nco366. ncpdq: Use ncwa technique to put non-dmn_rdr variables in var_fix rather than var_prc?
 nco367. fix ncwa list collapse errors once bug found in pcpdq. Unfortunately ncwa uses dim_avg_lst after it is collapsed
 nco369. make sure strcmp is used for comparison, rather than strstr
-nco370. ncpdq man page for Debian
 nco371. fix broken ncwa---due to nco_avg "fixes" made in last four days?
 nco372. Update man pages for -o, -t, stdin features
-nco373. Have man pages all get trailer from ~/nco/doc/man_end.txt
+nco373. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -306,7 +304,8 @@ bld38. Use OPeNDAP 3.4.4 opendap-config script to ease build process, e.g., `ope
 bld39. Fix autoconf build warnings (from including ncap_yacc in ncwa?):
 Makefile:472: warning: overriding commands for target `ncap_yacc.h'
 Makefile:440: warning: ignoring old commands for target `ncap_yacc.h'
-bld40.
+bld40. Automate splicing trailer ~/nco/doc/man_end.txt to man pages
+bld41.
 
 ************************************************************************
 End NCO Wish list
