@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.51 1999-12-15 00:57:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.52 1999-12-15 01:42:53 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -511,7 +511,7 @@ libnco := $(MY_LIB_DIR)/libnco
 # Default targets
 all: dir lib $(MDL_BIN_TRG) data
 # .PHONY tells make to remake the following non-file targets 
-.PHONY: all cln dst_cln dbg 
+.PHONY: all cln dst_cln dbg dir
 # Delete default suffixes---this should increase speed
 .SUFFIXES: 
 # Define suffixes which matter
@@ -521,10 +521,13 @@ all: dir lib $(MDL_BIN_TRG) data
 # Target directories which may not exist
 dir: bin_dir obj_dir lib_dir
 bin_dir:
+	-install -d $(MY_BIN_DIR)
 	-mkdir -p $(MY_BIN_DIR)
 lib_dir:
+	-install -d $(MY_BIN_DIR)
 	-mkdir -p $(MY_LIB_DIR)
 obj_dir:
+	-install -d $(MY_BIN_DIR)
 	-mkdir -p $(MY_OBJ_DIR)
 
 # Targets in bin
