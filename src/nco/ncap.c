@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.45 2002-01-13 09:23:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.46 2002-01-14 18:40:50 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.45 2002-01-13 09:23:40 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.45 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.46 2002-01-14 18:40:50 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.46 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -217,9 +217,10 @@ main(int argc,char **argv)
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
   
+
   /* Parse command line arguments */
   
-  opt_sng="ACcD:d:Fhl:n:Op:r:s:S:vx";
+  opt_sng="ACcD:d:Fhl:n:Op:r:s:S:v";
   
   while( (opt=getopt(argc,argv,opt_sng))!= EOF){
     switch(opt){
@@ -264,6 +265,7 @@ main(int argc,char **argv)
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
+
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
