@@ -1,3 +1,7 @@
+2002-11-04  Charlie Zender  <zender@uci.edu>
+
+	* Restore ./configure file from 2.6.5 and re-tag as 2.6.6
+
 2002-10-25  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_6_6
