@@ -1,3 +1,11 @@
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.9 1999-04-20 19:12:36 zender Exp $ >
+
+<! Purpose: NCO homepage >
+
+<! Usage: >
+<! http://www.cgd.ucar.edu/cms/nco/index.shtml >
+<! /bin/cp -f ~/nc/nco/doc/index.shtml /web/web-data/cms/nco/index.shtml >
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
 <HEAD>
@@ -136,11 +144,19 @@ User's Guide</A>. </P>
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
 
+<P>99/04/20: 
+Fixed bug where <TT>ncrcat</TT> and <TT>ncra</TT> omitted the last slice of the
+record dimension when <TT>`-F'</TT> (Fortran indexing) was user-specified AND
+user-specified hyperslab information was provided for some
+dimensions BUT not for the record dimension. This bug only
+affected <TT>ncrcat</TT> and <TT>ncra</TT> and only under these conditions. Thanks
+to John Sheldon <jps@server1.gfdl.gov> for pointing this out. 
+	
 <P>99/04/04: By default, extracted variables appear in the same order
 in which they were written to the source netCDF file.
 However, this order is often essentially random, making it hard to
 locate a particular variable in a dump of many variables.
-To help address this, <TT>`ncks'</TT> will now alphabetize variables.
+To help address this, <TT>ncks</TT> will now alphabetize variables.
 Simply specify <TT>`-a'</TT> on the command line.
 
 <P>99/01/21: An optional token has been added to NCO which eliminates
@@ -156,8 +172,7 @@ urged to upgrade your NCO and rerun the commands. This bug only
 affected variables averaged with both the weight and mask options
 enabled at the same time, no other variables would have been affected. 
 
-<P>
-The <TT>`-n'</TT> and <TT>`-W'</TT> normalization options to
+<P>The <TT>`-n'</TT> and <TT>`-W'</TT> normalization options to
 <TT>ncwa</TT> have been removed, possibly permanently, but at least
 until their implementation is simplified and redesigned. The
 <TT>`-N'</TT> option to <TT>ncwa</TT> remains the same. All the new

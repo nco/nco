@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.19 1999-04-05 00:37:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.20 1999-04-20 19:12:37 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -543,6 +543,7 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
   *lim_ptr=lim;
   
   if(dbg_lvl_get() == 5){
+    (void)fprintf(stderr,"Dimension hyperslabber lim_evl() diagnostics:\n");
     (void)fprintf(stderr,"name = %s\n",lim.nm);
     (void)fprintf(stderr,"min_sng = %s\n",lim.min_sng == NULL ? "NULL" : lim.min_sng);
     (void)fprintf(stderr,"max_sng = %s\n",lim.max_sng == NULL ? "NULL" : lim.max_sng);
@@ -554,7 +555,7 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
     (void)fprintf(stderr,"srt = %li\n",lim.srt);
     (void)fprintf(stderr,"end = %li\n",lim.end);
     (void)fprintf(stderr,"cnt = %li\n",lim.cnt);
-    (void)fprintf(stderr,"srd = %li\n",lim.srd);
+    (void)fprintf(stderr,"srd = %li\n\n",lim.srd);
   } /* end dbg */
   
 } /* end lim_evl() */ 
@@ -1086,10 +1087,12 @@ lim_dim_mk(int nc_id,int dim_id,lim_sct *lim,int nbr_lim,bool FORTRAN_STYLE)
   } /* end loop over idx */
   if(idx == nbr_lim){
     char dim_nm[MAX_NC_NAME];
+    long cnt;
+    int max_sng_sz;
     
     /* Fill in the limits with the default parsing info. */ 
     ncopts=0; 
-    rcd=ncdiminq(nc_id,dim_id,dim_nm,(long *)NULL);
+    rcd=ncdiminq(nc_id,dim_id,dim_nm,&cnt);
     ncopts=NC_VERBOSE | NC_FATAL; 
 
     if(rcd == -1){
@@ -1098,8 +1101,25 @@ lim_dim_mk(int nc_id,int dim_id,lim_sct *lim,int nbr_lim,bool FORTRAN_STYLE)
     } /* end if */ 
 
     lim_dim.nm=(char *)strdup(dim_nm);
-    lim_dim.max_sng=NULL;
     lim_dim.srd_sng=NULL;
+    /* Automatically generate min and max strings to look as if the user
+       had specified them.
+       Adjust accordingly if FORTRAN_STYLE was requested for other dimensions
+       These sizes will later be decremented in lim_evl() where all information
+       is converted internally to C based indexing representation.
+       Ultimately this problem arises because I want lim_evl() to think the
+       user always did specify this dimension's hyperslab.
+       In order to do that, I must fill in the max_sng, min_sng, and srd_sng
+       arguments with strings as if they had been read from the keyboard.
+       Another solution would be to add a flag to lim_sct indicating whether this
+       limit struct had been automatically generated and then act accordingly.
+    */ 
+    /* Decrement cnt to C index value if necessary */
+    if(!FORTRAN_STYLE) cnt--; 
+    max_sng_sz=(int)ceil(log10((double)cnt));
+    /* Add one for the NULL byte */
+    lim_dim.max_sng=(char *)malloc(sizeof(char)*(max_sng_sz+1));
+    (void)sprintf(lim_dim.max_sng,"%ld",cnt);
     if(FORTRAN_STYLE){
       lim_dim.min_sng=(char *)strdup("1");
     }else{

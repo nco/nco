@@ -1,23 +1,23 @@
 #!/contrib/bin/perl
 				
-my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.7 1999-04-05 00:54:36 zender Exp $';
+my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.8 1999-04-20 19:12:35 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
 # Usage:
 # Export tagged, public versions
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln nco1_1_23
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_23
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_23
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_prs nco1_1_23
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_23
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_23
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln nco1_1_24
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_24
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_24
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_prs nco1_1_24
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_24
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_24
 
 # Export daily snapshot
 # /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 
 # /home/zender/nc/nco/bld/nco_dst.pl --dbg=1 --cln --nst
 
-use strict; # Protect all namespaces; this produces many errors with non-expert code
+use strict; # Protect all namespaces
 use File::Basename; # Parses filenames
 
 # Specify modules
@@ -49,9 +49,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $RCS_Date='$Date: 1999-04-05 00:54:36 $';
-my $RCS_Id='$Id: nco_dst.pl,v 1.7 1999-04-05 00:54:36 zender Exp $';
-my $RCS_Revision='$Revision: 1.7 $';
+my $RCS_Date='$Date: 1999-04-20 19:12:35 $';
+my $RCS_Id='$Id: nco_dst.pl,v 1.8 1999-04-20 19:12:35 zender Exp $';
+my $RCS_Revision='$Revision: 1.8 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
