@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.152 2002-07-03 20:37:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.153 2002-07-04 03:51:56 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -46,6 +46,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 30. Allow -S to specify multiple input scripts to be sequentially parsed
 31. Put globals fl_spt_crr,ncl_dpt_crr,ln_nbr_crr in prs_arg or remove fl_spt from it
 32. Need filename expander and $NCO_DATA_PATH handling so #include's may be generic
+33. Document new math/roundig functions (acosh, floor...)
 
 Highest priority NCO-wide items that You can help with:
 41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)

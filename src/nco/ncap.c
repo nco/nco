@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.80 2002-07-04 03:40:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.81 2002-07-04 03:51:56 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -11,7 +11,8 @@
 /* Usage:
    ncap -O -D 1 -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    ncap -O -D 1 -s a=b+c -s "b=c-d/2." -S ncap.in in.nc foo.nc
-   ncap -O -D 1 -s two=one+two in.nc foo.nc */
+   ncap -O -D 1 -s two=one+two in.nc foo.nc
+   scp ~/nco/src/nco/ncap.c dataproc.ucar.edu:nco/src/nco/ncap.c */
 
 /* Standard C headers */
 #include <assert.h>  /* assert() debugging macro */
@@ -84,8 +85,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.80 2002-07-04 03:40:36 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.80 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.81 2002-07-04 03:51:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.81 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -117,13 +118,13 @@ main(int argc,char **argv)
   extern float sinhf(float);
   extern float tanhf(float);
 
-  /* Basic Rounding: ceil, floor, rint */
+  /* Basic Rounding: ceil, floor */
   extern float ceilf(float);
   extern float floorf(float);
-  extern float rintf(float);
 
-  /* Advanced Rounding: nearbyint, round, trunc */
+  /* Advanced Rounding: nearbyint, rint, round, trunc */
   extern float nearbyintf(float);
+  extern float rintf(float);
   extern float roundf(float);
   extern float truncf(float);
 
@@ -286,8 +287,8 @@ main(int argc,char **argv)
   sym_tbl_nbr= /* fxm: Make this dynamic */
    +10 /* Basic math: acos, asin, atan, cos, exp, log, log10, sin, sqrt, tan */
     +6 /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
-    +3 /* Basic Rounding: ceil, floor, rint */
-    +3 /* Advanced Rounding: nearbyint, round, trunc */
+    +2 /* Basic Rounding: ceil, floor */
+    +4 /* Advanced Rounding: nearbyint, rint, round, trunc */
     +3 /* Advanced math: erf, erfc, gamma */
     ;
   sym_tbl=(sym_sct **)nco_malloc(sizeof(sym_sct *)*sym_tbl_nbr);
@@ -304,11 +305,17 @@ main(int argc,char **argv)
   sym_tbl[sym_idx++]=ncap_sym_init("sqrt",sqrt,sqrtf);
   sym_tbl[sym_idx++]=ncap_sym_init("tan",tan,tanf);
 
+  /* Basic Rounding: ceil, floor */
+  sym_tbl[sym_idx++]=ncap_sym_init("ceil",ceil,ceilf); /* Round up to nearest integer */
+  sym_tbl[sym_idx++]=ncap_sym_init("floor",floor,floorf); /* Round down to nearest integer */
+
 #if (defined SGIMP64) || (defined AIX)
   /* 20020122 and 20020422: SGI and AIX do not define erff(), erfcf(), gammaf() */
   sym_tbl_nbr-=3; /* Advanced math: erf, erfc, gamma */
-  sym_tbl_nbr-=3; /* Basic Rounding: ceil, floor, rint */
-  sym_tbl_nbr-=3; /* Advanced Rounding: nearbyint, round, trunc */
+  /* sym_tbl_nbr-=2; *//* Basic Rounding: ceil, floor */
+  /* 20020703: SGI and AIX do not define rintf */
+  sym_tbl_nbr-=4; /* Advanced Rounding: nearbyint, rintf, round, trunc */
+  /* 20020703: SGI and AIX do not define acoshf, asinhf, atanhf */
   sym_tbl_nbr-=6; /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
 #else /* not SGIMP64 || AIX */
   /* Advanced math: erf, erfc, gamma */
@@ -324,16 +331,12 @@ main(int argc,char **argv)
   sym_tbl[sym_idx++]=ncap_sym_init("sinh",sinh,sinhf);
   sym_tbl[sym_idx++]=ncap_sym_init("tanh",tanh,tanhf);
 
-  /* Basic Rounding: ceil, floor, rint */
-  sym_tbl[sym_idx++]=ncap_sym_init("ceil",ceil,ceilf); /* Round up to nearest integer */
-  sym_tbl[sym_idx++]=ncap_sym_init("floor",floor,floorf); /* Round down to nearest integer */
-  sym_tbl[sym_idx++]=ncap_sym_init("rint",rint,rintf); /* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
-
-  sym_tbl_nbr-=3; /* Advanced Rounding: nearbyint, round, trunc */
+  sym_tbl_nbr-=4; /* Advanced Rounding: nearbyint, rint, round, trunc */
   /* Advanced Rounding: nearbyint, round, trunc */
   /* sym_tbl[sym_idx++]=ncap_sym_init("nearbyint",nearbyint,nearbyintf); *//* Round to integer value in floating point format using current rounding direction, do not raise inexact exceptions */
   /* sym_tbl[sym_idx++]=ncap_sym_init("round",round,roundf); *//* Round to nearest integer away from zero */
   /* sym_tbl[sym_idx++]=ncap_sym_init("trunc",trunc,truncf); *//* Round to nearest integer not larger in absolute value */
+  /* sym_tbl[sym_idx++]=ncap_sym_init("rint",rint,rintf); *//* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
 #endif /* not SGIMP64 || AIX */
   assert(sym_idx == sym_tbl_nbr);
  
