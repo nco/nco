@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.11 2003-11-10 06:45:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.12 2003-11-10 06:54:43 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -70,7 +70,7 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
     default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
     /* fxm: Print statement only works with type NC_FLOAT */
-    if(MSS_VAL_EQL) (void)fprintf(stderr,"%s: WARNING Input variables have different missing_value's:\nFile 1 variable %s has missing_value type = %s, value = %f\nFile 2 variable %s has missing_value type = %s, value = %f\nFile 3 variable %s will have missing_value type = %s, value = %f\nWill translate values of var2 equaling mss_val2 to mss_val1 before arithmetic operation",prg_nm_get(),var1->nm,nco_typ_sng(var1->type),var1->mss_val.fp[0],var2->nm,nco_typ_sng(var2->type),var2->mss_val.fp[0],var1->nm,nco_typ_sng(var1->type),var1->mss_val.fp[0]);
+    if(!MSS_VAL_EQL) (void)fprintf(stderr,"%s: WARNING Input variables have different missing_value's:\nFile 1 variable %s has missing_value type = %s, value = %f\nFile 2 variable %s has missing_value type = %s, value = %f\nFile 3 variable %s will have missing_value type = %s, value = %f\nWill translate values of var2 equaling mss_val2 to mss_val1 before arithmetic operation\n",prg_nm_get(),var1->nm,nco_typ_sng(var1->type),var1->mss_val.fp[0],var2->nm,nco_typ_sng(var2->type),var2->mss_val.fp[0],var1->nm,nco_typ_sng(var1->type),var1->mss_val.fp[0]);
     (void)cast_nctype_void(var_typ,&var1->mss_val);
     (void)cast_nctype_void(var_typ,&var2->mss_val);
   } /* end if both variables have missing values */
