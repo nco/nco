@@ -60,13 +60,6 @@ valid workaround.
 111. Investigate whether using ncwa to average files where variables of type 
 NC_CHAR have a record dimension is causing core dumps or other problems.
 i.e., LSM variable timecom caused subtle ncra problems for a while.
-113. ncwa is sensitive to direction of monotonicity!
-Following commands give different answers, but should not:
-ncks -O -D 5 -v z -d lev,1000.,100. in.nc foo.nc;ncks -H foo.nc
-ncks -O -D 5 -v rz -d rlev,1000.,100. in.nc foo.nc;ncks -H foo.nc
-ncwa -O -v z -a lev -d lev,-70.,-90. in.nc foo.nc;ncks -H foo.nc
-ncwa -a lat -d lat,-90.,-70.
-Latter command (monotonically increasing hyperslab) is correct.
 ************************************************************************
 End NCO Wish list
 ************************************************************************
