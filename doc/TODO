@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.63 2000-07-27 23:27:07 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.64 2000-07-28 23:54:24 zender Exp $ 
 
 *************
 NCO Wish list
@@ -137,6 +137,7 @@ with nco_dst.pl
 173. Add switch to ncra which allows user to remove degenerate time
 dimension from result
 174. Setup ncra,ncea,ncwa to do standard deviations sdn
+175. Change weights in ncwa to work correctly with all averages (avg,avgsqr,rms)
 ************************************************************************
 End NCO Wish list
 ************************************************************************

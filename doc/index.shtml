@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.46 2000-07-13 06:57:40 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.47 2000-07-28 23:54:24 zender Exp $
 
 Purpose: NCO homepage
 
@@ -160,6 +160,46 @@ description of each operator, please read the
 
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
+
+<P>2000/07/30: 
+nco-1.2 is released. 
+This new release includes substantial improvements to the functionality
+of NCO as well as to the administration.
+
+First, the names of three of the operators have been made obsolete
+because they are no longer just arithmetic averagers.
+<TT>ncra</TT>, <TT>ncea</TT>, and <TT>ncwa</TT> have all been given
+brain transplants so that the type of operation they perform may be
+specified on the command line. 
+The following operations are now supported by the new 
+<TT>-y</TT> switch: average (default), total, minimum, maximum,
+root-mean-square, square of the mean, mean of the squares, square
+root.
+Averaging is still the default so no existing usage needs to be modified.
+It is also possible to compute spatial and temporal standard
+deviations using combinations of three or four NCO commands.
+
+Second, all operators may be built to be 
+<a HREF="http://www.unidata.ucar.edu/packages/dods">DODS</a></dd> compliant.
+DODS enables network transparent data access for NCO.
+This means that you can operate on remote files accessible through any
+DODS server without transferring the files.
+Only the required data (e.g., the variable or hyperslab specified) are
+transferred.
+See the <A HREF="./nco.html">User's Guide</A> for complete details.
+
+Third, Fortran compatibility has been dropped. 
+If a volunteer wants to continue to maintain the option to perform
+arithmetic in Fortran for reasons of speed, contact me.
+
+Fourth, NCO is now an Open Source project licensed under the GPL.
+These new capabilities are the result of contributions from Henry
+Butowki, Bill Kocik, and Roland Schweitzer.
+For more information on how to contribute to NCO,
+visit the <a href="http://sourceforge.net/projects/nco">NCO
+administration homepage</a>.
+
+Mailing list....no more announcements on CCM list?
 
 <P>2000/05/15: 
 nco-1.1.48 fixes a bug introduced in nco-1.1.15 (November 1998) with

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.39 2000-07-27 12:51:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.40 2000-07-28 23:54:24 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.39 2000-07-27 12:51:34 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.39 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.40 2000-07-28 23:54:24 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.40 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -135,7 +135,7 @@ main(int argc,char **argv)
   int nbr_dmn_out;
   int nbr_dmn_xtr;
   int nbr_fl=0;
-  int nco_op_typ = nco_op_avg; /* flag for average,min,max,ttl operations */
+  int nco_op_typ=nco_op_avg; /* Flag for average,min,max,ttl operations */
   int opt;
   int op_type=0; /* Option o */ 
   int rec_dmn_id=-1;
@@ -217,7 +217,7 @@ main(int argc,char **argv)
       fl_pth_lcl=optarg;
       break;
     case 'm':
-      /* Name of variable to use as mask in averaging.  Default is none */
+      /* Name of variable to use as mask in reducing.  Default is none */
       msk_nm=optarg;
       break;
     case 'M':
@@ -265,17 +265,17 @@ main(int argc,char **argv)
       exit(EXIT_FAILURE);
       break;
     case 'w':
-      /* Variable to use as weight in averaging.  Default is none */
+      /* Variable to use as weight in reducing.  Default is none */
       wgt_nm=optarg;
       break;
     case 'x':
       /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
-	case 'y': /* Option minmax,average */
+    case 'y': /* Option minmax,average */
       nco_op_typ_sng=(char *)strdup(optarg);
-	  nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
-	  break;
+      nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
+      break;
     case '?':
       /* Print proper usage */
       (void)usg_prn();
@@ -284,7 +284,6 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
 
-  
   /* If called without arguments, print usage and exit successfully */ 
   if(arg_cnt == 0){
     (void)usg_prn();
@@ -353,19 +352,19 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_dmn_avg;idx++){
       dmn_avg_lst_in[idx]=(char *)strdup(dmn_lst[idx].nm);
     } /* end loop over idx */
-    (void)fprintf(stderr,"%s: WARNING No dimensions specified with -a, therefore averaging over all dimensions\n",prg_nm);
+    (void)fprintf(stderr,"%s: WARNING No dimensions specified with -a, therefore reducing (averaging, taking minimum, etc.) over all dimensions\n",prg_nm);
   } /* end if nbr_dmn_avg == 0 */
 
   if (nbr_dmn_avg > 0){
-    /* Form list of averaging dimensions */ 
+    /* Form list of reducing dimensions */ 
     dmn_avg_lst=dmn_lst_mk(in_id,dmn_avg_lst_in,nbr_dmn_avg);
 
     if(nbr_dmn_avg > nbr_dmn_xtr){
-      (void)fprintf(stdout,"%s: ERROR More averaging dimensions than extracted dimensions\n",prg_nm);
+      (void)fprintf(stdout,"%s: ERROR More reducing dimensions than extracted dimensions\n",prg_nm);
       exit(EXIT_FAILURE);
     } /* end if */
 
-    /* Form list of averaging dimensions from extracted input dimensions */ 
+    /* Form list of reducing dimensions from extracted input dimensions */ 
     dmn_avg=(dmn_sct **)nco_malloc(nbr_dmn_avg*sizeof(dmn_sct *));
     for(idx_avg=0;idx_avg<nbr_dmn_avg;idx_avg++){
       for(idx=0;idx<nbr_dmn_xtr;idx++){
@@ -374,7 +373,7 @@ main(int argc,char **argv)
       if(idx != nbr_dmn_xtr){
 	dmn_avg[idx_avg]=dim[idx];
       }else{
-	(void)fprintf(stderr,"%s: WARNING averaging dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_avg_lst[idx_avg].nm);
+	(void)fprintf(stderr,"%s: WARNING reducing dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_avg_lst[idx_avg].nm);
 	/* Collapse dimension average list by omitting irrelevent dimension */ 
 	(void)memmove(dmn_avg_lst,dmn_avg_lst,idx_avg*sizeof(nm_id_sct));
 	(void)memmove(dmn_avg_lst+idx_avg*sizeof(nm_id_sct),dmn_avg_lst+(idx_avg+1)*sizeof(nm_id_sct),(nbr_dmn_avg-idx_avg+1)*sizeof(nm_id_sct));
@@ -383,12 +382,12 @@ main(int argc,char **argv)
       } /* end else */ 
     } /* end loop over idx_avg */
 
-    /* Make sure no averaging dimension is specified more than once */ 
+    /* Make sure no reducing dimension is specified more than once */ 
     for(idx=0;idx<nbr_dmn_avg;idx++){
       for(idx_avg=0;idx_avg<nbr_dmn_avg;idx_avg++){
 	if(idx_avg != idx){
 	  if(dmn_avg[idx]->id == dmn_avg[idx_avg]->id){
-	    (void)fprintf(stdout,"%s: ERROR %s specified more than once in averaging list\n",prg_nm,dmn_avg[idx]->nm);
+	    (void)fprintf(stdout,"%s: ERROR %s specified more than once in reducing list\n",prg_nm,dmn_avg[idx]->nm);
 	    exit(EXIT_FAILURE);
 	  } /* end if */
 	} /* end if */
@@ -580,6 +579,7 @@ main(int argc,char **argv)
 	 for weights that do already conform to var_prc. TODO #114. */ 
 	wgt_out=var_conform_dim(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
 	wgt_out=var_conform_type(var_prc[idx]->type,wgt_out);
+	/* fxm: should perform weighting after avg,avgsqr,rms etc. */
 	/* Weight variable by taking product of weight and variable */ 
 	(void)var_multiply(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,wgt_out->val,var_prc[idx]->val);
       } /* end if */
@@ -660,48 +660,37 @@ main(int argc,char **argv)
 	/* Free wgt_avg, but keep wgt_out, after each use */
 	if(wgt_avg != NULL) wgt_avg=var_free(wgt_avg);
       }else if(NRM_BY_DNM){
-	/* Perform min,max,ttl, etc operations */ 
+	/* Normalize, multiply, etc where necessary */
 	switch(nco_op_typ){
-		  	  
-	  case nco_op_min: /* do nothing values already in var_prc_out */
-	  case nco_op_max: /* do nothing values already in var_prc_out */	
-	  case nco_op_ttl: /* do nothing values already in var_prc_out */	
-	  default:
-	break;
-	  
-	  case nco_op_avg:
-	  case nco_op_avgsqr: 
-	  case nco_op_avgsumsqr:
-	  case nco_op_rms:
-	  case nco_op_sqrt:
-		(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
-	break;
-	
-	  case nco_op_rmssdn:		
-	  	(void)var_normalize_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
-	break;
+	case nco_op_avg: /* Normalize sum by tally to create mean */
+	case nco_op_avgsqr: /* Normalize sum by tally to create mean */ 
+	case nco_op_avgsumsqr: /* Normalize sum of squares by tally to create mean square */
+	case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
+	case nco_op_sqrt: /* Normalize sum by tally to create mean */
+	  (void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+	  break;
+	case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
+	  (void)var_normalize_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+	  break;
+	case nco_op_min: /* Minimum is already in buffer, do nothing */
+	case nco_op_max: /* Maximum is already in buffer, do nothing */	
+	case nco_op_ttl: /* Total is already in buffer, do nothing */	
+	default:
+	  break;
 	} /* end switch */
-	
-	/* some options require additional processing */
-	
+	/* Some operations require additional processing */
 	switch(nco_op_typ){
-	
-	  case nco_op_avgsqr:
-		(void)var_multiply(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
-	break;
-		  
-	  case nco_op_sqrt:
-	  case nco_op_rms:
-	  case nco_op_rmssdn:
-		(void)var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);  
-	break;
-	
-	  default:
-	break;
-	
+	case nco_op_avgsqr: /* Square mean to create square of the mean (for sdn) */
+	  (void)var_multiply(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
+	  break;
+	case nco_op_sqrt: /* Take root of mean to create root mean */
+	case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
+	case nco_op_rmssdn: /* Take root of sdn mean of sum of squares to create root mean square for sdn */
+	  (void)var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);  
+	  break;
+	default:
+	  break;
 	} /* end switch */
-	
-	
       }else if(!NRM_BY_DNM){
 	/* No normalization required, we are done */ 
 	;

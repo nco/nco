@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.49 2000-07-27 23:27:07 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.50 2000-07-28 23:54:24 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -49,11 +49,11 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.1.49
-@set doc-edition 1.1.49
+@set nco-edition 1.2
+@set doc-edition 1.2
 @set copyright-years 1995--2000
 @set update-year 2000
-@set update-date 8 July 2000
+@set update-date 28 July 2000
 @set update-month July 2000
 
 @c Experiment with smaller amounts of whitespace between chapters and sections.
@@ -222,7 +222,7 @@ Features common to most operators
 * History attribute::           
 * NCAR CSM Conventions::        
 * ARM Conventions::             
-* Averaging Types::             
+* Operation Types::             
 
 Reference manual for all operators
 
@@ -279,8 +279,9 @@ This manual describes NCO, which stands for netCDF Operators.
 NCO is a suite of programs known as @dfn{operators}.
 Each operator is a standalone, command line program which is executed at
 the UNIX (or NT) shell-level like, e.g., @code{ls} or @code{mkdir}.
-The operators take netCDF file(s) as input, perform an operation (e.g.,
-averaging or hyperslabbing), and produce a netCDF file as output.
+The operators take netCDF file(s) (or HDF4 files) as input, perform an
+operation (e.g., averaging or hyperslabbing), and produce a netCDF file
+as output. 
 The operators are primarily designed to aid manipulation and analysis of
 data.
 The examples in this documentation are typical applications of the
@@ -1065,7 +1066,7 @@ feature is automatic and cannot be controlled by the user.
 * History attribute::           
 * NCAR CSM Conventions::        
 * ARM Conventions::             
-* Averaging Types::             
+* Operation Types::             
 @end menu
 
 @node Specifying input files, Remote storage, Common features, Common features
@@ -1901,7 +1902,7 @@ file 99% of the time.
 If you decide you would like any of the above CSM fields processed, you
 must use @code{ncrename} to rename them first.
 
-@node ARM Conventions, Averaging Types, NCAR CSM Conventions, Common features
+@node ARM Conventions, Operation Types, NCAR CSM Conventions, Common features
 @section ARM Conventions
 @cindex ARM conventions
 @cindex @code{time_offset}
@@ -1945,9 +1946,9 @@ variable, it will also contain the @code{time} coordinate.
 A short message is added to the @code{history} global attribute whenever
 these ARM-specific procedures are executed.
 
-@node Averaging Types,  , ARM Conventions, Common features
-@section Averaging Types
-@cindex averaging types
+@node Operation Types,  , ARM Conventions, Common features
+@section Operation Types
+@cindex operation types
 @cindex @code{avg}
 @cindex @code{min}
 @cindex @code{max}
@@ -1961,64 +1962,89 @@ these ARM-specific procedures are executed.
 @cindex maximum
 @cindex root-mean-square
 @cindex standard deviation
+@cindex @code{-y}
 @cartouche
 @noindent
 Availability: @code{ncra},@code{ncea},@code{ncwa} @*
 Key switches: @samp{-y}@*
 @end cartouche
 @noindent
-In addition to standard averaging, the following functions are avaiable:
-@example
--y avg       Mean value (default)
--y avgsqr    Square of the mean
--y avgsumsqr Mean of sum of squares
--y max       Maximium value
--y min       Minimium value
--y rms       Root-mean-square value
--y rmssdn    Root-mean square where normalized by N-1 instead of by N 
--y sqrt      Square root of the mean
--y ttl       Sum of values
-@end example
+The @samp{-y @var{op_typ}} switch allows operations besides averaging
+(the default) to be invoked.
+Set @var{op_typ} to the abbreviated key for the corresponding operation:
+@table @code
+@item avg
+Mean value (default)
+@item avgsqr
+Square of the mean
+@item avgsumsqr
+Mean of sum of squares
+@item max
+Maximium value
+@item min
+Minimium value
+@item rms
+Root-mean-square (normalized by N)
+@item rmssdn
+Root-mean square normalized by N-1
+@item sqrt
+Square root of the mean
+@item ttl
+Sum of values
+@end table
 @noindent
-If a function is not specified then ncra, ncea and ncwa all default to the standard 
-average. 
-Please note that with @code{ncwa} the weighted averages option @samp{-w}
-should not be used at the same time as this option.
+
+If an operations type is not specified with @samp{-y} then the operator
+will perform an arithmetic average by default.
+Please note that at this time the weighted average option @samp{-w}
+should not be given to @code{ncwa} at the same time as @samp{-y}.
+@comment fxm: why not?
+
 @noindent
 EXAMPLES
 
 @noindent
-Find the minimium value of @code{two_dim_var} over all dimensions.
+Suppose you wish to examine the variable @code{prs_sfc(time,lat,lon)} 
+which contains a time series of the surface pressure as a function of
+latitude and longitude.
+Find the minimium value of @code{prs_sfc} over all dimensions.
 @example
-ncwa -y min -v two_dmn_var in.nc foo.nc 
+ncwa -y min -v prs_sfc in.nc foo.nc 
 @end example
 @noindent
-Find the maximum value of @code{lon} at each time interval.
+Find the maximum value of @code{prs_sfc} at each time interval for each
+latitude. 
 @example
-ncwa -y max -v two_dmn_var -a lon in.nc foo.nc
+ncwa -y max -v prs_sfc -a lon in.nc foo.nc
 @end example
 @noindent
-Find the root-mean-square value of @code{three_dmn_var} over time.
+Find the root-mean-square value of the timeseries of @code{prs_sfc} at
+every gridpoint.
 @example
-ncra -y rms -v three_dmn_var in.nc foo.nc
+ncra -y rms -v prs_sfc in.nc foo.nc
+ncwa -y rms -v prs_sfc -a time in.nc foo.nc
 @end example
+@noindent
+The previous two commands give the same answer but @code{ncra} is
+preferred because it has a smaller memory footprint.
+Also, @code{ncra} leaves the (degenerate) @code{time} dimension in the
+output file (which is usually useful) whereas @code{ncwa} removes the
+@code{time} dimension. 
 
 @noindent
 These operations work as expected in multi-file operators.
-Consider the variable @code{temperature} in the three files 
-@file{jan.nc}, @file{feb.nc}, @file{march.nc}. 
-We can now find the three month maximium temperature at every point.
+Suppose that @code{prs_sfc} is stored in multiple timesteps per file
+across multiple files, say @file{jan.nc}, @file{feb.nc},
+@file{march.nc}.  
+We can now find the three month maximium surface pressure at every point.
 @example
-ncea -y max -v temperature jan.nc feb.nc march.nc out.nc
+ncea -y max -v prs_sfc jan.nc feb.nc march.nc out.nc
 @end example
 
 @noindent
 It is possible to use a combination of these operations to compute
 the standard deviation of a field stored in a single file or across
 multiple files.
-Suppose the variable @code{prs_sfc(time,lat,lon)} 
-contains the time series of the two dimensional surface pressure field 
-which is stored in multiple timesteps per file across multiple files.  
 The procedure to compute the temporal standard deviation of the surface
 pressure at all points in a single file @file{in.nc} involves three
 steps. 
@@ -2592,7 +2618,7 @@ SYNTAX
 ncea [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]]
-[-x] @var{input-files} @var{output-file}   
+[-x] [-y @var{op_typ}] @var{input-files} @var{output-file}   
 @end example
 
 @noindent
@@ -3225,7 +3251,7 @@ SYNTAX
 ncra [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]]
-[-x] @var{input-files} @var{output-file}   
+[-x] [-y @var{op_typ}] @var{input-files} @var{output-file}   
 @end example
 
 @noindent
@@ -3525,9 +3551,9 @@ SYNTAX
 @example
 ncwa [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-I] [-l @var{path}] 
-[-M @var{val}] [-m @var{var}] [-N] [-n] [-O] [-o @var{condition}] 
+[-M @var{val}] [-m @var{mask}] [-N] [-n] [-O] [-o @var{condition}] 
 [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}]
-[-x] @var{input-file} @var{output-file} 
+[-x] [-y @var{op_typ}] @var{input-file} @var{output-file} 
 @end example
 
 @noindent
@@ -3898,7 +3924,7 @@ The NCO project homepage at
 contains more information on how to contribute. 
 @table @samp
 @item Charlie Zender
-Concept, design and implementation of NCO from 1995--2000.
+Concept, design and implementation of NCO from 1995--2000
 @item Henry Butowsky
 Min, max, and total operations
 @item Bill Kocik

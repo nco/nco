@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.23 2000-07-15 19:53:58 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.24 2000-07-28 23:54:23 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -135,6 +135,10 @@ avg=`cut -d, -f 37 foo$$`
 echo "ncwa 28: Dimension reduction on type short variable with max switch and missing values: -99 =?= $avg"
 avg=`cut -d, -f 33 foo$$`
 echo "ncwa 29: Dimension reduction on type short, max switch variable: 69 =?= $avg"
+
+ncwa -O -y rms -w lat_wgt -v lat in.nc foo.nc 2>>foo.tst
+avg=`ncks -C -H -s "%d" -v lat foo.nc`
+echo "ncwa 30: rms with weights: 90 =?= $avg" 
 
 ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`

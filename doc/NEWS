@@ -2,6 +2,7 @@ NCO NEWS -- history of user-visible changes.
 --------
 
 * Changes in NCO version 1.2:
+** Fortran compatibility has been dropped
 ** DODS support
 ** New operations: min,max,ttl,rms,rmssdn...
 ^L
