@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.204 2004-01-17 01:19:45 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.205 2004-01-30 02:16:18 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -32,10 +32,6 @@ M-x texinfo-multiple-files-update
 
 Usage: 
 cd ~/nco/doc;texi2dvi nco.texi; makeinfo --html --ifinfo --no-split --output=nco.html nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml --no-split --output=nco.xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
-texi2html -monolithic -verbose nco.texi
-texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
-texi2dvi --output=nco.dvi nco.texi 
-texi2dvi --pdf --output=nco.pdf nco.texi
 pdfthumb nco.pdf nco.pdf2;/bin/mv nco.pdf2 nco.pdf
 dvips -o nco.ps nco.dvi 
 dvips -Ppdf -G0 -o nco.ps nco.dvi 
@@ -44,7 +40,12 @@ makeinfo --no-split --output=nco.info nco.texi
 makeinfo --no-headers --no-split --output=nco.txt nco.texi
 makeinfo --xml --no-split --output=nco.xml nco.texi
 makeinfo --docbook --no-split --output=nco.xml nco.texi
+pdftotext nco.pdf nco.txt
 ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
+texi2dvi --output=nco.dvi nco.texi 
+texi2dvi --pdf --output=nco.pdf nco.texi
+texi2html -monolithic -verbose nco.texi
+texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
 cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml dust.ess.uci.edu:/var/www/html/nco;cd -
 
