@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.39 2004-08-07 21:16:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.40 2005-01-07 23:54:56 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
-/* Copyright (C) 1995--2004 Charlie Zender
+/* Copyright (C) 1995--2005 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 

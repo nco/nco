@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.20 2004-05-13 18:18:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.21 2005-01-07 23:54:57 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
-/* Copyright (C) 1995--2004 Charlie Zender
+/* Copyright (C) 1995--2005 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
@@ -185,7 +185,7 @@ copyright_prn /* [fnc] Print copyright notice */
   }else{
     (void)fprintf(stderr,"NCO netCDF Operators version %s built %s on %s by %s\n",vrs_cpp,date_cpp,hst_cpp,usr_cpp);
   } /* endif */
-  (void)fprintf(stderr,"Copyright (C) 1995--2004 Charlie Zender\n");
+  (void)fprintf(stderr,"Copyright (C) 1995--2005 Charlie Zender\n");
   if(strlen(CVS_Id) > strlen("*Id*")){
     (void)fprintf(stderr,"%s version %s\n",prg_nm_get(),vrs_cvs);
   }else{

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.61 2004-05-05 19:38:16 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.62 2005-01-07 23:54:55 zender Exp $ -*-text-*-
 
 # Purpose: Potpurri of Sourceforge information for NCO netCDF Operators project
 
@@ -187,19 +187,17 @@ Developer's forum will help prevent duplication of effort and is
 the key communication point for everyone involved in the project.
 
 Once you have done all this, you are ready to choose an item on the
-TODO list to tackle. For C hackers, I suggest you dive right in to the
-source code. Yes, the source code in nc_utl.c and csz.c should be
-better organized and split into smaller files. If hacking 5000 line 
-files which contains 50 C functions each is too intimidating, then
-consider re-organizing the files themselves. This is TODO item #181.
+TODO list to tackle. For C hackers, dive in to the source code.
+If hacking 500 line files of C functions is too intimidating, then
+there are plenty of non-C ways to contribute.
+Consider contributing improvements to the documentation (man pages
+need work), web pages, or regression testing script (written in Perl).
 In an open source project, YOU decide what needs to be done.
-
-There are also plenty of non-C ways to contribute, if
-that's more your bag (HTML, Make, RPM). The important thing is to
-start learning NCO so you can decide for yourself how best
-you can contribute. Then, as mentioned above, post your questions
-and progress to the developer's forum where different implementation
-strategies and technical details are to be discussed. 
+Perhaps HTML, Make, RPM, Debian packaging, autoconf are more your bag. 
+The important thing is to start learning NCO so you can decide for
+yourself how best you can contribute. Then, as mentioned above, post
+your questions and progress to the developer's forum where different
+implementation strategies and technical details are to be discussed. 
 
 Thanks,
 Charlie

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.92 2004-12-01 00:25:42 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.93 2005-01-07 23:54:52 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -305,7 +305,7 @@ Status: Appears to work. Make sure to compile netCDF with CFLAGS+='-fPIC'
 ************************************************************************
 zender@sand:~/nco/bld$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUXAMD64
-Linux sand 2.4.21-201-smp #1 SMP Wed Feb 18 19:17:53 UTC 2004 x86_64 x86_64 x86_64 GNU/Linux
+Linux sand.ess.uci.edu 2.6.8.1-4-amd64-generic #1 Thu Dec 16 11:44:05 UTC 2004 x86_64 GNU/Linux
 x86_64-unknown-linux-gnu
 
 gcc/g++ Regular users, sysadmins use this to install/update NCO:
