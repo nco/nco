@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.179 2002-09-14 16:52:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.180 2002-09-14 17:53:35 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -600,7 +600,7 @@ endif
 
 ifeq (${PVM_ARCH},MACOSX)
 C++ := c++
-CC := cc
+CC := cc -std=c99 -ansi -pedantic -D_BSD_SOURCE
 CFLAGS := -Wall
 CPP := ${CC}
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}

@@ -1,6 +1,14 @@
 2002-09-14  Charlie Zender  <zender@uci.edu>
 
-	* Get rid of inline qualifier on function definitions
+	* cvs tag -c nco-2_6_3
+	Changes since nco-2_6_2: 
+	MACOSX builds with bld/Makefile
+
+	* MACOSX builds appear to work
+
+	* Add ranlib to bld/Makefile libnco.a target for MACOSX builds
+
+	* Get rid of inline qualifier on nco_rth_flt function definitions
 
 	* Move function definitions from nco_rth_flt.h to nco_rth_flt.c
 
