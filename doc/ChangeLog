@@ -1,5 +1,8 @@
 2002-04-27  Charlie Zender  <zender@uci.edu>
 
+	* Finished name cleanup in ncap. Still need to break large
+	files into smaller granules and const'ify prototypes
+
 	* cvs tag -c nco-2_2_4
 	Changes since nco-2_2_3: Packing and unpacking functions now
 	both work in ncap
