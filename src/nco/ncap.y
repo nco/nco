@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.42 2002-02-24 21:29:22 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.43 2002-03-22 00:51:59 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -484,7 +484,7 @@ var_exp '+' var_exp {
   var_free($3);
 }
 | var_exp '/' var_exp {
-  $$=ncap_var_var_divide($3,$1); // NB: Ordering is important
+  $$=ncap_var_var_divide($3,$1); /* NB: Ordering is important */
   var_free($1); var_free($3); 
 }
 | var_exp '/' att_exp {
