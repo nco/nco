@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.34 2002-09-04 15:36:20 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.35 2002-09-05 07:04:10 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -26,7 +26,7 @@ WIN32
 -----------------------------------------------------------------------
 Footnotes to summary table:
 02. After much environment variable passing, programs link but core dump
-03. Does not link tst.o
+03. Does not link tst.o because missing valarray= symbol
 05. xlC fails valarray test, but I believe xlC does support valarray. Hmm.
 06. CC unable to link tst.o, unresolved text symbols (missing library?)
 07. Error making ncap_yacc.c
@@ -397,15 +397,30 @@ End SGIMP64
 Start SUNMP
 Status: 
 Does not like nco_var.hh:270, same as SGI, taking address of non-lvalue
+Problems with linking tst.o with both compilers
 ************************************************************************
 zender@flagstaff:~/nco$ pvmgetarch;uname -a
 SUNMP
 SunOS goldhill 5.6 Generic_105181-19 sun4u sparc SUNW,Ultra-2
+bash-2.03$ pvmgetarch;uname -a
+SUNMP
+SunOS usf-cf-sparc-solaris-2 5.8 Generic_108528-15 sun4u sparc SUNW,Ultra-60
 
+For ABI=32:
 cc/CC:
+export GNU_TRP='sparc-sun-solaris2.8'
 export GNU_TRP='sparc-sun-solaris2.6'
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='cc' CXX='CC' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
+CC='/opt/SUNWspro/bin/cc' CXX='/opt/SUNWspro/bin/CC' LD='/usr/ccs/bin/ld -z muldefs' LDFLAGS='-z muldefs -L/opt/SUNWspro/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
+
+For ABI=64:
+cc/CC:
+export GNU_TRP='sparc-sun-solaris2.8'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+CC='/opt/SUNWspro/bin/cc' CXX='/opt/SUNWspro/bin/CC' FC='/opt/SUNWspro/bin/f90' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
@@ -425,6 +440,17 @@ g++ -DHAVE_CONFIG_H -I. -I. -I../..   -I/home/zender/include  -g -O2 -c tst.cc
 nco_var.hh: In function `int nco_put_var<prc_cmp>(const int &, const basic_string<char,string_char_traits<char>,__default_alloc_template<false,0> > &, const valarray<float> &)':
 tst.cc:155:   instantiated from here
 nco_var.hh:270: non-lvalue in unary `&'
+
+New build example:
+make  tst
+/opt/SUNWspro/bin/CC -DHAVE_CONFIG_H -I. -I. -I../..    -I/home/users/z/ze/zender/include  -g -c -o tst.o `test -f 'tst.cc' || echo './'`tst.cc
+/bin/bash ../../libtool --mode=link /opt/SUNWspro/bin/CC  -g   -z muldefs -L/opt/SUNWspro/lib -L/home/users/z/ze/zender/lib/sparc-sun-solaris2.8 -o tst  tst.o -lnco_c++ -lthread -lsocket -lsunmath -lresolv -lintl -lm -lnetcdf
+/opt/SUNWspro/bin/CC -g -z muldefs -o .libs/tst tst.o  -L/opt/SUNWspro/lib -L/home/users/z/ze/zender/lib/sparc-sun-solaris2.8 /home/users/z/ze/zender/nco/src/nco_c++/.libs/libnco_c++.so -lthread -lsocket -lsunmath -lresolv -lintl -lm -lnetcdf -R/home/users/z/ze/zender/lib/sparc-sun-solaris2.8
+Undefined                       first referenced
+ symbol                             in file
+std::valarray<unsigned>&std::valarray<unsigned>::operator=(const unsigned&)    /home/users/z/ze/zender/nco/src/nco_c++/.libs/libnco_c++.so
+ld: fatal: Symbol referencing errors. No output written to .libs/tst
+
 ************************************************************************
 End SUNMP
 ************************************************************************
