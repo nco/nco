@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.31 2003-11-20 21:36:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.32 2003-11-20 22:12:40 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -180,6 +180,8 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
      This routine does not take into account any user-specified limits, it just copies what it finds.
      Routine copies_variable by variable, old-style, used only by ncks */
 
+  char fnc_nm[]="nco_cpy_var_val()"; /* [sng] Function name */
+
   int *dmn_id;
   int idx;
   int nbr_dim;
@@ -236,11 +238,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   } /* end loop over dim */
       
   /* Allocate enough space to hold variable */
-  void_ptr=(void *)nco_malloc_flg(var_sz*nco_typ_lng(var_type));
-  if(void_ptr == NULL){
-    (void)fprintf(stderr,"%s: ERROR unable to malloc() %ld bytes for %s\n",prg_nm_get(),var_sz*nco_typ_lng(var_type),var_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* end if */
+  void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
   /* Get variable */
   if(nbr_dim==0){
@@ -280,6 +278,8 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
 
   bool SRD=False;
   bool WRP=False;
+
+  char fnc_nm[]="nco_cpy_var_val_lmt()"; /* [sng] Function name */
 
   int *dmn_id;
 
@@ -367,7 +367,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   } /* end loop over dim */
       
   /* Allocate enough space to hold variable */
-  void_ptr=(void *)nco_malloc_flg(var_sz*nco_typ_lng(var_type));
+  void_ptr=(void *)nco_malloc_dbg(var_sz*nco_typ_lng(var_type),"Unable to malloc() value buffer when copying hypserslab from input to output file",fnc_nm);
 
   /* Copy variable */
   if(nbr_dim==0){ /* Copy scalar */
@@ -484,7 +484,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
 	  case NC_CHAR:
 	  case NC_BYTE:
 	  default:
-	    (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in nco_cpy_var_val_lmt()\n",prg_nm_get(),var_type);
+	    (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in %s\n",prg_nm_get(),var_type,fnc_nm);
 	    nco_exit(EXIT_FAILURE);
 	    break;
 	  } /* end switch */
@@ -615,11 +615,9 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   /* Threads: Routine contains thread-unsafe calls protected by critical regions */
   /* Purpose: Allocate and retrieve given variable hyperslab from disk into memory
      If variable is packed on disk then inquire about scale_factor and add_offset */
+  char fnc_nm[]="nco_var_get()"; /* [sng] Function name */
 
-  if((var->val.vp=(void *)nco_malloc_flg(var->sz*nco_typ_lng(var->typ_dsk))) == NULL){
-    (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes in nco_var_get()\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
-    nco_exit(EXIT_FAILURE);
-  } /* end if */
+  var->val.vp=(void *)nco_malloc_dbg(var->sz*nco_typ_lng(var->typ_dsk),"Unable to malloc() value buffer when retrieving variable from disk",fnc_nm);
 
 #ifdef _OPENMP
 #pragma omp critical

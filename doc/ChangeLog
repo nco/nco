@@ -1,6 +1,12 @@
 2003-11-20  Charlie Zender  <zender@uci.edu>
 
-	* Remove another overly dire packing warning that scares people
+	* Implemented nco_malloc_dbg() in ncap_utl
+
+	* Created nco_malloc_dbg() for alternative to nco_malloc_flg().
+	This simplifies calling routines by moving most diagnostic
+	handling to nco_malloc_dbg().
+
+	* Remove two more overly scary packing warnings
 
 2003-11-19  Charlie Zender  <zender@uci.edu>
 
