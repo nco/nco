@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.13 2002-04-26 23:20:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.14 2002-04-26 23:30:00 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -160,7 +160,8 @@ extern "C" {
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
 #endif /* SUN4 */
-  
+
+  /* Limit structure */
   typedef struct { /* lmt_sct */
     char *nm; /* [sng] Variable name */
     int lmt_typ; /* crd_val or dmn_idx */
@@ -184,18 +185,21 @@ extern "C" {
     long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */
     long srd; /* Stride of hyperslab */
   } lmt_sct;
-  
+
+  /* Name ID structure */
   typedef struct{ /* nm_id_sct */
     char *nm;
     int id;
   } nm_id_sct;
   
+  /* Rename structure */
   typedef struct{ /* rnm_sct */
     char *old_nm;
     char *new_nm;
     int id;
   } rnm_sct;
-  
+
+  /* Pointer union */
   typedef union{ /* ptr_unn */
     float *fp;
     double *dp;
@@ -205,7 +209,8 @@ extern "C" {
     signed char *bp; /* Range of signed char is -127--127 */
     void *vp;
   } ptr_unn;
-  
+
+  /* Value union */
   typedef union{ /* val_unn */
     float f;
     double d;
@@ -214,12 +219,14 @@ extern "C" {
     unsigned char c; /* Range of unsigned char is 0--255 */
     signed char b; /* Range of signed char is -127--127 */
   } val_unn;
-  
+
+  /* Scalar value structure */
   typedef struct { /* scv_sct */
     val_unn val;
     nc_type type;
   } scv_sct;      
 
+  /* Attribute editing structure */
   typedef struct{ /* aed_sct */
     char *att_nm; /* Name of attribute */
     char *var_nm; /* Name of variable, or NULL for global attribute */
@@ -230,6 +237,7 @@ extern "C" {
     short mode; /* action to perform with attribute */
   } aed_sct;
   
+  /* Attribute structure */
   typedef struct { /* att_sct */
     char *nm;
     nc_type type;
@@ -238,6 +246,7 @@ extern "C" {
     ptr_unn val;
   } att_sct;
   
+  /* Dimension structure */
   typedef struct dmn_sct_tag{ /* dmn_sct */
     char *nm; /* Dimension name */
     int id; /* Dimension ID */
@@ -259,6 +268,7 @@ extern "C" {
   /* Each member of var_sct structure should be initialized to default in var_dfl_set()
      Each pointer member of var_sct structure should be freed in var_free()
      Each pointer member of var_sct structure should be copied in var_dpl() */
+  /* Variable structure */
   typedef struct var_sct_tag{ /* var_sct */
     char *nm; /* Variable name */
     int id; /* Variable ID */

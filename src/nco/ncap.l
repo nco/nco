@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.38 2002-04-26 23:20:08 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.39 2002-04-26 23:30:00 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -278,8 +278,8 @@ pow/[ ]*\( {return POWER;}
      During initial scan, just return attributes on RHS */
   if(prs_arg->initial_scan){
     if(!RHS){
-      lval_ptr->att.att_nm=strdup(att_nm);
-      lval_ptr->att.var_nm=strdup(var_nm);
+      lval_ptr->aed.att_nm=strdup(att_nm);
+      lval_ptr->aed.var_nm=strdup(var_nm);
       return OUT_ATT;
     }else{
       return IGNORE;
@@ -346,8 +346,8 @@ pow/[ ]*\( {return POWER;}
   if(!RHS){
     rcd_out=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
     if(rcd == NC_NOERR || rcd_out == NC_NOERR){
-      lval_ptr->att.att_nm=strdup(att_nm);
-      lval_ptr->att.var_nm=strdup(var_nm);
+      lval_ptr->aed.att_nm=strdup(att_nm);
+      lval_ptr->aed.var_nm=strdup(var_nm);
       return OUT_ATT;
     }else{
       (void)sprintf(err_sng,"#Warning: unable to locate variable %s. So cannot create attribute %s",var_nm,yytext);

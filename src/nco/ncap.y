@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.48 2002-04-26 23:20:08 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.49 2002-04-26 23:30:00 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -99,7 +99,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
   char *str;
   char *output_var;
   char *vara;
-  aed_sct att;
+  aed_sct aed;
   sym_sct *sym;
   scv_sct scv;
   var_sct *var;
@@ -113,7 +113,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 %token <scv> SCV
 %token <vara> VAR
 %token <output_var> OUT_VAR
-%token <att> OUT_ATT
+%token <aed> OUT_ATT
 %token <sym> FUNCTION
 %token <sbs_lst> LHS_SBS
 %token ABS ATOSTR EPROVOKE IGNORE PCK POWER
@@ -126,7 +126,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 %type <str> string_exp
 %type <var> var_exp
 %type <output_var> out_var_exp
-%type <att> out_att_exp
+%type <aed> out_att_exp
 
 /* "left", "right", and "nonassoc" perform same function as "token" and,
    in addition, specify associativity and relative precedence of symbols */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.45 2002-04-26 23:20:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.46 2002-04-26 23:30:00 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -1389,7 +1389,7 @@ ncap_initial_scan
       break;
     case OUT_ATT:
       /* Search for LHS attribute's parent variable in input file */
-      var_nm=lval.att.var_nm;     
+      var_nm=lval.aed.var_nm;     
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
 	for(var_idx=0;var_idx<n_lst_c;var_idx++)
