@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.105 2004-07-26 17:45:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.106 2004-07-27 06:16:36 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -89,7 +89,6 @@ main(int argc,char **argv)
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
-  char **dmn_rdr_lst=NULL_CEWI; /* Option z */
   char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
@@ -104,11 +103,9 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.105 2004-07-26 17:45:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.105 $";
-  const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qrRs:uv:xz:-:";
-
-  dmn_sct **dmn_rdr=NULL; /* [sct] Dimension structures to be re-ordered */
+  const char * const CVS_Id="$Id: ncks.c,v 1.106 2004-07-27 06:16:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.106 $";
+  const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qrRs:uv:x-:";
 
   extern char *optarg;
   extern int optind;
@@ -116,7 +113,6 @@ main(int argc,char **argv)
   FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
 
   int abb_arg_nbr=0;
-  int dmn_rdr_nbr=0; /* [nbr] Number of dimension to re-order */
   int fl_nbr=0;
   int fll_md_old; /* [enm] Old fill mode */
   int glb_att_nbr;
@@ -192,7 +188,6 @@ main(int argc,char **argv)
       {"variable",required_argument,0,'v'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
-      {"reorder",no_argument,0,'z'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -288,9 +283,6 @@ main(int argc,char **argv)
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
-    case 'z': /* Dimension re-ordering */
-      dmn_rdr_lst=lst_prs(optarg,",",&dmn_rdr_nbr);
-      break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
@@ -313,9 +305,6 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   
-  /* Make list of user-specified dimension re-orders */
-  if(dmn_rdr_nbr > 0) dmn_rdr=nco_prs_rdr_lst(dmn_rdr,dmn_rdr_lst,dmn_rdr_nbr);
-
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
@@ -417,12 +406,6 @@ main(int argc,char **argv)
     
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
-
-#if 0      
-      /* fxm: TODO nco329 */
-      /* Change dimension ordering */
-      var_out[idx]=nco_var_dmn_rdr(var_out[idx],dmn_rdr,dmn_rdr_nbr);
-#endif /* !0 */      
 
       /* Define variable in output file */
       if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);

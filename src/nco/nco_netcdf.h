@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.21 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.22 2004-07-27 06:16:36 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -44,7 +44,11 @@ f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
 (const nc_type type); /* O [enm] netCDF type */
 
 void 
-nco_dfl_case_nc_type_err /* [fnc] Print error and exit for illegal case */
+nco_dfl_case_nc_type_err /* [fnc] Print error and exit for illegal switch(nc_type) case */
+(void);
+
+void 
+nco_dfl_case_prg_id_err /* [fnc] Print error and exit for illegal switch(prg_id) case */
 (void);
 
 void 

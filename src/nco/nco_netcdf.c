@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.38 2004-01-17 01:19:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.39 2004-07-27 06:16:36 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -182,7 +182,7 @@ f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
 } /* end f90_typ_nm() */
 
 void 
-nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal case */
+nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(nc_type) case */
 {
   /* Purpose: Convenience routine for printing error and exiting when
      switch(nctype) statement receives an illegal default case
@@ -205,6 +205,20 @@ nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal case */
   abort();
   exit(EXIT_FAILURE);
 } /* end nco_dfl_case_nc_type_err() */
+
+void 
+nco_dfl_case_prg_id_err(void) /* [fnc] Print error and exit for illegal switch(prg_id) case */
+{
+  /* Purpose: Convenience routine for printing error and exiting when
+     switch(prg_id) statement receives an illegal default case
+
+     Placing this in its own routine also has the virtue of saving many lines 
+     of code since this function is used in many many switch() statements. */
+  const char fnc_nm[]="nco_dfl_case_prg_id_err()";
+  (void)fprintf(stdout,"%s: ERROR switch(prg_id) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(prg_id) statements are fully enumerated. Exiting...\n",fnc_nm);
+  abort();
+  exit(EXIT_FAILURE);
+} /* end nco_dfl_case_prg_id_err() */
 
 /* Begin file-level routines */
 int

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.20 2004-06-18 23:12:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.21 2004-07-27 06:16:36 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -461,7 +461,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
 {
   /* Purpose: Copy variable data from input netCDF file to output netCDF file 
      Routine truncates dimensions in variable definition in output file according to user-specified limits.
-     Routine copies_variable by variable, old-style, used only by ncks */
+     Routine copies variable-by-variable, old-style, used only by ncks */
   
   int *dmn_id;
   int idx;

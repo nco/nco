@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.40 2004-07-26 17:45:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.41 2004-07-27 06:16:36 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -877,15 +877,18 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       nco_pck_typ=nco_pck_all_new_att;
       break;
     case ncap:
+    case ncatted:
     case ncbo:
-    case ncflint:
-    case ncra:
-    case ncwa:
-    case ncrcat:
     case ncecat:
-    default:
+    case ncflint:
+    case ncks:
+    case ncpdq:
+    case ncra:
+    case ncrcat:
+    case ncwa:
       nco_pck_typ=nco_pck_nil;
       break;
+    default: nco_dfl_case_prg_id_err(); break;
     } /* end switch */
 
     switch(nco_pck_typ){

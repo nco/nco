@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.54 2004-07-09 17:00:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.55 2004-07-27 06:16:36 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -13,7 +13,6 @@ nco_exit /* [fnc] Wrapper for exit() */
 (int rcd) /* I [enm] Return code */
 {
   /* Purpose: Wrapper for exit() */
-
   exit(rcd);
 } /* nco_exit() */
 
@@ -53,10 +52,12 @@ nco_is_mlt_fl_opr /* [fnc] Query whether program is multi-file operator */
   case ncbo: 
   case ncflint: 
   case ncks: 
-  default:
+  case ncpdq: 
     return False;
     break;
+  default: nco_dfl_case_prg_id_err(); break;
   } /* end switch */
+  return False;
 } /* end nco_is_mlt_fl_opr() */
 
 bool /* [flg] Program does arithmetic */
@@ -64,7 +65,7 @@ nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
 (const int prg_id) /* [enm] Program ID */
 {
   /* Purpose: Does operator do arithmetic?
-     Consequences are operator specific
+     Consequences are operator-specific
      Currently, arithmetic operators automatically unpack variables by default 
      Non-arithmetic operators do not unpack variables */
   switch(prg_id){
@@ -79,11 +80,13 @@ nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
   case ncatted: 
   case ncecat: 
   case ncks: 
+  case ncpdq: 
   case ncrcat: 
-  default:
     return False;
     break;
+  default: nco_dfl_case_prg_id_err(); break;
   } /* end switch */
+  return False;
 } /* end nco_is_rth_opr() */
 
 void
@@ -233,6 +236,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   else if(!strcmp(nm_out,"ncrcat")){*prg_lcl=ncrcat;}
   else if(!strcmp(nm_out,"ncecat")){*prg_lcl=ncecat;}
   else if(!strcmp(nm_out,"ncks")){*prg_lcl=ncks;}
+  else if(!strcmp(nm_out,"ncpdq")){*prg_lcl=ncpdq;}
   else if(!strcmp(nm_out,"ncrename")){*prg_lcl=ncrename;}
   else if(!strcmp(nm_out,"ncatted")){*prg_lcl=ncatted;}
   else{
@@ -256,6 +260,24 @@ nco_usg_prn(void)
   prg_lcl=prg_get();
 
   switch(prg_lcl){
+  case ncap:
+    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-f] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-s algebra] [-S fl.nco] [-v] in.nc [out.nc]\n");
+    break;
+  case ncatted:
+    opt_sng=(char *)strdup("[-a ...] [-D dbg_lvl] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] in.nc [[out.nc]]\n");
+    break;
+  case ncbo:
+    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-n ...] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] [-x] [-y op_typ] in_1.nc in_2.nc [out.nc]\n");
+    break;
+  case ncflint:
+    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-i var,val] [-l path] [-n ...] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc [out.nc]\n");
+    break;
+  case ncks:
+    opt_sng=(char *)strdup("[-A] [-a] [-B] [-b fl_bnr] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-M] [-O] [-o out.nc] [-p path] [-q] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [[out.nc]]\n");
+    break;
+  case ncpdq:
+    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-t] [-v ...] [-x] in.nc [out.nc]\n");
+    break;
   case ncra:
   case ncea:
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-n ...] [-O] [-o out.nc] [-p path] [-R] [-r] [-t thr_nbr] [-v ...] [-x] [-y op_typ] in.nc [...] [out.nc]\n");
@@ -264,27 +286,13 @@ nco_usg_prn(void)
   case ncecat:
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-n ...] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] [-x] in.nc [...] [out.nc]\n");
     break;
-  case ncbo:
-    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-n ...] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] [-x] [-y op_typ] in_1.nc in_2.nc [out.nc]\n");
-    break;
-  case ncflint:
-    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-i var,val] [-l path] [-n ...] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc [out.nc]\n");
+  case ncrename:
+    opt_sng=(char *)strdup("[-a ...] [-D dbg_lvl] [-d ...] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] in.nc [[out.nc]]\n");
     break;
   case ncwa:
     opt_sng=(char *)strdup("[-A] [-a ...] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M val] [-N] [-O] [-o out.nc] [-p path] [-R] [-r] [-T condition] [-t thr_nbr] [-v ...] [-w wgt] [-x] [-y op_typ] in.nc [out.nc]\n");
     break;
-  case ncap:
-    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-f] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-s algebra] [-S fl.nco] [-v] in.nc [out.nc]\n");
-    break;
-  case ncks:
-    opt_sng=(char *)strdup("[-A] [-a] [-B] [-b fl_bnr] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-M] [-O] [-o out.nc] [-p path] [-q] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [[out.nc]]\n");
-    break;
-  case ncatted:
-    opt_sng=(char *)strdup("[-a ...] [-D dbg_lvl] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] in.nc [[out.nc]]\n");
-    break;
-  case ncrename:
-    opt_sng=(char *)strdup("[-a ...] [-D dbg_lvl] [-d ...] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] in.nc [[out.nc]]\n");
-    break;
+  default: nco_dfl_case_prg_id_err(); break;
   } /* end switch */
   
   /* Public service announcements */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.44 2004-07-09 16:36:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.45 2004-07-27 06:16:36 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -151,6 +151,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     } /* end if */
     break;
   case ncap:
+  case ncpdq:
   case ncwa:
     /* Operators with single fl_in and required fl_out */
     if(psn_arg_nbr != 2-psn_arg_fst){
@@ -249,8 +250,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       
     } /* end Operators with multiple fl_in and required fl_out */
     break;
-  default:
-    break;
+  default: nco_dfl_case_prg_id_err(); break;
   } /* end switch */
   
     /* If input files are required but have not been obtained yet from stdin */
@@ -708,7 +708,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
  CST_X_PTR_CST_PTR_CST_Y(char,fl_lst_abb), /* I [sng] NINTAP-style arguments, if any */
  const char * const fl_pth) /* I [sng] Path prefix for files in fl_lst_in */
 {
-  /* Purpose: Construct file name from various input arguments and switches.
+  /* Purpose: Construct file name from various input arguments and switches
      Routine implements NINTAP-style specification by using static
      memory to avoid repetition in construction of filename */
   

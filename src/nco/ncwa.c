@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.131 2004-07-27 01:50:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.132 2004-07-27 06:16:36 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -34,8 +34,8 @@
    while I rethink the normalization switches */
 
 /* Usage:
-   ncwa -O -a lon /home/zender/nco/data/in.nc foo.nc
-   ncwa -O -R -p /ZENDER/tmp -l /home/zender/nco/data in.nc foo.nc
+   ncwa -O -a lon ~/nco/data/in.nc foo.nc
+   ncwa -O -R -p /ZENDER/tmp -l ~/nco/data in.nc foo.nc
    ncwa -O -a lat -w gw -d lev,17 -v T -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc
 
    ncwa -O -C -a lat,lon,time -w gw -v PS -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc;ncks -H foo.nc
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char *msk_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val, op_typ_rlt */
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.131 2004-07-27 01:50:03 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.131 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.132 2004-07-27 06:16:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.132 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -904,7 +904,7 @@ main(int argc,char **argv)
     if(msk != NULL) msk=nco_var_free(msk);
     if(msk_out != NULL) msk_out=nco_var_free(msk_out);
     
-    if(dbg_lvl > 0) (void)fprintf(fp_stderr,"\n");
+    if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
     
     /* Close input netCDF file */
     nco_close(in_id);
