@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.19 2000-04-05 21:41:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.20 2000-06-25 19:31:47 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.19 2000-04-05 21:41:55 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.19 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.20 2000-06-25 19:31:47 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.20 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -357,7 +357,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 
   long idx_att_val_arg=4L; /* Number of required delimiters preceding the attribute values in -a argument list */ 
 
-  aed_lst=(aed_sct *)malloc(nbr_aed*sizeof(aed_sct));
+  aed_lst=(aed_sct *)nco_malloc(nbr_aed*sizeof(aed_sct));
 
   for(idx=0;idx<nbr_aed;idx++){
 
@@ -467,8 +467,8 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 	
 	long lmn;
 	
-	val_arg_dbl=(double *)malloc(aed_lst[idx].sz*sizeof(double));
-	aed_lst[idx].val.vp=(void *)malloc(aed_lst[idx].sz*nctypelen(aed_lst[idx].type));
+	val_arg_dbl=(double *)nco_malloc(aed_lst[idx].sz*sizeof(double));
+	aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nctypelen(aed_lst[idx].type));
 	
 	for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],(char **)NULL); 
 	
@@ -578,16 +578,16 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     (void)ncendef(nc_id);
   
     /* Initialize (partially) the variable structure */
-    var=(var_sct *)malloc(sizeof(var_sct));
+    var=(var_sct *)nco_malloc(sizeof(var_sct));
     var->nc_id=nc_id;
     var->id=var_id;
     var->sz=1L;
 
     /* Get type of variable and number of dimensions */
     (void)ncvarinq(var->nc_id,var->id,(char *)NULL,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
-    dmn_id=(int *)malloc(var->nbr_dim*sizeof(int));
-    dmn_sz=(long *)malloc(var->nbr_dim*sizeof(long));
-    dmn_srt=(long *)malloc(var->nbr_dim*sizeof(long));
+    dmn_id=(int *)nco_malloc(var->nbr_dim*sizeof(int));
+    dmn_sz=(long *)nco_malloc(var->nbr_dim*sizeof(long));
+    dmn_srt=(long *)nco_malloc(var->nbr_dim*sizeof(long));
     (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
 
     /* Get dimension sizes and construct variable size */
@@ -601,8 +601,8 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     var->srt=dmn_srt;
       
     /* Place var_get() code inline since var struct is not truly complete */
-    if((var->val.vp=(void *)malloc(var->sz*nctypelen(var->type))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in aed_prc()\n",prg_nm_get(),var->sz,nctypelen(var->type));
+    if((var->val.vp=(void *)nco_malloc(var->sz*nctypelen(var->type))) == NULL){
+      (void)fprintf(stdout,"%s: ERROR Unable to nco_malloc() %ld*%d bytes in aed_prc()\n",prg_nm_get(),var->sz,nctypelen(var->type));
       exit(EXIT_FAILURE); 
     } /* end if */ 
     if(var->sz > 1){
@@ -626,8 +626,8 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     var_sz=var->sz;
 
     /* Get new and old missing values in same type as variable */ 
-    mss_val_crr.vp=(void *)malloc(att_sz*nctypelen(var->type));
-    mss_val_new.vp=(void *)malloc(aed.sz*nctypelen(var->type));
+    mss_val_crr.vp=(void *)nco_malloc(att_sz*nctypelen(var->type));
+    mss_val_new.vp=(void *)nco_malloc(aed.sz*nctypelen(var->type));
     (void)val_conform_type(att_typ,var->mss_val,var->type,mss_val_crr);
     (void)val_conform_type(aed.type,aed.val,var->type,mss_val_new);
 
@@ -679,7 +679,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
 	(void)fprintf(stdout,"%s: ERROR %s attribute %s is of type %s not %s, unable to append\n",prg_nm_get(),var_nm,aed.att_nm,nc_type_nm(att_typ),nc_type_nm(aed.type));
 	exit(EXIT_FAILURE);
       } /* end if */ 
-      att_val_new=(void *)malloc((att_sz+aed.sz)*nctypelen(aed.type));
+      att_val_new=(void *)nco_malloc((att_sz+aed.sz)*nctypelen(aed.type));
       (void)ncattget(nc_id,var_id,aed.att_nm,(void *)att_val_new);
       /* NB: Following assumes sizeof(char) = 1 byte */ 
       (void)memcpy((void *)((char *)att_val_new+att_sz*nctypelen(aed.type)),

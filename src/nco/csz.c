@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.46 2000-06-03 01:07:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.47 2000-06-25 19:31:47 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
 
@@ -109,9 +109,9 @@ cmd_ln_sng(int argc,char **argv)
   for(idx=0;idx<argc;idx++){
     cmd_ln_sz+=(int)strlen(argv[idx])+1;
   } /* end loop over args */ 
-  cmd_ln=(char *)malloc(cmd_ln_sz*sizeof(char));
+  cmd_ln=(char *)nco_malloc(cmd_ln_sz*sizeof(char));
   if(argc <= 0){
-    cmd_ln=(char *)malloc(sizeof(char));
+    cmd_ln=(char *)nco_malloc(sizeof(char));
     cmd_ln[0]='\0';
   }else{
     (void)strcpy(cmd_ln,argv[0]);
@@ -151,7 +151,7 @@ lmt_prs(int lmt_nbr,char **lmt_arg)
   int idx;
   int arg_nbr;
 
-  if(lmt_nbr > 0) lmt=(lmt_sct *)malloc(lmt_nbr*sizeof(lmt_sct));
+  if(lmt_nbr > 0) lmt=(lmt_sct *)nco_malloc(lmt_nbr*sizeof(lmt_sct));
 
   for(idx=0;idx<lmt_nbr;idx++){
 
@@ -231,7 +231,7 @@ sng_lst_prs(char **sng_lst,const long lmn_nbr, const char *dlm_sng)
   /* List elements must be NUL-terminated (strings) so strlen() works */ 
   for(lmn=0L;lmn<lmn_nbr;lmn++) sng_sz+=(sng_lst[lmn] == NULL) ? 0L : strlen(sng_lst[lmn])+dlm_len;
   /* Add one for NULL byte */
-  sng=(char *)malloc(sizeof(char)*(sng_sz+1));
+  sng=(char *)nco_malloc(sizeof(char)*(sng_sz+1));
   /* NUL-terminate string for safety */
   sng[0]='\0';
   for(lmn=0L;lmn<lmn_nbr;lmn++){
@@ -290,7 +290,7 @@ lst_prs(char *sng_in,const char *dlm_sng,int *nbr_lst)
     (*nbr_lst)++;
   } /* end while */ 
 
-  lst=(char **)malloc(*nbr_lst*sizeof(char *));
+  lst=(char **)nco_malloc(*nbr_lst*sizeof(char *));
 
   sng_in_ptr=sng_in; 
   lst[0]=sng_in;
@@ -395,7 +395,7 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
       
       /* Initialize static information useful for future invocations */
       fl_nm_1st_dgt=fl_lst_in[0]+strlen(fl_lst_in[0])-fl_nm_nbr_dgt-fl_nm_sfx_len;
-      fl_nm_nbr_sng=(char *)malloc((fl_nm_nbr_dgt+1)*sizeof(char));
+      fl_nm_nbr_sng=(char *)nco_malloc((fl_nm_nbr_dgt+1)*sizeof(char));
       fl_nm_nbr_sng=strncpy(fl_nm_nbr_sng,fl_nm_1st_dgt,fl_nm_nbr_dgt);
       fl_nm_nbr_sng[fl_nm_nbr_dgt]='\0';
       fl_nm_nbr_crr=atoi(fl_nm_nbr_sng);
@@ -428,7 +428,7 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
     fl_nm_stub=fl_nm;
 
     /* Allocate enough room for joining slash '/' and terminating NUL */ 
-    fl_nm=(char *)malloc((strlen(fl_nm_stub)+strlen(fl_pth)+2)*sizeof(char));
+    fl_nm=(char *)nco_malloc((strlen(fl_nm_stub)+strlen(fl_pth)+2)*sizeof(char));
     (void)strcpy(fl_nm,fl_pth);
     (void)strcat(fl_nm,"/");
     (void)strcat(fl_nm,fl_nm_stub);
@@ -472,7 +472,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     /* Rearrange fl_nm_lcl to get rid of ftp://hostname part */ 
     fl_pth_lcl_tmp=strchr(fl_nm_lcl+6,'/');
     fl_nm_lcl_tmp=fl_nm_lcl;
-    fl_nm_lcl=(char *)malloc(strlen(fl_pth_lcl_tmp)+1);
+    fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     (void)free(fl_nm_lcl_tmp);
   }else if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
@@ -496,7 +496,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       /* Rearrange the fl_nm_lcl to get rid of the hostname: part */ 
       fl_pth_lcl_tmp=strchr(fl_nm_lcl+6,'/');
       fl_nm_lcl_tmp=fl_nm_lcl;
-      fl_nm_lcl=(char *)malloc(strlen(fl_pth_lcl_tmp)+1);
+      fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1);
       (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
       (void)free(fl_nm_lcl_tmp);
     } /* endif period is three or four characters from colon */
@@ -539,7 +539,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       
       fl_nm_lcl_tmp=fl_nm_lcl;
       /* Allocate enough room for the joining slash '/' and the terminating NUL */ 
-      fl_nm_lcl=(char *)malloc((strlen(fl_pth_lcl)+strlen(fl_nm_stub)+2)*sizeof(char));
+      fl_nm_lcl=(char *)nco_malloc((strlen(fl_pth_lcl)+strlen(fl_nm_stub)+2)*sizeof(char));
       (void)strcpy(fl_nm_lcl,fl_pth_lcl);
       (void)strcat(fl_nm_lcl,"/");
       (void)strcat(fl_nm_lcl,fl_nm_stub);
@@ -621,7 +621,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 	usr_nm=usr_pwd->pw_name;
 	/* DEBUG: 256 should be replaced by MAXHOSTNAMELEN from <sys/param.h>, but
 	   MAXHOSTNAMELEN isn't in there on Solaris */ 
-	host_nm_lcl=(char *)malloc((256+1)*sizeof(char));
+	host_nm_lcl=(char *)nco_malloc((256+1)*sizeof(char));
 	(void)gethostname(host_nm_lcl,256+1);
 	if(strchr(host_nm_lcl,'.') == NULL){
 	  /* The returned hostname did not include the full Internet domain name */ 
@@ -631,7 +631,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 	} /* end if */ 
 
 	/* Add one for the joining "@" and one for the NULL byte */ 
-	usr_email=(char *)malloc((strlen(usr_nm)+1+strlen(host_nm_lcl)+1)*sizeof(char));
+	usr_email=(char *)nco_malloc((strlen(usr_nm)+1+strlen(host_nm_lcl)+1)*sizeof(char));
 	(void)sprintf(usr_email,"%s@%s",usr_nm,host_nm_lcl);
 	/* Free the hostname space */ 
 	(void)free(host_nm_lcl);
@@ -644,7 +644,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 	*(fl_nm_rmt-1)='\0';
 	
 	/* Subtract the four characters replaced by new strings, and add one for the NULL byte */ 
-	fmt=(char *)malloc((strlen(fmt_template)+strlen(host_nm_rmt)+strlen(usr_email)-4+1)*sizeof(char));
+	fmt=(char *)nco_malloc((strlen(fmt_template)+strlen(host_nm_rmt)+strlen(usr_email)-4+1)*sizeof(char));
 	(void)sprintf(fmt,fmt_template,host_nm_rmt,usr_email,"%s","%s");
 	rmt_cmd->fmt=fmt;
 	/* Free the space holding the user's E-mail address */ 
@@ -705,7 +705,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     /* Construct the local storage filepath name */ 
     fl_pth_lcl_len=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1;
     /* Allocate enough room for the terminating NUL */ 
-    fl_pth_lcl_tmp=(char *)malloc((fl_pth_lcl_len+1)*sizeof(char));
+    fl_pth_lcl_tmp=(char *)nco_malloc((fl_pth_lcl_len+1)*sizeof(char));
     (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_len);
     fl_pth_lcl_tmp[fl_pth_lcl_len]='\0';
     
@@ -717,7 +717,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     /* If not, then create the local filepath */
     if(rcd != 0){
       /* Allocate enough room for joining space ' ' and terminating NUL */
-      cmd_sys=(char *)malloc((strlen(cmd_mkdir)+fl_pth_lcl_len+2)*sizeof(char));
+      cmd_sys=(char *)nco_malloc((strlen(cmd_mkdir)+fl_pth_lcl_len+2)*sizeof(char));
       (void)strcpy(cmd_sys,cmd_mkdir);
       (void)strcat(cmd_sys," ");
       (void)strcat(cmd_sys,fl_pth_lcl_tmp);
@@ -736,7 +736,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     if(fl_pth_lcl_tmp != NULL) (void)free(fl_pth_lcl_tmp);
 
     /* Allocate enough room for joining space ' ' and terminating NUL */ 
-    cmd_sys=(char *)malloc((strlen(rmt_cmd->fmt)-rmt_cmd->nbr_fmt_char+strlen(fl_nm_lcl)+strlen(fl_nm_rmt)+2)*sizeof(char));
+    cmd_sys=(char *)nco_malloc((strlen(rmt_cmd->fmt)-rmt_cmd->nbr_fmt_char+strlen(fl_nm_lcl)+strlen(fl_nm_rmt)+2)*sizeof(char));
     if(rmt_cmd->file_order == lcl_rmt){
       (void)sprintf(cmd_sys,rmt_cmd->fmt,fl_nm_lcl,fl_nm_rmt);
     }else{
@@ -960,13 +960,13 @@ cvs_vrs_prs()
     yr=gmt_tm->tm_year+1900;
 
     cvs_vrs_sng_len=4+2+2;
-    cvs_vrs_sng=(char *)malloc(cvs_vrs_sng_len+1);
+    cvs_vrs_sng=(char *)nco_malloc(cvs_vrs_sng_len+1);
     (void)sprintf(cvs_vrs_sng,"%04i%02i%02i",yr,mth,day);
     return cvs_vrs_sng;
   } /* endif dly_snp */ 
 
   /* cvs_nm_sng is, e.g., "nco1_1" */ 
-  cvs_nm_sng=(char *)malloc(cvs_nm_sng_len+1);
+  cvs_nm_sng=(char *)nco_malloc(cvs_nm_sng_len+1);
   strncpy(cvs_nm_sng,cvs_Name+7,cvs_nm_sng_len); /* 7 is strlen("$Name: ") */
   cvs_nm_sng[cvs_nm_sng_len]='\0';
 
@@ -978,7 +978,7 @@ cvs_vrs_prs()
   if(usc_1_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports usc_1_ptr == NULL\n",prg_nm_get());
   cvs_mjr_vrs_len=(int)(usc_1_ptr-cvs_nm_sng)-nco_sng_len; /* NB: cast pointer to int before subtracting */ 
   usc_2_ptr=strstr(usc_1_ptr+1,"_");
-  cvs_mjr_vrs_sng=(char *)malloc(cvs_mjr_vrs_len+1);
+  cvs_mjr_vrs_sng=(char *)nco_malloc(cvs_mjr_vrs_len+1);
   cvs_mjr_vrs_sng=strncpy(cvs_mjr_vrs_sng,cvs_nm_sng+nco_sng_len,cvs_mjr_vrs_len);
   cvs_mjr_vrs_sng[cvs_mjr_vrs_len]='\0';
   cvs_mjr_vrs=strtol(cvs_mjr_vrs_sng,(char **)NULL,10);
@@ -991,14 +991,14 @@ cvs_vrs_prs()
     cvs_pch_vrs_len=cvs_nm_sng_len-cvs_mjr_vrs_len-1-cvs_mnr_vrs_len-1;
     cvs_vrs_sng_len=cvs_mjr_vrs_len+1+cvs_mnr_vrs_len+1+cvs_pch_vrs_len;
   } /* end else */ 
-  cvs_mnr_vrs_sng=(char *)malloc(cvs_mnr_vrs_len+1);
+  cvs_mnr_vrs_sng=(char *)nco_malloc(cvs_mnr_vrs_len+1);
   cvs_mnr_vrs_sng=strncpy(cvs_mnr_vrs_sng,usc_1_ptr+1,cvs_mnr_vrs_len);
   cvs_mnr_vrs_sng[cvs_mnr_vrs_len]='\0';
   cvs_mnr_vrs=strtol(cvs_mnr_vrs_sng,(char **)NULL,10);
 
-  cvs_pch_vrs_sng=(char *)malloc(cvs_pch_vrs_len+1);
+  cvs_pch_vrs_sng=(char *)nco_malloc(cvs_pch_vrs_len+1);
   cvs_pch_vrs_sng[cvs_pch_vrs_len]='\0';
-  cvs_vrs_sng=(char *)malloc(cvs_vrs_sng_len+1);
+  cvs_vrs_sng=(char *)nco_malloc(cvs_vrs_sng_len+1);
   if(usc_2_ptr != NULL){
     cvs_pch_vrs_sng=strncpy(cvs_pch_vrs_sng,usc_2_ptr+1,cvs_pch_vrs_len);
     cvs_pch_vrs=strtol(cvs_pch_vrs_sng,(char **)NULL,10);
@@ -1048,14 +1048,14 @@ nc_lib_vrs_prn()
   of_ptr=strstr(lib_sng," of ");
   if(of_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports of_ptr == NULL\n",prg_nm_get());
   vrs_sng_len=(int)(of_ptr-lib_sng);
-  vrs_sng=(char *)malloc(vrs_sng_len+1);
+  vrs_sng=(char *)nco_malloc(vrs_sng_len+1);
   strncpy(vrs_sng,lib_sng,vrs_sng_len);
   vrs_sng[vrs_sng_len]='\0';
 
   dlr_ptr=strstr(lib_sng," $");
   if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
   nst_sng_len=(int)(dlr_ptr-of_ptr-4); /* 4 is the length of " of " */ 
-  nst_sng=(char *)malloc(nst_sng_len+1);
+  nst_sng=(char *)nco_malloc(nst_sng_len+1);
   strncpy(nst_sng,of_ptr+4,nst_sng_len); /* 4 is the length of " of " */ 
   nst_sng[nst_sng_len]='\0';
 
@@ -1084,7 +1084,7 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
   if(strlen(CVS_Id) > strlen("*Id*")){
     /* CVS_Id is defined */
     date_sng_len=10;
-    date_sng=(char *)malloc((date_sng_len+1)*sizeof(char));
+    date_sng=(char *)nco_malloc((date_sng_len+1)*sizeof(char));
     (void)strncpy(date_sng,strchr(CVS_Id,'/')-4,date_sng_len);
     date_sng[date_sng_len]='\0';
   }else{
@@ -1095,7 +1095,7 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
   if(strlen(CVS_Revision) > strlen("*Revision*") || strlen(CVS_Revision) < strlen("*Revision*")){
     /* CVS_Revision is defined */
     vrs_sng_len=strrchr(CVS_Revision,'$')-strchr(CVS_Revision,':')-3;
-    vrs_sng=(char *)malloc((vrs_sng_len+1)*sizeof(char));
+    vrs_sng=(char *)nco_malloc((vrs_sng_len+1)*sizeof(char));
     (void)strncpy(vrs_sng,strchr(CVS_Revision,':')+2,vrs_sng_len);
     vrs_sng[vrs_sng_len]='\0';
   }else{
@@ -1135,7 +1135,7 @@ fl_cp(char *fl_src,char *fl_dst)
   int nbr_fmt_char=4;
   
   /* Construct and execute the copy command */ 
-  cp_cmd=(char *)malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
+  cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Copying %s to %s...",fl_src,fl_dst);
   (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
   rcd=system(cp_cmd);
@@ -1164,7 +1164,7 @@ fl_mv(char *fl_src,char *fl_dst)
   int nbr_fmt_char=4;
   
   /* Construct and execute the copy command */ 
-  mv_cmd=(char *)malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
+  mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Moving %s to %s...",fl_src,fl_dst);
   (void)sprintf(mv_cmd,mv_cmd_fmt,fl_src,fl_dst);
   rcd=system(mv_cmd);
@@ -1190,7 +1190,7 @@ fl_rm(char *fl_nm)
   char *rm_cmd;
   
   /* Remember to add one for the space and one for the terminating NUL character */ 
-  rm_cmd=(char *)malloc((strlen(rm_cmd_sys_dep)+1+strlen(fl_nm)+1)*sizeof(char));
+  rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1+strlen(fl_nm)+1)*sizeof(char));
   (void)sprintf(rm_cmd,"%s %s",rm_cmd_sys_dep,fl_nm);
 
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: Removing %s with %s\n",prg_nm_get(),fl_nm,rm_cmd);
@@ -1285,4 +1285,31 @@ sng_ascii_trn(char *sng)
   return trn_nbr;
 
 } /* end sng_ascii_trn() */ 
+
+void *nco_malloc(size_t size)
+{
+  /* Purpose: Custom wrapper for malloc() that won't return a NULL pointer */
+   void *ptr;
+   if(size == 0) return NULL; /* NCO sometimes employs this degenerate case behavior of malloc() to simplify code */
+   ptr=malloc(size); 
+   if(ptr == NULL)
+   {
+      printf("%s: ERROR nco_malloc() ran out of memory trying to allocate %d bytes\n",prg_nm_get(),(int)size);
+      exit(8);
+   }
+   return ptr;
+} /* nco_malloc() */ 
+
+void *nco_realloc(void *ptr,size_t size)
+{
+  /* Purpose: Custom wrapper for realloc() that won't return a NULL pointer */
+   void *new_ptr;
+   new_ptr=realloc(ptr, size);
+   if(new_ptr == NULL && size != 0)
+   {
+      printf("%s: ERROR nco_realloc() ran out of memory trying to allocate %d bytes\n",prg_nm_get(),(int)size);
+      exit(8);
+   }
+   return new_ptr;
+} /* nco_realloc() */ 
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.25 2000-06-21 00:42:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.26 2000-06-25 19:31:47 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -94,7 +94,7 @@ main(int argc,char **argv)
   char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option a */ 
   char **fl_lst_in;
-  char *fl_in=NULL; /* fl_in is realloc'd when not NULL */ 
+  char *fl_in=NULL; /* fl_in is nco_realloc'd when not NULL */ 
   char *fl_in_1;
   char *fl_in_2;
   char *fl_pth_lcl=NULL; /* Option l */ 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.25 2000-06-21 00:42:41 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.25 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.26 2000-06-25 19:31:47 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.26 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -261,14 +261,14 @@ main(int argc,char **argv)
   dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
   /* Fill in dimension structure for all extracted dimensions */ 
-  dim=(dmn_sct **)malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   
   /* Merge hyperslab limit information into dimension structures */ 
   if(lmt_nbr > 0) (void)dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
 
   /* Duplicate input dimension structures for output dimension structures */ 
-  dmn_out=(dmn_sct **)malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dmn_out[idx]=dmn_dup(dim[idx]);
     (void)dmn_xrf(dim[idx],dmn_out[idx]); 
@@ -282,8 +282,8 @@ main(int argc,char **argv)
   NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
 
   /* Fill in variable structure list for all extracted variables */ 
-  var=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
-  var_out=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
+  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+  var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dup(var[idx]);

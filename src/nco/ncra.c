@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.25 2000-05-12 04:51:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.26 2000-06-25 19:31:47 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.25 2000-05-12 04:51:59 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.25 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.26 2000-06-25 19:31:47 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.26 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -257,14 +257,14 @@ main(int argc,char **argv)
   dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
   /* Fill in dimension structure for all extracted dimensions */ 
-  dim=(dmn_sct **)malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   
   /* Merge hyperslab limit information into dimension structures */ 
   if(lmt_nbr > 0) (void)dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
 
   /* Duplicate input dimension structures for output dimension structures */ 
-  dmn_out=(dmn_sct **)malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dmn_out[idx]=dmn_dup(dim[idx]);
     (void)dmn_xrf(dim[idx],dmn_out[idx]); 
@@ -288,8 +288,8 @@ main(int argc,char **argv)
   if(ARM_FORMAT) base_time_srt=arm_base_time_get(in_id);
 
   /* Fill in variable structure list for all extracted variables */ 
-  var=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
-  var_out=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
+  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+  var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dup(var[idx]);
@@ -339,9 +339,9 @@ main(int argc,char **argv)
       var_prc_out[idx]->sz=var_prc[idx]->sz=var_prc[idx]->sz_rec;
     } /* endif */ 
     if(prg == ncra || prg == ncea){
-      var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)malloc(var_prc_out[idx]->sz*sizeof(long));
+      var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));
       (void)zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
-      var_prc_out[idx]->val.vp=(void *)malloc(var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type));
+      var_prc_out[idx]->val.vp=(void *)nco_malloc(var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type));
       (void)var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
     } /* end if */
   } /* end loop over idx */

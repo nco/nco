@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.16 2000-04-24 06:37:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.17 2000-06-25 19:31:47 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.16 2000-04-24 06:37:44 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.16 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.17 2000-06-25 19:31:47 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.17 $";
   
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dmn_rnm_lst=NULL_CEWI;
@@ -375,7 +375,7 @@ prs_rnm_lst(int nbr_rnm,char **rnm_arg)
   int len_arg_1;
   int len_arg_2;
 
-  rnm_lst=(rnm_sct *)malloc(nbr_rnm*sizeof(rnm_sct));
+  rnm_lst=(rnm_sct *)nco_malloc(nbr_rnm*sizeof(rnm_sct));
 
   for(idx=0;idx<nbr_rnm;idx++){
     char *comma_1_cp;

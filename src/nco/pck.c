@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.1 2000-04-10 07:16:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.2 2000-06-25 19:31:47 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -86,7 +86,7 @@ is_var_pck
 
   if(rcd != -1 && att_typ == NC_CHAR){
     /* Add one for NULL byte */
-    att_val=(char *)malloc(att_sz*nctypelen(att_typ)+1);
+    att_val=(char *)nco_malloc(att_sz*nctypelen(att_typ)+1);
     (void)ncattget(nc_id,NC_GLOBAL,"convention",att_val);
     /* NUL-terminate convention attribute before using strcmp() */
     att_val[att_sz]='\0';

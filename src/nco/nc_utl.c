@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.68 2000-06-25 18:39:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.69 2000-06-25 19:31:47 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -354,7 +354,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     if(dim.type == NC_BYTE || dim.type == NC_CHAR) (void)fprintf(stderr,"\nWARNING: Coordinate %s is type %s. Dimension truncation is unpredictable.\n",lmt.nm,nc_type_nm(dim.type));
     
     /* Allocate enough space to hold coordinate */ 
-    dim.val.vp=(void *)malloc(dmn_sz*nctypelen(dim.type));
+    dim.val.vp=(void *)nco_malloc(dmn_sz*nctypelen(dim.type));
     
     /* Retrieve coordinate */ 
     ncvarget(nc_id,dim.cid,&dmn_srt,&dmn_sz,dim.val.vp);
@@ -364,7 +364,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       ptr_unn old_val;
 
       old_val=dim.val;
-      dim.val.vp=(void *)malloc(dmn_sz*nctypelen(NC_DOUBLE));
+      dim.val.vp=(void *)nco_malloc(dmn_sz*nctypelen(NC_DOUBLE));
       /* Typecast old coordinate pointer union to correct type before access */ 
       (void)cast_void_nctype(dim.type,&old_val);
 
@@ -951,7 +951,7 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
    var_sct *var_fll(): O variable structure
  */ 
 {
-  /* Routine to malloc() and return a completed var_sct */ 
+  /* Routine to nco_malloc() and return a completed var_sct */ 
 
   char dmn_nm[MAX_NC_NAME];
 
@@ -964,7 +964,7 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
   /* Get the record dimension ID */
   (void)ncinquire(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
   
-  var=(var_sct *)malloc(sizeof(var_sct));
+  var=(var_sct *)nco_malloc(sizeof(var_sct));
   var->nm=var_nm;
   var->id=var_id;
   var->nc_id=nc_id;
@@ -973,12 +973,12 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
   (void)ncvarinq(var->nc_id,var->id,(char *)NULL,&var->type,&var->nbr_dim,(int *)NULL,&var->nbr_att);
 
   /* Allocate space for dimension information */ 
-  if(var->nbr_dim > 0) var->dim=(dmn_sct **)malloc(var->nbr_dim*sizeof(dmn_sct *)); else var->dim=(dmn_sct **)NULL;
-  if(var->nbr_dim > 0) var->dmn_id=(int *)malloc(var->nbr_dim*sizeof(int)); else var->dmn_id=(int *)NULL;
-  if(var->nbr_dim > 0) var->cnt=(long *)malloc(var->nbr_dim*sizeof(long)); else var->cnt=(long *)NULL;
-  if(var->nbr_dim > 0) var->srt=(long *)malloc(var->nbr_dim*sizeof(long)); else var->srt=(long *)NULL;
-  if(var->nbr_dim > 0) var->end=(long *)malloc(var->nbr_dim*sizeof(long)); else var->end=(long *)NULL;
-  if(var->nbr_dim > 0) var->srd=(long *)malloc(var->nbr_dim*sizeof(long)); else var->srd=(long *)NULL;
+  if(var->nbr_dim > 0) var->dim=(dmn_sct **)nco_malloc(var->nbr_dim*sizeof(dmn_sct *)); else var->dim=(dmn_sct **)NULL;
+  if(var->nbr_dim > 0) var->dmn_id=(int *)nco_malloc(var->nbr_dim*sizeof(int)); else var->dmn_id=(int *)NULL;
+  if(var->nbr_dim > 0) var->cnt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->cnt=(long *)NULL;
+  if(var->nbr_dim > 0) var->srt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srt=(long *)NULL;
+  if(var->nbr_dim > 0) var->end=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->end=(long *)NULL;
+  if(var->nbr_dim > 0) var->srd=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srd=(long *)NULL;
 
   /* Get dimension IDs from input file */
   (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,var->dmn_id,(int *)NULL);
@@ -1104,13 +1104,13 @@ mss_val_get(int nc_id,var_sct *var)
     var->has_mss_val=True;
     /* Oddly, ARM uses NC_CHAR for the type of missing_value, so we must make allowances for this */ 
     att_len=att_sz*nctypelen(att_typ);
-    mss_tmp.vp=(void *)malloc(att_len);
+    mss_tmp.vp=(void *)nco_malloc(att_len);
     (void)ncattget(var->nc_id,var->id,att_nm,mss_tmp.vp);
     if(att_typ == NC_CHAR){
       /* NUL-terminate missing value string */
       if(mss_tmp.cp[att_len-1] != '\0'){
 	att_len++;
-	mss_tmp.vp=(void *)realloc(mss_tmp.vp,att_len);
+	mss_tmp.vp=(void *)nco_realloc(mss_tmp.vp,att_len);
 	mss_tmp.cp[att_len-1]='\0';
 	/* Un-typecast pointer to values after access */
 	(void)cast_nctype_void(att_typ,&mss_tmp);
@@ -1118,7 +1118,7 @@ mss_val_get(int nc_id,var_sct *var)
     } /* end if */ 
     
     /* Ensure mss_val in memory is stored as same type as variable */ 
-    var->mss_val.vp=(void *)malloc(nctypelen(var->type));
+    var->mss_val.vp=(void *)nco_malloc(nctypelen(var->type));
     (void)val_conform_type(att_typ,mss_tmp,var->type,var->mss_val);
 
     /* Free the temporary memory */ 
@@ -1139,13 +1139,13 @@ dmn_fll(int nc_id,int dmn_id,char *dmn_nm)
    dmn_sct *dmn_fll(): pointer to output dimension structure
  */ 
 {
-  /* Routine to malloc() and return a completed dmn_sct */ 
+  /* Routine to nco_malloc() and return a completed dmn_sct */ 
 
   dmn_sct *dim;
   
   int rec_dmn_id;
   
-  dim=(dmn_sct *)malloc(sizeof(dmn_sct));
+  dim=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
   
   dim->nm=dmn_nm;
   dim->id=dmn_id;
@@ -1229,7 +1229,7 @@ var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,
 
   if(*nbr_xtr > 0){
     /* If user named variables with -v option then check validity of user's list and find IDs */ 
-    xtr_lst=(nm_id_sct *)malloc(*nbr_xtr*sizeof(nm_id_sct));
+    xtr_lst=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
     ncopts=0; 
     for(idx=0;idx<*nbr_xtr;idx++){
       xtr_lst[idx].nm=var_lst_in[idx];
@@ -1249,7 +1249,7 @@ var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,
     char var_nm[MAX_NC_NAME];
     
     *nbr_xtr=nbr_var;
-    xtr_lst=(nm_id_sct *)malloc(*nbr_xtr*sizeof(nm_id_sct));
+    xtr_lst=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
     for(idx=0;idx<nbr_var;idx++){
       /* Get the name for each variable. */
       (void)ncvarinq(nc_id,idx,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,(int *)NULL);
@@ -1288,9 +1288,9 @@ var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
   /* Turn the extract list into the exclude list and reallocate the extract list  */ 
   nbr_xcl=*nbr_xtr;
   *nbr_xtr=0;
-  xcl_lst=(nm_id_sct *)malloc(nbr_xcl*sizeof(nm_id_sct));
+  xcl_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
   (void)memcpy((void *)xcl_lst,(void *)xtr_lst,nbr_xcl*sizeof(nm_id_sct));
-  xtr_lst=(nm_id_sct *)realloc((void *)xtr_lst,(nbr_var-nbr_xcl)*sizeof(nm_id_sct));
+  xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(nbr_var-nbr_xcl)*sizeof(nm_id_sct));
   
   for(idx=0;idx<nbr_var;idx++){
     /* Get the name and ID for the variable. */
@@ -1351,9 +1351,9 @@ var_lst_add_crd(int nc_id,int nbr_var,int nbr_dim,nm_id_sct *xtr_lst,int *nbr_xt
       } /* end loop over lst_idx */
       if(lst_idx == *nbr_xtr){
 	/* Coordinate is not already on the list, put it there. */ 
-	if(*nbr_xtr == 0) xtr_lst=(nm_id_sct *)malloc((*nbr_xtr+1)*sizeof(nm_id_sct)); else xtr_lst=(nm_id_sct *)realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
+	if(*nbr_xtr == 0) xtr_lst=(nm_id_sct *)nco_malloc((*nbr_xtr+1)*sizeof(nm_id_sct)); else xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
 	/* According to the man page for realloc(), this should work even when xtr_lst == NULL */ 
-/*	xtr_lst=(nm_id_sct *)realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));*/
+/*	xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));*/
 	xtr_lst[*nbr_xtr].nm=(char *)strdup(crd_nm);
 	xtr_lst[*nbr_xtr].id=crd_id;
 	(*nbr_xtr)++;
@@ -1458,7 +1458,7 @@ lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
        Adding 1 is required for cnt=10,100,1000... */
     if(cnt < 10L) max_sng_sz=1; else max_sng_sz=1+(int)ceil(log10((double)cnt));
     /* Add one for NUL terminator */
-    lmt_dim.max_sng=(char *)malloc(sizeof(char)*(max_sng_sz+1));
+    lmt_dim.max_sng=(char *)nco_malloc(sizeof(char)*(max_sng_sz+1));
     (void)sprintf(lmt_dim.max_sng,"%ld",cnt);
     if(FORTRAN_STYLE){
       lmt_dim.min_sng=(char *)strdup("1");
@@ -1503,11 +1503,11 @@ var_lst_crd_xcl(int nc_id,int dmn_id,nm_id_sct *xtr_lst,int *nbr_xtr)
     if(idx != *nbr_xtr){
       nm_id_sct *var_lst_tmp;
       
-      var_lst_tmp=(nm_id_sct *)malloc(*nbr_xtr*sizeof(nm_id_sct));
+      var_lst_tmp=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
       /* Copy the extract list to the temporary extract list and reallocate the extract list */ 
       (void)memcpy((void *)var_lst_tmp,(void *)xtr_lst,*nbr_xtr*sizeof(nm_id_sct));
       (*nbr_xtr)--;
-      xtr_lst=(nm_id_sct *)realloc((void *)xtr_lst,*nbr_xtr*sizeof(nm_id_sct));
+      xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,*nbr_xtr*sizeof(nm_id_sct));
       /* Collapse the temporary extract list into the permanent list by copying 
 	 all but the coordinate. NB: the ordering of the list is conserved. */ 
       (void)memcpy((void *)xtr_lst,(void *)var_lst_tmp,idx*sizeof(nm_id_sct));
@@ -1533,7 +1533,7 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 {
   /* Makes sure all coordinates associated with each of the variables
      to be extracted is also on the list. This helps with making concise
-     malloc() calls down the road. */ 
+     nco_malloc() calls down the road. */ 
 
   char dmn_nm[MAX_NC_NAME];
 
@@ -1570,7 +1570,7 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 	  } /* end loop over idx_var_dim */
 	  if(idx_var_dim != nbr_var_dim){
 	    /* Add the coordinate to the list */ 
-	    xtr_lst=(nm_id_sct *)realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
+	    xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
 	    xtr_lst[*nbr_xtr].nm=(char *)strdup(dmn_nm);
 	    xtr_lst[*nbr_xtr].id=crd_id;
 	    (*nbr_xtr)++;
@@ -1598,22 +1598,22 @@ lst_heapsort(nm_id_sct *lst,int nbr_lst,bool ALPHABETIZE_OUTPUT)
   int idx; /* Counting index */
   nm_id_sct *lst_tmp; /* Temporary copy of original extraction list */
   
-  srt_idx=(int *)malloc(nbr_lst*sizeof(int));
-  lst_tmp=(nm_id_sct *)malloc(nbr_lst*sizeof(nm_id_sct));
+  srt_idx=(int *)nco_malloc(nbr_lst*sizeof(int));
+  lst_tmp=(nm_id_sct *)nco_malloc(nbr_lst*sizeof(nm_id_sct));
   (void)memcpy((void *)lst_tmp,(void *)lst,nbr_lst*sizeof(nm_id_sct));
   
   /* NB: indexx employs "one-based" arrays */ 
   if(ALPHABETIZE_OUTPUT){
     /* Alphabetize list by variable name. Easiest to read */ 
     char **xtr_nm;
-    xtr_nm=(char **)malloc(nbr_lst*sizeof(char *));
+    xtr_nm=(char **)nco_malloc(nbr_lst*sizeof(char *));
     for(idx=0;idx<nbr_lst;idx++) xtr_nm[idx]=lst[idx].nm;
     (void)index_alpha(nbr_lst,xtr_nm-1,srt_idx-1);
     (void)free(xtr_nm);
   }else{
     /* Heapsort the list by ID. Fastest I/O */ 
     int *xtr_id;
-    xtr_id=(int *)malloc(nbr_lst*sizeof(int));
+    xtr_id=(int *)nco_malloc(nbr_lst*sizeof(int));
     for(idx=0;idx<nbr_lst;idx++) xtr_id[idx]=lst[idx].id;
     (void)indexx(nbr_lst,xtr_id-1,srt_idx-1);
     (void)free(xtr_id);
@@ -1674,14 +1674,14 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
   */
   /* Maximum length of decimal representation of PID is number of bits in PID times log10(2) */
   pid_sng_lng_max=(long)ceil(8*sizeof(pid_t)*log10(2.0));
-  pid_sng=(char *)malloc((pid_sng_lng_max+1)*sizeof(char));
+  pid_sng=(char *)nco_malloc((pid_sng_lng_max+1)*sizeof(char));
   pid=getpid();
   (void)sprintf(pid_sng,"%ld",(long)pid);
   /* Theoretical length of decimal representation of PID is 1+ceil(log10(PID)) where the 1 is required iff PID is an exact power of 10 */
   pid_sng_lng=1L+(long)ceil(log10((double)pid));
   /* NCO temporary file name is user-specified file name + "." + tmp_sng_1 + PID + "." + prg_nm + "." + tmp_sng_2 + NUL */
   fl_out_tmp_lng=strlen(fl_out)+1L+strlen(tmp_sng_1)+strlen(pid_sng)+1L+strlen(prg_nm_get())+1L+strlen(tmp_sng_2)+1L;
-  fl_out_tmp=(char *)malloc(fl_out_tmp_lng*sizeof(char));
+  fl_out_tmp=(char *)nco_malloc(fl_out_tmp_lng*sizeof(char));
   (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,prg_nm_get(),tmp_sng_2);
   if(dbg_lvl_get() > 5) (void)fprintf(stdout,"%s: fl_out_open() reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
   rcd=stat(fl_out_tmp,&stat_sct);
@@ -1837,7 +1837,7 @@ var_val_cpy(int in_id,int out_id,var_sct **var,int nbr_var)
   int idx;
 
   for(idx=0;idx<nbr_var;idx++){
-    var[idx]->xrf->val.vp=var[idx]->val.vp=(void *)malloc(var[idx]->sz*nctypelen(var[idx]->type));
+    var[idx]->xrf->val.vp=var[idx]->val.vp=(void *)nco_malloc(var[idx]->sz*nctypelen(var[idx]->type));
     if(var[idx]->nbr_dim==0){
       ncvarget1(in_id,var[idx]->id,var[idx]->srt,var[idx]->val.vp);
       ncvarput1(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->val.vp);
@@ -1995,7 +1995,7 @@ hst_att_cat(int out_id,char *hst_sng)
     /* history global attribute does not yet exist */
 
     /* Add 3 for formatting characters */ 
-    history_new=(char *)malloc((strlen(hst_sng)+strlen(time_stamp_sng)+3)*sizeof(char));
+    history_new=(char *)nco_malloc((strlen(hst_sng)+strlen(time_stamp_sng)+3)*sizeof(char));
     (void)sprintf(history_new,"%s: %s",time_stamp_sng,hst_sng);
   }else{ 
     /* history global attribute currently exists */
@@ -2008,17 +2008,17 @@ hst_att_cat(int out_id,char *hst_sng)
     } /* end if */
 
     if(att_sz > 0){
-      history_crr=(char *)malloc(att_sz*sizeof(char));
+      history_crr=(char *)nco_malloc(att_sz*sizeof(char));
       (void)ncattget(out_id,NC_GLOBAL,"history",(void *)history_crr);
     }else{
       /* History attribute exists but has size of zero */
-      history_crr=(char *)malloc(sizeof(char));
+      history_crr=(char *)nco_malloc(sizeof(char));
       /* Turn it into a null string so strlen(history_crr) = 0 */
       history_crr[0]='\0';
     } /* end else */
 
     /* Add 4 for formatting characters */ 
-    history_new=(char *)malloc((strlen(history_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4)*sizeof(char));
+    history_new=(char *)nco_malloc((strlen(history_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4)*sizeof(char));
     (void)sprintf(history_new,"%s: %s\n%s",time_stamp_sng,hst_sng,history_crr);
 
   } /* end else */
@@ -2062,7 +2062,7 @@ dmn_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
   (void)ncinquire(nc_id,&nbr_dmn_in,(int *)NULL,(int *)NULL,(int *)NULL);
 
   /* The number of input dimensions is an upper bound on the number of output dimensions */
-  dim=(nm_id_sct *)malloc(nbr_dmn_in*sizeof(nm_id_sct));
+  dim=(nm_id_sct *)nco_malloc(nbr_dmn_in*sizeof(nm_id_sct));
   
   /* ...For each dimension in the file... */ 
   for(idx_dmn_in=0;idx_dmn_in<nbr_dmn_in;idx_dmn_in++){
@@ -2100,7 +2100,7 @@ dmn_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
   /* We now have the final list of dimensions to extract. Phew. */
   
   /* Free unused space in output dimension list */ 
-  dim=(nm_id_sct *)realloc((void *)dim,*nbr_dim*sizeof(nm_id_sct));
+  dim=(nm_id_sct *)nco_realloc((void *)dim,*nbr_dim*sizeof(nm_id_sct));
   
   return dim;
 
@@ -2131,51 +2131,51 @@ var_dup(var_sct *var)
    var_sct *var_dup(): O copy of input variable structure
  */ 
 {
-  /* Purpose: malloc() and return duplicate of input var_sct */ 
+  /* Purpose: nco_malloc() and return duplicate of input var_sct */ 
 
   var_sct *var_dup;
 
-  var_dup=(var_sct *)malloc(sizeof(var_sct));
+  var_dup=(var_sct *)nco_malloc(sizeof(var_sct));
 
   (void)memcpy((void *)var_dup,(void *)var,sizeof(var_sct));
 
   /* Copy all dyamically allocated arrays currently defined in original */ 
   if(var->val.vp != NULL){
-    if((var_dup->val.vp=(void *)malloc(var_dup->sz*nctypelen(var_dup->type))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in var_dup()\n",prg_nm_get(),var_dup->sz,nctypelen(var_dup->type),var_dup->nm);
+    if((var_dup->val.vp=(void *)nco_malloc(var_dup->sz*nctypelen(var_dup->type))) == NULL){
+      (void)fprintf(stdout,"%s: ERROR Unable to nco_malloc() %ld*%d bytes for value buffer for variable %s in var_dup()\n",prg_nm_get(),var_dup->sz,nctypelen(var_dup->type),var_dup->nm);
       exit(EXIT_FAILURE); 
     } /* end if */ 
     (void)memcpy((void *)(var_dup->val.vp),(void *)(var->val.vp),var_dup->sz*nctypelen(var_dup->type));
   } /* end if */
   if(var->mss_val.vp != NULL){
-    var_dup->mss_val.vp=(void *)malloc(nctypelen(var_dup->type));
+    var_dup->mss_val.vp=(void *)nco_malloc(nctypelen(var_dup->type));
     (void)memcpy((void *)(var_dup->mss_val.vp),(void *)(var->mss_val.vp),nctypelen(var_dup->type));
   } /* end if */
   if(var->tally != NULL){
-    if((var_dup->tally=(long *)malloc(var_dup->sz*sizeof(long))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in var_dup()\n",prg_nm_get(),var_dup->sz,(long)sizeof(long),var_dup->nm);
+    if((var_dup->tally=(long *)nco_malloc(var_dup->sz*sizeof(long))) == NULL){
+      (void)fprintf(stdout,"%s: ERROR Unable to nco_malloc() %ld*%ld bytes for tally buffer for variable %s in var_dup()\n",prg_nm_get(),var_dup->sz,(long)sizeof(long),var_dup->nm);
       exit(EXIT_FAILURE); 
     } /* end if */ 
     (void)memcpy((void *)(var_dup->tally),(void *)(var->tally),var_dup->sz*sizeof(long));
   } /* end if */
   if(var->dim != NULL){
-    var_dup->dim=(dmn_sct **)malloc(var_dup->nbr_dim*sizeof(dmn_sct *));
+    var_dup->dim=(dmn_sct **)nco_malloc(var_dup->nbr_dim*sizeof(dmn_sct *));
     (void)memcpy((void *)(var_dup->dim),(void *)(var->dim),var_dup->nbr_dim*sizeof(var->dim[0]));
   } /* end if */
   if(var->dmn_id != NULL){
-    var_dup->dmn_id=(int *)malloc(var_dup->nbr_dim*sizeof(int));
+    var_dup->dmn_id=(int *)nco_malloc(var_dup->nbr_dim*sizeof(int));
     (void)memcpy((void *)(var_dup->dmn_id),(void *)(var->dmn_id),var_dup->nbr_dim*sizeof(var->dmn_id[0]));
   } /* end if */
   if(var->cnt != NULL){
-    var_dup->cnt=(long *)malloc(var_dup->nbr_dim*sizeof(long));
+    var_dup->cnt=(long *)nco_malloc(var_dup->nbr_dim*sizeof(long));
     (void)memcpy((void *)(var_dup->cnt),(void *)(var->cnt),var_dup->nbr_dim*sizeof(var->cnt[0]));
   } /* end if */
   if(var->srt != NULL){
-    var_dup->srt=(long *)malloc(var_dup->nbr_dim*sizeof(long));
+    var_dup->srt=(long *)nco_malloc(var_dup->nbr_dim*sizeof(long));
     (void)memcpy((void *)(var_dup->srt),(void *)(var->srt),var_dup->nbr_dim*sizeof(var->srt[0]));
   } /* end if */
   if(var->end != NULL){
-    var_dup->end=(long *)malloc(var_dup->nbr_dim*sizeof(long));
+    var_dup->end=(long *)nco_malloc(var_dup->nbr_dim*sizeof(long));
     (void)memcpy((void *)(var_dup->end),(void *)(var->end),var_dup->nbr_dim*sizeof(var->end[0]));
   } /* end if */
 
@@ -2190,11 +2190,11 @@ dmn_dup(dmn_sct *dim)
    dmn_sct *dmn_dup(): O copy of input dimension structure
  */ 
 {
-  /* Purpose: malloc() and return a duplicate of input dmn_sct */ 
+  /* Purpose: nco_malloc() and return a duplicate of input dmn_sct */ 
 
   dmn_sct *dmn_dup;
 
-  dmn_dup=(dmn_sct *)malloc(sizeof(dmn_sct));
+  dmn_dup=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
 
   (void)memcpy((void *)dmn_dup,(void *)dim,sizeof(dmn_sct));
 
@@ -2213,8 +2213,8 @@ var_get(int nc_id,var_sct *var)
 
   /* This is probably where scale_factor and add_offset unpacking should be done */
 
-  if((var->val.vp=(void *)malloc(var->sz*nctypelen(var->type))) == NULL){
-    (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in var_get()\n",prg_nm_get(),var->sz,nctypelen(var->type));
+  if((var->val.vp=(void *)nco_malloc(var->sz*nctypelen(var->type))) == NULL){
+    (void)fprintf(stdout,"%s: ERROR Unable to nco_malloc() %ld*%d bytes in var_get()\n",prg_nm_get(),var->sz,nctypelen(var->type));
     exit(EXIT_FAILURE); 
   } /* end if */ 
   if(var->sz > 1){
@@ -2423,7 +2423,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
     wgt_out->nm=wgt->nm;
     wgt_out->id=wgt->id;
     wgt_out->type=wgt->type;
-    wgt_out->val.vp=(void *)malloc(wgt_out->sz*nctypelen(wgt_out->type));
+    wgt_out->val.vp=(void *)nco_malloc(wgt_out->sz*nctypelen(wgt_out->type));
     wgt_cp=(char *)wgt->val.vp;
     wgt_out_cp=(char *)wgt_out->val.vp;
     wgt_type_sz=nctypelen(wgt_out->type);
@@ -2603,7 +2603,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
   
   /* Allocate space for type-conforming values */ 
   var_out->type=var_out_type;
-  var_out->val.vp=(void *)malloc(var_out->sz*nctypelen(var_out->type));
+  var_out->val.vp=(void *)nco_malloc(var_out->sz*nctypelen(var_out->type));
   
   /* Define convenience variables to avoid repetitive indirect addressing */
   sz=var_out->sz;
@@ -2615,7 +2615,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
 
     /* Sequence of following commands is important (copy before overwriting!) */
     var_in_mss_val=var_out->mss_val;
-    var_out->mss_val.vp=(void *)malloc(nctypelen(var_out->type));
+    var_out->mss_val.vp=(void *)nco_malloc(nctypelen(var_out->type));
     (void)val_conform_type(var_in_type,var_in_mss_val,var_out_type,var_out->mss_val);
     /* Free original */ 
     (void)free(var_in_mss_val.vp);
@@ -2836,8 +2836,8 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim)
   nbr_dmn_var=var->nbr_dim;
   nbr_dmn_fix=0;
   nbr_dmn_avg=0;
-  dmn_avg=(dmn_sct **)malloc(nbr_dim*sizeof(dmn_sct *));
-  dmn_fix=(dmn_sct **)malloc(nbr_dmn_var*sizeof(dmn_sct *));
+  dmn_avg=(dmn_sct **)nco_malloc(nbr_dim*sizeof(dmn_sct *));
+  dmn_fix=(dmn_sct **)nco_malloc(nbr_dmn_var*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_var;idx++){
     for(idx_dim=0;idx_dim<nbr_dim;idx_dim++){
       if(var->dmn_id[idx] == dim[idx_dim]->id){
@@ -2857,8 +2857,8 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim)
   } /* end loop over idx */
 
   /* Free the extra list space */ 
-  if(nbr_dmn_fix > 0) dmn_fix=(dmn_sct **)realloc(dmn_fix,nbr_dmn_fix*sizeof(dmn_sct *)); else dmn_fix=(dmn_sct **)NULL;
-  if(nbr_dmn_avg > 0) dmn_avg=(dmn_sct **)realloc(dmn_avg,nbr_dmn_avg*sizeof(dmn_sct *)); else dmn_avg=(dmn_sct **)NULL;
+  if(nbr_dmn_fix > 0) dmn_fix=(dmn_sct **)nco_realloc(dmn_fix,nbr_dmn_fix*sizeof(dmn_sct *)); else dmn_fix=(dmn_sct **)NULL;
+  if(nbr_dmn_avg > 0) dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,nbr_dmn_avg*sizeof(dmn_sct *)); else dmn_avg=(dmn_sct **)NULL;
 
   if(nbr_dmn_avg == 0){
     (void)fprintf(stderr,"%s: WARNING %s does not contain any averaging dimensions\n",prg_nm_get(),fix->nm);
@@ -2891,11 +2891,11 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim)
       fix->is_crd_var=True;
 
   /* Trim dimension arrays to their new sizes */ 
-  if(nbr_dmn_fix > 0) fix->dim=(dmn_sct **)realloc(fix->dim,nbr_dmn_fix*sizeof(dmn_sct *)); else fix->dim=NULL;
-  if(nbr_dmn_fix > 0) fix->dmn_id=(int *)realloc(fix->dmn_id,nbr_dmn_fix*sizeof(int)); else fix->dmn_id=NULL;
-  if(nbr_dmn_fix > 0) fix->srt=(long *)realloc(fix->srt,nbr_dmn_fix*sizeof(long)); else fix->srt=NULL;
-  if(nbr_dmn_fix > 0) fix->cnt=(long *)realloc(fix->cnt,nbr_dmn_fix*sizeof(long)); else fix->cnt=NULL;
-  if(nbr_dmn_fix > 0) fix->end=(long *)realloc(fix->end,nbr_dmn_fix*sizeof(long)); else fix->end=NULL;
+  if(nbr_dmn_fix > 0) fix->dim=(dmn_sct **)nco_realloc(fix->dim,nbr_dmn_fix*sizeof(dmn_sct *)); else fix->dim=NULL;
+  if(nbr_dmn_fix > 0) fix->dmn_id=(int *)nco_realloc(fix->dmn_id,nbr_dmn_fix*sizeof(int)); else fix->dmn_id=NULL;
+  if(nbr_dmn_fix > 0) fix->srt=(long *)nco_realloc(fix->srt,nbr_dmn_fix*sizeof(long)); else fix->srt=NULL;
+  if(nbr_dmn_fix > 0) fix->cnt=(long *)nco_realloc(fix->cnt,nbr_dmn_fix*sizeof(long)); else fix->cnt=NULL;
+  if(nbr_dmn_fix > 0) fix->end=(long *)nco_realloc(fix->end,nbr_dmn_fix*sizeof(long)); else fix->end=NULL;
   
   /* If the product of the sizes of all the averaging dimensions is 1, the input and output value arrays 
      should be identical. Since var->val was already copied to fix->val by var_dup() at the beginning
@@ -2962,10 +2962,10 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim)
     avg_val=fix->val;
     avg_cp=(char *)avg_val.vp;
     /* Create a new value buffer for output (averaged) size */ 
-    fix->val.vp=(void *)malloc(fix->sz*nctypelen(fix->type));
+    fix->val.vp=(void *)nco_malloc(fix->sz*nctypelen(fix->type));
     fix_cp=(char *)fix->val.vp;
     /* Resize (or just plain allocate) the tally array */ 
-    fix->tally=(long *)realloc(fix->tally,fix->sz*sizeof(long));
+    fix->tally=(long *)nco_realloc(fix->tally,fix->sz*sizeof(long));
 
     /* Re-initialize the value and tally arrays */ 
     (void)zero_long(fix->sz,fix->tally);
@@ -3742,7 +3742,7 @@ mss_val_mk(nc_type type)
 
   ptr_unn mss_val;
 
-  mss_val.vp=(void *)malloc(nctypelen(type));
+  mss_val.vp=(void *)nco_malloc(nctypelen(type));
 
   /* Typecast pointer to values before access */ 
   (void)cast_void_nctype(type,&mss_val);
@@ -3782,7 +3782,7 @@ mss_val_cp(var_sct *var1,var_sct *var2)
     var2->has_mss_val=False;
     if(var2->mss_val.vp != NULL) free(var2->mss_val.vp);
   }else{ /* endif no mss_val in var1 */
-    var2->mss_val.vp=(void *)realloc(var2->mss_val.vp,nctypelen(var2->type));
+    var2->mss_val.vp=(void *)nco_realloc(var2->mss_val.vp,nctypelen(var2->type));
     (void)val_conform_type(var1->type,var1->mss_val,var2->type,var2->mss_val);
     var2->has_mss_val=True;
   } /* endif var1 has mss_val */
@@ -4094,7 +4094,7 @@ ncar_csm_inq(int nc_id)
 
   if(rcd != -1 && att_typ == NC_CHAR){
     /* Add one for NULL byte */
-    att_val=(char *)malloc(att_sz*nctypelen(att_typ)+1);
+    att_val=(char *)nco_malloc(att_sz*nctypelen(att_typ)+1);
     (void)ncattget(nc_id,NC_GLOBAL,"convention",att_val);
     /* NUL-terminate convention attribute before using strcmp() */
     att_val[att_sz]='\0';
@@ -4256,7 +4256,7 @@ arm_time_install(int nc_id,nclong base_time_srt)
   (void)ncdiminq(nc_id,time_dmn_id,(char *)NULL,&cnt);
 
   /* If the time coordinate does not already exist, create it */ 
-  time_offset=(double *)malloc(cnt*nctypelen(NC_DOUBLE));
+  time_offset=(double *)nco_malloc(cnt*nctypelen(NC_DOUBLE));
 
   (void)ncvarget(nc_id,time_offset_id,&srt,&cnt,(void *)time_offset);
   for(idx=0L;idx<cnt;idx++) time_offset[idx]+=base_time_srt;
@@ -4304,8 +4304,8 @@ var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dmn_sct **dim,int nbr_d
   var_sct **var;
   var_sct **var_out;
 
-  var=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
-  var_out=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
+  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+  var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
 
   /* Fill in variable structure list for all extracted variables */ 
   for(idx=0;idx<nbr_xtr;idx++){
@@ -4367,10 +4367,10 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
   prg=prg_get(); /* Program key */
 
   /* Allocate space for too many structures, then realloc() at the end, to avoid duplication. */ 
-  var_fix=(var_sct **)malloc(MAX_NC_VARS*sizeof(var_sct *));
-  var_fix_out=(var_sct **)malloc(MAX_NC_VARS*sizeof(var_sct *));
-  var_prc=(var_sct **)malloc(MAX_NC_VARS*sizeof(var_sct *));
-  var_prc_out=(var_sct **)malloc(MAX_NC_VARS*sizeof(var_sct *));
+  var_fix=(var_sct **)nco_malloc(MAX_NC_VARS*sizeof(var_sct *));
+  var_fix_out=(var_sct **)nco_malloc(MAX_NC_VARS*sizeof(var_sct *));
+  var_prc=(var_sct **)nco_malloc(MAX_NC_VARS*sizeof(var_sct *));
+  var_prc_out=(var_sct **)nco_malloc(MAX_NC_VARS*sizeof(var_sct *));
 
   /* Find operation type for each variable: for now this is either fix or prc */ 
   for(idx=0;idx<nbr_var;idx++){
@@ -4485,10 +4485,10 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
   } /* end if */
 
   /* Free unused space and save the pointers in the output variables */ 
-  if(*nbr_var_fix > 0) *var_fix_ptr=(var_sct **)realloc(var_fix,*nbr_var_fix*sizeof(var_sct *)); else *var_fix_ptr=NULL;
-  if(*nbr_var_fix > 0) *var_fix_out_ptr=(var_sct **)realloc(var_fix_out,*nbr_var_fix*sizeof(var_sct *)); else *var_fix_out_ptr=NULL;
-  if(*nbr_var_prc > 0) *var_prc_ptr=(var_sct **)realloc(var_prc,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_ptr=NULL;
-  if(*nbr_var_prc > 0) *var_prc_out_ptr=(var_sct **)realloc(var_prc_out,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_out_ptr=NULL;
+  if(*nbr_var_fix > 0) *var_fix_ptr=(var_sct **)nco_realloc(var_fix,*nbr_var_fix*sizeof(var_sct *)); else *var_fix_ptr=NULL;
+  if(*nbr_var_fix > 0) *var_fix_out_ptr=(var_sct **)nco_realloc(var_fix_out,*nbr_var_fix*sizeof(var_sct *)); else *var_fix_out_ptr=NULL;
+  if(*nbr_var_prc > 0) *var_prc_ptr=(var_sct **)nco_realloc(var_prc,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_ptr=NULL;
+  if(*nbr_var_prc > 0) *var_prc_out_ptr=(var_sct **)nco_realloc(var_prc_out,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_out_ptr=NULL;
 
 } /* end var_lst_divide */ 
 
@@ -4505,7 +4505,7 @@ dmn_lst_mk(int nc_id,char **dmn_lst_in,int nbr_dim)
 
   nm_id_sct *dmn_lst;
   
-  dmn_lst=(nm_id_sct *)malloc(nbr_dim*sizeof(nm_id_sct));
+  dmn_lst=(nm_id_sct *)nco_malloc(nbr_dim*sizeof(nm_id_sct));
   for(idx=0;idx<nbr_dim;idx++){
     /* See if the requested dimension is in the input file */
     dmn_lst[idx].nm=dmn_lst_in[idx];
@@ -4603,7 +4603,7 @@ fl_lst_mk(char **argv,int argc,int arg_crr,int *nbr_fl,char **fl_out)
       (void)usg_prn();
       exit(EXIT_FAILURE);
     } /* end if */
-    fl_lst_in=(char **)malloc(sizeof(char *));
+    fl_lst_in=(char **)nco_malloc(sizeof(char *));
     fl_lst_in[(*nbr_fl)++]=argv[arg_crr++];
     if(arg_crr == argc-1) *fl_out=argv[arg_crr]; else *fl_out=NULL;
     return fl_lst_in;
@@ -4639,7 +4639,7 @@ fl_lst_mk(char **argv,int argc,int arg_crr,int *nbr_fl,char **fl_out)
   } /* end switch */ 
 
   /* Fill in the file list and output file */ 
-  fl_lst_in=(char **)malloc((argc-arg_crr-1)*sizeof(char *));
+  fl_lst_in=(char **)nco_malloc((argc-arg_crr-1)*sizeof(char *));
   while(arg_crr < argc-1) fl_lst_in[(*nbr_fl)++]=argv[arg_crr++];
   if(*nbr_fl == 0){
     (void)fprintf(stdout,"%s: ERROR Must specify input filename.\n",prg_nm_get());
@@ -4981,5 +4981,6 @@ int ncvarid_or_die /* O [enm] Variable ID */
   } /* endif */
 
   return var_id;
-} /* ncvarid_or_die */
+} /* ncvarid_or_die() */
+
 

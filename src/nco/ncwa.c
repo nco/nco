@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.35 2000-06-21 00:42:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.36 2000-06-25 19:31:47 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.35 2000-06-21 00:42:41 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.35 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.36 2000-06-25 19:31:47 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.36 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -331,7 +331,7 @@ main(int argc,char **argv)
   dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
   /* Fill in dimension structure for all extracted dimensions */ 
-  dim=(dmn_sct **)malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dim[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   } /* end loop over idx */
@@ -342,7 +342,7 @@ main(int argc,char **argv)
   /* Not specifying any dimensions is interpreted as specifying all dimensions */
   if (nbr_dmn_avg == 0){
     nbr_dmn_avg=nbr_dmn_xtr;
-    dmn_avg_lst_in=(char **)malloc(nbr_dmn_avg*sizeof(char *));
+    dmn_avg_lst_in=(char **)nco_malloc(nbr_dmn_avg*sizeof(char *));
     for(idx=0;idx<nbr_dmn_avg;idx++){
       dmn_avg_lst_in[idx]=(char *)strdup(dmn_lst[idx].nm);
     } /* end loop over idx */
@@ -359,7 +359,7 @@ main(int argc,char **argv)
     } /* end if */
 
     /* Form list of averaging dimensions from extracted input dimensions */ 
-    dmn_avg=(dmn_sct **)malloc(nbr_dmn_avg*sizeof(dmn_sct *));
+    dmn_avg=(dmn_sct **)nco_malloc(nbr_dmn_avg*sizeof(dmn_sct *));
     for(idx_avg=0;idx_avg<nbr_dmn_avg;idx_avg++){
       for(idx=0;idx<nbr_dmn_xtr;idx++){
 	if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
@@ -372,7 +372,7 @@ main(int argc,char **argv)
 	(void)memmove(dmn_avg_lst,dmn_avg_lst,idx_avg*sizeof(nm_id_sct));
 	(void)memmove(dmn_avg_lst+idx_avg*sizeof(nm_id_sct),dmn_avg_lst+(idx_avg+1)*sizeof(nm_id_sct),(nbr_dmn_avg-idx_avg+1)*sizeof(nm_id_sct));
 	--nbr_dmn_avg;
-	dmn_avg_lst=(nm_id_sct *)realloc(dmn_avg_lst,nbr_dmn_avg*sizeof(nm_id_sct));
+	dmn_avg_lst=(nm_id_sct *)nco_realloc(dmn_avg_lst,nbr_dmn_avg*sizeof(nm_id_sct));
       } /* end else */ 
     } /* end loop over idx_avg */
 
@@ -389,7 +389,7 @@ main(int argc,char **argv)
     } /* end loop over idx */
 
     /* Dimensions to be averaged will not appear in output file */ 
-    dmn_out=(dmn_sct **)malloc((nbr_dmn_xtr-nbr_dmn_avg)*sizeof(dmn_sct *));
+    dmn_out=(dmn_sct **)nco_malloc((nbr_dmn_xtr-nbr_dmn_avg)*sizeof(dmn_sct *));
     nbr_dmn_out=0;
     for(idx=0;idx<nbr_dmn_xtr;idx++){
       for(idx_avg=0;idx_avg<nbr_dmn_avg;idx_avg++){
@@ -411,7 +411,7 @@ main(int argc,char **argv)
 
     /* Duplicate input dimension structures for output dimension structures */ 
     nbr_dmn_out=nbr_dmn_xtr;
-    dmn_out=(dmn_sct **)malloc(nbr_dmn_out*sizeof(dmn_sct *));
+    dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_out*sizeof(dmn_sct *));
     for(idx=0;idx<nbr_dmn_out;idx++){
       dmn_out[idx]=dmn_dup(dim[idx]);
       (void)dmn_xrf(dim[idx],dmn_out[idx]);
@@ -423,8 +423,8 @@ main(int argc,char **argv)
   NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
 
   /* Fill in variable structure list for all extracted variables */ 
-  var=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
-  var_out=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
+  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+  var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dup(var[idx]);
@@ -538,13 +538,13 @@ main(int argc,char **argv)
 
       /* Allocate and, if necesssary, initialize accumulation space for all processed variables */ 
       var_prc_out[idx]->sz=var_prc[idx]->sz;
-      if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)malloc(var_prc_out[idx]->sz*sizeof(long))) == NULL){
-	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
+      if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long))) == NULL){
+	(void)fprintf(stdout,"%s: ERROR Unable to nco_malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
 	exit(EXIT_FAILURE); 
       } /* end if */ 
       (void)zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
-      if((var_prc_out[idx]->val.vp=(void *)malloc(var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type))) == NULL){
-	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,nctypelen(var_prc_out[idx]->type),var_prc_out[idx]->nm);
+      if((var_prc_out[idx]->val.vp=(void *)nco_malloc(var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type))) == NULL){
+	(void)fprintf(stdout,"%s: ERROR Unable to nco_malloc() %ld*%d bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,nctypelen(var_prc_out[idx]->type),var_prc_out[idx]->nm);
 	exit(EXIT_FAILURE); 
       } /* end if */ 
       (void)var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
@@ -631,7 +631,7 @@ main(int argc,char **argv)
 	   it is created, sometimes, before the tally array for var_prc_out[idx] is 
 	   created, and thus the var_dup() call in var_conform_dim() does not copy
 	   a tally array into wgt_avg. See related note about this above. TODO #114.*/ 
-	if((wgt_avg->tally=(long *)realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long))) == NULL){
+	if((wgt_avg->tally=(long *)nco_realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long))) == NULL){
 	  (void)fprintf(stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",prg_nm_get(),wgt_avg->sz,(long)sizeof(long),wgt_avg->nm);
 	  exit(EXIT_FAILURE); 
 	} /* end if */ 

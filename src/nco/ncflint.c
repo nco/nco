@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.20 2000-06-21 00:42:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.21 2000-06-25 19:31:47 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -96,8 +96,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */ 
-  char CVS_Id[]="$Id: ncflint.c,v 1.20 2000-06-21 00:42:41 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.20 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.21 2000-06-25 19:31:47 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.21 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -293,14 +293,14 @@ main(int argc,char **argv)
   dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
   /* Fill in dimension structure for all extracted dimensions */ 
-  dim=(dmn_sct **)malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   
   /* Merge hyperslab limit information into dimension structures */ 
   if(lmt_nbr > 0) (void)dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
 
   /* Duplicate input dimension structures for output dimension structures */ 
-  dmn_out=(dmn_sct **)malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dmn_out[idx]=dmn_dup(dim[idx]);
     (void)dmn_xrf(dim[idx],dmn_out[idx]); 
@@ -314,8 +314,8 @@ main(int argc,char **argv)
   NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
 
   /* Fill in variable structure list for all extracted variables */ 
-  var=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
-  var_out=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
+  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+  var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dup(var[idx]);
@@ -436,7 +436,7 @@ main(int argc,char **argv)
   if(dbg_lvl > 1) (void)fprintf(stderr,"wgt_1 = %g, wgt_2 = %g\n",wgt_1->val.dp[0],wgt_2->val.dp[0]);
 
     /* Create a structure list for the second file */ 
-  var_prc_2=(var_sct **)malloc(nbr_var_prc*sizeof(var_sct *));
+  var_prc_2=(var_sct **)nco_malloc(nbr_var_prc*sizeof(var_sct *));
 
   /* Loop over each interpolated variable */ 
   for(idx=0;idx<nbr_var_prc;idx++){
@@ -458,8 +458,8 @@ main(int argc,char **argv)
     /* Allocate and, if necesssary, initialize space for processed variable */ 
     var_prc_out[idx]->sz=var_prc_1[idx]->sz;
     /* NB: must not try to free() same tally buffer twice */ 
-    /*    var_prc_out[idx]->tally=var_prc_1[idx]->tally=(long *)malloc(var_prc_out[idx]->sz*sizeof(long));*/
-    var_prc_out[idx]->tally=(long *)malloc(var_prc_out[idx]->sz*sizeof(long));
+    /*    var_prc_out[idx]->tally=var_prc_1[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));*/
+    var_prc_out[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));
     (void)zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
   
     /* Weight the variable by taking the product of the weight and the variable */ 
@@ -513,7 +513,7 @@ scl_dbl_mk_var(double val)
 
   var_sct *var;
 
-  var=(var_sct *)malloc(sizeof(var_sct));
+  var=(var_sct *)nco_malloc(sizeof(var_sct));
 
   var->id=-1;
   var->nc_id=-1;
@@ -521,7 +521,7 @@ scl_dbl_mk_var(double val)
   var->nbr_att=-1;
 
   var->type=NC_DOUBLE;
-  var->val.vp=(void *)malloc(nctypelen(var->type));
+  var->val.vp=(void *)nco_malloc(nctypelen(var->type));
   (void)memcpy((void *)var->val.vp,(void *)(&val),nctypelen(var->type));
 
   /* Set defaults */ 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.29 2000-06-21 00:42:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.30 2000-06-25 19:31:47 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -420,6 +420,8 @@ extern void mss_val_cp(var_sct *,var_sct *);
 extern void nc_lib_vrs_prn(void);
 extern void nc_err_exit(int,char *);
 extern void ncar_csm_date(int,var_sct **,int);
+extern void *nco_malloc(size_t size);
+extern void *nco_realloc(void *ptr, size_t size);
 extern void rec_crd_chk(var_sct *,char *,char *,long,long);
 extern void usg_prn(void);
 extern void val_conform_type(nc_type,ptr_unn,nc_type,ptr_unn);
@@ -446,7 +448,7 @@ extern void zero_long(long,long *op1);
 extern int ncvarid_or_die /* O [enm] Variable ID */
 (int nc_id, /* I [enm] File ID */ 
  char *var_nm); /* I [sng] Variable name */ 
-
+ 
 #endif /* NC_H */ 
 
 

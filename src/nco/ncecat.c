@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.17 2000-05-09 05:20:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.18 2000-06-25 19:31:47 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -76,8 +76,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.17 2000-05-09 05:20:41 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.17 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.18 2000-06-25 19:31:47 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.18 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -237,14 +237,14 @@ main(int argc,char **argv)
   dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
   /* Fill in dimension structure for all extracted dimensions */ 
-  dim=(dmn_sct **)malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   
   /* Merge hyperslab limit information into dimension structures */ 
   if(lmt_nbr > 0) (void)dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
 
   /* Duplicate input dimension structures for output dimension structures */ 
-  dmn_out=(dmn_sct **)malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dmn_out[idx]=dmn_dup(dim[idx]);
     (void)dmn_xrf(dim[idx],dmn_out[idx]); 
@@ -254,8 +254,8 @@ main(int argc,char **argv)
   NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
 
   /* Fill in variable structure list for all extracted variables */ 
-  var=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
-  var_out=(var_sct **)malloc(nbr_xtr*sizeof(var_sct *));
+  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+  var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dup(var[idx]);
@@ -303,7 +303,7 @@ main(int argc,char **argv)
 
     /* Add the record dimension to the end of the dimension list */ 
     nbr_dmn_xtr++;
-    dmn_out=(dmn_sct **)realloc(dmn_out,nbr_dmn_xtr*sizeof(dmn_sct **));
+    dmn_out=(dmn_sct **)nco_realloc(dmn_out,nbr_dmn_xtr*sizeof(dmn_sct **));
     dmn_out[nbr_dmn_xtr-1]=rdim;
 
   } /* end if */ 
@@ -319,11 +319,11 @@ main(int argc,char **argv)
       var_prc_out[idx]->sz_rec=var_prc_out[idx]->sz;
       
       /* Allocate space to hold the dimension IDs */ 
-      var_prc_out[idx]->dim=(dmn_sct **)realloc(var_prc_out[idx]->dim,var_prc_out[idx]->nbr_dim*sizeof(dmn_sct *));
-      var_prc_out[idx]->dmn_id=(int *)realloc(var_prc_out[idx]->dmn_id,var_prc_out[idx]->nbr_dim*sizeof(int));
-      var_prc_out[idx]->cnt=(long *)realloc(var_prc_out[idx]->cnt,var_prc_out[idx]->nbr_dim*sizeof(long));
-      var_prc_out[idx]->srt=(long *)realloc(var_prc_out[idx]->srt,var_prc_out[idx]->nbr_dim*sizeof(long));
-      var_prc_out[idx]->end=(long *)realloc(var_prc_out[idx]->end,var_prc_out[idx]->nbr_dim*sizeof(long));
+      var_prc_out[idx]->dim=(dmn_sct **)nco_realloc(var_prc_out[idx]->dim,var_prc_out[idx]->nbr_dim*sizeof(dmn_sct *));
+      var_prc_out[idx]->dmn_id=(int *)nco_realloc(var_prc_out[idx]->dmn_id,var_prc_out[idx]->nbr_dim*sizeof(int));
+      var_prc_out[idx]->cnt=(long *)nco_realloc(var_prc_out[idx]->cnt,var_prc_out[idx]->nbr_dim*sizeof(long));
+      var_prc_out[idx]->srt=(long *)nco_realloc(var_prc_out[idx]->srt,var_prc_out[idx]->nbr_dim*sizeof(long));
+      var_prc_out[idx]->end=(long *)nco_realloc(var_prc_out[idx]->end,var_prc_out[idx]->nbr_dim*sizeof(long));
       
       /* Move the current array by one to make room for the new record dimension info */ 
       (void)memmove((void *)(var_prc_out[idx]->dim+1),(void *)(var_prc_out[idx]->dim),(var_prc_out[idx]->nbr_dim-1)*sizeof(dmn_sct *));
