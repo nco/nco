@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.21 2000-07-08 23:12:28 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.22 2000-07-13 18:32:34 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -113,6 +113,18 @@ echo "ncra 5: record max of float with double missing values across two files: 8
 ncra -O -y ttl -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
 echo "ncra 6: record ttl of float with double missing values across two files: 70 =?= $avg"
+
+ncra -O -y rms -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
+echo "ncra 7: record rms of float with double missing values across two files: 5.385164807 =?= $avg"
+
+ncrcat -O -v rec_var_flt_mss_val_dbl in.nc in.nc foo1.nc 2>> foo.tst
+ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo2.nc 2>> foo.tst
+ncwa -O -a time foo2.nc foo2.nc 2>> foo.tst
+ncdiff -O -v rec_var_flt_mss_val_dbl foo1.nc foo2.nc foo2.nc 2>> foo.tst
+ncra -O -y rms -v rec_var_flt_mss_val_dbl foo2.nc foo2.nc 2>> foo.tst
+avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo2.nc`
+echo "ncra 8: record sdn of float with double missing values across two files: 2 =?= $avg"
 
 ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
