@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.453 2005-03-15 07:50:47 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.454 2005-03-18 01:21:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -303,7 +303,6 @@ ncap29. Rewrite nco_var_pck() to use var_scv() arithmetic operations rather than
 ncap30. Allow -S to specify multiple input scripts to be sequentially parsed
 ncap31. Put globals fl_spt_crr,ncl_dpt_crr,ln_nbr_crr in prs_arg or remove fl_spt from it
 ncap32. Need filename expander and $NCO_DATA_PATH handling so #include's may be generic
-ncap33. Document new math/rounding functions (acosh, floor...)
 ncap34. Make parse errors always print current line to terminal rather than silently failing
 ncap36. cygwin builds of ncap.l and netcdf fail because of dependence on syslimits.h. non-kludge fix may require updated gcc and mingw packages
 ncap37. Implement float function definitions in nco_rth_flt.c as inline to improve speed for MACOSX builds (inline is OK in C99 but will it break C89?) using AC_C_INLINE
