@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.26 1999-10-04 06:47:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.27 1999-10-15 18:10:26 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -65,7 +65,7 @@ char *
 nmn_get()
 { 
   /* Purpose: Return a mnemonic that describes the current NCO version */
-  return "zot";
+  return "Son of Zot";
 } /* end nmn_get() */
 
 char *
