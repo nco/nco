@@ -1,5 +1,9 @@
 1999-10-03  Charlie Zender  <zender@dust.ps.uci.edu>
 
+	* Added test target in bld/Makefile. Now `make test' automatically
+	downloads a small (66 kb) file on which it performs a small
+	battery of tests (bld/nco_tst.sh). 
+
 	* Revamped build procedure to use GNU make dependencies rather
 	than makdep perl script. 
 

@@ -1,9 +1,8 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.8 1999-10-04 05:48:07 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.9 1999-10-04 06:04:07 zender Exp $
 
 # Purpose: NCO test battery
-# This script currently only works at NCAR because it depends on SEP1.T42.0596.nc
 
 # Create T42-size test field named one, which is identically 1.0 in foo.nc
 cd ../data 2> foo.tst

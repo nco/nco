@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.22 1999-08-31 22:25:55 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.23 1999-10-04 06:04:08 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
@@ -145,6 +145,15 @@ User's Guide</A>. </P>
 
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
+
+<P>1999/10/04: 
+The build configuration has been simplified and made more robust.
+Now typing <TT>make test</TT> will invoke a self-test where NCO
+attempts to download a small (~65 kb) file on which to perform a
+battery of NCO tests. 
+If the equations output by the <TT>make test</TT> command are
+numerically accurate, then you can have high confidence that NCO is
+installed and working correctly. 
 
 <P>1999/08/31: 
 A bug involving <TT>ncwa</TT>, weights, and missing values has been
