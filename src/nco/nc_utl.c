@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.1.1.1 1998-08-18 05:35:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.2 1998-08-19 00:52:53 zender Exp $ */
 
 /* (c) Copyright 1995 University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -1612,7 +1612,7 @@ hst_att_cat(int out_id,char *hst_sng)
 */ 
 {
 
-/* Routine to add the command line and a date stamp to the existing history attribute, if any,
+/* Routine to add command line and a date stamp to existing history attribute, if any,
    and write them to the specified output file */ 
 
   char att_nm[MAX_NC_NAME];
@@ -1629,14 +1629,14 @@ hst_att_cat(int out_id,char *hst_sng)
   
   time_t clock;
 
-  /* Create the timestamp string */ 
+  /* Create timestamp string */ 
   clock=time((time_t *)NULL);
   ctime_sng=ctime(&clock);
-  /* Get rid of the carriage return in the ctime_sng */ 
+  /* Get rid of carriage return in ctime_sng */ 
   (void)strncpy(time_stamp_sng,ctime_sng,24);
   time_stamp_sng[24]='\0';
 
-  /* Get the number of global attributes in the file */
+  /* Get number of global attributes in file */
   (void)ncinquire(out_id,(int *)NULL,(int *)NULL,&nbr_glb_att,(int *)NULL);
 
   for(idx=0;idx<nbr_glb_att;idx++){

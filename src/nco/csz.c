@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.3 1998-08-18 17:28:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.4 1998-08-19 00:52:53 zender Exp $ */
 
 /* (c) Copyright 1995 University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -305,6 +305,11 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
       /* Is there a .nc suffix? */ 
       if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-3,".nc",3) == 0){
 	fl_nm_sfx_len=3;
+      } /* end if */
+      
+      /* Is there a .cdf suffix? */ 
+      if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".cdf",4) == 0){
+	fl_nm_sfx_len=4;
       } /* end if */
       
       /* Initialize static information useful for future invocations  */ 
@@ -754,12 +759,14 @@ cvs_vrs_prs()
   char *usc_1_ptr=NULL;
   char *usc_2_ptr=NULL;
   char cvs_Name[]="$Name: not supported by cvs2svn $"; 
+  char nco_sng[]="nco"; 
 
   int cvs_nm_sng_len;
   int cvs_vrs_sng_len;
   int cvs_mjr_vrs_len;
   int cvs_mnr_vrs_len;
   int cvs_pch_vrs_len;
+  int nco_sng_len;
   
   long cvs_mjr_vrs=-1L;
   long cvs_mnr_vrs=-1L;
@@ -770,10 +777,10 @@ cvs_vrs_prs()
   if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
   cvs_nm_ptr=strstr(cvs_Name,"$Name: ");
   if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports cvs_nm_ptr == NULL\n",prg_nm_get());
-  cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-7);
+  cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-7); /* 7 is strlen("$Name: ") */ 
   if(cvs_nm_sng_len > 0) dly_snp=False; else dly_snp=True;
 
-  /* If not, then this must be a daily snapshot */ 
+  /* If not, this is a daily snapshot so use YYYYMMDD date for version string */ 
   if(dly_snp){
     int mth;
     int day;
@@ -796,16 +803,17 @@ cvs_vrs_prs()
 
   /* cvs_nm_sng is, e.g., "nco1_1" */ 
   cvs_nm_sng=(char *)malloc(cvs_nm_sng_len+1);
-  strncpy(cvs_nm_sng,cvs_Name+7,cvs_nm_sng_len);
+  strncpy(cvs_nm_sng,cvs_Name+7,cvs_nm_sng_len); /* 7 is strlen("$Name: ") */
   cvs_nm_sng[cvs_nm_sng_len]='\0';
 
   /* cvs_vrs_sng is, e.g., "1.1" */ 
+  nco_sng_len=strlen(nco_sng);
   usc_1_ptr=strstr(cvs_nm_sng,"_");
   if(usc_1_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports usc_1_ptr == NULL\n",prg_nm_get());
-  cvs_mjr_vrs_len=usc_1_ptr-cvs_nm_sng-3; /* 3 is strlen("nco") */ 
+  cvs_mjr_vrs_len=usc_1_ptr-cvs_nm_sng-nco_sng_len;
   usc_2_ptr=strstr(usc_1_ptr+1,"_");
   cvs_mjr_vrs_sng=(char *)malloc(cvs_mjr_vrs_len+1);
-  cvs_mjr_vrs_sng=strncpy(cvs_mjr_vrs_sng,cvs_nm_sng+3,cvs_mjr_vrs_len); /* 3 is strlen("nco") */
+  cvs_mjr_vrs_sng=strncpy(cvs_mjr_vrs_sng,cvs_nm_sng+nco_sng_len,cvs_mjr_vrs_len);
   cvs_mjr_vrs_sng[cvs_mjr_vrs_len]='\0';
   cvs_mjr_vrs=strtol(cvs_mjr_vrs_sng,(char **)NULL,10);
   if(usc_2_ptr == NULL){
