@@ -1,42 +1,45 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.60 2004-02-26 02:50:43 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.61 2004-03-01 01:20:16 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release mainly implements some overlooked ncap operations,
-and works around a newly discovered rank-reduction bug with
-GCC-compiled NCO. 
+This release fixes a recently discovered ncwa bug.
+This bug caused ncwa to produce garbage when processing packed NC_FLOAT data. 
+This problem may have affected other arithemetic operators (ncdiff,
+ncra, ncea, and ncecat, but not ncap) as well. We're not sure. 
+Upgrade to 2.9.1 if you process packed data with NCO. 
 
-NB: Solaris cc/CC autotools builds have been broken since ~2.8.6.
+This problem may have been noticed most by DODS users since many
+netCDF climate dataset served by DODS are packed NC_FLOAT data. 
+Thanks to me (pat self on back) for the bug report and to Rorik
+Peterson for fixing it. 
+
+fxm: NB: Solaris cc/CC autotools builds have been broken since ~2.8.6.
 If any Solaris users would care to send a patch that would be great!
 
-I'm writing an NSF proposal to fund taking NCO to the next level.
-NCO has never received any institutional funding...and it shows.
-If funded, we would implement OpenMP, optimized MPI, improved
-integration for distributed processing with via DODS, robust
-unit-testing, and take advantage of netCDF4's HDF backend.
-I will soon announce a site where you can read the proposal summary. 
-Moreover, if you choose to publicly endorse the proposal, you may
-enter your name and institutional affiliation so NSF can see it.
-If you find NCO useful I hope you will add your name to that list.
+The NSF proposal I am writing to fund improving distributed data
+processing with NCO is at 
 
-Enjoy,
+http://dust.ess.uci.edu/prp
+
+and plans for future proposals are mentioned in the NUG at 
+
+http://nco.sf.net/nco.html#prp
+
+Eat your vegetables, or be eaten,
 Charlie
 
 Feature changes:
-1. Complete ncap modulo operator (A%B) and generic exponentiation
-(A^B) with all combinations of attribute and variable
+1. None
 
 Bug-fixes:
-1. ncap attribute divided by variable (A/B) works correctly
-2. Rank-reduction on large arrays with GCC-compiled NCO no longer
-   breaks (segfaults) in corner cases. Permanent fix is in the works.
-3. 'make check' works again with --enable-*-custom.
+1. ncwa works correctly with packed data (Rorik)
 
 Other user-visible changes:
-1. None
+1. Corrected mis-information about DODS server capabilities in NUG
+2. Explained distinction and overlap between DODS and OPeNDAP in NUG
 
 User-invisible changes:
 1. None

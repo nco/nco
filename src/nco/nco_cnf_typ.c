@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.17 2004-02-26 19:52:55 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.18 2004-03-01 01:20:17 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -74,24 +74,23 @@ nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Convert char, short, long, int types to doubles for arithmetic
      Conversions are performed unless arithmetic operation type is min or max
-     Floats (and doubles, of course) are not converted for performance reason 
-     This routine is usually called 
-     Remember to convert back after weighting and arithmetic are complete! */
+     Floats (and doubles, of course) are not converted for performance reasons
+     Convert back after weighting and arithmetic are complete! */
 
-  /* we want variables that are unpacked into NC_FLOAT to be cast as NC_FLOAT.
-     This already happens 'transparently' when the original data is read at
-     nco_var_get(), but output structures correspond to the original type of
-     the input structure, which could be (likely is) non-NC_FLOAT. Do this
-     check first, then proceed with normal non-float->double conversion */
-  if (var->typ_upk == NC_FLOAT && var->type != NC_FLOAT)
-  {
+  /* Variables which are unpacked into NC_FLOAT should remain NC_FLOAT here
+     Unpacking happens 'transparently' when original data are read by nco_var_get() 
+     Output structures (i.e., var_prc_out) often correspond to original input type
+     Thus var may have typ_upk=NC_FLOAT and type=NC_SHORT
+     In that case, promote based on typ_upk rather than on type
+     Otherwise most var's that had been unpacked would be converted to NC_DOUBLE here
+     That would put them in conflict with the corresponding var_out, which is usually
+     based on typ_upk
+     Check this first, then proceed with normal non-float->double conversion */
+  if(var->typ_upk == NC_FLOAT && var->type != NC_FLOAT){
     var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
-  } 
-  else /* non-float -> double conversion for appropriate operation types */ 
-  if(var->type != NC_FLOAT && var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max)
-  {
-    var=nco_var_cnf_typ((nc_type)NC_DOUBLE,var);
-  }
+  }else{ /* Conversion only for appropriate operation types */ 
+    if(var->type != NC_FLOAT && var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=nco_var_cnf_typ((nc_type)NC_DOUBLE,var);
+  } /* end if */
   
   return var;
 } /* nco_typ_cnv_rth() */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.288 2004-02-26 15:39:35 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.289 2004-03-01 01:20:16 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -206,7 +206,9 @@ nco315. GNUC non-ANSI rank reduction methods in nco_var_avg.c fail on large file
 nco316. Change offending nco_malloc() to nco_malloc_flg() calls for #315
 nco317. Understand stack memory problem. ulimits? compiler switches?
 nco318. Solve stack memory problem and benchmark vs. ANSI code branch
-nco319. 
+nco319. Is Rorik's patch to nco_typ_cnv_rth() for ncwa a kludge or permanent?
+nco320. How to do TeX-like hyphens in TeXInfo?
+nco321. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

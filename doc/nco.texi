@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.210 2004-02-26 02:50:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.211 2004-03-01 01:20:16 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -48,6 +48,9 @@ texi2html -monolithic -verbose nco.texi
 texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
 cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml dust.ess.uci.edu:/var/www/html/nco;cd -
+
+NB: @cindex references in footnotes propogate to PDF file, but not to
+    HTML files, bug-report sent to makeinfo people 20040229
 
 Producing HTML, makeinfo vs. texi2html:
 makeinfo: Better format overall 
@@ -97,7 +100,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 2.9.0
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 25 February 2004
+@set update-date 29 February 2004
 @set update-month February 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -344,6 +347,7 @@ Boulder, Colorado@*
 Major feature improvements entitle me to write another Foreword.
 In the last five years a lot of work has been done refining
 @acronym{NCO}. 
+@cindex open source
 @acronym{NCO} is now an open source project and appears to be much
 healthier for it. 
 The list of illustrious institutions which do not endorse @acronym{NCO}     
@@ -826,7 +830,7 @@ However, support for @w{netCDF 3.x} in @w{@acronym{HDF} 5.x} is
 incomplete. 
 Much of the HDF5-netCDF3 interface is complete, however, and it may be
 separately downloaded from the
-@uref{http://hdf.ncsa.uiuc.edu/HDF5/papers/netcdfh5.html, HDF5-netCDF}
+@uref{http://hdf.ncsa.uiuc.edu/HDF5/papers/netcdfh5.html,HDF5-netCDF}
 website. 
 Now that @acronym{NCO} uses only @w{netCDF 3.x} system calls we are
 eager for HDF5 to add complete @w{netCDF 3.x} support.
@@ -1576,7 +1580,7 @@ feature is automatic and cannot be controlled by the user.
 * Type conversion::             
 * Suppressing interactive prompts::  
 * History attribute::           
-* NCAR CCSM Conventions::        
+* NCAR CCSM Conventions::       
 * ARM Conventions::             
 * Operator version::            
 @end menu
@@ -1946,7 +1950,7 @@ The third example will work from @acronym{NCAR} computers with local
 access to  the @command{msrcp}, @command{msread}, or @command{nrnet}
 commands. 
 The fourth command will work if your local version of @acronym{NCO} was 
-built with @acronym{DODS} capability (@pxref{DODS}).
+built with @acronym{DODS/OPeNDAP} capability (@pxref{DODS/OPeNDAP}).
 The above commands can be rewritten using the @samp{-p @var{input-path}}
 option as follows: 
 @cindex @code{-p @var{input-path}}
@@ -1987,73 +1991,115 @@ Note that @samp{-l .} is equivalent to @samp{-l ./} though the latter is
 recommended as it is syntactically more clear.
 
 @menu
-* DODS::                        
+* DODS/OPeNDAP::                
 @end menu
 
 @html
 <a name="DODS"></a> <!-- http://nco.sf.net/nco.html#DODS -->
+<a name="OPeNDAP"></a> <!-- http://nco.sf.net/nco.html#OPeNDAP -->
+<a name="dods"></a> <!-- http://nco.sf.net/nco.html#dods -->
+<a name="opendap"></a> <!-- http://nco.sf.net/nco.html#opendap -->
 @end html
-@node DODS,  , Remote storage, Remote storage
-@subsection @acronym{DODS}
+@node DODS/OPeNDAP,  , Remote storage, Remote storage
+@subsection @acronym{DODS}/@acronym{OPeNDAP}
 @cindex @acronym{DODS}
 @cindex @acronym{HTTP} protocol
 @cindex @env{DODS_ROOT}
 @cindex Distributed Oceanographic Data System
+@cindex oceanography
+@cindex data access protocol
+@cindex Open-source Project for a Network Data Access Protocol
+@cindex @acronym{OPeNDAP}.
+@cindex server
+@cindex client-server
 The Distributed Oceanographic Data System (@acronym{DODS}) provides
-replacements for common data interface libraries like netCDF.
+useful replacements for common data interface libraries like netCDF.
 The @acronym{DODS} versions of these libraries implement network
-transparent access to data using the @acronym{HTTP} protocol.
-@acronym{NCO} may be @acronym{DODS}-enabled by linking @acronym{NCO} to
-the @acronym{DODS} libraries. 
-@cindex @file{Makefile}
-This is described in the @acronym{DODS} documentation and implemented in 
-@acronym{NCO} build mechanisms
+transparent access to data via a client-server data access protocol
+that uses the @acronym{HTTP} protocol for communication.
+Although @acronym{DODS}-technology originated with oceanography data,
+it applyies to virtually all scientific data.
+In recognition of this, the data access protocol underlying
+@acronym{DODS} (which is what @acronym{NCO} cares about) has been 
+renamed the Open-source Project for a Network Data Access Protocol, 
+@acronym{OPeNDAP}.
+We use the terms @acronym{DODS} and @acronym{OPeNDAP} interchangeably,
+and often write @acronym{DODS}/@acronym{OPeNDAP} for now. 
+In the future we will deprecate @acronym{DODS} in favor of
+@acronym{OPeNDAP}
 @footnote{
-Automagic support for @acronym{DODS} version 3.2.x was deprecated in 
+@cindex @acronym{NVODS}
+@cindex National Virtual Ocean Data System
+@cindex open source
+@acronym{DODS} is being deprecated because it is ambiguous, referring
+both to a protocol and to a collection of (oceanography) data.
+It is superceded by two terms.
+@acronym{DAP} is the discipline-neutral Data Access Protocol at the
+heart of @acronym{DODS}.
+The National Virtual Ocean Data System (@acronym{NVODS}) refers to the
+collection of oceanography data and oceanographic extensions to
+@acronym{DAP}. 
+In other words, @acronym{NVODS} is implemented with @acronym{OPeNDAP}.
+@acronym{OPeNDAP} is @emph{also} the open source project which
+maintains, develops, and promulgates the @acronym{DAP} standard. 
+@acronym{OPeNDAP} and @acronym{DAP} really are interchangeable.
+Got it yet?}.
+
+@acronym{NCO} may be @acronym{DODS/OPeNDAP}-enabled by linking
+@acronym{NCO} to the @acronym{DODS/OPeNDAP} libraries. 
+@cindex @file{Makefile}
+This is described in the @acronym{DODS/OPeNDAP} documentation and
+automagically implemented in @acronym{NCO} build mechanisms
+@footnote{
+Automagic support for @acronym{DODS/OPeNDAP} version 3.2.x was deprecated in 
 December, 2003 with @acronym{NCO} 2.8.4.
-@acronym{NCO} now supports @acronym{DODS} version 3.4.x.}.
+@acronym{NCO} now supports @acronym{DODS/OPeNDAP} version 3.4.x.}.
 The @file{./configure} mechanism automatically enables @acronym{NCO} as
-@acronym{DODS} clients if it can find the required @acronym{DODS}
-libraries
+@acronym{DODS/OPeNDAP} clients if it can find the required
+@acronym{DODS/OPeNDAP} libraries
 @footnote{
 The minimal set of libraries required to build @acronym{NCO} as
-@acronym{DODS} clients are 
+@acronym{DODS/OPeNDAP} clients are 
 @file{DODS-dap-3.4.x}, @file{DODS-nc3-dods-3.4.5}, and 
 @file{DODS-packages-3.4.x}.}.
  in the usual locations.
 The @env{$DODS_ROOT} environment variable may be used to override the 
-default @acronym{DODS} library location at @acronym{NCO} compile time.
+default @acronym{DODS/OPeNDAP} library location at @acronym{NCO}
+compile-time.  
 Building @acronym{NCO} with @file{bld/Makefile} and the command
 @code{make DODS=Y} adds the (non-intuitive) commands to link to the
-@acronym{DODS} libraries installed in the @env{$DODS_ROOT} directory. 
+@acronym{DODS/OPeNDAP} libraries installed in the @env{$DODS_ROOT}
+directory.  
 The file @file{doc/dods.sh} contains a generic script intended to help
-users install @acronym{DODS} before building @acronym{NCO}.
+users install @acronym{DODS/OPeNDAP} before building @acronym{NCO}.
 The documentation at the 
 @uref{http://www.unidata.ucar.edu/packages/dods, DODS Homepage}
 is voluminous.
 Check there and on the
 @uref{http://www.unidata.ucar.edu/packages/dods/home/mailLists/, DODS mail lists}.
-to learn more about the extensive capabilities of @acronym{DODS}
+to learn more about the extensive capabilities of @acronym{DODS/OPeNDAP}
 @footnote{
-We are most familiar with the @acronym{DODS} ability to enable
+We are most familiar with the @acronym{DODS/OPeNDAP} ability to enable 
 network-transparent data access.
-@acronym{DODS} has many other features, including sophisticated
-hyperslabbing.
+@cindex constraint expressions
+@cindex server-side processing
+@acronym{DODS/OPeNDAP} has many other features, including sophisticated
+hyperslabbing and server-side processing via @dfn{constraint expressions}.
 If you know more about this, please consider writing a section
-on "@acronym{DODS} Capabilities of Interest to @acronym{NCO} Users"
+on "@acronym{DODS/OPeNDAP} Capabilities of Interest to @acronym{NCO} Users"
 for incorporation in the @cite{NCO User's Guide}.}.
 
-Once @acronym{NCO} is @acronym{DODS}-enabled the operators are
-@acronym{DODS} clients.  
-All @acronym{DODS} clients have network transparent access to any files
-controlled by a @acronym{DODS} server. 
+Once @acronym{NCO} is @acronym{DODS/OPeNDAP}-enabled the operators are
+@acronym{DODS/OPeNDAP} clients.  
+All @acronym{DODS/OPeNDAP} clients have network transparent access to
+any files controlled by a @acronym{DODS/OPeNDAP} server. 
 Simply specify the input file path(s) in @acronym{URL} notation and all 
 @acronym{NCO} operations may be performed on remote files made
-accessible by a @acronym{DODS} server. 
+accessible by a @acronym{DODS/OPeNDAP} server. 
 For example, this computes (remotely) and stores (locally) the global
 mean surface pressure (in Pa) in an equatorial region from 
 @acronym{NCEP daily reanalyses} data of the year 1969 made freely 
-available by a @acronym{NOAA} @acronym{DODS} server:
+available by a @acronym{NOAA} @acronym{DODS/OPeNDAP} server:
 @example
 ncks -O -C -d time,0 -d lon,0. -d lat,0. -l ./ -p \
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
@@ -2066,16 +2112,17 @@ pres.sfc.1969.nc foo.nc
 The data in this particular input file are packed, although this is
 completely transparent to the user. 
 
-@acronym{NCO} operates on remote files on the @acronym{DODS} server
-(e.g., @file{www.cdc.noaa.gov}) rather than on the local machine. 
-Input files are not copied to the local machine first.  
-The @acronym{DODS} server performs all operations (e.g., arithmetic,
-hyperslabbing).
+@acronym{NCO} obtains remote files from the @acronym{DODS/OPeNDAP} server
+(e.g., @file{www.cdc.noaa.gov}) rather than the local machine. 
+Input files are first copied to the local machine, then processed.
+The @acronym{DODS/OPeNDAP} server performs data access, hyperslabbing,
+and transfer to the local machine.
+@cindex I/O
 This allows the I/O to appear to @acronym{NCO} as if the input files
 were local.  
-Only the output data (e.g., derived variables or hyperslabs) are
-transferred over the network (to the output file) once the number
-crunching finishes.    
+The local machine performs all arithmetic operations.
+Only the hyperslabbed output data are transferred over the network (to
+the local machine) for the number-crunching to begin.
 The advantages of this are obvious if you are examining small parts of
 large files stored at remote locations.
 
@@ -2115,6 +2162,7 @@ used to retrieve @emph{any} file, including non-netCDF files, via
 @command{SSH}, anonymous @acronym{FTP}, or @command{msrcp}.
 Often this method is quicker than using a browser, or running an
 @acronym{FTP} session from a shell window yourself.
+@cindex server
 For example, say you want to obtain a @acronym{JPEG} file from a weather
 server. 
 @example
@@ -2129,8 +2177,9 @@ as a netCDF file, it fails and exits, leaving  @file{storm.jpg} in
 the current directory.
 
 @cindex @acronym{DODS}
-If your @acronym{NCO} is @acronym{DODS}-enabled (@pxref{DODS}), then
-you may use @acronym{NCO} to retrieve any files (including netCDF,
+@cindex server
+If your @acronym{NCO} is @acronym{DODS}-enabled (@pxref{DODS/OPeNDAP}),
+then you may use @acronym{NCO} to retrieve any files (including netCDF,
 @acronym{HDF}, etc.) served by a @acronym{DODS} server to your local
 machine. 
 For example, 
@@ -2358,6 +2407,7 @@ Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 Short options: @samp{-F}@*
 Long options: @samp{--fortran}@*
 @end cartouche
+@cindex I/O
 By default, @acronym{NCO} uses C-style (0-based) indices for all I/O. 
 The @samp{-F} switch tells @acronym{NCO} to switch to reading and
 writing with Fortran index conventions.
@@ -2523,6 +2573,7 @@ Any number of hyperslabs specifications may be chained together
 to specify the multislab.
 Multislabs are more efficient than the alternative of sequentially
 performing hyperslab operations and concatenating the results.
+@cindex I/O
 This is because @acronym{NCO} employs a novel multislab algorithm to
 minimize the number of I/O operations when retrieving irregularly spaced
 data from disk.
@@ -2582,7 +2633,7 @@ Short options: @samp{-d}@*
 Long options: @samp{--dimension}, @samp{--dmn}@*
 @end cartouche
 There is more than one way to hyperslab a cat.
-The @uref{http://www.unidata.ucar.edu/packages/udunits,UDUnits} package 
+The @uref{http://www.unidata.ucar.edu/packages/udunits, UDUnits} package 
 provides a library which, if present, @acronym{NCO} uses to translate
 user-specified physical dimensions into the physical dimensions of data
 stored in netCDF files.
@@ -2688,12 +2739,12 @@ intended.
 
 @cindex Climate and Forecast Metadata Convention
 @cindex CF convention
-The @uref{http://www.unidata.ucar.edu/packages/udunits,UDUnits}
+The @uref{http://www.unidata.ucar.edu/packages/udunits, UDUnits}
 package documentation describes the supported formats of time
 dimensions. 
 Among the metadata conventions which adhere to these formats are the  
-@uref{http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html,Climate 
-and Forecast (CF) Conventions} and the 
+@uref{http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html, 
+Climate and Forecast (CF) Conventions} and the 
 @uref{http://ferret.wrc.noaa.gov/noaa_coop/coop_cdf_profile.html,
 Cooperative Ocean/Atmosphere Research Data Service (COARDS) Conventions}.
 The following @samp{-d arguments} extract the same data using 
@@ -6693,15 +6744,44 @@ a total regional area.
 @node Contributing, General Index, Operator Reference Manual, Top
 @chapter Contributing
 @cindex contributing
-@cindex contributors
 We welcome contributions from anyone.
 The @acronym{NCO} project homepage at
 @uref{https://sf.net/projects/nco}
 contains more information on how to contribute. 
+
+@cindex PayPal
+Financial contributions to @acronym{NCO} development may be made through  
+@uref{https://www.paypal.com/xclick/business=zender%40uci.edu&item_name=NCO+development&item_number=nco_dnt_dvl&no_note=1&tax=0&currency_code=USD, PayPal}.
+@acronym{NCO} has been shared for almost @w{10 years} yet no one has
+ever contributed any money to the developers
+@footnote{
+@cindex chocolate
+Happy users have sent me a few gifts, though.
+This includes a box of imported chocolate.
+Mmm.
+Appreciation and gifts are definitely better than money.
+Naturally, I'm too lazy to split and send gifts to the other developers.
+However, unlike some @acronym{NCO} developers, I have a high-paying "real job".
+My intention is to split monetary donations among the active developers
+and to send them their shares via PayPal.}. 
+So you could be the first!
+
+@html
+<a name="dvl"></a> <!-- http://nco.sf.net/nco.html#dvl -->
+@end html
+@menu
+* Contributors::                
+* Proposals for Institutional Funding::  
+@end menu
+
+@node Contributors, Proposals for Institutional Funding, Contributing, Contributing
+@section Contributors
+@cindex contributors
+The primary contributors to @acronym{NCO} development are:
 @table @asis
 @cindex Charlie Zender
 @item Charlie Zender
-Concept, design and implementation of @acronym{NCO} from 1995--2000.
+Concept, design and implementation of @acronym{NCO} from 1995-2000.
 Since then mainly autotools, bug-squashing, documentation, packing,
 @acronym{NCO} library redesign, @command{ncap} features, @command{ncbo},  
 project coordination, and releases.
@@ -6711,6 +6791,7 @@ Non-linear operations and @code{min()}, @code{max()}, @code{total()}
 support in @command{ncra} and @command{ncwa}. 
 Type conversion for arithmetic.
 Migration to netCDF3 API.
+@cindex I/O
 @command{ncap} parser, lexer, @w{and I/O}.
 Multislabbing algorithm.
 Variable wildcarding.
@@ -6721,6 +6802,7 @@ Autotool build support.
 Long command-line options.
 UDUnits support.
 Debianization.
+Numerous bug-fixes.
 @cindex Brian Mays
 @item Brian Mays
 Packaging for Debian GNU/Linux, @command{nroff} man pages.
@@ -6745,6 +6827,38 @@ Compatibility with large PIDs.
 @item Martin Dix, Keith Lindsay, Mike Page
 Excellent bug reports.
 @end table
+
+@html
+<a name="prp"></a> <!-- http://nco.sf.net/nco.html#prp -->
+<a name="fnd"></a> <!-- http://nco.sf.net/nco.html#fnd -->
+@end html
+@menu
+* Proposals for Institutional Funding::  
+@end menu
+
+@node Proposals for Institutional Funding,  , Contributors, Contributing
+@section Proposals for Institutional Funding
+@cindex funding
+@cindex proposals
+@cindex @acronym{NSF}
+@cindex server-side processing
+We are writing an @acronym{NSF}
+@uref{http://dust.ess.uci.edu/prp, proposal} for funding to help
+implement more server-side processing of data on @acronym{DODS}
+servers, as this would dramatically reduce bandwidth usage for
+distributed data analysis.  
+Please contact us if you are interested in helping on this proposal. 
+Comments on the proposal and letters of support are very welcome.
+
+@cindex @acronym{NASA}
+@cindex @acronym{NRA}
+@cindex @acronym{HDF}
+We are also interested in obtaining @acronym{NASA} support for
+@acronym{HDF}-specific enhancements to @acronym{NCO}.
+We will probably submit a proposal to the next suitable @acronym{NASA}  
+@acronym{NRA}.
+Contact us if you are interested in contributing to or becoming involved
+in that project, too.
 
 @c @ignore
 @c @node CCSM Example, General Index, Operators, Top

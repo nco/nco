@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.112 2004-02-09 07:54:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.113 2004-03-01 01:20:17 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -106,8 +106,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.112 2004-02-09 07:54:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.112 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.113 2004-03-01 01:20:17 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.113 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -697,7 +697,7 @@ main(int argc,char **argv)
 	  double mss_val_dbl=double_CEWI;
 	  /* Set denominator to missing value at all locations where variable is missing value
 	     If this is accomplished by setting weight to missing value wherever variable is missing value
-	     then weight must not be reused by next variable (which might conform but have missing values in different locations)
+	     then weight must not be re-used by next variable (which might conform but have missing values in different locations)
 	     This is one good reason to copy wgt_out into disposable wgt_avg for each new variable */
 	  /* First make sure wgt_avg has same missing value as variable */
 	  (void)nco_mss_val_cp(var_prc[idx],wgt_avg);
@@ -817,7 +817,7 @@ main(int argc,char **argv)
       /* Free tally buffer */
       var_prc_out[idx]->tally=(long *)nco_free(var_prc_out[idx]->tally);
       
-      /* Revert any arithmetic promotion but leave unpacking (for now) */
+      /* Revert any arithmetic promotion but leave unpacked (for now) */
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
       
       /* Free current input buffer */
