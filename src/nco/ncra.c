@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.53 2001-05-08 01:36:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.54 2001-07-20 20:30:04 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.53 2001-05-08 01:36:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.53 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.54 2001-07-20 20:30:04 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.54 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -171,7 +171,7 @@ main(int argc,char **argv)
   bindtextdomain("nco","/home/zender/share/locale"); // LOCALEDIR is e.g., /usr/share/locale
   // MO files should be in $LOCALEDIR/es/LC_MESSAGES
   textdomain("nco"); // PACKAGE is name of program
-#endif // not _LIBINTL_H
+#endif /* not _LIBINTL_H */
 
   /* Start the clock and save the command line */
   cmd_ln=cmd_ln_sng(argc,argv);

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.93 2001-06-08 05:32:27 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.94 2001-07-20 20:30:04 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -20,7 +20,7 @@
 
 MY_BLD_DIR := ../bld
 ifndef PVM_ARCH
- PVM_ARCH := $(shell $(MY_BLD_DIR)/pvmgetarch)
+ PVM_ARCH := $(shell ${MY_BLD_DIR}/pvmgetarch)
 endif
 ifndef MY_BIN_DIR
  MY_BIN_DIR := ../bin
@@ -32,7 +32,7 @@ ifndef MY_OBJ_DIR
  MY_OBJ_DIR := ../obj
 endif
 ifndef PVM_ARCH
- PVM_ARCH := $(shell $(MY_BLD_DIR)/pvmgetarch)
+ PVM_ARCH := $(shell ${MY_BLD_DIR}/pvmgetarch)
 endif
 MY_DAT_DIR := ../data
 MY_DOC_DIR := ../doc
@@ -41,7 +41,7 @@ MY_DPN_DIR := ${MY_OBJ_DIR}
 MY_SRC_DIR := ../src/nco
 ifndef NCO_VRS
 # Used for RPM building
- NCO_VRS := $(shell cat $(MY_DOC_DIR)/VERSION)
+ NCO_VRS := $(shell cat ${MY_DOC_DIR}/VERSION)
 endif
 ifeq (${PVM_ARCH},LINUX)
 # rpm command, and thus RPM variables, may only be assumed to be available in Linux
@@ -115,56 +115,56 @@ TMP_LIBS := $(NCO_LIBS) $(NC_LIBS)
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=
-space := $(null) $(null)
+space := ${null} ${null}
 comma := ,
 newline := \n
 # We replace `/' by `cszzsc', call perl, then replace `cszzxc' by `/'
-# Unique character(s) to substitute for $(slash) before passing to perl regex
+# Unique character(s) to substitute for ${slash} before passing to perl regex
 slash_rx := cszzsc
-# Unique character(s) to replace by $(slash_rx) before passing to perl regex
+# Unique character(s) to replace by ${slash_rx} before passing to perl regex
 slash := /
-MY_OBJ_DIR_RX := $(subst $(slash),$(slash_rx),${MY_OBJ_DIR})
-MY_DPN_DIR_RX := $(subst $(slash),$(slash_rx),${MY_DPN_DIR})
+MY_OBJ_DIR_RX := $(subst ${slash},${slash_rx},${MY_OBJ_DIR})
+MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
 
 # Directories to search for source files
 MDL_PTH := $(MY_SRC_DIR)
 # Find all C++, C, and Fortran files in a given directory
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- FIND_FNC = $(wildcard $(dir)/*.cc $(dir)/*.c $(dir)/*.F) # Compile Fortran only if necessary
+ FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c ${dir}/*.F) # Compile Fortran only if necessary
 else
- FIND_FNC = $(wildcard $(dir)/*.cc $(dir)/*.c)
+ FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c)
 endif
 # Assemble source files from all directories
-SRC_LST = $(foreach dir, $(MDL_PTH),$(FIND_FNC))
+SRC_LST = $(foreach dir, ${MDL_PTH},$(FIND_FNC))
 # Source file names with directories removed
 MDL_SRC := $(notdir $(SRC_LST))
 # Dependency list for executable
-MDL_OBJ := $(addprefix ${MY_OBJ_DIR}/,$(addsuffix .o, $(basename $(MDL_SRC)))) 
+MDL_OBJ := $(addprefix ${MY_OBJ_DIR}/,$(addsuffix .o, $(basename ${MDL_SRC}))) 
 # Dependency (make) file for each object file
-MDL_DPN := $(addprefix ${MY_DPN_DIR}/,$(addsuffix .d, $(basename $(MDL_SRC)))) 
+MDL_DPN := $(addprefix ${MY_DPN_DIR}/,$(addsuffix .d, $(basename ${MDL_SRC}))) 
 # VPATH helps make find dependencies (which are not pathname qualified) in *.d file
-VPATH := $(subst $(space),:,$(MDL_PTH))
+VPATH := $(subst ${space},:,${MDL_PTH})
 # Prepend -I to use for compiler argument
-CPP_PTH := $(foreach dir,$(MDL_PTH),-I$(dir))
+CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 
 # Variables having to do with binary executables created by module
 MDL_BIN_TRG := ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted # NCO binary targets
 MDL_BIN_SYM_LNK := ncea ncrcat # Symbolic links
-MDL_BIN_STB := $(MDL_BIN_TRG) $(MDL_BIN_SYM_LNK) # All NCO files in MY_BIN_DIR
-MDL_BIN := $(addprefix ${MY_BIN_DIR}/,$(MDL_BIN_STB)) # distclean removes these files
+MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
+MDL_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_BIN_STB}) # distclean removes these files
 
 # Variables having to do with NCO data
 MDL_DAT_STB := 85 86 87 88 89 h0001 h0002 h0003 # Symbolic links to in.nc
 MDL_DAT_STB := $(addsuffix .nc,$(MDL_DAT_STB)) # `make data' creates these files
-MDL_DAT := $(addprefix $(MY_DAT_DIR)/,$(MDL_DAT_STB)) # `make distclean' removes these files
+MDL_DAT := $(addprefix ${MY_DAT_DIR}/,$(MDL_DAT_STB)) # `make distclean' removes these files
 
 # Variables having to do with NCO documentation
-MDL_DOC_SRC := $(addprefix $(MY_DOC_DIR)/,nco.texi MANIFEST README NEWS TODO index.shtml ncap.txt nco_news.shtml) # `make tags' includes these files
+MDL_DOC_SRC := $(addprefix ${MY_DOC_DIR}/,nco.texi MANIFEST README NEWS TODO index.shtml ncap.txt nco_news.shtml) # `make tags' includes these files
 MDL_DOC_TRG := nco.dvi nco.ps nco.pdf nco.html nco.info # `make doc' creates these files
-MDL_DOC := $(addprefix $(MY_DOC_DIR)/,$(MDL_DOC_TRG)) # `make distclean' removes these files
+MDL_DOC := $(addprefix ${MY_DOC_DIR}/,$(MDL_DOC_TRG)) # `make distclean' removes these files
 
 # Variables having to do with NCO build
-MDL_BLD_SRC := $(addprefix $(MY_BLD_DIR)/,Makefile nco_dst.pl nco_tst.sh) # `make tags' includes these files
+MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,Makefile nco_dst.pl nco_tst.sh) # `make tags' includes these files
 
 # Variables having to do with ncap
 MDL_NCAP_SRC := $(addprefix $(MY_SRC_DIR)/,ncap.y ncap.l ncap.h) # `make tags' includes these files
@@ -175,7 +175,7 @@ MDL_NCAP := $(addprefix $(MY_SRC_DIR)/,$(MDL_NCAP_TRG)) # `make distclean' remov
 ${MY_OBJ_DIR}/%.o : %.c
 	${CC} ${CPPFLAGS} ${CFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 ${MY_OBJ_DIR}/%.o : %.cc
-	$(C++) ${CPPFLAGS} ${C++FLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
+	${C++} ${CPPFLAGS} ${C++FLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 
 # Default Fortran pattern rules: CRAY and RS6K must override these rules
 ${MY_OBJ_DIR}/%.o : %.F
@@ -186,7 +186,7 @@ ${MY_OBJ_DIR}/%.o : %.f
 # Rules for installing i18n files
 %.po : %.cc
 	xgettext --default-domain=$* --join-existing $<
-$(MY_ES_DIR)/%.mo : %.po
+${MY_ES_DIR}/%.mo : %.po
 #	Linux version accepts more arguments than Solaris version
 #	msgfmt --output-file=$@ --statistics $<
 	msgfmt -o $@ $<
@@ -204,18 +204,18 @@ ${MY_DPN_DIR}/%.d : %.F
 # This works fairly well, but is a hack
 # First pattern substitutes MY_OBJ_DIR_RX, which has placeholders for slashes
 # Second pattern substitutes slashes for the placeholders
-	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*(\.F)?\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' > $@
+	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*(\.F)?\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 # Following command makes, e.g., f.d begin "${MY_OBJ_DIR}/f.o f.d : f.F ..."
 # This would be the ideal command but I can't get the dollar sign to show up
-#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.F\.o/\$(dollar)MY_OBJ_DIR\/$*.o $@/g;' > $@
+#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.F\.o/\${dollar}MY_OBJ_DIR\/$*.o $@/g;' > $@
 
 ${MY_DPN_DIR}/%.d : %.c
 #	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
-	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' > $@
+	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 
 ${MY_DPN_DIR}/%.d : %.cc
 #	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
-	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' > $@
+	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 
 # The first LDFLAGS is for typical C programs with netCDF, math, and networking
 # The second LDFLAGS enables C/Fortran linking
@@ -259,7 +259,7 @@ endif
 # Using -P causes additional warning messages about lm 
 # Not using -P causes *.o files to be created twice
 ${MY_DPN_DIR}/%.d : %.c
-	${CPP} -M ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' $*.u > $@ ; \
+	${CPP} -M ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' $*.u > $@ ; \
 	rm -f $*.i $*.o $*.u;
 endif
 # endif AIX
@@ -290,9 +290,9 @@ ifeq (${OPTS},D)
  FFLAGS += -g
 endif
 ${MY_OBJ_DIR}/%.o : %.F90
-	${FC} -c $(FREEFLAGS) ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
+	${FC} -c ${FREEFLAGS} ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 ${MY_OBJ_DIR}/%.o : %.F
-	${FC} -c $(FIXEDFLAGS) ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
+	${FC} -c ${FIXEDFLAGS} ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 endif
 # endif ALPHA
 
@@ -652,7 +652,7 @@ endif
 # Internationalize NCO with i18n features
 ifeq ($(I18N),Y)
  CPPFLAGS += -DI18N
-ifneq ($(null),$(findstring SGI,${PVM_ARCH}))
+ifneq (${null},$(findstring SGI,${PVM_ARCH}))
  LDFLAGS += -lintl
 endif
 endif
@@ -674,7 +674,7 @@ endif
 # endif LINUX
 
 # Disable OpenMP on platforms that automatically support it
-ifeq ($(OMP),N)
+ifeq (${OMP},N)
 ifneq (,$(findstring SGI,${PVM_ARCH}))
  CFLAGS := $(filter-out -mp -mpio,${CFLAGS})
  LDFLAGS := $(filter-out -mp -mpio,${LDFLAGS})
@@ -686,7 +686,7 @@ endif # endif OMP
 libnco := ${MY_LIB_DIR}/libnco
 
 # Default targets
-all: dir lib $(MDL_BIN_TRG) data
+all: dir lib ${MDL_BIN_TRG} data
 # .PHONY tells make to remake the following non-file targets 
 .PHONY: all cln dst_cln dbg 
 # Delete default suffixes---this should increase speed
@@ -743,25 +743,25 @@ ncrename:   ${MY_BIN_DIR}/ncrename
 ${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o $(libnco).a
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
-bin: $(MDL_BIN_TRG)
+bin: ${MDL_BIN_TRG}
 binclean: bin_cln
 bin_cln: 
-	rm -f $(MDL_BIN)
+	rm -f ${MDL_BIN}
 # Targets in bld
 buildclean: bld_cln
 bld_cln:
-	cd $(MY_BLD_DIR); rm -f TAGS
-rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.0.0 rpm
-	cd $(DATA)/tmp; \
-	/bin/rm -fr $(DATA)/tmp/nco*; \
+	cd ${MY_BLD_DIR}; rm -f TAGS
+rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.0.0 rpm
+	cd ${DATA}/tmp; \
+	/bin/rm -fr ${DATA}/tmp/nco*; \
 	cp -r ${HOME}/nco nco-$(NCO_VRS); \
 	tar cvzf nco-$(NCO_VRS).tar.gz ./nco-$(NCO_VRS); \
-	mv $(DATA)/tmp/nco-$(NCO_VRS).tar.gz /usr/src/redhat/SOURCES; \
+	mv ${DATA}/tmp/nco-$(NCO_VRS).tar.gz /usr/src/redhat/SOURCES; \
 	/bin/rm -f /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	ln -s ${HOME}/nco/bld/nco.spec /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SPECS; \
 	rpm -ba nco-$(NCO_VRS).spec;
-rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.0.0 rpmnet
+rpmnet:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.0.0 rpmnet
 	- if test -f /usr/src/redhat/SOURCES/nco-$(NCO_VRS).tar.gz; then printf "Using existing nco-$(NCO_VRS).tar.gz\n" ; else ${MY_BIN_DIR}/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-$(NCO_VRS).tar.gz; fi
 	/bin/rm -f /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SOURCES; \
@@ -776,48 +776,48 @@ rpm_cln:
 	rpm --erase $(MDL_RPM_NST_NM)
 # Targets in dat
 data:	dat
-dat:	$(MY_DAT_DIR)/in.nc 
-	-for fl in $(MDL_DAT_STB); do cd $(MY_DAT_DIR); ln -f -s in.nc $$fl; done
-$(MY_DAT_DIR)/in.nc: $(MY_DAT_DIR)/in.cdl
-	cd $(MY_DAT_DIR); ncgen -b -o in.nc in.cdl
+dat:	${MY_DAT_DIR}/in.nc 
+	-for fl in $(MDL_DAT_STB); do cd ${MY_DAT_DIR}; ln -f -s in.nc $$fl; done
+${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
+	cd ${MY_DAT_DIR}; ncgen -b -o in.nc in.cdl
 dataclean: dat_cln
 dat_cln:
 	rm -f $(MDL_DAT)
-	cd $(MY_DAT_DIR); rm -f foo*
+	cd ${MY_DAT_DIR}; rm -f foo*
 test:	tst
-tst:	$(MY_DAT_DIR)/in.nc
-	- if test -f $(MY_DAT_DIR)/nco_tst.nc; then printf "" ; else ${MY_BIN_DIR}/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l $(MY_DAT_DIR) nco_tst.nc; fi
-	cd $(MY_BLD_DIR); nco_tst.sh
+tst:	${MY_DAT_DIR}/in.nc
+	- if test -f ${MY_DAT_DIR}/nco_tst.nc; then printf "" ; else ${MY_BIN_DIR}/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l ${MY_DAT_DIR} nco_tst.nc; fi
+	cd ${MY_BLD_DIR}; nco_tst.sh
 testclean: tst_cln
 tst_cln:
-	cd $(MY_DAT_DIR); rm -f foo* nco_tst.nc
+	cd ${MY_DAT_DIR}; rm -f foo* nco_tst.nc
 # Targets in doc
 # Each make directive line spawns a separate shell so must use `cd dir;cmd' format
-doc:	$(MY_DOC_DIR)/nco.dvi $(MY_DOC_DIR)/nco.ps $(MY_DOC_DIR)/nco.pdf $(MY_DOC_DIR)/nco.html $(MY_DOC_DIR)/nco.info   
-$(MY_DOC_DIR)/nco.ps: $(MY_DOC_DIR)/nco.dvi
-	cd $(MY_DOC_DIR); dvips -o nco.ps nco.dvi
-$(MY_DOC_DIR)/nco.dvi: $(MY_DOC_DIR)/nco.texi
-	cd $(MY_DOC_DIR); texi2dvi nco.texi
-$(MY_DOC_DIR)/nco.info: $(MY_DOC_DIR)/nco.texi
-	cd $(MY_DOC_DIR); makeinfo nco.texi
-$(MY_DOC_DIR)/nco.html: $(MY_DOC_DIR)/nco.texi
-	cd $(MY_DOC_DIR); texi2html -monolithic -verbose nco.texi
-$(MY_DOC_DIR)/nco.pdf: $(MY_DOC_DIR)/nco.texi
-	cd $(MY_DOC_DIR); texi2dvi --pdf nco.texi
-#	cd $(MY_DOC_DIR); ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
+doc:	${MY_DOC_DIR}/nco.dvi ${MY_DOC_DIR}/nco.ps ${MY_DOC_DIR}/nco.pdf ${MY_DOC_DIR}/nco.html ${MY_DOC_DIR}/nco.info   
+${MY_DOC_DIR}/nco.ps: ${MY_DOC_DIR}/nco.dvi
+	cd ${MY_DOC_DIR}; dvips -o nco.ps nco.dvi
+${MY_DOC_DIR}/nco.dvi: ${MY_DOC_DIR}/nco.texi
+	cd ${MY_DOC_DIR}; texi2dvi nco.texi
+${MY_DOC_DIR}/nco.info: ${MY_DOC_DIR}/nco.texi
+	cd ${MY_DOC_DIR}; makeinfo nco.texi
+${MY_DOC_DIR}/nco.html: ${MY_DOC_DIR}/nco.texi
+	cd ${MY_DOC_DIR}; texi2html -monolithic -verbose nco.texi
+${MY_DOC_DIR}/nco.pdf: ${MY_DOC_DIR}/nco.texi
+	cd ${MY_DOC_DIR}; texi2dvi --pdf nco.texi
+#	cd ${MY_DOC_DIR}; ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
 docclean: doc_cln
 doc_cln:
-	cd $(MY_DOC_DIR); rm -f nco.info* nco.dvi nco.html* nco.ps nco.pdf *~
+	cd ${MY_DOC_DIR}; rm -f nco.info* nco.dvi nco.html* nco.ps nco.pdf *~
 # Targets in dpn
 depend: dpn
-dpn: $(MDL_DPN)
+dpn: ${MDL_DPN}
 dpn_cln:
-	rm -f $(MDL_DPN)
+	rm -f ${MDL_DPN}
 # Targets in inc
 include: inc
-inc: $(MDL_INC)
+inc: ${MDL_INC}
 inc_cln:
-	rm -f $(MDL_INC)
+	rm -f ${MDL_INC}
 # Targets in lib
 library: lib
 lib: inc $(libnco).a
@@ -837,10 +837,10 @@ lib_cln:
 	rm -f $(libnco).a
 # Targets in obj
 object: obj
-obj: $(MDL_OBJ)
+obj: ${MDL_OBJ}
 objclean: obj_cln
 obj_cln:
-	rm -f $(MDL_OBJ)
+	rm -f ${MDL_OBJ}
 # Targets in src
 src: $(MDL_NCAP)
 src_cln:
@@ -849,10 +849,10 @@ src_cln:
 # Housekeeping
 clean: cln
 cln: lib_cln dpn_cln obj_cln tst_cln
-	cd $(MY_DOC_DIR); rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
+	cd ${MY_DOC_DIR}; rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
 debug: dbg
 dbg:
-	@printf "C++ = $(C++)\n"
+	@printf "C++ = ${C++}\n"
 	@printf "C++FLAGS = ${C++FLAGS}\n"
 	@printf "CC = ${CC}\n"
 	@printf "CFLAGS = ${CFLAGS}\n"
@@ -866,24 +866,24 @@ dbg:
 	@printf "HDF5 = $(HDF5)\n"
 	@printf "LDFLAGS = ${LDFLAGS}\n"
 	@printf "LEX = $(LEX)\n"
-	@printf "MDL_DPN = $(MDL_DPN)\n"
-	@printf "MDL_OBJ = $(MDL_OBJ)\n"
-	@printf "MDL_PTH = $(MDL_PTH)\n"
+	@printf "MDL_DPN = ${MDL_DPN}\n"
+	@printf "MDL_OBJ = ${MDL_OBJ}\n"
+	@printf "MDL_PTH = ${MDL_PTH}\n"
 	@printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
-	@printf "MDL_SRC = $(MDL_SRC)\n"
+	@printf "MDL_SRC = ${MDL_SRC}\n"
 	@printf "NCO_VRS = $(NCO_VRS)\n"
 	@printf "NETCDF_INC = ${NETCDF_INC}\n"
 	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
-	@printf "OMP = $(OMP)\n"
+	@printf "OMP = ${OMP}\n"
 	@printf "PVM_ARCH = ${PVM_ARCH}\n"
 	@printf "SRC_LST = $(SRC_LST)\n"
 	@printf "USE_FORTRAN_ARITHMETIC = $(USE_FORTRAN_ARITHMETIC)\n"
-	@printf "VPATH = $(VPATH)\n"
+	@printf "VPATH = ${VPATH}\n"
 	@printf "YACC = $(YACC)\n"
 distclean: dst_cln
 dst_cln: cln bin_cln doc_cln dat_cln
-	cd $(MY_BLD_DIR); rm -f *~
-	cd $(MY_DAT_DIR); rm -f in.nc *~
+	cd ${MY_BLD_DIR}; rm -f *~
+	cd ${MY_DAT_DIR}; rm -f in.nc *~
 tags: 
 	etags $(MY_SRC_DIR)/nc.h $(SRC_LST) $(MDL_DOC_SRC) $(MDL_BLD_SRC) $(MDL_NCAP_SRC)
 
@@ -936,11 +936,11 @@ readnet:	$(READNET_OBJ)
 # Create dependency files only if they will not be immediately deleted
 INCLUDE_DPN := TRUE
 GOALS_WHICH_DELETE_DEPENDENCY_FILES := cln clean dir distclean dst_cln dpn_cln tags uninstall
-ifeq (,$(findstring $(MAKECMDGOALS),$(GOALS_WHICH_DELETE_DEPENDENCY_FILES)))
+ifeq (,$(findstring $(MAKECMDGOALS),${GOALS_WHICH_DELETE_DEPENDENCY_FILES}))
  INCLUDE_DPN := TRUE
 else
  INCLUDE_DPN := FALSE
 endif
-ifeq ($(INCLUDE_DPN),TRUE)
--include $(MDL_DPN)
+ifeq (${INCLUDE_DPN},TRUE)
+-include ${MDL_DPN}
 endif
