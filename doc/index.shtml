@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.110 2002-08-19 06:44:37 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.111 2002-08-19 08:15:38 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -143,6 +143,12 @@ instructions for helping the NCO project.
 <dt><a name="News"></a></dt>
 <h2>NCO News & Announcements</h2>
 <ul>
+<li><tt>ncra</tt> versions <tt>2.4.x--2.5.5</tt> handled multifile
+averages of low precision (<tt>int, char</tt>) data incorrectly if
+the data had a <tt>missing_value</tt>. 
+Under these conditions, this bug could result in incorrect values.
+Thanks to Martin Dix for pointing this out.
+User's of this feature should definitely upgrade to <tt>2.5.6</tt>.
 <li><tt>libnco_c++</tt> reads into and writes from type <tt>long double</tt></li>
 <li>Developer code has fully integrated <tt>autoconf</tt>/<tt>libtool</tt>
 build procedure</li>
