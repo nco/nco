@@ -1,7 +1,7 @@
  %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.15 2001-11-29 16:05:30 hmb Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.16 2001-12-11 16:17:25 hmb Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -203,18 +203,18 @@ statement:     out_att_exp '=' att_exp
                   int index;
                   aed_sct *ptr_aed;
 
-                  if( $3->nbr_dim == 0  ){
+                  if( $3->nbr_dim < 2  ){
                     index=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
                     ptr_aed=((prs_sct*)prs_arg)->att_lst[index];
                     ptr_aed->sz = $3->sz;
-                    ptr_aed->val.vp = (void*)nco_malloc(ptr_aed->sz);
-		    (void)var_copy($3->type,ptr_aed->sz,$3->val,ptr_aed->val);
                     ptr_aed->type= $3->type;
-                    cast_nctype_void($3->type,&ptr_aed->val);
-                    (void)sprintf(errstr,"Saving in attribute %s:%s O dimensional variable",$1.var_nm,$1.att_nm);
+                    ptr_aed->val.vp = (void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
+		    (void)var_copy(ptr_aed->type,ptr_aed->sz,$3->val,ptr_aed->val);
+                    //cast_nctype_void($3->type,&ptr_aed->val);
+                    (void)sprintf(errstr,"Saving in attribute %s:%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
                     (void)yyerror(errstr); 
 		  }else{
-                   (void)sprintf(errstr,"Warning: Cannot store a multi-dimensional variable in attribute %s:%s",$1.var_nm,$1.att_nm );
+                   (void)sprintf(errstr,"Warning: Cannot store in attribute %s:%s a variable with dimension %d",$1.var_nm,$1.att_nm,$3->nbr_dim );
                   (void)yyerror(errstr);
                   }
 		  
@@ -507,7 +507,9 @@ ncap_aed_lookup(char *var_nm,char *att_nm,aed_sct **att_lst,int *nbr_att, bool u
   int i;
   
   for(i=0; i < *nbr_att ; i++)
-    if (!strcmp(att_lst[i]->att_nm,att_nm) && !strcmp(att_lst[i]->var_nm,var_nm)) {   
+    if (!strcmp(att_lst[i]->att_nm,att_nm) && !strcmp(att_lst[i]->var_nm,var_nm)) {
+      /* Free up the memory if we are doing an update */
+        if(update) free(att_lst[i]->val.vp);   
         return i;
       } /* end if */
 
