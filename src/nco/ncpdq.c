@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.14 2004-08-04 21:50:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.15 2004-08-04 21:55:32 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -98,8 +98,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.14 2004-08-04 21:50:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.14 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.15 2004-08-04 21:55:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.15 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:p:Rrt:v:x-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -159,10 +159,10 @@ main(int argc,char **argv)
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       {"append",no_argument,0,'A'},
-      {"arrange",no_argument,0,'a'},
-      {"permute",no_argument,0,'a'},
-      {"reorder",no_argument,0,'a'},
-      {"rdr",no_argument,0,'a'},
+      {"arrange",required_argument,0,'a'},
+      {"permute",required_argument,0,'a'},
+      {"reorder",required_argument,0,'a'},
+      {"rdr",required_argument,0,'a'},
       {"no-coords",no_argument,0,'C'},
       {"no-crd",no_argument,0,'C'},
       {"coords",no_argument,0,'c'},
