@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.11 1999-07-01 23:13:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.12 1999-07-29 17:49:06 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -67,8 +67,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.11 1999-07-01 23:13:18 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.11 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.12 1999-07-29 17:49:06 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.12 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -375,11 +375,11 @@ main(int argc,char **argv)
 	idx_rec_out++;
 	if(dbg_lvl > 2) (void)fprintf(stderr,"\n");
       } /* end loop over idx_rec */
-      /* Warn if fewer than number of requested records were read */
+      /* Warn if fewer than number of requested records were read and final file has been processed */
       if(lmt_rec.lmt_typ == lmt_dim_idx && lmt_rec.is_usr_spc_min && lmt_rec.is_usr_spc_max){
 	long rec_nbr_rqs; /* Number of records user requested */
 	rec_nbr_rqs=1L+(lmt_rec.max_idx-lmt_rec.min_idx)/lmt_rec.srd;
-	if(rec_nbr_rqs != idx_rec_out) (void)fprintf(stdout,"%s: WARNING User requested %li records but only %li were found\n",prg_nm_get(),rec_nbr_rqs,idx_rec_out);
+	if(idx_fl == nbr_fl-1 && rec_nbr_rqs != idx_rec_out) (void)fprintf(stdout,"%s: WARNING User requested %li records but only %li were found\n",prg_nm_get(),rec_nbr_rqs,idx_rec_out);
       } /* end if */
     }else{ /* ncea */ 
       /* Process all variables in current file */ 

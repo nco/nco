@@ -1,3 +1,10 @@
+1999-07-29  Charlie Zender  <zender@dust.acd.ucar.edu>
+
+	* Tagged this as nco1_1_35
+
+	* Changed WARNING message to print in ncra only when insufficient
+	records have been found and last file has been processed
+
 1999-07-03  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Tagged this as nco1_1_34

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.25 1999-07-03 21:58:22 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.26 1999-07-29 17:49:06 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1922,7 +1922,7 @@ This allows @code{ncatted} to change the missing values in files from
 different machines to a single value so that the files may then be 
 concatenated together, e.g., by @code{ncrcat}, without losing any
 information.   
-@xref{Missing values} for more information.
+For more information @xref{Missing values}. 
 
 The key to mastering @code{ncatted} is understanding the meaning of the
 structure describing the attribute modification, @var{att_dsc}.

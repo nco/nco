@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.18 1999-07-03 21:58:22 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.19 1999-07-29 17:49:06 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
@@ -146,7 +146,7 @@ User's Guide</A>. </P>
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
 
-<P>99/07/03: 
+<P>1999/07/03: 
 <TT>ncatted</TT> now replaces missing values of variables whose
 <IT>missing_value</IT> attribute is changed.
 When the internal floating point representation of a missing value, 
@@ -159,7 +159,7 @@ different machines to a single value so that the files may then be
 concatenated together with, e.g., by <TT>ncrcat</TT>, without losing
 any information.  
 
-<P>99/05/09: 
+<P>1999/05/09: 
 <TT>ncks</TT> now alphabetizes output by default.
 To turn off alphabetization and return to the previous behavior
 (variables reported in the order they were written to disk) simply
@@ -184,7 +184,7 @@ Attempting to use this new feature in older versions of NCO resulted
 in an "index out of range" error.
 Thanks to John Truesdale <jet@ncar.ucar.edu> for pointing this out. 
 
-<P>99/04/20: 
+<P>1999/04/20: 
 Fixed bug where <TT>ncrcat</TT> and <TT>ncra</TT> omitted the last slice of the
 record dimension when <TT>`-F'</TT> (Fortran indexing) was user-specified AND
 user-specified hyperslab information was provided for some
@@ -192,18 +192,18 @@ dimensions BUT not for the record dimension. This bug only
 affected <TT>ncrcat</TT> and <TT>ncra</TT> and only under these conditions. Thanks
 to John Sheldon <jps@server1.gfdl.gov> for pointing this out. 
 	
-<P>99/04/04: By default, extracted variables appear in the same order
+<P>1999/04/04: By default, extracted variables appear in the same order
 in which they were written to the source netCDF file.
 However, this order is often essentially random, making it hard to
 locate a particular variable in a dump of many variables.
 To help address this, <TT>ncks</TT> will now alphabetize variables.
 Simply specify <TT>`-a'</TT> on the command line.
 
-<P>99/01/21: An optional token has been added to NCO which eliminates
+<P>1999/01/21: An optional token has been added to NCO which eliminates
 all netCDF 3.x calls and thus restores compatibility of NCO with HDF
 files. 
 
-<P>98/12/02: <TT>ncwa</TT> has been updated again since a user
+<P>1998/12/02: <TT>ncwa</TT> has been updated again since a user
 discovered a bug which occurred when a weight (<TT>`-w'</TT>) and a
 mask (<TT>`-m'</TT>) were both given to <TT>ncwa</TT>. Unfortunately, 
 <TT>ncwa</TT> sometimes produced incorrect answers in this scenario so
@@ -221,7 +221,7 @@ behavior is fully documented in the rewritten and expanded
 <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO User's
 Guide</A>.
 
-<P>98/11/24: Choose whether to weight your coordinates in <TT>ncwa</TT>
+<P>1998/11/24: Choose whether to weight your coordinates in <TT>ncwa</TT>
 A <TT>`-I'</TT> switch has been added to <TT>ncwa</TT>.
 Henforth, by default, <TT>ncwa</TT> applies weights or masks to
 coordinate variables just like any other variable.
@@ -233,7 +233,7 @@ rather than masked, weighted averages of coordinate variables).
 A problem where <TT>ncwa</TT> would refuse to average variables which
 did not contain any of the averaged dimensions has also been fixed.
 
-<P>98/07/07: Reduce bloating!     
+<P>1998/07/07: Reduce bloating!     
 The <TT>`-h'</TT> switch has been enabled on all operators.
 Using this switch suppresses the automatic history feature in NCO.
 Now you can decide whether each change to a file warrants an
