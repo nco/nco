@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.57 2000-06-16 03:16:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.58 2000-06-20 18:08:27 zender Exp $ -*-text-*-
 
 *************
 NCO Wish list
@@ -30,7 +30,7 @@ NCO Wish list
 88. ncks is slow on large files on Crays: ncks -H -v time,date,datesec /tmp/eaton/pcw101/h0009.nc will this be fixed when move beyond netcdf2.4.2 cray libs?
 92. ncrcat -O -v base_time,time_offset arm.cdf arm.cdf foo.nc;ncks -H -C -h foo.nc | m gives bad time_offset on LINUX not SUNMP (problem with LINUX adding record coordinate to open file?)
 94. ~/bin/sh/texi2html -monolithic nco.texi has started dumping core. adding -verbose switch fixes problem, though I've no idea why.
-95. Can udunits accomplish CCM "time since..." conversions for ncrcat?
+95. Can Unidata udunits package accomplish CCM "time since..." conversions for ncrcat?
 97. Add x_op=average... attributes to averagers for ncar_csm
 99. Allow ncatted to print out a file in ncatted format
 103. Implement trapezoidal rule option in ncra, ncea
@@ -132,6 +132,7 @@ with nco_dst.pl
 166. Document 'make test' so people know it exists and use it
 167. Improve/redesign test suite so it is more comprehensive and easier to add to
 168. Implement autoconf/automake build environment?
+169. Merge TODO into Task manager and bug manager as appropriate
 ************************************************************************
 End NCO Wish list
 ************************************************************************
