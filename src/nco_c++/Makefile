@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile,v 1.1 2002-01-11 23:20:29 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile,v 1.2 2002-01-11 23:48:19 zender Exp $
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -654,7 +654,7 @@ bld_cln :
 data:	dat
 dat:	${MY_DAT_DIR}/in.nc 
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
-	cd ${MY_DAT_DIR}; ncgen -b -o in.nc in.cdl
+	ncgen -b -o in.nc ${MY_DAT_DIR}/in.cdl
 dat_cln :
 	-cd ${MY_DAT_DIR}; rm -f in.nc foo.nc
 # Targets in dpn

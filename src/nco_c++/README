@@ -1,17 +1,32 @@
-$Header: /data/zender/nco_20150216/nco/src/nco_c++/README,v 1.1 2002-01-11 23:20:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/src/nco_c++/README,v 1.2 2002-01-11 23:48:19 zender Exp $
 
 Purpose: Documentation of libnco_c++
 
 I've taken a stab at a C++ interface to the netCDF 3.x library.
-The library is called libnco_c++.a. It is currently completely
-independent of NCO but that may change.
-libnco_c++ seems to be working and I wanted to make you aware 
-of its existence in case you are interested in commenting on it,
-contributing to it, or bundling it in future versions of netCDF. 
-I'm very interested in comments, critcisms, and suggestions for the
-basic design and API. You can download the latest version from
+The library is called libnco_c++. It has just been added to
+its own directory in the NCO repository on Sourceforge. The 
+software is completely independent of NCO, however, and only
+requires the current netCDF C library to build.
+libnco_c++ is mostly working and it is ready for alpha testing,
+comments, and contributions by developers (not end users yet).
+I'm very interested in comments, critcisms, and contributions to
+the basic design and API. You can download the latest version from 
+the NCO CVS repository on Sourceforge
 
-ftp://dust.ps.uci.edu/pub/zender/nco_c++
+cvs -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco login
+cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco
+
+All code is in the nco/src/nco_c++ directory, including the
+all important TODO and ChangeLog files. If you want to contribute
+patches or comments the appropriate venue is the developer's forum
+
+http://sourceforge.net/forum/forum.php?forum_id=9831 
+
+Those with good patches to contribute will be give CVS write access. 
+What follows is a description of the software design and status.
+I hope you like it!
+
+Charlie Zender
 
 Short description:
 This is NOT an object-based approach, like libnetcdf_c++.a.

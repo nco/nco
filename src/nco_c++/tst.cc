@@ -1,15 +1,15 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.1 2002-01-11 23:20:29 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.2 2002-01-11 23:48:19 zender Exp $
 
 // Purpose:  Test for C++ programs using libnco_c++ API
 
 /* Compilation
    make -W tst.cc OPTS=D tst
    make OPTS=D tst
-   cd $HOME/nco_c++;make -W OPTS=D tst.cc tst;cd -
-   cd $HOME/nco_c++;make OPTS=D tst;cd -
+   cd ${HOME}/nco/src/nco_c++;make -W OPTS=D tst.cc tst;cd -
+   cd ${HOME}/nco/src/nco_c++;make OPTS=D tst;cd -
  */
 
-// etags ~/nco_c++/*.cc ~/nco_c++/*.hh ~/mie/*.cc ~/mie/*.hh ~/slr_spc/*.cc ~/slr_spc/*.hh ~/ck/htrn.c ~/c++/*.cc ~/c++/*.hh 
+// etags ~/nco/src/nco_c++/*.cc ~/nco/src/nco_c++/*.hh ~/mie/*.cc ~/mie/*.hh ~/slr_spc/*.cc ~/slr_spc/*.hh ~/ck/htrn.c ~/c++/*.cc ~/c++/*.hh 
 
 /* I am trying to decide on a reasonable license for this software
    Here is a first attempt, based on the BSD license of my_getopt: */
@@ -66,10 +66,10 @@ int main(int argc,char **argv)
   long sz_nbr(1); // [nbr] Number of sizes
   register long idx; // [idx] Counting index
 
-  const std::string CVS_Date("$Date: 2002-01-11 23:20:29 $"); // [sng] CVS date string
-  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.1 2002-01-11 23:20:29 zender Exp $"); // [sng] CVS header string
-  const std::string CVS_Id("$Id: tst.cc,v 1.1 2002-01-11 23:20:29 zender Exp $"); // [sng] CVS identification string
-  const std::string CVS_Revision("$Revision: 1.1 $"); // [sng] CVS revision string
+  const std::string CVS_Date("$Date: 2002-01-11 23:48:19 $"); // [sng] CVS date string
+  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.2 2002-01-11 23:48:19 zender Exp $"); // [sng] CVS header string
+  const std::string CVS_Id("$Id: tst.cc,v 1.2 2002-01-11 23:48:19 zender Exp $"); // [sng] CVS identification string
+  const std::string CVS_Revision("$Revision: 1.2 $"); // [sng] CVS revision string
   const std::string date_cvs(CVS_Date.length() > 7 ? CVS_Date.substr(7,19) : "Unknown"); // [sng] Date from CVS
   const std::string sbr_nm("main"); // [sng] Subroutine name
   const std::string prg_nm("libnco_c++"); // [sng] Program name
