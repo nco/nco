@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.8 2002-06-16 05:49:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.9 2002-07-04 03:40:36 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -110,9 +110,9 @@ nco_type_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
   /* Purpose: Provide sprintf() format string for specified type */
   switch (type) {
   case NC_FLOAT:
-    return "%g";
+    return "%g"; /* %g defaults to 6 digits of precision */
   case NC_DOUBLE:
-    return "%g";
+    return "%.12g"; /* Specify 12 digits of precision for double precision */
   case NC_INT:
     return "%li"; /* NCO currently stores NC_INT in native type long, but this will be deprecated when netCDF supports a 64 bit integer type */
     /*  case NC_LONG:

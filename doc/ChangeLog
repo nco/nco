@@ -1,5 +1,7 @@
 2002-07-03  Charlie Zender  <zender@uci.edu>
 
+	* Print double precision numbers with 12 digits of precision
+
 	* Added erf(), erfc() to ncap
 
 	* Document ncks -b, -B switches in manual

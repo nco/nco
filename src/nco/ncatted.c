@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.45 2002-07-02 01:47:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.46 2002-07-04 03:40:36 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -99,9 +99,7 @@
    ncatted -D 5 -O -a float_att,,m,f,74 in.nc foo.nc
 
    Verify results:
-   ncks -C -h foo.nc | m
-
-   */
+   ncks -C -h foo.nc | m */
 
 /* Standard C headers */
 #include <math.h> /* sin cos cos sin 3.14159 */
@@ -143,8 +141,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.45 2002-07-02 01:47:26 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.45 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.46 2002-07-04 03:40:36 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.46 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 

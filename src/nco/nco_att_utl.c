@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.10 2002-07-02 01:47:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.11 2002-07-04 03:40:36 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -43,15 +43,14 @@ nco_aed_prc /* [fnc] Process a single attribute edit on a single variable */
   if(aed.att_nm) rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
 
   /* Before changing metadata, change missing values to new missing value if warranted 
-     This capability is an add on feature and is not implemented very cleanly or efficiently
-     If, for example, every variable has a "missing_value" attribute and it is changed
-     globally, then this routine will go into and out of define mode for each variable,
-     rather than collecting all information in first pass and then replacing all data in second pass.
+     This capability is add-on feature not implemented very cleanly or efficiently
+     If every variable has "missing_value" attribute and "missing_value" is changed
+     globally, then algorithm goes into and out of define mode for each variable,
+     rather than collecting all information in first pass and replacing all data in second pass.
      This is because ncatted was originally designed to change only metadata and so was
-     architected differently from other NCO operators.
-   */
+     architected differently from other NCO operators. */
   if(
-     aed.att_nm /* Prevent core dump in strcmp() if attribute name is blank */
+     aed.att_nm /* Linux strcmp() dumps core if attribute name is blank */
      && strcmp(aed.att_nm,"missing_value") == 0 /* Current attribute is "missing_value" */
      && var_id != NC_GLOBAL /* Current attribute is not global */
      && (aed.mode == aed_modify || aed.mode == aed_overwrite)  /* Modifying or overwriting existing value */
@@ -103,7 +102,7 @@ nco_aed_prc /* [fnc] Process a single attribute edit on a single variable */
       (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes in nco_aed_prc()\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
       nco_exit(EXIT_FAILURE); 
     } /* end if */
-    if(var->sz > 1){
+    if(var->sz > 1L){
       (void)nco_get_vara(var->nc_id,var->id,var->srt,var->cnt,var->val.vp,var->type);
     }else{
       (void)nco_get_var1(var->nc_id,var->id,var->srt,var->val.vp,var->type);
