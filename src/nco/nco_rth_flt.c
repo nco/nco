@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.9 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.10 2004-06-29 19:13:11 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -57,6 +57,9 @@ float erff(float x){return (float)(erf((double)x));}
 #ifdef NEED_EXPF
 float expf(float x){return (float)(exp((double)x));}
 #endif /* !NEED_EXPF */ 
+#ifdef NEED_FABSF
+float fabsf(float x){return (float)(fabs((double)x));}
+#endif /* !NEED_FABSF */ 
 #ifdef NEED_FLOORF
 float floorf(float x){return (float)(floor((double)x));}
 #endif /* !NEED_FLOORF */ 
