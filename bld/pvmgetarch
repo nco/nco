@@ -1,28 +1,29 @@
 #!/bin/sh
-#
-# $Id: pvmgetarch,v 1.6 2002-09-18 05:02:51 zender Exp $
-#
-# pvmgetarch.sh
-#
-# Generate PVM architecture string.
-#
+
+# $Id: pvmgetarch,v 1.7 2003-11-16 20:51:47 zender Exp $
+
+# Purpose: Generate PVM architecture string
+
+# Usage:
+# cp ~/bin/sh/pvmgetarch ~/nco/bld/pvmgetarch
+# cp ~/bin/sh/pvmgetarch ~/aer/pvmgetarch
+# scp ~/bin/sh/pvmgetarch dust.ess.uci.edu:/var/www/html/dead/pvmgetarch
+
 # This is a heuristic thing that may need to be tuned from time
 # to time.  I don't know of a real solution to determining the
 # machine type.
-#
+
 # Notes:
 #   1. Local people mess with things.
 #   2. It's good to try a few things for robustness.
 #   3. Don't use test -x
-#
+
 # 08 Apr 1993  Robert Manchek  manchek@CS.UTK.EDU.
 # 24 Aug 1994  last revision
 # 28 Jul 1995  release 3.3.8
 #
 
-#
-# begin section that may need to be tuned.
-#
+# begin section that may need to be tuned
 ARCH=UNKNOWN
 
 #
@@ -60,6 +61,9 @@ if [ -f /bin/uname -o -f /usr/bin/uname \
 	IRIX,* )                ARCH=SGI ;;
 	IRIX64,* )              ARCH=SGI64 ;;
 	*OSF*,alpha )           ARCH=ALPHA ;;
+# 20031116 csz++ Implement AMD
+	Linux,x86_64 )           ARCH=LINUXAMD64 ;;
+# csz--
 	Linux,alpha )           ARCH=LINUXALPHA ;;
 	CRSOS,smp )             ARCH=CRAYSMP ;;
 	*,paragon )             ARCH=PGON ;;
