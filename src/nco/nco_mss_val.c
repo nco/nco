@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.7 2002-09-03 01:19:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.8 2002-09-14 22:41:09 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -93,11 +93,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
 
   for(idx=0;idx<var->nbr_att;idx++){
     (void)nco_inq_attname(var->nc_id,var->id,idx,att_nm);
-#ifdef HAVE_STRCASECMP
     if((int)strcasecmp(att_nm,"missing_value") != 0) continue;
-#else /* fxm: make strcmp() branch equivalent to strcasecmp() */
-    if((int)strcmp    (att_nm,"missing_value") != 0) continue;
-#endif /* !HAVE_STRCASECMP */
     (void)nco_inq_att(var->nc_id,var->id,att_nm,&att_typ,&att_sz);
     if(att_sz != 1 && att_typ != NC_CHAR){
       (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s has %li elements and so will not be used\n",prg_nm_get(),att_nm,var->nm,att_sz);

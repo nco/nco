@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.4 2002-09-14 17:28:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.5 2002-09-14 22:41:09 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -8,6 +8,12 @@
 
 #include "nco_rth_flt.h" /* Float-precision arithmetic */
 
+/* In ANSI C, <math.h> provides standard math intrinsics in double precision 
+   On most architectures, single precision ("float") versions are also supplied 
+   C++ compilers need float versions of these functions to be efficient anyway
+   Names of these optional float functions end in "f", as specified by ANSI
+   Create any needed float functions simply by coercing I/O of double versions
+   MacOS X does not provide float versions of _any_ standard function! */
 #ifdef NEED_FMODF
 float fmodf(float x,float y){return (float)(fmod((double)x,(double)y));}
 #endif /* !NEED_FMODF */ 
@@ -77,3 +83,4 @@ float tanf(float x){return (float)(tan((double)x));}
 #ifdef NEED_TANHF
 float tanhf(float x){return (float)(tanh((double)x));}
 #endif /* !NEED_TANHF */ 
+

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.181 2002-09-14 18:09:58 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.182 2002-09-14 22:41:08 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1023,18 +1023,18 @@ ${MY_DOC_DIR}/nco.info: ${MY_DOC_DIR}/nco.texi
 	cd ${MY_DOC_DIR}; makeinfo --no-split --output=$@ $<
 ${MY_DOC_DIR}/nco.html: ${MY_DOC_DIR}/nco.texi
 	cd ${MY_DOC_DIR}; texi2html -monolithic -verbose $<
-#	cd ${MY_DOC_DIR}; makeinfo --no-split --html --output=$@ $<
+#	cd ${MY_DOC_DIR}; makeinfo --html --no-split --output=$@ $<
 ${MY_DOC_DIR}/nco.ps: ${MY_DOC_DIR}/nco.dvi
 	cd ${MY_DOC_DIR}; dvips -o $@ nco.dvi
 ${MY_DOC_DIR}/nco.pdf: ${MY_DOC_DIR}/nco.texi
 	cd ${MY_DOC_DIR}; texi2dvi --pdf --output=$@ $<
 #	cd ${MY_DOC_DIR}; ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps $@
 ${MY_DOC_DIR}/nco.txt: ${MY_DOC_DIR}/nco.texi
-	cd ${MY_DOC_DIR}; makeinfo --no-headers --output=$@ $<
+	cd ${MY_DOC_DIR}; makeinfo --no-headers --no-split --output=$@ $<
 # Neither of these xml formats seems to be viewable
 ${MY_DOC_DIR}/nco.xml: ${MY_DOC_DIR}/nco.texi
-	cd ${MY_DOC_DIR}; makeinfo --xml --output=$@ $<
-#	cd ${MY_DOC_DIR}; makeinfo --docbook --output=$@ $<
+	cd ${MY_DOC_DIR}; makeinfo --xml --no-split --output=$@ $<
+#	cd ${MY_DOC_DIR}; makeinfo --docbook --no-split --output=$@ $<
 docclean: doc_cln
 doc_cln:
 	cd ${MY_DOC_DIR}; rm -f nco.info* nco.dvi nco.html* nco.ps nco.pdf *~

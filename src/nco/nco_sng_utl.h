@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.6 2002-09-09 04:14:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.7 2002-09-14 22:41:09 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -12,6 +12,10 @@
 #ifndef NCO_SNG_UTL_H
 #define NCO_SNG_UTL_H
 
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
+
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <string.h> /* strcmp. . . */
@@ -24,6 +28,19 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+#ifndef HAVE_STRCASECMP
+int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
+strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
+(const char *sng_1, /* I [sng] First string */
+ const char *sng_2); /* I [sng] Second string */
+#endif /* HAVE_STRCASECMP */
+
+#ifndef HAVE_STRDUP
+char * /* O [sng] Copy of input string */
+strdup /* [fnc] Duplicate string */
+(char *sng_in); /* I [sng] String to duplicate */
+#endif /* HAVE_STRDUP */
 
 char * /* O [sng] Parsed command line */
 nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.8 2002-09-09 04:14:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.9 2002-09-14 22:41:09 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -8,12 +8,43 @@
 
 #include "nco_sng_utl.h" /* String utilities */
 
+#ifndef HAVE_STRCASECMP
+int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
+strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
+(const char *sng_1, /* I [sng] First string */
+ const char *sng_2) /* I [sng] Second string */
+{
+  char chr_1;
+  char chr_2;
+  while(1){
+    chr_1=tolower(*sng_1++);
+    chr_2=tolower(*sng_2++);
+    if(chr_1 < chr_2) return -1;
+    if(chr_1 > chr_2) return 1;
+    if(chr_1 == 0) return 0;
+  } /* end while */
+} /* end strcasecmp() */
+#endif /* HAVE_STRCASECMP */
+
+#ifndef HAVE_STRDUP
+char * /* [sng] Copy of input string */
+strdup /* [fnc] Duplicate string */
+(char *sng_in) /* [sng] String to duplicate */
+{
+  /* Purpose: Provide strdup() for broken systems 
+     Input string must be NUL-terminated */
+  int sng_lng=strlen(sng_in)+1;
+  /* Use normal malloc() not nco_malloc() since strdup() is system function */
+  char *sng_out=(char *)malloc(sng_lng*sizeof(char));
+  if(sng_out) strcpy(sng_out,sng_in);
+  return sng_out;
+} /* end strdup() */
+#endif /* HAVE_STRDUP */
+
 char * /* O [sng] Parsed command line */
 nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */
 (const int argc, /* I [nbr] Argument count */
  CST_X_PTR_CST_PTR_CST_Y(char,argv)) /* I [sng] Command line argument values */
-     /* const char * const * const argv) *//* I [sng] Command line argument values */
- /* char **argv) *//* I [sng] Command line argument values */
 {
   /* Purpose: Re-construct command line from argument list and number */
   char *cmd_ln; /* [sng] Parsed command line */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.187 2002-09-14 17:40:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.188 2002-09-14 22:41:09 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -14,7 +14,6 @@ Autoconf-build items:
 11. Use autoconf standard for VERSION, HOSTNAME, USER
 14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, I18N, _LIBINTL_H, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
 17. Fix CXX valarray to work on AIX
-18. Autoconf workarounds for strdup(), strcasecmp() (#234, 235 below)
 19. Implement autotools processing of doc/nco.texi to generate standard documentation: nco.info, nco.dvi, nco.ps, nco.pdf
 20. DODS linkage appears broken on Linux
 21. Add nco_rth_flt.[ch] to autotools build mechanism
@@ -61,7 +60,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 33. Document new math/rounding functions (acosh, floor...)
 34. Make parse errors always print current line to terminal rather than silently failing
 36. cygwin builds of ncap.l and netcdf fail because of dependence on syslimits.h. non-kludge fix may require updated gcc and mingw packages
-37. Implement float function definitions in nco_rth_flt as inline to improve speed for MACOSX builds
+37. Implement float function definitions in nco_rth_flt as inline to improve speed for MACOSX builds (inline is OK in C99 but will it break C89?)
 
 Highest priority NCO-wide items that You can help with:
 41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)
@@ -221,8 +220,6 @@ Command executes but in.hdf is full of screwy values
 230. Keep track of type of missing_value field in variable structure for reasons described in nco_cnf_var_typ()/nco_cnv_mss_val_typ()
 232. Warn when arithmetic operators encounter packed variables?
 233. Makefile.old rule for make tst appears broken for long ftp rule
-234. Replace strcasecmp() with ANSI standard calls (multiple strcmp()?)
-235. Replace strdup() with ANSI standard calls (malloc(),memcpy()?)
 237. Break down nco.texi into bite-size chunks, e.g., one file per section
 238. Replace y=(typ *)malloc(nbr*sizeof(typ)) with y=(typ *)malloc(nbr*sizeof(*y))?
 ************************************************************************
