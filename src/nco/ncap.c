@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.35 2001-11-29 16:08:37 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.36 2001-12-11 16:13:35 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -122,8 +122,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.35 2001-11-29 16:08:37 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.35 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.36 2001-12-11 16:13:35 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.36 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -157,6 +157,8 @@ main(int argc,char **argv)
   int spt_arg_len;
   int nbr_att=0;    /* Contains the size of att_lst */ 
 
+  const int att_lst_max=500;
+
   lmt_sct *lmt=NULL_CEWI;
   
   nm_id_sct *dmn_lst;
@@ -175,8 +177,7 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   
-  aed_sct *att_lst[500]; /* Structure filled out by yyparse , contains attributes to write to disk */
-                         /* Can be realloced in yyparse */
+  aed_sct *att_lst[att_lst_max]; /* Structure filled out by yyparse , contains attributes to write to disk */
   prs_sct prs_arg;
 
  
