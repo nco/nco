@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.187 2003-11-21 18:53:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.188 2003-11-24 17:30:34 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -210,10 +210,6 @@ notice identical to this one except for the removal of this paragraph
 (this paragraph not being relevant to the printed manual).
 
 @end ignore
-
-Portions of this document were extracted verbatim from Unidata netCDF
-documentation, particularly ``NetCDF Operators and Utilities'' by Russ
-Rew and Steve Emmerson. 
 @end ifinfo
 
 @setchapternewpage odd
@@ -3231,7 +3227,7 @@ Short options: None@*
 @cindex promotion
 Type conversion (often called @dfn{promotion}) refers to the casting of
 one fundamental data type to another, e.g., converting @code{NC_SHORT}
-(2 bytes) to @code{NC_DOUBLE} (8 bytes). 
+(two bytes) to @code{NC_DOUBLE} (eight bytes). 
 As a general rule, automatic type conversions should be avoided for at
 least two reasons. 
 First, type conversions are expensive since they require creating
@@ -3843,7 +3839,7 @@ where @var{ndrv} is the number of discrete representable values for
 given type of packed variable.
 The theoretical maximum value for @var{ndrv} is two raised to the
 number of bits used to store the packed variable.
-Thus if the variable is packed into type @code{NC_SHORT}, @w{a 2} byte
+Thus if the variable is packed into type @code{NC_SHORT}, a two-byte
 datatype, then there are at most @math{2^16 = 65536} distinct values
 representible.
 In practice, the number of discretely representible values is taken
@@ -3951,10 +3947,10 @@ The available elementary mathematical functions are:
 @cindex @var{atanh}
 @cindex @var{atan}
 @cindex @var{ceil}
-@cindex @var{cerf}
 @cindex @var{cosh}
 @cindex @var{cos}
 @cindex @var{erf}
+@cindex @var{erfc}
 @cindex @var{exp}
 @cindex @var{floor}
 @cindex @var{gamma}
@@ -3996,18 +3992,23 @@ The available elementary mathematical functions are:
 @item abs(x)
 @dfn{Absolute value}
 Absolute value of @var{x}.
+Example: @math{abs(-1) = 1}
 @item acos(x)
 @dfn{Arc-cosine}
 Arc-cosine of @var{x} where @var{x} is specified in radians.
+Example: @math{acos(1.0) = 0.0}
 @item acosh(x)
 @dfn{Hyperbolic arc-cosine}
 Hyperbolic arc-cosine of @var{x} where @var{x} is specified in radians.
+Example: @math{acosh(1.0) = 0.0}
 @item asin(x)
 @dfn{Arc-sine}
 Arc-sine of @var{x} where @var{x} is specified in radians.
+Example: @math{asin(1.0) = 1.57079632679489661922}
 @item asinh(x)
 @dfn{Hyperbolic arc-sine}
 Hyperbolic arc-sine of @var{x} where @var{x} is specified in radians.
+Example: @math{asinh(1.0) = 0.88137358702}
 @item atan(x)
 @dfn{Arc-tangent}
 Arc-tangent of @var{x} where @var{x} is specified in radians between 
@@ -4017,6 +4018,7 @@ $-\pi/2$ and $\pi/2$.
 @ifinfo
 @math{-pi/2} and @math{pi/2}.
 @end ifinfo
+Example: @math{atan(1.0) = 0.78539816339744830961}
 @item atanh(x)
 @dfn{Hyperbolic arc-tangent}
 Hyperbolic arc-tangent of @var{x} where @var{x} is specified in radians between 
@@ -4026,24 +4028,19 @@ $-\pi/2$ and $\pi/2$.
 @ifinfo
 @math{-pi/2} and @math{pi/2}.
 @end ifinfo
+Example: @math{atanh(3.14159265358979323844) = 1.0}
 @item ceil(x)
 @dfn{Ceil}
-Ceiling of @var{x}.
-@item cerf(x)
-@dfn{Complementary error function}
-Complementary error function of @var{x} where @var{x} is specified between
-@tex
-$-1$ and $1$.
-@end tex
-@ifinfo
-@math{-1} and @math{1}.
-@end ifinfo
+Ceiling of @var{x}. Smallest integral value not less than argument.
+Example: @math{ceil(0.1) = 1.0}
 @item cos(x)
 @dfn{Cosine}
 Cosine of @var{x} where @var{x} is specified in radians.
+Example: @math{cos(0.0) = 1.0}
 @item cosh(x)
 @dfn{Hyperbolic cosine}
 Hyperbolic cosine of @var{x} where @var{x} is specified in radians.
+Example: @math{cosh(0.0) = 1.0}
 @item erf(x)
 @dfn{Error function}
 Error function of @var{x} where @var{x} is specified between
@@ -4053,6 +4050,17 @@ $-1$ and $1$.
 @ifinfo
 @math{-1} and @math{1}.
 @end ifinfo
+Example: @math{erf(1.0) = 0.842701}
+@item erfc(x)
+@dfn{Complementary error function}
+Complementary error function of @var{x} where @var{x} is specified between
+@tex
+$-1$ and $1$.
+@end tex
+@ifinfo
+@math{-1} and @math{1}.
+@end ifinfo
+Example: @math{erfc(1.0) = 0.15729920705}
 @item exp(x)
 @dfn{Exponential}
 Exponential of @var{x},
@@ -4060,11 +4068,13 @@ Exponential of @var{x},
 $e^{x}$.
 @end tex
 @ifinfo
-@math{e^x}
+@math{e^x}.
 @end ifinfo
+Example: @math{exp(1.0) = 2.71828182845904523536}
 @item floor(x)
 @dfn{Floor}
-Floor of @var{x}.
+Floor of @var{x}. Largest integral value not greater than argument.
+Example: @math{exp(1.0) = 2.71828182845904523536}
 @item gamma(x)
 @dfn{Gamma function}
 Gamma function of @var{x},
@@ -4072,8 +4082,10 @@ Gamma function of @var{x},
 $\Gamma(x)$.
 @end tex
 @ifinfo
-@math{Gamma(x)}
+@math{Gamma(x)}.
 @end ifinfo
+largest integral value not greater than argument.
+Example: @math{gamma(0.5) = sqrt(pi)}
 @item log(x)
 @dfn{Natural Logarithm}
 Natural logarithm of @var{x},
@@ -4081,8 +4093,9 @@ Natural logarithm of @var{x},
 $\ln(x)$.
 @end tex
 @ifinfo
-@math{ln(x)}
+@math{ln(x)}.
 @end ifinfo
+Example: @math{log(2.71828182845904523536) = 1.0}
 @item log10(x)
 @dfn{Base 10 Logarithm}
 Base 10 logarithm of @var{x}, 
@@ -4090,27 +4103,33 @@ Base 10 logarithm of @var{x},
 $\log_{10}(x)$.
 @end tex
 @ifinfo
-@math{log10(x)}
+@math{log10(x)}.
 @end ifinfo
+Example: @math{log(10.0) = 1.0}
 @item nearbyint(x)
 @dfn{Round inexactly}
 Nearest integer to @var{x} is returned in floating point format.
 @cindex inexact conversion
 No exceptions are raised for @dfn{inexact conversions}.
+Example: @math{nearbyint(0.1) = 0.0}
 @item rint(x)
 @dfn{Round exactly}
 Nearest integer to @var{x} is returned in floating point format.
 Exceptions are raised for @dfn{inexact conversions}.
+Example: @math{rint(0.1) = 0}
 @item round(x)
 @dfn{Round}
 Nearest integer to @var{x} is returned in floating point format.
 Round halfway cases away from zero, regardless of current IEEE rounding direction. 
+Example: @math{round(0.5) = 1.0}
 @item sin(x)
 @dfn{Sine}
 Sine of @var{x} where @var{x} is specified in radians.
+Example: @math{sin(1.57079632679489661922) = 1.0}
 @item sinh(x)
 @dfn{Hyperbolic sine}
 Hyperbolic sine of @var{x} where @var{x} is specified in radians.
+Example: @math{sinh(1.0) = 1.1752}
 @item sqrt(x)
 @dfn{Square Root}
 Square Root of @var{x},
@@ -4118,24 +4137,29 @@ Square Root of @var{x},
 $\sqrt{x}$.
 @end tex
 @ifinfo
-@math{sqrt(x)}
+@math{sqrt(x)}.
 @end ifinfo
+Example: @math{sqrt(4.0) = 2.0}
 @item tan(x)
 @dfn{Tangent}
 Tangent of @var{x} where @var{x} is specified in radians.
+Example: @math{tan(0.78539816339744830961) = 1.0}
 @item tanh(x)
 @dfn{Hyperbolic tangent}
 Hyperbolic tangent of @var{x} where @var{x} is specified in radians.
+Example: @math{tanh(1.0) = 0.761594155956}
 @item trunc(x)
 @dfn{Truncate}
 Nearest integer to @var{x} is returned in floating point format.
 Round halfway cases toward zero, regardless of current IEEE rounding direction. 
+Example: @math{trunc(0.5) = 0.0}
 @end table
 @noindent
 The complete list of mathematical functions supported is
 platform-specific.  
 Functions mandated by @w{ANSI C} are @emph{guaranteed} to be present
 and are indicated with an asterisk 
+@c fxm No they're not, not yet
 @cindex @code{ANSI C}
 @cindex @code{float}
 @cindex precision
@@ -4506,7 +4530,7 @@ string and it may contain C-language escape sequences, e.g., @code{\n},
 which @acronym{NCO} will interpret before writing anything to disk.
 @acronym{NCO} translates valid escape sequences and stores the
 appropriate @acronym{ASCII} code instead.
-Since two byte escape sequences, e.g., @code{\n}, represent one byte
+Since two byte escape sequences, e.g., @code{\n}, represent one-byte
 @acronym{ASCII} codes, e.g., @acronym{ASCII} 10 (decimal), the stored
 string attribute is one byte shorter than the input string length for
 each embedded escape sequence. 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.9 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.10 2003-11-24 17:30:39 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -30,7 +30,7 @@ extern "C" {
 #endif /* __cplusplus */
 
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
-  /* Basic math: acos, asin, atan, cos, exp, log, log10, sin, sqrt, tan */
+  /* Basic math: acos, asin, atan, cos, erf, erfc, exp, gamma, log, log10, pow, sin, sqrt, tan */
   float acosf(float);
   float asinf(float);
   float atanf(float);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.30 2003-08-16 21:41:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.31 2003-11-24 17:30:38 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -90,8 +90,8 @@ nco_lib_vrs_prn(void) /* [fnc] Print netCDF library version */
   nst_sng[nst_sng_lng]='\0';
 
   (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",vrs_sng,nst_sng);
-  (void)fprintf(stdout,"NCO homepage URL is http://nco.sf.net\n");
-  (void)fprintf(stdout,"NCO User's Guide in HTML is at http://nco.sf.net/nco.html\n");
+  (void)fprintf(stdout,"NCO homepage URL: http://nco.sf.net\n");
+  (void)fprintf(stdout,"NCO User's Guide: http://nco.sf.net/nco.html\n");
 
   vrs_sng=(char *)nco_free(vrs_sng);
   lib_sng=(char *)nco_free(lib_sng);

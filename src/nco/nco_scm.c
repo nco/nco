@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.11 2003-11-16 22:45:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.12 2003-11-24 17:30:39 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -180,16 +180,20 @@ copyright_prn /* [fnc] Print copyright notice */
   vrs_cvs=cvs_vrs_prs();
 
   if(strlen(CVS_Id) > strlen("*Id*")){
-    (void)fprintf(stderr,"%s version %s last modified %s built %s on %s by %s\n",prg_nm_get(),vrs_cvs,date_cvs,date_cpp,hst_cpp,usr_cpp);
+    (void)fprintf(stderr,"NCO netCDF Operators version %s last modified %s built %s on %s by %s\n",vrs_cpp,date_cvs,date_cpp,hst_cpp,usr_cpp);
   }else{
-    (void)fprintf(stderr,"%s version %s built %s on %s by %s\n",prg_nm_get(),vrs_cpp,date_cpp,hst_cpp,usr_cpp);
+    (void)fprintf(stderr,"NCO netCDF Operators version %s built %s on %s by %s\n",vrs_cpp,date_cpp,hst_cpp,usr_cpp);
   } /* endif */
-
-  (void)fprintf(stderr,"NCO netCDF Operators version %s\n",vrs_cvs);
   (void)fprintf(stderr,"Copyright (C) 1995--2003 Charlie Zender\n");
-  (void)fprintf(stderr,"%s version %s (%s) \"%s\"\n",prg_nm_get(),vrs_rcs,date_cvs,nmn_get());
+  if(strlen(CVS_Id) > strlen("*Id*")){
+    (void)fprintf(stderr,"%s version %s\n",prg_nm_get(),vrs_cvs);
+  }else{
+    (void)fprintf(stderr,"%s version %s\n",prg_nm_get(),vrs_cpp);
+  } /* endif */
   (void)fprintf(stdout,"NCO is free software and comes with ABSOLUTELY NO WARRANTY\nNCO is distributed under the terms of the GNU General Public License\n");
+  (void)fprintf(stderr,"\"%s\"\n",nmn_get());
 
+  date_cvs=(char *)nco_free(date_cvs);
   vrs_rcs=(char *)nco_free(vrs_rcs);
   vrs_cvs=(char *)nco_free(vrs_cvs);
 } /* end copyright_prn() */
