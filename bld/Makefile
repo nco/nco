@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.159 2002-08-23 07:43:20 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.160 2002-08-27 19:09:26 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -437,7 +437,7 @@ CC := gcc
 #CC := insure
 CPP := ${CC}
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := ${CPP_TKN} -Di386 -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} -DHAVE_GETOPT_H -Di386 -I${NETCDF_INC}
 FC := g77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -816,7 +816,7 @@ ifeq (${PVM_ARCH},WIN32)
 C++ := g++
 CC := gcc -ansi
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := ${CPP_TKN} -Di386 -I/usr/include -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} -DHAVE_GETOPT_H -Di386 -I/usr/include -I${NETCDF_INC}
 FC := g77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm

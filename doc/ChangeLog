@@ -1,5 +1,12 @@
 2002-08-27  Charlie Zender  <zender@uci.edu>
 
+	* Replace PVM_ARCH token with HAVE_GETOPT_H for getopt.h handling
+
+	* Remove Fortran files nco_cal_utl.F,  nco_fortran.F,
+	nco_fortran.h since it is unlikely anyone will step forward to
+	maintain fortran support. Of course these can be resurrected if
+	necessary. 
+
 	* Add instructions for using compile farm, modify AIX, MACOSX
 	builds 
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.87 2002-08-27 07:43:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.88 2002-08-27 19:09:26 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -29,13 +29,12 @@
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
 
-#if ( defined LINUX || defined LINUXALPHA )
-#include <getopt.h> /* GNU getopt() is standard on Linux */
-#else /* not LINUX || SUN */
-#if ( !defined AIX ) && ( !defined CRAY ) && ( !defined NECSX ) && ( !defined SUNMP ) && ( !defined SUN4SOL2 ) /* getopt() is in <unistd.h> or <stdlib.h> */
-#include "getopt.h" /* Grab local GNU getopt() on SGI */
-#endif /* not AIX */
-#endif /* not LINUX */
+#ifdef HAVE_GETOPT_H 
+/* GNU getopt() is standard, independent header on FREEBSD, LINUX, LINUXALPHA, WIN32
+   AT&T getopt() is in unistd.h or stdlib.h on AIX, CRAY, NECSX, SUNMP, SUN4SOL2
+   fxm: I'm not sure what ALPHA and SGI do */
+# include <getopt.h>
+#endif /* !HAVE_GETOPT_H */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -90,8 +89,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.87 2002-08-27 07:43:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.87 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.88 2002-08-27 19:09:26 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.88 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
