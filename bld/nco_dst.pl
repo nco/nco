@@ -26,7 +26,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.45 2000-01-28 02:03:06 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.46 2000-01-28 02:06:36 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -62,9 +62,9 @@ my $False=0;
 my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
-my $CVS_Date='$Date: 2000-01-28 02:03:06 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.45 2000-01-28 02:03:06 zender Exp $';
-my $CVS_Revision='$Revision: 1.45 $';
+my $CVS_Date='$Date: 2000-01-28 02:06:36 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.46 2000-01-28 02:06:36 zender Exp $';
+my $CVS_Revision='$Revision: 1.46 $';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
 my $bld=$False; # Option bld; Whether to rebuild netCDF distribution
 my $data_nm=$ENV{'DATA'};
@@ -290,7 +290,7 @@ if($blk_cnt){
     &cmd_prc("rsh $rmt_mch \"/bin/rm -r -f /usr/tmp/zender/nco*\"");
     &cmd_prc("rsh $rmt_mch \"mkdir -p /usr/tmp/zender/$dst_vrs/obj\"");
     &cmd_prc("rcp -p ftp.cgd.ucar.edu:/ftp/pub/zender/nco/nco.tar.gz $rmt_mch:/usr/tmp/zender");
-    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender;gtar -xvzf nco.tar.gz;rm -f nco.tar.gz\"");
+    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender;gunzip nco.tar.gz;tar -xvf nco.tar;rm -f nco.tar\"");
     &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/$dst_vrs/bld; setenv MY_BIN_DIR /home/blackforest/zender/bin/AIX; setenv MY_LIB_DIR /home/blackforest/zender/lib/AIX; setenv MY_OBJ_DIR /home/blackforest/zender/obj/AIX; setenv NETCDF_INC /usr/local/include; setenv NETCDF_LIB /usr/local/lib32/r4i4; gmake cln all tst\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
 } # endif blk_cnt
