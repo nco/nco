@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.18 2001-10-31 06:28:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.19 2001-11-16 12:31:01 hmb Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -46,11 +46,136 @@
 #include <unistd.h>             /* POSIX stuff */
 
 #include <netcdf.h>             /* netCDF definitions */
-#include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
+#include "nco_netcdf.h"         /* netCDF wrapper functions */
+
 #include "nco.h"                /* netCDF operator universal def'ns */
+#include "ncap.h"               /*include prs_arg */
+
+
 
 var_sct *
-ncap_var_add(var_sct *var_1,var_sct *var_2)
+ncap_var_init(char *var_nm,prs_sct *prs_arg)
+{
+  int var_id;
+  int rcd;
+  int f_id;
+  var_sct *vara;
+  
+  /* check output file for var */  
+  rcd = nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
+  
+  if( rcd == NC_NOERR ) {
+    f_id = prs_arg->out_id;
+    }else{
+  /* check input file for id */
+     rcd = nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
+     if ( rcd == NC_NOERR ) {
+       f_id = prs_arg->in_id;
+       }else{
+       (void)fprintf(stderr,"can't find %s in %s or %s\n",var_nm,prs_arg->fl_in,prs_arg->fl_out);     
+       return (var_sct*)NULL;
+       }/* end else */
+  } /* end else */
+   
+  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"VAR: retriving %s from disk\n",var_nm);  
+  vara=var_fll(f_id,var_id,var_nm,prs_arg->dim,prs_arg->nbr_dmn_xtr);
+  vara->nm = nco_malloc((strlen(var_nm)+1)*sizeof(char)); strcpy(vara->nm,var_nm);
+  vara->tally=(long *)malloc(vara->sz*nco_typ_lng(NC_INT));
+  (void)zero_long(vara->sz,vara->tally);
+  vara->val.vp=(void *)malloc(vara->sz*nco_typ_lng(vara->type));
+  /* Retrieve variable values from disk into memory */
+  (void)var_get(f_id,vara);
+   /* (void)var_free(var_nm);*/
+   /* free(var_nm->nm);*/
+   return vara;
+
+}
+
+sym_sct *
+ncap_sym_init(char *name,double (*function)())
+{ 
+  sym_sct *symbol;
+  symbol = malloc(sizeof(sym_sct));
+  symbol->nm = strdup(name);
+  symbol->fnc= function;
+  return symbol;
+}
+int 
+ncap_var_write(var_sct *var, prs_sct *prs_arg)
+{
+  int rcd;
+  int var_out_id;
+   
+  rcd = nco_redef(prs_arg->out_id);
+
+  /* define variable */   
+
+  rcd=nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
+  /* now write variable */
+
+ rcd = nco_enddef(prs_arg->out_id);
+ if(var->nbr_dim == 0 ){
+   (void)nco_put_var1(prs_arg->out_id,var_out_id,0L,var->val.vp,var->type);
+   }else{
+   (void)nco_put_vara(prs_arg->out_id,var_out_id,var->srt,var->cnt,var->val.vp,var->type);
+ } /* end else */
+
+ return 1;
+} 
+
+parse_sct 
+ncap_ptr_unn_2_attribute(nc_type type, ptr_unn val)
+{
+  /* convert a ptr_unn to an attribute parse_sct */
+  /* Assumes theat val is initially cast to void */
+  /* Note does not convert cp ( strings) as these */
+  /* are not handled by parse_sct */
+  
+  parse_sct a;
+  (void)cast_void_nctype(type,&val);
+    switch(type) {
+     case NC_FLOAT: a.val.f = *val.fp ; break;
+     case NC_DOUBLE: a.val.d =*val.dp ; break;
+     case NC_INT:    a.val.l =*val.lp ; break;
+     case NC_SHORT:  a.val.s=*val.sp  ; break;
+     case NC_BYTE:   a.val.b =*val.bp;  break;
+     case NC_CHAR:   break; /* do nothing */
+     default: nco_dfl_case_nctype_err(); break;
+     } 
+  a.type = type;
+  /* don't have to uncast pointer as we are working with acopy */
+  return a;
+} /* end ncap_ptr_unn_2_attribute */
+
+
+ptr_unn
+ncap_attribute_2_ptr_unn(parse_sct a)
+{
+  /* converts a parse_sct to a ptr_unn */
+  /* It mallocs the appropriate space for the single type */
+  /* n.b It doesn't do strings */
+  ptr_unn val;
+  nc_type type = a.type;
+  val.vp = (void *)nco_malloc(nco_typ_lng(type));
+  (void)cast_void_nctype(type,&val);
+  
+  switch(type) {
+     case NC_FLOAT: *val.fp = a.val.f; break;
+     case NC_DOUBLE:*val.dp = a.val.d; break;
+     case NC_INT:   *val.lp = a.val.l; break;
+     case NC_SHORT: *val.sp = a.val.s; break;
+     case NC_BYTE:  *val.bp = a.val.b;  break;
+     case NC_CHAR:   break; /* do nothing */
+     default: nco_dfl_case_nctype_err(); break;
+     } 
+  (void)cast_nctype_void(type,&val);
+  return val;
+} /* end ncap_attribute_2_ptr_unn */
+
+
+
+var_sct *
+ncap_var_var_add(var_sct *var_1,var_sct *var_2)
 /* 
    var_sct *var_1: input variable structure containing first operand
    var_sct *var_2: input variable structure containing second operand
@@ -71,37 +196,827 @@ ncap_var_add(var_sct *var_1,var_sct *var_2)
   return var_sum;
 } /* end ncap_var_add() */
 
-int
-ncap_write_var(int nc_id,var_sct *var)
+var_sct *
+ncap_var_var_sub(var_sct *var_2,var_sct *var_1)
 /* 
-   int nc_id: input netCDF file ID
-   var_sct *var: input/output variable structure
-   var_sct *ncap_write_var(): output ID of var in output file
+   var_sct *var_1: input variable structure containing first operand
+   var_sct *var_2: input variable structure containing second operand
+   var_sct *ncap_var_sub(): output var_2 - var_1 of input variables
  */
 {
+  bool MUST_CONFORM=False; /* Must var_conform_dim() find truly conforming variables? */
+  bool DO_CONFORM; /* Did var_conform_dim() find truly conforming variables? */
+
   /* Routine called by parser */
-  int var_id;
-  int rcd;
+  var_sct *var_sum;
+
+  var_sum=var_dpl(var_2);
+  var_sum=var_conform_dim(var_1,var_2,var_sum,MUST_CONFORM,&DO_CONFORM);
+  var_sum=var_conform_type(var_1->type,var_sum);
+  (void)var_subtract(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_sum->val);
+   
+  return var_sum;
+} /* end ncap_var_add() */
+
+var_sct *
+ncap_var_var_multiply(var_sct *var_1,var_sct *var_2)
+/* 
+   var_sct *var_1: input variable structure containing first operand
+   var_sct *var_2: input variable structure containing second operand
+   var_sct *ncap_var_multipy(): output multiplacation of individual elements
+ */
+{
+  bool MUST_CONFORM=False; /* Must var_conform_dim() find truly conforming variables? */
+  bool DO_CONFORM; /* Did var_conform_dim() find truly conforming variables? */
+
+  /* Routine called by parser */
+  var_sct *var_sum;
+
+  var_sum=var_dpl(var_2);
+  var_sum=var_conform_dim(var_1,var_2,var_sum,MUST_CONFORM,&DO_CONFORM);
+  var_sum=var_conform_type(var_1->type,var_sum);
+  (void)var_multiply(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_sum->val);
+   
+  return var_sum;
+} /* end ncap_var_add() */
+
+var_sct *
+ncap_var_attribute_multiply(var_sct *var,parse_sct attribute)
+{
+  var_sct *var_sum;
+  var_sum=var_dpl(var);
+  (void)ncap_attribute_conform_type(var->type,&attribute);
+  (void)var_attribute_multiply(var->type,var->sz,var->has_mss_val,var->mss_val,var_sum->val,&attribute);
+
+  return var_sum;
+}
+
+var_sct *
+ncap_var_attribute_power(var_sct *var_in,parse_sct attribute)
+{
+  long idx;
+  long sz;
+  double att_dpl;
+  ptr_unn op1;
+  var_sct *var;
+  /* convert attribute and var to type DOUBLE */
+  (void)ncap_attribute_conform_type(NC_DOUBLE,&attribute);
+  var_in = var_conform_type(NC_DOUBLE,var_in);
+  var = var_dpl(var_in);
+  op1=var->val;
+  (void)cast_void_nctype(NC_DOUBLE,&op1);
+  if(var->has_mss_val) (void)cast_void_nctype(NC_DOUBLE,&(var->mss_val));
   
-  /* file must be in define mode */
+    att_dpl = attribute.val.d;
+    sz = var->sz;
+    if(!var->has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]=pow(op1.dp[idx],att_dpl);
+      
+    }else{
+      double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=pow(op1.dp[idx],att_dpl);
+        } /* end for */
+      } /* end else */
   
-  rcd = nco_redef(nc_id);
+    if(var->has_mss_val) (void)cast_nctype_void(NC_DOUBLE,&(var->mss_val));
+    return var;
+   
+}
+
+var_sct *
+ncap_var_function(var_sct *var_in, double(*fnc)())
+{
+  long idx;
+  long sz;
+  ptr_unn op1;
+  var_sct *var;
+  /* convert attribute and var to type DOUBLE */
+  var_in = var_conform_type(NC_DOUBLE,var_in);
+  var = var_dpl(var_in);
+  op1=var->val;
+  (void)cast_void_nctype(NC_DOUBLE,&op1);
+  if(var->has_mss_val) (void)cast_void_nctype(NC_DOUBLE,&(var->mss_val));
+  
+    sz = var->sz;
+    if(!var->has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]=fnc(op1.dp[idx]);
+      
+    }else{
+      double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=fnc(op1.dp[idx]);
+        } /* end for */
+      } /* end else */
+  
+    //(void)cast_nctype_void(NC_DOUBLE,&var->val);
+    if(var->has_mss_val) (void)cast_nctype_void(NC_DOUBLE,&(var->mss_val));
+    return var;
+   
+}/* end ncap_var_function */
+
+var_sct *
+ncap_var_attribute_add(var_sct *var,parse_sct attribute)
+{
+  var_sct *var_sum;
+  var_sum=var_dpl(var);
+  (void)ncap_attribute_conform_type(var->type,&attribute);
+  (void)var_attribute_add(var->type,var->sz,var->has_mss_val,var->mss_val,var_sum->val,&attribute);
+
+  return var_sum;
+
+}
+
+var_sct *
+ncap_var_attribute_sub(var_sct *var,parse_sct attribute)
+{
+  var_sct *var_sum;
+  var_sum=var_dpl(var);
+  (void)ncap_attribute_minus(&attribute);
+  (void)ncap_attribute_conform_type(var->type,&attribute);
+  (void)var_attribute_add(var->type,var->sz,var->has_mss_val,var->mss_val,var_sum->val,&attribute);
+
+  return var_sum;
+}
+
+var_sct *
+ncap_var_attribute_divide(var_sct *var,parse_sct attribute)
+{
+  var_sct *var_sum;
+  var_sum=var_dpl(var);
+  (void)ncap_attribute_conform_type(var->type,&attribute);
+  (void)var_attribute_divide(var->type,var->sz,var->has_mss_val,var->mss_val,var_sum->val,&attribute);
+
+  return var_sum;
+}
+
+
+var_sct *
+ncap_var_attribute_modulus(var_sct *var,parse_sct attribute)
+{
+  var_sct *var_sum;
+  var_sum=var_dpl(var);
+  (void)ncap_attribute_conform_type(var->type,&attribute);
+  (void)var_attribute_modulus(var->type,var->sz,var->has_mss_val,var->mss_val,var_sum->val,&attribute);
+
+  return var_sum;
+}
+
+
+var_sct *
+ncap_var_abs(var_sct *var)
+{
+  var_sct *var_sum;
+  var_sum=var_dpl(var);
+  (void)var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var_sum->val);
+  return var_sum;
+}
+
+void
+var_attribute_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,parse_sct *attribute)
+     /* 
+	nc_type type: I netCDF type of operands
+	long sz: I size (in elements) of operands
+	int has_mss_val: I flag for missing values
+	ptr_unn mss_val: I value of missing value
+	ptr_unn op1: I values of first operand
+        attribute: 
+     */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: multiply all values in op1 by value in attrib
+     Store result in first operand */    
+
+  /* Addition  is currently defined as op1:=op1+attribute */  
+  
+  long idx;
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  switch(type){
+  case NC_FLOAT:{
+    float att_flt = attribute->val.f;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.fp[idx]+=att_flt;
+    }else{
+      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]+=att_flt; 
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_DOUBLE:{
+    double att_dpl = attribute->val.d;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]+=att_dpl;
+    }else{
+      double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]+=att_dpl;  
+        } /* end for */
+      } /* end else */
+    break;
+  }
+  case NC_INT:{
+    nco_long att_lng = attribute->val.l;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.lp[idx]+=att_lng;
+    }else{
+      long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]+=att_lng; 
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_SHORT:{
+    short att_shrt = attribute->val.s; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.sp[idx]+=att_shrt;
+    }else{
+      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.sp[idx] != mss_val_shrt) op1.sp[idx]+=att_shrt;
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+  
+} /* end var_attribute_add() */
+
+
+
+void
+var_attribute_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,parse_sct *attribute)
+     /* 
+	nc_type type: I netCDF type of operands
+	long sz: I size (in elements) of operands
+	int has_mss_val: I flag for missing values
+	ptr_unn mss_val: I value of missing value
+	ptr_unn op1: I values of first operand
+        attribute:   parse_sct containing multiplation value
+     */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: multiply all values in op1 by value in attrib
+     Store result in first operand */    
+
+  /* Multiplication  is currently defined as op1:=op1*attribute */  
+  
+  long idx;
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  switch(type){
+  case NC_FLOAT:{
+    float att_flt = attribute->val.f;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.fp[idx]*=att_flt;
+    }else{
+      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]*=att_flt; 
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_DOUBLE:{
+    double att_dpl = attribute->val.d;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]*=att_dpl;
+    }else{
+      double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]*=att_dpl;  
+        } /* end for */
+      } /* end else */
+    break;
+  }
+  case NC_INT:{
+    nco_long att_lng = attribute->val.l;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.lp[idx]*=att_lng;
+    }else{
+      long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]*=att_lng; 
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_SHORT:{
+    short att_shrt = attribute->val.s; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.sp[idx]*=att_shrt;
+    }else{
+      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.sp[idx] != mss_val_shrt) op1.sp[idx]*=att_shrt;
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+  
+} /* end var_attribute_multiply() */
+
+
+
+void
+var_attribute_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,parse_sct *attribute)
+     /* 
+	nc_type type: I netCDF type of operands
+	long sz: I size (in elements) of operands
+	int has_mss_val: I flag for missing values
+	ptr_unn mss_val: I value of missing value
+	ptr_unn op1: I values of first operand
+        attribute: 
+     */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Divide all values in op1 by value in attrib
+     Store result in first operand */    
+
+  /* Addition  is currently defined as op1:=op1/attribute */  
+  
+  long idx;
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  switch(type){
+  case NC_FLOAT:{
+    float att_flt = attribute->val.f;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.fp[idx]/=att_flt;
+    }else{
+      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]/=att_flt; 
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_DOUBLE:{
+    double att_dpl = attribute->val.d;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]/=att_dpl;
+    }else{
+      double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]/=att_dpl;  
+        } /* end for */
+      } /* end else */
+    break;
+  }
+  case NC_INT:{
+    nco_long att_lng = attribute->val.l;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.lp[idx]/=att_lng;
+    }else{
+      long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]/=att_lng; 
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_SHORT:{
+    short att_shrt = attribute->val.s; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.sp[idx]/=att_shrt;
+    }else{
+      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.sp[idx] != mss_val_shrt) op1.sp[idx]/=att_shrt;
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+  
+} /* end var_attribute_divide() */
+
+void 
+var_attribute_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,parse_sct *attribute)
+     /* 
+	nc_type type: I netCDF type of operands
+	long sz: I size (in elements) of operands
+	int has_mss_val: I flag for missing values
+	ptr_unn mss_val: I value of missing value
+	ptr_unn op1: I values of first operand
+        attribute: 
+     */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Take modulus of  all values in op1 by value in attrib
+     Store result in op1  */    
+
+  /* Modulus  is currently defined as op1:=op1%attribute */  
+
+
+  
+  long idx;
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  switch(type){
+  case NC_FLOAT:{ 
+   float att_flt = fabsf(attribute->val.f);
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.fp[idx]=fmodf(op1.fp[idx],att_flt);
+    }else{
+      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=fmodf(op1.fp[idx],att_flt);
+      } /* end for */
+    } /* end else */
+    
+  }
+     break; 
+  case NC_DOUBLE:{
+    double att_dpl = fabs(attribute->val.d);
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]=fmod(op1.dp[idx],att_dpl);
+    }else{
+      double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=fmod(op1.dp[idx],att_dpl);  
+        } /* end for */
+      } /* end else */
+    break;
+  }
+   
+  case NC_INT:{
+    nco_long att_lng = attribute->val.l;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.lp[idx]%=att_lng;
+    }else{
+      long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]%=att_lng; 
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_SHORT:{
+    short att_shrt = attribute->val.s; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.sp[idx]%=att_shrt;
+    }else{
+      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.sp[idx] != mss_val_shrt) op1.sp[idx]%=att_shrt;
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+
+} /* end var_attribute_modulus */
+
+
+
+
+
+void
+var_abs(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
+     /* 
+	nc_type type: I netCDF type of operands
+	long sz: I size (in elements) of operands
+	int has_mss_val: I flag for missing values
+	ptr_unn mss_val: I value of missing value
+	ptr_unn op1: I values of first operand
+     */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Find the absolute value of all numbers in op1
+     Store result in first operand */    
+
+  /*   op1:=abs(op1) */  
+
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+  
+  long idx;
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  switch(type){
+  case NC_FLOAT:{
+     if(!has_mss_val){
+       for(idx=0;idx<sz;idx++) op1.fp[idx]=fabsf(op1.fp[idx]);
+    }else{
+      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=fabsf(op1.fp[idx]); 
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_DOUBLE:{
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]=fabs(op1.dp[idx]);
+    }else{
+      double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=fabs(op1.dp[idx]);
+        } /* end for */
+      } /* end else */
+    break;
+  }
+  case NC_INT:{
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.lp[idx]=abs(op1.lp[idx]);
+    }else{
+      long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]=abs(op1.lp[idx]); 
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_SHORT:{
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) if(op1.sp[idx] < 0 ) op1.sp[idx]=-op1.sp[idx] ;
+    }else{
+      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.sp[idx] != mss_val_shrt && op1.sp[idx] < 0 ) op1.sp[idx]=-op1.sp[idx];
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
   
 
-  /* Define variable */
-  (void)fprintf(stderr,"ncap_write_var(): nm = %s\n",var->nm);
-  rcd=nco_def_var(nc_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_id);
-  /* Take output file out of define mode */
-  rcd=nco_enddef(nc_id);
-  /* Write out data */
-  if(var->nbr_dim==0){
-    rcd=nco_put_var1(nc_id,var_id,0L,var->val.vp,var->type);
-  }else{ /* end if variable is a scalar */
-    nco_put_vara(nc_id,var_id,var->srt,var->cnt,var->val.vp,var->type);
-  } /* end if variable is an array */
 
-   return var_id;
-} /* end ncap_write_var() */
+} /* end var_abs() */
+
+
+
+int 
+ncap_retype(parse_sct *a,parse_sct *b)
+{
+  
+  if (a->type == b->type) return a->type;
+  if ((a->type) > (b->type)){ (void)ncap_attribute_conform_type(a->type,b);}
+    else {(void)ncap_attribute_conform_type(b->type,a);}
+
+  return a->type;    
+}
+
+
+int  
+ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
+{
+   
+    nc_type type_old = a->type;
+    
+    parse_sct b;
+    switch (type_new){ 
+
+    case NC_BYTE:
+             switch(type_old){
+             case NC_FLOAT: b.val.b=(signed char)(a->val).f; break; 
+             case NC_DOUBLE: b.val.b=(signed char)(a->val).d; break; 
+             case NC_INT: b.val.b=(a->val).l; break;
+             case NC_SHORT: b.val.b=(a->val).s; break;
+             case NC_BYTE: b.val.b=(a->val).b; break;
+             case NC_CHAR: break;
+             case NC_NAT:  break;    
+            } break;
+
+    case NC_CHAR:
+                 /* Do nothing */
+                break;
+    case NC_SHORT:
+             switch(type_old){
+             case NC_FLOAT: b.val.s=(short)(a->val).f; break; 
+             case NC_DOUBLE: b.val.s=(short)(a->val).d; break; 
+             case NC_INT: b.val.s=(a->val).l; break;
+             case NC_SHORT: b.val.s=(a->val).s; break;
+             case NC_BYTE: b.val.b=(a->val).b; break;
+             case NC_CHAR: break;
+             case NC_NAT:  break;    
+            } break;
+
+
+    case NC_INT:
+            switch(type_old){
+             case NC_FLOAT: b.val.l=(long)(a->val).f; break; 
+             case NC_DOUBLE: b.val.l=(long)(a->val).d; break; 
+             case NC_INT:    b.val.l =a->val.l;
+             case NC_SHORT: b.val.l=(a->val).s; break;
+             case NC_BYTE: b.val.l=(a->val).b; break;
+             case NC_CHAR: break;
+             case NC_NAT:  break;
+            } break;
+
+
+
+    case NC_FLOAT:
+            switch(type_old){
+             case NC_FLOAT:  b.val.f = (a->val).d; 
+             case NC_DOUBLE: b.val.f=(a->val).d; break; 
+             case NC_INT: (b.val).f=(a->val).l; break;
+             case NC_SHORT: (b.val).f=(a->val).s; break;
+             case NC_BYTE: (b.val).f=(a->val).b; break;
+             case NC_CHAR: break;
+             case NC_NAT:  break;    
+            } break;
+
+
+    case NC_DOUBLE:
+            switch(type_old){
+             case NC_FLOAT:  b.val.d=(a->val).f; break; 
+             case NC_DOUBLE: b.val.d =(a->val).d;  break; 
+             case NC_INT:    b.val.d=(a->val).l; break;
+             case NC_SHORT:  b.val.d=(a->val).s; break;
+             case NC_BYTE:   b.val.d=(a->val).b; break;
+             case NC_CHAR: break;
+             case NC_NAT:  break;    
+            } break;
+     default: nco_dfl_case_nctype_err(); break;
+       
+       
+  } /* end switch */
+       b.type = type_new;
+       *a = b;
+      
+} /* end ncap_attribute_conform_type */
+
+
+parse_sct  
+ncap_attribute_calc(parse_sct a, char op, parse_sct b)
+{
+   parse_sct c;
+   c.type = a.type;
+   switch(c.type){ 
+
+    case NC_BYTE:
+             switch(op){
+	       case'+': c.val.b = a.val.b + b.val.b;break;
+               case'-': c.val.b = a.val.b - b.val.b;break;
+               case'/': c.val.b = a.val.b / b.val.b;break;
+               case'*': c.val.b = a.val.b * b.val.b;break;
+               case'%': c.val.b = a.val.b % b.val.b;break;
+            } break;
+    case NC_CHAR:
+                 /* Do nothing */
+                break;
+    case NC_SHORT:
+            switch(op){
+	       case'+': c.val.s = a.val.s + b.val.s;break;
+               case'-': c.val.s = a.val.s - b.val.s;break;
+               case'/': c.val.s = a.val.s / b.val.s;break;
+               case'*': c.val.s = a.val.s * b.val.s;break;
+               case'%': c.val.s = a.val.s % b.val.s;break;
+            } break;
+    case NC_INT:
+            switch(op){
+	       case'+': c.val.l = a.val.l + b.val.l;break;
+               case'-': c.val.l = a.val.l - b.val.l;break;
+               case'/': c.val.l = a.val.l / b.val.l;break;
+               case'*': c.val.l = a.val.l * b.val.l;break;
+               case'%': c.val.l = a.val.l % b.val.l;break;
+            } break;
+
+    case NC_FLOAT:
+             switch(op){
+	       case'+': c.val.f = a.val.f + b.val.f;break;
+               case'-': c.val.f = a.val.f - b.val.f;break;
+               case'/': c.val.f = a.val.f / b.val.f;break;
+	       case'*': c.val.f = a.val.f * b.val.f;break;
+	       case'%': c.val.f = fmodf(a.val.f, fabsf(b.val.f));break;
+            } break;
+
+    case NC_DOUBLE:
+             switch(op){
+	       case'+': c.val.d = a.val.d + b.val.d;break;
+               case'-': c.val.d = a.val.d - b.val.d;break;
+               case'/': c.val.d = a.val.d / b.val.d;break;
+	       case'*': c.val.d = a.val.d * b.val.d;break;
+	       case'%': c.val.d = fmod(a.val.d, fabs(b.val.d));break;
+            } break;
+    default: nco_dfl_case_nctype_err(); break;
+   }/* end switch */    
+   
+  return c;
+} /* end ncap_attribute_calc_type */
+
+parse_sct
+ncap_attribute_abs(parse_sct a)
+{
+   parse_sct b;
+   b.type = a.type;
+   switch(a.type){ 
+    case NC_BYTE:
+             b.val.b = ( (a.val.b >= 0) ? a.val.b : -a.val.b) ;
+             break;
+    case NC_CHAR:
+                 /* Do nothing */
+             break;
+    case NC_SHORT:
+            b.val.s = ( (a.val.s >= 0) ? a.val.s : -a.val.s) ;
+             break;
+    case NC_INT:
+             b.val.l=abs(a.val.l);
+             break;            
+    case NC_FLOAT:
+             b.val.f = fabsf(a.val.f);
+             break;
+    case NC_DOUBLE:
+             b.val.d = fabs(a.val.d);
+             break;
+   } /* end switch */
+   return b;
+} /* end ncap_attribute_abs */
+int 
+ncap_attribute_minus(parse_sct *a)
+{
+   switch(a->type){ 
+    case NC_BYTE:
+             a->val.b= -a->val.b; 
+             break;
+    case NC_CHAR:
+                 /* Do nothing */
+                break;
+    case NC_SHORT:
+             a->val.s = -a->val.s;
+             break;
+    case NC_INT:
+             a->val.l = -a->val.l;
+             break;            
+    case NC_FLOAT:
+             a->val.f = -a->val.f;
+             break;
+    case NC_DOUBLE:
+             a->val.d = -a->val.d;
+             break;
+   }/* end switch */    
+   return a->type;
+}
+
+
 
 int yyerror(char *sng)
 {
@@ -115,4 +1030,10 @@ int yyerror(char *sng)
   /* I have no idea what yyerror() should return */
   return 0;
 } /* end yyerror() */
+
+
+
+
+
+
 
