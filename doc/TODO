@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.197 2003-01-08 08:11:55 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.198 2003-01-09 00:37:59 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -62,6 +62,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 36. cygwin builds of ncap.l and netcdf fail because of dependence on syslimits.h. non-kludge fix may require updated gcc and mingw packages
 37. Implement float function definitions in nco_rth_flt as inline to improve speed for MACOSX builds (inline is OK in C99 but will it break C89?)
 38. Finish dimension-reducing operations (min/max/avg)
+39. Document procedure for computing covariance of two variables
 
 Highest priority NCO-wide items that You can help with:
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
@@ -222,11 +223,12 @@ Command executes but in.hdf is full of screwy values
 237. Break down nco.texi into bite-size chunks, e.g., one file per section
 238. Replace y=(typ *)malloc(nbr*sizeof(typ)) with y=(typ *)malloc(nbr*sizeof(*y))?
 239. Create one global compatibility file (nco_xpf.[ch]?) activated by HAVE_ or NEED_ actions so do not have multiple platform dependent #includes as is case now with HAVE_STRCASECMP, HAVE_STRDUP requiring nco_sng_utl.h
-240. ncrename -a julian_day,julian in.nc out.nc
+240. Weird bug in ncrename. Following bug shows up on command line but disappears in debugger:
+ncrename -a julian_day,julian in.nc out.nc
 nco_err_exit(): ERROR nco_inq_attid
 Attribute not found
 241. Add run-time switch which requests that output be missing_value where ANY of the input fields are missing_value. 
-242. Use getopt_long() from Sittler (BSD-licensed version with no problems) when system lacks it
+242. Use getopt_long() from Sittler (BSD-licensed version with no alloca()-dependency problems) when system lacks getopt_long()
 244. Get builds working on testdrive.hp.com
 ************************************************************************
 End NCO Wish list

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.198 2003-01-09 00:30:28 rorik Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.199 2003-01-09 00:37:58 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -22,7 +22,7 @@
 # cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 make --jobs=1 lib_cln cln all ABI=64;cd -
 
 # Top-level tokens defining directory structure
-# These tokens may be over-ridden by environment variables or when invoking make, e.g. make DODS=Y
+# These tokens may be over-ridden by environment variables or when invoking make, e.g., make DODS=Y
 MY_BLD_DIR := ../bld
 ifndef PVM_ARCH
  PVM_ARCH := $(shell ${MY_BLD_DIR}/pvmgetarch)
@@ -88,7 +88,7 @@ ifndef UNAMES
  UNAMES := $(shell uname -s)
 endif
 ifndef USE_FORTRAN_ARITHMETIC
-# Whether or not to use Fortran arithmetic routines
+# Whether or not to use Fortran arithmetic routines (feature deprecated in 2001)
  USE_FORTRAN_ARITHMETIC := N
 endif
 ifndef USR_TKN
@@ -105,7 +105,7 @@ CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNA
 
 ifeq (${DODS},Y)
 # Build NCO as DODS-enabled clients
-# fxm: DODS bloats executables, should automatically enable stripping
+# fxm: DODS bloats executables, should automagically enable stripping
 # http://www.unidata.ucar.edu/packages/dods/user/guide-html/guide_28.html
 ifndef DODS_ROOT
 # Directory containing libdap++.a, libnc-dods.a
