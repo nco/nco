@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.16 2002-08-23 18:56:54 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.17 2002-08-23 19:00:08 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -20,9 +20,11 @@ Footnotes to summary table:
 01. Needs CXX that supports valarray
 02. Invocation of nm needs -X 64 flag and final (linking) invocation of 
 xlc _may_ need an ABI64 flag, but may just fail because nm is failing.
+I do not know how to pass flags to nm.
 03. Fails to link tst.o
 04. When pointed to ABI64 libnetcdf.a, it compiles ABI64 but
 uses ABI32 link flags to ld (should pass -64 not -n32 to /bin/ld).
+I do not know where -n32 is being set.
 05. xlC fails valarray test, but I believe xlC does support valarray. Hmm.
 -----------------------------------------------------------------------
 

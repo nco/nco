@@ -146,13 +146,15 @@ case $host in
   *-*-aix*)  CFLAGS="$CFLAGS -q64"
              LDFLAGS="$LDFLAGS -q64"
              AR_FLAGS="$AR_FLAGS -X 64"
-             NM="$NM -X 64"
-             NM_FLAGS="$NM_FLAGS -X 64"
+#	     csz: these had no effect but are needed!
+#             NM="$NM -X 64"
+#             NM_FLAGS="$NM_FLAGS -X 64"
 	     ;;
   *-*-irix*) case $CC in
                gcc) CFLAGS="$CFLAGS -mabi=64"
 		    LDFLAGS="$LDFLAGS -mips4 -L/usr/local/lib/mabi=64" ;;
-               cc)  CFLAGS="$CFLAGS -64 -mips4" ;;
+               cc)  CFLAGS="$CFLAGS -64 -mips4" 
+		    LDFLAGS="$LDFLAGS -64" ;;
              esac
              ;;
   sparc-*-*) CFLAGS="$CFLAGS -xarch=v9"
