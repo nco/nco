@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.46 2003-01-07 03:22:40 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.47 2003-01-21 06:04:57 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -10,7 +10,7 @@ AIX		Y	N(2)				N(5)
 ALPHA
 CRAY
 FREEBSD		N(10)
-HPUX
+HPPA
 LINUX como	N(11)	
 LINUX gcc/g++	Y	N/A	N(12)			Y	Y
 LINUX icc	Y	N/A				Y	Y
@@ -109,9 +109,41 @@ make[2]: Leaving directory `/fs/cgd/home0/zender/nco/src'
 make[1]: *** [all-recursive] Error 1
 make[1]: Leaving directory `/fs/cgd/home0/zender/nco'
 make: *** [all-recursive-am] Error 2
-
 ************************************************************************
 End AIX
+************************************************************************
+
+************************************************************************
+Start ALPHA
+Status: Does not work
+************************************************************************
+spe171.testdrive.hp.com
+
+CC=/bin/c89
+CPPFLAGS=-D_HPUX_SOURCE
+FC=/opt/fortran/bin/fort77
+FFLAGS=-w
+FLIBS=-lU77
+CXX=aCC
+
+zender@spe171.testdrive.hp.com> ./pvmgetarch;uname -a;${HOME}/nco/autobld/config.guess
+ALPHA
+OSF1 spe171.testdrive.hp.com V5.1 2650 alpha
+alpha-dec-osf5.1
+
+gcc/g++:
+export GNU_TRP=`~/nco/autobld/config.guess`
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/ftp/pub/zender/nco/rgr
+
+Old build example:
+
+New build example:
+************************************************************************
+End ALPHA
 ************************************************************************
 
 ************************************************************************
@@ -138,7 +170,7 @@ End FREEBSD
 ************************************************************************
 
 ************************************************************************
-Start HPUX
+Start HPPA
 Status: Does not work
 ************************************************************************
 CC=/bin/c89
@@ -165,7 +197,7 @@ Old build example:
 
 New build example:
 ************************************************************************
-End HPUX
+End HPPA
 ************************************************************************
 
 ************************************************************************
