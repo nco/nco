@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.56 2002-05-06 06:37:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.57 2002-05-06 07:01:42 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -735,9 +735,9 @@ ncap_initial_scan
       break;
 
    case LHS_SBS:
-     /* add dimensions defined in LHS subscripts */
-     lst_t = lst_d;n_lst_t = n_lst_t;
-     lst_d = var_lst_add(prs_arg->in_id,lst_d,&n_lst_d,lval.sbs_lst->list,lval.sbs_lst->nbr);          
+     /* Add dimensions defined in LHS subscripts */
+     lst_t=lst_d;n_lst_t=n_lst_t;
+     lst_d=var_lst_add(prs_arg->in_id,lst_d,&n_lst_d,lval.sbs_lst->list,lval.sbs_lst->nbr);          
      if(n_lst_t >0) (void)var_lst_free(lst_t,n_lst_t);
          
    break;
