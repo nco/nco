@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.149 2003-08-16 16:57:26 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.150 2003-08-16 23:20:29 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -197,7 +197,7 @@ User's of this feature should definitely upgrade to <tt>2.5.6+</tt>.</li>
 <li>Most releases since 2.0.0 are not &ldquo;packaged&rdquo;.
 This means that they are simply tagged in the CVS repository and that
 tarballs are generated and stored 
-<a href="http://dust.ess.uci.edu/nco">here</a>. 
+<a href="http://dust.ess.uci.edu/nco/src">here</a>. 
 Tarballs are only uploaded to SourceForge, and RPMs are only
 generated, for those releases marked &ldquo;Packaged&rdquo;.
 Retrieve these versions <a name="#Download">using CVS</a> or from 

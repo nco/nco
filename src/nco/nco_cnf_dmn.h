@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.h,v 1.7 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.h,v 1.8 2003-08-16 23:20:30 zender Exp $ */
 
 /* Purpose: Conform dimensions */
 
@@ -36,8 +36,8 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 (const var_sct * const var, /* I [ptr] Pointer to variable structure to serve as template */
  var_sct * const wgt, /* I [ptr] Pointer to variable structure to make conform to var */
  var_sct *wgt_crr, /* I/O [ptr] pointer to existing conforming variable structure, if any (destroyed when does not conform to var) */
- const bool MUST_CONFORM, /* I [flg] Must wgt and var must conform? */
- bool *DO_CONFORM); /* O [flg] Did wgt and var conform? */
+ const bool MUST_CONFORM, /* I [flg] Must wgt and var conform? */
+ bool *DO_CONFORM); /* O [flg] Do wgt and var conform? */
 
 bool /* [flg] Do var_1 and var_2 conform after processing? */
 ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */

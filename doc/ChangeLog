@@ -3,6 +3,8 @@
 	* cvs tag -c nco-2_8_1
 	Changes since nco-2_8_0: variable wildcarding
 
+	* Verified autotools builds fine again on SGI, AIX
+
 	* Straighten out getopt_long() preprocessor logic to work with
 	architectures with getopt.h but no getopt_long() (SGI, AIX)
 

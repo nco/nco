@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.4 2003-08-16 21:29:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.5 2003-08-16 23:20:30 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *opt_sng;
   char *time_bfr_srt;
-  char CVS_Id[]="$Id: ncbo.c,v 1.4 2003-08-16 21:29:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.4 $";
+  char CVS_Id[]="$Id: ncbo.c,v 1.5 2003-08-16 23:20:30 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.5 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -432,7 +432,7 @@ main(int argc,char **argv)
       (void)nco_inq_vartype(in_id_2,var_id,&var_type);
       var_prc_out[idx]->type=var_type;
 
-      /* Test whether all dimensions match in sequence */
+      /* Do all dimensions match in sequence? */
       for(idx_dim=0;idx_dim<var_prc[idx]->nbr_dim;idx_dim++){
 	if(
 	   !strstr(var_prc_out[idx]->dim[idx_dim]->nm,var_prc[idx]->dim[idx_dim]->nm) || /* Dimension names do not match */
@@ -449,10 +449,12 @@ main(int argc,char **argv)
       (void)nco_var_get(in_id_2,var_prc_out[idx]);
       /* Reset srt vector to zeros for eventual output */
       var_prc_out[idx]->srt=lp;
-    }else{
+    }else{ /* var_prc_out[idx]->nbr_dim != var_prc[idx]->nbr_dim) */
+      /* Number of dimensions do not match, attempt to broadcast variables */
       var_sct *var_tmp=NULL;
       int var_id; /* [id] Variable ID */
       
+      /* fxm: TODO 268 allow var1 or var2 to be broadcast */
       /* var1 and var2 have differing numbers of dimensions so make var2 conform to var1 */
       var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
       (void)nco_inq_varid(in_id_2,var_prc[idx]->nm,&var_id);
@@ -467,6 +469,7 @@ main(int argc,char **argv)
     
     /* var2 now conforms in size to var1, and is in memory */
 
+    /* fxm: TODO 268 allow var1 or var2 to typecast */
     /* Make sure var2 conforms to type of var1 */
     if(var_prc_out[idx]->type != var_prc[idx]->type){
       (void)fprintf(stderr,"%s: WARNING Input variables do not conform in type:\nFile 1 = %s variable %s has type %s\nFile 2 = %s variable %s has type %s\nFile 3 = %s variable %s will have type %s\n",prg_nm,fl_in_1,var_prc[idx]->nm,nco_typ_sng(var_prc[idx]->type),fl_in_2,var_prc_out[idx]->nm,nco_typ_sng(var_prc_out[idx]->type),fl_out,var_prc[idx]->nm,nco_typ_sng(var_prc[idx]->type));

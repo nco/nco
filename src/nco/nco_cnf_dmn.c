@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.9 2003-08-02 23:26:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.10 2003-08-16 23:20:30 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -13,11 +13,11 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 (const var_sct * const var, /* I [ptr] Pointer to variable structure to serve as template */
  var_sct * const wgt, /* I [ptr] Pointer to variable structure to make conform to var */
  var_sct *wgt_crr, /* I/O [ptr] pointer to existing conforming variable structure, if any (destroyed when does not conform to var) */
- const bool MUST_CONFORM, /* I [flg] Must wgt and var must conform? */
- bool *DO_CONFORM) /* O [flg] Did wgt and var conform? */
+ const bool MUST_CONFORM, /* I [flg] Must wgt and var conform? */
+ bool *DO_CONFORM) /* O [flg] Do wgt and var conform? */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* fxm: TODO 226. See if xrf in nco_var_cnf_dmn() is really necessary, if not, remove it and make wgt arg const var_sct * const */
+  /* fxm: TODO 226. Is xrf in nco_var_cnf_dmn() really necessary? Iif not, remove it and make wgt arg const var_sct * const */
 
   /* Purpose: Stretch second variable to match dimensions of first variable
      Dimensions in var which are not in wgt will be present in wgt_out, with values
@@ -62,12 +62,12 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
      (otherwise which hyperslab of weight to use would be ill-defined). 
      However, weight may (and often will) have fewer dimensions than variable */
 
-  bool CONFORMABLE=False; /* Whether wgt can be made to conform to var */
-  bool USE_DUMMY_WGT=False; /* Whether to fool NCO into thinking wgt conforms to var */
+  bool CONFORMABLE=False; /* [flg] wgt can be made to conform to var */
+  bool USE_DUMMY_WGT=False; /* [flg] Fool NCO into thinking wgt conforms to var */
 
-  int idx; /* Counting index */
-  int idx_dmn; /* Dimension index */
-  int wgt_var_dmn_shr_nbr=0; /* Number of dimensions shared by wgt and var */
+  int idx; /* [idx] Counting index */
+  int idx_dmn; /* [idx] Dimension index */
+  int wgt_var_dmn_shr_nbr=0; /* [nbr] Number of dimensions wgt and var share */
 
   var_sct *wgt_out=NULL;
 

@@ -1,11 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.25 2003-08-16 00:55:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.26 2003-08-16 23:20:29 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.1 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-There one notable changes since version 2.8.0:
+There is one notable feature improvement since version 2.8.0:
 
 1. Henry Butowsky implemented the capability of specifying variable
    names to all operators using regular expressions. For example,
@@ -13,6 +13,10 @@ There one notable changes since version 2.8.0:
    letters are DSTQ. We call this capability wildcarding, and it is
    very useful for sub-setting large data files such as those produced
    by chemical transport models.
+
+There are also minor build-related improvements for autotools and Debian.
+In particular, autotools support for non-LINUX platforms is improved.
+getopt_long() problems seen with SGI builds of 2.8.0 appear to be fixed.
 
 Enjoy,
 Charlie
