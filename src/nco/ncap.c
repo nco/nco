@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.130 2004-06-29 19:23:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.131 2004-06-29 22:37:38 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.130 2004-06-29 19:23:30 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.130 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.131 2004-06-29 22:37:38 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.131 $";
   const char * const opt_sng="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -129,22 +129,24 @@ main(int argc,char **argv)
   extern int optind;
   
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
-  /* Basic math: acos, asin, atan, cos, exp, log, log10, sin, sqrt, tan */
+  /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, sin, sqrt, tan */
   extern float acosf(float);
   extern float asinf(float);
   extern float atanf(float);
   extern float cosf(float);
-  extern float erff(float);
-  extern float erfcf(float);
   extern float expf(float);
   extern float fabsf(float); /* 20040629: Only AIX may need this */
-  extern float gammaf(float);
   extern float logf(float);
   extern float log10f(float);
   extern float sinf(float);
   extern float sqrtf(float);
   extern float tanf(float);
   
+  /* Advanced math: erf, erfc, gamma */
+  extern float erff(float);
+  extern float erfcf(float);
+  extern float gammaf(float);
+
   /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
   extern float acoshf(float);
   extern float asinhf(float);
@@ -369,7 +371,8 @@ main(int argc,char **argv)
   
   /* Create function table */
   sym_tbl_nbr= /* fxm: Make this dynamic */
-    +12 /* Basic math: acos, asin, atan, cos, exp, fabs, ln, log, log10, sin, sqrt, tan */
+    +11 /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, sin, sqrt, tan */
+    +1 /* Basic math synonyms: ln */
     +6 /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
     +2 /* Basic Rounding: ceil, floor */
     +4 /* Advanced Rounding: nearbyint, rint, round, trunc */
@@ -384,12 +387,14 @@ main(int argc,char **argv)
   sym_tbl[sym_idx++]=ncap_sym_init("cos",cos,cosf);  
   sym_tbl[sym_idx++]=ncap_sym_init("exp",exp,expf);
   sym_tbl[sym_idx++]=ncap_sym_init("fabs",fabs,fabsf);
-  sym_tbl[sym_idx++]=ncap_sym_init("ln",log,logf); /* ln() is synonym for log() */
   sym_tbl[sym_idx++]=ncap_sym_init("log",log,logf);
   sym_tbl[sym_idx++]=ncap_sym_init("log10",log10,log10f);
   sym_tbl[sym_idx++]=ncap_sym_init("sin",sin,sinf);
   sym_tbl[sym_idx++]=ncap_sym_init("sqrt",sqrt,sqrtf);
   sym_tbl[sym_idx++]=ncap_sym_init("tan",tan,tanf);
+
+  /* Basic math synonyms: ln */
+  sym_tbl[sym_idx++]=ncap_sym_init("ln",log,logf); /* ln() is synonym for log() */
   
   /* Basic Rounding: ceil, floor */
   sym_tbl[sym_idx++]=ncap_sym_init("ceil",ceil,ceilf); /* Round up to nearest integer */

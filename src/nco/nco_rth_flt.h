@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.15 2004-06-29 19:23:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.16 2004-06-29 22:37:38 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -30,22 +30,24 @@ extern "C" {
 #endif /* __cplusplus */
 
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
-  /* Basic math: acos, asin, atan, cos, erf, erfc, exp, gamma, log, log10, pow, sin, sqrt, tan */
+  /* Basic math: acos, asin, atan, cos, exp, fabs, log, log10, pow, sin, sqrt, tan */
   float acosf(float);
   float asinf(float);
   float atanf(float);
   float cosf(float);
-  float erff(float);
-  float erfcf(float);
   float expf(float);
-  float fabsf(float); /* 20040629: Only AIX may need this */
-  float gammaf(float);
+  float fabsf(float);
   float logf(float);
   float log10f(float);
   float powf(float,float);
   float sinf(float);
   float sqrtf(float);
   float tanf(float);
+
+  /* Advanced math: erf, erfc, gamma */
+  float erff(float);
+  float erfcf(float);
+  float gammaf(float);
 
   /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
   float acoshf(float);
