@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.12 2004-01-01 20:41:43 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.13 2004-02-26 02:50:43 zender Exp $
 
 // Purpose: Test for C++ programs using libnco_c++ API
 
@@ -50,10 +50,10 @@ int main(int argc,char **argv)
   long sz_nbr(1); // [nbr] Number of sizes
   register long idx; // [idx] Counting index
 
-  const std::string CVS_Date("$Date: 2004-01-01 20:41:43 $"); // [sng] CVS date string
-  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.12 2004-01-01 20:41:43 zender Exp $"); // [sng] CVS header string
-  const std::string CVS_Id("$Id: tst.cc,v 1.12 2004-01-01 20:41:43 zender Exp $"); // [sng] CVS identification string
-  const std::string CVS_Revision("$Revision: 1.12 $"); // [sng] CVS revision string
+  const std::string CVS_Date("$Date: 2004-02-26 02:50:43 $"); // [sng] CVS date string
+  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.13 2004-02-26 02:50:43 zender Exp $"); // [sng] CVS header string
+  const std::string CVS_Id("$Id: tst.cc,v 1.13 2004-02-26 02:50:43 zender Exp $"); // [sng] CVS identification string
+  const std::string CVS_Revision("$Revision: 1.13 $"); // [sng] CVS revision string
   const std::string date_cvs(CVS_Date.length() > 7 ? CVS_Date.substr(7,19) : static_cast<std::string>("Unknown")); // [sng] Date from CVS
   const std::string sbr_nm("main"); // [sng] Subroutine name
   const std::string prg_nm("libnco_c++"); // [sng] Program name
@@ -162,6 +162,9 @@ int main(int argc,char **argv)
   rcd=nco_close(nc_out); // [fnc] Close netCDF file
   std::cerr << "Wrote results to " << fl_out << std::endl;
   std::cerr << "ncks: ncks -C -H -F -m -u -d wvl,0.5e-6 -v wvl " << fl_out << std::endl;
+
+  // Fix all unused identifiers at end where no harm can be done
+  idx=0*(lat_nbr+lon_nbr+dmn_bnd_sz[0]+argc+sizeof(argv)); // [idx] Counting index CEWI
 
   return EXIT_SUCCESS;
 } // end main()

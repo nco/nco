@@ -1,16 +1,26 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.59 2004-02-09 07:54:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.60 2004-02-26 02:50:43 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.8.8 are ready. 
+The netCDF operators NCO version 2.9.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release mainly implements some overlooked ncap operations. 
-ncap modulo operator (A%B) and generic exponentiation (A^B) work in
-all combinations.
+This release mainly implements some overlooked ncap operations,
+and works around a newly discovered rank-reduction bug with
+GCC-compiled NCO. 
 
-fxm: Solaris cc/CC autotools builds have been broken since ~2.8.6, too.
-If anyone would care to send a patch that would be great!
+NB: Solaris cc/CC autotools builds have been broken since ~2.8.6.
+If any Solaris users would care to send a patch that would be great!
+
+I'm writing an NSF proposal to fund taking NCO to the next level.
+NCO has never received any institutional funding...and it shows.
+If funded, we would implement OpenMP, optimized MPI, improved
+integration for distributed processing with via DODS, robust
+unit-testing, and take advantage of netCDF4's HDF backend.
+I will soon announce a site where you can read the proposal summary. 
+Moreover, if you choose to publicly endorse the proposal, you may
+enter your name and institutional affiliation so NSF can see it.
+If you find NCO useful I hope you will add your name to that list.
 
 Enjoy,
 Charlie
@@ -21,6 +31,9 @@ Feature changes:
 
 Bug-fixes:
 1. ncap attribute divided by variable (A/B) works correctly
+2. Rank-reduction on large arrays with GCC-compiled NCO no longer
+   breaks (segfaults) in corner cases. Permanent fix is in the works.
+3. 'make check' works again with --enable-*-custom.
 
 Other user-visible changes:
 1. None

@@ -1,3 +1,17 @@
+2004-02-25  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_9_0
+	Changes since nco-2_8_8: CF convention, ncap corner cases,
+	Deactivate non-ANSI __GNUC__ extensions, make check nco_c++
+
+	* Implement CEWI workarounds so tst.cc builds warning-free and
+	make check works again with --enable-*-custom
+
+	* Deactivate __GNUC__ extensions for rank reduction in nco_var_avg.c
+	Replace #ifndef __GNUC__ with #define FXM_NCO315 1; #ifdef FXM_NCO315
+	Will change back to original code only when stack memory problem
+	is fully understood/solved/benchmarked to improve on ANSI code branch
+	
 2004-02-10  Charlie Zender  <zender@uci.edu>
 
 	* Make Convention CF-1.0 behave same as existing CSM convention

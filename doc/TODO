@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.286 2004-02-25 01:33:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.287 2004-02-26 02:50:43 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -203,6 +203,11 @@ nco311. Automatically convert int,short to float in nco_var_pwr()
 nco314. nco -O -C -a lat,lon,time http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface/pres.sfc.1969.nc foo.nc 
 causes SIGSEGV in nco_var_avg_reduce_ttl ad nco_var_avg.c:413
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface/pres.sfc.1969.nc foo.nc
+nco315. GNUC non-ANSI rank reduction methods in nco_var_avg.c fail on large files. Problem with stack memory allocation?
+nco316. Change offending nco_malloc() to nco_malloc_flg() calls for #315
+nco317. Understand stack memory problem. ulimits? compiler switches?
+nco318. Solve stack memory problem and benchmark vs. ANSI code branch
+nco319. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

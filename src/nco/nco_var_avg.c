@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.17 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.18 2004-02-26 02:50:43 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -301,10 +301,14 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
   /* Each operation has GNUC and non-GNUC blocks:
      GNUC: Utilize (non-ANSI-compliant) compiler support for local automatic arrays
      This results in more elegent loop structure and, theoretically, in faster performance
+     20040225: In reality, the GNUC non-ANSI blocks fail on some large files
+     This may be because they allocate significant local storage on the stack
+     
      non-GNUC: Fully ANSI-compliant structure
      Fortran: Support deprecated */
 
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
   long idx_op1;
 #endif /* __GNUC__ */
   const long sz_blk=sz_op1/sz_op2;
@@ -336,7 +340,8 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 
   switch(type){
   case NC_FLOAT:
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
@@ -384,7 +389,8 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 #endif /* __GNUC__ */
     break;
   case NC_DOUBLE:
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
@@ -432,7 +438,8 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 #endif /* __GNUC__ */
     break;
   case NC_INT:
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
@@ -480,7 +487,8 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 #endif /* __GNUC__ */
     break;
   case NC_SHORT:
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
@@ -562,7 +570,8 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
      See nco_var_avg_reduce_ttl() for more algorithmic documentation
      nco_var_avg_reduce_max() is derived from nco_var_avg_reduce_min() */
 
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
   long idx_op1;
 #endif /* __GNUC__ */
   const long sz_blk=sz_op1/sz_op2;
@@ -598,7 +607,8 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
   switch(type){
   case NC_FLOAT:
     
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
@@ -652,7 +662,8 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
     break;
   case NC_DOUBLE:
     
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
@@ -704,7 +715,8 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
 #endif /* __GNUC__ */
     break;
   case NC_INT:
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
@@ -756,7 +768,8 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
 #endif /* __GNUC__ */
     break;
   case NC_SHORT:
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
@@ -842,7 +855,8 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
      See nco_var_avg_reduce_ttl() for more algorithmic documentation
      nco_var_avg_reduce_max() is derived from nco_var_avg_reduce_min() */
 
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
   long idx_op1;
 #endif /* __GNUC__ */
   const long sz_blk=sz_op1/sz_op2;
@@ -878,7 +892,8 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
   switch(type){
   case NC_FLOAT:
     
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
@@ -932,7 +947,8 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
     break;
   case NC_DOUBLE:
     
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
@@ -984,7 +1000,8 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
 #endif /* __GNUC__ */
     break;
   case NC_INT:
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
@@ -1036,7 +1053,8 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
 #endif /* __GNUC__ */
     break;
   case NC_SHORT:
-#ifndef __GNUC__
+#define FXM_NCO315 1
+#ifdef FXM_NCO315
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){

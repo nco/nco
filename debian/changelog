@@ -1,3 +1,9 @@
+nco (2.9.0-1) unstable; urgency=low
+
+  * CF convention behaves like CSM, ncap corner cases, workaround GCC stack limitation
+
+ -- Charlie Zender <zender@uci.edu>  Wed, 25 Feb 2004 15:51:29 -0800
+
 nco (2.8.8-1) unstable; urgency=low
 
   * --enable-[optimize/debug]-custom works again on GCC
