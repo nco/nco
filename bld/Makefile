@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.37 1999-10-04 17:56:36 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.38 1999-10-04 17:58:00 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -429,8 +429,9 @@ FC := f77
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS += -cg92 -L/opt/SUNWspro/SC3.0/lib/cg92 -lF77 -lM77 -lresolv
+ LDFLAGS += -cg92 -L/opt/SUNWspro/SC3.0/lib/cg92 -lF77 -lM77
 endif
+LDFLAGS += -lresolv
 LEX := lex
 LINT := lint
 YACC := yacc
@@ -452,8 +453,9 @@ FC := f77
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lsunmath -lsocket -lnsl -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS += -lF77 -lM77 -lresolv
+ LDFLAGS += -lF77 -lM77
 endif
+LDFLAGS += -lresolv
 LEX := lex
 LINT := lint
 YACC := yacc
@@ -484,8 +486,9 @@ FC := f77
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lsunmath -lthread -lsocket -lnsl -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS += -lF77 -lM77 -lresolv
+ LDFLAGS += -lF77 -lM77
 endif
+LDFLAGS += -lresolv
 LEX := flex
 LINT := lint
 YACC := bison
