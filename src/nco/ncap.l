@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.50 2002-05-19 16:06:12 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.51 2002-05-20 06:11:10 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -522,7 +522,7 @@ unpack/[ ]*\( {return UNPACK;}
   /* Build subscript list only once, during initial scan */
   if(prs_arg->ntl_scn){
     lval_ptr->sbs_lst=(nm_lst_sct *)nco_malloc(sizeof(nm_lst_sct));
-    lval_ptr->sbs_lst->list=out_lst;
+    lval_ptr->sbs_lst->lst=out_lst;
     lval_ptr->sbs_lst->nbr=out_nbr;
     /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
     BEGIN INITIAL;
@@ -664,23 +664,25 @@ yywrap(void)
 } /* end yywrap() */
 
 void 
-ncap_ntl_scn
-(prs_sct *prs_arg,
- char *spt_arg_cat,
- nm_id_sct** xtr_lst_a,
- int *nbr_lst_a,
- nm_id_sct** xtr_lst_b,
- int *nbr_lst_b,
- nm_id_sct** xtr_lst_c,
- int *nbr_lst_c,
- nm_id_sct** xtr_lst_d,
- int *nbr_lst_d)
+ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
+(prs_sct * const prs_arg, /* I/O [sct] Global information required in parser routines */
+ const char * const spt_arg_cat, /* I [sng] User-specified script */
+ nm_id_sct** const xtr_lst_a, /* O [sct] RHS variables present in input file */
+ int * const nbr_lst_a, /* O [nbr] Number of distinct RHS variables in input file */
+ nm_id_sct** const xtr_lst_b, /* O [sct] LHS variables present in input file */
+ int * const nbr_lst_b, /* O [nbr] Number of distinct LHS variables in input file */
+ nm_id_sct** const xtr_lst_c, /* O [sct] Parent variables of LHS attributes in input file */
+ int * const nbr_lst_c, /* O [nbr] Number of attribute parent variables in input file */
+ nm_id_sct** const xtr_lst_d, /* O [sct] LHS dimensions in input file */
+ int * const nbr_lst_d) /* O [nbr] Number of LHS dimensions in input file */
 {
-  /* Purpose: Scan command script and return three lists
+  /* Purpose: Scan command script, construct I/O lists
+     Routine is called so that metadata contents of output file are known 
+     before arithmetic processing
      list a: RHS variables present in input file
      list b: LHS variables present in input file
-     list c: Variables of attributes on LHS which are present in input file
-     list d: */
+     list c: Parent variables of LHS attributes in input file
+     list d: Dimensions required by LHS subscripts (casting) */
   
   /* 20020510: ncap_ntl_scn() was in ncap_utl.c but g++ (not gcc) would barf
      g++ complains that since YYSTYPE is defined in ncap.tab.h,
@@ -703,11 +705,11 @@ ncap_ntl_scn
   extern int yy_scan_string(const char *);
 #endif /* NCAP_NTL_SCN_NOT_IN_NCAP_L */
 
-  bool match;
+  bool match; /* [flg] Variable is defined in list already */
   
   char *var_nm;  
 
-  int n_lst_a=0;
+  int n_lst_a=0; /* [nbr] Number of elements in list a */
   int n_lst_b=0;
   int n_lst_c=0;
   int n_lst_d=0;
@@ -747,12 +749,21 @@ ncap_ntl_scn
       /* Search for RHS variables in input file */
       var_nm=lval.var_nm_RHS;
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
-	match=False;
-	for(var_idx=0;var_idx<n_lst_a;var_idx++)
-	  if(!strcmp(lst_a[var_idx].nm,var_nm)){match=True; break;}
+	match=False; /* [flg] Variable is defined in list already */
+	/* Search RHS variables already known to be in input file... */
+	for(var_idx=0;var_idx<n_lst_a;var_idx++){
+	  /* ...if the new variable is found then... */
+	  if(!strcmp(lst_a[var_idx].nm,var_nm)){
+	    /* ...set the flag and... */
+	    match=True; /* [flg] Variable is defined in list already */
+	    /* ...stop looking through list... */
+	    break;
+	  } /* end if */
+	} /* end loop over var */
+	/* If RHS variable information is already in list we are done */
 	if(match) break;
-	if(n_lst_a==0) lst_a=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
-	else lst_a=(nm_id_sct *)nco_realloc(lst_a,((n_lst_a+1)*sizeof(nm_id_sct)));
+	/* Otherwise add new RHS variable to list */
+	if(n_lst_a==0) lst_a=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct)); else lst_a=(nm_id_sct *)nco_realloc(lst_a,((n_lst_a+1)*sizeof(nm_id_sct)));
 	lst_a[n_lst_a].nm=strdup(var_nm);
 	lst_a[n_lst_a++].id=var_id;
       } /* endif RHS variable is in input file */
@@ -787,8 +798,9 @@ ncap_ntl_scn
       break;
     case LHS_SBS:
       /* Add dimensions defined in LHS subscripts */
-      lst_t=lst_d;n_lst_t=n_lst_t;
-      lst_d=var_lst_add(prs_arg->in_id,lst_d,&n_lst_d,lval.sbs_lst->list,lval.sbs_lst->nbr);          
+      lst_t=lst_d;
+      n_lst_t=n_lst_t;
+      lst_d=var_lst_add(prs_arg->in_id,lst_d,&n_lst_d,lval.sbs_lst->lst,lval.sbs_lst->nbr);          
       if(n_lst_t >0) (void)var_lst_free(lst_t,n_lst_t);
       break;
     default: 

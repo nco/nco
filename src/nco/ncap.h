@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.38 2002-05-18 19:59:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.39 2002-05-20 06:11:10 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -43,9 +43,9 @@ typedef struct { /* sym_sct */
   float (*flt_flt)(float);
 } sym_sct;
 
-/* Name list structure */
+/* Name list structure (use to store subscript lists) */
 typedef struct { /* nm_lst_sct */
-  nm_id_sct *list;
+  nm_id_sct *lst;
   int nbr;
 } nm_lst_sct;
 
@@ -84,6 +84,19 @@ ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribut
  int * const nbr_att, /* I/O [nbr] Number of attributes in list */
  const bool update); /* I [flg] Delete existing value or add new attribute to list */
 
+void 
+ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
+(prs_sct * const prs_arg, /* I/O [sct] Global information required in parser routines */
+ const char * const spt_arg_cat, /* I [sng] User-specified script */
+ nm_id_sct** const xtr_lst_a, /* O [sct] RHS variables present in input file */
+ int * const nbr_lst_a, /* O [nbr] Number of distinct RHS variables in input file */
+ nm_id_sct** const xtr_lst_b, /* O [sct] LHS variables present in input file */
+ int * const nbr_lst_b, /* O [nbr] Number of distinct LHS variables in input file */
+ nm_id_sct** const xtr_lst_c, /* O [sct] Parent variables of LHS attributes in input file */
+ int * const nbr_lst_c, /* O [nbr] Number of attribute parent variables in input file */
+ nm_id_sct** const xtr_lst_d, /* O [sct] LHS dimensions in input file */
+ int * const nbr_lst_d); /* O [nbr] Number of LHS dimensions in input file */
+
 bool ncap_var_stretch(var_sct **,var_sct **);
 int ncap_scv_minus(scv_sct *);
 int ncap_var_write(var_sct *,prs_sct*);
@@ -113,7 +126,6 @@ var_sct *ncap_var_var_divide(var_sct *var_1,var_sct *var_2);
 var_sct *ncap_var_var_multiply(var_sct *var_1,var_sct *var_2);
 var_sct *ncap_var_var_sub(var_sct *var_1,var_sct *var_2);
 void fnc_add(char *nm, double (*fnc_dbl)());
-void ncap_ntl_scn(prs_sct*,char *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *);
 void nco_lib_vrs_prn();
 void nco_var_free(var_sct **);
 

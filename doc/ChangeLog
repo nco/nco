@@ -1,3 +1,10 @@
+2002-05-19  Charlie Zender  <zender@uci.edu>
+
+	* More ncap work to prepare for dimension list structures
+	which are going to be implemented correctly by tokenizing
+	each element of dimension list and assembling full list in
+	parser and letting scanner pass in each token. 
+
 2002-05-18  Charlie Zender  <zender@uci.edu>
 
 	* Added nco_op_typ element to prs_sct for handling dimension

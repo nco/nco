@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.3 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.4 2002-05-20 06:11:10 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -17,7 +17,7 @@
 
    From netCDF User's Guide:
    scale_factor: If present for a variable, the data are to be multiplied by this factor after the data are read by the application that accesses the data
-   add_offset: If present for a variable, this number is to be added to the data after is is read by the application that acceses the data. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. 
+   add_offset: If present for a variable, this number is added to the data after the data are read by the application. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. 
    When scale_factor and add_offset are used for packing, the associated variable (containing the packed data) is typically of type byte or short, whereas the unpacked values are intended to be of type float or double. Attribute's scale_factor and add_offset should both be of type intended for the unpacked data, e.g., float or double. */     
 
 int /* O [enm] Packing type */

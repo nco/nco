@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.59 2002-05-12 16:32:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.60 2002-05-20 06:11:10 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -321,7 +321,7 @@ ncap_var_abs(var_sct *var)
 var_sct *
 ncap_var_scv_power(var_sct *var_in,scv_sct scv)
 {
-  /* Purpose: Raise var to the power in scv
+  /* Purpose: Raise var to power in scv
      All values converted to type double before operation */
   long idx;
   long sz;
@@ -349,8 +349,8 @@ ncap_var_scv_power(var_sct *var_in,scv_sct scv)
         if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=pow(op1.dp[idx],scv_dpl);
       } /* end for */
     } /* end else */
-   break;
-  }
+    break;
+  } /* end NC_DOUBLE */
   case NC_FLOAT: {
     float scv_flt=scv.val.f;
     if(!var->has_mss_val){
@@ -361,8 +361,8 @@ ncap_var_scv_power(var_sct *var_in,scv_sct scv)
         if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=powf(op1.fp[idx],scv_flt);
       } /* end for */
     } /* end else */
-   break;
-  }
+    break;
+  } /* end NC_FLOAT */
   default: nco_dfl_case_nctype_err(); break;
   }/* end switch */
 
@@ -371,136 +371,136 @@ ncap_var_scv_power(var_sct *var_in,scv_sct scv)
 } /* end ncap_var_scv_power */
 
 scv_sct  
-ncap_scv_calc(scv_sct a, char op, scv_sct b)
+ncap_scv_calc(scv_sct scv_1, char op, scv_sct scv_2)
 {
-  /* Purpose: Calculate (a op b) NB: Scalar values must be of same type */
+  /* Purpose: Calculate (scv_1 op scv_2) NB: Scalar values must be of same type */
 
   extern float fmodf(float,float); /* Cannot insert fmodf in ncap_sym_init() because it takes two arguments TODO #20 */
   extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
 
-  scv_sct c;
-  c.type=a.type;
-  switch(c.type){ 
+  scv_sct scv_out;
+  scv_out.type=scv_1.type;
+  switch(scv_out.type){ 
   case NC_BYTE:
     switch(op){
-      case'+': c.val.b=a.val.b + b.val.b;break;
-      case'-': c.val.b=a.val.b - b.val.b;break;
-      case'/': c.val.b=a.val.b / b.val.b;break;
-      case'*': c.val.b=a.val.b * b.val.b;break;
-      case'%': c.val.b=a.val.b % b.val.b;break;
+      case '+': scv_out.val.b=scv_1.val.b + scv_2.val.b;break;
+      case '-': scv_out.val.b=scv_1.val.b - scv_2.val.b;break;
+      case '/': scv_out.val.b=scv_1.val.b / scv_2.val.b;break;
+      case '*': scv_out.val.b=scv_1.val.b * scv_2.val.b;break;
+      case '%': scv_out.val.b=scv_1.val.b % scv_2.val.b;break;
     } break;
   case NC_CHAR:
     /* Do nothing */
     break;
   case NC_SHORT:
     switch(op){
-      case'+': c.val.s=a.val.s + b.val.s;break;
-      case'-': c.val.s=a.val.s - b.val.s;break;
-      case'/': c.val.s=a.val.s / b.val.s;break;
-      case'*': c.val.s=a.val.s * b.val.s;break;
-      case'%': c.val.s=a.val.s % b.val.s;break;
+      case '+': scv_out.val.s=scv_1.val.s + scv_2.val.s;break;
+      case '-': scv_out.val.s=scv_1.val.s - scv_2.val.s;break;
+      case '/': scv_out.val.s=scv_1.val.s / scv_2.val.s;break;
+      case '*': scv_out.val.s=scv_1.val.s * scv_2.val.s;break;
+      case '%': scv_out.val.s=scv_1.val.s % scv_2.val.s;break;
     } break;
   case NC_INT:
     switch(op){
-      case'+': c.val.l=a.val.l + b.val.l;break;
-      case'-': c.val.l=a.val.l - b.val.l;break;
-      case'/': c.val.l=a.val.l / b.val.l;break;
-      case'*': c.val.l=a.val.l * b.val.l;break;
-      case'%': c.val.l=a.val.l % b.val.l;break;
+      case '+': scv_out.val.l=scv_1.val.l + scv_2.val.l;break;
+      case '-': scv_out.val.l=scv_1.val.l - scv_2.val.l;break;
+      case '/': scv_out.val.l=scv_1.val.l / scv_2.val.l;break;
+      case '*': scv_out.val.l=scv_1.val.l * scv_2.val.l;break;
+      case '%': scv_out.val.l=scv_1.val.l % scv_2.val.l;break;
     } break;
   case NC_FLOAT:
     switch(op){
-      case'+': c.val.f=a.val.f + b.val.f;break;
-      case'-': c.val.f=a.val.f - b.val.f;break;
-      case'/': c.val.f=a.val.f / b.val.f;break;
-      case'*': c.val.f=a.val.f * b.val.f;break;
-      case'%': c.val.f=fmodf(a.val.f,fabsf(b.val.f));break;
+      case '+': scv_out.val.f=scv_1.val.f + scv_2.val.f;break;
+      case '-': scv_out.val.f=scv_1.val.f - scv_2.val.f;break;
+      case '/': scv_out.val.f=scv_1.val.f / scv_2.val.f;break;
+      case '*': scv_out.val.f=scv_1.val.f * scv_2.val.f;break;
+      case '%': scv_out.val.f=fmodf(scv_1.val.f,fabsf(scv_2.val.f));break;
     } break;
   case NC_DOUBLE:
     switch(op){
-      case'+': c.val.d=a.val.d + b.val.d;break;
-      case'-': c.val.d=a.val.d - b.val.d;break;
-      case'/': c.val.d=a.val.d / b.val.d;break;
-      case'*': c.val.d=a.val.d * b.val.d;break;
-      case'%': c.val.d=fmod(a.val.d,fabs(b.val.d));break;
+      case '+': scv_out.val.d=scv_1.val.d + scv_2.val.d;break;
+      case '-': scv_out.val.d=scv_1.val.d - scv_2.val.d;break;
+      case '/': scv_out.val.d=scv_1.val.d / scv_2.val.d;break;
+      case '*': scv_out.val.d=scv_1.val.d * scv_2.val.d;break;
+      case '%': scv_out.val.d=fmod(scv_1.val.d,fabs(scv_2.val.d));break;
     } break;
   default: nco_dfl_case_nctype_err(); break;
   }/* end switch */    
   
-  return c;
+  return scv_out;
 } /* end ncap_scv_calc_type */
 
 scv_sct
-ncap_scv_abs(scv_sct a)
+ncap_scv_abs(scv_sct scv)
 {
   /* Purpose: Find the absolute value of a scalar value */
   extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
   
-  scv_sct b;
-  b.type=a.type;
-  switch(a.type){ 
+  scv_sct scv_out;
+  scv_out.type=scv.type;
+  switch(scv.type){ 
   case NC_BYTE:
-    b.val.b=( (a.val.b >= 0) ? a.val.b : -a.val.b) ;
+    scv_out.val.b=((scv.val.b >= 0) ? scv.val.b : -scv.val.b) ;
     break;
   case NC_CHAR:
     /* Do nothing */
     break;
   case NC_SHORT:
-    b.val.s=( (a.val.s >= 0) ? a.val.s : -a.val.s) ;
+    scv_out.val.s=((scv.val.s >= 0) ? scv.val.s : -scv.val.s) ;
     break;
   case NC_INT:
-    b.val.l=abs(a.val.l);
+    scv_out.val.l=abs(scv.val.l);
     break;            
   case NC_FLOAT:
-    b.val.f=fabsf(a.val.f);
+    scv_out.val.f=fabsf(scv.val.f);
     break;
   case NC_DOUBLE:
-    b.val.d=fabs(a.val.d);
+    scv_out.val.d=fabs(scv.val.d);
     break;
   default: nco_dfl_case_nctype_err(); break;    
   } /* end switch */
-  return b;
+  return scv_out;
 } /* end ncap_scv_abs */
 
 int 
-ncap_scv_minus(scv_sct *a)
+ncap_scv_minus(scv_sct *scv)
 {
-  switch(a->type){ 
+  switch(scv->type){ 
   case NC_BYTE:
-    a->val.b= -a->val.b; 
+    scv->val.b= -scv->val.b; 
     break;
   case NC_CHAR:
     /* Do nothing */
     break;
   case NC_SHORT:
-    a->val.s=-a->val.s;
+    scv->val.s=-scv->val.s;
     break;
   case NC_INT:
-    a->val.l=-a->val.l;
+    scv->val.l=-scv->val.l;
     break;            
   case NC_FLOAT:
-    a->val.f=-a->val.f;
+    scv->val.f=-scv->val.f;
     break;
   case NC_DOUBLE:
-    a->val.d=-a->val.d;
+    scv->val.d=-scv->val.d;
     break;
   default: nco_dfl_case_nctype_err(); break;   
   }/* end switch */    
-  return a->type;
+  return scv->type;
 }
 
 nm_id_sct *
 var_lst_copy(nm_id_sct *xtr_lst,int n)
 {
   /* Purpose: Copy xtr_lst and return the new list */
-  int i;
+  int idx;
   nm_id_sct *xtr_new_lst;
   
   if(n == 0) return NULL;
   xtr_new_lst=(nm_id_sct*)nco_malloc(n*sizeof(nm_id_sct));
-  for (i=0;i<n;i++){
-    xtr_new_lst[i].nm=strdup(xtr_lst[i].nm);
-    xtr_new_lst[i].id=xtr_lst[i].id;
+  for(idx=0;idx<n;idx++){
+    xtr_new_lst[idx].nm=strdup(xtr_lst[idx].nm);
+    xtr_new_lst[idx].id=xtr_lst[idx].id;
   } /* end loop over variable */
   return xtr_new_lst;            
 } /* end var_lst_copy */
@@ -509,10 +509,10 @@ nm_id_sct *
 var_lst_free(nm_id_sct *xtr_lst,int n)
 {
   /* Purpose: free xtr_lst and return null pointer */
-  int i;
+  int idx;
 
-  for(i = 0 ; i<n ; i++)
-    nco_free(xtr_lst[i].nm);
+  for(idx = 0 ; idx<n ; idx++)
+    nco_free(xtr_lst[idx].nm);
   nco_free(xtr_lst);
 
   return NULL;
@@ -523,7 +523,7 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
 {
   /* Purpose: Subtract from xtr_lst any elements from xtr_lst_b which are present
      and return new list */
-  int i;
+  int idx;
   int j;
   int n=0;
   
@@ -534,25 +534,23 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
   if(*nbr_xtr == 0 ) return xtr_lst;
   
   xtr_new_lst=(nm_id_sct*)nco_malloc((*nbr_xtr)*sizeof(nm_id_sct));  
-  for(i =0 ; i < *nbr_xtr ; i++){
+  for(idx =0 ; idx < *nbr_xtr ; idx++){
     match=False;
     for(j=0; j < nbr_lst_b ; j++)
-      if(!strcmp(xtr_lst[i].nm,xtr_lst_b[j].nm)){ match=True ; break; }
+      if(!strcmp(xtr_lst[idx].nm,xtr_lst_b[j].nm)){ match=True ; break; }
     if(match) continue;
-    xtr_new_lst[n].nm=strdup(xtr_lst[i].nm);
-    xtr_new_lst[n++].id=xtr_lst[i].id;
+    xtr_new_lst[n].nm=strdup(xtr_lst[idx].nm);
+    xtr_new_lst[n++].id=xtr_lst[idx].id;
   }
   *nbr_xtr=n;
   return xtr_new_lst;      
 }/* end var_lst_sub */
 
-
 nm_id_sct *
 var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst_a)
 {
-  /* Purpose: Add to xtr_lst any elements from xtr_lst_b which are not already present 
-     and return a new list */
-  int i;
+  /* Purpose: Add to xtr_lst any elements from xtr_lst_b not already present and return new list */
+  int idx;
   int j;
   int n;
   
@@ -560,26 +558,26 @@ var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int n
   
   bool match;
   
-  if(*nbr_xtr >0 ){
+  if(*nbr_xtr > 0){
     xtr_new_lst=(nm_id_sct*)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
     n=*nbr_xtr;
-    for(i=0;i<*nbr_xtr;i++){
-      xtr_new_lst[i].nm=strdup(xtr_lst[i].nm);
-      xtr_new_lst[i].id=xtr_lst[i].id;
+    for(idx=0;idx<*nbr_xtr;idx++){
+      xtr_new_lst[idx].nm=strdup(xtr_lst[idx].nm);
+      xtr_new_lst[idx].id=xtr_lst[idx].id;
     } /* end loop over variables */
   }else{
     *nbr_xtr=nbr_lst_a;
     return var_lst_copy(xtr_lst_a,nbr_lst_a);
   }/* end if */
   
-  for(i=0;i<nbr_lst_a;i++){
+  for(idx=0;idx<nbr_lst_a;idx++){
     match=False;
     for(j=0;j<*nbr_xtr;j++)
-      if(!strcmp(xtr_lst[j].nm,xtr_lst_a[i].nm)){match=True;break;}
+      if(!strcmp(xtr_lst[j].nm,xtr_lst_a[idx].nm)){match=True;break;}
     if(match) continue;
     xtr_new_lst=(nm_id_sct*)nco_realloc(xtr_new_lst,(n+1)*sizeof(nm_id_sct));
-    xtr_new_lst[n].nm=strdup(xtr_lst_a[i].nm);
-    xtr_new_lst[n++].id=xtr_lst_a[i].id;
+    xtr_new_lst[n].nm=strdup(xtr_lst_a[idx].nm);
+    xtr_new_lst[n++].id=xtr_lst_a[idx].id;
   }
   *nbr_xtr=n;
   return xtr_new_lst;            

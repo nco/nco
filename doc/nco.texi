@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.94 2002-05-12 00:24:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.95 2002-05-20 06:11:08 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -252,6 +252,10 @@ Reference manual for all operators
 * ncrcat netCDF Record Concatenator::  
 * ncrename netCDF Renamer::     
 * ncwa netCDF Weighted Averager::  
+
+@command{ncap} netCDF Arithmetic Processor
+
+* Intrinsic mathematical functions ::  
 
 @command{ncwa} netCDF Weighted Averager
 
@@ -2651,6 +2655,10 @@ ncap [-A] [-C] [-c] [-D @var{dbg}]
 @noindent
 DESCRIPTION
 
+Note: documentation for @command{ncap} is incomplete and evolving.
+The @command{ncap} parser tends to develop fitfully, and the best
+documentation for recent capabilities is the @file{ChangeLog} file.
+
 @command{ncap} arithmetically processes a netCDF file.
 @cindex script file
 The processing instructions are contained either in the NCO script file 
@@ -2660,19 +2668,23 @@ transformations of data and archive the results as easily as possible.
 @cindex derived fields
 The results of the algebraic manipulations are called @dfn{derived fields}.
 
-Unlike the other operators, @code{ncap} does not accept a list of
+Unlike the other operators, @command{ncap} does not accept a list of
 variables to be operated on as an argument to @samp{-v} (@pxref{Variable
 subsetting}).
 Rather, the @samp{-v} switch takes no arguments and indicates
-that @code{ncap} should output @emph{only} user-defined variables.
-@code{ncap} does not accept or understand the @var{-x} switch.
+that @command{ncap} should output @emph{only} user-defined variables.
+@command{ncap} does not accept or understand the @var{-x} switch.
 
-@node Left hand casting
+@menu
+* Intrinsic mathematical functions ::  
+@end menu
+
+@node Left hand casting, Intrinsic mathematical functions , ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
 @cindex hybrid coordinate system 
 @cindex left hand casting
 @cindex @acronym{LHS}
 The following examples demonstrate the utility of the @dfn{left hand
-casting} ability of @code{ncap}.
+casting} ability of @command{ncap}.
 Consider first a simple, albeit artificial, example.
 If @var{lat} and @var{lon} are one dimensional coordinates of
 dimensions @var{lat} and @var{lon}, respectively, then addition
@@ -2699,7 +2711,7 @@ resolves the otherwise ambiguous ordering of dimensions in
 In effect, the @acronym{LHS} @dfn{casts} its rank properties onto the 
 @acronym{RHS}.
 Without @acronym{LHS} casting, the dimensional ordering of @var{lat_lon}
-would be undefined and, hopefully, @code{ncap} would print an error
+would be undefined and, hopefully, @command{ncap} would print an error
 message. 
 
 Consider now a slightly more complex example.
@@ -2720,7 +2732,7 @@ from the four input variables of mixed rank and orthogonality:
 ncap -O -s "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm" in.nc out.nc
 @end example
 
-@node Syntax of @command{ncap} statements
+@node Syntax of @command{ncap} statements, Intrinsic mathematical functions , ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
 @cindex statement
 @cindex syntax
 @cindex semi-colon
@@ -2747,8 +2759,90 @@ Single line comments are preceded by @code{//} characters;
 The at-sign @code{@@} is used to delineate an attribute name from a
 variable name.
 
-@unnumberedsubsec @code{ncap} mathematical functions
+@node Intrinsic functions, Intrinsic mathematical functions , ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
+@command{ncap} contains a small but growing library of intrinsic
+functions.
+In addition to the standard mathematical functions (@pxref{Intrinsic
+mathematical functions}), @command{ncap} currently supports packing
+and unpacking.
+@unnumberedsubsec @command{ncap} packing functions
+@cindex packing
+@cindex unpacking
+@cindex @code{add_offset}
+@cindex @code{scale_factor}
+@cindex @command{pack(x)}
+@item pack(x)
+@dfn{Packing}
+The standard packing algorithm is applied to variable @var{x}.
+The packing algorithm is lossy, and produces data with the same dynamic
+range as the original but which requires no more than half the space
+to store.
+The packed variable is stored (usually) as type @code{NC_SHORT}
+with the two attributes required to unpack the variable,
+@code{scale_factor} and @code{add_offset}, stored at the original
+precision of the variable.
+Let @var{min} and @var{max} be the minimum and maximum values of
+@var{x}. 
+@tex
+$$
+scale_factor = (max-min)/ndrv
+add_offset = 0.5*(min+max)
+pck = (upk-add_offset)/scale_factor = (upk-0.5*(min+max))*ndrv/(max-min)
+$$
+@end tex
+@ifnottex
+scale_factor = (max-min)/ndrv
+add_offset = 0.5*(min+max)
+pck = (upk-add_offset)/scale_factor = (upk-0.5*(min+max))*ndrv/(max-min)
+@end ifnottex
+where @var{ndrv} is the number of discrete representable values for
+given type of packed variable.
+The theoretical maximum value for @var{ndrv} is two raised to the
+number of bits used to store the packed variable.
+Thus if the variable is packed into type @code{NC_SHORT}, a 2 byte
+datatype, then there are at most @math{2^16 = 65536} distinct values
+representible.
+In practice, the number of discretely representible values is taken
+to be one less than the theoretical maximum.
+This leaves extra space and solves potential problems with rounding
+which can occur during the unpacking of the variable.
+Thus for @code{NC_SHORT}, @math{ndrv = 65536 - 1 = 65535}.
+Less often, the variable may be packed into type @code{NC_CHAR}, 
+where @math{ndrv = 256 - 1 = 255}, or type @code{NC_INT} where
+where @math{ndrv = 4294967295 - 1 = 4294967294}.
+@item unpack(x)
+@dfn{Unpacking}
+The standard unpacking algorithm is applied to variable @var{x}.
+The unpacking algorithm depends on the presence of two attributes,
+@code{scale_factor} and @code{add_offset}.
+If @code{scale_factor} is present for a variable, the data are
+multiplied by the value @var{scale_factor} after the data are read.
+If @code{add_offset} is present for a variable, then the
+@var{add_offset} value is added to the data after the data are read.
+If both @code{scale_factor} and @code{add_offset} attributes are
+present, the data are first scaled by @var{scale_factor} before the
+offset @var{add_offset} is added.   
+@tex
+$$
+upk = scale_factor*pck + add_offset = (max-min)*pck/ndrv + 0.5*(min+max) 
+$$
+@end tex
+@ifnottex
+upk = scale_factor*pck + add_offset = (max-min)*pck/ndrv + 0.5*(min+max) 
+@end ifnottex
+When @code{scale_factor} and @code{add_offset} are used for packing, the
+associated variable (containing the packed data) is typically of type
+@code{byte} or @code{short}, whereas the unpacked values are intended to
+be of type @code{float} or @code{double}. 
+An attribute's @code{scale_factor} and @code{add_offset} should both be
+of the type intended for the unpacked data, e.g., @code{float} or
+@code{double}. 
+
+@node Intrinsic mathematical functions ,  , ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
+@unnumberedsubsec @command{ncap} mathematical functions
 @cindex mathematical functions
+@cindex @var{abs(x)}
+@cindex @var{acos(x)}
 @cindex @var{asin(x)}
 @cindex @var{atan(x)}
 @cindex @var{cos(x)}
@@ -2759,8 +2853,8 @@ variable name.
 @cindex @var{sin(x)}
 @cindex @var{sqrt(x)}
 @cindex @var{tan(x)}
-@cindex @var{abs(x)}
-@cindex @var{acos(x)}
+@cindex absolute value
+@cindex arccosine function
 @cindex arcsine function
 @cindex arctangent function
 @cindex cosine function
@@ -2771,15 +2865,81 @@ variable name.
 @cindex sine function
 @cindex square root function
 @cindex tangent
-@cindex absolute value
-@cindex arccosine function
 The available elementary mathematical functions are: 
 @table @code
 @c fxm finish me
+@item abs(x)
+@dfn{Absolute value}
+Absolute value of @var{x}.
 @item acos(x)
 @dfn{Arc-cosine}
-Returns the arc-cosine of @var{x} between 
-asin(x); atan(x); cos(x); exp(x); gamma(x); log(x); log10(x); sin(x); sqrt(x); tan(x);
+Arc-cosine of @var{x} where @var{x} is specified in radians.
+@item asin(x)
+@dfn{Arc-sine}
+Arc-sine of @var{x} where @var{x} is specified in radians.
+@item atan(x)
+@dfn{Arc-tangent}
+Arc-tangent of @var{x} where @var{x} is specified in radians between 
+@tex
+$-\pi/2$ and $\pi/2$.
+@end tex
+@ifinfo
+@math{-\pi/2} and @math{\pi/2}.
+@end ifinfo
+@item cos(x)
+@dfn{Cosine}
+Cosine of @var{x} where @var{x} is specified in radians.
+@item exp(x)
+@dfn{Exponential}
+Exponential of @var{x},
+@tex
+$e^{x}$.
+@end tex
+@ifinfo
+@math{e^x}
+@end ifinfo
+@item gamma(x)
+@dfn{Gamma function}
+Gamma function of @var{x},
+@tex
+$\Gamma(x)$.
+@end tex
+@ifinfo
+@math{\Gamma(x)}
+@end ifinfo
+@item log(x)
+@dfn{Natural Logarithm}
+Natural logarithm of @var{x},
+@tex
+$\ln(x)$.
+@end tex
+@ifinfo
+@math{\ln(x)}
+@end ifinfo
+@item log10(x)
+@dfn{Base 10 Logarithm}
+Base 10 logarithm of @var{x}, 
+@tex
+$\log_{10}(x)$.
+@end tex
+@ifinfo
+@math{\log_{10}(x)}
+@end ifinfo
+@item sin(x)
+@dfn{Sine}
+Sine of @var{x} where @var{x} is specified in radians.
+@item sqrt(x)
+@dfn{Square Root}
+Square Root of @var{x},
+@tex
+$\sqrt{x}$.
+@end tex
+@ifinfo
+@math{\sqrt{x}}
+@end ifinfo
+@item tan(x);
+@dfn{Tangent}
+Tangent of @var{x} where @var{x} is specified in radians.
 @end table
 @noindent
 @cindex addition
@@ -4673,12 +4833,11 @@ contains more information on how to contribute.
 @table @asis
 @item Charlie Zender
 Concept, design and implementation of @acronym{NCO} from 1995--2000.
-@code{ncap} variable stretching.
 @item Henry Butowsky
 Min, max, total, and non-linear operations in @code{ncra} and @code{ncwa}. 
 Type conversion for arithmetic.
 Migration to netCDF3 API.
-@code{ncap} parser, lexer, and I/O.
+@command{ncap} parser, lexer, and I/O.
 Various hacks.
 @item Bill Kocik
 Memory management
