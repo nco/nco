@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.7 2000-08-31 17:58:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.8 2000-08-31 20:05:41 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -141,8 +141,8 @@ var_upk /* [fnc] Unpack variable in memory */
   /* Purpose: Unpack variable
      Routine is inverse of var_pck(): var_upk(var_pck(var))=var */
 
-  var_sct *scl_fct; /* [sct] Variable structure for scale_factor */
-  var_sct *add_fst; /* [sct] Variable structure for add_offset */
+  var_sct *scl_fct=NULL_CEWI; /* [sct] Variable structure for scale_factor */
+  var_sct *add_fst=NULL_CEWI; /* [sct] Variable structure for add_offset */
 
   /* Return if variable in memory is not currently packed */
   if(!var->pck_ram) return var;
@@ -205,8 +205,8 @@ var_pck /* [fnc] Pack variable in memory */
   /* Purpose: Pack variable 
      Routine is inverse of var_uck(): var_pck(var_upk(var))=var */
 
-  double scl_fct_dbl; /* [sct] Double precision value of scale_factor */
-  double add_fst_dbl; /* [sct] Double precision value of add_offset */
+  double scl_fct_dbl=double_CEWI; /* [sct] Double precision value of scale_factor */
+  double add_fst_dbl=double_CEWI; /* [sct] Double precision value of add_offset */
 
   /*  var_sct *scl_fct=NULL; */ /* [sct] Variable structure for scale_factor */
   /* var_sct *add_fst=NULL; */ /* [sct] Variable structure for add_offset */
@@ -227,7 +227,7 @@ var_pck /* [fnc] Pack variable in memory */
     /* Assume var->scl_fct.vp and var->add_fst.vp are already in memory from pck_dsk_inq() */
   }else{
     /* Compute packing parameters to apply to var */
-    double bppv_dbl; /* [frc] Double precision value of bits per packed value */
+    double bppv_dbl=double_CEWI; /* [frc] Double precision value of bits per packed value */
     double max_mns_min_dbl; /* [frc] Maximum value minus minimum value */
 
     ptr_unn ptr_unn_min; /* [ptr] Pointer union to minimum value of variable */
