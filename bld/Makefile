@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.210 2003-06-09 17:19:12 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.211 2003-07-07 01:29:38 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1079,6 +1079,9 @@ dat_cln:
 	cd ${MY_DAT_DIR}; rm -f foo*
 test:	tst
 tst:	dat
+	cd ${MY_BLD_DIR}; \
+	env MY_BIN_DIR=${MY_BIN_DIR} MY_DAT_DIR=${MY_DAT_DIR} ./nco_tst.sh
+tst_ftp:	dat
 	- if test -f ${MY_DAT_DIR}/nco_tst.nc; then printf "" ; else ${MY_BIN_DIR}/ncks -R -p ftp://dust.ess.uci.edu/pub/zender/nco -l ${MY_DAT_DIR} nco_tst.nc; if [ $? != 0 ]; then printf "WARNING: Unable to retrieve ftp://dust.ess.uci.edu/pub/zender/nco/nco_tst.nc required for self-test, possible problem with getting through your firewall? Manually download and install in directory ../data to continue self test...\n"; fi; fi
 	cd ${MY_BLD_DIR}; \
 	env MY_BIN_DIR=${MY_BIN_DIR} MY_DAT_DIR=${MY_DAT_DIR} ./nco_tst.sh

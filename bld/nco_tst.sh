@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.55 2003-03-27 18:47:47 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.56 2003-07-07 01:29:38 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -87,23 +87,11 @@ printf "NCO Test Suite: LHS is target value, RHS value is actual value\n"
 
 if [ "${START}" = 1 ]; then
 
-# ncks -O -v PS,gw /fs/cgd/csm/input/atm/SEP1.T42.0596.nc ~/nco/data/nco_tst.nc
-# Subtract PS from itself gives zero valued array
-${MY_BIN_DIR}/ncdiff -O -v PS nco_tst.nc nco_tst.nc foo.nc 2>> foo.tst
-# Rename zero-valued PS array to array named negative_one (which will be renamed zero below)
-${MY_BIN_DIR}/ncrename -O -v PS,negative_one foo.nc 2>> foo.tst
-# Zero-valued array minus negative one scalar value gives one-valued array
-${MY_BIN_DIR}/ncdiff -O -C -v negative_one foo.nc in.nc foo2.nc 2>> foo.tst
-# Rename one-valued array from negative_one to one
-${MY_BIN_DIR}/ncrename -O -v negative_one,one foo2.nc 2>> foo.tst
-# Append one-valued array to foo.nc
-${MY_BIN_DIR}/ncks -A -C -v one foo2.nc foo.nc 2>> foo.tst
-# Append Gaussian weight array to foo.nc
-${MY_BIN_DIR}/ncks -A -C -v gw nco_tst.nc foo.nc 2>> foo.tst
-# Rename zero-valued array named negative_one to array named zero
-${MY_BIN_DIR}/ncrename -O -v negative_one,zero foo.nc 2>> foo.tst
-# Get rid of working file
-/bin/rm -f foo2.nc 2>> foo.tst
+# Create file containing non-trivial arrays (64x128) to test NCO
+${MY_BIN_DIR}/ncks -O -v lat_64,lon_128,gw_64 in.nc foo.nc
+${MY_BIN_DIR}/ncrename -O -d lat_64,lat -d lon_128,lon -v lat_64,lat -v gw_64,gw -v lon_128,lon foo.nc
+${MY_BIN_DIR}/ncap -O -D 1 -s "one[lat,lon]=lat*lon*0.0+1.0" -s "zero[lat,lon]=lat*lon*0.0" foo.nc foo.nc
+
 fi # end start
 
 # ncks testing

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.165 2003-07-04 20:19:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.166 2003-07-07 01:29:38 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -4048,7 +4048,7 @@ and the @var{att_type} is NC_CHAR, e.g., @code{-a units,T,o,c,""} or
 @code{-a units,T,o,c,}, then the corresponding attribute is set to 
 have zero length.
 When specifying an array of values, it is safest to enclose
-@var{att_val} in double or single quotes, e.g., 
+@var{att_val} in single or double quotes, e.g., 
 @code{-a levels,T,o,s,"1,2,3,4"} or   
 @code{-a levels,T,o,s,'1,2,3,4'}.
 The quotes are strictly unnecessary around @var{att_val} except 

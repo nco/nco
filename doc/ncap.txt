@@ -1,3 +1,6 @@
+# Purpose: Rantings on ncap from 1995, when it was designed
+# Now obsolete, although subscripts still now implemented
+
 ncap functionality:
 
 The specification of user-defined fields is as follows:
