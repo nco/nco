@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.49 2003-02-19 01:32:33 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.50 2003-02-26 05:53:49 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -212,3 +212,4 @@ strategies and technical details are to be discussed.
 
 Thanks,
 Charlie
+
