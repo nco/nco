@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.217 2003-05-30 19:28:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.218 2003-06-06 18:02:34 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -220,6 +220,7 @@ ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 257. Put hybrid_sigma_pressure etc. definitions into in.cdl
 258. Develop syntax/procedure for specifying lists of hyperslabs for single pass, low memory consumption MSA jobs like Martin Schultz's in Discussion forum on 20030506
 259. Variadic function extension to nco_malloc() to support printing debuggin messages
+260. Warn (but work) when coordinate variable has more than two dimensions
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.83 2003-05-07 01:09:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.84 2003-06-06 18:02:37 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.83 2003-05-07 01:09:55 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.83 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.84 2003-06-06 18:02:37 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.84 $";
   
   extern char *optarg;
   
@@ -337,73 +337,68 @@ main(int argc,char **argv)
   /* We now have final list of variables to extract. Phew. */
   
   /* Place all dims in lmt_lst */
-  lmt_lst = (lmt_all * )nco_malloc(nbr_dmn_fl*sizeof(lmt_all));
+  lmt_lst=(lmt_all *)nco_malloc(nbr_dmn_fl*sizeof(lmt_all));
 
-   for(idx =0 ; idx <nbr_dmn_fl ; idx++){
+  for(idx=0;idx<nbr_dmn_fl;idx++){
     (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
-    lmt_tmp = &lmt_lst[idx];
-    lmt_tmp->lmt_dmn  = (lmt_sct **) nco_malloc(sizeof(lmt_sct *));
-    lmt_tmp->lmt_dmn[0] = (lmt_sct *) nco_malloc(sizeof(lmt_sct));
+    lmt_tmp=&lmt_lst[idx];
+    lmt_tmp->lmt_dmn=(lmt_sct **)nco_malloc(sizeof(lmt_sct *));
+    lmt_tmp->lmt_dmn[0]=(lmt_sct *)nco_malloc(sizeof(lmt_sct));
     lmt_tmp->dmn_nm=strdup(dmn_nm);
     lmt_tmp->lmt_dmn_nbr=1;
-    lmt_tmp->dmn_sz_org = dmn_sz;
-    lmt_tmp->WRP = False;
-    lmt_tmp->BASIC_DMN = True;
-    /* iniialize lmt struct */
+    lmt_tmp->dmn_sz_org=dmn_sz;
+    lmt_tmp->WRP=False;
+    lmt_tmp->BASIC_DMN=True;
+    /* Initialize lmt struct */
     lmt_tmp->lmt_dmn[0]->nm=lmt_tmp->dmn_nm;
-    lmt_tmp->lmt_dmn[0]->id = idx;
-    lmt_tmp->lmt_dmn[0]->is_rec_dmn = (idx == rec_dmn_id ? True : False);
-    lmt_tmp->lmt_dmn[0]->srt = 0L;
-    lmt_tmp->lmt_dmn[0]->end = dmn_sz -1L;
-    lmt_tmp->lmt_dmn[0]->cnt = dmn_sz;
-    lmt_tmp->lmt_dmn[0]->srd = 1L;
-    /* flag which shows that struct has been inialized here. A HACK */
-    lmt_tmp->lmt_dmn[0]->lmt_typ = -1;
-  }     
+    lmt_tmp->lmt_dmn[0]->id=idx;
+    lmt_tmp->lmt_dmn[0]->is_rec_dmn=(idx == rec_dmn_id ? True : False);
+    lmt_tmp->lmt_dmn[0]->srt=0L;
+    lmt_tmp->lmt_dmn[0]->end=dmn_sz-1L;
+    lmt_tmp->lmt_dmn[0]->cnt=dmn_sz;
+    lmt_tmp->lmt_dmn[0]->srd=1L;
+    /* Flag to show that struct has been inialized. fxm: A HACK */
+    lmt_tmp->lmt_dmn[0]->lmt_typ=-1;
+  } /* end loop over dimensions */
 
-  /* Now add user specified limits lmt_lst */
-  for(idx=0;idx<lmt_nbr;idx++) {
-  /* Find coordinate/dimension values associated with user-specified limits */
-     (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
-     for(jdx=0; jdx < nbr_dmn_fl ; jdx++) {
-       if(!strcmp(lmt[idx].nm,lmt_lst[jdx].dmn_nm)){   
-         lmt_tmp = &lmt_lst[jdx];
-         lmt_tmp->BASIC_DMN = False;
-         if(lmt_tmp->lmt_dmn[0]->lmt_typ == -1) { 
-	   lmt_tmp->lmt_dmn[0]=lmt+idx; 
-           }else{ 
-           
-	   lmt_tmp->lmt_dmn  = (lmt_sct **) nco_realloc(lmt_tmp->lmt_dmn,((lmt_tmp->lmt_dmn_nbr) +1)*sizeof(lmt_sct *));
-           lmt_tmp->lmt_dmn[(lmt_tmp->lmt_dmn_nbr)++]=lmt+idx;
-	 }
-         break;
-       } /* end if */
-     }
-     /* dimension in limit not found */
-     if( jdx == nbr_dmn_fl ) {
-       (void)fprintf(stderr,"Unable to find limit dimension %s in list\n ",lmt[idx].nm);
-       nco_exit(EXIT_FAILURE);
-     }
+  /* Add user specified limits lmt_lst */
+  for(idx=0;idx<lmt_nbr;idx++){
+    /* Find coordinate/dimension values associated with user-specified limits */
+    (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
+    for(jdx=0;jdx<nbr_dmn_fl;jdx++) {
+      if(!strcmp(lmt[idx].nm,lmt_lst[jdx].dmn_nm)){   
+	lmt_tmp=&lmt_lst[jdx];
+	lmt_tmp->BASIC_DMN=False;
+	if(lmt_tmp->lmt_dmn[0]->lmt_typ == -1) { 
+	  lmt_tmp->lmt_dmn[0]=lmt+idx; 
+	}else{ 
+	  lmt_tmp->lmt_dmn=(lmt_sct **)nco_realloc(lmt_tmp->lmt_dmn,((lmt_tmp->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
+	  lmt_tmp->lmt_dmn[(lmt_tmp->lmt_dmn_nbr)++]=lmt+idx;
+	} /* endif */
+	break;
+      } /* end if */
+    } /* end loop over dimensions */
+    /* dimension in limit not found */
+    if(jdx == nbr_dmn_fl){
+      (void)fprintf(stderr,"Unable to find limit dimension %s in list\n ",lmt[idx].nm);
+      nco_exit(EXIT_FAILURE);
+    } /* end if err */
   } /* end loop over idx */       
-
-
-  /* Split up any wrapped limits */
- for(idx = 0 ; idx < nbr_dmn_fl ; idx++)
-   if( lmt_lst[idx].BASIC_DMN == False) 
-     (void)nco_msa_wrp_splt( lmt_lst+idx);
-   
   
-
+  /* Split up wrapped limits */
+  for(idx=0;idx<nbr_dmn_fl;idx++)
+    if(lmt_lst[idx].BASIC_DMN == False)
+      (void)nco_msa_wrp_splt(lmt_lst+idx);
+  
   /* Find and store the final size of each dimension */
-  for(idx = 0 ; idx < nbr_dmn_fl ; idx++){
-    (void)nco_msa_clc_cnt( lmt_lst+idx );
-    /*   if( lmt_lst[idx].lmt_dmn_nbr >1 ) (void)nco_msa_prn_idx(&lmt_lst[idx]);  */
-  }
+  for(idx=0;idx<nbr_dmn_fl;idx++){
+    (void)nco_msa_clc_cnt(lmt_lst+idx);
+    /* if(lmt_lst[idx].lmt_dmn_nbr>1) (void)nco_msa_prn_idx(&lmt_lst[idx]); */
+  } /* end loop over dimensions */
   
-	 
   if(fl_out != NULL){
     int out_id;  
-
+    
     /* Open output file */
     fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
     
@@ -412,7 +407,7 @@ main(int argc,char **argv)
     
     /* Catenate timestamped command line to "history" global attribute */
     if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-
+    
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
        /* Define variable in output file */
@@ -472,13 +467,9 @@ main(int argc,char **argv)
     } /* end loop over idx */
   } /* end if OUTPUT_VARIABLE_METADATA */
 
-   
-  /*
-  if(OUTPUT_DATA){
+  /* if(OUTPUT_DATA){
     for(idx=0;idx<nbr_xtr;idx++) (void)nco_prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_STYLE,PRINT_DIMENSIONAL_UNITS,PRN_DMN_IDX_CRD_VAL);
-  } 
-  
-  */
+    } */
 
   if(OUTPUT_DATA){
     for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl,dlm_sng,FORTRAN_STYLE,PRINT_DIMENSIONAL_UNITS,PRN_DMN_IDX_CRD_VAL);
