@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.46 2000-06-06 05:49:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.47 2000-07-09 00:07:40 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -49,12 +49,12 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.1.47
-@set doc-edition 1.1.47
+@set nco-edition 1.1.49
+@set doc-edition 1.1.49
 @set copyright-years 1995--2000
 @set update-year 2000
-@set update-date 11 May 2000
-@set update-month May 2000
+@set update-date 8 July 2000
+@set update-month July 2000
 
 @c Experiment with smaller amounts of whitespace between chapters and sections.
 @tex
@@ -160,18 +160,18 @@ by the Free Software Foundation.
 @sp 2
 @c Cover art by Robynn Rudel
 @end titlepage
-
 @node  Top, Foreword, (dir), (dir)
 @comment node-name, next,     previous, up
 
 @menu
-* Foreword::                    Foreword
-* Summary::                     What is NCO?
-* Introduction::                Overview of NCO operators
-* Strategies::                  Operator Strategies
-* Common features::             Common Operator Features
-* Operators::                   Description of all NCO operators
-* General Index::               Index of concepts
+* Foreword::                    
+* Summary::                     
+* Introduction::                
+* Strategies::                  
+* Common features::             
+* Operators::                   
+* Contributing::                
+* General Index::               
 
 @detailmenu
  --- The Detailed Node Listing ---
@@ -306,10 +306,12 @@ itself.
 The complete NCO source distribution is currently distributed as a
 @dfn{compressed tarfile} from
 @ifhtml
-<a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz"> ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz</a>.
+<a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz"> ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz</a>
+and <a href="https://sourceforge.net/projects/nco"> https://sourceforge.net/projects/nco</a>.
 @end ifhtml
 @ifclear html
-@code{ftp://ftp.cgd.ucar.edu/@-pub/@-zender/@-nco/@-nco.@-tar.@-gz}.
+@code{ftp://ftp.cgd.ucar.edu/@-pub/@-zender/@-nco/@-nco.@-tar.@-gz} and
+@code{https://sourceforge.net/@-projects/@-nco}.
 @end ifclear
 The compressed tarfile must be uncompressed and untarred before building
 NCO.
@@ -353,18 +355,18 @@ If you want to quickly see what the latest improvements in NCO are
 (without downloading the entire source distribution), visit the NCO
 homepage at URL
 @ifhtml
-<a href="http://www.cgd.ucar.edu/cms/nco"> http://www.cgd.ucar.edu/cms/nco</a>.
+<a href="http://nco.sourceforge.net"> http://nco.sourceforge.net</a>.
 @end ifhtml
 @ifclear html
-@code{http://www.cgd.ucar.edu/cms/nco}.
+@code{http://nco.sourceforge.net}.
 @end ifclear
 The HTML version of the @cite{User's Guide} is also available online through
 the World Wide Web at URL
 @ifhtml
-<a href="http://www.cgd.ucar.edu/cms/nco/nco.html"> http://www.cgd.ucar.edu/cms/nco/nco.html</a>.
+<a href="http://nco.sourceforge.net/nco.html"> http://nco.sourceforge.net/nco.html</a>.
 @end ifhtml
 @ifclear html
-@code{http://www.cgd.ucar.edu/cms/nco/nco.html}.
+@code{http://nco.sourceforge.net/nco.html}.
 @end ifclear
 @cindex netCDF
 To build and use NCO, you must have netCDF installed.
@@ -1941,7 +1943,7 @@ variable, it will also contain the @code{time} coordinate.
 A short message is added to the @code{history} global attribute whenever
 these ARM-specific procedures are executed.
 
-@node Operators, General Index, Common features, Top
+@node Operators, Contributing, Common features, Top
 @chapter Reference manual for all operators
 
 This chapter presents reference pages for each of the operators
@@ -3760,6 +3762,32 @@ ncwa -m ORO -M 0.5 -o lt -w gw -a lat,lon,time
 -d lat,-20.,20. -d lon,120.,270. in.nc out.nc
 @end example
 
+@node Contributing, General Index, Operators, Top
+@chapter Contributing
+@cindex contributing
+@cindex contributors
+We welcome contributions from anyone.
+The NCO project homepage at
+@ifhtml
+<a href="https://sourceforge.net/projects/nco"> https://sourceforge.net/projects/nco</a>
+@end ifhtml
+@ifclear html
+@code{https://sourceforge.net/@-projects/@-nco}
+@end ifclear
+contains more information on how to contribute. 
+@table @samp
+@item Charlie Zender
+Concept, design and implementation of NCO from 1995--2000.
+@item Henry Butowsky
+Min, max, and total operations
+@item Bill Kocik
+Memory management
+@item Juliana Rew
+Compatibility with large PIDs
+@item Keith Oleson
+Excellent bug reports
+@end table
+
 @c @ignore
 @c @node CSM Example, General Index, Operators, Top
 @c @chapter Example: Analyzing a CSM run
@@ -3773,7 +3801,7 @@ ncwa -m ORO -M 0.5 -o lt -w gw -a lat,lon,time
 
 @c @printindex fn
 
-@node General Index,  , Operators, Top
+@node General Index,  , Contributing, Top
 @unnumbered General Index
 
 @printindex cp
