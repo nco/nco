@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.63 2002-03-26 03:45:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.64 2002-04-24 16:52:16 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -107,7 +107,8 @@ main(int argc,char **argv)
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *spt_arg[73]; /* fxm: turn arbitrary size into pre-processor token */
+#define NCAP_SPT_NBR_MAX 100
+  char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL;
   char *opt_sng;
   char *fl_out;
@@ -115,8 +116,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.63 2002-03-26 03:45:55 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.63 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.64 2002-04-24 16:52:16 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.64 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -187,8 +188,8 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   
-#define NCAP_ATT_LST_MAX 500 /* fxm: turn arbitrary size into pre-processor token */
-  aed_sct *att_lst[NCAP_ATT_LST_MAX]; /* Structure filled in by yyparse(), contains attributes to write to disk */
+#define NCAP_ATT_LST_NBR_MAX 500 /* fxm: Arbitrary size, should be dynamic */
+  aed_sct *att_lst[NCAP_ATT_LST_NBR_MAX]; /* Structure filled in by yyparse(), contains attributes to write to disk */
   prs_sct prs_arg; /* [sct] Global information required in parser routines */
   
   /* Start clock and save command line */ 
@@ -254,6 +255,7 @@ main(int argc,char **argv)
       break;
     case 's': /* Copy command script for later processing */
       spt_arg[nbr_spt++]=strdup(optarg);
+      if(nbr_spt == NCAP_SPT_NBR_MAX-1) (void)fprintf(stderr,"%s: WARNING No more than %d script arguments allowed. TODO #24\n",prg_nm_get(),NCAP_SPT_NBR_MAX);
       break;
     case 'S': /* Read command script from file rather than from command line */
       fl_spt=optarg;
@@ -292,7 +294,7 @@ main(int argc,char **argv)
   } /* end if */    
 
   /* Create function table */
-  sym_tbl_nbr=11;
+  sym_tbl_nbr=11; /* fxm: Make this dynamic */
   sym_tbl=(sym_sct **)nco_malloc(sizeof(sym_sct *)*sym_tbl_nbr);
   sym_tbl[sym_idx++]=ncap_sym_init("cos",cos,cosf);  
   sym_tbl[sym_idx++]=ncap_sym_init("sin",sin,sinf);
@@ -304,10 +306,10 @@ main(int argc,char **argv)
   sym_tbl[sym_idx++]=ncap_sym_init("log",log,logf);
   sym_tbl[sym_idx++]=ncap_sym_init("log10",log10,log10f);
   sym_tbl[sym_idx++]=ncap_sym_init("sqrt",sqrt,sqrtf);
-#ifdef SGIMP64
-  /* 20020122: SGI does not define gammaf() */
+#if (defined SGIMP64) || (defined AIX)
+  /* 20020122 and 20020422: SGI and AIX do not define gammaf() */
   sym_tbl_nbr--;
-#else /* not SGIMP64 */
+#else /* not SGIMP64 || AIX */
   sym_tbl[sym_idx++]=ncap_sym_init("gamma",gamma,gammaf);
 #endif /* not SGIMP64 */
   assert(sym_idx == sym_tbl_nbr);

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.134 2002-04-24 06:15:04 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.135 2002-04-24 16:52:16 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -37,25 +37,9 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 19. Make all binary operators handle ordering of operands consistently, e.g., divide(1,2)=1/2 not 2/1
 20. Print out contents of each non-comment statement when dbg_lvl==1
 21. Add two-argument functions like fmodf to ncap_sym_init()
-22. Sun version dumps core because zero length variable name is passed to ncap_var_init():
-zender@flagstaff:~/nco/bld$ gdb `which ncap`
-(gdb) run -O -D 1 -v -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/
-nco/data/foo.nc
-Starting program: /home/zender/bin/SUNMP/ncap -O -D 1 -v -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-ncap: CONVENTION File convention is NCAR-CSM
-23. Make LHS type most precise of RHS types
-
-Program received signal SIGSEGV, Segmentation fault.
-0x6fca4734 in strlen ()
-(gdb) where
-#0  0x6fca4734 in strlen ()
-#1  0x4fc08 in NC_findvar ()
-#2  0x4ffec in nc_inq_varid ()
-#3  0x31010 in nco_inq_varid_flg ()
-#4  0x18d5c in ncap_var_init (var_nm=0x0, prs_arg=0xefffe8d0)
-    at ../src/nco/ncap_utl.c:72
-#5  0x20418 in yyparse ()
-#6  0x18ac4 in main ()
+24. AIX compilation fails with missing symbols for float math functions cosf()...
+25. Turn arbitrarily fixed size array tokens NCAP_ATT_LST_NBR_MAX, NCAP_SPT_NBR_MAX into dynamically allocatable arrays
+26. Make sym_tbl_nbr dynamic
 
 Highest priority NCO-wide items that You can help with:
 41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)

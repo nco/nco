@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.122 2002-04-19 05:55:24 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.123 2002-04-24 16:52:15 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -246,8 +246,7 @@ else
  FC := xlf95
 endif # endif OMP
 C++ := xlC
-# Additional switch to fix compiler warnings on csz.c
-# -qmaxmem=num Limit the amount of memory used by space intensive optimizations to <num> kilobytes
+# -qmaxmem=num Limit amount of memory used by space intensive optimizations to <num> kilobytes
 CFLAGS := -qmaxmem=8192
 CPP := cc -c
 CPPFLAGS := ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC}
@@ -255,7 +254,8 @@ FFLAGS := ${OMP_FLG} -qmaxmem=-1 -qarch=auto -qspillsize=2500
 FIXEDFLAGS := -qsuffix=f=f:cpp=F -qfixed=132
 FREEFLAGS := -qsuffix=f=f90:cpp=F90
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+# 20040422: -lC links to AIX C++ library which contains float intrinsics cosf()...
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm -lC
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 #LDFLAGS += -lxlf90 -lxlf
 endif
@@ -264,14 +264,10 @@ LINT := lint
 YACC := yacc
 ifeq (${OPTS},O)
  CFLAGS += -O
-# CPP := ${CPP} ${CPPFLAGS}
-# PREPROCESS.F := ${CPP} ${CPPFLAGS}
  FFLAGS += -O -NS2000 -qfixed=132
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
-# CPP := ${CPP} ${CPPFLAGS}
-# PREPROCESS.F := ${CPP} ${CPPFLAGS}
  FFLAGS := -g -NS2000 -qfixed=132
 endif
 # Additional flags for AIX:
