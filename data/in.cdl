@@ -14,8 +14,8 @@
 // msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/h0003.nc
 // msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/h0004.nc
 
-// Changing the values of the variables below, especially the coordinate 
-// variables, will affect the outcome of the test script nco_tst.sh.
+// WARNING: Changing values of variables below, especially coordinate variables, will affect the outcome of nco_tst.sh test script
+// Other programs, e.g., ~/f/fff.F90, ~/c++/ccc.cc, ~/c/c.c may also break
 // In particular, do not change the number of elements in the record coordinate, time, without simultaneously changing the number of data in all the record variables
 
 // Data constants in CDL:
@@ -38,7 +38,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.31 2001-08-10 17:09:08 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.32 2001-08-28 19:43:22 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
