@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.35 2004-08-14 21:00:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.36 2004-09-06 06:46:58 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -448,7 +448,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     case ncwa:
       /* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
       if(prg == ncpdq && nco_pck_typ != nco_pck_nil){
-	/* Packing operates on every extracted variable */
+	/* fxm: Packing currently operates on every extracted variable */
 	var_op_typ[idx]=prc;
       }else{
 	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){

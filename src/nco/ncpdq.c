@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.45 2004-09-06 06:26:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.46 2004-09-06 06:46:58 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.45 2004-09-06 06:26:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.45 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.46 2004-09-06 06:46:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.46 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -140,7 +140,7 @@ main(int argc,char **argv)
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
-  int nco_pck_map=nco_pck_map_hgh_sht; /* [enm] Packing conversion map */
+  int nco_pck_map=nco_pck_map_hgh_sht; /* [enm] Packing map */
   int nco_pck_typ=nco_pck_nil; /* [enm] Packing type */
   int opt;
   int out_id;  
@@ -365,6 +365,7 @@ main(int argc,char **argv)
   /* No re-order dimensions specified implies packing request */
   if(dmn_rdr_nbr == 0){
     if(nco_pck_typ == nco_pck_nil) nco_pck_typ=nco_pck_typ_get(nco_pck_typ_sng);
+    if(dbg_lvl > 0) (void)fprintf(stderr,"%s: DEBUG Packing map %s enum %d requested\n",prg_nm_get(),nco_pck_map_sng,nco_pck_map);
     if(dbg_lvl > 0) (void)fprintf(stderr,"%s: DEBUG Packing type %s enum %d requested\n",prg_nm_get(),nco_pck_typ_sng,nco_pck_typ);
   } /* endif */
 
@@ -629,7 +630,7 @@ main(int argc,char **argv)
       aed_lst_scl_fct=(aed_sct *)nco_malloc(nbr_var_prc*sizeof(aed_sct));
     } /* endif packing */
     for(idx=0;idx<nbr_var_prc;idx++){
-      nco_pck_mtd(var_prc[idx],var_prc_out[idx],nco_pck_typ);
+      nco_pck_mtd(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_typ);
       if(nco_pck_typ != nco_pck_upk){
 	/* Use same copy of attribute name for all edits */
 	aed_lst_add_fst[idx].att_nm=add_fst_sng;

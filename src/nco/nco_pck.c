@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.38 2004-09-06 06:26:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.39 2004-09-06 06:46:58 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -127,13 +127,13 @@ nco_pck_typ_get /* [fnc] Convert user-specified packing type to key */
 
 nc_type /* O [enm] Type to pack variable to */
 nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */
-(const nc_type nc_typ_in) /* I [enm] Type of input variable */
+(const nc_type nc_typ_in, /* I [enm] Type of input variable */
+ const int nco_pck_map)  /* I [enm] Packing map */
 {
   /* Purpose: Determine best type to pack input variable to */
   /* fxm: devise better system to allow user to specify output type for packed variable */
   const char fnc_nm[]="nco_typ_pck_get()"; /* [sng] Function name */
   nc_type nc_typ_pck_out=NC_NAT; /* [enm] Type to pack to */
-  int nco_pck_map=nco_pck_map_hgh_sht;  /* [enm] Packing conversion */
   
   switch(nco_pck_map){ 
   case nco_pck_map_nil:
@@ -308,13 +308,14 @@ void
 nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
 (const var_sct * const var_in, /* I [ptr] Variable in original disk state */
  var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be altered */
+ const int nco_pck_map,  /* I [enm] Packing map */
  const int nco_pck_typ)  /* I [enm] Packing type */
 {
   /* Purpose: Alter metadata according to packing specification */
   const char fnc_nm[]="nco_pck_mtd()"; /* [sng] Function name */
   nc_type nc_typ_pck_out=NC_NAT; /* [enm] Type to pack to */
   
-  nc_typ_pck_out=nco_typ_pck_get(var_in->type);
+  nc_typ_pck_out=nco_typ_pck_get(var_in->type,nco_pck_map);
   
   switch(nco_pck_typ){
   case nco_pck_all_xst_att:
@@ -369,7 +370,7 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
   /* Variable is already packed---try to re-pack it 
      Final packing type may differ from original */
   if(nco_is_packable(var_in->typ_upk)){
-    var_out->type=nco_typ_pck_get(var_in->typ_upk);
+    var_out->type=nco_typ_pck_get(var_in->typ_upk,nco_pck_map);
         if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s will re-pack variable %s of expanded type %s from current packing (type %s) into new packing of type %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->typ_upk),nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
   }else{
         (void)fprintf(stderr,"%s: WARNING %s variable %s of expanded type %s is already packed into type %s and re-packing is requested but %s unable to re-pack variables of type %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->typ_upk),nco_typ_sng(var_in->type),prg_nm_get(),nco_typ_sng(var_in->typ_upk));

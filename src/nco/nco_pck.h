@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.24 2004-09-06 06:26:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.25 2004-09-06 06:46:58 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -70,12 +70,14 @@ nco_is_packable /* [fnc] Will NCO attempt to pack variable? */
 
 nc_type /* O [enm] Type to pack variable to */
 nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */
-(const nc_type nc_typ_in); /* I [enm] Type of input variable */
+(const nc_type nc_typ_in, /* I [enm] Type of input variable */
+ const int nco_pck_map); /* I [enm] Packing map */
 
 void
 nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
 (const var_sct * const var_in, /* I [ptr] Variable in original disk state */
  var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be altered */
+ const int nco_pck_map,  /* I [enm] Packing map */
  const int nco_pck_typ); /* I [enm] Packing type */
 
 void
