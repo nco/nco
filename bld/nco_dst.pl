@@ -29,7 +29,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.60 2000-06-06 05:49:21 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.61 2000-06-06 05:52:54 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -65,9 +65,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-06-06 05:49:21 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.60 2000-06-06 05:49:21 zender Exp $';
-my $CVS_Revision='$Revision: 1.60 $';
+my $CVS_Date='$Date: 2000-06-06 05:52:54 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.61 2000-06-06 05:52:54 zender Exp $';
+my $CVS_Revision='$Revision: 1.61 $';
 my $CVSROOT=':pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -230,6 +230,7 @@ if($dbg_lvl >= 1){
 # Build distribution from scratch
 if($bld){
     cmd_prc("$rm_cmd -r $dst_pth_bld"); # Remove contents of current directory, if any
+    if($CVSROOT =~ m/pserver/){cmd_prc("$cvs_cmd -d $CVSROOT login");} # Login first
     if($dly_snp){
 	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -D \"1 second ago\" -d $dst_pth_bld nco"); # Export
     }else{

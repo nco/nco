@@ -1,13 +1,13 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.16 2000-06-03 01:07:20 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.17 2000-06-06 05:49:21 zender Exp $
 
 # Purpose: NCO test battery
 
 # Create T42-size test field named one, which is identically 1.0 in foo.nc
 cd ../data 2> foo.tst
 printf "NCO Test Suite:\n"
-# ncks -O -v PS,gw /fs/cgd/csm/input/atm/SEP1.T42.0596.nc ~/nc/nco/data/nco_tst.nc
+# ncks -O -v PS,gw /fs/cgd/csm/input/atm/SEP1.T42.0596.nc ~/nco/data/nco_tst.nc
 # Subtract PS from itself gives zero valued array
 ncdiff -O -v PS nco_tst.nc nco_tst.nc foo.nc 2>> foo.tst
 # Rename zero-valued PS array to array named negative_one (which will be renamed zero below)
@@ -141,3 +141,4 @@ echo "nco 4: HTTP/DODS protocol: 1 =?= $avg"
 mv in_tmp.nc in.nc
 
 /data/zender/tmp/ncrcat -n 2,4 -d lat,-15.,15. -d lon,120.,130. -d time,355,370 -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc air.out.nc
+

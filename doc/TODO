@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.55 2000-05-20 03:57:51 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.56 2000-06-06 05:49:21 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -75,7 +75,7 @@ Maybe 1.0e36d does not convert to 1.0e36f on Crays?
 138. If fastest varying dimension of NC_CHAR variable is of size one,
 then should not expect it to be NUL-terminated.
 139. ncks does not correctly print coordinate indices in hyperslabs with wrapping
-ncks -H -C -v one_dmn_rec_var -d time,9,6 ~/nc/nco/data/in.nc
+ncks -H -C -v one_dmn_rec_var -d time,9,6 ~/nco/data/in.nc
 Must compute dmn_ss using WRP information for each dimension
 140. ncks prints dimensional indices relative to disk values, but
 variable index relative to hyperslab origin for all data types except
@@ -98,7 +98,7 @@ directory rather than, say, an NFS-mounted directory like /fs/cgd
 148. Put in more useful error diagnostics for Schweitzer's data holes
 These only appear in ncra/ncrcat because ncks treats same hyperslab as a wrap!
 Must define a consistent convention here
-cd ~/nc/nco/data
+cd ~/nco/data
 ncks -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 ncrcat -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 149. Add ncks hyperslab tests to nco_tst to catch inconsistencies like #148

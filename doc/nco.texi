@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.45 2000-05-12 07:03:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.46 2000-06-06 05:49:21 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -13,7 +13,7 @@ C-c C-u C-a	texinfo-all-menus-update
 C-c C-u C-e	texinfo-every-node-update
 
 Usage: 
-cd ~/nc/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o $DATA/ps/nco.ps nco.dvi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
+cd ~/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o $DATA/ps/nco.ps nco.dvi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 texi2html -monolithic -verbose nco.texi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco
 cd $DATA/ps;gzip --force nco.ps;scp -p nco.ps.gz www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 texi2dvi nco.texi 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.33 2000-05-09 06:55:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.34 2000-06-06 05:49:22 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -38,8 +38,8 @@
    while I rethink the normalization switches */ 
 
 /* Usage:
-   ncwa -O -a lon /home/zender/nc/nco/data/in.nc foo.nc
-   ncwa -O -R -p /ZENDER/tmp -l /home/zender/nc/nco/data in.nc foo.nc
+   ncwa -O -a lon /home/zender/nco/data/in.nc foo.nc
+   ncwa -O -R -p /ZENDER/tmp -l /home/zender/nco/data in.nc foo.nc
    ncwa -O -a lat -w gw -d lev,17 -v T -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc
    ncwa -O -C -a lat,lon,time -w gw -v PS -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc;ncks -H foo.nc
  */ 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.33 2000-05-09 06:55:57 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.33 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.34 2000-06-06 05:49:22 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.34 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

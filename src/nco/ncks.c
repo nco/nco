@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.24 2000-04-05 21:41:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.25 2000-06-06 05:49:22 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -41,9 +41,9 @@
    ncks -v one in.nc foo.nc
    ncks -p /ZENDER/tmp -l /data/zender/tmp h0001.nc foo.nc
    ncks -s "%+16.10f\n" -H -C -v three_dmn_var in.nc
-   ncks -H -v fl_nm,fl_nm_arr ~/nc/nco/data/in.nc
-   ncks -H -d fl_dim,1 -d char_dim,6,12 -v fl_nm,fl_nm_arr ~/nc/nco/data/in.nc
-   ncks -H -m -v char_var_nul,char_var_space,char_var_multinul ~/nc/nco/data/in.nc
+   ncks -H -v fl_nm,fl_nm_arr ~/nco/data/in.nc
+   ncks -H -d fl_dim,1 -d char_dim,6,12 -v fl_nm,fl_nm_arr ~/nco/data/in.nc
+   ncks -H -m -v char_var_nul,char_var_space,char_var_multinul ~/nco/data/in.nc
    ncks -H -C -v three_dmn_rec_var -d time,,,2 in.nc
    ncks -H -C -v lon -d lon,3,1 in.nc
 */ 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.24 2000-04-05 21:41:57 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.24 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.25 2000-06-06 05:49:22 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.25 $";
   
   extern char *optarg;
   extern int ncopts;

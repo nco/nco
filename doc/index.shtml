@@ -1,15 +1,15 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.44 2000-05-19 17:10:29 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.45 2000-06-06 05:49:21 zender Exp $
 
 Purpose: NCO homepage
 
 Usage:
 http://www.cgd.ucar.edu/cms/nco/index.shtml
-file:/home/zender/nc/nco/doc/index.shtml
-/bin/cp -f ~/nc/nco/doc/index.shtml /web/web-data/cms/nco/index.shtml
-rcp -p ~/nc/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml
-scp -p ~/nc/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml
+file:/home/zender/nco/doc/index.shtml
+/bin/cp -f ~/nco/doc/index.shtml /web/web-data/cms/nco/index.shtml
+rcp -p ~/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml
+scp -p ~/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml
 
-scp -p ~/nc/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.shtml
+scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.shtml
 -->
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
