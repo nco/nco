@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.154 2003-08-27 22:58:50 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.155 2003-08-29 19:39:46 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -123,21 +123,22 @@ Tru64, UNICOS, and Windows.
 
 The following operators are thoroughly described in the 
 <a href="./nco.html">NCO User's Guide</a>. 
-Note that the &ldquo;averagers&rdquo; are misnamed because they
-perform many non-linear operations as well, e.g., total, minimum, 
-maximum, RMS: 
+Note that the <a
+href="./nco.html#averagers">&ldquo;averagers&rdquo;</a> are misnamed
+because they perform many non-linear operations as well, e.g., total,
+minimum, maximum, RMS: 
 <ul>
-<li><b>ncap</b> netCDF Arithmetic Processor</li>
-<li><b>ncatted</b> netCDF Attribute Editor</li>
-<li><b>ncbo</b> netCDF Binary Operator (includes <tt>ncadd</tt>, <tt>ncsubtract</tt>, <tt>ncmultiply</tt>, <tt>ncdivide</tt>)</li>
-<li><b>ncea</b> netCDF Ensemble Averager</li>
-<li><b>ncecat</b> netCDF Ensemble Concatenator</li>
-<li><b>ncflint</b> netCDF File Interpolator</li>
-<li><b>ncks</b> netCDF Kitchen Sink</li>
-<li><b>ncra</b> netCDF Record Averager</li>
-<li><b>ncrcat</b> netCDF Record Concatenator</li>
-<li><b>ncrename</b> netCDF Renamer</li>
-<li><b>ncwa</b></td> netCDF Weighted Averager</li>
+<li><a href="./nco.html#ncap"><b>ncap</b></a> netCDF Arithmetic Processor</li>
+<li><a href="./nco.html#ncatted"><b>ncatted</b></a> netCDF Attribute Editor</li>
+<li><a href="./nco.html#ncbo"><tt>ncbo</tt></a> netCDF Binary Operator (includes <tt>ncadd</tt>, <tt>ncsubtract</tt>, <tt>ncmultiply</tt>, <tt>ncdivide</tt>)</li>
+<li><a href="./nco.html#ncea"><b>ncea</b></a> netCDF Ensemble Averager</li>
+<li><a href="./nco.html#ncecat"><b>ncecat</b></a> netCDF Ensemble Concatenator</li>
+<li><a href="./nco.html#ncflint"><b>ncflint</b></a> netCDF File Interpolator</li>
+<li><a href="./nco.html#ncks"><b>ncks</b></a> netCDF Kitchen Sink</li>
+<li><a href="./nco.html#ncra"><b>ncra</b></a> netCDF Record Averager</li>
+<li><a href="./nco.html#ncrcat"><b>ncrcat</b></a> netCDF Record Concatenator</li>
+<li><a href="./nco.html#ncrename"><b>ncrename</b></a> netCDF Renamer</li>
+<li><a href="./nco.html#ncwa"><b>ncwa</b></a></td> netCDF Weighted Averager</li>
 </ul>
 <p><hr width="100%"></p>
 
@@ -179,7 +180,7 @@ monetary donations on NCO development:
 <dt><a name="News"></a></dt>
 <h2>NCO News & Announcements</h2>
 <ul>
-<li>New &ldquo;binary&rdquo; operator <tt>ncbo</tt> does file addition, subtraction, multiplication, and division
+<li>New &ldquo;binary&rdquo; operator <a href="./nco.html#ncbo"><tt>ncbo</tt></a> does file addition, subtraction, multiplication, and division
 <li><tt>ncap</tt> adds user-invokable type conversion functions
 <tt>char()</tt>, <tt>short()</tt>, <tt>int()</tt>, <tt>float()</tt>,
 <tt>double()</tt>.</li>
@@ -205,8 +206,8 @@ Tarballs are only uploaded to SourceForge, and RPMs are only
 generated, for those releases marked &ldquo;Packaged&rdquo;.
 Retrieve these versions <a name="#Download">using CVS</a> or from 
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
-<li><b>NCO 2.8.1</b>, &ldquo;Variable wildcarding&rdquo;&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators
-<li><b>NCO 2.8.0</b>, New &ldquo;binary&rdquo; operator <tt>ncbo</tt>, obsoletes <tt>ncdiff</tt>, Debian integration
+<li><b>NCO 2.8.1</b>, <a href="./nco.html#wildcarding">&ldquo;Variable wildcarding&rdquo;</a>&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators
+<li><b>NCO 2.8.0</b>, New &ldquo;binary&rdquo; operator <a href="./nco.html#ncbo"><tt>ncbo</tt></a>, obsoletes <tt>ncdiff</tt>, Debian integration
 <li><b>NCO 2.7.4</b>, Autotools build support for AIX, fix UDUnits confusion with floating point hyperslab specifications
 <li><b>NCO 2.7.3</b>, Support <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (and some <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html">CF</a>) conventions, e.g., <tt>ncks -d wvl "1 picometer","1 furlong" -d time,"2001-03-19 06:00:0.0","2001-03-19 18:00:0.0"</tt> 
 <li><b>NCO 2.7.2</b>, Printing (<tt>ncks -H</tt>) plays well with multi-slabbing
@@ -288,8 +289,8 @@ version.
 This command retrieves and places NCO version <tt>2.5.3</tt> into a
 local directory named <tt>nco-2.5.3</tt>: 
 <p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2_5_3 -d nco-2.5.3 nco</tt></p>
-This command retrieves the current ("bleeding edge") development
-version of NCO into a local directory named <tt>nco</tt>:
+This command retrieves the current (&ldquo;bleeding edge&rdquo;)
+development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>

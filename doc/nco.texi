@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.175 2003-08-29 16:28:47 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.176 2003-08-29 19:39:46 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -33,6 +33,7 @@ M-x texinfo-multiple-files-update
 Usage: 
 cd ~/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
 texi2html -monolithic -verbose nco.texi
+texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
 texi2dvi --output=nco.dvi nco.texi 
 texi2dvi --pdf --output=nco.pdf nco.texi
 pdfthumb nco.pdf nco.pdf2;/bin/mv nco.pdf2 nco.pdf
@@ -54,6 +55,8 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @email{}: E-mail address, e.g., @email{zender at uci dot edu}
 @env{}: Environment variable, e.g., @env{HOME}
 @file{}: Filename, e.g., @url{in.nc}
+@html: Text until @end html passed without translation
+@ifhtml: Text until @end ifhtml passed with translation
 @kbd{}: Keyboard input, e.g., @kbd{ncra in.nc out.nc}
 @key{}: Key name, e.g., @key{ESC} (rarely needed)
 @option{}: Command-line option, e.g., @option{}
@@ -206,17 +209,16 @@ Rew and Steve Emmerson.
 @setchapternewpage odd
 
 @titlepage
-@ifhtml
+@html
 <meta name="Author" CONTENT="Charlie Zender">
 <meta name="Keywords" CONTENT="NCO documentation, NCO User's Guide,
 netCDF, operator, GCM, CCM, scientific data, ncbo, ncea, ncecat,
 ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
-@end ifhtml
-@c fxm: Direct HTML commands have no effect
-@ifhtml
+@end html
+@html
 <body text="#000000" link="#0000EF" vlink="#008080" alink="#FF0000">
 <font face="Arial">
-@end ifhtml
+@end html
 @ignore
 @end ignore
 @title NCO User's Guide
@@ -227,10 +229,10 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @author by Charlie Zender
 @author Department of Earth System Science
 @author University of California at Irvine
-@ifhtml
+@html
 <p>WWW readers: Having trouble finding the section you want?</p> 
 <p>Search for keywords in the (hyper) index at the end of this page</p> 
-@end ifhtml
+@end html
 
 @c Include Distribution inside titlepage so that headings are turned off
 @page
@@ -274,15 +276,16 @@ The operators facilitate manipulation and analysis of self-describing
 data stored in the netCDF or HDF4 formats, which are freely available
 (@uref{http://www.unidata.ucar.edu/packages/netcdf} and
 @uref{http://hdf.ncsa.uiuc.edu}, respectively). 
-Each @acronym{NCO} operator (e.g., ncks) takes netCDF or HDF input file(s),
-performs an operation (e.g., averaging, hyperslabbing, or renaming),
-and outputs a processed netCDF file. 
+Each @acronym{NCO} operator (e.g., ncks) takes netCDF or HDF input
+file(s), performs an operation (e.g., averaging, hyperslabbing, or
+renaming), and outputs a processed netCDF file. 
 Although most users of netCDF and HDF data are involved in scientific
 research, these data formats, and thus @acronym{NCO}, are generic and are
 equally useful in fields like finance. 
-The @acronym{NCO} User's Guide illustrates @acronym{NCO} use with examples from the field
-of climate modeling and analysis. 
-The @acronym{NCO} homepage is @uref{http://nco.sourceforge.org}.
+The @acronym{NCO} User's Guide illustrates @acronym{NCO} use with
+examples from the field of climate modeling and analysis. 
+The @acronym{NCO} homepage is @uref{http://nco.sourceforge.net}, and
+there is a mirror at @uref{http://dust.ess.uci.edu/nco}.
 
 This file documents @acronym{NCO} version @value{nco-edition}.
 
@@ -809,7 +812,7 @@ Our request is that you communicate with the project via @acronym{NCO}
 Project Forums.
 Before posting to the @acronym{NCO} forums described below, you might
 first @uref{https://sourceforge.net/account/register.php, register}
-your name and email address with SourceForge.org or else all of your
+your name and email address with SourceForge.net or else all of your
 postings will be attributed to "nobody".
 Once registered you may choose to "monitor" any forum and to receive
 (or not) email when there are any postings.
@@ -820,8 +823,7 @@ see if that feature is already on the
 If it is, please consider implementing that feature yourself and sending
 us the patch!
 If the feature is not yet on the list then send a note to the
-@uref{http://sourceforge.net/forum/forum.php?forum_id=9829, NCO
-Discussion forum}.
+@uref{http://sourceforge.net/forum/forum.php?forum_id=9829, NCO Discussion forum}.
 
 Please read the manual before reporting a bug or posting a request for
 help.  
@@ -1036,6 +1038,9 @@ file addition, subtraction, multiplication and interpolation.
 Sequences of these commands can accomplish simple but powerful
 operations from the command line.
 
+@html
+<a name="averagers"></a>
+@end html
 @node Averaging vs. Concatenating, Large numbers of input files, Addition Subtraction Division Multiplication and Interpolation, Strategies
 @section Averagers vs. Concatenators
 
@@ -1863,6 +1868,9 @@ For @code{ncap}, the @samp{-v} switch takes no arguments and indicates
 that @emph{only} user-defined variables should be output.
 @code{ncap} neither accepts nor understands the @var{-x} switch.
 
+@html
+<a name="wildcarding"></a>
+@end html
 @cindex extended regular expressions
 @cindex regular expressions
 @cindex pattern matching
@@ -2638,19 +2646,19 @@ masks and normalization.
 Averaging is the default, and will be described first so the
 terminology for the other operations is familiar.
 
-@ifhtml
+@html
 <p><b>Note for HTML user's</b>: 
 <br>The definition of mathematical operations involving rank reduction
 (e.g., averaging) relies heavily on mathematical expressions which
-cannot be easily represented in HTML.  
-<b>See the printed manual for complete documentation.</b>
-@end ifhtml
+cannot easily be represented in HTML.  
+<b>See the <a href="./nco.pdf">printed manual</a> for complete documentation.</b>
+@end html
 @ifinfo
 Note for Info user's: 
 The definition of mathematical operations involving rank reduction
 (e.g., averaging) relies heavily on mathematical expressions which
 cannot be easily represented in Info.
-See the printed manual for complete documentation.
+@emph{See the @uref{./nco.pdf,printed manual} for complete documentation.}
 @end ifinfo
 
 @tex
@@ -3292,6 +3300,9 @@ described in any detail in the sections below.
 @end menu
 
 @page
+@html
+<a name="ncap"></a>
+@end html
 @node ncap netCDF Arithmetic Processor, ncatted netCDF Attribute Editor, Operator Reference Manual, Operator Reference Manual
 @section @command{ncap} netCDF Arithmetic Processor
 @cindex parser
@@ -3941,6 +3952,9 @@ ncap -O -s "uprmvprm=(u-uavg)*(v-vavg)" foo.nc foo.nc # Covariance
 @end example
 
 @page
+@html
+<a name="ncatted"></a>
+@end html
 @node ncatted netCDF Attribute Editor, ncbo netCDF Binary Operator, ncap netCDF Arithmetic Processor, Operator Reference Manual
 @section @command{ncatted} netCDF Attribute Editor
 @cindex attributes
@@ -4275,6 +4289,9 @@ These outer single quotes are necessary for interactive use, but may be
 omitted in batch scripts.
 
 @page
+@html
+<a name="ncbo"></a>
+@end html
 @node ncbo netCDF Binary Operator, ncea netCDF Ensemble Averager, ncatted netCDF Attribute Editor, Operator Reference Manual
 @section @command{ncbo} netCDF Binary Operator
 @findex ncbo
@@ -4600,6 +4617,9 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @noindent
 
 @page
+@html
+<a name="ncea"></a>
+@end html
 @node ncea netCDF Ensemble Averager, ncecat netCDF Ensemble Concatenator, ncbo netCDF Binary Operator, Operator Reference Manual
 @section @command{ncea} netCDF Ensemble Averager
 @cindex averaging data
@@ -4688,6 +4708,9 @@ input files.
 Additionally, only data inside the tropics is included.
 
 @page
+@html
+<a name="ncecat"></a>
+@end html
 @node ncecat netCDF Ensemble Concatenator, ncflint netCDF File Interpolator, ncea netCDF Ensemble Averager, Operator Reference Manual
 @section @command{ncecat} netCDF Ensemble Concatenator
 @cindex concatenation
@@ -4757,6 +4780,9 @@ It contains 60 months of data (which might or might not be stored in the
 record dimension, depending on the input files).
 
 @page
+@html
+<a name="ncflint"></a>
+@end html
 @node ncflint netCDF File Interpolator, ncks netCDF Kitchen Sink, ncecat netCDF Ensemble Concatenator, Operator Reference Manual
 @section @command{ncflint} netCDF File Interpolator
 @cindex interpolation
@@ -4937,6 +4963,9 @@ ncatted -O -a units,prs_sfc,o,c,millibar out.nc
 @noindent
 
 @page
+@html
+<a name="ncks"></a>
+@end html
 @node ncks netCDF Kitchen Sink, ncra netCDF Record Averager, ncflint netCDF File Interpolator, Operator Reference Manual
 @section @command{ncks} netCDF Kitchen Sink
 @cindex kitchen sink
@@ -5345,6 +5374,9 @@ ncks -d lon,260.0,45.0 in.nc out.nc
 For more details @xref{Wrapped coordinates}.
 
 @page
+@html
+<a name="ncra"></a>
+@end html
 @node ncra netCDF Record Averager, ncrcat netCDF Record Concatenator, ncks netCDF Kitchen Sink, Operator Reference Manual
 @section @command{ncra} netCDF Record Averager
 @cindex averaging data
@@ -5437,6 +5469,9 @@ ncra -d time,6.,54. ??.nc 8506_8906.nc
 @end example
 
 @page
+@html
+<a name="ncrcat"></a>
+@end html
 @node ncrcat netCDF Record Concatenator, ncrename netCDF Renamer, ncra netCDF Record Averager, Operator Reference Manual
 @section @command{ncrcat} netCDF Record Concatenator
 @cindex concatenation
@@ -5528,6 +5563,9 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @end example
 
 @page
+@html
+<a name="ncrename"></a>
+@end html
 @node ncrename netCDF Renamer, ncwa netCDF Weighted Averager, ncrcat netCDF Record Concatenator, Operator Reference Manual
 @section @command{ncrename} netCDF Renamer
 @cindex renaming variables
@@ -5678,6 +5716,9 @@ The variable @code{prs_sfc} need not exist, and need not contain the
 @code{hieght} attribute.
 
 @page
+@html
+<a name="ncwa"></a>
+@end html
 @node ncwa netCDF Weighted Averager,  , ncrename netCDF Renamer, Operator Reference Manual
 @section @command{ncwa} netCDF Weighted Averager
 @cindex averaging data

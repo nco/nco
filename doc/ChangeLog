@@ -1,3 +1,8 @@
+2003-08-29  Charlie Zender  <zender@uci.edu>
+
+	* nco.texi: Added #sections in English to nco.html for easy direct
+	referencing of man pages
+
 2003-08-28  Charlie Zender  <zender@uci.edu>
 
 	* Add section on ncbo portability
