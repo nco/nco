@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.64 2002-06-10 02:33:23 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.65 2002-06-10 04:48:19 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -17,6 +17,7 @@
 
 /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */
+#include <stdarg.h> /* va_start, va_arg, va_end */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strcmp. . . */
@@ -27,7 +28,7 @@
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
 #include "nco_netcdf.h" /* netCDF3 wrapper calls */
-#include "ncap.h" /* symbol table definition */
+#include "ncap.h" /* Symbol table definition */
 
 /* Turn on parser debugging option (Bison manual p. 85) */
 #define YYDEBUG 1
@@ -628,3 +629,48 @@ nco_var_free /* [fnc] Safely free variable */
      Routine is wrapper for var_free() that simplifies code in calling routine */
   if(*var != NULL) *var=var_free(*var);
 } /* end nco_var_free() */
+
+nodeType * /* O [unn] Syntax tree node */
+opr_ctl /* [fnc] Operation controller function Nie02 opr() */
+(int opr_tkn, /* I [enm] Operator token */
+ int arg_nbr, /* I [nbr] Number of arguments */
+ ...) /* I [llp] Ellipsis defined in stdarg.h */
+{
+  /* Purpose: Create and return syntax tree node */
+  va_list arg_lst; /* [] Variable argument list */
+  nodeType *nod; /* [sct] Syntax tree node */
+  size_t nod_sz; /* [nbr] Node size */
+  int arg_idx; /* [idx] Argument index */
+
+  /* Operator node requires space for token and arguments */
+  nod_sz=sizeof(opr_nod_sct)+(arg_nbr-1)*sizeof(nodeType *);
+  nod=(nodeType *)nco_malloc(nod_sz);
+  /* Copy information into new node */
+  nod->nod_typ=typ_opr; /* [enm] Node type */
+  nod->opr.opr_tkn=opr_tkn; /* [enm] Operator token */
+  nod->opr.arg_nbr=arg_nbr; /* [nbr] Number of arguments */
+  /* Begin variable argument list access */
+  va_start(arg_lst,arg_nbr);
+  for(arg_idx=0;arg_idx<nod->opr.arg_nbr;arg_idx++) nod->opr.arg[arg_idx]=va_arg(arg_lst,nodeType); /* NB: Nie02 p. 27 has typo in va_arg() */
+  /* End variable argument list access */
+  va_end(arg_lst);
+  return nod;
+} /* end opr_ctl() */
+
+void
+freeNode /* [fnc] Free syntax tree node Nie02 freeNode() */
+(nodeType *nod) /* I/O [sct] Syntax tree node to free */
+{
+  /* Purpose: Free syntax tree node */
+  int arg_idx; /* [idx] Argument index */
+
+  if(!nod) return;
+
+  /* Operator nodes have copies of arguments. Free these first. */
+  if(nod->nod_typ == typ_opr){
+    /* Recursive call to freeNode continue until statement is reduced */
+    for(arg_idx=0;arg_idx<nod->opr.arg_nbr;arg_idx++) freeNode(nod->opr.arg+arg_idx); /* Nie02 p. 28 has typo and passes node not node pointer */
+  } /* endif */
+  /* Free node itself */
+  nod=(nodeType *)nco_free(nod);
+} /* end freeNode() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.10 2002-06-10 02:33:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.11 2002-06-10 04:48:19 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -81,7 +81,7 @@ sng_lst_prs /* [fnc] Join list of strings together into one string */
 
   char *sng; /* Output string */
 
-  int dlm_len;
+  int dlm_lng;
   long lmn;
   long sng_sz=0L; /* NB: sng_sz get incremented */
 
@@ -92,10 +92,10 @@ sng_lst_prs /* [fnc] Join list of strings together into one string */
     (void)fprintf(stdout,"%s: ERROR sng_lst_prs() reports delimiter string is NULL\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* end if */
-  dlm_len=strlen(dlm_sng); 
+  dlm_lng=strlen(dlm_sng); 
 
   /* List elements must be NUL-terminated (strings) so strlen() works */
-  for(lmn=0L;lmn<lmn_nbr;lmn++) sng_sz+=(sng_lst[lmn] == NULL) ? 0L : strlen(sng_lst[lmn])+dlm_len;
+  for(lmn=0L;lmn<lmn_nbr;lmn++) sng_sz+=(sng_lst[lmn] == NULL) ? 0L : strlen(sng_lst[lmn])+dlm_lng;
   /* Add one for NUL byte */
   sng=(char *)nco_malloc(sizeof(char)*(sng_sz+1));
   /* NUL-terminate string for safety */
@@ -103,7 +103,7 @@ sng_lst_prs /* [fnc] Join list of strings together into one string */
   for(lmn=0L;lmn<lmn_nbr;lmn++){
     /* List elements must be NUL-terminated (strings) so strcat() works */
     sng=(sng_lst[lmn] == NULL) ? sng : strcat(sng,sng_lst[lmn]);
-    if(lmn != lmn_nbr-1 && dlm_len != 0) sng=strcat(sng,dlm_sng);
+    if(lmn != lmn_nbr-1L && dlm_lng != 0) sng=strcat(sng,dlm_sng);
   } /* end loop over lmn */
 
   return sng;
