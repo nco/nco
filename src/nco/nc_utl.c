@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.31 1999-08-30 07:07:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.32 1999-08-30 17:08:35 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -4648,17 +4648,18 @@ nclong newdate(nclong date,int day_srt)
   */
   /* Local */
   int date_srt; /* Initial value of date (may change sign) */
-  int yr_crr; /* Year of date */
-  int mth_crr; /* Month of date */
-  int mth_srt; /* Save the initial value of month */
+  int day_nbr_2_eom; /* Days to end of month */
   int day_crr; /* Day of date */
   int day_ncr; /* Running count of days to increment date by */
+  int int_foo; /* Dummy variable for do nothing statement after label */
+  int mth_crr; /* Month of date */
   int mth_idx; /* Index */
+  int mth_srt; /* Save the initial value of month */
   int mth_tmp; /* Current month as we increment date */
-  int day_2_eom; /* Days to end of month */
-
-  int mth_day_nbr[]={ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
-		31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+  int yr_crr; /* Year of date */
+  int mth_day_nbr[]= /* Number of days in each month */
+  { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
+    31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
   nclong newdate_YYMMDD; /* New date in YYMMDD format */
 
@@ -4678,22 +4679,23 @@ nclong newdate(nclong date,int day_srt)
     for(mth_idx=mth_srt;mth_idx<=mth_srt+12;mth_idx++){
       mth_tmp=mth_idx;
       if(mth_idx > 12) mth_tmp=mth_idx-12;
-      day_2_eom=nd2endm(mth_tmp,day_crr);
-      if(day_ncr > day_2_eom){
+      day_nbr_2_eom=nd2endm(mth_tmp,day_crr);
+      if(day_ncr > day_nbr_2_eom){
 	mth_crr++;
 	if(mth_crr > 12){
 	  mth_crr=1;
 	  yr_crr++;
 	} /* end if */
 	day_crr=1;
-	day_ncr-=day_2_eom+1;
-	if(day_ncr == 0) goto end_day_srtgt0;
+	day_ncr-=day_nbr_2_eom+1;
+	if(day_ncr == 0) goto end_day_srt_gt0_lbl;
       }else{
 	day_crr=day_crr+day_ncr;
-	goto end_day_srtgt0;
+	goto end_day_srt_gt0_lbl;
       } /* end if */
     } /* end loop over */
-  end_day_srtgt0: /* label */
+  end_day_srt_gt0_lbl: /* label */
+    int_foo++; /* Some compilers, e.g., SGI cc require statements after labels */
   }else if(day_srt < 0){
     day_ncr=-day_srt;
     yr_crr=yr_crr-day_ncr/365;
@@ -4708,13 +4710,14 @@ nclong newdate(nclong date,int day_srt)
 	} /* end if */
 	day_ncr-=day_crr;
 	day_crr=mth_day_nbr[mth_crr-1];
-	if(day_ncr == 0) goto end_day_srtlt0;
+	if(day_ncr == 0) goto end_day_srt_lt0_lbl;
       }else{
 	day_crr-=day_ncr;
-	goto end_day_srtlt0;
+	goto end_day_srt_lt0_lbl;
       } /* end if */
     } /* end loop over */
-  end_day_srtlt0: /* label */
+  end_day_srt_lt0_lbl: /* label */
+    int_foo++; /* Some compilers, e.g., SGI cc require statements after labels */
   } /* end if */
 
   if(yr_crr >= 0){
