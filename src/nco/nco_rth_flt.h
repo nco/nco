@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.16 2004-06-29 22:37:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.17 2004-07-06 19:37:35 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -18,6 +18,9 @@
 
 /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */
+
+/* fxm stdio only needed for TODO ncap57 */
+#include <stdio.h> /* stderr, FILE, NULL, etc. */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
