@@ -1,0 +1,34 @@
+// Purpose: CDL file to generate a netCDF file that approximates a gene expression data set.
+
+// Usage:
+// Create ge.nc from ge.cdl on a beefy 64-bit computer
+// ncgen -b -o ge.nc ge.cdl
+
+// On small-RAM machines, create 50MB file with multiple simple variables
+// ncap -D 3 -O -s "wvl_1e8[wvl_1e8]=1.0f" ~/nco/data/big.nc ${DATA}/tmp/big.nc
+
+// Valid CDF/netCDF files need not have any defined variable or data
+
+// Use ncap LHS-casting to define variables with big dimensions
+netcdf mlw_gene_ex{
+dimensions:
+//replicates per cell
+    rep=3;
+//treatment per cell
+    treat=2;
+//number of cell types tested
+    cell=4;
+//# of parameters per 'gene' or ge_atom)
+    params=10;
+//# of genes thingies tested for - this might be unlimited for later additions
+    ge_atoms=56000;
+    
+variables:
+    int rep(rep);
+    int treat(treat);
+    int cell(cell);
+    int params(params);
+    int ge_atoms(ge_atoms);
+    float base(rep,treat,cell,params,ge_atoms);
+data:
+}
