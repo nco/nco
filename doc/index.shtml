@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.124 2002-12-23 22:46:17 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.125 2003-01-03 00:52:37 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -65,7 +65,7 @@ Try to disable Spammers' machines:
 <li><a href="#Download">Download/CVS NCO Software</a></li>
 <li><a href="#RTFM">User's Guide</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
-<li><a href="#NCAR">Using NCO at UCI and NCAR</a></li>
+<li><a href="#NCAR">Using NCO at UCI, NCAR, and SDSC</a></li>
 <li><a href="#FAQ">FAQ</a></li>
 <li><a href="#Bugs">Known Problems</a></li>
 </ul>
@@ -171,31 +171,24 @@ capable of performing arbitrary arithmetic operations</li>
 <dt><a name="Version"></a></dt>
 <h2>Version Summary</h2>
 <ul>
-<li>Many releases since 2.0.0 are not packaged (e.g., with
-tarballs and RPMs).
+<li>Many releases since 2.0.0 are not packaged (i.e., no tarballs or RPMs).
 Retrieve these versions <a name="#Download">using CVS</a>.
-<li><b>NCO 2.6.7</b>, GNU/POSIX long options now supported on all operators
+<li><b>NCO 2.6.7</b>, Support for GNU/POSIX long options,
+<tt>ncks</tt> introduces <i>multi-slabbing</i> (= multiple hyperslabs) capability
 <li><b>NCO 2.6.6</b>, Fix and document <tt>ncrename</tt>
 attribute renaming, add type conversion functions to <tt>ncap</tt>
 <li><b>NCO 2.6.5</b>, Cray, Sun build improvements
 <li><b>NCO 2.6.4</b>, Mac OS X, NEC, SGI build improvements
-<li><b>NCO 2.6.3</b>, Mac OS X builds work seamlessly,
-documentation fixed
-<li><b>NCO 2.6.2</b>, Major improvements in autotools
-support, <tt>ncap</tt> supports user-defined dimensions
+<li><b>NCO 2.6.3</b>, Mac OS X builds work seamlessly, documentation fixed
+<li><b>NCO 2.6.2</b>, Major improvements in autotools support, <tt>ncap</tt> supports user-defined dimensions
 <li><b>NCO 2.6.1</b>, Minor fix to unpacking support
 <li><b>NCO 2.6.0</b>, Not packaged: All arithmetic operators (<tt>ncap</tt>, <tt>ncdiff</tt>, <tt>ncea</tt>, <tt>ncflint</tt>, <tt>ncra</tt>) support unpacking
-<li><b>NCO 2.5.6</b>, Not packaged: Handle <tt>missing_value</tt> 
-correctly for integer variables in <tt>ncra</tt>, merge
-<tt>autoconf</tt> build
+<li><b>NCO 2.5.6</b>, Not packaged: Handle <tt>missing_value</tt> correctly for integer variables in <tt>ncra</tt>, merge <tt>autoconf</tt> build
 <li><b>NCO 2.5.5</b>, Not packaged: Handle files without
 existing global "<tt>History</tt>" attribute correctly
-<li><b>NCO 2.5.4</b>, Not packaged: Add support NEC-SX support,
-update Cray support, small build changes
-<li><b>NCO 2.5.3</b>, Not packaged: Fix native builds under MS Windows with Cygwin
-<tt>ncap</tt>, hint to <tt>ncwa</tt>
-<li><b>NCO 2.5.2</b>, Not packaged: Add math functions to
-<tt>ncap</tt>, hint to <tt>ncwa</tt>
+<li><b>NCO 2.5.4</b>, Not packaged: Add support NEC-SX support, update Cray support, small build changes
+<li><b>NCO 2.5.3</b>, Not packaged: Fix native builds under MS Windows with Cygwin <tt>ncap</tt>, hint to <tt>ncwa</tt>
+<li><b>NCO 2.5.2</b>, Not packaged: Add math functions to <tt>ncap</tt>, hint to <tt>ncwa</tt>
 <li><b>NCO 2.5.1</b>, Not packaged: <tt>ncatted</tt> deletes all
 attributes of <i>att_var</i> when <i>att_nm</i> not specified
 <li><b>NCO 2.5.0</b>, Not packaged: man(1) pages from Debian distribution
@@ -323,34 +316,14 @@ fixes we currently have in mind for NCO.</li>
 </ul>
 <hr></p>
 
-<dt><a name="NCAR"></a></dt>
-<h2>Using NCO at UCI and NCAR</h2>
-<p>Users at UC Irvine and NCAR <i>may</i> find pre-built,
-<i>almost</i> up-to-date NCO executables in the following locations:
-<ul>
-<li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.4.7): <tt>/home/zender/bin/LINUX</tt></li>
-<li>ESS <tt>ess1.ess.uci.edu</tt> (Linux 2.2.15): <tt>/home/zender/bin/LINUXALPHA</tt></li>
-<li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
-<li>CGD network (Solaris 2.6): <tt>/contrib/bin</tt>, <tt>/home/zender/bin/SUNMP</tt></li>
-<li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5):
-<tt>/contrib/bin</tt>, <tt>/home/dataproc/zender/bin/SGIMP64</tt></li>
-<li>SCD <tt>blackforest.ucar.edu</tt> (AIX 4.0): <tt>/home/blackforest/zender/bin/AIX</tt></li>
-<li>SCD <tt>bluesky.ucar.edu</tt> (AIX 5.0): <tt>/home/bluesky/zender/bin/AIX</tt></li>
-<li>SCD <tt>longs.ucar.edu</tt> (Linux 2.2.17): <tt>/fs/cgd/home0/zender/bin/LINUX</tt></li>
-<li>SCD <tt>ouray.ucar.edu</tt> (UNICOS 10.0.0): <tt>/home/ouray0/zender/bin/CRAY</tt></li>
-<li>SCD <tt>prospect.ucar.edu</tt> (OSF1 5.0): <tt>/home/prospect/zender/bin/ALPHA</tt></li>
-<li>SCD <tt>utefe.ucar.edu</tt> (IRIX 6.5): <tt>/home/ute/zender/bin/SGIMP64</tt></li>
-</ul>
-<hr></p>
-
 <dt><a name="FAQ"></a></dt>
 <h2>FAQ:</h2>
 <p>These questions show up almost as frequently as my mother.
 But they are more predictable:
 <ul>
 <li><i>Where can I find prebuilt NCO executables?</i>
-If you have an account at NCAR or UCI, try the locations listed above.
-Otherwise you are on your own.</li>
+If you have an account at UCI, NCAR, or SDSC, try the locations listed below.
+Otherwise, you are on your own.</li>
 <li><i>The executables at NCAR are out of date, where can I get the
 latest, greatest version?</i>
 You must build them from source yourself. See next question.</li>
@@ -378,13 +351,52 @@ site.
 </ul>
 <hr></p>
 
+<dt><a name="NCAR"></a></dt>
+<h2>Using NCO at UCI, NCAR, and SDSC</h2>
+<p>Users at UC Irvine, NCAR, and SDSC <i>may</i> find pre-built,
+<i>almost</i> up-to-date NCO executables in the following locations:
+<ul>
+<li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.4.7): <tt>/home/zender/bin/LINUX</tt></li>
+<li>ESS <tt>ess1.ess.uci.edu</tt> (Linux 2.2.15): <tt>/home/zender/bin/LINUXALPHA</tt></li>
+<li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
+<li>CGD network (Solaris 2.6): <tt>/contrib/bin</tt>, <tt>/home/zender/bin/SUNMP</tt></li>
+<li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5):
+<tt>/contrib/bin</tt>, <tt>/home/dataproc/zender/bin/SGIMP64</tt></li>
+<li>SCD <tt>babyblue.ucar.edu</tt> (AIX 4.0): <tt>/home/babyblue/zender/bin/AIX</tt></li>
+<li>SCD <tt>blackforest.ucar.edu</tt> (AIX 4.0): <tt>/home/blackforest/zender/bin/AIX</tt></li>
+<li>SCD <tt>bluesky.ucar.edu</tt> (AIX 5.0): <tt>/home/bluesky/zender/bin/AIX</tt></li>
+<li>SCD <tt>longs.ucar.edu</tt> (Linux 2.2.17): <tt>/fs/cgd/home0/zender/bin/LINUX</tt></li>
+<li>SCD <tt>ouray.ucar.edu</tt> (UNICOS 10.0.0): <tt>/home/ouray0/zender/bin/CRAY</tt></li>
+<li>SCD <tt>prospect.ucar.edu</tt> (OSF1 5.0): <tt>/home/prospect/zender/bin/ALPHA</tt></li>
+<li>SCD <tt>utefe.ucar.edu</tt> (IRIX 6.5): <tt>/home/ute/zender/bin/SGIMP64</tt></li>
+<li>SDSC <tt>horizon.npaci.edu</tt> (AIX 5.0): <tt>/paci/uci/ux453797/bin/AIX</tt></li>
+</ul>
+<hr></p>
+
 <dt><a name="Bugs"></a></dt>
 <h2>Known Problems with NCO and/or netCDF:</h2>
 
 <ul>
-<li><b>NCO build problems:</b>
+<li><b>Generic NCO build problems:</b>
 NCO requires recent versions of netCDF (version >= 3.5.0).
 NCO requires recent versions of GNU <tt>make</tt> (version >= 3.78.1).
+</li>
+
+<li><b>Platform-dependent problems with <tt>./configure</tt>
+(Autotools) build mechanism:</b>
+The file <tt>configure.eg</tt> contains a table which describes the 
+success you can expect building NCO with the new <tt>./configure</tt>
+mechanism. 
+In summary, only Linux platforms can expect trouble-free behavior.
+All platforms work continue to work fine with the
+<tt>bld/Makefile</tt> method. 
+However, this method does not support shared libraries and other nice
+features that come automagically with Autotools.
+So please send in the patches required to get the <tt>./configure</tt> 
+mechanism working properly for NCO, <tt>nco_c++</tt>, and DODS on your
+platform. 
+The gory details of the failed (and successful) builds are in the
+<a href="ftp://dust.ess.uci.edu/pub/zender/nco/rgr">regressions archive</a>.
 </li>
 
 <li><b><tt>ncap</tt> build problems:</b>

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.140 2002-12-30 08:01:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.141 2003-01-03 00:52:38 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -88,8 +88,8 @@ http://www.gnu.ai.mit.edu/copyleft/fdl.html
 @clear smallbook
 
 @c Define edition, date, ...
-@set nco-edition 2.6.7
-@set doc-edition 2.6.7
+@set nco-edition 2.7.0
+@set doc-edition 2.7.0
 @set copyright-years 1995--2003
 @set update-year 2003
 @set update-date 1 January 2003
