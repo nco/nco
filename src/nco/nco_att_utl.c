@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.4 2002-05-31 21:00:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.5 2002-05-31 21:18:15 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -264,7 +264,6 @@ hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   char *ctime_sng;
   char *history_crr=NULL;
   char *history_new;
-  char *hst_att_nm=NULL; /* [sng] Actual name of history attribute */
   char time_stamp_sng[TIME_STAMP_SNG_LNG];
   char sng_history[]="history"; /* [sng] Possible name of history attribute */
   
