@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.38 2002-06-17 00:41:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.39 2002-10-25 20:04:47 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -52,7 +52,6 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
-/*#include <curses.h>*/
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -65,11 +64,6 @@
 int 
 main(int argc,char **argv)
 {
-/*  int initscr(void);*/
-/*  int cbreak(void);*/
-
-  rnm_sct *nco_prs_rnm_lst(int,char **);
-  int nco_prs_att(rnm_sct *, char *);
   bool OUTPUT_TO_NEW_NETCDF_FILE=False;
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
@@ -89,8 +83,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.38 2002-06-17 00:41:09 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.38 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.39 2002-10-25 20:04:47 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.39 $";
   
   extern char *optarg;
   
@@ -178,12 +172,12 @@ main(int argc,char **argv)
     nco_exit(EXIT_FAILURE);
   } /* end if */ 
 
-  /* Make a uniform list of the user-specified rename structures */
+  /* Make uniform list of user-specified rename structures */
   if(nbr_var_rnm > 0) var_rnm_lst=nco_prs_rnm_lst(nbr_var_rnm,var_rnm_arg);
   if(nbr_dmn_rnm > 0) dmn_rnm_lst=nco_prs_rnm_lst(nbr_dmn_rnm,dmn_rnm_arg);
   if(nbr_att_rnm > 0) att_rnm_lst=nco_prs_rnm_lst(nbr_att_rnm,att_rnm_arg);
 
-  /* We now have the final list of variables, dimensions, and attributes to rename. */
+  /* We have final list of variables, dimensions, and attributes to rename */
   
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
@@ -245,8 +239,7 @@ main(int argc,char **argv)
       }else{
 	(void)fprintf(stderr,"%s: WARNING Variable \"%s\" not present in %s, skipping it.\n",prg_nm,var_rnm_lst[idx].old_nm+1,fl_in);
       } /* end if */
-      
-    }else{
+    }else{ /* Variable name does not contain '.' so variable presence is required */
       rcd=nco_inq_varid(nc_id,var_rnm_lst[idx].old_nm,&var_rnm_lst[idx].id);
       (void)nco_rename_var(nc_id,var_rnm_lst[idx].id,var_rnm_lst[idx].new_nm);
       if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed variable \"%s\" to \"%s\"\n",var_rnm_lst[idx].old_nm,var_rnm_lst[idx].new_nm);
@@ -281,45 +274,51 @@ main(int argc,char **argv)
       int var_id;
       int nbr_rnm=0;
       
-      /* Check if we are renaming attribute of single variable */
-      if(strchr(att_rnm_lst[idx].old_nm,':')){
+      /* Rename attribute of single variable... */
+      if(strchr(att_rnm_lst[idx].old_nm,'@')){
 	/* Get variable name from old name */
 	char var_nm[NC_MAX_NAME];
 	if(nco_prs_att((att_rnm_lst+idx),var_nm)){
 	  /* Get var_id of variable */
-	  rcd=nco_inq_varid_flg(nc_id,var_nm,&var_id);
+	  if(var_nm[0] == '.'){
+	    rcd=nco_inq_varid_flg(nc_id,var_nm+1,&var_id);
+	    if(rcd != NC_NOERR){
+	      (void)fprintf(stderr,"%s: WARNING Variable \"%s\" not present in %s, skipping it.\n",prg_nm,var_nm+1,fl_in);
+	      continue;
+	    } /* end if */
+	  }else{ /* Variable name does not contain '.' so variable presence is required */
+	    rcd=nco_inq_varid(nc_id,var_nm,&var_id);
+	  } /* end if */
 	  if(rcd == NC_NOERR){
 	    if(att_rnm_lst[idx].old_nm[0] == '.'){
 	      /* Preceding '.' means attribute may not be present */
-	      rcd=nco_inq_attid(nc_id,var_id,att_rnm_lst[idx].old_nm+1,&att_rnm_lst[idx].id);	  
+	      rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx].old_nm+1,&att_rnm_lst[idx].id);	  
 	      if(rcd == NC_NOERR){
 		(void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);
 		nbr_rnm++;
-		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed attribute \"%s\" to \"%s\" for variable \"%s\"\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm,var_nm);
+		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed attribute \"%s\" to \"%s\" for variable \"%s\"\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm,(var_nm[0] == '.' ? var_nm+1 : var_nm));
 	      } /* endif */
 	    }else{ 
 	      rcd=nco_inq_attid(nc_id,var_id,att_rnm_lst[idx].old_nm,&att_rnm_lst[idx].id);
 	      if(rcd == NC_NOERR){
 		(void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
 		nbr_rnm++;
-		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed attribute \"%s\" to \"%s\" for variable \"%s\"\n",att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm,var_nm);
+		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed attribute \"%s\" to \"%s\" for variable \"%s\"\n",att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm,(var_nm[0] == '.' ? var_nm+1 : var_nm));
 	      } /* endif attribute is present */
 	    } /* endelse attribute must be present */  
 	  }else{
 	    (void)fprintf(stderr,"%s: WARNING variable \"%s\" not present in %s\n",prg_nm,var_nm,fl_in);
 	  } /* endelse variable is present */
-	} /*  */
-      }else{ /* endif */
+	} /* end if renaming single variable */
+      }else{ /* ...or rename attribute for all variables... */
 	for(var_id=-1;var_id<nbr_var_fl;var_id++){
 	  if(att_rnm_lst[idx].old_nm[0] == '.'){
-	    
-	    rcd=nco_inq_attid(nc_id,var_id,att_rnm_lst[idx].old_nm+1,&att_rnm_lst[idx].id);
+	    /* Rename attribute if variable contains attribute else do nothing */
+	    rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx].old_nm+1,&att_rnm_lst[idx].id);
 	    if(rcd == NC_NOERR){
 	      (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);
 	      nbr_rnm++;
-	      
-	      /* There can be many attributes with same name in given file
-		 Inform user what was actually renamed */
+	      /* Inform user which variable had attribute renamed */
 	      if(var_id > -1){
 		char var_nm[NC_MAX_NAME];
 		
@@ -329,14 +328,14 @@ main(int argc,char **argv)
 		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed global attribute \"%s\" to \"%s\"\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);
 	      } /* end else */
 	    } /* end if */
+	    
 	  }else{
+	    /* Rename attribute or die trying */
 	    rcd=nco_inq_attid(nc_id,var_id,att_rnm_lst[idx].old_nm,&att_rnm_lst[idx].id);
 	    if(rcd == NC_NOERR){
 	      (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
 	      nbr_rnm++;
-	      
-	      /* There can be many attributes with same name in given file
-		 Inform user what was actually renamed */
+	      /* Inform user which variable had attribute renamed */
 	      if(var_id > -1){
 		char var_nm[NC_MAX_NAME];
 		
@@ -348,7 +347,7 @@ main(int argc,char **argv)
 	    } /* end if */
 	  } /* end else */
 	} /* end loop over var_id */
-      } /* end else */
+      } /* end if renaming attribute for all variables */
       /* See to it that any mandatory renaming was performed, else abort */
       if(nbr_rnm == 0){
 	if(att_rnm_lst[idx].old_nm[0] == '.'){
@@ -359,9 +358,9 @@ main(int argc,char **argv)
 	} /* end else */
       } /* end if */
       
-    } /* end loop over idx */
+    } /* end loop over attributes to rename */
      
-  }/* end if */
+  } /* end if renaming attributes */
   
   /* Catenate timestamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
@@ -379,92 +378,3 @@ main(int argc,char **argv)
   return EXIT_SUCCESS;
 } /* end main() */
 
-rnm_sct *
-nco_prs_rnm_lst(int nbr_rnm,char **rnm_arg)
-{
-  /* Routine to set old_nm, new_nm elements of rename structure
-     This routine merely fills rename structure and does not attempt to validate 
-     presence of variables in input netCDF file. */
-
-  rnm_sct *rnm_lst;
-
-  int idx;
-
-  ptrdiff_t len_arg_1;
-  ptrdiff_t len_arg_2;
-
-  rnm_lst=(rnm_sct *)nco_malloc((size_t)nbr_rnm*sizeof(rnm_sct));
-
-  for(idx=0;idx<nbr_rnm;idx++){
-    char *comma_1_cp;
-
-    /* Find the positions of the commas and number of characters
-       between (non-inclusive) them */
-    comma_1_cp=strchr(rnm_arg[idx],',');
-    
-    /* Before doing any pointer arithmetic, make sure the pointers 
-       are valid. */
-    if(comma_1_cp == NULL){
-      (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
-    
-    len_arg_1=comma_1_cp-rnm_arg[idx]; 
-    len_arg_2=rnm_arg[idx]+strlen(rnm_arg[idx])-comma_1_cp-1; 
-    
-    /* If the length of either of the arguments is zero then exit */
-    if(len_arg_1 <= 0 || len_arg_2 <= 0){
-      (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
-    
-    /* Assign the pointers to the member of the rnm_lst */
-    rnm_lst[idx].old_nm=rnm_arg[idx];
-    rnm_lst[idx].new_nm=comma_1_cp+1;
-
-    /* Manually null-terminate the arguments */
-    rnm_lst[idx].old_nm[len_arg_1]='\0';
-    rnm_lst[idx].new_nm[len_arg_2]='\0';
-    
-  } /* End loop over rnm_lst */
-
-  if(dbg_lvl == 5){
-    for(idx=0;idx<nbr_rnm;idx++){
-      (void)fprintf(stderr,"%s\n",rnm_lst[idx].old_nm);
-      (void)fprintf(stderr,"%s\n",rnm_lst[idx].new_nm);
-    } /* end loop over idx */
-  } /* end debug */
-
-  return rnm_lst;
-} /* end nco_prs_rnm_lst() */
-
-int
-nco_prs_att(rnm_sct *rnm_att,char *var_nm)
-{
-  /* Purpose: Check if attribute name space contains variable name before attribute name of form var_nm:att_name
-     Attribute name is then extracted from from old_nm and new_nm as necessary */
-  
-  char *colon_ptr;
-
-  size_t att_nm_lng;
-
-  colon_ptr=strchr(rnm_att->old_nm,':');	
-  if(colon_ptr == NULL) return 0;
-  
-  att_nm_lng=strlen(rnm_att->old_nm);
-  
-  if(att_nm_lng < 3 || colon_ptr == rnm_att->old_nm || colon_ptr == rnm_att->old_nm+att_nm_lng-1) return 0;
-  *colon_ptr='\0';
-  /* Copy variable name only */
-  strcpy(var_nm,rnm_att->old_nm);
-  /* Set to attribute name alone */
-  rnm_att->old_nm=colon_ptr+1; 
-    
-  colon_ptr=strchr(rnm_att->new_nm,':');	
-  if(colon_ptr){
-    att_nm_lng=strlen(rnm_att->new_nm);
-    if((colon_ptr-rnm_att->new_nm) < att_nm_lng) rnm_att->new_nm=colon_ptr+1;
-    else return 0;
-  } /* endif */
-  return 1;
-} /* end nco_prs_att() */

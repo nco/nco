@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.128 2002-10-05 16:31:56 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.129 2002-10-25 20:04:38 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -32,6 +32,7 @@ texi2dvi --output=nco.dvi nco.texi
 texi2dvi --pdf --output=nco.pdf nco.texi
 pdfthumb nco.pdf nco.pdf2;/bin/mv nco.pdf2 nco.pdf
 dvips -o nco.ps nco.dvi 
+dvips -Ppdf -G0 -o nco.ps nco.dvi 
 makeinfo --no-split --output=nco.info nco.texi 
 makeinfo --no-headers --no-split --output=nco.txt nco.texi
 makeinfo --xml --no-split --output=nco.xml nco.texi
@@ -4464,11 +4465,15 @@ netCDF file.
 Each object that has a name in the list of old names is renamed using
 the corresponding name in the list of new names. 
 All the new names must be unique. 
-Every old name must exist in the input file, unless the name is preceded
-by the character @samp{.}. 
-The validity of the old names is not checked prior to the renaming. 
-Thus, if an old name is specified without the the @samp{.} prefix and is
-not present in @var{input-file}, @command{ncrename} will abort. 
+Every old name must exist in the input file, unless the old name is
+preceded by the character @samp{.}. 
+The validity of @var{old_name} is not checked prior to the renaming. 
+Thus, if @var{old_name} is specified without the the @samp{.} prefix and
+is not present in @var{input-file}, @command{ncrename} will abort. 
+The @var{new_name} should never be prefixed by a @samp{.} (the period
+will be included as part of the new name).
+The OPTIONS and EXAMPLES show how to select specific variables
+whose attributes are to be renamed.
 
 @cindex data safety
 @cindex safeguards
@@ -4511,11 +4516,17 @@ The old and new names of the attribute are specified by the associated
 @cindex attributes, global
 Global attributes are treated no differently than variable attributes.
 This option may be specified more than once.
-You cannot change the attribute name for one particular variable (unless
-it is uniquely named); all occurrences of the attribute of a given name
-will be renamed. 
-This is considered an oversight and will be addressed in a future
-version of @acronym{NCO}.
+As mentioned above, all occurrences of the attribute of a given name
+will be renamed unless the @samp{.} form is used, with one exception.
+To change the attribute name for a particular variable, specify 
+the @var{old_name} in the format @var{old_var_name@old_att_name}.
+The @samp{@@} symbol serves to delimit the variable name from the
+attribute name.
+If the attribute is uniquely named (no other variables contain the
+attribute) then the @var{old_var_name@old_att_name} syntax is
+redundant. 
+The @var{var_name@att_name} syntax is accepted, but not required,
+for the @var{new_name}.
 
 @item -d @var{old_name},@var{new_name}
 Dimension renaming. 
@@ -4528,12 +4539,6 @@ Variable renaming.
 The old and new names of the variable are specified by the associated
 @var{old_name} and @var{new_name} values. 
 This option may be specified more than once.
-
-@c @cindex interactive prompting
-@c @item -i 
-@c Interactive. 
-@c @command{ncrename} will prompt for confirmation before overwriting an
-@c existing file. 
 @end table
 
 @noindent
@@ -4562,12 +4567,25 @@ ncrename -d lon,longitude -v lon,longitude in.nc
 @cindex @code{_FillValue} attribute
 @cindex @code{missing_value} attribute
 Create netCDF @file{out.nc} identical to @file{in.nc} except the attribute
-@code{_FillValue} is changed to @code{missing_value} (in all variables
-which possess it) and the global attribute @code{Zaire} is changed to
-@code{Congo}:  
+@code{_FillValue} is changed to @code{missing_value}
+which possess it), the attribute @code{units} is renamed to
+@code{CGS_units} (but only in those variables which possess it)
+ and the global attribute @code{Zaire} is renamed to @code{Congo}:  
 @example
-ncrename -a _FillValue,missing_value -a Zaire,Congo in.nc out.nc 
+ncrename -a _FillValue,missing_value -a .units,CGS_units \
+-a tpt@hieght,height -a prs_sfc@.hieght,height in.nc out.nc 
 @end example
+The presence and absence of the @samp{.} and @samp{@@} features
+cause this command to execute successfully only if a number of 
+conditions are met. 
+All variables @emph{must} have a @code{_FillValue} attribute @emph{and}
+@code{_FillValue} must also be a global attribute.
+The @code{units} attribute, on the other hand, will be renamed to
+@code{CGS_units} wherever it is found but need not be present in
+the file at all (either as a global or a variable attribute).
+The variable @code{tpt} must contain the @code{hieght} attribute.
+The variable @code{prs_sfc} need not exist, and need not contain the
+@code{hieght} attribute.
 
 @page
 @node ncwa netCDF Weighted Averager,  , ncrename netCDF Renamer, Operator Reference Manual

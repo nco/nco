@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.191 2002-09-20 05:34:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.192 2002-10-25 20:04:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -224,6 +224,10 @@ Command executes but in.hdf is full of screwy values
 237. Break down nco.texi into bite-size chunks, e.g., one file per section
 238. Replace y=(typ *)malloc(nbr*sizeof(typ)) with y=(typ *)malloc(nbr*sizeof(*y))?
 239. Create one global compatibility file (nco_xpf.[ch]?) activated by HAVE_ or NEED_ actions so do not have multiple platform dependent #includes as is case now with HAVE_STRCASECMP, HAVE_STRDUP requiring nco_sng_utl.h
+240. ncrename -a julian_day,julian in.nc out.nc
+nco_err_exit(): ERROR nco_inq_attid
+Attribute not found
+
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -38,7 +38,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.39 2002-08-22 06:10:19 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.40 2002-10-25 20:04:29 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -307,6 +307,7 @@ variables:
 	float tpt(time);
 	tpt:long_name = "Temperature";
 	tpt:units = "kelvin";
+	tpt:hieght = "Leave mispelled for NCO User's guide example";
 
 	double rec_var_dbl_mss_val_dbl_upk(time);
 	rec_var_dbl_mss_val_dbl_upk:long_name = "record variable, double, with double missing values";

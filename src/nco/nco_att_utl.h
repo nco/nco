@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.9 2002-09-17 15:59:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.10 2002-10-25 20:04:45 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -46,17 +46,27 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
  const aed_sct aed); /* I [id] Structure containing information necessary to edit */
 
 void 
-nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
-(const int out_id, /* I [id] netCDF output-file ID */
- const char * const hst_sng); /* I [sng] String to add to history attribute */
-
-void 
 nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF file */
 (const int in_id, /* I [id] netCDF input-file ID */
  const int out_id, /* I [id] netCDF output-file ID */
  const int var_in_id, /* I [id] netCDF input-variable ID */
  const int var_out_id, /* I [id] netCDF output-variable ID */
  const bool PCK_ATT_CPY); /* I [flg] Copy attributes "scale_factor", "add_offset" */
+
+void 
+nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
+(const int out_id, /* I [id] netCDF output-file ID */
+ const char * const hst_sng); /* I [sng] String to add to history attribute */
+
+int /* [flg] Variable and attribute names are conjoined */
+nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
+(rnm_sct * const rnm_att, /* I/O [sct] Structure [Variable:]Attribute name on input, Attribute name on output */
+ char * const var_nm); /* O [sng] Variable name, if any */
+
+rnm_sct * /* O [sng] Structured list of old, new names */
+nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
+(const int nbr_rnm, /* I [nbr] Number of elements in rename list */
+ CST_X_PTR_CST_PTR_CST_Y(char,rnm_arg)); /* I [sng] Unstructured list of old, new names */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,9 +1,17 @@
+2002-10-25  Charlie Zender  <zender@uci.edu>
+
+	* Use '.' consistently in .var@.att renaming
+
+	* Changed variable-attribute delimiter in ncrename from ":" to "@"
+	to be consistent with ncap
+
+	* Fixed ncrename to not fail when . specified and variable does
+	not contain attribute
+
 2002-09-24  Henry Butowsky <henryb@ntlworld.com>
 
-	* Added type conversion functions 
-	  for attributes and variables
-	  byte, char,short,int, float and double
-
+	* Added type conversion functions for attributes and variables
+	  byte, char, short, int, float, and double
 
 2002-09-22  Charlie Zender  <zender@uci.edu>
 

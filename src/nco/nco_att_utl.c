@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.17 2002-09-14 22:41:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.18 2002-10-25 20:04:43 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -396,3 +396,103 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 
 } /* end nco_hst_att_cat() */
 
+int /* [flg] Variable and attribute names are conjoined */
+nco_prs_att /* [fnc] Parse conjoined variable and attribute names */
+(rnm_sct * const rnm_att, /* I/O [sct] Structure [Variable:]Attribute name on input, Attribute name on output */
+ char * const var_nm) /* O [sng] Variable name, if any */
+{
+  /* Purpose: Check if attribute name space contains variable name before attribute name of form var_nm:att_nm
+     Attribute name is then extracted from from old_nm and new_nm as necessary */
+  
+  char *dlm_ptr; /* Ampersand pointer */
+
+  size_t att_nm_lng;
+  size_t var_nm_lng;
+
+  dlm_ptr=strchr(rnm_att->old_nm,'@');	
+  if(dlm_ptr == NULL) return 0;
+  
+  att_nm_lng=strlen(rnm_att->old_nm);
+  
+  /* Return if ampersand appears to be part of attribute name */
+  if(att_nm_lng < 3 || dlm_ptr == rnm_att->old_nm || dlm_ptr == rnm_att->old_nm+att_nm_lng-1) return 0;
+
+  /* NUL-terminate variable name */
+  *dlm_ptr='\0';
+  var_nm_lng=strlen(rnm_att->old_nm);
+  if(var_nm_lng > NC_MAX_NAME){
+    (void)fprintf(stdout,"%s: ERROR Derived variable name \"%s\" too long\n",prg_nm_get(),rnm_att->old_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* end if */ 
+
+  /* Copy variable name only */
+  strcpy(var_nm,rnm_att->old_nm);
+  /* Set to attribute name alone */
+  rnm_att->old_nm=dlm_ptr+1; 
+    
+  dlm_ptr=strchr(rnm_att->new_nm,'@');	
+  if(dlm_ptr){
+    att_nm_lng=strlen(rnm_att->new_nm);
+    if((dlm_ptr-rnm_att->new_nm) < att_nm_lng) rnm_att->new_nm=dlm_ptr+1; else return 0;
+  } /* endif */
+  return 1;
+} /* end nco_prs_att() */
+
+rnm_sct * /* O [sng] Structured list of old, new names */
+nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
+(const int nbr_rnm, /* I [nbr] Number of elements in rename list */
+ CST_X_PTR_CST_PTR_CST_Y(char,rnm_arg)) /* I [sng] Unstructured list of old, new names */
+{
+  /* Purpose: Set old_nm, new_nm elements of rename structure
+     Routine merely fills rename structure and does not attempt to validate 
+     presence of variables in input netCDF file. */
+
+  rnm_sct *rnm_lst;
+
+  int idx;
+
+  ptrdiff_t lng_arg_1;
+  ptrdiff_t lng_arg_2;
+
+  rnm_lst=(rnm_sct *)nco_malloc((size_t)nbr_rnm*sizeof(rnm_sct));
+
+  for(idx=0;idx<nbr_rnm;idx++){
+    char *comma_1_cp;
+
+    /* Find positions of commas and number of characters between (non-inclusive) them */
+    comma_1_cp=strchr(rnm_arg[idx],',');
+    
+    /* Before doing any pointer arithmetic, make sure pointers are valid */
+    if(comma_1_cp == NULL){
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+    
+    lng_arg_1=comma_1_cp-rnm_arg[idx]; 
+    lng_arg_2=rnm_arg[idx]+strlen(rnm_arg[idx])-comma_1_cp-1; 
+    
+    /* Exit if length of either argument is zero */
+    if(lng_arg_1 <= 0 || lng_arg_2 <= 0){
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+    
+    /* Assign pointers to member of rnm_lst */
+    rnm_lst[idx].old_nm=rnm_arg[idx];
+    rnm_lst[idx].new_nm=comma_1_cp+1;
+
+    /* NUL-terminate arguments */
+    rnm_lst[idx].old_nm[lng_arg_1]='\0';
+    rnm_lst[idx].new_nm[lng_arg_2]='\0';
+    
+  } /* end loop over rnm_lst */
+
+  if(dbg_lvl_get() == 5){
+    for(idx=0;idx<nbr_rnm;idx++){
+      (void)fprintf(stderr,"%s\n",rnm_lst[idx].old_nm);
+      (void)fprintf(stderr,"%s\n",rnm_lst[idx].new_nm);
+    } /* end loop over idx */
+  } /* end debug */
+
+  return rnm_lst;
+} /* end nco_prs_rnm_lst() */
