@@ -1,3 +1,7 @@
+2003-09-16  Charlie Zender  <zender@uci.edu>
+
+	* Add verbose errror message and HINT for NC_ERANGE errors
+
 2003-09-03  Charlie Zender  <zender@uci.edu>
 
 	* Makefile (ABI): Change default ABI to 64

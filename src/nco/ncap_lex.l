@@ -1,11 +1,32 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.10 2003-05-21 22:45:18 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.11 2003-09-16 21:55:36 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
 
   /* Copyright (C) 1995--2003 Charlie Zender
-     This software is distributed under the terms of the GNU General Public License
-     See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+     
+   This software is distributed under the terms of the GNU General Public License Version 2
+   The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
+   and in the file nco/doc/LICENSE in the NCO source distribution.
+   
+   As a special exception to the terms of the GPL, you are permitted 
+   to link the NCO source code with the DODS, HDF, netCDF, and UDUnits
+   libraries and to distribute the resulting executables under the terms 
+   of the GPL, but in addition obeying the extra stipulations of the 
+   DODS, HDF, netCDF, and UDUnits licenses.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+   See the GNU General Public License for more details.
+   
+   The original author of this software, Charlie Zender, wants to improve it
+   with the help of your suggestions, improvements, bug-reports, and patches.
+   Please contact the NCO project at http://nco.sf.net or by writing
+   Charlie Zender
+   Department of Earth System Science
+   University of California at Irvine
+   Irvine, CA 92697-3100 */
 
   /* Example lexers:
      /data/zender/ora/lexyacc/ch3-05.l

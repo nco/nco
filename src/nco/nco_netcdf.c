@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.28 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.29 2003-09-16 21:55:36 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -45,6 +45,9 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
      is contained in the netCDF-defined error message.
      Use msg to print, e.g., the name of variable which caused the error */
   char sbr_nm[]="nco_err_exit()";
+  switch(rcd){
+  case NC_ERANGE: (void)fprintf(stdout,"ERROR Result not representable in output file\nHINT: This may occur when an arithmetic operation results in a value not representible by the output variable type and NCO attempts to write that variable to an output file, with, e.g., nc_put_var*(). If this occurs, you might permanently promote the variable before attempting the arithmetic operation. For example, ncap -s \"foo=double(foo);\""); break;
+  } /* end switch */
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"%s: ERROR %s\n%s\n",sbr_nm,msg,nc_strerror(rcd));
     exit(EXIT_FAILURE);
