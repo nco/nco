@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.127 2004-06-18 23:12:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.128 2004-06-18 23:56:41 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -87,6 +87,7 @@ main(int argc,char **argv)
   
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
@@ -114,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.127 2004-06-18 23:12:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.127 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.128 2004-06-18 23:56:41 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.128 $";
   const char * const opt_sng="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -436,7 +437,7 @@ main(int argc,char **argv)
   } /* end if PRN_FNC_TBL */
   
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
   /* Make uniform list of user-specified dimension limits */
   if(lmt_nbr > 0) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);

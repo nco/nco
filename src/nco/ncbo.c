@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.17 2004-06-18 23:12:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.18 2004-06-18 23:56:45 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -85,6 +85,7 @@ main(int argc,char **argv)
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_1_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FILE_2_RETRIEVED_FROM_REMOTE_LOCATION;
+  bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
@@ -111,8 +112,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.17 2004-06-18 23:12:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.17 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.18 2004-06-18 23:56:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.18 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:rRv:xy:-:";
   
   dmn_sct **dim;
@@ -277,7 +278,7 @@ main(int argc,char **argv)
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);

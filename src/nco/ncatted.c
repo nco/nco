@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.68 2004-06-18 01:21:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.69 2004-06-18 23:56:45 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -126,9 +126,10 @@ main(int argc,char **argv)
   aed_sct *aed_lst=NULL_CEWI;
 
   bool OUTPUT_TO_NEW_NETCDF_FILE=False;
+  bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
-  bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool HISTORY_APPEND=True; /* Option h */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   
@@ -142,8 +143,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.68 2004-06-18 01:21:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.68 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.69 2004-06-18 23:56:45 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.69 $";
   const char * const opt_sng="Aa:D:hl:Oo:p:Rr-:";
   
   extern char *optarg;
@@ -244,7 +245,7 @@ main(int argc,char **argv)
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   if(fl_out != NULL) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=fl_lst_in[0];
 
   if(nbr_aed == 0){

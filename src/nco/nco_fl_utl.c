@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.31 2004-06-18 16:33:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.32 2004-06-18 23:56:45 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -84,7 +84,8 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
  const int argc, /* I [nbr] Argument count */
  int arg_crr, /* I [idx] Index of current argument */
  int * const fl_nbr, /* O [nbr] Number of files in input file list */
- char ** const fl_out) /* I/O [sng] Name of output file */
+ char ** const fl_out, /* I/O [sng] Name of output file */
+ bool *FL_LST_IN_FROM_STDIN) /* O [flg] fl_lst_in comes from stdin */
 {
   /* Purpose: Parse positional arguments on command line
      Name of calling program plays a role in this */
@@ -97,7 +98,6 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
      Otherwise, multi-file operators try to get input filenames from stdin */
 
   bool FL_OUT_FROM_PSN_ARG=True; /* [flg] fl_out comes from positional argument */
-  bool FL_IN_FROM_STDIN=False; /* [flg] fl_in comes from stdin */
 
   char **fl_lst_in=NULL_CEWI; /* [sng] List of user-specified filenames */
 
@@ -213,15 +213,15 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	bfr_in=(char *)nco_free(bfr_in);
 	
 	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",prg_nm_get(),*fl_nbr,(long)chr_nbr);
-	if(*fl_nbr > 0) FL_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING Tried but failed to get input filenames from stdin\n",prg_nm_get());
+	if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING Tried but failed to get input filenames from stdin\n",prg_nm_get());
 	
       } /* endif multi-file operator without positional arguments for fl_in */
 
-      if(!FL_IN_FROM_STDIN){ 
+      if(!*FL_LST_IN_FROM_STDIN){ 
 	if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least two\n",prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need at least one (output file was specified with -o switch)\n",prg_nm_get(),psn_arg_nbr);
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
-      } /* FL_IN_FROM_STDIN */
+      } /* FL_LST_IN_FROM_STDIN */
       
     } /* end Operators with multiple fl_in and required fl_out */
     break;
@@ -230,11 +230,11 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   } /* end switch */
   
     /* If input files are required but have not been obtained yet from stdin */
-  if(!FL_IN_FROM_STDIN){ 
+  if(!*FL_LST_IN_FROM_STDIN){ 
     /* Fill in input file list from positional arguments */
     fl_lst_in=(char **)nco_malloc((psn_arg_nbr-1+psn_arg_fst)*sizeof(char *));
     while(arg_crr < argc-1+psn_arg_fst) fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
-  } /* FL_IN_FROM_STDIN */
+  } /* FL_LST_IN_FROM_STDIN */
   
   if(*fl_nbr == 0){
     (void)fprintf(stdout,"%s: ERROR Must specify input filename.\n",prg_nm_get());

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.49 2004-06-18 23:12:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.50 2004-06-18 23:56:45 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -311,7 +311,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-f")) (void)fprintf(stdout,"-f, --fnc_tbl, --prn_fnc_tbl\tPrint function table\n");
   if(strstr(opt_sng,"-H")){
     if(prg_lcl == ncks) (void)fprintf(stdout,"-H, --prn, --print\tPrint data\n");
-    if(nco_is_mlt_fl_opr(prg_lcl)) (void)fprintf(stdout,"-H, --fl_lst_in, --file_list\tCreate \"input_file_list\" global attribute\n");
+    if(nco_is_mlt_fl_opr(prg_lcl)) (void)fprintf(stdout,"-H, --fl_lst_in, --file_list\tDo not create \"input_file_list\" global attribute\n");
   } /* end if -H */
   if(strstr(opt_sng,"-h")) (void)fprintf(stdout,"-h, --hst, --history\tDo not append to \"history\" global attribute\n");
   if(strstr(opt_sng,"-i")) (void)fprintf(stdout,"-i, --ntp, --interpolate var,val\tInterpolant and value\n");
