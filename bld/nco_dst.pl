@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.110 2003-08-13 20:09:54 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.111 2003-08-13 20:15:57 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -67,9 +67,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2003-08-13 20:09:54 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.110 2003-08-13 20:09:54 zender Exp $';
-my $CVS_Revision='$Revision: 1.110 $';
+my $CVS_Date='$Date: 2003-08-13 20:15:57 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.111 2003-08-13 20:15:57 zender Exp $';
+my $CVS_Revision='$Revision: 1.111 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -206,11 +206,11 @@ if($dly_snp){
     if($nco_vrs_mjr < 1 || $nco_vrs_mjr > 2){die "$prg_nm: ERROR $nco_vrs_mjr < 1 || $nco_vrs_mjr > 2"};
 } # endelse
 $dst_fl=$dst_vrs.'.tar.gz'; # Standard tarball distribution
-$dst_fl_chg=$dst.'_'.$nco_vrs.'-1_i386.changes'; # Debian changes
-$dst_fl_deb=$dst.'_'.$nco_vrs.'-1_i386.deb'; # Debian executables and libraries
-$dst_fl_doc=$dst.'-doc_'.$nco_vrs.'-1_all.deb'; # Debian documentation
-$dst_fl_dsc=$dst.'_'.$nco_vrs.'-1.dsc'; # Debian description
-$dst_fl_tgz=$dst.'_'.$nco_vrs.'-1.tar.gz'; # Debian tarball
+$dst_fl_chg=$mdl_sng.'_'.$nco_vrs.'-1_i386.changes'; # Debian changes
+$dst_fl_deb=$mdl_sng.'_'.$nco_vrs.'-1_i386.deb'; # Debian executables and libraries
+$dst_fl_doc=$mdl_sng.'-doc_'.$nco_vrs.'-1_all.deb'; # Debian documentation
+$dst_fl_dsc=$mdl_sng.'_'.$nco_vrs.'-1.dsc'; # Debian description
+$dst_fl_tgz=$mdl_sng.'_'.$nco_vrs.'-1.tar.gz'; # Debian tarball
 
 my $dst_pth_bld=$dst_pth_pfx.'/'.$dst_vrs; # Build directory
 
