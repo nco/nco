@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.10 2001-11-16 12:30:10 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.11 2001-11-29 16:07:42 hmb Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -65,7 +65,9 @@ typedef struct{
     int *nbr_att;
     dmn_sct **dim;
     int nbr_dmn_xtr;
+    bool inital_scan;
 } prs_sct;
+
 
 /* These funtions are kept either in ncap.y or ncap_utl.c */
 extern sym_sct *sym_look(char *sym_nm);
@@ -85,6 +87,7 @@ extern var_sct *ncap_var_attribute_modulus(var_sct *,parse_sct);
 extern var_sct *ncap_var_function(var_sct *,double (*fnc)( ));
 extern var_sct *ncap_var_abs(var_sct *);
 extern int ncap_retype(parse_sct *, parse_sct *);
+extern int ncap_var_retype(var_sct* , var_sct* );
 extern int ncap_attribute_conform_type(nc_type, parse_sct *);
 extern int ncap_attribute_minus(parse_sct *);
 extern parse_sct ncap_attribute_abs(parse_sct);
@@ -92,7 +95,7 @@ extern parse_sct ncap_attribute_calc(parse_sct, char, parse_sct);
 extern parse_sct ncap_ptr_unn_2_attribute(nc_type, ptr_unn);
 extern ptr_unn ncap_attribute_2_ptr_unn(parse_sct); 
 extern sym_sct * ncap_sym_init(char * ,double (*fnc)());
-
+extern void ncap_initial_scan(prs_sct*,char *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *);
 extern void var_attribute_multiply(nc_type ,long ,int ,ptr_unn ,ptr_unn ,parse_sct *);
 extern void var_attribute_add(nc_type ,long ,int ,ptr_unn ,ptr_unn ,parse_sct *);
 extern void var_attribute_divide(nc_type ,long ,int ,ptr_unn ,ptr_unn ,parse_sct *);
@@ -100,6 +103,9 @@ extern void var_attribute_modulus(nc_type ,long ,int ,ptr_unn ,ptr_unn ,parse_sc
 extern void var_abs(nc_type ,long ,int ,ptr_unn ,ptr_unn);
 extern int ncap_aed_lookup(char *,char *,aed_sct **,int *,bool);
 
+nm_id_sct *var_lst_add(int ,nm_id_sct *,int *,nm_id_sct *,int );
+nm_id_sct *var_lst_sub(int ,nm_id_sct *,int *,nm_id_sct *,int );
+nm_id_sct * var_lst_copy(nm_id_sct *,int );
 extern int yyerror(char *sng);
 extern void nco_lib_vrs_prn();
 
