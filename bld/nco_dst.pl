@@ -6,8 +6,9 @@
 # Usage:
 # Export tagged, public versions
 
-# $HOME/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-1_2
-# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco-1_2
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-1_2 # Build, do not install
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco-1_2 # Install, do not build
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --bld --cln --nst_all nco-1_2 # Build and install
 # $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco-1_2
 # $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco-1_2
 # $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco-1_2
@@ -29,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.67 2000-08-04 23:13:00 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.68 2000-08-07 04:40:51 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -65,9 +66,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-08-04 23:13:00 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.67 2000-08-04 23:13:00 zender Exp $';
-my $CVS_Revision='$Revision: 1.67 $';
+my $CVS_Date='$Date: 2000-08-07 04:40:51 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.68 2000-08-07 04:40:51 zender Exp $';
+my $CVS_Revision='$Revision: 1.68 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -163,7 +164,6 @@ if($#ARGV > 0){die "$prg_nm: ERROR Called with $#ARGV+1 positional arguments, ne
 elsif($#ARGV == 0){$vrs_tag=$ARGV[0];} # Version name is first positional argument, if present. 
 
 if($nst_all){
-    $bld=$True;
     $cgd_prs=$True;
     $cgd_cnt=$True;
     $acd_prs=$True;

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.57 2000-08-05 00:11:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.58 2000-08-07 04:40:51 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2260,23 +2260,43 @@ $$
 \bar x_j = {\sum_{i = 1}^{i = N} \mu_i m_i w_i x^2_i \over \sum_{i =
 1}^{i = N} \mu_i m_i w_i}
 $$
+If $x$ represents a deviation from the mean of another variable, $x_i =
+y_i - \bar{y}$ (possibly created by @code{ncdiff} in a previous step),
+then applying @code{avgsqr} to $x$ computes the approximate variance of
+$y$. 
+Computing the true variance of $y$ requires subtracting 1 from the
+denominator, discussed below.
+For a large sample size however, the two results will be nearly
+indistinguishable. 
+
 The root mean square of $x$ (@code{-y rms}) is 
 $$
 \bar x_j = \sqrt{ {\sum_{i = 1}^{i = N} \mu_i m_i w_i x^2_i \over \sum_{i =
 1}^{i = N} \mu_i m_i w_i} }
 $$
+Thus @code{rms} simply computes the squareroot of the quantity computed
+by @code{avgsqr}.
+
 The root mean square of $x$ with standard-deviation-like normalization
 (@code{-y rmssdn}) is implemented as follows.
-When weights are not specified, the root mean square of $x$ is
+When weights are not specified, this function is the same as the root
+mean square of $x$ except one is subtracted from the sum in the
+denominator 
 $$
-\bar x_j = \sqrt{ {\sum_{i = 1}^{i = N} \mu_i m_i x^2_i \over -1 + \sum_{i =
-1}^{i = N} \mu_i m_i} }
+\bar x_j = \sqrt{ {\sum_{i = 1}^{i = N} \mu_i m_i x^2_i \over -1 + 
+\sum_{i = 1}^{i = N} \mu_i m_i} }
 $$
-This is the classic formula where the number of degrees of freedom is
-one less than the sample size.
-However, when weights are specified it is unclear how to proceed.
+If $x$ represents the deviation from the mean of another variable, 
+$x_i = y_i - \bar{y}$, then applying @code{rmssdn} to $x$ computes the
+standard deviation of $y$.
+In this case the $-1$ in the denominator compensates for the degree of
+freedom already used in computing $\bar{y}$ in the numerator.
+Consult a statistics book for more details.
+
+When weights are specified it is unclear how to compensate for this
+extra degree of freedom.
 Weighting the numerator and denominator of the above by $w_i$ and
-subtracting one from the denominator is only appropriate when all the 
+subtracting one from the denominator is only appropriate when all the  
 weights are one.
 When the weights are arbitrary (e.g., Gaussian weights), subtracting one 
 from the sum in the denominator does not necessarily remove one degree
