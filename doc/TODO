@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.155 2002-07-08 03:09:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.156 2002-07-08 20:46:30 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -48,8 +48,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 32. Need filename expander and $NCO_DATA_PATH handling so #include's may be generic
 33. Document new math/roundig functions (acosh, floor...)
 34. Make parse errors always print current line to terminal rather than silently failing
-35. cygwin ncap.l does not build because of dependence on syslimits.h
-36. cygwin build of netcdf fails also because of dependence on syslimits.h
+36. cygwin builds of ncap.l and netcdf fail because of dependence on syslimits.h. non-kludge fix may require updated gcc and mingw packages
 
 Highest priority NCO-wide items that You can help with:
 41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)

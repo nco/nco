@@ -1,15 +1,18 @@
 2002-07-08  Charlie Zender  <zender@uci.edu>
 
+	* Correct ncap symbol table to build on SGI6, SGI64 platforms
+
 	* Add ncap to nco_tst.sh test suite
 
 2002-07-08    <zender@LANINA>
 
 	* All operators build with cygwin gcc-3.1.1 as long as
-	-I/usr/include is given first (fixes syslimits.h problem)
+	-I/usr/include is given first (fixes weird syslimits.h problem),
+	non-kludge fix may require updated gcc and mingw packages.
 
 	* Modify Makefile for cygwin-1.3.x compatibility.
 	Everything appears to build except ncap.l/ncap_lex.c which needs
-	syslimits.h which cygwin does not appear to support
+	syslimits.h which current cygwin gcc-3.1.1 does not appear to support
 
 2002-07-03  Charlie Zender  <zender@uci.edu>
 
