@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.15 2002-04-27 00:15:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.16 2002-04-27 06:16:06 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -418,6 +418,7 @@ extern "C" {
   extern nm_id_sct *var_lst_xcl(int,int,nm_id_sct *,int *);
   extern ptr_unn mss_val_mk(nc_type);
   extern unsigned short dbg_lvl_get(void);
+  extern scv_sct ptr_unn_2_scv(nc_type,ptr_unn);
   extern var_sct *scl_dbl_mk_var(double);
   extern var_sct *var_avg(var_sct *,dmn_sct **,int,int);
   extern var_sct *var_conform_dim(var_sct *,var_sct *,var_sct *,bool,bool *);

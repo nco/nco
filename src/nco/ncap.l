@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.40 2002-04-27 06:08:33 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.41 2002-04-27 06:16:06 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -306,7 +306,7 @@ unpack/[ ]*\( {return UNPACK;}
 	lval_ptr->str[ptr_aed->sz]='\0';
 	return STRING;
       } else {
-	lval_ptr->scv=ncap_ptr_unn_2_scv(ptr_aed->type,ptr_aed->val);
+	lval_ptr->scv=ptr_unn_2_scv(ptr_aed->type,ptr_aed->val);
 	return SCV;  
       } /* end else */        
     } /* end if */
@@ -329,7 +329,7 @@ unpack/[ ]*\( {return UNPACK;}
 	  lval_ptr->str[att_sz]='\0'; 
 	  return STRING;
 	}else{
-	  lval_ptr->scv=ncap_ptr_unn_2_scv(type,val);
+	  lval_ptr->scv=ptr_unn_2_scv(type,val);
 	  return SCV;   
 	} /* end else */ 
       } /* end if */

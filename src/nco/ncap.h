@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.31 2002-04-27 06:08:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.32 2002-04-27 06:16:06 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -87,7 +87,6 @@ extern nm_id_sct *var_lst_copy(nm_id_sct *,int);
 extern nm_id_sct *var_lst_free(nm_id_sct *,int );
 extern nm_id_sct *var_lst_sub(int,nm_id_sct *,int *,nm_id_sct *,int);
 extern ptr_unn ncap_scv_2_ptr_unn(scv_sct); 
-extern scv_sct ncap_ptr_unn_2_scv(nc_type,ptr_unn);
 extern scv_sct ncap_scv_abs(scv_sct);
 extern scv_sct ncap_scv_calc(scv_sct,char,scv_sct);
 extern sym_sct *ncap_sym_init(char * ,double (*fnc)(double),float (*fncf)(float));

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.3 2002-04-27 06:08:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.4 2002-04-27 06:16:06 zender Exp $ */
 
 /* Purpose: NCO utilities for arithmetic involving var and scv types */
 
@@ -71,7 +71,7 @@ var_scv_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
   
   switch(type){
   case NC_FLOAT:{
-    float scv_flt=scv->val.f;
+    const float scv_flt=scv->val.f;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]+=scv_flt;
     }else{
@@ -83,7 +83,7 @@ var_scv_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     break;
   } /* endif NC_FLOAT */
   case NC_DOUBLE:{
-    double scv_dpl=scv->val.d;
+    const double scv_dpl=scv->val.d;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]+=scv_dpl;
     }else{
@@ -95,7 +95,7 @@ var_scv_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     break;
   } /* endif NC_DOUBLE */
   case NC_INT:{
-    nco_long scv_lng=scv->val.l;
+    const nco_long scv_lng=scv->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]+=scv_lng;
     }else{
@@ -107,7 +107,7 @@ var_scv_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     break;
   } /* endif NC_INT */
   case NC_SHORT:{
-    short scv_sht=scv->val.s; 
+    const short scv_sht=scv->val.s; 
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]+=scv_sht;
     }else{
@@ -155,7 +155,7 @@ var_scv_sub(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
   
   switch(type){
   case NC_FLOAT:{
-    float scv_flt=scv->val.f;
+    const float scv_flt=scv->val.f;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]-=scv_flt;
     }else{
@@ -167,7 +167,7 @@ var_scv_sub(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     break;
   }
   case NC_DOUBLE:{
-    double scv_dpl=scv->val.d;
+    const double scv_dpl=scv->val.d;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]-=scv_dpl;
     }else{
@@ -179,7 +179,7 @@ var_scv_sub(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     break;
   }
   case NC_INT:{
-    nco_long scv_lng=scv->val.l;
+    const nco_long scv_lng=scv->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]-=scv_lng;
     }else{
@@ -191,7 +191,7 @@ var_scv_sub(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     break;
   }
   case NC_SHORT:{
-    short scv_sht=scv->val.s; 
+    const short scv_sht=scv->val.s; 
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]-=scv_sht;
     }else{
@@ -240,7 +240,7 @@ var_scv_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
   
   switch(type){
   case NC_FLOAT:{
-    float scv_flt=scv->val.f;
+    const float scv_flt=scv->val.f;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]*=scv_flt;
     }else{
@@ -252,7 +252,7 @@ var_scv_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
     break;
   }
   case NC_DOUBLE:{
-    double scv_dpl=scv->val.d;
+    const double scv_dpl=scv->val.d;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]*=scv_dpl;
     }else{
@@ -264,7 +264,7 @@ var_scv_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
     break;
   }
   case NC_INT:{
-    nco_long scv_lng=scv->val.l;
+    const nco_long scv_lng=scv->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]*=scv_lng;
     }else{
@@ -276,7 +276,7 @@ var_scv_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
     break;
   }
   case NC_SHORT:{
-    short scv_sht=scv->val.s; 
+    const short scv_sht=scv->val.s; 
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]*=scv_sht;
     }else{
@@ -325,7 +325,7 @@ var_scv_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,
   
   switch(type){
   case NC_FLOAT:{
-    float scv_flt=scv->val.f;
+    const float scv_flt=scv->val.f;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]/=scv_flt;
     }else{
@@ -337,7 +337,7 @@ var_scv_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,
     break;
   }
   case NC_DOUBLE:{
-    double scv_dpl=scv->val.d;
+    const double scv_dpl=scv->val.d;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]/=scv_dpl;
     }else{
@@ -349,7 +349,7 @@ var_scv_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,
     break;
   }
   case NC_INT:{
-    nco_long scv_lng=scv->val.l;
+    const nco_long scv_lng=scv->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]/=scv_lng;
     }else{
@@ -361,7 +361,7 @@ var_scv_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,
     break;
   }
   case NC_SHORT:{
-    short scv_sht=scv->val.s; 
+    const short scv_sht=scv->val.s; 
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]/=scv_sht;
     }else{
@@ -413,7 +413,7 @@ var_scv_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1
   
   switch(type){
   case NC_FLOAT:{ 
-    float scv_flt=fabsf(scv->val.f);
+    const float scv_flt=fabsf(scv->val.f);
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]=fmodf(op1.fp[idx],scv_flt);
     }else{
@@ -425,7 +425,7 @@ var_scv_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1
   }
   break; 
   case NC_DOUBLE:{
-    double scv_dpl=fabs(scv->val.d);
+    const double scv_dpl=fabs(scv->val.d);
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]=fmod(op1.dp[idx],scv_dpl);
     }else{
@@ -438,7 +438,7 @@ var_scv_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1
   }
   
   case NC_INT:{
-    nco_long scv_lng=scv->val.l;
+    const nco_long scv_lng=scv->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]%=scv_lng;
     }else{
@@ -450,7 +450,7 @@ var_scv_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1
     break;
   }
   case NC_SHORT:{
-    short scv_sht=scv->val.s; 
+    const short scv_sht=scv->val.s; 
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]%=scv_sht;
     }else{

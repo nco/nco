@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.21 2002-04-27 06:08:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.22 2002-04-27 06:16:06 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -161,7 +161,7 @@ var_upk /* [fnc] Unpack variable in memory */
     scv_sct scl_fct_scv;
     var->scl_fct.vp=(void *)nco_malloc(nco_typ_lng(var->typ_upk));
     (void)nco_get_att(var->nc_id,var->id,scl_fct_sng,var->scl_fct.vp,var->typ_upk);
-    scl_fct_scv=ncap_ptr_unn_2_scv(var->typ_upk,var->scl_fct);
+    scl_fct_scv=ptr_unn_2_scv(var->typ_upk,var->scl_fct);
     /* Convert var to type of scale_factor for expansion */
     var=var_conform_type(scl_fct_scv.type,var);
     /* Multiply var by scale_factor */
@@ -172,7 +172,7 @@ var_upk /* [fnc] Unpack variable in memory */
     scv_sct add_fst_scv;
     var->add_fst.vp=(void *)nco_malloc(nco_typ_lng(var->typ_upk));
     (void)nco_get_att(var->nc_id,var->id,add_fst_sng,var->add_fst.vp,var->typ_upk);
-    add_fst_scv=ncap_ptr_unn_2_scv(var->typ_upk,var->add_fst);
+    add_fst_scv=ptr_unn_2_scv(var->typ_upk,var->add_fst);
     /* Convert var to type of scale_factor for expansion */
     var=var_conform_type(add_fst_scv.type,var);
     /* Add add_offset to var */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.49 2002-04-27 06:08:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.50 2002-04-27 06:16:06 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -133,31 +133,6 @@ ncap_sym_init(char *name,double (*fnc_dbl)(double),float (*fnc_flt)(float))
   symbol->fncf=fnc_flt;
   return symbol;
 } /* end ncap_sym_init */
-
-scv_sct 
-ncap_ptr_unn_2_scv(nc_type type,ptr_unn val)
-{
-  /* Purpose: Convert a ptr_unn to an attribute scv_sct
-     Assumes that val is initially cast to void
-     Note does not convert cp (strings) as these are not handled by scv_sct
-     Note: netCDF attributes may contain multiple values
-     Only FIRST value in memory block is converted */
-  
-  scv_sct scv;
-  (void)cast_void_nctype(type,&val);
-  switch(type){
-  case NC_FLOAT: scv.val.f=*val.fp; break;
-  case NC_DOUBLE: scv.val.d =*val.dp; break;
-  case NC_INT: scv.val.l =*val.lp; break;
-  case NC_SHORT: scv.val.s=*val.sp; break;
-  case NC_BYTE: scv.val.b =*val.bp; break;
-  case NC_CHAR: break; /* Do nothing */
-  default: nco_dfl_case_nctype_err(); break;
-  } /* end switch */
-  scv.type=type;
-  /* Do not uncast pointer as we are working with a copy */
-  return scv;
-} /* end ncap_ptr_unn_2_scv */
 
 ptr_unn
 ncap_scv_2_ptr_unn(scv_sct scv)
