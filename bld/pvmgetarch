@@ -1,5 +1,7 @@
 #!/bin/sh
 #
+# $Id: pvmgetarch,v 1.2 1998-08-19 17:49:31 zender Exp $
+#
 # pvmgetarch.sh
 #
 # Generate PVM architecture string.
@@ -26,13 +28,24 @@ ARCH=UNKNOWN
 #
 # determine the machine type from scratch
 #
-if [ -f /bin/uname -o -f /usr/bin/uname ]; then
+if [ -f /bin/uname -o -f /usr/bin/uname \
+		-o -f /bin/uname.exe -o -f /usr/bin/uname.exe ]; then
 	if [ -f /bin/uname ]; then
 		os="`/bin/uname -s`"
 		ht="`/bin/uname -m`"
-	else
+		ov="`/bin/uname -v`"
+	elif [ -f /usr/bin/uname ]; then
 		os="`/usr/bin/uname -s`"
 		ht="`/usr/bin/uname -m`"
+		ov="`/usr/bin/uname -v`"
+	elif [ -f /bin/uname.exe ]; then
+		os="`/bin/uname.exe -s`"
+		ht="`/bin/uname.exe -m`"
+		ov="`/bin/uname.exe -v`"
+	else
+		os="`/usr/bin/uname.exe -s`"
+		ht="`/usr/bin/uname.exe -m`"
+		ov="`/usr/bin/uname.exe -v`"
 	fi
 
 	case "$os,$ht" in
@@ -45,20 +58,24 @@ if [ -f /bin/uname -o -f /usr/bin/uname ]; then
 	*HP*,9000/[2345]* )     ARCH=HP300 ;;
 	*HP*,9000/[78]* )       ARCH=HPPA ;;
 	IRIX,* )                ARCH=SGI ;;
-	*,alpha )               ARCH=ALPHA ;;
+	IRIX64,* )              ARCH=SGI64 ;;
+	*OSF*,alpha )           ARCH=ALPHA ;;
+	Linux,alpha )           ARCH=LINUXALPHA ;;
 	CRSOS,smp )             ARCH=CRAYSMP ;;
 	*,paragon )             ARCH=PGON ;;
 	dgux,AViiON )           ARCH=DGAV ;;
 	*,88k )                 ARCH=E88K ;;
 	*,mips )                ARCH=MIPS ;;
 	*,CRAY-2 )              ARCH=CRAY2 ;;
-	Linux,i[3456]86 )        ARCH=LINUX ;;
-	BSD/OS,i[3456]86 )       ARCH=BSD386 ;;
+	Linux,i[3456]86 )       ARCH=LINUX ;;
+	Linux,sparc)			ARCH=LINUXSPARC ;;
+	BSD/OS,i[3456]86 )      ARCH=BSD386 ;;
 	FreeBSD,i386 )          ARCH=FREEBSD ;;
 	SUPER-UX,SX-3 )         ARCH=SX3 ;;
 	uts,* )                 ARCH=UTS2 ;;
 	realix,M88* )           ARCH=M88K ;;
 	DomainOS,DN* )          ARCH=APOLLO ;;
+	OS/2,i[3456]86 )        ARCH=OS2 ;;
 	esac
 fi
 
@@ -90,13 +107,19 @@ if [ "$ARCH" = UNKNOWN ]; then
 	if [ -d /usr/alliant ]; then ARCH=AFX8; fi
 	if [ -f /usr/bin/cluster ]; then ARCH=BFLY; fi
 	if [ -d /usr/convex ]; then ARCH=CNVX; fi
-	if [ -f /unicos ]; then ARCH=CRAY; fi
+#++csz
+#	if [ -f /unicos ]; then ARCH=CRAY; fi
+#--csz
 	if [ -f /hp-ux ]; then ARCH=HP300; fi
 	if [ -f /usr/bin/getcube ]; then ARCH=I860; fi
 	if [ -f /usr/bin/asm56000 ]; then ARCH=NEXT; fi
 	if [ -f /etc/vg ]; then ARCH=RS6K; fi
 	if [ -d /usr/include/caif ]; then ARCH=RT; fi
+#++csz
+# Move check for /unicos to after /bin/4d because Ouray=Unicos 10.0.0 has both
 	if [ -f /bin/4d ]; then ARCH=SGI; fi
+	if [ -f /unicos ]; then ARCH=CRAY; fi
+#--csz
 	if [ -f /dynix ]; then ARCH=SYMM; fi
 	if [ -f /bin/titan ]; then ARCH=TITN; fi
 
@@ -118,6 +141,9 @@ if [ "$ARCH" = UNKNOWN ]; then
 	if [ -f /usr/bin/uxpm ] && /usr/bin/uxpm ; then
 		ARCH=UXPM
 	fi
+	if [ -f /usr/bin/uxpv ] && /usr/bin/uxpv ; then
+		ARCH=UXPV
+	fi
 fi
 
 if [ "$ARCH" = UNKNOWN ]; then
@@ -125,13 +151,18 @@ if [ "$ARCH" = UNKNOWN ]; then
 		if [ -f /bin/uname ]; then
 			os="`/bin/uname -s`"
 			ht="`/bin/uname -m`"
+			rv="`/bin/uname -r`"
 		else
 			os="`/usr/bin/uname -s`"
 			ht="`/usr/bin/uname -m`"
+			rv="`/usr/bin/uname -r`"
 		fi
 
 		case "$os,$ht" in
-		*,i[345]86 )            ARCH=SCO ;;
+		*,i[3456]86 )    case "$rv" in
+				4.*) ARCH=UWARE ;;
+				*) ARCH=SCO ;;
+				esac
 		esac
 	fi
 fi
@@ -146,31 +177,51 @@ if [ "$ARCH" = SUN4 ]; then
 	esac
 fi
 if [ "$ARCH" = SUN4SOL2 ]; then
-	nproc="`/bin/mpstat | wc -l`"
-	if [ $nproc -gt 2 ]; then ARCH=SUNMP; fi
+#++csz
+	nproc="`/bin/mpstat | /bin/wc -l`"
+#	nproc="`/bin/mpstat | wc -l`"
+# Omit requirement that PVM_SHMEM be set to return SUNMP
+# Keep requirement that /bin/mpstat return multiple lines
+#	if [ $nproc -gt 2 -a "$PVM_SHMEM" = ON ];
+	if [ $nproc -gt 2 ];
+#--csz
+		then ARCH=SUNMP;
+	fi
 fi
 if [ "$ARCH" = ALPHA ]; then
 	rel="`/usr/bin/uname -r`"
 	case "$rel" in
-	*3.*)
+	*[34].*)
 		nproc="`/usr/sbin/sizer -p`"
-		if [ $nproc -gt 1 ]; then ARCH=ALPHAMP; fi ;;
+		if [ $nproc -gt 1 -a "$PVM_SHMEM" = ON ];
+			then ARCH=ALPHAMP;
+		fi ;;
 	esac
 fi
 if [ "$ARCH" = SGI ]; then
 	rel="`/bin/uname -r`"
 	case "$rel" in
 	5.* )   ARCH=SGI5 ;;
-	6.* )   ARCH=SGI64 ;;
+	6.* )   ARCH=SGI6 ;;
 	esac
 fi
 if [ "$ARCH" = SGI64 ]; then
 	nproc="`/usr/sbin/mpadmin -n | wc -w`"
-	if [ $nproc -gt 1 -a "$SGIMP" = ON ]; then ARCH=SGIMP64; fi
+	if [ $nproc -gt 1 -a "$PVM_SHMEM" = ON ];
+		then ARCH=SGIMP64;
+	fi
 fi
 if [ "$ARCH" = SGI5 ]; then
 	nproc="`/usr/sbin/mpadmin -n | wc -w`"
-	if [ $nproc -gt 1 -a "$SGIMP" = ON ]; then ARCH=SGIMP; fi
+	if [ $nproc -gt 1 -a "$PVM_SHMEM" = ON ];
+		then ARCH=SGIMP;
+	fi
+fi
+if [ "$ARCH" = SGI6 ]; then
+	nproc="`/usr/sbin/mpadmin -n | wc -w`"
+	if [ $nproc -gt 1 -a "$PVM_SHMEM" = ON ];
+		then ARCH=SGIMP6;
+	fi
 fi
 if [ "$ARCH" = SUN4 -a -f /dev/cm ]; then ARCH=CM2; fi
 if [ "$ARCH" = SUN4 -a -f /dev/cmni ]; then ARCH=CM5; fi
@@ -180,16 +231,23 @@ if [ "$ARCH" = CNVX ]; then
 	fi
 fi
 if [ "$ARCH" = PMAX -a -d /usr/maspar ]; then ARCH=MASPAR; fi
-if [ "$ARCH" = RS6K ]; then 
-	nproc="`/usr/sbin/lsdev -C -c processor | wc -l`"
-	if [ $nproc -gt 1 ]; then ARCH=RS6KMP; fi
+if [ "$ARCH" = RS6K ]; then
+	case "$os,$ov" in
+	AIX*,4 )	nproc="`/usr/sbin/lsdev -C -c processor | wc -l`"
+			if [ $nproc -gt 1 -a "$PVM_SHMEM" = ON ]; then 
+				ARCH=AIX4MP;
+			else
+				ARCH=AIX46K;
+			fi ;;
+	esac
 fi
 if [ "$ARCH" = HPPA -a -f /bin/sysinfo ]; then ARCH=CSPP; fi
 if [ "$ARCH" = HPPA ]; then
 	nproc="`/usr/bin/vmstat -n | wc -l`"
-	if [ $nproc -gt 8 ]; then ARCH=HPPAMP; fi
+	if [ $nproc -gt 8 -a "$PVM_SHMEM" = ON ];
+		then ARCH=HPPAMP;
+	fi
 fi
-
 #
 # ugh, done.
 #

@@ -1,3 +1,12 @@
+Wed Aug 19 11:26:25 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
+
+	* Fixed bug where pvmgetarch returned "SGI" on UNICOS 10.0.0.
+
+	* Improved Makefile fortran switches and added convenience
+	housekeeping targets.
+
+	* Fixed bug where cvs_vrs_prs() crashed with -kkv exports
+
 1998-08-18  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Added nco_vrs_prs() to parse NCO versions. NCO version is now
