@@ -1,3 +1,9 @@
+2004-06-18  Charlie Zender  <zender@uci.edu>
+
+	* Added new -H section to documentation
+
+	* Change FORTRAN_STYLE to FORTRAN_IDX_CNV
+
 2004-06-17  Charlie Zender  <zender@uci.edu>
 
 	* Added nco_fl_lst_att_cat() to add input file list global attribute

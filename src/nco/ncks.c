@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.102 2004-06-18 01:21:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.103 2004-06-18 23:12:28 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -76,7 +76,7 @@ main(int argc,char **argv)
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
-  bool FORTRAN_STYLE=False; /* Option F */
+  bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool NCO_BNR_WRT=False; /* [flg] Write binary file */
   bool OUTPUT_DATA=False; /* Option H */
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.102 2004-06-18 01:21:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.102 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.103 2004-06-18 23:12:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.103 $";
   const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qrRs:uv:x-:";
 
   extern char *optarg;
@@ -252,7 +252,7 @@ main(int argc,char **argv)
       fl_out=(char *)strdup(optarg);
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
-      FORTRAN_STYLE=!FORTRAN_STYLE;
+      FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
     case 'p': /* Common file path */
       fl_pth=optarg;
@@ -359,7 +359,7 @@ main(int argc,char **argv)
   /* Add user specified limits lmt_lst */
   for(idx=0;idx<lmt_nbr;idx++){
     /* Find coordinate/dimension values associated with user-specified limits */
-    (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
+    (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_IDX_CNV);
     for(jdx=0;jdx<nbr_dmn_fl;jdx++) {
       if(!strcmp(lmt[idx].nm,lmt_lst[jdx].dmn_nm)){   
 	lmt_tmp=&lmt_lst[jdx];
@@ -463,11 +463,11 @@ main(int argc,char **argv)
   } /* end if OUTPUT_VARIABLE_METADATA */
 
   /* if(OUTPUT_DATA){
-    for(idx=0;idx<nbr_xtr;idx++) (void)nco_prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_STYLE,PRINT_DIMENSIONAL_UNITS,PRN_DMN_IDX_CRD_VAL);
+    for(idx=0;idx<nbr_xtr;idx++) (void)nco_prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_IDX_CNV,PRINT_DIMENSIONAL_UNITS,PRN_DMN_IDX_CRD_VAL);
     } */
 
   if(OUTPUT_DATA){
-    for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl,dlm_sng,FORTRAN_STYLE,PRINT_DIMENSIONAL_UNITS,PRN_DMN_IDX_CRD_VAL);
+    for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,PRINT_DIMENSIONAL_UNITS,PRN_DMN_IDX_CRD_VAL);
   } /* end if OUTPUT_DATA */
   
   /* Close input netCDF file */

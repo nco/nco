@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.104 2004-06-18 01:21:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.105 2004-06-18 23:12:29 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -91,9 +91,10 @@ main(int argc,char **argv)
 {
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  bool FL_LST_IN_APPEND=True; /* Option H */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
-  bool FORTRAN_STYLE=False; /* Option F */
+  bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool ARM_FORMAT=int_CEWI;
   bool NCAR_CCSM_FORMAT=int_CEWI;
@@ -115,9 +116,9 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.104 2004-06-18 01:21:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.104 $";
-  const char * const opt_sng="ACcD:d:Fhl:n:Oo:p:P:rRv:xy:-:";
+  const char * const CVS_Id="$Id: ncra.c,v 1.105 2004-06-18 23:12:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.105 $";
+  const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRv:xy:-:";
 
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -179,6 +180,8 @@ main(int argc,char **argv)
       {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
       {"ftn",no_argument,0,'F'},
+      {"fl_lst_in",no_argument,0,'H'},
+      {"file_list",no_argument,0,'H'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
       {"local",required_argument,0,'l'},
@@ -239,7 +242,10 @@ main(int argc,char **argv)
       lmt_nbr++;
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
-      FORTRAN_STYLE=!FORTRAN_STYLE;
+      FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
+      break;
+    case 'H': /* Toggle writing input file list attribute */
+      FL_LST_IN_APPEND=!FL_LST_IN_APPEND;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
@@ -342,7 +348,7 @@ main(int argc,char **argv)
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
+  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_IDX_CNV);
 
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
@@ -368,7 +374,7 @@ main(int argc,char **argv)
       if(fl_nbr == 1)(void)fprintf(stdout,gettext("%s: HINT Use ncks instead of %s\n"),prg_nm_get(),prg_nm_get());
       nco_exit(EXIT_FAILURE);
     } /* endif */
-    lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_STYLE);
+    lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_IDX_CNV);
   } /* endif */
 
   /* Is this an NCAR CCSM-format history tape? */
@@ -399,6 +405,9 @@ main(int argc,char **argv)
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+
+  /* Add input file list global attribute */
+  if(FL_LST_IN_APPEND && HISTORY_APPEND) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
 
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
@@ -452,7 +461,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++) (void)nco_var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 
     /* Each file can have a different number of records to process */
-    if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,&lmt_rec,idx_rec_out,FORTRAN_STYLE); /* Routine is thread-unsafe */
+    if(prg == ncra || prg == ncrcat) (void)nco_lmt_evl(in_id,&lmt_rec,idx_rec_out,FORTRAN_IDX_CNV); /* Routine is thread-unsafe */
     
     /* Is this an ARM-format data file? */
     if(ARM_FORMAT) base_time_crr=arm_base_time_get(in_id); /* Routine is thread-unsafe */

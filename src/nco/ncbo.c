@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.16 2004-06-18 01:21:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.17 2004-06-18 23:12:28 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -87,7 +87,7 @@ main(int argc,char **argv)
   bool FILE_2_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
-  bool FORTRAN_STYLE=False; /* Option F */
+  bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool MUST_CONFORM=True; /* Must nco_var_cnf_dmn() find truly conforming variables? */
   bool DO_CONFORM; /* Did nco_var_cnf_dmn() find truly conforming variables? */
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.16 2004-06-18 01:21:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.16 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.17 2004-06-18 23:12:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.17 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:rRv:xy:-:";
   
   dmn_sct **dim;
@@ -224,7 +224,7 @@ main(int argc,char **argv)
       lmt_nbr++;
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
-      FORTRAN_STYLE=!FORTRAN_STYLE;
+      FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
@@ -312,7 +312,7 @@ main(int argc,char **argv)
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
+  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_IDX_CNV);
   
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);

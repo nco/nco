@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.14 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.15 2004-06-18 23:12:29 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -238,7 +238,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
  const lmt_sct * const lmt, /* I [sct] Dimension limits */
  const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
- const bool FORTRAN_STYLE, /* I [flg] Hyperslab indices obey Fortran convention */
+ const bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
  const bool PRINT_DIMENSIONAL_UNITS, /* I [flg] Print units attribute, if any */
  const bool PRN_DMN_IDX_CRD_VAL) /* I [flg] Print dimension/coordinate indices/values */
 {
@@ -484,7 +484,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
       for(idx=0;idx<var.nbr_dim;idx++) hyp_srt+=dmn_srt[idx]*hyp_mod[idx];
     } /* end if */
 
-    if(FORTRAN_STYLE){
+    if(FORTRAN_IDX_CNV){
       ftn_idx_off=1;
       arr_lft_dlm='(';
       arr_rgt_dlm=')';
@@ -506,7 +506,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
       /* Treat character arrays as strings if possible */
       if(var.type == NC_CHAR){
 	/* Do not print final dimension (C-convention) of character arrays */
-	if(FORTRAN_STYLE) dmn_idx_prn_srt=1; else dmn_nbr_prn=var.nbr_dim-1;
+	if(FORTRAN_IDX_CNV) dmn_idx_prn_srt=1; else dmn_nbr_prn=var.nbr_dim-1;
       } /* endif */
       
       dmn_sbs_ram[var.nbr_dim-1]=lmn%dmn_cnt[var.nbr_dim-1];
@@ -528,7 +528,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 	for(idx=dmn_idx_prn_srt;idx<dmn_nbr_prn;idx++){
 	  
 	  /* Reverse dimension ordering for Fortran convention */
-	  if(FORTRAN_STYLE) dmn_idx=var.nbr_dim-1-idx; else dmn_idx=idx;
+	  if(FORTRAN_IDX_CNV) dmn_idx=var.nbr_dim-1-idx; else dmn_idx=idx;
 	  
 	  /* Printed dimension subscript includes indexing convention (C or Fortran) */
 	  dmn_sbs_prn=dmn_sbs_dsk[dmn_idx]+ftn_idx_off;

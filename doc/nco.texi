@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.235 2004-06-18 16:33:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.236 2004-06-18 23:12:27 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -95,11 +95,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 2.9.6
-@set doc-edition 2.9.6
+@set nco-edition 2.9.7
+@set doc-edition 2.9.7
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 17 June 2004
+@set update-date 18 June 2004
 @set update-month June 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -1412,7 +1412,9 @@ A side-effect of using this method is that the @code{history} attribute
 (@pxref{History attribute}) does not record the name of any input
 files since the names were not passed on the command line.
 This makes determining the data provenance at a later date difficult.
-fxm: add discussion of new file list attribute.
+To remedy this situation, multi-file operators always store the input
+file list in the @code{input_file_list} global attribute.
+@cindex global attributes
 
 @node Large files and Memory, Memory usage, Large numbers of input files, Strategies
 @section Working with large files
@@ -1667,6 +1669,7 @@ feature is automatic and cannot be controlled by the user.
 * Type conversion::             
 * Suppressing interactive prompts::  
 * History attribute::           
+* Input file list attribute::   
 * NCAR CCSM Conventions::       
 * ARM Conventions::             
 * Operator version::            
@@ -1841,7 +1844,8 @@ name that most suits their taste.
 @cindex @code{--path @var{input-path}}
 @cindex @var{input-path}
 @cartouche
-Availability: All operators@*
+Availability (@code{-n}): @command{ncea}, @command{ncecat}, @command{ncra}, @command{ncrcat}@*
+Availability (@code{-n}): All operators@*
 Short options: @samp{-n}, @samp{-p}@*
 Long options: @samp{--nintap}, @samp{--pth}, @samp{--path}@*
 @end cartouche
@@ -3754,7 +3758,7 @@ existing @var{output-file} without prompting the user interactively.
 These switches are useful in batch environments because they suppress
 interactive keyboard input.
 
-@node History attribute, NCAR CCSM Conventions, Suppressing interactive prompts, Common features
+@node History attribute, Input file list attribute, Suppressing interactive prompts, Common features
 @section History attribute
 @cindex @code{history} attribute
 @cindex timestamp
@@ -3769,7 +3773,7 @@ Short options: @samp{-h}@*
 Long options: @samp{--hst}, @samp{--history}@*
 @end cartouche
 All operators automatically append a @code{history} global attribute to
-any file they modify or create.
+any file they create or modify.
 The @code{history} attribute consists of a timestamp and the full string
 of the invocation command to the operator, e.g., @samp{Mon May 26 20:10:24
 1997: ncks in.nc foo.nc}.
@@ -3791,10 +3795,54 @@ for "history", the first one found will be used.
 @code{history} attribute
 @cindex @command{ncatted}
 To avoid information overkill, all operators have an optional switch
-(@samp{-h}) to override automatically appending the @code{history}
-attribute (@pxref{ncatted netCDF Attribute Editor}).  
+(@samp{-h}, @samp{--hst}, or @samp{--history}) to override
+automatically appending the @code{history} attribute 
+(@pxref{ncatted netCDF Attribute Editor}).   
+Note that the @samp{-h} switch also turns off writing the
+@code{input_file_list} attribute for multi-file operators
+(@pxref{Input file list attribute}).
 
-@node NCAR CCSM Conventions, ARM Conventions, History attribute, Common features
+@html
+<a name="fl_lst_in_att"></a> <!-- http://nco.sf.net/nco.html#fl_lst_in_att -->
+@end html
+@node Input file list attribute, NCAR CCSM Conventions, History attribute, Common features
+@section Input file list attribute
+@cindex @code{input_file_list} attribute
+@cindex global attributes
+@cindex attributes, global
+@cindex @code{-H}
+@cindex @code{--fl_lst_in}
+@cindex @code{--file_list}
+@cartouche
+Availability: @command{ncea}, @command{ncecat}, @command{ncra}, @command{ncrcat}@*
+Short options: @samp{-H}@*
+Long options: @samp{--fl_lst_in}, @samp{--file_list}@*
+@end cartouche
+The multi-file operators automatically append an
+@code{input_file_list} global attribute to any file they create or  
+modify.
+The @code{input_file_list} global attribute contains a list of all
+input files specified as input in the last invocation of a multi-file
+operator. 
+Many methods of specifying large numbers of input file names pass
+these names via pipes, encodings, or argument transfer programs
+(@pxref{Large numbers of input files}).
+When these methods are used, the input file list is not explicitly
+passed on the command line.
+This results in a loss of information since the full information
+required to recreate the processed files is not contained in the
+@code{history} attribute.
+Without the @code{input_file_list} attribute, the information is lost
+forever and the ``chain of evidence'' would be broken.
+The @code{input_file_list} global attribute is not written when the 
+@samp{-h} switch is used to turn off the @code{history} attribute.
+This allows space-conscious users to avoid storing what may amount to
+many thousands of filenames in a metadata attribute.
+
+@html
+<a name="cnv_CCSM"></a> <!-- http://nco.sf.net/nco.html#cnv_CCSM -->
+@end html
+@node NCAR CCSM Conventions, ARM Conventions, Input file list attribute, Common features
 @section @acronym{NCAR CCSM} Conventions
 @cindex @acronym{NCAR CCSM} conventions
 @cindex @acronym{CCSM} conventions
@@ -3872,7 +3920,7 @@ For example rename the variables first with @command{ncrename},
 or alter the @code{convention} attribute.
 
 @html
-<a name="ARM"></a> <!-- http://nco.sf.net/nco.html#ARM -->
+<a name="cnv_ARM"></a> <!-- http://nco.sf.net/nco.html#cnv_ARM -->
 @end html
 @node ARM Conventions, Operator version, NCAR CCSM Conventions, Common features
 @section @acronym{ARM} Conventions
@@ -6695,7 +6743,7 @@ The mathematical definition of operations involving rank reduction
 is given above (@pxref{Operation Types}).
 
 @menu
-* Mask condition::           
+* Mask condition::              
 * Normalization::               
 @end menu
 

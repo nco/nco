@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.126 2004-06-18 01:21:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.127 2004-06-18 23:12:28 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -89,7 +89,7 @@ main(int argc,char **argv)
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
-  bool FORTRAN_STYLE=False; /* Option F */
+  bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool NCAR_CCSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.126 2004-06-18 01:21:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.126 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.127 2004-06-18 23:12:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.127 $";
   const char * const opt_sng="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -279,7 +279,7 @@ main(int argc,char **argv)
       lmt_nbr++;
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
-      FORTRAN_STYLE=!FORTRAN_STYLE;
+      FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
     case 'f': /* Print function table */
       PRN_FNC_TBL=True;

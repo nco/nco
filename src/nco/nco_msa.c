@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.19 2004-01-05 23:36:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.20 2004-06-18 23:12:29 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -581,7 +581,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  lmt_all_sct * const lmt_lst, /* I [sct] Dimension limits */
  const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
- const bool FORTRAN_STYLE, /* I [flg] Hyperslab indices obey Fortran convention */
+ const bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
  const bool PRINT_DIMENSIONAL_UNITS, /* I [flg] Print units attribute, if any */
  const bool PRN_DMN_IDX_CRD_VAL) /* I [flg] Print dimension/coordinate indices/values */
 {
@@ -801,19 +801,19 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	for(idx=0;idx<var.nbr_dim;idx++){
 	  
 	  /* Reverse dimension ordering for Fortran convention */
-	  if(FORTRAN_STYLE) dmn_idx=var.nbr_dim-1-idx; else dmn_idx=idx;
+	  if(FORTRAN_IDX_CNV) dmn_idx=var.nbr_dim-1-idx; else dmn_idx=idx;
 	  
 	  /* Format and print dimension part of output string for non-coordinate variables */
 	  if(dim[dmn_idx].cid == var.id) continue; /* If variable is a coordinate then skip printing until later */
 	  if(!dim[dmn_idx].is_crd_dmn){ /* If dimension is not a coordinate... */
-	    if(FORTRAN_STYLE) (void)fprintf(stdout,"%s(%ld) ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]+1L); else (void)fprintf(stdout,"%s[%ld] ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]);
+	    if(FORTRAN_IDX_CNV) (void)fprintf(stdout,"%s(%ld) ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]+1L); else (void)fprintf(stdout,"%s[%ld] ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]);
 	    continue;
 	  } /* end if */
                
 	  (void)sprintf(dmn_sng,"%%s[%%ld]=%s ",nco_typ_fmt_sng(dim[dmn_idx].type));
           dmn_sbs_prn=dmn_sbs_dsk[dmn_idx];
 
-	  if(FORTRAN_STYLE){
+	  if(FORTRAN_IDX_CNV){
             (void)nco_msa_c_2_f(dmn_sng);
 	    dmn_sbs_prn++;
 	  } /* end if */
@@ -869,7 +869,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	    prn_sng[chr_cnt]='\0';
 	    var_dsk_end=var_dsk;   
           } /* end if */
-          if(FORTRAN_STYLE){ 
+          if(FORTRAN_IDX_CNV){ 
 	    (void)nco_msa_c_2_f(var_sng);
 	    var_dsk_srt++; 
 	    var_dsk_end++; 
@@ -884,10 +884,10 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
       /* Print variable name, index, and value */
       (void)sprintf(var_sng,"%%s[%%ld]=%s %%s\n",nco_typ_fmt_sng(var.type));
-      if(FORTRAN_STYLE){
+      if(FORTRAN_IDX_CNV){
 	(void)nco_msa_c_2_f(var_sng);
 	var_dsk++;
-      } /* end if FORTRAN_STYLE */
+      } /* end if FORTRAN_IDX_CNV */
 
       switch(var.type){
       case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.fp[lmn],unit_sng); break;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.17 2004-03-18 02:09:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.18 2004-06-18 23:12:29 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -51,7 +51,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 (int nc_id, /* I [idx] netCDF file ID */
  lmt_sct *lmt_ptr, /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
  long cnt_crr, /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
- bool FORTRAN_STYLE); /* I [flg] Hyperslab indices obey Fortran convention */
+ bool FORTRAN_IDX_CNV); /* I [flg] Hyperslab indices obey Fortran convention */
 
 lmt_sct * /* O [sct] Structure with user-specified strings for min and max limits */
 nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */
@@ -64,7 +64,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
  const int dmn_id, /* I [idx] ID of dimension for this limit structure */
  const lmt_sct * const lmt, /* I [sct] Array of limit structures from nco_lmt_evl() */
  int lmt_nbr, /* I [nbr] Number of limit structures */
- const bool FORTRAN_STYLE); /* I [flg] Hyperslab indices obey Fortran convention */
+ const bool FORTRAN_IDX_CNV); /* I [flg] Hyperslab indices obey Fortran convention */
 
 int /* [rcd] Successful conversion returns 0 */
 nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */

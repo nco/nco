@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.27 2004-04-20 07:20:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.28 2004-06-18 23:12:28 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -14,7 +14,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
  const int dmn_id, /* I [idx] ID of dimension for this limit structure */
  const lmt_sct * const lmt, /* I [sct] Array of limit structures from nco_lmt_evl() */
  int lmt_nbr, /* I [nbr] Number of limit structures */
- const bool FORTRAN_STYLE) /* I [flg] Hyperslab indices obey Fortran convention */
+ const bool FORTRAN_IDX_CNV) /* I [flg] Hyperslab indices obey Fortran convention */
 {
   /* Purpose: Create stand-alone limit structure just for given dimension 
      nco_lmt_sct_mk() is called by ncra() to generate limit structure for record dimension */
@@ -71,22 +71,22 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
     lmt_dim.nm=(char *)strdup(dmn_nm);
     lmt_dim.srd_sng=NULL;
     /* Generate min and max strings to look as if user had specified them
-       Adjust accordingly if FORTRAN_STYLE was requested for other dimensions
+       Adjust accordingly if FORTRAN_IDX_CNV was requested for other dimensions
        These sizes will later be decremented in nco_lmt_evl() where all information
        is converted internally to C based indexing representation.
        Ultimately this problem arises because I want nco_lmt_evl() to think the
        user always did specify this dimension's hyperslab.
-       Otherwise, problems arise when FORTRAN_STYLE is specified by the user 
+       Otherwise, problems arise when FORTRAN_IDX_CNV is specified by the user 
        along with explicit hypersalbs for some dimensions excluding the record
        dimension.
        Then, when nco_lmt_sct_mk() creates the record dimension structure, it must
-       be created consistently with the FORTRAN_STYLE flag for the other dimensions.
+       be created consistently with the FORTRAN_IDX_CNV flag for the other dimensions.
        In order to do that, I must fill in the max_sng, min_sng, and srd_sng
        arguments with strings as if they had been read from the keyboard.
        Another solution would be to add a flag to lmt_sct indicating whether this
        limit struct had been automatically generated and then act accordingly. */
     /* Decrement cnt to C index value if necessary */
-    if(!FORTRAN_STYLE) cnt--; 
+    if(!FORTRAN_IDX_CNV) cnt--; 
     if(cnt < 0L){
       (void)fprintf(stdout,"%s: cnt < 0 in nco_lmt_sct_mk()\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
@@ -97,7 +97,7 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
     /* Add one for NUL terminator */
     lmt_dim.max_sng=(char *)nco_malloc(sizeof(char)*(max_sng_sz+1));
     (void)sprintf(lmt_dim.max_sng,"%ld",cnt);
-    if(FORTRAN_STYLE){
+    if(FORTRAN_IDX_CNV){
       lmt_dim.min_sng=(char *)strdup("1");
     }else{
       lmt_dim.min_sng=(char *)strdup("0");
@@ -113,7 +113,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
 (int nc_id, /* I [idx] netCDF file ID */
  lmt_sct *lmt_ptr, /* I/O [sct] Structure from nco_lmt_prs() or from nco_lmt_sct_mk() to hold dimension limit information */
  long cnt_crr, /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
- bool FORTRAN_STYLE) /* I [flg] Hyperslab indices obey Fortran convention */
+ bool FORTRAN_IDX_CNV) /* I [flg] Hyperslab indices obey Fortran convention */
 {
   /* Threads: Routine is thread-unsafe */
   /* Purpose: Take parsed list of dimension names, minima, and
@@ -452,21 +452,21 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* Following logic is messy, but hard to simplify */
     if(lmt.min_sng == NULL || !lmt.is_usr_spc_lmt){
       /* No user-specified value available--generate minimal dimension index */
-      if(FORTRAN_STYLE) lmt.min_idx=1L; else lmt.min_idx=0L;
+      if(FORTRAN_IDX_CNV) lmt.min_idx=1L; else lmt.min_idx=0L;
     }else{
       /* Use user-specified limit when available */
       lmt.min_idx=strtol(lmt.min_sng,(char **)NULL,10);
     } /* end if */
     if(lmt.max_sng == NULL || !lmt.is_usr_spc_lmt){
       /* No user-specified value available---generate maximal dimension index */
-      if(FORTRAN_STYLE) lmt.max_idx=dmn_sz; else lmt.max_idx=dmn_sz-1L;
+      if(FORTRAN_IDX_CNV) lmt.max_idx=dmn_sz; else lmt.max_idx=dmn_sz-1L;
     }else{
       /* Use user-specified limit when available */
       lmt.max_idx=strtol(lmt.max_sng,(char **)NULL,10);
     } /* end if */
     
     /* Adjust indices if FORTRAN style input was specified */
-    if(FORTRAN_STYLE){
+    if(FORTRAN_IDX_CNV){
       lmt.min_idx--;
       lmt.max_idx--;
     } /* end if */

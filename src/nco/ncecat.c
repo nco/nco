@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.72 2004-06-18 16:33:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.73 2004-06-18 23:12:28 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -65,7 +65,7 @@ main(int argc,char **argv)
   bool FL_LST_IN_APPEND=True; /* Option H */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
-  bool FORTRAN_STYLE=False; /* Option F */
+  bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool NCAR_CCSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
@@ -84,8 +84,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.72 2004-06-18 16:33:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.72 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.73 2004-06-18 23:12:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.73 $";
   const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:rRv:x-:";
 
   dmn_sct *rec_dmn;
@@ -140,10 +140,10 @@ main(int argc,char **argv)
       {"dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
       {"dmn",required_argument,0,'d'},
-      {"fl_lst_in",no_argument,0,'H'},
-      {"file_list",no_argument,0,'H'},
       {"fortran",no_argument,0,'F'},
       {"ftn",no_argument,0,'F'},
+      {"fl_lst_in",no_argument,0,'H'},
+      {"file_list",no_argument,0,'H'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
       {"local",required_argument,0,'l'},
@@ -195,7 +195,7 @@ main(int argc,char **argv)
       lmt_nbr++;
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
-      FORTRAN_STYLE=!FORTRAN_STYLE;
+      FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
     case 'H': /* Toggle writing input file list attribute */
       FL_LST_IN_APPEND=!FL_LST_IN_APPEND;
@@ -291,7 +291,7 @@ main(int argc,char **argv)
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
+  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_IDX_CNV);
   
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
