@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.321 2004-06-20 06:54:27 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.322 2004-06-20 07:04:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -199,7 +199,21 @@ nco340. o/a/e stdin is overwritten when stdin input method used
 cd ~/nco/data;echo "in.nc" | ncecat -o foo.nc
 nco341. Add _FILE_OFFSET_BITS == 64 to all compiles? Otherwise stat() call in nco_fl_mk_lcl() may fail on large files on 32 bit systems
 nco342. Get canonicalize_file_name() working in nco_fl_info_get()
-nco343. 
+nco343. Dis-ambiguate nco_put_att() functions
+mie.cc:3508: error: call of overloaded `nco_put_att(const int&, int,
+   std::string, prc_cmp&)' is ambiguous
+/home/zender/include/nco_att.hh:53: error: candidates are: int
+   nco_put_att(const int&, const int&, const std::string&, const float&, const
+   nc_type&)
+/home/zender/include/nco_att.hh:91: error:                 int
+   nco_put_att(const int&, const int&, const std::string&, const int&, const
+   nc_type&)
+/home/zender/include/nco_att.hh:109: error:                 int
+   nco_put_att(const int&, const int&, const std::string&, const short int&,
+   const nc_type&)
+/home/zender/include/nco_att.hh:127: error:                 int
+   nco_put_att(const int&, const int&, const std::string&, const long int&,
+   const nc_type&)
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
