@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.151 2002-07-03 18:20:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.152 2002-07-08 03:09:23 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -134,6 +134,12 @@ ifeq (${PVM_ARCH},LINUX)
 # MDL_RPM_PRV_NM := $(shell rpm -qp foo) # Name of package provided by specified RPM
 endif
 # endif LINUX
+
+ifeq (${PVM_ARCH},WIN32)
+ BNR_SFX := .exe
+else
+ BNR_SFX := ${null}
+endif 
 
 # TMP_* and NCO_* are required to play nicely with DODS flags
 NCO_LDFLAGS := -L${MY_LIB_DIR}
@@ -869,37 +875,37 @@ obj_dir:
 ncra:   ${MY_BIN_DIR}/ncra
 ${MY_BIN_DIR}/ncra:	${MY_OBJ_DIR}/ncra.o lib
 	${CC} -o $@ $< ${LDFLAGS}
-	chmod 755 $@
+	chmod 755 $@${BNR_SFX}
 	cd ${MY_BIN_DIR}; rm -f ncea; ln -f -s ncra ncea
 	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -f -s ncra ncrcat
 ncatted:   ${MY_BIN_DIR}/ncatted
 ${MY_BIN_DIR}/ncatted:	${MY_OBJ_DIR}/ncatted.o lib
 	${CC} -o $@ $< ${LDFLAGS}
-	chmod 755 $@
+	chmod 755 $@${BNR_SFX}
 ncks:   ${MY_BIN_DIR}/ncks
 ${MY_BIN_DIR}/ncks:	${MY_OBJ_DIR}/ncks.o lib
 	${CC} -o $@ $< ${LDFLAGS}
-	chmod 755 $@
+	chmod 755 $@${BNR_SFX}
 ncwa:   ${MY_BIN_DIR}/ncwa
 ${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o lib
 	${CC} -o $@ $< ${LDFLAGS}
-	chmod 755 $@
+	chmod 755 $@${BNR_SFX}
 ncecat:   ${MY_BIN_DIR}/ncecat
 ${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o lib
 	${CC} -o $@ $< ${LDFLAGS}
-	chmod 755 $@
+	chmod 755 $@${BNR_SFX}
 ncdiff:   ${MY_BIN_DIR}/ncdiff
 ${MY_BIN_DIR}/ncdiff:	${MY_OBJ_DIR}/ncdiff.o lib
 	${CC} -o $@ $< ${LDFLAGS}
-	chmod 755 $@
+	chmod 755 $@${BNR_SFX}
 ncflint:   ${MY_BIN_DIR}/ncflint
 ${MY_BIN_DIR}/ncflint:	${MY_OBJ_DIR}/ncflint.o lib
 	${CC} -o $@ $< ${LDFLAGS}
-	chmod 755 $@
+	chmod 755 $@${BNR_SFX}
 ncrename:   ${MY_BIN_DIR}/ncrename
 ${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o lib
 	${CC} -o $@ $< ${LDFLAGS}
-	chmod 755 $@
+	chmod 755 $@${BNR_SFX}
 bin: ${MDL_BIN_TRG}
 binclean: bin_cln
 bin_cln: 
@@ -1037,6 +1043,7 @@ debug: dbg
 dbg:
 	@printf "ABI = ${ABI}\n"
 	@printf "AR = ${AR}\n"
+	@printf "BNR_SFX = ${BNR_SFX}\n"
 	@printf "C++ = ${C++}\n"
 	@printf "C++FLAGS = ${C++FLAGS}\n"
 	@printf "CC = ${CC}\n"
