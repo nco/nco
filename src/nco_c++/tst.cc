@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.9 2002-09-02 06:51:47 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.10 2002-09-05 06:58:57 zender Exp $
 
 // Purpose: Test for C++ programs using libnco_c++ API
 
@@ -50,14 +50,14 @@ int main(int argc,char **argv)
   long sz_nbr(1); // [nbr] Number of sizes
   register long idx; // [idx] Counting index
 
-  const std::string CVS_Date("$Date: 2002-09-02 06:51:47 $"); // [sng] CVS date string
-  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.9 2002-09-02 06:51:47 zender Exp $"); // [sng] CVS header string
-  const std::string CVS_Id("$Id: tst.cc,v 1.9 2002-09-02 06:51:47 zender Exp $"); // [sng] CVS identification string
-  const std::string CVS_Revision("$Revision: 1.9 $"); // [sng] CVS revision string
-  const std::string date_cvs(CVS_Date.length() > 7 ? CVS_Date.substr(7,19) : "Unknown"); // [sng] Date from CVS
+  const std::string CVS_Date("$Date: 2002-09-05 06:58:57 $"); // [sng] CVS date string
+  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.10 2002-09-05 06:58:57 zender Exp $"); // [sng] CVS header string
+  const std::string CVS_Id("$Id: tst.cc,v 1.10 2002-09-05 06:58:57 zender Exp $"); // [sng] CVS identification string
+  const std::string CVS_Revision("$Revision: 1.10 $"); // [sng] CVS revision string
+  const std::string date_cvs(CVS_Date.length() > 7 ? CVS_Date.substr(7,19) : static_cast<std::string>("Unknown")); // [sng] Date from CVS
   const std::string sbr_nm("main"); // [sng] Subroutine name
   const std::string prg_nm("libnco_c++"); // [sng] Program name
-  const std::string vrs_cvs(CVS_Revision.length() > 10 ? CVS_Revision.substr(10,4) : "Unknown"); // [sng] Version from CVS
+  const std::string vrs_cvs(CVS_Revision.length() > 10 ? CVS_Revision.substr(10,4) : static_cast<std::string>("Unknown")); // [sng] Version from CVS
 #define XTKN2SNG(x) #x
 #define TKN2SNG(x) XTKN2SNG(x)
   const std::string date_cpp(__DATE__); // [sng] Date from C pre-processor
