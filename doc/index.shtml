@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.261 2004-09-10 16:08:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.262 2004-09-11 05:44:08 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -95,8 +95,8 @@ little money, click on the PayPal button:
 
 <li>August&nbsp;21, 2004:
 <a href="http://www.nsf.gov">National Science Foundation (NSF)</a>
-decides to fund the
-<a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO&rarr;SDO Proposal</a>!</li>
+funds the
+<a href="#prp_sei">NCO&rarr;SDO Project</a>!</li>
 
 <li>August&nbsp;7, 2004: NCO 2.9.8 debuts <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> operator&mdash;performs arbitrary dimension re-ordering and reversal</li>
 
