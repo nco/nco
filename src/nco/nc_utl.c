@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.72 2000-07-08 23:12:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.73 2000-07-09 19:06:52 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -3167,7 +3167,7 @@ var_max(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
       for(idx=0;idx<sz;idx++){
 	if(op2.dp[idx] == mss_val_dbl) 
 	  op2.dp[idx]=op1.dp[idx];
-	else if((op1.dp[idx] != mss_val_flt) && (op2.dp[idx] < op1.dp[idx]))
+	else if((op1.dp[idx] != mss_val_dbl) && (op2.dp[idx] < op1.dp[idx]))
 	  op2.dp[idx]=op1.dp[idx]; 
       } /* end for */ 
     } /* end else */
@@ -3182,7 +3182,7 @@ var_max(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
       for(idx=0;idx<sz;idx++){
 	if(op2.lp[idx] == mss_val_lng) 
 	  op2.lp[idx]=op1.lp[idx];
-	else if((op1.lp[idx] != mss_val_flt) && (op2.lp[idx] < op1.lp[idx]))
+	else if((op1.lp[idx] != mss_val_lng) && (op2.lp[idx] < op1.lp[idx]))
 	  op2.lp[idx]=op1.lp[idx]; 
       } /* end for */ 
     } /* end else */
@@ -3197,7 +3197,7 @@ var_max(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
       for(idx=0;idx<sz;idx++){
 	if(op2.sp[idx] == mss_val_shrt) 
 	  op2.sp[idx]=op1.sp[idx];
-	else if((op1.sp[idx] != mss_val_flt) && (op2.sp[idx] < op1.sp[idx]))
+	else if((op1.sp[idx] != mss_val_shrt) && (op2.sp[idx] < op1.sp[idx]))
 	  op2.sp[idx]=op1.sp[idx]; 
       } /* end for */ 
     } /* end else */
@@ -3259,7 +3259,7 @@ var_min(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
       for(idx=0;idx<sz;idx++){
 	if(op2.dp[idx] == mss_val_dbl) 
 	  op2.dp[idx]=op1.dp[idx];
-	else if((op1.dp[idx] != mss_val_flt) && (op2.dp[idx] > op1.dp[idx]))
+	else if((op1.dp[idx] != mss_val_dbl) && (op2.dp[idx] > op1.dp[idx]))
 	  op2.dp[idx]=op1.dp[idx]; 
       } /* end for */ 
     } /* end else */
@@ -3274,7 +3274,7 @@ var_min(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
       for(idx=0;idx<sz;idx++){
 	if(op2.lp[idx] == mss_val_lng) 
 	  op2.lp[idx]=op1.lp[idx];
-	else if((op1.lp[idx] != mss_val_flt) && (op2.lp[idx] > op1.lp[idx]))
+	else if((op1.lp[idx] != mss_val_lng) && (op2.lp[idx] > op1.lp[idx]))
 	  op2.lp[idx]=op1.lp[idx]; 
       } /* end for */ 
     } /* end else */
@@ -3288,7 +3288,7 @@ var_min(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn
       for(idx=0;idx<sz;idx++){
 	if(op2.sp[idx] == mss_val_shrt) 
 	  op2.sp[idx]=op1.sp[idx];
-	else if((op1.sp[idx] != mss_val_flt) && (op2.sp[idx] > op1.sp[idx]))
+	else if((op1.sp[idx] != mss_val_shrt) && (op2.sp[idx] > op1.sp[idx]))
 	  op2.sp[idx]=op1.sp[idx]; 
       } /* end for */ 
     } /* end else */
