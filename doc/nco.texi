@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.256 2004-08-07 21:16:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.257 2004-08-07 23:38:28 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1214,6 +1214,10 @@ operations from the command line.
 @node Averaging vs. Concatenating, Large numbers of input files, Addition Subtraction Division Multiplication and Interpolation, Strategies
 @section Averagers vs.@: Concatenators
 
+@html
+<a name="sym_ncea"></a> <!-- http://nco.sf.net/nco.html#sym_ncea -->
+<a name="sym_ncrcat"></a> <!-- http://nco.sf.net/nco.html#sym_ncrcat -->
+@end html
 @cindex symbolic links
 The most frequently used operators of @acronym{NCO} are probably the
 averagers and concatenators.
@@ -1256,7 +1260,7 @@ First, let's describe the concatenators, then the averagers.
 @cindex @command{ncecat}
 @cindex @command{ncrcat}
 
-Joining independent files together along a record coordinate is called
+Joining independent files together along a record dimension is called
 @dfn{concatenation}.    
 @command{ncrcat} is designed for concatenating record variables, while
 @command{ncecat} is designed for concatenating fixed length variables.
@@ -1300,11 +1304,33 @@ data on different realizations of the same variables.
 @xref{ncecat netCDF Ensemble Concatenator}, for a complete description
 of @command{ncecat}. 
 
+@cindex @command{ncpdq}
+@command{ncpdq} makes it possible to concatenate files along any
+dimension, not just the record dimension.
+First, use @command{ncpdq} to convert the dimension to be concatenated
+(i.e., extended with data from other files) into the record dimension. 
+Second, use @command{ncrcat} to concatenate these files.
+Finally, if desirable, use @command{ncpdq} to revert to the original
+dimensionality.
+As a concrete example, say that files @file{x_01.nc}, @file{x_02.nc},
+@w{@dots{} @file{x_10.nc}} contain time-evolving datasets from spatially
+adjacent regions.
+The time and spatial coordinates are @code{time} and @code{x}, respectively.
+Initially the record dimension is @code{time}.
+Our goal is to create a single file that contains joins all the
+spatially adjacent regions into one single time-evolving dataset.
+@example
+for idx in 01 02 03 04 05 06 07 08 09 10; do # Bourne Shell
+  ncpdq -a x,time x_$@{idx@}.nc foo_$@{idx@}.nc # Make x record dimension
+done
+ncrcat foo_??.nc out.nc       # Concatenate along x
+ncpdq -a time,x out.nc out.nc # Revert to time as record dimension
+@end example
+
 Note that @command{ncrcat} will not concatenate fixed-length variables, 
 whereas @command{ncecat} concatenates both fixed-length and record
-variables.
-To conserve system memory, use @command{ncrcat} rather than
-@command{ncecat} when concatenating record variables.
+variables along a new record variable.
+To conserve system memory, use @command{ncrcat} where possible.
 
 @html
 <a name="avg"></a> <!-- http://nco.sf.net/nco.html#avg -->
@@ -3202,10 +3228,10 @@ concatenate the resulting files together:
 @cindex C Shell
 @example
 for idx in 02 14 26 38 50; do # Bourne Shell
-ncks -d time,$@{idx@} 8501_8912.nc foo.$@{idx@}
+  ncks -d time,$@{idx@} 8501_8912.nc foo.$@{idx@}
 done
 foreach idx (02 14 26 38 50) # C Shell
-ncks -d time,$@{idx@} 8501_8912.nc foo.$@{idx@}
+  ncks -d time,$@{idx@} 8501_8912.nc foo.$@{idx@}
 end
 ncrcat foo.?? 8589_03.nc
 rm foo.??
@@ -5620,16 +5646,21 @@ one file, and use @command{ncra} to create the average anomaly for all
 five Januarys. 
 These commands are embedded in a shell loop so they are repeated for all
 twelve months:
+@cindex Bash Shell
 @cindex Bourne Shell
 @cindex C Shell
 @example
+for idx in @{01..12@}; do # Bash Shell (version 3.0+, beware ordering!)
+  ncks -F -d time,$@{idx@},,12 t_anm_8501_8912.nc foo.$@{idx@}
+  ncra foo.$@{idx@} t_anm_8589_$@{idx@}.nc
+done
 for idx in 01 02 03 04 05 06 07 08 09 10 11 12; do # Bourne Shell
-ncks -F -d time,$@{idx@},,12 t_anm_8501_8912.nc foo.$@{idx@}
-ncra foo.$@{idx@} t_anm_8589_$@{idx@}.nc
+  ncks -F -d time,$@{idx@},,12 t_anm_8501_8912.nc foo.$@{idx@}
+  ncra foo.$@{idx@} t_anm_8589_$@{idx@}.nc
 done
 foreach idx (01 02 03 04 05 06 07 08 09 10 11 12) # C Shell
-ncks -F -d time,$@{idx@},,12 t_anm_8501_8912.nc foo.$@{idx@}
-ncra foo.$@{idx@} t_anm_8589_$@{idx@}.nc
+  ncks -F -d time,$@{idx@},,12 t_anm_8501_8912.nc foo.$@{idx@}
+  ncra foo.$@{idx@} t_anm_8589_$@{idx@}.nc
 end
 @end example
 @noindent
@@ -6538,10 +6569,15 @@ Re-ordering and reversal may be performed simultaneously, e.g.,
 Users may specify any permutation of dimensions, including
 permutations which change the record dimension identity.
 The record dimension is re-ordered like any other dimension.
+@cindex concatenation
+@cindex record dimension
+This unique @command{ncpdq} capability makes it possible to concatenate
+files along any dimension.
+See @ref{Concatenation} for a detailed example.
 @cindex record variable
 The record dimension is always the most slowly varying dimension in a
 record variable (@pxref{Fortran indexing}).
-The specified re-ordering will fail if it requires creating more than
+The specified re-ordering fails if it requires creating more than
 one record dimension amongst all the output variables
 @footnote{This limitation, imposed by the netCDF storage layer,
 may be relaxed in the future with netCDF4.}.
@@ -6549,6 +6585,9 @@ may be relaxed in the future with netCDF4.}.
 @tex
 NB: fxm ncpdq documentation will evolve through Fall 2004.
 I am unfamiliar with the terminology needed to describe what ncpdq does.
+Sequences, sets, sheesh!
+I just know that it does "The right thing" according to my gut feelings.
+There, do you feel more comfortable?
 
 Let $\dmnvct(\xxx)$ represent the dimensionality of the variable $\xxx$. 
 Dimensionality describes the order and sizes of dimensions.
