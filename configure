@@ -24223,14 +24223,14 @@ else
   enable_dods=no
 fi
 
-# PUSH & POP to allow nc-dods to resolve libdap++ symbols
+# use AC_LANG_PUSH & AC_LANG_POP to allow nc-dods to resolve libdap++ symbols    # This causes libstdc++ to be linked in for (only) this link
     ac_ext=cc
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-    LIBS="-ldap++ -lnc-dods -ldap++ ${LIBS}"
+    LIBS="-ldap++ -lnc-dods  ${LIBS}"
 
 echo "$as_me:$LINENO: checking for nc_open in -lnc-dods" >&5
 echo $ECHO_N "checking for nc_open in -lnc-dods... $ECHO_C" >&6
@@ -24318,9 +24318,15 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
     nco_old_LIBS="${LIBS}"
 # Assume stdc++ is available, (fxm: how to look for it automatically?)
 # NB: -lstdc++ automatically linked by g++, add by hand for other compilers
+# hjm: no, it's not (on linux anyway).  Use AC_LANG_PUSH & AC_LANG_POP
+# as above to link it in portably.
     LIBS="-lstdc++ ${LIBS}"
 # Duplicate library links required to resolve dependencies when -lnc-dods is used
-    LIBS="-ldap++ -lnc-dods -ldap++ ${LIBS}"
+# hjm: I'm not sure that the duplicate links are needed anymore (w/ gcc >3.4)
+#   tried form the commandline and it doesn't, but will leave alone for now.
+#    LIBS="-ldap++ -lnc-dods -ldap++ ${LIBS}"
+# hjm: AC_CHECK_LIB line is commented out, so we shouldn't need the preceding
+#   LIBS line either
 #    AC_CHECK_LIB([nc-dods],[nc_open],,enable_dods=no)
     if test "${enable_dods}" = 'no'; then
 	{ echo "$as_me:$LINENO: WARNING: DODS support disabled (missing libraries)" >&5
@@ -25478,7 +25484,11 @@ fi;
 # Check for UDUnits libraries unless told not to
 if test "${enable_udunits}" != 'no'; then
   if test "${UDUNITS_PATH}"; then
-    nco_udunits_dat=${UDUNITS_PATH}
+# Add ${UDUNITS_PATH}/lib to search path if present
+    nco_udunits_dat=${UDUNITS_PATH}/src/lib/udunits.dat
+    LDFLAGS="${LDFLAGS} -L${UDUNITS_PATH}/lib"
+    CPPFLAGS="${CPPFLAGS} -I${UDUNITS_PATH}/include"
+#    nco_udunits_dat=${UDUNITS_PATH}/src/lib/udunits.dat
   elif test "${NETCDF_INC}"; then
     nco_udunits_dat="${NETCDF_INC}/../etc/udunits.dat"
   else
@@ -25517,6 +25527,8 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
   # MacOS X requires libudport for threaded functions
+  # Following need to know about non-standard Lib locations if used
+
   echo "$as_me:$LINENO: checking for tdelete" >&5
 echo $ECHO_N "checking for tdelete... $ECHO_C" >&6
 if test "${ac_cv_func_tdelete+set}" = set; then
@@ -25761,7 +25773,37 @@ else
   enable_udunits=no
 fi
 
-    if test "${ac_cv_header_udunits_h+set}" = set; then
+    if test "${UDUNITS_PATH}"; then
+       as_ac_File=`echo "ac_cv_file_${UDUNITS_PATH}/include/udunits.h" | $as_tr_sh`
+echo "$as_me:$LINENO: checking for ${UDUNITS_PATH}/include/udunits.h" >&5
+echo $ECHO_N "checking for ${UDUNITS_PATH}/include/udunits.h... $ECHO_C" >&6
+if eval "test \"\${$as_ac_File+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  test "$cross_compiling" = yes &&
+  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+   { (exit 1); exit 1; }; }
+if test -r "${UDUNITS_PATH}/include/udunits.h"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
+if test `eval echo '${'$as_ac_File'}'` = yes; then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_UDUNITS_H 1
+_ACEOF
+
+else
+  enable_udunits=no
+fi
+
+    else
+      if test "${ac_cv_header_udunits_h+set}" = set; then
   echo "$as_me:$LINENO: checking for udunits.h" >&5
 echo $ECHO_N "checking for udunits.h... $ECHO_C" >&6
 if test "${ac_cv_header_udunits_h+set}" = set; then
@@ -25908,6 +25950,7 @@ else
 fi
 
 
+    fi
     if test "${enable_udunits}" = 'no'; then
 	{ echo "$as_me:$LINENO: WARNING: UDUnits support disabled (missing/unusable library or header file)" >&5
 echo "$as_me: WARNING: UDUnits support disabled (missing/unusable library or header file)" >&2;}
