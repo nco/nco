@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.13 2003-02-25 22:17:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.14 2003-03-14 15:58:46 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -575,8 +575,8 @@ void
 nco_msa_c_2_f(char *s)
 {
   while(*s){
-    if(*s == '(') *s='[';
-    if(*s == ')') *s=']';
+    if(*s == '[') *s='(';
+    if(*s == ']') *s=')';
     s++;
   } /* end while */
 } /* end nco_msa_c_2_f() */
@@ -716,8 +716,12 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng); break;
     case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.lp[lmn],unit_sng); break;
     case NC_CHAR:
-      (void)sprintf(var_sng,"%%s='%s' %%s\n",nco_typ_fmt_sng(var.type));
-      (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
+      if( var.val.cp[lmn] != '\0') {
+        (void)sprintf(var_sng,"%%s='%s' %%s\n",nco_typ_fmt_sng(var.type));
+        (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
+      } else { /* deal with nul char here */
+        (void)fprintf(stdout, "%s=\"\" %s\n",var_nm,unit_sng);
+      }   
       break;
     case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng); break;
     default: nco_dfl_case_nc_type_err(); break;
@@ -815,14 +819,14 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	  if(dim[dmn_idx].cid == var.id) continue; /* If variable is also  a coordinate...skip printing till later */
 	  if(!dim[dmn_idx].is_crd_dmn){ /* If dimension is not a coordinate... */
  	     if(FORTRAN_STYLE)
-	       (void)fprintf(stdout,"%s[%ld] ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]+1L);
+	       (void)fprintf(stdout,"%s(%ld) ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]+1L);
 	     else
-	       (void)fprintf(stdout,"%s(%ld) ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]);
+	       (void)fprintf(stdout,"%s[%ld] ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]);
               
              continue;
 	  }
                
-	  (void)sprintf(dmn_sng,"%%s(%%ld)=%s ",nco_typ_fmt_sng(dim[dmn_idx].type));
+	  (void)sprintf(dmn_sng,"%%s[%%ld]=%s ",nco_typ_fmt_sng(dim[dmn_idx].type));
           dmn_sbs_prn=dmn_sbs_dsk[dmn_idx];
 
 	  if(FORTRAN_STYLE){
@@ -857,24 +861,29 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	if( memchr((void *)(var.val.cp+lmn),'\0',dmn_sz) ){
 	  /* Memory region is NUL-terminated, i.e., a valid string */
 	  /* Print strings inside double quotes */
-	  (void)sprintf(var_sng,"%%s(%%ld--%%ld)=\"%%s\" %%s");
+	  (void)sprintf(var_sng,"%%s[%%ld--%%ld]=\"%%s\" %%s");
           if(FORTRAN_STYLE){(void)nco_msa_c_2_f(var_sng);idx_crr++;}
 
-	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+strlen((char *)var.val.cp+lmn),(char *)var.val.cp+lmn,unit_sng);
+	  /*	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+strlen((char *)var.val.cp+lmn),(char *)var.val.cp+lmn,unit_sng); */
+
+
+	   (void)fprintf(stdout,var_sng,var_nm,(idx_crr+lmn),(idx_crr+lmn+strlen((char *)var.val.cp+lmn)),(char *)var.val.cp+lmn,unit_sng);
+
+
 	}else{
 	  /* Memory region is not NUL-terminated, print block of chars instead */
 	  /* Print block of chars inside single quotes */
           prn_sng=(char*)nco_malloc(dmn_sz+1);
           (void)strncpy(prn_sng,(char *)(var.val.cp+lmn),dmn_sz);
           *(prn_sng+dmn_sz)='\0';
-          (void)printf("DMN SIZE= %ld\n",dmn_sz);
-          (void)sprintf(var_sng,"%%s(%%ld--%%ld)=%%s %%s" );
+          (void)sprintf(var_sng,"%%s[%%ld--%%ld]='%%s' %%s" );
           if(FORTRAN_STYLE){(void)nco_msa_c_2_f(var_sng);idx_crr++;}
 	  
           /* Possibly introduce a function which convert non-print chars into escape chars */ 
           /* i.e the reverse of sng_ascii_trn */
 
-	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,(dmn_sz-1L+idx_crr),prn_sng,unit_sng);
+	  /*  (void)fprintf(stdout,var_sng,var_nm,idx_crr,(dmn_sz-1L+idx_crr),prn_sng,unit_sng); */
+	   (void)fprintf(stdout,var_sng,var_nm,idx_crr+lmn ,(dmn_sz-1L+idx_crr+lmn),prn_sng,unit_sng); 
           
           (void)nco_free(prn_sng);
 	} /* endif */
@@ -887,7 +896,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       } /* endif */
 
       /* Now print actual variable name, index and value. */
-      (void)sprintf(var_sng,"%%s(%%ld)=%s %%s\n",nco_typ_fmt_sng(var.type));
+      (void)sprintf(var_sng,"%%s[%%ld]=%s %%s\n",nco_typ_fmt_sng(var.type));
 
       if(FORTRAN_STYLE){(void)nco_msa_c_2_f(var_sng);var_dsk++;}
 
