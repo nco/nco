@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.69 2004-04-13 17:57:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.70 2004-04-14 00:11:54 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -100,8 +100,8 @@ main(int argc,char **argv)
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.69 2004-04-13 17:57:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.69 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.70 2004-04-14 00:11:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.70 $";
   const char * const opt_sng="ACcD:d:Fhi:l:Op:rRv:xw:-:";
   
   dmn_sct **dim;
@@ -512,7 +512,7 @@ main(int argc,char **argv)
     /* Weight variable by taking product of weight with variable */
     (void)nco_var_mlt(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,wgt_out_1->val,var_prc_1[idx]->val);
     (void)nco_var_mlt(var_prc_2[idx]->type,var_prc_2[idx]->sz,var_prc_2[idx]->has_mss_val,var_prc_2[idx]->mss_val,wgt_out_2->val,var_prc_2[idx]->val);
-    (void)nco_var_add_tll_old(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,var_prc_out[idx]->tally,var_prc_1[idx]->val,var_prc_2[idx]->val);
+    (void)nco_var_add_tll_ncflint(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,var_prc_out[idx]->tally,var_prc_1[idx]->val,var_prc_2[idx]->val);
     
     /* Recast output variable to original type */
     var_prc_2[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc_2[idx]);

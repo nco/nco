@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.296 2004-04-13 17:57:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.297 2004-04-14 00:11:52 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -60,12 +60,6 @@ nco114. Fix nco_var_cnf_dmn() so that returned weight always has same size tally
 nco115. When sum of denominator in ncwa (i.e., sum of weight) is zero, SIGFPE results 
 Users should not be doing weighted averages if denominator sums to zero, but...
 Desired fix here is a graceful exit instead of core dump
-nco121. cf. nco325 Problem reported when mss_val = 0.0 in averagers. C and Fortran 
-versions of nco_var_add_real() etc. do not handle missing_value attributes in 
-exactly the same way. C versions test both operands agains mss_val,
-Fortran tests only op1. Since running averages are initialized to 0.0 before
-entry, problems arise in C version when missing_value = 0.0. Only fix seems
-to be checking whether tally == 0 before checking whether op2 == mss_val
 nco123. Add HTTP protocol to fl_get() (independent of DODS)
 nco127. Make mss: signal retrieval from NCAR mass store
 nco134. Problem on CRAY with ncra test #2, averaging float whose
@@ -196,11 +190,6 @@ nco321. Do not promote NC_FLOAT to NC_DOUBLE in ncra/ncea(?)
 nco322. Implement integer empowerment in var_scv_pwr() with, e.g., GSL
 nco323. Collect all past ANNOUNCE files and place in reverse chronological order in ANNOUNCE file
 nco324. Add release date to "Version Summary" section on homepage
-nco325. nco121 bug: missing_value=0 causes answers to equal zero:
-ncks -O -d time,0 -d level,0 -d lat,0 -d lon,0 ~/xncra.nc ~/xncra_1.nc
-ncra -O -y avg ~/xncra_1.nc ~/foo.nc
-ncks -H ~/xncra_1.nc | m
-ncks -H ~/foo.nc | m
 nco326. 
 
 ncap-specific items:

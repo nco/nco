@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.15 2004-04-13 17:57:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.16 2004-04-14 00:11:54 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -12,8 +12,8 @@ void
 nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea */
 (const long idx_rec, /* I [idx] Index of current record */
  const int nco_op_typ, /* I [enm] Operation type */
- var_sct * const var_prc_out, /* I/O [sct] Variable in output file */
- const var_sct * const var_prc) /* I [sct] Variable in input file */
+ const var_sct * const var_prc, /* I [sct] Variable in input file */
+ var_sct * const var_prc_out) /* I/O [sct] Variable in output file */
 {
   /* Purpose: Perform appropriate ncra/ncea operation (avg, min, max, ttl, ...) on operands
      nco_opr_drv() is called within the record loop of ncra, and within file loop of ncea
@@ -37,7 +37,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
   case nco_op_sqrt: /* Squareroot will produce the squareroot of the mean */
   case nco_op_ttl: /* Total */
   case nco_op_sqravg: /* Square of the mean */
-    (void)nco_var_add_tll_old(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)nco_var_add_tll_ncra(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   case nco_op_rms: /* Root mean square */
   case nco_op_rmssdn: /* Root mean square normalized by N-1 */
@@ -45,7 +45,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
     /* Square values in var_prc first */
     nco_var_mlt(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc->val);
     /* Sum the squares */
-    (void)nco_var_add_tll_old(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)nco_var_add_tll_ncra(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   } /* end switch */
 } /* end nco_opr_drv() */

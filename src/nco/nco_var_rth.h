@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.16 2004-04-13 17:57:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.17 2004-04-14 00:11:54 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -46,7 +46,7 @@ extern "C" {
    ptr_unn op2); /* I/O [val] Values of second operand on input, values of sum on output */
 
   void
-  nco_var_add_tll_old /* [fnc] Add first operand to second operand, increment tally */
+  nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment tally */
   (const nc_type type, /* I [enm] netCDF type of operands */
    const long sz, /* I [nbr] Size (in elements) of operands */
    const int has_mss_val, /* I [flg] Flag for missing values */
@@ -56,14 +56,14 @@ extern "C" {
    ptr_unn op2); /* I/O [val] Values of second operand on input, values of sum on output */
 
   void
-  nco_var_add_tll /* [fnc] Add first operand to second operand, increment tally */
+  nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tally */
   (const nc_type type, /* I [enm] netCDF type of operands */
    const long sz, /* I [nbr] Size (in elements) of operands */
    const int has_mss_val, /* I [flg] Flag for missing values */
    ptr_unn mss_val, /* I [flg] Value of missing value */
    long *tally, /* I/O [nbr] Counter space */
    ptr_unn op1, /* I [val] Values of first operand */
-   ptr_unn op2); /* I/O [val] Values of second operand on input, values of sum on output */
+   ptr_unn op2); /* I/O [val] Values of second operand (running sum) on input, values of new sum on output */
 
   void
   nco_var_dvd /* [fnc] Divide second operand by first operand */

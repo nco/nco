@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.210 2004-04-13 17:57:52 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.211 2004-04-14 00:11:52 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -210,7 +210,8 @@ Tarballs and RPMs are only rarely uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.9.3</b>: (<i>In progress</i>)
+<li><b>NCO 2.9.4</b>: (<i>In progress</i>) 
+<li><b>NCO 2.9.3</b>: <tt>ncra</tt> and <tt>ncea</tt> now <a name="bug_mss_val_zro_ncra">work correctly</a> when <tt>missing_value</tt> equals zero or any intermediate sums
 <li><b>NCO 2.9.2</b>: <tt>ncap</tt> <tt>S/V</tt>, <tt>S%V</tt>, and <tt>S^V</tt> <a href="#bug_ncap_cmt">operations fixed</a> (<tt>S</tt> = scalar, <tt>V</tt> = variable)
 <li><b>NCO 2.9.1</b>: <tt>ncwa</tt> works again on packed <tt>NC_FLOAT</tt> data (<a href="#bug_pck_ncwa">broke when?</a>),
 <li><b>NCO 2.9.0</b>: Complete <tt>ncap</tt> modulo operator (<tt>V%S</tt>) and generic exponentiation (<tt>V^S</tt>), scalar divided by variable (<tt>S/V</tt>), workaround stack memory problem with GCC extensions, fix <tt>make check</tt>
@@ -580,25 +581,28 @@ We recommend that all <tt>ncap</tt> users upgrade to version 2.9.2.
 </li>
 
 <a name="bug_mss_val_zro_ncra"></a>
-<li><i>Problems with <tt>ncra</tt> when <tt>missing_value</tt> = 0.0:</i>
-The algorithm <tt>ncra</tt> uses to perform arithmetic breaks when
-used on variables whose <tt>missing_value</tt> is&nbsp;0.0.
-This is NCO <a href="./TODO">TODO</a>&nbsp;#121.
-The running average (or total, etc.) algorithm initializes the answer
-to 0.0.
-This must be done since the answer accumulates in place as
-<tt>ncra</tt> proceeds across records and files. 
-(The last step is to normalize this accumulation by the total number of 
-records).
-The accumulator compares the current running average and the new
-record to the <tt>missing_value</tt>.
-If either comparison matches, then nothing accumulates for that
+<li><i>Problems with <tt>ncra</tt> and <tt>ncea</tt> when <tt>missing_value</tt> = 0.0:</i>
+The algorithm <tt>ncra</tt> and <tt>ncea</tt> used to perform
+arithmetic in versions up to 2.9.2 breaks <tt>missing_value</tt>
+is&nbsp;0.0. 
+That running average (or total, etc.) algorithm initializes the answer 
+to&nbsp;0.0.
+This is done since the sum accumulates in place as <tt>ncra</tt> and
+<tt>ncea</tt> proceeds across records and files.  
+(Normalizing this accumulation by the total number of records is the
+last step).
+The old algorithm compared both the current running average and the
+new record to the <tt>missing_value</tt>.
+If either comparison matched, then nothing accumulated for that
 record. 
-This zero initialization leads to a state where it is impossible for 
-accumulator to ever recognize valid data.
-As a result nothing accumulates and the answer is always zero.
-The workaround for this bug is to change <tt>missing_value</tt> to
-anything besides zero.
+This zero-initialization led to a state where it was impossible 
+to ever recognize valid data.
+As a result nothing accumulated and the answer was always zero.
+The record and ensemble averages would also fail (in a non-obvious)
+way whenever an intermediate sum equalled <tt>missing_value</tt>.
+The chances of the latter event ever happening are exceedingly
+remote. 
+The new algorithm fixes both problems and is faster, to boot. 
 
 <a name="bug_pck_ncwa"></a>
 <li><i>Packing problems with <tt>ncwa</tt>:</i>

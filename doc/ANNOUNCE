@@ -1,23 +1,22 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.72 2004-03-25 12:05:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.73 2004-04-14 00:11:51 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.9.2 are ready. 
+The netCDF operators NCO version 2.9.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release eradicates some long buried bugs in ncap arithmetic
-corner-cases. ncap incorrectly handled division, modulo, and
-exponentiation of the form S/V, S%V, and S^V where first operand was
-scalar and second was a full variable. Full details are at 
+This release corrects a corner-case problem with arithmetic
+performed by ncra and ncea that causes record and ensemble averages to 
+fail (in an obvious way) when the missing_value equals zero.
+The record and ensemble averages would also fail (in a non-obvious)
+way whenever an intermediate sum equalled the missing value.
+The chances of the latter event ever happening are exceedingly
+remote. The new code is faster and fixes both problems. 
+Full details are at 
 
-http://nco.sf.net/index.shtml#bug_ncap_cmt.
+http://nco.sf.net/index.shtml#bug_mss_val_zro_ncra
 
-Thanks to an alert user for noticing this.
-V/V, V%V, V^V, V/S, V%S, V^S, S/S, S%S, and S^S were not buggy.
-We recommend that all ncap users upgrade to version 2.9.2.
-
-Solaris autotools problems have been resolved.
-NCO builds fine with up-to-date bison's (e.g., version 1.875+).
+Thanks to Remik Ziemlinski for noticing this.
 
 Enjoy,
 Charlie
@@ -26,14 +25,14 @@ Feature changes:
 1. None
 
 Bug-fixes:
-1. ncap division, modulo, and exponentiation of form S/V, S%V, and S^V
-   where first operand was scalar and second was full variable is fixed.
+1. ncra/ncea arithmetic works when missing_value equals zero or any
+   intermediate sum. 
 
 Build changes:
-1. Ignore broken UDUnits installations (like CGD's) during builds
+1. None
 
 Other user-visible changes:
-1. Print variable names when writes and reads fail in nco_c++
+1. None
 
 User-invisible changes:
 1. None

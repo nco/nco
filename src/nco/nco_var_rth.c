@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.22 2004-04-13 17:57:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.23 2004-04-14 00:11:54 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -104,7 +104,7 @@ nco_var_add /* [fnc] Add first operand to second operand */
      and store result in second operand. 
      Assume operands conform, are same type, and are in memory
      nco_var_add() does not increment a tally counter
-     nco_var_add_tll() does increment a tally counter */
+     nco_var_add_tll_ncra() does increment a tally counter */
 
   /* Addition is currently defined as op2:=op1+op2 */
 
@@ -171,7 +171,7 @@ nco_var_add /* [fnc] Add first operand to second operand */
 } /* end nco_var_add() */
 
 void
-nco_var_add_tll_old /* [fnc] Add first operand to second operand, increment tally */
+nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment tally */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -184,7 +184,7 @@ nco_var_add_tll_old /* [fnc] Add first operand to second operand, increment tall
      and store result in second operand. 
      Assume operands conform, are same type, and are in memory
      nco_var_add() does not increment a tally counter
-     nco_var_add_tll_old() does increment a tally counter */
+     nco_var_add_tll_ncflint() does increment a tally counter */
 
   /* Addition is currently defined as op2:=op1+op2 */
 
@@ -272,23 +272,45 @@ nco_var_add_tll_old /* [fnc] Add first operand to second operand, increment tall
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end nco_var_add_tll_old() */
+} /* end nco_var_add_tll_ncflint() */
 
 void
-nco_var_add_tll /* [fnc] Add first operand to second operand, increment tally */
+nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tally */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
  ptr_unn mss_val, /* I [flg] Value of missing value */
  long *tally, /* I/O [nbr] Counter space */
  ptr_unn op1, /* I [val] Values of first operand */
- ptr_unn op2) /* I/O [val] Values of second operand on input, values of sum on output */
+ ptr_unn op2) /* I/O [val] Values of second operand (running sum) on input, values of new sum on output */
 {
   /* Purpose: Add value of first operand to value of second operand 
      and store result in second operand. 
      Assume operands conform, are same type, and are in memory
-     nco_var_add() does not increment a tally counter
-     nco_var_add_tll() does increment a tally counter */
+     nco_var_add() adds if neither operand equals missing_value
+     nco_var_add() does not increment tally counter.
+     nco_var_add_tll_ncflint() adds if neither operand equals missing value
+     nco_var_add_tll_ncflint() does increment tally counter (unlike nco_var_add())
+     nco_var_add_tll_ncra() adds if op1 does not equal missing value
+     nco_var_add_tll_ncra() does increment tally counter (like nco_var_add_tll_ncflint())
+     nco_var_add_tll_ncra() is designed to:
+     1. Work for "running average" algorithms only
+     2. Assume running sum is valid and is stored in op2
+     3. Assume new record is stored in op1
+     4. Check only if new record (not running sum) equals missing_value
+        Note that missing_value is associated with op1, i.e., new record, not running sum
+     5. Accumulate running sum only if new record is valid
+     6. Increment tally
+  The only difference between nco_var_add_tll_ncra() and nco_var_add_tll_ncflint() is that 
+  nco_var_add_tll_ncflint() checks both operands against the missing_value, whereas 
+  nco_var_add_tll_ncra() checks only the first operand (the new record) against the missing_value
+  The nco_var_add_tll_ncflint() algorithm fails as a running average algorithm when
+  the missing value is zero because the running sum is bootstrapped to zero which 
+  causes the comparison to missing_value to always be true.
+  nco_var_add_tll_ncflint() also fails as a running average algorithm whenever the
+  running sum happens to equal the missing_value (regardless if the missing value is zero).
+  NCO uses nco_var_add_tll_ncflint() only for ncflint
+  NCO uses nco_var_add_tll_ncra() only for ncra */
 
   /* Addition is currently defined as op2:=op1+op2 */
 
@@ -309,7 +331,7 @@ nco_var_add_tll /* [fnc] Add first operand to second operand, increment tally */
     }else{
       const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++){
-	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)){
+	if(op1.fp[idx] != mss_val_flt){
 	  op2.fp[idx]+=op1.fp[idx];
 	  tally[idx]++;
 	} /* end if */
@@ -325,7 +347,7 @@ nco_var_add_tll /* [fnc] Add first operand to second operand, increment tally */
     }else{
       const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++){
-	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)){
+	if(op1.dp[idx] != mss_val_dbl){
 	  op2.dp[idx]+=op1.dp[idx];
 	  tally[idx]++;
 	} /* end if */
@@ -341,7 +363,7 @@ nco_var_add_tll /* [fnc] Add first operand to second operand, increment tally */
     }else{
       const long mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
-	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)){
+	if(op1.lp[idx] != mss_val_lng){
 	  op2.lp[idx]+=op1.lp[idx];
 	  tally[idx]++;
 	} /* end if */
@@ -357,7 +379,7 @@ nco_var_add_tll /* [fnc] Add first operand to second operand, increment tally */
     }else{
       const short mss_val_sht=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
-	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)){
+	if(op1.sp[idx] != mss_val_sht){
 	  op2.sp[idx]+=op1.sp[idx];
 	  tally[idx]++;
 	} /* end if */
@@ -376,7 +398,7 @@ nco_var_add_tll /* [fnc] Add first operand to second operand, increment tally */
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end nco_var_add_tll() */
+} /* end nco_var_add_tll_ncra() */
 
 void
 nco_var_dvd /* [fnc] Divide second operand by first operand */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.100 2004-02-09 07:54:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.101 2004-04-14 00:11:54 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.100 2004-02-09 07:54:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.100 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.101 2004-04-14 00:11:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.101 $";
   const char * const opt_sng="ACcD:d:Fhl:n:Op:P:rRv:xy:-:";
 
   dmn_sct **dim;
@@ -482,7 +482,7 @@ main(int argc,char **argv)
 	    /* Convert var_prc to type of var_prc_out in case type of variable on disk has changed */
 	    var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 	    /* Perform arithmetic operations: avg, min, max, ttl, ... */
-	    nco_opr_drv(idx_rec_out,nco_op_typ,var_prc_out[idx],var_prc[idx]);
+	    nco_opr_drv(idx_rec_out,nco_op_typ,var_prc[idx],var_prc_out[idx]);
 	  } /* end if ncra */
 	  	  	  
 	  /* Append current record to output file */
@@ -536,12 +536,12 @@ main(int argc,char **argv)
 	/* Convert var_prc to type of var_prc_out in case type of variable on disk has changed */
 	var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 	/* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: idx_fl not idx_rec_out! */
-	nco_opr_drv(idx_fl,nco_op_typ,var_prc_out[idx],var_prc[idx]);
+	nco_opr_drv(idx_fl,nco_op_typ,var_prc[idx],var_prc_out[idx]);
 	
 	/* Free current input buffer */
 	var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
       } /* end (OpenMP parallel for) loop over idx */
-    } /* end else */
+    } /* end else ncea */
 
     if(dbg_lvl > 1) (void)fprintf(stderr,"\n");
       
