@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.16 2002-05-05 21:21:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.17 2002-05-06 00:44:34 zender Exp $ */
 
 /* Purpose: Prototypes, typedefs, and global variables for libcsm_c++ */
 
@@ -42,5 +42,7 @@
 #include "nco_var_utl.h" /* Variable utilities */
 #include "nco_var_avg.h" /* Average variables */
 #include "nco_var_lst.h" /* Variable list utilities */
+#include "nco_var_rth.h" /* Variable arithmetic */
+#include "nco_var_scv.h" /* Arithmetic between variables and scalar values */
 
 #endif /* LIBNCO_H */
