@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.51 2000-05-09 06:55:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.52 2000-05-10 07:15:36 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -56,10 +56,6 @@ i.e., LSM variable timecom caused subtle ncra problems for a while.
 116. Weighting an integer by a float causes weight to be converted to integer first, so that weighting, e.g., nlons by gw, will cause zero in denominator since all gw's convert to integer value of 0. This causes core dumps with, e.g., 
 ncwa -O -a lat -w gw foo.nc foo2.nc
 Thus the best fix for #116 is to implement #81 ASAP
-120. Allow superfluous, but conforming, files at beginning of ncra, ncrcat,
-just like they are already allowed at end. 
-This means relaxing restriction that first requested record must be in first file.
-ncra -O -d time,11,12 in.nc in.nc foo.nc
 121. Problem reported when mss_val = 0.0 in averagers. C and Fortran 
 versions of var_add_real() etc. do not handle missing_value attributes in 
 exactly the same way. C versions test both operands agains mss_val,
@@ -124,13 +120,20 @@ ncks -H foo3.nc
 Bug occurs iff dim1 is declared before dim2 (but not after) in foo1.cdl
 CDL files are copied below for convenience
 20000323 Problem may be in var_conform_dim()
-156. Builds with Electric Fence crash all over the place. 
+156. Builds with Electric Fence crash all over the place with nco_tst.sh 
 Appears to be related to NCO assumption that NULL=malloc(0)
 158. Add policy for hyperslabbing single level values to User's Guide. 
 Multi-file operators with record coordinate
 treat single point hyperslabs differently than single file operators 
 or than any operators with single point cuts on non-record coordinates.
 See explanatory notes in lmt_evl().
+159. Add capability to handle superfluous intermediate files to ncra,
+ncrcat when lmt_typ = dim_idx.
+This would allow these multifile operators to handle hyperslabs where,
+for example, every other file was not needed. This capability is already
+implemented for lmt_typ = crd_val. This is an issue only when stride
+is non-unity.
+160. Add documentation of ncra, ncrcat superfluous file capabilities to nco.texi
 ************************************************************************
 End NCO Wish list
 ************************************************************************

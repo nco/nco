@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.23 2000-05-10 00:32:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.24 2000-05-10 07:15:37 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.23 2000-05-10 00:32:50 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.23 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.24 2000-05-10 07:15:37 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.24 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -277,7 +277,7 @@ main(int argc,char **argv)
       if(nbr_fl == 1)(void)fprintf(stdout,"%s: HINT Use ncks instead of %s\n",prg_nm_get(),prg_nm_get());
       exit(EXIT_FAILURE);
     } /* endif */ 
-    lmt_rec=lmt_dmn_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_STYLE);
+    lmt_rec=lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_STYLE);
   } /* endif */ 
 
   /* Is this an NCAR CSM-format history tape? */
@@ -369,10 +369,10 @@ main(int argc,char **argv)
     if(False) (void)fl_cmp_err_chk();
 
     if(prg == ncra || prg == ncrcat){
-      /* Loop over each record in the current file */ 
-      if(lmt_rec.srt > lmt_rec.end) (void)fprintf(stdout,"%s: WARNING %s is superfluous\n",prg_nm_get(),fl_in);
+      /* Loop over each record in current file */ 
+      if(lmt_rec.srt > lmt_rec.end) (void)fprintf(stdout,"%s: WARNING %s (input file %d) is superfluous\n",prg_nm_get(),fl_in,idx_fl);
       for(idx_rec=lmt_rec.srt;idx_rec<=lmt_rec.end;idx_rec+=lmt_rec.srd){
-	/* Process all variables in the current record */ 
+	/* Process all variables in current record */
 	if(dbg_lvl > 1) (void)fprintf(stderr,"Record %ld of %s is input record %ld\n",idx_rec,fl_in,idx_rec_out);
 	for(idx=0;idx<nbr_var_prc;idx++){
 	  if(dbg_lvl > 2) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.41 2000-05-09 23:52:26 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.42 2000-05-10 07:15:36 zender Exp $
 
 Purpose: NCO homepage
 
@@ -160,7 +160,23 @@ description of each operator, please read the
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
 
-<P>2000/05/09: 
+<P>2000/05/10: 
+Added capability of <TT>ncra</TT>, and <TT>ncrcat</TT> to handle
+superfluous initial files. These multifile operators used to require
+that hyperslabs along the record dimension contain valid points in the
+first input file, although superfluous trailing files were allowed.
+Now superfluous files are also allowed anywhere in the file argument
+list for coordinate value hyperslabs (e.g., <tt>-d time,2.0,3.0</tt>),
+and at the beginning and end of the file argument list for dimension
+index hyperslabs (e.g., <tt>-d time,2,3</tt>).
+This vastly simplifies analysis of file collections where the location
+of certain record coordinates or indices is not known a priori, or is
+tedious to compute. 
+Users may now operate on specific segments of a timeseries 
+(e.g., February values) without knowing which files contain February. 
+Simply input the entire timeseries of files to the operators will
+and they will automagically find and operate on only the February values! 
+
 Sylvia Murphy of the NCAR 
 <a href="http://www.cgd.ucar.edu/csm/cmps/cmps_home.html">Community 
 Climate System Model Support Network</a> organized a workshop in

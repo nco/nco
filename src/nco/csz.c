@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.42 2000-04-10 07:16:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.43 2000-05-10 07:15:36 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
 
@@ -132,11 +132,11 @@ lmt_prs(int lmt_nbr,char **lmt_arg)
    lmt_sct *lmt_prs(): O structure holding user-specified strings for min and max limits
  */ 
 {
-  /* Routine to set name, min_sng, max_sng elements of 
+  /* Purpose: Set name, min_sng, max_sng elements of 
      a comma separated list of names and ranges. This routine
-     merely evaluates the syntax of the input expressions and
-     does not attempt to validate the dimensions or their ranges
-     against those present in the input netCDF file. */
+     merely evaluates syntax of input expressions and
+     does not attempt to validate dimensions or their ranges
+     against those present in input netCDF file. */
 
   /* Valid syntax adheres to nm,[min_sng][,[max_sng]][,srd_sng] */
 
@@ -171,17 +171,19 @@ lmt_prs(int lmt_nbr,char **lmt_arg)
     } /* end if */ 
 
     /* Initialize structure */ 
-    /* lmt strings which are not explicitly set by the user remain NULL, i.e., 
-       specifying the default setting will appear as if nothing at all was set.
-       Hopefully, in the routines that follow, the branch followed by a dimension for which
-       all the default settings were specified (e.g.,"-d foo,,,,") will yield the same answer
-       as the branch for which no hyperslab along that dimension was set.
+    /* lmt strings which are not explicitly set by user remain NULL, i.e., 
+       specifying default setting will appear as if nothing at all was set.
+       Hopefully, in routines that follow, branch followed by a dimension for which
+       all default settings were specified (e.g.,"-d foo,,,,") will yield same answer
+       as branch for which no hyperslab along that dimension was set.
      */ 
     lmt[idx].nm=NULL;
     lmt[idx].is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
     lmt[idx].min_sng=NULL;
     lmt[idx].max_sng=NULL;
     lmt[idx].srd_sng=NULL;
+    /* rec_skp_nsh is used for record dimension in multi-file operators */
+    lmt[idx].rec_skp_nsh=0L; /* Number of records skipped in initial files */
 
     /* Fill in structure */ 
     lmt[idx].nm=arg_lst[0];

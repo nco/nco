@@ -6,16 +6,16 @@
 # Usage:
 # Export tagged, public versions
 
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_46
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_46
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_46
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_46
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_46
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_46
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco1_1_46
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco1_1_46
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_46
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_46
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_47
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_47
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_47
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_47
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_47
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_47
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco1_1_47
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco1_1_47
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_47
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_47
 
 # Export daily snapshot
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 
@@ -28,7 +28,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.57 2000-03-09 01:17:40 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.58 2000-05-10 07:15:35 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -64,9 +64,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-03-09 01:17:40 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.57 2000-03-09 01:17:40 zender Exp $';
-my $CVS_Revision='$Revision: 1.57 $';
+my $CVS_Date='$Date: 2000-05-10 07:15:35 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.58 2000-05-10 07:15:35 zender Exp $';
+my $CVS_Revision='$Revision: 1.58 $';
 my $CVSROOT='$CVSROOT'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};

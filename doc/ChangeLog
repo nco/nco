@@ -1,6 +1,15 @@
-2000-05-09  Charlie Zender  <zender@uci.edu>
+2000-05-10  Charlie Zender  <zender@uci.edu>
 
-	* Allowing skipping of initial files when lmt_typ = dim_idx
+	* Finished testing of feature allowing skipping of initial files
+	when lmt_typ = dim_idx. Seems to work. Now dim_idx and crd_val
+	hyperslabs may have arbitrary numbers of superfluous files at 
+	beginning and end. 
+
+	* Added rec_skp_nsh member to lmt structure to support keeping
+	track of records skipped in superfluous initial files for lmt_typ
+	= dim_idx on multi-file operators
+
+2000-05-09  Charlie Zender  <zender@uci.edu>
 
 	* Altered behavior of single point hyperslabs so that single point
 	hyperslabs in the record coordinate (i.e., -d time,1.0,1.0) may be

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.26 2000-05-09 05:20:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.27 2000-05-10 07:15:37 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -155,7 +155,8 @@ typedef struct {
   bool is_usr_spc_min; /* True if user-specified, else False */
   bool is_usr_spc_max; /* True if user-specified, else False */
   bool is_rec_dmn; /* True if record dimension, else False */
-  long rec_skp; /* Records skipped at end of previous file (multi-file record dimension only) */
+  long rec_skp; /* Records skipped at end of previous valid file (multi-file record dimension only) */
+  long rec_skp_nsh; /* Number of records skipped in initial files (multi-file record dimension only) */
   char *min_sng; /* User-specified string for dimension minimum */ 
   char *max_sng; /* User-specified string for dimension maximum */ 
   char *srd_sng; /* User-specified string for dimension stride */ 
@@ -364,7 +365,7 @@ extern int nd2endm(int,int);
 extern int op_prs(char *);
 extern int prg_get(void);
 extern lmt_sct *lmt_prs(int,char **);
-extern lmt_sct lmt_dmn_mk(int,int,lmt_sct *,int,bool);
+extern lmt_sct lmt_sct_mk(int,int,lmt_sct *,int,bool);
 extern nclong FORTRAN_newdate(nclong *,int *);
 extern nclong arm_base_time_get(int);
 extern nclong newdate(nclong,int);
