@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.20 2001-11-29 16:06:55 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.21 2001-12-11 16:14:40 hmb Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -55,6 +55,8 @@
 var_sct *
 ncap_var_init(char *var_nm,prs_sct *prs_arg)
 {
+  /* purpose: initialize var structure, retrieve var values from disk */
+
   int var_id;
   int rcd;
   int f_id;
@@ -89,20 +91,15 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   //vara=var_upk(vara);
    return vara;
 
-}
+} /* end ncap_var_init */
 
-sym_sct *
-ncap_sym_init(char *name,double (*function)())
-{ 
-  sym_sct *symbol;
-  symbol = malloc(sizeof(sym_sct));
-  symbol->nm = strdup(name);
-  symbol->fnc= function;
-  return symbol;
-}
+
+
 int 
 ncap_var_write(var_sct *var, prs_sct *prs_arg)
 {
+  /* purpose: Define var in the output file and write the variables */
+
   int rcd;
   int var_out_id;
    
@@ -124,7 +121,20 @@ ncap_var_write(var_sct *var, prs_sct *prs_arg)
  } /* end else */
 
  return 1;
-} 
+} /* end ncap_var_write */
+
+
+sym_sct *
+ncap_sym_init(char *name,double (*function)())
+{ 
+  /* purpose: Allocate space for sym_sct then initalize */
+  sym_sct *symbol;
+  symbol = malloc(sizeof(sym_sct));
+  symbol->nm = strdup(name);
+  symbol->fnc= function;
+  return symbol;
+} /* end ncap_sym_init */
+
 
 parse_sct 
 ncap_ptr_unn_2_attribute(nc_type type, ptr_unn val)
@@ -195,7 +205,8 @@ ncap_var_var_add(var_sct *var_1,var_sct *var_2)
 
   (void)ncap_var_retype(var_1,var_2);
   var_sum=var_dpl(var_2);
-  var_sum=var_conform_dim(var_1,var_2,var_sum,MUST_CONFORM,&DO_CONFORM);
+  //var_sum=var_conform_dim(var_1,var_2,var_sum,MUST_CONFORM,&DO_CONFORM);
+  (void)ncap_var_conform_dim(var_1,var_sum);
   (void)var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_sum->val);
    
   return var_sum;
@@ -217,7 +228,8 @@ ncap_var_var_sub(var_sct *var_2,var_sct *var_1)
 
   (void)ncap_var_retype(var_1,var_2);
   var_sum=var_dpl(var_2);
-  var_sum=var_conform_dim(var_1,var_2,var_sum,MUST_CONFORM,&DO_CONFORM);
+  //var_sum=var_conform_dim(var_1,var_2,var_sum,MUST_CONFORM,&DO_CONFORM);
+  (void)ncap_var_conform_dim(var_1,var_sum);
   (void)var_subtract(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_sum->val);
    
   return var_sum;
@@ -238,7 +250,8 @@ ncap_var_var_multiply(var_sct *var_1,var_sct *var_2)
   var_sct *var_sum;
   (void)ncap_var_retype(var_1,var_2);
   var_sum=var_dpl(var_2);
-  var_sum=var_conform_dim(var_1,var_2,var_sum,MUST_CONFORM,&DO_CONFORM);
+  //var_sum=var_conform_dim(var_1,var_2,var_sum,MUST_CONFORM,&DO_CONFORM);
+  (void)ncap_var_conform_dim(var_1,var_sum);
   (void)var_multiply(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_sum->val);
    
   return var_sum;
@@ -247,17 +260,20 @@ ncap_var_var_multiply(var_sct *var_1,var_sct *var_2)
 var_sct *
 ncap_var_attribute_multiply(var_sct *var,parse_sct attribute)
 {
+  /* purpose: Multiply variable by value in attribute */
   var_sct *var_sum;
   var_sum=var_dpl(var);
   (void)ncap_attribute_conform_type(var->type,&attribute);
   (void)var_attribute_multiply(var->type,var->sz,var->has_mss_val,var->mss_val,var_sum->val,&attribute);
 
   return var_sum;
-}
+} /* end ncap_var_attribute_multiply */
 
 var_sct *
 ncap_var_attribute_power(var_sct *var_in,parse_sct attribute)
 {
+  /* purpose: raise to the power in attribute, each value in var */
+  /* All values converted to type double before operation        */
   long idx;
   long sz;
   double att_dpl;
@@ -286,11 +302,13 @@ ncap_var_attribute_power(var_sct *var_in,parse_sct attribute)
     if(var->has_mss_val) (void)cast_nctype_void(NC_DOUBLE,&(var->mss_val));
     return var;
    
-}
+} /* end ncap_var_attribute_power */
+
 
 var_sct *
 ncap_var_function(var_sct *var_in, double(*fnc)())
 {
+  /* purpose: evalue fnc(var) for each value in variable */
   long idx;
   long sz;
   ptr_unn op1;
@@ -322,6 +340,7 @@ ncap_var_function(var_sct *var_in, double(*fnc)())
 var_sct *
 ncap_var_attribute_add(var_sct *var,parse_sct attribute)
 {
+  /* purpose: add the value in attribute to each element of var */
   var_sct *var_sum;
   var_sum=var_dpl(var);
   (void)ncap_attribute_conform_type(var->type,&attribute);
@@ -329,11 +348,12 @@ ncap_var_attribute_add(var_sct *var,parse_sct attribute)
 
   return var_sum;
 
-}
+} /* end ncap_var_attribute_add */
 
 var_sct *
 ncap_var_attribute_sub(var_sct *var,parse_sct attribute)
 {
+  /* purpose: Subtract the value in attribute from each element of var */
   var_sct *var_sum;
   var_sum=var_dpl(var);
   (void)ncap_attribute_minus(&attribute);
@@ -341,40 +361,44 @@ ncap_var_attribute_sub(var_sct *var,parse_sct attribute)
   (void)var_attribute_add(var->type,var->sz,var->has_mss_val,var->mss_val,var_sum->val,&attribute);
 
   return var_sum;
-}
+} /* end ncap_var_attriibute_sub */
 
 var_sct *
 ncap_var_attribute_divide(var_sct *var,parse_sct attribute)
 {
+  /* purpose: Divide each element of var by value in attribute */
   var_sct *var_sum;
   var_sum=var_dpl(var);
   (void)ncap_attribute_conform_type(var->type,&attribute);
   (void)var_attribute_divide(var->type,var->sz,var->has_mss_val,var->mss_val,var_sum->val,&attribute);
 
   return var_sum;
-}
+} /* end ncap_var_attribute_divide */
 
 
 var_sct *
 ncap_var_attribute_modulus(var_sct *var,parse_sct attribute)
 {
+    /* purpose: var % attribute , Take the modulus of each element of var with the value in attribute */
+
   var_sct *var_sum;
   var_sum=var_dpl(var);
   (void)ncap_attribute_conform_type(var->type,&attribute);
   (void)var_attribute_modulus(var->type,var->sz,var->has_mss_val,var->mss_val,var_sum->val,&attribute);
 
   return var_sum;
-}
+} /* ncap_var_attribute_modulus */
 
 
 var_sct *
 ncap_var_abs(var_sct *var)
 {
+  /* purpose: Find the absolute value of each element of var */
   var_sct *var_sum;
   var_sum=var_dpl(var);
   (void)var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var_sum->val);
   return var_sum;
-}
+} /* end ncap_var_abs */
 
 void
 var_attribute_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,parse_sct *attribute)
@@ -818,6 +842,8 @@ var_abs(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
 int 
 ncap_var_retype(var_sct* vara, var_sct* varb)
 {
+  /* Purpose: Convert a variable if necessary so the vars are of the same type */
+
   if( vara->type == varb->type) return vara->type;
   if (vara->type > varb->type){
     varb = var_conform_type(vara->type,varb);
@@ -826,24 +852,42 @@ ncap_var_retype(var_sct* vara, var_sct* varb)
     vara=var_conform_type(varb->type,vara);
     return varb->type;
   }
-}
+} /* end ncap_var_retype */
+
+bool
+ncap_var_conform_dim(var_sct* vara,var_sct *varb)
+{
+  /* Purpose: Make sure the vars have conforming variables. If this isn't possible then die */
+  bool MUST_CONFORM=True;
+  bool DO_CONFORM;
+  if(vara->nbr_dim > varb->nbr_dim) varb=var_conform_dim(vara,varb,vara,MUST_CONFORM,&DO_CONFORM);
+    else
+  vara=var_conform_dim(varb,vara,varb,MUST_CONFORM,&DO_CONFORM);
+
+  if (!DO_CONFORM) {
+   (void)fprintf(stderr,"%s: Variables don't have have conforming dimensions. Cannot proceed with operation\n",prg_nm_get());
+    exit(EXIT_FAILURE);
+    }
+  return DO_CONFORM;
+} /* end ncap_var_conform_dim */
+
 
 int 
 ncap_retype(parse_sct *a,parse_sct *b)
 {
-  
+  /* Purpose: Convert an attribute if necessary so the attributes  are of the same type */
   if (a->type == b->type) return a->type;
   if ((a->type) > (b->type)){ (void)ncap_attribute_conform_type(a->type,b);}
     else {(void)ncap_attribute_conform_type(b->type,a);}
 
   return a->type;    
-}
+} /* end ncap_retype */
 
 
 int  
 ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
 {
-   
+  /* purpose: Convert an attribute to type_new using implicit C convertions */
     nc_type type_old = a->type;
     
     parse_sct b;
@@ -916,13 +960,14 @@ ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
   } /* end switch */
        b.type = type_new;
        *a = b;
-      
+       return 1;      
 } /* end ncap_attribute_conform_type */
 
 
 parse_sct  
 ncap_attribute_calc(parse_sct a, char op, parse_sct b)
 {
+  /* Purpose: Calculate (a op b) . n.b Attributes must be of the same type */
    parse_sct c;
    c.type = a.type;
    switch(c.type){ 
@@ -981,6 +1026,8 @@ ncap_attribute_calc(parse_sct a, char op, parse_sct b)
 parse_sct
 ncap_attribute_abs(parse_sct a)
 {
+  /* Purpose: Find the absolute value of an attribute */
+
    parse_sct b;
    b.type = a.type;
    switch(a.type){ 
@@ -1002,6 +1049,7 @@ ncap_attribute_abs(parse_sct a)
     case NC_DOUBLE:
              b.val.d = fabs(a.val.d);
              break;
+         default: nco_dfl_case_nctype_err(); break;    
    } /* end switch */
    return b;
 } /* end ncap_attribute_abs */
@@ -1027,6 +1075,7 @@ ncap_attribute_minus(parse_sct *a)
     case NC_DOUBLE:
              a->val.d = -a->val.d;
              break;
+           default: nco_dfl_case_nctype_err(); break;   
    }/* end switch */    
    return a->type;
 }
@@ -1034,6 +1083,7 @@ ncap_attribute_minus(parse_sct *a)
 nm_id_sct *
 var_lst_copy(nm_id_sct *xtr_lst,int n)
 {
+  /* Purpose: Copy xtr_lst and return the new list */
   int i;
   nm_id_sct *xtr_new_lst;
 
@@ -1044,15 +1094,15 @@ var_lst_copy(nm_id_sct *xtr_lst,int n)
       xtr_new_lst[i].id = xtr_lst[i].id;
       }
   return xtr_new_lst;            
-    
-
-}
+} /* end var_lst_copy */
 
 
 
 nm_id_sct *
 var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst_b)
 {
+  /* Purpose: subtract from xtr_lst any elements from xtr_lst_b which are present */
+  /* and return a new list */
   int i;
   int j;
   int n=0;
@@ -1074,11 +1124,14 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
   *nbr_xtr = n;
   return xtr_new_lst;      
       
-  }
+}/* end var_lst_sub */
 
 nm_id_sct *
 var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst_a)
 {
+
+  /* Purpose: Add to xtr_lst any elements from xtr_lst_b which are not already present */
+  /* and return a new list */
   int i;
   int j;
   int n;
@@ -1097,7 +1150,7 @@ var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int n
       }
     }else{
       *nbr_xtr = nbr_lst_a;
-      return xtr_lst_a;
+      return var_lst_copy(xtr_lst_a,nbr_lst_a);
     }/* end if */
  
   
@@ -1115,12 +1168,18 @@ var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int n
   return xtr_new_lst;            
     
 
-}
+} /* var_lst_add */
 
 void 
 ncap_initial_scan(prs_sct *prs_arg,char *spt_arg_cat, nm_id_sct** xtr_lst_a,int *nbr_lst_a,
 nm_id_sct** xtr_lst_b,int *nbr_lst_b,nm_id_sct** xtr_lst_c, int *nbr_lst_c)
 {
+  /* Purpose: Do a scan of the command script and return three lists  */
+  /* list a -- variables on the RHS which are present in the input file*/
+  /* list b -- variables on the LHS which are present in the input file*/
+  /* list c -- variables of attributes on the LHS which are present in the input file*/
+
+
 #include "ncap.tab.h"           /* TOKENS and YYSTYPE - produced by Bison */
                                 /* We need these because we are calling the scanner */
   int i;                      
@@ -1128,7 +1187,6 @@ nm_id_sct** xtr_lst_b,int *nbr_lst_b,nm_id_sct** xtr_lst_c, int *nbr_lst_c)
   int n_lst_a=0;
   int n_lst_b=0;
   int n_lst_c=0;
-  int rcd;
   int var_id;
   bool match;
   char *var_nm;  
@@ -1215,7 +1273,7 @@ nm_id_sct** xtr_lst_b,int *nbr_lst_b,nm_id_sct** xtr_lst_c, int *nbr_lst_c)
   if(n_lst_b >0) { *xtr_lst_b = lst_b ; *nbr_lst_b = n_lst_b ;}  
   if(n_lst_c >0) { *xtr_lst_c = lst_c ; *nbr_lst_c = n_lst_c ;}  
   
-}
+} /* end ncap_initial_scan */
 
 
 
