@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.209 2003-05-27 18:16:15 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.210 2003-06-09 17:19:12 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -149,7 +149,7 @@ ifeq (${I18N},Y)
 endif
 
 ifeq (${PVM_ARCH},LINUX)
-# rpm command, and thus RPM variables, may only be assumed to be available in Linux
+# rpm command, and thus RPM variables only guaranteed in RedHat Linux
  MDL_RPM_NST_NM := $(shell rpm -qa | grep nco-) # Name of installed package
 # MDL_RPM_PRV_NM := $(shell rpm -qp foo) # Name of package provided by specified RPM
 endif # endif LINUX
