@@ -1,5 +1,5 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.21 2002-01-14 08:58:59 zender Exp $ -*-C-*- */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.22 2002-01-14 18:06:20 hmb Exp $ -*-C-*- */
 
   /* Purpose: Token generator for ncap parser */
 
@@ -206,7 +206,7 @@ pow/[ ]*\(     {return POWER;}
         lvalp->sym=prs_arg->sym_tbl[i];
         return FUNCTION;
      } /* endif */
-   (void)sprintf(err_sng,"Warning: Unable to locate function %s.",yytext);
+   (void)sprintf(err_sng,"Warning: Unable to locate function %s. Is this really a variable ?",yytext);
    (void)yyerror(err_sng);       
    return EPROVOKE;             
 
