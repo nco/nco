@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.131 2002-03-29 02:00:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.132 2002-04-18 23:43:34 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -2901,6 +2901,8 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     fix->sz/=dmn_avg[idx]->cnt;
     if(!dmn_avg[idx]->is_rec_dmn) fix->sz_rec/=dmn_avg[idx]->cnt;
   } /* end loop over idx */
+  /* Convenience variable to avoid repetitive indirect addressing */
+  fix_sz=fix->sz;
 
   fix->is_rec_var=False;
   for(idx=0;idx<nbr_dmn_fix;idx++){
@@ -2928,10 +2930,8 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
      Since var->val was already copied to fix->val by var_dpl() at the beginning
      of this routine, only one task remains, to set fix->tally appropriately. */
   if(avg_sz == 1L){
-    long fix_sz;
     long *fix_tally;
 
-    fix_sz=fix->sz;
     fix_tally=fix->tally;
 
     /* First set tally field to 1 */
@@ -2973,8 +2973,6 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
 
     ptr_unn avg_val;
 
-    /* Define convenience variables to avoid repetitive indirect addressing */
-    fix_sz=fix->sz;
     nbr_dmn_var_m1=nbr_dmn_var-1;
     type_sz=nco_typ_lng(fix->type);
     var_cnt=var->cnt;
@@ -2985,13 +2983,13 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     avg_val=fix->val;
     avg_cp=(char *)avg_val.vp;
     /* Create a new value buffer for output (averaged) size */
-    fix->val.vp=(void *)nco_malloc(fix->sz*nco_typ_lng(fix->type));
+    fix->val.vp=(void *)nco_malloc(fix_sz*nco_typ_lng(fix->type));
     /* Resize (or just plain allocate) the tally array */
-    fix->tally=(long *)nco_realloc(fix->tally,fix->sz*sizeof(long));
+    fix->tally=(long *)nco_realloc(fix->tally,fix_sz*sizeof(long));
 
     /* Re-initialize value and tally arrays */
-    (void)zero_long(fix->sz,fix->tally);
-    (void)var_zero(fix->type,fix->sz,fix->val);
+    (void)zero_long(fix_sz,fix->tally);
+    (void)var_zero(fix->type,fix_sz,fix->val);
   
     /* Compute map for each dimension of variable */
     for(idx=0;idx<nbr_dmn_var;idx++) dmn_var_map[idx]=1L;

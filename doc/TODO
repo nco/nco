@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.130 2002-04-17 07:23:09 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.131 2002-04-18 23:43:34 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -235,6 +235,24 @@ ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 221. Add Makefile option to strip executables (STR=Y)
 222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
 223. texi2dvi nco.texi works on old RHL not on RHL 7.2
+224. ncwa bug:
+(gdb) run -O -a lat,lon,lev -w gw -d lat,-14.25 -d lon,189.42 -d lev,1000.0 /dust/zender/dstmch79/dstmch79_clm_0112.nc /dust/zender/dstmch79/dstmch79_clm_0112_AmS.nc
+Starting program: /home/zender/bin/LINUX/ncwa -D 5 -O -a lat,lon,lev -w gw -d lat,-14.25 -d lon,189.42 -d lev,1000.0 /dust/zender/dstmch79/dstmch79_clm_0112.nc /dust/zender/dstmch79/dstmch79_clm_0112_AmS.nc
+ncwa: INFO Not attempting OpenMP multi-threading
+lev, 
+ncwa: DEBUG gw and template lev share no dimensions: Not broadcasting gw to lev
+lat, gw, lon, 
+ncwa: DEBUG gw and template lon share no dimensions: Not broadcasting gw to lon
+
+Program received signal SIGSEGV, Segmentation fault.
+0x0805757b in var_avg (var=0x8090170, dim=0x808ab88, nbr_dim=3, nco_op_typ=0)
+    at ../src/nco/nc_utl.c:2938
+2938        for(idx=0;idx<fix_sz;idx++) fix_tally[idx]=1L;
+It seems to die in var_avg() when averaging lon
+because fix_sz=huge number (unitialized?)
+Works fine when run with -v DSTODXC
+Works fine when run with -D 5
+Works fine when compiled with OPTS=D
 ************************************************************************
 End NCO Wish list
 ************************************************************************
