@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.285 2005-01-10 04:22:17 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.286 2005-01-10 06:11:03 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2552,6 +2552,12 @@ repeats.
 In cases where it is useful to keep the remotely-retrieved files on the
 local file system after processing, the automatic removal feature may be 
 disabled by specifying @samp{-R} on the command line.
+
+Invoking @code{-R} disables the default printing behavior of
+@command{ncks}.
+This allows @command{ncks} to retrieve remote files without
+automatically trying to print them.
+See @ref{ncks netCDF Kitchen Sink}, for more details.
 
 @cindex @acronym{FTP}
 @cindex @acronym{SSH}
@@ -6275,8 +6281,8 @@ Option @samp{-s} (or lon options @samp{--sng}, @samp{--string},
 using C-style format strings. 
 
 Options @samp{-a}, @samp{-F} , @samp{-H}, @samp{-M}, @samp{-m},
-@samp{-q}, @samp{-s}, and @samp{-u} (and their long option counterparts)
-control the formatted appearance of the data.
+@samp{-Q}, @samp{-q}, @samp{-s}, and @samp{-u} (and their long option
+counterparts) control the formatted appearance of the data.
 
 @cindex global attributes
 @cindex attributes, global
@@ -6497,14 +6503,6 @@ screen if no netCDF output file is specified.
 Use @samp{-m} to print variable metadata to screen if a netCDF output is 
 specified. 
 
-@cindex @code{-q}
-@cindex @code{--quiet}
-@cindex quiet
-@item -q 
-Turn off all printing to screen.
-This overrides the setting of all print-related switches, equivalent to
-@kbd{-H -M -m} when in single-file printing mode. 
-
 @cindex @code{-Q}
 @item -Q 
 Toggle printing of dimension indices and coordinate values when printing
@@ -6512,6 +6510,18 @@ arrays.
 Each variable's name appears flush left in the output.
 This helps locate specific variables in lists with many variables and 
 different dimensions. 
+
+@cindex @code{-q}
+@cindex @code{--quiet}
+@cindex quiet
+@item -q 
+Turn off all printing to screen.
+This overrides the setting of all print-related switches, equivalent to
+@kbd{-H -M -m} when in single-file printing mode. 
+When invoked with @code{-R} (@pxref{File retention}), @command{ncks}
+automatically sets @code{-q}. 
+This allows @command{ncks} to retrieve remote files without
+automatically trying to print them.
 Also @samp{--quiet}.
 
 @cindex @code{-s}

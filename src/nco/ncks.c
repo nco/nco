@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.114 2005-01-10 04:22:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.115 2005-01-10 06:11:04 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.114 2005-01-10 04:22:20 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.114 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.115 2005-01-10 06:11:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.115 $";
   const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qQrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -272,6 +272,7 @@ main(int argc,char **argv)
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
+      PRN_QUIET=True; /* [flg] Turn off all printing to screen */
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
