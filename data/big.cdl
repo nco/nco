@@ -33,19 +33,6 @@
 // ncks -m -M -H ${DATA}/mie/big.nc | m
 // ncks -H -d wvl_1e9,999999999 ${DATA}/mie/big.nc | m
 
-// Benchmark arithmetic operations on large files
-// timex ncwa -O -a wvl_1e8 -v wvl_1e8 ${DATA}/mie/big.nc ${DATA}/mie/foo.nc;ncks -H ${DATA}/mie/foo.nc
-// date;ncwa -O -a wvl_1e8 -v wvl_1e8 ${DATA}/mie/big.nc ${DATA}/mie/foo.nc;date;ncks -H ${DATA}/mie/foo.nc
-// Results: 
-// elnino gcc 3.3.4 with restrict keyword     20040719: 11m31s
-// elnino gcc 3.3.4 without restrict keyword  20040719: 10m20s
-// esmf04m xlc 6.x with restrict keyword      20040719: 22s
-// esmf04m xlc 6.x without restrict keyword   20040719:
-// 2^32=4294967296
-// 2^31=2147483648
-// 10^9=1000000000
-// 10^8= 100000000
-
 // Valid CDF/netCDF files need not have any defined variable or data
 // Use ncap LHS-casting to define variables with big dimensions
 netcdf big {
