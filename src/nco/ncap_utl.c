@@ -1,5 +1,5 @@
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.71 2002-08-27 21:01:01 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.72 2002-08-28 07:07:21 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -66,7 +66,7 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
            (void)nco_dmn_xrf(*dim_new,dmn_in);
            /* write dimension to output file */
            (void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,dim_new,1);
-           //printf("Dimension %s defined\n",(*dim_new)->nm);
+           /* printf("Dimension %s defined\n",(*dim_new)->nm); */
 	    break;
 	  } /* end for j */
 	(void)nco_free(dim_id);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.13 2002-08-22 22:04:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.14 2002-08-28 07:07:21 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -751,7 +751,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     fl_out_hnd=mkstemp(fl_out_tmp_sys);
 #else
     fl_out_hnd=creat(mktemp(fl_out_tmp_sys),0600);
-#endif
+#endif /* !CRAY */
     fl_out_hnd=fl_out_hnd; /* Removes compiler warning on SGI */
     if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: nco_fl_out_open() reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",prg_nm_get(),(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
   } /* endif dbg */

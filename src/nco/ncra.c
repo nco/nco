@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.74 2002-08-22 06:10:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.75 2002-08-28 07:07:21 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -79,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.74 2002-08-22 06:10:19 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.74 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.75 2002-08-28 07:07:21 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.75 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -133,9 +133,9 @@ main(int argc,char **argv)
   
 #ifdef _LIBINTL_H
   setlocale(LC_ALL,""); /* LC_ALL sets all localization tokens to same value */
-  bindtextdomain("nco","/home/zender/share/locale"); // LOCALEDIR is e.g., /usr/share/locale
-  // MO files should be in $LOCALEDIR/es/LC_MESSAGES
-  textdomain("nco"); // PACKAGE is name of program
+  bindtextdomain("nco","/home/zender/share/locale"); /* ${LOCALEDIR} is e.g., /usr/share/locale */
+  /* MO files should be in ${LOCALEDIR}/es/LC_MESSAGES */
+  textdomain("nco"); /* PACKAGE is name of program */
 #endif /* not _LIBINTL_H */
 
   /* Start the clock and save the command line */
