@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.29 2004-08-03 18:22:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.30 2004-08-04 21:50:59 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -366,8 +366,9 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
  bool * const dmn_rvr_in) /* O [idx] Reverse dimension */
 {
   /* Purpose: Re-order dimensions in a given variable
-     dmn_rdr contains is the new order for dimensions
-     NB: free() var_in in calling routine if it is no longer needed
+     dmn_rdr contains new dimension order for dimensions
+     Currently routine allows only dimension permutations, i.e., 
+     re-arranging dimensions without changing their number (variable rank).
 
      Routine keeps track of two variables var_* whose abbreviations are:
      in: Input variable (already hyperslabbed) with old dimension ordering
@@ -418,11 +419,10 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
      Some, or even all, dimensions in dmn_rdr may not be in dmn_in
      Re-ordering is only necessary for variables where dmn_in and dmn_rdr share at least two dimensions
      
-     fxm: Add dimension reversal capability to this routine
      Dimension reversal:
      Users specify dimension reversal by prefixing dimension name with negative sign
-     Dimensions may be re-ordered, reversed, or both
-     Dimension reversal algorithm could be implemented by fiddling with dimension maps */
+     Host routine passes dimension reversing flags in dmn_rvr_rdr
+     Dimensions may be re-ordered, reversed, or both */
   
   const char fnc_nm[]="nco_var_dmn_rdr_mtd()"; /* [sng] Function name */
   
@@ -504,51 +504,32 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++)
     dmn_rvr_in[dmn_idx_shr_in[dmn_shr_idx]]=dmn_rvr_rdr[dmn_idx_shr_rdr[dmn_shr_idx]];
 
+  /* No dimension re-ordering is necessary if dmn_in and dmn_rdr share fewer than two dimensions
+     Dimension reversal must be done with even one shared dimension
+     Single dimension reversal, however, uses default dimension maps and return values */
+  if(dmn_shr_nbr < 2) return rec_dmn_nm_out;
+  
+  /* Initialize final map to no re-ordering */
+  for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++) 
+    dmn_idx_in_out[dmn_in_idx]=dmn_in_idx;
+
+  /* For each dimension in shared dimension list... */
+  for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++){
+    /* Splice current shared dimension in after previous group of non-shared dimensions */
+    dmn_idx_in_out[dmn_idx_shr_in[dmn_shr_idx]]=dmn_shr_idx;
+  } /* end loop over dmn_shr */
+  
   if(dbg_lvl_get() > 3){
     (void)fprintf(stdout,"%s: DEBUG %s variable %s shares %d of its %d dimensions with the %d dimensions in the re-order list\n",prg_nm_get(),fnc_nm,var_in->nm,dmn_shr_nbr,var_in->nbr_dim,dmn_rdr_nbr);
     (void)fprintf(stdout,"shr_idx\tshr_in\tshr_rdr\n");
     for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++){
       (void)fprintf(stdout,"%d\t%d\t%d\n",dmn_shr_idx,dmn_idx_shr_in[dmn_shr_idx],dmn_idx_shr_rdr[dmn_shr_idx]);
     } /* end loop over dmn_in */
-    (void)fprintf(stdout,"in_idx\tin_shr\tin_rdr\n");
+    (void)fprintf(stdout,"in_idx\tin_shr\tin_rdr\tin_out\trvr_flg\n");
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
-      (void)fprintf(stdout,"%d\t%d\t%d\n",dmn_in_idx,dmn_idx_in_shr[dmn_in_idx],dmn_idx_in_rdr[dmn_in_idx]);
+      (void)fprintf(stdout,"%d\t%d\t%d\t%d\t%s\n",dmn_in_idx,dmn_idx_in_shr[dmn_in_idx],dmn_idx_in_rdr[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],(dmn_rvr_in[dmn_in_idx]) ? "true" : "false");
     } /* end loop over dmn_in */
   } /* end if dbg */
-
-  /* No re-ordering is necessary if dmn_in and dmn_rdr share fewer than two dimensions
-     fxm: However, this will change to one dimension when reversing is implemented
-     fxm: Diagnostics and output may require proceeding past this point even though
-     metadata re-order per se is done */
-  if(dmn_shr_nbr < 2) return rec_dmn_nm_out;
-  
-  /* Initialize final map to no re-ordering */
-  for(dmn_in_idx=0;dmn_in_idx<NC_MAX_DIMS;dmn_in_idx++) dmn_idx_in_out[dmn_in_idx]=dmn_in_idx;
-
-  /* For each dimension in shared dimension list... */
-  for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++){
-    /* ...current group of un-assigned, un-ordered dimensions starts at... */
-    if(dmn_shr_idx == 0){
-      /* ...zero if this is the first shared dimension... */
-      dmn_in_idx_srt=0;
-    }else{
-      /* ...one beyond previous splice point for subsequent shared dimensions... */
-      dmn_in_idx_srt=dmn_idx_shr_in[dmn_shr_idx-1]+1;
-    } /* dmn_rdr_idx != 0 */
-    /* Assign preceding un-assigned, un-ordered input dimensions to output list */
-    for(dmn_in_idx=dmn_in_idx_srt;dmn_in_idx<dmn_idx_shr_in[dmn_shr_idx];dmn_in_idx++){
-      dmn_idx_in_out[dmn_in_idx]=dmn_nbr_ass_crr++;
-    } /* end loop over dmn_in */
-      
-    /* Splice current shared dimension in after previous group of non-shared dimensions */
-    dmn_idx_in_out[dmn_idx_shr_in[dmn_shr_idx]]=dmn_nbr_ass_crr++;
-  } /* end loop over dmn_shr */
-  
-  /* Sanity check */
-  if(dmn_nbr_ass_crr != dmn_out_nbr){
-    (void)fprintf(stdout,"%s: ERROR %s reports dmn_nbr_ass_crr = %d != %d = dmn_out_nbr\n",prg_nm_get(),fnc_nm,dmn_nbr_ass_crr,dmn_out_nbr);
-    nco_exit(EXIT_FAILURE);
-  } /* end if */
 
   /* Create reverse correspondence */
   for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)

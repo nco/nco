@@ -1,5 +1,8 @@
 2004-08-04  Charlie Zender  <zender@uci.edu>
 
+	* Make all error exits go through nco_err_exit() so that error
+	exits uniformly call exit(EXIT_FAILURE) or abort()
+
 	* Fixed diagnostic bug in nco_var_dfn() which would dump core when dbg_lvl=3
 	and prg=ncwa
 
