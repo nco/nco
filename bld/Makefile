@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.164 2002-09-03 01:19:53 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.165 2002-09-04 15:36:22 zender Exp $ -*-makefile-*-
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -280,9 +280,11 @@ ${MY_DPN_DIR}/%.d : %.cc
 # Initialize OS-specific tokens to empty
 CPP_TKN_OS := 
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32))
-# HAVE_GETOPT_H
  CPP_TKN_OS += -DHAVE_GETOPT_H
 endif # !LINUX
+ifneq (${PVM_ARCH},CRAY)
+CPP_TKN_OS += -DHAVE_MKSTEMP
+endif # CRAY
 # Assume strcasecmp() and strdup() routines are present (Comeau is exception)
 CPP_TKN_OS += -DHAVE_STRCASECMP -DHAVE_STRDUP
 # fxm: Define HAVE_LIBINTL, HAVE_LOCALE_H, HAVE_GETTEXT, HAVE_OMP_H

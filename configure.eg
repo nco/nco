@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.33 2002-09-04 04:40:15 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.34 2002-09-04 15:36:20 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -13,7 +13,7 @@ FREEBSD		N(10)
 LINUX como	N(11)	
 LINUX gcc/g++	Y	N/A				Y	Y
 LINUX icc	Y	N/A				Y	Y
-LINUXALPHA	Y					N(1)	Y
+LINUXALPHA	Y					Y	Y
 LINUXPPC	Y					Y	N(9)
 LINUXSPARC64	Y					Y	Y
 MACOSX		N(8)
@@ -25,7 +25,6 @@ SUNMP gcc/g++
 WIN32		
 -----------------------------------------------------------------------
 Footnotes to summary table:
-01. Needs CXX that supports valarray
 02. After much environment variable passing, programs link but core dump
 03. Does not link tst.o
 05. xlC fails valarray test, but I believe xlC does support valarray. Hmm.
@@ -190,7 +189,7 @@ End LINUX
 
 ************************************************************************
 Start LINUXALPHA
-Status: Tested platform needs newer g++ for valarray support
+Status: Appears to work (of course C++ compiler requires valarray)
 ************************************************************************
 zender@ess1:/usr/home/zender/nco$ pvmgetarch;uname -a
 LINUXALPHA
@@ -198,10 +197,21 @@ Linux ess1.ps.uci.edu 2.2.15 #1 Thu May 18 17:22:29 EDT 2000 alpha unknown
 
 export GNU_TRP='alphaev56-unknown-linux-gnu'
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.alphaev56-unknown-linux-gnu.foo 2>&1
-/bin/cp -f config.log config.log.alphaev56-unknown-linux-gnu.foo
-make clean;make > make.alphaev56-unknown-linux-gnu.foo 2>&1
-scp configure.alphaev56-unknown-linux-gnu.foo config.log.alphaev56-unknown-linux-gnu.foo make.alphaev56-unknown-linux-gnu.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
+./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
+
+zender@usf-cf-alpha-linux-1:~/nco/bld$ ./pvmgetarch;uname -a
+LINUXALPHA
+Linux usf-cf-alpha-linux-1 2.4.17 #1 SMP Fri Jan 4 13:37:30 PST 2002 alpha unknown
+
+export GNU_TRP='alphaev67-unknown-linux-gnu'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 Old build example:
 ************************************************************************

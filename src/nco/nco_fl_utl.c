@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.16 2002-09-04 15:04:01 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.17 2002-09-04 15:36:22 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -749,12 +749,12 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     fl_out_tmp_sys[0]='\0'; /* NUL-terminate */
     fl_out_tmp_sys=strcat(fl_out_tmp_sys,fl_out);
     fl_out_tmp_sys=strcat(fl_out_tmp_sys,"XXXXXX");
-    /* 20020812: Cray does not support mkstemp */
 #ifdef HAVE_MKSTEMP
     fl_out_hnd=mkstemp(fl_out_tmp_sys);
-#else
+#else /* !HAVE_MKSTEMP */
+    /* 20020812: Cray does not support mkstemp() */
     fl_out_hnd=creat(mktemp(fl_out_tmp_sys),0600);
-#endif /* !CRAY */
+#endif /* !HAVE_MKSTEMP */
     fl_out_hnd=fl_out_hnd; /* Removes compiler warning on SGI */
     if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: nco_fl_out_open() reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",prg_nm_get(),(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
   } /* endif dbg */
