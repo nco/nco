@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.58 2000-08-07 04:40:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.59 2000-08-11 01:04:17 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -637,6 +637,19 @@ Notes saying the equivalent of "Hey, NCO continues to work great
 and it saves me more time everyday than it took to write this note" are
 a distant fourth.
 There is a different protocol for each type of request.
+Our request is that you communicate with the project via NCO Project 
+Forums.
+Before posting to the NCO forums described below, you must first 
+@ifhtml
+<a href="https://sourceforge.net/account/register.php">register</a> 
+your name and email address with SourceForge.org.
+@end ifhtml
+@ifclear html
+register your name and email address with SourceForge.org at
+@code{https://sourceforge.net/account/register.php}.
+@end ifclear
+Once registered you may choose to "monitor" any forum and to receive
+(or not) email when there are any postings.
 
 If you would like NCO to include a new feature, first check to see
 if that feature is already on the 
@@ -659,8 +672,8 @@ NCO Discussion forum at
 @code{http://sourceforge.net/forum/forum.php?forum_id=9829}. 
 @end ifclear
 
-Please read the manual before reporting a bug or posting a
-request for help. 
+Please read the manual before reporting a bug or posting a request for
+help.  
 Sending questions whose answers are not in the manual is the best
 way to motivate us to write more documentation.  
 We would also like to accentuate the contrapositive of this statement.  
@@ -1433,6 +1446,15 @@ in the @file{Makefile} distributed with NCO.
 Building NCO with @code{make DODS=Y} adds the (non-intuitive) commands
 to link to the DODS libraries installed in the @code{$DODS_ROOT}
 directory. 
+You will probably need to visit the 
+@ifhtml
+<a href="http://www.unidata.ucar.edu/packages/dods/">DODS Homepage</a>
+@end ifhtml
+@ifclear html
+DODS homepage at @code{http://www.unidata.ucar.edu/packages/dods}
+@end ifclear
+to learn which libraries to obtain and link to for the DODS-enabled NCO 
+executables.
 
 Once NCO is DODS-enabled the operators are DODS clients. 
 All DODS clients have network transparent access to any files controlled

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.54 2000-08-05 00:11:40 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.55 2000-08-11 01:04:17 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -168,6 +168,11 @@ modifying NCO, and discussion of specific items on the
 <a href="./TODO">TODO list</a> and how best to address them</li>  
 </ul></li>
 </ul>
+Note: You must first 
+<a href="https://sourceforge.net/account/register.php">register</a> 
+in order to post to these forums.
+Once registered you may choose to "monitor" the forums and to receive
+email when there are any postings.
 
 <p>
 <a href="./nco_news.shtml"> Older NCO news</a>  
@@ -262,6 +267,12 @@ upgrade to netCDF3.4.x which is available from URL
 <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z</a>.</li>
 <li>NCO may not build correctly on SGI machines unless the latest
 version of GNU make (version 3.78.1) is installed.</li>
+<li>20000810: NCO, netCDF, or IRIX are causing filesystem-dependent
+crashes of some NCO operations on <tt>dataproc.ucar.edu</tt>.
+Crashes seem to occur when files are created in <tt>/usr/tmp</tt>, 
+but same commands work fine in <tt>/home/dataproc</tt>.
+Can anyone repeat this behavior?
+</li>
 </ul>
 
 <li><b>NCO on the Cray T90</b>
