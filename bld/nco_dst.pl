@@ -6,16 +6,16 @@
 # Usage:
 # Export tagged, public versions
 
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_47
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_47
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_47
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_47
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_47
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_47
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco1_1_47
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco1_1_47
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_47
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_47
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_48
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_48
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_48
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_48
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_48
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_48
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco1_1_48
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco1_1_48
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_48
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_48
 
 # Export daily snapshot
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 
@@ -23,12 +23,13 @@
 
 # Machines requiring interactive builds
 # cd $HOME/nc/nco;cvs update;cd bld;make;make tst
+# scp $HOME/nc/nco/bld/nco_dst.pl goldhill.cgd.ucar.edu:/home/zender/nc/nco/bld/nco_dst.pl
 
 BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.58 2000-05-10 07:15:35 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.59 2000-05-19 17:10:05 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -64,9 +65,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-05-10 07:15:35 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.58 2000-05-10 07:15:35 zender Exp $';
-my $CVS_Revision='$Revision: 1.58 $';
+my $CVS_Date='$Date: 2000-05-19 17:10:05 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.59 2000-05-19 17:10:05 zender Exp $';
+my $CVS_Revision='$Revision: 1.59 $';
 my $CVSROOT='$CVSROOT'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -234,7 +235,7 @@ if($bld){
 	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -r $vrs_tag -d $dst_pth_bld nco"); # Export
     } # endelse
     cmd_prc("printf $dst_vrs > $dst_pth_bld/doc/VERSION"); # Stamp version in VERSION file in exported files
-    cmd_prc("printf $dst_vrs > $usr_nm/nc/nco/doc/VERSION"); # Stamp version in VERSION file in development directory
+    cmd_prc("printf $dst_vrs > $HOME/nc/nco/doc/VERSION"); # Stamp version in VERSION file in development directory
 #    cmd_prc("ln -s $dst_pth_bld/bld/nco.spec $dst_pth_bld/bld/nco-$dst_vrs.spec"); # Stamp version in VERSION file
     
 # Make sure documentation files are up to date
@@ -372,7 +373,7 @@ if($cray_prs){
     print STDOUT "\n$prg_nm: Updating private NCO on $rmt_mch...\n";
     cmd_prc("$rsh_cmd $rmt_mch \"$rm_cmd -r /usr/tmp/$usr_nm/nco*\"");
     cmd_prc("$rsh_cmd $rmt_mch \"$mkdir_cmd /usr/tmp/$usr_nm/$dst_vrs/obj\"");
-    cmd_prc("$rcp_cmd $ftp_mch:$ftp_drc/nco.tar.gz $rmt_mch:/usr/tmp/$usr_nm");
+    cmd_prc("rcp -p $ftp_mch:$ftp_drc/nco.tar.gz $rmt_mch:/usr/tmp/$usr_nm");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm;gunzip nco.tar.gz;tar -xvf nco.tar;rm nco.tar*\"");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm/$dst_vrs/bld; setenv MY_BIN_DIR /home/ouray0/$usr_nm/bin/CRAY; setenv MY_LIB_DIR /usr/tmp/$usr_nm/$dst_vrs/lib; setenv MY_OBJ_DIR /usr/tmp/$usr_nm/$dst_vrs/obj; gnumake cln all tst\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";

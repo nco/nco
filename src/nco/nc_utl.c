@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.64 2000-05-12 07:03:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.65 2000-05-19 17:10:29 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -2233,21 +2233,24 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
      /* fxm: TODO #114. Fix var_conform_dim() so returned weight always has same size tally array as template variable */
 
 /*  
-   var_sct *var: I pointer to variable structure to serve as template
-   var_sct *wgt: I pointer to variable structure to make conform to var
-   var_sct *wgt_crr: I/O pointer to existing conforming variable structure (if any) (may be destroyed)
-   bool MUST_CONFORM; I Must wgt and var must conform?
-   bool *DO_CONFORM; O Did wgt and var conform?
-   var_sct *var_conform_dim(): O pointer to conforming variable structure
+   var_sct *var: I [ptr] Pointer to variable structure to serve as template
+   var_sct *wgt: I [ptr] Pointer to variable structure to make conform to var
+   var_sct *wgt_crr: I/O [ptr] pointer to existing conforming variable structure (if any) (may be destroyed)
+   bool MUST_CONFORM; I [flg] Must wgt and var must conform?
+   bool *DO_CONFORM; O [flg] Did wgt and var conform?
+   var_sct *var_conform_dim(): O [ptr] Pointer to conforming variable structure
 */
 {
-  /* Purpose: Strech second variable to match dimensions of first variable
+  /* Purpose: Stretch second variable to match dimensions of first variable
      Dimensions in var which are not in wgt will be present in wgt_out, with values
      replicated from existing dimensions in wgt.
      By default, wgt's dimensions must be a subset of var's dimensions (MUST_CONFORM=true)
      If it is permissible for wgt not to conform to var then set MUST_CONFORM=false before calling this routine
      In this case when wgt and var do not conform then then var_conform_dim sets *DO_CONFORM=False and returns a copy of var with all values set to 1.0
      The calling procedure can then decide what to do with the output
+     MUST_CONFORM is True for ncdiff: Variables of like name to be differenced must be same rank
+     MUST_CONFORM is False false for ncap, ncflint, ncwa: Variables to be averaged may 
+     
      */ 
 
   /* There are many inelegant ways to accomplish this (without using C++): */   
@@ -2299,7 +2302,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
   
   /* Does the current weight (wgt_crr) conform to the variable's dimensions? */ 
   if(wgt_crr != NULL){
-    /* Test rank first because wgt_crr because of 96/02/18 bug (invalid dmn_id in old wgt_crr leads to match) */
+    /* Test rank first because wgt_crr because of 19960218 bug (invalid dmn_id in old wgt_crr leads to match) */
     if(var->nbr_dim == wgt_crr->nbr_dim){
       /* Test whether all wgt and var dimensions match in sequence */ 
       for(idx=0;idx<var->nbr_dim;idx++){
@@ -2322,8 +2325,8 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
       /* Test that all dimensions in wgt appear in var */ 
       for(idx=0;idx<wgt->nbr_dim;idx++){
         for(idx_dim=0;idx_dim<var->nbr_dim;idx_dim++){
+	  /* Compare names, not dimension IDs */
 	  if(strstr(wgt->dim[idx]->nm,var->dim[idx_dim]->nm)){
-	    /*          if(wgt->dmn_id[idx] == var->dmn_id[idx_dim]){*/
 	    wgt_var_dmn_shr_nbr++; /* wgt and var share this dimension */ 
 	    break;
 	  } /* endif */ 
@@ -2397,7 +2400,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
   } /* end if */
 
   if(wgt_out == NULL){
-    /* We need to extend the original weight (wgt) to match the size of the current variable */ 
+    /* Expand original weight (wgt) to match size of current variable */ 
     char *wgt_cp;
     char *wgt_out_cp;
 
@@ -2415,11 +2418,11 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
     long wgt_lmn;
     long var_sz;
 
-    /* Copy the basic attributes of the variable into the current weight */ 
+    /* Copy main attributes of variable into current weight */ 
     wgt_out=var_dup(var);
     (void)var_xrf(wgt,wgt_out);
 
-    /* Modify a few elements of the weight array */ 
+    /* Modify a few elements of weight array */
     wgt_out->nm=wgt->nm;
     wgt_out->id=wgt->id;
     wgt_out->type=wgt->type;
@@ -2429,55 +2432,57 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
     wgt_type_sz=nctypelen(wgt_out->type);
 
     if(wgt_out->nbr_dim == 0){
-      /* The variable (and weight) are scalars, not arrays */
+      /* Variable (and weight) are scalars, not arrays */
 
       (void)memcpy(wgt_out_cp,wgt_cp,wgt_type_sz);
 
     }else{
-      /* The variable (and weight) are arrays, not scalars */
+      /* Variable (and weight) are arrays, not scalars */
       
-      /* Create forward and reverse mappings from the variable's dimensions to the weight's:
+      /* Create forward and reverse mappings from variable's dimensions to weight's dimensions:
 
-	 dmn_var_map[i] is the number of elements between one value of the i_th 
-	 dimension of the variable and the next value of the i_th dimension, i.e., the number
-	 of elements in memory between indicial increments in the i_th dimension. This is computed
-	 as the product of one (1) times the size of all the dimensions (if any) after the i_th 
-	 dimension in the variable.
+	 dmn_var_map[i] is number of elements between one value of i_th 
+	 dimension of variable and next value of i_th dimension, i.e., 
+	 number of elements in memory between indicial increments in i_th dimension. 
+	 This is computed as product of one (1) times size of all dimensions (if any) after i_th 
+	 dimension in variable.
 
-	 dmn_wgt_map[i] contains the analogous information, except for the original weight variable.
+	 dmn_wgt_map[i] contains analogous information, except for original weight variable
 
-	 idx_wgt_var[i] contains the index into the variable's dimensions of the 
-	 i_th dimension of the original weight.
-	 idx_var_wgt[i] contains the index into the original weight's dimensions of the 
-	 i_th dimension of the variable. 
+	 idx_wgt_var[i] contains index into variable's dimensions of i_th dimension of original weight
+	 idx_var_wgt[i] contains index into original weight's dimensions of i_th dimension of variable 
 
-	 NB: Since the weight is a subset of the variable, some of the elements of idx_var_wgt
-	 may be "empty", or unused. 
+	 Since weight is a subset of variable, some elements of idx_var_wgt may be "empty", or unused
 
-	 NB: Since the mapping arrays (dmn_var_map and dmn_wgt_map) are ultimately used for a
-	 memcpy() operation, they could (read: should) be computed as byte offsets, not type
-	 offsets. This is why the netCDF generic hyperslab routines (ncvarputg(), ncvargetg())
-	 request the imap vector to specify the offset (imap) vector in bytes.
-	 
-	 */
+	 Since mapping arrays (dmn_var_map and dmn_wgt_map) are ultimately used for a
+	 memcpy() operation, they could (read: should) be computed as byte offsets, not type offsets. 
+	 This is why netCDF generic hyperslab routines (ncvarputg(), ncvargetg())
+	 request imap vector to specify offset (imap) vector in bytes.
+      */
 
       for(idx=0;idx<wgt->nbr_dim;idx++){
 	for(idx_dim=0;idx_dim<var->nbr_dim;idx_dim++){
-	  if(var->dmn_id[idx_dim] == wgt->dmn_id[idx]){
+	  /* Compare names, not dimension IDs */
+	  if(strstr(var->dim[idx_dim]->nm,wgt->dim[idx]->nm)){
 	    idx_wgt_var[idx]=idx_dim;
 	    idx_var_wgt[idx_dim]=idx;
 	    break;
 	  } /* end if */
+	  /* Sanity check */ 
+	  if(idx_dim == var->nbr_dim-1){
+	    (void)fprintf(stdout,"%s: ERROR wgt %s has dimension %s but var %s does not deep in var_conform_dim()\n",prg_nm_get(),wgt->nm,wgt->dim[idx]->nm,var->nm);
+	    exit(EXIT_FAILURE);
+	  } /* end if err */
 	} /* end loop over variable dimensions */
       } /* end loop over weight dimensions */
       
-      /* Figure out the map for each dimension of the variable */ 
+      /* Figure out map for each dimension of variable */
       for(idx=0;idx<var->nbr_dim;idx++)	dmn_var_map[idx]=1L;
       for(idx=0;idx<var->nbr_dim-1;idx++)
 	for(idx_dim=idx+1;idx_dim<var->nbr_dim;idx_dim++)
 	  dmn_var_map[idx]*=var->cnt[idx_dim];
       
-      /* Figure out the map for each dimension of the weight */ 
+      /* Figure out map for each dimension of weight */
       for(idx=0;idx<wgt->nbr_dim;idx++)	dmn_wgt_map[idx]=1L;
       for(idx=0;idx<wgt->nbr_dim-1;idx++)
 	for(idx_dim=idx+1;idx_dim<wgt->nbr_dim;idx_dim++)
@@ -2489,7 +2494,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
       var_cnt=var->cnt;
       var_nbr_dmn_m1=var->nbr_dim-1;
 
-      /* var_lmn is the offset into the 1-D array corresponding to the N-D indices dmn_ss */
+      /* var_lmn is offset into 1-D array corresponding to N-D indices dmn_ss */
       for(var_lmn=0;var_lmn<var_sz;var_lmn++){
 	dmn_ss[var_nbr_dmn_m1]=var_lmn%var_cnt[var_nbr_dmn_m1];
 	for(idx=0;idx<var_nbr_dmn_m1;idx++){
@@ -2497,7 +2502,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	  dmn_ss[idx]%=var_cnt[idx];
 	} /* end loop over dimensions */
 	
-	/* Map the (shared) N-D array indices into a 1-D index into the original weight data */ 
+	/* Map (shared) N-D array indices into 1-D index into original weight data */
 	wgt_lmn=0L;
 	for(idx=0;idx<wgt_nbr_dim;idx++) wgt_lmn+=dmn_ss[idx_wgt_var[idx]]*dmn_wgt_map[idx];
 	
@@ -3987,18 +3992,18 @@ zero_long(long sz,long *op1)
 void
 var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: I netCDF type of operands
-  long sz: I size (in elements) of operands
-  int has_mss_val: I flag for missing values
-  ptr_unn mss_val: I value of missing value
-  ptr_unn op1: I values of first operand
-  ptr_unn op2: I/O values of second operand on input, values of difference on output
+  nc_type type: I [type] netCDF type of operands
+  long sz: I [nbr] Size (in elements) of operands
+  int has_mss_val: I [flg] Flag for missing values
+  ptr_unn mss_val: I [flg] Value of missing value
+  ptr_unn op1: I [val] Values of first operand
+  ptr_unn op2: I/O [val] Values of second operand on input, values of difference on output
  */ 
 {
-  /* Routine to difference value of first operand from value of second operand 
-     and store result in second operand. Operands are assumed to have conforming
-     dimensions, and be of specified type. Operands' values are 
-     assumed to be in memory already. */ 
+  /* Purpose: Subtract value of first operand from value of second operand 
+     and store result in second operand. 
+     Operands are assumed to have conforming dimensions, and be of specified type. 
+     Operands' values are assumed to be in memory already. */ 
 
   /* Subtraction is currently defined as op2:=op2-op1 */ 
 

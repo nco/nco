@@ -1,6 +1,24 @@
-2000-05-12  Charlie Zender  <zender@uci.edu>
+2000-05-16  Charlie Zender  <zender@uci.edu>
 
-	* Tagged and released as nco1_1_47
+	* Tagged this as nco1_1_48
+
+	* Found and fixed ncdiff bug in TODO #155. 
+	Bug had been inserted in ncdiff 1.5 (nco-1.1.15, November 1998)
+	when I switched from using dimension IDs to using dimension names
+	to identify and compare dimensions in var_conform_dim(). Problem
+	was that there are two locations in var_conform_dim() where this
+	needed to be done and I only changed the first location. Then I
+	turned off dimension remapping code in ncdiff which used to take
+	care of the problem. Fortunately I had left that code commented
+	out in ncdiff() so I was able to check that turning it back on
+	solves the problem. Now I have removed old commented-out block
+	from ncdiff (because it was confusing) and all logic is now local
+	to var_conform_dim(). This fix increases the number of strstr() 
+	comparisons of dimension names because names must now be compared
+	twice in var_conform_dim() for each variable being expanded. 
+	Oh well. 
+
+2000-05-12  Charlie Zender  <zender@uci.edu>
 
 	* Fixed bug in -d dmn,,,srd case where lmt.end was incorrect
 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.53 2000-05-12 22:07:21 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.54 2000-05-19 17:10:29 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -108,15 +108,6 @@ changing version numbers can be directly linked
 152. Change make or nco_dst.pl to add docs to /usr/doc in RPM
 153. Change CVS repository to sourceforge, enable anonymous access
 154. Add mirror capability to web pages
-155. ncdiff bug found by Keith Lindsay
-cd ~/nc/nco/data
-ncgen -b -o foo1.nc foo1.cdl
-ncgen -b -o foo2.nc foo2.cdl
-ncdiff -O foo1.nc foo2.nc foo3.nc
-ncks -H foo3.nc
-Bug occurs iff dim1 is declared before dim2 (but not after) in foo1.cdl
-CDL files are copied below for convenience
-20000323 Problem may be in var_conform_dim()
 156. Builds with Electric Fence crash all over the place with nco_tst.sh 
 Appears to be related to NCO assumption that NULL=malloc(0)
 158. Add policy for hyperslabbing single level values to User's Guide. 
@@ -196,29 +187,3 @@ item 92.: problem with LINUX adding record coordinate to open file?
 End machine-specific problems
 ************************************************************************
 
-Problem 155 CDL files
-foo1.cdl:
-// ncgen -b -o foo1.nc foo1.cdl
-netcdf ncdiff_testA {
-dimensions:
-// Bug occurs if dim1 is declared before dim2
-   dim1 = 1 ;
-   dim2 = 2 ;
-variables:
-   float x(dim1, dim2) ;
-
-data:
-   x = 1, 2;
-}
-
-foo2.cdl:
-// ncgen -b -o foo2.nc foo2.cdl
-netcdf ncdiff_testB {
-dimensions:
-   dim2 = 2 ;
-variables:
-   float x(dim2) ;
-
-data:
-   x = 1, 2;
-}

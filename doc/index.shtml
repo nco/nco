@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.43 2000-05-15 07:02:42 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.44 2000-05-19 17:10:29 zender Exp $
 
 Purpose: NCO homepage
 
@@ -160,8 +160,18 @@ description of each operator, please read the
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
 
+<P>2000/05/15: 
+nco-1.1.48 fixes a bug introduced in nco-1.1.15 (November 1998) with
+<TT>ncdiff</TT> version 1.5.
+That bug could cause incorrect answers when the broadcast feature was
+used and dimensions were defined in a certain order (that appears to
+be favored by oceanographers).
+All NCO users are urged to upgrade NCO in order to avoid the potential 
+<TT>ncdiff</TT> bug as well as to take advantage of the new features
+in <TT>ncra</TT> and <TT>ncrcat</TT>. 
+
 <P>2000/05/10: 
-Added capability of <TT>ncra</TT>, and <TT>ncrcat</TT> to handle
+nco-1.1.47 adds capability of <TT>ncra</TT>, and <TT>ncrcat</TT> to handle
 superfluous initial files. These multifile operators used to require
 that hyperslabs along the record dimension contain valid points in the
 first input file, although superfluous trailing files were allowed.
@@ -169,24 +179,32 @@ Now superfluous files are also allowed anywhere in the file argument
 list for coordinate value hyperslabs (e.g., <tt>-d time,2.0,3.0</tt>),
 and at the beginning and end of the file argument list for dimension
 index hyperslabs (e.g., <tt>-d time,2,3</tt>).
-This vastly simplifies analysis of file collections where the location
-of certain record coordinates or indices is not known a priori, or is
-tedious to compute. 
+This can dramatically simplify analysis of file collections when the
+location of certain record coordinates or indices is not known a
+priori, or is tedious to compute. 
 Users may now operate on specific segments of a timeseries 
 (e.g., February values) without knowing which files contain February. 
 Simply input the entire timeseries of files to the operators 
-and they will automagically find and operate on only the February values! 
-<p><tt>ncra -O -d time,2.0,3.0 -n 1000,4,1 h0001.nc feb.nc</tt>
-<p><tt>ncrcat -O -F -d time,2,,12 -n 1000,4,1 h0037.nc feb.nc</tt>
+and they will automagically find and operate on only the February
+values.
+For example, 
+<p><tt>ncra -O -d time,2.0,3.0 -n 1000,4,1 h0001.nc feb.nc</tt></p>
+<p><tt>ncrcat -O -F -d time,2,,12 -n 1000,4,1 h0037.nc feb.nc</tt></p>
 
-Sylvia Murphy of the NCAR 
+<p>Sylvia Murphy of the NCAR 
 <a href="http://www.cgd.ucar.edu/csm/cmps/cmps_home.html">Community 
 Climate System Model Support Network</a> organized a workshop in
 February, 2000 which devoted some time to NCO. 
 Here are links to the very useful 
-<a href="http://www.cgd.ucar.edu/csm/cmps/Workshop/nco/nco.pdf">pamphlet</a>
-urce and prebuilt binary executable <a href="http://www.rpm.org">RPM</a>s for NCO are now available for  
-<A HREF="#Download">download</A>. 
+<a href="http://www.cgd.ucar.edu/csm/cmps/Workshop/nco.pdf">pamphlet</a>
+and
+<a href="http://www.cgd.ucar.edu/csm/cmps/Workshop/nco">slide presentation</a> 
+she developed to introduce and to summarize the NCO operators. 
+The pamphlet is an excellent primer on NCO's capabilities, though not
+as definitive as the <A HREF="./nco.html">User's Guide</A>.
+
+<P>2000/03/05: 
+Source and prebuilt binary executable <a href="http://www.rpm.org">RPM</a>s for NCO are now available for  <A HREF="#Download">download</A>. 
 
 <P>2000/01/26: 
 Fixed longstanding NCO bug which caused infrequent but unpredictable
@@ -308,7 +326,9 @@ as having been fixed in the latest revision.
 <DT><A NAME="Version"></A></DT>
 <H2>Current release of NCO is <!--#include virtual="VERSION"--> </H2>
 
-<P>You easily can tell whether you have the most recent version, and whether you should upgrade by reading the <TT><A HREF="./ChangeLog">ChangeLog</A></TT>.
+<P>You easily can tell whether you have the most recent version by
+typing <TT>ncks -r</TT>. 
+Decide whether to upgrade by reading the most recent <TT><A HREF="./ChangeLog">ChangeLog</A></TT>.
 
 <HR></P>
 
@@ -349,12 +369,6 @@ T90 to avoid C-Fortran interface problems; otherwise incorrect answers
 may result. 
 As of NCO 1.1.38, this is the default.
 </P>
-
-<P>20000321: <tt>ncdiff</tt> has a bug which may be triggered when a
-variable subtracts a conforming subset of itself. 
-This bug is sensitive to the order of declaration of dimensions in the
-file.
-The problem is being investigated.</P>
 
 <HR></P>
 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.7 2000-05-15 07:02:43 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.8 2000-05-19 17:10:29 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -10,11 +10,14 @@ Project Websites:   http://nco.sourceforge.net
 		    nco.sourceforge.net:/home/groups/nco
 Project FTP:        ftp://nco.sourceforge.net/pub
 		    nco.sourceforge.net:/home/groups/ftp/pub/nco
-CVS:		    cvs -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco login 
-		    cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco 
+CVS:		    Anonymous check out:
+		    cvs -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco login 
+		    cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco
+		    Developer check out (note absence of pserver protocol allows ssh to be used)
+		    cvs -dzender@cvs.nco.sourceforge.net:/cvsroot/nco login 
+		    cvs -z3 -dzender@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco 
 		    export CVS_RSH=ssh 
 		    export CVSROOT=cvs.nco.sourceforge.net:/cvsroot/nco
-		    cvs -z3 -ddevelopername@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco 
 
 The purpose of this project is to create and improve tools for data
 analysis by using Open Source development strategy. The starting

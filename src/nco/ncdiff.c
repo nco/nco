@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.23 2000-04-05 21:41:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.24 2000-05-19 17:10:29 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.23 2000-04-05 21:41:56 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.23 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.24 2000-05-19 17:10:29 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.24 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -323,14 +323,23 @@ main(int argc,char **argv)
   /* Copy variable data for non-processed variables */ 
   (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 
-  /* The code for ncdiff() has been similar to ncea() (and ncra()) wherever possible.
-     The only differences have occurred where performance would suffer otherwise.
-     From now on, however, the binary-file and binary-operation nature of ncdiff() 
-     is too different from the ncea() paradigm to justify following the ncea() style.
+  /* The code for ncdiff() has been similar to ncea() (and ncra()) wherever possible
+     The major differences occur where performance would otherwise suffer
+     From now on, however, the binary-file and binary-operation nature of ncdiff()
+     is too different from the ncea() paradigm to justify following ncea() style.
      Instead, a symmetric nomenclature of file_1, file_2 is adopted, and the 
      differences are performed variable by variable so that peak memory usage goes as
      Order(2*maximum variable size) rather than Order(3*maximum record size) or
-     Order(3*file size) */ 
+     Order(3*file size) 
+     
+     The other unique "feature" to know about ncdiff is that it tries too hard to save memory
+     For example, ncdiff is a three file operator (input, input, output) but manages to get by 
+     with having only two lists of variable structures at any given time.
+     As a result, the logic it employs is fairly convoluted
+     ncdiff overwrites the variable structure from file_2 with the structure for file_3 (the output file)
+     but, at the same time, it writes the value array for the file_3 into the value part of the file_1
+     variable structures. 
+  */
 
   in_id_1=in_id;
   fl_in_1=(char *)strdup(fl_in);
@@ -398,31 +407,12 @@ main(int argc,char **argv)
       /* Reset srt vector to zeros for eventual output */ 
       var_prc_out[idx]->srt=lp;
     }else{
-      int idx_var_dim;
-
       var_sct *var_tmp=NULL;
       
       /* var1 and var2 have differing numbers of dimensions so make var2 conform to var1 */ 
       var_prc_out[idx]=var_free(var_prc_out[idx]);
       var_prc_out[idx]=var_fll(in_id_2,ncvarid(in_id_2,var_prc[idx]->nm),var_prc[idx]->nm,dim,nbr_dmn_xtr);
       (void)var_get(in_id_2,var_prc_out[idx]);
-      
-      /* Now that we have the second variable, reset its dimension IDs to match 
-	 corresponding dimensions in first variable, because var_conform_dim()
-	 makes (usually true) assumption that if dimension IDs are equal, then 
-	 dimensions conform, i.e., var_conform_dim() assumes "conformee" and 
-	 "conformand" are from same file. */ 
-      
-      /* This 8 line block should not be necessary when dimension names,
-	 rather than dimension IDs, are used in var_conform_dim() */
-      if(False){
-	for(idx_var_dim=0;idx_var_dim<var_prc_out[idx]->nbr_dim;idx_var_dim++){
-	  for(idx_dim=0;idx_dim<var_prc[idx]->nbr_dim;idx_dim++){
-	    if(var_prc_out[idx]->dim[idx_var_dim]->id == var_prc[idx]->dim[idx_dim]->id) break;
-	  } /* end loop over idx_var_dim */ 
-	  var_prc_out[idx]->dmn_id[idx_var_dim]=var_prc[idx]->dim[idx_dim]->id;
-	} /* end loop over idx_dim */ 
-      } /* endif False */ 
       
       /* Pass dummy pointer so we do not lose track of original */ 
       var_tmp=var_conform_dim(var_prc[idx],var_prc_out[idx],var_tmp,MUST_CONFORM,&DO_CONFORM);
