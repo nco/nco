@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.139 2004-08-03 18:22:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.140 2004-08-04 19:17:05 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char *msk_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val, op_typ_rlt */
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.139 2004-08-03 18:22:15 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.139 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.140 2004-08-04 19:17:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.140 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -477,7 +477,6 @@ main(int argc,char **argv)
       }else{
 	(void)fprintf(stderr,"%s: WARNING reducing dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_avg_lst[idx_avg].nm);
 	/* Collapse dimension average list by omitting irrelevent dimension */
-	(void)memmove(dmn_avg_lst,dmn_avg_lst,idx_avg*sizeof(nm_id_sct));
 	(void)memmove(dmn_avg_lst+idx_avg*sizeof(nm_id_sct),dmn_avg_lst+(idx_avg+1)*sizeof(nm_id_sct),(nbr_dmn_avg-idx_avg+1)*sizeof(nm_id_sct));
 	/* fxm: Possible bug since nbr_dmn_avg decremented before dmn_avg filled TODO nco367 */
 	--nbr_dmn_avg;

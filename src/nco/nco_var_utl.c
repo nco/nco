@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.45 2004-08-04 19:04:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.46 2004-08-04 19:14:45 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -848,6 +848,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       if(dbg_lvl_get() == 3){
 	(void)fprintf(stdout,"%s: DEBUG %s defining variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,ID): " : "");
 	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	  /* fxm: nco373 var[idx]->dim[dmn_idx]->nm is NULL for ncwa -D 3 -N -O -v three_dmn_var -C -a lat,lon -w gw in.nc foo.nc */
 	  (void)fprintf(stdout,"%s (%d,%d)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,dmn_id_vec[dmn_idx],(dmn_idx < dmn_nbr-1) ? ", " : "");
 	} /* end loop over dmn */
 	(void)fprintf(stdout,"\n");
