@@ -1,3 +1,7 @@
+2002-06-09  Charlie Zender  <zender@uci.edu>
+
+	* Replace indexx* routines with system qsort()-based routines
+
 2002-06-08  Charlie Zender  <zender@uci.edu>
 
 	* Lexer/parser changes to implement conditional, clean up rx's

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.74 2002-06-07 05:53:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.75 2002-06-10 02:33:23 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -84,8 +84,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.74 2002-06-07 05:53:44 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.74 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.75 2002-06-10 02:33:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.75 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -374,9 +374,9 @@ main(int argc,char **argv)
     if(nbr_lst_b > 0) xtr_lst_2=var_lst_sub(xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
   } /* end if PROCESS_ALL_VARS */
   
-  /* Heapsort extraction lists by variable ID for fastest I/O */
-  if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
-  if(nbr_xtr_2 > 1) xtr_lst_2=lst_heapsort(xtr_lst_2,nbr_xtr_2,False);
+  /* Sort extraction list by variable ID for fastest I/O */
+  if(nbr_xtr > 1) xtr_lst=lst_srt(xtr_lst,nbr_xtr,False);
+  if(nbr_xtr_2 > 1) xtr_lst_2=lst_srt(xtr_lst_2,nbr_xtr_2,False);
   
   /* Find coordinate/dimension values associated with user-specified limits */
   for(idx=0;idx<lmt_nbr;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);

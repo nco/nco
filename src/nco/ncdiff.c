@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.48 2002-05-14 00:57:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.49 2002-06-10 02:33:23 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.48 2002-05-14 00:57:45 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.48 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.49 2002-06-10 02:33:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.49 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -253,8 +253,8 @@ main(int argc,char **argv)
   /* Make sure coordinates associated extracted variables are also on extraction list */
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
-  /* Finally, heapsort extraction list by variable ID for fastest I/O */
-  if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
+  /* Sort extraction list by variable ID for fastest I/O */
+  if(nbr_xtr > 1) xtr_lst=lst_srt(xtr_lst,nbr_xtr,False);
     
   /* We now have final list of variables to extract. Phew. */
   

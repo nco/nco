@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.38 2002-06-07 07:11:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.39 2002-06-10 02:33:23 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -79,6 +79,13 @@ extern "C" {
   
 #endif /* MAIN_PROGRAM_FILE is NOT defined, i.e., the current file does not contain main() */
   
+#ifndef EXIT_SUCCESS /* Most likely this is a SUN4 machine */
+#define EXIT_SUCCESS 0
+#endif /* SUN4 */
+#ifndef EXIT_FAILURE /* Most likely this is a SUN4 machine */
+#define EXIT_FAILURE 1
+#endif /* SUN4 */
+
   enum prg{ /* [enm] Key value for all netCDF operators */
     ncap,
     ncatted,
@@ -101,6 +108,11 @@ extern "C" {
     aed_overwrite
   }; /* end enum */
   
+  enum lmt_typ{ /* [enm] Limit type */
+    lmt_crd_val, /* 0, Coordinate value limit */
+    lmt_dmn_idx /* 1, Dimension index limit */
+  }; /* end lmt_typ enum */
+  
   enum nco_rlt_opr{ /* [enm] Arithmetic relations (comparisons) for masking */
     nco_op_eq, /* Equality */
     nco_op_ne, /* Inequality */
@@ -109,11 +121,6 @@ extern "C" {
     nco_op_le, /* Less than or equal to */
     nco_op_ge /* Greater than or equal to */
   }; /* end enum */
-  
-  enum lmt_typ{ /* [enm] Limit type */
-    lmt_crd_val, /* 0, Coordinate value limit */
-    lmt_dmn_idx /* 1, Dimension index limit */
-  }; /* end lmt_typ enum */
   
   enum nco_op_typ{ /* [enm] Operation type */
     nco_op_avg, /* [enm] Average */
@@ -127,15 +134,15 @@ extern "C" {
     nco_op_rmssdn, /* [enm] Root-mean square normalized by N-1 */
     nco_op_nil /* [enm] Nil or undefined operation type  */
   }; /* end nco_op_typ enum */
+
+  /* Following typedef's from Nie02 */
+  typedef enum { /* [enm] Node enumerator Nie02 nodeEnum */
+    typ_scv, /* [enm] Scalar value */
+    typ_sym, /* [enm] Symbol identifier */
+    typ_opr /* [enm] Operator */
+  } nod_enm;
   /* end enumeration section */
   
-#ifndef EXIT_SUCCESS /* Most likely this is a SUN4 machine */
-#define EXIT_SUCCESS 0
-#endif /* SUN4 */
-#ifndef EXIT_FAILURE /* Most likely this is a SUN4 machine */
-#define EXIT_FAILURE 1
-#endif /* SUN4 */
-
   /* Limit structure */
   typedef struct { /* lmt_sct */
     char *nm; /* [sng] Variable name */
@@ -196,9 +203,10 @@ extern "C" {
   } val_unn;
 
   /* Scalar value structure */
-  typedef struct { /* scv_sct */
-    val_unn val;
-    nc_type type;
+  typedef struct{ /* scv_sct */
+    val_unn val; /* [sct] Value */
+    nc_type type; /* [enm] netCDF typ */
+    nod_enm nod_typ; /* [enm] Node type */
   } scv_sct;      
 
   /* Attribute editing structure */
@@ -213,7 +221,7 @@ extern "C" {
   } aed_sct;
   
   /* Attribute structure */
-  typedef struct { /* att_sct */
+  typedef struct{ /* att_sct */
     char *nm;
     nc_type type;
     long sz;
@@ -245,38 +253,38 @@ extern "C" {
      Each pointer member of var_sct structure should be copied in var_dpl() */
   /* Variable structure */
   typedef struct var_sct_tag{ /* var_sct */
-    char *nm; /* Variable name */
-    int id; /* Variable ID */
-    int nc_id; /* File ID */
-    int nbr_dim; /* Number of dimensions of variable in input file */
-    nc_type type; /* Type of variable in RAM */
-    nc_type typ_dsk; /* Type of variable on disk (never changes) */
-    short is_rec_var; /* Is this a record variable? */
-    short is_crd_var; /* Is this a coordinate variable? */
-    long sz; /* Number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */
-    long sz_rec; /* Number of elements in one record of hyperslab */
-    int nbr_att; /* Number of attributes */
-    int has_mss_val; /* Is there a missing_value attribute? */
-    ptr_unn mss_val; /* Value of missing_value attribute, if any (mss_val stored in this structure must be same type as variable) */
-    int cid; /* Dimension ID of the associated coordinate, if any */
-    char fmt[5]; /* Hint for printf()-style formatting */
-    dmn_sct **dim; /* Pointers to full dimension structures */
-    int *dmn_id; /* Contiguous vector of dimension IDs */
-    long *srt; /* Contiguous vector of indices to start of hyperslab */
-    long *end; /* Contiguous vector of indices to end of hyperslab */
-    long *cnt; /* Contiguous vector of lengths of hyperslab */
-    long *srd; /* Contiguous vector of stride of hyperslab */
-    ptr_unn val; /* Buffer to hold hyperslab */
-    long *tally; /* Number of valid operations performed so far */
-    struct var_sct_tag *xrf; /* Cross-reference to associated variable structure (usually the structure for variable on output) */
-    int pck_dsk; /* Variable is packed on disk (valid scale_factor, add_offset, or both attributes exist) */
-    int pck_ram; /* Variable is packed in memory (valid scale_factor, add_offset, or both attributes exist) */
-    int has_scl_fct; /* Valid scale_factor attribute exists */
-    int has_add_fst; /* Valid add_offset attribute exists */
-    ptr_unn scl_fct; /* Value of scale_factor attribute of type typ_upk */
-    ptr_unn add_fst; /* Value of add_offset attribute of type typ_upk */
-    nc_type typ_pck; /* Type of variable when packed (on disk). typ_pck = typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
-    nc_type typ_upk; /* Type of variable when unpacked (expanded) (in memory) */
+    char *nm; /* [sng] Variable name */
+    int id; /* [id] Variable ID */
+    int nc_id; /* [id] File ID */
+    int nbr_dim; /* [nbr] Number of dimensions of variable in input file */
+    nc_type type; /* [enm] Type of variable in RAM */
+    nc_type typ_dsk; /* [enm] Type of variable on disk (never changes) */
+    short is_rec_var; /* [flg] Is this a record variable? */
+    short is_crd_var; /* [flg] Is this a coordinate variable? */
+    long sz; /* [nbr] Number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */
+    long sz_rec; /* [nbr] Number of elements in one record of hyperslab */
+    int nbr_att; /* [nbr] Number of attributes */
+    int has_mss_val; /* [flg] Is there a missing_value attribute? */
+    ptr_unn mss_val; /* [frc] Value of missing_value attribute, if any (mss_val stored in this structure must be same type as variable) */
+    int cid; /* [id] Dimension ID of the associated coordinate, if any */
+    char fmt[5]; /* [sng] Hint for printf()-style formatting */
+    dmn_sct **dim; /* [sct] Pointers to full dimension structures */
+    int *dmn_id; /* [id] Contiguous vector of dimension IDs */
+    long *srt; /* [id] Contiguous vector of indices to start of hyperslab */
+    long *end; /* [id] Contiguous vector of indices to end of hyperslab */
+    long *cnt; /* [id] Contiguous vector of lengths of hyperslab */
+    long *srd; /* [id] Contiguous vector of stride of hyperslab */
+    ptr_unn val; /* [bfr] Buffer to hold hyperslab */
+    long *tally; /* [nbr] Number of valid operations performed so far */
+    struct var_sct_tag *xrf; /* [sct] Cross-reference to associated variable structure (usually the structure for variable on output) */
+    int pck_dsk; /* [flg] Variable is packed on disk (valid scale_factor, add_offset, or both attributes exist) */
+    int pck_ram; /* [flg] Variable is packed in memory (valid scale_factor, add_offset, or both attributes exist) */
+    int has_scl_fct; /* [flg] Valid scale_factor attribute exists */
+    int has_add_fst; /* [flg] Valid add_offset attribute exists */
+    ptr_unn scl_fct; /* [frc] Value of scale_factor attribute of type typ_upk */
+    ptr_unn add_fst; /* [frc] Value of add_offset attribute of type typ_upk */
+    nc_type typ_pck; /* [enm] Type of variable when packed (on disk). typ_pck = typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+    nc_type typ_upk; /* [enm] Type of variable when unpacked (expanded) (in memory) */
   } var_sct; /* end var_sct_tag */
   
   /* Function prototypes */

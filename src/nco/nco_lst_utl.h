@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.5 2002-05-13 19:40:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.6 2002-06-10 02:33:23 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -44,6 +44,16 @@ nco_cmp_sng /* [fnc] Compare two strings */
 (const void *val_1, /* I [sng] String to compare */
  const void *val_2); /* I [sng] String to compare */
 
+int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+nco_cmp_nm_id_nm /* [fnc] Compare two nm_id_sct's by name member */
+(const void *val_1, /* I [sct] nm_id_sct to compare */
+ const void *val_2); /* I [sct] nm_id_sct to compare */
+
+int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+nco_cmp_nm_id_id /* [fnc] Compare two nm_id_sct's by ID member */
+(const void *val_1, /* I [sct] nm_id_sct to compare */
+ const void *val_2); /* I [sct] nm_id_sct to compare */
+
 char * /* O [sng] Concatenated string formed by joining all input strings */
 sng_lst_prs /* [fnc] Join list of strings together into one string */
 (char * const * const sng_lst, /* I [sng] List of pointers to strings to join together */
@@ -59,18 +69,24 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
 void 
 indexx /* [fnc] Sort array of integers */
 (const int n, /* I [nbr] Number of elements */
- const int * const arrin, /* I [idx] Array to sort */
- int * const indx); /* O [idx] Indices to sorted array */
+ const int * const arr_in, /* I [idx] Array to sort */
+ int * const idx); /* O [idx] Indices to sorted array */
 
 void 
-index_alpha /* [fnc] Sort array of strings */
+indexx_alpha /* [fnc] Sort array of strings */
 (const int n, /* I [nbr] Number of elements */
- char * const * const arrin, /* I [sng] Strings to sort */
- int * const indx); /* O [idx] Indices to sorted array */
+ char * const * const arr_in, /* I [sng] Strings to sort */
+ int * const idx); /* O [idx] Indices to sorted array */
 
 nm_id_sct * /* O [sct] Sorted output list */
 lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
 (nm_id_sct *lst, /* I/O [sct] Current list (destroyed) */
+ const int nbr_lst, /* I [nbr] number of members in list */
+ const bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */
+
+nm_id_sct * /* O [sct] Sorted output list */
+lst_srt /* [fnc] Sort input list numerically or alphabetically */
+(nm_id_sct * const lst, /* I/O [sct] Current list (destroyed) */
  const int nbr_lst, /* I [nbr] number of members in list */
  const bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */
 

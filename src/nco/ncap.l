@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.57 2002-06-09 18:49:42 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.58 2002-06-10 02:33:23 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -306,7 +306,14 @@ XPN [eE][+-]?[0-9]+
   } /* end else */
 } /* end byte */
 
-foo/[ ]*\( {return ABS;} /* TOKEN whitespace (: Token followed any amount of whitespace followed by opening parenthesis signifies function name, not variable name.
+foo1_zyx {return ABS;} /* Strategy for lexing control statements: 
+1. Look for language control statements (if, while, do, for)
+2. Look for NCO-defined intrinsic functions (abs, pack, unpack)
+3. Look for mathematical intrinsic functions (sin, cos) */
+"if" {return IF;}
+"print" {return PRINT;}
+
+foo2_zyx {return ABS;} /* TOKEN whitespace (: Token followed any amount of whitespace followed by opening parenthesis signifies function name, not variable name.
 This disambiguates variable and functional namespaces.
 
 Dimension reducing functions (min,max,avg,ttl) need thought
@@ -486,7 +493,6 @@ unpack/[ ]*\( {return UNPACK;}
 } /* end variables without subscripts */
 
 <LHS_SUBSCRIPT>\[[^\]\n]*[\]\n] {
-  /* */
   /* fxm: allow whitespace in dimension list */
   /* Recognize subscripted (hyperslabbed) variables
      Hyperslabbed variables for now indicated with square brackets
@@ -654,9 +660,6 @@ unpack/[ ]*\( {return UNPACK;}
   BEGIN INITIAL;
 } /* end RHS_SUBSCRIPT */
 
-"if" { /* If */
-  return IF;
-} /* end if */
 "&&" { /* And */
   return AND;
 } /* end && */

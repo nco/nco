@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.81 2002-06-09 01:11:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.82 2002-06-10 02:33:23 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.81 2002-06-09 01:11:14 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.81 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.82 2002-06-10 02:33:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.82 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -311,8 +311,8 @@ main(int argc,char **argv)
   /* Remove record coordinate, if any, from extraction list */
   if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
 
-  /* Finally, heapsort extraction list by variable ID for fastest I/O */
-  if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
+  /* Sort extraction list by variable ID for fastest I/O */
+  if(nbr_xtr > 1) xtr_lst=lst_srt(xtr_lst,nbr_xtr,False);
     
   /* Find coordinate/dimension values associated with user-specified limits */
   for(idx=0;idx<lmt_nbr;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.41 2002-06-07 05:53:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.42 2002-06-10 02:33:23 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -37,16 +37,32 @@ extern "C" {
    This technique is frequently used in Pigeon book */
 
 /* Symbol structure */
-typedef struct { /* sym_sct */
-  char *nm;
-  double (*fnc_dbl)(double);
-  float (*fnc_flt)(float);
+typedef struct{ /* sym_sct */
+  char *nm; /* [sng] Symbol name */
+  double (*fnc_dbl)(double); /* [fnc] Double-valued function */
+  float (*fnc_flt)(float); /* [fnc] Float-valued function */
+  nod_enm nod_typ; /* [enm] Node type */
 } sym_sct;
 
-/* Name list structure (use to store subscript lists) */
-typedef struct { /* nm_lst_sct */
-  nm_id_sct *lst;
-  int nbr;
+/* Operator */
+typedef struct{ /* Nie02 oprNodeType */
+  nod_enm nod_typ; /* [enm] Node type */
+  int opr; /* [enm] Operator */
+  int arg_nbr; /* [nbr] Number of arguments */
+  union nod_typ_tag *arg; /* [unn] Argument list */
+} nod_sct;
+
+typedef union nod_typ_tag{ /* Nie02 nodeTypeTag */
+  nod_enm nod_typ; /* [enm] Node type */
+  scv_sct scv; /* [sct] Scalar value */
+  sym_sct *sym; /* [sct] Intrinsic function name */
+  nod_sct opr; /* [sct] Operator structure */
+} nodeType;
+
+/* Name list structure (for subscript lists) */
+typedef struct{ /* nm_lst_sct */
+  nm_id_sct *lst; /* [sct] List element */
+  int nbr; /* [nbr] Number of structures in list */
 } nm_lst_sct;
 
 /* Parse structure 

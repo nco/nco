@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.9 2002-05-14 00:06:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.10 2002-06-10 02:33:23 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -11,7 +11,7 @@
 /* NB: Free (speech) sorting by Joerg Shoen available from
    http://www.pci.uni-heidelberg.de/tc/usr/joerg
    are faster than ANSI system qsort() in all cases 
-   See code in $DATA/tmp/testsort */
+   See code in ${DATA}/tmp/testsort */
 
 int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
 nco_cmp_int /* [fnc] Compare two integers */
@@ -50,6 +50,24 @@ nco_cmp_sng /* [fnc] Compare two strings */
      This wrapper casts input values to simple char pointers, calls strcmp(), and feeds results back to qsort() */
   return strcmp(*(char * const *)val_1,*(char * const *)val_2);
 } /* end nco_cmp_sng() */
+
+int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+nco_cmp_nm_id_nm /* [fnc] Compare two nm_id_sct's by name member */
+(const void *val_1, /* I [sct] nm_id_sct to compare */
+ const void *val_2) /* I [sct] nm_id_sct to compare */
+{
+  /* Purpose: Compare two nm_id_sct's by name structure member */
+  return strcmp((*(nm_id_sct *)val_1).nm,(*(nm_id_sct *)val_2).nm);
+} /* end nco_cmp_nm_id_nm() */
+
+int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+nco_cmp_nm_id_id /* [fnc] Compare two nm_id_sct's by ID member */
+(const void *val_1, /* I [sct] nm_id_sct to compare */
+ const void *val_2) /* I [sct] nm_id_sct to compare */
+{
+  /* Purpose: Compare two nm_id_sct's by ID structure member */
+  return ((*(nm_id_sct *)val_1).id-(*(nm_id_sct *)val_2).id);
+} /* end nco_cmp_nm_id_nm() */
 
 char * /* O [sng] Concatenated string formed by joining all input strings */
 sng_lst_prs /* [fnc] Join list of strings together into one string */
@@ -117,11 +135,11 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
   char **lst;
   char *sng_in_ptr;
 
-  int dlm_len;
+  int dlm_lng;
   int idx;
 
   /* Delimiter must be NUL-terminated (a string) so we may find its length */
-  dlm_len=strlen(dlm_sng); 
+  dlm_lng=strlen(dlm_sng); 
 
   /* Do not increment actual sng_in pointer while searching for delimiters---increment a dummy pointer instead. */
   sng_in_ptr=sng_in; 
@@ -131,7 +149,7 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
 
   /* Count list members */
   while((sng_in_ptr=strstr(sng_in_ptr,dlm_sng))){
-    sng_in_ptr+=dlm_len;
+    sng_in_ptr+=dlm_lng;
     (*nbr_lst)++;
   } /* end while */
 
@@ -143,7 +161,7 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
   while((sng_in_ptr=strstr(sng_in_ptr,dlm_sng))){
     /* NUL-terminate previous arg */
     *sng_in_ptr='\0';
-    sng_in_ptr+=dlm_len;
+    sng_in_ptr+=dlm_lng;
     lst[++idx]=sng_in_ptr;
   } /* end while */
 
@@ -168,87 +186,24 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
 void 
 indexx /* [fnc] Sort array of integers */
 (const int n, /* I [nbr] Number of elements */
- const int * const arrin, /* I [idx] Array to sort */
- int * const indx) /* O [idx] Indices to sorted array */
+ const int * const arr_in, /* I [idx] Array to sort */
+ int * const idx) /* O [idx] Indices to sorted array */
 {
-  /* Purpose: Sort array of integers
-     Based on indexx() from Numerical Recipes
-     Routine computes an index table which sorts input array into ascending order
-     I made arrin argument and local variable q integers for netCDF purposes
-     Routine assumes "one-based" arrays */
-  int l,j,ir,indxt,i;
-/*  float q;*/
-  int q;
-  
-  for (j=1;j<=n;j++) indx[j]=j;
-  l=(n >> 1) + 1;
-  ir=n;
-  for (;;) {
-    if (l > 1)
-      q=arrin[(indxt=indx[--l])];
-    else {
-      q=arrin[(indxt=indx[ir])];
-      indx[ir]=indx[1];
-      if (--ir == 1) {
-	indx[1]=indxt;
-	return;
-      }
-    }
-    i=l;
-    j=l << 1;
-    while (j <= ir) {
-      if (j < ir && arrin[indx[j]] < arrin[indx[j+1]]) j++;
-      if (q < arrin[indx[j]]) {
-	indx[i]=indx[j];
-	j += (i=j);
-      }
-      else j=ir+1;
-    }
-    indx[i]=indxt;
-  }
+  /* Purpose: Stub for Numerical Recipes-compatible indexx() routine */
+  (void)fprintf(stdout,"%s: ERROR indexx() routine should not be called\n",prg_nm_get());
+  nco_exit(EXIT_FAILURE);
 } /* end indexx() */
 
 void 
-index_alpha /* [fnc] Sort array of strings */
+indexx_alpha /* [fnc] Sort array of strings */
 (const int n, /* I [nbr] Number of elements */
- char * const * const arrin, /* I [sng] Strings to sort */
- int * const indx) /* O [idx] Indices to sorted array */
+ char * const * const arr_in, /* I [sng] Strings to sort */
+ int * const idx) /* O [idx] Indices to sorted array */
 {
-/* Purpose: Sort input array alphanumerically
-   This is indexx() from Numerical recipes hacked to alphabetize a list of strings */
-  int l,j,ir,indxt,i;
-/*  float q;*/
-  char *q;
-  
-  for (j=1;j<=n;j++) indx[j]=j;
-  l=(n >> 1) + 1;
-  ir=n;
-  for (;;) {
-    if (l > 1)
-      q=arrin[(indxt=indx[--l])];
-    else {
-      q=arrin[(indxt=indx[ir])];
-      indx[ir]=indx[1];
-      if (--ir == 1) {
-	indx[1]=indxt;
-	return;
-      }
-    }
-    i=l;
-    j=l << 1;
-    while (j <= ir) {
-      /*      if (j < ir && arrin[indx[j]] < arrin[indx[j+1]]) j++;*/
-      if (j < ir && strcmp(arrin[indx[j]],arrin[indx[j+1]]) < 0) j++;
-      /*      if (q < arrin[indx[j]]) {*/
-      if (strcmp(q,arrin[indx[j]]) < 0) {
-	indx[i]=indx[j];
-	j += (i=j);
-      }
-      else j=ir+1;
-    }
-    indx[i]=indxt;
-  }
-} /* end index_alpha() */
+  /* Purpose: Stub for Numerical Recipes-compatible indexx_alpha() routine */
+  (void)fprintf(stdout,"%s: ERROR indexx_alpha() routine should not be called\n",prg_nm_get());
+  nco_exit(EXIT_FAILURE);
+} /* end indexx() */
 
 nm_id_sct * /* O [sct] Sorted output list */
 lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
@@ -256,7 +211,19 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
  const int nbr_lst, /* I [nbr] number of members in list */
  const bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
 {
-  /* Purpose: Sort extraction lists numerically or alphabetically */
+  /* Purpose: Sort extraction lists numerically or alphabetically
+     Routine is deprecated in favor of lst_srt() which uses system qsort()
+     lst_heapsort drives Numerical Recipes indexx-style routines
+
+     Advantage of indexx* routines is they return list of sorted indices,
+     allowing original list to be untouched and sorted indices to be used.
+     Disadvantage of indexx* routines is they employ 1-based indexing,
+     and are non-free.
+
+     This driver routine IS free, and maintained for future reference
+     Main purpose of routine is to handle bookkeeping of copying structure
+     elements to be sorted and rearranging original list on basis of sorted indices */
+
   int *srt_idx; /* List to store sorted key map */
   int idx; /* Counting index */
   nm_id_sct *lst_tmp; /* Temporary copy of original extraction list */
@@ -274,8 +241,8 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
     char **xtr_nm;
     xtr_nm=(char **)nco_malloc(nbr_lst*sizeof(char *));
     for(idx=0;idx<nbr_lst;idx++) xtr_nm[idx]=lst[idx].nm;
-    /* fxm: Replace with system qsort() */
-    (void)index_alpha(nbr_lst,xtr_nm-1,srt_idx-1);
+    /* Replace with free (speech) index_alpha() replacement */
+    /*(void)index_alpha(nbr_lst,xtr_nm-1,srt_idx-1);*/
     xtr_nm=(char **)nco_free(xtr_nm);
   }else{
     /* Heapsort list by variable ID 
@@ -283,8 +250,9 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
     int *xtr_id;
     xtr_id=(int *)nco_malloc(nbr_lst*sizeof(int));
     for(idx=0;idx<nbr_lst;idx++) xtr_id[idx]=lst[idx].id;
+    /* Replace with free (speech) indexx() replacement */
     /* fxm: Replace with system qsort() */
-    (void)indexx(nbr_lst,xtr_id-1,srt_idx-1);
+    /* (void)indexx(nbr_lst,xtr_id-1,srt_idx-1);*/
     xtr_id=(int *)nco_free(xtr_id);
   } /* end else */
 
@@ -298,6 +266,24 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
   srt_idx=(int *)nco_free(srt_idx);
   
   return lst;
-  
 } /* end lst_heapsort() */
+
+nm_id_sct * /* O [sct] Sorted output list */
+lst_srt /* [fnc] Sort input list numerically or alphabetically */
+(nm_id_sct * const lst, /* I/O [sct] Current list (destroyed) */
+ const int nbr_lst, /* I [nbr] number of members in list */
+ const bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
+{
+  /* Purpose: Sort extraction lists numerically or alphabetically */
+  if(ALPHABETIZE_OUTPUT){
+    /* Alphabetize list by variable name
+       This produces easy-to-read screen output with ncks */
+    qsort(lst,nbr_lst,sizeof(lst[0]),nco_cmp_nm_id_nm);
+  }else{
+    /* Heapsort list by variable ID 
+       This theoretically allows fastest I/O when creating output file */
+    qsort(lst,nbr_lst,sizeof(lst[0]),nco_cmp_nm_id_id);
+  } /* end else */
+  return lst;
+} /* end lst_srt() */
 

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.63 2002-06-09 18:49:42 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.64 2002-06-10 02:33:23 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -9,10 +9,11 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Example yacc text:
-   /data/zender/ora/lexyacc/ch3-05.y
-   /data/zender/gcc-2.7.2/c-parse.y
-   parser_build_binary_op is in /data/zender/gcc-2.7.2/c-typeck.c
-   unidata ncgen.y */
+   Nie02 "A Compact Guide to Lex & Yacc" by Thomas Niemann, ePaper Press, URL:http://epaperpress.com/lexandyacc/index.html
+   LMB92 ${DATA}/ora/lexyacc/ch3-05.y
+   GCC c-parse.y
+   GCC parser_build_binary_op() c-typeck.c
+   Unidata ncgen.y */
 
 /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */
@@ -88,7 +89,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 %token <var_nm_LHS> OUT_VAR
 %token <var_nm_RHS> VAR
 %token ABS ATOSTR EPROVOKE IGNORE RDC PACK POWER UNPACK
-%token IF
+%token IF PRINT
 
 /* "type" declaration sets type for non-terminal symbols which otherwise need no declaration
    Format of "type" declaration is
@@ -144,6 +145,12 @@ IF '(' bln_xpr ')' stmt %prec LOWER_THAN_ELSE {
   /* LMB92 p. 234 */
   ;
 } /* end IF bln_xpr stmt ELSE stmt */
+PRINT '(' scv_xpr ')' ';' {
+  ;
+} /* end PRINT '(' scv_xpr ')' */
+PRINT '(' var_xpr ')' ';' {
+  ;
+} /* end PRINT '(' var_xpr ')' */
 | out_att_xpr '=' scv_xpr { 
   int aed_idx; 
   aed_sct *ptr_aed;

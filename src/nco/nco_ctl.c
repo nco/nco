@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.9 2002-06-07 02:42:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.10 2002-06-10 02:33:23 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -182,14 +182,14 @@ nco_usg_prn(void)
   (void)fprintf(stdout,"%s %s\n",prg_nm_get(),opt_sng);
 
   if(strstr(opt_sng,"-A")) (void)fprintf(stdout,"-A\t\tAppend to existing output file, if any\n");
-  if(strstr(opt_sng,"-B")) (void)fprintf(stdout,"-B\t\tWrite data to unformatted binary file\n");
-  if(strstr(opt_sng,"-b")) (void)fprintf(stdout,"-b fl_bnr\tUnformatted binary file to write\n");
   if(strstr(opt_sng,"-a")){
     if(prg == ncrename) (void)fprintf(stdout,"-a old_att,new_att Attribute's old and new names\n");
     if(prg == ncwa) (void)fprintf(stdout,"-a avg_dim1[,avg_dim2[...]] Averaging dimensions\n");
     if(prg == ncks) (void)fprintf(stdout,"-a\t\tDisable alphabetization of extracted variables\n");
     if(prg == ncatted) (void)fprintf(stdout,"-a att_nm,var_nm,mode,att_typ,att_val Attribute specification:\n\t\tmode = a,c,d,m,o and att_typ = f,d,l,s,c,b\n");
   } /* end if */
+  if(strstr(opt_sng,"-B")) (void)fprintf(stdout,"-B\t\tWrite data to unformatted binary file\n");
+  if(strstr(opt_sng,"-b")) (void)fprintf(stdout,"-b fl_bnr\tUnformatted binary file to write\n");
   if(strstr(opt_sng,"-c")) (void)fprintf(stdout,"-c\t\tCoordinate variables will all be processed\n");
   if(strstr(opt_sng,"-C")) (void)fprintf(stdout,"-C\t\tAssociated coordinate variables should not be processed\n");
   if(strstr(opt_sng,"-D")) (void)fprintf(stdout,"-D dbg_lvl\tDebugging level\n");

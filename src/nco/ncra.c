@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.68 2002-05-14 00:57:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.69 2002-06-10 02:33:23 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -79,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.68 2002-05-14 00:57:45 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.68 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.69 2002-06-10 02:33:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.69 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -251,8 +251,8 @@ main(int argc,char **argv)
   /* Remove record coordinate, if any, from extraction list */
   if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
 
-  /* Finally, heapsort extraction list by variable ID for fastest I/O */
-  if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
+  /* Sort extraction list by variable ID for fastest I/O */
+  if(nbr_xtr > 1) xtr_lst=lst_srt(xtr_lst,nbr_xtr,False);
   
   /* We now have final list of variables to extract. Phew. */
   
