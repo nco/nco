@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.239 2004-01-30 23:40:16 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.240 2004-05-06 05:37:24 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -73,28 +73,6 @@ endif # endif HDF5
 ifndef I18N
  I18N := N
 endif
-ifndef LINUX_CXX
-# C++ compiler for Linux
- LINUX_CXX := g++
- #LINUX_CXX := como
- #LINUX_CXX := icc
- #LINUX_CXX := insure
-endif # endif LINUX_CXX
-ifndef LINUX_CC
-# C compiler for Linux
- LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
- #LINUX_CC := como --c99
- #LINUX_CC := icc
- #LINUX_CC := insure
-endif # endif LINUX_CC
-ifndef LINUX_FC
-# Fortran compiler for Linux
-# LINUX_FC := g95 # NB: g95 will not work until .F90 -> .f90 pre-processing rules work
-# LINUX_FC := gcc-g95
- LINUX_FC := lf95
-# LINUX_FC := ifc
-# LINUX_FC := pgf90
-endif # endif LINUX_FC
 ifndef MK_DPN
  MK_DPN = ${CPP} -M # NB: Recursive expansion required
  MK_DPN_C++ = ${C++} -M # NB: Recursive expansion required
@@ -176,6 +154,40 @@ ifeq (${I18N},Y)
  MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
  MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
 endif
+
+ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
+# Decide among the plethora of Linux compilers
+ifndef LINUX_CXX
+# C++ compiler for Linux
+ LINUX_CXX := g++
+ #LINUX_CXX := como
+ #LINUX_CXX := icc
+ #LINUX_CXX := insure
+ #LINUX_CXX := pgCC
+endif # endif LINUX_CXX
+ifndef LINUX_CC
+# C compiler for Linux
+ LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
+ #LINUX_CC := como --c99
+ #LINUX_CC := icc
+ #LINUX_CC := insure
+ #LINUX_CC := pgcc
+endif # endif LINUX_CC
+ifndef LINUX_FC
+# Fortran compiler for Linux
+ #LINUX_FC := g95 # NB: g95 will not work until .F90 -> .f90 pre-processing rules work
+ #LINUX_FC := gfortran
+ LINUX_FC := lf95
+ #LINUX_FC := ifort
+ #LINUX_FC := pgf90
+ifeq (${PVM_ARCH},LINUXAMD64)
+ LINUX_FC := pgf90
+endif # endif LINUXAMD64
+ifeq (${PVM_ARCH},LINUXALPHA)
+ LINUX_FC := g77
+endif # endif LINUXALPHA
+endif # endif LINUX_FC
+endif # endif LINUX
 
 ifeq (${RPM},Y)
 # rpm command, and thus RPM variables only guaranteed in RedHat Linux
@@ -552,11 +564,7 @@ CPP := ${CC}
 # NB: nameser.h needs -Di386, but gcc sends -Di586 (on pentiums)
 CPP_TKN_OS += -Di386
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
-ifeq (${PVM_ARCH},LINUX)
- FC := ${LINUX_FC}
-else # LINUXALPHA
- FC := g77
-endif # LINUXALPHA
+FC := ${LINUX_FC}
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
@@ -675,6 +683,24 @@ ifeq (${OPTS},X)
  FFLAGS += -g -C -e95
 endif
 endif # endif Intel (Kai) Fortran Compiler
+# Portland Group C++ Compiler
+ifeq (${C++},pgCC)
+ CFLAGS := 
+ OMP_FLG := -mp
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},O)
+ CFLAGS += -fast
+endif
+ifeq (${OPTS},R)
+ CFLAGS += 
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g -Mbounds
+endif
+ C++FLAGS := ${CFLAGS}
+endif # endif Portland Group C++ Compiler
 # Portland Group Fortran Compiler
 ifeq (${FC},pgf90)
  FFLAGS := -Mextend -Mnosecond_underscore -byteswapio -Mrecursive -Mdalign -Ktrap=fp
