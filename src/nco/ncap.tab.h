@@ -8,17 +8,17 @@ typedef union{
   var_sct *var;
   nm_lst_sct *sbs_lst;
 } YYSTYPE;
-#define	STRING	257
-#define	ATTRIBUTE	258
-#define	VAR	259
-#define	OUT_VAR	260
-#define	OUT_ATT	261
-#define	FUNCTION	262
-#define	LHS_SBS	263
-#define	POWER	264
-#define	ABS	265
-#define	ATOSTR	266
-#define	IGNORE	267
-#define	EPROVOKE	268
-#define	UMINUS	269
+#define	STRING	258
+#define	ATTRIBUTE	259
+#define	VAR	260
+#define	OUT_VAR	261
+#define	OUT_ATT	262
+#define	FUNCTION	263
+#define	LHS_SBS	264
+#define	POWER	265
+#define	ABS	266
+#define	ATOSTR	267
+#define	IGNORE	268
+#define	EPROVOKE	269
+#define	UMINUS	270
 
