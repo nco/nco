@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.27 2004-09-07 01:25:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.28 2004-09-07 04:16:34 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.27 2004-09-07 01:25:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.27 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.28 2004-09-07 04:16:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.28 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
   dmn_sct **dim;
@@ -354,7 +354,7 @@ main(int argc,char **argv)
   } /* end loop over idx */
   
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.24 2004-09-07 01:25:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.25 2004-09-07 04:16:36 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -41,7 +41,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
-  int  /* O [id] Outputfile variable ID */
+  int /* O [id] Output file variable ID */
   nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */

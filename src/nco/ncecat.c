@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.80 2004-09-07 01:25:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.81 2004-09-07 04:16:34 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -85,8 +85,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.80 2004-09-07 01:25:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.80 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.81 2004-09-07 04:16:34 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.81 $";
   const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:rRv:x-:";
 
   dmn_sct *rec_dmn;
@@ -322,7 +322,7 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);

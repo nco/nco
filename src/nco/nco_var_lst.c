@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.36 2004-09-06 06:46:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.37 2004-09-07 04:16:35 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -366,6 +366,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */
  const bool NCAR_CCSM_FORMAT, /* I [flg] File adheres to NCAR CCSM conventions */
+ const int nco_pck_map, /* I [enm] Packing map */
  const int nco_pck_typ, /* I [enm] Packing type */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl, /* I [nbr] Number of altered dimensions */
@@ -446,11 +447,21 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       break;
     case ncpdq:
     case ncwa:
-      /* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
-      if(prg == ncpdq && nco_pck_typ != nco_pck_nil){
-	/* fxm: Packing currently operates on every extracted variable */
+      if(nco_pck_typ != nco_pck_nil){
+	/* Variables are processed for packing/unpacking operator unless ... */
+	if(
+	   /* ...unpacking requested for unpacked variable... */
+	   (nco_pck_upk == nco_pck_upk && !var[idx]->pck_ram) ||
+	   /* ...or packing unpacked requested and variable is already packed... */
+	   (nco_pck_typ == nco_pck_all_xst_att && var_prc[idx]->pck_ram) ||
+	   /* ...or re-packing packed requested and variable is unpacked... */
+	   (nco_pck_typ == nco_pck_xst_new_att && !var_prc[idx]->pck_ram)
+	   )
+	  var_op_typ[idx]=fix;
+	/* fxm: ncpdq packing treats all variables as processed */
 	var_op_typ[idx]=prc;
       }else{
+	/* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
 	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
 	  for(idx_xcl=0;idx_xcl<nbr_dmn_xcl;idx_xcl++){
 	    if(var[idx]->dim[idx_dmn]->id == dmn_xcl[idx_xcl]->id) break;
