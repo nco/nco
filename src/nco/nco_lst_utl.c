@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.8 2002-05-13 19:40:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.9 2002-05-14 00:06:01 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -7,6 +7,11 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_lst_utl.h" /* List utilities */
+
+/* NB: Free (speech) sorting by Joerg Shoen available from
+   http://www.pci.uni-heidelberg.de/tc/usr/joerg
+   are faster than ANSI system qsort() in all cases 
+   See code in $DATA/tmp/testsort */
 
 int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
 nco_cmp_int /* [fnc] Compare two integers */

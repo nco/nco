@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.132 2002-05-12 06:12:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.133 2002-05-14 00:05:59 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -255,7 +255,8 @@ ifeq (${OMP},Y)
  FC := xlf95_r
  OMP_FLG := -qsmp=noauto 
 else
- CC := xlc
+ CC := cc
+# CC := xlc
  CPP_DFN += -U_OPENMP
  FC := xlf95
 endif # endif OMP
