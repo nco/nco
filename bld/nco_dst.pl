@@ -28,7 +28,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.54 2000-03-09 00:14:34 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.55 2000-03-09 00:22:53 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -64,9 +64,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-03-09 00:14:34 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.54 2000-03-09 00:14:34 zender Exp $';
-my $CVS_Revision='$Revision: 1.54 $';
+my $CVS_Date='$Date: 2000-03-09 00:22:53 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.55 2000-03-09 00:22:53 zender Exp $';
+my $CVS_Revision='$Revision: 1.55 $';
 my $CVSROOT='$CVSROOT'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -273,6 +273,8 @@ if($bld){
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/index.shtml $www_mch_mrr:$www_drc_mrr/index.shtml");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco_news.shtml $www_mch_mrr:$www_drc_mrr/nco_news.shtml");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco.ps $www_mch_mrr:$www_drc_mrr/nco.ps");
+	cmd_prc("$rsh_cmd $www_mch_mrr gzip --force $www_drc_mrr/nco.ps");
+	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco.html $www_mch_mrr:$www_drc_mrr/nco.html");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/README $www_mch_mrr:$www_drc_mrr/README");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/VERSION $www_mch_mrr:$www_drc_mrr/VERSION");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/ChangeLog $www_mch_mrr:$www_drc_mrr/ChangeLog");

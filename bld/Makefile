@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.61 2000-03-09 00:14:33 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.62 2000-03-09 00:22:52 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -32,6 +32,12 @@ ifndef NCO_VRS
 # Used for RPM building
  NCO_VRS := $(shell cat $(MY_DOC_DIR)/VERSION)
 endif
+ifeq ($(PVM_ARCH),LINUX)
+# rpm command, and thus RPM variables, may only be assumed to be available in Linux
+ MDL_RPM_NST_NM := $(shell rpm -qa | grep nco-) # Name of installed package
+ MDL_RPM_PRV_NM := $(shell rpm -qp foo) # Name of package provided by specified RPM
+endif
+# endif LINUX
 ifndef OPTS
  OPTS := O
 endif
@@ -108,10 +114,6 @@ MDL_BLD_SRC := $(addprefix $(MY_BLD_DIR)/,Makefile nco_dst.pl nco_tst.sh) # `mak
 MDL_NCAP_SRC := $(addprefix $(MY_SRC_DIR)/,ncap.y ncap.l ncap.h) # `make tags' includes these files
 MDL_NCAP_TRG := ncap.tab.c ncap.tab.h ncap_lex.c # `make ncap' creates these files
 MDL_NCAP := $(addprefix $(MY_SRC_DIR)/,$(MDL_NCAP_TRG)) # `make distclean' removes these files
-
-# RPM variables
-MDL_RPM_NST_NM := $(shell rpm -qa | grep nco-) # Name of installed package
-MDL_RPM_PRV_NM := $(shell rpm -qp foo) # Name of package provided by specified RPM
 
 # Redefine default C and C++ pattern rules
 $(MY_OBJ_DIR)/%.o : %.c
