@@ -45,8 +45,8 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-BUILD_NCAP_FALSE = @BUILD_NCAP_FALSE@
-BUILD_NCAP_TRUE = @BUILD_NCAP_TRUE@
+BUILD_YACC_SOURCE_FALSE = @BUILD_YACC_SOURCE_FALSE@
+BUILD_YACC_SOURCE_TRUE = @BUILD_YACC_SOURCE_TRUE@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -156,6 +156,14 @@ target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
 test_data = in.nc big.nc
+
+EXTRA_DIST = big.cdl ncap.in ncap.in2 in.cdl tst.nco
+
+# from the automake manual section 14
+# If configure built it, then distclean should delete it
+# if make built it, then clean should delete it
+DISTCLEANFILES = 85.nc 86.nc 87.nc 88.nc 89.nc foo.nc h0001.nc h0002.nc h0003.nc in.nc ../src/nco_c++/in.nc
+CLEANFILES = foo*
 subdir = data
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/autobld/mkinstalldirs
@@ -242,9 +250,11 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f $(CONFIG_CLEAN_FILES)
+	-test -z "$(DISTCLEANFILES)" || rm -f $(DISTCLEANFILES)
 
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
