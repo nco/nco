@@ -12,8 +12,32 @@
 /* Autoconf-generated architecture "triplet" */
 #undef GNU_TRP
 
+/* Define to 1 if you have the `acosf' function. */
+#undef HAVE_ACOSF
+
+/* Define to 1 if you have the `asinf' function. */
+#undef HAVE_ASINF
+
+/* Define to 1 if you have the `atanf' function. */
+#undef HAVE_ATANF
+
+/* Define to 1 if you have the `ceilf' function. */
+#undef HAVE_CEILF
+
+/* Define to 1 if you have the `cosf' function. */
+#undef HAVE_COSF
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
+
+/* Define to 1 if you have the `expf' function. */
+#undef HAVE_EXPF
+
+/* Define to 1 if you have the `floorf' function. */
+#undef HAVE_FLOORF
+
+/* Define to 1 if you have the `fmodf' function. */
+#undef HAVE_FMODF
 
 /* Define to 1 if you have the `gethostname' function. */
 #undef HAVE_GETHOSTNAME
@@ -63,6 +87,12 @@
 /* Define to 1 if you have the <locale.h> header file. */
 #undef HAVE_LOCALE_H
 
+/* Define to 1 if you have the `log10f' function. */
+#undef HAVE_LOG10F
+
+/* Define to 1 if you have the `logf' function. */
+#undef HAVE_LOGF
+
 /* Define to 1 if your system has a working `malloc' function. */
 #undef HAVE_MALLOC
 
@@ -90,14 +120,23 @@
 /* Define to 1 if you have the `pow' function. */
 #undef HAVE_POW
 
+/* Define to 1 if you have the `powf' function. */
+#undef HAVE_POWF
+
 /* Define to 1 if the system has the type `ptrdiff_t'. */
 #undef HAVE_PTRDIFF_T
 
 /* Define to 1 if you have the `setlocale' function. */
 #undef HAVE_SETLOCALE
 
+/* Define to 1 if you have the `sinf' function. */
+#undef HAVE_SINF
+
 /* Define to 1 if you have the `sqrt' function. */
 #undef HAVE_SQRT
+
+/* Define to 1 if you have the `sqrtf' function. */
+#undef HAVE_SQRTF
 
 /* Define to 1 if `stat' has the bug that it succeeds when given the
    zero-length file name argument. */
@@ -138,6 +177,9 @@
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the `tanf' function. */
+#undef HAVE_TANF
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
