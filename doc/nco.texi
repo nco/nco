@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.166 2003-07-07 01:29:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.167 2003-07-20 21:59:16 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -3235,7 +3235,7 @@ described in any detail in the sections below.
 SYNTAX
 @example
 ncap [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] 
+[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-f]
 [-l @var{path}] [-O] [-p @var{path}] [-R] [-r] 
 [-s @var{algebra}] [-S @var{fl.nco}] [-v]
 @var{input-file} [@var{output-file}]  
@@ -3752,8 +3752,11 @@ and then recasting.
 available, and uses the casting method when they are not.
 }.
 and are indicated with an asterisk. 
-To see a complete list of functions supported on your platform,
-use @code{ncap -r}.
+@cindex @code{-f}
+@cindex @code{--prn_fnc_tbl}
+@cindex @code{--fnc_tbl}
+Use the @samp{-f} (or @samp{fnc_tbl} or @samp{prn_fnc_tbl}) switch
+to print a complete list of functions supported on your platform.
 This prints a list of functions and whether they are supported
 for netCDF variables of intrinsic type NC_FLOAT and NC_DOUBLE.
 @cindex Linux

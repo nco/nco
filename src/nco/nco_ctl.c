@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.24 2003-07-01 23:00:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.25 2003-07-20 21:59:17 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -165,7 +165,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-A] [-a ...] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M val] [-N] [-O] [-o op_typ] [-p path] [-R] [-r] [-v ...] [-w wgt] [-x] [-y op_typ] in.nc out.nc\n");
     break;
   case ncap:
-    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-O] [-p path] [-R] [-r] [-s algebra] [-S fl.nco] [-v] in.nc out.nc\n");
+    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-f] [-h] [-l path] [-O] [-p path] [-R] [-r] [-s algebra] [-S fl.nco] [-v] in.nc out.nc\n");
     break;
   case ncks:
     opt_sng=(char *)strdup("[-A] [-a] [-B] [-b fl_bnr] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-M] [-O] [-p path] [-q] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [out.nc]\n");
@@ -204,6 +204,7 @@ nco_usg_prn(void)
     else (void)fprintf(stdout,"-d, --dmn, --dimension dim,[min][,[max]] Dimension's limits in hyperslab\n");
   } /* end if -d */
   if(strstr(opt_sng,"-F")) (void)fprintf(stdout,"-F, --ftn, --fortran\tFortran indexing conventions (1-based) for I/O\n");
+  if(strstr(opt_sng,"-f")) (void)fprintf(stdout,"-f, --fnc_tbl, --prn_fnc_tbl\tPrint function table\n");
   if(strstr(opt_sng,"-H")) (void)fprintf(stdout,"-H, --prn, --print\tPrint data\n");
   if(strstr(opt_sng,"-h")) (void)fprintf(stdout,"-h, --hst, --history\tDo not append to \"history\" global attribute\n");
   if(strstr(opt_sng,"-i")) (void)fprintf(stdout,"-i, --ntp, --interpolate var,val\tInterpolant and value\n");

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.113 2003-06-16 16:37:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.114 2003-07-20 21:59:17 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -94,7 +94,7 @@ main(int argc,char **argv)
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   bool PROCESS_ALL_VARS=True; /* Option v */  
-  bool PRN_FNC_TBL=False; /* Option r */  
+  bool PRN_FNC_TBL=False; /* Option f */  
   
   char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option n */
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.113 2003-06-16 16:37:27 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.113 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.114 2003-07-20 21:59:17 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.114 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -214,7 +214,8 @@ main(int argc,char **argv)
       {"dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
       {"dmn",required_argument,0,'d'},
-      {"ftn",no_argument,0,'F'},
+      {"fnc_tbl",no_argument,0,'f'},
+      {"prn_fnc_tbl",no_argument,0,'f'},
       {"ftn",no_argument,0,'F'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
@@ -252,7 +253,7 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
   
   /* Parse command line arguments */
-  opt_sng="ACcD:d:Fhl:n:Op:Rrs:S:vx-:";
+  opt_sng="ACcD:d:Ffhl:n:Op:Rrs:S:vx-:";
   while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
@@ -273,6 +274,9 @@ main(int argc,char **argv)
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_STYLE=!FORTRAN_STYLE;
+      break;
+    case 'f': /* Print function table */
+      PRN_FNC_TBL=True;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
@@ -302,7 +306,6 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
-      PRN_FNC_TBL=True;
       break;
     case 's': /* Copy command script for later processing */
       spt_arg[nbr_spt++]=(char *)strdup(optarg);
@@ -415,7 +418,7 @@ main(int argc,char **argv)
   
   if(PRN_FNC_TBL){
     /* ncap TODO #43: alphabetize this list */ 
-    (void)fprintf(stdout,"\nAvailable Maths functions:\n");
+    (void)fprintf(stdout,"Maths functions available in %s:\n",prg_nm_get());
     (void)fprintf(stdout,"Name\tFloat\tDouble\n");          
     for(idx=0;idx<sym_tbl_nbr;idx++)
       (void)fprintf(stdout,"%s\t%c\t%c\n",sym_tbl[idx]->nm,(sym_tbl[idx]->fnc_flt ? 'y' : 'n'),(sym_tbl[idx]->fnc_dbl ? 'y' : 'n'));

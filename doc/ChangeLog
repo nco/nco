@@ -1,3 +1,8 @@
+2003-07-20  Charlie Zender  <zender@uci.edu>
+
+	* Changed math table printing from -r to -f in ncap so that -r is
+	consistent among all operators. Documented this in nco.texi.
+
 2003-07-06  Charlie Zender  <zender@uci.edu>
 
 	* Removed FTP requirement from make tst. Create nco_tst.sh creates
