@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.22 2004-08-06 20:56:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.23 2004-08-06 21:34:26 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -98,8 +98,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.22 2004-08-06 20:56:39 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.22 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.23 2004-08-06 21:34:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.23 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:p:Rrt:v:x-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -493,7 +493,18 @@ main(int argc,char **argv)
 	/* Assign record flag dictated by re-order */
 	var_out[idx]->is_rec_var=False; 
       }else{ /* ...otherwise variable will be record variable... */
-	/* ...Yes. Variable will be record---does this change its status?... */
+	/* ...Yes. Variable will be record... */
+	/* ...must ensure new record dimension is not duplicate dimension... */
+	if(var_out[idx]->has_dpl_dmn){
+	  int dmn_dpl_idx;
+	  for(dmn_dpl_idx=1;dmn_dpl_idx<var_out[idx]->nbr_dim;dmn_dpl_idx++){ /* NB: loop starts from 1 */
+	    if(var_out[idx]->dmn_id[0] == var_out[idx]->dmn_id[dmn_dpl_idx]){
+	      (void)fprintf(stdout,"%s: ERROR Requested re-order turns duplicate non-record dimension %s in variable %s into output record dimension. netCDF does not support duplicate record dimensions in a single variable.\n",prg_nm_get(),rec_dmn_nm_out,var_out[idx]->nm);
+	      nco_exit(EXIT_FAILURE);
+	    } /* endif err */
+	  } /* end loop over dmn_out */
+	} /* endif has_dpl_dmn */
+	/* ...Will becoming record variable change its status?... */
 	if(var_out[idx]->is_rec_var == False){
 	  if(dbg_lvl > 2) (void)fprintf(fp_stdout,"%s: INFO Requested re-order will change variable %s from non-record to record variable\n",prg_nm,var_out[idx]->nm);
 	  /* Change record flag to status dictated by re-order */
