@@ -23329,6 +23329,8 @@ if test "${enable_dods}" != 'no'; then
 #  AC_CHECK_LIB([www],[HTLibInit],,enable_dods=no)
 #  AC_CHECK_LIB([rx],[main],,enable_dods=no)
 # DODS version 3.4.x tests:
+    { echo "$as_me:$LINENO: NB: Following six libraries required for DODS/OPeNDAP clients:" >&5
+echo "$as_me: NB: Following six libraries required for DODS/OPeNDAP clients:" >&6;}
 
 echo "$as_me:$LINENO: checking for inflate in -lz" >&5
 echo $ECHO_N "checking for inflate in -lz... $ECHO_C" >&6
