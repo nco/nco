@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.11 2004-07-29 22:57:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.12 2004-07-29 23:14:40 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -95,8 +95,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.11 2004-07-29 22:57:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.11 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.12 2004-07-29 23:14:40 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.12 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:Rrt:v:xz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -373,11 +373,6 @@ main(int argc,char **argv)
     /* fxm: dmn_rdr is already known, is nco_prs_rdr_lst() obsolete? */
     if(False) dmn_rdr=nco_dmn_avg_rdr_prp(dmn_rdr,dmn_rdr_lst_in,dmn_rdr_nbr);
 
-    if(dmn_rdr_nbr > nbr_dmn_xtr){
-      (void)fprintf(fp_stdout,"%s: ERROR More re-ordering dimensions than extracted dimensions\n",prg_nm);
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
-
     /* Create structured list of re-ordering dimension names and IDs */
     dmn_rdr_lst=nco_dmn_lst_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr);
 
@@ -407,6 +402,11 @@ main(int argc,char **argv)
 	} /* end if */
       } /* end loop over idx_rdr */
     } /* end loop over idx */
+
+    if(dmn_rdr_nbr > nbr_dmn_xtr){
+      (void)fprintf(fp_stdout,"%s: ERROR More re-ordering dimensions than extracted dimensions\n",prg_nm);
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
 
   } /* dmn_rdr_nbr <= 0 */
 

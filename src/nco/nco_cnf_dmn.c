@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.23 2004-07-29 22:57:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.24 2004-07-29 23:14:40 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -426,7 +426,6 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   const int dmn_rdr_nil=-1; /* [enm] Input dimension is not in re-order list */
   
   char *rec_dmn_nm_out=NULL; /* [sng] Name of record dimension, if any, required by re-order */
-  char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by current variable re-order */
 
   dmn_sct **dmn_in=NULL; /* [sct] List of dimension structures in input order */
   dmn_sct **dmn_out; /* [sct] List of dimension structures in output order */
@@ -566,7 +565,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
 
   if(dbg_lvl_get() > 2){
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
-      (void)fprintf(stdout,"%s: DEBUG %s re-ordering metadata for variable %s maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,unknown)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx]);
+      (void)fprintf(stdout,"%s: DEBUG %s re-ordering variable %s will map dimension %s from (ordinal,ID)=(%d,%d) to (%d,unknown)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx]);
     } /* end loop over dmn_in */
   } /* endif dbg */
   
@@ -655,16 +654,17 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
       dmn_idx_in_out[dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;
   
     for(dmn_in_idx=0;dmn_in_idx<dmn_out_nbr;dmn_in_idx++){
-      (void)fprintf(stdout,"%s: DEBUG %s re-ordering metadata for variable %s maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,%d)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
+      (void)fprintf(stdout,"%s: DEBUG %s re-ordering variable %s maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,%d)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
     } /* end loop over dmn_in */
   } /* endif dbg */
   
   /* Is identity re-ordering requested? */
   for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
-    if(dmn_out[dmn_out_idx] != dmn_in[dmn_out_idx]) break;
+    if(dmn_out[dmn_out_idx]->xrf != dmn_in[dmn_out_idx]) break;
   } /* end loop over dmn_out */
   if(dmn_out_idx == dmn_out_nbr) IDENTITY_REORDER=True;
   if(IDENTITY_REORDER){
+    (void)fprintf(stdout,"%s: INFO %s re-ordering is identity transformation for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
     /* Copy in one fell swoop then return */
     (void)memcpy((void *)(var_out->val.vp),(void *)(var_in->val.vp),var_out->sz*nco_typ_lng(var_out->type));
     return rcd;
@@ -698,10 +698,6 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
      1b. 
    */
 
-  if(dbg_lvl_get() == 3){
-    (void)fprintf(stdout,"%s: DEBUG %s re-ordering variable values for %s\n",prg_nm_get(),fnc_nm,var_in->nm);
-  } /* endif dbg */
-  
   /* Begin Method 1: Loop over input elements */
   /* var_in_lmn is offset into 1-D array */
   for(var_in_lmn=0;var_in_lmn<var_sz;var_in_lmn++){
