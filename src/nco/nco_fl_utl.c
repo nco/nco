@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.37 2004-06-20 20:00:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.38 2004-06-20 20:09:31 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -915,12 +915,14 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   
   /* If permanent file already exists, query user whether to overwrite, append, or exit */
   if(rcd != -1){
-    char *rcd_fgets; /* Return code from fgets */
+    char *rcd_fgets=NULL; /* Return code from fgets */
 #define USR_RPL_MAX_LNG 10 /* [nbr] Maximum length for user reply */
 #define USR_RPL_MAX_NBR 10 /* [nbr] Maximum number of chances for user to reply */
+    int cnv_nbr; /* [nbr] Number of scanf conversions performed this scan */
     char usr_rpl[USR_RPL_MAX_LNG];
     int usr_rpl_int;
     short nbr_itr=0;
+    size_t usr_rpl_lng;
     
     /* Initialize user reply string */
     usr_rpl[0]='z';
@@ -945,18 +947,17 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       (void)fflush(stdout);
       /* fgets() reads (at most one less than USR_RPL_MAX_LNG) to first newline or EOF */
       /*      rcd_fgets=fgets(usr_rpl,USR_RPL_MAX_LNG,stdin);*/
-      while((rcd_fgets=fgets(usr_rpl,USR_RPL_MAX_LNG,stdin)) == NULL){
-	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read \"%s\" while waiting for non-NULL on stdin...\n",prg_nm_get(),(rcd_fgets == NULL) ? "NULL" : usr_rpl);
-	continue;
-      } /* end while */
-      /* Check that last character in input string is \n and replace that with \0 */
-      if(rcd_fgets != NULL){
-	size_t usr_rpl_lng;
-	usr_rpl_lng=strlen(usr_rpl);
-	if(usr_rpl_lng >= 1)
-	  if(usr_rpl[usr_rpl_lng-1] == '\n')
+      while((cnv_nbr=fscanf(stdin,"%9s",usr_rpl)) != EOF) continue;
+      /*      while((rcd_fgets=fgets(usr_rpl,USR_RPL_MAX_LNG,stdin)) == NULL){*/
+	/*	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read \"%s\" while waiting for non-NULL on stdin...\n",prg_nm_get(),(rcd_fgets == NULL) ? "NULL" : usr_rpl);*/
+      /*      continue;}*/
+
+      /* Ensure last character in input string is \n and replace that with \0 */
+      usr_rpl_lng=strlen(usr_rpl);
+      if(usr_rpl_lng >= 1)
+	if(usr_rpl[usr_rpl_lng-1] == '\n')
 	    usr_rpl[usr_rpl_lng-1]='\0';
-      } /* endif non-NULL input */
+
       if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: INFO nco_fl_out_open() reports that fgets() read \"%s\" (after removing trailing newline) from stdin\n",prg_nm_get(),(rcd_fgets == NULL) ? "NULL" : usr_rpl);
     } /* end while */
     
