@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.50 2002-09-09 05:53:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.51 2002-09-09 06:39:18 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -169,6 +169,8 @@ dmn_sct **nco_dmn_out_grow(prs_sct *);
    or prototype the parser routines here */
 
   /* fxm: Eventually make this MACOSX kludge go away */
+#ifndef MACOSX_FLT_FNC
+#define MACOSX_FLT_FNC
 #ifdef MACOSX
 #define NEED_ACOSF 1
 #define NEED_ACOSHF 1
@@ -263,6 +265,7 @@ inline float tanf(float x){return (float)(tan(x));}
 #ifdef NEED_TANHF
 inline float tanhf(float x){return (float)(tanh(x));}
 #endif /* !NEED_TANHF */ 
+#endif /* MACOSX_FLT_FNC */
 
 #ifdef __cplusplus
 } /* end extern "C" */
