@@ -1,3 +1,14 @@
+2002-01-23  Charlie Zender  <zender@uci.edu>
+
+	* Fix read overflow in ncks.c:prn_var_val_lmt() where
+	non-NUL-terminated character array was being printed with %s format
+
+2002-01-22  Charlie Zender  <zender@uci.edu>
+
+	* Fix non-NUL-terminated strings in hst_att_cat()
+
+	* Added nco/doc/purify.txt to track memory problems reported by purify
+
 2002-01-21  Charlie Zender  <zender@uci.edu>
 
 	* Remove templates for math functions from ncap.c

@@ -1,0 +1,1591 @@
+$Header: /data/zender/nco_20150216/nco/doc/insure.txt,v 1.1 2002-01-23 09:01:50 zender Exp $
+
+Purpose: Keep track of memory access problems with NCO reported by insure
+
+ncks -H in.nc
+
+  Runtime: Executed "ncks" on lanina.zender.org, pid=18654  [4 tot.]
+  Format string is inconsistent: Error in format string for fprintf.
+  Format string: "%s = %hhi %s\n"
+  Stack trace where the error occurred:
+                 prn_var_val_lmt()
+                            main(
+  This occurs at ncks.c line 1323
+  Apparently %hhi triggers this problem
+  %hhi appears to be a GNU extension to ANSI C
+
+ncks -O -C -H -d lat,0 -d lon,0 in.nc foo.nc
+
+Runtime: Executed "ncks" on lanina.zender.org, pid=18656  [8 tot.]
+  Memory leaked due to pointer reassignment: ptr
+  Lost block : 0x0812ae88 thru 0x0812ae8f (8 bytes)
+               ptr, allocated at:
+                          malloc()
+                      nco_malloc()
+                         lst_prs()
+                         lmt_prs(
+                            main()
+  Stack trace where the error occurred:
+                         lmt_prs()
+                            main(
+
+ncflint -O in.nc in.nc foo.nc
+
+  Runtime: Executed "ncatted" on lanina.zender.org, pid=18675  [5 tot.]
+ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three." in.nc foo.n
+
+  Memory leaked leaving scope: ptr
+  Lost block : 0x08114db0 thru 0x08114dc3 (20 bytes)
+               ptr, allocated at:
+                          malloc()
+                      nco_malloc()
+                         lst_prs()
+                     prs_aed_lst(
+                           main()
+  Stack trace where the error occurred:
+                     prs_aed_lst(
+
+ncap -O -D 1 -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: <return>
+
+  Lost block : 0x081742d0 thru 0x081742d2 (3 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+  Stack trace where the error occurred:
+               ncap_initial_scan()
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: <return>
+
+  Lost block : 0x081742e0 thru 0x081742e4 (5 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+  Stack trace where the error occurred:
+               ncap_initial_scan()
+                            main()
+
+
+[unknown:unknown] **LEAK_SCOPE**
+
+
+  Memory leaked leaving scope: <return>
+
+  Lost block : 0x08174460 thru 0x08174462 (3 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+  Stack trace where the error occurred:
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: <return>
+
+  Lost block : 0x08174448 thru 0x08174455 (14 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+  Stack trace where the error occurred:
+               ncap_initial_scan()
+                            main()
+
+
+[unknown:unknown] **LEAK_SCOPE**
+
+
+  Memory leaked leaving scope: <return>
+
+  Lost block : 0x081744a0 thru 0x081744a7 (8 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+  Stack trace where the error occurred:
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: <return>
+
+  Lost block : 0x08174470 thru 0x08174472 (3 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+  Stack trace where the error occurred:
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: <return>
+
+  Lost block : 0x08174590 thru 0x08174593 (4 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+  Stack trace where the error occurred:
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: <return>
+
+  Lost block : 0x08174900 thru 0x08174903 (4 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+  Stack trace where the error occurred:
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: <return>
+
+  Lost block : 0x08174910 thru 0x08174913 (4 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+  Stack trace where the error occurred:
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: <return>
+
+  Lost block : 0x08174cc0 thru 0x08174cc5 (6 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+  Stack trace where the error occurred:
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+
+[unknown:unknown] **LEAK_SCOPE**
+
+
+  Memory leaked leaving scope: ptr
+
+  Lost block : 0x08174ce0 thru 0x08174ce9 (10 bytes)
+               ptr, allocated at:
+                          malloc()
+                      nco_malloc()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+  Stack trace where the error occurred:
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: <return>
+
+  Lost block : 0x08174da0 thru 0x08174da4 (5 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+  Stack trace where the error occurred:
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: ptr
+
+  Lost block : 0x08174f58 thru 0x081751f7 (672 bytes)
+               ptr, allocated at:
+                          malloc()
+                      nco_malloc()
+                      var_lst_mk()
+                            main()
+
+  Stack trace where the error occurred:
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: vara->val.vp
+
+  Lost block : 0x08180348 thru 0x08180353 (12 bytes)
+               vara->val.vp, allocated at:
+                          malloc()
+                   ncap_var_init()
+                         yyparse()
+                            main()
+
+  Stack trace where the error occurred:
+                         var_get()
+                   ncap_var_init()
+                         yyparse()
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: ptr
+
+  Lost block : 0x08180328 thru 0x0818032c (5 bytes)
+               ptr, allocated at:
+                          malloc()
+                      nco_malloc()
+                   ncap_var_init()
+                         yyparse()
+                            main()
+
+  Stack trace where the error occurred:
+                         yyparse()
+                            main()
+
+
+[unknown:unknown] **LEAK_FREE**
+
+
+  Memory leaked freeing block: <return>
+
+  Lost block : 0x08180368 thru 0x0818036a (3 bytes)
+               block allocated at:
+                          strdup()
+                         yyparse()
+                            main()
+
+  Stack trace where the error occurred:
+                            free()
+                        var_free()
+                         yyparse()
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment:
+        malloc(var_dpl->sz * _Insight_1)
+
+  Lost block : 0x08180b90 thru 0x08180b9b (12 bytes)
+               malloc(var_dpl->sz * _Insight_1), allocated at:
+                          malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+  Stack trace where the error occurred:
+                 var_conform_dim()
+            ncap_var_conform_dim()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: <return>
+
+  Lost block : 0x0817fd90 thru 0x0817fd9d (14 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+                         yyparse()
+                            main()
+
+  Stack trace where the error occurred:
+                       nco_redef()
+                  ncap_var_write()
+                         yyparse()
+                            main()
+
+
+[unknown:unknown] **LEAK_SCOPE**
+
+
+  Memory leaked leaving scope: ptr
+
+  Lost block : 0x08181040 thru 0x08181042 (3 bytes)
+               ptr, allocated at:
+                          malloc()
+                      nco_malloc()
+                           yylex()
+                         yyparse()
+                            main()
+
+  Stack trace where the error occurred:
+                           yylex()
+                         yyparse()
+                            main()
+
+
+[unknown:unknown] **LEAK_SCOPE**
+
+
+  Memory leaked leaving scope: ptr
+
+  Lost block : 0x0817ff68 thru 0x0817ff81 (26 bytes)
+               ptr, allocated at:
+                          malloc()
+                      nco_malloc()
+                           yylex()
+                         yyparse()
+                            main()
+
+  Stack trace where the error occurred:
+                           yylex()
+                         yyparse()
+                            main()
+
+
+[unknown:unknown] **LEAK_SCOPE**
+
+
+  Memory leaked leaving scope: ptr
+
+  Lost block : 0x08180da0 thru 0x08180da7 (8 bytes)
+               ptr, allocated at:
+                          malloc()
+                      nco_malloc()
+                           yylex()
+                         yyparse()
+                            main()
+
+  Stack trace where the error occurred:
+                           yylex()
+                         yyparse()
+                            main()
+
+
+[unknown:unknown] **FUNC_BAD**
+
+
+  Function pointer is not a function: (void *) (yyvsp[-3].sym->fnc)
+
+  Pointer: 0x0804aea8
+  Stack trace where the error occurred:
+                         yyparse()
+                            main()
+
+**Memory corrupted.  Program may crash!!**
+
+
+[unknown:unknown] **LEAK_SCOPE**
+
+
+  Memory leaked leaving scope: <return>
+
+  Lost block : 0x08180998 thru 0x0818099b (4 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+                         yyparse()
+                            main()
+
+  Stack trace where the error occurred:
+                           yylex()
+                         yyparse()
+                            main()
+
+
+[unknown:unknown] **FUNC_BAD**
+
+
+  Function pointer is not a function: (void *) (app->fncf)
+
+  Pointer: 0x0804a668
+  Stack trace where the error occurred:
+               ncap_var_function()
+                         yyparse()
+                            main()
+
+
+[unknown:unknown] **LEAK_ASSIGN**
+
+
+  Memory leaked due to pointer reassignment: vara->val.vp
+
+  Lost block : 0x0818c020 thru 0x0818c037 (24 bytes)
+               vara->val.vp, allocated at:
+                          malloc()
+                   ncap_var_init()
+                         yyparse()
+                            main()
+
+  Stack trace where the error occurred:
+                         yyparse()
+                            main()
+
+
+[unknown:unknown] **LEAK_SCOPE**
+
+
+  Memory leaked leaving scope: <return>
+
+  Lost block : 0x0818c200 thru 0x0818c210 (17 bytes)
+               block allocated at:
+                          strdup()
+                           yylex()
+                         yyparse()
+                            main()
+
+  Stack trace where the error occurred:
+                         yyparse()
+                            main()
+
+
+
+
+************************** INSURE SUMMARY ************************* v5.2 **
+*   Program      : ncap                                                   *
+*   Arguments    : -O -D 1 -S /home/zender/nco/data/ncap.in               *
+*                  /home/zender/nco/data/in.nc                            *
+*                  /home/zender/nco/data/foo.nc                           *
+*   Directory    : /home/zender/nco/bld                                   *
+*   Compiled on  : Jan 23, 2002  00:53:58                                 *
+*   Run on       : Jan 23, 2002  00:54:36                                 *
+*   Elapsed time : 00:00:04                                               *
+*   Malloc HWM   : 175,835 bytes (171K)                                   *
+***************************************************************************
+
+PROBLEM SUMMARY - by type
+===============
+
+          Problem                Reported      Suppressed
+          -------------------------------------------------
+          COPY_BAD_RANGE               0                1
+          FUNC_BAD                     2              960
+          LEAK_ASSIGN                 15              197
+          LEAK_FREE                    1               27
+          LEAK_SCOPE                   8              138
+          RETURN_FAILURE               0                4
+          -------------------------------------------------
+          TOTAL                       26             1327
+          -------------------------------------------------
+
+PROBLEM SUMMARY - by location
+===============
+
+FUNC_BAD: Function pointer is not a function, 2 unique occurrences
+       960 at PC: 0x08056e08
+         2 at PC: 0x08075995
+
+LEAK_ASSIGN: Memory leaked due to pointer reassignment, 15 unique occurrences
+        85 at PC: 0x0804eb82
+        18 at PC: 0x08064fc6
+        16 at PC: 0x080655fe
+        23 at PC: 0x08065c3d
+         2 at PC: 0x0806e0fc
+        12 at PC: 0x08071e3c
+         3 at PC: 0x0807fb86
+         2 at PC: 0x080821c3
+        16 at PC: 0x08082cac
+         4 at PC: 0x08082d42
+         3 at PC: 0x08085c1d
+         2 at PC: 0x08085cdd
+        21 at PC: 0x080afb86
+         1 at PC: 0x080b3f31
+         4 at PC: 0x08101aca
+
+LEAK_FREE: Memory leaked freeing block, 1 unique occurrence
+        28 at PC: 0x080c4dd5
+
+LEAK_SCOPE: Memory leaked leaving scope, 8 unique occurrences
+         1 at PC: 0x0807cdb4
+         6 at PC: 0x0807fda2
+        46 at PC: 0x08082d54
+        22 at PC: 0x08082d86
+        14 at PC: 0x080835fb
+         6 at PC: 0x08083e1f
+         6 at PC: 0x08083eea
+        45 at PC: 0x0808440d
+
+
+
+
+************************** INSURE SUMMARY ************************* v5.2 **
+*   Program      : ncap                                                   *
+*   Arguments    : -O -D 1 -S /home/zender/nco/data/ncap.in               *
+*                  /home/zender/nco/data/in.nc                            *
+*                  /home/zender/nco/data/foo.nc                           *
+*   Directory    : /home/zender/nco/bld                                   *
+*   Compiled on  : Jan 23, 2002  00:53:58                                 *
+*   Run on       : Jan 23, 2002  00:54:36                                 *
+*   Elapsed time : 00:00:04                                               *
+*   Malloc HWM   : 175,835 bytes (171K)                                   *
+***************************************************************************
+
+1729 outstanding memory references for 83,754 bytes (81K).
+
+
+Leaks detected during execution
+-------------------------------
+       672 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                      var_lst_mk()
+                            main()
+
+        36 bytes      2 chunks allocated
+                          malloc()
+                   ncap_var_init()
+                         yyparse()
+                            main()
+
+        34 bytes      2 chunks allocated
+                          malloc()
+                      nco_malloc()
+                           yylex()
+                         yyparse()
+                            main()
+
+        31 bytes      2 chunks allocated
+                          strdup()
+                           yylex()
+                         yyparse()
+                            main()
+
+        22 bytes      5 chunks allocated
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+        19 bytes      2 chunks allocated
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+        11 bytes      2 chunks allocated
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+        10 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+         5 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                   ncap_var_init()
+                         yyparse()
+                            main()
+
+         4 bytes      1 chunk  allocated
+                          strdup()
+                           yylex()
+                         yyparse()
+                            main()
+
+         4 bytes      1 chunk  allocated
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+         3 bytes      1 chunk  allocated
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+         3 bytes      1 chunk  allocated
+                          strdup()
+                         yyparse()
+                            main()
+
+         3 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                           yylex()
+                         yyparse()
+                            main()
+
+
+
+Leaks detected at exit
+----------------------
+      8000 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                  var_lst_divide()
+                            main()
+
+      8000 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                  var_lst_divide()
+                            main()
+
+      7046 bytes     19 chunks allocated
+                          malloc()
+                   ncap_var_init()
+                         yyparse()
+                            main()
+
+      1920 bytes      2 chunks allocated
+                          malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_add()
+                         yyparse()
+                            main()
+
+      1920 bytes      2 chunks allocated
+                          malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_add()
+                         yyparse()
+                            main()
+
+       855 bytes     84 chunks allocated
+                          strdup()
+                      var_lst_mk()
+                            main()
+
+       640 bytes      1 chunk  allocated
+                          malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+       320 bytes      1 chunk  allocated
+                          malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+       256 bytes      2 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_add()
+                         yyparse()
+                            main()
+
+       200 bytes     20 chunks allocated
+                          malloc()
+                      nco_malloc()
+                   ncap_var_init()
+                         yyparse()
+                            main()
+
+       195 bytes     33 chunks allocated
+                          strdup()
+                           yylex()
+                         yyparse()
+                            main()
+
+       189 bytes     34 chunks allocated
+                          malloc()
+                      nco_malloc()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+       188 bytes     32 chunks allocated
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+       186 bytes     19 chunks allocated
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+       186 bytes     33 chunks allocated
+                          malloc()
+                      nco_malloc()
+                           yylex()
+                         yyparse()
+                            main()
+
+       174 bytes     19 chunks allocated
+                          strdup()
+                           yylex()
+                         yyparse()
+                            main()
+
+       128 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         aed_prc()
+                            main()
+
+       128 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+       128 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_sub()
+                         yyparse()
+                            main()
+
+       128 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+       123 bytes     18 chunks allocated
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+       117 bytes     22 chunks allocated
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+       105 bytes     18 chunks allocated
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+        96 bytes      1 chunk  allocated
+                          malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_sub()
+                         yyparse()
+                            main()
+
+        96 bytes      1 chunk  allocated
+                          malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_sub()
+                         yyparse()
+                            main()
+
+        77 bytes     12 chunks allocated
+                          strdup()
+                         yyparse()
+                            main()
+
+        35 bytes      5 chunks allocated
+                          strdup()
+                         yyparse()
+                            main()
+
+        32 bytes      2 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_add()
+                         yyparse()
+                            main()
+
+        32 bytes      2 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_add()
+                         yyparse()
+                            main()
+
+        32 bytes      2 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_add()
+                         yyparse()
+                            main()
+
+        32 bytes      2 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_add()
+                         yyparse()
+                            main()
+
+        32 bytes      2 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_add()
+                         yyparse()
+                            main()
+
+        32 bytes      2 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_add()
+                         yyparse()
+                            main()
+
+        29 bytes      3 chunks allocated
+                          malloc()
+                      nco_malloc()
+                           yylex()
+                         yyparse()
+                            main()
+
+        22 bytes      3 chunks allocated
+                          strdup()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+        19 bytes      2 chunks allocated
+                          malloc()
+                      nco_malloc()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_sub()
+                         yyparse()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_sub()
+                         yyparse()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_sub()
+                         yyparse()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_sub()
+                         yyparse()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_sub()
+                         yyparse()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+                ncap_var_var_sub()
+                         yyparse()
+                            main()
+
+        12 bytes      2 chunks allocated
+                          malloc()
+                      nco_malloc()
+                           yylex()
+                         yyparse()
+                            main()
+
+        11 bytes      1 chunk  allocated
+                          strdup()
+                         yyparse()
+                            main()
+
+         8 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                 var_conform_dim()
+            ncap_var_conform_dim()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+         4 bytes      1 chunk  allocated
+                          malloc()
+                         var_dpl()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+         4 bytes      1 chunk  allocated
+                          malloc()
+                         var_dpl()
+           ncap_var_var_multiply()
+                         yyparse()
+                            main()
+
+
+
+Outstanding allocated memory
+----------------------------
+     16386 bytes      1 chunk  allocated
+                          malloc()
+                   yy_flex_alloc()
+                yy_create_buffer()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+     10368 bytes     81 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                            main()
+
+     10368 bytes     81 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_fll()
+                            main()
+
+      1032 bytes      6 chunks allocated
+                           ctime()
+                            main()
+
+       841 bytes     81 chunks allocated
+                          strdup()
+                    var_lst_copy()
+                            main()
+
+       841 bytes     81 chunks allocated
+                          strdup()
+                     var_lst_sub()
+                            main()
+
+       672 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                     var_lst_sub()
+                            main()
+
+       660 bytes     11 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         dmn_dpl()
+                            main()
+
+       660 bytes     11 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         dmn_fll()
+                            main()
+
+       648 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                    var_lst_copy()
+                            main()
+
+       364 bytes      1 chunk  allocated
+                           fopen()
+                            main()
+
+       364 bytes      1 chunk  allocated
+                           fopen()
+               ncap_initial_scan()
+                            main()
+
+       364 bytes     13 chunks allocated
+                          malloc()
+                      nco_malloc()
+                 ncap_aed_lookup()
+                         yyparse()
+                            main()
+
+       360 bytes     62 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                            main()
+
+       360 bytes     62 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                            main()
+
+       360 bytes     62 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                            main()
+
+       360 bytes     62 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                            main()
+
+       360 bytes     62 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                            main()
+
+       360 bytes     62 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                            main()
+
+       360 bytes     62 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_fll()
+                            main()
+
+       360 bytes     62 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_fll()
+                            main()
+
+       360 bytes     62 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_fll()
+                            main()
+
+       360 bytes     62 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_fll()
+                            main()
+
+       360 bytes     62 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_fll()
+                            main()
+
+       360 bytes     62 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_fll()
+                            main()
+
+       324 bytes      1 chunk  allocated
+                     nco_realloc()
+                  var_lst_divide()
+                            main()
+
+       324 bytes      1 chunk  allocated
+                     nco_realloc()
+                  var_lst_divide()
+                            main()
+
+       324 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                            main()
+
+       324 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                            main()
+
+       140 bytes      5 chunks allocated
+                          malloc()
+                      nco_malloc()
+                 ncap_aed_lookup()
+                         yyparse()
+                            main()
+
+       117 bytes     13 chunks allocated
+                          strdup()
+               ncap_initial_scan()
+                            main()
+
+       104 bytes      1 chunk  allocated
+                     nco_realloc()
+               ncap_initial_scan()
+                            main()
+
+       103 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                      cmd_ln_sng()
+                            main()
+
+       100 bytes      3 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         yyparse()
+                            main()
+
+        88 bytes      1 chunk  allocated
+                     nco_realloc()
+                 dmn_lst_ass_var()
+                            main()
+
+        84 bytes      3 chunks allocated
+                          malloc()
+                      nco_malloc()
+                 ncap_aed_lookup()
+                         yyparse()
+                            main()
+
+        82 bytes     13 chunks allocated
+                          strdup()
+                 ncap_aed_lookup()
+                         yyparse()
+                            main()
+
+        78 bytes      5 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         yyparse()
+                            main()
+
+        71 bytes     13 chunks allocated
+                          malloc()
+                      nco_malloc()
+        ncap_attribute_2_ptr_unn()
+                         yyparse()
+                            main()
+
+        70 bytes     11 chunks allocated
+                          strdup()
+                 dmn_lst_ass_var()
+                            main()
+
+        61 bytes     13 chunks allocated
+                          strdup()
+                 ncap_aed_lookup()
+                         yyparse()
+                            main()
+
+        60 bytes     15 chunks allocated
+                          malloc()
+                      nco_malloc()
+                         var_dpl()
+                            main()
+
+        60 bytes     15 chunks allocated
+                          malloc()
+                      nco_malloc()
+                     mss_val_get()
+                         var_fll()
+                            main()
+
+        47 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                     fl_out_open()
+                            main()
+
+        44 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                            main()
+
+        44 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                            main()
+
+        44 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                            main()
+
+        40 bytes      1 chunk  allocated
+                          malloc()
+                   yy_flex_alloc()
+                yy_create_buffer()
+                           yylex()
+               ncap_initial_scan()
+                            main()
+
+        31 bytes      5 chunks allocated
+                          strdup()
+                 ncap_aed_lookup()
+                         yyparse()
+                            main()
+
+        28 bytes      1 chunk  allocated
+                          strdup()
+                       fl_mk_lcl()
+                            main()
+
+        24 bytes      1 chunk  allocated
+                     nco_realloc()
+               ncap_initial_scan()
+                            main()
+
+        22 bytes      5 chunks allocated
+                          strdup()
+                 ncap_aed_lookup()
+                         yyparse()
+                            main()
+
+        21 bytes      3 chunks allocated
+                          strdup()
+                 ncap_aed_lookup()
+                         yyparse()
+                            main()
+
+        18 bytes      2 chunks allocated
+                          strdup()
+               ncap_initial_scan()
+                            main()
+
+        16 bytes      1 chunk  allocated
+                     nco_realloc()
+               ncap_initial_scan()
+                            main()
+
+        15 bytes      3 chunks allocated
+                          strdup()
+                 ncap_aed_lookup()
+                         yyparse()
+                            main()
+
+        14 bytes      3 chunks allocated
+                          strdup()
+               ncap_initial_scan()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                   ncap_sym_init()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                   ncap_sym_init()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                   ncap_sym_init()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                   ncap_sym_init()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                   ncap_sym_init()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                   ncap_sym_init()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                   ncap_sym_init()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                   ncap_sym_init()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                   ncap_sym_init()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                   ncap_sym_init()
+                            main()
+
+        12 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                   ncap_sym_init()
+                            main()
+
+         6 bytes      1 chunk  allocated
+                            main()
+
+         6 bytes      1 chunk  allocated
+                          strdup()
+                   ncap_sym_init()
+                            main()
+
+         6 bytes      1 chunk  allocated
+                          strdup()
+                   ncap_sym_init()
+                            main()
+
+         5 bytes      1 chunk  allocated
+                          strdup()
+                   ncap_sym_init()
+                            main()
+
+         5 bytes      1 chunk  allocated
+                          strdup()
+                   ncap_sym_init()
+                            main()
+
+         5 bytes      1 chunk  allocated
+                          strdup()
+                   ncap_sym_init()
+                            main()
+
+         5 bytes      1 chunk  allocated
+                          strdup()
+                   ncap_sym_init()
+                            main()
+
+         4 bytes      1 chunk  allocated
+                          strdup()
+                   ncap_sym_init()
+                            main()
+
+         4 bytes      1 chunk  allocated
+                          strdup()
+                   ncap_sym_init()
+                            main()
+
+         4 bytes      1 chunk  allocated
+                          strdup()
+                   ncap_sym_init()
+                            main()
+
+         4 bytes      1 chunk  allocated
+                          strdup()
+                   ncap_sym_init()
+                            main()
+
+         4 bytes      1 chunk  allocated
+                          strdup()
+                   ncap_sym_init()
+                            main()
+
+         4 bytes      1 chunk  allocated
+                          malloc()
+                      nco_malloc()
+                       fl_lst_mk()
+                            main()
+
+
+

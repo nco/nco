@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.111 2002-01-23 04:08:34 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.112 2002-01-23 09:01:50 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -221,6 +221,8 @@ or variable list is made more specific, or MALLOC_CHECK_=1 is used
 213. Pass const values as const (may improve speed)
 214. Disable threads > 1 on SGI temporarily because thread #0 is doing all the work, why?
 215. var_conform_dim() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
+216. Use %z for printing size_t rather than casting to long
+217. Replace all uses of free() with nco_free()
 ************************************************************************
 End NCO Wish list
 ************************************************************************
