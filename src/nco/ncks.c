@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.115 2005-01-10 06:11:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.116 2005-01-13 04:32:32 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -88,7 +88,7 @@ main(int argc,char **argv)
   bool PRN_VAR_DATA_TGL=False; /* [flg] Toggle print variable data Option H */
   bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
   bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
-  bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
+  bool PRN_DMN_UNITS=True; /* [flg] Print dimensional units Option u */
   bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.115 2005-01-10 06:11:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.115 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.116 2005-01-13 04:32:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.116 $";
   const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qQrRs:uv:xZ-:";
 
   extern char *optarg;

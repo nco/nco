@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.287 2005-01-11 15:19:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.288 2005-01-13 04:32:29 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3075,7 +3075,7 @@ In the following example, the user extracts all wavelengths
 in the visible portion of the spectrum in terms of the units
 very frequently used in visible spectroscopy, microns:
 @example
-% ncks -O -C -u -v wvl -d wvl,"0.4 micron","0.7 micron" in.nc
+% ncks -O -C -v wvl -d wvl,"0.4 micron","0.7 micron" in.nc
 wvl[0]=5e-07 meter
 @end example
 @noindent
@@ -3129,7 +3129,7 @@ In this example, the user prints all data between the eighth and ninth
 of December, 1999, from a variable whose time dimension is hours
 since the year 1900:
 @example
-% ncks -O -C -u -v time_udunits -d time_udunits,"1999-12-08 \
+% ncks -O -C -v time_udunits -d time_udunits,"1999-12-08 \
 12:00:0.0","1999-12-09 00:00:0.0",2 in.nc foo2.nc
 % time_udunits[1]=876018 hours since 1900-01-01 00:00:0.0
 @end example
@@ -6538,8 +6538,8 @@ Also @samp{--string}, @samp{--format}, and @samp{--fmt}.
 @cindex @code{-u}
 @cindex @code{--units}
 @item -u 
-Accompany the printing of a variable's values with its @code{units}
-attribute, if any.
+Toggle the printing of a variable's @code{units} attribute, if any, 
+with its values.
 Also @samp{--units}.
 
 @end table

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.80 2005-01-10 04:22:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.81 2005-01-13 04:32:32 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -387,7 +387,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-S")) (void)fprintf(stdout,"-S, --fl_spt, --script-file fl.nco\tScript file containing multiple algebraic commands\n");
   if(strstr(opt_sng,"-T")) (void)fprintf(stdout,"-T, --truth_condition, --msk_cmp_typ, --op_rlt condition\tTruth condition for masking: eq,ne,ge,le,gt,lt\n");
   if(strstr(opt_sng,"-t")) (void)fprintf(stdout,"-t, --thr_nbr, --threads, --omp_num_threads thr_nbr\tThread number for OpenMP\n");
-  if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u, --units\t\tUnits of variables, if any, will be printed\n");
+  if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u, --units\t\tUnits of variables, if any, will not be printed\n");
   if(strstr(opt_sng,"-U")) (void)fprintf(stdout,"-U, --upk, --unpack\t\tUnpack input file\n");
   if(strstr(opt_sng,"-v")){
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-v, --variable old_var,new_var Variable's old and new names\n");

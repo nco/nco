@@ -1,3 +1,7 @@
+2005-01-12  Charlie Zender  <zender@uci.edu>
+
+	* ncks prints units, when present, by default (-u now turns this off)
+
 2005-01-09  Charlie Zender  <zender@uci.edu>
 
 	* Make ncks -q switch a true quiet switch that stops all printing

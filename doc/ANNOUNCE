@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.132 2005-01-10 02:22:46 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.133 2005-01-13 04:32:29 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.9 are ready. 
 
@@ -14,7 +14,7 @@ These changes are mainly oriented toward stabilization.
    See http://nco.sf.net/nco.html#ncpdq for details.
 
 3. ncks prints data to screen by default if only one filename specified
-   Formerly, three ncks switches (-H -m -M) were required to print all
+   Formerly, four ncks switches (-H -m -M -u) were required to print all
    file data and metadata to screen. 
    Now ncks automatically prints data to screen when no output file
    is specified. Change scripts that rely on the old behavior.
@@ -42,6 +42,7 @@ Other user-visible changes:
 1. ncks prints data to screen by default if only one filename specified
 2. Remove extra carriage returns from ncks global metadata printing
 3. Add help error message when ncks -b specified without -o file
+4. ncks prints units, when present, by default (-u now turns this off)
 
 User-invisible changes:
 1. libnco_c++ builds with g++-3.4
