@@ -1,7 +1,8 @@
 2002-05-20  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_4_1
-	Changes since nco-2_4_0: minor bugfix
+	Changes since nco-2_4_0: minor bugfix which should fix
+	use of operators in scripts where return code is checked
 
 2002-05-19  Charlie Zender  <zender@uci.edu>
 
