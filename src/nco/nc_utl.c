@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.120 2002-01-13 09:23:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.121 2002-01-14 18:42:46 hmb Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -5816,7 +5816,7 @@ usg_prn(void)
     opt_sng=(char *)strdup("[-A] [-a ...] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M val] [-N] [-O] [-o op_typ] [-p path] [-R] [-r] [-v ...] [-w wgt] [-x] [-y op_typ] in.nc out.nc\n");
     break;
   case ncap:
-    opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-m mask] [-M val] [-o op_typ] [-O] [-p path] [-R] [-r] [-s] [-S] [-v ...] [-w wgt] [-x] in.nc out.nc\n");
+    opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-O] [-p path] [-R] [-r] [-s] [-S] [-v] in.nc out.nc\n");
     break;
   case ncks:
     opt_sng=(char *)strdup("[-A] [-a] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-O] [-p path] [-q] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [out.nc]\n");
@@ -5887,7 +5887,9 @@ usg_prn(void)
   if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u\t\tUnits of variables, if any, will be printed\n");
   if(strstr(opt_sng,"-v")){
     if(prg == ncrename) (void)fprintf(stdout,"-v old_var,new_var Variable's old and new names\n");
-    if(prg != ncrename) (void)fprintf(stdout,"-v var1[,var2[...]] Variables to process\n");
+	if(prg == ncap) (void)fprintf(stdout,"-v\t\tInclude in the output file ONLY variables defined in the command script\n");
+    if(prg != ncrename && prg != ncap) (void)fprintf(stdout,"-v var1[,var2[...]] Variables to process\n");
+	
   } /* end if */
   /*  if(strstr(opt_sng,"-W")) (void)fprintf(stdout,"-W\t\tNormalize by weight but not tally\n");*/
   if(strstr(opt_sng,"-w")){
