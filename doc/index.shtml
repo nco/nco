@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.174 2003-11-17 07:15:06 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.175 2003-11-21 20:37:42 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -468,6 +468,13 @@ AT&T <tt>lex</tt> will not work because it does not understand
 <tt>bison</tt> version 1.29 (the default version on Mac OS X) is buggy
 and does not parse <tt>ncap_yacc.y</tt> correctly; previous and later
 versions of <tt>bison</tt> work correctly.
+</li>
+
+<li><b><tt>ncrcat</tt> time offset problems:</b>
+A recent version of <tt>ncrcat</tt> (2.8.1) appears to handle time
+offsets incorrectly.
+If this is true, it represents a serious (i.e., answer-changing) bug.
+We are working on diagnosing and fixing the problem.
 </li>
 
 <li><b>Build problems with DODS:</b>

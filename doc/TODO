@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.253 2003-11-20 21:36:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.254 2003-11-21 20:37:42 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -235,7 +235,7 @@ ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 285. Kevin: ncap segfaults on packing
 ncbo -O -y add -D3 -d date,0,100 /data/zender/tmp/convecPrecip00z.nc /data/zender/tmp/convecPrecip00z.nc /data/zender/tmp/sum.nc
 ncap -O  -D3 -s 'cp=pack(cp)' /data/zender/tmp/sum.nc /data/zender/tmp/packed_sum.nc
-
+286. mpage@ucar.edu: ncrcat 2.8.1 has time offset regression against 2.7.3
 ************************************************************************
 End NCO Wish list
 ************************************************************************
