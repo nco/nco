@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.40 2004-09-06 19:09:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.41 2004-09-06 20:37:01 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -413,9 +413,11 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
     } /* endif input variable was not packed */
     break;
   case nco_pck_xst_new_att:
-    /* If necessary,  unpack before re-packing */
-    if(var_in->pck_ram) nco_var_upk_swp(var_in,var_out);
-    goto var_upk_try_to_pck; 
+    /* If necessary, unpack before re-packing */
+    if(var_in->pck_ram){
+      nco_var_upk_swp(var_in,var_out);
+      goto var_upk_try_to_pck;
+    } /* endif */
     break;
   case nco_pck_all_new_att:
     if(var_in->pck_ram){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.60 2004-09-05 21:41:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.61 2004-09-06 20:37:01 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -930,37 +930,50 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        ncpdq is currently only operator that passes values other than nco_pck_nil */
     if(nco_pck_typ == nco_pck_upk) /* ...and variable will be _unpacked_ ... */
       PCK_ATT_CPY=False;
-
+    
     /* Recall that:
        var      refers to output variable structure
        var->xrf refers to input variable structure 
        ncpdq may pre-define packing attributes below regardless of PCK_ATT_CPY */ 
     (void)nco_att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id,PCK_ATT_CPY);
-
+    
     /* Create dummy packing attributes for ncpdq if necessary 
+       Must apply nearly same logic at end of ncpdq when writing final attributes
        Recall ncap calls ncap_var_write() to define newly packed LHS variables 
        If operator will attempt to pack some variables... */
     if(nco_pck_typ != nco_pck_nil && nco_pck_typ != nco_pck_upk){ 
-      /* ...and operator will pack this particular variable... */
-      if(nco_is_packable(var[idx]->type)){
-	/* ...then add/overwrite dummy scale_factor and add_offset attributes
-	   Overwrite these with correct values once known
-	   Adding dummy attributes now reduces likelihood that netCDF layer
-	   will impose file copy penalties when final values are written */
-	const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
-	const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
-	val_unn zero_unn; /* [frc] Generic container for value 0.0 */
-	var_sct *zero_var; /* [sct] NCO variable for value 0.0 */
-	zero_unn.d=0.0; /* [frc] Generic container for value 0.0 */
-	zero_var=scl_mk_var(zero_unn,typ_out); /* [sct] NCO variable for value 0.0 */
-	(void)nco_put_att(out_id,var[idx]->id,scl_fct_sng,typ_out,1,zero_var->val.vp);
-	(void)nco_put_att(out_id,var[idx]->id,add_fst_sng,typ_out,1,zero_var->val.vp);
-	zero_var=(var_sct *)nco_var_free(zero_var);
+      /* ...and expanded variable is pack-able... */
+      if(nco_is_packable(var[idx]->typ_upk)){
+	/* ...and operator will pack this particular variable... */
+	if(
+	   /* ...either because operator newly packs all variables... */
+	   (nco_pck_typ == nco_pck_all_new_att) ||
+	   /* ...or because operator newly packs un-packed variables like this one... */
+	   (nco_pck_typ == nco_pck_all_xst_att && !var[idx]->pck_ram) ||
+	   /* ...or because operator re-packs packed variables like this one... */
+	   (nco_pck_typ == nco_pck_all_xst_att && var[idx]->pck_ram)
+	   ){
+	  
+	  /* ...then add/overwrite dummy scale_factor and add_offset attributes
+	     Overwrite these with correct values once known
+	     Adding dummy attributes of maximum possible size (NC_DOUBLE) now 
+	     reduces likelihood that netCDF layer will impose file copy 
+	     penalties when final attribute values are written later
+	     Either add_offset or scale_factor may be removed in nco_pck_val() 
+	     if nco_var_pck() packing algorithm did not require utilizing it */ 
+	  const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+	  const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+	  val_unn zero_unn; /* [frc] Generic container for value 0.0 */
+	  var_sct *zero_var; /* [sct] NCO variable for value 0.0 */
+	  zero_unn.d=0.0; /* [frc] Generic container for value 0.0 */
+	  zero_var=scl_mk_var(zero_unn,typ_out); /* [sct] NCO variable for value 0.0 */
+	  (void)nco_put_att(out_id,var[idx]->id,scl_fct_sng,typ_out,1,zero_var->val.vp);
+	  (void)nco_put_att(out_id,var[idx]->id,add_fst_sng,typ_out,1,zero_var->val.vp);
+	  zero_var=(var_sct *)nco_var_free(zero_var);
+	} /* endif this variable will be packed or re-packed */
       } /* endif nco_is_packable() */
-    } /* endif attempting to pack */
-
+    } /* endif nco_pck_typ involves packing */
   } /* end loop over idx variables to define */
-  
 } /* end nco_var_dfn() */
 
 void
@@ -972,9 +985,9 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
 {
   /* Purpose: Copy variable data for every variable in input variable structure list
      from input file to output file */
-
+  
   int idx;
-
+  
   for(idx=0;idx<nbr_var;idx++){
     var[idx]->xrf->val.vp=var[idx]->val.vp=(void *)nco_malloc(var[idx]->sz*nco_typ_lng(var[idx]->type));
     if(var[idx]->nbr_dim==0){
