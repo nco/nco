@@ -3,7 +3,12 @@
 # Usage: 
 # ~/nco/bld/nco_tst.pl
 
+# NB: When adding tests, _be sure to use -O to overwrite files_
+# Otherwise, script hangs waiting for interactive response to overwrite queries
+
 use File::Basename;
+
+my $dbg_lvl=0; # [enm] Print tests during execution for debugging
 
 &initialize();
 &perform_tests();
@@ -18,7 +23,8 @@ sub perform_tests
 ####################
 $operator="ncap";
 ####################
-$test[0]='ncap -O -D 1 -v -S ncap.in in.nc foo.nc 2> foo.tst';
+$test[0]='ncap -O -v -S ncap.in in.nc foo.nc';
+$description=" running ncap.in script into nco_tst.pl";
 $expected="ncap: WARNING Replacing missing value data in variable val_half_half";
 &go();
 
@@ -143,9 +149,9 @@ $test[0]='ncks -O -C -d lon,1 -v mss_val in.nc foo_x.nc';
 $test[1]='ncks -O -C -d lon,0 -v mss_val in.nc foo_y.nc';
 $test[2]='ncflint -O -w 0.5,0.5 foo_x.nc foo_y.nc foo_xy.nc';
 $test[3]='ncflint -O -w 0.5,0.5 foo_y.nc foo_x.nc foo_yx.nc';
-$test[4]='ncdiff foo_xy.nc foo_yx.nc foo_xymyx.nc';
+$test[4]='ncdiff -O foo_xy.nc foo_yx.nc foo_xymyx.nc';
 $test[5]='ncks -C -H -s "%g" -v mss_val foo_xymyx.nc';
-$description=" switch order of occurrence to test for associativity";
+$description=" switch order of occurrence to test for commutivity";
 $expected= 1e+36 ; 
 &go();
 ####################
@@ -661,8 +667,9 @@ $expected= 0;
 ####################
 sub initialize
 {
-  @all_operators = qw(ncap ncbo ncflint ncea ncecat ncks ncra ncwa);
-if (scalar @ARGV > 0) 
+  @all_operators = qw(ncap ncbo ncflint ncea ncecat ncks ncra ncrename ncwa);
+#if (scalar @ARGV > 0) 
+if ($#ARGV > 0) 
 {
   @operators=@ARGV;
 } else {
@@ -715,26 +722,27 @@ if (scalar @ARGV > 0)
 sub go {
   # Only perform tests of requested operator; default is all
   if (!defined $testnum{$operator}) { 
-    #clear test array
+    # Clear test array
     @test=();
     return; 
     }
   $testnum{$operator}++;
   foreach  (@test) {
-    # add MY_BIN_DIR to NCO operator commands only, not things like 'cut'
+    # Add MY_BIN_DIR to NCO operator commands only, not things like 'cut'
     foreach $op (@all_operators) {
       if ($_ =~ m/^$op/) {
         $_ = "$MY_BIN_DIR/$_" ;
       }
     }
-    #perform an individual test
+    # Perform an individual test
+    if($dbg_lvl > 0){printf ("$0: Executing following test operator $operator:\n$_\n");}
     $result=`$_` ;
   }
   
-  # remove trailing newline for easier regex comparison
+  # Remove trailing newline for easier regex comparison
   chomp $result;
   
-  # compare numeric results
+  # Compare numeric results
   if ($expected =~/\d/)
   {
     if ($result == $expected)
@@ -744,10 +752,10 @@ sub go {
       &failed($expected);
     } 
   }
-  # compare non-numeric tests
+  # Compare non-numeric tests
   elsif ($expected =~/\D/)
   {
-    # compare $result with $expected
+    # Compare $result with $expected
     if (substr($result,0,length($expected)) eq $expected)
     {
       $success{$operator}++;
@@ -755,13 +763,13 @@ sub go {
       &failed($expected);
     }
  }   
- # no result at all?
+ # No result at all?
  else {
     &failed();
  }
- # clear test
+ # Clear test
  @test=();
-}
+} # end &go()
 
 ####################
 sub failed {

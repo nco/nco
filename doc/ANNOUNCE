@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.102 2004-07-01 17:34:32 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.103 2004-07-01 21:01:00 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.6 are ready. 
 
@@ -46,9 +46,12 @@ Feature changes:
 
 Bug-fixes:
 1. Use NCO-supplied float-valued functions (e.g., cosf()) on AIX
+2. Fix segfaults since 2.9.6 when no input filename present for
+   non-multi-file-operators 
 
 Build changes:
 1. LFS enabled by default
+2. Fix nco_tst.pl test script hangs waiting for interactive responses
 
 Other user-visible changes:
 1. Add nco_put_att<int,short,long> functions to libnco_c++
@@ -56,6 +59,8 @@ Other user-visible changes:
    Interactive responses to "overwrite (o/a/e)?" questions must now be
    terminated with carriage return (and are case-insensitive)
 3. ln works in ncap as natural logarithm (synonym for log())
+4. Changed old ncwa -t to ncwa -T so can use -t for threads
 
 User-invisible changes:
 1. Added additional file diagnostics to debugging output
+2. Added $dbg_lvl variable to print nco_tst.pl tests during execution

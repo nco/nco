@@ -1,5 +1,21 @@
 2004-07-01  Charlie Zender  <zender@uci.edu>
 
+	* Added $dbg_lvl variable to print nco_tst.pl tests during execution
+
+	* Fixed nco_tst.pl test hanging while waiting for interactive
+	response to overwrite query
+
+	* Fix brokenness in nco_fl_utl:nco_fl_lst_mk() which triggered
+	segfaults in non-multi-file-operators when no input filename was
+	offerred, i.e., when there were no positional arguments
+
+	* Fix brokenness in nco_tst.pl caused by renaming -o to -T
+
+	* Changed old (only since 2.9.6) ncwa -t to ncwa -T so can use -t
+	for threads consistently everywhere
+
+	* Pass thr_nbr on command line
+
 	* Added LFS stub to nco.texi, pass LFS info from configure.in
 
 	* Added large file support LFS to custom Makefiles. Rorik added it

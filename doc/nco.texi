@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.244 2004-07-01 18:00:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.245 2004-07-01 21:01:06 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -911,6 +911,10 @@ offending files and re-run the command until it no longer breaks.
 Then back up one step and report the problem.
 Usually the file(s) will be very small, i.e., one variable with one or
 two small dimensions ought to suffice.
+@html
+<a name="dbg"></a> <!-- http://nco.sf.net/nco.html#dbg -->
+<a name="-D"></a> <!-- http://nco.sf.net/nco.html#-D -->
+@end html
 @cindex @code{-r}
 @cindex @code{--revision}
 @cindex @code{--version}
@@ -1044,6 +1048,10 @@ by approximately the time it takes to copy the @var{output-file}.
 Finally, note this feature allows the @var{output-file} to be the same 
 as the @var{input-file} without any danger of ``overlap''.
 
+@html
+<a name="-A"></a> <!-- http://nco.sf.net/nco.html#-A -->
+<a name="-O"></a> <!-- http://nco.sf.net/nco.html#-O -->
+@end html
 @cindex @code{-A}
 @cindex @code{-O}
 @cindex @code{--apn}
@@ -1676,7 +1684,8 @@ feature is automatic and cannot be controlled by the user.
 
 @menu
 * Internationalization::        
-* OpenMP threading::      
+* OpenMP threading::            
+* Large File Support::          
 * Command line options::        
 * Specifying input files::      
 * Specifying output files::     
@@ -1723,7 +1732,7 @@ We hope to produce foreign language string catalogues in 2004.
 <a name="omp"></a> <!-- http://nco.sf.net/nco.html#omp -->
 <a name="openmp"></a> <!-- http://nco.sf.net/nco.html#openmp -->
 @end html
-@node OpenMP threading, Command line options, Internationalization, Common features
+@node OpenMP threading, Large File Support, Internationalization, Common features
 @section OpenMP threading
 @cindex OpenMP
 @cindex threads
@@ -1762,7 +1771,7 @@ This information is also useful for benchmarking.
 @html
 <a name="lfs"></a> <!-- http://nco.sf.net/nco.html#lfs -->
 @end html
-@node Large File Support
+@node Large File Support, Command line options, OpenMP threading, Common features
 @section Large File Support
 @cindex LFS
 @cindex Large File Support
@@ -1776,7 +1785,7 @@ Long options: All@*
 @html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
 @end html
-@node Command line options, Specifying input files, OpenMP threading, Common features
+@node Command line options, Specifying input files, Large File Support, Common features
 @section Command line options
 @cindex command line options
 @cartouche
@@ -2566,6 +2575,8 @@ filename expansion (globbing).
 
 @html
 <a name="crd"></a> <!-- http://nco.sf.net/nco.html#crd -->
+<a name="-C"></a> <!-- http://nco.sf.net/nco.html#-C -->
+<a name="-c"></a> <!-- http://nco.sf.net/nco.html#-c -->
 @end html
 @node Coordinate variables, Fortran indexing, Variable subsetting, Common features
 @section Including/Excluding coordinate variables
@@ -2601,6 +2612,7 @@ without having to know their names.
 
 @html
 <a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
+<a name="-F"></a> <!-- http://nco.sf.net/nco.html#-F -->
 @end html
 @node Fortran indexing, Hyperslabs, Coordinate variables, Common features
 @section C & Fortran index conventions
@@ -2645,6 +2657,7 @@ lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0
 
 @html
 <a name="dmn"></a> <!-- http://nco.sf.net/nco.html#dmn -->
+<a name="-d"></a> <!-- http://nco.sf.net/nco.html#-d -->
 @end html
 @node Hyperslabs, Multislabs, Fortran indexing, Common features
 @section Hyperslabs 
@@ -3819,6 +3832,10 @@ existing @var{output-file} without prompting the user interactively.
 These switches are useful in batch environments because they suppress
 interactive keyboard input.
 
+@html
+<a name="hst"></a> <!-- http://nco.sf.net/nco.html#hst -->
+<a name="-h"></a> <!-- http://nco.sf.net/nco.html#-h -->
+@end html
 @node History attribute, Input file list attributes, Suppressing interactive prompts, Common features
 @section History attribute
 @cindex @code{history} attribute

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.331 2004-07-01 18:00:30 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.332 2004-07-01 21:01:05 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -206,7 +206,8 @@ nco347. Add OpenMP documentation to nco.texi
 nco348. Create OpenMP robustness test
 cd ${DATA}/mie/mie15
 /bin/ls | grep aer_h2o_lqd_${SZ_SNG}_${CASEID}_'0[0-4]\.[0-9][0-9]00000_0[0-5]\.[0-9][0-9]00000.nc' | ncea -D 2 -O -v ${var_lst} -p ${DATA_MIE}/mie/${CASEID} -o ${DATA_MIE}/aca/aer_h2o_lqd_${SZ_SNG}_${CASEID}_avg.nc
-nco349. 
+nco349. ncks with no filename arguments fails
+nco350. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
