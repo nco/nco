@@ -192,6 +192,7 @@ NCO_CHECK_FUNCS([erff erfcf gammaf])
 NCO_CHECK_FUNCS([acoshf asinhf atanhf coshf sinhf tanhf])
 NCO_CHECK_FUNCS([ceilf floorf])
 NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
+NCO_CHECK_FUNCS([getopt_long])
 AC_CHECK_LIB([intl], [gettext])
 AC_CHECK_LIB([resolv], [res_init])
 AC_CHECK_LIB([socket], [main])> 
