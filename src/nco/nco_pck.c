@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.36 2004-09-06 04:53:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.37 2004-09-06 06:00:20 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -99,26 +99,84 @@ nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */
 {
   /* Purpose: Determine best type to pack input variable to */
   /* fxm: devise better system to allow user to specify output type for packed variable */
+  const char fnc_nm[]="nco_typ_pck_get()"; /* [sng] Function name */
   nc_type nc_typ_pck_out=NC_NAT; /* [enm] Type to pack to */
-
-  switch(nc_typ_in){ 
-  case NC_FLOAT: 
-  case NC_DOUBLE: 
-  case NC_INT: 
-    nc_typ_pck_out=NC_SHORT;
+  int nco_pck_cnv=nco_pck_cnv_hgh_sht;  /* [enm] Packing conversion */
+  
+  switch(nco_pck_cnv){ 
+  case nco_pck_cnv_nil:
+    nc_typ_pck_out=nc_typ_in; break;
+  case nco_pck_cnv_hgh_sht:
+    switch(nc_typ_in){ 
+    case NC_DOUBLE: 
+    case NC_FLOAT: 
+    case NC_INT: 
+      nc_typ_pck_out=NC_SHORT; break;
+    case NC_SHORT: 
+    case NC_CHAR: 
+    case NC_BYTE: 
+      nc_typ_pck_out=nc_typ_in; break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end nc_type switch */ 
     break;
-  case NC_SHORT: 
-    nc_typ_pck_out=NC_SHORT;
+  case nco_pck_cnv_hgh_chr:
+    switch(nc_typ_in){ 
+    case NC_DOUBLE: 
+    case NC_FLOAT: 
+    case NC_INT: 
+    case NC_SHORT: 
+      nc_typ_pck_out=NC_CHAR; break;
+    case NC_CHAR: 
+    case NC_BYTE: 
+      nc_typ_pck_out=nc_typ_in; break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end nc_type switch */ 
     break;
-  case NC_CHAR: 
-    nc_typ_pck_out=NC_CHAR;
+  case nco_pck_cnv_dwn_one:
+    switch(nc_typ_in){ 
+    case NC_DOUBLE: nc_typ_pck_out=NC_INT; break; 
+    case NC_FLOAT: 
+    case NC_INT: 
+      nc_typ_pck_out=NC_NAT; break;
+    case NC_SHORT: nc_typ_pck_out=NC_CHAR; break;
+    case NC_CHAR: 
+    case NC_BYTE: 
+      nc_typ_pck_out=nc_typ_in; break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end nc_type switch */ 
     break;
-  case NC_BYTE: 
-    nc_typ_pck_out=NC_BYTE;
+  case nco_pck_cnv_flt_sht:
+    switch(nc_typ_in){ 
+    case NC_DOUBLE: 
+    case NC_FLOAT: 
+      nc_typ_pck_out=NC_SHORT; break;
+    case NC_INT:
+    case NC_SHORT:
+    case NC_CHAR:
+    case NC_BYTE:
+      nc_typ_pck_out=nc_typ_in; break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end nc_type switch */ 
     break;
-  default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */ 
-
+  case nco_pck_cnv_flt_chr:
+    switch(nc_typ_in){ 
+    case NC_DOUBLE: 
+    case NC_FLOAT: 
+      nc_typ_pck_out=NC_CHAR; break;
+    case NC_INT:
+    case NC_SHORT:
+    case NC_CHAR:
+    case NC_BYTE:
+      nc_typ_pck_out=nc_typ_in; break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end nc_type switch */ 
+    break;
+  default: 
+    (void)fprintf(stdout,"%s: ERROR %s reports switch(nco_pck_cnv) statement fell through to default case\n",prg_nm_get(),fnc_nm);
+    nco_err_exit(0,fnc_nm);
+    break;
+  } /* end nco_pck_cnv switch */ 
+  
   return nc_typ_pck_out;
 } /* end nco_typ_pck_get() */
 
@@ -134,12 +192,12 @@ nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
      Multi-file operators which handle packing must call this routine prior
      to each read of a variable, in case that variable has been unpacked. */
   /* ncea -O -D 3 -v pck ~/nco/data/in.nc ~/nco/data/foo.nc */
-
+  
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
   int rcd; /* [rcd] Return success code */
-
+  
   long add_fst_lng; /* [idx] Number of elements in add_offset attribute */
   long scl_fct_lng; /* [idx] Number of elements in scale_factor attribute */
 

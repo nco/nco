@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.22 2004-09-06 04:53:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.23 2004-09-06 06:00:21 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -32,7 +32,7 @@
 #include "nco_var_utl.h" /* Variable utilities */
 
 /* Packing types: 
-   Handle each packing type in nco_pck_mtd, nco_pck_val */
+   Handle each packing type in nco_pck_mtd(), nco_pck_val() */
 enum nco_pck_typ{ /* [enm] Packing type */
   nco_pck_nil, /* 0 [enm] Do not think about packing */
   nco_pck_all_xst_att, /* 1 [enm] Pack all variables, keep existing packing attributes if any */
@@ -40,6 +40,21 @@ enum nco_pck_typ{ /* [enm] Packing type */
   nco_pck_xst_new_att, /* 3 [enm] Pack existing packed variables, always generate new packing attributes */
   nco_pck_upk /* 4 [enm] Unpack all packed variables */
 }; /* end nco_pck_typ enum */
+
+/* Packing conversions: */
+enum nco_pck_cnv{ /* [enm] Packing conversion */
+  nco_pck_cnv_nil, /* 0 [enm] Do not convert anything, i.e., all types remain unchanged */
+  nco_pck_cnv_hgh_sht, /* 1 [enm] Pack higher precision types to NC_SHORT, pack nothing else
+			  [NC_DOUBLE,NC_FLOAT,NC_INT]->NC_SHORT, [NC_SHORT,NC_CHAR,NC_BYTE]->remain */
+  nco_pck_cnv_hgh_chr, /* 2 [enm] Pack higher precision types to NC_CHAR, pack nothing else
+			  [NC_DOUBLE,NC_FLOAT,NC_INT,NC_SHORT]->NC_CHAR, [NC_CHAR,NC_BYTE]->remain */
+  nco_pck_cnv_dwn_one, /* 3 [enm] Convert each type of each size to type of next size down
+			  NC_DOUBLE->NC_INT, [NC_FLOAT,NC_INT]->NC_SHORT, [NC_CHAR,NC_BYTE]->remain */
+  nco_pck_cnv_flt_sht, /* 4 [enm] Pack floating precision types to NC_SHORT, pack nothing else
+			  [NC_DOUBLE,NC_FLOAT]->NC_SHORT, [NC_INT,NC_SHORT,NC_CHAR,NC_BYTE]->remain */
+  nco_pck_cnv_flt_chr /* 5 [enm] Pack floating precision types to NC_CHAR, pack nothing else
+			  [NC_DOUBLE,NC_FLOAT]->NC_CHAR, [NC_INT,NC_SHORT,NC_CHAR,NC_BYTE]->remain */
+}; /* end nco_pck_cnv enum */
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.120 2004-09-06 01:12:23 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.121 2004-09-06 06:00:14 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.9 are ready. 
 
@@ -27,9 +27,10 @@ To pack the entire file in.nc into output file out.nc use
 ncpdq -P all_new in.nc out.nc
 
 The main options to -P are 
-  all_new: Pack all unpacked variables and re-pack all packed variables
-  all_xst: Pack all unpacked variables and do not touch packed variables
-  upk: Unpack all packed variables
+  all_new: Pack unpacked variables, re-pack packed variables
+  all_xst: Pack unpacked variables, copy packed variables
+  xst_new: Re-pack packed variables, copy unpacked variables
+      upk: Unpack packed variables, copy unpacked variables
 This basic packing reduces the size of the average floating point file
 by a factor of two with no additional work on the user's part.
 One nice feature of (lossy) scale_factor/add_offset packing is that

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.401 2004-09-06 01:12:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.402 2004-09-06 06:00:15 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -259,7 +259,12 @@ nco425. ncpdq: Make unpacking offer to unpack missing value to preserve its usef
 nco426. ncpdq: Make packing offer to pack missing value to the packed type to preserve its usefulness
 nco427. Search and fix all pck_dbg statements
 nco431. Implement ncpdq -P optional options
-nco439. 
+nco439. Verify packing NC_INT->NC_SHORT
+nco440. Verify packing NC_DOUBLE->NC_INT
+nco441. Verify packing NC_DOUBLE->NC_CHAR
+nco442. Verify packing NC_INT->NC_CHAR
+nco443. Verify packing NC_SHORT->NC_CHAR
+nco444. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
