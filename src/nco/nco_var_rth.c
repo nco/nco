@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.24 2004-06-03 05:52:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.25 2004-07-06 16:30:02 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -22,14 +22,8 @@ nco_var_abs(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
   
   /* Absolute value is currently defined as op1:=abs(op1) */  
   
-  /* http://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
-     __GNUC__ : Defined by gcc 
-     __GNUG__ : Defined by g++, equivalent to (__GNUC__ && __cplusplus) */
+  /* NB: Many compilers need to #include "nco_rth_flt.h" for fabsf() prototype */
 
-#ifndef __GNUG__
-  float fabsf(float); /* Sun math.h does not include fabsf() prototype */
-#endif /* __GNUG__ */
-  
   long idx;
   
   /* Typecast pointer to values before access */
@@ -1317,14 +1311,8 @@ nco_var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
 
   /* Square root is currently defined as op2:=sqrt(op1) */
 
-  /* http://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
-     __GNUC__ : Defined by gcc 
-     __GNUG__ : Defined by g++, equivalent to (__GNUC__ && __cplusplus) */
+  /* NB: Many compilers need to #include "nco_rth_flt.h" for sqrtf() prototype */
 
-#ifndef __GNUG__
-  float sqrtf(float); /* Sun math.h does not include sqrtf() prototype */
-#endif /* __GNUG__ */
-  
   long idx;
 
   /* Typecast pointer to values before access */
