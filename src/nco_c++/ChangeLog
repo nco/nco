@@ -1,3 +1,9 @@
+2004-07-07  Charlie Zender  <zender@uci.edu>
+
+	* nco_att.cc: Manually NUL-terminate retrieved text attributes in
+	nco_get_att() so that non-NUL-terminated attributes get correctly
+	copied into returned string value.
+
 2004-07-05  Charlie Zender  <zender@uci.edu>
 
 	* Added nco_wrn_prn() to standardize printing warnings
