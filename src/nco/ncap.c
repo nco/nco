@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.55 2002-01-28 10:06:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.56 2002-02-02 17:32:38 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.55 2002-01-28 10:06:53 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.55 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.56 2002-02-02 17:32:38 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.56 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -154,6 +154,7 @@ main(int argc,char **argv)
   int nbr_lst_a=0;
   int nbr_lst_b=0;
   int nbr_lst_c=0;
+  int nbr_lst_d=0;
   int opt;
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -170,13 +171,14 @@ main(int argc,char **argv)
   
   lmt_sct *lmt=NULL_CEWI;
   
-  nm_id_sct *dmn_lst;
+  nm_id_sct *dmn_lst=NULL;
   nm_id_sct *xtr_lst=NULL;
   nm_id_sct *xtr_lst_2=NULL;
   
   nm_id_sct *xtr_lst_a=NULL;
   nm_id_sct *xtr_lst_b=NULL;
   nm_id_sct *xtr_lst_c=NULL;
+  nm_id_sct *xtr_lst_d=NULL;
   time_t clock;
   
   var_sct **var;
@@ -341,8 +343,9 @@ main(int argc,char **argv)
   /* Perform initial scan of input script to create three lists of variables:
      list a: RHS variables present in input file
      list b: LHS variables present in input file
-     list c: Variables of attributes on LHS which are present in input file */
-  (void)ncap_initial_scan(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c,&nbr_lst_c);
+     list c: Variables of attributes on LHS which are present in input file 
+     list d: Dimensions defined in LHS subscripts         */
+  (void)ncap_initial_scan(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c,&nbr_lst_c,&xtr_lst_d,&nbr_lst_d);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
   rcd=nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
@@ -379,7 +382,14 @@ main(int argc,char **argv)
    /* Create list of coordinate variables */
    if(nbr_xtr > 0 && (PROCESS_ALL_COORDINATES || PROCESS_ASSOCIATED_COORDINATES)){
      nbr_xtr_2=nbr_xtr;
-     xtr_lst_2=ncap_var_lst_crd_make(in_id,xtr_lst,&nbr_xtr_2);
+     xtr_lst_2 = var_lst_copy(xtr_lst,nbr_xtr);
+     
+     /* add the dimensions defined in LHS subscripts */
+     if(xtr_lst_d > 0) xtr_lst_2 = var_lst_add(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_d,nbr_lst_d); 
+     
+     /* now make a list of just the co-ordinates */
+     xtr_lst_2=ncap_var_lst_crd_make(in_id,xtr_lst_2,&nbr_xtr_2);
+     
    } /* endif */
 
    /* Add list_c to new list */
@@ -398,6 +408,9 @@ main(int argc,char **argv)
   
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
+
+  /* now add list d */
+  if(nbr_lst_d > 0) dmn_lst=var_lst_add(in_id,dmn_lst,&nbr_dmn_xtr,xtr_lst_d,nbr_lst_d);  
   
   /* Fill in dimension structure for all extracted dimensions */
   dmn=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
