@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.115 2001-11-02 17:18:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.116 2001-11-02 17:19:17 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -961,9 +961,6 @@ var_refresh(int nc_id,var_sct *var)
      NCO is one of the only tool I know of which makes all of this transparent to the user
      Thus this capability is very important to maintain
    */
-#ifdef _OPENMP
-  int rcd=NC_NOERR; /* [rcd] Return code */
-#endif /* _OPENMP */
 
   /* Refresh variable ID */
   var->nc_id=nc_id;
@@ -972,7 +969,7 @@ var_refresh(int nc_id,var_sct *var)
 #pragma omp critical
 #endif /* _OPENMP */
   { /* begin OpenMP critical */
-    rcd=nco_inq_varid(var->nc_id,var->nm,&var->id);
+    (void)nco_inq_varid(var->nc_id,var->nm,&var->id);
     
     /* fxm: Not sure if/why it is necessary refresh number of dimensions...but it should not hurt */
     /* Refresh number of dimensions in variable */
