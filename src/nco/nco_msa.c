@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.11 2003-02-25 21:58:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.12 2003-02-25 22:12:01 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -12,8 +12,6 @@
 /* Length should be computed at run time but is a pain */
 #define MAX_LEN_FMT_SNG 100
 
-
-
 void *
 nco_msa_rec_clc /* [fnc] Multi slab algorithm (recursive routine, returns a single slab pointer */
 (int dpt_crr, /* current depth, we st
@@ -22,9 +20,8 @@ art at 0 */
  lmt_sct **lmt, /* limits of the current hyperslabs these change as we recurse */
  lmt_all **lmt_lst, /* list of limits in each dimension (this remains STATIC as we recurse) */
  var_sct *vara) /* Info for routine to read var info and pass info between calls */
-{  
+{
   /* Purpose: Multi slab algorithm (recursive routine, returns a single slab pointer */
-  
   int idx;
   int nbr_slb;
   void *vp;
@@ -87,7 +84,7 @@ art at 0 */
 
     /* deal first with wrapped dims. With true wrapped dims nbr_slb =2 */
     /* They are also "continuous" , and there is no overlapping        */  
-  if(lmt_lst[dpt_crr]->WRP) {
+  if(lmt_lst[dpt_crr]->WRP){
       
       for(slb_idx=0;slb_idx<2;slb_idx++){
 	cp_stp=(char*)vp+cp_fst;
@@ -99,7 +96,7 @@ art at 0 */
 	  slb+=slb_sz;
 	  cp_stp+=cp_inc;
         } /* end while */
-        cp_fst+=slb_sz;       
+        cp_fst+=slb_sz;      
       }
 
     }else{
@@ -129,7 +126,7 @@ art at 0 */
   } /* endif multiple hyperslabs */
 
  read_lbl:
-  {   
+ { 
     long var_sz=1L;
     long mult_srd=1L;
     long *dmn_srt;
@@ -245,7 +242,7 @@ nco_msa_clc_idx
     } /* end if */
     
     for(i=0;i<size;i++){
-      if(min[i]){ 
+      if(min[i]){
 	indices[i]+=lmt_a->lmt_dmn[i]->srd;
 	if(indices[i] > lmt_a->lmt_dmn[i]->end) indices[i]=-1;
       }
@@ -257,7 +254,7 @@ nco_msa_clc_idx
   *slb=prv_slb;
   
   /* normalize the slab */
-  if(NORMALIZE){  
+  if(NORMALIZE){
     lmt->srt=(lmt->srt-lmt_a->lmt_dmn[*slb]->srt)/(lmt_a->lmt_dmn[*slb]->srd);
     lmt->end=(lmt->end-lmt_a->lmt_dmn[*slb]->srt)/(lmt_a->lmt_dmn[*slb]->srd);
     lmt->srd=1L;
@@ -286,19 +283,19 @@ bool FREE){
   if(!initialize){
     dmn_sbs_prv=(long*)nco_malloc(nbr_dim*sizeof(long));
     dmn_indices=(long**)nco_malloc(nbr_dim*sizeof(long*));
-    for(idx= 0;idx<nbr_dim;idx++){
+    for(idx=0;idx<nbr_dim;idx++){
       dmn_indices[idx]=(long *)nco_malloc(lmt_mult[idx]->lmt_dmn_nbr*sizeof(long));
       for(jdx=0;jdx<lmt_mult[idx]->lmt_dmn_nbr;jdx++)
 	dmn_indices[idx][jdx]=lmt_mult[idx]->lmt_dmn[jdx]->srt;
       dmn_sbs_prv[idx]=-1L;
-    } 
+    }
     initialize=1;
   }
-  for(idx= 0;idx <nbr_dim;idx ++){
+  for(idx=0;idx <nbr_dim;idx ++){
     size=lmt_mult[idx]->lmt_dmn_nbr;
     if(dmn_sbs_ram[idx] == dmn_sbs_prv[idx]) continue;
 
-    if(lmt_mult[idx]->BASIC_DMN) { 
+    if(lmt_mult[idx]->BASIC_DMN){
       dmn_sbs_dsk[idx]=dmn_sbs_ram[idx];
       continue;
     }
@@ -309,21 +306,21 @@ bool FREE){
        	dmn_indices[idx][jdx]=lmt_mult[idx]->lmt_dmn[jdx]->srt;
    
     /* Deal with wrapping - we have 2 hyperlsbas to deal with */
-     if(lmt_mult[idx]->WRP){ 
+     if(lmt_mult[idx]->WRP){
        if(dmn_indices[idx][0]<lmt_mult[idx]->dmn_sz_org){
-	 dmn_sbs_dsk[idx]= dmn_indices[idx][0];
+	 dmn_sbs_dsk[idx]=dmn_indices[idx][0];
          dmn_indices[idx][0]+=lmt_mult[idx]->lmt_dmn[0]->srd;
         }else{
-	 dmn_sbs_dsk[idx]= dmn_indices[idx][1];
+	 dmn_sbs_dsk[idx]=dmn_indices[idx][1];
          dmn_indices[idx][1]+=lmt_mult[idx]->lmt_dmn[1]->srd;
        }
-     continue; 
+     continue;
      }
          
     dmn_sbs_dsk[idx]=nco_msa_min_idx(dmn_indices[idx],min,size);
 
     for(jdx=0;jdx<size;jdx++){
-      if(min[jdx]){ 
+      if(min[jdx]){
 	dmn_indices[idx][jdx]+=lmt_mult[idx]->lmt_dmn[jdx]->srd;
 	if(dmn_indices[idx][jdx] > lmt_mult[idx]->lmt_dmn[jdx]->end) dmn_indices[idx][jdx]=-1;
       }
@@ -364,7 +361,7 @@ nco_msa_clc_cnt(lmt_all *lmt_a)
   
   while(nco_msa_min_idx(indices,min,size) != LONG_MAX){
     for(idx=0;idx<size;idx++){
-      if(min[idx]){ 
+      if(min[idx]){
 	indices[idx]+=lmt_a->lmt_dmn[idx]->srd;
 	if(indices[idx] > lmt_a->lmt_dmn[idx]->end) indices[idx]=-1;
       }
@@ -383,23 +380,20 @@ nco_msa_wrp_splt
   int size=lmt_a->lmt_dmn_nbr;
   long dmn_sz_org=lmt_a->dmn_sz_org;
   long srt;
-  long end;
   long cnt;
   long srd;
   long index=0;
   lmt_sct *lmt_wrp;
 
-  for(idx=0;idx<size;idx++) {
+  for(idx=0;idx<size;idx++){
 
-    if(lmt_a->lmt_dmn[idx]->srt > lmt_a->lmt_dmn[idx]->end) {
+    if(lmt_a->lmt_dmn[idx]->srt > lmt_a->lmt_dmn[idx]->end){
 
       lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
 
-      srt= lmt_a->lmt_dmn[idx]->srt;
-      end= lmt_a->lmt_dmn[idx]->end;
-      cnt= lmt_a->lmt_dmn[idx]->cnt;
-      srd= lmt_a->lmt_dmn[idx]->srd;
-    
+      srt=lmt_a->lmt_dmn[idx]->srt;
+      cnt=lmt_a->lmt_dmn[idx]->cnt;
+      srd=lmt_a->lmt_dmn[idx]->srd;
      
     for(jdx=0;jdx<cnt;jdx++){
       index=(srt+srd*jdx)%dmn_sz_org;
@@ -616,7 +610,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* For regular data */
   long lmn;
   
-  char *unit_sng=""; 
+  char *unit_sng="";
   char var_sng[MAX_LEN_FMT_SNG];
   
   var_sct var;
@@ -656,7 +650,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   for(idx=0;idx< var.nbr_dim;idx++)
     for(jdx=0;jdx< lmt_nbr;jdx++){
       if(dmn_id[idx] == lmt_lst[jdx].lmt_dmn[0]->id){
-	lmt_mult[idx]= &lmt_lst[jdx];
+	lmt_mult[idx]=&lmt_lst[jdx];
         break;
       }
     } /* end loop over jdx */
@@ -712,7 +706,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
   /* if nbr_dim ==0 and dlm_sng==NULL  print variable */
 
-  if(var.nbr_dim == 0 && dlm_sng == NULL){ 
+  if(var.nbr_dim == 0 && dlm_sng == NULL){
     /* Variable is a scalar, byte, or character */
     lmn=0;
     (void)sprintf(var_sng,"%%s = %s %%s\n",nco_typ_fmt_sng(var.type));
@@ -730,12 +724,12 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end switch */
   } /* end if variable is a scalar, byte, or character */
 
-  if(var.nbr_dim > 0 && dlm_sng == NULL) {
+  if(var.nbr_dim > 0 && dlm_sng == NULL){
 
     long *mod_map_in;
     long *mod_map_out;
-    long *dmn_sbs_ram;             /* indices in the hyperslab */
-    long *dmn_sbs_dsk;          /* indices of the hyperslab relative to original on disk */  
+    long *dmn_sbs_ram;            /* indices in the hyperslab */
+    long *dmn_sbs_dsk;         /* indices of the hyperslab relative to original on disk */  
     long var_dsk;
 
     mod_map_in=(long*)nco_malloc(var.nbr_dim * sizeof(long));
@@ -747,16 +741,16 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     for(idx=0;idx< var.nbr_dim;idx++) mod_map_in[idx]=1L;
     for(idx=0;idx< var.nbr_dim;idx++)
       for(jdx=idx+1;jdx<var.nbr_dim;jdx++)
-	mod_map_in[idx] *= lmt_mult[jdx]->dmn_sz_org;
+	mod_map_in[idx]*=lmt_mult[jdx]->dmn_sz_org;
        
     /* Create mod_map_out */
     for(idx=0;idx< var.nbr_dim;idx++) mod_map_out[idx]=1L;
     for(idx=0;idx< var.nbr_dim;idx++) 
       for(jdx=idx;jdx<var.nbr_dim;jdx++)
-	mod_map_out[idx] *= lmt_mult[jdx]->dmn_cnt;
+	mod_map_out[idx]*=lmt_mult[jdx]->dmn_cnt;
       
     /* Read in co-ord dims if required */
-    if(PRN_DMN_IDX_CRD_VAL) { 
+    if(PRN_DMN_IDX_CRD_VAL){
       var_sct var_crd;
 
       dim=(dmn_sct *)nco_malloc(var.nbr_dim*sizeof(dmn_sct));
@@ -778,17 +772,17 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         var_crd.type=dim[idx].type;
         var_crd.id=dim[idx].cid;
         /* Read in co-ord var with limits applied */
-	dim[idx].val.vp=nco_msa_rec_clc(0,1,lmt,lmt_mult+idx ,&var_crd);    
+	dim[idx].val.vp=nco_msa_rec_clc(0,1,lmt,lmt_mult+idx ,&var_crd);   
 
         /* typecast pointer before use */  
         (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
       }/* end for */
     } /* end if */
    
-    for(lmn=0;lmn<var.sz;lmn++) {
+    for(lmn=0;lmn<var.sz;lmn++){
 
       /* Caculate ram indices from current limit */
-      for(idx= 0;idx <var.nbr_dim;idx++) 
+      for(idx=0;idx <var.nbr_dim;idx++) 
 	dmn_sbs_ram[idx]=(lmn % mod_map_out[idx]) / (idx == var.nbr_dim -1 ? 1L : mod_map_out[idx+1]);
 	
       /* Calculate disk indices from ram indices */
@@ -797,7 +791,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       /* Find variable index relative to disk */
       var_dsk=0;
       for(idx=0;idx <var.nbr_dim;idx++)
-	var_dsk+= dmn_sbs_dsk[idx]*mod_map_in[idx];
+	var_dsk+=dmn_sbs_dsk[idx]*mod_map_in[idx];
 
 
       /* Skip rest of loop unless element is first in string */
@@ -831,7 +825,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	  (void)sprintf(dmn_sng,"%%s(%%ld)=%s ",nco_typ_fmt_sng(dim[dmn_idx].type));
           dmn_sbs_prn=dmn_sbs_dsk[dmn_idx];
 
-	  if(FORTRAN_STYLE) { 
+	  if(FORTRAN_STYLE){
             (void)nco_msa_c_2_f(dmn_sng);
 	     dmn_sbs_prn++;
 	  }
@@ -857,26 +851,25 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] == 0L){
 	char *prn_sng;
         long dmn_sz=lmt_mult[var.nbr_dim -1]->dmn_cnt;
-        long idx_crr=0;        	
+        long idx_crr=0;       	
 
 	/* Search for NUL-termination within size of last dimension */
 	if( memchr((void *)(var.val.cp+lmn),'\0',dmn_sz) ){
 	  /* Memory region is NUL-terminated, i.e., a valid string */
 	  /* Print strings inside double quotes */
 	  (void)sprintf(var_sng,"%%s(%%ld--%%ld)=\"%%s\" %%s");
-          if(FORTRAN_STYLE) { (void)nco_msa_c_2_f(var_sng); idx_crr++ ; }
+          if(FORTRAN_STYLE){(void)nco_msa_c_2_f(var_sng);idx_crr++;}
 
 	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+strlen((char *)var.val.cp+lmn),(char *)var.val.cp+lmn,unit_sng);
 	}else{
 	  /* Memory region is not NUL-terminated, print block of chars instead */
 	  /* Print block of chars inside single quotes */
-	  
-          prn_sng = (char*)nco_malloc(dmn_sz+1);
+          prn_sng=(char*)nco_malloc(dmn_sz+1);
           (void)strncpy(prn_sng,var.val.cp+lmn,dmn_sz);
-          *(prn_sng+dmn_sz) = '\0';
+          *(prn_sng+dmn_sz)='\0';
           (void)printf("DMN SIZE= %ld\n",dmn_sz);
           (void)sprintf(var_sng,"%%s(%%ld--%%ld)=%%s %%s" );
-          if(FORTRAN_STYLE) { (void)nco_msa_c_2_f(var_sng); idx_crr++ ; }
+          if(FORTRAN_STYLE){(void)nco_msa_c_2_f(var_sng);idx_crr++;}
 	  
           /* Possibly introduce a function which convert non-print chars into escape chars */ 
           /* i.e the reverse of sng_ascii_trn */
@@ -884,8 +877,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,(dmn_sz-1L+idx_crr),prn_sng,unit_sng);
           
           (void)nco_free(prn_sng);
-
-           
 	} /* endif */
     
 	/* Newline separates consecutive values within given variable */
@@ -894,15 +885,11 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	/* Skip rest of loop for this element, move to next element */
 	continue;
       } /* endif */
-      
-
-
-
 
       /* Now print actual variable name, index and value. */
-      (void)sprintf(var_sng,"%%s(%%ld)=%s %%s\n",nco_typ_fmt_sng(var.type)); 
+      (void)sprintf(var_sng,"%%s(%%ld)=%s %%s\n",nco_typ_fmt_sng(var.type));
 
-      if(FORTRAN_STYLE){ (void)nco_msa_c_2_f(var_sng);var_dsk++;}
+      if(FORTRAN_STYLE){(void)nco_msa_c_2_f(var_sng);var_dsk++;}
 
       switch(var.type){
       case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.fp[lmn],unit_sng); break;
@@ -924,8 +911,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     /* Additional newline between consecutive variables or final variable and prompt */
     (void)fprintf(stdout,"\n");
     (void)fflush(stdout);
-}
-
+  }
   var.val.vp=nco_free(var.val.vp);
   var.nm=(char *)nco_free(var.nm);
  
@@ -934,18 +920,10 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     (void)nco_free(lmt_mult);
     (void)nco_free(lmt);
   }
-  if(PRN_DMN_IDX_CRD_VAL && dlm_sng==NULL) {
-    for(idx=0 ; idx < var.nbr_dim ; idx++)
-      dim[idx].val.vp =nco_free(dim[idx].val.vp);
+  if(PRN_DMN_IDX_CRD_VAL && dlm_sng==NULL){
+    for(idx=0;idx < var.nbr_dim;idx++)
+      dim[idx].val.vp=nco_free(dim[idx].val.vp);
     dim=(dmn_sct *)nco_free(dim);
   }
 
-} /* nco_msa_prn_var_val */
-  
-
-
-
-
-
-
-
+} /* end nco_msa_prn_var_val() */

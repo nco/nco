@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.109 2003-02-25 21:58:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.110 2003-02-25 22:11:59 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.109 2003-02-25 21:58:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.109 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.110 2003-02-25 22:11:59 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.110 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -289,7 +289,7 @@ main(int argc,char **argv)
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
-      (void)fprintf(stderr,"%s: ERROR %s does not currently implement -x option\n",prg_nm_get(),prg_nm_get());
+      if(EXCLUDE_INPUT_LIST) (void)fprintf(stderr,"%s: ERROR %s does not currently implement -x option\n",prg_nm_get(),prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     case '?': /* Print proper usage */
