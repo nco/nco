@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.54 2004-09-07 20:55:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.55 2004-09-07 21:10:04 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.54 2004-09-07 20:55:08 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.54 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.55 2004-09-07 21:10:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.55 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -143,7 +143,7 @@ main(int argc,char **argv)
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
-  int nco_pck_map=nco_pck_map_hgh_sht; /* [enm] Packing map */
+  int nco_pck_map=nco_pck_map_flt_sht; /* [enm] Packing map */
   int nco_pck_plc=nco_pck_plc_nil; /* [enm] Packing policy */
   int opt;
   int out_id;  

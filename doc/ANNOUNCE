@@ -1,22 +1,22 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.122 2004-09-06 18:00:48 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.123 2004-09-07 21:10:04 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.9 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-There is good news to report about the NCO->SDO proposal,
-and two significant feature improvements in version 2.9.9.
-
-1. The NCO->SDO proposal was funded by NSF. A new section on the NCO 
+First, there is good news to report about the NCO->SDO proposal:
+The NCO->SDO proposal was funded by NSF. A new section on the NCO 
 homepage describes the project and contains pointers to the proposal
 and two job ads. See http://nco.sf.net#prp_sei
 
-2. ncbo now supports threading.
+There are two significant feature improvements in version 2.9.9:
+
+1. ncbo now supports threading.
 Manually configure threading with -t (as with ncra, ncpdq, ncea), or
 ncbo will pick a default for you.
 
-3. ncpdq has powerful packing and unpacking capabilities
+2. ncpdq has powerful packing and unpacking capabilities
 ncpdq stands for "Permute Dimensions Quickly" and now "Pack Data
 Quietly" too. See http://nco.sf.net/nco.html#ncpdq for full info.
 Prior to this release, ncap sported the only packing features in NCO.
@@ -26,23 +26,40 @@ To pack the entire file in.nc into output file out.nc use
 
 ncpdq -P all_new in.nc out.nc
 
-The main options to -P are 
+The main packing options to ncpdq are -P pck_plc and -M pck_map.
+pck_plc is the "packing policy". Currently implemented policies are
   all_new: Pack unpacked variables, re-pack packed variables
   all_xst: Pack unpacked variables, copy packed variables
   xst_new: Re-pack packed variables, copy unpacked variables
       upk: Unpack packed variables, copy unpacked variables
-This basic packing reduces the size of the average floating point file
-by a factor of two with no additional work on the user's part.
+
+pck_map is the "packing map" which determines how variables of each
+numeric type are packed. Currently implemented maps are
+
+hgh_sht: Pack higher precision types to NC_SHORT, pack nothing else
+         [NC_DOUBLE,NC_FLOAT,NC_INT]->NC_SHORT, [NC_SHORT,NC_CHAR,NC_BYTE]->unaltered
+hgh_byt: Pack higher precision types to NC_BYTE, pack nothing else
+         [NC_DOUBLE,NC_FLOAT,NC_INT,NC_SHORT]->NC_BYTE, [NC_CHAR,NC_BYTE]->unaltered
+dwn_one: Convert each type of each size to type of next size down
+         NC_DOUBLE->NC_INT, [NC_FLOAT,NC_INT]->NC_SHORT, [NC_CHAR,NC_BYTE]->unaltered
+flt_sht: Pack floating precision types to NC_SHORT, pack nothing else
+         [NC_DOUBLE,NC_FLOAT]->NC_SHORT, [NC_INT,NC_SHORT,NC_CHAR,NC_BYTE]->unaltered
+flt_byt: Pack floating precision types to NC_BYTE: pack nothing else
+         [NC_DOUBLE,NC_FLOAT]->NC_BYTE, [NC_INT,NC_SHORT,NC_CHAR,NC_BYTE]->unaltered
+
+The default "all_new" packing policy with the default "flt_sht"
+packing map shrinks the average floating point file by a factor of two
+with no additional work on the user's part. 
 One nice feature of (lossy) scale_factor/add_offset packing is that
 additional, loss-less packing algorithms can layer on top of it.
-
-Right now, ncpdq picks the packing type (e.g., NC_SHORT) for you.
-The next version will introduce options for more fine-grained control.
-Caveats: Packing tends to remove the utility of missing_values.
-The interaction of packing and missing_values is hard to handle.
-I am reluctant to implement any such features until/unless multiple
-users agree on the most useful features and specifically request
-them. So the ball is your court.
+Caveats: 
+1. The interaction of packing and missing_values is complex.
+Test the missing_value behavior by performing a pack/unpack cycle
+to make sure your data that is missing stays missing.
+This may lead you to pick new missing_values.
+2. Packing into NC_CHAR (with, e.g., flt_chr) is actually allowed 
+but is not recommended. Pack into NC_BYTE (with, e.g., flt_byt)
+instead unless you understand the consequences.
 
 FYI, the plan is to stabilize recent changes in NCO 3.0.0.
 Then we will start development of the grid-enabled features of SDO.
