@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.12 2004-06-18 23:12:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.13 2004-09-18 05:22:03 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -57,7 +57,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
  const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
  const bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
- const bool PRINT_DIMENSIONAL_UNITS, /* I [flg] Print units attribute, if any */
+ const bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
  const bool PRN_DMN_IDX_CRD_VAL); /* I [flg] Print dimension/coordinate indices/values */
 
 #ifdef __cplusplus

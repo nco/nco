@@ -241,6 +241,14 @@ argument to hyperslabber.
 .TP
 .B -H 
 Print data to screen.
+The default behavior is to print data to screen if no netCDF output
+file is specified. 
+Use 
+.B -H 
+to print data to screen if a netCDF output is specified
+(the same behavior applies to 
+.B -m
+).
 Unless otherwise specified (with 
 .BR -s ),
 each element of the data
@@ -550,7 +558,7 @@ ncks -d lon,260.,45. in.nc out.nc
 .RE
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.2 2004-08-04 18:13:46 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncks.1,v 1.3 2004-09-18 05:22:02 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

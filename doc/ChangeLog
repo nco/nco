@@ -1,6 +1,6 @@
 2004-09-12  Charlie Zender  <zender@uci.edu>
 
-	* 
+	* ncks: Print data to screen when only input file is specified
 
 	* Add NC_BYTE to types of variables with known ndrv in nco_var_pck()
 

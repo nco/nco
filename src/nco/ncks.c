@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.107 2004-08-05 00:01:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.108 2004-09-18 05:22:02 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -80,16 +80,16 @@ main(int argc,char **argv)
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool NCO_BNR_WRT=False; /* [flg] Write binary file */
-  bool OUTPUT_DATA=False; /* Option H */
-  bool OUTPUT_VARIABLE_METADATA=False; /* Option m */
-  bool OUTPUT_GLOBAL_METADATA=False; /* Option M */
-  bool PRINT_DIMENSIONAL_UNITS=False; /* Option u */
-  bool PRN_DMN_IDX_CRD_VAL=True; /* Option q Print leading dimension/coordinate indices/values */
+  bool PRN_VAR_DATA=False; /* flg] Print variable data Option H */
+  bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata Option m */
+  bool PRN_GLB_METADATA=False; /* [flg] Print global metadata Option M */
+  bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
+  bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option q */
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
-  char **var_lst_in=NULL_CEWI;
+  char **var_lst_in=NULL;
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
   char *dlm_sng=NULL;
@@ -103,8 +103,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.107 2004-08-05 00:01:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.107 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.108 2004-09-18 05:22:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.108 $";
   const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qrRs:uv:x-:";
 
   extern char *optarg;
@@ -232,7 +232,7 @@ main(int argc,char **argv)
       lmt_nbr++;
       break;
     case 'H': /* Print data to screen */
-      OUTPUT_DATA=True;
+      PRN_VAR_DATA=True;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
@@ -241,10 +241,10 @@ main(int argc,char **argv)
       fl_pth_lcl=optarg;
       break;
     case 'm': /* Print variable metadata to screen */
-      OUTPUT_VARIABLE_METADATA=True;
+      PRN_VAR_METADATA=True;
       break;
     case 'M': /* Print global metadata to screen */
-      OUTPUT_GLOBAL_METADATA=True;
+      PRN_GLB_METADATA=True;
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -273,7 +273,7 @@ main(int argc,char **argv)
       dlm_sng=optarg;
       break;
     case 'u': /* Turn on the printing of dimensional units. */
-      PRINT_DIMENSIONAL_UNITS=!PRINT_DIMENSIONAL_UNITS;
+      PRN_DMN_UNITS=!PRN_DMN_UNITS;
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -392,7 +392,12 @@ main(int argc,char **argv)
     /* if(lmt_lst[idx].lmt_dmn_nbr > 1) (void)nco_msa_prn_idx(&lmt_lst[idx]); */
   } /* end loop over dimensions */
   
-  if(fl_out != NULL){
+  if(fl_out == NULL){
+    /* Print data to screen when only input file is specified */
+    PRN_VAR_DATA=True;
+    PRN_VAR_METADATA=True;
+    if(var_lst_in == NULL) PRN_GLB_METADATA=True;
+  }else{
     int out_id;  
     
     /* Open output file */
@@ -440,7 +445,7 @@ main(int argc,char **argv)
 
   } /* end if fl_out != NULL */
   
-  if(OUTPUT_GLOBAL_METADATA){
+  if(PRN_GLB_METADATA){
     (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, id = %i\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,in_id);
     if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
       char rec_dmn_nm[NC_MAX_NAME];
@@ -452,24 +457,24 @@ main(int argc,char **argv)
     
     /* Print all global attributes */
     (void)nco_prn_att(in_id,NC_GLOBAL);
-  } /* endif OUTPUT_GLOBAL_METADATA */
+  } /* endif PRN_GLB_METADATA */
   
-  if(OUTPUT_VARIABLE_METADATA){
+  if(PRN_VAR_METADATA){
     for(idx=0;idx<nbr_xtr;idx++){
       /* Print variable's definition */
       (void)nco_prn_var_dfn(in_id,xtr_lst[idx].nm);
       /* Print variable's attributes */
       (void)nco_prn_att(in_id,xtr_lst[idx].id);
     } /* end loop over idx */
-  } /* end if OUTPUT_VARIABLE_METADATA */
+  } /* end if PRN_VAR_METADATA */
 
-  /* if(OUTPUT_DATA){
-    for(idx=0;idx<nbr_xtr;idx++) (void)nco_prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_IDX_CNV,PRINT_DIMENSIONAL_UNITS,PRN_DMN_IDX_CRD_VAL);
+  /* if(PRN_VAR_DATA){
+    for(idx=0;idx<nbr_xtr;idx++) (void)nco_prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL);
     } */
 
-  if(OUTPUT_DATA){
-    for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,PRINT_DIMENSIONAL_UNITS,PRN_DMN_IDX_CRD_VAL);
-  } /* end if OUTPUT_DATA */
+  if(PRN_VAR_DATA){
+    for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl,dlm_sng,FORTRAN_IDX_CNV,PRN_DMN_UNITS,PRN_DMN_IDX_CRD_VAL);
+  } /* end if PRN_VAR_DATA */
   
   /* Close input netCDF file */
   nco_close(in_id);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.16 2004-07-06 05:40:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.17 2004-09-18 05:22:03 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -239,7 +239,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
  const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
  const bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
- const bool PRINT_DIMENSIONAL_UNITS, /* I [flg] Print units attribute, if any */
+ const bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
  const bool PRN_DMN_IDX_CRD_VAL) /* I [flg] Print dimension/coordinate indices/values */
 {
   /* Purpose: Print variable data 
@@ -384,7 +384,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(var.type,&var.val);
 
-  if(PRINT_DIMENSIONAL_UNITS){
+  if(PRN_DMN_UNITS){
     const char units_nm[]="units"; /* [sng] Name of units attribute */
     int rcd_lcl; /* [rcd] Return code */
     int att_id; /* [id] Attribute ID */
@@ -401,7 +401,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 	unit_sng[(att_sz+1)*nco_typ_lng(att_typ)-1]='\0';
       } /* end if */
     } /* end if */
-  } /* end if PRINT_DIMENSIONAL_UNITS */
+  } /* end if PRN_DMN_UNITS */
 
   if(dlm_sng != NULL){
     /* Print each element with user-supplied formatting code */

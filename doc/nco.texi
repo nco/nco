@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.277 2004-09-15 15:50:44 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.278 2004-09-18 05:22:00 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -101,7 +101,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 2.9.9
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 8 September 2004
+@set update-date 17 September 2004
 @set update-month September 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -2295,11 +2295,11 @@ through the (asynchronous) Masnet Interface Gateway System
 The following examples show how one might analyze files stored on  
 remote systems.
 @example
-ncks -H -l ./ ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
-ncks -H -l ./ dust.ess.uci.edu:/home/zender/nco/in.nc
-ncks -H -l ./ /ZENDER/nco/in.nc 
-ncks -H -l ./ mss:/ZENDER/nco/in.nc
-ncks -H -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/\
+ncks -l ./ ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
+ncks -l ./ dust.ess.uci.edu:/home/zender/nco/in.nc
+ncks -l ./ /ZENDER/nco/in.nc 
+ncks -l ./ mss:/ZENDER/nco/in.nc
+ncks -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/\
 ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc
 @end example
 @noindent
@@ -2319,10 +2319,10 @@ option as follows:
 @cindex @code{-l @var{output-path}}
 @cindex @var{output-path}
 @example
-ncks -H -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc
-ncks -H -p dust.ess.uci.edu:/home/zender/nco -l ./ in.nc
-ncks -H -p /ZENDER/nco -l ./ in.nc 
-ncks -H -p mss:/ZENDER/nco -l ./ in.nc
+ncks -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc
+ncks -p dust.ess.uci.edu:/home/zender/nco -l ./ in.nc
+ncks -p /ZENDER/nco -l ./ in.nc 
+ncks -p mss:/ZENDER/nco -l ./ in.nc
 @end example
 @noindent
 Using @samp{-p} is recommended because it clearly separates the
@@ -2809,10 +2809,10 @@ Printing variable @var{three_dmn_var} in file @file{in.nc} first with
 @w{C indexing} conventions, then with Fortran indexing conventions
 results in the following output formats: 
 @example
-% ncks -H -v three_dmn_var in.nc
+% ncks -v three_dmn_var in.nc
 lat[0]=-90 lev[0]=1000 lon[0]=-180 three_dmn_var[0]=0 
 ...
-% ncks -F -H -v three_dmn_var in.nc
+% ncks -F -v three_dmn_var in.nc
 lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0 
 ...
 @end example
@@ -3035,7 +3035,7 @@ In the following example, the user extracts all wavelengths
 in the visible portion of the spectrum in terms of the units
 very frequently used in visible spectroscopy, microns:
 @example
-% ncks -O -C -H -u -v wvl -d wvl,"0.4 micron","0.7 micron" in.nc
+% ncks -O -C -u -v wvl -d wvl,"0.4 micron","0.7 micron" in.nc
 wvl[0]=5e-07 meter
 @end example
 @noindent
@@ -3089,7 +3089,7 @@ In this example, the user prints all data between the eighth and ninth
 of December, 1999, from a variable whose time dimension is hours
 since the year 1900:
 @example
-% ncks -O -C -H -u -v time_udunits -d time_udunits,"1999-12-08 \
+% ncks -O -C -u -v time_udunits -d time_udunits,"1999-12-08 \
 12:00:0.0","1999-12-09 00:00:0.0",2 in.nc foo2.nc
 % time_udunits[1]=876018 hours since 1900-01-01 00:00:0.0
 @end example
@@ -6387,6 +6387,9 @@ For a complete description of the @var{stride} argument, @xref{Stride}.
 @item -H 
 Print data to screen.
 Also activated using @samp{--print} or @samp{--prn}.
+The @command{ncks} default behavior is to print data to screen if
+no netCDF output file is specified.
+Use @samp{-H} to print data to screen if a netCDF output is specified.
 Unless otherwise specified (with @code{-s}), each element of the data
 hyperslab is printed on a separate line containing the names, indices,
 and, values, if any, of all of the variables dimensions.
@@ -6394,7 +6397,7 @@ The dimension and variable indices refer to the location of the
 corresponding data element with respect to the variable as stored on
 disk (i.e., not the hyperslab).
 @example
-% ncks -H -C -v three_dmn_var in.nc
+% ncks -C -v three_dmn_var in.nc
 lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
 lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
 lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2 
@@ -6406,7 +6409,7 @@ lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23
 Printing the same variable with the @samp{-F} option shows the same
 variable indexed with Fortran conventions
 @example
-% ncks -F -H -C -v three_dmn_var in.nc
+% ncks -F -C -v three_dmn_var in.nc
 lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0 
 lon(2)=90 lev(1)=100 lat(1)=-90 three_dmn_var(2)=1 
 lon(3)=180 lev(1)=100 lat(1)=-90 three_dmn_var(3)=2 
@@ -6425,7 +6428,7 @@ lat[1]=90 lev[2]=1000 lon[0]=0 three_dmn_var[20]=20
 lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
 lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
 lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
-% ncks -C -H -v three_dmn_var out.nc
+% ncks -C -v three_dmn_var out.nc
 lat[0]=90 lev[0]=1000 lon[0]=0 three_dmn_var[0]=20 
 lat[0]=90 lev[0]=1000 lon[1]=90 three_dmn_var[1]=21 
 lat[0]=90 lev[0]=1000 lon[2]=180 three_dmn_var[2]=22 
@@ -6440,6 +6443,10 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 Print to screen the global metadata describing the file.
 This includes file summary information and global attributes.
 Also @samp{--Mtd} and @samp{--Metadata}.
+The default behavior is to global metadata to screen if no netCDF output
+file and no variable extraction list is specified (with @samp{-v}). 
+Use @samp{-M} to print global metadata to screen if a netCDF output is 
+specified, or if a variable extraction list is specified (with @samp{-v}). 
 
 @cindex @command{ncdump}
 @cindex @code{-m}
@@ -6451,6 +6458,10 @@ Print variable metadata to screen (similar to @kbd{ncdump -h}).
 This displays all metadata pertaining to each variable, one variable
 at a time.
 Also @samp{--mtd} and @samp{--metadata}.
+The @command{ncks} default behavior is to print variable metadata to
+screen if no netCDF output file is specified.
+Use @samp{-m} to print variable metadata to screen if a netCDF output is 
+specified. 
 
 @cindex @code{-q}
 @cindex @code{--quiet}
@@ -6489,7 +6500,7 @@ EXAMPLES
 View all data in netCDF @file{in.nc}, printed with Fortran indexing
 conventions: 
 @example
-ncks -H -F in.nc
+ncks -F in.nc
 @end example
 
 Copy the netCDF file @file{in.nc} to file @file{out.nc}.
@@ -6520,22 +6531,22 @@ Next print @code{three_dmn_var} as an un-annotated text column.
 Then print @code{three_dmn_var} signed with very high precision.
 Finally, print @code{three_dmn_var} as a comma-separated list.
 @example
-% ncks -H -C -v three_dmn_var in.nc
+% ncks -C -v three_dmn_var in.nc
 lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
 lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
 ...
 lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
-% ncks -s "%f\n" -H -C -v three_dmn_var in.nc
+% ncks -s "%f\n" -C -v three_dmn_var in.nc
 0.000000
 1.000000
 ...
 23.000000
-% ncks -s "%+16.10f\n" -H -C -v three_dmn_var in.nc
+% ncks -s "%+16.10f\n" -C -v three_dmn_var in.nc
    +0.0000000000
    +1.0000000000
 ...
   +23.0000000000
-% ncks -s "%f, " -H -C -v three_dmn_var in.nc
+% ncks -s "%f, " -C -v three_dmn_var in.nc
 0.000000, 1.000000, ..., 23.000000,
 @end example
 @noindent
@@ -6554,7 +6565,7 @@ ncks -v fl_nm in.nc
 The @code{%c} formatting code is useful for printing 
 multidimensional arrays of characters representing fixed length strings
 @example
-ncks -H -s "%c" -v fl_nm_arr in.nc
+ncks -s "%c" -v fl_nm_arr in.nc
 @end example
 @noindent
 @cindex @code{core dump}
@@ -6997,10 +7008,10 @@ latitude values decrease monotonically from north to south.
 Accomplish this with
 @example
 % ncpdq -a -lat in.nc out.nc
-% ncks -C -H -v lat in.nc
+% ncks -C -v lat in.nc
 lat[0]=-90
 lat[1]=90
-% ncks -C -H -v lat out.nc
+% ncks -C -v lat out.nc
 lat[0]=90
 lat[1]=-90
 @end example
@@ -7024,7 +7035,7 @@ dimensions in the dimension re-order list in reversed order.
 This example creates the transpose of @code{three_dmn_var}: 
 @example
 % ncpdq -a lon,lev,lat -v three_dmn_var in.nc out.nc
-% ncks -H -C -v three_dmn_var in.nc
+% ncks -C -v three_dmn_var in.nc
 lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
 lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
 lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2 
@@ -7032,7 +7043,7 @@ lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2
 lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
 lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
 lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
-% ncks -H -C -v three_dmn_var out.nc
+% ncks -C -v three_dmn_var out.nc
 lon[0]=0 lev[0]=100 lat[0]=-90 three_dmn_var[0]=0
 lon[0]=0 lev[0]=100 lat[1]=90 three_dmn_var[1]=12
 lon[0]=0 lev[1]=500 lat[0]=-90 three_dmn_var[2]=4
@@ -7048,7 +7059,7 @@ sign.
 This example reverses the storage order of @code{three_dmn_var}: 
 @example
 % ncpdq -a -lat,-lev,-lon -v three_dmn_var in.nc out.nc
-% ncks -H -C -v three_dmn_var in.nc
+% ncks -C -v three_dmn_var in.nc
 lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
 lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
 lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2 
@@ -7056,7 +7067,7 @@ lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2
 lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
 lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
 lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
-% ncks -H -C -v three_dmn_var out.nc
+% ncks -C -v three_dmn_var out.nc
 lat[0]=90 lev[0]=1000 lon[0]=270 three_dmn_var[0]=23
 lat[0]=90 lev[0]=1000 lon[1]=180 three_dmn_var[1]=22
 lat[0]=90 lev[0]=1000 lon[2]=90 three_dmn_var[2]=21

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.22 2004-09-05 06:37:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.23 2004-09-18 05:22:03 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -582,7 +582,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
  const bool FORTRAN_IDX_CNV, /* I [flg] Hyperslab indices obey Fortran convention */
- const bool PRINT_DIMENSIONAL_UNITS, /* I [flg] Print units attribute, if any */
+ const bool PRN_DMN_UNITS, /* I [flg] Print units attribute, if any */
  const bool PRN_DMN_IDX_CRD_VAL) /* I [flg] Print dimension/coordinate indices/values */
 {
   /* Purpose:
@@ -679,7 +679,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
   } /* end if dlm_sng */
 
-  if(PRINT_DIMENSIONAL_UNITS){
+  if(PRN_DMN_UNITS){
     const char units_nm[]="units"; /* [sng] Name of units attribute */
     int rcd_lcl; /* [rcd] Return code */
     int att_id; /* [id] Attribute ID */
@@ -696,7 +696,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	unit_sng[(att_sz+1)*nco_typ_lng(att_typ)-1]='\0';
       } /* end if */
     } /* end if */
-  } /* end if PRINT_DIMENSIONAL_UNITS */
+  } /* end if PRN_DMN_UNITS */
 
   /* if nbr_dim ==0 and dlm_sng==NULL print variable */
   if(var.nbr_dim == 0 && dlm_sng == NULL){
