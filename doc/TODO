@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.245 2003-11-11 18:04:18 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.246 2003-11-14 17:42:54 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -241,6 +241,7 @@ ncks -O -v mss_val_fst -p ~/nco/data in.nc ~/nco/data/out.nc
 ncrename -O -v mss_val_fst,mss_val ~/nco/data/out.nc
 ncbo -O -y '-' -v mss_val -p ~/nco/data in.nc out.nc ~/foo.nc
 ncks -m -C -H -v mss_val ~/foo.nc
+282. nco_tst.sh with 2.8.3: ncwa 1: normalize by denominator: 1.0 =?= nan
 ************************************************************************
 End NCO Wish list
 ************************************************************************
