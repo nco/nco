@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.23 1999-06-29 19:00:35 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.24 1999-07-01 22:24:27 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2730,7 +2730,26 @@ conventions:
 ncks -H -F in.nc
 @end example
 
-First, print variable @code{three_dim_var} from file @file{in.nc} with
+Copy the netCDF file @file{in.nc} to file @file{out.nc}.
+@example
+ncks -O in.nc out.nc
+@end example
+Now the file @file{out.nc} contains all the data from @file{in.nc}.
+There are, however, two differences between @file{in.nc} and
+@file{out.nc}.
+@cindex @code{history} attribute
+First, the @code{history} global attribute (@pxref{History attribute})
+will contain the command used to create @file{out.nc}.
+@cindex alphabetize output
+@cindex sort alphabetically
+@cindex @code{-a}
+Second, the variables in @file{out.nc} will be defined in alphabetical
+order.
+Of course the internal storage of variable in a netCDF file should be
+transparent to the user, but there are cases when alphabetizing a file 
+is useful (see description of @code{-a} switch).
+
+Print variable @code{three_dim_var} from file @file{in.nc} with
 default notations. 
 Next print @code{three_dim_var} as an un-annotated text column.
 Then print @code{three_dim_var} signed with very high precision.
