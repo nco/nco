@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.166 2002-08-20 06:34:01 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.167 2002-08-20 17:43:48 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -24,7 +24,8 @@ then ftp nco_tst.nc from remote server
 11. Use autoconf standard for VERSION, HOSTNAME, USER
 12. Pass the GNU architecture-OS "triplet", e.g., alphaev56-unknown-linux-gnu, as, e.g., -DGNU_TRP='${GNU_TRP}' so the executable can print $GNU_TRP as a diagnostic
 13. Have ./configure dump diagnostic information (i.e, last 10 lines of configure.in) when ./configure _fails_
-14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAS_HDF5, etc. Other tokens are WIN32, _OPENMP, I18N, _LIBINTL_H, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, but that token use is consistent
+14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens are WIN32, _OPENMP, I18N, _LIBINTL_H, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, but that token use is consistent
+15. Change libnco_cxx back to libnco_c++
 
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
