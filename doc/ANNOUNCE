@@ -1,25 +1,25 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.54 2004-01-13 21:02:37 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.55 2004-01-17 01:19:44 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.7 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This is a double-paper bag release to correct a recently introduced
-bug that caused ncap packing to fail and Cygwin builds to fail.
+We've fixed some more autotools build failures introduced in 2.8.6.
+Cygwin builds continue to fail.
 
 Enjoy,
 Charlie
 
 Bug-fixes:
-1. ncap packing works again (broken in 2.8.4)
-2. Default GCC builds (without --enable-*-custom) work again (broken in 2.8.6)
+1. fxm Appends are now order-independent
+2. fxm Solaris cc/CC autotools builds work again (broken in ~2.8.6)
 
 Feature changes:
 1. None
 
 Other user-visible changes:
-1. None
+1. Documented how to do co-variances
 
 User-invisible changes:
 1. None

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.203 2004-01-16 06:52:33 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.204 2004-01-17 01:19:45 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4451,11 +4451,11 @@ arises from the signal fluctuations versus the mean signals.
 Sometimes this is called the @dfn{eddy covariance}.
 We will store the covariance in the variable @code{uprmvprm}.
 @example
-ncwa -O -C -a time -v u,v in.nc foo.nc # Compute time mean of u,v
+ncwa -O -a time -v u,v in.nc foo.nc # Compute time mean of u,v
 ncrename -O -v u,uavg -v v,vavg foo.nc # Rename to avoid conflict
-ncks -A -v u,v in.nc foo.nc # Place originals with time means
-ncap -O -s "uprmvprm=u*v-uavg*vavg" foo.nc foo.nc # Covariance
-ncra -O -v uprmvprm foo.nc out.nc # Time-mean covariance
+ncks -A -v uavg,vavg foo.nc in.nc # Place time means with originals
+ncap -O -s "uprmvprm=u*v-uavg*vavg" in.nc in.nc # Covariance
+ncra -O -v uprmvprm in.nc foo.nc # Time-mean covariance
 @end example
 The mathmatically inclined will note that the same covariance would be
 obtained by replacing the step involving @command{ncap} with

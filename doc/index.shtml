@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.191 2004-01-13 19:52:57 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.192 2004-01-17 01:19:45 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -202,7 +202,7 @@ Tarballs and RPMs are only rarely uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.8.8</b>: (<i>In progress</i>)
+<li><b>NCO 2.8.8</b>: (<i>In progress</i>) 
 <li><b>NCO 2.8.7</b>: <tt>ncap</tt> packing works again (<a href="#bug_pck">broke in 2.8.4</a>), Cygwin builds work again
 <li><b>NCO 2.8.6</b>: AIX and IRIX builds work again, custom GCC builds with <tt>-Werror</tt>
 <li><b>NCO 2.8.5</b>: Solaris <tt>make install</tt> works, <tt>ncap</tt> changes attribute values correctly, <a href="#bug_DODS">Support DODS 3.4+, deprecate 3.3-</a>, add <tt>--enable-[optimize/debug]-custom</tt> options to <tt>./configure</tt>

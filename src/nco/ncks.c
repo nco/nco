@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.97 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.98 2004-01-17 01:19:46 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.97 2004-01-12 18:11:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.97 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.98 2004-01-17 01:19:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.98 $";
   const char * const opt_sng="aABb:CcD:d:FHhl:MmOp:qrRs:uv:x-:";
 
   extern char *optarg;
@@ -402,7 +402,7 @@ main(int argc,char **argv)
     
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
-       /* Define variable in output file */
+      /* Define variable in output file */
       if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);
       /* Copy variable's attributes */
       (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,True);
@@ -421,9 +421,9 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_xtr;idx++){
       if(dbg_lvl > 2 && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
-
+      /* Old hyperslab routines */
       /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
-
+      /* Multi-slab routines */
       if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
     } /* end loop over idx */
     

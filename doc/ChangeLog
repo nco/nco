@@ -1,3 +1,7 @@
+2004-01-16  Charlie Zender  <zender@uci.edu>
+
+	* nco_netcdf.c: Do not initialize rcd unless not doing so might	cause CEWI
+
 2004-01-15  Charlie Zender  <zender@uci.edu>
 
 	* Change dods.sh from RC6 to 3.4 final, and pre-clean

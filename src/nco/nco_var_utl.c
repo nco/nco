@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.34 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.35 2004-01-17 01:19:46 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -30,10 +30,10 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   
   nc_type var_type;
   
-  /* See if requested variable is already in output file */
+  /* Is requested variable already in output file? */
   rcd=nco_inq_varid_flg(out_id,var_nm,&var_out_id);
   if(rcd == NC_NOERR) return var_out_id;
-  /* See if requested variable is in input file */
+  /* Is requested variable in input file? */
   rcd=nco_inq_varid_flg(in_id,var_nm,&var_in_id);
   if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: ERROR unable to find variable \"%s\"\n",prg_nm_get(),var_nm);
   
@@ -62,13 +62,11 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
     /* Has dimension been defined in output file? */
     rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
     
-    /* If dimension has not been defined, copy it */
+    /* Define dimension in output file if necessary */
     if(rcd_lcl != NC_NOERR){
       if(dmn_in_id[idx] != rec_dmn_id){
-	/* dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,dmn_sz); */
 	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
       }else{
-	/* dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,NC_UNLIMITED); */
 	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
       } /* end else */
     } /* end if */
@@ -177,8 +175,8 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
  char *var_nm) /* I [sng] Variable name */
 {
   /* Purpose: Copy variable data from input netCDF file to output netCDF file
-     This routine does not take into account any user-specified limits, it just copies what it finds.
-     Routine copies_variable by variable, old-style, used only by ncks */
+     Routine does not account for user-specified limits, it just copies what it findsa
+     Routine copies variable-by-variable, old-style, called only by ncks */
 
   const char fnc_nm[]="nco_cpy_var_val()"; /* [sng] Function name */
 
@@ -223,16 +221,12 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   
   /* Get dimension sizes from input file */
   for(idx=0;idx<nbr_dim;idx++){
-  /* NB: For the record dimension, ncdiminq() returns the maximum 
-     value used so far in writing data for that dimension.
-     Thus if you read dimension sizes from output file, then
-     the ncdiminq() returns dmn_sz=0 for the record dimension
-     until a variable has been written with that dimension. This is
-     the reason for always reading input file for dimension
-     sizes. */
+  /* nc_inq_dimlen() returns maximum value used so far in writing record dimension data
+     Until a record variable has been written, nc_inq_dimlen() returns dmn_sz=0 for record dimension in output file
+     Thus we read input file for dimension sizes */
     (void)nco_inq_dimlen(in_id,dmn_id[idx],dmn_cnt+idx);
 
-    /* Initialize the indicial offset and stride arrays */
+    /* Initialize indicial offset and stride arrays */
     dmn_srt[idx]=0L;
     var_sz*=dmn_cnt[idx];
   } /* end loop over dim */
@@ -332,14 +326,9 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   
   /* Get dimension sizes from input file */
   for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
-    
-    /* NB: For record dimension, ncdiminq() returns maximum 
-       value used so far in writing data for that dimension.
-       Thus if you read dimension sizes from output file, then
-       ncdiminq() returns dmn_sz=0 for the record dimension
-       until a variable has been written with that dimension. This is
-       the reason for always reading input file for dimension
-       sizes. */
+  /* nc_inq_dimlen() returns maximum value used so far in writing record dimension data
+     Until a record variable has been written, nc_inq_dimlen() returns dmn_sz=0 for record dimension in output file
+     Thus we read input file for dimension sizes */
 
     /* dmn_cnt may be overwritten by user-specified limits */
     (void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
