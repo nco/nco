@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.52 2004-07-01 18:00:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.53 2004-07-06 05:40:42 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -206,8 +206,8 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   char *nm_out;
 
   /* Get program name (use strrchr() first in case nm_in contains a path)
-     fxm: Put initial nm_out pointer in list of malloc()'s to be freed
-     Then free this memory in nco_exit() */
+     fxm: Put initial nm_out pointer in list of malloc()'s to be free()'d
+     Then free() this memory in nco_exit() */
   nm_out=(char *)strdup(nm_in);
   if(strrchr(nm_out,'/') != NULL) nm_out=strrchr(nm_out,'/')+1;
 
@@ -219,7 +219,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   else if(!strcmp(nm_out,"ncap")){*prg_lcl=ncap;}
   else if(!strcmp(nm_out,"ncea")){*prg_lcl=ncea;}
   else if(!strcmp(nm_out,"ncbo")){*prg_lcl=ncbo;}
-  /* Synonyms for ncbo */
+  /* Synonyms for ncbo: These are acceptable symlinks for ncbo */
   else if(!strcmp(nm_out,"ncadd")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out,"ncdiff")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out,"ncsub")){*prg_lcl=ncbo;}

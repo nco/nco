@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.15 2004-06-18 23:12:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.16 2004-07-06 05:40:42 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -214,11 +214,11 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
     } /* end loop over dim */
     (void)sprintf(sng_foo,"%li*nco_typ_lng(%s)",dim[idx].sz,nco_typ_sng(var_typ));
     (void)strcat(sz_sng,sng_foo);
-    (void)fprintf(stdout,"%s memory size is %s = %li*%zu = %li bytes\n",var_nm,sz_sng,var_sz,nco_typ_lng(var_typ),var_sz*nco_typ_lng(var_typ));
+    (void)fprintf(stdout,"%s memory size is %s = %li*%lu = %lu bytes\n",var_nm,sz_sng,var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   }else{
     long var_sz=1L;
 
-    (void)fprintf(stdout,"%s memory size is %ld*nco_typ_lng(%s) = %ld*%zu = %ld bytes\n",var_nm,var_sz,nco_typ_sng(var_typ),var_sz,nco_typ_lng(var_typ),var_sz*nco_typ_lng(var_typ));
+    (void)fprintf(stdout,"%s memory size is %ld*nco_typ_lng(%s) = %ld*%lu = %ld bytes\n",var_nm,var_sz,nco_typ_sng(var_typ),var_sz,(unsigned long)nco_typ_lng(var_typ),(unsigned long)(var_sz*nco_typ_lng(var_typ)));
   } /* end if variable is a scalar */
   (void)fflush(stdout);
   
