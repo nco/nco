@@ -1,0 +1,138 @@
+* {
+  display: inline;
+}
+
+texinfo {
+  margin: 3em;
+  display: block;
+  max-width: 50em;
+}
+
+para {
+  display: block;
+  margin-bottom: 1em;
+  text-indent: 2em;
+}
+
+para[role="continues"] {
+  text-indent: 0;
+}
+
+setfilename, settitle, setvalue, clearvalue {
+  display: none;
+}
+
+titlepage {
+  display: block;
+  margin-bottom: 4em;
+  text-align: center;
+}
+
+titlepage > booktitle {
+  display: block;
+  font-size: 200%;
+  margin-bottom: .2em;
+  letter-spacing: .2em;
+}
+
+titlepage > booksubtitle {
+  display: block;
+  font-size: 140%;
+  margin-bottom: .2em;
+  letter-spacing: .14em;
+  font-style: italic;
+}
+
+titlepage > author {
+  display: block;
+  font-size: 110%;
+  margin-bottom: .2em;
+}
+
+titlepage > para {
+  text-align: justify;
+  margin-bottom: 1em;
+  font-size: 75%;
+  display: block;
+}
+
+nodename, nodenext, nodeprev, nodeup {
+  display: none;
+}
+
+menu {
+  display: none;
+}
+
+
+chapter, section, subsection, subsubsection,
+unnumbered, unnumberedsec, unnumberedsubsec, unnumberedsubsubsec,
+appendix, appendixsec, appendixsubsec, appendixsubsubsec {
+  display: block;
+  margin-bottom: 2em;
+}
+
+chapter > title, section > title, subsection > title, subsubsection > title,
+unnumbered > title, unnumberedsec > title, unnumberedsubsec > title, unnumberedsubsubsec > title,
+appendix > title, appendixsec > title, appendixsubsec > title, appendixsubsubsec > title {
+  display: block;
+  margin-bottom: .2em;
+}
+
+chapter > title,
+unnumbered > title,
+appendix > title {
+  font-size: 150%;
+}
+
+section > title,
+unnumberedsec > title,
+appendixsec > title {
+  font-size: 140%;
+}
+
+subsection > title,
+unnumberedsubsec > title,
+appendixsubsec > title {
+  font-size: 130%;
+}
+
+subsubsection > title,
+unnumberedsubsubsec > title,
+appendixsubsubsec > title {
+  font-size: 120%;
+}
+
+/* Counters */
+chapter > title:before {
+    content: counter(chapter) ". ";
+    counter-increment: chapter;
+    counter-reset: section;
+    counter-reset: subsection;
+    counter-reset: subsubsection;
+}
+section > title:before {
+    content: counter(chapter) "." counter(section) " ";
+    counter-increment: section;
+    counter-reset: subsection;
+    counter-reset: subsubsection;
+}
+subsection > title:before {
+    content: counter(chapter) "." counter(section) "." counter(subsection) " ";
+    counter-increment: subsection;
+    counter-reset: subsubsection;
+}
+subsubsection > title:before {
+    content: counter(chapter) "." counter(section) "." counter(subsection) "." counter(subsubsection) " ";
+    counter-increment: subsubsection;
+}
+
+indexterm {
+  display: none;
+}
+
+acronym > acronymword {
+  font-family: monospace;
+  font-variant: small-caps;
+  border-bottom: 1px dashed black;
+}
