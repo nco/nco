@@ -1,13 +1,13 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.32 2000-10-16 07:07:01 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.33 2000-11-03 19:11:21 zender Exp $
 
 # Purpose: NCO test battery
 
-function usage()
-{
-    echo >&2 "Usage: $(basename $0) ncra | ncea | ncwa | ncflint | ncdiff | net"
+# Usage: 
 
+usage () {
+    echo >&2 "Usage: ${basename $0} ncra | ncea | ncwa | ncflint | ncdiff | net" ;
 }
 
 START=0

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.82 2000-10-23 22:57:34 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.83 2000-11-03 19:11:21 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires: GNU Make. AT&T Make will not understand this.
@@ -222,26 +222,34 @@ endif
 # endif AIX
 
 ifeq ($(PVM_ARCH),ALPHA)
-C++ := g++
-CC := gcc
-# NB: Hack to make ALPHA look like LINUX (g77 + gcc + g++)
-CPPFLAGS += -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
-FC := g77
-FFLAGS := -ffixed-line-length-132
+C++ := cxx
+CC := cc
+CPP := cpp
+CPPFLAGS += $(CPP_PTH) -I$(NETCDF_INC)
+FC := f90
+FFLAGS := -r8 -i4 -c -omp -automatic
+FIXEDFLAGS := -extend_source -omp -automatic
+FREEFLAGS := -DHIDE_SHR_MSG -free
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
-LDFLAGS += 
+LDFLAGS += -omp $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS +=
+endif
 LEX := flex
 LINT := lint
 YACC := bison
 ifeq ($(OPTS),O)
- CFLAGS += -O
- FFLAGS += -O
+ CFLAGS := -O2
+ FFLAGS += -O3 -strict
 endif
 ifeq ($(OPTS),D)
- CFLAGS += -g
+ CFLAGS := -g
  FFLAGS += -g
 endif
+$(MY_OBJ_DIR)/%.o : %.F90
+	$(FC) -c $(FREEFLAGS) $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
+$(MY_OBJ_DIR)/%.o : %.F
+	$(FC) -c $(FIXEDFLAGS) $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
 endif
 # endif ALPHA
 
@@ -578,13 +586,13 @@ all: dir lib $(MDL_BIN_TRG) data
 # Target directories which may not exist
 dir: bin_dir obj_dir lib_dir
 bin_dir:
-	-install -d $(MY_BIN_DIR)
+#	-install -d $(MY_BIN_DIR)
 	-mkdir -p $(MY_BIN_DIR)
 lib_dir:
-	-install -d $(MY_BIN_DIR)
+#	-install -d $(MY_BIN_DIR)
 	-mkdir -p $(MY_LIB_DIR)
 obj_dir:
-	-install -d $(MY_BIN_DIR)
+#	-install -d $(MY_BIN_DIR)
 	-mkdir -p $(MY_OBJ_DIR)
 # Targets in bin
 .PHONY:  ncra ncatted ncks ncwa ncecat ncdiff ncflint ncrename

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.103 2000-10-27 11:03:24 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.104 2000-11-03 19:11:21 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -1987,6 +1987,7 @@ var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
        --> Copy all attributes, define scale_factor and add_offset now, write their values later
     */
 
+#undef FALSE
 #ifdef FALSE
     /* Set nco_pck_typ based on program */
     switch(prg){
