@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.6 2002-08-23 22:03:25 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.7 2002-08-24 07:27:41 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF variable routines
 
@@ -236,8 +236,9 @@ nco_put_var // [fnc] Write variable to netCDF file
  const std::valarray<typ_ntr> &var_val) // I [frc] Variable value
 {
   // Purpose: Wrapper for nco_put_var()
-  //  int rcd=nco_put_var(nc_id,var_id,&(const_cast<std::valarray<typ_ntr> &>(var_val)[0]));
-  int rcd=nco_put_var(nc_id,var_id,&var_val[0]);
+  int rcd=nco_put_var(nc_id,var_id,&(const_cast<std::valarray<typ_ntr> &>(var_val)[0]));
+  // Simpler statement fails unless const replaced by typename in var_val qualifier because taking address of non-lvalue
+  //  int rcd=nco_put_var(nc_id,var_id,&var_val[0]);
   return rcd;
 } // end nco_put_var<std::valarray<typ_ntr> >()
 
@@ -266,8 +267,8 @@ nco_put_var // [fnc] Write variable to netCDF file
  const std::valarray<typ_ntr> &var_val) // I [frc] Variable value
 {
   // Purpose: Wrapper for nco_put_var()
-  //  int rcd=nco_put_var(nc_id,nco_inq_varid(nc_id,var_nm),&(const_cast<std::valarray<typ_ntr> &>(var_val)[0]));
-  int rcd=nco_put_var(nc_id,nco_inq_varid(nc_id,var_nm),&var_val[0]);
+  int rcd=nco_put_var(nc_id,nco_inq_varid(nc_id,var_nm),&(const_cast<std::valarray<typ_ntr> &>(var_val)[0]));
+  // int rcd=nco_put_var(nc_id,nco_inq_varid(nc_id,var_nm),&var_val[0]);
   return rcd;
 } // end nco_put_var<std::valarray<typ_ntr> >()
 
