@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.449 2005-01-24 21:30:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.450 2005-02-02 00:53:13 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -356,7 +356,8 @@ Makefile:440: warning: ignoring old commands for target `ncap_yacc.h'
 bld40. Automate splicing trailer ~/nco/doc/man_end.txt to man pages
 bld41.Add configure check for libssl functionality, if not found (Fedora) to explicitly adding libssl
 bld42. Adopt orphaned Debian NCO http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=273322
-bld43. 
+bld43. Implement Martin Schmidt's suggestion for AIX autoconf builds posted to developer's forum 20050201: {$CC} is not tested for xlc* but for (arbitrary_path/xlc*)
+bld44. 
 
 ************************************************************************
 End NCO Wish list
