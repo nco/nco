@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.5 2002-05-21 03:53:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.6 2002-06-07 01:39:54 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -57,11 +57,11 @@ var_abs(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
     break;
   case NC_INT:
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.lp[idx]=abs(op1.lp[idx]);
+      for(idx=0;idx<sz;idx++) op1.lp[idx]=labs(op1.lp[idx]); /* int abs(int), long labs(long) */
     }else{
       const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
-	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]=abs(op1.lp[idx]); 
+	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]=labs(op1.lp[idx]); /* int abs(int), long labs(long) */
       } /* end for */
     } /* end else */
     break;

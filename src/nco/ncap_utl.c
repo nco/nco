@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.62 2002-06-05 19:06:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.63 2002-06-07 01:39:54 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -449,7 +449,7 @@ ncap_scv_abs(scv_sct scv)
     scv_out.val.s=((scv.val.s >= 0) ? scv.val.s : -scv.val.s) ;
     break;
   case NC_INT:
-    scv_out.val.l=(nco_long)abs(scv.val.l); /* abs() returns type signed int */
+    scv_out.val.l=labs(scv.val.l); /* int abs(int), long labs(long) */
     break;            
   case NC_FLOAT:
     scv_out.val.f=fabsf(scv.val.f);
@@ -497,7 +497,7 @@ var_lst_copy(nm_id_sct *xtr_lst,int lst_nbr)
   nm_id_sct *xtr_new_lst;
   
   if(lst_nbr == 0) return NULL;
-  xtr_new_lst=(nm_id_sct *)nco_malloc(lst_nbr*sizeof(nm_id_sct));
+  xtr_new_lst=(nm_id_sct *)nco_malloc((size_t)lst_nbr*sizeof(nm_id_sct));
   for(idx=0;idx<lst_nbr;idx++){
     xtr_new_lst[idx].nm=strdup(xtr_lst[idx].nm);
     xtr_new_lst[idx].id=xtr_lst[idx].id;
@@ -520,8 +520,7 @@ var_lst_free(nm_id_sct *xtr_lst,int lst_nbr)
 nm_id_sct *
 var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst_b)
 {
-  /* Purpose: Subtract from xtr_lst any elements from xtr_lst_b which are present
-     and return new list */
+  /* Purpose: Subtract from xtr_lst any elements from xtr_lst_b which are present and return new list */
   int idx;
   int j;
   int n=0;
@@ -532,7 +531,7 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
   
   if(*nbr_xtr == 0) return xtr_lst;
   
-  xtr_new_lst=(nm_id_sct*)nco_malloc((*nbr_xtr)*sizeof(nm_id_sct));  
+  xtr_new_lst=(nm_id_sct*)nco_malloc((size_t)(*nbr_xtr)*sizeof(nm_id_sct));  
   for(idx=0;idx<*nbr_xtr;idx++){
     match=False;
     for(j=0;j<nbr_lst_b;j++)
@@ -548,7 +547,7 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
 nm_id_sct *
 var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst_a)
 {
-  /* Purpose: Add to xtr_lst any elements from xtr_lst_b not already present and return new list */
+  /* Purpose: Add to xtr_lst any elements from xtr_lst_a not already present and return new list */
   int idx;
   int j;
   int n;
@@ -558,7 +557,7 @@ var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int n
   bool match;
   
   if(*nbr_xtr > 0){
-    xtr_new_lst=(nm_id_sct*)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
+    xtr_new_lst=(nm_id_sct*)nco_malloc((size_t)(*nbr_xtr)*sizeof(nm_id_sct));
     n=*nbr_xtr;
     for(idx=0;idx<*nbr_xtr;idx++){
       xtr_new_lst[idx].nm=strdup(xtr_lst[idx].nm);
@@ -617,7 +616,7 @@ ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 	  if(nbr_new_lst == 0) new_lst=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	  else new_lst=(nm_id_sct *)nco_realloc((void *)new_lst,(nbr_new_lst+1)*sizeof(nm_id_sct));
 	  new_lst[nbr_new_lst].nm=(char *)strdup(dmn_nm);
-	  new_lst[nbr_new_lst++] .id=crd_id;
+	  new_lst[nbr_new_lst++].id=crd_id;
 	  break;
         } /* end if */
       } /* end for */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.24 2002-05-18 19:59:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.25 2002-06-07 01:39:54 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -51,7 +51,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
   } /* endif error */
 } /* end nco_err_exit() */
 
-int
+size_t
 nco_typ_lng /* [fnc]   */
 (nc_type nco_typ) 
 { 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.12 2002-05-18 19:59:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.13 2002-06-07 01:39:54 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -49,7 +49,7 @@ f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
 (nc_type type); /* O [enm] netCDF type */
 
 void nco_dfl_case_nctype_err(void);
-int nco_typ_lng(nc_type);
+size_t nco_typ_lng(nc_type);
 
 /* File Routines */
 int nco_create(const char *,int,int *);
