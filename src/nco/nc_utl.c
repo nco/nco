@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.77 2000-07-15 19:53:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.78 2000-07-27 12:48:32 hmb Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -3033,16 +3033,24 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     case nco_op_max:
       (void)var_avg_reduce_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
       break;
+    
+    case nco_op_avgsumsqr:
+    case nco_op_rms:
+    case nco_op_rmssdn:
+    
+	  /* Square all the values first */
+	  (void)var_multiply(fix->type,var_sz,fix->has_mss_val,fix->mss_val,avg_val,avg_val);
+	  /* Now sum the squares */
+	  (void)var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  			  
+	  break;
+    
     case nco_op_avg: 
     case nco_op_ttl:
+    case nco_op_avgsqr:
     default:
       (void)var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  		
       break;
-/* Not yet implemented 
-   case nco_op_avgsqr:
-   break;
-   case nco_op_avgsumsqr:
-   break;       */      
+
     } /* end case */
 
     /* Free dynamic memory that held the rearranged input variable values */ 
@@ -4615,7 +4623,8 @@ nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
   case nco_op_avgsqr: /* Square of the mean */
     (void)var_add(var_prc_out->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
-  case nco_op_rms: /* Root mean square */ 
+  case nco_op_rms: /* Root mean square */
+  case nco_op_rmssdn: 
   case nco_op_avgsumsqr: /* Mean square */
     /* Square values in var_prc first */
     var_multiply(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc->val);
@@ -4708,6 +4717,84 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
      because we have only operated on local copies of them. */ 
 
 } /* end var_normalize() */ 
+void
+var_normalize_sdn(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
+/* 
+  nc_type type: I netCDF type of operand
+  long sz: I size (in elements) of operand
+  int has_mss_val: I flag for missing values
+  ptr_unn mss_val: I value of missing value
+  long *tally: I counter space
+  ptr_unn op1: I/O values of first operand on input, normalized result on output
+*/ 
+{
+  /* Purpose: Normalize value of first operand by count in (tally-1) array 
+     and store result in first operand. */
+
+  /* Normalization is currently defined as op1:=op1/(--tally) */   
+
+  long idx;
+
+  /* Typecast pointer to values before access */ 
+  (void)cast_void_nctype(type,&op1);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+
+  switch(type){
+  case NC_FLOAT:
+
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.fp[idx]/=(tally[idx]-1);
+    }else{
+      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if((tally[idx]-1) != 0L) op1.fp[idx]/=(tally[idx]-1); else op1.fp[idx]=mss_val_flt;
+      } /* end for */ 
+    } /* end else */
+
+    break;
+  case NC_DOUBLE:
+
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]/=(tally[idx]-1);
+    }else{
+      float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if((tally[idx]-1) != 0L) op1.dp[idx]/=(tally[idx]-1); else op1.dp[idx]=mss_val_dbl;
+      } /* end for */ 
+    } /* end else */
+    break;
+  case NC_LONG:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.lp[idx]/=(tally[idx]-1);
+    }else{
+      float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if((tally[idx]-1) != 0L) op1.lp[idx]/=(tally[idx]-1); else op1.lp[idx]=mss_val_lng;
+      } /* end for */ 
+    } /* end else */
+    break;
+  case NC_SHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.sp[idx]/=(tally[idx]-1);
+    }else{
+      float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if((tally[idx]-1) != 0L) op1.sp[idx]/=(tally[idx]-1); else op1.sp[idx]=mss_val_shrt;
+      } /* end for */ 
+    } /* end else */
+    break;
+  case NC_CHAR:
+    /* Do nothing */ 
+    break;
+  case NC_BYTE:
+    /* Do nothing */ 
+    break;
+  } /* end switch */ 
+
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */ 
+
+} /* end of var_normalize_sdn */
 
 ptr_unn
 mss_val_mk(nc_type type)
@@ -5796,7 +5883,7 @@ usg_prn(void)
     if(prg == ncflint) (void)fprintf(stdout,"-w wgt_1[,wgt_2] Weight(s) of file(s)\n");
   } /* end if */
   if(strstr(opt_sng,"-x")) (void)fprintf(stdout,"-x\t\tExtract all variables EXCEPT those specified with -v\n");
-  if(strstr(opt_sng,"-y")) (void)fprintf(stdout,"-y op_typ\tArithmetic operation: avg,min,max,ttl,avgsqr,avgsumsqr,sqrt,rms\n");
+  if(strstr(opt_sng,"-y")) (void)fprintf(stdout,"-y op_typ\tArithmetic operation: avg,min,max,ttl,avgsqr,avgsumsqr,sqrt,rms,rmssdn\n");
   if(strstr(opt_sng,"in.nc")) (void)fprintf(stdout,"in.nc\t\tInput file name(s)\n");
   if(strstr(opt_sng,"out.nc")) (void)fprintf(stdout,"out.nc\t\tOutput file name\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/
@@ -5819,6 +5906,8 @@ nco_op_typ_get(char *nco_op_sng)
   if(!strcmp(nco_op_sng,"avgsumsqr")) return nco_op_avgsumsqr;  
   if(!strcmp(nco_op_sng,"sqrt")) return nco_op_sqrt;
   if(!strcmp(nco_op_sng,"rms")) return nco_op_rms;
+  if(!strcmp(nco_op_sng,"rmssdn")) return nco_op_rmssdn;
+
   return nco_op_avg;
 } /* end nco_op_typ_get() */
 
