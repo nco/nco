@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.45 2003-01-03 02:26:27 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.46 2003-01-07 03:22:41 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -44,9 +44,12 @@ cd ~/nco/doc;scp -C nco.dvi nco.html nco.info* nco.pdf nco.ps* zender@dust.ess.u
 
 # Copy netCDF library to HP account
 ncftpput spe141.testdrive.compaq.com /house/zender /data/zender/tmp/netcdf-3.5.1-beta5.tar.Z
+mkdir ${HOME}/bin/${GNU_TRP}
+mkdir ${HOME}/lib/${GNU_TRP}
 cd ~/netcdf-3.5.1-beta5/src
 make distclean
 CPPFLAGS='-Df2cFortran' FC='g77' ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --libdir=${HOME}/lib/${GNU_TRP}
+CC='/bin/c89' CPPFLAGS='-D_HPUX_SOURCE' CXX='aCC' FC='/opt/fortran/bin/fort77' FFLAGS='-w' FLIBS='-lU77' ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --libdir=${HOME}/lib/${GNU_TRP}
 make;make install
 
 # Copy netCDF library to NCO group account

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.45 2002-12-20 17:59:48 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.46 2003-01-07 03:22:40 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -10,6 +10,7 @@ AIX		Y	N(2)				N(5)
 ALPHA
 CRAY
 FREEBSD		N(10)
+HPUX
 LINUX como	N(11)	
 LINUX gcc/g++	Y	N/A	N(12)			Y	Y
 LINUX icc	Y	N/A				Y	Y
@@ -134,6 +135,37 @@ Old build example:
 New build example:
 ************************************************************************
 End FREEBSD
+************************************************************************
+
+************************************************************************
+Start HPUX
+Status: Does not work
+************************************************************************
+CC=/bin/c89
+CPPFLAGS=-D_HPUX_SOURCE
+FC=/opt/fortran/bin/fort77
+FFLAGS=-w
+FLIBS=-lU77
+CXX=aCC
+
+spe169> ./pvmgetarch;uname -a;~/nco/autobld/config.guess
+HPPA
+HP-UX spe169 B.11.11 U 9000/800 1939057856 unlimited-user license
+hppa2.0w-hp-hpux11.11
+
+gcc/g++:
+export GNU_TRP=`~/nco/autobld/config.guess`
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/ftp/pub/zender/nco/rgr
+
+Old build example:
+
+New build example:
+************************************************************************
+End HPUX
 ************************************************************************
 
 ************************************************************************
