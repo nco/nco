@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.1 2002-12-19 20:48:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.2 2002-12-22 17:46:21 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -41,37 +41,27 @@ extern "C" {
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
    const bool NCO_BNR_WRT, /* I [flg] Write binary file */
    char *var_nm, /* I [sng] Variable name */
-   const lmt_all * const lmt_lst, /* I multi-hyperslab limits */
-   const int nbr_dmn_fl); /* I [nbr] Number of multi-hyperslab limits */
-
-
-  void *
-  nco_msa_merge_slabs(
-  int i,               /* current depth, we start at 0 */
-  int imax,            /* maximium depth (i.e the number of dims in variable (does not change)*/	
-  lmt_all **lmt_lst,   /* list of limits in each dimension (this remains STATIC as we recurse) */
-  void **vp_wrap,     /* pointers to hyperslabs */ 
-  long *vp_size,      /* size of each hyperslab */
-  long *var_sz,       /* Var size of merged hyperslab */ 
-  var_sct *vara);      /* hold data about current variable */
+   lmt_all * const lmt_lst, /* I multi-hyperslab limits */
+   int nbr_dmn_fl); /* I [nbr] Number of multi-hyperslab limits */
 
   
   bool 
-  nco_msa_calc_indices(   /* if false then this is the last limit out */
+  nco_msa_calc_indices(   /* if false then we are at the end of the slab */
   bool NORMALIZE,         /* Return indices of slab within the slab */
   lmt_all *lmt_a,         /* I list of lmts for each dimension  */
   long *indices,          /* I/O so routine can keep track of where its at */
-  lmt_sct  *lmt_out,      /* O  output hyperslab */
+  lmt_sct* lmt_out,      /* O  output hyperslab */
   int *slb );             /* slab which the above limit refers to */ 
 
   
   void 
-  nco_msa_print_indices    /* Calculate indices for multiple hyperslabbing */
+  nco_msa_print_indices    /* Print multiple hyperslab indices  */
   (lmt_all * lmt_lst); 
 
+
   void 
-  nco_msa_calc_cnt    /* Calculate indices for multiple hyperslabbing */
-  (lmt_all * lmt_lst); 
+  nco_msa_calc_cnt    /* Calculate size of  multiple hyperslab */ 
+  (lmt_all* lmt_lst); 
 
   void *
   nco_msa_rec_calc(  /* Multi slab algorithm (recursive routine, returns a single slab pointer */
