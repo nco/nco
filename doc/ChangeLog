@@ -1,3 +1,13 @@
+2001-05-07  Charlie Zender  <zender@uci.edu>
+
+	* This netcdf2 version branched at nco-1_2_3 and is now in
+	maintenance mode. The netcdf3 branch is now merged into the main
+	trunk 
+
+	* cvs tag -b netcdf2
+
+	* cvs tag -c nco-1_2_3
+
 2001-02-16  Charlie Zender  <zender@uci.edu>
 
 	* After many minor tweaks, made commits and retagged nco-1_2_2
