@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.4 1998-08-19 05:26:51 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.5 1998-08-19 17:10:33 zender Exp $
 
 MY_BLD_DIR := ../bld
 MY_DAT_DIR := ../data
@@ -71,9 +71,15 @@ LINT := lint
 YACC := yacc
 ifeq ($(OPTS),O)
  CFLAGS := -O
+ FFLAGS = -N 132
 endif
 ifeq ($(OPTS),D)
  CFLAGS := -g
+ FFLAGS = -g -N 132
+endif
+ifeq ($(OPTS),X)
+ CFLAGS := -g -N 132
+ FFLAGS = -g -N 132 -e i
 endif
 # 97/10/21 Added -P to suppress #line # directives on Fortran files
 $(MY_OBJ_DIR)/%.o : %.F
@@ -179,7 +185,7 @@ NETCDF_INC := /fs/local/include64
 NETCDF_LIB := /fs/local/lib64
 C++ := c++
 CC := cc
-CPPFLAGS := -D$(PVM_ARCH) $(MY_INC_DIR) -I/usr/local/lib -I$(NETCDF_INC)
+CPPFLAGS := -D$(PVM_ARCH) $(MY_INC_DIR) -I$(NETCDF_INC)
 FC := f77
 LD := ld
 LDFLAGS := -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf
@@ -246,11 +252,19 @@ LINT := lint
 YACC := yacc
 ifeq ($(OPTS),O)
  CFLAGS := -O2
- FFLAGS := -fast -e -Nl99
+ FFLAGS := -O -e
 endif
 ifeq ($(OPTS),D)
  CFLAGS := -g
- FFLAGS := -g -e -Nl99
+ FFLAGS := -g -e
+endif
+ifeq ($(OPTS),X)
+ CFLAGS := -g 
+ FFLAGS := -g -e
+# NB: 98/06/01 -C (range-checking) is not supported by Sun f90
+ifeq ($(FC),f77)
+ FFLAGS += $(FFLAGS) -C
+endif
 endif
 $(MY_OBJ_DIR)/%.o : %.F
 	$(FC) -c $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
@@ -274,11 +288,19 @@ LINT := lint
 YACC := bison
 ifeq ($(OPTS),O)
  CFLAGS := -O2
- FFLAGS := -fast -e -Nl99
+ FFLAGS := -O -e
 endif
 ifeq ($(OPTS),D)
  CFLAGS := -g
- FFLAGS := -g -e -Nl99
+ FFLAGS := -g -e
+endif
+ifeq ($(OPTS),X)
+ CFLAGS := -g 
+ FFLAGS := -g -e
+# NB: 98/06/01 -C (range-checking) is not supported by Sun f90
+ifeq ($(FC),f77)
+ FFLAGS += $(FFLAGS) -C
+endif
 endif
 $(MY_OBJ_DIR)/%.o : %.F
 	$(FC) -c $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
