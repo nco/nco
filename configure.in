@@ -39,6 +39,7 @@ else
 fi
 AC_DEFINE_UNQUOTED(HOST,$nco_hostname,Hostname)
 AC_DEFINE_UNQUOTED(HOSTNAME,$nco_hostname,Hostname alias)
+AC_DEFINE_UNQUOTED(GNU_TRP,$build,Autoconf-generated architecture \"triplet\")
 
 # use automake to create Makefiles
 #AM_INIT_AUTOMAKE
