@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.32 2002-02-12 07:49:10 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.33 2002-08-19 19:14:35 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -105,17 +105,18 @@ http://lists.sourceforge.net/mailman/admin/nco-announce
 
 Contributors with active projects:
 Name, E-mail, Sourceforge name, Project
-Henry Butowsky <thin@thin.screaming.net> ncap
-James Watson <jwatson@csee.uq.edu.au> autoconf
-gautam <gautamdhar@hotmail.com> getopt?
-Jason Dale Robey <jrobey@users.sourceforge.net> getopt? (Bad email,
+Henry Butowsky <henryb at ntlworld dot com> ncap
+Rorik Peterson <ffrap1 at uaf dot edu> autoconf
+James Watson <jwatson at csee dot uq dot edu dot au> autoconf
+gautam <gautamdhar at hotmail dot com> getopt?
+Jason Dale Robey <jrobey at users dot sourceforge dot net> getopt? (Bad email,
 never contacted)
-S. Srinivasan <s.srinivasan@ematic.com>
-Gian Luca Bignardi <pac77@libero.it> GTK+ GUI wrapper?
-Jeff Turner <jturner@alum.rpi.edu> getopt, _FillValue?
-Igor Crane <igor_crane@hotmail.com> ncap?
-John Parish <gerbil@planetquake.com> http? C++ interface?
-Mohan Thiyagarajah <mthiyagarajah@yahoo.com> C++ interface? namespace/nc_utl?
+S dot  Srinivasan <s dot srinivasan at ematic dot com>
+Gian Luca Bignardi <pac77 at libero dot it> GTK+ GUI wrapper?
+Jeff Turner <jturner at alum dot rpi dot edu> getopt, _FillValue?
+Igor Crane <igor_crane at hotmail dot com> ncap?
+John Parish <gerbil at planetquake dot com> http? C++ interface?
+Mohan Thiyagarajah <mthiyagarajah at yahoo dot com> C++ interface? namespace/nc_utl?
 
 How to help develop NCO:
 

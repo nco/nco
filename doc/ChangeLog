@@ -1,5 +1,7 @@
 2002-08-19  Charlie Zender  <zender@uci.edu>
 
+	* Added .cvsignore to dirs affected by autoconf
+
 	* Added autoconf-specific list to doc/TODO
 
 	* Added configure.eg to keep track of autoconf problems
