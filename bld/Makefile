@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.10 1998-08-20 23:21:47 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.11 1998-08-21 05:05:21 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -54,18 +54,18 @@ SRC_STB_LST := $(sort $(notdir $(SRC_LST)))
 # Source files names sorted alphabetically, one per line, for input to makdep
 SRC_STB_FL := $(strip $(subst $(space),$(newline),$(SRC_STB_LST))) # <--Intentional
 # Dependency list for executable
-NCO_OBJ := $(addprefix $(MY_OBJ_DIR)/,$(addsuffix .o, $(basename $(SRC_STB_LST)))) 
+MDL_OBJ := $(addprefix $(MY_OBJ_DIR)/,$(addsuffix .o, $(basename $(SRC_STB_LST)))) 
 
-# Variables having to do with NCO executables
-NCO_BIN_TRG := ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted # NCO binary targets
-NCO_BIN_SYM_LNK := ncea ncrcat # Symbolic links
-NCO_BIN_STB := $(NCO_BIN_TRG) $(NCO_BIN_SYM_LNK) # All NCO files in MY_BIN_DIR
-NCO_BIN := $(addprefix $(MY_BIN_DIR)/,$(NCO_BIN_STB)) # distclean removes these files
+# Variables having to do with binary executables created by module
+MDL_BIN_TRG := ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted # NCO binary targets
+MDL_BIN_SYM_LNK := ncea ncrcat # Symbolic links
+MDL_BIN_STB := $(MDL_BIN_TRG) $(MDL_BIN_SYM_LNK) # All NCO files in MY_BIN_DIR
+MDL_BIN := $(addprefix $(MY_BIN_DIR)/,$(MDL_BIN_STB)) # distclean removes these files
 
 # Variables having to do with NCO data
-NCO_DAT_STB := 85 86 87 88 89 h0001 h0002 h0003 # Symbolic links to in.nc
-NCO_DAT_STB := $(addsuffix .nc,$(NCO_DAT_STB)) # `make data' creates these files
-NCO_DAT := $(addprefix $(MY_DAT_DIR)/,$(NCO_DAT_STB)) # `make distclean' removes these files
+MDL_DAT_STB := 85 86 87 88 89 h0001 h0002 h0003 # Symbolic links to in.nc
+MDL_DAT_STB := $(addsuffix .nc,$(MDL_DAT_STB)) # `make data' creates these files
+MDL_DAT := $(addprefix $(MY_DAT_DIR)/,$(MDL_DAT_STB)) # `make distclean' removes these files
 
 # Redefine default patterns for C compiling
 $(MY_OBJ_DIR)/%.o : %.c
@@ -367,7 +367,7 @@ endif
 libnco := $(MY_LIB_DIR)/libnco
 
 # Default targets
-all: bin_dir obj_dir lib_dir libnco $(NCO_BIN_TRG)
+all: bin_dir obj_dir lib_dir libnco $(MDL_BIN_TRG)
 # .PHONY tells make to remake the following non-file targets 
 .PHONY: all clean distclean debug 
 lib_dir :
@@ -405,7 +405,7 @@ ncrename:	$(MY_OBJ_DIR)/ncrename.o $(libnco).a
 	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
 	chmod 755 $(MY_BIN_DIR)/$@
 binclean:
-	rm -f $(NCO_BIN)
+	rm -f $(MDL_BIN)
 
 # Targets in lib
 libnco : $(libnco).a
@@ -423,15 +423,15 @@ libclean:
 
 # Targets in obj
 objclean:
-	rm -f $(NCO_OBJ)
+	rm -f $(MDL_OBJ)
 
 # Targets in data
 data:	$(MY_DAT_DIR)/in.nc 
-	for fl in $(NCO_DAT_STB); do cd $(MY_DAT_DIR); ln -s in.nc $$fl; done
+	for fl in $(MDL_DAT_STB); do cd $(MY_DAT_DIR); ln -s in.nc $$fl; done
 $(MY_DAT_DIR)/in.nc : $(MY_DAT_DIR)/in.cdl
 	cd $(MY_DAT_DIR); ncgen -b -o in.nc in.cdl
 dataclean:
-	rm -f $(NCO_DAT)
+	rm -f $(MDL_DAT)
 
 # Targets in doc
 # Each make directive line spawns a separate shell so must use `cd dir;cmd' format
@@ -459,7 +459,7 @@ debug:
 	printf "SRC_LST = $(SRC_LST)\n"
 	printf "SRC_STB_LST = $(SRC_STB_LST)\n"
 	printf "SRC_STB_FL = $(SRC_STB_FL)\n"
-	printf "NCO_OBJ = $(NCO_OBJ)\n"
+	printf "MDL_OBJ = $(MDL_OBJ)\n"
 distclean: clean docclean dataclean binclean libclean
 	cd $(MY_BLD_DIR); rm -f *~
 	cd $(MY_DAT_DIR); rm -f in.nc *~
