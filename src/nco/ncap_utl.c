@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.22 2001-12-28 19:25:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.23 2001-12-29 05:52:50 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
-/* Copyright (C) 1995--2001 Charlie Zender
+/* Copyright (C) 1995--2002 Charlie Zender
    
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -87,7 +87,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   (void)var_get(f_id,vara);
   /* (void)var_free(var_nm);*/
   /* free(var_nm->nm);*/
-  //vara=var_upk(vara);
+  /* vara=var_upk(vara); */
   return vara;
   
 } /* end ncap_var_init */
@@ -307,7 +307,7 @@ ncap_var_function(var_sct *var_in, double(*fnc)())
     } /* end for */
   } /* end else */
   
-  //(void)cast_nctype_void(NC_DOUBLE,&var->val);
+  /* (void)cast_nctype_void(NC_DOUBLE,&var->val); */
   if(var->has_mss_val) (void)cast_nctype_void(NC_DOUBLE,&(var->mss_val));
   return var;
   

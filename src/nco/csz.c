@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.77 2001-12-03 06:43:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.78 2001-12-29 05:52:50 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
-/* Copyright (C) 1995--2001 Charlie Zender
+/* Copyright (C) 1995--2002 Charlie Zender
    
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -1098,7 +1098,7 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
   (void)fprintf(stderr,"Portions copyright 1999--2000 Regents of the University of California\n"); */
 
   (void)fprintf(stderr,"NCO netCDF Operators version %s\n",vrs_cvs);
-  (void)fprintf(stderr,"Copyright (C) 1995--2001 Charlie Zender\n");
+  (void)fprintf(stderr,"Copyright (C) 1995--2002 Charlie Zender\n");
   (void)fprintf(stderr,"%s version %s (%s) \"%s\"\n",prg_nm_get(),vrs_rcs,date_cvs,nmn_get());
   (void)fprintf(stdout,"NCO is free software and comes with ABSOLUTELY NO WARRANTY\nNCO is distributed under the terms of the GNU General Public License\n");
 

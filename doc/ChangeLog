@@ -1,5 +1,9 @@
 2001-12-28  Charlie Zender  <zender@uci.edu>
 
+	* Changed copyright to 2002
+
+	* Remove C++ comment characters from ncap_utl.c
+
 	* cvs tag -c nco-2_1_1
 	Changes since nco-2_1_0: ncap uses @ for attributes
 	Mixed rank handling improved but still broken

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.57 2001-10-28 23:05:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.58 2001-12-29 05:52:50 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -6,7 +6,7 @@
    specfied variables of multiple input netCDF files and output them 
    to a single file. */
 
-/* Copyright (C) 1995--2001 Charlie Zender
+/* Copyright (C) 1995--2002 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.57 2001-10-28 23:05:36 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.57 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.58 2001-12-29 05:52:50 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.58 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   

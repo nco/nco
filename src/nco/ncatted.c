@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.36 2001-11-29 15:33:14 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.37 2001-12-29 05:52:50 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
 /* Purpose: Add, create, delete, or overwrite attributes in a netCDF file */
 
-/* Copyright (C) 1995--2001 Charlie Zender
+/* Copyright (C) 1995--2002 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.36 2001-11-29 15:33:14 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.36 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.37 2001-12-29 05:52:50 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.37 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 

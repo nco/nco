@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.5 2001-10-08 07:25:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.6 2001-12-29 05:52:50 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
-/* Copyright (C) 1995--2001 Charlie Zender
+/* Copyright (C) 1995--2002 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.84 2001-10-09 23:26:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.85 2001-12-29 05:52:50 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -27,7 +27,7 @@ cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco
 Resources:
 Octave TeXInfo manual is a good example of clean TeXInfo structure
 
-Copyright (C) 1995--2001 Charlie Zender
+Copyright (C) 1995--2002 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1
 or any later version published by the Free Software Foundation;
@@ -65,7 +65,7 @@ END-INFO-DIR-ENTRY
 @c Define edition, date, ...
 @set nco-edition 2.0.0
 @set doc-edition 2.0.0
-@set copyright-years 1995--2001
+@set copyright-years 1995--2002
 @set update-year 2001
 @set update-date 1 April 2001
 @set update-month April 2001

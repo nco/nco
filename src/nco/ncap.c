@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.36 2001-12-11 16:13:35 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.37 2001-12-29 05:52:50 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
 /* Purpose: Compute user-defined derived fields using forward algebraic notation applied to netCDF files */
 
-/* Copyright (C) 1995--2001 Charlie Zender
+/* Copyright (C) 1995--2002 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -93,7 +93,6 @@ main(int argc,char **argv)
 {
   extern int yyparse (void *); /* Prototype here as in bison.simple to avoid compiler warning */
 
-
   extern FILE *yyin;
 
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
@@ -122,15 +121,14 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.36 2001-12-11 16:13:35 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.36 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.37 2001-12-29 05:52:50 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.37 $";
   
-  dmn_sct **dim;
+  dmn_sct **dmn;
   dmn_sct **dmn_out;
   
   extern char *optarg;
   extern int optind;
-  
   
   int idx;
   int in_id;  
@@ -304,7 +302,7 @@ main(int argc,char **argv)
   prs_arg.fl_spt = fl_spt;
   prs_arg.att_lst = att_lst;
   prs_arg.nbr_att =&nbr_att;
-  prs_arg.dim=dim;
+  prs_arg.dim=dmn;
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
   prs_arg.inital_scan = True;
   
@@ -358,17 +356,17 @@ main(int argc,char **argv)
   dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
   /* Fill in dimension structure for all extracted dimensions */
-  dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++) dim[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
+  dmn=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
+  for(idx=0;idx<nbr_dmn_xtr;idx++) dmn[idx]=dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
   
   /* Merge hyperslab limit information into dimension structures */
-  if(lmt_nbr > 0) (void)dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
+  if(lmt_nbr > 0) (void)dmn_lmt_mrg(dmn,nbr_dmn_xtr,lmt,lmt_nbr);
 
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
-    dmn_out[idx]=dmn_dpl(dim[idx]);
-    (void)dmn_xrf(dim[idx],dmn_out[idx]); 
+    dmn_out[idx]=dmn_dpl(dmn[idx]);
+    (void)dmn_xrf(dmn[idx],dmn_out[idx]); 
   } /* end loop over idx */
 
   /* Is this an NCAR CSM-format history tape? */
@@ -379,7 +377,7 @@ main(int argc,char **argv)
   var=(var_sct **)nco_malloc(nbr_xtr_2*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr_2*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr_2;idx++){
-    var[idx]=var_fll(in_id,xtr_lst_2[idx].id,xtr_lst_2[idx].nm,dim,nbr_dmn_xtr);
+    var[idx]=var_fll(in_id,xtr_lst_2[idx].id,xtr_lst_2[idx].nm,dmn,nbr_dmn_xtr);
     var_out[idx]=var_dpl(var[idx]);
     (void)var_xrf(var[idx],var_out[idx]);
     (void)var_dmn_xrf(var_out[idx]);
@@ -450,8 +448,6 @@ main(int argc,char **argv)
     rcd=yyparse((void *)&prs_arg);
   } /* end else */
   /* Define dimensions in output file */
-
-   
   rcd = nco_redef(out_id);
   
   /* Copy new attributes overwriting old ones */

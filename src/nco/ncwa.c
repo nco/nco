@@ -1,11 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.70 2001-10-08 07:25:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.71 2001-12-29 05:52:50 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
 /* Purpose: Compute averages of specified hyperslabs of specfied variables
    in a single input netCDF file and output them to a single file. */
 
-/* Copyright (C) 1995--2001 Charlie Zender
+/* Copyright (C) 1995--2002 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.70 2001-10-08 07:25:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.70 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.71 2001-12-29 05:52:50 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.71 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;

@@ -1,11 +1,11 @@
  %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.19 2001-12-28 20:09:27 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.20 2001-12-29 05:52:50 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
-/* Copyright (C) 1995--2001 Charlie Zender
+/* Copyright (C) 1995--2002 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
