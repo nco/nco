@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.168 2002-09-09 07:21:51 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.169 2002-09-10 00:49:38 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -449,7 +449,8 @@ C++ := g++
 # fxm: 19980517: As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
 #CC := como --c99
 #CC := g++
-CC := gcc
+# 20020909 comp.unix.programmer: -D_BSD_SOURCE tells GCC nameser.h is ANSI-compliant
+CC := gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE
 #CC := icc
 #CC := insure
 CPP := ${CC}

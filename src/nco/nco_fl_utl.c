@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.19 2002-09-09 04:14:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.20 2002-09-10 00:49:39 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -349,6 +349,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	   MAXHOSTNAMELEN isn't in there on Solaris */
 	host_nm_lcl=(char *)nco_malloc((256+1)*sizeof(char));
 	(void)gethostname(host_nm_lcl,256+1);
+	/* fxm: move to gethostbyname() next */
 	if(strchr(host_nm_lcl,'.') == NULL){
 /* #ifdef HAVE_RES_ */
 	  /* Returned hostname did not include fully qualified Internet domain name (FQDN) */
