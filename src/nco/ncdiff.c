@@ -1,11 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.61 2002-12-29 08:59:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.62 2002-12-30 02:56:14 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
 /* Purpose: Compute differences of specified hyperslabs of specfied variables
    from two input netCDF files and output them to a single file. */
 
-/* Copyright (C) 1995--2002 Charlie Zender
+/* Copyright (C) 1995--2003 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.61 2002-12-29 08:59:48 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.61 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.62 2002-12-30 02:56:14 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.62 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

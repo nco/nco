@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.11 2002-08-30 07:22:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.12 2002-12-30 02:56:15 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
-/* Copyright (C) 1995--2002 Charlie Zender
+/* Copyright (C) 1995--2003 Charlie Zender
    This software is distributed under the terms of the GNU General Public License
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 

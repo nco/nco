@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.h,v 1.5 2002-06-17 00:06:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.h,v 1.6 2002-12-30 02:56:15 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
-/* Copyright (C) 1995--2002 Charlie Zender
+/* Copyright (C) 1995--2003 Charlie Zender
    This software is distributed under the terms of the GNU General Public License
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 

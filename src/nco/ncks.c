@@ -1,11 +1,11 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.77 2002-12-29 08:59:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.78 2002-12-30 02:56:14 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
 /* Purpose: Extract (subsets of) variables from a netCDF file 
    Print them to screen, or copy them to a new file, or both */
 
-/* Copyright (C) 1995--2002 Charlie Zender
+/* Copyright (C) 1995--2003 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.77 2002-12-29 08:59:48 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.77 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.78 2002-12-30 02:56:14 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.78 $";
   
   extern char *optarg;
   

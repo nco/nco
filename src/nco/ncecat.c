@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.51 2002-12-29 08:59:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.52 2002-12-30 02:56:14 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
 /* Purpose: Join variables across files by attaching them to a new record variable */
 
-/* Copyright (C) 1995--2002 Charlie Zender
+/* Copyright (C) 1995--2003 Charlie Zender
 
    This program is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
@@ -89,8 +89,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.51 2002-12-29 08:59:48 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.51 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.52 2002-12-30 02:56:14 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.52 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;

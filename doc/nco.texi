@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.138 2002-12-29 08:59:46 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.139 2002-12-30 02:56:13 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -14,16 +14,17 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @code{}: Program text, e.g., @code{if(foo) x=y;}
 @command{}: Commands, e.g., @command{ncra}
 @dfn{}: Define use of term, e.g., @dfn{supercalifragilisticexpialidocious}
+@email{}: E-mail address, e.g., @email{zender@uci.edu}
 @env{}: Environment variable, e.g., @env{HOME}
+@file{}: Filename, e.g., @url{in.nc}
 @kbd{}: Keyboard input, e.g., @kbd{ncra in.nc out.nc}
 @key{}: Key name, e.g., @key{ESC} (rarely needed)
 @option{}: Command-line option, e.g., @option{}
 @samp{}: Extended commands, character sequences, e.g., @samp{ncra in.nc out.nc}
-@var{}: Metasyntactic variable, e.g., @var{}
 @uref{}: URL with alternate text, e.g., @uref{http://nco.sf.net,NCO homepage}
 @url{}: Uniform resource locator, e.g., @url{http://nco.sf.net}
-@file{}: Filename, e.g., @url{in.nc}
-@email{}: E-mail address, e.g., @email{zender@uci.edu}
+@var{}: Metasyntactic variable, e.g., @var{}
+@w{}: Unbreakable text, e.g., @w{of 1}
 
 After editing any hyperlink locations, use 
 C-c C-u C-a	texinfo-all-menus-update
@@ -54,7 +55,7 @@ Resources:
 Octave TeXInfo manual is a good example of clean TeXInfo structure
 /usr/share/doc/octave-2.1.34/interpreter/octave.texi
 
-Copyright (C) 1995--2002 Charlie Zender
+Copyright (C) 1995--2003 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1
 or any later version published by the Free Software Foundation;
@@ -87,12 +88,12 @@ http://www.gnu.ai.mit.edu/copyleft/fdl.html
 @clear smallbook
 
 @c Define edition, date, ...
-@set nco-edition 2.6.6
-@set doc-edition 2.6.6
-@set copyright-years 1995--2002
-@set update-year 2002
-@set update-date 27 October 2002
-@set update-month October 2002
+@set nco-edition 2.6.7
+@set doc-edition 2.6.7
+@set copyright-years 1995--2003
+@set update-year 2003
+@set update-date 1 January 2003
+@set update-month January 2003
 
 @c Experiment with smaller amounts of whitespace between chapters and sections
 @tex
@@ -145,7 +146,7 @@ Rew and Steve Emmerson.
 
 @titlepage
 @ifhtml
-<meta name="Author" CONTENT="Charles S. Zender">
+<meta name="Author" CONTENT="Charlie Zender">
 <meta name="Keywords" CONTENT="NCO documentation, NCO User's Guide,
 netCDF, operator, GCM, CCM, scientific data, ncdiff, ncea, ncecat,
 ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
@@ -162,7 +163,7 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @subtitle Edition @value{doc-edition}, for @acronym{NCO} Version @value{nco-edition}
 @subtitle @value{update-month}
 
-@author by Charles S. Zender
+@author by Charlie Zender
 @author Department of Earth System Science
 @author University of California at Irvine
 @ifhtml
@@ -177,7 +178,7 @@ Copyright @copyright{} @value{copyright-years} Charlie Zender.
 
 @sp 2
 This is the first edition of the @cite{NCO User's Guide},@*
-and is consistent with version~2 of @file{texinfo.tex}.
+and is consistent with @w{version 2} of @file{texinfo.tex}.
 @sp 2
 
 Published by Charlie Zender@*
@@ -253,13 +254,11 @@ Nike.@*
 @sp 1
 @noindent
 Charlie Zender@*
-@sp 1
-@noindent
 May 1997@*
 Boulder, Colorado@*
 
-@ignore
-I suppose a major version change entitles me to write another Foreword.
+@sp 2
+Major feature improvements entitle me to write another Foreword.
 In the last five years a lot of work has been done refining @acronym{NCO}.
 @acronym{NCO} is now an honest-to-goodness open source project.
 It appears to be much healthier for it.
@@ -268,11 +267,19 @@ continues to grow, and now includes @acronym{UCI}.
 @sp 1
 @noindent
 Charlie Zender@*
-@sp 1
-@noindent
 October 2000@*
 Irvine, California@*
-@end ignore
+
+@sp 2
+The most remarkable advances in  @acronym{NCO} capabilities in the last 
+few years are due to contributions from the Open Source community.
+Especially noteworthy are the contributions of Henry Butowsky and Rorik
+Peterson. 
+@sp 1
+@noindent
+Charlie Zender@*
+January 2003@*
+Irvine, California@*
 
 @node Summary, Introduction, Foreword, Top
 @unnumbered Summary
@@ -311,7 +318,7 @@ itself.
 The complete @acronym{NCO} source distribution is currently distributed
 as a @dfn{compressed tarfile} from
 @uref{http://sourceforge.net/projects/nco}
-and 
+and from
 @uref{ftp://dust.ess.uci.edu/pub/zender/nco/nco.tar.gz}.
 The compressed tarfile must be uncompressed and untarred before building
 @acronym{NCO}.
@@ -375,6 +382,17 @@ This tests incorporates an image using the @code{@@image} command.
 @node Compatability, Libraries, Availability, Introduction
 @section Operating systems compatible with @acronym{NCO}
 @cindex @acronym{OS}
+@cindex @acronym{IBM}
+@cindex @acronym{NEC}
+@cindex @acronym{SGI}
+@cindex @acronym{HP}
+@cindex @acronym{DEC}
+@cindex Cray
+@cindex Digital
+@cindex Sun
+@cindex Intel
+@cindex Comeau
+@cindex Compaq
 @cindex Macintosh
 @cindex Microsoft
 @cindex Windows
@@ -398,28 +416,69 @@ If you port the code to a new operating system, please send me a note
 and any patches you required.
 
 @cindex @acronym{UNIX}
-The major prerequisite for installing @acronym{NCO} on a particular platform is
-the successful, prior installation of the netCDF libraries themselves.
+The major prerequisite for installing @acronym{NCO} on a particular
+platform is the successful, prior installation of the netCDF libraries
+themselves. 
 Unidata has shown a commitment to maintaining netCDF on all popular
 @acronym{UNIX} platforms, and is moving towards full support for the
 Microsoft Windows operating system (@acronym{OS}).
 Given this, the only difficulty in implementing @acronym{NCO} on a
 particular platform is standardization of various C and Fortran
 interface and system calls.
-The C-code has been tested for @acronym{ANSI} compliance by compiling
-with @acronym{GNU} @samp{gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE}
-(the @samp{_BSD_SOURCE} token is required on some Linux platforms where
+The @acronym{NCO} code is tested for @acronym{ANSI} compliance by
+compiling with C compilers including those from 
+@cindex @command{CC}
+@cindex @command{c++}
+@cindex @command{cc}
+@cindex @command{como}
+@cindex @command{cxx}
+@cindex @command{gcc}
+@cindex @command{icc}
+@cindex @command{xlC}
+@cindex @command{xlc}
+@acronym{GNU} (@samp{gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE} -Wall)
+@footnote{
+The @samp{_BSD_SOURCE} token is required on some Linux platforms where 
 @command{gcc} dislikes the network header files like
-@file{netinet/in.h}). 
+@file{netinet/in.h}).},
+Comeau Computing (@samp{como --c99}),
+Cray (@samp{cc}),
+@acronym{HP}/Compaq/@acronym{DEC} (@samp{cc}),
+@acronym{IBM} (@samp{xlc -c -qlanglvl=extended}),
+Intel (@samp{icc}),
+@acronym{NEC} (@samp{cc}),
+@acronym{SGI} (@samp{cc -LANG:std}),
+and
+Sun (@samp{cc}).
+@cindex C++
+@cindex @acronym{ISO}
+@cindex @command{libnco}
+@acronym{NCO} (all commands and the @command{libnco} library) and
+the C++ interface to netCDF (called @command{libnco_c++}) comply with
+the @acronym{ISO} C++ standards as implemented by
+Comeau Computing (@samp{como}),
+Cray (@samp{CC}),
+@acronym{GNU} (@samp{g++ -Wall}),
+@acronym{HP}/Compaq/@acronym{DEC} (@samp{cxx}),
+@acronym{IBM} (@samp{xlC}),
+Intel (@samp{icc}),
+@acronym{NEC} (@samp{c++}),
+@acronym{SGI} (@samp{CC -LANG:std}),
+and
+Sun (@samp{CC -LANG:std}).
+@cindex @file{Makefile}
+See the files @file{nco/bld/Makefile} and
+@file{nco/src/nco_c++/Makefile.old} for more details.
+
 @cindex @acronym{ANSI}
 @cindex C99
 @cindex C89
 Until recently (and not even yet), @acronym{ANSI}-compliant has meant
-compliance with the 1989 ISO C-standard, usually called C89 (with
+compliance with the 1989 @acronym{ISO} C-standard, usually called C89 (with
 minor revisions made in 1994 and 1995).
 C89 does not allow variable-size arrays nor use of the @samp{%z} format 
 for @code{printf}.
-These are nice features of the 1999 ISO C-standard called C99. 
+These are nice features of the 1999 @acronym{ISO} C-standard called C99. 
 @acronym{NCO} is C99-compliant where possible and C89-compliant where
 necessary. 
 Certain branches in the code are required to satisfy the native
@@ -440,7 +499,8 @@ subroutines with C subroutines.
 Furthermore, this greatly simplifies the task of compiling on nominally 
 unsupported platforms. 
 As of August 1999, @acronym{NCO} is built entirely in C by default.
-This allows @acronym{NCO} to compile on any machine with an @acronym{ANSI} C compiler.
+This allows @acronym{NCO} to compile on any machine with an
+@acronym{ANSI} C compiler. 
 Furthermore, @acronym{NCO} automatically takes advantage of extensions
 to @acronym{ANSI} C when compiled with the @acronym{GNU} compiler
 collection, @acronym{GCC}. 
@@ -449,9 +509,10 @@ As of July 2000 and @acronym{NCO} version 1.2, @acronym{NCO} no longer
 supports performing arithmetic operations in Fortran to improve speed.
 Supporting Fortran involves maintaining two sets of routines for every
 arithmetic operation. 
-The @code{USE_FORTRAN_ARITHMETIC} flag is retained in the Makefile and 
-the file containing the Fortran code, @file{nc_fortran.F}, is still
-distributed with @acronym{NCO} in case a volunteer decides to resurrect them.
+The @code{USE_FORTRAN_ARITHMETIC} flag is retained in the
+@file{Makefile} and the file containing the Fortran code,
+@file{nc_fortran.F}, is still distributed with @acronym{NCO} in case a
+volunteer decides to resurrect them. 
 If you would like to volunteer to maintain @file{nc_fortran.F} please 
 contact me. 
 Otherwise the Fortran hooks will be completely removed in the next major
@@ -491,7 +552,7 @@ platform, and the change in the wallclock time for execution.}.
 
 @cindex @code{USE_FORTRAN_ARITHMETIC}
 @acronym{NCO} has been successfully ported and tested on the Microsoft
-Windows @acronym{NT} 4.0 operating system.
+Windows (98/NT) operating systems.
 The switches necessary to accomplish this are included in the standard
 distribution of @acronym{NCO}.
 Using the freely available Cygwin (formerly gnu-win32) development
@@ -509,6 +570,7 @@ itself.}, the compilation process is very similar to installing @acronym{NCO} on
 @cindex @code{gnu-win32}
 @cindex @code{WIN32}
 @cindex @file{GNUmakefile}
+@cindex @file{Makefile}
 The preprocessor token @code{PVM_ARCH} should be set to @code{WIN32}.  
 Note that defining @code{WIN32} has the side effect of disabling
 Internet features of @acronym{NCO} (see below). 
@@ -622,6 +684,7 @@ If, at compilation time, @code{NETCDF2_ONLY} is defined, then
 @acronym{NCO} version 1.2.x will not use any netCDF 3.x calls and, if
 linked properly, the resulting @acronym{NCO} operators will work with
 @acronym{HDF4} files.  
+@cindex @file{Makefile}
 The @file{Makefile} supplied with @acronym{NCO} 1.2.x has been written
 to simplify building in this @acronym{HDF} capability.
 When @acronym{NCO} is built with @code{make HDF4=Y}, the @file{Makefile}
@@ -993,7 +1056,7 @@ dimension names as well as sizes) as the input hyperslabs
 @command{ncea}).  
 The file output from @command{ncra} will have the same dimensions as
 the input hyperslabs except for the record dimension, which will have a 
-size of~1 (@pxref{ncra netCDF Record Averager}, for a complete
+size @w{of 1} (@pxref{ncra netCDF Record Averager}, for a complete
 description of @command{ncra}). 
 
 @node Interpolating,  , Averaging, Averaging vs. Concatenating
@@ -1083,7 +1146,7 @@ When processing large files the operators may appear to hang, or do
 nothing, for large periods of time.
 In order to see what the operator is actually doing, it is useful to
 activate a more verbose output mode.
-This is accomplished by supplying a number greater than~0 to the
+This is accomplished by supplying a number greater @w{than 0} to the
 @samp{-D @var{debug-level}} (or @samp{--debug-level}, or
 @samp{--dbg_lvl}) switch.
 @cindex @code{-D @var{debug-level}}
@@ -1095,7 +1158,7 @@ This is accomplished by supplying a number greater than~0 to the
 When the @var{debug-level} is nonzero, the operators report their
 current status to the terminal through the @var{stderr} facility.
 Using @samp{-D} does not slow the operators down. 
-Choose a @var{debug-level} between~1 and~3 for most situations, e.g.,
+Choose a @var{debug-level} @w{between 1} @w{and 3} for most situations, e.g.,
 @code{ncea -D 2 85.nc 86.nc 8586.nc}.
 A full description of how to estimate the actual amount of memory the
 multi-file @acronym{NCO} operators consume is given in @ref{Memory usage}. 
@@ -1584,6 +1647,7 @@ for common data interface libraries like netCDF.
 The @acronym{DODS} versions of these libraries implement network transparent
 access to data using the HTTP protocol.
 @acronym{NCO} may be @acronym{DODS}-enabled by linking @acronym{NCO} to the @acronym{DODS} libraries.
+@cindex @file{Makefile}
 Examples of how to do this are given in the @acronym{DODS} documentation and 
 in the @file{Makefile} distributed with @acronym{NCO}.
 Building @acronym{NCO} with @code{make DODS=Y} adds the (non-intuitive) commands
@@ -1738,7 +1802,7 @@ Long options: @samp{--fortran}@*
 By default, @acronym{NCO} uses C-style (0-based) indices for all I/O.
 The @samp{-F} switch tells @acronym{NCO} to switch to reading and writing with
 Fortran index conventions.
-In Fortran, indices begin counting from~1 (rather than 0), and
+In Fortran, indices begin counting @w{from 1} (rather @w{than 0}), and
 dimensions are ordered from fastest varying to slowest varying.
 Consider a file @file{85.nc} containing 12 months of data in the record
 dimension @code{time}.
@@ -1907,7 +1971,7 @@ ncks -d lon,0,4 -d lon,2,9,2 in.nc out.nc
 @noindent
 This command retrieves the first five longitudes, and then every other
 longitude value up to the tenth.
-Elements 0, 2, and~4 are specified by both hyperslab arguments (hence
+Elements 0, 2, @w{and 4} are specified by both hyperslab arguments (hence
 this is redundant) but will count only once if an arithmetic operation
 is being performed.  
 The @acronym{NCO} multislab algorithm retrieves each element from disk
@@ -1921,7 +1985,7 @@ A final example shows the real power of multislabs.
 Suppose the @var{Q} variable contains three dimensional arrays of
 distinct chemical constituents in no particular order.
 We are interested in the NOy species in a certain geographic range. 
-Say that NO, NO2, and N2O5 are elements~0, 1, and~5 of the
+Say that NO, NO2, and N2O5 are @w{elements 0}, 1, @w{and 5} of the
 @var{species} dimension of @var{Q}.
 The multislab specification might look something like
 @example
@@ -1959,7 +2023,7 @@ Halfway around the globe, the longitude is 180 degrees East (or West).
 Continuing eastward, longitude increases to 360 degrees East at
 Greenwich. 
 The longitude values of most geophysical data are either in the range
-[0,360), or [-180,180).
+[0,360), or [@minus{}180,180).
 In either case, the Westernmost and Easternmost longitudes are
 numerically separated by 360 degrees, but represent contiguous regions
 on the globe.
@@ -1967,7 +2031,7 @@ For example, the Saharan desert stretches from roughly 340 to 50 degrees
 East.
 Extracting the hyperslab of data representing the Sahara from a global
 dataset presents special problems when the global dataset is stored
-consecutively in longitude from~0 to 360 degrees.
+consecutively in longitude from @w{0 to 360} degrees.
 This is because the data for the Sahara will not be contiguous in the
 @var{input-file} but is expected by the user to be contiguous in the
 @var{output-file}. 
@@ -2019,8 +2083,8 @@ hyperslab, while @command{ncra} and @command{ncrcat} suport the
 @var{stride} argument only for the record dimension.
 The @var{stride} is the spacing between consecutive points in a
 hyperslab. 
-A @var{stride} of~1 means pick all the elements of the hyperslab, but a
-@var{stride} of~2 means skip every other element, etc.
+A @var{stride} @w{of 1} means pick all the elements of the hyperslab, but a
+@var{stride} @w{of 2} means skip every other element, etc.
 Using the @var{stride} option with @command{ncra} and @command{ncrcat} makes
 it possible, for instance, to average or concatenate regular intervals
 across multi-file input data sets.
@@ -2035,9 +2099,9 @@ Thus using @samp{-d time,,,2} is valid but @samp{-d time,,,2.0} and
 @samp{-d time,,,} are not.
 When @var{stride} is specified but @var{min} is not, there is an
 ambiguity as to whether the extracted hyperslab should begin with (using
-C-style, 0-based indexes) element~0 or element @samp{stride-1}.
-@acronym{NCO} must resolve this ambiguity and it chooses element~0 as the first  
-element of the hyperslab when @var{min} is not specified.
+C-style, 0-based indexes) @w{element 0} or element @samp{stride-1}.
+@acronym{NCO} must resolve this ambiguity and it chooses @w{element 0}
+as the first element of the hyperslab when @var{min} is not specified.
 Thus @samp{-d time,,,@var{stride}} is syntactically equivalent to
 @samp{-d time,0,,@var{stride}}.
 This means, for example, that specifying the operation @samp{-d
@@ -2549,7 +2613,7 @@ $32767 = 2^{15}-1$
 @end ifinfo
 @ifset flg
 @c texi2html does not like @math{}
-32767 = 2^15-1
+32767 = 2^15@minus{}1
 @clear flg
 @end ifset
 }.
@@ -3082,7 +3146,7 @@ where @var{ndrv} is the number of discrete representable values for
 given type of packed variable.
 The theoretical maximum value for @var{ndrv} is two raised to the
 number of bits used to store the packed variable.
-Thus if the variable is packed into type @code{NC_SHORT}, a~2 byte
+Thus if the variable is packed into type @code{NC_SHORT}, @w{a 2} byte
 datatype, then there are at most @math{2^16 = 65536} distinct values
 representible.
 In practice, the number of discretely representible values is taken
@@ -3701,10 +3765,10 @@ For concreteness say the record dimension in @code{file_1} is
 If @var{file_2} were created by averaging @var{file_1} over the
 @code{time} dimension with the @command{ncra} operator rather than with the
 @command{ncwa} operator, then @var{file_2} will have a @code{time}
-dimension of size~1 rather than having no @code{time} dimension at all 
+dimension of @w{size 1} rather than having no @code{time} dimension at all 
 @cindex degenerate dimensions
 @footnote{This is because @command{ncra} collapses the record dimension
-to a size of~1 (making it a @dfn{degenerate} dimension), but does not
+to a size @w{of 1} (making it a @dfn{degenerate} dimension), but does not
 remove it, while @command{ncwa} removes all dimensions it averages over. 
 In other words, @command{ncra} changes the size but not the rank of
 variables, while @command{ncwa} changes both the size and the rank of
@@ -3752,7 +3816,7 @@ ncwa -O -a time 85.nc 85.nc
 @end example
 @noindent
 The second command, @command{ncwa}, gets rid of the @code{time} dimension
-of size~1 that @command{ncra} left in @file{85.nc}. 
+of @w{size 1} that @command{ncra} left in @file{85.nc}. 
 Now none of the variables in @file{85.nc} has a @code{time} dimension.
 A quicker way to accomplish this is to use @command{ncwa} from the
 beginning:  
@@ -4042,8 +4106,8 @@ the command line with the @samp{-w} (or @samp{--weight} or
 @cindex @code{--weight @var{wgt1}[,@var{wgt2}]}
 @cindex @code{--wgt_var @var{wgt1}[,@var{wgt2}]}
 If only @var{wgt1} is specified then @var{wgt2} is automatically
-computed as @math{@var{wgt2} = 1 - @var{wgt1}}.
-Note that weights larger than~1 are allowed. 
+computed as @math{@var{wgt2} = 1 @minus{} @var{wgt1}}.
+Note that weights larger @w{than 1} are allowed. 
 Thus it is possible to specify @math{@var{wgt1} = 2} and
 @math{@var{wgt2} = -3}.
 One can use this functionality to multiply all the values in a given
@@ -4128,7 +4192,7 @@ ncflint -w 0.667 85_01.nc 85_04.nc 85_02.nc
 ncflint -w 0.667,0.333 85_01.nc 85_04.nc 85_02.nc
 @end example
 
-Multiply @file{85.nc} by~3 and by~@minus{}2 and add them together to
+Multiply @file{85.nc} @w{by 3} and @w{by @minus{}2} and add them together to
 make @file{tst.nc}: 
 @example
 ncflint -w 3,-2 85.nc 85.nc tst.nc
@@ -4626,7 +4690,7 @@ ncra -F -d time,3,,12 -v temperature 85.nc 86.nc 87.nc 858687_03.nc
 @xref{Stride}, for a description of the @var{stride} argument.
 
 Assume the @var{time} coordinate is incrementally numbered such that
-January, 1985 =~1 and December, 1989 = 60.
+January, @w{@math{1985 = 1}} and December, @w{@math{1989 = 60}}.
 Assuming @samp{??} only expands to the five desired files, the following
 averages June, 1985--June, 1989: 
 @example
@@ -4717,7 +4781,7 @@ ncrcat -F -d time,3,,12 -v temperature 85.nc 86.nc 87.nc 858687_03.nc
 @xref{Stride}, for a description of the @var{stride} argument.
 
 Assume the @var{time} coordinate is incrementally numbered such that
-January, 1985 =~1 and December, 1989 = 60.
+January, @w{1985 = 1} and December, @w{1989 = 60.}
 Assuming @code{??} only expands to the five desired files, the following
 concatenates June, 1985--June, 1989: 
 @example
