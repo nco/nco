@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.32 2002-01-25 17:27:24 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.33 2002-01-25 18:11:30 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -430,10 +430,10 @@ var_exp: var_exp '+' var_exp {
   var_free($3);
 }
 | att_exp '-' var_exp { 
-  var_sct *var1 ;
+  var_sct *var1;
   parse_sct minus;
   minus.val.b=-1;
-  minus.type= NC_BYTE;
+  minus.type=NC_BYTE;
   (void)ncap_attribute_conform_type($3->type,&minus);
   var1=ncap_var_attribute_sub($3,$1);
   $$=ncap_var_attribute_multiply(var1,minus);
@@ -476,7 +476,7 @@ var_exp: var_exp '+' var_exp {
   $$=ncap_var_attribute_power($3,$5);
   var_free($3);
 }
-| '-' var_exp  %prec UMINUS { 
+| '-' var_exp %prec UMINUS { 
   parse_sct minus;
   minus.val.b=-1;
   minus.type=NC_BYTE;

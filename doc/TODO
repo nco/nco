@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.113 2002-01-23 09:24:13 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.114 2002-01-25 18:11:29 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -224,6 +224,8 @@ or variable list is made more specific, or MALLOC_CHECK_=1 is used
 216. Use %z for printing size_t rather than casting to long
 217. Replace all uses of free() with nco_free()
 218. Fix all leaks etc. enumerated in insure.txt
+219. Sourceforge FTP nco.tar.gz link appears broken
+ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 ************************************************************************
 End NCO Wish list
 ************************************************************************

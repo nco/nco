@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.80 2002-01-23 04:08:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.81 2002-01-25 18:11:29 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -80,14 +80,15 @@ Each operator is a standalone, command line program which is executed at
 the UNIX (or NT) shell-level like, e.g., <tt>ls</tt> or <tt>mkdir</tt>.
 The operators take <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
 or <a href="http://hdf.ncsa.uiuc.edu">HDF4</a> files as input, then
-perform an operation (e.g., averaging, hyperslabbing, or metadata
-manipulation) and produce a 
+perform a set of operations (e.g., deriving new data, averaging, 
+hyperslabbing, or metadata manipulation) and produce a 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> file
-as output. The operators are primarily designed to aid manipulation and analysis of
+as output. 
+The operators are primarily designed to aid manipulation and analysis of
 gridded scientific data.
 The single command style of NCO allows users to manipulate and analyze
-files interactively, without recourse to a higher level programming
-environment. 
+files interactively and with simple scripts, avoiding the overhead
+(and some of the power) of a higher level programming environment. 
 The <a href="./nco.html">NCO User's Guide</a> 
 illustrates their use with examples from the field of climate modeling
 and analysis.</p> 
@@ -109,6 +110,7 @@ The following operators are thoroughly described in the
 Note that the "averagers" are misnamed because they can perform many 
 non-linear operations as well, e.g., total, minimum, maximum, RMS:
 <ul>
+<li><b>ncap</b> netCDF Arithmetic Processor</li>
 <li><b>ncatted</b> netCDF Attribute Editor</li>
 <li><b>ncdiff</b> netCDF Differencer</li>
 <li><b>ncea</b> netCDF Ensemble Averager</li>
@@ -141,6 +143,9 @@ instructions for helping the NCO project.
 <dt><a name="News"></a></dt>
 <h2>NCO News & Announcements</h2>
 <ul>
+<li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS
+Repository</a> code includes <b>ncap</b>, a scriptable operator
+capable of performing arbitrary arithmetic operations</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code includes libnco_c++, a new C++ interface to netCDF</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code now supports multithreading with OpenMP-compliant compilers</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code contains working packing and unpacking primitives</li>
