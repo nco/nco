@@ -1,11 +1,13 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.46 2003-12-23 21:04:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.47 2004-01-01 22:50:29 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release focuses on improving NCO buildability as DODS clients.
+This release focuses on improving NCO buildability/configuration.
+Most notably we now updated and simplified support the latest DODS.
+See http://nco.sf.net/nco.html#DODS for more info.
 We want more users to take advantage of the network-transparent data
 access capabilities of DODS by building NCO as DODS clients.
 
@@ -13,7 +15,6 @@ ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l ./ -p \
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
 air.sig995.1975.nc foo.nc
 
-See http://nco.sf.net/nco.html#DODS for more info.
 Why use your local CPU when you can slow down a remote DODS server
 instead? :)  
 
@@ -25,12 +26,17 @@ Bug-fixes:
 
 Feature changes:
 1. Changing attribute values with ncap should work as advertised (Henry)
+2. -r switch prints compile-time configuration for all operators (Charlie)
+3. Build with ./configure --enable-optimize-custom, if possible, 
+   for best performance (Charlie)
 
 Other user-visible changes:
 1. Build procedure assumes DODS v. 3.4+ is installed. (Rorik)
    Building with DODS v. 3.3- is no longer supported.
    Added doc/dods.sh as guide DODS installation prior to building NCO 
+2. Re-arranged ./configure script, renamed options, and improved
+   ./configure support for custom optimization and debugging.
 
 User-invisible changes:
-1. 
+1. Builds almost cleanly with --enable-debug-custom (Charlie)
 
