@@ -69,6 +69,15 @@ ncrcat -d time,1,100 in1.nc in2.nc ... out.nc
 ncrcat -d time,1,100,12 in1.nc in2.nc ... out.nc
 118. Return state of cnt,srt,end should be predictable for lim_rec in files
 which contain no usable records (but are still searched anyway)
+119. Apparently the fix is not quite in...
+ncks -O -d time,0 in.nc foo1.nc
+ncks -O -d time,1,2 in.nc foo2.nc
+ncks -O -d time,3,5 in.nc foo3.nc
+ncks -O -d time,6,9 in.nc foo4.nc
+ncrcat -D 5 -O -C -v time foo1.nc foo2.nc foo.nc
+ncrcat -D 5 -O -C -v time foo1.nc foo2.nc foo3.nc foo4.nc foo.nc
+ncrcat -D 5 -O -C -d time,,,2 -v time foo1.nc foo2.nc foo3.nc foo4.nc foo.nc
+ncks -H -v time foo.nc
 ************************************************************************
 End NCO Wish list
 ************************************************************************
