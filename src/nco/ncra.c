@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.93 2003-08-16 21:29:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.94 2003-08-26 15:17:29 hmb Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -93,8 +93,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.93 2003-08-16 21:29:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.93 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.94 2003-08-26 15:17:29 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.94 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -252,6 +252,8 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */
+      /* change commas INSIDE {} to # . Convert back later */
+      (void)nco_lst_comma2hash(optarg);
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */

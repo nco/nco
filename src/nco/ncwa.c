@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.106 2003-08-16 21:29:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.107 2003-08-26 15:13:14 hmb Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -106,8 +106,8 @@ main(int argc,char **argv)
   char *opt_sng;
   char *time_bfr_srt;
   char *wgt_nm=NULL;
-  char CVS_Id[]="$Id: ncwa.c,v 1.106 2003-08-16 21:29:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.106 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.107 2003-08-26 15:13:14 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.107 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -306,6 +306,8 @@ main(int argc,char **argv)
        nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */
+      /* change commas INSIDE {} to # . Convert back later */
+      (void)nco_lst_comma2hash(optarg);
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
     case 'W':

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.92 2003-08-20 14:40:28 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.93 2003-08-26 15:09:11 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -106,9 +106,9 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.92 2003-08-20 14:40:28 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.92 $";
-  
+  char CVS_Id[]="$Id: ncks.c,v 1.93 2003-08-26 15:09:11 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.93 $";
+
   extern char *optarg;
   
   extern int optind;
@@ -275,8 +275,10 @@ main(int argc,char **argv)
       PRINT_DIMENSIONAL_UNITS=!PRINT_DIMENSIONAL_UNITS;
       break;
     case 'v': /* Variables to extract/exclude */
+      /* change commas INSIDE {} to # . Covert back later */
+      (void)nco_lst_comma2hash(optarg);
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
-      break;
+       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;

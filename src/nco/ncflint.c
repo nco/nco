@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.62 2003-08-16 21:29:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.63 2003-08-26 15:10:07 hmb Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -101,8 +101,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.62 2003-08-16 21:29:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.62 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.63 2003-08-26 15:10:07 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.63 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -255,6 +255,8 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */
+      /* change commas INSIDE {} to # . Covert back later */
+      (void)nco_lst_comma2hash(optarg);
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
     case 'w':

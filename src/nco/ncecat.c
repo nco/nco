@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.60 2003-08-16 21:29:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.61 2003-08-26 15:11:05 hmb Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.60 2003-08-16 21:29:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.60 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.61 2003-08-26 15:11:05 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.61 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -221,6 +221,8 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */
+      /* change commas INSIDE {} to # . Covert back later */
+      (void)nco_lst_comma2hash(optarg);
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */

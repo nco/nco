@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.5 2003-08-16 23:20:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.6 2003-08-26 15:14:47 hmb Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *opt_sng;
   char *time_bfr_srt;
-  char CVS_Id[]="$Id: ncbo.c,v 1.5 2003-08-16 23:20:30 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.5 $";
+  char CVS_Id[]="$Id: ncbo.c,v 1.6 2003-08-26 15:14:47 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.6 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -247,6 +247,8 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */
+      /* change commas INSIDE {} to # . Convert back later */
+      (void)nco_lst_comma2hash(optarg);
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
