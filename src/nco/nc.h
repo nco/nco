@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.33 2000-07-08 23:12:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.34 2000-07-13 18:33:06 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -118,7 +118,9 @@ enum nco_op_typ{
   nco_op_max,
   nco_op_ttl,
   nco_op_avgsqr,
-  nco_op_avgsumsqr
+  nco_op_avgsumsqr,
+  nco_op_sqrt,
+  nco_op_rms
 }; /* end nco_op_typ enum */
   
 #else /* SGI */
@@ -160,6 +162,8 @@ enum nco_op_typ{
 #define nco_op_ttl 3
 #define nco_op_avgsqr 4
 #define nco_op_avgsumsqr 5
+#define nco_op_sqrt 6
+#define nco_op_rms 7
 
 #endif /* SGI */
 
@@ -463,6 +467,7 @@ extern void var_multiply(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
 extern void nco_opr_drv(int,int,var_sct *, var_sct * );
 extern void var_normalize(nc_type,long,int,ptr_unn,long *,ptr_unn);
 extern void var_refresh(int,var_sct *);
+extern void var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2);
 extern void var_srt_zero(var_sct **,int);
 extern void var_subtract(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
 extern void var_val_cpy(int,int,var_sct **,int);

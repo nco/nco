@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.75 2000-07-12 22:07:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.76 2000-07-13 18:33:06 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -3589,6 +3589,117 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 } /* end var_add() */ 
 
 void
+var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
+/* 
+  nc_type type: I netCDF type of operands
+  long sz: I size (in elements) of operands
+  int has_mss_val: I flag for missing values
+  ptr_unn mss_val: I value of missing value
+  long *tally: I/O counter space
+  ptr_unn op1: I values of first operand
+  ptr_unn op2: O squareroot of first operand
+ */ 
+{
+  /* Purpose: Place squareroot of first operand in value of second operand 
+     Operands are assumed to have conforming dimensions, and be of specified type 
+     Operands' values are assumed to be in memory already */ 
+
+  /* Square root is currently defined as op2:=sqrt(op1) */
+
+  long idx;
+
+  /* Typecast pointer to values before access */ 
+  (void)cast_void_nctype(type,&op1);
+  (void)cast_void_nctype(type,&op2);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+
+  switch(type){
+  case NC_FLOAT:
+#ifdef USE_FORTRAN_ARITHMETIC
+    (void)FORTRAN_sqrt_real(&sz,&has_mss_val,mss_val.fp,tally,op1.fp,op2.fp);
+#else /* !USE_FORTRAN_ARITHMETIC */
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.fp[idx]=sqrt(op1.fp[idx]);
+	tally[idx]++;
+      } /* end for */ 
+    }else{
+      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.fp[idx] != mss_val_flt){
+	  op2.fp[idx]=sqrt(op1.fp[idx]);
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */ 
+    } /* end else */
+#endif /* !USE_FORTRAN_ARITHMETIC */
+    break;
+  case NC_DOUBLE:
+#ifdef USE_FORTRAN_ARITHMETIC
+    (void)FORTRAN_sqrt_double_precision(&sz,&has_mss_val,mss_val.dp,tally,op1.dp,op2.dp);
+#else /* !USE_FORTRAN_ARITHMETIC */
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.dp[idx]=sqrt(op1.dp[idx]);
+	tally[idx]++;
+      } /* end for */ 
+    }else{
+      float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.dp[idx] != mss_val_dbl){
+	  op2.dp[idx]=sqrt(op1.dp[idx]);
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */ 
+    } /* end else */
+#endif /* !USE_FORTRAN_ARITHMETIC */
+    break;
+  case NC_LONG:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.lp[idx]=sqrt(op1.lp[idx]);
+	tally[idx]++;
+      } /* end for */ 
+    }else{
+      float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.lp[idx] != mss_val_lng){
+	  op2.lp[idx]=sqrt(op1.lp[idx]);
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */ 
+    } /* end else */
+    break;
+  case NC_SHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.sp[idx]=sqrt(op1.sp[idx]);
+	tally[idx]++;
+      } /* end for */ 
+    }else{
+      float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.sp[idx] != mss_val_shrt){
+	  op2.sp[idx]=sqrt(op1.sp[idx]);
+	  tally[idx]++;
+	} /* end if */
+      } /* end for */ 
+    } /* end else */
+    break;
+  case NC_CHAR:
+    /* Do nothing */ 
+    break;
+  case NC_BYTE:
+    /* Do nothing */ 
+    break;
+  } /* end switch */ 
+
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */ 
+
+} /* end var_sqrt() */ 
+
+void
 var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
 /* 
   nc_type type: I netCDF type of operands
@@ -3878,11 +3989,15 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 void 
 nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
 {
-  /* Purpose: Perform appropriate operation (avg, min, max...) on operands */
+  /* Purpose: Perform appropriate ncra operation (avg, min, max...) on operands 
+     nco_opr_drv() is called within the record loop of ncra, and within the file loop of ncea 
+     These operations perform part, but not all, of the necessary operations for each procedure
+     Most arithmetic operations require additional procedures such as normalization be performed after all files/records have been procesed */
   
+  /* fxm: combine ttl, avg, avgsqr and avgsumsqr into one operation like in ncra */
   switch (nco_op_typ){
-    
   case nco_op_avg: /* Average */
+  case nco_op_sqrt: /* Squareroot will produce the squareroot of the mean */
     (void)var_add(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   case nco_op_min: /* Minimum */
@@ -3895,13 +4010,14 @@ nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
     if(cnt == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else
       (void)var_max(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;	
-  case nco_op_ttl: /* total */
+  case nco_op_ttl: /* Total */
     (void)var_add(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
-  case nco_op_avgsqr:
+  case nco_op_avgsqr: /* Square of the mean */
     (void)var_add(var_prc_out->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
-  case nco_op_avgsumsqr:
+  case nco_op_rms: /* Root mean square */ 
+  case nco_op_avgsumsqr: /* Mean square */
     /* Square values in var_prc first */
     var_multiply(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc->val);
     /* Sum the squares */
@@ -3912,16 +4028,16 @@ nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
 
 void
 var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
-     /* 
-	nc_type type: I netCDF type of operand
-	long sz: I size (in elements) of operand
-	int has_mss_val: I flag for missing values
+/* 
+  nc_type type: I netCDF type of operand
+  long sz: I size (in elements) of operand
+  int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   long *tally: I counter space
   ptr_unn op1: I/O values of first operand on input, normalized result on output
- */ 
+*/ 
 {
-  /* Normalize value of first operand by count in tally array 
+  /* Purpose: Normalize value of first operand by count in tally array 
      and store result in first operand. */
 
   /* Normalization is currently defined as op1:=op1/tally */   
@@ -5081,7 +5197,7 @@ usg_prn(void)
     if(prg == ncflint) (void)fprintf(stdout,"-w wgt_1[,wgt_2] Weight(s) of file(s)\n");
   } /* end if */
   if(strstr(opt_sng,"-x")) (void)fprintf(stdout,"-x\t\tExtract all variables EXCEPT those specified with -v\n");
-  if(strstr(opt_sng,"-y")) (void)fprintf(stdout,"-y op_typ\tArithmetic operation: avg,min,max,ttl,avgsqr,avgsumsqr\n");
+  if(strstr(opt_sng,"-y")) (void)fprintf(stdout,"-y op_typ\tArithmetic operation: avg,min,max,ttl,avgsqr,avgsumsqr,sqrt,rms\n");
   if(strstr(opt_sng,"in.nc")) (void)fprintf(stdout,"in.nc\t\tInput file name(s)\n");
   if(strstr(opt_sng,"out.nc")) (void)fprintf(stdout,"out.nc\t\tOutput file name\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/
@@ -5094,7 +5210,7 @@ usg_prn(void)
 int
 nco_op_typ_get(char *nco_op_sng)
 {
-  /* Purpose: Process 'y' cmd line option 
+  /* Purpose: Process '-y' command line argument
      Convert user-specified string to enumerated operation type 
      Return nco_op_avg by default */
   if(!strcmp(nco_op_sng,"min")) return nco_op_min;
@@ -5102,6 +5218,8 @@ nco_op_typ_get(char *nco_op_sng)
   if(!strcmp(nco_op_sng,"total") || !strcmp(nco_op_sng,"ttl")) return nco_op_ttl;
   if(!strcmp(nco_op_sng,"avgsqr")) return nco_op_avgsqr;
   if(!strcmp(nco_op_sng,"avgsumsqr")) return nco_op_avgsumsqr;  
+  if(!strcmp(nco_op_sng,"sqrt")) return nco_op_sqrt;
+  if(!strcmp(nco_op_sng,"rms")) return nco_op_rms;
   return nco_op_avg;
 } /* end nco_op_typ_get() */
 

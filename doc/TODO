@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.61 2000-07-01 20:44:46 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.62 2000-07-13 18:33:06 zender Exp $ -*-text-*-
 
 *************
 NCO Wish list
@@ -134,6 +134,8 @@ with nco_dst.pl
 170. rgn.sh appears to cause core dump over some ocean basins
 171. Add DODS options to all NCAR architectures
 172. Create NCO announce list
+173. Add switch to ncra which allows user to remove degenerate time
+dimension from result
 ************************************************************************
 End NCO Wish list
 ************************************************************************
