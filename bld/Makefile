@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.174 2002-09-10 06:27:57 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.175 2002-09-14 16:33:03 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -138,8 +138,7 @@ ifeq (${PVM_ARCH},LINUX)
 # rpm command, and thus RPM variables, may only be assumed to be available in Linux
  MDL_RPM_NST_NM := $(shell rpm -qa | grep nco-) # Name of installed package
 # MDL_RPM_PRV_NM := $(shell rpm -qp foo) # Name of package provided by specified RPM
-endif
-# endif LINUX
+endif # endif LINUX
 
 ifeq (${PVM_ARCH},WIN32)
  BNR_SFX := .exe
@@ -281,7 +280,7 @@ ${MY_DPN_DIR}/%.d : %.cc
 # Manually define autotools tokens normally defined in HAVE_CONFIG_H
 # Initialize OS-specific tokens to empty
 CPP_TKN_OS := 
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDMACOSXWIN32))
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32))
  CPP_TKN_OS += -DHAVE_GETOPT_H
 endif # !LINUX
 ifneq (${PVM_ARCH},CRAY)
@@ -1109,6 +1108,9 @@ inc_cln:
 # Targets in lib
 library: lib
 lib : inc ${libnco}.a
+ifeq (${PVM_ARCH},MACOSX)
+	ranlib ${libnco}.a
+endif # endif LINUX
 ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/ncap_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_bnr.o) \

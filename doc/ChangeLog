@@ -1,4 +1,14 @@
+2002-09-14  Charlie Zender  <zender@uci.edu>
+
+	* #include <math.h> in nco_rth_flt.h
+
+	* Do not look for <getopt.h> in MACOSX
+
 2002-09-09  Charlie Zender  <zender@uci.edu>
+
+	* Added preliminary MACOSX support to bld/Makefile
+	Everything appears to work but ncap, which has numerous problems 
+	on MACOSX because of bison, float functions, and ranlib.
 
 	* Code compiles with gcc -ansi -pedantic -D_BSD_SOURCE
 	Switches -std=c99 and -std=gnu99 both work too

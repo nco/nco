@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.3 2002-09-10 05:24:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.4 2002-09-14 16:33:07 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -17,6 +17,7 @@
 #endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
+#include <math.h> /* sin cos cos sin 3.14159 */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -97,7 +98,6 @@ inline float fmodf(float x,float y){return (float)(fmod((double)x,(double)y));}
 #ifdef NEED_POWF
 inline float powf(float x,float y){return (float)(pow((double)x,(double)y));}
 #endif /* !NEED_POWF */ 
-#ifdef NEED_GAMMAF
 #ifdef NEED_ACOSF
 inline float acosf(float x){return (float)(acos((double)x));}
 #endif /* !NEED_ACOSF */ 
@@ -137,6 +137,7 @@ inline float expf(float x){return (float)(exp((double)x));}
 #ifdef NEED_FLOORF
 inline float floorf(float x){return (float)(floor((double)x));}
 #endif /* !NEED_FLOORF */ 
+#ifdef NEED_GAMMAF
 inline float gammaf(float x){return (float)(gamma((double)x));}
 #endif /* !NEED_GAMMAF */ 
 #ifdef NEED_LOG10F
