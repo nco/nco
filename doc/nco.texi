@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.116 2002-09-06 18:42:05 rorik Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.117 2002-09-07 01:39:03 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -28,6 +28,9 @@ dvips -o nco.ps nco.dvi
 ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf nco.texi nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
 cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf nco.texi www.ess.uci.edu:/home/zender/public_html/nco;cd -
+scp nco.sf.net:/home/groups/n/nc/nco/nco/doc/nco.dvi ~/nco/doc
+scp nco.sf.net:/home/groups/n/nc/nco/nco/doc/nco.pdf ~/nco/doc
+scp /home/groups/n/nc/nco/nco/doc/nco.dvi dust.ps.uci.edu:nco/doc
 
 Resources:
 Octave TeXInfo manual is a good example of clean TeXInfo structure
@@ -2747,9 +2750,11 @@ Let @var{min} and @var{max} be the minimum and maximum values of
 @var{x}. 
 @tex
 $$
-scale_factor = (max-min)/ndrv
-add_offset = 0.5*(min+max)
-pck = (upk-add_offset)/scale_factor = (upk-0.5*(min+max))*ndrv/(max-min)
+\rm
+\eqalign{\hbox{scale\_factor} &= (\hbox{max}-\hbox{min})/\hbox{ndrv}\cr
+\hbox{add\_offset} &= (\hbox{min}+\hbox{max})/2\cr
+\hbox{pck} &= (\hbox{upk}-\hbox{add\_offset})/\hbox{scale\_factor}\cr
+ &= {\hbox{ndrv}\times[\hbox{upk}-(\hbox{min}+\hbox{max})/2]\over\hbox{max}-\hbox{min}}\cr}
 $$
 @end tex
 @ifnottex
@@ -2787,7 +2792,9 @@ present, the data are first scaled by @var{scale_factor} before the
 offset @var{add_offset} is added.   
 @tex
 $$
-upk = scale_factor*pck + add_offset = (max-min)*pck/ndrv + 0.5*(min+max) 
+\rm
+\eqalign{\hbox{upk} &= \hbox{scale\_factor}\times\hbox{pck} + \hbox{add\_offset}\cr 
+&= {\hbox{pck}\times(\hbox{max}-\hbox{min})\over\hbox{ndrv}} + {\hbox{min}+\hbox{max}\over2}\cr} 
 $$
 @end tex
 @ifnottex
@@ -2806,7 +2813,6 @@ of the type intended for the unpacked data, e.g., @code{float} or
 @subsection Intrinsic mathematical functions
 @code{ncap} supports the standard mathematical functions supplied with
 most operating systems.
-@unnumberedsubsec Mathematical functions
 @cindex mathematical functions
 @cindex @var{abs(x)}
 @cindex @var{acos(x)}
