@@ -163,6 +163,9 @@
 /* Hostname */
 #undef HOST
 
+/* Hostname alias */
+#undef HOSTNAME
+
 /* Linux OS */
 #undef LINUX
 

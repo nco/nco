@@ -38,6 +38,7 @@ else
   nco_hostname="nowhere";
 fi
 AC_DEFINE_UNQUOTED(HOST,$nco_hostname,Hostname)
+AC_DEFINE_UNQUOTED(HOSTNAME,$nco_hostname,Hostname alias)
 
 # use automake to create Makefiles
 #AM_INIT_AUTOMAKE
