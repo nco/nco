@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.32 2003-11-14 16:55:22 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.33 2003-11-14 17:06:01 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.3 are ready. 
 
@@ -7,10 +7,11 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 There are two notable feature improvement since version 2.8.2:
 
-There are a few minor packaging fixes:
+There are two notable bug-fixes fixes:
 1. Support for unpacking and packing is no longer considered beta,
 so associated WARNING messages were removed because they are too scary.
- 
+2. A large memory leak in ncap was reported, found, and fixed.
+Thanks to Kevin, Rorik, and Henry, respectively.
 
 Enjoy,
 Charlie

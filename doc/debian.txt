@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.5 2003-11-10 19:01:23 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.6 2003-11-14 17:06:01 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -71,6 +71,6 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
    releases, follow this procedure.
    1. Tag CVS code after changing files in ~/nco/debian
    cd ~/nco/debian
-   dch -v 2.8.2-1
+   dch -v 2.8.3-1
    date -R
    cd ~/nco;dpkg-buildpackage -rfakeroot > foo 2>&1
