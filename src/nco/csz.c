@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.20 1999-05-13 03:24:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.21 1999-07-01 23:13:18 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -832,7 +832,7 @@ cvs_vrs_prs()
 
     clock=time((time_t *)NULL);
     gmt_tm=gmtime(&clock); 
-    /* localtime() gives YYYYMMDD in MDT, but this conflicts with RCS, which uses GMT */ 
+    /* localtime() gives YYYYMMDD in MDT, but this conflicts with CVS, which uses GMT */ 
     /*    gmt_tm=localtime(&clock); */
 
     mth=gmt_tm->tm_mon+1;
@@ -949,10 +949,10 @@ nc_lib_vrs_prn()
 } /* end nc_lib_vrs_prn() */
 
 void
-copyright_prn(char *RCS_Id,char *RCS_Revision)
+copyright_prn(char *CVS_Id,char *CVS_Revision)
 /* 
-   char *RCS_Id: I RCS identification string
-   char *RCS_Revision: I RCS revision string
+   char *CVS_Id: I [sng] CVS identification string
+   char *CVS_Revision: I [sng] CVS revision string
  */ 
 {
   char *date_sng;
@@ -962,15 +962,27 @@ copyright_prn(char *RCS_Id,char *RCS_Revision)
   int date_sng_len;
   int vrs_sng_len;
   
-  date_sng_len=10;
-  date_sng=(char *)malloc((date_sng_len+1)*sizeof(char));
-  (void)strncpy(date_sng,strchr(RCS_Id,'/')-4,date_sng_len);
-  date_sng[date_sng_len]='\0';
+  if(strlen(CVS_Id) > strlen("*Id*")){
+    /* CVS_Id is defined */
+    date_sng_len=10;
+    date_sng=(char *)malloc((date_sng_len+1)*sizeof(char));
+    (void)strncpy(date_sng,strchr(CVS_Id,'/')-4,date_sng_len);
+    date_sng[date_sng_len]='\0';
+  }else{
+    /* CVS_Id is undefined */
+    date_sng=(char *)strdup("Current");
+  } /* endif */
 
-  vrs_sng_len=strrchr(RCS_Revision,'$')-strchr(RCS_Revision,':')-3;
-  vrs_sng=(char *)malloc((vrs_sng_len+1)*sizeof(char));
-  (void)strncpy(vrs_sng,strchr(RCS_Revision,':')+2,vrs_sng_len);
-  vrs_sng[vrs_sng_len]='\0';
+  if(strlen(CVS_Revision) > strlen("*Revision*") || strlen(CVS_Revision) < strlen("*Revision*")){
+    /* CVS_Revision is defined */
+    vrs_sng_len=strrchr(CVS_Revision,'$')-strchr(CVS_Revision,':')-3;
+    vrs_sng=(char *)malloc((vrs_sng_len+1)*sizeof(char));
+    (void)strncpy(vrs_sng,strchr(CVS_Revision,':')+2,vrs_sng_len);
+    vrs_sng[vrs_sng_len]='\0';
+  }else{
+    /* CVS_Revision is undefined */
+    vrs_sng=(char *)strdup("Current");
+  } /* endif */
 
   cvs_vrs_sng=cvs_vrs_prs();
 

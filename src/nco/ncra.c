@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.10 1999-05-13 03:06:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.11 1999-07-01 23:13:18 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -67,8 +67,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char RCS_Id[]="$Id: ncra.c,v 1.10 1999-05-13 03:06:04 zender Exp $"; 
-  char RCS_Revision[]="$Revision: 1.10 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.11 1999-07-01 23:13:18 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.11 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -168,8 +168,8 @@ main(int argc,char **argv)
     case 'R': /* Toggle the removal of remotely-retrieved-files after processing. Default is True */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
-    case 'r': /* Print the RCS program info and copyright notice */
-      (void)copyright_prn(RCS_Id,RCS_Revision);
+    case 'r': /* Print the CVS program info and copyright notice */
+      (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nc_lib_vrs_prn();
       exit(EXIT_SUCCESS);
       break;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.18 1999-05-13 03:06:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.19 1999-07-01 23:13:18 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -73,8 +73,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char RCS_Id[]="$Id: ncwa.c,v 1.18 1999-05-13 03:06:04 zender Exp $"; 
-  char RCS_Revision[]="$Revision: 1.18 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.19 1999-07-01 23:13:18 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.19 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -208,8 +208,8 @@ main(int argc,char **argv)
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
     case 'r':
-      /* Print the RCS program info and copyright notice */
-      (void)copyright_prn(RCS_Id,RCS_Revision);
+      /* Print the CVS program info and copyright notice */
+      (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nc_lib_vrs_prn();
        exit(EXIT_SUCCESS);
       break;
