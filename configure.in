@@ -144,12 +144,12 @@ AC_MSG_NOTICE([libnetcdf links with default compiler flags]) ],[
 # linking failed, so add 64-bit compiler flags and try again
 AC_MSG_NOTICE([initial linking failed.  Adding 64-bit flags (if known)])
 case $host in
+# fxm csz: Test for existence of user-defined vars before overwriting
   *-*-aix*)  CFLAGS="$CFLAGS -q64"
              LDFLAGS="$LDFLAGS -q64"
-             AR_FLAGS="$AR_FLAGS -X 64"
-#	     csz: these had no effect but are needed!
-#             NM="$NM -X 64"
-#             NM_FLAGS="$NM_FLAGS -X 64"
+# csz: Pass -X 64 to symbol extractor or libtool will fail
+             AR="ar -X 64"
+             NM="nm -B -X 64"
 	     ;;
   *-*-irix*) case $CC in
                gcc) CFLAGS="$CFLAGS -mabi=64"

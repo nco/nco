@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.23 2002-08-27 05:09:14 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.24 2002-08-27 06:27:44 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -39,16 +39,21 @@ Recommended/current custom ./configure invocation, alphabetized by pvmgetarch:
 
 ************************************************************************
 Start AIX
-Status: Link problems for ABI64, libtool is breaking
+Status: Link problems for ABI64, libtool breaks.
+Builds after many -X 64 tweaks to environment, but executables all core dump.
+Try using --no_shared_libs...
 ************************************************************************
 zender@bb0001en:/fs/cgd/home0/zender/nco$ pvmgetarch;uname -a
 AIX
 AIX bb0001en 3 4 000117924C00
 
 For ABI=64:
+Notes: Setting CC='xlc -q64' and CFLAGS='-q64' is redundant except for
+shared object link command which uses $CC not $CC $LDFLAGS or $CC $CFLAGS.
+Also, AR='ar -X 64' and NM='nm -B -X 64' are necessary.
 export GNU_TRP='powerpc-ibm-aix4.3.3.0'
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='xlc' CFLAGS='-q64' CXX='xlC' CXXFLAGS='-q64' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+AR='ar -X 64' CC='xlc -q64' CFLAGS='-q64' CXX='xlC' CXXFLAGS='-q64' LDFLAGS='-q64' NM='nm -B -X 64' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
@@ -70,7 +75,9 @@ xlc -o /home/babyblue/zender/bin/AIX/ncflint /home/babyblue/zender/obj/AIX/ncfli
 
 Status:
 When ABI=64, nm utility requires "-X 64" argument, e.g., nm -X 64
-libtool is now breaking....
+libtool now breaks because nm -B command produces all errors, which
+are piped into nothing but another pipe and then sed. The emptiness
+after the first pipe is the value of \$global_symbol_pipe
 
 generating symbol list for `libnco.la'
 /bin/nm -B  nco_att_utl.o nco_bnr.o nco_cln_utl.o nco_cnf_dmn.o nco_cnf_typ.o nc
