@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.41 2002-09-10 04:51:08 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.42 2002-09-14 17:25:17 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -72,7 +72,7 @@ export MY_BIN_DIR="${HOME}/bin/${GNU_TRP}"
 export MY_LIB_DIR="${HOME}/lib/${GNU_TRP}"
 export NETCDF_INC="${HOME}/include"
 export NETCDF_LIB="${HOME}/lib/${GNU_TRP}"
-export PATH=${PATH}\:${MY_BIN_DIR}
+export PATH=${MY_BIN_DIR}\:${PATH}
 export PS1='\u@\h:\w\$ ' # Prompt user@host:cwd$ NeR98 p. 71 NB: single quotes
 cd ~/nco;cvs update -kk
 

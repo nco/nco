@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.185 2002-09-10 04:37:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.186 2002-09-14 17:25:17 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -17,6 +17,7 @@ Autoconf-build items:
 18. Autoconf workarounds for strdup(), strcasecmp() (#234, 235 below)
 19. Implement autotools processing of doc/nco.texi to generate standard documentation: nco.info, nco.dvi, nco.ps, nco.pdf
 20. DODS linkage appears broken on Linux
+21. Add nco_rth_flt.[ch] to autotools build mechanism
 
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
