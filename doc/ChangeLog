@@ -1,3 +1,7 @@
+2003-11-11  Charlie Zender  <zender@uci.edu>
+
+	* Add nco_mmr_stt() hook call to all memory routines
+
 2003-11-10  Charlie Zender  <zender@uci.edu>
 
 	* Add debian docs to make tags target

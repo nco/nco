@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.244 2003-11-11 02:11:52 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.245 2003-11-11 18:04:18 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -232,16 +232,15 @@ Permission denied
 266. ncbo: Finish ncbo.1 manpage
 268. ncbo: use ncap var_cnf_dmn() technique so fl_1 fl_2 broadcast interchangeably
 270. Automate uploading of tagged .deb builds to ftp://ftp.debian.org
-274. ncbo: ncdiff gives bogus answers when mss_val_1 != mss_val_2 ?
+275. Use nco_mss_val_cnf() in ncflint
+276. Use nco_mss_val_cnf() in ncap
+277. Use nco_mss_val_cnf() in ncwa
+280. Understand memory usage in ncap
+281. Add ncbo test to nco_tst.sh:
 ncks -O -v mss_val_fst -p ~/nco/data in.nc ~/nco/data/out.nc
 ncrename -O -v mss_val_fst,mss_val ~/nco/data/out.nc
 ncbo -O -y '-' -v mss_val -p ~/nco/data in.nc out.nc ~/foo.nc
 ncks -m -C -H -v mss_val ~/foo.nc
-275. Use nco_mss_val_cnf() in ncflint
-276. Use nco_mss_val_cnf() in ncap
-277. Use nco_mss_val_cnf() in ncwa
-278. ncbo memory usage packing/unpacking issue 20031110
-279. Write optional memory management statistics into nco_malloc/free to track memory usage
 ************************************************************************
 End NCO Wish list
 ************************************************************************

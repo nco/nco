@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.15 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.16 2003-11-11 18:04:22 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -31,11 +31,6 @@ enum nco_fl_typ{ /* [enm] File type */
 }; /* end nco_fl_typ enum */
 
 /* Utility Routines */
-void nco_err_exit(int,char *);
-char *nco_typ_sng(nc_type);
-char *c_typ_nm(nc_type);
-char *f77_typ_nm(nc_type);
-
 char * /* O [sng] Native C type */
 c_typ_nm /* [fnc] Return string describing native C type */
 (nc_type type); /* O [enm] netCDF type */
@@ -48,8 +43,22 @@ char * /* O [sng] Native Fortran90 type */
 f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
 (nc_type type); /* O [enm] netCDF type */
 
-void nco_dfl_case_nc_type_err(void);
-size_t nco_typ_lng(nc_type);
+void 
+nco_dfl_case_nc_type_err /* [fnc] Print error and exit for illegal case */
+(void);
+
+void 
+nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
+(int rcd, /* I [enm] netCDF error code */ 
+ char *msg); /* I [sng] supplemental error message */
+
+size_t /* O [B] Native type size */
+nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
+(nc_type nco_typ); /* I [enm] netCDF type */
+
+char * /* O [sng] String describing type */
+nco_typ_sng /* [fnc] Convert netCDF type enum to string */
+(nc_type type); /* I [enm] netCDF type */
 
 /* File Routines */
 int nco_create(const char *,int,int *);

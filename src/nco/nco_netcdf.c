@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.31 2003-09-16 22:14:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.32 2003-11-11 18:04:22 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -54,9 +54,9 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
   } /* endif error */
 } /* end nco_err_exit() */
 
-size_t
-nco_typ_lng /* [fnc]   */
-(nc_type nco_typ) 
+size_t /* O [B] Native type size */
+nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
+(nc_type nco_typ) /* I [enm] netCDF type */
 { 
   /* Purpose: Return native size of specified netCDF type
      Routine is used to determine memory required to store variables in RAM */
@@ -80,13 +80,9 @@ nco_typ_lng /* [fnc]   */
   return (int)-1;
 } /* end nco_typ_lng() */ 
 
-char *
-nco_typ_sng /* [fnc]   */
-(nc_type type)
-/*  
-   nc_type type: I [enm] netCDF type
-   char *nco_typ_sng(): O [sng] string describing type
-*/
+char * /* O [sng] String describing type */
+nco_typ_sng /* [fnc] Convert netCDF type enum to string */
+(nc_type type) /* I [enm] netCDF type */
 {
   switch(type){
   case NC_FLOAT:
@@ -185,7 +181,7 @@ f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
 } /* end f90_typ_nm() */
 
 void 
-nco_dfl_case_nc_type_err(void) /* [fnc]   */
+nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal case */
 {
   /* Purpose: Convenience routine for printing error and exiting when
      switch(nctype) statement receives an illegal default case
