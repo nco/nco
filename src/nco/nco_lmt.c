@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.14 2003-03-25 17:05:08 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.15 2003-03-25 17:55:45 rorik Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -880,7 +880,8 @@ nco_lmt_udu_cnv /* [fnc] convert from unidata units to coordinate value */
     /* allocate memory for attribute */
     fl_unt_str = (char *)nco_malloc((att_sz+1)*sizeof(char));
     /* get 'units' attribute */
-    nco_get_att(nc_id, dimid, att_nm, fl_unt_str, att_type);
+    (void)nco_get_att(nc_id, dimid, att_nm, fl_unt_str, att_type);
+    fl_unt_str[att_sz]='\0';
     }
   
   /* convert 'units' attribute into a utUnit structure */
@@ -959,9 +960,8 @@ nco_lmt_udu_cnv /* [fnc] convert from unidata units to coordinate value */
   
     /* quick return if specified and supplied units are the same */
     if (strcmp(usr_unt_str,fl_unt_str) == 0) {
-      usr_unt_str--; /* step back to the space delimiter */
-      *usr_unt_str='\0'; /* make it NULL */
-      return 0;
+      *lmt_val=strtod(lmt_sng,(char **)NULL); /* convert to double */
+      return 0; /* success */
       }
   
     /* convert user-specified unit into a utUnit structure */
