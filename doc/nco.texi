@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.283 2004-12-01 00:26:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.284 2004-12-01 02:19:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -882,7 +882,7 @@ This is scheduled to occur sometime in 2005, with the release of netCDF
 @w{version 4}, a collaboration between Unidata and @acronym{NCSA}.
 
 @html
-<a name="hlp"></a> <!-- http://nco.sf.net/nco.html#help -->
+<a name="help"></a> <!-- http://nco.sf.net/nco.html#help -->
 <a name="hlp"></a> <!-- http://nco.sf.net/nco.html#hlp -->
 <a name="bug"></a> <!-- http://nco.sf.net/nco.html#bug -->
 @end html

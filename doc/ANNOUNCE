@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.129 2004-11-05 23:56:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.130 2004-12-01 02:19:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.9 are ready. 
 
@@ -36,6 +36,7 @@ Bug-fixes:
 
 Build changes:
 1. Build improvements in configure.in improve NEC SX compatibility
+2. Updated config.sub and config.guess to most recent FSF sources
 
 Other user-visible changes:
 1. ncks prints data to screen by default if only one filename specified
