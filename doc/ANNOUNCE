@@ -1,20 +1,20 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.106 2004-07-06 17:01:45 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.107 2004-07-06 20:59:22 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.9.6 are ready. 
+fxm: delayed until 2.9.8: First, AIX NCO installations should upgrade to this version to get the
+AIX-specific ncap bug-fix. 
+
+The netCDF operators NCO version 2.9.7 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-First, AIX NCO installations should upgrade to this version to get the
-AIX-specific ncap bug-fix. 
-
-Second, Large File support (LFS) is now enabled by default.
+First, Large File support (LFS) is now enabled by default.
 Subject to physical memory limitations, this allows 32-bit OSs
 files > 2 GB. Compile libnetcdf.a with LFS too, for this to work.
 Disable this with ./configure --disable-largefile
 See nco/data/big.cdl for sample LFS tests
 
-Third, multi-file operations are more user friendly.
+Second, multi-file operations are more user friendly.
 Multi-file operators (nc[re]a, nc[re]cat) now take input file lists from stdin.
 The old method, passing input file names through the shell, fails on
 many OSs (e.g., AIX) when the filelist is 25k characters or more.  
@@ -47,14 +47,14 @@ Feature changes:
 4. Add -t, --thr_nbr, --omp_num_threads switch to specify threads
 
 Bug-fixes:
-1. Use NCO-supplied float-valued functions (e.g., cosf()) on AIX
-2. Fix segfaults since 2.9.6 when no input filename present for
+1. Fix segfaults since 2.9.6 when no input filename present for
    non-multi-file-operators 
 
 Build changes:
 1. LFS enabled by default
 2. Fix nco_tst.pl test script hangs waiting for interactive responses
 3. Change prototype source of fabsf(), sqrtf() to help HP-UX builds
+4. Try to use NCO-supplied float-valued functions (e.g., cosf()) on AIX
 
 Other user-visible changes:
 1. Add nco_put_att<int,short,long> functions to libnco_c++
@@ -63,6 +63,7 @@ Other user-visible changes:
    terminated with carriage return (and are case-insensitive)
 3. ln works in ncap as natural logarithm (synonym for log())
 4. Changed old ncwa -t to ncwa -T so can use -t for threads
+5. size_t type correctly printed on platforms without %zu support
 
 User-invisible changes:
 1. Added additional file diagnostics to debugging output

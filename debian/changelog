@@ -1,3 +1,9 @@
+nco (2.9.7-1) unstable; urgency=low
+
+  * MFO input files from stdin, OpenMP threading in ncra
+
+ -- Charlie Zender <zender@uci.edu>  Tue,  6 Jul 2004 13:49:28 -0700
+
 nco (2.9.6-1) unstable; urgency=low
 
   *  Add -o fl_out option, change ncwa -o meaning, AMD64 build tweaks

@@ -1,5 +1,11 @@
 2004-07-06  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_9_7
+	Changes since nco-2_9_6: Read MFO input files from stdin, add 
+	more attribute functionality to nco_c++, turn threading on in ncra
+
+	* Finished replacing %zu's with %lu's with casts to (unsigned long)
+
 	* Provide definitions of fabsf(), sqrtf() in nco_var_rth.c from
 	nco_flt_rth.h rather than from special #ifdefs 
 
@@ -85,10 +91,6 @@
 2004-06-25  Charlie Zender  <zender@uci.edu>
 
 	* Added ln() as synonym for log() in ncap
-
-	* cvs tag -c nco-2_9_7
-	Changes since nco-2_9_6: Read MFO input files from stdin, add 
-	more attribute functionality to nco_c++
 
 	* Fix size_t format printing in memory allocation routines
 
