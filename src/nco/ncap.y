@@ -1,7 +1,7 @@
 %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.12 2001-10-28 23:05:36 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.13 2001-10-31 06:28:30 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -55,7 +55,7 @@
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
 
 #include <netcdf.h>             /* netCDF definitions */
-#include "nc.h"                 /* NCO definitions */
+#include "nco.h"                /* NCO definitions */
 #include "ncap.h"               /* symbol table definition */
 #include "nco_netcdf.h"         /* netCDF3 wrapper calls */
 

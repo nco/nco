@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.32 2001-10-28 23:05:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.33 2001-10-31 06:28:30 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -70,6 +70,7 @@ lex.yy.c:1060: warning: `yyunput' defined but not used
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
+#include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
@@ -79,7 +80,7 @@ lex.yy.c:1060: warning: `yyunput' defined but not used
 #ifdef LINUX
 #include <getopt.h> /* GNU getopt() is standard on Linux */
 #else /* not LINUX */
-#ifndef AIX /* AIX keeps getopt() in <unistd.h> */
+#if ( !defined AIX ) && ( !defined CRAY ) && ( !defined NEC ) /* getopt() is in <unistd.h> or <stdlib.h> */
 #include "getopt.h" /* GNU getopt() */
 #endif /* not AIX */
 #endif /* not LINUX */
@@ -135,8 +136,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.32 2001-10-28 23:05:36 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.32 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.33 2001-10-31 06:28:30 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.33 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

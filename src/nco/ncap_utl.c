@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.17 2001-10-08 07:25:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.18 2001-10-31 06:28:30 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -46,6 +46,7 @@
 #include <unistd.h>             /* POSIX stuff */
 
 #include <netcdf.h>             /* netCDF definitions */
+#include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
 #include "nco.h"                /* netCDF operator universal def'ns */
 
 var_sct *
