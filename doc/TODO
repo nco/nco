@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.87 2000-12-30 02:23:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.88 2001-01-03 01:58:07 zender Exp $ 
 
 *************
 NCO Wish list
@@ -150,6 +150,10 @@ Works fine when compiled without OPTS=D
 Perhaps this is a gcc-2.96 bug?
 195. Itanium builds
 196. nco_tst.sh has errors in ncwa tests 15--29 when built with NETCDF2_ONLY
+197. Construct HDF format in.hdf from in.cdl for testing HDF-enabled NCO:
+ncks -O in.nc in.hdf 
+Command executes but in.hdf is full of screwy values
+198. HDF-enabled ncgen does not parse in.cdl
 ************************************************************************
 End NCO Wish list
 ************************************************************************

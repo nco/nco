@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.66 2000-12-30 02:23:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.67 2001-01-03 01:58:07 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -97,22 +97,20 @@ Exit_gracefully(void)
   exit(EXIT_SUCCESS);
 } /* end Exit_gracefully() */
 
-char * 
+char * /* O [sng] Mnemonic that describes current NCO version */
 nmn_get()
 { 
   /* Purpose: Return mnemonic that describes current NCO version */
   return "I70+I15 Roadtrip";
 } /* end nmn_get() */
 
-char *
-cmd_ln_sng(int argc,char **argv)
-/* 
-   int argc: I argument count
-   char **argv: I argument list
-   char *cmd_ln_sng(): O command line
-*/
+char * /* O [sng] Parsed command line */
+cmd_ln_sng /* [fnc] Re-construct command line from arguments */
+(int argc, /* I [nbr] Argument count */
+ char **argv) /* I [sng] Command line argument values */
 {
-  char *cmd_ln;
+  /* Purpose: Re-construct command line from argument list and number */
+  char *cmd_ln; /* [sng] Parsed command line */
   
   int cmd_ln_sz=0;
   int idx;
@@ -132,7 +130,7 @@ cmd_ln_sng(int argc,char **argv)
     } /* end loop over args */
   } /* end else */
 
-  return cmd_ln;
+  return cmd_ln; /* [sng] Parsed command line */
 } /* end cmd_ln_sng() */
 
 lmt_sct *

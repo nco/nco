@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.85 2000-12-30 02:23:03 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.86 2001-01-03 01:58:06 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -16,7 +16,7 @@
 # DODS support:
 # cd ~/nco/bld;make DODS=Y;cd -
 # HDF4 version of netCDF libraries:
-# cd ~/nco/bld;make HDF4=Y;cd -
+# cd ~/nco/bld;make cln bin_cln all HDF4=Y;cd -
 
 MY_BLD_DIR := ../bld
 ifndef PVM_ARCH

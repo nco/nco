@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.55 2000-12-30 02:23:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.56 2001-01-03 01:58:07 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -40,9 +40,15 @@
 #ifndef NC_H /* Contents have not yet been inserted in current source file */
 #define NC_H
 
+#ifndef bool
 #define bool int
+#endif /* bool */
+#ifndef True
 #define True 1
+#endif /* True */
+#ifndef False
 #define False 0
+#endif /* False */
 
 /* Variables marked CEWI "Compiler Error Warning Initialization" are initialized
    to prevent spurious "warning: `float foo' might be used uninitialized in 
@@ -58,23 +64,18 @@
 #define nclong_CEWI 0L
 #define short_CEWI 0
 
-/*const short True=1;*/
-/*const short False=0;*/
-/*extern const short True=1;*/
-/*extern const short False=0;*/
-
 #ifdef MAIN_PROGRAM_FILE /* Current file contains main() */
 
 /* Global variables and variables with scope limited to main.c allocated here */
 
-int prg;
-int prg_get(void){return prg;}
+int prg; // [enm] Program ID
+int prg_get(void){return prg;} // [enm] Program ID
 
-char *prg_nm;
-char *prg_nm_get(void){return prg_nm;}
+char *prg_nm; // [sng] Program name
+char *prg_nm_get(void){return prg_nm;} // [sng] Program name
 
-unsigned short dbg_lvl=0; /* Option D */
-unsigned short dbg_lvl_get(void){return dbg_lvl;}
+unsigned short dbg_lvl=0; // [enm] Debugging level
+unsigned short dbg_lvl_get(void){return dbg_lvl;} // [enm] Debugging level
 
 #else /* MAIN_PROGRAM_FILE is NOT defined, i.e., current file does not contain main() */
 
@@ -347,7 +348,9 @@ typedef struct var_sct_tag{ /* var_sct */
 #endif /* USE_FORTRAN_ARITHMETIC */
 
 /* Function prototypes 
-   Those without descriptive variable names were written before ANSI C compilers were widely available */
+   Prototypes without descriptive variable names were written before ANSI C compilers were widely available and should be migrated to include arguments names and comments
+   Specifying extern is redundant (functions are extern by default) but Emacs highlights the in a nice shade of lavender :-)
+*/
 extern bool arm_inq(int);
 extern bool ncar_csm_inq(int);
 extern char **fl_lst_mk(char **,int,int,int *,char **);
@@ -464,7 +467,6 @@ extern void var_zero(nc_type,long,ptr_unn);
 extern void vec_set(nc_type,long,ptr_unn,double);
 extern void zero_long(long,long *op1);
 
-
 extern var_sct * /* O [var] Variable after (possible) conversion */
 nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
 (var_sct *var, /* I/O [var] Variable to be considered for conversion */
@@ -505,26 +507,26 @@ scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO vari
 (ptr_unn val_ptr_unn, /* I [unn] Pointer union to scalar value to turn into netCDF variable */
  nc_type val_typ); /* I [enm] netCDF type of pointer/value */
 
-var_sct * /* O [sct] Packed variable */
+extern var_sct * /* O [sct] Packed variable */
 var_pck /* [fnc] Pack variable in memory */
 (var_sct *var, /* I/O [sct] Variable to be packed */
  nc_type typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
  bool USE_EXISTING_PCK); /* I [flg] Use existing packing scale_factor and add_offset */
 
-double /* O [frc] Double precision representation of var->val.?p[0] */
+extern double /* O [frc] Double precision representation of var->val.?p[0] */
 ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar double */
 (ptr_unn val, /* I [sct] Pointer union to variable values */
  nc_type type); /* I [enm] Type of values pointed to by pointer union */
 
-int /* O [enm] Return code */
+extern int /* O [enm] Return code */
 nco_openmp_ini(); /* [fnc] Set up OpenMP multi-threading environment */
 
-int /* O [enm] Return code */
+extern int /* O [enm] Return code */
 nco_var_prc_crr_prn /* [fnc] Print name of current variable */
 (int idx, /* I [idx] Index of current variable */
  char *var_nm); /* I [sng] Variable name */
 
-var_sct * /* O [sct] Packed variable */
+extern var_sct * /* O [sct] Packed variable */
 nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to disk */
 (var_sct *var, /* I/O [sct] Variable to be packed */
  int nco_pck_typ); /* [enm] Packing operation type */
