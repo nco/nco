@@ -1,24 +1,46 @@
 %{
 /* Begin C declarations section */ 
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.3 1999-05-12 03:06:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.4 2000-01-17 01:53:56 zender Exp $ */
 
 /* Purpose: Grammar parser for ncap */ 
 
-/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
-   National Center for Atmospheric Research/
-   Clmt.te and Global Dynamics Division
+/* Copyright (C) 1995--2000 Charlie Zender
 
-   The file LICENSE contains the full copyright notice, or 
-   you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; either version 2
+   of the License, or (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+   The file LICENSE contains the GNU General Public License, version 2
+   It may be viewed interactively by typing, e.g., ncks -L
+
+   The author of this software, Charlie Zender, would like to receive
+   your suggestions, improvements, bug-reports, and patches for NCO.
+   Please contact me via e-mail at zender@uci.edu or by writing
+
+   Charlie Zender
+   Department of Earth System Science
+   University of California at Irvine
+   Irvine, CA 92697-3100
+ */
 
   /* Example yacc text:
-     /data2/zender/ora/lexyacc/ch3-05.y
+     /data/zender/ora/lexyacc/ch3-05.y
      /home/thibaud/usr/local/src/gcc-2.7.2/c-parse.y
-     /data2/zender/gcc-2.7.2/c-parse.y
-     parser_build_binary_op is in /data2/zender/gcc-2.7.2/c-typeck.c
+     /data/zender/gcc-2.7.2/c-parse.y
+     parser_build_binary_op is in /data/zender/gcc-2.7.2/c-typeck.c
      unidata ncgen.y
-     */ 
+  */ 
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */

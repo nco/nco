@@ -1,11 +1,34 @@
-c     $Header: /data/zender/nco_20150216/nco/src/nco/nc_fortran.F,v 1.7 1999-08-31 22:25:55 zender Exp $
+c     $Header: /data/zender/nco_20150216/nco/src/nco/nc_fortran.F,v 1.8 2000-01-17 01:53:55 zender Exp $
 
-c     Fortran arithmetic utilities for netCDF operators
+c     Purpose: Fortran arithmetic utilities for NCO netCDF operators
 
-c     (c) Copyright 1995--1999 University Corporation for Atmospheric Research
-c     Portions (c) Copyright 1999 Regents of the University of California
-c     The file LICENSE contains the full copyright notice 
-c     Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance
+c     Copyright (C) 1995--2000 Charlie Zender
+
+c     This program is free software; you can redistribute it and/or
+c     modify it under the terms of the GNU General Public License
+c     as published by the Free Software Foundation; either version 2
+c     of the License, or (at your option) any later version.
+   
+c     This program is distributed in the hope that it will be useful,
+c     but WITHOUT ANY WARRANTY; without even the implied warranty of
+c     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+c     GNU General Public License for more details.
+   
+c     You should have received a copy of the GNU General Public License
+c     along with this program; if not, write to the Free Software
+c     Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+c     The file LICENSE contains the GNU General Public License, version 2
+c     It may be viewed interactively by typing, e.g., ncks -L
+
+c     The author of this software, Charlie Zender, would like to receive
+c     your suggestions, improvements, bug-reports, and patches, for NCO.
+c     Please contact me via e-mail at zender@uci.edu or by writing
+
+c     Charlie Zender
+c     Department of Earth System Science
+c     University of California at Irvine
+c     Irvine, CA 92697-3100
 
 c     Define the Fortran specification required to obtain the same type of 
 c     integer as a C "long int" on this platform.

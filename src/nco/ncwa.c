@@ -1,15 +1,40 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.29 1999-12-30 02:01:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.30 2000-01-17 01:53:58 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
-
-/* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
-   The file LICENSE contains the full copyright notice 
-   Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
 
 /* Purpose: Compute averages of specified hyperslabs of specfied variables
    in a single input netCDF file and output them to a single file. */
 
-/* NB: As of 1998/12/02, -n and -W switches were deactivated but code left in place
+/* Copyright (C) 1995--2000 Charlie Zender
+
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; either version 2
+   of the License, or (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+   The file LICENSE contains the GNU General Public License, version 2
+   It may be viewed interactively by typing, e.g., ncks -L
+
+   The author of this software, Charlie Zender, would like to receive
+   your suggestions, improvements, bug-reports, and patches for NCO.
+   Please contact me via e-mail at zender@uci.edu or by writing
+
+   Charlie Zender
+   Department of Earth System Science
+   University of California at Irvine
+   Irvine, CA 92697-3100
+ */
+
+/* fxm: As of 1998/12/02, -n and -W switches were deactivated but code left in place
    while I rethink the normalization switches */ 
 
 /* Usage:
@@ -62,6 +87,7 @@ main(int argc,char **argv)
   bool NORMALIZE_BY_TALLY=True; /* Not currently implemented */ 
   bool NORMALIZE_BY_WEIGHT=True; /* Not currently implemented */ 
   bool WGT_MSK_CRD_VAR=True; /* Option I */ 
+  bool opt_a_flg=False; /* Option a */
 
   char **dim_avg_lst_in=NULL_CEWI; /* Option a */ 
   char **var_lst_in=NULL_CEWI;
@@ -78,8 +104,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.29 1999-12-30 02:01:34 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.29 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.30 2000-01-17 01:53:58 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.30 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -91,6 +117,7 @@ main(int argc,char **argv)
   extern int ncopts;
   extern int optind;
   
+  int arg_cnt=0; /* arg_cnt get incremented */
   int idx;
   int idx_avg;
   int idx_fl;
@@ -142,13 +169,21 @@ main(int argc,char **argv)
   /* Parse command line arguments */
   opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:xWw:";
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
+    arg_cnt++;
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'a':
       /* Dimensions over which to average hyperslab */
+      if(opt_a_flg){
+	(void)fprintf(stdout,"%s: ERROR Option -a appears more than once\n",prg_nm);
+	(void)fprintf(stdout,"%s: HINT Use -a dim1,dim2,... not -a dim1 -a dim2 ...\n",prg_nm);
+	(void)usg_prn();
+	exit(EXIT_FAILURE);
+      } /* endif */
       dim_avg_lst_in=lst_prs(optarg,",",&nbr_dim_avg);
+      opt_a_flg=True;
       break;
     case 'C': /* Extraction list should include all coordinates associated with extracted variables? */ 
       PROCESS_ASSOCIATED_COORDINATES=False;
@@ -242,6 +277,12 @@ main(int argc,char **argv)
       break;
     } /* end switch */
   } /* end while loop */
+
+  /* If called without arguments, print usage and exit successfully */ 
+  if(arg_cnt == 0){
+    (void)usg_prn();
+    exit(EXIT_SUCCESS);
+  } /* endif */
   
   /* Ensure we do not attempt to normalize by non-existent weight */ 
   if(wgt_nm == NULL) NORMALIZE_BY_WEIGHT=False;

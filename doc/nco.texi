@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.40 1999-12-30 02:01:31 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.41 2000-01-17 01:53:54 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -51,11 +51,10 @@ END-INFO-DIR-ENTRY
 
 @set nco-edition 1.1.44
 @set doc-edition 1.1.44
-@set NCAR-copyright-years 1995, 1996, 1997, 1998, 1999, 2000
-@set UC-copyright-years 1999, 2000
-@set update-year 1999
-@set update-date 26 December 1999
-@set update-month December 1999
+@set copyright-years 1995--2000
+@set update-year 2000
+@set update-date 15 January 2000
+@set update-month January 2000
 
 @c Experiment with smaller amounts of whitespace between chapters and sections.
 @tex
@@ -77,8 +76,7 @@ END-INFO-DIR-ENTRY
 This file documents NCO, a collection of utilities to manipulate and 
 analyze netCDF files.
 
-Copyright (c) @value{copyright_years} University Corporation for
-Atmospheric Research. 
+Copyright @copyright{} @value{copyright_years} Charlie Zender
 
 This is the first edition of the @cite{NCO User's Guide},@*
 and is consistent with version 2 of @file{texinfo.tex}.
@@ -124,7 +122,6 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @subtitle @value{update-month}
 
 @author by Charles S. Zender
-@author NCAR ACD & CGD
 @author Department of Earth System Science
 @author University of California at Irvine
 @ifhtml
@@ -135,21 +132,17 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @c Include Distribution inside titlepage so that headings are turned off
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} @value{NCAR-copyright-years} University
-Corporation for Atmospheric Research. 
-
-Portions copyright @copyright{} @value{UC-copyright-years} Regents of
-the University of California.
+Copyright @copyright{} @value{copyright-years} Charlie Zender.
 
 @sp 2
 This is the first edition of the @cite{NCO User's Guide},@*
 and is consistent with version 2 of @file{texinfo.tex}.
 @sp 2
 
-Published by the National Center for Atmospheric Research@*
-Climate and Global Dynamics Division@*
-P.O. Box 3000@*
-Boulder, CO 80307-3000 USA@*
+Published by Charlie Zender@*
+Department of Earth System Science@*
+University of California at Irvine@*
+Irvine, CA 92612-3100 USA@*
 
 Permission is granted to make and distribute verbatim copies of
 this manual provided the copyright notice and this permission notice
@@ -602,7 +595,7 @@ to a manageable size, document your run-time environment, and send me
 the exact error messages (and run the operator with @samp{-D 5} 
 to increase the verbosity of the debugging output). 
 Write a bug report based on the latest version of NCO. 
-Send the bug report to @code{zender@@ncar.ucar.edu}.
+Send the bug report to @code{zender@@uci.edu}.
 
 @node Strategies, Common features, Introduction, Top
 @chapter Operator Strategies

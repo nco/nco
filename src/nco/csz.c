@@ -1,10 +1,35 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.34 1999-12-27 03:39:52 zender Exp $ */
-
-/* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
-   The file LICENSE contains the full copyright notice 
-   Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.35 2000-01-17 01:53:54 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
+
+/* Copyright (C) 1995--2000 Charlie Zender
+   
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; either version 2
+   of the License, or (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+   
+   The file LICENSE contains the GNU General Public License, version 2
+   It may be viewed interactively by typing, e.g., ncks -L
+   
+   The author of this software, Charlie Zender, would like to receive
+   your suggestions, improvements, bug-reports, and patches for NCO.
+   Please contact me via e-mail at zender@uci.edu or by writing
+   
+   Charlie Zender
+   Department of Earth System Science
+   University of California at Irvine
+   Irvine, CA 92697-3100
+*/
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
@@ -1018,7 +1043,6 @@ nc_lib_vrs_prn()
   (void)free(nst_sng);
 #endif /* NETCDF2_ONLY */ 
   (void)fprintf(stdout,"NCO homepage URL is http://www.cgd.ucar.edu/cms/nco\n");
-
 } /* end nc_lib_vrs_prn() */
 
 void
@@ -1059,9 +1083,16 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
 
   cvs_vrs_sng=cvs_vrs_prs();
 
-  (void)fprintf(stderr,"NCO netCDF Operators version %s by Charlie Zender\n",cvs_vrs_sng);
-  (void)fprintf(stderr,"%s version %s (%s) \"%s\"\nCopyright 1995--1999 University Corporation for Atmospheric Research\n",prg_nm_get(),vrs_sng,date_sng,nmn_get());
-  (void)fprintf(stderr,"Portions copyright 1999--2000 Regents of the University of California\n");
+  /*  (void)fprintf(stderr,"NCO netCDF Operators version %s by Charlie Zender\n",cvs_vrs_sng);
+  (void)fprintf(stderr,"%s version %s (%s) \"%s\"\n",prg_nm_get(),vrs_sng,date_sng,nmn_get());
+  (void)fprintf(stderr,"Copyright 1995--1999 University Corporation for Atmospheric Research\n");
+  (void)fprintf(stderr,"Portions copyright 1999--2000 Regents of the University of California\n"); */
+
+  (void)fprintf(stderr,"NCO netCDF Operators version %s\n",cvs_vrs_sng);
+  (void)fprintf(stderr,"Copyright 1995--2000, Charlie Zender\n");
+  (void)fprintf(stderr,"%s version %s (%s) \"%s\"\n",prg_nm_get(),vrs_sng,date_sng,nmn_get());
+  (void)fprintf(stdout,"NCO is free software and comes with ABSOLUTELY NO WARRANTY\nNCO is distributed under the GNU General Public License\n");
+
   (void)free(vrs_sng);
   (void)free(cvs_vrs_sng);
 } /* end copyright_prn() */

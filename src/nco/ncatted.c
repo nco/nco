@@ -1,12 +1,37 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.17 1999-12-30 02:01:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.18 2000-01-17 01:53:56 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
-/* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
-   The file LICENSE contains the full copyright notice 
-   Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
+/* Purpose: Add, create, delete, or overwrite attributes in a netCDF file */
 
-/* Purpose: Add, create, delete, or overwrite attributes in a netCDF file. */
+/* Copyright (C) 1995--2000 Charlie Zender
+
+   This program is free software; you can redistribute it and/or
+   modify it under the terms of the GNU General Public License
+   as published by the Free Software Foundation; either version 2
+   of the License, or (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+   The file LICENSE contains the GNU General Public License, version 2
+   It may be viewed interactively by typing, e.g., ncks -L
+
+   The author of this software, Charlie Zender, would like to receive
+   your suggestions, improvements, bug-reports, and patches for NCO.
+   Please contact me via e-mail at zender@uci.edu or by writing
+
+   Charlie Zender
+   Department of Earth System Science
+   University of California at Irvine
+   Irvine, CA 92697-3100
+*/
 
 /* Usage:
 
@@ -109,8 +134,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.17 1999-12-30 02:01:33 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.17 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.18 2000-01-17 01:53:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.18 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 

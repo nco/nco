@@ -1,3 +1,17 @@
+2000-01-16  Charlie Zender  <zender@uci.edu>
+
+	* Changed all addresses except website to UCI ESS
+
+	* Changed license to GNU GPL
+
+2000-01-14  Charlie Zender  <zender@uci.edu>
+
+	* Calling ncwa without arguments now causes operator to print
+	usage and exit successfully 
+
+	* Print error message and hint when ncwa called with -a dim1 -a
+	dim2 instead of -a dim1,dim2
+
 2000-01-10  Charlie Zender  <zender@z.ppp.uci.edu>
 
 	* ncks now puts string values inside double quotes, character
