@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.24 2003-08-02 23:12:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.25 2003-08-02 23:26:57 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -125,7 +125,6 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     return fl_lst_in;
     /*    break;*//* NB: putting break after return in case statement causes warning on SGI cc */
   case ncbo:
-  case ncdiff:
   case ncflint:
     if(argc-arg_crr != 3){
       (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly three\n",prg_nm_get(),argc-arg_crr);

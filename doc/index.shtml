@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.141 2003-08-02 05:02:53 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.142 2003-08-02 23:26:57 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -125,6 +125,7 @@ non-linear operations as well, e.g., total, minimum, maximum, RMS:
 <ul>
 <li><b>ncap</b> netCDF Arithmetic Processor</li>
 <li><b>ncatted</b> netCDF Attribute Editor</li>
+<li><b>ncbo</b> netCDF Binary Operator</li>
 <li><b>ncdiff</b> netCDF Differencer</li>
 <li><b>ncea</b> netCDF Ensemble Averager</li>
 <li><b>ncecat</b> netCDF Ensemble Concatenator</li>
@@ -194,6 +195,8 @@ User's of this feature should definitely upgrade to <tt>2.5.6+</tt>.</li>
 <li>Many releases since 2.0.0 are not packaged (i.e., no tarballs or RPMs).
 Retrieve these versions <a name="#Download">using CVS</a> or from 
 <a href="http://dust.ess.uci.edu/nco">this anonymous FTP site</a>.
+<li><b>NCO 2.8.0</b>, New "binary" operator <tt>ncbo</tt> does file
+addition, subtraction, multiplication, and division, obsoletes <tt>ncdiff</tt>
 <li><b>NCO 2.7.4</b>, Autotools build support for AIX, fix UDUnits confusion with floating point hyperslab specifications
 <li><b>NCO 2.7.3</b>, Support <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (and some <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html">CF</a>) conventions, e.g., <tt>ncks -d wvl "1 picometer","1 furlong" -d time,"2001-03-19 06:00:0.0","2001-03-19 18:00:0.0"</tt> 
 <li><b>NCO 2.7.2</b>, Printing (<tt>ncks -H</tt>) plays well with multi-slabbing

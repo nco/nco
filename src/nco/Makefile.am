@@ -16,7 +16,7 @@ else
   NCO_GETOPT=
 endif
 
-bin_PROGRAMS = ${NCAP} ncatted ncdiff ncecat ncflint ncks ncra ncrename ncwa
+bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncra ncrename ncwa
 
 AM_YFLAGS = -d
 
@@ -26,8 +26,8 @@ ncap_LDADD = libnco.la
 ncatted_SOURCES = ncatted.c
 ncatted_LDADD = libnco.la
 
-ncdiff_SOURCES = ncdiff.c
-ncdiff_LDADD = libnco.la
+ncbo_SOURCES = ncbo.c
+ncbo_LDADD = libnco.la
 
 ncecat_SOURCES = ncecat.c
 ncecat_LDADD = libnco.la
@@ -68,10 +68,12 @@ TESTS = test1.sh ${DODS_TESTS}
 EXTRA_DIST = nco_getopt.c
 
 install-exec-hook:
+	ln -s $(DESTDIR)$(bindir)/ncbo $(DESTDIR)$(bindir)/ncdiff
 	ln -s $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncea
 	ln -s $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncrcat
 
 uninstall-hook:
+	rm -f $(DESTDIR)$(bindir)/ncdiff
 	rm -f $(DESTDIR)$(bindir)/ncea
 	rm -f $(DESTDIR)$(bindir)/ncrcat
 	

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.54 2003-07-07 01:29:38 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.55 2003-08-02 23:26:56 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -383,7 +383,7 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.
 
 Old build example: (Default is ABI64 on this platform)
 cc  -DSGIMP64 -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='krein.math.uci.edu' -DUSER='zender' -I/usr/local/include -U_OPENMP -64 -mips4 -O2 -c ../src/nco/nco_att_utl.c -o /home/ess/zender/zender/obj/SGIMP64/nco_att_utl.o
-cc -o /home/ess/zender/zender/bin/SGIMP64/ncdiff /home/ess/zender/zender/obj/SGIMP64/ncdiff.o -64 -mips4 -L/home/ess/zender/zender/lib/SGIMP64 -L/usr/local/lib -lnco -lnetcdf -lm
+cc -o /home/ess/zender/zender/bin/SGIMP64/ncbo /home/ess/zender/zender/obj/SGIMP64/ncbo.o -64 -mips4 -L/home/ess/zender/zender/lib/SGIMP64 -L/usr/local/lib -lnco -lnetcdf -lm
 
 New build example:
 cc/CC:

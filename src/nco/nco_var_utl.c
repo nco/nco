@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.29 2003-06-16 16:37:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.30 2003-08-02 23:26:57 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -826,7 +826,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     /* Assume arithmetic operators store values as unpacked pck_dbg
        Problem here is that ncap is not unpacking "fixed" variables
        Why change the type of "fixed" variables?
-       ncra does not average them, ncdiff does not subtract them, etc.,
+       ncra does not average them, ncbo does not subtract them, etc.,
        so it should be safe to leave them packed 
        Thus checking only is_rth_opr is too simplistic
        The most important thing is to be consistent---
@@ -901,9 +901,9 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       nco_pck_typ=nco_pck_all_new_att;
       break;
     case ncap:
-    case ncra:
-    case ncdiff:
+    case ncbo:
     case ncflint:
+    case ncra:
     case ncwa:
     case ncrcat:
     case ncecat:

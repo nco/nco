@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.27 2003-08-02 23:12:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.28 2003-08-02 23:26:57 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -43,7 +43,6 @@ is_rth_opr /* [fnc] Query whether program does arithmetic */
   switch(prg_id){
   case ncap: 
   case ncbo:
-  case ncdiff:
   case ncea:
   case ncflint:
   case ncra:
@@ -167,9 +166,6 @@ nco_usg_prn(void)
     break;
   case ncbo:
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-n ...] [-O] [-p path] [-R] [-r] [-v ...] [-x] [-y op_typ] in_1.nc in_2.nc out.nc\n");
-    break;
-  case ncdiff:
-    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-n ...] [-O] [-p path] [-R] [-r] [-v ...] [-x] in_1.nc in_2.nc out.nc\n");
     break;
   case ncflint:
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-i var,val] [-l path] [-n ...] [-O] [-p path] [-R] [-r] [-v ...] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc out.nc\n");

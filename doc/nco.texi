@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.167 2003-07-20 21:59:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.168 2003-08-02 23:26:57 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -205,7 +205,7 @@ Rew and Steve Emmerson.
 @ifhtml
 <meta name="Author" CONTENT="Charlie Zender">
 <meta name="Keywords" CONTENT="NCO documentation, NCO User's Guide,
-netCDF, operator, GCM, CCM, scientific data, ncdiff, ncea, ncecat,
+netCDF, operator, GCM, CCM, scientific data, ncbo, ncdiff, ncea, ncecat,
 ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @end ifhtml
 @c fxm: Direct HTML commands have no effect
@@ -1001,18 +1001,18 @@ Selecting @dfn{append/replace} causes the operator to attempt to place
 the results of the operation in the existing @var{output-file}, 
 @xref{ncks netCDF Kitchen Sink}.
 
-@node Addition Subtraction Multiplication and Interpolation, Averaging vs. Concatenating, Appending, Strategies
-@section Addition Subtraction Multiplication and Interpolation
+@node Addition Subtraction Division Multiplication and Interpolation, Averaging vs. Concatenating, Appending, Strategies
+@section Addition Subtraction Division Multiplication and Interpolation
 
 Users comfortable with @acronym{NCO} semantics may find it easier to
 perform some simple mathematical operations in @acronym{NCO} rather than
 higher level languages. 
-@command{ncdiff} (@pxref{ncdiff netCDF Differencer}) can be used for
-subtraction and broadcasting. 
-@command{ncflint} (@pxref{ncflint netCDF File Interpolator}) can be used 
-for addition, subtraction, multiplication and interpolation.
+@command{ncbo} (@pxref{ncbo netCDF Differencer}) does
+addition, subtraction, multiplication, division, and broadcasting. 
+@command{ncflint} (@pxref{ncflint netCDF File Interpolator}) does
+addition, subtraction, multiplication and interpolation. 
 Sequences of these commands can accomplish simple but powerful
-operations at the command line.
+operations from the command line.
 
 @node Averaging vs. Concatenating, Large numbers of input files, Addition Subtraction Multiplication and Interpolation, Strategies
 @section Averagers vs. Concatenators
@@ -1275,7 +1275,7 @@ The operators have the following memory requirements:
 @command{ncecat} requires @math{MS <= VT}. 
 @command{ncra} requires @math{MS = 2FR + VR}. 
 @command{ncea} requires @math{MS = 2FT + VT}. 
-@command{ncdiff} requires @math{MS <= 2VT}.
+@command{ncbo} requires @math{MS <= 2VT}.
 @command{ncflint} requires @math{MS <= 2VT}.
 Note that only variables which are processed, i.e., averaged or
 concatenated, contribute to @math{MS}.
@@ -1815,7 +1815,7 @@ disabled by specifying @samp{-R} on the command line.
 @cindex @code{--xcl}
 @cartouche
 @noindent
-Availability: (@command{ncap}), @command{ncdiff}, @command{ncea},
+Availability: (@command{ncap}), @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-v}, @samp{-x}@*
@@ -1853,7 +1853,7 @@ that @emph{only} user-defined variables should be output.
 @cindex @code{--crd}
 @cartouche
 @noindent
-Availability: @command{ncap}, @command{ncdiff}, @command{ncea},
+Availability: @command{ncap}, @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks},  @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-C}, @samp{-c}@*
@@ -1885,7 +1885,7 @@ without having to know their names.
 @cindex @code{--fortran}
 @cartouche
 @noindent
-Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
+Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
 @command{ncwa}@* 
 Short options: @samp{-F}@*
@@ -1927,7 +1927,7 @@ lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0
 @cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}]]}
 @cartouche
 @noindent
-Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
+Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
 @command{ncwa}@* 
 Short options: @samp{-d}@*
@@ -2102,7 +2102,7 @@ future.
 @cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}]]}
 @cartouche
 @noindent
-Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
+Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
 @command{ncwa}@* 
 Short options: @samp{-d}@*
@@ -2405,7 +2405,7 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @cindex @code{missing_value} attribute
 @cartouche
 @noindent
-Availability: @command{ncap}, @command{ncdiff}, @command{ncea},
+Availability: @command{ncap}, @command{ncbo}, @command{ncea},
 @command{ncflint}, @command{ncra}, @command{ncwa}@* 
 Short options: None@*
 @end cartouche
@@ -2491,11 +2491,11 @@ Treatment of any data identified as missing in arithmetic operators.
 @cindex @command{ncea}
 @cindex @command{ncra}
 @cindex @command{ncwa}
-@cindex @command{ncdiff}
+@cindex @command{ncbo}
 @cindex @command{ncflint}
 @acronym{NCO} averagers (@command{ncra}, @command{ncea}, @command{ncwa}) do not count any
 element with the value @var{missing_value} towards the average.
-@command{ncdiff} and @command{ncflint} define a @var{missing_value} result
+@command{ncbo} and @command{ncflint} define a @var{missing_value} result
 when either of the input values is a @var{missing_value}.
 Sometimes the @var{missing_value} may change from file to file in a
 multi-file operator, e.g., @command{ncra}.
@@ -2633,7 +2633,7 @@ The value of~$\mssflg_{\idx}$ is~1 (true) unless $\xxx_{\idx}$ equals
 the @var{missing value} (@pxref{Missing values}) for the variable. 
 Thus, for a variable with no @code{missing_value} attribute,
 $\mssflg_{\idx}$~is always~1.
-All @acronym{NCO} arithmetic operators (@command{ncdiff},
+All @acronym{NCO} arithmetic operators (@command{ncbo},
 @command{ncra}, @command{ncea}, @command{ncflint}, @command{ncwa}) treat  
 missing values analogously. 
 
@@ -2682,7 +2682,7 @@ $$
 $$
 If $\xxx$ represents a deviation from the mean of another variable,
 $\xxx_{\idx} = \yyy_{\idx} - \bar{\yyy}$ (possibly created by
-@command{ncdiff} in a previous step), then applying @code{avgsqr} to
+@command{ncbo} in a previous step), then applying @code{avgsqr} to
 $\xxx$ computes the approximate variance of $\yyy$. 
 Computing the true variance of~$\yyy$ requires subtracting~1 from the
 denominator, discussed below.
@@ -2793,7 +2793,7 @@ pressure at all points in a single file @file{in.nc} involves three
 steps. 
 @example
 ncwa -O -v prs_sfc -a time in.nc out.nc
-ncdiff -O -v prs_sfc in.nc out.nc out.nc
+ncbo -O -v prs_sfc in.nc out.nc out.nc
 ncra -O -y rmssdn out.nc out.nc
 @end example
 First the output file @file{out.nc} is contructed containing the
@@ -2812,7 +2812,7 @@ The procedure to compute the spatial standard deviation of a field
 in a single file @file{in.nc} involves three steps.
 @example
 ncwa -O -v prs_sfc,gw -a lat,lon -w gw in.nc out.nc
-ncdiff -O -v prs_sfc,gw in.nc out.nc out.nc
+ncbo -O -v prs_sfc,gw in.nc out.nc out.nc
 ncwa -O -y rmssdn -v prs_sfc -a lat,lon -w gw out.nc out.nc
 @end example
 First the appropriately weighted (with @samp{-w gw}) spatial mean values
@@ -2833,19 +2833,19 @@ collected into one file.
 @example
 ncrcat -O -v tpt in.nc in.nc foo1.nc
 ncwa -O -a time foo1.nc foo2.nc
-ncdiff -O -v tpt foo1.nc foo2.nc foo2.nc
+ncbo -O -v tpt foo1.nc foo2.nc foo2.nc
 ncra -O -y rmssdn foo2.nc out.nc
 @end example
 The first step assembles all the data into a single file.
 This may require a lot of temporary disk space, but is more or less
-required by the @command{ncdiff} operation in the fourth step.
+required by the @command{ncbo} operation in the fourth step.
 
 @node Type conversion, Suppressing interactive prompts, Operation Types, Common features
 @section Type conversion
 @cindex type conversion
 @cartouche
 @noindent
-Availability: @command{ncap}, @command{ncdiff}, @command{ncea},
+Availability: @command{ncap}, @command{ncbo}, @command{ncea},
 @command{ncra}, @command{ncwa}@* 
 Short options: None@*
 @end cartouche
@@ -2897,8 +2897,8 @@ Thus, unlike C and Fortran, but like many other higher level interpreted
 languages, @acronym{NCO} arithmetic operators will perform automatic type
 conversion when all the following conditions are met
 @footnote{Operators began performing type conversions before arithmetic
-in @acronym{NCO} version 1.2, August, 2000. 
-Previous version never performed unnecessary type conversion for
+in @acronym{NCO} @w{version 1.2}, August, 2000. 
+Previous versions never performed unnecessary type conversion for
 arithmetic.}: 
 @enumerate
 @item The operator is @command{ncea}, @command{ncra}, or @command{ncwa}. 

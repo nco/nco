@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.53 2003-08-02 23:12:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.54 2003-08-02 23:26:57 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -100,9 +100,8 @@ extern "C" {
 
   enum prg{ /* [enm] Key value for all netCDF operators */
     ncap,
-    ncbo,
     ncatted,
-    ncdiff,
+    ncbo,
     ncea,
     ncecat,
     ncflint,

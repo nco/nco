@@ -1,5 +1,7 @@
 2003-08-02  Charlie Zender  <zender@uci.edu>
 
+	* Rename val_conform_type() to val_cnf_typ()
+
 	* All regressions due to introduction of ncbnr appear to be fixed
 
 	* Correct nco_tst.sh procedure for ncap. 

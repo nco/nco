@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.8 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.9 2003-08-02 23:26:57 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -26,7 +26,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
      If it is permissible for wgt not to conform to var then set MUST_CONFORM=false before calling this routine
      In this case when wgt and var do not conform then then nco_var_cnf_dmn sets *DO_CONFORM=False and returns a copy of var with all values set to 1.0
      The calling procedure can then decide what to do with the output
-     MUST_CONFORM is True for ncdiff: Variables of like name to be differenced must be same rank
+     MUST_CONFORM is True for ncbo: Variables of like name to be, e.g., differenced, must be same rank
      MUST_CONFORM is False false for ncap, ncflint, ncwa: Some variables to be averaged may not conform to the specified weight, e.g., lon will not conform to gw. This is fine and the returned wgt_out may not be used. */
 
   /* There are many inelegant ways to accomplish this (without using C++): */  
