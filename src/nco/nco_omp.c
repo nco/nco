@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.11 2004-07-02 01:04:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.12 2004-07-02 05:08:42 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -91,9 +91,6 @@ nco_openmp_ini /* [fnc] Set up OpenMP multi-threading environment */
     if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO Allowing OS to dynamically set threads\n",prg_nm_get());
   } /* USR_SPC_THR_RQS */
 
-#endif /* not _OPENMP */
-
-#ifdef _OPENMP /* OpenMP-compliant compilers define _OPENMP=YYYYMM = year and month of OpenMP specification */
 #pragma omp parallel default(none) shared(fp_stderr,thr_nbr)
   { /* begin OpenMP parallel */
 #pragma omp single nowait
@@ -103,6 +100,7 @@ nco_openmp_ini /* [fnc] Set up OpenMP multi-threading environment */
     } /* end OpenMP single */
   } /* end OpenMP parallel */
 #else /* not _OPENMP */
+  thr_nbr_act+=0*thr_nbr; /* CEWI */
   if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO Not attempting OpenMP threading\n",prg_nm_get());
 #endif /* not _OPENMP */
   
