@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.2 2002-02-12 07:33:33 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.3 2002-08-24 06:08:05 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface utilities for netCDF routines
 
@@ -11,6 +11,10 @@
 
 #ifndef NCO_UTL_HH // Contents have not yet been inserted in current source file
 #define NCO_UTL_HH
+
+#ifdef HAVE_CONFIG_H
+# include <config.h> // Autotools tokens
+#endif /* !HAVE_CONFIG_H */
 
 // C++ headers
 #include <iostream> // Standard C++ I/O streams cout, cin
