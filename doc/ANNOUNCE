@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.4 2001-02-11 20:57:33 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.5 2001-02-13 04:43:41 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 1.2.2 are ready. 
 User-visible improvements to version 1.2.1 include a few new 
@@ -10,7 +10,7 @@ http://nco.sourceforge.net
 Summary of changes:
 
 1. ncrename handles specific variables rather than whole file (Butowsky)
-2. Weights work with <tt>ncwa</tt> in min/max/ttl operations (Zender)
+2. Weights work with ncwa in min/max/ttl operations (Zender)
 3. make HDF4=Y simplifies building HDF-enabled NCO 
 
 Enjoy,

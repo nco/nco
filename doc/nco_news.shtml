@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.10 2001-02-11 20:57:33 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.11 2001-02-13 04:43:41 zender Exp $
 
 Purpose: NCO news archive
 
@@ -29,19 +29,26 @@ scp -p ~/nco/doc/nco_news.shtml nco.sourceforge.net:/home/groups/nco/htdocs/nco_
 <p>2001/02/11: 
 NCO version 1.2.2 is released.
 Differences with version 1.2.1 include three new features and one bugfix:
-Weights are allowed with <tt>ncwa</tt> in min/max/ttl operations.
+<ul>
+<li>Weights are allowed with <tt>ncwa</tt> in min/max/ttl operations.
 New "var:att" syntax allows <tt>ncrename</tt> to rename attributes for
-specific variables rather than whole file, e.g., 
-<tt>ncrename -a os_name:eunuchs,unix in.nc out.nc</tt>
+specific variables rather than whole file, e.g.,<br>
+<pre>ncrename -a os_name:eunuchs,unix in.nc out.nc</pre>
 Previously, <tt>ncrename</tt> would rename the same attribute for all
-variables in a file.
-Finally, the build system has been modified so that 
+variables in a file.</li>
+
+<li><tt>ncks</tt> has new <tt>-q</tt> option to allow for printing
+arrays without printing associated dimensions
+
+<li>The build system has been modified so that 
 <tt>make HDF4=Y</tt> will build NCO with HDF4 compatibility 
-(previously this had to be done by hand).
-Also, the internal representations of <tt>NC_CHAR</tt> and
+(previously this had to be done by hand).</li>
+
+<li>The internal representations of <tt>NC_CHAR</tt> and
 <tt>NC_BYTE</tt> data have been swapped in order to agree with the
 netCDF standard.  
-The effects of this last change should not be visible to the user.
+The effects of this last change should not be visible to the user.</li>
+</ul>
 
 <a name="20000828"></a>
 <p>2000/08/28: 

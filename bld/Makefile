@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.88 2001-02-12 05:37:57 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.89 2001-02-13 04:43:41 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -699,6 +699,7 @@ rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., su
 	rpm -ba nco.spec; \
 	scp /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm zender@ftp.cgd.ucar.edu:/ftp/pub/zender/nco
 	scp /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm zender@nco.sourceforge.net:/home/groups/ftp/pub/nco
+	ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-1.2.2-*.src.rpm /usr/src/redhat/RPMS/i386/nco-1.2.2-*.i386.rpm
 rpm_cln:
 	rpm --erase $(MDL_RPM_NST_NM)
 # Targets in dat
@@ -721,7 +722,7 @@ tst_cln:
 # Targets in doc
 # Each make directive line spawns a separate shell so must use `cd dir;cmd' format
 doc:	$(MY_DOC_DIR)/nco.dvi $(MY_DOC_DIR)/nco.ps $(MY_DOC_DIR)/nco.pdf $(MY_DOC_DIR)/nco.html $(MY_DOC_DIR)/nco.info   
-$(MY_DOC_DIR)/nco.ps: $(MY_DOC_DIR)/nco.texi
+$(MY_DOC_DIR)/nco.ps: $(MY_DOC_DIR)/nco.dvi
 	cd $(MY_DOC_DIR); dvips -o nco.ps nco.dvi
 $(MY_DOC_DIR)/nco.dvi: $(MY_DOC_DIR)/nco.texi
 	cd $(MY_DOC_DIR); texi2dvi nco.texi
@@ -729,8 +730,9 @@ $(MY_DOC_DIR)/nco.info: $(MY_DOC_DIR)/nco.texi
 	cd $(MY_DOC_DIR); makeinfo nco.texi
 $(MY_DOC_DIR)/nco.html: $(MY_DOC_DIR)/nco.texi
 	cd $(MY_DOC_DIR); texi2html -monolithic -verbose nco.texi
-$(MY_DOC_DIR)/nco.pdf: $(MY_DOC_DIR)/nco.ps
-	cd $(MY_DOC_DIR); ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
+$(MY_DOC_DIR)/nco.pdf: $(MY_DOC_DIR)/nco.texi
+	cd $(MY_DOC_DIR); texi2dvi --pdf nco.texi
+#	cd $(MY_DOC_DIR); ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
 docclean: doc_cln
 doc_cln:
 	cd $(MY_DOC_DIR); rm -f nco.info* nco.dvi nco.html* nco.ps nco.pdf *~

@@ -1,5 +1,8 @@
 2001-02-11  Charlie Zender  <zender@uci.edu>
 
+	* Figured out that texi2dvi --pdf really does work nicely and am
+	now using it rather than ps2pdf
+
 	* Tagged and released nco-1_2_2
 
 2001-01-02  Charlie Zender  <zender@uci.edu>
