@@ -1,39 +1,74 @@
-# Legal, bookkeeping and installation files
-COPYING		Copying restrictions
-INSTALL		Installation instructions
-README
-MANIFEST	This file
-TODO
-NEWS
-VERSION		Nothing but the version number
-ChangeLog
-configure.in	autoconf(1) used this input to generate ./configure
-configure	Script to generate machine-specific ./Makefile
-Makefile.in	used by ./configure to generate machine-specific ./Makefile
-GNUmakefile	Same as Makefile.alt 
-Makefile.alt	Alternative makefile (in case you overwrite the working ./Makefile)
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.2 1998-08-20 20:55:54 zender Exp $ -*-text-*-
 
-# Supporting GNU software:
-mkinstalldirs
-install-sh
-texi2dvi	creates nco.dvi from nco.texi
-texi2html	creates nco*.html from nco.texi
-texinfo.tex	sometimes needed by TeXInfo or makeinfo
-getopt.c
-getopt.h
-getopt1.c
-alloca.c
+This file enumerates the files in the NCO distribution and, where
+appropriate, describes the purpose of the file.
 
-# Supporting PVM software:
-pvmgetarch	determines machine type
+Top-level directories:
+nco/bin		Binary directory for NCO binary executable
+nco/bld		Build directory for Makefile and ancillary scripts
+nco/data	Sample I/O datasets
+nco/doc		Documentation
+nco/obj		Object files
+nco/src		Source files
 
-# Documentation
-nco.texi	TeXInfo documention (use texi2dvi to make .dvi file)
-nco.info	Info documentation
-nco.dvi		DVI documentation
-nco.ps		DVI documentation
+Binary directory:
+nco/bin/README		Description of binary directory
 
-# Source Code
-nc.h csz.c ncks.c ncrename.c nc_utl.c nc.h nc_fortran.F cal_util.F ncra.c
-ncwa.c ncdiff.c ncecat.c ncflint.c ncatted.c
+Build directory:
+nco/bld/Depends		Dependencies of each object file
+nco/bld/Filepath	Directory location and order of all source files
+nco/bld/Makefile	Makefile used by GNU make to create NCO executable
+nco/bld/Srcfiles	Source stubs of each source file
+nco/bld/makdep		Perl script needed by `make depends' command
+nco/bld/nco_tst.sh	Shell script to test NCO executables (not yet used)
+nco/bld/pvmgetarch	Script used by Makefile to determine your native machine type
+
+Data Directory:
+nco/data/in.cdl 	CDL file to generate netCDF test file in.nc
+nco/data/ncap.in	Text input for ncap (not yet used)
+
+Documentation directory:
+nco/doc/ANNOUNCE	Announcement to accompany release notifications
+nco/doc/FAQ		Frequently Asked Questions about the NCO
+nco/doc/INSTALL		Installation instructions
+nco/doc/LICENSE		License and legal information
+nco/doc/MANIFEST	This file. Describes all files in distribution
+nco/doc/README		Description of the NCO
+nco/doc/TAG		CVS tag for this version 
+nco/doc/TODO		List of tasks for future releases
+nco/doc/VERSION		NCO version 
+nco/doc/ChangeLog	Chronological log of NCO changes
+nco/doc/dir		Example Info file to load nco.info
+nco/doc/ncap.txt	Description of the ncap operator (not yet used)
+nco/doc/nco.texi	NCO User's Guide: TeXInfo format
+nco/doc/nco.info	NCO User's Guide: Info format
+nco/doc/nco.dvi		NCO User's Guide: DVI format
+nco/doc/nco.ps		NCO User's Guide: Postscript format
+nco/doc/nco.html	NCO User's Guide: HTML format
+
+Object directory:
+nco/obj/README		Description of object directory
+
+Source directories:
+nco/src/nco		NCO-specific source files
+
+NCO-specific source directory:
+nco/src/nco/cal_util.F
+nco/src/nco/csz.c
+nco/src/nco/nc.h
+nco/src/nco/nc_fortran.F
+nco/src/nco/nc_utl.c
+nco/src/nco/ncap.c
+nco/src/nco/ncap.h
+nco/src/nco/ncap.l
+nco/src/nco/ncap.y
+nco/src/nco/ncap_utl.c
+nco/src/nco/ncatted.c
+nco/src/nco/ncdiff.c
+nco/src/nco/ncecat.c
+nco/src/nco/ncflint.c
+nco/src/nco/ncks.c
+nco/src/nco/ncra.c
+nco/src/nco/ncrename.c
+nco/src/nco/ncwa.c
 

@@ -41,7 +41,7 @@ NCO Wish list (or, improvements I could make while on airplanes if only I had a 
 101. Change tokens so g77 will work with OSs besides LINUX, e.g., SUNMP
 103. Implement trapezoidal rule option in ncra, ncea.
 104. Investigate/Document reliability of -A operator when appending from large rank variables to small rank files. Add error message when variables are same size but one has a degenerate dimension.
-In general, adding large rank variable to small rank file seems to work, e.g.,
+In general, adding large rank variable to small rank file does work, e.g.,
 ncks -C -O -v one_dim_rec_var in.nc foo.nc
 ncks -C -A -v three_dim_rec_var in.nc foo.nc
 ncdump foo.nc
@@ -50,6 +50,7 @@ ncdump foo.nc
 107. Migrate to netCDF3.x calls. 
 108. Find concise way to reproduce flaky IRIX problems: 
 ncdiff -O -v float_var in.nc in.nc foo.nc; ncks -H foo.nc
+109. Change copyright printing so order is NCO vrs, netCDF vrs, URL, Copyright
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.8 1998-08-20 05:27:33 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.9 1998-08-20 20:55:50 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -31,16 +31,25 @@ space := $(null) $(null)
 comma := ,
 newline := \n
 
-dirs := $(shell cat Filepath) # Load dependency search path
-VPATH := $(subst $(space),:,$(dirs)) # Change spaces to colons. VPATH tells make where to find dependencies (which are not pathname qualified) in Depends file
-cpp_dirs := $(dirs) # Additional directories, e.g., ./, could be added here
-cpp_path := $(foreach dir,$(cpp_dirs),-I$(dir)) # -I format for compiler argument
+# User-specified and ranked source file locations
+dirs := $(shell cat Filepath)
+# VPATH tells make where to find dependencies (which are not pathname qualified) in Depends file
+VPATH := $(subst $(space),:,$(dirs))
+# Additional directories, e.g., /home/zender/include, could be added here
+cpp_dirs := $(dirs)
+# Prepend -I to use for compiler argument
+cpp_path := $(foreach dir,$(cpp_dirs),-I$(dir))
 MY_INC_DIR += $(cpp_path)
-FIND_FNC = $(wildcard $(dir)/*.c $(dir)/*.F) # Find all C and Fortran source files in a given directory
-SRC_LST = $(strip $(foreach dir, $(dirs),$(FIND_FNC))) # Assemble source files from all directories
-SRC_STB_LST := $(strip $(sort $(notdir $(SRC_LST)))) # Source file names with directories removed
-SRC_STB_FL := $(strip $(subst $(space),$(newline),$(SRC_STB_LST))) # Source files names sorted alphabetically, one per line, suitable for input to makdep
-NCO_OBJ := $(addprefix $(MY_OBJ_DIR)/,$(addsuffix .o, $(basename $(SRC_STB_LST)))) # Dependency list for executable
+# Find all C++, C, and Fortran files in a given directory
+FIND_FNC = $(wildcard $(dir)/*.cc $(dir)/*.c $(dir)/*.F)
+# Assemble source files from all directories
+SRC_LST = $(foreach dir, $(dirs),$(FIND_FNC))
+# Source file names with directories removed
+SRC_STB_LST := $(sort $(notdir $(SRC_LST)))
+# Source files names sorted alphabetically, one per line, for input to makdep
+SRC_STB_FL := $(strip $(subst $(space),$(newline),$(SRC_STB_LST))) # <--Intentional
+# Dependency list for executable
+NCO_OBJ := $(addprefix $(MY_OBJ_DIR)/,$(addsuffix .o, $(basename $(SRC_STB_LST)))) 
 
 # Variables having to do with NCO executables
 NCO_BIN_TRG := ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted # NCO binary targets
