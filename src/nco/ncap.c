@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.145 2005-03-23 06:44:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.146 2005-03-25 21:30:11 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.145 2005-03-23 06:44:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.145 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.146 2005-03-25 21:30:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.146 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -194,8 +194,8 @@ main(int argc,char **argv)
   lmt_sct *lmt=NULL_CEWI;
   
   nm_id_sct *dmn_lst=NULL;       
-  nm_id_sct *xtr_lst=NULL;   /* The list of non-processed variables which get copied to OUTPUT */
-  nm_id_sct *xtr_lst_a=NULL; /* initialized to ALL the vars in the OUTPUT file */
+  nm_id_sct *xtr_lst=NULL; /* Non-processed variables to copy to OUTPUT */
+  nm_id_sct *xtr_lst_a=NULL; /* Initialize to ALL variables in OUTPUT file */
   
   size_t sng_lng;
   size_t spt_arg_lng=size_t_CEWI;
@@ -546,9 +546,7 @@ main(int argc,char **argv)
     
     /* Form initial list of all variables in input file */
     xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,False,&nbr_xtr);
-  } /* endif */
-  
-  if(!PROCESS_ALL_VARS){
+  }else{
     /* Make list of variables of new attributes whose parent variable is only in input file */
     xtr_lst=nco_att_lst_mk(in_id,out_id,att_lst,nbr_att,&nbr_xtr);
   } /* endif */
@@ -639,7 +637,9 @@ main(int argc,char **argv)
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
-  
+  /* Extraction list is no longer needed */
+  xtr_lst=nco_free(xtr_lst);
+
   /* NB: ncap is not well-suited for nco_var_lst_dvd() */
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);

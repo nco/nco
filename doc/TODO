@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.455 2005-03-22 02:57:21 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.456 2005-03-25 21:30:10 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -344,8 +344,12 @@ ncap61. Possible math parser error: and should be ~ 27000.0
     ncks -m -v p ~/foo.nc
     p = 524414.715719
 ncap62. Does LHS-casting still work? Following results in only three dimensions:
-    ncap -O -v -s "x[lat,lev,lon,time]=three_dmn_var" ~/nco/data/in.nc ~/foo.nc
-ncap 63. 
+    ncap -O -v -s "x[time,lat,lev,lon]=three_dmn_var" ~/nco/data/in.nc ~/foo.nc
+ncap63. mmr: memory leak in ncap with var_nm_RHS
+ncap64. mmr: memory leak in ncap with xtr_lst
+ncap65. mmr: memory leak in ncap with var->nm
+ncap66. make ncap errors fatal, either in yyerror(), or call nco_error_exit()
+ncap67. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.

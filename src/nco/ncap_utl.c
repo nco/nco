@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.111 2005-03-24 00:37:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.112 2005-03-25 21:30:11 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -759,6 +759,7 @@ nco_att_lst_mk
       for(jdx=0;jdx<size;jdx++)
 	if(!strcmp(xtr_lst[jdx].nm,att_lst[idx]->var_nm)) break;
       if(jdx!=size) continue;
+      /* fxm mmr TODO 491: memory leak xtr_lst */
       xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(size+1)*sizeof(nm_id_sct));
       xtr_lst[size].id=var_id;
       xtr_lst[size++].nm=(char *)strdup(att_lst[idx]->var_nm);

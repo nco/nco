@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.32 2005-03-24 00:36:54 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.33 2005-03-25 21:30:11 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -556,6 +556,7 @@ M_PI {return NAMED_CONSTANT;}
   /* Recognize plain variables */
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable %s\n",yytext);
   if(RHS){
+    /* fxm mmr: memory leak since var_nm_RHS is never free()'d */
     lval_ptr->var_nm_RHS=(char *)strdup(yytext); 
     return VAR;
   }else{ 
