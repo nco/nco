@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.365 2004-08-05 22:37:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.366 2004-08-06 18:26:10 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -236,12 +236,12 @@ nco369. make sure strcmp is used for comparison, rather than strstr
 nco372. Update man pages for -o, -t, stdin features
 nco374. ncwa: re-write ncwa so, like ncpdq, ncwa re-arranges output metadata prior to calling nco_var_dfn()
 nco375. Do something consistent with: nco_exit(EXIT_FAILURE)
-nco377. ncpdq breaks when re-order alters record dimension:
-ncpdq -D 1 -C -O -v PS,date -a lon,time ~/nco/data/in.nc ~/foo.nc
-This prevents using ncwa-like efficiency in directly copying large numbers of var->fix variables.
 nco378. Make \dfr, \me, \mi upright characters in nco.texi
 nco379. ncpdq: Add packing/unpacking capabilities
-nco380.
+nco380. ncpdq breaks when re-order changes non-record to record variables:
+ncpdq -D 4 -C -O -v PS,three_dmn_var -a lon,time ~/nco/data/in.nc ~/foo.nc
+This prevents using ncwa-like efficiency in directly copying large numbers of var->fix variables.
+nco381.
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

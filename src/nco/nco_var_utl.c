@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.48 2004-08-04 21:50:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.49 2004-08-06 18:26:12 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -850,6 +850,17 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	} /* end loop over dmn_idx */
 	dmn_nbr=var[idx]->nbr_dim;
       } /* end else */
+
+      if(dbg_lvl_get() > 3 && prg_id != ncwa){
+	/* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
+	   contains _wrong name_ when variables will be averaged. */
+	(void)fprintf(stdout,"%s: DEBUG %s about to define variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
+	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	  (void)fprintf(stdout,"%s (%d,%s)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,"unknown",(dmn_idx < dmn_nbr-1) ? ", " : "");
+	} /* end loop over dmn */
+	(void)fprintf(stdout,"\n");
+      } /* endif dbg */
+
       (void)nco_def_var(out_id,var[idx]->nm,typ_out,dmn_nbr,dmn_id_vec,&var[idx]->id);
       
       if(dbg_lvl_get() > 3 && prg_id != ncwa){
