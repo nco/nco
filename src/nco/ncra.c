@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.81 2002-12-16 16:42:29 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.82 2002-12-16 19:36:13 rorik Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.81 2002-12-16 16:42:29 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.81 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.82 2002-12-16 19:36:13 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.82 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -152,7 +152,7 @@ main(int argc,char **argv)
       {"ftn",no_argument,0,'F'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
-      {"local",no_argument,0,'l'},
+      {"local",required_argument,0,'l'},
       {"nintap",required_argument,0,'n'},
       {"overwrite",no_argument,0,'O'},
       {"path",required_argument,0,'p'},

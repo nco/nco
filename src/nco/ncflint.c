@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.50 2002-12-16 16:40:05 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.51 2002-12-16 19:36:12 rorik Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -107,8 +107,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.50 2002-12-16 16:40:05 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.50 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.51 2002-12-16 19:36:12 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.51 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -176,7 +176,7 @@ main(int argc,char **argv)
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
       {"interpolate",required_argument,0,'i'},
-      {"local",no_argument,0,'l'},
+      {"local",required_argument,0,'l'},
       {"overwrite",no_argument,0,'O'},
       {"path",required_argument,0,'p'},
       {"retain",no_argument,0,'R'},

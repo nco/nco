@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.94 2002-12-16 16:42:59 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.95 2002-12-16 19:36:14 rorik Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.94 2002-12-16 16:42:59 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.94 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.95 2002-12-16 19:36:14 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.95 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -188,7 +188,7 @@ main(int argc,char **argv)
       {"hst",no_argument,0,'h'},
       {"here",no_argument,0,'H'},
       {"wgt_msk_crd_var",no_argument,0,'I'},
-      {"local",no_argument,0,'l'},
+      {"local",required_argument,0,'l'},
       {"mask-variable",required_argument,0,'m'},
       {"Mask-value",required_argument,0,'M'},
       {"nintap",required_argument,0,'n'},

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.71 2002-12-16 16:42:00 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.72 2002-12-16 19:36:12 rorik Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.71 2002-12-16 16:42:00 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.71 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.72 2002-12-16 19:36:12 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.72 $";
   
   extern char *optarg;
   
@@ -158,7 +158,7 @@ main(int argc,char **argv)
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
       {"here",no_argument,0,'H'},
-      {"local",no_argument,0,'l'},
+      {"local",required_argument,0,'l'},
       {"meta",no_argument,0,'m'},
       {"Meta",no_argument,0,'M'},
       {"overwrite",no_argument,0,'O'},

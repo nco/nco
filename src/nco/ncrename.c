@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.45 2002-12-16 01:59:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.46 2002-12-16 19:36:14 rorik Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -90,8 +90,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.45 2002-12-16 01:59:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.45 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.46 2002-12-16 19:36:14 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.46 $";
   
   extern char *optarg;
   
@@ -123,7 +123,7 @@ main(int argc,char **argv)
       {"dmn",required_argument,0,'d'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
-      {"local",no_argument,0,'l'},
+      {"local",required_argument,0,'l'},
       {"overwrite",no_argument,0,'O'},
       {"path",required_argument,0,'p'},
       {"revision",no_argument,0,'r'},

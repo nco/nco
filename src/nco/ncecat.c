@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.48 2002-12-16 16:39:47 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.49 2002-12-16 19:36:11 rorik Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -89,8 +89,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.48 2002-12-16 16:39:47 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.48 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.49 2002-12-16 19:36:11 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.49 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -147,7 +147,7 @@ main(int argc,char **argv)
       {"ftn",no_argument,0,'F'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
-      {"local",no_argument,0,'l'},
+      {"local",required_argument,0,'l'},
       {"nintap",required_argument,0,'n'},
       {"overwrite",no_argument,0,'O'},
       {"path",required_argument,0,'p'},
