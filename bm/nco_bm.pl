@@ -1,13 +1,13 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.2 2005-03-23 18:28:14 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.3 2005-03-29 17:08:33 mangalam Exp $
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_tst.pl # Tests all operators
 # <BUILD_ROOT>/nco/bld/nco_tst.pl ncra # Test one operator
 
 # NB: When adding tests, _be sure to use -O to overwrite files_
 # Otherwise, script hangs waiting for interactive response to overwrite queries
-require 5.6.1 or die "this script requires Perl version >= 5.6.1";
+require 5.6.1 or die "This script requires Perl version >= 5.6.1";
 use Cwd 'abs_path';
 #use IO::Socket;
 use Getopt::Long; #qw(:config no_ignore_case bundling);

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# $Header: /data/zender/nco_20150216/nco/bm/sml_fls.sh,v 1.3 2005-03-24 22:17:22 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/sml_fls.sh,v 1.4 2005-03-29 17:08:33 mangalam Exp $
 # top section is all the shell cruft to set DATA dir and testing to see if
 # we can use the GNU time command to test various things.  
 # The guts of the script start at ~line 100.
@@ -98,7 +98,7 @@ echo
 
 mkdir -p ${DATA}/nco
 
-echo "The entire script takes ~1m20s  on a 900MHz/512MB THinkpad"
+echo "The entire script takes ~30s  on a 900MHz/512MB THinkpad"
 echo "                        ~56s on a 2.8GHz/2GB Xeon" 
 echo "                        ~35s on the ESMF"
 echo "                        ~30s on a 1.8GHz/4GB Opteron"
