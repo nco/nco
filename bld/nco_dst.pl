@@ -23,7 +23,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.40 1999-12-15 00:28:09 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.41 1999-12-15 00:43:42 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -59,17 +59,23 @@ my $False=0;
 my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
+my $CVS_Date='$Date: 1999-12-15 00:43:42 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.41 1999-12-15 00:43:42 zender Exp $';
+my $CVS_Revision='$Revision: 1.41 $';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $CVS_Date='$Date: 1999-12-15 00:28:09 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.40 1999-12-15 00:28:09 zender Exp $';
-my $CVS_Revision='$Revision: 1.40 $';
-my $cln=$True; # GNU standard Makefile option `clean'
-my $dbg_lvl=0;
-my $dst_cln=$False; # GNU standard Makefile option `distclean'
+my $bld=$False; # Option bld; Whether to rebuild netCDF distribution
+my $data_nm=$ENV{'DATA'};
 my $dst_pth='/data/zender'; # Where the distribution will be exported and built
 my $main_trunk_tag='nco';
 my $nco_sng='nco';
-my $bld=$False; # Option bld; Whether to rebuild netCDF distribution
+my $usr_nm=$ENV{'USER'};
+my $vrs_tag='';
+my $www_drc='/web/web-data/cms/nco'; # WWW directory for package
+
+# Set defaults for command line arguments
+my $cln=$True; # GNU standard Makefile option `clean'
+my $dbg_lvl=0;
+my $dst_cln=$False; # GNU standard Makefile option `distclean'
 my $nst_all=$False; # Option nst_all; Install version on all machines
 my $acd_cnt=$False; # Option acd_cnt; Install version in acd contrib
 my $acd_prs=$False; # Option acd_prs; Install version in acd personal
@@ -79,8 +85,8 @@ my $ute_prs=$False; # Option ute_prs; Install version in ute personal
 my $cgd_cnt=$False; # Option cgd_cnt; Install version in CGD contrib
 my $cgd_prs=$False; # Option cgd_prs; Install version in CGD personal
 my $cray_prs=$False; # Option cray_prs; Install version in Cray personal
-my $vrs_tag='';
-my $www_drc='/web/web-data/cms/nco'; # WWW directory for package
+
+# Derived fields
 if($PVM_ARCH =~ m/SUN/){ # See Camel p. 81 for =~ and m//
     $tar_cmd='gtar';
     $mk_cmd='gmake';
@@ -99,24 +105,24 @@ $prg_vrs.='*' if length('$Locker:  $ ') > 12; # Tack '*' if it is not checked in
 ($prg_nm,$pth_in,$fl_sfx)=fileparse($0,''); # $0 is program name Camel p. 136
 if(length($CVS_Date) > 6){($prg_date)=unpack '@7 a19',$CVS_Date;}else{$prg_date='Unknown';}
 
-# Parse command line arguments: '!' means Boolean, '|' is OR, '=' specifies required argument: 'i' is integer, 'f' is float
-$rcd=GetOptions(
+# Parse command line arguments: '!' means Boolean, '|' is OR, '=' specifies required argument: 'i' is integer, 'f' is float, 's' is string
+$rcd=GetOptions( # man Getopt::GetoptLong
+		'acd_cnt!' => \$acd_cnt,
+		'acd_prs!' => \$acd_prs,
 		'bld!' => \$bld,
-		'cln!' => \$cln,
+		'blk_cnt!' => \$blk_cnt,
+		'cgd_cnt!' => \$cgd_cnt,
+		'cgd_prs!' => \$cgd_prs,
 		'clean!' => \$cln,
+		'cln!' => \$cln,
+		'cray_prs!' => \$cray_prs,
+		'dat_cnt!' => \$dat_cnt,
+		'dbg_lvl=i' => \$dbg_lvl,
 		'distclean!' => \$dst_cln,
 		'dst_cln!' => \$dst_cln,
-		'dbg_lvl=i' => \$dbg_lvl,
 		'nst_all!' => \$nst_all,
-		'cgd_prs!' => \$cgd_prs,
-		'cgd_cnt!' => \$cgd_cnt,
-		'acd_prs!' => \$acd_prs,
-		'acd_cnt!' => \$acd_cnt,
 		'ute_prs!' => \$ute_prs,
-		'blk_cnt!' => \$blk_cnt,
-		'dat_cnt!' => \$dat_cnt,
-		'cray_prs!' => \$cray_prs,
-		);
+		 ); # end GetOptions arguments
 
 # Parse positional arguments, if present
 if($#ARGV > 0){die "$prg_nm: ERROR Called with $#ARGV+1 positional arguments, need no more than 1\n";}
