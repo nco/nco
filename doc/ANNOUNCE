@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.61 2004-03-01 01:20:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.62 2004-03-01 09:03:51 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.0 are ready. 
 
@@ -16,8 +16,9 @@ netCDF climate dataset served by DODS are packed NC_FLOAT data.
 Thanks to me (pat self on back) for the bug report and to Rorik
 Peterson for fixing it. 
 
-fxm: NB: Solaris cc/CC autotools builds have been broken since ~2.8.6.
-If any Solaris users would care to send a patch that would be great!
+NB: Solaris cc/CC autotools builds have been broken on Solaris 2.7
+and earlier Solaris version since NCO version 2.8.6. 
+Solaris users are urged to upgrade their OS.
 
 The NSF proposal I am writing to fund improving distributed data
 processing with NCO is at 

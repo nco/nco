@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.198 2004-03-01 01:20:16 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.199 2004-03-01 09:03:51 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -207,7 +207,7 @@ Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> 
 <li><b>NCO 2.8.8</b>: <tt>--enable-[optimize/debug]-custom</tt> options for GCC work again (broke in 2.8.6)
 <li><b>NCO 2.8.7</b>: <tt>ncap</tt> packing works again (<a href="#bug_pck">broke in 2.8.4</a>), Cygwin builds work again
 <li><b>NCO 2.8.6</b>: AIX and IRIX builds work again, custom GCC builds with <tt>-Werror</tt>
-<li><b>NCO 2.8.5</b>: Solaris <tt>make install</tt> works, <tt>ncap</tt> changes attribute values correctly, <a href="#bug_DODS">Support DODS 3.4+, deprecate 3.3-</a>, add <tt>--enable-[optimize/debug]-custom</tt> options to <tt>./configure</tt>
+<li><b>NCO 2.8.5</b>: Solaris <tt>make install</tt> works, <tt>ncap</tt> changes attribute values correctly, <a href="#bld_DODS">Support DODS 3.4+, deprecate 3.3-</a>, add <tt>--enable-[optimize/debug]-custom</tt> options to <tt>./configure</tt>
 <li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (<a href="#bug_idx_hyp">broke in 2.7.3</a>, <b><i>upgrade highly recommended</i></b>), <tt>ncap</tt> peak memory usage reduced still more, support for AMD Opteron x86-64 architecture
 <li><b>NCO 2.8.3</b>: Fix big <tt>ncap</tt> memory leak, fix regressions, remove scary packing warnings</li>
 <li><b>NCO 2.8.2</b>: <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly, improve error diagnostics</li>
@@ -441,7 +441,7 @@ Users at NCAR should try the <i>supported</i> executables in
 <ul>
 <li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.4.20): <tt>/home/zender/bin/LINUX</tt></li>
 <li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
-<li>CGD network (Solaris 2.6): <tt>/home/zender/bin/SUNMP</tt></li>
+<li>CGD network (Solaris 2.7): <tt>/home/zender/bin/SUNMP</tt></li>
 <li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5): <tt>/home/dataproc/zender/bin/SGIMP64</tt></li>
 <li>SCD <tt>babyblue.ucar.edu</tt> (AIX 5.1.0.35): <tt>/home/babyblue/zender/bin/AIX</tt></li>
 <li>SCD <tt>blackforest.ucar.edu</tt> (AIX 5.1.0.35): <tt>/home/blackforest/zender/bin/AIX</tt></li>
@@ -527,7 +527,7 @@ The gory details of the failed (and successful) builds are in the
 <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>.
 </li>
 
-<a name="bug_DODS"></a>
+<a name="bld_DODS"></a>
 <li><b>Build problems with DODS:</b>
 NCO versions prior to 2.8.5 link with the
 <a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> netCDF
@@ -537,6 +537,13 @@ greater than GCC&nbsp;3.1+.
 NCO versions 2.8.5 and greater support automatic building and linking
 for DODS versions 3.4+ and GCC versions 3.3+.
 No other version combination is supported.
+</li>
+
+<a name="bld_slr"></a>
+<li><b>Solaris build problems:</b>
+NCO versions 2.8.6+ do not build with autotools for Solaris 2.7 cc/CC.
+The do appear to build with autotools with Solaris 2.6 or 2.8 cc/CC.
+Solaris users are urged to solve this one themselves.
 </li>
 
 </ul>
