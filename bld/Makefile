@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.204 2003-03-03 02:29:51 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.205 2003-03-08 00:50:32 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -446,7 +446,7 @@ endif
 
 ifeq (${PVM_ARCH},HPPA)
 C++ := g++
-CC := gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE
+CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f77
 LD := ld
@@ -479,11 +479,12 @@ ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXARMFREEBSD))
 C++ := g++
 #C++ := icc
 #C++ := insure
-# fxm: 19980517: As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
+# fxm: 19980517: As of gcc-2.8.0 using switch breaks because resolv.h structure have changed
 #CC := como --c99
 #CC := g++
 # 20020909 comp.unix.programmer: -D_BSD_SOURCE tells GCC nameser.h is ANSI-compliant
-CC := gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE
+# 20030225 gnu.gcc.help: -ansi == -std=c89 so conflicts with -std=c99
+CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
 #CC := icc
 #CC := insure
 CPP := ${CC}
@@ -708,7 +709,7 @@ endif
 
 ifeq (${PVM_ARCH},RS6K)
 C++ := g++
-CC := gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE
+CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
 CPP := /lib/cpp -P
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := xlf
@@ -749,7 +750,7 @@ C++ := CC -LANG:std
 CC := cc
 # 20000302: -w suppresses warnings which will swamp linker
 #C++ := g++ -w
-#CC := gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE
+#CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 ifdef $(MIPSPRO_SGI)
 # SGIs like dataproc keep omp.h in special location determined by module MIPSpro
@@ -829,7 +830,7 @@ endif
 
 ifeq (${UNAMES},SunOS) 
 C++ := g++
-CC := gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE
+CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
 CFLAGS := -Wall
 CPP := cpp
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
@@ -863,7 +864,7 @@ endif
 
 ifeq (${PVM_ARCH},WIN32)
 C++ := g++
-CC := gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE
+CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
 CPP_TKN_OS += -Di386 -I/usr/include
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}

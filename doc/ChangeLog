@@ -1,3 +1,8 @@
+2003-03-07  Charlie Zender  <zender@uci.edu>
+
+	* Remove -ansi flag from gcc builds because it is (apparently)
+	equivalent to -std=c89 and thus conflicts with -std=c99.
+
 2003-03-02  Charlie Zender  <zender@uci.edu>
 
 	* Began Debian-ization of upstream source by populating debian
