@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.35 2000-07-15 19:53:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.36 2000-07-27 12:10:03 hmb Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -120,7 +120,8 @@ enum nco_op_typ{
   nco_op_avgsqr,
   nco_op_avgsumsqr,
   nco_op_sqrt,
-  nco_op_rms
+  nco_op_rms,
+  nco_op_rmssdn
 }; /* end nco_op_typ enum */
   
 #else /* SGI */
@@ -164,7 +165,7 @@ enum nco_op_typ{
 #define nco_op_avgsumsqr 5
 #define nco_op_sqrt 6
 #define nco_op_rms 7
-
+#define nco_op_rmssdn 8
 #endif /* SGI */
 
 #ifndef EXIT_SUCCESS
@@ -468,6 +469,7 @@ extern void var_min(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
 extern void var_multiply(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
 extern void nco_opr_drv(int,int,var_sct *, var_sct * );
 extern void var_normalize(nc_type,long,int,ptr_unn,long *,ptr_unn);
+extern void var_normalize_sdn(nc_type,long,int,ptr_unn,long *,ptr_unn);
 extern void var_refresh(int,var_sct *);
 extern void var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2);
 extern void var_srt_zero(var_sct **,int);
