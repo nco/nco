@@ -1,3 +1,7 @@
+2004-08-10  Charlie Zender  <zender@uci.edu>
+
+	* Threaded main variable loop of ncbo
+
 2004-08-08  Charlie Zender  <zender@uci.edu>
 
 	* Changed some formats from %e to %g in nco_tst.pl so that Solaris
