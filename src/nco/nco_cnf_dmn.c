@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.34 2004-08-05 05:27:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.35 2004-08-05 05:30:02 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -598,7 +598,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     if(dmn_idx_rec_out != 0) (void)fprintf(stdout,"%s: INFO %s for variable %s reports old input record dimension %s is now ordinal dimension %d, new record dimension must be %s\n",prg_nm_get(),fnc_nm,var_in->nm,dmn_out[dmn_idx_rec_out]->nm,dmn_idx_rec_out,dmn_out[0]->nm);
   } /* endif record variable */
 
-  if(dbg_lvl_get() > 2){
+  if(dbg_lvl_get() > 3){
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
       (void)fprintf(stdout,"%s: DEBUG %s variable %s re-order maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,unknown)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx]);
   } /* endif dbg */
