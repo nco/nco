@@ -1,3 +1,7 @@
+2002-04-02  Charlie Zender  <zender@uci.edu>
+
+	* Switch back to using pure_parser to prevent Linux core dumps on 
+
 2002-03-27  Charlie Zender  <zender@uci.edu>
 
 	* Quiet output by only printing CONVENTION when dbg > 0
