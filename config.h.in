@@ -161,6 +161,9 @@
    slash. */
 #undef LSTAT_FOLLOWS_SLASHED_SYMLINK
 
+/* no netcdf version 2 */
+#undef NO_NETCDF_2
+
 /* Name of package */
 #undef PACKAGE
 

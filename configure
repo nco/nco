@@ -926,6 +926,14 @@ ac_env_CXXCPP_set=${CXXCPP+set}
 ac_env_CXXCPP_value=$CXXCPP
 ac_cv_env_CXXCPP_set=${CXXCPP+set}
 ac_cv_env_CXXCPP_value=$CXXCPP
+ac_env_NETCDF_LIB_set=${NETCDF_LIB+set}
+ac_env_NETCDF_LIB_value=$NETCDF_LIB
+ac_cv_env_NETCDF_LIB_set=${NETCDF_LIB+set}
+ac_cv_env_NETCDF_LIB_value=$NETCDF_LIB
+ac_env_NETCDF_INC_set=${NETCDF_INC+set}
+ac_env_NETCDF_INC_value=$NETCDF_INC
+ac_cv_env_NETCDF_INC_set=${NETCDF_INC+set}
+ac_cv_env_NETCDF_INC_value=$NETCDF_INC
 ac_env_HDF5_ROOT_set=${HDF5_ROOT+set}
 ac_env_HDF5_ROOT_value=$HDF5_ROOT
 ac_cv_env_HDF5_ROOT_set=${HDF5_ROOT+set}
@@ -1044,6 +1052,8 @@ Some influential environment variables:
   CXXFLAGS    C++ compiler flags
   CPP         C preprocessor
   CXXCPP      C++ preprocessor
+  NETCDF_LIB  location of netcdf library
+  NETCDF_INC  location of netcdf header files
   HDF5_ROOT   location of HDF5 libraries
   DODS_ROOT   root of DODS stuff
 
@@ -4894,7 +4904,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4897 "configure"' > conftest.$ac_ext
+  echo '#line 4907 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5426,7 +5436,7 @@ chmod -w .
 save_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -o out/conftest2.$ac_objext"
 compiler_c_o=no
-if { (eval echo configure:5429: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>out/conftest.err; } && test -s out/conftest2.$ac_objext; then
+if { (eval echo configure:5439: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>out/conftest.err; } && test -s out/conftest2.$ac_objext; then
   # The compiler can only warn and ignore the option if not recognized
   # So say no if there are warnings
   if test -s out/conftest.err; then
@@ -7240,7 +7250,7 @@ else
     lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7243 "configure"
+#line 7253 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -7338,7 +7348,7 @@ else
     lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7341 "configure"
+#line 7351 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -9811,7 +9821,7 @@ _ACEOF
 
 #############################################
 # standard additions to compilers and preprocessors
-# do this before testing anyting
+# do this before testing anything
 case $host in
   *-*-aix*)
     CFLAGS="$CFLAGS -qmaxmem=8192 -qlanglvl=extended"
@@ -9834,14 +9844,30 @@ fi
 if test -d "/usr/local/include"; then
   CPPFLAGS="-I/usr/local/include $CPPFLAGS"
 fi
+# make precious variables for ./configure --help
+
+
+# add user-specified netCDF locations
+if test -d "$NETCDF_LIB"; then
+  LDFLAGS="$LDFLAGS -L$NETCDF_LIB"
+fi
+if test -d "$NETCDF_INC"; then
+  CPPFLAGS="$CPPFLAGS -I$NETCDF_INC"
+fi
+# NCO does not support netcdf2
+
+cat >>confdefs.h <<\_ACEOF
+#define NO_NETCDF_2 1
+_ACEOF
+
 # First check for 'ncopen' using default compiler flags.  If it fails, add
 # 64-bit flags if we know them and check for 'ncclose' (ncopen is cached,
 # so checking for it again will not work)
 { echo "$as_me:$LINENO: checking default compiler flags" >&5
 echo "$as_me: checking default compiler flags" >&6;}
-echo "$as_me:$LINENO: checking for ncopen in -lnetcdf" >&5
-echo $ECHO_N "checking for ncopen in -lnetcdf... $ECHO_C" >&6
-if test "${ac_cv_lib_netcdf_ncopen+set}" = set; then
+echo "$as_me:$LINENO: checking for nc_open in -lnetcdf" >&5
+echo $ECHO_N "checking for nc_open in -lnetcdf... $ECHO_C" >&6
+if test "${ac_cv_lib_netcdf_nc_open+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -9856,7 +9882,7 @@ extern "C"
 #endif
 /* We use char because int might match the return type of a gcc2
    builtin and then its argument prototype would still apply.  */
-char ncopen ();
+char nc_open ();
 #ifdef F77_DUMMY_MAIN
 #  ifdef __cplusplus
      extern "C"
@@ -9866,7 +9892,7 @@ char ncopen ();
 int
 main ()
 {
-ncopen ();
+nc_open ();
   ;
   return 0;
 }
@@ -9883,18 +9909,18 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_netcdf_ncopen=yes
+  ac_cv_lib_netcdf_nc_open=yes
 else
   echo "$as_me: failed program was:" >&5
 cat conftest.$ac_ext >&5
-ac_cv_lib_netcdf_ncopen=no
+ac_cv_lib_netcdf_nc_open=no
 fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_ncopen" >&5
-echo "${ECHO_T}$ac_cv_lib_netcdf_ncopen" >&6
-if test $ac_cv_lib_netcdf_ncopen = yes; then
+echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_nc_open" >&5
+echo "${ECHO_T}$ac_cv_lib_netcdf_nc_open" >&6
+if test $ac_cv_lib_netcdf_nc_open = yes; then
 
 LIBS="-lnetcdf $LIBS"
 { echo "$as_me:$LINENO: libnetCDF links with default compiler flags" >&5
@@ -9906,16 +9932,16 @@ else
 echo "$as_me: initial linking failed.  Adding 64-bit flags (if known)" >&6;}
 case $host in
   *-*-aix*)  CFLAGS="$CFLAGS -q64"
-             LDFLAGS="LDFLAGS -q64"
-             AR_FLAGS="AR_FLAGS -X 64"
+             LDFLAGS="$LDFLAGS -q64"
+             AR_FLAGS="$AR_FLAGS -X 64"
 	     ;;
-  sparc-*-*) CFLAGS="CFLAGS -xarch=v9"
+  sparc-*-*) CFLAGS="$CFLAGS -xarch=v9"
              ;;
 esac
 
-echo "$as_me:$LINENO: checking for ncclose in -lnetcdf" >&5
-echo $ECHO_N "checking for ncclose in -lnetcdf... $ECHO_C" >&6
-if test "${ac_cv_lib_netcdf_ncclose+set}" = set; then
+echo "$as_me:$LINENO: checking for nc_close in -lnetcdf" >&5
+echo $ECHO_N "checking for nc_close in -lnetcdf... $ECHO_C" >&6
+if test "${ac_cv_lib_netcdf_nc_close+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
@@ -9930,7 +9956,7 @@ extern "C"
 #endif
 /* We use char because int might match the return type of a gcc2
    builtin and then its argument prototype would still apply.  */
-char ncclose ();
+char nc_close ();
 #ifdef F77_DUMMY_MAIN
 #  ifdef __cplusplus
      extern "C"
@@ -9940,7 +9966,7 @@ char ncclose ();
 int
 main ()
 {
-ncclose ();
+nc_close ();
   ;
   return 0;
 }
@@ -9957,18 +9983,18 @@ if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
   ac_status=$?
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); }; }; then
-  ac_cv_lib_netcdf_ncclose=yes
+  ac_cv_lib_netcdf_nc_close=yes
 else
   echo "$as_me: failed program was:" >&5
 cat conftest.$ac_ext >&5
-ac_cv_lib_netcdf_ncclose=no
+ac_cv_lib_netcdf_nc_close=no
 fi
 rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
 LIBS=$ac_check_lib_save_LIBS
 fi
-echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_ncclose" >&5
-echo "${ECHO_T}$ac_cv_lib_netcdf_ncclose" >&6
-if test $ac_cv_lib_netcdf_ncclose = yes; then
+echo "$as_me:$LINENO: result: $ac_cv_lib_netcdf_nc_close" >&5
+echo "${ECHO_T}$ac_cv_lib_netcdf_nc_close" >&6
+if test $ac_cv_lib_netcdf_nc_close = yes; then
   { echo "$as_me:$LINENO: adding 64-bit compiler flags" >&5
 echo "$as_me: adding 64-bit compiler flags" >&6;}
 else
@@ -12076,6 +12102,8 @@ s,@MAINTAINER_MODE_FALSE@,$MAINTAINER_MODE_FALSE,;t t
 s,@MAINT@,$MAINT,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@POW_LIB@,$POW_LIB,;t t
+s,@NETCDF_LIB@,$NETCDF_LIB,;t t
+s,@NETCDF_INC@,$NETCDF_INC,;t t
 s,@HDF5_ROOT@,$HDF5_ROOT,;t t
 s,@DODS_ROOT@,$DODS_ROOT,;t t
 s,@path_to_ncgen@,$path_to_ncgen,;t t
