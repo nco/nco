@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.12 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.13 2004-08-11 04:55:49 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -32,10 +32,10 @@
 #include "nco_var_utl.h" /* Variable utilities */
 
 enum nco_pck_typ{ /* [enm] Packing type */
-  nco_pck_all_xst_att, /* 0 [enm] Pack all variables, keeping existing packing attributes if any */
+  nco_pck_all_xst_att, /* 0 [enm] Pack all variables, keep existing packing attributes if any */
   nco_pck_all_new_att, /* 1 [enm] Pack all variables, always generate new packing attributes */
   nco_pck_xst_xst_att, /* 2 [enm] Pack existing packed variables, keep existing packing attributes if any */
-  nco_pck_xst_new_att, /* 3 [enm] Pack existing packed variables, always generat new packing attributes */
+  nco_pck_xst_new_att, /* 3 [enm] Pack existing packed variables, always generate new packing attributes */
   nco_pck_upk, /* 4 [enm] Unpack all packed variables */
   nco_pck_nil /* 5 [enm] Do not think about packing */
 }; /* end nco_pck_typ enum */

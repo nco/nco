@@ -1,5 +1,7 @@
 2004-08-10  Charlie Zender  <zender@uci.edu>
 
+	* Copy packing infrastructure from ncra to ncpdq
+
 	* Finished thr_nbr documentation
 
 	* Threaded main variable loop of ncbo

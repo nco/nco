@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.117 2004-08-05 08:18:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.118 2004-08-11 04:55:49 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -101,22 +101,22 @@ main(int argc,char **argv)
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
-  char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
+  char **var_lst_in=NULL_CEWI;
+  char *cmd_ln;
   char *fl_in=NULL;
-  char *fl_pth_lcl=NULL; /* Option l */
-  char *lmt_arg[NC_MAX_DIMS];
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
-  char *time_bfr_srt;
-  char *cmd_ln;
+  char *fl_pth_lcl=NULL; /* Option l */
+  char *lmt_arg[NC_MAX_DIMS];
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type Option y */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type Option P */
+  char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.117 2004-08-05 08:18:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.117 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.118 2004-08-11 04:55:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.118 $";
   const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.25 2004-08-06 23:56:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.26 2004-08-11 04:55:49 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -93,14 +93,15 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
+  char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type Option P */
   char *rec_dmn_nm_in=NULL; /* [sng] Record dimension name, original */
   char *rec_dmn_nm_out=NULL; /* [sng] Record dimension name, re-ordered */
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.25 2004-08-06 23:56:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.25 $";
-  const char * const opt_sng="Aa:CcD:d:Fhl:Oo:p:Rrt:v:x-:";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.26 2004-08-11 04:55:49 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.26 $";
+  const char * const opt_sng="Aa:CcD:d:Fhl:Oo:P:p:Rrt:v:x-:";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -133,6 +134,7 @@ main(int argc,char **argv)
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
+  int nco_pck_typ=nco_pck_nil; /* [enm] Default packing is none */
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -244,6 +246,10 @@ main(int argc,char **argv)
       break;
     case 'o': /* Name of output file */
       fl_out=(char *)strdup(optarg);
+      break;
+    case 'P': /* Packing type */
+      nco_pck_typ_sng=(char *)strdup(optarg);
+      nco_pck_typ=nco_pck_typ_get(nco_pck_typ_sng);
       break;
     case 'p': /* Common file path */
       fl_pth=optarg;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.50 2004-08-06 20:56:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.51 2004-08-11 04:55:49 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -618,7 +618,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   } /* end OpenMP critical */
 
   /* Packing properties of variable initially obtained from pck_dsk_inq() call in nco_var_fll()
-     Multifile operators call nco_var_get() multiple times for each variable
+     Multi-file operators (MFOs) call nco_var_get() multiple times for each variable
      In between subsequent calls to nco_var_get(), variable may be unpacked 
      When this occurs, packing flags in variable structure will not match disk
      Thus it is important to refresh (some) packing attributes on each read */
@@ -637,7 +637,8 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   
   /* Packing/Unpacking */
   if(nco_is_rth_opr(prg_get())){
-    /* fxm: Automatic unpacking is in beta testing for all arithmetic operators */
+    /* Arithmetic operators must unpack variables before performing arithmetic
+       Otherwise arithmetic will produce garbage results */
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.21 2004-05-13 18:18:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.22 2004-08-11 04:55:49 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -28,9 +28,17 @@ nco_pck_typ_get /* [fnc] Convert user-specified packing type to key */
      Convert user-specified string to packing operation type 
      Return nco_pck_nil by default */
   /* fxm: add the rest of types */
-  if(!strcmp(nco_pck_sng,"all")) return nco_pck_all_xst_att;
-
-  return nco_pck_nil;
+  if(!strcmp(nco_pck_sng,"all_xst")) return nco_pck_all_xst_att;
+  if(!strcmp(nco_pck_sng,"nco_pck_all_xst_att")) return nco_pck_all_xst_att;
+  if(!strcmp(nco_pck_sng,"all_new")) return nco_pck_all_new_att;
+  if(!strcmp(nco_pck_sng,"nco_pck_all_new_att")) return nco_pck_all_new_att;
+  if(!strcmp(nco_pck_sng,"xst_xst")) return nco_pck_xst_xst_att;
+  if(!strcmp(nco_pck_sng,"nco_pck_xst_xst_att")) return nco_pck_xst_xst_att;
+  if(!strcmp(nco_pck_sng,"xst_new")) return nco_pck_xst_new_att;
+  if(!strcmp(nco_pck_sng,"nco_pck_xst_new_att")) return nco_pck_xst_new_att;
+  (void)fprintf(stderr,"%s: ERROR nco_pck_typ_get() reports unknown user-specified packing type %s\n",prg_nm_get(),nco_pck_sng);
+  nco_exit(EXIT_FAILURE);
+  return nco_pck_nil; /* Statement should not be reached */
 } /* end nco_pck_typ_get() */
 
 bool /* O [flg] Variable is packed on disk */
