@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.444 2004-12-15 01:20:27 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.445 2004-12-18 01:50:23 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -330,7 +330,11 @@ ncap58. Implement ncap test script in nco_tst.pl format so that errors are flagg
 ncap59. ncap always gives points in first quadrant for
 ncap -O -v -s 'water_dir=(180/4*atan(1))*(atan(water_v/water_u) + 4 * atan(1) * ((water_u-abs(water_u))/(-2*water_u)))'
 ncap60. Add capability to create character string variables that contain any string, given only a pre-existing dimension size capable of holding the string
-ncap61. 
+ncap61. Possible math parser error: and should be ~ 27000.0
+    ncap -O -v -s "ps=100000.0" -s "Ts=300.0" -s "gammanot=0.0065" -s "R=287.5" -s "g=9.8" -s "z=10000.0" -s 'p=ps*(Ts/(Ts-gammanot*z))^(g/(R*gammanot))' ~/nco/data/in.nc ~/foo.nc
+    ncks -m -v p ~/foo.nc
+    p = 524414.715719
+ncap62. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
