@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.5 2004-08-07 21:16:03 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.6 2004-09-06 18:00:53 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncpdq 
 .\" Usage:
 .\" nroff -man ~/nco/man/ncpdq.1
@@ -17,8 +17,12 @@ ncpdq [-A] [-a
 [-F]
 [-h] [-l 
 .IR path ]
+[-M 
+.IR pck_map ]
 [-O] [-o 
 .IR output-file ]
+[-P 
+.IR pck_typ ]
 [-p 
 .IR path ]
 [-R] [-r] 
@@ -31,11 +35,28 @@ ncpdq [-A] [-a
 .SH DESCRIPTION
 .PP
 .B ncpdq
+packs or re-shapes variables in 
+.I input-file
+and stores them in 
+.I output-file.
+The high level packing instructions are encoded in the 
+.IR pck_typ 
+argument to the 
+.BR -P
+switch.
+The valid 
+.IR pck_typ 
+options are
+.IR all_new, 
+.IR all_xst, 
+.IR xst_new, 
+and
+.IR upk.
 
-.B ncpdq
+.B ncpdq 
 re-shapes variables in 
 .I input-file
-by and/or reversing dimensions specified in the dimension list.
+by re-ordering and/or reversing dimensions specified in the dimension list.
 The dimension list is a comma separated list of dimension names,
 optionally prefixed by negative signs, that follow the 
 .BR -a
@@ -60,7 +81,7 @@ The specified re-ordering will fail if it requires creating more than
 one record dimension amongst all the output variables.
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.5 2004-08-07 21:16:03 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.6 2004-09-06 18:00:53 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

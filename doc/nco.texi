@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.271 2004-09-06 06:00:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.272 2004-09-06 18:00:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6617,7 +6617,7 @@ SYNTAX
 @example
 ncpdq [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
-[-O] [-o @var{output-file}] [-P @var{pck_typ}] [-p @var{path}] 
+[-M @var{pck_map}] [-O] [-o @var{output-file}] [-P @var{pck_typ}] [-p @var{path}] 
 [-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-x]
 @var{input-file} [@var{output-file}]
 @end example
@@ -6630,7 +6630,7 @@ dimension permutation, but not both, when invoked.
 @command{ncpdq} is optimized to perform these actions in a parallel
 fashion with a minimum of time and memory.
 The @dfn{pdq} may stand for ``Permute Dimensions Quickly'', 
-``Pack Data Quickly'', or other uses we have not dreamed of yet.
+``Pack Data Quietly'', or other uses we have not dreamed of yet.
 
 @cindex @code{add_offset}
 @cindex @code{scale_factor}

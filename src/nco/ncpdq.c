@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.47 2004-09-06 06:57:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.48 2004-09-06 18:01:10 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.47 2004-09-06 06:57:05 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.47 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.48 2004-09-06 18:01:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.48 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -189,8 +189,8 @@ main(int argc,char **argv)
       {"hst",no_argument,0,'h'},
       {"local",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
-      {"map_pck",required_argument,0,'M'},
-      {"map_pack",required_argument,0,'M'},
+      {"pck_map",required_argument,0,'M'},
+      {"map",required_argument,0,'M'},
       {"overwrite",no_argument,0,'O'},
       {"ovr",no_argument,0,'O'},
       {"output",required_argument,0,'o'},

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.404 2004-09-06 06:57:05 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.405 2004-09-06 18:00:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -266,13 +266,13 @@ nco442. Verify packing NC_INT->NC_CHAR
 nco443. Verify packing NC_SHORT->NC_CHAR
 nco444. ncpdq: Split var_prc from var_fix in nco_var_lst_dvd()
 nco445. ncpdq: Fix xst_new
-        ncpdq -D 3 -O -C -P xst_new ~/nco/data/in.nc ~/foo.nc
+        ncpdq -D 5 -O -C -P xst_new ~/nco/data/in.nc ~/foo.nc
         ncpdq: ERROR nco_var_pck() called with invalid packed type nc_typ_pck = NC_FLOAT
         ncpdq: ERROR exiting through nco_exit() which will now call abort()
         Aborted
 nco446. ncpdq: Fix all_xst
         valgrind ncpdq -D 3 -O -C -P all_xst -v three_dmn_var_sht ~/nco/data/in.nc ~/foo.nc > ~/foo.valgrind 2>&1
-nco446. 
+nco447. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
