@@ -1,3 +1,10 @@
+2004-06-27  Charlie Zender  <zender@uci.edu>
+
+	* Makefile.old: Update AIX compiler flags, fix -spill=2048 option
+
+	* Working toward compiling on AIX with -qtemplateregistry option
+	to fix ld duplicate symbol warnings
+
 2004-06-25  Charlie Zender  <zender@uci.edu>
 
 	* Compiling libnco_c++ standalone from rest of NCO:
