@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.108 2002-08-22 06:10:19 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.109 2002-09-05 17:33:38 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -255,9 +255,9 @@ Reference manual for all operators
 * ncrename netCDF Renamer::     
 * ncwa netCDF Weighted Averager::  
 
-@command{ncap} netCDF Arithmetic Processor
+Features specific to @code{ncap}
 
-* Intrinsic mathematical functions ::  
+* Intrinsic mathematical functions::  
 
 @command{ncwa} netCDF Weighted Averager
 
@@ -2686,11 +2686,12 @@ Rather, the @samp{-v} switch takes no arguments and indicates
 that @command{ncap} should output @emph{only} user-defined variables.
 @command{ncap} does not accept or understand the @var{-x} switch.
 
+@subsection Features specific to @code{ncap}
 @menu
-* Intrinsic mathematical functions ::  
+* Intrinsic mathematical functions::  
 @end menu
 
-@node Left hand casting, Intrinsic mathematical functions , ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
+@node Left hand casting, Intrinsic mathematical functions, ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
 @cindex hybrid coordinate system 
 @cindex left hand casting
 @cindex @acronym{LHS}
@@ -2743,7 +2744,7 @@ from the four input variables of mixed rank and orthogonality:
 ncap -O -s "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm" in.nc out.nc
 @end example
 
-@node Syntax of @command{ncap} statements, Intrinsic mathematical functions , ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
+@node Syntax of ncap statements, Intrinsic mathematical functions, ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
 @cindex statement
 @cindex syntax
 Mastering @command{ncap} is relatively simple.
@@ -2791,13 +2792,13 @@ The at-sign @code{@@} is used to delineate an attribute name from a
 variable name.
 @end table 
 
-@node Intrinsic functions, Intrinsic mathematical functions , ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
+@node Intrinsic functions, Intrinsic mathematical functions, ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
 @command{ncap} contains a small but growing library of intrinsic
 functions.
 In addition to the standard mathematical functions (@pxref{Intrinsic
 mathematical functions}), @command{ncap} currently supports packing
 and unpacking.
-@unnumberedsubsec @command{ncap} packing functions
+@unnumberedsubsec Packing and Unpacking Functions
 @cindex packing
 @cindex unpacking
 @cindex @code{add_offset}
@@ -2872,8 +2873,8 @@ of the type intended for the unpacked data, e.g., @code{float} or
 @code{double}. 
 @end table
 
-@node Intrinsic mathematical functions ,  , ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
-@unnumberedsubsec @command{ncap} mathematical functions
+@node Intrinsic mathematical functions,  , ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
+@unnumberedsubsec Mathematical functions
 @cindex mathematical functions
 @cindex @var{abs(x)}
 @cindex @var{acos(x)}
@@ -2918,7 +2919,7 @@ Arc-tangent of @var{x} where @var{x} is specified in radians between
 $-\pi/2$ and $\pi/2$.
 @end tex
 @ifinfo
-@math{-\pi/2} and @math{\pi/2}.
+@math{-pi/2} and @math{pi/2}.
 @end ifinfo
 @item cos(x)
 @dfn{Cosine}
@@ -2939,7 +2940,7 @@ Gamma function of @var{x},
 $\Gamma(x)$.
 @end tex
 @ifinfo
-@math{\Gamma(x)}
+@math{Gamma(x)}
 @end ifinfo
 @item log(x)
 @dfn{Natural Logarithm}
@@ -2948,7 +2949,7 @@ Natural logarithm of @var{x},
 $\ln(x)$.
 @end tex
 @ifinfo
-@math{\ln(x)}
+@math{ln(x)}
 @end ifinfo
 @item log10(x)
 @dfn{Base 10 Logarithm}
@@ -2957,7 +2958,7 @@ Base 10 logarithm of @var{x},
 $\log_{10}(x)$.
 @end tex
 @ifinfo
-@math{\log_{10}(x)}
+@math{log10(x)}
 @end ifinfo
 @item sin(x)
 @dfn{Sine}
@@ -2969,7 +2970,7 @@ Square Root of @var{x},
 $\sqrt{x}$.
 @end tex
 @ifinfo
-@math{\sqrt{x}}
+@math{sqrt(x)}
 @end ifinfo
 @item tan(x);
 @dfn{Tangent}
