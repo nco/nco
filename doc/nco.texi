@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.266 2004-09-04 05:22:22 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.267 2004-09-05 06:37:23 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5121,10 +5121,12 @@ Edit mode abbreviation.
 Example: @code{a}. 
 See below for complete listing of valid values of @var{mode}.
 @item att_type
-Attribute type abbreviation. Example: @code{c}. 
+Attribute type abbreviation. 
+Example: @code{c}. 
 See below for complete listing of valid values of @var{att_type}.
 @item att_val
-Attribute value. Example: @code{pascal}. 
+Attribute value. 
+Example: @code{pascal}. 
 @end table
 @noindent
 There should be no empty space between these five consecutive
@@ -5388,11 +5390,24 @@ omitted in batch scripts.
 @page
 @html
 <a name="ncbo"></a> <!-- http://nco.sf.net/nco.html#ncbo -->
+<a name="ncdiff"></a> <!-- http://nco.sf.net/nco.html#ncdiff -->
+<a name="ncadd"></a> <!-- http://nco.sf.net/nco.html#ncadd -->
+<a name="ncsub"></a> <!-- http://nco.sf.net/nco.html#ncsub -->
+<a name="ncsubtract"></a> <!-- http://nco.sf.net/nco.html#ncsubtract -->
+<a name="ncmult"></a> <!-- http://nco.sf.net/nco.html#ncmult -->
+<a name="ncmultiply"></a> <!-- http://nco.sf.net/nco.html#ncmultiply -->
+<a name="ncdivide"></a> <!-- http://nco.sf.net/nco.html#ncdivide -->
 @end html
 @node ncbo netCDF Binary Operator, ncea netCDF Ensemble Averager, ncatted netCDF Attribute Editor, Operator Reference Manual
 @section @command{ncbo} netCDF Binary Operator
 @findex ncbo
 @findex ncdiff
+@findex ncadd
+@findex ncsub
+@findex ncsubtract
+@findex ncmult
+@findex ncmultiply
+@findex ncdivide
 @cindex binary operations
 @cindex addition
 @cindex subtraction
@@ -6216,7 +6231,7 @@ Only variables and coordinates may be specifically included or
 excluded---all global attributes and any attribute associated with an
 extracted variable are copied to the screen and/or output netCDF file. 
 Options @samp{-c}, @samp{-C}, @samp{-v}, and @samp{-x} (and their long 
-option synomyms) control which variables are extracted.
+option synonyms) control which variables are extracted.
 
 @command{ncks} extracts hyperslabs from the specified variables
 (@command{ncks} implements the original @command{nccut} specification). 
@@ -6579,28 +6594,77 @@ For more details @xref{Wrapped coordinates}.
 @page
 @html
 <a name="ncpdq"></a> <!-- http://nco.sf.net/nco.html#ncpdq -->
+<a name="ncpack"></a> <!-- http://nco.sf.net/nco.html#ncpack -->
+<a name="ncunpack"></a> <!-- http://nco.sf.net/nco.html#ncunpack -->
 @end html
 @node ncpdq netCDF Permute Dimensions Quickly, ncra netCDF Record Averager, ncks netCDF Kitchen Sink, Operator Reference Manual
 @section @command{ncpdq} netCDF Permute Dimensions Quickly
+@findex ncpdq
+@findex ncpack
+@findex ncunpack
 @cindex reshape variables
 @cindex permute dimensions
 @cindex reverse dimensions
 @cindex re-order dimensions
 @cindex re-dimension
-@findex ncpdq
+@cindex packing
+@cindex unpacking
 
 @noindent
 SYNTAX
 @example
-ncpdq [-A] -a [-]@var{dim}[,@dots{}] [-C] [-c] [-D @var{dbg}] 
+ncpdq [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
-[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-t thr_nbr] 
-[-v @var{var}[,@dots{}]] [-x]
+[-O] [-o @var{output-file}] [-P @var{pck_typ}] [-p @var{path}] 
+[-R] [-r] [-t thr_nbr] [-U] [-v @var{var}[,@dots{}]] [-x]
 @var{input-file} [@var{output-file}]
 @end example
 
 @noindent
 DESCRIPTION
+
+@cindex @code{add_offset}
+@cindex @code{scale_factor}
+@cindex @command{ncap}
+@command{ncpdq} performs one of two distinct functions, packing or
+dimension permutation, but not both, when invoked.
+The packing (and unpacking) algorithms are described 
+@ref{Intrinsic functions}, and are also implemented in @command{ncap}.
+@command{ncpdq} extends the functionality of these algorithms by 
+providing high level controls which allow users to pack (and unpack) 
+entire files.
+For the finest-grained control, the user specifies the desired packing
+functionality with the @var{pck_typ} option, which currently takes one
+of three values:@*  
+
+@table @dfn
+@item Packing All Variables
+Definition: Pack all variables, always generate new packing attributes@*
+Alternate invocation: @code{ncpack}@*
+@var{pck_typ} key values: @samp{all_new}, @samp{pck_all_new_att}@*
+@item Packing All Variables
+Definition: Pack all variables, keep existing packing attributes if any@*
+Alternate invocation: none@*
+@var{pck_typ} key values: @samp{all_xst}, @samp{pck_all_xst_att}@*
+@item Unpacking
+Definition: Unpack all packed variables@*
+Alternate invocation: @code{ncunpack}@*
+@var{pck_typ} key values: @samp{upk}, @samp{unpack}, @samp{pck_upk}@*
+@end table
+@noindent
+For example, the following packing commands are equivalent
+@example
+ncpdq -P all_new in.nc out.nc # Pack (and re-pack) all data
+ncpack in.nc out.nc # Easy to remember!
+@end example
+@noindent
+and these unpacking commands are equivalent
+@example
+ncpdq -P upk in.nc out.nc # Unpack all data
+ncpdq -P unpack in.nc out.nc # Unpack all data
+ncpdq -U in.nc out.nc # Unpack all data
+ncunpack in.nc out.nc # Easy to remember!
+@end example
 
 @command{ncpdq} re-shapes variables in @var{input-file} by re-ordering
 and/or reversing dimensions specified in the dimension list.

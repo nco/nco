@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.393 2004-09-04 05:22:22 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.394 2004-09-05 06:37:23 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -260,7 +260,12 @@ nco423. ncpdq: test on AIX
 nco425. ncpdq: Make unpacking offer to unpack missing value to preserve its usefulness
 nco426. ncpdq: Make packing offer to pack missing value to the packed type to preserve its usefulness
 nco427. ncpdq: Search and fix all pck_dbg statements
-nco428. 
+nco428. make test has serious problems on AIX (threading?)
+nco429. Implement ncunpack with nco_pck_typ_get()
+nco430. Implement ncpdq -U
+nco431. Implement ncpdq -P optional options
+nco433. ncpdq: Use gotos to reduce co-repeats in switch statements
+nco434. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

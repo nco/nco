@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.21 2004-07-27 06:16:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.22 2004-09-05 06:37:24 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -188,7 +188,7 @@ nco_msa_clc_idx
      if NORMALIZE then It returns the slab number and the hyperslab in lmt- Note
      VERY IMPORTANT - This is the slab WHITH-IN the slab
      So the stride is ALWAYS 1 */
-  int i;
+  int sz_idx;
   int size=lmt_a->lmt_dmn_nbr;
   bool *min;
   
@@ -208,13 +208,13 @@ nco_msa_clc_idx
     crr_idx=nco_msa_min_idx(indices,min,size);
     
     crr_slb=-1;
-    for(i=0;i <size;i++)
-      if(min[i]){crr_slb=i;break;}
+    for(sz_idx=0;sz_idx<size;sz_idx++)
+      if(min[sz_idx]){crr_slb=sz_idx;break;}
     
     if(crr_slb == -1){
       if(lmt->srt == -1) return False;
       else break;
-    }
+    } /* endif */
     
     if(min[prv_slb]) crr_slb=prv_slb;
     
@@ -238,19 +238,19 @@ nco_msa_clc_idx
       lmt->srd=1L;
     } /* end if */
     
-    for(i=0;i<size;i++){
-      if(min[i]){
-	indices[i]+=lmt_a->lmt_dmn[i]->srd;
-	if(indices[i] > lmt_a->lmt_dmn[i]->end) indices[i]=-1;
+    for(sz_idx=0;sz_idx<size;sz_idx++){
+      if(min[sz_idx]){
+	indices[sz_idx]+=lmt_a->lmt_dmn[sz_idx]->srd;
+	if(indices[sz_idx] > lmt_a->lmt_dmn[sz_idx]->end) indices[sz_idx]=-1;
       }
-    } /* end loop over i */
+    } /* end loop over sz_idx */
     prv_idx=crr_idx;
     prv_slb=crr_slb;
   } /* end while */
   
   *slb=prv_slb;
   
-  /* normalize the slab */
+  /* Normalize slab */
   if(NORMALIZE){
     lmt->srt=(lmt->srt-lmt_a->lmt_dmn[*slb]->srt)/(lmt_a->lmt_dmn[*slb]->srd);
     lmt->end=(lmt->end-lmt_a->lmt_dmn[*slb]->srt)/(lmt_a->lmt_dmn[*slb]->srd);
@@ -437,14 +437,14 @@ nco_msa_min_idx /* [fnc] Find minimum values in current */
  bool *min, /* [flg] Minimum */
  int size) /* [nbr] Size of current and min */
 {
-  int i;
+  int sz_idx;
   long min_val=LONG_MAX;
   
-  for(i=0;i< size;i++)
-    if(current[i] != -1 && current[i]<min_val) min_val=current[i];
+  for(sz_idx=0;sz_idx<size;sz_idx++)
+    if(current[sz_idx] != -1 && current[sz_idx]<min_val) min_val=current[sz_idx];
   
-  for(i=0;i<size;i++)
-    min[i]=((current[i] != -1 && current[i]== min_val) ? True : False);
+  for(sz_idx=0;sz_idx<size;sz_idx++)
+    min[sz_idx]=((current[sz_idx] != -1 && current[sz_idx]== min_val) ? True : False);
   
   return min_val;
 } /* end nco_msa_min_idx() */
@@ -788,7 +788,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       for(idx=0;idx <var.nbr_dim;idx++)	var_dsk+=dmn_sbs_dsk[idx]*mod_map_in[idx];
 
       /* Skip rest of loop unless element is first in string */
-      if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] > 0) goto lbl_char_prn;
+      if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] > 0) goto lbl_chr_prn;
              
       /* Print dimensions with indices along with values if they are coordinate variables */
       if(PRN_DMN_IDX_CRD_VAL){
@@ -833,7 +833,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       } /* end if PRN_DMN_IDX_CRD_VAL */
       
       /* Print all characters in last dimension each time penultimate dimension subscript changes to its start value */
-    lbl_char_prn:
+    lbl_chr_prn:
 
       if(var.type == NC_CHAR){
         static bool NULL_IN_SLAB;

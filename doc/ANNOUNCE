@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.117 2004-09-04 05:22:22 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.118 2004-09-05 06:37:23 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.9 are ready. 
 
@@ -37,6 +37,9 @@ The interaction of packing and missing_values is hard to handle.
 I am reluctant to implement any such features until/unless multiple
 users agree on the most useful features and specifically request
 them. So the ball is your court.
+
+FYI, the plan is to stabilize recent changes in NCO 3.0.0.
+Then we will start development of the grid-enabled features of SDO.
 
 Enjoy,
 Charlie

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.69 2004-09-03 06:28:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.70 2004-09-05 06:37:24 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -248,7 +248,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   else if(!strcmp(nm_out,"ncap")){*prg_lcl=ncap;}
   else if(!strcmp(nm_out,"ncea")){*prg_lcl=ncea;}
   else if(!strcmp(nm_out,"ncbo")){*prg_lcl=ncbo;}
-  /* Synonyms for ncbo: These are acceptable symlinks for ncbo */
+  /* Synonyms for ncbo: These are acceptable symbolic links for ncbo */
   else if(!strcmp(nm_out,"ncadd")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out,"ncdiff")){*prg_lcl=ncbo;}
   else if(!strcmp(nm_out,"ncsub")){*prg_lcl=ncbo;}
@@ -263,6 +263,10 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   else if(!strcmp(nm_out,"ncecat")){*prg_lcl=ncecat;}
   else if(!strcmp(nm_out,"ncks")){*prg_lcl=ncks;}
   else if(!strcmp(nm_out,"ncpdq")){*prg_lcl=ncpdq;}
+  /* Synonyms for ncbo: These are acceptable symbolic links for ncpdq */
+  else if(!strcmp(nm_out,"ncpack")){*prg_lcl=ncpdq;}
+  else if(!strcmp(nm_out,"ncunpack")){*prg_lcl=ncpdq;}
+  /* End synonyms for ncpdq */
   else if(!strcmp(nm_out,"ncrename")){*prg_lcl=ncrename;}
   else if(!strcmp(nm_out,"ncatted")){*prg_lcl=ncatted;}
   else{
@@ -302,7 +306,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-A] [-a] [-B] [-b fl_bnr] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-M] [-O] [-o out.nc] [-p path] [-q] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [[out.nc]]\n");
     break;
   case ncpdq:
-    opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-t] [-v ...] [-x] in.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-A] [-a ...] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-O] [-o out.nc] [-P pck_typ] [-p path] [-R] [-r] [-t] [-v ...] [-U] [-x] in.nc [out.nc]\n");
     break;
   case ncra:
   case ncea:
@@ -369,6 +373,7 @@ nco_usg_prn(void)
   } /* end if */
   if(strstr(opt_sng,"-o")) (void)fprintf(stdout,"-o, --output, --fl_out fl_out\tOutput file name (or use last positional argument)\n");
   if(strstr(opt_sng,"-O")) (void)fprintf(stdout,"-O, --ovr, --overwrite\tOverwrite existing output file, if any\n");
+  if(strstr(opt_sng,"-P")) (void)fprintf(stdout,"-P, --pck_typ, --pack_type pck_typ\tPacking type [all_new,all_xst,upk]\n");
   if(strstr(opt_sng,"-p")) (void)fprintf(stdout,"-p, --pth, --path path\tPath prefix for all input filenames\n");
   if(strstr(opt_sng,"-q")) (void)fprintf(stdout,"-q, --quiet\t\tToggle printing of dimension indices and coordinate values\n");
   if(strstr(opt_sng,"-R")) (void)fprintf(stdout,"-R, --rtn, --retain\tRetain remotely-retrieved files after use\n");
@@ -381,6 +386,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-T")) (void)fprintf(stdout,"-T, --truth_condition, --msk_cmp_typ, --op_rlt condition\tTruth condition for masking: eq,ne,ge,le,gt,lt\n");
   if(strstr(opt_sng,"-t")) (void)fprintf(stdout,"-t, --thr_nbr, --threads, --omp_num_threads thr_nbr\tThread number for OpenMP\n");
   if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u, --units\t\tUnits of variables, if any, will be printed\n");
+  if(strstr(opt_sng,"-U")) (void)fprintf(stdout,"-U, --upk, --unpack\t\tUnpack input file\n");
   if(strstr(opt_sng,"-v")){
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-v, --variable old_var,new_var Variable's old and new names\n");
 	if(prg_lcl == ncap) (void)fprintf(stdout,"-v, --variable \t\tOutput file includes ONLY user-defined variables\n");

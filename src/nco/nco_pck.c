@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.32 2004-09-04 05:22:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.33 2004-09-05 06:37:24 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -64,22 +64,31 @@ int /* O [enm] Packing type */
 nco_pck_typ_get /* [fnc] Convert user-specified packing type to key */
 (const char *nco_pck_sng) /* [sng] User-specified packing type */
 {
-  /* Purpose: Process '-P' command line argument
+  /* Purpose: Process ncpdq '-P' command line argument
      Convert user-specified string to packing operation type 
      Return nco_pck_nil by default */
-  /* fxm: add the rest of types */
-  if(!strcmp(nco_pck_sng,"all_xst")) return nco_pck_all_xst_att;
-  if(!strcmp(nco_pck_sng,"nco_pck_all_xst_att")) return nco_pck_all_xst_att;
-  if(!strcmp(nco_pck_sng,"all_new")) return nco_pck_all_new_att;
-  if(!strcmp(nco_pck_sng,"nco_pck_all_new_att")) return nco_pck_all_new_att;
-  if(!strcmp(nco_pck_sng,"xst_xst")) return nco_pck_xst_xst_att;
-  if(!strcmp(nco_pck_sng,"nco_pck_xst_xst_att")) return nco_pck_xst_xst_att;
-  if(!strcmp(nco_pck_sng,"xst_new")) return nco_pck_xst_new_att;
-  if(!strcmp(nco_pck_sng,"nco_pck_xst_new_att")) return nco_pck_xst_new_att;
-  if(!strcmp(nco_pck_sng,"upk")) return nco_pck_upk;
-  if(!strcmp(nco_pck_sng,"nco_pck_upk")) return nco_pck_upk;
+  const char fnc_nm[]="nco_pck_typ_get()"; /* [sng] Function name */
+  char *prg_nm; /* [sng] Program name */
+  prg_nm=prg_nm_get(); /* [sng] Program name */
 
-  (void)fprintf(stderr,"%s: ERROR nco_pck_typ_get() reports unknown user-specified packing type %s\n",prg_nm_get(),nco_pck_sng);
+  if(nco_pck_sng == NULL){
+    if(!strcmp(prg_nm,"ncpack")) return nco_pck_all_new_att;
+    if(!strcmp(prg_nm,"ncunpack")) return nco_pck_upk;
+    (void)fprintf(stderr,"%s: ERROR %s reports empty user-specified packing string in conjunction with unknown or ambiguous executable name %s\n",prg_nm,fnc_nm,prg_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+
+  if(!strcmp(nco_pck_sng,"all_xst")) return nco_pck_all_xst_att;
+  if(!strcmp(nco_pck_sng,"pck_all_xst_att")) return nco_pck_all_xst_att;
+  if(!strcmp(nco_pck_sng,"all_new")) return nco_pck_all_new_att;
+  if(!strcmp(nco_pck_sng,"pck_all_new_att")) return nco_pck_all_new_att;
+  if(!strcmp(nco_pck_sng,"xst_new")) return nco_pck_xst_new_att;
+  if(!strcmp(nco_pck_sng,"pck_xst_new_att")) return nco_pck_xst_new_att;
+  if(!strcmp(nco_pck_sng,"upk")) return nco_pck_upk;
+  if(!strcmp(nco_pck_sng,"unpack")) return nco_pck_upk;
+  if(!strcmp(nco_pck_sng,"pck_upk")) return nco_pck_upk;
+
+  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified packing type %s\n",prg_nm_get(),fnc_nm,nco_pck_sng);
   nco_exit(EXIT_FAILURE);
   return nco_pck_nil; /* Statement should not be reached */
 } /* end nco_pck_typ_get() */
@@ -216,17 +225,14 @@ nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to
      ncpdq breaks up writing packed variables into multiple tasks, i.e.,
      ncpdq separates variable value writes from packing attribute value writes.
      This routine is intended to write a packed variable in one routine */
+  bool PCK_VAR_WITH_NEW_PCK_ATT=False; /* [flg] Insert new scale_factor and add_offset into lists */
   
-  bool USE_EXISTING_PCK=False; /* I [flg] Use existing packing scale_factor and add_offset */
-
   switch(nco_pck_typ){
-  case nco_pck_xst_xst_att:
   case nco_pck_all_xst_att:
-    USE_EXISTING_PCK=True; /* I [flg] Use existing packing scale_factor and add_offset */
     break;
   case nco_pck_xst_new_att:
+    break;
   case nco_pck_all_new_att:
-    USE_EXISTING_PCK=False; /* I [flg] Use existing packing scale_factor and add_offset */
     break;
   case nco_pck_upk:
     break;
@@ -235,7 +241,7 @@ nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to
   } /* end switch */
 
   /* Pack variable */
-  if(var->xrf->pck_dsk && !var->xrf->pck_ram) var=nco_var_pck(var,var->typ_pck,USE_EXISTING_PCK);
+  if(var->xrf->pck_dsk && !var->xrf->pck_ram) var=nco_var_pck(var,var->typ_pck,&PCK_VAR_WITH_NEW_PCK_ATT);
 
   /* Write/overwrite scale_factor and add_offset attributes */
   if(var->pck_ram){ /* [flg] Variable is packed in memory */
@@ -255,7 +261,7 @@ var_sct * /* O [sct] Packed variable */
 nco_var_pck /* [fnc] Pack variable in memory */
 (var_sct *var, /* I/O [sct] Variable to be packed */
  const nc_type nc_typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
- const bool USE_EXISTING_PCK) /* I [flg] Use existing scale_factor and add_offset, if any */
+ bool *PCK_VAR_WITH_NEW_PCK_ATT) /* O [flg] Routine generated new scale_factor/add_offset */
 {
   /* Purpose: Pack variable 
      Routine is inverse of nco_var_upk(): nco_var_pck[nco_var_upk(var)]=var 
@@ -268,6 +274,9 @@ nco_var_pck /* [fnc] Pack variable in memory */
   const char fnc_nm[]="nco_var_pck()"; /* [sng] Function name */
   double scl_fct_dbl=double_CEWI; /* [sct] Double precision value of scale_factor */
   double add_fst_dbl=double_CEWI; /* [sct] Double precision value of add_offset */
+
+  /* Set flag true once new scale_factor/add_offset generated */
+  *PCK_VAR_WITH_NEW_PCK_ATT=False;
 
   /* Return if variable in memory is currently packed and should not be re-packed */
   if(var->pck_ram) return var;
@@ -472,6 +481,8 @@ nco_var_pck /* [fnc] Pack variable in memory */
   if(!var->has_scl_fct && !var->has_add_fst){
     (void)fprintf(stderr,"%s: ERROR Reached end of %s without packing variable\n",prg_nm_get(),fnc_nm);
     nco_exit(EXIT_FAILURE);
+  }else{
+    *PCK_VAR_WITH_NEW_PCK_ATT=True; /* O [flg] Routine generated new scale_factor/add_offset */
   } /* endif */
 
   /* Tell the world we have packed the variable
@@ -556,11 +567,11 @@ nco_var_upk_swp /* [fnc] Unpack var_in into var_out */
   /* Purpose: Unpack var_in into var_out
      Information flow in ncpdq prevents ncpdq from calling nco_var_upk()
      directly with either var_in or var_out.
-     A combination of var_in (for the right file and variable IDs) 
-     and var_out (so the unpacked variable ends up in the right place) are needed
-     We accomplish this by unpacking into a temporary variable and copying what
-     is needed from the temporary (swap) variable to var_out.
-     This routine hides the gory details of the swapped unpacking
+     Need combination of var_in (for correct file and variable IDs) 
+     and var_out (so unpacked variable ends up in correct place)
+     Accomplish this by unpacking into temporary variable and copying 
+     needed information from temporary (swap) variable to var_out.
+     Routine hides gory details of swapped unpacking
 
      nco_pck_val() uses this routine for two purposes:
      1. Unpack already packed variable prior to re-packing them 
@@ -568,7 +579,13 @@ nco_var_upk_swp /* [fnc] Unpack var_in into var_out */
   const char fnc_nm[]="nco_var_upk_swp()";
   var_sct *var_tmp; /* [sct] Temporary variable to be unpacked */
   
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s unpacking variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_pck),nco_typ_sng(var_out->typ_upk));
+  if(var_in->pck_ram){
+    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s unpacking variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_pck),nco_typ_sng(var_out->typ_upk));
+  }else{
+    (void)fprintf(stderr,"%s: ERROR %s variable %s is already unpacked\n",prg_nm_get(),fnc_nm,var_in->nm);
+    nco_exit(EXIT_FAILURE);
+  } /* endif not already packed */
+
   /* Output file does not contain packing attributes yet 
      Hence unpacking var_out directly is impossible 
      Instead, make var_tmp a copy of var_in and unpack var_tmp 

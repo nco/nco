@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.41 2004-09-04 05:22:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.42 2004-09-05 06:37:24 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -104,9 +104,9 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.41 2004-09-04 05:22:22 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.41 $";
-  const char * const opt_sng="Aa:CcD:d:Fhl:Oo:P:p:Rrt:v:x-:";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.42 2004-09-05 06:37:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.42 $";
+  const char * const opt_sng="Aa:CcD:d:Fhl:Oo:P:p:Rrt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -188,6 +188,8 @@ main(int argc,char **argv)
       {"ovr",no_argument,0,'O'},
       {"output",required_argument,0,'o'},
       {"fl_out",required_argument,0,'o'},
+      {"pack_type",required_argument,0,'P'},
+      {"pck_typ",required_argument,0,'P'},
       {"path",required_argument,0,'p'},
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
@@ -197,6 +199,8 @@ main(int argc,char **argv)
       {"thr_nbr",required_argument,0,'t'},
       {"threads",required_argument,0,'t'},
       {"omp_num_threads",required_argument,0,'t'},
+      {"unpack",no_argument,0,'U'},
+      {"upk",no_argument,0,'U'},
       {"variable",required_argument,0,'v'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
@@ -254,8 +258,6 @@ main(int argc,char **argv)
       break;
     case 'P': /* Packing type */
       nco_pck_typ_sng=(char *)strdup(optarg);
-      nco_pck_typ=nco_pck_typ_get(nco_pck_typ_sng);
-      if(dbg_lvl > 0) (void)fprintf(stderr,"%s: DEBUG Packing type %s enum %d requested\n",prg_nm_get(),nco_pck_typ_sng,nco_pck_typ);
       break;
     case 'p': /* Common file path */
       fl_pth=(char *)strdup(optarg);
@@ -270,6 +272,9 @@ main(int argc,char **argv)
       break;
     case 't': /* Thread number */
       thr_nbr=(int)strtol(optarg,(char **)NULL,10);
+      break;
+    case 'U': /* Unpacking switch */
+      nco_pck_typ_sng=(char *)strdup("upk");
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -348,6 +353,12 @@ main(int argc,char **argv)
     dmn_out[idx]=nco_dmn_dpl(dim[idx]);
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
   } /* end loop over idx */
+
+  /* No re-order dimensions specified implies packing request */
+  if(dmn_rdr_nbr == 0){
+    if(nco_pck_typ == nco_pck_nil) nco_pck_typ=nco_pck_typ_get(nco_pck_typ_sng);
+    if(dbg_lvl > 0) (void)fprintf(stderr,"%s: DEBUG Packing type %s enum %d requested\n",prg_nm_get(),nco_pck_typ_sng,nco_pck_typ);
+  } /* endif */
 
   /* From this point forward, assume ncpdq operator packs or re-orders, not both */
   if(dmn_rdr_nbr > 0 && nco_pck_typ != nco_pck_nil){
@@ -713,11 +724,12 @@ main(int argc,char **argv)
 	if(nco_is_packable(var_prc[idx]->type)){
 	  /* Verify input variable was newly packed by this operator
 	     Trying to write pre-existing packing attributes would fail because
-	     nco_pck_dsk_inq() never fills in var->scl_fct.vp and var->add_fst.vp */
+	     nco_pck_dsk_inq() never fills in var->scl_fct.vp and var->add_fst.vp
+	     ...exclude pre-packed variables that were not re-packed... */
 	  if(!(var_prc[idx]->pck_ram && nco_pck_typ == nco_pck_all_xst_att)){
-	    /* Replace dummy packing attributes with real thing */
-	    (void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);	
-	    (void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);	
+	    /* Replace dummy packing attributes with real thing (or delete them) */
+	    (void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
+	    (void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
 	  } /* endif variable is newly packed by this operator */
 	} /* endif nco_is_packable() */
       } /* end loop over var_prc */
@@ -784,6 +796,7 @@ main(int argc,char **argv)
   dmn_out=(dmn_sct **)nco_free(dmn_out);
   /* Variables have their own free() routine */
   for(idx=0;idx<nbr_xtr;idx++){
+    if(dbg_lvl >= 5) (void)fprintf(stderr,"%s: main() free()'ing variable %s\n",prg_nm,var[idx]->nm);
     var[idx]=nco_var_free(var[idx]);
     var_out[idx]=nco_var_free(var_out[idx]);
   } /* end loop over idx */
@@ -808,7 +821,6 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
   nc_typ_pck_out=nco_typ_pck_get(var_in->type);
   
   switch(nco_pck_typ){
-  case nco_pck_xst_xst_att:
   case nco_pck_all_xst_att:
     /* If variable is already packed do nothing otherwise pack to default type */
     if(var_in->pck_ram){
@@ -820,10 +832,25 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
     } /* endif */
     break;
   case nco_pck_xst_new_att:
+    /* If variable is already packed then re-pack otherwise do nothing */
+    if(var_in->pck_ram){
+      /* NB: Same if-then-else as below, functionalize? */
+      if(nco_is_packable(var_in->typ_upk)){
+	var_out->type=nco_typ_pck_get(var_in->typ_upk);
+	if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s will re-pack variable %s of expanded type %s from current packing (type %s) into new packing of type %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->typ_upk),nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
+      }else{
+	(void)fprintf(stderr,"%s: WARNING %s variable %s of expanded type %s is already packed into type %s and re-packing is requested but %s unable to re-pack variables of type %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->typ_upk),nco_typ_sng(var_in->type),prg_nm_get(),nco_typ_sng(var_in->typ_upk));
+      } /* endif nco_is_packable() */
+    }else{
+      /* Variable is not packed so do nothing */
+      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s leaving variable %s of type %s as unpacked\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk));
+    } /* endif */
+    break;
   case nco_pck_all_new_att:
     if(var_in->pck_ram){
       /* Variable is already packed---unpack then re-pack it 
 	 Final packing type may differ from original */
+      /* NB: Same if-then-else as above, functionalize? */
       if(nco_is_packable(var_in->typ_upk)){
 	var_out->type=nco_typ_pck_get(var_in->typ_upk);
 	if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s will re-pack variable %s of expanded type %s from current packing (type %s) into new packing of type %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->typ_upk),nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
@@ -862,7 +889,7 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
   /* Purpose: Alter metadata according to packing specification */
   /* fxm: Use (or delete) nco_put_var_pck() */
   const char fnc_nm[]="nco_pck_val()"; /* [sng] Function name */
-  bool USE_EXISTING_PCK=False; /* I [flg] Use existing packing scale_factor and add_offset */
+  bool PCK_VAR_WITH_NEW_PCK_ATT=False; /* [flg] Insert new scale_factor and add_offset into lists */
   nc_type typ_out; /* [enm] Type in output file */
   
   /* typ_out contains type of variable defined in output file
@@ -872,9 +899,7 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
   typ_out=var_out->type; /* [enm] Type in output file */
   
   switch(nco_pck_typ){
-  case nco_pck_xst_xst_att:
   case nco_pck_all_xst_att:
-    USE_EXISTING_PCK=True;
     /* nco_var_pck() expects to alter var_out->type itself, if necessary */
     var_out->type=var_in->typ_dsk;
     if(var_in->pck_ram){
@@ -885,7 +910,7 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
       /* NB: Same if-then-else as nco_pck_all_new_att, funcion-ify? */
       if(nco_is_packable(var_out->type)){
 	if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s packing variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk),nco_typ_sng(typ_out));
-	var_out=nco_var_pck(var_out,typ_out,USE_EXISTING_PCK);
+	var_out=nco_var_pck(var_out,typ_out,&PCK_VAR_WITH_NEW_PCK_ATT);
 	/* Packing function nco_var_pck() usually free()'s var_out->val.vp 
 	   Hence var_in->val.vp is left with a dangling pointer
 	   In ncpdq, var_in->val.vp and var_out->val.vp point to same buffer 
@@ -897,8 +922,21 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
     } /* endif input variable was not packed */
     break;
   case nco_pck_xst_new_att:
+    if(var_in->pck_ram){
+      /* Variable is already packed---unpack it before re-packing it */
+      nco_var_upk_swp(var_in,var_out);
+      /* NB: Same if-then-else as nco_pck_all_xst_att, funcion-ify? */
+      if(nco_is_packable(var_out->type)){
+	if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s packing variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk),nco_typ_sng(typ_out));
+	var_out=nco_var_pck(var_out,typ_out,&PCK_VAR_WITH_NEW_PCK_ATT);
+	/* Remove dangling pointer. See explanation above. */
+	var_in->val.vp=NULL; 
+      }else{
+	if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s skipping variable %s of type %s as un-packable\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk));
+      } /* endif nco_is_packable() */ 
+    } /* endif already packed*/
+    break;
   case nco_pck_all_new_att:
-    USE_EXISTING_PCK=False;
     if(var_in->pck_ram){
       /* Variable is already packed---unpack it before re-packing it */
       nco_var_upk_swp(var_in,var_out);
@@ -909,7 +947,7 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
     /* NB: Same if-then-else as nco_pck_all_xst_att, funcion-ify? */
     if(nco_is_packable(var_out->type)){
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s packing variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk),nco_typ_sng(typ_out));
-      var_out=nco_var_pck(var_out,typ_out,USE_EXISTING_PCK);
+      var_out=nco_var_pck(var_out,typ_out,&PCK_VAR_WITH_NEW_PCK_ATT);
       /* Remove dangling pointer. See explanation above. */
       var_in->val.vp=NULL; 
     }else{
@@ -917,7 +955,8 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
     } /* endif nco_is_packable() */ 
     break;
   case nco_pck_upk:
-    nco_var_upk_swp(var_in,var_out);
+    /* Unpack if possible, otherwise remove dangling pointer. See explanation above. */
+    if(var_in->pck_ram) nco_var_upk_swp(var_in,var_out); else var_in->val.vp=NULL; 
     break;
   case nco_pck_nil:
   default: nco_dfl_case_pck_typ_err(); break;
@@ -926,12 +965,16 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
   /* Fill attribute edit structures
      Use values directly from variable structures rather than copying
      Attribute structure dynamic memory will be free()'d in nco_var_free() call */
-  if(nco_pck_typ != nco_pck_upk){
+  if(PCK_VAR_WITH_NEW_PCK_ATT){
     aed_lst_add_fst->var_nm=aed_lst_scl_fct->var_nm=var_out->nm;
     aed_lst_add_fst->id=aed_lst_scl_fct->id=var_out->id;
     aed_lst_add_fst->sz=aed_lst_scl_fct->sz=1L;
     aed_lst_add_fst->type=aed_lst_scl_fct->type=var_out->typ_upk;
-    aed_lst_add_fst->mode=aed_lst_scl_fct->mode=aed_overwrite;
+    /* Packing generates at least one of scale_factor or add_offset,
+       but not necessarily both.
+       Delete pre-defined attributes for those which were not created */
+    if(var_out->has_add_fst) aed_lst_add_fst->mode=aed_overwrite; else aed_lst_add_fst->mode=aed_delete;
+    if(var_out->has_scl_fct) aed_lst_scl_fct->mode=aed_overwrite; else aed_lst_scl_fct->mode=aed_delete;
     /* Insert values into attribute structures */
     aed_lst_add_fst->val=var_out->add_fst;
     aed_lst_scl_fct->val=var_out->scl_fct;

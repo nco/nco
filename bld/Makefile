@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.261 2004-07-29 00:40:57 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.262 2004-09-05 06:37:21 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1155,7 +1155,7 @@ ncbo:   ${MY_BIN_DIR}/ncbo
 ${MY_BIN_DIR}/ncbo:	${MY_OBJ_DIR}/ncbo.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
-	cd ${MY_BIN_DIR}; rm -f ncdiff; ln -f -s ncbo ncdiff
+	cd ${MY_BIN_DIR}; rm -f ncdiff; ln -s -f ncbo ncdiff
 ncecat:   ${MY_BIN_DIR}/ncecat
 ${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o lib
 	${CC} -o $@ $< ${LDFLAGS}
@@ -1172,12 +1172,14 @@ ncpdq:   ${MY_BIN_DIR}/ncpdq
 ${MY_BIN_DIR}/ncpdq:	${MY_OBJ_DIR}/ncpdq.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
+	cd ${MY_BIN_DIR}; rm -f ncunpack; ln -s -f ncpdq ncunpack
+	cd ${MY_BIN_DIR}; rm -f ncpack; ln -s -f ncpdq ncpack
 ncra:   ${MY_BIN_DIR}/ncra
 ${MY_BIN_DIR}/ncra:	${MY_OBJ_DIR}/ncra.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
-	cd ${MY_BIN_DIR}; rm -f ncea; ln -f -s ncra ncea
-	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -f -s ncra ncrcat
+	cd ${MY_BIN_DIR}; rm -f ncea; ln -s -f ncra ncea
+	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -s -f ncra ncrcat
 ncrename:   ${MY_BIN_DIR}/ncrename
 ${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o lib
 	${CC} -o $@ $< ${LDFLAGS}
@@ -1232,7 +1234,7 @@ rpm_cln:
 # Targets in dat
 data:	dat
 dat:	${MY_DAT_DIR}/in.nc
-	-for fl in $(MDL_DAT_STB); do cd ${MY_DAT_DIR}; ln -f -s in.nc $$fl; done
+	-for fl in $(MDL_DAT_STB); do cd ${MY_DAT_DIR}; ln -s -f in.nc $$fl; done
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
 	cd ${MY_DAT_DIR}; ncgen -b -o in.nc in.cdl
 dataclean: dat_cln

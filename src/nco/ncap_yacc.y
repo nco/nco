@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.22 2004-09-03 23:06:46 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.23 2004-09-05 06:37:24 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -589,7 +589,9 @@ var_xpr '+' var_xpr { /* Begin Addition */
 | PACK '(' var_xpr ')' {
   /* Packing variable does not create duplicate so DO NOT free $3 */
   const nc_type nc_typ_pck_dfl=NC_SHORT; /* [enm] Default type to pack to */
-  $$=nco_var_pck($3,nc_typ_pck_dfl,False);
+  bool PCK_VAR_WITH_NEW_PCK_ATT;
+  $$=nco_var_pck($3,nc_typ_pck_dfl,&PCK_VAR_WITH_NEW_PCK_ATT);
+  PCK_VAR_WITH_NEW_PCK_ATT=PCK_VAR_WITH_NEW_PCK_ATT; /* CEWI */
 } /* end PACK */
 | UNPACK '(' var_xpr ')' {
   /* Unpacking variable does not create duplicate so DO NOT free $3 */
