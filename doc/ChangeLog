@@ -3,6 +3,8 @@
 	* cvs tag -c nco-2_9_9
 	Changes since nco-2_9_8: 1. ncbo threading 2. ncpdq -P packing
 
+	* Finished initial ncpdq packing documentation
+
 	* Verified unpacking complete missing values works, with both scalars and arrays
 
 	* Fixed packing pure missing values fields in nco_var_pck()

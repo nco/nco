@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.400 2004-09-06 00:26:39 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.401 2004-09-06 01:12:23 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -259,7 +259,6 @@ nco425. ncpdq: Make unpacking offer to unpack missing value to preserve its usef
 nco426. ncpdq: Make packing offer to pack missing value to the packed type to preserve its usefulness
 nco427. Search and fix all pck_dbg statements
 nco431. Implement ncpdq -P optional options
-nco438. ncpdq: document basic ncpdq -P options and synonyms
 nco439. 
 
 ncap-specific items:

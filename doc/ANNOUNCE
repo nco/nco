@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.119 2004-09-05 20:02:12 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.120 2004-09-06 01:12:23 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.9 are ready. 
 
@@ -16,9 +16,9 @@ and two job ads. See http://nco.sf.net#prp_sei
 Manually configure threading with -t (as with ncra, ncpdq, ncea), or
 ncbo will pick a default for you.
 
-3. ncpdq has powerful packing capabilities
+3. ncpdq has powerful packing and unpacking capabilities
 ncpdq stands for "Permute Dimensions Quickly" and now "Pack Data
-Quickly" too. 
+Quickly" too. See http://nco.sf.net/nco.html#ncpdq for full info.
 Prior to this release, ncap sported the only packing features in NCO.
 However, ncap only packs one variable at a time.
 ncpdq is more consistent with the NCO file-at-a-time paradigm.

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.268 2004-09-06 00:26:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.269 2004-09-06 01:12:23 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4453,17 +4453,18 @@ variable name.
 @end html
 @node Intrinsic functions, Intrinsic mathematical functions, Syntax of ncap statements, ncap netCDF Arithmetic Processor
 @subsection Intrinsic functions
-@command{ncap} contains a small but growing library of intrinsic
-functions.
+@command{ncap} contains a small (and growing) library of intrinsic
+functions. 
 In addition to the standard mathematical functions 
 (@pxref{Intrinsic mathematical functions}), @command{ncap} currently
 supports packing and unpacking.
-@unnumberedsubsec Packing and Unpacking Functions
+@unnumberedsubsec Packing and Unpacking Algorithms
 @cindex packing
 @cindex unpacking
 @cindex @code{add_offset}
 @cindex @code{scale_factor}
 @cindex @command{pack(x)}
+@cindex @command{unpack(x)}
 @table @code
 @item pack(x)
 @dfn{Packing}
@@ -5424,7 +5425,7 @@ SYNTAX
 ncbo [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] 
 [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] 
-[-t thr_nbr] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -5755,7 +5756,7 @@ SYNTAX
 ncea [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-t thr_nbr] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -6617,19 +6618,25 @@ SYNTAX
 ncpdq [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-O] [-o @var{output-file}] [-P @var{pck_typ}] [-p @var{path}] 
-[-R] [-r] [-t thr_nbr] [-U] [-v @var{var}[,@dots{}]] [-x]
+[-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-x]
 @var{input-file} [@var{output-file}]
 @end example
 
 @noindent
 DESCRIPTION
 
+@command{ncpdq} performs one of two distinct functions, packing or
+dimension permutation, but not both, when invoked.
+@command{ncpdq} is optimized to perform these actions in a parallel
+fashion with a minimum of time and memory.
+The @dfn{pdq} may stand for ``Permute Dimensions Quickly'', 
+``Pack Data Quickly'', or other uses we have not dreamed of yet.
+
 @cindex @code{add_offset}
 @cindex @code{scale_factor}
 @cindex @command{ncap}
-@command{ncpdq} performs one of two distinct functions, packing or
-dimension permutation, but not both, when invoked.
-The packing (and unpacking) algorithms are described 
+@unnumberedsubsec Packing and Unpacking Functions
+The @command{ncpdq} packing (and unpacking) algorithms are described 
 @ref{Intrinsic functions}, and are also implemented in @command{ncap}.
 @command{ncpdq} extends the functionality of these algorithms by 
 providing high level controls which allow users to pack (and unpack) 
@@ -6643,14 +6650,14 @@ functionality with the @samp{-P} switch (or its long option equivalents,
 which currently takes one of three values:@*  
 @table @dfn
 @item Packing (and Re-Packing) Variables
-Definition: Pack all variables, always generate new packing attributes@*
+Definition: Pack unpacked variables, re-pack already packed variables@*
 Alternate invocation: @code{ncpack}@*
 @var{pck_typ} key values: @samp{all_new}, @samp{pck_all_new_att}@*
-@item Packing Variables
-Definition: Pack all variables, keep existing packing attributes if any@*
+@item Packing (and not Re-Packing) Variables
+Definition: Pack unpacked variables, leave already packed variables alone@*
 Alternate invocation: none@*
 @var{pck_typ} key values: @samp{all_xst}, @samp{pck_all_xst_att}@*
-@item Unpack
+@item Unpacking
 Definition: Unpack all packed variables@*
 Alternate invocation: @code{ncunpack}@*
 @var{pck_typ} key values: @samp{upk}, @samp{unpack}, @samp{pck_upk}@*
@@ -6690,7 +6697,16 @@ The following commands are equivalent for unpacking:
 and @code{ncunpack}.
 The user can determines equivalent commands for other packing
 request types, e.g., @samp{all_xst}, by analogy.
+@cindex @command{alias}
+@cindex @command{ln -s}
+@cindex symbolic links
+Note that @command{ncpdq} synonyms are subject to the same constraints 
+and recommendations discussed in the secion on @command{ncbo} synonyms
+(@pxref{ncbo netCDF Binary Operator}).
+That is, symbolic links must exist from the synonym to @command{ncpdq},
+or else the user must define an @command{alias}.
 
+@unnumberedsubsec Dimension Permutation
 @command{ncpdq} re-shapes variables in @var{input-file} by re-ordering
 and/or reversing dimensions specified in the dimension list.
 The dimension list is a whitespace-free, comma separated list of
@@ -6734,7 +6750,7 @@ Second, it may useful to transpose a variable's storage order, e.g.,
 @w{from C} to Fortran data storage order (@pxref{Fortran indexing}).
 To do this, include all the variable's dimensions in the dimension
 re-order list in reversed order.
-Explicit examples of both these techniques appear below.
+Explicit examples of these two techniques appear below.
 
 @tex
 NB: fxm ncpdq documentation will evolve through Fall 2004.
@@ -6820,6 +6836,23 @@ $\dmnsubnnnprm = \shrsubsss$.
 
 @noindent
 EXAMPLES
+
+Pack and unpack all variables in file @file{in.nc} and store the results
+in @file{out.nc}:  
+@example
+ncpdq -P all_new in.nc out.nc # Same as ncpack in.nc out.nc
+ncpdq -P all_xst in.nc out.nc
+ncpdq -P upk in.nc out.nc # Same as ncunpack in.nc out.nc
+@end example
+The first command packs any unpacked variable in the input file.
+It also unpacks and then re-packs every packed variable in the input 
+file. 
+The second command only packs unpacked variables in the input file.
+If a variable is already packed, the second command copies it unchanged
+to the output file. 
+The third command unpacks any packed variable in the input file.
+If a variable is not packed, the third command copies it unchanged
+to the output file. 
 
 Re-order file @file{in.nc} so that the dimension @code{lon} always
 precedes the dimension @code{lat} and store the results in
@@ -6926,7 +6959,7 @@ SYNTAX
 ncra [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
-[-t thr_nbr] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -7296,7 +7329,7 @@ ncwa [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}]
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-I] [-l @var{path}] 
 [-M @var{mask_val}] [-m @var{mask_var}] [-N] [-n] [-O] 
 [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{condition}]
-[-t thr_nbr] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}] 
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}] 
 @var{input-file} [@var{output-file}]
 @end example
 
