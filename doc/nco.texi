@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.250 2004-08-04 18:08:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.251 2004-08-05 06:05:29 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6462,7 +6462,7 @@ For more details @xref{Wrapped coordinates}.
 @noindent
 SYNTAX
 @example
-ncpdq [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
+ncpdq [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-t thr_nbr] 
 [-v @var{var}[,@dots{}]] [-x]
@@ -6473,15 +6473,22 @@ ncpdq [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}]
 DESCRIPTION
 
 @command{ncpdq} re-shapes variables in @var{input-file} by re-ordering
-their dimensions as specified in the dimension re-order list.
-The record dimension is re-ordered like any other dimension.
+and/or reversing dimensions specified in the dimension list.
+The dimension list is a comma separated list of dimension names,
+optionally prefixed by negative signs, that follow the @samp{-a}
+switch. 
 To re-order variables by a subset of their dimensions, specify
-these dimensions in a comma-separated list following @samp{-a}, e.g.,
+these dimensions in a comma-separated list following @samp{-a}, e.g., 
 @samp{-a lon,lat}. 
+To reverse a dimension, prefix its name with a negative sign in the
+dimension list, e.g., @samp{-a -lat}. 
+Re-ordering and reversal may be performed simultaneously, e.g.,
+@samp{-a lon,-lat,time,-lev}. 
 
 @cindex record dimension
 Users may specify any permutation of dimensions, including
 permutations which change the record dimension identity.
+The record dimension is re-ordered like any other dimension.
 @cindex record variable
 The record dimension is always the most slowly varying dimension in a
 record variable (@pxref{Fortran indexing}).
@@ -6503,21 +6510,20 @@ ncpdq -O -v three_dmn_var -z lon,lat in.nc out.nc
 The second command extracts and re-orders only the variable
 @code{three_dmn_var}. 
 
-Suppose the dimension @code{lat} represents latitude and monotonically
+Suppose the dimension @code{lat} represents latitude and monotonically 
 increases increases from south to north. 
 Reversing the @code{lat} dimension means re-ordering the data so that
 latitude values decrease monotonically from north to south.
 Accomplish this with
 @example
 ncpdq -O -a "-lat" in.nc out.nc
-ncpdq -O -a -lat in.nc out.nc # Wrong!
+ncpdq -O -a -lat in.nc out.nc # Dangerous
 ncpdq -O --rdr=-lat in.nc out.nc # OK, no whitespace before "-"
-ncpdq -O  in.nc out.nc # OK, no whitespace before "-"
+ncpdq -O -a lon,-lat in.nc out.nc # OK, no whitespace before "-"
 @end example
-Quotes are required in the first command.
-Quotes protect the @code{-lat} argument from being interpreted as a
-new command line switch by the shell.
-Quotes are requried whenever whitespace immediately precedes the
+Quotes can help protect negative signs that should indicate dimension
+reversal from being interpreted as new command line switches by the shell. 
+Quotes are recommended when whitespace immediately precedes the
 negative sign.
 
 Re-ordering and reversal may be performed simultaneously, e.g.,
