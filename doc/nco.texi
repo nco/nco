@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.153 2003-03-27 08:14:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.154 2003-03-29 01:51:38 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1321,6 +1321,7 @@ feature is automatic and cannot be controlled by the user.
 * Fortran indexing::            
 * Hyperslabs::                  
 * Multislabs::                  
+* UDUnits Support::             
 * Wrapped coordinates::         
 * Stride::                      
 * Missing values::              
@@ -1975,7 +1976,7 @@ ranges of all dimensions.
 This option may be specified more than once in a single command 
 (each hyperslabed dimension requires its own @code{-d} option).
 
-@node Multislabs, Wrapped coordinates, Hyperslabs, Common features
+@node Multislabs, UDUnits Support, Hyperslabs, Common features
 @section Multislabs 
 @cindex multislab
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
@@ -2059,7 +2060,35 @@ commands to gather the desired range of data.
 We envision adding multislab support to all arithmetic operators in the
 future. 
 
-@node Wrapped coordinates, Stride, Multislabs, Common features
+@node UDUnits Support, Wrapped coordinates, Multislabs, Common features
+@section UDUnits Support 
+@cindex UDUnits
+@cindex Unidata
+@cindex @code{UDUNITS}
+@cindex @code{units} attribute
+@cindex attribute, @code{units}
+@cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
+@cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}]]}
+@cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}]]}
+@cartouche
+@noindent
+Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
+@command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
+@command{ncwa}@* 
+Short options: @samp{-d}@*
+Long options: @samp{--dimension}, @samp{--dmn}@*
+@end cartouche
+There is more than one way to hyperslab a cat.
+The @uref{http://www.unidata.ucar.edu/packages/udunits,UDUnits} package 
+provides a library which, if present, @acronym{NCO} uses to translate
+user-specified physical dimensions into the physical dimensions of data
+stored in netCDF files.
+Unidata provides UDUnits under the same terms as netCDF, so there is no
+reason not to install both.
+The use of UDUnits in NCO is currently optional but may become required
+in a future version of NCO.
+
+@node Wrapped coordinates, Stride, UDUnits Support, Common features
 @section Wrapped coordinates
 @cindex wrapped coordinates
 @cindex longitude
@@ -2850,6 +2879,7 @@ attribute (@pxref{ncatted netCDF Attribute Editor}).
 @section @acronym{NCAR CSM} Conventions
 @cindex @acronym{NCAR CSM} conventions
 @cindex @acronym{CSM} conventions
+@cindex UDUnits
 @cindex @code{gw}
 @cindex @code{ORO}
 @cindex @code{date}
@@ -2890,8 +2920,9 @@ specified in the @code{units} attribute of @code{time} from the first
 file. 
 The analogous problem has been fixed in @acronym{ARM} files (@pxref{ARM
 Conventions}) and could be fixed for @acronym{CSM} files if there is
-sufficient lobbying, and if Unidata fixes the UDUNITS package to build
-out of the box on Linux.
+sufficient lobbying, and if Unidata fixes the
+@uref{http://www.unidata.ucar.edu/packages/udunits,UDUnits} package to
+build out of the box on Linux.
 }.
 However, to facilitate maximum user friendliness, @acronym{NCO} does
 treat certain variables in some @acronym{CSM} files specially. 

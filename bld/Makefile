@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.207 2003-03-27 19:21:35 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.208 2003-03-29 01:51:36 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -18,11 +18,12 @@
 # cd ~/nco/bld;make DODS=Y;cd -
 # HDF5 version of netCDF libraries:
 # cd ~/nco/bld;make cln bin_cln all HDF5=Y;cd -
-# UDUNITS support:
+# UDUnits support:
 # cd ~/nco/bld;make UDUNITS=Y;cd -
-# 64-bit ABI on NCAR AIX and IRIX systems:
-# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 make --jobs=1 lib_cln cln all ABI=64;cd -
-# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 make --jobs=1 lib_cln cln all ABI=64;cd -
+# 64-bit ABI on NCAR AIX systems:
+# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 make --jobs=1 lib_cln cln all ABI=64 UDUNITS=N;cd -
+# 64-bit ABI on NCAR IRIX systems:
+# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 UDUNITS_INC=/contrib/include UDUNITS_LIB=/contrib/lib make --jobs=1 lib_cln cln all ABI=64;cd -
 
 # Top-level tokens defining directory structure
 # These tokens may be over-ridden by environment variables or when invoking make, e.g., make DODS=Y
@@ -88,7 +89,7 @@ ifndef OPTS
  OPTS := O
 endif
 ifndef UDUNITS
-# Use UDUNITS functionality
+# Use UDUnits functionality
  UDUNITS := Y
 endif
 ifndef UNAMES
@@ -156,7 +157,7 @@ else
 endif 
 
 ifeq (${UDUNITS},Y)
-# Build NCO as UDUNITS-enabled clients
+# Build UDUnits-enabled NCO 
 # Place UDUNITS block after DODS block for both to work together
 ifndef UDUNITS_INC
  UDUNITS_INC := /usr/local/include # Directory containing udunits.h
@@ -316,7 +317,7 @@ ifneq (${PVM_ARCH},CRAY)
 endif # CRAY
 ifeq (${UDUNITS},Y)
  CPP_TKN_OS += -DHAVE_LIBUDUNITS -DHAVE_UDUNITS_H
-endif # UDUNITS
+endif # !UDUNITS
 # Assume strcasecmp() and strdup() routines are present (Comeau is exception)
 CPP_TKN_OS += -DHAVE_STRCASECMP -DHAVE_STRDUP
 # fxm: Define HAVE_LIBINTL, HAVE_LOCALE_H, HAVE_GETTEXT, HAVE_OMP_H
