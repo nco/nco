@@ -25142,10 +25142,15 @@ fi
 case ${host} in
     powerpc-ibm-aix* )
 	case ${CC} in
-	    xlc* ) CFLAGS="${CFLAGS} -qmaxmem=8192 -qlanglvl=extended" ; ;;
+# -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
+# -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
+	    xlc* ) CFLAGS="${CFLAGS} -qlanglvl=extended -qmaxmem=8192 -qspill=2048" ; ;;
 #    CPPFLAGS="${CPPFLAGS} -qlanglvl=extended"
 	esac
-	;;
+	case ${CXX} in
+# -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
+	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ; ;;
+	esac
 esac
 # End Default OS-specific Compiler Arguments
 
@@ -25419,7 +25424,7 @@ _ACEOF
 	    ;;
 	powerpc-ibm-aix* )
 	    case ${CC} in
-		xlc* ) CFLAGS="${CFLAGS} -O" ; ;;
+		xlc* ) CFLAGS="${CFLAGS} -O5" ; ;;
 	    esac
 	    ;;
 	rs6000-ibm-aix* )

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.228 2004-01-01 20:41:43 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.229 2004-01-02 20:22:05 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -380,7 +380,8 @@ FIXEDFLAGS := -qsuffix=f=f:cpp=F -qfixed=132
 FREEFLAGS := -qsuffix=f=f90:cpp=F90
 LD := ld
 # 20020422: -lC links to AIX C++ library which contains float intrinsics cosf()...
-LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm -lC
+# -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
+LDFLAGS += -bh:5 ${TMP_LDFLAGS} ${TMP_LIBS} -lm -lC
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 #LDFLAGS += -lxlf90 -lxlf
 endif

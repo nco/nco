@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.32 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.33 2004-01-02 20:22:05 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -93,7 +93,7 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
   (void)fprintf(stdout,"User's Guide: http://nco.sf.net/nco.html\n");
   /* TKN2YESNO is insufficient when TKN is undefined */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
-  (void)fprintf(stderr,"Configuration Option:\tActive?\tReference:\nDODS/OpenDAP clients\t%s\thttp://nco.sf.net/nco.html#DODS\nCustom debugging\t%s\tPedantic, bounds checking (slowest execution)\nDebugging symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n\nOpenMP Multi-threading\t%s\thttp://nco.sf.net/nco.html#omp\nRun-time optimized\t%s\tFastest execution possible (slowest compilation)\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
+  (void)fprintf(stderr,"Configuration Option:\tActive?\tReference:\nDODS/OpenDAP clients\t%s\thttp://nco.sf.net/nco.html#DODS\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n\nOpenMP Multi-threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
 #if defined(ENABLE_DODS) && (ENABLE_DODS)
 		"Yes",
 #else /* !ENABLE_DODS */

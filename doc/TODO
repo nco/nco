@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.265 2004-01-01 22:42:53 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.266 2004-01-02 20:22:05 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -244,7 +244,8 @@ ncwa -O -C -a lat,lon,time -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo.nc
 If possible, modify so that shared-library (rather than main.c) holds
 and returns thread-specific values for each, set with, e.g., prg_set().
 295. Understand/maintain re-entrant behavior of shared library.
-296. 
+296. Completely de-lint NCO with --enable-debug-custom
+297. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************

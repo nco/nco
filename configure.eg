@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.71 2004-01-01 20:41:42 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.72 2004-01-02 20:22:05 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -42,10 +42,28 @@ Table footnotes:
 16. ERROR User does not have read permission for ../../data/nco_tst.nc, or file does not exist
 -----------------------------------------------------------------------
 
-Default installation procedure for system-wide installation,
-cd ~/nco;cvs update -kk;make distclean;./configure;make;sudo make install
+There are three basic ways to build/install NCO with the GNU autotools:
+Method 1. Default installation procedure for system-wide installation.
 
-Recommended/current custom ./configure invocation, alphabetized by pvmgetarch:
+   cd ~/nco;cvs update -kk;make distclean;./configure;make;sudo make install
+
+   This simplest default method works if the required libraries 
+   (e.g., libnetcdf.a) are in normal places (e.g., /usr/local/lib).
+   No special optimizations or features are activated.
+
+Method 2. Optimized installation procedure for system-wide installation.
+
+   cd ~/nco;cvs update -kk;make distclean;./configure --enable-optimize-custom;make;sudo make install
+
+   Activating --enable-optimize-custom causes NCO to attempt to build with 
+   a set of compiler switches customized for speed. 
+   This will only work if Method 1 worked, so give it a whirl.
+
+Method 3. Recommended/current custom ./configure invocation
+   System administrators like to install multiple compilers, and 
+   have libraries in weird places.
+   Serious users of NCO are encouraged to try the configurations below.
+   The suggestions are alphabetized by pvmgetarch.
 
 ************************************************************************
 Start AIX
@@ -62,7 +80,7 @@ For ABI=64:
 export GNU_TRP=`~/nco/autobld/config.guess`
 export OBJECT_MODE='64' # AIX-specific hack
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -73,7 +91,7 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.
 export GNU_TRP=`~/nco/autobld/config.guess`
 export OBJECT_MODE='64' # AIX-specific hack
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -85,7 +103,7 @@ For ABI=32:
 export GNU_TRP=`~/nco/autobld/config.guess`
 export OBJECT_MODE='32' # AIX-specific hack
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -117,7 +135,7 @@ alpha-dec-osf5.1
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -142,7 +160,7 @@ FreeBSD usf-cf-x86-freebsd-1 4.6-STABLE FreeBSD 4.6-STABLE #9: Tue Aug 20 12:33:
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f config.status config.status.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
@@ -175,7 +193,7 @@ hppa2.0w-hp-hpux11.11
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -200,7 +218,7 @@ Linux dust.ess.uci.edu 2.4.19-pre8 #1 SMP Wed May 8 10:16:29 PDT 2002 i686 unkno
 gcc/g++ Zender uses this to install/update NCO in personal directories:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
@@ -211,7 +229,7 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo ma
 gcc/g++ Sysadmins: use this to install/update NCO in /usr/local
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-./configure --prefix=/usr/local > configure.${GNU_TRP}.foo 2>&1
+./configure --enable-optimize-custom --prefix=/usr/local > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
@@ -228,9 +246,9 @@ autoheader # Create config.h.in from configure.in
 autoconf # Create ./configure from ./configure.in
 automake --foreign # Create Makefile.in from Makefile.am
 # Debugging
-CFLAGS="-g -Wall -O0" ./configure --disable-shared --enable-maintainer-mode --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CFLAGS="-g -Wall -O0" ./configure --disable-shared --enable-maintainer-mode --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 # Production
-./configure --enable-maintainer-mode --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+./configure --enable-maintainer-mode --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
@@ -241,7 +259,7 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo ma
 gcc/g++ DODS:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-LDFLAGS=-L/usr/local/DODS/lib NETCDF_INC=/usr/local/DODS/include NETCDF_LIB=/usr/local/DODS/lib ./configure --enable-dods --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+LDFLAGS=-L/usr/local/DODS/lib NETCDF_INC=/usr/local/DODS/include NETCDF_LIB=/usr/local/DODS/lib ./configure --enable-dods --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -251,9 +269,9 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.
 gcc/g++ cygwin:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 # Comment out maintainer mode until it works reliably
-# ./configure --enable-maintainer-mode --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+# ./configure --enable-maintainer-mode --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
@@ -264,7 +282,7 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo ma
 como:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='como --c99' CXX='como' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='como --c99' CXX='como' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -274,7 +292,7 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.
 icc:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='icc' CXX='icc' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='icc' CXX='icc' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -301,7 +319,7 @@ x86_64-unknown-linux-gnu
 gcc/g++ Regular users, sysadmins use this to install/update NCO:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
@@ -333,7 +351,7 @@ Linux ess1.ess.uci.edu 2.2.15 #1 Thu May 18 17:22:29 EDT 2000 alpha unknown
 
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -346,7 +364,7 @@ Linux usf-cf-alpha-linux-1 2.4.17 #1 SMP Fri Jan 4 13:37:30 PST 2002 alpha unkno
 
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -369,7 +387,7 @@ Linux usf-cf-ppc-linux-1 2.2.17-pre1 #2 SMP Fri Jun 16 12:39:25 MDT 2000 ppc unk
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -404,7 +422,7 @@ Linux usf-cf-sparc-linux-1 2.4.18 #2 Thu Apr 11 14:37:17 EDT 2002 sparc64 unknow
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -428,7 +446,7 @@ Darwin usf-cf-ppc-macosx-1 5.5 Darwin Kernel Version 5.5: Thu May 30 14:51:26 PD
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -453,7 +471,7 @@ IRIX64 krein 6.5 10100655 IP27 mips
 cc/CC ABI64:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='cc' CFLAGS='-64 -mips4' CXX='CC -LANG:std' CXXFLAGS='-64 -mips4 -LANG:std' NETCDF_INC='/usr/local/include' LDFLAGS='-LANG:std' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='cc' CFLAGS='-64 -mips4' CXX='CC -LANG:std' CXXFLAGS='-64 -mips4 -LANG:std' NETCDF_INC='/usr/local/include' LDFLAGS='-LANG:std' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -463,7 +481,7 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.
 cc/CC ABI32:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='cc' CXX='CC' CXXFLAGS='-LANG:std' NETCDF_INC='/usr/local/include' LDFLAGS='-LANG:std' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='cc' CXX='CC' CXXFLAGS='-LANG:std' NETCDF_INC='/usr/local/include' LDFLAGS='-LANG:std' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -473,7 +491,7 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.
 gcc/g++ ABI32:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='gcc' CXX='g++' NETCDF_INC='/usr/local/include' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='gcc' CXX='g++' NETCDF_INC='/usr/local/include' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -521,7 +539,7 @@ For ABI=32:
 cc/CC:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='/opt/SUNWspro/bin/cc' CXX='/opt/SUNWspro/bin/CC' LD='/usr/ccs/bin/ld -z muldefs' LDFLAGS='-z muldefs -L/opt/SUNWspro/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
+CC='/opt/SUNWspro/bin/cc' CXX='/opt/SUNWspro/bin/CC' LD='/usr/ccs/bin/ld -z muldefs' LDFLAGS='-z muldefs -L/opt/SUNWspro/lib' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -532,7 +550,7 @@ For ABI=64:
 cc/CC:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='/opt/SUNWspro/bin/cc' CXX='/opt/SUNWspro/bin/CC' FC='/opt/SUNWspro/bin/f90' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
+CC='/opt/SUNWspro/bin/cc' CXX='/opt/SUNWspro/bin/CC' FC='/opt/SUNWspro/bin/f90' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
@@ -542,7 +560,7 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.
 gcc/g++:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='gcc' CXX='g++' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
+CC='gcc' CXX='g++' ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1

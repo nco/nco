@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.57 2004-01-01 20:41:42 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.58 2004-01-02 20:22:05 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -361,10 +361,15 @@ fi
 case ${host} in
     powerpc-ibm-aix* ) 
 	case ${CC} in 
-	    xlc* ) CFLAGS="${CFLAGS} -qmaxmem=8192 -qlanglvl=extended" ; ;;
+# -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
+# -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
+	    xlc* ) CFLAGS="${CFLAGS} -qlanglvl=extended -qmaxmem=8192 -qspill=2048" ; ;;
 #    CPPFLAGS="${CPPFLAGS} -qlanglvl=extended" 
 	esac
-	;;
+	case ${CXX} in 
+# -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
+	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ; ;;
+	esac
 esac
 # End Default OS-specific Compiler Arguments
 
@@ -470,7 +475,7 @@ if test "${enable_optimize_custom}" = 'yes'; then
 	    ;;
 	powerpc-ibm-aix* ) 
 	    case ${CC} in 
-		xlc* ) CFLAGS="${CFLAGS} -O" ; ;;
+		xlc* ) CFLAGS="${CFLAGS} -O5" ; ;;
 	    esac
 	    ;;
 	rs6000-ibm-aix* ) 
