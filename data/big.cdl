@@ -6,7 +6,7 @@
 // Transfer big.nc to a 32-bit system as an LFS testfile
 
 // ncgen -b -o big.nc big.cdl
-// ncgen -b -o ${DATA}/mie/big.nc ~/nco/data/big.cdl
+// ncgen -b -o ~/nco/data/big.nc ~/nco/data/big.cdl
 // scp ~/nco/data/big.cdl esmf.ess.uci.edu:nco/data
 // scp ~/nco/data/big.cdl sand.ess.uci.edu:nco/data
 
@@ -16,22 +16,22 @@
 
 // Create 4 GB file with one variable 
 // Expect this to fail on "small RAM" (< ~4 GB) machines:
-// ncap -D 3 -O -s "wvl_1e9[wvl_1e9]=1.0f" ${DATA}/mie/big.nc ${DATA}/mie/big.nc
-// ls -l ${DATA}/mie/big.nc
+// ncap -D 3 -O -s "wvl_1e9[wvl_1e9]=1.0f" ~/nco/data/big.nc ${DATA}/tmp/big.nc
+// ls -l ${DATA}/tmp/big.nc
 
 // On small-RAM machines, create 4 GB file with multiple variables instead
 // This reduces peak memory usage to ~400 MB, and still tests LFS capability
-// ncap -D 3 -O -s "wvl_1e8[wvl_1e8]=1.0f" ${DATA}/mie/big.nc ${DATA}/mie/big.nc
+// ncap -D 3 -O -s "wvl_1e8[wvl_1e8]=1.0f" ~/nco/data/big.nc ${DATA}/tmp/big.nc
 // ncrename -D -d wvl_1e8,wvl big.nc # Rename because ncecat does not do coordinate variables
 // Aggregate ten files together
-// ncecat -D 3 -O -p ${DATA}/mie big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc ${DATA}/mie/big.nc 
-// ls -l ${DATA}/mie/big.nc
+// ncecat -D 3 -O -p ${DATA}/tmp big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc big.nc ${DATA}/tmp/big.nc 
+// ls -l ${DATA}/tmp/big.nc
 
 // Test data access:
 // This is where LFS is useful
 // These commands should work on 32-bit systems with LFS support even though files exceed 2 GB
-// ncks -m -M -H ${DATA}/mie/big.nc | m
-// ncks -H -d wvl_1e9,999999999 ${DATA}/mie/big.nc | m
+// ncks -m -M -H ${DATA}/tmp/big.nc | m
+// ncks -H -d wvl_1e9,999999999 ${DATA}/tmp/big.nc | m
 
 // Valid CDF/netCDF files need not have any defined variable or data
 // Use ncap LHS-casting to define variables with big dimensions
