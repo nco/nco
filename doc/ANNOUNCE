@@ -1,74 +1,29 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.113 2004-08-07 21:16:02 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.114 2004-08-07 21:46:16 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.9.7 are ready. 
+The netCDF operators NCO version 2.9.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-The three significant new changes are 1. ncpdq, 2. ncwa consolidated
-mask switch, and 3. C99.
+The significant new changes are 1. ...
 
-1. ncpdq is a new operator which re-shapes variables and files.
-ncpdq behaves like ncwa in most respects, except ncpdq re-arranges
-values in variables rather than averages them.  
-For example,
-
-ncpdq -a lon,lat in.nc out.nc
-
-writes out.nc after permuting dimensions, where necessary, to ensure
-that lat follows lon in all variables. 
-ncpdq alters the identity of the record dimension, where necessary.
-(use this feature to concatenate files along non-record dimensions).
-ncpdq also reverses dimensions prefixed by the negative sign, e.g.,
-
-ncpdq -a -lat,-lon in.nc out.nc
-
-No existing operator was well suited for modification to handle
-re-shaping all the variables in a file, so, by design, ncpdq 
-provides a good structure for operations (such as re-shaping,
-reversal) which do not alter variable rank. 
-Placing packing/unpacking functions (already in ncap) in ncpdq, so
-that all the variables in a file can be packed with one commend,
-should now be straightforward and is now on the TODO list.
-
-2. ncwa consolidated mask switch --msk_sng
-
-ncwa used to require three switches to specify a masking operation.
-The new --msk_sng switch consolidates these into one switch:
-
-(Old version) ncwa -m ORO -T gt -M 1.0 in.nc out.nc
-(New version) ncwa --msk_sng="ORO > 1.0" in.nc out.nc
-
-We encourage user to use --msk_sng from now on.
-We plan to deprecate the old -m, -T, and -M usage soon.
-
-3. NCO now requires a C99 compiler to build.
-We could no longer resist the temptation to use C99 features.
-Building NCO with old (C89) compilers is now iffy and unsupported
-(C89 compilers may work if you add -Drestrict="" to CPPFLAGS).
+fxm First, AIX NCO installations should upgrade to this version to get the 
+AIX-specific ncap bug-fix. 
 
 Enjoy,
 Charlie
 
 Feature changes:
-1. New ncpdq operator
-2. ncwa -z (or --msk_sng, or --mask_string) switch replaces -M -m -T
-   switch trio (Butowsky) 
-
-Bug-fixes:
 1. None
 
+Bug-fixes:
+1. fxm: AIX uses NCO-supplied float-valued functions (e.g., cosf())
+
 Build changes:
-1. RPM builder updated for FC2 i386 and x86_64 (Ed Hill)
-2. Various Debian package improvements allowing direct uploads to Sid.
-   Debian is switching to our packages now that Rorik Peterson is the
-   official NCO maintainer for Debian.
-3. C99 compiler now required
-4. Homepage has better documentation of binary NCO distributions for 
-   Debian, Fedora, Gentoo, and Mac OS X.
+1. None
 
 Other user-visible changes:
-1. Improved man pages
+1. None
 
 User-invisible changes:
-1. Improve arithmetic optimizations using C99 restricted pointers
+1. None
