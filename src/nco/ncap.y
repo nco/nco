@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.40 2002-02-03 08:40:08 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.41 2002-02-12 16:56:54 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -44,8 +44,7 @@
      /home/thibaud/usr/local/src/gcc-2.7.2/c-parse.y
      /data/zender/gcc-2.7.2/c-parse.y
      parser_build_binary_op is in /data/zender/gcc-2.7.2/c-typeck.c
-     unidata ncgen.y
-  */
+     unidata ncgen.y */
 
 /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */
