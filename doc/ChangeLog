@@ -1,3 +1,8 @@
+2004-08-25  Charlie Zender  <zender@uci.edu>
+
+	* Added nco.css contributed by Alper Ersoy of the TeXInfo project
+	Does not quite work yet, but points the right direction for XML compatibility
+
 2004-08-22  Charlie Zender  <zender@uci.edu>
 
 	* Include sys/types.h prior to regex.h on Mac OS X
