@@ -1,17 +1,18 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.71 2004-03-18 02:09:56 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.72 2004-03-25 12:05:16 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.9.1 are ready. 
+The netCDF operators NCO version 2.9.2 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release eradicates some old but newly discovered ncap bugs.
-ncap incorrectly handled division, modulo, and exponentiation of the
-form S/V, S%V, and S^V where first operand was scalar and second was
-a full variable. Full details are at 
+This release eradicates some long buried bugs in ncap arithmetic
+corner-cases. ncap incorrectly handled division, modulo, and
+exponentiation of the form S/V, S%V, and S^V where first operand was
+scalar and second was a full variable. Full details are at 
 
 http://nco.sf.net/index.shtml#bug_ncap_cmt.
 
+Thanks to an alert user for noticing this.
 V/V, V%V, V^V, V/S, V%S, V^S, S/S, S%S, and S^S were not buggy.
 We recommend that all ncap users upgrade to version 2.9.2.
 

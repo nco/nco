@@ -1,3 +1,16 @@
+2004-03-23  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_9_2
+	Changes since nco-2_9_1: Fix S/V, S%V, S^V, workaround broken
+	UDUnits installations
+
+	* Correctly implement non-commutative ncap S%V modulo
+
+	* Correctly implement non-commutative ncap S^V empowerment
+
+	* Document promotion for empowerment (sounds more political than
+	it is) in nco.texi
+
 2004-03-17  Charlie Zender  <zender@uci.edu>
 
 	* Change nco_lmt.h from HAVE_UDUNITS_H to ENABLE_UDUNITS 

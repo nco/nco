@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.15 2004-03-16 23:52:19 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.16 2004-03-25 12:05:17 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -88,7 +88,7 @@ extern char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in nca
 /* Begin parser declaration section */
 
 /* Request pure, re-entrant parser, so we can pass a structure to parser
-   fxm: 20020122 Code breaks on Linux when pure_parser is not used---why?
+   fxm: 20020122 ncap16: Code breaks on Linux when pure_parser is not used---why?
    e.g., ncap -O -D 5 -S ${HOME}/dst/dst.nco ${DATA}/${caseid}/${caseid}_${yr_sng}_xy.nc ${DATA}/${caseid}/${caseid}_${yr_sng}_xy.nc
    Possibly because hardcoded yy* function prototypes change? */
 %pure_parser
@@ -386,7 +386,7 @@ scv_xpr '+' scv_xpr {
     $$.type=NC_DOUBLE; 
   } /* end else */
 } /* end scv_xpr '^' scv_xpr */
-| POWER '(' scv_xpr ',' scv_xpr ')' { /* fxm: this is identical to previous clause except for argument numbering, should be functionalized to use common code */
+| POWER '(' scv_xpr ',' scv_xpr ')' { /* fxm: ncap52 this is identical to previous clause except for argument numbering, should be functionalized to use common code */
   if($3.type <= NC_FLOAT && $5.type <= NC_FLOAT) {
     (void)scv_conform_type((nc_type)NC_FLOAT,&$3);
     (void)scv_conform_type((nc_type)NC_FLOAT,&$5);
@@ -487,6 +487,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
   $$=ncap_var_scv_add($1,$3);
 }            
 | scv_xpr '+' var_xpr {
+  /* Addition commutes so swap arguments and use S+V = V+S */
   $$=ncap_var_scv_add($3,$1);
 }  /* End Addition */
 | var_xpr '-' var_xpr { /* Begin Subtraction */
@@ -497,6 +498,8 @@ var_xpr '+' var_xpr { /* Begin Addition */
   $$=ncap_var_scv_sub($1,$3);
 }
 | scv_xpr '-' var_xpr { 
+  /* Subtraction is non-commutative, do not swap arguments and/or re-use V-S subtraction function
+     Use anti-symmetric property that V-S=-(S-V) */
   scv_sct minus;
   minus.val.b=-1;
   minus.type=NC_BYTE;
@@ -512,16 +515,21 @@ var_xpr '+' var_xpr { /* Begin Addition */
   $$=ncap_var_scv_mlt($1,$3);
 }
 | scv_xpr '*' var_xpr {
+  /* Addition commutes so swap arguments and use S*V = V*S */
   $$=ncap_var_scv_mlt($3,$1);
 } /* End Multiplication */
 | var_xpr '/' var_xpr { /* Begin Division */
-  $$=ncap_var_var_dvd($3,$1); /* NB: Order is important */
+  /* NB: Order was important (keeping denominator as I/O variable)
+     This is no longer true with ncbo
+     Maybe rewrite to keep argument ordering consitent with multiplication, addition */
+  $$=ncap_var_var_dvd($3,$1);
   nco_var_free($3); 
 }
-| var_xpr '/' scv_xpr { /* Division is non-commutative so use different functions for V/S and S/V */
+| var_xpr '/' scv_xpr { /* Keep V as I/O */
   $$=ncap_var_scv_dvd($1,$3);
 }
-| scv_xpr '/' var_xpr { /* Division is non-commutative so use different functions for V/S and S/V */
+| scv_xpr '/' var_xpr {
+  /* Division is non-commutative, use S/V not V/S division function */
   $$=ncap_scv_var_dvd($1,$3);
 } /* End Division */
 | var_xpr '%' var_xpr { /* Begin Modulo */
@@ -532,9 +540,10 @@ var_xpr '+' var_xpr { /* Begin Addition */
   $$=ncap_var_scv_mod($1,$3);
 }
 | scv_xpr '%' var_xpr {
-  $$=ncap_var_scv_mod($3,$1); /* fxm: S%V is broken */
+  /* Modulo is non-commutative, use S%V not V%S modulo function */
+  $$=ncap_scv_var_mod($1,$3);
 } /* End Modulo */
-| var_xpr '^' var_xpr { /* Begin Empowerment */
+| var_xpr '^' var_xpr { /* Begin Empowerment of form x^y */
   $$=ncap_var_var_pwr($1,$3);
   nco_var_free($1); 
 }
@@ -542,17 +551,20 @@ var_xpr '+' var_xpr { /* Begin Addition */
   $$=ncap_var_scv_pwr($1,$3);
 }
 | scv_xpr '^' var_xpr {
-  $$=ncap_var_scv_pwr($3,$1); /* fxm: S^V is broken */
+  /* Empowerment is non-commutative, use S^V not V^S empowerment function */
+  $$=ncap_scv_var_pwr($1,$3);
 }
-| POWER '(' var_xpr ',' var_xpr ')' {
+| POWER '(' var_xpr ',' var_xpr ')' { /* Begin Empowerment of form pow(x,y) */
+  /* fxm: TODO ncap52 Combine pow() with ^ parsing in parser ncap_yacc.y */
   $$=ncap_var_var_pwr($3,$5);
   nco_var_free($3); 
 }
 | POWER '(' var_xpr ',' scv_xpr ')' {
   $$=ncap_var_scv_pwr($3,$5);
 }
-| POWER '(' scv_xpr ',' var_xpr ')' { /* fxm: S^V is broken */
-  $$=ncap_var_scv_pwr($5,$3);
+| POWER '(' scv_xpr ',' var_xpr ')' {
+  /* Empowerment is non-commutative, use S^V not V^S empowerment function */
+  $$=ncap_scv_var_pwr($3,$5);
 } /* End Empowerment */
 | '-' var_xpr %prec UMINUS { /* Begin Unary Subtraction */
   scv_sct minus;
@@ -591,8 +603,6 @@ var_xpr '+' var_xpr { /* Begin Addition */
 | CNV_TYPE '(' var_xpr ')' {
   $$=nco_var_cnf_typ($1,$3);
 }
-
-
 | NAMED_CONSTANT { /* Terminal symbol action */
   /* fxm: Allow commands like a=M_PI*rds^2; to work */
 }

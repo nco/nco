@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.216 2004-03-08 06:03:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.217 2004-03-25 12:05:16 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -95,12 +95,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 2.9.1
-@set doc-edition 2.9.1
+@set nco-edition 2.9.2
+@set doc-edition 2.9.2
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 29 February 2004
-@set update-month February 2004
+@set update-date 23 March 2004
+@set update-month March 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -4334,7 +4334,7 @@ $\ln(x)$.
 Example: @math{log(2.71828182845904523536) = 1.0}
 @item log10(x)
 @dfn{Base 10 Logarithm}
-Base 10 logarithm of @var{x}, 
+@w{Base 10} logarithm of @var{x}, 
 @tex
 $\log_{10}(x)$.
 @end tex
@@ -4350,8 +4350,13 @@ No exceptions are raised for @dfn{inexact conversions}.
 Example: @math{nearbyint(0.1) = 0.0}
 @item pow(x,y)
 @dfn{Power}
+@cindex promotion
+@cindex automatic type conversion
 Value of @var{x} is raised to the power of @var{y}.
 Exceptions are raised for @dfn{domain errors}.
+Due to type-limitations in the @w{C language} @code{pow} function,
+integer arguments are promoted (@pxref{Type conversion}) to type
+@code{NC_FLOAT} before evaluation. 
 Example: @math{pow(2,3) = 8}
 @item rint(x)
 @dfn{Round exactly}
@@ -4408,11 +4413,11 @@ and are indicated with an asterisk
 @cindex single precision
 @cindex double precision
 @cindex @code{long double}
-@cindex NC_DOUBLE
+@cindex @code{NC_DOUBLE}
 @footnote{
 @w{ANSI C} compilers are guaranteed to support double precision versions
 of these functions.
-These functions normally operate on netCDF variables of type NC_DOUBLE
+These functions normally operate on netCDF variables of type @code{NC_DOUBLE}
 without having to perform intrinsic conversions.
 For example, @acronym{ANSI} compilers provide @code{sin} for the sine of C-type
 @code{double} variables. 
@@ -4433,7 +4438,7 @@ and are indicated with an asterisk.
 Use the @samp{-f} (or @samp{fnc_tbl} or @samp{prn_fnc_tbl}) switch
 to print a complete list of functions supported on your platform.
 This prints a list of functions and whether they are supported
-for netCDF variables of intrinsic type NC_FLOAT and NC_DOUBLE.
+for netCDF variables of intrinsic type @code{NC_FLOAT} and @code{NC_DOUBLE}.
 @cindex Linux
 @footnote{Linux supports more of these intrinsic functions than
 other OSs.}
@@ -4480,8 +4485,8 @@ statements chained together as a single @samp{-s} argument.
 @cindex flags
 Imagine you wish to create a binary flag based on the value of 
 an array.
-The flag should have value 1.0 where the array exceeds 1.0, and
-a value of 0.0 elsewhere.
+The flag should have @w{value 1.0} where the array @w{exceeds 1.0},
+and @w{value 0.0} elsewhere.
 Assume the array named @code{ORO} is in @file{in.nc}.
 The variable @code{ORO_flg} in @file{out.nc}
 @cindex masked average
@@ -4743,31 +4748,31 @@ for one of the seven primitive netCDF data types:@*
 @item f
 @dfn{Float}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
-type NC_FLOAT. 
+type @code{NC_FLOAT}. 
 @item d
 @dfn{Double}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
-type NC_DOUBLE.
+type @code{NC_DOUBLE}.
 @item i
 @dfn{Integer}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
-type NC_INT.
+type @code{NC_INT}.
 @item l
 @dfn{Long}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
-type NC_LONG.
+type @code{NC_LONG}.
 @item s
 @dfn{Short}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
-type NC_SHORT.
+type @code{NC_SHORT}.
 @item c
 @dfn{Char.} 
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
-type NC_CHAR.
+type @code{NC_CHAR}.
 @item b
 @dfn{Byte}.
 Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
-type NC_BYTE.
+type @code{NC_BYTE}.
 @end table
 @noindent
 The specification of @var{att_type} is optional in @dfn{Delete} mode.
@@ -4775,12 +4780,12 @@ The specification of @var{att_type} is optional in @dfn{Delete} mode.
 The value of @var{att_val} is what you want to change attribute
 @var{att_nm} to contain.
 The specification of @var{att_val} is optional in @dfn{Delete} mode.
-Attribute values for all types besides NC_CHAR must have an attribute
+Attribute values for all types besides @code{NC_CHAR} must have an attribute
 length of at least one.
 Thus @var{att_val} may be a single value or one-dimensional array of
 elements of type @code{att_type}.
 If the @var{att_val} is not set or is set to empty space,
-and the @var{att_type} is NC_CHAR, e.g., @code{-a units,T,o,c,""} or 
+and the @var{att_type} is @code{NC_CHAR}, e.g., @code{-a units,T,o,c,""} or 
 @code{-a units,T,o,c,}, then the corresponding attribute is set to 
 have zero length.
 When specifying an array of values, it is safest to enclose
@@ -4793,14 +4798,14 @@ shell, such as spaces, commas, and wildcard characters.
 
 @cindex Perl
 @cindex @acronym{ASCII}
-@acronym{NCO} processing of NC_CHAR attributes is a bit like Perl in
+@acronym{NCO} processing of @code{NC_CHAR} attributes is a bit like Perl in
 that it attempts to do what you want by default (but this sometimes
 causes unexpected results if you want unusual data storage).
 @cindex @code{printf()}
 @cindex @code{\n} (@acronym{ASCII} LF, linefeed)
 @cindex characters, special
 @cindex @code{\t} (@acronym{ASCII} HT, horizontal tab)
-If the @var{att_type} is NC_CHAR then the argument is interpreted as a
+If the @var{att_type} is @code{NC_CHAR} then the argument is interpreted as a
 string and it may contain C-language escape sequences, e.g., @code{\n},
 which @acronym{NCO} will interpret before writing anything to disk.
 @acronym{NCO} translates valid escape sequences and stores the
@@ -4855,7 +4860,7 @@ strings is assumed and need not be explicitly specified.
 If @code{\0} is input, it will not be translated (because it would
 terminate the string in an additional location).
 Because of these context-sensitive rules, if wish to use an attribute of 
-type NC_CHAR to store data, rather than text strings, you should use
+type @code{NC_CHAR} to store data, rather than text strings, you should use
 @command{ncatted} with care.
 
 @noindent

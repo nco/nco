@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.293 2004-03-04 07:37:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.294 2004-03-25 12:05:16 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -191,9 +191,10 @@ nco315. GNUC non-ANSI rank reduction methods in nco_var_avg.c fail on large file
 nco316. Change offending nco_malloc() to nco_malloc_flg() calls for #315
 nco317. Understand stack memory problem. ulimits? compiler switches?
 nco318. Solve stack memory problem and benchmark vs. ANSI code branch
-nco319. Is Rorik's patch to nco_typ_cnv_rth() for ncwa a kludge or permanent?
 nco320. How to do TeX-like hyphens in TeXInfo?
-nco321. Do not promote NC_FLOAT to NC_DOUBLE in ncra/ncea
+nco321. Do not promote NC_FLOAT to NC_DOUBLE in ncra/ncea(?)
+nco322. Implement integer empowerment in var_scv_pwr() with, e.g., GSL
+nco323. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -226,14 +227,13 @@ ncap43. Alphabetize ncap function list prior to printing it with -f
 ncap46. Define YYMALLOC/FREE/REALLOC etc so lexer/parser use nco_malloc() etc.
 ncap48. Search ncap_yacc.y for non-symmetric arithmetic operations, implement symmetric operations
 ncap49. Cause "**" in arithmetic context to cause error, print HINT to Fortran syntax users
-ncap50. Implement ncap_var_var_mod()
-ncap51. Document pow() in nco.texi
+ncap52. Combine pow() with ^ parsing in parser ncap_yacc.y 
+ncap53. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
 bld23. Implement ncra i18n support I18N with autotools: Add .po files, update doc/i18n.txt
-bld28. Solaris cc: "ncap_yacc.y", line 115: identifier redeclared: YYSTYPE
-bld29. RedHat 9 does not build with --enable-*-customize because of flex  warnings.
+bld29. RedHat 9 does not build with --enable-*-customize because of flex warnings.
 bld30. Search for libstdc++ with AIX/DODS/GCC breaks NCO build
 bld31. 
  

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.16 2004-03-16 23:52:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.17 2004-03-25 12:05:17 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -262,7 +262,7 @@ var_scv_mlt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
 } /* end var_scv_mlt() */
 
 void
-var_scv_dvd
+var_scv_dvd /* [fnc] Divide variable by scalar */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of array operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -294,7 +294,7 @@ var_scv_dvd
       } /* end for */
     } /* end else */
     break;
-  }
+  } /* endif NC_FLOAT */
   case NC_DOUBLE:{
     const double scv_dbl=scv->val.d;
     if(!has_mss_val){
@@ -306,7 +306,7 @@ var_scv_dvd
       } /* end for */
     } /* end else */
     break;
-  }
+  } /* endif NC_DOUBLE */
   case NC_INT:{
     const nco_long scv_lng=scv->val.l;
     if(!has_mss_val){
@@ -318,7 +318,7 @@ var_scv_dvd
       } /* end for */
     } /* end else */
     break;
-  }
+  } /* endif NC_INT */
   case NC_SHORT:{
     const short scv_sht=scv->val.s; 
     if(!has_mss_val){
@@ -330,7 +330,7 @@ var_scv_dvd
       } /* end for */
     } /* end else */
     break;
-  }
+  } /* endif NC_SHORT */
   case NC_CHAR:
     /* Do nothing */
     break;
@@ -346,7 +346,7 @@ var_scv_dvd
 } /* end var_scv_dvd() */
 
 void
-scv_var_dvd
+scv_var_dvd /* [fnc] Divide scalar by variable */
 (const nc_type type, /* I [enm] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of array operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
@@ -378,7 +378,7 @@ scv_var_dvd
       } /* end for */
     } /* end else */
     break;
-  }
+  } /* endif NC_FLOAT */
   case NC_DOUBLE:{
     const double scv_dbl=scv->val.d;
     if(!has_mss_val){
@@ -390,7 +390,7 @@ scv_var_dvd
       } /* end for */
     } /* end else */
     break;
-  }
+  } /* endif NC_DOUBLE */
   case NC_INT:{
     const nco_long scv_lng=scv->val.l;
     if(!has_mss_val){
@@ -402,7 +402,7 @@ scv_var_dvd
       } /* end for */
     } /* end else */
     break;
-  }
+  } /* endif NC_INT */
   case NC_SHORT:{
     const short scv_sht=scv->val.s; 
     if(!has_mss_val){
@@ -414,7 +414,7 @@ scv_var_dvd
       } /* end for */
     } /* end else */
     break;
-  }
+  } /* endif NC_SHORT */
   case NC_CHAR:
     /* Do nothing */
     break;
@@ -429,21 +429,20 @@ scv_var_dvd
   
 } /* end scv_var_dvd() */
 
-void 
-var_scv_mod(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
-     /* 
-	const nc_type type: I netCDF type of operands
-	const long sz: I size (in elements) of operands
-	const int has_mss_val: I flag for missing values
-	ptr_unn mss_val: I value of missing value
-	ptr_unn op1: I values of first operand
-        scv_sct scv: I pointer to scalar value (second operand) */
+void
+var_scv_mod /* [fnc] Modulo variable by scalar */
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of array operands */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [flg] Value of missing value */
+ ptr_unn op1, /* I/O [val] Values of first operand */
+ scv_sct *scv) /* I [val] Pointer to scalar value (second operand) */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* Purpose: Take modulus of  all values in op1 by value in attrib
-     Store result in op1  */    
+  /* Purpose: Take modulus of all values in op1 by scv
+     Store result in op1 */    
   
-  /* Modulus is currently defined as op1:=op1%scv */  
+  /* Variable-scalar modulus is currently defined as op1:=op1%scv */  
   
   /* http://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
      __GNUC__ : Defined by gcc 
@@ -471,8 +470,8 @@ var_scv_mod(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
 	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=fmodf(op1.fp[idx],scv_flt);
       } /* end for */
     } /* end else */
-  }
-  break; 
+    break; 
+  } /* endif NC_FLOAT */
   case NC_DOUBLE:{
     const double scv_dbl=fabs(scv->val.d);
     if(!has_mss_val){
@@ -484,8 +483,7 @@ var_scv_mod(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
       } /* end for */
     } /* end else */
     break;
-  }
-  
+  } /* endif NC_DOUBLE */
   case NC_INT:{
     const nco_long scv_lng=scv->val.l;
     if(!has_mss_val){
@@ -497,7 +495,7 @@ var_scv_mod(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
       } /* end for */
     } /* end else */
     break;
-  }
+  } /* endif NC_INT */
   case NC_SHORT:{
     const short scv_sht=scv->val.s; 
     if(!has_mss_val){
@@ -509,7 +507,7 @@ var_scv_mod(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
       } /* end for */
     } /* end else */
     break;
-  }
+  } /* endif NC_SHORT */
   case NC_CHAR:
     /* Do nothing */
     break;
@@ -520,3 +518,223 @@ var_scv_mod(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
   } /* end switch */
   
 } /* end var_scv_mod */
+
+void
+scv_var_mod /* [fnc] Modulo scalar by variable */
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of array operands */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [flg] Value of missing value */
+ scv_sct *scv, /* I [val] Pointer to scalar value (first operand) */
+ ptr_unn op2) /* I/O [val] Values of second operand */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Take modulus of all values in scv by op2
+     Store result in op2 */    
+  
+  /* Scalar-variable modulus is currently defined as op2:=scv%op2 */  
+  
+  /* http://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
+     __GNUC__ : Defined by gcc 
+     __GNUG__ : Defined by g++, equivalent to (__GNUC__ && __cplusplus) */
+
+#ifndef __GNUG__
+  float fmodf(float,float); /* Cannot insert fmodf() in ncap_sym_init() because it takes two arguments TODO #20 */
+  float fabsf(float); /* Sun math.h does not include fabsf() prototype */
+#endif /* __GNUG__ */
+
+  long idx;
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op2);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  switch(type){
+  case NC_FLOAT:{ 
+    const float scv_flt=fabsf(scv->val.f);
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.fp[idx]=fmodf(scv_flt,op2.fp[idx]);
+    }else{
+      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op2.fp[idx] != mss_val_flt) op2.fp[idx]=fmodf(scv_flt,op2.fp[idx]);
+      } /* end for */
+    } /* end else */
+    break; 
+  } /* endif NC_FLOAT */
+  case NC_DOUBLE:{
+    const double scv_dbl=fabs(scv->val.d);
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.dp[idx]=fmod(scv_dbl,op2.dp[idx]);
+    }else{
+      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op2.dp[idx] != mss_val_dbl) op2.dp[idx]=fmod(scv_dbl,op2.dp[idx]);  
+      } /* end for */
+    } /* end else */
+    break;
+  } /* endif NC_DOUBLE */
+  case NC_INT:{
+    const nco_long scv_lng=scv->val.l;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.lp[idx]=scv_lng%op2.lp[idx];
+    }else{
+      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op2.lp[idx] != mss_val_lng) op2.lp[idx]=scv_lng%op2.lp[idx];
+      } /* end for */
+    } /* end else */
+    break;
+  } /* endif NC_INT */
+  case NC_SHORT:{
+    const short scv_sht=scv->val.s; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.sp[idx]=scv_sht%op2.sp[idx];
+    }else{
+      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op2.sp[idx] != mss_val_sht) op2.sp[idx]=scv_sht%op2.sp[idx];
+      } /* end for */
+    } /* end else */
+    break;
+  } /* endif NC_SHORT */
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+  
+} /* end scv_var_mod */
+
+void
+var_scv_pwr /* [fnc] Empower variable by scalar */
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of array operands */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [flg] Value of missing value */
+ ptr_unn op1, /* I/O [val] Values of first operand */
+ scv_sct *scv) /* I [val] Pointer to scalar value (second operand) */
+{
+  /* Purpose: Raise var to power in scv */
+
+  /* Variable-scalar empowerment is currently defined as op1:=op1^scv */  
+
+  long idx;
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+
+  switch(type){ 
+  case NC_FLOAT:{
+    const float scv_flt=scv->val.f;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.fp[idx]=powf(op1.fp[idx],scv_flt);
+    }else{
+      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+        if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=powf(op1.fp[idx],scv_flt);
+      } /* end for */
+    } /* end else */
+    break;
+  } /* end NC_FLOAT */
+  case NC_DOUBLE:{
+    const double scv_dbl=scv->val.d;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]=pow(op1.dp[idx],scv_dbl);
+    }else{
+      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+        if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=pow(op1.dp[idx],scv_dbl);
+      } /* end for */
+    } /* end else */
+    break;
+  } /* end NC_DOUBLE */
+  case NC_INT:
+    /* Do nothing */
+    /* fxm: nco322 Implement integer empowerment? GSL? */
+    break;
+  case NC_SHORT:
+    /* Do nothing */
+    break;
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+  default: nco_dfl_case_nc_type_err(); break;
+  }/* end switch */
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+  
+} /* end var_scv_pwr */
+
+void
+scv_var_pwr /* [fnc] Empower scalar by variable */
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of array operands */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [flg] Value of missing value */
+ scv_sct *scv, /* I [val] Pointer to scalar value (first operand) */
+ ptr_unn op2) /* I/O [val] Values of second operand */
+{
+  /* Purpose: Raise scv to power in var */
+
+  /* Scalar-variable empowerment is currently defined as op2:=scv^op2 */  
+
+  long idx;
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op2);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+
+  switch(type){ 
+  case NC_FLOAT:{
+    const float scv_flt=scv->val.f;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.fp[idx]=powf(scv_flt,op2.fp[idx]);
+    }else{
+      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+        if(op2.fp[idx] != mss_val_flt) op2.fp[idx]=powf(scv_flt,op2.fp[idx]);
+      } /* end for */
+    } /* end else */
+    break;
+  } /* end NC_FLOAT */
+  case NC_DOUBLE:{
+    const double scv_dbl=scv->val.d;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.dp[idx]=pow(scv_dbl,op2.dp[idx]);
+    }else{
+      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+        if(op2.dp[idx] != mss_val_dbl) op2.dp[idx]=pow(scv_dbl,op2.dp[idx]);
+      } /* end for */
+    } /* end else */
+    break;
+  } /* end NC_DOUBLE */
+  case NC_INT:
+    /* Do nothing */
+    /* fxm: nco322 Implement integer empowerment? GSL? */
+    break;
+  case NC_SHORT:
+    /* Do nothing */
+    break;
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+  default: nco_dfl_case_nc_type_err(); break;
+  }/* end switch */
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+  
+} /* end var_scv_pwr */

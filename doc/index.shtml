@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.207 2004-03-17 00:30:20 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.208 2004-03-25 12:05:16 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -202,10 +202,10 @@ Tarballs and RPMs are only rarely uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.9.2</b>: (<i>In progress</i>) <tt>ncap</tt> <tt>S/V</tt>,
-<tt>S%V</tt>, and <tt>S^V</tt> <a href="#bug_ncap_cmt">operations fixed</a>
+<li><b>NCO 2.9.3</b>: (<i>In progress</i>)
+<li><b>NCO 2.9.2</b>: <tt>ncap</tt> <tt>S/V</tt>, <tt>S%V</tt>, and <tt>S^V</tt> <a href="#bug_ncap_cmt">operations fixed</a> (<tt>S</tt> = scalar, <tt>V</tt> = variable)
 <li><b>NCO 2.9.1</b>: <tt>ncwa</tt> works again on packed <tt>NC_FLOAT</tt> data (<a href="#bug_pck_ncwa">broke when?</a>),
-<li><b>NCO 2.9.0</b>: Complete <tt>ncap</tt> modulo operator (<tt>A%B</tt>) and generic exponentiation (<tt>A^B</tt>), fix attribute divided by variable (<tt>A/B</tt>), workaround stack memory problem with GCC extensions, fix <tt>make check</tt>
+<li><b>NCO 2.9.0</b>: Complete <tt>ncap</tt> modulo operator (<tt>V%S</tt>) and generic exponentiation (<tt>V^S</tt>), scalar divided by variable (<tt>S/V</tt>), workaround stack memory problem with GCC extensions, fix <tt>make check</tt>
 <li><b>NCO 2.8.8</b>: <tt>--enable-[optimize/debug]-custom</tt> options for GCC work again (broke in 2.8.6)
 <li><b>NCO 2.8.7</b>: <tt>ncap</tt> packing works again (<a href="#bug_pck">broke in 2.8.4</a>), Cygwin builds work again
 <li><b>NCO 2.8.6</b>: AIX and IRIX builds work again, custom GCC builds with <tt>-Werror</tt>
@@ -284,19 +284,19 @@ Simply hit return when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>2.9.1</tt> (which is
-tagged as <tt>nco-2_9_1</tt> due to CVS rules) into local directory
-<tt>nco-2.9.1</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2_9_1 -d nco-2.9.1 nco</tt></p>
+This command retrieves and places NCO version <tt>2.9.2</tt> (which is
+tagged as <tt>nco-2_9_2</tt> due to CVS rules) into local directory
+<tt>nco-2.9.2</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2_9_2 -d nco-2.9.2 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-2_9_1</tt>) and the development version is that the
+(e.g., <tt>nco-2_9_2</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>2.9.1</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>2.9.2</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -324,14 +324,14 @@ distribution by many months, if not years:
 
 <ul>
 <!--
-<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.9.1</a></li>
+<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.9.2</a></li>
 -->
 <a href="http://www.debian.org">Debian GNU/Linux</a>-compatible systems: 
-<li><a href="src/nco_2.9.1-1_i386.deb">nco_2.9.1-1_i386.deb</a> (<!--#fsize file="src/nco_2.9.1-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
-<li><a href="src/nco_2.9.1-1.dsc">nco_2.9.1-1.dsc</a> (<!--#fsize file="src/nco_2.9.1-1.dsc"-->): Description</li>
-<li><a href="src/nco_2.9.1-1.tar.gz">nco_2.9.1-1.tar.gz</a> (<!--#fsize file="src/nco_2.9.1-1.tar.gz"-->): Gzipped Source Tarball</li>
+<li><a href="src/nco_2.9.2-1_i386.deb">nco_2.9.2-1_i386.deb</a> (<!--#fsize file="src/nco_2.9.2-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
+<li><a href="src/nco_2.9.2-1.dsc">nco_2.9.2-1.dsc</a> (<!--#fsize file="src/nco_2.9.2-1.dsc"-->): Description</li>
+<li><a href="src/nco_2.9.2-1.tar.gz">nco_2.9.2-1.tar.gz</a> (<!--#fsize file="src/nco_2.9.2-1.tar.gz"-->): Gzipped Source Tarball</li>
 <li><a
-href="src/nco_2.9.1-1_i386.changes">nco_2.9.1-1_i386.changes</a> (<!--#fsize file="src/nco_2.9.1-1.changes"-->): Changes</li> (I think an error here is expected since there are no changes between the official tarball and the Debian tarball. Anyone know?)
+href="src/nco_2.9.2-1_i386.changes">nco_2.9.2-1_i386.changes</a> (<!--#fsize file="src/nco_2.9.2-1.changes"-->): Changes</li> (I think an error here is expected since there are no changes between the official tarball and the Debian tarball. Anyone know?)
 </ul>
 
 <ul>

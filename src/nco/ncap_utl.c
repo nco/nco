@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.96 2004-03-16 23:52:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.97 2004-03-25 12:05:17 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -348,9 +348,6 @@ var_sct *
 ncap_var_scv_mlt(var_sct *var,scv_sct scv)
 {
   /* Purpose: Multiply variable by value in scv */
-
-  /* fxm: 20020421 Old method was to always convert scv to var precision 
-     (void)scv_conform_type(var->type,&scv); */
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   (void)var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
@@ -377,12 +374,44 @@ ncap_scv_var_dvd(scv_sct scv,var_sct *var)
 var_sct *
 ncap_var_scv_mod(var_sct *var,scv_sct scv)
 {
-  /* Purpose: var % scv, take modulus of each element of var with value in scv */
-  
+  /* Purpose: Modulus of each element of var with scv */
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   (void)var_scv_mod(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
 } /* ncap_var_scv_mod */
+
+var_sct *
+ncap_scv_var_mod(scv_sct scv,var_sct *var)
+{
+  /* Purpose: Modulus of scv with each element of var */
+  (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
+  (void)scv_var_mod(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
+  return var;
+} /* ncap_var_scv_mod */
+
+var_sct *
+ncap_var_scv_pwr(var_sct *var,scv_sct scv)
+{
+  /* Purpose: Empower each element in var by scv */
+  /* Promote scv and var to NC_FLOAT if necessary since C has no integer empowerment 
+     This reduces type conversion warnings (it is not done to avoid overflow) */
+  if(var->type < NC_FLOAT) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
+  (void)scv_conform_type(var->type,&scv);
+  (void)var_scv_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
+  return var;
+} /* end ncap_var_scv_pwr */
+
+var_sct *
+ncap_scv_var_pwr(scv_sct scv,var_sct *var)
+{
+  /* Purpose: Empower each element in scv by var */
+  /* Promote scv and var to NC_FLOAT if necessary since C has no integer empowerment 
+     This reduces type conversion warnings (it is not done to avoid overflow) */
+  if(var->type < NC_FLOAT) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
+  (void)scv_conform_type(var->type,&scv);
+  (void)scv_var_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
+  return var;
+} /* end ncap_var_scv_pwr */
 
 var_sct *
 ncap_var_abs(var_sct *var)
@@ -391,54 +420,6 @@ ncap_var_abs(var_sct *var)
   (void)nco_var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var->val);
   return var;
 } /* end ncap_var_abs */
-
-var_sct *
-ncap_var_scv_pwr(var_sct *var,scv_sct scv)
-{
-  /* Purpose: Raise var to power in scv
-     Convert all values to type double before operation */
-  long idx;
-  long sz;
-  ptr_unn op1;
-  
-  /* Promote scv and var to NC_FLOAT */
-  if(var->type < NC_FLOAT) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
-  (void)scv_conform_type(var->type,&scv);
-  
-  op1=var->val;
-  sz=var->sz;
-  (void)cast_void_nctype(var->type,&op1);
-  if(var->has_mss_val) (void)cast_void_nctype(var->type,&(var->mss_val));
-  
-  switch(var->type){ 
-  case NC_FLOAT: { /* Extra brace limits scope of temporary type-specific scalar variable */
-    const float scv_flt=scv.val.f;
-    if(!var->has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.fp[idx]=powf(op1.fp[idx],scv_flt);
-    }else{
-      const float mss_val_flt=*(var->mss_val.fp); /* Temporary variable reduces de-referencing */
-      for(idx=0;idx<sz;idx++){
-        if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=powf(op1.fp[idx],scv_flt);
-      } /* end for */
-    } /* end else */
-    break; } /* end NC_FLOAT */
-  case NC_DOUBLE: { /* Extra brace limits scope of temporary type-specific scalar variable */
-    const double scv_dbl=scv.val.d;
-    if(!var->has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.dp[idx]=pow(op1.dp[idx],scv_dbl);
-    }else{
-      const double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces de-referencing */
-      for(idx=0;idx<sz;idx++){
-        if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=pow(op1.dp[idx],scv_dbl);
-      } /* end for */
-    } /* end else */
-    break; } /* end NC_DOUBLE */
-  default: nco_dfl_case_nc_type_err(); break;
-  }/* end switch */
-  
-  if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
-  return var;
-} /* end ncap_var_scv_pwr */
 
 scv_sct  
 ncap_scv_clc

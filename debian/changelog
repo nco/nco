@@ -1,3 +1,9 @@
+nco (2.9.2-1) unstable; urgency=medium
+
+  * Fix S/V, S%V, S^V, workaround broken UDUnits installations
+
+ -- Charlie Zender <zender@uci.edu>  Tue, 23 Mar 2004 07:16:59 -0800
+
 nco (2.9.1-1) unstable; urgency=low
 
   * prp_sei, fix ncwa unpacking bug
