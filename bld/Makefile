@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.147 2002-06-06 23:07:36 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.148 2002-06-08 00:35:38 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -264,6 +264,8 @@ ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 ifeq (${OMP},Y)
  CC := xlc_r
  FC := xlf95_r
+# -qsmp=noauto : Turn on SMP/OMP code generation but do no automatic parallelization
+# -qsmp=omp : Use industry standard OMP without IBM extensions
  OMP_FLG := -qsmp=noauto 
 else
  CC := xlc
