@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.42 2002-03-12 20:27:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.43 2002-04-17 07:23:10 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -706,6 +706,7 @@ var_attribute_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_u
   /* Modulus  is currently defined as op1:=op1%attribute */  
   
   extern float fmodf(float,float); /* Cannot insert fmodf in ncap_sym_init() because it takes two arguments TODO #20 */
+  extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
 
   long idx;
   
@@ -792,6 +793,7 @@ var_abs(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
+  extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
   
   long idx;
   
@@ -993,6 +995,7 @@ ncap_attribute_calc(parse_sct a, char op, parse_sct b)
   /* Purpose: Calculate (a op b) . n.b Attributes must be of the same type */
 
   extern float fmodf(float,float); /* Cannot insert fmodf in ncap_sym_init() because it takes two arguments TODO #20 */
+  extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
 
   parse_sct c;
   c.type=a.type;
@@ -1030,7 +1033,7 @@ ncap_attribute_calc(parse_sct a, char op, parse_sct b)
       case'-': c.val.f=a.val.f - b.val.f;break;
       case'/': c.val.f=a.val.f / b.val.f;break;
       case'*': c.val.f=a.val.f * b.val.f;break;
-      case'%': c.val.f=fmodf(a.val.f, fabsf(b.val.f));break;
+      case'%': c.val.f=fmodf(a.val.f,fabsf(b.val.f));break;
     } break;
   case NC_DOUBLE:
     switch(op){
@@ -1038,7 +1041,7 @@ ncap_attribute_calc(parse_sct a, char op, parse_sct b)
       case'-': c.val.d=a.val.d - b.val.d;break;
       case'/': c.val.d=a.val.d / b.val.d;break;
       case'*': c.val.d=a.val.d * b.val.d;break;
-      case'%': c.val.d=fmod(a.val.d, fabs(b.val.d));break;
+      case'%': c.val.d=fmod(a.val.d,fabs(b.val.d));break;
     } break;
   default: nco_dfl_case_nctype_err(); break;
   }/* end switch */    
@@ -1050,6 +1053,7 @@ parse_sct
 ncap_attribute_abs(parse_sct a)
 {
   /* Purpose: Find the absolute value of an attribute */
+  extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
   
   parse_sct b;
   b.type=a.type;

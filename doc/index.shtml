@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.90 2002-03-13 05:21:42 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.91 2002-04-17 07:23:09 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -66,6 +66,7 @@ Try to disable Spammers' machines:
 <li><a href="#RTFM">NCO User's Guide</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
 <li><a href="#NCAR">Using NCO at UCI and NCAR</a></li>
+<li><a href="#FAQ">NCO FAQ</a></li>
 <li><a href="#Bugs">Known Problems</a></li>
 </ul>
 <hr>
@@ -240,8 +241,8 @@ fixes we currently have in mind for NCO.</li>
 
 <dt><a name="NCAR"></a></dt>
 <h2>Using NCO at UCI and NCAR</h2>
-<p>Users at UC Irvine and NCAR <it>may</it> find pre-built,
-<it>almost</it> up-to-date NCO executables in the following locations:
+<p>Users at UC Irvine and NCAR <i>may</i> find pre-built,
+<i>almost</i> up-to-date NCO executables in the following locations:
 <ul>
 <li>ESS <tt>dust.ps.uci.edu</tt> (Linux 2.4.7): <tt>/home/zender/bin/LINUX</tt></li>
 <li>ESS <tt>ess1.ps.uci.edu</tt> (Linux 2.2.15): <tt>/home/zender/bin/LINUXALPHA</tt></li>
@@ -254,6 +255,26 @@ fixes we currently have in mind for NCO.</li>
 <li>SCD <tt>ouray.ucar.edu</tt> (UNICOS 10.0.0): <tt>/home/ouray0/zender/bin/CRAY</tt></li>
 <li>SCD <tt>prospect.ucar.edu</tt> (OSF1 5.0): <tt>/home/prospect/zender/bin/ALPHA</tt></li>
 <li>SCD <tt>utefe.ucar.edu</tt> (IRIX 6.5): <tt>/home/ute/zender/bin/SGIMP64</tt></li>
+</ul>
+<hr></p>
+
+<dt><a name="FAQ"></a></dt>
+<h2>NCO FAQ:</h2>
+<p>These questions show up frequently, here is my canned response:
+<ul>
+<li><i>Where can I find prebuilt NCO executables?</i>
+If you have an account at NCAR or UCI, try the locations listed above.
+Otherwise you are on your own.</li>
+<li><i>The executables at NCAR are out of date, where can I get the
+latest, greatest version?</i>
+You must build them from source yourself.</li>
+<li><i>Why doesn't NCAR support NCO?</i>
+Not enough people have asked NCAR to support it. 
+If you would like NCO to be installed and maintained on NCAR machines
+please send your request to relevant system administrators, e.g.,
+<a href="mailto:consult1@ncar.ucar.edu">NCAR User Support</a>
+or <a href="mailto:support@unidata.ucar.edu">Unidata Support</a>
+</li>
 </ul>
 <hr></p>
 
