@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.91 2002-02-28 07:08:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.92 2002-03-01 07:50:11 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -22,7 +22,7 @@ texi2html -monolithic -verbose nco.texi
 dvips -o nco.ps nco.dvi 
 ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf nco.texi nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
-cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf nco.texi www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
+cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf nco.texi www.ess.uci.edu:/home/zender/public_html/nco;cd -
 
 Resources:
 Octave TeXInfo manual is a good example of clean TeXInfo structure
@@ -339,7 +339,7 @@ The complete @acronym{NCO} source distribution is currently distributed as a
 @dfn{compressed tarfile} from
 @uref{http://sourceforge.net/projects/nco}
 and 
-@uref{ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz}.
+@uref{ftp://dust.ps.uci.edu/pub/zender/nco/nco.tar.gz}.
 The compressed tarfile must be uncompressed and untarred before building
 @acronym{NCO}.
 Uncompress the file with @samp{gunzip nco.tar.gz}. 
@@ -1393,7 +1393,7 @@ through the (asynchronous) Masnet Interface Gateway System
 The following examples show how one might analyze files stored on  
 remote systems.
 @example
-ncks -H -l ./ ftp://ftp.cgd.ucar.edu/pub/zender/nco/in.nc
+ncks -H -l ./ ftp://dust.ps.uci.edu/pub/zender/nco/in.nc
 ncks -H -l ./ dust.ps.uci.edu:/home/zender/nco/in.nc
 ncks -H -l ./ /ZENDER/nco/in.nc 
 ncks -H -l ./ mss:/ZENDER/nco/in.nc
@@ -1416,7 +1416,7 @@ option as follows:
 @cindex @code{-l @var{output-path}}
 @cindex @var{output-path}
 @example
-ncks -H -p ftp://ftp.cgd.ucar.edu/pub/zender/nc -l ./ in.nc
+ncks -H -p ftp://dust.ps.uci.edu/pub/zender/nc -l ./ in.nc
 ncks -H -p dust.ps.uci.edu:/home/zender/nc -l ./ in.nc
 ncks -H -p /ZENDER/nco -l ./ in.nc 
 ncks -H -p mss:/ZENDER/nco -l ./ in.nc
@@ -2403,7 +2403,7 @@ $n \le x < n+1$
 @end ifset
 will have the value @var{n} when converted to an integer.
 
-@node  Suppressing interactive prompts, History attribute, Type conversion, Common features
+@node Suppressing interactive prompts, History attribute, Type conversion, Common features
 @section Suppressing interactive prompts
 @cindex overwriting files
 @cindex appending to files
@@ -2452,9 +2452,10 @@ The full contents of an existing @code{history} attribute are copied
 from the first @var{input-file} to the @var{output-file}.
 The timestamps appear in reverse chronological order, with the most
 recent timestamp appearing first in the @code{history} attribute.
-Since @acronym{NCO} and many other netCDF operators adhere to the @code{history}
-convention, the entire data processing path of a given netCDF file may
-often be deduced from examination of its @code{history} attribute.
+Since @acronym{NCO} and many other netCDF operators adhere to the
+@code{history} convention, the entire data processing path of a given
+netCDF file may often be deduced from examination of its @code{history}
+attribute. 
 @cindex @command{ncatted}
 To avoid information overkill, all operators have an optional switch
 (@samp{-h}) to override automatically appending the @code{history}
@@ -2481,15 +2482,16 @@ If you do not work with @acronym{NCAR CSM} data then you may skip this
 section. 
 The @acronym{CSM} netCDF convention is described at
 @uref{http://www.cgd.ucar.edu/csm/experiments/output.format.html"}.
-Most of the @acronym{CSM} netCDF convention is transparent to @acronym{NCO}
+Most of the @acronym{CSM} netCDF convention is transparent to
+@acronym{NCO} 
 @footnote{
 The exception is appending/altering the attributes @code{x_op},
 @code{y_op}, @code{z_op}, and @code{t_op} for variables which have been
 averaged across space and time dimensions.
 This feature is scheduled for future inclusion in @acronym{NCO}.
 }.
-There are no known pitfalls associated with using any @acronym{NCO} operator on
-files adhering to this convention
+There are no known pitfalls associated with using any @acronym{NCO}
+operator on files adhering to this convention
 @footnote{
 The @acronym{CSM} convention recommends @code{time} be stored in the format
 @var{time} since @var{base_time}, e.g., the @code{units} attribute of
@@ -2501,22 +2503,25 @@ That is, any @code{time} values from files following the first file to
 be concatenated should be corrected to the @var{base_time} offset
 specified in the @code{units} attribute of @code{time} from the first
 file. 
-The analogous problem has been fixed in @acronym{ARM} files (@pxref{ARM Conventions})
-and could be fixed for @acronym{CSM} files if there is sufficient lobbying, and if
-Unidata fixes the UDUNITS package to build out of the box on Linux.
+The analogous problem has been fixed in @acronym{ARM} files (@pxref{ARM
+Conventions}) and could be fixed for @acronym{CSM} files if there is
+sufficient lobbying, and if Unidata fixes the UDUNITS package to build
+out of the box on Linux.
 }.
-However, to facilitate maximum user friendliness, @acronym{NCO} does treat certain
-variables in some @acronym{CSM} files specially. 
-The special functions are not required by the @acronym{CSM} netCDF convention,
-but experience has shown they do make life easier.
+However, to facilitate maximum user friendliness, @acronym{NCO} does
+treat certain variables in some @acronym{CSM} files specially. 
+The special functions are not required by the @acronym{CSM} netCDF
+convention, but experience has shown they do make life easier.
 
-Currently, @acronym{NCO} determines whether a datafile is a @acronym{CSM} output datafile
-simply by checking whether value of the global attribute
-@code{convention} (if it exists) equals @samp{NCAR-CSM}.  
+Currently, @acronym{NCO} determines whether a datafile is a
+@acronym{CSM} output datafile simply by checking whether value of the
+global attribute @code{convention} (if it exists) equals
+@samp{NCAR-CSM}.   
 Should @code{convention} equal @samp{NCAR-CSM} in the (first)
-@var{input-file}, @acronym{NCO} will attempt to treat certain variables specially,
-because of their meaning in @acronym{CSM} files. 
-@acronym{NCO} will not average the following variables often found in @acronym{CSM} files:
+@var{input-file}, @acronym{NCO} will attempt to treat certain variables
+specially, because of their meaning in @acronym{CSM} files. 
+@acronym{NCO} will not average the following variables often found in
+@acronym{CSM} files: 
 @code{ntrm}, @code{ntrn}, @code{ntrk}, @code{ndbase}, @code{nsbase},
 @code{nbdate}, @code{nbsec}, @code{mdt}, @code{mhisf}.
 These variables contain scalar metadata such as the resolution of the
@@ -2528,8 +2533,8 @@ These variables represent the Gaussian weights, the orography field,
 time fields, and hybrid pressure coefficients.
 These are fields which you want to remain unaltered in the differenced
 file 99% of the time.
-If you decide you would like any of the above @acronym{CSM} fields processed, you
-must use @command{ncrename} to rename them first.
+If you decide you would like any of the above @acronym{CSM} fields
+processed, you must use @command{ncrename} to rename them first.
 
 @node ARM Conventions, Operator version, NCAR CSM Conventions, Common features
 @section @acronym{ARM} Conventions

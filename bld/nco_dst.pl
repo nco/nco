@@ -24,13 +24,13 @@
 
 # Machines requiring interactive builds
 # cd ${HOME}/nco;cvs update;cd bld;make;make tst
-# scp ${HOME}/nco/bld/nco_dst.pl goldhill.cgd.ucar.edu:/home/zender/nco/bld/nco_dst.pl
+# scp ${HOME}/nco/bld/nco_dst.pl dust.ps.uci.edu:/home/zender/nco/bld/nco_dst.pl
 
 BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.79 2002-02-05 08:15:06 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.80 2002-03-01 07:50:11 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -66,9 +66,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2002-02-05 08:15:06 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.79 2002-02-05 08:15:06 zender Exp $';
-my $CVS_Revision='$Revision: 1.79 $';
+my $CVS_Date='$Date: 2002-03-01 07:50:11 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.80 2002-03-01 07:50:11 zender Exp $';
+my $CVS_Revision='$Revision: 1.80 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -124,14 +124,7 @@ if($data_nm eq ''){$data_nm='/data/'.$usr_nm;}
 my $dst_pth_pfx=$data_nm; # Parent of build directory
 if($dst_pth_pfx eq $HOME){die "$prg_nm: ERROR \$dst_pth_pfx eq $dst_pth_pfx";} # This could be disastrous
 if($rm_cmd =~ m/( -r)|( -R)|( --recursive)/){die "$prg_nm: ERROR Dangerous setting \$rm_cmd eq $rm_cmd";} # This would be disastrous
-#  if($HOST =~ m/cgd\.ucar\.edu/ || $HOST =~ m/sanitas/ || $HOST =~ m/goldhill/ || $HOST =~ m/dataproc/){
-#  # CVS 1.10 has a bug where 'cvs -d :ext:user@host:repositorypath export -kkv -r revision_tag module' fails
-#  # Workaround: Export from a machine cross-mounted to /fs/cgd so that :ext:user@host is not necessary
-#      $CVSROOT='/home/zender/cvs'; # CVS repository
-#  }else{
-#      $CVSROOT=':ext:'.$usr_nm.'@goldhill.cgd.ucar.edu:/home/zender/cvs'; # CVS repository
 #      $CVSROOT=':pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
-#  } # endif CVSROOT
 
 $prg_dsc='NCO distribution maker'; # Program description
 ($prg_nm,$prg_vrs)=$CVS_Id =~ /: (.+).pl,v ([\d.]+)/; # Program name and version
