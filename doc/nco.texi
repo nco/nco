@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.193 2003-12-23 18:39:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.194 2003-12-23 21:04:07 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1979,18 +1979,35 @@ Once @acronym{NCO} is @acronym{DODS}-enabled the operators are
 @acronym{DODS} clients.  
 All @acronym{DODS} clients have network transparent access to any files
 controlled by a @acronym{DODS} server. 
-Simply specify the path to the file in @acronym{URL} notation
+Simply specify the input file path(s) in @acronym{URL} notation and all 
+@acronym{NCO} operations may be performed on remote files made
+accessible by a @acronym{DODS} server. 
+For example, this computes (remotely) and stores (locally) the global
+mean surface pressure (in Pa) in an equatorial region from 
+@acronym{NCEP daily reanalyses} data of the year 1969 made freely 
+available by a @acronym{NOAA} @acronym{DODS} server:
 @example
-ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/\
-Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc
+ncks -O -C -d time,0 -d lon,0. -d lat,0. -l ./ -p \
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
+pres.sfc.1969.nc foo.nc
+ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l ./ -p \
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
+pres.sfc.1969.nc foo.nc
 @end example
 @noindent
-@acronym{NCO} operates on these remote files without having to transfer
-the files to the local disk.  
-@acronym{DODS} causes all the I/O to appear to @acronym{NCO} as if the
-files were local. 
-Only the required data (e.g., the variable or hyperslab specified) are
-transferred over the network. 
+The data in this particular input file are packed, although this is
+completely transparent to the user. 
+
+@acronym{NCO} operates on remote files on the @acronym{DODS} server
+(e.g., @file{www.cdc.noaa.gov}) rather than on the local machine. 
+Input files are not copied to the local machine first.  
+The @acronym{DODS} server performs all operations (e.g., arithmetic,
+hyperslabbing).
+This allows the I/O to appear to @acronym{NCO} as if the input files
+were local.  
+Only the output data (e.g., derived variables or hyperslabs) are
+transferred over the network (to the output file) once the number
+crunching finishes.    
 The advantages of this are obvious if you are examining small parts of
 large files stored at remote locations.
 
