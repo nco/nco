@@ -1,3 +1,7 @@
+2003-09-02  Charlie Zender  <zender@uci.edu>
+
+	* Change default HTML production from texi2html to makeinfo
+
 2003-09-01  Charlie Zender  <zender@uci.edu>
 
 	* Clean up nco.texi

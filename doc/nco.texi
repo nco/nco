@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.178 2003-09-02 16:12:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.179 2003-09-02 16:28:27 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -31,7 +31,7 @@ Multiple files:
 M-x texinfo-multiple-files-update
 
 Usage: 
-cd ~/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
+cd ~/nco/doc;texi2dvi nco.texi; makeinfo --html --no-split --output=nco.html nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
 texi2html -monolithic -verbose nco.texi
 texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
 texi2dvi --output=nco.dvi nco.texi 
@@ -47,6 +47,10 @@ makeinfo --docbook --no-split --output=nco.xml nco.texi
 ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
 cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml dust.ess.uci.edu:/var/www/html/nco;cd -
+
+Producing HTML, makeinfo vs. texi2html:
+makeinfo: Better format overall, uses node names for cross references and index
+texi2html: Has more options (e.g., latex2html), better index organization
 
 Legend (defined in "highlighting" section of TeXInfo manual):
 @code{}: Program text, e.g., @code{if(foo) x=y;}
@@ -337,7 +341,7 @@ In the last five years a lot of work has been done refining
 @acronym{NCO} is now an open source project and appears to be much
 healthier for it. 
 The list of illustrious institutions which do not endorse @acronym{NCO}     
-continues to grow, and now includes @acronym{UCI}.
+continues to grow, and now includes @acronym{UCI}.@* 
 @sp 1
 @noindent
 Charlie Zender@*
@@ -348,7 +352,7 @@ Irvine, California@*
 The most remarkable advances in  @acronym{NCO} capabilities in the last  
 few years are due to contributions from the Open Source community.
 Especially noteworthy are the contributions of Henry Butowsky and Rorik 
-Peterson. 
+Peterson.@* 
 @sp 1
 @noindent
 Charlie Zender@*
