@@ -9703,7 +9703,7 @@ case $host_os in
 	shared_flag='-G'
       else
 	if test "$aix_use_runtimelinking" = yes; then
-	  shared_flag='${wl}-G -qmkshrobj'
+	  shared_flag='${wl}-G'
 	else
 	  shared_flag='${wl}-bM:SRE'
 	fi
