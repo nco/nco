@@ -373,6 +373,9 @@ if test  "$path_to_ncgen"; then
       $LN_S in.nc data/$fl;
     fi
   done
+  if !(test -e src/nco_c++/in.nc); then
+    $LN_S ../../data/in.nc src/nco_c++/in.nc
+  fi
 else
   echo "** I could not find 'ncgen' in your path, so the netCDF data files"
   echo "** were not created. This will need to be done manually in the data/"
