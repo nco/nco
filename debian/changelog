@@ -1,3 +1,9 @@
+nco (2.9.4-1) unstable; urgency=low
+
+  * ncecat works on scalar files, AIX GCC, improved nco_tst.pl
+
+ -- Charlie Zender <zender@uci.edu>  Fri, 21 May 2004 10:52:29 -0700
+
 nco (2.9.3-1) unstable; urgency=low
 
   * ncra/ncea arithmetic works when missing_value equals zero or any intermediate sum
