@@ -596,7 +596,7 @@ $expected= 17000 ;
 
 $test[0]='ncwa -O -y ttl -v val_max_max_sht in.nc foo.nc 2> foo.tst';
 $test[1]='ncks -C -H -s "%d" -v val_max_max_sht foo.nc';
-$description=" ttl would overflow without dbl_prc patch, wraps anyway so exact value not important";
+$description=" ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure on AIX expected/OK because of different wrap behavior)";
 $expected= -32768 ; 
 &go();
 ####################
