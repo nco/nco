@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.225 2004-06-02 01:12:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.226 2004-06-03 05:52:42 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -95,12 +95,12 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 2.9.4
-@set doc-edition 2.9.4
+@set nco-edition 2.9.5
+@set doc-edition 2.9.5
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 13 April 2004
-@set update-month April 2004
+@set update-date 2 June 2004
+@set update-month June 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -5561,15 +5561,21 @@ This behavior is hardcoded.
 
 @cindex missing values
 @cindex @code{missing_value} attribute
-Valid data are weighted by @var{wgt1} and @var{wgt2}, respectively,
-regardless of whether the data in both files are valid.
-This causes @command{ncflint} to behave non-intuitively with 
-missing values.
+Depending on your intuition, @command{ncflint} may treat missing values
+unexpectedly.
 Consider a point where the value in one input file, say @var{val1},
 equals the missing value @var{mss_val_1} and, at the same point,
 the corresponding value in the other input file @var{val2} is not
 misssing (i.e., does not equal @var{mss_val_2}).
-Then the output is the weighted valid data point, 
+There are three plausible answers, and this creates ambiguity.
+
+@w{Option one} is to set @math{@var{val3} = @var{mss_val_1}}.
+The rationale is that @command{ncflint} is, at heart, an interpolator
+and interpolation involving a missing value is intrinsically undefined.
+@command{ncflint} currently implements this behavior since it is the
+most conservative and least likely to lead to misinterpretation.
+
+@w{Option two} is to output the weighted valid data point, i.e.,
 @set flg
 @tex
 $val3 = wgt2 \times val2$
@@ -5585,13 +5591,21 @@ $val3 = wgt2 \times val2$
 @clear flg
 @end ifset
 .
-Some might expect the answer to be unweighted in this case, i.e., 
-@math{@var{val3} = @var{val2}}, since one cannot interpolate with
-only one valid datum.
-Others might expect the answer to be the missing value, since an
-interpolation with only one valid datum is undefined.
-However, the current implementation uses neither of these approaches.
-If you have strong opinions on this matter, let us know.
+The rationale for this behavior is that interpolation is really a
+weighted average of known points, so @command{ncflint} should weight the
+valid point. 
+
+@w{Option three} is to return the @emph{unweighted} valid point, i.e.,
+@math{@var{val3} = @var{val2}}.
+This behavior would appeal to those who use @command{ncflint} to
+estimate data using the closest available data. 
+When a point is not bracketed by valid data on both sides, it is better
+to return the known datum than no datum at all.
+
+The current implementation uses the first approach, @w{Option one}.
+If you have strong opinions on this matter, let us know, since we are
+willing to implement the other approaches as options if there is enough
+interest. 
 
 @noindent
 EXAMPLES

@@ -139,14 +139,14 @@ $expected= 2.0 ;
 &go();
 ####################
 
-$test[0]='ncks -O -C -d lon,1 -v mss_val in.nc foo_x.nc'
-$test[1]='ncks -O -C -d lon,0 -v mss_val in.nc foo_y.nc'
-$test[2]='ncflint -O -w 0.5,0.5 foo_x.nc foo_y.nc foo_xy.nc'
-$test[3]='ncflint -O -w 0.5,0.5 foo_y.nc foo_x.nc foo_yx.nc'
-$test[4]='ncdiff foo_xy.nc foo_yx.nc foo_xymyx.nc'
-$test[5]='ncks -C -H -s "%e" -v mss_val foo_xymyx.nc'
+$test[0]='ncks -O -C -d lon,1 -v mss_val in.nc foo_x.nc';
+$test[1]='ncks -O -C -d lon,0 -v mss_val in.nc foo_y.nc';
+$test[2]='ncflint -O -w 0.5,0.5 foo_x.nc foo_y.nc foo_xy.nc';
+$test[3]='ncflint -O -w 0.5,0.5 foo_y.nc foo_x.nc foo_yx.nc';
+$test[4]='ncdiff foo_xy.nc foo_yx.nc foo_xymyx.nc';
+$test[5]='ncks -C -H -s "%g" -v mss_val foo_xymyx.nc';
 $description=" switch order of occurrence to test for associativity";
-$expected= 0.0 ; 
+$expected= 1e+36 ; 
 &go();
 ####################
 

@@ -1,23 +1,41 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.83 2004-06-02 01:12:13 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.84 2004-06-03 05:52:42 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.9.4 are ready. 
+The netCDF operators NCO version 2.9.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release...fxm
+This release fixes a problem with ncflint interpolations
+when one of the two inputs was missing_value.
+The previous algorithm was non-commutative, i.e., the result
+depended on the order the files were specified.
+It was also non-intuitive in that it returned the weighted valid datum 
+rather than the unweighted valid datum or just missing_value.
+The new alorithm is commutative, and much more conservative.
+Now, when either of the input datums is missing_value, the result 
+is missing_value as well.
+
+I am willing to implement other ncflint algorithms if there is
+interest. If you have an opinion about this, please read the new
+documentation at
+
+http://nco.sf.net/nco.html#ncflint
+
+and post your preferences to the NCO discussion forum at
+
+http://sf.net/forum/forum.php?forum_id=9829
 
 Enjoy,
 Charlie
 
 Feature changes:
-1. None
+1. none
 
 Bug-fixes:
-1. fxm Fix non-associativity problem with missing values in ncflint
+1. ncflint is commutative when weights are equal
 
 Build changes:
-1. fxm Install nco_*.hh and libnco_c++.hh in include directory
+1. Install nco_*.hh and libnco_c++.hh in include directory
 
 Other user-visible changes:
 1. None

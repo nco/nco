@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.23 2004-04-14 00:11:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.24 2004-06-03 05:52:43 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -195,6 +195,94 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
 
+  /* Return missing_value where either or both input values are missing 
+     Algorithm used since 20040603 
+     NB: Tally is incremented but not used */
+  switch(type){
+  case NC_FLOAT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.fp[idx]+=op1.fp[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const float mss_val_flt=*mss_val.fp;
+      for(idx=0;idx<sz;idx++){
+	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)){
+	  op2.fp[idx]+=op1.fp[idx];
+	  tally[idx]++;
+	}else{
+	  op2.fp[idx]=mss_val_flt;
+	}/* end else */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_DOUBLE:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.dp[idx]+=op1.dp[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const double mss_val_dbl=*mss_val.dp;
+      for(idx=0;idx<sz;idx++){
+	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)){
+	  op2.dp[idx]+=op1.dp[idx];
+	  tally[idx]++;
+	}else{
+	  op2.dp[idx]=mss_val_dbl;
+	}/* end else */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_INT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.lp[idx]+=op1.lp[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const long mss_val_lng=*mss_val.lp;
+      for(idx=0;idx<sz;idx++){
+	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)){
+	  op2.lp[idx]+=op1.lp[idx];
+	  tally[idx]++;
+	}else{
+	  op2.lp[idx]=mss_val_lng;
+	} /* end else */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_SHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++){
+	op2.sp[idx]+=op1.sp[idx];
+	tally[idx]++;
+      } /* end for */
+    }else{
+      const short mss_val_sht=*mss_val.sp;
+      for(idx=0;idx<sz;idx++){
+	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)){
+	  op2.sp[idx]+=op1.sp[idx];
+	  tally[idx]++;
+	}else{
+	  op2.sp[idx]=mss_val_sht;
+	} /* end else */
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Used this block of code until 20040603. 
+     It keeps track of tally but does not do anything with it later */
+#if 0
   switch(type){
   case NC_FLOAT:
     if(!has_mss_val){
@@ -268,6 +356,7 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
     break;
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
+#endif /* endif 0 */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */

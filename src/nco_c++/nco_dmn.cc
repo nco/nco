@@ -1,9 +1,9 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_dmn.cc,v 1.5 2004-01-05 17:29:05 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_dmn.cc,v 1.6 2004-06-03 05:52:43 zender Exp $ 
 
 // Implementation (declaration) of C++ interface to netCDF dimension routines
 
 /* Copyright (C) 2001--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include <nco_dmn.hh> // C++ interface to netCDF dimension routines
