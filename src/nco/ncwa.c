@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.124 2004-07-06 05:22:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.125 2004-07-06 05:40:42 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.124 2004-07-06 05:22:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.124 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.125 2004-07-06 05:40:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.125 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -655,7 +655,9 @@ main(int argc,char **argv)
       
       (void)nco_var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
       /* Retrieve variable from disk into memory */
+      if(dbg_lvl > 2) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco334 About to nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
       (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
+      if(dbg_lvl > 2) (void)fprintf(fp_stdout,"%s: DEBUG: fxm TODO nco334 Finished nco_var_get() %s\n",prg_nm,var_prc[idx]->nm);
       
       /* Convert char, short, long, int types to doubles before arithmetic */
       var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
