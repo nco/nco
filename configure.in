@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.64 2004-01-07 20:51:42 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.65 2004-01-07 21:40:42 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -9,7 +9,8 @@
 
 # Usage: 
 # autoconf
-# aclocal;autoheader;automake --foreign;autoconf
+# cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
+# cd ~/nco;aclocal;autoheader;automake --foreign;autoconf;configure;make install
 
 # Process file with autoconf to produce configure script
 # (package name,version,bug-report-address,tarball name)
@@ -474,7 +475,7 @@ if test "${enable_optimize_custom}" = 'yes'; then
 	CC="${CC} -std=c99 -pedantic -D_BSD_SOURCE"
 	CFLAGS="${CFLAGS} -fshort-enums -fno-common -Dinline= -O4"
 	if test "x${GXX}" = 'xyes' ; then 
-	    CXXFLAGS="${CFLAGS}"
+	    CXXFLAGS="${CXXFLAGS} -fshort-enums -fno-common -O4"
 	fi
     fi
     case ${host} in

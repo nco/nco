@@ -25468,7 +25468,7 @@ _ACEOF
 	CC="${CC} -std=c99 -pedantic -D_BSD_SOURCE"
 	CFLAGS="${CFLAGS} -fshort-enums -fno-common -Dinline= -O4"
 	if test "x${GXX}" = 'xyes' ; then
-	    CXXFLAGS="${CFLAGS}"
+	    CXXFLAGS="${CXXFLAGS} -fshort-enums -fno-common -O4"
 	fi
     fi
     case ${host} in
