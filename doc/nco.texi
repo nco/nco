@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.5 1998-11-24 00:30:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.6 1998-11-25 22:14:18 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -49,11 +49,11 @@ END-INFO-DIR-ENTRY
 @clear smallbook
 
 @set nco-edition 1.1
-@set doc-edition 1.14
+@set doc-edition 1.15
 @set copyright-years 1995, 1996, 1997, 1998
 @set update-year 1998
-@set update-date 10 August 1998
-@set update-month August 1998
+@set update-date 25 November 1998
+@set update-month November 1998
 
 @c Experiment with smaller amounts of whitespace between chapters and sections.
 @tex
@@ -921,10 +921,10 @@ feature is automatic and cannot be controlled by the user.
 * File retention::              
 * Variable subsetting::         
 * Coordinate variables::        
+* Fortran indexing::            
 * Hyperslabs::                  
 * Wrapped coordinates::         
 * Stride::                      
-* Fortran indexing::            
 * Missing values::              
 * Suppressing interactive prompts::  
 * Operator version::            
@@ -1167,7 +1167,7 @@ averaging or concatenating large files, then the easiest solution is
 often to use the @samp{-v} option to retain only the variables you
 really need (@pxref{Memory usage}).
 
-@node Coordinate variables, Hyperslabs, Variable subsetting, Common features
+@node Coordinate variables, Fortran indexing, Variable subsetting, Common features
 @section Including/Excluding coordinate variables
 @cindex @code{-C}
 @cindex @code{-c}
@@ -1194,7 +1194,44 @@ automatically specifying that @emph{all} coordinate variables in the
 Thus @samp{-c} allows the user to select all the coordinate variables
 without having to know their names.
 
-@node Hyperslabs, Wrapped coordinates, Coordinate variables, Common features
+@node Fortran indexing, Hyperslabs, Coordinate variables, Common features
+@section C & Fortran index conventions
+@cindex index conventions
+@cindex Fortran index convention
+@cindex C index convention
+@cindex @code{-F}
+@cartouche
+@noindent
+Availability: @code{ncdiff}, @code{ncea}, @code{ncecat}, @code{ncflint},
+@code{ncks},  @code{ncra}, @code{ncrcat}, @code{ncwa}@*
+Key switches: @samp{-F}@*
+@end cartouche
+By default, NCO uses C-style (0-based) indices for all I/O.
+The @samp{-F} switch tells NCO to switch to reading and writing with
+Fortran index conventions.
+In Fortran, indices begin counting from 1 (rather than 0), and
+dimensions are ordered from fastest varying to slowest varying.
+Consider a file @file{85.nc} containing 12 months of data in the record
+dimension @code{time}.
+The following hyperslab operations produce identical results, a
+June-July-August average of the data:
+@example
+ncra -d time,5,7 85.nc 85_JJA.nc
+ncra -F -d time,6,8 85.nc 85_JJA.nc
+@end example
+
+Printing variable @var{three_dim_var} in file @file{in.nc} first with C 
+indexing conventions, then with Fortran indexing conventions results in
+the following output formats: 
+@example
+% ncks -H -v three_dim_var in.nc
+% lat[0]=-90 lev[0]=1000 lon[0]=-180 three_dim_var[0]=0 
+@dots{}
+% ncks -F -H -v three_dim_var in.nc
+% lon(1)=-180 lev(1)=1000 lat(1)=-90 three_dim_var(1)=0 
+@end example
+
+@node Hyperslabs, Wrapped coordinates, Fortran indexing, Common features
 @section Hyperslabs 
 @cindex hyperslab
 @cindex dimension limits
@@ -1342,7 +1379,7 @@ Should you need to hyperslab @code{lon} again, be sure to give
 dimensional indices as the hyperslab arguments, rather than coordinate
 values (@pxref{Hyperslabs}).
 
-@node Stride, Fortran indexing, Wrapped coordinates, Common features
+@node Stride, Missing values, Wrapped coordinates, Common features
 @section Stride 
 @cindex stride
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
@@ -1374,8 +1411,9 @@ Thus using @samp{-d time,,2} is valid but @samp{-d time,,2.0} and
 For example, consider a file @file{8501_8912.nc} which contains 60
 consecutive months of data. 
 Say you wish to obtain just the March data from this file.
-This data is stored in records 2, 14, @dots{} 50 so the desired
-@var{stride} is 12.
+Using 0-based subscripts (@pxref{Fortran indexing}) these
+data are stored in records 2, 14, @dots{} 50 so the desired @var{stride}
+is 12.  
 Without the @var{stride} option, the procedure is very awkward.
 One could use @code{ncks} five times and then use @code{ncrcat} to
 concatenate the resulting files together:
@@ -1393,44 +1431,7 @@ ncks -d time,2,,12 8501_8912.nc 8589_03.nc
 @end example
 @xref{ncks netCDF Kitchen Sink} for more information on @code{ncks}.
 
-@node Fortran indexing, Missing values, Stride, Common features
-@section C & Fortran index conventions
-@cindex index conventions
-@cindex Fortran index convention
-@cindex C index convention
-@cindex @code{-F}
-@cartouche
-@noindent
-Availability: @code{ncdiff}, @code{ncea}, @code{ncecat}, @code{ncflint},
-@code{ncks},  @code{ncra}, @code{ncrcat}, @code{ncwa}@*
-Key switches: @samp{-F}@*
-@end cartouche
-By default, NCO uses C-style (0-based) indices for all I/O.
-The @samp{-F} switch tells NCO to switch to reading and writing with
-Fortran index conventions.
-In Fortran, indices begin counting from 1 (rather than 0), and
-dimensions are ordered from fastest varying to slowest varying.
-Consider a file @file{85.nc} containing 12 months of data in the record
-dimension @code{time}.
-The following hyperslab operations produce identical results, a
-June-July-August average of the data:
-@example
-ncra -d time,5,7 85.nc 85_JJA.nc
-ncra -F -d time,6,8 85.nc 85_JJA.nc
-@end example
-
-Printing variable @var{three_dim_var} in file @file{in.nc} first with C 
-indexing conventions, then with Fortran indexing conventions results in
-the following output formats: 
-@example
-% ncks -H -v three_dim_var in.nc
-% lat[0]=-90 lev[0]=1000 lon[0]=-180 three_dim_var[0]=0 
-@dots{}
-% ncks -F -H -v three_dim_var in.nc
-% lon(1)=-180 lev(1)=1000 lat(1)=-90 three_dim_var(1)=0 
-@end example
-
-@node Missing values, Suppressing interactive prompts, Fortran indexing, Common features
+@node Missing values, Suppressing interactive prompts, Stride, Common features
 @section Missing values
 @cindex missing values
 @cindex data, missing 
