@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.58 2003-08-02 06:12:33 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.59 2003-08-02 16:25:06 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -139,11 +139,11 @@ echo "ncks 9: Hyperslab of a variable that has two identical dims 59.5 =?= ${avg
 
 ${MY_BIN_DIR}/ncks -O -C -d time_udunits,"1999-12-08 12:00:0.0","1999-12-09 00:00:0.0" in.nc foo2.nc
 avg=`${MY_BIN_DIR}/ncks -H -C -s "%6.0f" -d time_udunits,"1999-12-08 18:00:0.0","1999-12-09 12:00:0.0",2 -v time_udunits in.nc`
-echo "ncks 10: dimension slice using UDUnits library: 876018 ?=? ${avg} (will fail without UDUnits library support)"
+echo "ncks 10: dimension slice using UDUnits library: 876018 ?=? ${avg} (fails without UDUnits library support)"
 
 ${MY_BIN_DIR}/ncks -O -C -d wvl,"0.1 micron","1 micron" in.nc foo2.nc
 avg=`${MY_BIN_DIR}/ncks -H -C -d wvl,"0.6 micron","1 micron" -s "%3.1e" -v wvl in.nc`
-echo "ncks 11: dimension slice using UDunit conversion: 1.0e-06 ?=? ${avg} (will fail without UDUnits library support)"
+echo "ncks 11: dimension slice using UDUnit conversion: 1.0e-06 ?=? ${avg} (fails without UDUnits library support)"
 
 fi # end NCKS
 
@@ -375,31 +375,7 @@ fi # end ncbnr
 
 if [ "${NCDIFF}" = 1 ]; then
 ${MY_BIN_DIR}/ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
-avgother help options)
-zender@elnino:~/nco/bld$  repository
-bash: repository: command not found
-zender@elnino:~/nco/bld$         diff         Show differences between revisions
-diff: extra operand
-diff: Try `diff --help' for more information.
-zender@elnino:~/nco/bld$         edit         Get ready to edit a watched file
-        commit       Check files into the repository
-        diff         Show differences between revisions
-        edit         Get ready to edit a watched file
-        editors      See who is editing a watched file
-        export       Export sources from CVS, similar to checkout
-        history      Show repository access history
-        import       Import sources into CVS, using vendor branches
-        init         Create a CVS repository if it doesn't exist
-        log          Print out history information for files
-        login        Prompt for password for authenticating server
-        logout       Removes entry in .cvspass for remote repository
-        pserver      Password server mode
-        rannotate    Show last revision where each line of module was modified
-        rdiff        Create 'patch' format diffs between releases
-        release      Indicate that a Module is no longer in use
-        remove       Remove an entry from the repository
-        rlog         Print out history information for a module
-        rtag         Add a sym=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v mss_val foo.nc`
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v mss_val foo.nc`
 echo "ncdiff 1: difference with missing value attribute: 1.0e36 =?= ${avg}" 
 
 ${MY_BIN_DIR}/ncdiff -O -d lon,0 -v no_mss_val in.nc in.nc foo.nc 2>> foo.tst
@@ -421,26 +397,26 @@ fi # end ncflint
 
 # ncap testing
 if [ "${NCAP}" = 1 ]; then
-${MY_BIN_DIR}/ncap -O -D 1 -v -S ${MY_DAT_DIR}/ncap.in ${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/foo.nc
+${MY_BIN_DIR}/ncap -O -D 1 -v -S ncap.in in.nc foo.nc
 fi # end NCAP
 
 if [ "${NET}" = 1 ]; then
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
 ${MY_BIN_DIR}/ncks -O -v one -p ftp://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
-echo "nco 1: FTP protocol: 1 =?= ${avg} (Will fail if unable to anonymous FTP to dust.ps.uci.edu)" 
+echo "nco 1: FTP protocol: 1 =?= ${avg} (fails if unable to anonymous FTP to dust.ess.uci.edu)" 
 mv in_tmp.nc in.nc
 
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
 ${MY_BIN_DIR}/ncks -O -v one -p goldhill.cgd.ucar.edu:/home/zender/nco/data -l ./ in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
-echo "nco 2: scp/rcp protocol: 1 =?= ${avg} (Will fail if no SSH/RSH access to goldhill.cgd.ucar.edu)" 
+echo "nco 2: scp/rcp protocol: 1 =?= ${avg} (fails if no SSH/RSH access to goldhill.cgd.ucar.edu)" 
 mv in_tmp.nc in.nc
 
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
 ${MY_BIN_DIR}/ncks -O -v one -p mss:/ZENDER/nc -l ./ in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
-echo "nco 3: msrcp protocol: 1 =?= ${avg} (Will fail if not at NCAR)" 
+echo "nco 3: msrcp protocol: 1 =?= ${avg} (fails if not at NCAR)" 
 mv in_tmp.nc in.nc
 
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
@@ -451,6 +427,6 @@ mv in_tmp.nc in.nc
 
 ${MY_BIN_DIR}/ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v lon foo.nc 2>> foo.tst`
-echo "nco 5: HTTP/DODS protocol: 0 =?= ${avg} (Will fail if not compiled on Linux with 'make DODS=Y')" 
+echo "nco 5: HTTP/DODS protocol: 0 =?= ${avg} (fails if not compiled on Linux with 'make DODS=Y')" 
 fi # end net
 

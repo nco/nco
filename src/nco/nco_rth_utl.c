@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.10 2003-07-30 21:58:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.11 2003-08-02 16:25:07 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -76,14 +76,15 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
-  if(!strcmp(nco_op_sng,"min")) return nco_op_min;
+  if(!strcmp(nco_op_sng,"avg")) return nco_op_avg;
+  if(!strcmp(nco_op_sng,"avgsqr")) return nco_op_avgsqr;
   if(!strcmp(nco_op_sng,"max")) return nco_op_max;
-  if(!strcmp(nco_op_sng,"total") || !strcmp(nco_op_sng,"ttl")) return nco_op_ttl;
-  if(!strcmp(nco_op_sng,"sqravg")) return nco_op_sqravg;
-  if(!strcmp(nco_op_sng,"avgsqr")) return nco_op_avgsqr;  
-  if(!strcmp(nco_op_sng,"sqrt")) return nco_op_sqrt;
+  if(!strcmp(nco_op_sng,"min")) return nco_op_min;
   if(!strcmp(nco_op_sng,"rms")) return nco_op_rms;
   if(!strcmp(nco_op_sng,"rmssdn")) return nco_op_rmssdn;
+  if(!strcmp(nco_op_sng,"sqravg")) return nco_op_sqravg;
+  if(!strcmp(nco_op_sng,"sqrt")) return nco_op_sqrt;
+  if(!strcmp(nco_op_sng,"total") || !strcmp(nco_op_sng,"ttl")) return nco_op_ttl;
 
   if(!strcmp(nco_op_sng,"add") || !strcmp(nco_op_sng,"+") || !strcmp(nco_op_sng,"addition")) return nco_op_add;
   if(!strcmp(nco_op_sng,"sbt") || !strcmp(nco_op_sng,"-") || !strcmp(nco_op_sng,"dff") || !strcmp(nco_op_sng,"diff") || !strcmp(nco_op_sng,"sub") || !strcmp(nco_op_sng,"subtract") || !strcmp(nco_op_sng,"subtraction")) return nco_op_sbt;

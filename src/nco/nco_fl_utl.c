@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.22 2003-06-16 16:37:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.23 2003-08-02 16:25:07 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -45,13 +45,13 @@ fl_mv /* [fnc] Move first file to second */
   int rcd;
   int nbr_fmt_char=4;
   
-  /* Construct and execute the copy command */
+  /* Construct and execute copy command */
   mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Moving %s to %s...",fl_src,fl_dst);
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",prg_nm_get(),fl_src,fl_dst);
   (void)sprintf(mv_cmd,mv_cmd_fmt,fl_src,fl_dst);
   rcd=system(mv_cmd);
   if(rcd == -1){
-    (void)fprintf(stdout,"%s: ERROR fl_mv() is unable to execute mv command \"%s\"\n",prg_nm_get(),mv_cmd);
+    (void)fprintf(stdout,"%s: ERROR fl_mv() unable to execute mv command \"%s\"\n",prg_nm_get(),mv_cmd);
     nco_exit(EXIT_FAILURE); 
   } /* end if */
   mv_cmd=(char *)nco_free(mv_cmd);
@@ -71,7 +71,7 @@ nco_fl_rm /* [fnc] Remove file */
   rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1+strlen(fl_nm)+1)*sizeof(char));
   (void)sprintf(rm_cmd,"%s %s",rm_cmd_sys_dep,fl_nm);
 
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: Removing %s with %s\n",prg_nm_get(),fl_nm,rm_cmd);
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG Removing %s with %s\n",prg_nm_get(),fl_nm,rm_cmd);
   rcd=system(rm_cmd);
   if(rcd == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",prg_nm_get(),fl_nm);
 
@@ -115,7 +115,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   case ncatted:
   case ncrename:
     if(argc-arg_crr > 2){
-      (void)fprintf(stdout,"%s: ERROR received %d filenames; need no more than 2\n",prg_nm_get(),argc-arg_crr);
+      (void)fprintf(stdout,"%s: ERROR received %d filenames; need no more than two\n",prg_nm_get(),argc-arg_crr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end if */
@@ -124,10 +124,11 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     if(arg_crr == argc-1) *fl_out=(char *)strdup(argv[arg_crr]); else *fl_out=NULL;
     return fl_lst_in;
     /*    break;*//* NB: putting break after return in case statement causes warning on SGI cc */
+  case ncbnr:
   case ncdiff:
   case ncflint:
     if(argc-arg_crr != 3){
-      (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly 3\n",prg_nm_get(),argc-arg_crr);
+      (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly three\n",prg_nm_get(),argc-arg_crr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end if */
@@ -135,7 +136,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   case ncap:
   case ncwa:
     if(argc-arg_crr != 2){
-      (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly 2\n",prg_nm_get(),argc-arg_crr);
+      (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly two\n",prg_nm_get(),argc-arg_crr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end if */
@@ -145,7 +146,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   case ncrcat:
   case ncecat:
     if(argc-arg_crr < 2){
-      (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least 2\n",prg_nm_get(),argc-arg_crr);
+      (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least two\n",prg_nm_get(),argc-arg_crr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end if */

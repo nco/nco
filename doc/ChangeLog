@@ -1,3 +1,15 @@
+2003-08-02  Charlie Zender  <zender@uci.edu>
+
+	* All regressions due to introduction of ncbnr appear to be fixed
+
+	* Correct nco_tst.sh procedure for ncap. 
+
+	* Restore nco_op_avg inadvertently removed from nco_op_typ_get()
+
+2003-08-01  Charlie Zender  <zender@uci.edu>
+
+	* Fix ncbnr case statement and verifiy ncbnr works for +-*/
+
 2003-07-29  Charlie Zender  <zender@uci.edu>
 
 	* Verify ncdiff and ncbnr -y sbt work as expected but problems
