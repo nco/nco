@@ -1,3 +1,9 @@
+nco (2.9.3-1) unstable; urgency=low
+
+  * ncra/ncea arithmetic works when missing_value equals zero or any intermediate sum
+
+ -- Charlie Zender <zender@ashes.ess.uci.edu>  Tue, 13 Apr 2004 17:18:37 -0700
+
 nco (2.9.2-1) unstable; urgency=medium
 
   * Fix S/V, S%V, S^V, workaround broken UDUnits installations

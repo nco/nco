@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.211 2004-04-14 00:11:52 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.212 2004-04-14 00:23:18 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -293,19 +293,19 @@ Simply hit return when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>2.9.2</tt> (which is
-tagged as <tt>nco-2_9_2</tt> due to CVS rules) into local directory
-<tt>nco-2.9.2</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2_9_2 -d nco-2.9.2 nco</tt></p>
+This command retrieves and places NCO version <tt>2.9.3</tt> (which is
+tagged as <tt>nco-2_9_3</tt> due to CVS rules) into local directory
+<tt>nco-2.9.3</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2_9_3 -d nco-2.9.3 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-2_9_2</tt>) and the development version is that the
+(e.g., <tt>nco-2_9_3</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>2.9.2</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>2.9.3</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -333,14 +333,14 @@ distribution by many months, if not years:
 
 <ul>
 <!--
-<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.9.2</a></li>
+<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.9.3</a></li>
 -->
 <a href="http://www.debian.org">Debian GNU/Linux</a>-compatible systems: 
-<li><a href="src/nco_2.9.2-1_i386.deb">nco_2.9.2-1_i386.deb</a> (<!--#fsize file="src/nco_2.9.2-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
-<li><a href="src/nco_2.9.2-1.dsc">nco_2.9.2-1.dsc</a> (<!--#fsize file="src/nco_2.9.2-1.dsc"-->): Description</li>
-<li><a href="src/nco_2.9.2-1.tar.gz">nco_2.9.2-1.tar.gz</a> (<!--#fsize file="src/nco_2.9.2-1.tar.gz"-->): Gzipped Source Tarball</li>
+<li><a href="src/nco_2.9.3-1_i386.deb">nco_2.9.3-1_i386.deb</a> (<!--#fsize file="src/nco_2.9.3-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
+<li><a href="src/nco_2.9.3-1.dsc">nco_2.9.3-1.dsc</a> (<!--#fsize file="src/nco_2.9.3-1.dsc"-->): Description</li>
+<li><a href="src/nco_2.9.3-1.tar.gz">nco_2.9.3-1.tar.gz</a> (<!--#fsize file="src/nco_2.9.3-1.tar.gz"-->): Gzipped Source Tarball</li>
 <li><a
-href="src/nco_2.9.2-1_i386.changes">nco_2.9.2-1_i386.changes</a> (<!--#fsize file="src/nco_2.9.2-1.changes"-->): Changes</li> (I think an error here is expected since there are no changes between the official tarball and the Debian tarball. Anyone know?)
+href="src/nco_2.9.3-1_i386.changes">nco_2.9.3-1_i386.changes</a> (<!--#fsize file="src/nco_2.9.3-1.changes"-->): Changes</li> (I think an error here is expected since there are no changes between the official tarball and the Debian tarball. Anyone know?)
 </ul>
 
 <ul>
@@ -577,15 +577,16 @@ The
 <tt>V/S</tt>, <tt>V%S</tt>, <tt>V^S</tt>, 
 <tt>S/S</tt>, <tt>S%S</tt>, and <tt>S^S</tt> operations were never
 affected. 
-We recommend that all <tt>ncap</tt> users upgrade to version 2.9.2.
+We recommend that all <tt>ncap</tt> users upgrade.
 </li>
 
 <a name="bug_mss_val_zro_ncra"></a>
 <li><i>Problems with <tt>ncra</tt> and <tt>ncea</tt> when <tt>missing_value</tt> = 0.0:</i>
 The algorithm <tt>ncra</tt> and <tt>ncea</tt> used to perform
-arithmetic in versions up to 2.9.2 breaks <tt>missing_value</tt>
+arithmetic in versions up to 2.9.2 breaks if <tt>missing_value</tt>
 is&nbsp;0.0. 
-That running average (or total, etc.) algorithm initializes the answer 
+Why, you ask?
+Running average (or total, etc.) algorithms must initialize the answer  
 to&nbsp;0.0.
 This is done since the sum accumulates in place as <tt>ncra</tt> and
 <tt>ncea</tt> proceeds across records and files.  
@@ -602,7 +603,9 @@ The record and ensemble averages would also fail (in a non-obvious)
 way whenever an intermediate sum equalled <tt>missing_value</tt>.
 The chances of the latter event ever happening are exceedingly
 remote. 
-The new algorithm fixes both problems and is faster, to boot. 
+The new algorithm compares only the new record to the
+<tt>missing_value</tt>. 
+This fixes both problems and is faster, to boot. 
 
 <a name="bug_pck_ncwa"></a>
 <li><i>Packing problems with <tt>ncwa</tt>:</i>
