@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.h,v 1.19 2004-07-29 01:47:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.h,v 1.20 2004-07-29 19:38:50 zender Exp $ */
 
 /* Purpose: Conform dimensions */
 
@@ -50,7 +50,7 @@ nco_dmn_avg_rdr_prp /* [fnc] Process dimension string list into dimension struct
  char **dmn_rdr_lst, /* I [sng] Names of dimensions to be re-ordered */
  const int dmn_rdr_nbr); /* I [nbr] Number of dimension structures in re-order list */
 
-int /* O [enm] Return success code */
+char * /* [sng] Name of record dimension, if any, required by re-order */
 nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
 (const var_sct * const var_in, /* I [ptr] Variable with metadata and data in original order */
  var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be re-ordered */

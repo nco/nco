@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.20 2004-07-29 01:47:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.21 2004-07-29 19:38:50 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -355,7 +355,7 @@ nco_dmn_avg_rdr_prp /* [fnc] Process dimension string list into dimension struct
   return dmn_rdr;
 } /* end nco_dmn_avg_rdr_prp() */
 
-int /* O [enm] Return success code */
+char * /* [sng] Name of record dimension, if any, required by re-order */
 nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
 (const var_sct * const var_in, /* I [ptr] Variable with metadata and data in original order */
  var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be re-ordered */
@@ -425,12 +425,16 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   const char fnc_nm[]="nco_var_dmn_rdr_mtd()"; /* [sng] Function name */
   const int dmn_rdr_nil=-1; /* [enm] Input dimension is not in re-order list */
   
+  char *rec_dmn_nm_out=NULL; /* [sng] Name of record dimension, if any, required by re-order */
+  char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by current variable re-order */
+
   dmn_sct **dmn_in=NULL; /* [sct] List of dimension structures in input order */
   dmn_sct **dmn_out; /* [sct] List of dimension structures in output order */
   
   int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
   int dmn_idx_in_rdr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->re-order */
   int dmn_idx_rdr_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, re-order->input */
+  int dmn_idx_rec_out=NCO_REC_DMN_UNDEFINED; /* [idx] Record dimension index in output variable */
   int dmn_in_dmn_rdr_shr_nbr=0; /* [nbr] Number of dimensions dmn_in and dmn_rdr share */
   int dmn_in_idx; /* [idx] Counting index for dmn_in */
   int dmn_in_nbr; /* [nbr] Number of dimensions in input variable */
@@ -439,7 +443,6 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   int dmn_out_nbr; /* [nbr] Number of dimensions in output variable */
   int dmn_rdr_idx; /* [idx] Counting index for dmn_rdr */
   int dmn_in_idx_srt; /* [idx] Starting index of current un-ordered dimension group */
-  int rcd=0; /* [rcd] Return code */
   
   /* Initialize variables to reduce indirection */
   /* NB: Number of input and output dimensions are equal for pure re-orders
@@ -452,7 +455,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     dmn_idx_out_in[dmn_in_idx]=dmn_in_idx;
   
   /* Scalars and 1-D variables are never altered by dimension re-ordering */
-  if(dmn_in_nbr <= 1) return rcd;
+  if(dmn_in_nbr <= 1) return rec_dmn_nm_out;
   
   /* On entry to this section of code, we assume:
      1. var_out duplicates var_in */
@@ -478,7 +481,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   
     /* No re-ordering necessary if dmn_in and dmn_rdr share fewer than two dimensions */
     /* fxm: this will change to one dimension when reversing is implemented */
-  if(dmn_in_dmn_rdr_shr_nbr < 2) return rcd;
+  if(dmn_in_dmn_rdr_shr_nbr < 2) return rec_dmn_nm_out;
   
   /* Initialize output order to input order */
   for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
@@ -521,15 +524,24 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
      var_out->dim refers to re-ordered dimensions 
      However, var_out->dmn_id,cnt,srt,end,srd refer still duplicate var_in members
      They refer to old dimension ordering in input file
-     nco_cnf_dmn_rdr() implicitly assumes that only nco_cnf_dmn_rdr() modifies var_out 
-     The next call to nco_cnf_dmn_rdr() for this variable performs the actual re-ordering
-     Interim modifications of var_out by any other routine are dangerous!
-     This is clear at date written (20040727), but memories are short
+     nco_cnf_dmn_rdr_mtd() implicitly assumes that only nco_cnf_dmn_rdr_mtd() modifies var_out 
+     The call to nco_cnf_dmn_rdr_val() for this variable performs the actual re-ordering
+     The interim inconsistent state is required for dimension IDs because 
+     output dimension IDs are not known until nco_dmn_dfn() which cannot (or, at least, should not)
+     occur until output record dimension is known
+     Interim modifications of var_out by any other routine are dangerous! */
+
+  /* This is clear at date written (20040727), but memories are short
      Hence we modify var_out->dmn_id,cnt,srt,end,srd to contain re-ordered values now
-     This makes it safer to var_out->dmn_id,cnt,srt,end,srd before second call to nco_cnf_dmn_rdr() */
+     This makes it safer to var_out->dmn_id,cnt,srt,end,srd before second call to nco_cnf_dmn_rdr()
+     If dmn_out->id does depend on record dimension identity, then this update will do no good
+     Hence, we must re-update dmn_out->id after nco_dmn_dfn() in nco_cnf_dmn_rdr_val()
+     Structures should be completely consisten at that point
+     Not updating these structures (at least dmn_out->id) is equivalent to assuming that
+     dmn_out->id does not depend on record dimension identity, which is an ASSUMPTION
+     that may currently be true, but is not guaranteed by the netCDF API to always be true. */
   for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
-    /* fxm: Changed dmn_id,cnt,srt,end,srd...anything else need changing? */
-    /* NB: Cuidadoso! Change cnt,srt,end,srd but _do not change_ dmn_id */
+    /* NB: Change dmn_id,cnt,srt,end,srd together to minimize chances of forgetting one */
     var_out->dmn_id[dmn_out_idx]=dmn_out[dmn_out_idx]->id;
     var_out->cnt[dmn_out_idx]=dmn_out[dmn_out_idx]->cnt;
     var_out->srt[dmn_out_idx]=dmn_out[dmn_out_idx]->srt;
@@ -537,13 +549,23 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     var_out->srd[dmn_out_idx]=dmn_out[dmn_out_idx]->srd;
   } /* end loop over dmn_out */
   
-  if(dbg_lvl_get() == 3){
+  if(var_out->is_rec_var){
+    /* Which dimension in output dimension list is scheduled to be record dimension? */
+    for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
+      if(dmn_out[dmn_out_idx]->is_rec_dmn) break;
+    if(dmn_out_idx != dmn_out_nbr) dmn_idx_rec_out=dmn_out_idx; else nco_exit(EXIT_FAILURE);
+    /* Request that first dimension be record dimension */
+    rec_dmn_nm_out=dmn_out[0]->nm;
+    if(dmn_idx_rec_out != 0) (void)fprintf(stdout,"%s: INFO %s for variable %s reports old input record dimension %s is now ordinal dimension %d, new record dimension must be %s\n",prg_nm_get(),fnc_nm,var_in->nm,dmn_out[dmn_idx_rec_out]->nm,dmn_idx_rec_out,dmn_out[0]->nm);
+  } /* endif record variable */
+
+  if(dbg_lvl_get() > 2){
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
-      (void)fprintf(stdout,"%s: DEBUG %s re-ordering metadata for variable %s maps dimension %s from (ordinal, ID)=(%d,%d) to (%d,%d)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
+      (void)fprintf(stdout,"%s: DEBUG %s re-ordering metadata for variable %s maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,%d)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
     } /* end loop over dmn_in */
   } /* endif dbg */
   
-  return rcd;
+  return rec_dmn_nm_out;
 } /* end nco_var_dmn_rdr_mtd() */ 
 
 int /* O [enm] Return success code */
@@ -562,7 +584,7 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   char *val_out_cp; /* [ptr] Output data location as char pointer */
   
   const char fnc_nm[]="nco_var_dmn_rdr_val()"; /* [sng] Function name */
-  
+
   dmn_sct **dmn_in=NULL; /* [sct] List of dimension structures in input order */
   dmn_sct **dmn_out; /* [sct] List of dimension structures in output order */
   
@@ -604,6 +626,21 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   val_out_cp=(char *)var_out->val.vp;
   var_in_cnt=var_in->cnt;
   var_sz=var_in->sz;
+  
+  /* As explained in nco_var_dmn_rdr_mtd(),
+     "Hence, we must re-update dmn_out->id after nco_dmn_dfn() in nco_cnf_dmn_rdr_val()
+     Structures should be completely consisten at that point
+     Not updating these structures (at least dmn_out->id) is equivalent to assuming that
+     dmn_out->id does not depend on record dimension identity, which is an ASSUMPTION
+     that may currently be true, but is not guaranteed by the netCDF API to always be true." */
+  for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
+    /* NB: Change dmn_id,cnt,srt,end,srd together to minimize chances of forgetting one */
+    var_out->dmn_id[dmn_out_idx]=dmn_out[dmn_out_idx]->id;
+    var_out->cnt[dmn_out_idx]=dmn_out[dmn_out_idx]->cnt;
+    var_out->srt[dmn_out_idx]=dmn_out[dmn_out_idx]->srt;
+    var_out->end[dmn_out_idx]=dmn_out[dmn_out_idx]->end;
+    var_out->srd[dmn_out_idx]=dmn_out[dmn_out_idx]->srd;
+  } /* end loop over dmn_out */
   
   /* Is identity re-ordering requested? */
   for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){

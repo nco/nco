@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.42 2004-07-29 00:40:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.43 2004-07-29 19:38:50 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -790,9 +790,12 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 
   bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
+  const char fnc_nm[]="nco_var_dfn()"; /* [sng] Function name */
+
+  int dmn_nbr=0;
   int dmn_id_vec[NC_MAX_DIMS];
   int idx;
-  int idx_dmn;
+  int dmn_idx;
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   nc_type typ_out; /* [enm] Type in output file */
@@ -822,25 +825,32 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       
       /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of output dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, nco_var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, nco_var_dfn() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
       if(dmn_ncl != NULL || prg_get() == ncwa){
-	int nbr_var_dim=0;
 	int idx_ncl;
 	/* May need to reduce rank of output variable */
-	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
+	for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++){
 	  /* Is dimension allowed in output file? */
 	  for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
-	    if(var[idx]->xrf->dim[idx_dmn]->id == dmn_ncl[idx_ncl]->xrf->id) break;
+	    if(var[idx]->xrf->dim[dmn_idx]->id == dmn_ncl[idx_ncl]->xrf->id) break;
 	  } /* end loop over idx_ncl */
-	  if(idx_ncl != nbr_dmn_ncl) dmn_id_vec[nbr_var_dim++]=var[idx]->dim[idx_dmn]->id;
-	} /* end loop over idx_dmn */
-	(void)nco_def_var(out_id,var[idx]->nm,typ_out,nbr_var_dim,dmn_id_vec,&var[idx]->id);
+	  if(idx_ncl != nbr_dmn_ncl) dmn_id_vec[dmn_nbr++]=var[idx]->dim[dmn_idx]->id;
+	} /* end loop over dmn_idx */
       }else{ /* ...operator is not ncwa which needs special handling... */
 	/* More straightforward definition used by operators besides ncwa */
-	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
-	  dmn_id_vec[idx_dmn]=var[idx]->dim[idx_dmn]->id;
-	} /* end loop over idx_dmn */
-	(void)nco_def_var(out_id,var[idx]->nm,typ_out,var[idx]->nbr_dim,dmn_id_vec,&var[idx]->id);
+	for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++){
+	  dmn_id_vec[dmn_idx]=var[idx]->dim[dmn_idx]->id;
+	} /* end loop over dmn_idx */
+	dmn_nbr=var[idx]->nbr_dim;
       } /* end else */
+      (void)nco_def_var(out_id,var[idx]->nm,typ_out,dmn_nbr,dmn_id_vec,&var[idx]->id);
       
+      if(dbg_lvl_get() == 3){
+	(void)fprintf(stdout,"%s: DEBUG %s defining variable %s with %d dimensions%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr > 0) ? " (ordinal,ID): " : "");
+	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+	  (void)fprintf(stdout,"%s (%d,%d)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,dmn_id_vec[dmn_idx],(dmn_idx < dmn_nbr-1) ? ", " : "");
+	} /* end loop over dmn */
+	(void)fprintf(stdout,"\n");
+      } /* endif dbg */
+
       /* endif variable has not yet been defined in output file */
     }else{
       /* Variable is already in output file---use existing definition

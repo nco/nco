@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.7 2004-07-29 01:52:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.8 2004-07-29 19:38:50 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -74,6 +74,7 @@ main(int argc,char **argv)
   bool NCAR_CCSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
+  bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
   char **dmn_rdr_lst_in=NULL_CEWI; /* Option z */
@@ -87,10 +88,13 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
+  char *rec_dmn_nm_in=NULL; /* [sng] Record dimension name, original */
+  char *rec_dmn_nm_out=NULL; /* [sng] Record dimension name, re-ordered */
+  char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.7 2004-07-29 01:52:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.7 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.8 2004-07-29 19:38:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.8 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:Rrt:v:xz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -126,7 +130,9 @@ main(int argc,char **argv)
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rec_dmn_id=-1;
+  int rec_dmn_id_in=NCO_REC_DMN_UNDEFINED; /* [id] Record dimension ID in input file */
+  int dmn_out_idx; /* [idx] Index over output dimension list */
+  int dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED; /* [idx] Record dimension index in output dimension list, original */
   int thr_nbr=0; /* [nbr] Thread number Option t */
   
   lmt_sct *lmt;
@@ -281,7 +287,7 @@ main(int argc,char **argv)
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
-  (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
+  (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id_in);
   
   /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
@@ -348,7 +354,7 @@ main(int argc,char **argv)
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
   if(dbg_lvl > 4) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
 
-  /* Copy all global attributes */
+  /* Copy global attributes */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
   
   /* Catenate time-stamped command line to "history" global attribute */
@@ -358,9 +364,6 @@ main(int argc,char **argv)
   thr_nbr=nco_openmp_ini(thr_nbr);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
   
-  /* Define dimensions in output file */
-  (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
-
   if(dmn_rdr_nbr > 0){
     /* NB: Same logic as in ncwa, perhaps combine into single function, nco_dmn_avg_rdr_prp()? */
     /* Make list of user-specified dimension re-orders */
@@ -407,12 +410,51 @@ main(int argc,char **argv)
 
   } /* dmn_rdr_nbr <= 0 */
 
+  /* In files with record dimension */
+  if(rec_dmn_id_in != NCO_REC_DMN_UNDEFINED){
+    /* Which, if any, output dimension structure currently holds record dimension? */
+    for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_out;dmn_out_idx++)
+      if(dmn_out[dmn_out_idx]->is_rec_dmn) break;
+    if(dmn_out_idx != nbr_dmn_out){
+      dmn_out_idx_rec_in=dmn_out_idx;
+      /* Initialize output record dimension to input record dimension */
+      rec_dmn_nm_in=rec_dmn_nm_out=dmn_out[dmn_out_idx_rec_in]->nm;
+    }else{
+      dmn_out_idx_rec_in=NCO_REC_DMN_UNDEFINED;
+    } /* end else */
+  } /* end if file contains record dimension */
+  
   /* Determine and set new dimensionality in metadata of each re-ordered variable */
   dmn_idx_out_in=(int **)nco_malloc(nbr_var_prc*sizeof(int *));
   for(idx=0;idx<nbr_var_prc;idx++){
     dmn_idx_out_in[idx]=(int *)nco_malloc(nbr_var_prc*sizeof(int));
-    rcd=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx]);
-  } /* end if */
+    /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
+    rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx]);
+    /* If record dimension required by re-order of current variable... */
+    if(rec_dmn_nm_out_crr){
+      /* ...differs from current output record dimension... */
+      if(strstr(rec_dmn_nm_out_crr,rec_dmn_nm_out){
+	/* ...and current output record dimension already differs from input record dimension... */
+	if(REDEFINED_RECORD_DIMENSION){
+	  /* ...then requested re-order requires multiple record dimensions... */
+	  (void)fprintf(fp_stdout,"%s: ERROR Requested re-order requires multiple record dimensions\n. Record dimensions involved (original,first change request,second change request)=(%s,%s,%s)\n",prg_nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
+	  nco_exit(EXIT_FAILURE);
+	} /* end if REDEFINED_RECORD_DIMENSION */
+	/* ...otherwise, update output record dimension name... */
+	rec_dmn_nm_out=rec_dmn_nm_out_crr;
+	/* ...and set new and un-set old record dimensions... */
+	var_prc_out[idx]->dim[0]->is_rec_dmn=True;
+	dmn_out[dmn_out_idx_rec_in]->is_rec_dmn=False;
+	/* ...and set flag that record dimension has been re-defined... */
+	REDEFINED_RECORD_DIMENSION=True;
+      } /* endif new and old record dimensions differ */
+    } /* endif current variable is record variable */
+  } /* end loop over var_prc */
+    
+  if(REDEFINED_RECORD_DIMENSION) (void)fprintf(fp_stdout,"%s: INFO Requested re-order requires changing record dimension from %s to %s\n",prg_nm,rec_dmn_nm_in,rec_dmn_nm_out);
+    
+  /* Once new record dimension, if any, is known, define dimensions in output file */
+  (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
 
   /* Define variables in output file, copy their attributes */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0);
