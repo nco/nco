@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.25 2001-12-29 18:18:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.26 2002-01-04 16:05:15 hmb Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -872,7 +872,7 @@ ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
     case NC_DOUBLE: b.val.s=(short)(a->val).d; break; 
     case NC_INT: b.val.s=(a->val).l; break;
     case NC_SHORT: b.val.s=(a->val).s; break;
-    case NC_BYTE: b.val.b=(a->val).b; break;
+    case NC_BYTE: b.val.s=(a->val).b; break;
     case NC_CHAR: break;
     case NC_NAT:  break;    
     } break;
@@ -882,7 +882,7 @@ ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
     switch(type_old){
     case NC_FLOAT: b.val.l=(long)(a->val).f; break; 
     case NC_DOUBLE: b.val.l=(long)(a->val).d; break; 
-    case NC_INT:    b.val.l =a->val.l;
+    case NC_INT:    b.val.l =a->val.l; break;
     case NC_SHORT: b.val.l=(a->val).s; break;
     case NC_BYTE: b.val.l=(a->val).b; break;
     case NC_CHAR: break;
@@ -891,7 +891,7 @@ ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
     
   case NC_FLOAT:
     switch(type_old){
-    case NC_FLOAT:  b.val.f=(a->val).d; 
+    case NC_FLOAT:  b.val.f=(a->val).f; break; 
     case NC_DOUBLE: b.val.f=(a->val).d; break; 
     case NC_INT: (b.val).f=(a->val).l; break;
     case NC_SHORT: (b.val).f=(a->val).s; break;
