@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.229 2004-06-14 21:31:30 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.230 2004-06-15 00:36:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1303,16 +1303,17 @@ One brave user, for example, recently created a five year time-series of
 satellite observations by using @command{ncecat} to join thousands of
 daily data files together.
 @cindex automagic
-Unfotunately, data archives (e.g., @acronym{NASA EOSDIS}) are unlikely
-to distribute netCDF files conveniently named in a format understood by
-the @samp{-n @var{loop}} switch that automagically generates arbitrary
-numbers of input filenames.
-If there is not a simple, arithmetic pattern to the input filenames
-(e.g., @file{h00001.nc}, @file{h00002.nc}, @w{@dots{} @file{h90210.nc}})  
-then the @samp{-n @var{loop}} switch is useless.
-Moreover, when the input files are so numerous that the input filenames 
-are too lengthy (when strung together as a single argument) to be passed 
-by the calling shell to the @acronym{NCO} operator 
+Unfortunately, data archives (e.g., @acronym{NASA EOSDIS}) may not
+name netCDF files in a format understood by the @samp{-n @var{loop}}
+switch that automagically generates arbitrary numbers of input
+filenames. 
+The @samp{-n @var{loop}} switch is useless when there is no simple,
+arithmetic pattern to the input filenames (e.g., @file{h00001.nc},
+@file{h00002.nc}, @w{@dots{} @file{h90210.nc}}).
+Moreover, filename globbing does not work when the input files are to
+numerous or their names are too lengthy (when strung together as a
+single argument) to be passed by the calling shell to the @acronym{NCO}
+operator.
 @footnote{The exact length which exceeds the operating system internal
 limit for command line lengths varies from @acronym{OS} to @acronym{OS}
 and from shell to shell.  
@@ -1322,32 +1323,53 @@ Many @acronym{OS}s cannot handle command line arguments (including
 results of file globbing) exceeding 4096 characters.
 When this occurs, the @acronym{ANSI} C-standard @code{argc}-@code{argv} 
 method of passing arguments from the calling shell to a C-program (i.e.,
-an @acronym{NCO} operator) breaks down.}, then the following strategy
-has proven useful to specify the input filenames to @acronym{NCO}. 
-@cindex symbolic links
-Write a script that creates symbolic links between the irregular input
-filenames and a set of regular, arithmetic filenames that 
-@samp{-n @var{loop}} switch understands.
+an @acronym{NCO} operator) breaks down.}. 
 
-The following script a monotonically enumerated symbolic link to 
-up to one million @file{.nc} files in a directory.
-If there are 480 netCDF files present, their links will be named
-@file{000001.nc} to @file{000480.nc}:
-@cindex Perl
+There are (at least) two alternative methods of specifying the input
+filenames to @acronym{NCO} in environment-limited situations.
 @cindex @command{xargs}
+@cindex @acronym{UNIX}
+The simpler option is to use the @acronym{UNIX} @command{xargs} command.
+This simple example selects as input to @command{xargs} all the files
+in the current directory matching the @file{??.nc} pattern
+(@pxref{Variable subsetting}):
+@example
+# Alternative Method using xargs
+/bin/ls | grep ??.nc | xargs ncecat -o foo.nc
+@end example
+@cindex pipes
+The @command{xargs} command uses the @acronym{UNIX} pipe feature to
+append the suitably filtered input file list to the end of the
+@command{ncecat} command options. 
+@cindex output file
+@cindex input files
+@cindex @code{-o @var{fl_out}}
+The @code{-o foo.nc} switch ensures that the input files supplied by
+@command{xargs} are not confused with the output file name. 
+
+@cindex symbolic links
+The @command{xargs} technique may not work or be sophisticated enough
+to handle all situations.
+A full scripting language like Perl can handle any level of complexity
+of filtering input filenames.
+The technique of last resort is write a script that creates symbolic
+links between the irregular input filenames and a set of regular,
+arithmetic filenames that @samp{-n @var{loop}} switch understands.
+@cindex Perl
+For example, the following Perl script a monotonically enumerated
+symbolic link to up to one million @file{.nc} files in a directory.
+If there are 480 netCDF files present, the links are named
+@file{000001.nc} to @file{000480.nc}: 
+@cindex @code{-n @var{loop}}
 @example
 # Create enumerated symbolic links
 /bin/ls | grep \.nc | perl -e \
 '$idx=1;while(<STDIN>)@{chop;symlink $_,sprintf("%06d.nc",$idx++);@}'
-# Perform multi-file operation
-ncecat -O -n 480,6,1 000001.nc foo.nc
-# Remove symbolic links when finished
-/bin/rm ??????.nc
-# Alternative Method using xargs
-/bin/ls | grep \.nc | xargs ncecat foo.nc
+ncecat -O -n 480,6,1 000001.nc foo.nc # Perform multi-file operation
+/bin/rm ??????.nc # Remove symbolic links when finished
 @end example
-The @acronym{NCO} operator will then succeed at automatically generating
-the filnames of the symbolic links with the @samp{-n @var{loop}} option.
+The @samp{-n @var{loop}} option tells the @acronym{NCO} operator to
+automatically generate the filnames of the symbolic links.
 This circumvents any @acronym{OS} and shell limits on command line size.
 The symbolic links are easily removed once @acronym{NCO} is finished.
 

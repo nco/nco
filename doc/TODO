@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.312 2004-06-14 21:31:30 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.313 2004-06-15 00:36:32 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -30,7 +30,6 @@ nco50. Allow user-specified scalar weights to ncwa
 nco51. Make getopt() a shared subroutine?
 nco53. Add -t wall clock timer option? (then again, users can always use, e.g., timex())
 nco55. nco_var_cnf_dmn() should be able to expand (x,64,128) array into (nx,64,128) array (maybe)
-nco58. Add -o fl_out switch to supercede positional argument (GNU style)
 nco60. Make something that can mask a field without having to average over a dimension
 nco66. Make history attribute get appended, rather than overwritten, when in append mode
 nco69. ncks option for file/field summary: var name list,var min,max,avg,mss_val,# mss_val,

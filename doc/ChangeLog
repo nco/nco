@@ -7,7 +7,7 @@
 
 	* Modify nco_fl_lst_mk() so operators accept output filename
 	specified with -o (or --fl_out or --output), or as last positional
-	argument (traditional behavior).
+	argument (traditional behavior). Finished TODO#58.
 
 2004-06-13  Charlie Zender  <zender@uci.edu>
 
