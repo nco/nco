@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.236 2004-06-18 23:12:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.237 2004-06-18 23:33:54 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1402,6 +1402,9 @@ One side-effect of using this method is that the @code{history} attribute
 that represents the symbolic links.
 This makes it difficult to determine the data provenance at a later date.
 
+@html
+<a name="lrg"></a> <!-- http://nco.sf.net/nco.html#stdin -->
+@end html
 @example
 # Alternative Method piping filenames to stdin
 /bin/ls | grep $@{CASEID@}_'......'.nc | ncecat -o foo.nc

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.31 2004-06-18 16:33:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.32 2004-06-18 23:33:54 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -323,6 +323,7 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   /* Purpose: Write input file list to global metadata fxm TODO nco339 */
   aed_sct fl_in_lst_aed;
   char att_nm[]="input_file_list"; /* [sng] Name of input file list attribute */
+  char spc_sng[]=" "; /* [sng] Intervening space */
   char *fl_in_lst_sng;
   int fl_idx;
   size_t fl_in_lst_sng_lng; /* [nbr] Filename list string length */
@@ -333,10 +334,12 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     fl_in_lst_sng_lng+=strlen(fl_lst_in[fl_idx]);
   } /* end loop over fl */
-  fl_in_lst_sng=(char *)nco_malloc((fl_in_lst_sng_lng+1L)*sizeof(char));
+  /* Make room for intervening spaces and for terminating NUL character */
+  fl_in_lst_sng=(char *)nco_malloc((fl_in_lst_sng_lng+(fl_nbr-1L)+1L)*sizeof(char));
   fl_in_lst_sng[0]='\0';
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     fl_in_lst_sng=strcat(fl_in_lst_sng,fl_lst_in[fl_idx]);
+    if(fl_idx != fl_nbr-1) fl_in_lst_sng=strcat(fl_in_lst_sng,spc_sng);
   } /* end loop over fl */
   
   /* Insert file list into value */

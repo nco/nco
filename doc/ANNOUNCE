@@ -1,17 +1,39 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.93 2004-06-18 01:21:02 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.94 2004-06-18 23:33:54 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
+This release makes large multi-file operations more user friendly.
+Using the commandline shell to pass input file names fails on
+AIX when the input filelist is 25k characters or more.
+Creating symbolic links with names that NCO can automatically 
+generate with its -N feature hackish, since then the history attribute 
+retains the names of the symbolic links, not the source files.
 
+The solution we now recommend is to pipe long lists of input file
+names directly to NCO multi-file operators, e.g., 
+
+/bin/ls | grep ${CASEID}_'......'.nc | ncra -O -o output.nc
+
+This avoids all shell limitations.
+NCO automatically stores the names of the input files in the
+"input_file_list" global attribute (unless you pass it -H), so the
+"chain of evidence" is maintained.
+
+Read more about it in 
+
+http://nco.sf.net/nco.html#stdin
+http://nco.sf.net/nco.html#fl_lst_in
 
 Enjoy,
 Charlie
 
 Feature changes:
 1. Multi-file operators accept input filenames from stdin
+2. Multi-file operators automatically add input_file_list global
+   attribute when reading names from stdin.
 
 Bug-fixes:
 1. None
