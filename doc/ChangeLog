@@ -1,3 +1,15 @@
+1998-12-02  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Rewrote ncwa section of User's Guide
+
+1998-12-01  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Made sure ncwa weights were being masked
+
+	* Rearranged normalization logic of ncwa
+
+	* Removed special treatment of "gw" from ncwa
+
 1998-11-25  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Allow hyperslab coordinate specification in exponential format

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.9 1998-11-26 04:51:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.10 1998-12-03 05:40:28 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -2412,17 +2412,20 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
    var_sct *var: input/output pointer to variable structure (destroyed)
    dim_sct **dim: input pointer to list of dimension structures
    int nbr_dim: input number of structures in list
-   var_sct *var_avg(): output pointer to averaged variable
+   var_sct *var_avg(): output pointer to PARTIALLY (non-normalized) averaged variable
 */
 {
   /* Routine to average given variable over given dimensions. The input variable 
-     structure is destroyed and the routine returns the resized, averaged variable. */ 
+     structure is destroyed and the routine returns the resized, partially averaged variable. 
+     To complete the averaging operation, the output variable must be normalized by its tally array.
+     In other words, var_normalize() should be called subsequently if normalization is desired.
+     Normalization is not done internally to var_avg() in order to allow the user more flexibility.
+  */  
 
   /* Create output variable as a duplicate of the input variable, except for the dimensions
      which are to be averaged over */ 
 
-  /* NB: var_avg() overwrites the contents, if any, of the tally array with the number of valid
-     averaging operations */ 
+  /* NB: var_avg() overwrites the contents, if any, of the tally array with the number of valid averaging operations */ 
 
   /* Their are three variables to keep track of in this routine, their abbreviations are:
      var: the input variable
@@ -2642,7 +2645,8 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
     /* Input data are now sorted and stored (in avg_val) in blocks (of length avg_sz)
        in the same order as the blocks' average values will appear in the output buffer. 
        An averaging routine can take advantage of this by casting avg-val to a two dimensional
-       variable and averaging over the inner dimension. */ 
+       variable and averaging over the inner dimension. 
+       This is where the tally array is actually set. */ 
     (void)var_avg_reduce(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
 
     /* Free dynamic memory that held the rearranged input variable values */ 
@@ -2667,7 +2671,7 @@ var_free(var_sct *var)
 {
   /* Routine to free all the space associated with a dynamically allocated variable structure */ 
   
-  /* NB: var->nm is not freed because i decided to let names be static memory, and refer to
+  /* NB: var->nm is not freed because I decided to let names be static memory, and refer to
      the optarg list if available. This assumption needs to be changed before freeing 
      the name pointer. */ 
   
@@ -4357,7 +4361,7 @@ usg_prn(void)
     if(prg == ncatted) (void)fprintf(stdout,"-h\t\tDo not append to \"history\" global attribute\n");
   } /* end if */
   if(strstr(opt_sng,"-i")) (void)fprintf(stdout,"-i var,val\tInterpolant and value\n");
-  if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I \t\tWeight and mask coordinate variables\n");
+  if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I \t\tDo not weight or mask coordinate variables\n");
   if(strstr(opt_sng,"-l")) (void)fprintf(stdout,"-l path\t\tLocal storage path for remotely-retrieved files\n");
   if(strstr(opt_sng,"-M")){
     if(prg == ncwa) (void)fprintf(stdout,"-M val\t\tMasking value (default is 1.)\n");

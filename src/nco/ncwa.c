@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.7 1998-11-26 04:51:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.8 1998-12-03 05:40:28 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -51,7 +51,7 @@ main(int argc,char **argv)
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */ 
   bool NORMALIZE_BY_TALLY=True;
   bool NORMALIZE_BY_WEIGHT=True;
-  bool WGT_MSK_CRD_VAR=False; /* Option I */ 
+  bool WGT_MSK_CRD_VAR=True; /* Option I */ 
 
   char **dim_avg_lst_in; /* Option a */ 
   char **var_lst_in;
@@ -68,8 +68,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncwa.c,v 1.7 1998-11-26 04:51:39 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.7 $";
+  char rcs_Id[]="$Id: ncwa.c,v 1.8 1998-12-03 05:40:28 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.8 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -243,6 +243,9 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
   
+  /* Ensure we do not attempt to normalize by non-existent weight */ 
+  if(wgt_nm == NULL) NORMALIZE_BY_WEIGHT=False;
+
   /* Process the positional arguments and fill in the filenames */
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
 
@@ -490,7 +493,7 @@ main(int argc,char **argv)
       (void)var_refresh(in_id,var_prc[idx]);
       /* Retrieve the variable from disk into memory */ 
       (void)var_get(in_id,var_prc[idx]);
-      if(msk_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR) && (!NCAR_CSM_FORMAT || strcmp(var_prc[idx]->nm,"gw")) ){
+      if(msk_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	msk_out=var_conform_dim(var_prc[idx],msk,msk_out,MUST_CONFORM);
 	msk_out=var_conform_type(var_prc[idx]->type,msk_out);
 
@@ -500,10 +503,10 @@ main(int argc,char **argv)
 	  var_prc[idx]->mss_val=mss_val_mk(var_prc[idx]->type);
 	} /* end if */
 
-	/* Mask variable by changing data to missing value wherever mask is transparent */ 
+	/* Mask by changing variable to missing value where condition is false */ 
 	(void)var_mask(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,msk_val,op_type,msk_out->val,var_prc[idx]->val);
       } /* end if */
-      if(wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR) && (!NCAR_CSM_FORMAT || strcmp(var_prc[idx]->nm,"gw")) ){
+      if(wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	wgt_out=var_conform_dim(var_prc[idx],wgt,wgt_out,MUST_CONFORM);
 	wgt_out=var_conform_type(var_prc[idx]->type,wgt_out);
 	/* Weight variable by taking product of weight and variable */ 
@@ -513,16 +516,36 @@ main(int argc,char **argv)
       (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type));
       /* Average variable over specified dimensions (tally array is set here) */
       var_prc_out[idx]=var_avg(var_prc_out[idx],dim_avg,nbr_dim_avg);
-      if(NORMALIZE_BY_TALLY) (void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+      /* var_prc_out[idx]->val holds numerator of averaging expression documented in NCO User's Guide 
+	 Denominator is also tricky due to sundry normalization options 
+	 These logical switches are VERY tricky---be careful modifying them */
+      if(!NORMALIZE_BY_TALLY && !NORMALIZE_BY_WEIGHT){
+	; /* No normalization of numerator at all---we are done */ 
+      }else if(NORMALIZE_BY_TALLY && !NORMALIZE_BY_WEIGHT){
+	/* Normalize by tally only and forget about weights */ 
+	(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+      }else if(wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
+	if(msk_nm != NULL){
+	  /* Must mask weight in same fashion as variable was masked */ 
+	  /* Ensure wgt_out has a missing value */ 
+	  if(!wgt_out->has_mss_val){
+	    wgt_out->has_mss_val=True;
+	    wgt_out->mss_val=mss_val_mk(wgt_out->type);
+	  } /* end if */
+	  /* Mask by changing weight to missing value where condition is false */ 
+	  (void)var_mask(wgt_out->type,wgt_out->sz,wgt_out->has_mss_val,wgt_out->mss_val,msk_val,op_type,msk_out->val,wgt_out->val);
+	} /* endif weight must be masked */ 
+	/* Average weight over specified dimensions (tally array is set here) */ 
+	wgt_out=var_avg(wgt_out,dim_avg,nbr_dim_avg);
+	/*	(void)var_normalize(wgt_out->type,wgt_out->sz,wgt_out->has_mss_val,wgt_out->mss_val,wgt_out->tally,wgt_out->val);*/
+	(void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_out->val,var_prc_out[idx]->val);
+      }else{
+	(void)fprintf(stdout,"%s: ERROR Unforeseen logical branch in main()\n",prg_nm);
+	exit(EXIT_FAILURE);
+      } /* end if */
       /* Free tallying buffer */
       (void)free(var_prc_out[idx]->tally); var_prc_out[idx]->tally=NULL;
-      /* Normalize averages by average of weights */ 
-      if(wgt_nm != NULL && NORMALIZE_BY_WEIGHT && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR) && (!NCAR_CSM_FORMAT || strcmp(var_prc[idx]->nm,"gw")) ){
-	wgt_out=var_avg(wgt_out,dim_avg,nbr_dim_avg);
-	(void)var_normalize(wgt_out->type,wgt_out->sz,wgt_out->has_mss_val,wgt_out->mss_val,wgt_out->tally,wgt_out->val);
-	(void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_out->val,var_prc_out[idx]->val);
-      } /* end if */
-      /* Free the current input buffer */
+      /* Free current input buffer */
       (void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
 
       /* Copy average to output file and free averaging buffer */ 

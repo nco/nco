@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.2 1998-08-26 22:33:13 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.3 1998-12-03 05:40:28 zender Exp $
 
 # Purpose: NCO test battery
 # This script currently only works at NCAR
@@ -41,6 +41,22 @@ echo "ncwa 5: average with missing value attribute: 73 =?= $avg"
 ncwa -O -a lon -v no_mss_val in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v no_mss_val foo.nc`
 echo "ncwa 6: average without missing value attribute: 5.0e35 =?= $avg" 
+
+ncwa -O -v lat -m lat -M 90.0 -o eq -a lat in.nc foo.nc 2>>foo.tst 
+avg=`ncks -C -H -s "%e" -v lat foo.nc`
+echo "ncwa 7: average masked coordinate: 90.0 =?= $avg" 
+
+ncwa -O -v lat_var -m lat -M 90.0 -o eq -a lat in.nc foo.nc 2>>foo.tst 
+avg=`ncks -C -H -s "%e" -v lat_var foo.nc`
+echo "ncwa 8: average masked variable: 2.0 =?= $avg" 
+
+ncwa -O -v lev -m lev -M 100.0 -o eq -a lev -w lev_wgt in.nc foo.nc 2>>foo.tst 
+avg=`ncks -C -H -s "%e" -v lev foo.nc`
+echo "ncwa 9: average masked, weighted coordinate: 100.0 =?= $avg" 
+
+ncwa -O -v lev_var -m lev -M 100.0 -o gt -a lev -w lev_wgt in.nc foo.nc 2>>foo.tst 
+avg=`ncks -C -H -s "%e" -v lev_var foo.nc`
+echo "ncwa 10: average masked, weighted variable: 666.6667 =?= $avg" 
 
 ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v mss_val foo.nc`

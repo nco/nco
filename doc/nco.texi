@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.6 1998-11-25 22:14:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.7 1998-12-03 05:40:28 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -177,6 +177,70 @@ by the Free Software Foundation.
 
 Introduction
 
+* Availability::                
+* Compatability::               
+* Libraries::                   
+* netCDF 2.x vs. 3.x::          
+* Reporting bugs::              
+
+Operating systems compatible with NCO
+
+* Windows NT::                  
+
+Operator Strategies
+
+* Philosophy::                  
+* Climate model paradigm::      
+* Output files::                
+* Appending::                   
+* Averaging vs. Concatenating::  
+* Large numbers of input files::  
+* Large files and Memory::      
+* Memory usage::                
+* Operator limitations::        
+
+Differences between averagers and concatenators
+
+* Concatenation::               
+* Averaging::                   
+
+Features common to most operators
+
+* Specifying input files::      
+* Remote storage::              
+* File retention::              
+* Variable subsetting::         
+* Coordinate variables::        
+* Fortran indexing::            
+* Hyperslabs::                  
+* Wrapped coordinates::         
+* Stride::                      
+* Missing values::              
+* Suppressing interactive prompts::  
+* Operator version::            
+* History attribute::           
+* NCAR CSM Conventions::        
+* ARM Conventions::             
+
+Reference manual for all operators
+
+* ncatted netCDF Attribute Editor::  
+* ncdiff netCDF Differencer::   
+* ncea netCDF Ensemble Averager::  
+* ncecat netCDF Ensemble Concatenator::  
+* ncflint netCDF File Interpolator::  
+* ncks netCDF Kitchen Sink::    
+* ncra netCDF Record Averager::  
+* ncrcat netCDF Record Concatenator::  
+* ncrename netCDF Renamer::     
+* ncwa netCDF Weighted Averager  ::  
+
+@code{ncwa} netCDF Weighted Averager
+
+* Masking condition::           
+* Normalization::               
+
+@end detailmenu
 @end menu
 
 @node Foreword, Summary, Top, Top
@@ -2970,27 +3034,38 @@ Non-coordinate variables are always masked and weighted if specified.
 
 Coordinate variables, however, may be treated specially.
 By default, an averaged coordinate variable, e.g., @code{latitude},
-appears in @var{output-file} as a scalar which is the simple arithmetic
-average of the input array.  
-In other words, by default @code{ncwa} does not weight or mask
-coordinate variables.  
-This design decision was intended to be helpful but for many
-applications it may be preferable to weight and/or mask coordinate
+appears in @var{output-file} averaged the same way as any other variable
+containing an averaged dimension.
+In other words, by default @code{ncwa} weights and masks
+coordinate variables like all other variables.  
+This design decision was intended to be helpful but for some
+applications it may be preferable not to weight or mask coordinate
 variables just like all other variables.   
 Consider the following arguments to @code{ncwa}:  @code{-a latitude -w
 lat_wgt -d latitude,0.,90.} where @code{lat_wgt} is a weight in the
 @code{latitude} dimension.
-Since, by default @code{ncwa} does not weight coordinate variables, the
-value of @code{latitude} in the @var{output-file} will be 45.---which is
-a somewhat appealing result.
+Since, by default @code{ncwa} weights coordinate variables, the
+value of @code{latitude} in the @var{output-file} depends on the weights 
+in @var{lat_wgt} and is not likely to be 45.---the midpoint latitude of
+the hyperslab.
 @cindex coordinate variable
 @cindex @code{-I}
 Option @samp{-I} overrides this default behavior and causes @code{ncwa}
-to weight and mask coordinate variables.
+not to weight or mask coordinate variables.
 In the above case, this causes the value of @code{latitude} in the
-@var{output-file} would depend on the weights in @var{lat_wgt}.
-If you strongly prefer the former (default) or latter (@samp{-I})
-behavior, send me a note because this default is subject to change.
+@var{output-file} to be 45.---which is a somewhat appealing result.
+Thus, @samp{-I} specifies simple arithmetic averages for the coordinate
+variables. 
+In the case of latitude, @samp{-I} specifies that you prefer to archive
+the central latitude of the hyperslab over which variables were averaged 
+rather than the area weighted centroid of the hyperslab
+@footnote{If @code{lat_wgt} contains Gaussian weights then the value of 
+@code{latitude} in the @var{output-file} will be the area-weighted
+centroid of the hyperslab. For the example given, this is about 30
+degrees.}. 
+Note that the default behavior of (@samp{-I}) changed on
+98/12/01---before this date the default was not to weight or mask
+coordinate variables.
 
 @ifhtml
 Note for HTML user's: The documentation for <CODE>ncwa</CODE> relies
@@ -3006,73 +3081,49 @@ Info.
 The printed manual contains much better documentation on @code{ncwa}.
 @end ifinfo
 
-@cindex normalization
 @tex
-Given no @var{mask} or @var{weight}, the average of $x$ is defined as:  
+@code{ncwa} defines the generic average of the variable $x$ to be
 $$
-\bar x_j = {\sum_{i = 1}^{i = N} x_i \over N } 
+\bar x_j = {\sum_{i = 1}^{i = N} \mu_i m_i w_i x_i \over \sum_{i =
+1}^{i = N} \mu_i m_i w_i} 
 $$
-$N$ is the number of input elements contributing to each element in the
-output. 
-In this example $N$ is simply the product of the sizes of all dimensions
-which are averaged over (i.e., dimensions specified with @samp{-a}).
-The total sum in the numerator is, by default, normalized by the
-@dfn{tally}.
-In this case the tally is $N$, since there is no masking condition. 
-In general the tally counts only the number of $x$'s which contribute to
-the output average.
-This may differ from $N$ when there is a condition, such as a
-@dfn{masking condition}, on the average.  
-Note that $\bar x_j$ represents just the $j$'th element of the output  
-hyperslab.
+where $\bar x_j$ is the $j$'th element of the output hyperslab, $x_i$ is
+the $i$'th element of the input hyperslab, $\mu_i$ is 1 unless $x_i$
+equals the missing value, $m_i$ is 1 unless $x_i$ is masked, and $w_i$
+is the weight.  
+This formiddable looking formula represents a simple weighted average
+whose bells and whistles are all explained below. 
+It is not early to note, however, that when $\mu_i = m_i = w_i = 1$, the
+generic averaging expression above reduces to a simple arithmetic
+average. 
 The size $J$ of the output hyperslab for a given variable is the product
 of all the dimensions of the input variable which are not averaged over.
+The size $N$ of the input hyperslab contributing to each $\bar x_j$ is
+simply the product of the sizes of all dimensions which are averaged
+over (i.e., dimensions specified with @samp{-a}). 
+Thus $N$ is the number of input elements which @emph{potentially}
+contribute to each output element.
+An input element $x_i$ contributes to the output element $x_j$ except
+in two conditions:  
+@cindex missing values
+@enumerate
+@item $x_i$ equals the @var{missing value} (@pxref{Missing values}) for the
+variable. 
+@item $x_i$ is located at a point where the masking condition
+(@pxref{Masking condition}) is false.
+@end enumerate
+Points $x_i$ in either of these two categories do not contribute to
+$x_j$, they are ignored.
+We now define these criteria more rigorously.
 
-Given a @var{weight} $w$ (specified with @samp{-w}), but no @var{mask},
-the average of $x$ generalizes to:  
-$$
-\bar x_j = {\sum_{i = 1}^{i = N} w_i x_i \over N \sum_{i = 1}^{i = N} w_i} 
-$$
-As in the previous example, the tally is the product of the sizes of the
-averaging dimensions (i.e., the dimensions specified with @samp{-a}).  
-Notice the total sum in the numerator is, by default, normalized by both
-the tally, $N$, and the sum of the @var{weights}, $\sum w_i$.
-
-Given a @var{mask} (specified with @samp{-m}), but no @var{weight}
-$w$, the average of $x$ is defined as: 
-$$
-\bar x_j = {\sum_{i = 1}^{i = N} m_i x_i \over \sum_{i = 1}^{i = N} m_i} 
-$$
-Here the tally, $\sum m_i$, is not necessarily equal to $N$.
-The $m_i$ are the Boolean results of the @dfn{masking condition} for
-points $x_i$. 
-Thus $m_i = 1$ when the masking condition is @dfn{true} and $m_i = 0$
-otherwise.   
-The definition of the masking condition is given below.
-
-The total sum in the numerator is, by default, normalized by the tally,
-$\sum m_i$. 
-When a @var{mask} is specified (with @samp{-m}), the tally is less than
-the product of the sizes of the averaging dimensions whenever the
-masking condition is false for at least one of the $N$ elements of the
-input hyperslab.   
-For each point where masking condition is @dfn{true}, the tally is
-incremented by one.
-But elements which do not meet the masking condition do not contribute
-to the output average, and hence do not contribute to the tally.
-
-Given a @var{mask} $m$ (specified with @samp{-m}), and @var{weight} $w$
-(specified with @samp{-w}), the average of $x$ is defined as:  
-$$
-\bar x_j = {\sum_{i = 1}^{i = N} m_i w_i x_i \over \sum_{i = 1}^{i = N} m_i
-\sum_{i = 1}^{i = N} m_i w_i} 
-$$
-This is the most general case handled by @code{ncwa}.
-This case reduces to the simplest case when $w$ is 1 and the masking
-condition is always true so $m_i = 1$. 
-The total sum in the numerator is, by default, normalized by both the
-tally, $\sum m_i$, and the sum of the weights contributing to the output
-average, $\sum m_i w_i$. 
+Each $x_i$ has an associated Boolean weight $\mu_i$ whose value is 0 or
+1 (false or true).
+The value of $\mu_i$ is 1 (true) unless $x_i$ equals the @var{missing
+value} (@pxref{Missing values}) for the variable.
+Thus, for a variable with no @code{missing_value} attribute, $\mu_i$ is
+always 1.
+All other NCO arithmetic operators (@code{ncdiff}, @code{ncra},
+@code{ncea}, @code{ncflint}) treat missing values analogously.
 @end tex
 
 @menu
@@ -3083,7 +3134,20 @@ average, $\sum m_i w_i$.
 @node Masking condition, Normalization, ncwa netCDF Weighted Averager  , ncwa netCDF Weighted Averager
 @unnumberedsubsec Masking condition
 @cindex masking condition
-The @dfn{masking condition} has the syntax @math{@var{mask}}
+@tex
+Each $x_i$ also has an associated masking weight $m_i$ whose value is 0
+or 1 (false or true).
+The value of $m_i$ is always 1 unless a @var{mask} is specified (with
+@samp{-m}).
+As noted above, @var{mask} is broadcast, if possible, to conform 
+to the variable being averaged.  
+In this case, the value of $m_i$ depends on the @dfn{masking
+condition}. 
+As expected, $m_i = 1$ when the masking condition is @dfn{true} and $m_i
+= 0$ otherwise.   
+@end tex
+
+The masking condition has the syntax @math{@var{mask}}
 @math{@var{condition}} @math{@var{val}}. 
 Here @var{mask} is the name of the masking variable (specified with
 @samp{-m}). 
@@ -3115,11 +3179,67 @@ Thus for the @var{i}'th element of the hyperslab to be averaged,
 the masking condition is 
 @math{@var{mask_i}} @var{condition} @var{val}.
 
+@tex
+Each $x_i$ is also associated with an additional weight $w_i$ whose
+value may be user-specified.
+The value of $w_i$ is identically 1 unless the user specifies a
+@var{weight} (with @samp{-w}).
+In this case, the value of $w_i$ is determined by the @var{weight}
+variable in the @var{input-files}. 
+As noted above, @var{weight} is broadcast, if possible, to conform 
+to the variable being averaged.  
+
+$M$ is the number of input elements $x_i$ which @emph{actually}
+contribute to the output element $x_j$.
+$M$ is also known as the @dfn{tally} and is defined as 
+$$
+M = \sum_{i = 1}^{i = N} \mu_i m_i 
+$$
+$M$ is identical to the denominator of the generic averaging expression
+except for the omission of the weight $w_i$.
+Thus $M = N$ whenever no input points are missing values or are masked. 
+Whether an element contributes to the output, and thus increments
+$M$ by one, has more to do with the above two criteria (missing value
+and masking) than with the numeric value of the element per se.
+For example, $x_i = 0.0$ does contribute to $x_j$ (assuming the
+@code{missing_value} attribute is not 0.0 and location $i$ is not
+masked). 
+The value $x_i = 0.0$ will not change the numerator of the generic
+averaging expression, but it will change the denominator (unless its
+weight $w_i =0.0$ as well).
+@end tex
+
 @node Normalization,  , Masking condition, ncwa netCDF Weighted Averager
 @unnumberedsubsec Normalization
 @cindex normalization
 @code{ncwa} has three switches which control the normalization of the
 averages appearing in the @var{output-file}.
+The first normalization option, @samp{-N}, prevents @code{ncwa} from
+dividing the weighted sum of the variable (the numerator in the
+averaging expression) by the weighted sum of the weights (the
+denominator in the averaging expression). 
+Thus @samp{-N} tells @code{ncwa} to return just the numerator of the
+above expression. 
+
+The second normalization option tells @code{ncwa} to multiply the
+weighted average the variable (given by the averaging expression)
+by the tally, @var{M}.
+Thus this option is similar to integration---multiplying the mean value
+of a quantity by the number of gridpoints to which it applies.
+
+The third normalization option is equivalent to specifying the first two
+options simultaneously. 
+In other words this option causes @code{ncwa} to return @var{M} times
+the numerator of the generic averaging expression.  
+
+In summary, @code{ncwa} performs simple arithmetic averages by default.
+@code{ncwa} also handles values matching the variable's
+@code{missing_value} attribute correctly.
+Moreover, @code{ncwa} understands how to manipulate user-specified
+weights, masks, and normalization options.
+Using all of these options, one can compute sophisticated averages (and  
+integrals) from the command line.
+
 Option @samp{-N} turns off all normalization (tally and weight). 
 This causes the numerators in the above expressions to appear in the
 output files.
@@ -3170,7 +3290,7 @@ ncwa -w gw -a lat in.nc out.nc
 @end example
 @noindent
 Here the tally is simply the size of @code{lat}, or 64.
-The sum of the Gaussian weights is 2.
+The sum of the Gaussian weights is 2.0.
 
 Compute the area average over the tropical Pacific:
 @example
@@ -3193,33 +3313,33 @@ Compute the area average over the globe, but include only points for
 which 
 @set flg
 @tex
-$ORO < .5$
+$ORO < 0.5$
 @clear flg
 @end tex
 @ifset flg
-@var{ORO} < .5
+@var{ORO} < 0.5
 @clear flg
 @end ifset
 @footnote{@code{ORO} stands for @dfn{Orography} in the NCAR climate model.
-@math{@var{ORO} < .5} selects the gridpoints which are covered by ocean.}:
+@math{@var{ORO} < 0.5} selects the gridpoints which are covered by ocean.}:
 @example
-ncwa -m ORO -M .5 -o lt -w gw -a lat,lon in.nc out.nc
+ncwa -m ORO -M 0.5 -o lt -w gw -a lat,lon in.nc out.nc
 @end example
 @noindent
 Assuming 70% of the gridpoints are maritime, then here the tally is
 @set flg
 @tex
-$.70 \times 8192 \approx 5734$.
+$0.70 \times 8192 \approx 5734$.
 @clear flg
 @end tex
 @ifset flg
-.70 times 8192 = 5734.
+0.70 times 8192 = 5734.
 @clear flg
 @end ifset
 
 Compute the global annual average over the maritime tropical Pacific:
 @example
-ncwa -m ORO -M .5 -o lt -w gw -a lat,lon,time -d lat,-20.,20. 
+ncwa -m ORO -M 0.5 -o lt -w gw -a lat,lon,time -d lat,-20.,20. 
 -d lon,120.,270. in.nc out.nc
 @end example
 
