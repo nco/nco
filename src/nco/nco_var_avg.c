@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.7 2002-06-07 06:27:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.8 2002-06-07 06:44:38 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -306,7 +306,6 @@ var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
      Fortran: Support deprecated */
 
 #ifndef __GNUC__
-  long blk_off;
   long idx_op1;
 #endif /* !__GNUC__ */
   const long sz_blk=sz_op1/sz_op2;
@@ -342,13 +341,13 @@ var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* ANSI-compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1.fp[blk_off+idx_blk];
 	tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
 	  if(op1.fp[idx_op1] != mss_val_flt){
@@ -390,13 +389,13 @@ var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.dp[idx_op2]+=op1.dp[blk_off+idx_blk];
 	tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
 	  if(op1.dp[idx_op1] != mss_val_dbl){
@@ -438,13 +437,13 @@ var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.lp[idx_op2]+=op1.lp[blk_off+idx_blk];
 	tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
 	  if(op1.lp[idx_op1] != mss_val_lng){
@@ -486,13 +485,13 @@ var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.sp[idx_op2]+=op1.sp[blk_off+idx_blk];
 	tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
 	  if(op1.sp[idx_op1] != mss_val_sht){
@@ -565,12 +564,11 @@ var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2
      var_avg_reduce_max() is derived from var_avg_reduce_min() */
 
 #ifndef __GNUC__
-  long blk_off;
   long idx_op1;
 #endif /* !__GNUC__ */
+  const long sz_blk=sz_op1/sz_op2;
   long idx_op2;
   long idx_blk;
-  long sz_blk;
 
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
@@ -580,8 +578,6 @@ var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2
   signed char mss_val_byt;
   
   bool flg_mss=False;
-  
-  sz_blk=sz_op1/sz_op2;
   
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
@@ -607,14 +603,14 @@ var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2
     /* ANSI-compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	op2.fp[idx_op2]=op1.fp[blk_off];
 	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.fp[idx_op2] > op1.fp[blk_off+idx_blk]) op2.fp[idx_op2]=op1.fp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
@@ -661,14 +657,14 @@ var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	op2.dp[idx_op2]=op1.dp[blk_off];
 	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.dp[idx_op2] > op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
@@ -713,14 +709,14 @@ var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	op2.lp[idx_op2]=op1.lp[blk_off];
 	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.lp[idx_op2] > op1.lp[blk_off+idx_blk]) op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
@@ -765,14 +761,14 @@ var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	op2.sp[idx_op2]=op1.sp[blk_off];
 	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.sp[idx_op2] > op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
@@ -848,12 +844,11 @@ var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2
      var_avg_reduce_max() is derived from var_avg_reduce_min() */
 
 #ifndef __GNUC__
-  long blk_off;
   long idx_op1;
 #endif /* !__GNUC__ */
+  const long sz_blk=sz_op1/sz_op2;
   long idx_op2;
   long idx_blk;
-  long sz_blk;
   
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
@@ -863,8 +858,6 @@ var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2
   signed char mss_val_byt;
   
   bool flg_mss=False;
-  
-  sz_blk=sz_op1/sz_op2;
   
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
@@ -890,14 +883,14 @@ var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2
     /* ANSI-compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	op2.fp[idx_op2]=op1.fp[blk_off];
 	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.fp[idx_op2] < op1.fp[blk_off+idx_blk]) op2.fp[idx_op2]=op1.fp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
@@ -944,14 +937,14 @@ var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	op2.dp[idx_op2]=op1.dp[blk_off];
 	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.dp[idx_op2] < op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
@@ -996,14 +989,14 @@ var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	op2.lp[idx_op2]=op1.lp[blk_off];
 	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.lp[idx_op2] < op1.lp[blk_off+idx_blk]) op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
@@ -1048,14 +1041,14 @@ var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2
     /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	op2.sp[idx_op2]=op1.sp[blk_off];
 	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
 	  if(op2.sp[idx_op2] < op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	blk_off=idx_op2*sz_blk;
+	const long blk_off=idx_op2*sz_blk;
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
