@@ -1,5 +1,5 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.19 2002-01-01 01:00:10 zender Exp $ -*-C-*- */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.20 2002-01-11 23:25:00 hmb Exp $ -*-C-*- */
 
   /* Purpose: Token generator for ncap parser */
 
@@ -193,20 +193,25 @@ static bool RHS;
   }/* end else */
 }
 
- /* Intrinsic mathematical functions (which return doubles) */
-acos {lvalp->sym=ncap_sym_init(yytext,acos); return FUNCTION;}
-asin {lvalp->sym=ncap_sym_init(yytext,asin); return FUNCTION;}
-atan {lvalp->sym=ncap_sym_init(yytext,atan); return FUNCTION;}
-cos {lvalp->sym=ncap_sym_init(yytext,cos); return FUNCTION;}
-exp {lvalp->sym=ncap_sym_init(yytext,exp); return FUNCTION;}
-log {lvalp->sym=ncap_sym_init(yytext,log); return FUNCTION;}
-log10 {lvalp->sym=ncap_sym_init(yytext,log10); return FUNCTION;}
-sin {lvalp->sym=ncap_sym_init(yytext,sin); return FUNCTION;}
-sqrt {lvalp->sym=ncap_sym_init(yytext,sqrt); return FUNCTION;}
-tan {lvalp->sym=ncap_sym_init(yytext,tan); return FUNCTION;}
-abs {return ABS;}
-atostr {return ATOSTR;}
-pow {return POWER;}
+abs/[ ]*\(     { return ABS;    }
+atostr/[ ]*\(  { return ATOSTR; }
+pow/[ ]*\(     { return POWER;  }
+
+
+[A-Za-z_][A-Za-z0-9_]*/[ ]*\( {
+/* Compare input with mathematical function names in table and then return */
+/* a pointer which contains the name,double function,float function   */
+   int i;
+   for( i = 0 ; i < prs_arg->sym_tbl_nbr ; i++)
+     if( !strcmp(yytext,(prs_arg->sym_tbl[i]->nm))) { 
+        lvalp->sym=prs_arg->sym_tbl[i];
+        return FUNCTION;
+     }
+   (void)sprintf(err_sng,"Warning: Unable to locate the function %s.",yytext);
+   (void)yyerror(err_sng);       
+   return EPROVOKE;             
+
+}/* end functions */
 
 [A-Za-z_][A-Za-z0-9_]*@[A-Za-z_][A-Za-z0-9_]* { 
   /* Recognize attributes e.g., var_nm@att_nm */
@@ -234,6 +239,7 @@ pow {return POWER;}
   
   /* Assume global attribute when variable name is "global" */
   if(!strcmp(var_nm,"global")) var_id=NC_GLOBAL; else rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
+
   
   /* We are on RHS so return value of attribute (if available) to parser
      For initial scan, just return attributes on RHS */
