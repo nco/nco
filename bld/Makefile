@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.77 2000-09-19 15:52:47 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.78 2000-09-19 20:25:36 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires: GNU Make. AT&T Make will not understand this.
@@ -572,7 +572,7 @@ libnco := $(MY_LIB_DIR)/libnco
 # Default targets
 all: dir lib $(MDL_BIN_TRG) data
 # .PHONY tells make to remake the following non-file targets 
-.PHONY: all cln dst_cln dbg $(MDL_BIN_TRG)
+.PHONY: all cln dst_cln dbg 
 # Delete default suffixes---this should increase speed
 .SUFFIXES: 
 # Define suffixes which matter
@@ -591,6 +591,7 @@ obj_dir:
 	-install -d $(MY_BIN_DIR)
 	-mkdir -p $(MY_OBJ_DIR)
 # Targets in bin
+.PHONY:  ncra ncatted ncks ncwa ncecat ncdiff ncflint ncrename
 ncra:   $(MY_BIN_DIR)/ncra
 $(MY_BIN_DIR)/ncra:	$(MY_OBJ_DIR)/ncra.o $(libnco).a
 	$(CC) -o $@ $< $(LDFLAGS)
@@ -732,7 +733,6 @@ cln: lib_cln dpn_cln obj_cln tst_cln
 debug: dbg
 dbg:
 	printf "PVM_ARCH = $(PVM_ARCH)\n"
-	printf "MDL_BIN_TRG = $(MDL_BIN_TRG)\n"
 	printf "LDFLAGS = $(LDFLAGS)\n"
 	printf "CFLAGS = $(CFLAGS)\n"
 	printf "MDL_PTH = $(MDL_PTH)\n"
@@ -786,7 +786,7 @@ ifeq ($(PVM_ARCH),LINUX)
 else	
 	$(CC) $(CFLAGS) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(MY_OBJ_DIR)/ncap_utl.o $(MY_OBJ_DIR)/getopt.o $(MY_OBJ_DIR)/getopt1.o $(MY_OBJ_DIR)/$@.tab.o $(MY_OBJ_DIR)/$@_lex.o -ll -ly $(LDFLAGS)
 endif
-	chmod 755 $@
+	chmod 755 $(MY_BIN_DIR)/$@
 	/bin/rm -f $(MDL_NCAP) $(MY_OBJ_DIR)/$@_lex.o
 
 GENNET_SRC := gennet.f
