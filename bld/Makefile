@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.169 2002-09-10 00:49:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.170 2002-09-10 04:37:02 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -281,7 +281,7 @@ ${MY_DPN_DIR}/%.d : %.cc
 # Manually define autotools tokens normally defined in HAVE_CONFIG_H
 # Initialize OS-specific tokens to empty
 CPP_TKN_OS := 
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32))
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32MACOSX))
  CPP_TKN_OS += -DHAVE_GETOPT_H
 endif # !LINUX
 ifneq (${PVM_ARCH},CRAY)
@@ -441,7 +441,7 @@ endif
 # endif CRAY
 
 # Works on LINUX, LINUXALPHA, and FREEBSD
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDMACOSX))
 #C++ := como
 C++ := g++
 #C++ := icc
@@ -1202,7 +1202,7 @@ endif
 # For some reason, ncap_lex.c is not remade when I expect it to be, so I explicitly remove the object file every time
 ncap:	${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o  ncap_yacc.h ${MY_OBJ_DIR}/ncap.o ${MY_OBJ_DIR}/ncap_utl.o ${libnco}.a
 #        ${YACC} --name-prefix=nco_
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32))
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32MACOSX))
 	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@_yacc.o ${MY_OBJ_DIR}/$@_lex.o ${LDFLAGS}
 else	
 	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@_yacc.o ${MY_OBJ_DIR}/$@_lex.o -ll -ly ${LDFLAGS}

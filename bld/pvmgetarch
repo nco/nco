@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: pvmgetarch,v 1.4 2002-08-13 08:02:22 zender Exp $
+# $Id: pvmgetarch,v 1.5 2002-09-10 04:37:03 zender Exp $
 #
 # pvmgetarch.sh
 #
@@ -68,9 +68,12 @@ if [ -f /bin/uname -o -f /usr/bin/uname \
 	*,mips )                ARCH=MIPS ;;
 	*,CRAY-2 )              ARCH=CRAY2 ;;
 	Linux,i[3456]86 )       ARCH=LINUX ;;
-	Linux,sparc)			ARCH=LINUXSPARC ;;
+	Linux,sparc)		ARCH=LINUXSPARC ;;
 	BSD/OS,i[3456]86 )      ARCH=BSD386 ;;
 	FreeBSD,i386 )          ARCH=FREEBSD ;;
+# 20020812 csz++ Implement MACOSX
+	Darwin,Power* )         ARCH=MACOSX ;;
+# csz--
 # 20020812 csz++ deprecate SX3 in favor of NECSX
 #	SUPER-UX,SX-3 )         ARCH=SX3 ;;
 	SUPER-UX,SX-3 )         ARCH=NECSX ;;
