@@ -220,8 +220,35 @@ DEFAULT_INCLUDES =  -I. -I$(srcdir) -I$(top_builddir)
 CPPFLAGS = @CPPFLAGS@
 LDFLAGS = @LDFLAGS@
 LIBS = @LIBS@
-depcomp =
-am__depfiles_maybe =
+depcomp = $(SHELL) $(top_srcdir)/autobld/depcomp
+am__depfiles_maybe = depfiles
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/ncap.Po ./$(DEPDIR)/ncap_lex.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/ncap_utl.Po ./$(DEPDIR)/ncap_yacc.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/ncatted.Po ./$(DEPDIR)/ncdiff.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/ncecat.Po ./$(DEPDIR)/ncflint.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/ncks.Po ./$(DEPDIR)/nco_att_utl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_bnr.Plo ./$(DEPDIR)/nco_cln_utl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_cnf_dmn.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_cnf_typ.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_cnv_arm.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_cnv_csm.Plo ./$(DEPDIR)/nco_ctl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_dbg.Plo ./$(DEPDIR)/nco_dmn_utl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_fl_utl.Plo ./$(DEPDIR)/nco_lmt.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_lst_utl.Plo ./$(DEPDIR)/nco_mmr.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_mss_val.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_netcdf.Plo ./$(DEPDIR)/nco_omp.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_pck.Plo ./$(DEPDIR)/nco_prn.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_rec_var.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_rth_flt.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_rth_utl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_scl_utl.Plo ./$(DEPDIR)/nco_scm.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_sng_utl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_var_avg.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_var_lst.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_var_rth.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_var_scv.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/nco_var_utl.Plo ./$(DEPDIR)/ncra.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/ncrename.Po ./$(DEPDIR)/ncwa.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -248,7 +275,7 @@ all: all-am
 .SUFFIXES: .c .l .lo .o .obj .y
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  --ignore-deps src/nco/Makefile
+	  $(AUTOMAKE) --foreign  src/nco/Makefile
 Makefile: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
 libLTLIBRARIES_INSTALL = $(INSTALL)
@@ -349,14 +376,70 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap_lex.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap_utl.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncap_yacc.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncatted.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncdiff.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncecat.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncflint.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncks.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_att_utl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_bnr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_cln_utl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_cnf_dmn.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_cnf_typ.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_cnv_arm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_cnv_csm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_ctl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_dbg.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_dmn_utl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_fl_utl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_lmt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_lst_utl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_mmr.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_mss_val.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_netcdf.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_omp.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_pck.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_prn.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_rec_var.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_rth_flt.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_rth_utl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_scl_utl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_scm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_sng_utl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_var_avg.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_var_lst.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_var_rth.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_var_scv.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_var_utl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncra.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncrename.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncwa.Po@am__quote@
+
+distclean-depend:
+	-rm -rf ./$(DEPDIR)
+
 .c.o:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(COMPILE) -c `test -f '$<' || echo '$(srcdir)/'`$<
 
 .c.obj:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(COMPILE) -c `cygpath -w $<`
 
 .c.lo:
+@AMDEP_TRUE@	source='$<' object='$@' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 	$(LTCOMPILE) -c -o $@ `test -f '$<' || echo '$(srcdir)/'`$<
+CCDEPMODE = @CCDEPMODE@
 
 .l.c:
 	$(LEXCOMPILE) `test -f $< || echo '$(srcdir)/'`$<
@@ -551,8 +634,8 @@ clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
 
 distclean: distclean-am
 
-distclean-am: clean-am distclean-compile distclean-generic \
-	distclean-libtool distclean-tags
+distclean-am: clean-am distclean-compile distclean-depend \
+	distclean-generic distclean-libtool distclean-tags
 
 dvi: dvi-am
 
@@ -586,11 +669,11 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
 
 .PHONY: GTAGS all all-am check check-TESTS check-am clean \
 	clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
-	clean-libtool distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am info \
-	info-am install install-am install-binPROGRAMS install-data \
-	install-data-am install-exec install-exec-am install-info \
-	install-info-am install-libLTLIBRARIES install-man \
+	clean-libtool distclean distclean-compile distclean-depend \
+	distclean-generic distclean-libtool distclean-tags distdir dvi \
+	dvi-am info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-exec install-exec-am \
+	install-info install-info-am install-libLTLIBRARIES install-man \
 	install-strip installcheck installcheck-am installdirs \
 	maintainer-clean maintainer-clean-generic mostlyclean \
 	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \

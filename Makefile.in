@@ -100,8 +100,6 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/autobld/mkinstalldirs
 CONFIG_HEADER = config.h
 CONFIG_CLEAN_FILES =
-depcomp =
-am__depfiles_maybe =
 DIST_SOURCES =
 
 RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
@@ -109,9 +107,10 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	install-exec-recursive installdirs-recursive install-recursive \
 	uninstall-recursive check-recursive installcheck-recursive
 DIST_COMMON = Makefile.am Makefile.in acinclude.m4 aclocal.m4 \
-	autobld/config.guess autobld/config.sub autobld/install-sh \
-	autobld/ltmain.sh autobld/missing autobld/mkinstalldirs \
-	autobld/texinfo.tex config.h.in configure configure.in
+	autobld/config.guess autobld/config.sub autobld/depcomp \
+	autobld/install-sh autobld/ltmain.sh autobld/missing \
+	autobld/mkinstalldirs autobld/texinfo.tex config.h.in configure \
+	configure.in
 DIST_SUBDIRS = $(SUBDIRS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -122,7 +121,7 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  --ignore-deps Makefile
+	  $(AUTOMAKE) --foreign  Makefile
 Makefile: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $@ $(am__depfiles_maybe)
 

@@ -103,8 +103,6 @@ subdir = doc
 mkinstalldirs = $(SHELL) $(top_srcdir)/autobld/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-depcomp =
-am__depfiles_maybe =
 DIST_SOURCES =
 TEXINFO_TEX = $(top_srcdir)/autobld/texinfo.tex
 INFO_DEPS = nco.info
@@ -117,7 +115,7 @@ all: all-am
 .SUFFIXES: .dvi .html .info .pdf .ps .texi
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  --ignore-deps doc/Makefile
+	  $(AUTOMAKE) --foreign  doc/Makefile
 Makefile: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
 

@@ -99,8 +99,6 @@ subdir = src
 mkinstalldirs = $(SHELL) $(top_srcdir)/autobld/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-depcomp =
-am__depfiles_maybe =
 DIST_SOURCES =
 
 RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
@@ -114,7 +112,7 @@ all: all-recursive
 .SUFFIXES:
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  --ignore-deps src/Makefile
+	  $(AUTOMAKE) --foreign  src/Makefile
 Makefile: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.in  $(top_builddir)/config.status
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)
 
