@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.20 2002-05-05 02:55:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.21 2002-05-05 03:30:33 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -338,23 +338,17 @@ extern "C" {
      Specifying extern is redundant (functions are extern by default) but Emacs highlights them in a nice shade of lavender :-)
      fxm: TODO 210 Break into sourcefile specific headers, e.g., csz.h, pck.h... */
   
-  extern bool ncar_csm_inq(int);
-  extern char **lst_prs(char *,const char *,int *);
   extern char *cmd_ln_sng(int,char **);
   extern char *cvs_vrs_prs();
   extern char *nmn_get(void);
   extern char *prg_nm_get(void);
-  extern char *sng_lst_prs(char **,const long, const char *);
   extern int sng_ascii_trn(char *);
   extern int mss_val_get(int,var_sct *);
   extern int op_prs_rlt(char *);
   extern int nco_op_typ_get(char *);
   extern int prg_get(void);
-  extern lmt_sct *lmt_prs(int,char **);
-  extern lmt_sct lmt_sct_mk(int,int,lmt_sct *,int,bool);
   extern nco_long FORTRAN_newdate(nco_long *,int *);
   extern nco_long newdate(nco_long,int);
-  extern nm_id_sct *lst_heapsort(nm_id_sct *,int,bool);
   extern nm_id_sct *var_lst_add_crd(int,int,int,nm_id_sct *,int *);
   extern nm_id_sct *var_lst_ass_crd_add(int,nm_id_sct *,int *);
   extern nm_id_sct *var_lst_crd_xcl(int,int,nm_id_sct *,int *);
@@ -367,7 +361,6 @@ extern "C" {
   extern var_sct *var_avg(var_sct *,dmn_sct **,int,int);
   extern var_sct *var_dpl(var_sct *);
   extern var_sct *var_fll(int,int,char *,dmn_sct **,int);
-  extern var_sct *var_free(var_sct *);
   extern void FORTRAN_add_double_precision(long *,int *,double *,long *,double *,double *);
   extern void FORTRAN_add_real(long *,int *,float *,long *,float *,float *);
   extern void FORTRAN_avg_reduce_double_precision(long *,long *,int *,double *,long *,double *,double *);
@@ -384,15 +377,7 @@ extern "C" {
   extern void cast_void_nctype(nc_type,ptr_unn *);
   extern void copyright_prn(char *,char *);
   extern void hst_att_cat(int,char *);
-  extern void index_alpha(int,char **,int *);
-  extern void indexx(int,int *,int *);
-  extern void lmt_evl(int,lmt_sct *,long,bool);
   extern void mss_val_cp(var_sct *,var_sct *);
-  extern void ncar_csm_date(int,var_sct **,int);
-  extern void *nco_calloc(size_t lmn_nbr,size_t lmn_sz);
-  extern void *nco_free(void *vp);
-  extern void *nco_malloc(size_t size);
-  extern void *nco_realloc(void *ptr, size_t size);
   extern void rec_crd_chk(var_sct *,char *,char *,long,long);
   extern void val_conform_type(nc_type,ptr_unn,nc_type,ptr_unn);
   extern void var_add(nc_type,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
