@@ -6,7 +6,7 @@
 # NB: When adding tests, _be sure to use -O to overwrite files_
 # Otherwise, script hangs waiting for interactive response to overwrite queries
 
-use File::Basename;
+use Cwd 'abs_path';
 
 my $dbg_lvl=0; # [enm] Print tests during execution for debugging
 
@@ -678,23 +678,25 @@ if (scalar @ARGV > 0)
   {
     $MY_BIN_DIR=$ENV{MY_BIN_DIR};
   } else {
-  # find available operators
-    if ($op= `which $operators[0]`) {
-      $MY_BIN_DIR = dirname($op);
-      print "MY_BIN_DIR not specified, use $MY_BIN_DIR? ('y' or specify) ";
-      my $ans = <STDIN>;
-      chomp $ans;
-      $MY_BIN_DIR = $ans unless (lc($ans) eq "y");
-    } else {
-      print "MY_BIN_DIR not specified, please specify. ";
-      $MY_BIN_DIR=<STDIN>;
-      chomp $MY_BIN_DIR;
-    }
+  # set and verify MY_BIN_DIR
+		$MY_BIN_DIR = abs_path("../src/nco");
+    print "MY_BIN_DIR not specified, use $MY_BIN_DIR? ('y' or specify) ";
+    my $ans = <STDIN>;
+    chomp $ans;
+    $MY_BIN_DIR = $ans unless (lc($ans) eq "y");
   }
   # Die if this path still does not work
   die "$MY_BIN_DIR/$operators[0] doesn't exist\n" unless (-e "$MY_BIN_DIR/$operators[0]");
   
-  # Go to data directory where tests are actually run
+  # create symbolic links for testing
+  $sym_link{ncdiff}="ncbo";
+	$sym_link{ncea}="ncra";
+	$sym_link{ncrcat}="ncra";
+	foreach(keys %sym_link) {
+	  system("cd $MY_BIN_DIR && ln -s -f $sym_link{$_} $_ || (rm -f $_ && ln -s -f $sym_link{$_} $_)");
+	}
+
+# Go to data directory where tests are actually run
   my $data_dir = "../data";
   
   chdir $data_dir or die "$!\n";
