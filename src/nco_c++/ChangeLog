@@ -1,5 +1,8 @@
 2004-06-27  Charlie Zender  <zender@uci.edu>
 
+	* Makefile.old: MY_*_DIRS now check environment first to allow for
+	completely relocatable builds
+
 	* Makefile.old: Update AIX compiler flags, fix -spill=2048 option
 
 	* Working toward compiling on AIX with -qtemplateregistry option
@@ -8,6 +11,9 @@
 2004-06-25  Charlie Zender  <zender@uci.edu>
 
 	* Compiling libnco_c++ standalone from rest of NCO:
+	Check out nco_c++ source code alone:
+	cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -kk -d nco_c++ nco/src/nco_c++
+	cd nco_c++
 	bash # Create new shell to sandbox environment changes
 	alias make='gmake'
 	make -f Makefile.old dst_cln
@@ -22,13 +28,6 @@
 	make -f Makefile.old 
 	exit # exit new shell	
 
-2004-06-24  Charlie Zender  <zender@uci.edu>
-
-	* The command to check out the nco_c++ source code alone is
-	cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -kk -d nco_c++ nco/src/nco_c++
-	cd nco_c++
-	make -f Makefile.old 
-	
 2004-06-20  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco_c++-0_1_6 mie c++ nco/src/nco_c++

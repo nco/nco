@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.22 2004-06-28 06:10:44 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.23 2004-06-28 07:26:35 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -44,11 +44,21 @@ endif
 ifndef MY_OBJ_DIR
  MY_OBJ_DIR := ../../obj
 endif
-MY_BLD_DIR := .
-MY_DAT_DIR := ../../data
-MY_DOC_DIR := .
-MY_DPN_DIR := ${MY_OBJ_DIR}
-MY_INC_DIR := ${HOME}/include
+ifndef MY_DAT_DIR
+ MY_DAT_DIR := ../../data 
+endif
+ifndef MY_INC_DIR
+ MY_INC_DIR := ${HOME}/include
+endif
+ifndef MY_BLD_DIR
+ MY_BLD_DIR := .
+endif
+ifndef MY_DOC_DIR
+ MY_DOC_DIR := .
+endif
+ifndef MY_DPN_DIR
+ MY_DPN_DIR := ${MY_OBJ_DIR}
+endif
 
 # Primary tokens which determine build options
 # Specify non-default when invoking make, e.g. make DODS=Y
