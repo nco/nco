@@ -1,3 +1,9 @@
+nco (2.8.5-1) unstable; urgency=low
+
+  * DODS support, configure.in rewrite,	ncap attribute assignment fix
+
+ -- Charlie Zender <zender@uci.edu>  Wed,  7 Jan 2004 14:27:38 -0800
+
 nco (2.8.4-1) unstable; urgency=high
 
   * Fix bug with index-based hyperslabs introduced near 2.7.4

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.184 2004-01-07 20:51:42 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.185 2004-01-07 22:33:49 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -286,7 +286,7 @@ development version of NCO into a local directory named <tt>nco</tt>:
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-2_8_4</tt>) and the development version is that the
+(e.g., <tt>nco-2_8_5</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
 <tt>2.8.4</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
