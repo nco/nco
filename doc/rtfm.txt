@@ -34,6 +34,8 @@ http://lists.sourceforge.net/mailman/listinfo/nco-announce
 
 3. You have not read and understood the manual. After reading the
 manual you should post your question to the Help Forum listed above.
+The most answerable questions are accompanied with the exact commands
+which are problematic, NCO version information, and file metadata.  
 
 Thanks,
 Charlie

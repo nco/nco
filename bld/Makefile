@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.192 2002-09-20 20:44:12 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.193 2002-09-24 18:28:24 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -410,6 +410,9 @@ CC := cc
 CPP := cpp
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
+# -F enables macro substitution
+# -dp enables DOUBLEPRECISION/double
+FFLAGS := -N 132 -F -dp
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
@@ -420,15 +423,15 @@ LINT := lint
 YACC := bison
 ifeq (${OPTS},O)
  CFLAGS += -h rounddiv -h nofastmd -h nofastmodulus
- FFLAGS = -O2 -N 132
+ FFLAGS += -O2
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g -h indef -h rounddiv -h nofastmd -h nofastmodulus
- FFLAGS = -g -N 132 -ei
+ FFLAGS += -g -ei
 endif
 ifeq (${OPTS},X)
  CFLAGS += -g -h rounddiv -h indef -h bounds -h nofastmd -h nofastmodulus
- FFLAGS = -g -N 132 -ei -Rabc
+ FFLAGS += -g -ei -Rabc
 endif
 # 19971021 Added -P to suppress #line # directives on Fortran files
 ${MY_OBJ_DIR}/%.o : %.F
