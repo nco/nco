@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.107 2005-03-22 05:48:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.108 2005-03-23 06:44:24 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -118,6 +118,10 @@ ncap_var_write
   int rcd; /* [rcd] Return code */
   int var_out_id;
   
+#ifdef NCO_RUSAGE_DBG
+  long maxrss; /* [B] Maximum resident set size */
+#endif /* !NCO_RUSAGE_DBG */
+
   /* Put file in define mode to allow metadata writing */
   (void)nco_redef(prs_arg->out_id);
   
@@ -145,6 +149,13 @@ ncap_var_write
     (void)nco_put_vara(prs_arg->out_id,var_out_id,var->srt,var->cnt,var->val.vp,var->type);
   } /* end else */
   
+#ifdef NCO_RUSAGE_DBG
+  /* Compile: cd ~/nco/bld;make 'USR_TKN=-DNCO_RUSAGE_DBG';cd - */
+  /* Print rusage memory usage statistics */
+  if(dbg_lvl_get() == 1) (void)fprintf(stdout,"%s: INFO ncap_var_write() writing variable %s\n",prg_nm_get(),var->nm);
+  maxrss=nco_mmr_rusage_prn((int)0);
+#endif /* !NCO_RUSAGE_DBG */
+
   return rcd;
 } /* end ncap_var_write() */
 

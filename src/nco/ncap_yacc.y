@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.25 2005-01-10 02:22:47 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.26 2005-03-23 06:44:24 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -81,7 +81,7 @@ int rcd; /* [enm] Return value for function calls */
 extern size_t ncap_ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
 extern size_t *ncap_ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
 extern char **ncap_fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
-extern char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) */
+extern char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap_lex.l) */
 
 /* End C declarations section */
 %}

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.20 2005-03-22 07:53:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.21 2005-03-23 06:44:24 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -176,7 +176,7 @@ nco_zero_long /* [fnc] Zero all values of long array */
 
   size_t sz_byt; /* [B] Number of bytes in variable buffer */
   sz_byt=(size_t)sz*sizeof(long);
-  (void)memset((void *)op1,0,sz_byt);
+  (void)memset((void *)op1,(int)0,sz_byt);
 
 #if 0
   /* Presumably this old method used until 20050321 is slower because of pointer de-referencing */

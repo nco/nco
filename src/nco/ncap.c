@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.144 2005-03-22 05:08:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.145 2005-03-23 06:44:24 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -70,8 +70,8 @@
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
 /* Global variables */
-size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap.l) */
-size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
+size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap_lex.l) */
+size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap_lex.l) */
 char **ncap_fl_spt_glb; /* [fl] Script file */
 
 int 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.144 2005-03-22 05:08:55 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.144 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.145 2005-03-23 06:44:24 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.145 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -501,7 +501,7 @@ main(int argc,char **argv)
   
   /* Initialize line counter */
   ncap_ln_nbr_crr=(size_t *)nco_realloc(ncap_ln_nbr_crr,ncap_ncl_dpt_crr+1UL); 
-  ncap_ln_nbr_crr[ncap_ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap.l */
+  ncap_ln_nbr_crr[ncap_ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap_lex.l */
   if(fl_spt_usr == NULL){
     /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0){
