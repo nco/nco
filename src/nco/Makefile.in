@@ -199,7 +199,8 @@ nco_cln_utl.h nco_dmn_utl.h nco_netcdf.h nco_scm.h nco_getopt.h
 
 lib_LTLIBRARIES = libnco.la
 
-libnco_la_LDFLAGS = -version-info 1:0:0
+# this will create the shared-library called libnco-2.8.0.so, for example
+libnco_la_LDFLAGS = -release @VERSION@
 
 libnco_la_SOURCES = nco_att_utl.c nco_bnr.c nco_cln_utl.c nco_cnf_dmn.c \
 nco_cnf_typ.c nco_cnv_arm.c nco_rth_flt.c ${NCO_GETOPT} \
