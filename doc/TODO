@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.343 2004-07-21 01:10:45 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.344 2004-07-22 15:26:34 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -227,6 +227,8 @@ fails with
 Segmentation fault (core dumped)
 ncwa -O -a wvl -w flx_slr_frc -v sca_cff_mss,ext_cff_mss,abs_cff_mss,ss_alb,ss_co_alb ${DATA_MIE}/mie/mie_${wvl_nbr}.nc ${DATA_MIE}/mie/mie_avg_${wvl_nbr}.nc
 nco357. Add OpenMP robustness test to nco_bnch.sh
+nco358. Document ncwa -z switch
+nco359. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -288,7 +290,6 @@ bld35. Add pgcc, pgCC switches to configure.in
 bld36. Improve precision/wording of nco_ctl.c tokens on shared/static libraries
 bld37. Ensure C99 used by compilers with AX_CFLAGS_SUN_OPTION AX_CFLAGS_HPUX_OPTION AX_CFLAGS_AIX_OPTION AX_CFLAGS_IRIX_OPTION
 bld38. 
-
 
 ************************************************************************
 End NCO Wish list

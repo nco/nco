@@ -1,3 +1,8 @@
+2004-07-21  Charlie Zender  <zender@uci.edu>
+
+	* Implement infrastructure for dimension re-ordering routine
+	nco_var_dmn_rdr() 
+
 2004-07-19  Charlie Zender  <zender@uci.edu>
 
 	* Create nco_bnch.sh to benchmark big file operations

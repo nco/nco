@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.11 2004-05-20 14:16:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.12 2004-07-22 15:26:34 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -39,7 +39,7 @@ nco_dmn_dfn /* [fnc] Define dimensions in output file */
   
 } /* end nco_dmn_dfn() */
 
-dmn_sct * /* O [sct] copy of input dimension structure */
+dmn_sct * /* O [sct] Copy of input dimension structure */
 nco_dmn_dpl /* [fnc] Duplicate input dimension structure */
 (const dmn_sct * const dmn) /* I [sct] Dimension structure to duplicate */
 {

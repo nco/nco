@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.97 2004-03-25 12:05:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.98 2004-07-22 15:26:34 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -785,14 +785,14 @@ ncap_var_stretch /* [fnc] Stretch variables */
      var_gtr_out is required since both variables may change
      var_gtr_out=var_gtr unless convolution is required */
   
-  bool CONFORMABLE=False; /* Whether var_lsr can be made to conform to var_gtr */
+  bool CONFORMABLE=False; /* [flg] Whether var_lsr can be made to conform to var_gtr */
   bool CONVOLVE=False; /* [flg] var_1 and var_2 had to be convolved */
   bool DO_CONFORM; /* [flg] Did var_1 and var_2 conform? */
   bool MUST_CONFORM=False; /* [flg] Must var_1 and var_2 conform? */
   
   int idx;
   int idx_dmn;
-  int var_lsr_var_gtr_dmn_shr_nbr=0; /* Number of dimensions shared by var_lsr and var_gtr */
+  int var_lsr_var_gtr_dmn_shr_nbr=0; /* [nbr] Number of dimensions shared by var_lsr and var_gtr */
   
   var_sct *var_gtr=NULL; /* [ptr] Pointer to variable structure of greater rank */
   var_sct *var_lsr=NULL; /* [ptr] Pointer to variable structure to lesser rank */
@@ -867,15 +867,15 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	  DO_CONFORM=False;
 	} /* end else */
       } /* endif CONFORMABLE */
-    }else{
+    }else{ /* nbr_dmn == 0 */
       /* var_gtr is scalar, if var_lsr is also then set flag to copy var_lsr to var_lsr_out else proceed to generic conform routine */
       if(var_lsr->nbr_dim == 0) DO_CONFORM=True; else DO_CONFORM=False;
-    } /* end else */
+    } /* end else nbr_dmn == 0 */
     if(CONFORMABLE && DO_CONFORM){
       var_lsr_out=nco_var_dpl(var_lsr);
       (void)nco_xrf_var(var_lsr,var_lsr_out);
     } /* end if */
-  } /* end if */
+  } /* endif var_lsr_out == NULL */
   
   if(var_lsr_out == NULL && CONVOLVE){
     /* Convolve variables by returned stretched variables with minimum possible number of dimensions */

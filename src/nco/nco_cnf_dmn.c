@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.13 2004-07-19 22:16:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.14 2004-07-22 15:26:34 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -12,7 +12,7 @@ var_sct * /* O [sct] Pointer to conforming variable structure */
 nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first variable */
 (const var_sct * const var, /* I [ptr] Pointer to variable structure to serve as template */
  var_sct * const wgt, /* I [ptr] Pointer to variable structure to make conform to var */
- var_sct *wgt_crr, /* I/O [ptr] pointer to existing conforming variable structure, if any (destroyed when does not conform to var) */
+ var_sct *wgt_crr, /* I/O [ptr] Pointer to existing conforming variable structure, if any (destroyed when does not conform to var) */
  const bool MUST_CONFORM, /* I [flg] Must wgt and var conform? */
  bool *DO_CONFORM) /* O [flg] Do wgt and var conform? */
 {
@@ -300,7 +300,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
   
 } /* end nco_var_cnf_dmn() */
 
-bool /* [flg] Do var_1 and var_2 conform after processing? */
+bool /* [flg] var_1 and var_2 conform after processing */
 ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
 (var_sct **var_1, /* I/O [ptr] First variable */
  var_sct **var_2) /* I/O [ptr] Second variable */
@@ -335,3 +335,43 @@ ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
 
   return DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
 } /* end ncap_var_cnf_dmn() */
+
+var_sct * /* O [sct] Pointer to variable with re-ordered dimensions */
+nco_var_dmn_rdr /* [fnc] Change dimension ordering */
+(const var_sct * const var_in, /* I [ptr] Variable whose dimensions to re-order */
+ CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_out), /* I [sct] List of dimension structures in new order */
+ const int nbr_dmn_out) /* I [nbr] Number of dimension structures in structure list */
+{
+  /* Purpose: Re-order dimensions in a given variable
+     dmn_out contains is the new order for dimensions
+     NB: free() var_in in calling routine if it is no longer needed */
+  int dmn_in_idx; /* [idx] Counting index for dmn_in */
+  int dmn_out_idx; /* [idx] Counting index for dmn_out */
+  int dmn_in_nbr; /* [nbr] Number of dimensions in input file */
+  int dmn_in_dmn_out_shr_nbr=0; /* [nbr] Number of dimensions shared by dmn_in and dmn_out */
+
+  var_sct *var_out=NULL;
+  
+  /* Initialize variables to reduce indirection */
+  dmn_in_nbr=var_in->nbr_dim; /* [nbr] Number of dimensions in input file */
+  var_out=nco_var_dpl(var_in);
+
+  /* Create complete 1-to-1 ordered list of dimensions in new output variable */
+
+  if(dmn_in_nbr > 0){
+    /* For each dimension in the re-ordered dimension list... */
+    for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_out;dmn_out_idx++){
+      /* Test whether dimension exists in dmn_in dimension list... */
+      for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
+	/* Compare names, not dimension IDs */
+	if(strstr(var_in->dim[dmn_in_idx]->nm,dmn_out[dmn_out_idx]->nm)){
+	  dmn_in_dmn_out_shr_nbr++; /* dmn_in and dmn_out share this dimension */
+	  break;
+	} /* endif */
+      } /* end loop over dmn_in */
+    } /* end loop over dmn_out */
+  } /* endif dmn_in_nbr > 0 */
+
+  return var_out;
+} /* end nco_var_dmn_rdr() */ 
+
