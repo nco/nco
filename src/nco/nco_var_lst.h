@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.10 2003-08-14 14:08:12 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.11 2003-08-20 14:41:40 hmb Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -25,7 +25,10 @@
 #include <netcdf.h> /* netCDF definitions */
 #include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
 
+
+#ifdef HAVE_REGEX_H
 #include <regex.h> /* POSIX regular expressions library */
+#endif
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
@@ -47,7 +50,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list */
 
 
 nm_id_sct * /* O [sct] Variable extraction list */
-nco_var_lst_mk_meta /* [fnc] Create variable extraction list */
+nco_var_lst_mk_old /* [fnc] Create variable extraction list */
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names */
