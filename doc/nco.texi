@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.146 2003-03-03 02:29:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.147 2003-03-13 18:49:50 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -4437,10 +4437,12 @@ Activate native machine binary output writing to the default binary
 file, @file{ncks.bnr}. 
 The @code{-B} switch is redundant when the @code{-b} @file{file} 
 option is specified, and native binary output will be directed to the binary file @file{file}. Also @samp{--binary}.
+Writing packed variables in binary format is not supported.
 
 @cindex @code{-b}
 @item -b @file{file}
 Activate native machine binary output writing to binary file @file{file}.  Also @samp{--binary}.
+Writing packed variables in binary format is not supported.
 
 @cindex stride
 @item -d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]

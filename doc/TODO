@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.206 2003-02-19 01:32:33 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.207 2003-03-13 18:49:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -217,7 +217,7 @@ Command executes but in.hdf is full of screwy values
 228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
 230. Keep track of type of missing_value field in variable structure for reasons described in nco_cnf_var_typ()/nco_cnv_mss_val_typ()
 232. Warn when arithmetic operators encounter packed variables?
-233. Makefile.old rule for make tst appears broken for long ftp rule
+233. Makefile.old rule for make tst appears broken for long FTP rule
 237. Break down nco.texi into bite-size chunks, e.g., one file per section
 238. Replace y=(typ *)malloc(nbr*sizeof(typ)) with y=(typ *)malloc(nbr*sizeof(*y))?
 239. Create one global compatibility file (nco_xpf.[ch]?) activated by HAVE_ or NEED_ actions so do not have multiple platform dependent #includes as is case now with HAVE_STRCASECMP, HAVE_STRDUP requiring nco_sng_utl.h
@@ -226,10 +226,9 @@ Command executes but in.hdf is full of screwy values
 245. Eliminate all instances of passing naked constants
 246. Deprecate USE_FORTRAN_ARITHMETIC from Makefile
 247. Automate .deb builds
-248. Merge downstream Debian mods by Brian Mays into main tree
-249. Merge downstream Gentoo mods by George Shapovalov <george@gentoo.org> and Jordan Dawe <freedryk@hotmail.com> into main tree
 250. make ncks refuse to print strings formatted with %s unless they contain NUL-terminator. This will avoid segfaults like
 ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
+251. Does ncks -B correctly write packed variables in binary format?
 ************************************************************************
 End NCO Wish list
 ************************************************************************
