@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.171 2003-08-16 00:55:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.172 2003-08-20 01:22:57 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -3821,6 +3821,27 @@ that a trailing semi-colon @samp{;} be placed at the end of a @samp{-s}
 argument, although a trailing semi-colon @samp{;} is always allowed.
 However, semi-colons are required to separate individual assignment
 statements chained together as a single @samp{-s} argument. 
+
+@cindex flags
+Imagine you wish to create a binary flag based on the value of 
+an array.
+The flag should have value 1.0 where the array exceeds 1.0, and
+a value of 0.0 elsewhere.
+Assume the array named @coded{ORO} is in @file{in.nc}.
+The variable @code{ORO_flg} in @file{out.nc}
+@cindex masked average
+@findex ncecat
+@findex ncwa
+@begin example
+# Add degenerate "record" dimension to ORO for averaging
+ncecat -O -v ORO in.nc foo.nc
+# Average degenerate "record" dimension using ORO as mask
+ncwa -a record -O -m ORO -M 1.0 -o gt foo.nc foo.nc
+# ORO is either 0.0 or > 1.0 everywhere
+# Create ORO_frc in [0.0,1.0) then add 0.99 and convert to int 
+ncap -O -s "ORO_frc=ORO-int(ORO)" -s "ORO_flg=int(ORO_frc+0.99)" foo.nc out.nc
+# ORO_flg now equals 0 or 1
+@end example
 
 This example uses @code{ncap} to compute the covariance of two
 variables. 

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.151 2003-08-18 06:38:43 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.152 2003-08-20 01:22:56 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -91,7 +91,7 @@ If you like NCO and want to send us a little money, click here:
 href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
 Operators, or NCO, are a suite of programs known as <b>operators</b>. 
 Each operator is a standalone, command line program which is executed at
-the UNIX (or NT) shell-level like, e.g., <tt>ls</tt> or <tt>mkdir</tt>.
+the UNIX shell-level like, e.g., <tt>ls</tt> or <tt>mkdir</tt>.
 The operators take <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
 or <a href="http://hdf.ncsa.uiuc.edu">HDF4</a> files as input, then
 perform a set of operations (e.g., deriving new data, averaging, 
@@ -107,8 +107,9 @@ The <a href="./nco.html">NCO User's Guide</a>
 illustrates their use with examples from the field of climate modeling
 and analysis.</p> 
 
-<p>The operators are as general as <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> itself: there are no restrictions
-on the contents of the 
+<p>The operators are as general as 
+<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
+itself: there are no restrictions on the contents of the 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> or 
 <a href="http://hdf.ncsa.uiuc.edu">HDF4</a> file(s) used as input. 
 The internal routines of NCO are completely dynamic which means that
@@ -118,12 +119,13 @@ NCO is designed to be used both interactively and with large batch jobs.
 There are plenty of command line (i.e., runtime) options, but the defaults
 settings are often sufficient for everyday needs.
 NCO works on AIX, Alpha, ARM, *BSD, IRIX, Linux, NEC-SX, OSX, Solaris,
-tru64, UNICOS, and Windows. 
+Tru64, UNICOS, and Windows. 
 
 The following operators are thoroughly described in the 
 <a href="./nco.html">NCO User's Guide</a>. 
-Note that the &ldquo;averagers&rdquo; are misnamed because they can perform many 
-non-linear operations as well, e.g., total, minimum, maximum, RMS:
+Note that the &ldquo;averagers&rdquo; are misnamed because they
+perform many non-linear operations as well, e.g., total, minimum, 
+maximum, RMS: 
 <ul>
 <li><b>ncap</b> netCDF Arithmetic Processor</li>
 <li><b>ncatted</b> netCDF Attribute Editor</li>
@@ -153,6 +155,7 @@ capability, we need your help!
 The <a href="http://sourceforge.net/projects/nco">NCO project
 homepage</a> contains mailing lists, discussion forums, and
 instructions for helping the NCO project.
+
 <p>As of June, 2003, you may use PayPal to donate money to support NCO development.
 Your donation will be distributed to NCO developers as an incentive
 for them to tackle <a href="./TODO"><tt>TODO</tt></a> items on a
@@ -169,7 +172,7 @@ pay-per-feature basis.
 </form>
 We will update the following counters to track the influence of
 monetary donations on NCO development:
-<dt>Donations received between 20030624 and 20030803: US$0.00.
+<dt>Donations received between 20030624 and 20030818: US$0.00.
 <dt>NCO features "incentivized" by these donations: None.
 <hr></p>
 
