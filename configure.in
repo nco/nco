@@ -183,7 +183,7 @@ AC_MSG_ERROR([all netCDF linking failed.]) ] ) ]
 AC_CHECK_LIB([C], [cosf])
 AC_CHECK_LIB([m], [sin])
 AC_CHECK_LIB([sunmath], [sinf])
-AC_CHECK_FUNCS([getopt getopt_long])
+NCO_CHECK_FUNCS([getopt getopt_long])
 AC_CHECK_FUNC(getopt_long, , [nco_need_getopt_long="yes"] )
 AM_CONDITIONAL(NCO_NEED_GETOPT_LONG, test "$nco_need_getopt_long" = "yes")
 # NCO_CHECK_FUNC also defines NEED_xxxx when xxxx function is not found
@@ -195,7 +195,7 @@ NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
 NCO_CHECK_FUNCS([getopt_long])
 AC_CHECK_LIB([intl], [gettext])
 AC_CHECK_LIB([resolv], [res_init])
-AC_CHECK_LIB([socket], [main])> 
+AC_CHECK_LIB([socket], [main])
 AC_CHECK_LIB([thread], [main])
 #AC_CHECK_LIB([nsl], [main])
 AC_CHECK_LIB([nco], [nco_open])
