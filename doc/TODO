@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.422 2004-09-08 17:56:18 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.423 2004-09-08 18:08:20 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -266,7 +266,7 @@ nco450. Run ncra on two multiple record files with packed variables and look for
 nco453. Re-think handling of dangling pointers in nco_pck_val()?
 nco454. ncpdq: Combine nco_pck_map,nco_pck_typ into new nco_pck_sct to avoid proliferation of argument passing
 nco457. ncpdq: missing_value is not converted to variable type when variable is not packed three_dmn_var_dbl. How to reconcile with nco427?
-nco460. ncpdq: Use nco_pck_map in nco_var_lst.c to further hone fix/prc distinction
+nco461. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
