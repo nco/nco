@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.443 2004-12-13 02:02:35 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.444 2004-12-15 01:20:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -347,8 +347,8 @@ Makefile:472: warning: overriding commands for target `ncap_yacc.h'
 Makefile:440: warning: ignoring old commands for target `ncap_yacc.h'
 bld40. Automate splicing trailer ~/nco/doc/man_end.txt to man pages
 bld41.Add configure check for libssl functionality, if not found (Fedora) to explicitly adding libssl
-bld42. 
-
+bld42. Adopt orphaned Debian NCO http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=273322
+bld43. 
 
 ************************************************************************
 End NCO Wish list
