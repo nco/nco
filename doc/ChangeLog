@@ -1,3 +1,7 @@
+2003-03-17  Charlie Zender  <zender@uci.edu>
+
+	* Replaced examples in nco.texi with output from MSA printing
+
 2003-03-09  Charlie Zender  <zender@uci.edu>
 
 	* Modifying debian/* files to build with 2.7.x as zender

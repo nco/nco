@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.148 2003-03-17 03:16:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.149 2003-03-17 19:28:24 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1827,13 +1827,13 @@ ncra -F -d time,6,8 85.nc 85_JJA.nc
 Printing variable @var{three_dmn_var} in file @file{in.nc} first with
 @w{C indexing} conventions, then with Fortran indexing conventions
 results in the following output formats: 
-@c fxm: replace with new MSA output style
 @example
 % ncks -H -v three_dmn_var in.nc
-% lat[0]=-90 lev[0]=1000 lon[0]=-180 three_dmn_var[0]=0 
-@dots{}
+lat[0]=-90 lev[0]=1000 lon[0]=-180 three_dmn_var[0]=0 
+...
 % ncks -F -H -v three_dmn_var in.nc
-% lon(1)=-180 lev(1)=1000 lat(1)=-90 three_dmn_var(1)=0 
+lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0 
+...
 @end example
 
 @node Hyperslabs, Multislabs, Fortran indexing, Common features
@@ -4462,7 +4462,6 @@ and, values, if any, of all of the variables dimensions.
 The dimension and variable indices refer to the location of the
 corresponding data element with respect to the variable as stored on
 disk (i.e., not the hyperslab).
-@c fxm: replace with new MSA output style
 @example
 % ncks -H -C -v three_dmn_var in.nc
 lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
@@ -4475,7 +4474,6 @@ lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23
 @end example
 Printing the same variable with the @samp{-F} option shows the same
 variable indexed with Fortran conventions
-@c fxm: replace with new MSA output style
 @example
 % ncks -F -H -C -v three_dmn_var in.nc
 lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0 
@@ -4490,12 +4488,13 @@ However, if the hypserslab is saved to an output file and those values
 are printed, the indices will change:
 @c fxm: replace with new MSA output style
 @example
-% ncks -H -d lat,90.0 -d lev,1000.0 -v three_dmn_var in.nc out.nc
+% ncks -O -H -d lat,90.0 -d lev,1000.0 -v three_dmn_var in.nc out.nc
+...
 lat[1]=90 lev[2]=1000 lon[0]=0 three_dmn_var[20]=20 
 lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
 lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
 lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
-% ncks -H out.nc
+% ncks -C -H -v three_dmn_var out.nc
 lat[0]=90 lev[0]=1000 lon[0]=0 three_dmn_var[0]=20 
 lat[0]=90 lev[0]=1000 lon[1]=90 three_dmn_var[1]=21 
 lat[0]=90 lev[0]=1000 lon[2]=180 three_dmn_var[2]=22 
@@ -4576,7 +4575,6 @@ default notations.
 Next print @code{three_dmn_var} as an un-annotated text column.
 Then print @code{three_dmn_var} signed with very high precision.
 Finally, print @code{three_dmn_var} as a comma-separated list.
-@c fxm: replace with new MSA output style
 @example
 % ncks -H -C -v three_dmn_var in.nc
 lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
@@ -5382,7 +5380,7 @@ Various hacks.
 Autotool build support, long options.
 @item Brian Mays
 Packaging for Debian GNU/Linux, nroff man pages.
-@item fxm
+@item George Shapovalov
 Packaging for Gentoo GNU/Linux.
 @item Bill Kocik
 Memory management.
