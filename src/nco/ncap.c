@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.78 2002-07-03 22:40:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.79 2002-07-03 22:44:53 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -84,8 +84,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.78 2002-07-03 22:40:28 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.78 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.79 2002-07-03 22:44:53 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.79 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -98,9 +98,9 @@ main(int argc,char **argv)
   extern float asinf(float);
   extern float atanf(float);
   extern float cosf(float);
-  extern float expf(float);
   extern float erff(float);
   extern float erfcf(float);
+  extern float expf(float);
   extern float gammaf(float);
   extern float logf(float);
   extern float log10f(float);
@@ -271,19 +271,19 @@ main(int argc,char **argv)
   sym_tbl[sym_idx++]=ncap_sym_init("atan",atan,atanf);
   sym_tbl[sym_idx++]=ncap_sym_init("cos",cos,cosf);  
   sym_tbl[sym_idx++]=ncap_sym_init("exp",exp,expf);
-  sym_tbl[sym_idx++]=ncap_sym_init("erf",erf,erff);
-  sym_tbl[sym_idx++]=ncap_sym_init("erfc",erfc,erfcf);
   sym_tbl[sym_idx++]=ncap_sym_init("log",log,logf);
   sym_tbl[sym_idx++]=ncap_sym_init("log10",log10,log10f);
   sym_tbl[sym_idx++]=ncap_sym_init("sin",sin,sinf);
   sym_tbl[sym_idx++]=ncap_sym_init("sqrt",sqrt,sqrtf);
   sym_tbl[sym_idx++]=ncap_sym_init("tan",tan,tanf);
 #if (defined SGIMP64) || (defined AIX)
-  /* 20020122 and 20020422: SGI and AIX do not define gammaf() */
-  sym_tbl_nbr--;
+  /* 20020122 and 20020422: SGI and AIX do not define erff(), erfcf(), gammaf() */
+  sym_tbl_nbr-=3;
 #else /* not SGIMP64 || AIX */
+  sym_tbl[sym_idx++]=ncap_sym_init("erf",erf,erff);
+  sym_tbl[sym_idx++]=ncap_sym_init("erfc",erfc,erfcf);
   sym_tbl[sym_idx++]=ncap_sym_init("gamma",gamma,gammaf);
-#endif /* not SGIMP64 */
+#endif /* not SGIMP64 || AIX */
   assert(sym_idx == sym_tbl_nbr);
  
   /* Process positional arguments and fill in filenames */
