@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.98 2004-07-29 00:40:55 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.99 2004-08-05 18:24:43 rorik Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -77,7 +77,7 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_LIBTOOL
 
-AM_CONDITIONAL(BUILD_NCAP,[test "${YACC}" != "yacc" || test -e "src/nco/ncap_yacc.c"])
+AM_CONDITIONAL(BUILD_YACC_SOURCE,[test "${YACC}" != "yacc" || test -e "src/nco/ncap_yacc.c"])
 
 # Disable maintainer-only options in generated Makefiles unless flag
 # --enable-maintainer-mode is given at configure time
@@ -668,10 +668,10 @@ else
 fi
 # End netCDF test data
 
-# Tell gcc to use C99 standard (older gcc versions default to C89)
-AX_CFLAGS_GCC_OPTION(-std=c99)
-# -D_BSD_SOURCE tells GCC nameser.h is ANSI-compliant
-AX_CFLAGS_GCC_OPTION(-D_BSD_SOURCE)
+# Tell the GNU C compiler to use C99 standard (older gcc versions default to C89)
+if (test $ac_compiler_gnu == "yes"); then
+  CFLAGS="$CFLAGS -std=c99 -D_BSD_SOURCE"
+fi
 
 # Begin config
 AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile man/Makefile doc/Makefile])

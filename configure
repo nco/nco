@@ -467,7 +467,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CPP CXXCPP LEX LEXLIB LEX_OUTPUT_ROOT YACC LN_S EGREP ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB F77 FFLAGS ac_ct_F77 LIBTOOL BUILD_NCAP_TRUE BUILD_NCAP_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBOBJS POW_LIB NETCDF_INC NETCDF_LIB NCO_NEED_GETOPT_LONG_TRUE NCO_NEED_GETOPT_LONG_FALSE DODS_ROOT TEST_DODS_TRUE TEST_DODS_FALSE HDF5_ROOT I18N_SHARE UDUNITS_PATH path_to_ncgen NCO_CXX LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CPP CXXCPP LEX LEXLIB LEX_OUTPUT_ROOT YACC LN_S EGREP ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB F77 FFLAGS ac_ct_F77 LIBTOOL BUILD_YACC_SOURCE_TRUE BUILD_YACC_SOURCE_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBOBJS POW_LIB NETCDF_INC NETCDF_LIB NCO_NEED_GETOPT_LONG_TRUE NCO_NEED_GETOPT_LONG_FALSE DODS_ROOT TEST_DODS_TRUE TEST_DODS_FALSE HDF5_ROOT I18N_SHARE UDUNITS_PATH path_to_ncgen NCO_CXX LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -19330,11 +19330,11 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 if test "${YACC}" != "yacc" || test -e "src/nco/ncap_yacc.c"; then
-  BUILD_NCAP_TRUE=
-  BUILD_NCAP_FALSE='#'
+  BUILD_YACC_SOURCE_TRUE=
+  BUILD_YACC_SOURCE_FALSE='#'
 else
-  BUILD_NCAP_TRUE='#'
-  BUILD_NCAP_FALSE=
+  BUILD_YACC_SOURCE_TRUE='#'
+  BUILD_YACC_SOURCE_FALSE=
 fi
 
 
@@ -26236,192 +26236,10 @@ else
 fi
 # End netCDF test data
 
-# Tell gcc to use C99 standard (older gcc versions default to C89)
-echo "$as_me:$LINENO: checking CFLAGS for gcc -std=c99" >&5
-echo $ECHO_N "checking CFLAGS for gcc -std=c99... $ECHO_C" >&6
-if test "${ac_cv_cflags_gcc_option__std_c99+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_cv_cflags_gcc_option__std_c99="no, unknown"
-
-
- ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
- ac_save_CFLAGS="$CFLAGS"
-for ac_arg in "-pedantic  % -std=c99"     #
-do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
-   cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-int
-main ()
-{
-return 0;
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext
-if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
-  (eval $ac_compile) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest.$ac_objext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_cflags_gcc_option__std_c99=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
+# Tell the GNU C compiler to use C99 standard (older gcc versions default to C89)
+if (test $ac_compiler_gnu == "yes"); then
+  CFLAGS="$CFLAGS -std=c99 -D_BSD_SOURCE"
 fi
-rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
-done
- CFLAGS="$ac_save_CFLAGS"
- ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-
-fi
-echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__std_c99" >&5
-echo "${ECHO_T}$ac_cv_cflags_gcc_option__std_c99" >&6
-case ".$ac_cv_cflags_gcc_option__std_c99" in
-     .ok|.ok,*)  ;;
-   .|.no|.no,*)  ;;
-   *)
-   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__std_c99 " 2>&1 >/dev/null
-   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__std_c99") >&5
-  (: CFLAGS does contain $ac_cv_cflags_gcc_option__std_c99) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }
-   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__std_c99\"") >&5
-  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__std_c99") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }
-                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__std_c99"
-   fi
- ;;
-esac
-
-# -D_BSD_SOURCE tells GCC nameser.h is ANSI-compliant
-echo "$as_me:$LINENO: checking CFLAGS for gcc -D_BSD_SOURCE" >&5
-echo $ECHO_N "checking CFLAGS for gcc -D_BSD_SOURCE... $ECHO_C" >&6
-if test "${ac_cv_cflags_gcc_option__D_BSD_SOURCE+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  ac_cv_cflags_gcc_option__D_BSD_SOURCE="no, unknown"
-
-
- ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
- ac_save_CFLAGS="$CFLAGS"
-for ac_arg in "-pedantic  % -D_BSD_SOURCE"     #
-do CFLAGS="$ac_save_CFLAGS "`echo $ac_arg | sed -e 's,%%.*,,' -e 's,%,,'`
-   cat >conftest.$ac_ext <<_ACEOF
-/* confdefs.h.  */
-_ACEOF
-cat confdefs.h >>conftest.$ac_ext
-cat >>conftest.$ac_ext <<_ACEOF
-/* end confdefs.h.  */
-
-int
-main ()
-{
-return 0;
-  ;
-  return 0;
-}
-_ACEOF
-rm -f conftest.$ac_objext
-if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
-  (eval $ac_compile) 2>conftest.er1
-  ac_status=$?
-  grep -v '^ *+' conftest.er1 >conftest.err
-  rm -f conftest.er1
-  cat conftest.err >&5
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; } &&
-	 { ac_try='test -s conftest.$ac_objext'
-  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
-  (eval $ac_try) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; }; then
-  ac_cv_cflags_gcc_option__D_BSD_SOURCE=`echo $ac_arg | sed -e 's,.*% *,,'` ; break
-else
-  echo "$as_me: failed program was:" >&5
-sed 's/^/| /' conftest.$ac_ext >&5
-
-fi
-rm -f conftest.err conftest.$ac_objext conftest.$ac_ext
-done
- CFLAGS="$ac_save_CFLAGS"
- ac_ext=c
-ac_cpp='$CPP $CPPFLAGS'
-ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
-ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
-ac_compiler_gnu=$ac_cv_c_compiler_gnu
-
-
-fi
-echo "$as_me:$LINENO: result: $ac_cv_cflags_gcc_option__D_BSD_SOURCE" >&5
-echo "${ECHO_T}$ac_cv_cflags_gcc_option__D_BSD_SOURCE" >&6
-case ".$ac_cv_cflags_gcc_option__D_BSD_SOURCE" in
-     .ok|.ok,*)  ;;
-   .|.no|.no,*)  ;;
-   *)
-   if echo " $CFLAGS " | grep " $ac_cv_cflags_gcc_option__D_BSD_SOURCE " 2>&1 >/dev/null
-   then { (echo "$as_me:$LINENO: : CFLAGS does contain \$ac_cv_cflags_gcc_option__D_BSD_SOURCE") >&5
-  (: CFLAGS does contain $ac_cv_cflags_gcc_option__D_BSD_SOURCE) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }
-   else { (echo "$as_me:$LINENO: : CFLAGS=\"\$CFLAGS \$ac_cv_cflags_gcc_option__D_BSD_SOURCE\"") >&5
-  (: CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__D_BSD_SOURCE") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }
-                      CFLAGS="$CFLAGS $ac_cv_cflags_gcc_option__D_BSD_SOURCE"
-   fi
- ;;
-esac
-
 
 # Begin config
                                                             ac_config_files="$ac_config_files Makefile data/Makefile src/Makefile src/nco/Makefile man/Makefile doc/Makefile"
@@ -26547,10 +26365,10 @@ echo "$as_me: error: conditional \"am__fastdepCXX\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
-if test -z "${BUILD_NCAP_TRUE}" && test -z "${BUILD_NCAP_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"BUILD_NCAP\" was never defined.
+if test -z "${BUILD_YACC_SOURCE_TRUE}" && test -z "${BUILD_YACC_SOURCE_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"BUILD_YACC_SOURCE\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"BUILD_NCAP\" was never defined.
+echo "$as_me: error: conditional \"BUILD_YACC_SOURCE\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -27183,8 +27001,8 @@ s,@F77@,$F77,;t t
 s,@FFLAGS@,$FFLAGS,;t t
 s,@ac_ct_F77@,$ac_ct_F77,;t t
 s,@LIBTOOL@,$LIBTOOL,;t t
-s,@BUILD_NCAP_TRUE@,$BUILD_NCAP_TRUE,;t t
-s,@BUILD_NCAP_FALSE@,$BUILD_NCAP_FALSE,;t t
+s,@BUILD_YACC_SOURCE_TRUE@,$BUILD_YACC_SOURCE_TRUE,;t t
+s,@BUILD_YACC_SOURCE_FALSE@,$BUILD_YACC_SOURCE_FALSE,;t t
 s,@MAINTAINER_MODE_TRUE@,$MAINTAINER_MODE_TRUE,;t t
 s,@MAINTAINER_MODE_FALSE@,$MAINTAINER_MODE_FALSE,;t t
 s,@MAINT@,$MAINT,;t t
