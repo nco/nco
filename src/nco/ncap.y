@@ -1,7 +1,7 @@
 %{
 /* Begin C declarations section */ 
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.5 2000-04-05 21:41:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.6 2000-04-06 00:52:51 zender Exp $ */
 
 /* Purpose: Grammar parser for ncap */ 
 
@@ -85,20 +85,20 @@ typedef struct{
 /* Request a pure, reentrant parser, so we can pass the parser a structure */ 
 %pure_parser
 
-/* NB: A "terminal symbol" is just a fancy name for a token produced by the lexer. 
-   Symbols defined on the LHS of rules are called "non-terminal symbols" or "non-terminals". 
-   Examples of non-terminals are xpr, stt, stt_lst.
+/* NB: A "terminal symbol" is just a fancy name for a token produced by lexer 
+   Symbols defined on LHS of rules are called "non-terminal symbols" or "non-terminals" 
+   Examples of non-terminals are xpr, stt, stt_lst
    Examples of terminal symbols, or tokens, are NAME, NUMBER
-   The convention is to make token names all uppercase, and non-terminals lowercase. */ 
+   Convention is to make token names all uppercase, and non-terminals lowercase */ 
 
-/* Define the YYSTYPE union (the type of the lex variable yylval) */
+/* Define YYSTYPE union (type of lex variable yylval) */
 %union{
   double val_double; /* store input in double precision */ 
-  sym_sct *sym; /* pointer to entry in the symbol table */ 
+  sym_sct *sym; /* pointer to entry in symbol table */ 
   var_sct var;
 }
 
-/* Tell the parser which kind of values each token takes */
+/* Tell parser which kind of values each token takes */
 %token <val_double> NUMBER
 %token <sym> NAME
 
@@ -119,10 +119,10 @@ typedef struct{
 /* Begin Rules section */
 /* Format is rule: action */ 
 
-/* NB: yacc automatically dereferences the correct member of each token's structure.
-   Thus, if the third symbol is a NUMBER, a reference to $3 acts like $3.val_double */
+/* NB: yacc automatically dereferences correct member of each token's structure
+   Thus, if third symbol is a NUMBER, a reference to $3 acts like $3.val_double */
 
-/* NB: The $$ symbol refers to the value for the symbol to the left of the colon */
+/* NB: $$ symbol refers to value for symbol to left of colon */
 
 /* A statement list can be a single line or a collection of statements separated by newlines */
  stt_lst: stt '\n'
@@ -141,7 +141,7 @@ typedef struct{
    $$->var->nm=$$->nm;
    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"xpr: %s+%s\n",$1->nm,$3->nm); 
    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"xpr: $$->var->nm= %s, $$->var->val.fp[0]=%g\n",$$->var->nm,$$->var->val.fp[0]); 
-   /* Now the variable has been (re)defined. Save it to disk. */ 
+   /* Now variable has been (re)defined. Save it to disk. */ 
    /*rcd=ncap_write_var(((prs_sct *)prs_arg)->out_id,$$->var);*/
  } /* end '+' */ 
 
@@ -152,10 +152,10 @@ typedef struct{
 /* The %prec UMINUS tells YACC to use the precedence of UMINUS for this rule */ 
 /*| '-' xpr %prec UMINUS { $$=-$2; }*/
 | '(' xpr ')' { $$=$2; }
-/* | NUMBER { *//* Make the xpr a netCDF variable based on the NUMBER see pigeon book p. 58 "...not strictly necessary..." */ 
+/* | NUMBER { *//* Make xpr a netCDF variable based on NUMBER see pigeon book p. 58 "...not strictly necessary..." */ 
 /*$$=scalar_mk_sym($1); }*/
 /*| NUMBER { $$=$1; }*/ /* pigeon book p. 58 "...not strictly necessary..." */
-| NAME { /* Lookup undefined NAME in the input file */
+| NAME { /* Lookup undefined NAME in input file */
   if($1->var != NULL){
     $$->var=$1->var;
     if(dbg_lvl_get() > 0) (void)fprintf(stderr,"NAME: variable %s is already in symbol table\n",$1->nm); 
@@ -165,17 +165,17 @@ typedef struct{
 
     if(dbg_lvl_get() > 1) (void)fprintf(stderr,"NAME: getting %s from netCDF %s\n",$1->nm,((prs_sct *)prs_arg)->fl_in);
 
-    /* Get the variable ID */ 
+    /* Get variable ID */ 
     var_id=ncvarid(((prs_sct *)prs_arg)->in_id,$1->nm);
     if(var_id == -1){
       (void)fprintf(stderr,"can't find %s in %s\n",$1->nm,((prs_sct *)prs_arg)->fl_in);
     }else{
       var=var_fll(((prs_sct *)prs_arg)->in_id,var_id,$1->nm,((prs_sct *)prs_arg)->dim,((prs_sct *)prs_arg)->nbr_dmn_xtr);
-      /* Allocate and initialize accumulation space for the variable */ 
+      /* Allocate and initialize accumulation space for variable */ 
       var->tally=(long *)malloc(var->sz*nctypelen(NC_LONG));
       (void)zero_long(var->sz,var->tally);
       var->val.vp=(void *)malloc(var->sz*nctypelen(var->type));
-      /* Retrieve the variable values from disk into memory */ 
+      /* Retrieve variable values from disk into memory */ 
       (void)var_get(((prs_sct *)prs_arg)->in_id,var);
       if(dbg_lvl_get() > 3) (void)fprintf(stderr,"var->nm=%s, var->id=%d, var->nc_id=%d\n",var->nm,var->id,var->nc_id);
       $$->var=var;
