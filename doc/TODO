@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.167 2002-08-20 17:43:48 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.168 2002-08-21 02:22:56 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -231,6 +231,14 @@ Command executes but in.hdf is full of screwy values
 226. See if xrf in nco_var_cnf_dmn() is really necessary, if not, remove it and make wgt arg const var_sct * const
 228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
 230. Keep track of type of missing_value field in variable structure for reasons described in nco_cnf_var_typ()/nco_cnv_mss_val_typ_upk()
+231. Get packing working in ncra:
+ncap -C -O -v -s "rec_var_dbl_mss_val_dbl_pck=pack(rec_var_dbl_mss_val_dbl_upk);rec_var_dbl_mss_val_dbl_upk=rec_var_dbl_mss_val_dbl_upk;" ~/nco/data/in.nc ~/foo.nc
+ncks -C -m -H ~/foo.nc
+ncap -C -O -v -s "rec_var_dbl_mss_val_dbl_upk=unpack(rec_var_dbl_mss_val_dbl_pck);rec_var_dbl_mss_val_dbl_pck=rec_var_dbl_mss_val_dbl_pck;" ~/foo.nc ~/foo2.nc
+ncks -C -m -H ~/foo2.nc
+ncra -O ~/foo.nc ~/foo3.nc
+ncks -C -m -H ~/foo3.nc
+232. Warn when arithmetic operators encounter packed variables
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -38,7 +38,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.36 2002-08-14 19:45:01 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.37 2002-08-21 02:22:55 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -308,6 +308,11 @@ variables:
 	tpt:long_name = "Temperature";
 	tpt:units = "kelvin";
 
+	double rec_var_dbl_mss_val_dbl_upk(time);
+	rec_var_dbl_mss_val_dbl_upk:long_name = "record variable, double, with double missing values";
+	rec_var_dbl_mss_val_dbl_upk:purpose = "This variable is used to generate the packed variable rec_var_dbl_pck_sht_mss_val_dbl, so its missing_value should not be too far out of range, i.e., it should be representable by a short";
+	rec_var_dbl_mss_val_dbl_upk:missing_value = -999;
+
 	float rec_var_flt_mss_val_flt(time);
 	rec_var_flt_mss_val_flt:long_name = "record variable, float, with float missing values";
 	rec_var_flt_mss_val_flt:missing_value = 1.0e36f;
@@ -327,6 +332,14 @@ variables:
 	int rec_var_int_mss_val_flt(time);
 	rec_var_int_mss_val_flt:long_name = "record variable, integer, with float missing values";
 	rec_var_int_mss_val_flt:missing_value = -999.0f;
+
+	int rec_var_int_mss_val_dbl(time);
+	rec_var_int_mss_val_dbl:long_name = "record variable, integer, with double missing values";
+	rec_var_int_mss_val_dbl:missing_value = -999.0;
+
+	short rec_var_dbl_pck_sht_mss_val_dbl(time);
+	rec_var_dbl_pck_sht_mss_val_dbl:long_name = "record variable, double packed as short, with double missing values";
+	rec_var_dbl_pck_sht_mss_val_dbl:missing_value = -999.0;
 
 	char one_dmn_rec_var_sng(time);
 	one_dmn_rec_var_sng:long_name = "one dimensional record variable of string";
@@ -413,11 +426,14 @@ data:
 	upk_arr=-32767.,0.,1.,32767.;
 	rec_var_dbl=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_flt=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+	rec_var_dbl_mss_val_dbl_upk=-999,2.,3.,4.,5.,6.,7.,8.,-999,-999;
 	rec_var_flt_mss_val_dbl=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
 	rec_var_flt_mss_val_flt=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
 	rec_var_flt_mss_val_int=-999.,2.,3.,4.,5.,6.,7.,8.,-999.,-999.;
 	rec_var_int_mss_val_int=-999,2,3,4,5,6,7,8,-999,-999;
 	rec_var_int_mss_val_flt=-999,2,3,4,5,6,7,8,-999,-999;
+	rec_var_dbl_pck_sht_mss_val_dbl=-999,2,3,4,5,6,7,8,-999,-999;
+	rec_var_int_mss_val_dbl=-999,2,3,4,5,6,7,8,-999,-999;
 	rlev=1000,500,100;
 	rz=0,5000,17000;
 	scalar_var=10.;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.17 2002-08-19 06:44:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.18 2002-08-21 02:22:56 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -788,15 +788,15 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 
   /* This function is unusual (for me) in that dimension arguments are only intended
      to be used by certain programs, those that alter the rank of input variables. 
-     If program does not alter rank (dimensionality) of input variables then it should
+     If program does not alter input variable rank (dimensionality) then it should
      call this function with NULL dimension list. Otherwise, this routine attempts
      to define variable correctly in output file (allowing variable to be
      defined with only those dimensions that are in dimension inclusion list) 
      without altering variable structures. 
 
-     The other unusual thing about this function is that it is intended to be called with var_prc_out
-     So the local variable var usually refers to var_prc_out in the calling function 
-     That is why many of the names look reversed in this function, and why xrf is frequently used */
+     Moreover, this function is intended to be called with var_prc_out, not var_prc
+     So local variable var usually refers to var_prc_out in calling function 
+     Hence names may look reversed in this function, and xrf is frequently used */
 
   int idx_dmn;
   int dmn_id_vec[NC_MAX_DIMS];
@@ -816,7 +816,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	int nbr_var_dim=0;
 	int idx_ncl;
 
-	/* Rank of output variable may have to be reduced */
+	/* Rank of output variable may need to be reduced */
 	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
 	  /* Is dimension allowed in output file? */
 	  for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
@@ -833,7 +833,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	(void)nco_def_var(out_id,var[idx]->nm,var[idx]->type,var[idx]->nbr_dim,dmn_id_vec,&var[idx]->id);
       } /* end else */
       
-      /* endif if variable had not yet been defined in output file */
+      /* endif if variable has not yet been defined in output file */
     }else{
       /* Variable is already in output file---use existing definition
 	 This branch is executed, e.g., by operators in append mode */
