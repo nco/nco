@@ -9,6 +9,11 @@
 
 2000-12-29  Charlie Zender  <zender@uci.edu>
 
+	* Added make NETCDF2=Y to compare netCDF2 behavior with/without
+	HDF libraries. HDF libraries cause ncwa to fail certain tests
+	that work fine with Unidata netcdf2 libraries. All other operators 
+	appear fine with HDF libraries.
+
 	* Added default statements to switch(type) constructs which
 	emitted warnings when compiled with -DNETCDF2_ONLY since,
 	apparently, there are a whole bunch of things besides numeric
