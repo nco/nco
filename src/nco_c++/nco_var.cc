@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.13 2004-07-08 06:11:16 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.14 2004-09-18 03:23:01 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -283,6 +283,52 @@ nco_inq_vardimid // [fnc] Inquire variable dimension IDS
 } // end nco_inq_vardimid() 
 
 // End nco_inq_var() overloads
+// Begin nco_put_vara() overloads
+
+// Overload 1:  Write array given ID
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::valarray<size_t> &var_srt, // I [idx] Start vector
+ const std::valarray<size_t> &var_cnt, // I [nbr] Count vector
+ const float * const &var_val) // I [frc] Variable value
+{
+  // Purpose: Wrapper for nc_put_vara_float()
+  int rcd=nc_put_vara_float(nc_id,var_id,&var_srt[0],&var_cnt[0],var_val);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara<valarray,valarray,float *> failed with variable "+nco_inq_varname(nc_id,var_id));
+  return rcd;
+} // end nco_put_vara<valarray,valarray,float *>()
+
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const float * const &var_val) // I [frc] Variable value
+{
+  // Purpose: Wrapper for nc_put_vara_float()
+  int rcd=nc_put_vara_float(nc_id,var_id,var_srt,var_cnt,var_val);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara<size_t *,size_t *,float *> failed with variable "+nco_inq_varname(nc_id,var_id));
+  return rcd;
+} // end nco_put_vara<size_t *,size_t *,float *>()
+
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const double * const &var_val) // I [frc] Variable value
+{
+  // Purpose: Wrapper for nc_put_vara_double()
+  int rcd=nc_put_vara_double(nc_id,var_id,var_srt,var_cnt,var_val);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara<size_t *,size_t *,double *> failed with variable "+nco_inq_varname(nc_id,var_id));
+  return rcd;
+} // end nco_put_vara<size_t *,size_t *,double *>()
+
+// End nco_put_vara() overloads
 // Begin nco_put_var() overloads
 
 // Overload 1:  Write array given ID

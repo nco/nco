@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.10 2004-06-03 05:52:43 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.11 2004-09-18 03:23:01 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF variable routines
 
@@ -182,6 +182,78 @@ nco_inq_vardimid // [fnc] Inquire variable dimension IDS
 // end nco_inq_vardimid() prototype
 
 // End nco_inq_var() overloads
+// Begin nco_put_vara() overloads
+
+// Overload 1:  Write array given ID
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::valarray<size_t> &var_srt, // I [idx] Start vector
+ const std::valarray<size_t> &var_cnt, // I [nbr] Count vector
+ const float * const &var_val); // I [frc] Variable value
+// end nco_put_vara<valarray,valarray,float *>() prototype
+
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const float * const &var_val); // I [frc] Variable value
+// end nco_put_vara<size_t *,size_t *,float *>() prototype
+
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const double * const &var_val); // I [frc] Variable value
+// end nco_put_vara<size_t *,size_t *,double *>() prototype
+
+// Overload 2: Write array given name
+template<typename typ_ntr>
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const std::string &var_nm, // I [sng] Variable name
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const typ_ntr * const &var_val) // I [frc] Variable value
+{
+  // Purpose: Wrapper for nco_put_vara()
+  int rcd=nco_put_vara(nc_id,nco_inq_varid(nc_id,var_nm),var_srt,var_cnt,var_val);
+  return rcd;
+} // end nco_put_vara<size_t *,size_t *,typ_ntr *>()
+
+// Overload 5: Write coordinate given name, size
+template<typename typ_ntr>
+int // O [enm] Return success code
+nco_put_vara_crd // [fnc] Write coordinate to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const std::string &var_nm, // I [sng] Coordinate name
+ const size_t &dmn_sz, // I [nbr] Dimension size
+ const typ_ntr * const &var_val) // I [frc] Coordinate value
+{
+  /* Purpose: Wrapper for nco_put_vara() for coordinates
+     Routine writes all values input coordinate variable with nco_put_vara() interface
+     Routine works with writing any coordinate, record or not
+     Non-record coordinates may be written with nco_put_var() interface
+     since dimension fixed dimension size is always known by netCDF layer.
+     Record coordinate size is unknown until nco_put_vara() interface is called
+     Hence, first record variable write in program _should_ call this routine
+     This facilitates communicating record variable size netCDF file */
+  const size_t cnt_crd(dmn_sz); // [nbr] Count for dimension
+  const size_t *cnt_vct_crd(&cnt_crd); // [nbr] Count vector for dimension
+  const size_t srt_crd(0); // [idx] Starting offset for dimension
+  const size_t *srt_vct_crd(&srt_crd); // [idx] Starting offset vector for dimension
+
+  int rcd=nco_put_vara(nc_id,nco_inq_varid(nc_id,var_nm),srt_vct_crd,cnt_vct_crd,var_val);
+  return rcd;
+} // end nco_put_vara_crd<string,size_t,typ_ntr *>()
+
+// End nco_put_vara() overloads
 // Begin nco_put_var() overloads
 
 // Overload 1: Write array given ID

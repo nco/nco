@@ -1,3 +1,13 @@
+2004-09-17  Charlie Zender  <zender@uci.edu>
+
+	* Added nco_put_vara_crd() to handle writing coordinates
+	Coordinates should always be written with this routine
+
+	* Begin adding overloaded definitions for nco_put_vara() functions
+	nco_put_vara_float() and nco_put_vara_double() are now covered with
+	functions that pass valarrays or size_t vectors, and may be
+	referenced either by variable ID or by variable name string.
+
 2004-07-07  Charlie Zender  <zender@uci.edu>
 
 	* nco_att.cc: Manually NUL-terminate retrieved text attributes in
