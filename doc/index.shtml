@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.238 2004-07-07 01:12:10 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.239 2004-07-19 07:35:54 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -210,7 +210,7 @@ Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> 
 <ul>
 <li><b>NCO 2.9.8</b>: (<i>In progress</i>) Float functions will work in AIX <tt>ncap</tt> (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users)
 <li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>nco_input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS), write <tt>nco_openmp_thread_number</tt> attribute
-<li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax, 64-bit ABI for x86_64, Debian builds libnco_c++
+<li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax, 64-bit ABI for x86_64, <a href="http://www.debian.org">Debian</a> builds libnco_c++
 <li><b>NCO 2.9.5</b>: <tt>ncflint</tt> handles <tt>missing_value</tt> data better, is commutative when weights are equal
 <li><b>NCO 2.9.4</b>: <tt>ncecat</tt> works on pure scalar files, change to <tt>cvs.sf.net</tt>, AIX GCC builds
 <li><b>NCO 2.9.3</b>: <tt>ncra</tt> and <tt>ncea</tt> now <a name="bug_mss_val_zro_ncra">work correctly</a> when <tt>missing_value</tt> equals zero or any intermediate sums
@@ -225,7 +225,7 @@ Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> 
 <li><b>NCO 2.8.3</b>: Fix big <tt>ncap</tt> memory leak, fix regressions, remove scary packing warnings</li>
 <li><b>NCO 2.8.2</b>: <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly, improve error diagnostics</li>
 <li><b>NCO 2.8.1</b>: <a href="./nco.html#rx">&ldquo;Variable wildcarding&rdquo;</a>&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators</li>
-<li><b>NCO 2.8.0</b>: New &ldquo;binary&rdquo; operator <a href="./nco.html#ncbo"><tt>ncbo</tt></a>, obsoletes <tt>ncdiff</tt>, Debian integration</li>
+<li><b>NCO 2.8.0</b>: New &ldquo;binary&rdquo; operator <a href="./nco.html#ncbo"><tt>ncbo</tt></a>, obsoletes <tt>ncdiff</tt>, <a href="http://www.debian.org">Debian</a> integration</li>
 <li><b>NCO 2.7.4</b>: Autotools build support for AIX, fix UDUnits confusion with floating point hyperslab specifications</li>
 <li><b>NCO 2.7.3</b>: Support <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (and some <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html">CF</a>) conventions, e.g., <tt>ncks -d wvl "1 picometer","1 furlong" -d time,"2001-03-19 06:00:0.0","2001-03-19 18:00:0.0"</tt></li>
 <li><b>NCO 2.7.2</b>: Printing (<tt>ncks -H</tt>) plays well with multi-slabbing</li>
@@ -244,7 +244,7 @@ Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> 
 <li><b>NCO 2.5.3</b>: Fix native builds under MS Windows with Cygwin <tt>ncap</tt>, hint to <tt>ncwa</tt></li>
 <li><b>NCO 2.5.2</b>: Add math functions to <tt>ncap</tt>, hint to <tt>ncwa</tt></li>
 <li><b>NCO 2.5.1</b>: <tt>ncatted</tt> deletes all attributes of <tt>att_var</tt> when <tt>att_nm</tt> not specified</li>
-<li><b>NCO 2.5.0</b>: man(1) pages from Debian distribution</li>
+<li><b>NCO 2.5.0</b>: man(1) pages from <a href="http://www.debian.org">Debian</a> distribution</li>
 <li><b>NCO 2.4.6</b>: Free (speech) sort routines</li>
 <li><b>NCO 2.4.5</b>: Arithmetic speedups</li>
 <li><b>NCO 2.4.4</b>: 64-bit AIX builds</li>
@@ -279,7 +279,7 @@ Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> 
 <dt><a name="Download"></a><a name="dwn"></a></dt>
 <h2>Download/CVS NCO Software</h2>
 
-The best way to acquire NCO is with <a href="http://www.cvshome.org">CVS</a>.
+The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS</a>.
 The second best way is to download the compressed tarfile 
 <a href="nco.tar.gz">here</a>.
 <p>The 
@@ -322,20 +322,17 @@ binaries on a variety of platforms (using, e.g.,
 <a href="http://sf.net/docman/display_doc.php?docid=762&group_id=1">Compile Farm</a> or 
 <a href="http://www.testdrive.compaq.com">HP Testdrive</a> sites)
 would be very welcome to join the NCO team.
-Tarballs are usually up-to-date, as are binaries for x86 Debian
-systems (i.e., .debs), but RedHat RPMs tend to lag the current
-distribution by many months, if not years:  
+Tarballs are always up-to-date, as are binaries for x86
+<a href="http://www.debian.org">Debian</a>-compatible systems (i.e., .debs).
+Fedora/RedHat-compatible RPMs may lag a bit more.
 <ul>
 <li>Source and documentation in tarball format: 
 <a href="nco.tar.gz">nco.tar.gz</a> (<!--#fsize file="nco.tar.gz"--> compressed tar-file)</li>
-<!-- 
-<a href="http://prdownloads.sf.net/nco/nco-2.2.0.tar.gz">nco-2.2.0.tar.gz</a> (901 Kb compressed tar-file)</li>
--->
 </ul>
 
 <ul>
 <!--
-<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.9.7</a></li>
+<li><a href="http://www.debian.org">Debian</a> GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.9.7</a></li>
 -->
 <a name="dbn"></a>
 <a href="http://www.debian.org">Debian GNU/Linux</a>-compatible systems: 
@@ -348,10 +345,14 @@ href="src/nco_2.9.7-1_i386.changes">nco_2.9.7-1_i386.changes</a> (<!--#fsize fil
 
 <ul>
 <a name="redhat"></a>
-<a href="www.redhat.com">Redhat 7.0 GNU/Linux</a>-compatible Intel
-systems <a href="http://www.rpm.org">RPMs</a>:
-<li><a href="http://prdownloads.sf.net/nco/nco-2.0.0-1.i386.rpm">nco-2.0.0-1.i386.rpm</a>: Pre-built executable RPM (install with <tt>rpm -i nco</tt>)</li>
-<li><a href="http://prdownloads.sf.net/nco/nco-2.0.0-1.src.rpm">nco-2.0.0-1.src.rpm</a>: Source RPM</li>
+<a name="fedora"></a>
+<a name="fdr"></a>
+<a name="rhl"></a>
+<a href="http://fedora.redhat.com">Fedora GNU/Linux</a>
+and <a href="www.redhat.com">Redhat GNU/Linux</a>-compatible
+<a href="http://www.rpm.org">RPMs</a> (courtesy of Ed Hill):
+<li><a href="http://mitgcm.org/eh3/NetCDF/nco-2.9.7-0.fdr.1.i386.rpm">nco-2.9.7-0.fdr.1.i386.rpm</a>: Fedora Core&nbsp;1, i386 Binary RPM</li>
+<li><a href="http://mitgcm.org/eh3/NetCDF/nco-2.9.7-0.fdr.1.src.rpm">nco-2.9.7-0.fdr.1.src.rpm</a>: Fedora Core&nbsp;1, Source RPM</li>
 </ul>
 <hr></p>
 
@@ -405,8 +406,9 @@ fixes we currently have in mind for NCO.</li>
 But they are more predictable:
 <ul>
 <li><i>Where can I find prebuilt NCO executables?</i>
-Users of Debian and RedHat Linux should <a href="#Download">download</a>
-prebuilt .debs and/or RPMs as described above.
+Users of <a href="http://www.debian.org">Debian</a>-compatible and Fedora/RedHat-compatible GNU/Linux
+should <a href="#Download">download</a> prebuilt .debs and/or RPMs as
+described above. 
 If you have an account at UCI or SDSC, try the locations in my
 personal home directories listed below. 
 At NCAR, first try <tt>/usr/local/bin</tt>.

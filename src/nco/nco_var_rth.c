@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.25 2004-07-06 16:30:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.26 2004-07-19 07:35:55 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -94,7 +94,7 @@ nco_var_add /* [fnc] Add first operand to second operand */
  ptr_unn op1, /* I [val] Values of first operand */
  ptr_unn op2) /* I/O [val] Values of second operand on input, values of sum on output */
 {
-  /* Routine to add value of first operand to value of second operand 
+  /* Purpose: Add value of first operand to value of second operand 
      and store result in second operand. 
      Assume operands conform, are same type, and are in memory
      nco_var_add() does not increment a tally counter
@@ -1407,7 +1407,7 @@ nco_var_zero(const nc_type type,const long sz,ptr_unn op1)
   ptr_unn op1: I values of first operand
  */
 {
-  /* Routine to zero value of first operand and store result in second operand. */
+  /* Purpose: Zero value of first operand and store result in second operand. */
 
   long idx;
 
