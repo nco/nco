@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.16 2002-01-28 10:06:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.17 2002-04-25 06:47:14 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -85,13 +85,7 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
   nc_type scl_fct_typ; /* [idx] Type of scale_factor attribute */
 
   /* Vet scale_factor */
-  
-  /* netCDF 2.x ncattinq() returns -1 on failure, so compare rcd to -1 */
-   
   rcd=nco_inq_att_flg(nc_id,var->id,scl_fct_sng,&scl_fct_typ,&scl_fct_lng);
-  
-  /* netCDF 3.x nc_inq_att() returns 0 on success, so compare rcd to NC_NOERR */
-  /*  rcd=nc_inq_att(nc_id,var->id,scl_fct_sng,&scl_fct_typ,(size_t *)&scl_fct_lng);*/
   if(rcd != NC_ENOTATT){
     if(scl_fct_typ != NC_FLOAT && scl_fct_typ != NC_DOUBLE){
       (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports scale_factor for %s is not NC_FLOAT or NC_DOUBLE. Will not attempt to unpack using scale_factor.\n",prg_nm_get(),var->nm); 
@@ -106,9 +100,7 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
   } /* endif */
 
   /* Vet add_offset */
-  
   rcd=nco_inq_att_flg(nc_id,var->id,add_fst_sng,&add_fst_typ,&add_fst_lng);
-  
   if(rcd != NC_ENOTATT){
     if(add_fst_typ != NC_FLOAT && add_fst_typ != NC_DOUBLE){
       (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports add_offset for %s is not NC_FLOAT or NC_DOUBLE. Will not attempt to unpack.\n",prg_nm_get(),var->nm); 
@@ -135,10 +127,13 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
     /* If variable is packed on disk and is in memory then variable is packed in memory */
     var->pck_ram=True; /* [flg] Variable is packed in memory */
     var->typ_upk=scl_fct_typ; /* Type of variable when unpacked (expanded) (in memory) */
-    if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: PACKING Variable %s is type %s packed into type %s\n",prg_nm_get(),var->nm,nco_typ_sng(var->typ_upk),nco_typ_sng(var->typ_dsk));
+    if(is_arithmetic_operator(prg_get()) || dbg_lvl_get() > 2){
+      (void)fprintf(stderr,"%s: PACKING Variable %s is type %s packed into type %s\n",prg_nm_get(),var->nm,nco_typ_sng(var->typ_upk),nco_typ_sng(var->typ_dsk));
+      (void)fprintf(stderr,"%s: WARNING Packed variables are not yet handled correctly, be careful with results\n",prg_nm_get());
+    } /* endif print packing information */
   } /* endif */
 
-  return var->pck_dsk;
+  return var->pck_dsk; /* Variable is packed on disk (valid scale_factor, add_offset, or both attributes exist) */
   
 } /* end pck_dsk_inq() */
 
@@ -148,7 +143,7 @@ var_upk /* [fnc] Unpack variable in memory */
 {
   /* Threads: Routine is thread-unsafe */
   /* Purpose: Unpack variable
-     Routine is inverse of var_pck(): var_upk(var_pck(var))=var */
+     Routine is inverse of var_pck(): var_upk[var_pck(var)]=var */
 
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
@@ -215,7 +210,7 @@ var_pck /* [fnc] Pack variable in memory */
  bool USE_EXISTING_PCK) /* I [flg] Use existing packing scale_factor and add_offset */
 {
   /* Purpose: Pack variable 
-     Routine is inverse of var_uck(): var_pck(var_upk(var))=var */
+     Routine is inverse of var_upk(): var_pck[var_upk(var)]=var */
 
   double scl_fct_dbl=double_CEWI; /* [sct] Double precision value of scale_factor */
   double add_fst_dbl=double_CEWI; /* [sct] Double precision value of add_offset */
@@ -248,7 +243,7 @@ var_pck /* [fnc] Pack variable in memory */
 
        where 
 
-       ndrv = number of discrete representable values for a given type of packed variable and
+       ndrv = number of discrete representable values for given type of packed variable and
        ndrv = 256 iff var->typ_pck == NC_CHAR
        ndrv = 256*256 iff var->typ_pck == NC_SHORT */
 
@@ -306,9 +301,9 @@ var_pck /* [fnc] Pack variable in memory */
 
     /* ndrv is 2^{bits per packed value} where bppv = 8 for NC_CHAR and bppv = 16 for NC_SHORT */
     if(typ_pck == NC_CHAR){
-      ndrv_dbl=256; /* [sct] Double precision value of number of discrete representable values */
+      ndrv_dbl=256.0; /* [sct] Double precision value of number of discrete representable values */
     }else if(typ_pck == NC_SHORT){
-      ndrv_dbl=65536; /* [sct] Double precision value of number of discrete representable values */
+      ndrv_dbl=65536.0; /* [sct] Double precision value of number of discrete representable values */
     } /* end else */
     ndrv_unn.d=ndrv_dbl; /* Generic container for number of discrete representable values */
     ndrv_var=scl_mk_var(ndrv_unn,NC_DOUBLE); /* [sct] Variable structure for number of discrete representable values */

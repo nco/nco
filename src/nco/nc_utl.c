@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.134 2002-04-24 06:15:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.135 2002-04-25 06:47:13 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -931,12 +931,8 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
 
-  if(dbg_lvl_get() == 3){
-    if(prg_get() == ncra || prg_get() == ncea){
-      /* Packing/Unpacking */
-      (void)pck_dsk_inq(nc_id,var);
-    } /* endif arithemetic operator with packing capability */
-  } /* endif debug */
+  /* Packing/Unpacking */
+  (void)pck_dsk_inq(nc_id,var);
 
   return var;
 } /* end var_fll() */
@@ -5455,7 +5451,29 @@ var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dmn_sct **dim,int nbr_d
   *var_ptr=var;
   *var_out_ptr=var_out;
 
-} /* end var_lst_convert */
+} /* end var_lst_convert() */
+
+bool
+is_arithmetic_operator(int prg_id)
+{
+  switch(prg_id){
+  case ncap: 
+  case ncdiff:
+  case ncea:
+  case ncflint:
+  case ncra:
+  case ncwa:
+    return True;
+    break;
+  case ncatted: 
+  case ncecat: 
+  case ncks: 
+  case ncrcat: 
+  default:
+    return False;
+    break;
+  } /* end switch */
+} /* end is_arithmetic_operator() */
 
 void
 var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,

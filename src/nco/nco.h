@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.11 2002-01-30 08:24:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.12 2002-04-25 06:47:14 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -249,7 +249,7 @@ extern "C" {
     long srd; /* Stride of hyperslab */
     ptr_unn val; /* Buffer to hold hyperslab */
     struct dmn_sct_tag *xrf; /* Cross-reference to associated dimension structure (usually the structure for dimension on output) */
-  } dmn_sct;
+  } dmn_sct; /* end dmn_sct_tag */
   
   /* Each member of var_sct structure should be initialized to default in var_dfl_set()
      Each pointer member of var_sct structure should be freed in var_free()
@@ -287,7 +287,7 @@ extern "C" {
     ptr_unn add_fst; /* Value of add_offset attribute of type typ_upk */
     nc_type typ_pck; /* Type of variable when packed (on disk). typ_pck = typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
     nc_type typ_upk; /* Type of variable when unpacked (expanded) (in memory) */
-  } var_sct;
+  } var_sct; /* end var_sct_tag */
   
   /* Fortran functions are deprecated as of NCO 1.2, will be removed unless volunteer takes over their maintenance */
 #ifdef USE_FORTRAN_ARITHMETIC
@@ -542,6 +542,10 @@ extern "C" {
   (var_sct *var, /* I/O [sct] Variable to be packed */
    int nco_pck_typ); /* [enm] Packing operation type */
   
+  extern bool /* O [flg] Operator is arithmetic */
+  is_arithmetic_operator /* [fnc] Operator is arithmetic */
+  (int prg_id); /* [enm] Operator key */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
