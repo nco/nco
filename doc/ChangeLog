@@ -1,5 +1,7 @@
 2003-02-25  Charlie Zender  <zender@uci.edu>
 
+	* Builds cleanly on LINUX, IRIX, AIX
+
 	* Remove unused variables from ncap.[cl], nco_msa.c
 
 	* Clean up nco_att_cpy()
