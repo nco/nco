@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.27 2000-06-25 19:31:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.28 2000-06-30 22:22:23 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.27 2000-06-25 19:31:47 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.27 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.28 2000-06-30 22:22:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.28 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -717,9 +717,9 @@ cpy_var_val(int in_id,int out_id,char *var_nm)
   } /* end loop over dim */
       
   /* Allocate enough space to hold the variable */ 
-  void_ptr=(void *)nco_malloc(var_sz*nctypelen(var_type));
+  void_ptr=(void *)malloc(var_sz*nctypelen(var_type));
   if(void_ptr == NULL){
-    (void)fprintf(stderr,"%s: ERROR unable to nco_malloc() %ld bytes for %s\n",prg_nm_get(),var_sz*nctypelen(var_type),var_nm);
+    (void)fprintf(stderr,"%s: ERROR unable to malloc() %ld bytes for %s\n",prg_nm_get(),var_sz*nctypelen(var_type),var_nm);
     exit(EXIT_FAILURE);
   } /* end if */ 
 
@@ -845,9 +845,9 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
   } /* end loop over dim */
       
   /* Allocate enough space to hold variable */ 
-  void_ptr=(void *)nco_malloc(var_sz*nctypelen(var_type));
+  void_ptr=(void *)malloc(var_sz*nctypelen(var_type));
   if(void_ptr == NULL){
-    (void)fprintf(stderr,"%s: ERROR unable to nco_malloc() %ld bytes for %s\n",prg_nm_get(),var_sz*nctypelen(var_type),var_nm);
+    (void)fprintf(stderr,"%s: ERROR unable to malloc() %ld bytes for %s\n",prg_nm_get(),var_sz*nctypelen(var_type),var_nm);
     exit(EXIT_FAILURE);
   } /* end if */ 
 
@@ -1247,9 +1247,9 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   for(idx=0;idx<var.nbr_dim;idx++) var.sz*=dmn_cnt[idx];
 
   /* Allocate enough space to hold variable */ 
-  var.val.vp=(void *)nco_malloc(var.sz*nctypelen(var.type));
+  var.val.vp=(void *)malloc(var.sz*nctypelen(var.type));
   if(var.val.vp == NULL){
-    (void)fprintf(stderr,"%s: ERROR unable to nco_malloc() %ld bytes for %s\n",prg_nm_get(),var.sz*nctypelen(var.type),var.nm);
+    (void)fprintf(stderr,"%s: ERROR unable to malloc() %ld bytes for %s\n",prg_nm_get(),var.sz*nctypelen(var.type),var.nm);
     exit(EXIT_FAILURE);
   } /* end if */ 
 

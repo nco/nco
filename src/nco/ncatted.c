@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.20 2000-06-25 19:31:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.21 2000-06-30 22:22:23 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.20 2000-06-25 19:31:47 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.20 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.21 2000-06-30 22:22:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.21 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -601,8 +601,8 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     var->srt=dmn_srt;
       
     /* Place var_get() code inline since var struct is not truly complete */
-    if((var->val.vp=(void *)nco_malloc(var->sz*nctypelen(var->type))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to nco_malloc() %ld*%d bytes in aed_prc()\n",prg_nm_get(),var->sz,nctypelen(var->type));
+    if((var->val.vp=(void *)malloc(var->sz*nctypelen(var->type))) == NULL){
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in aed_prc()\n",prg_nm_get(),var->sz,nctypelen(var->type));
       exit(EXIT_FAILURE); 
     } /* end if */ 
     if(var->sz > 1){

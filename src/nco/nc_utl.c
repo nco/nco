@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.69 2000-06-25 19:31:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.70 2000-06-30 22:22:22 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -2141,8 +2141,8 @@ var_dup(var_sct *var)
 
   /* Copy all dyamically allocated arrays currently defined in original */ 
   if(var->val.vp != NULL){
-    if((var_dup->val.vp=(void *)nco_malloc(var_dup->sz*nctypelen(var_dup->type))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to nco_malloc() %ld*%d bytes for value buffer for variable %s in var_dup()\n",prg_nm_get(),var_dup->sz,nctypelen(var_dup->type),var_dup->nm);
+    if((var_dup->val.vp=(void *)malloc(var_dup->sz*nctypelen(var_dup->type))) == NULL){
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in var_dup()\n",prg_nm_get(),var_dup->sz,nctypelen(var_dup->type),var_dup->nm);
       exit(EXIT_FAILURE); 
     } /* end if */ 
     (void)memcpy((void *)(var_dup->val.vp),(void *)(var->val.vp),var_dup->sz*nctypelen(var_dup->type));
@@ -2152,8 +2152,8 @@ var_dup(var_sct *var)
     (void)memcpy((void *)(var_dup->mss_val.vp),(void *)(var->mss_val.vp),nctypelen(var_dup->type));
   } /* end if */
   if(var->tally != NULL){
-    if((var_dup->tally=(long *)nco_malloc(var_dup->sz*sizeof(long))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to nco_malloc() %ld*%ld bytes for tally buffer for variable %s in var_dup()\n",prg_nm_get(),var_dup->sz,(long)sizeof(long),var_dup->nm);
+    if((var_dup->tally=(long *)malloc(var_dup->sz*sizeof(long))) == NULL){
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in var_dup()\n",prg_nm_get(),var_dup->sz,(long)sizeof(long),var_dup->nm);
       exit(EXIT_FAILURE); 
     } /* end if */ 
     (void)memcpy((void *)(var_dup->tally),(void *)(var->tally),var_dup->sz*sizeof(long));
@@ -2213,8 +2213,8 @@ var_get(int nc_id,var_sct *var)
 
   /* This is probably where scale_factor and add_offset unpacking should be done */
 
-  if((var->val.vp=(void *)nco_malloc(var->sz*nctypelen(var->type))) == NULL){
-    (void)fprintf(stdout,"%s: ERROR Unable to nco_malloc() %ld*%d bytes in var_get()\n",prg_nm_get(),var->sz,nctypelen(var->type));
+  if((var->val.vp=(void *)malloc(var->sz*nctypelen(var->type))) == NULL){
+    (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in var_get()\n",prg_nm_get(),var->sz,nctypelen(var->type));
     exit(EXIT_FAILURE); 
   } /* end if */ 
   if(var->sz > 1){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.36 2000-06-25 19:31:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.37 2000-06-30 22:22:23 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.36 2000-06-25 19:31:47 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.36 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.37 2000-06-30 22:22:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.37 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -538,13 +538,13 @@ main(int argc,char **argv)
 
       /* Allocate and, if necesssary, initialize accumulation space for all processed variables */ 
       var_prc_out[idx]->sz=var_prc[idx]->sz;
-      if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long))) == NULL){
-	(void)fprintf(stdout,"%s: ERROR Unable to nco_malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
+      if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)malloc(var_prc_out[idx]->sz*sizeof(long))) == NULL){
+	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
 	exit(EXIT_FAILURE); 
       } /* end if */ 
       (void)zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
-      if((var_prc_out[idx]->val.vp=(void *)nco_malloc(var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type))) == NULL){
-	(void)fprintf(stdout,"%s: ERROR Unable to nco_malloc() %ld*%d bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,nctypelen(var_prc_out[idx]->type),var_prc_out[idx]->nm);
+      if((var_prc_out[idx]->val.vp=(void *)malloc(var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type))) == NULL){
+	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,nctypelen(var_prc_out[idx]->type),var_prc_out[idx]->nm);
 	exit(EXIT_FAILURE); 
       } /* end if */ 
       (void)var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
