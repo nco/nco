@@ -1,3 +1,10 @@
+1999-10-17  Charlie Zender  <zender@dust.ps.uci.edu>
+
+	* Tagged this as nco1_1_41
+
+	* Added dir to targets which do not rebuild *.d dependencies
+	Doing this and installing latest make-3.78.1 fixes build on dataproc
+
 1999-10-15  Charlie Zender  <zender@dust.ps.uci.edu>
 
 	* Tagged this as nco1_1_40
