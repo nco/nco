@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.67 2004-08-16 04:13:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.68 2004-08-31 16:39:54 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -322,7 +322,8 @@ nco_usg_prn(void)
   } /* end switch */
   
   /* Public service announcements */
-  (void)fprintf(stdout,"NCO homepage at http://nco.sf.net has complete online User's Guide\n");
+  (void)fprintf(stdout,"NCO homepage is http://nco.sf.net\n");
+  (void)fprintf(stdout,"On-line User's Guide for %s is http://nco.sf.net/nco.html#%s\n",prg_nm_get(),prg_nm_get());
   (void)fprintf(stdout,"Post questions, suggestions, patches at http://sf.net/projects/nco\n");
 
   /* We now have command-specific command line option string */
