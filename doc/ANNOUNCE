@@ -1,29 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.85 2004-06-07 04:18:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.86 2004-06-09 16:46:57 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release fixes a problem with ncflint interpolations
-when one of the two inputs was missing_value.
-The previous algorithm was non-commutative, i.e., the result
-depended on the order the files were specified.
-It was also non-intuitive in that it returned the weighted valid datum 
-rather than the unweighted valid datum or just missing_value.
-The new alorithm is commutative, and much more conservative.
-Now, when either of the input datums is missing_value, the result 
-is missing_value as well.
-
-I am willing to implement other ncflint algorithms if there is
-interest. If you have an opinion about this, please read the new
-documentation at
-
-http://nco.sf.net/nco.html#ncflint
-
-and post your preferences to the NCO discussion forum at
-
-http://sf.net/forum/forum.php?forum_id=9829
+This release ...
 
 Enjoy,
 Charlie
@@ -36,6 +18,8 @@ Bug-fixes:
 
 Build changes:
 1. Implement -m64 option for ABI=64 with LINUXAMD64
+2. Debian packages now install libnco_c++ by default, and libnco_c++
+   version numbers now track libnco
 
 Other user-visible changes:
 1. None
