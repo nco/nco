@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.6 2004-03-12 01:02:18 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.7 2005-01-07 23:12:20 zender Exp $
 
 # Purpose: Install DODS prior to building NCO as DODS-enabled clients
 
@@ -31,6 +31,9 @@ DODS_ROOT=`pwd`
 # Set compiler environment variables CC and CXX before executing this
 # You cannot do it on the command line like with NCO 
 # On Linux, it defaults to gcc and g++
+# On Opteron, may want to set 64-bit?
+# 20041222: DODS configure scripts do not recognize GNU_TRP=x86_64-unknown-linux-gnu
+# CFLAGS='-m64' CXXFLAGS='-m64' ./configure --prefix=${DODS_ROOT}
 ./configure --prefix=${DODS_ROOT}
 # Build necessary libraries
 make
