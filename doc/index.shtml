@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.205 2004-03-11 07:44:39 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.206 2004-03-13 01:38:44 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -506,7 +506,7 @@ AT&T <tt>lex</tt> will not work because it does not understand
 and does not parse <tt>ncap_yacc.y</tt> correctly; previous and later
 versions of <tt>bison</tt> work correctly.
 <tt>bison</tt> version 1.25 will not build <tt>ncap</tt> on Solaris.
-Please upgrade <tt>bison</tt> to the latest version (i.e., 1.875+)
+Please upgrade <tt>bison</tt> to the latest version (e.g., 1.875+)
 before reporting <tt>ncap</tt> build problems.
 </li>
 
@@ -541,9 +541,10 @@ No other version combination is supported.
 
 <a name="bld_slr"></a>
 <li><b>Solaris build problems:</b>
-NCO versions 2.8.6+ do not build with autotools for Solaris 2.7 cc/CC.
-They do appear to build with autotools with Solaris 2.6 or 2.8 cc/CC.
-Solaris users are urged to solve this one themselves.
+All recent NCO versions build with autotools on Solaris 2.7+.
+The most common problem with building on Solaris with
+<tt>cc</tt>/<tt>CC</tt> is that <tt>bison</tt> may be out-of-date.
+Install an up-to-date <tt>bison</tt> (e.g., 1.875+).
 </li>
 
 <a name="bld_aix"></a>

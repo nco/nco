@@ -1,3 +1,8 @@
+2004-03-12  Charlie Zender  <zender@uci.edu>
+
+	* Verify Solaris does autobuild correctly with up-to-date bison 
+	and when UDUnits workaround is installed.
+	
 2004-03-11  Charlie Zender  <zender@uci.edu>
 
 	* Re-do UDUnits logic in configure.in to ignore broken UDUnits
