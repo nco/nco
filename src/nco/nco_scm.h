@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.h,v 1.2 2002-08-22 20:16:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.h,v 1.3 2002-08-23 00:09:26 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -12,6 +12,11 @@
 #ifndef NCO_SCM_H
 #define NCO_SCM_H
 
+/* Autotools tokens */
+#ifdef HAVE_CONFIG_H
+# include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
+
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <string.h> /* strcmp. . . */
@@ -19,9 +24,6 @@
 /* 3rd party vendors */
 
 /* Personal headers */
-#ifdef HAVE_CONFIG_H
-# include <config.h> /* Autotools tokens */
-#endif /* !HAVE_CONFIG_H */
 #include "nco_mmr.h" /* Memory management */
 
 #ifdef __cplusplus

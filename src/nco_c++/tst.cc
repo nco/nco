@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.6 2002-08-22 22:04:15 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.7 2002-08-23 00:09:26 zender Exp $
 
 // Purpose: Test for C++ programs using libnco_c++ API
 
@@ -14,6 +14,11 @@
 
 // etags ~/nco/src/nco_c++/*.cc ~/nco/src/nco_c++/*.hh ~/mie/*.cc ~/mie/*.hh ~/slr_spc/*.cc ~/slr_spc/*.hh ~/ck/htrn.c ~/c++/*.cc ~/c++/*.hh 
 
+// Autotools may enable/disable library features
+#ifdef HAVE_CONFIG_H
+# include <config.h> // Autotools tokens
+#endif /* !HAVE_CONFIG_H */
+
 // Standard C++ headers
 #include <config.h>  // autoconf-generated header file for HOST, USER
 #include <iostream> // Standard C++ I/O streams cout, cin
@@ -27,9 +32,6 @@
 #include <netcdf.h> // netCDF C interface
 
 // Personal headers
-#ifdef HAVE_CONFIG_H
-# include <config.h> /* Autotools tokens */
-#endif /* !HAVE_CONFIG_H */
 #include <libnco_c++.hh> // C++ interface to netCDF C library
 
 // Typedefs
@@ -49,10 +51,10 @@ int main(int argc,char **argv)
   long sz_nbr(1); // [nbr] Number of sizes
   register long idx; // [idx] Counting index
 
-  const std::string CVS_Date("$Date: 2002-08-22 22:04:15 $"); // [sng] CVS date string
-  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.6 2002-08-22 22:04:15 zender Exp $"); // [sng] CVS header string
-  const std::string CVS_Id("$Id: tst.cc,v 1.6 2002-08-22 22:04:15 zender Exp $"); // [sng] CVS identification string
-  const std::string CVS_Revision("$Revision: 1.6 $"); // [sng] CVS revision string
+  const std::string CVS_Date("$Date: 2002-08-23 00:09:26 $"); // [sng] CVS date string
+  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.7 2002-08-23 00:09:26 zender Exp $"); // [sng] CVS header string
+  const std::string CVS_Id("$Id: tst.cc,v 1.7 2002-08-23 00:09:26 zender Exp $"); // [sng] CVS identification string
+  const std::string CVS_Revision("$Revision: 1.7 $"); // [sng] CVS revision string
   const std::string date_cvs(CVS_Date.length() > 7 ? CVS_Date.substr(7,19) : "Unknown"); // [sng] Date from CVS
   const std::string sbr_nm("main"); // [sng] Subroutine name
   const std::string prg_nm("libnco_c++"); // [sng] Program name

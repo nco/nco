@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.12 2002-08-22 22:16:33 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.13 2002-08-23 00:09:26 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -8,17 +8,18 @@ Summary table: Y: feature works, N feature broken, blank: not yet tested
 Architecture	build?	ABI64	DODS	I18N	OpenMP	nco_c++	check
 AIX		N(2)
 CRAY
-LINUX		Y	N/A				Y	N
-LINUXALPHA	N					N(1)
+LINUX		Y	N/A				Y	Y
+LINUXALPHA	Y					N(1)	Y
 NECSX
 OSF1		
 SGIMP64		N
-SUNMP		Y
+SUNMP		Y					Y	N(03)
 WIN32		
 -----------------------------------------------------------------------
 Footnotes to summary table:
-01. Try with CXX that supports valarray
-02. Fails to find getopt.h, gamma()
+01. Needs CXX that supports valarray
+02. make distclean because it looks for bash in /bin/bash
+03. Fails to link tst.o
 -----------------------------------------------------------------------
 
 Default installation procedure for system-wide installation,
@@ -28,7 +29,7 @@ Recommended/current custom ./configure invocation, alphabetized by pvmgetarch:
 
 ************************************************************************
 Start AIX
-Status: Appears that /usr/local... takes precedence over $NETCDF_INC/LIB
+Status: Link problems, problems finding bash to use in 'make distclean'
 ************************************************************************
 zender@bb0001en:/fs/cgd/home0/zender/nco$ pvmgetarch;uname -a
 AIX
@@ -48,14 +49,32 @@ For ABI=64:
 xlc  -DAIX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='bb0001en' -DUSER='zender' -I./ -I../src/nco -I/usr/local/include -U_OPENMP -qmaxmem=8192 -qlanglvl=extended -O -q64 -c ../src/nco/nco_att_utl.c -o /home/babyblue/zender/obj/AIX/nco_att_utl.o
 ar -X 64 rv /home/babyblue/zender/lib/AIX/libnco.a /home/babyblue/zender/obj/AIX/nco_var_lst.o
 xlc -o /home/babyblue/zender/bin/AIX/ncflint /home/babyblue/zender/obj/AIX/ncflint.o -L/home/babyblue/zender/lib/AIX -L/usr/local/lib64/r4i4 -lnco -lnetcdf -lm -lC -q64 
-New build examples:
+
+Status:
+AIX:
+When ABI=64,
+ar and nm utilities require "-X 64" argument, e.g., nm -X 64
+When ABI=32,
+ar and nm utilities do not require, but will recognize, "-X 32" argument, e.g., nm -X 32
+can/should this be sent manually in LDFLAGS?
+
+/bin/nm -B  nco_att_utl.o nco_bnr.o nco_cln_utl.o nco_cnf_dmn.o nco_cnf_typ.o nc
+o_cnv_arm.o nco_cnv_csm.o nco_ctl.o nco_dbg.o nco_dmn_utl.o nco_fl_utl.o nco_lmt
+.o nco_lst_utl.o nco_mmr.o nco_mss_val.o nco_netcdf.o nco_omp.o nco_pck.o nco_pr
+n.o nco_rec_var.o nco_rth_utl.o nco_scl_utl.o nco_scm.o nco_sng_utl.o nco_var_av
+g.o nco_var_lst.o nco_var_rth.o nco_var_scv.o nco_var_utl.o   | sed -n -e 's/^.*
+[       ]\([BCDT][BCDT]*\)[     ][      ]*\(\)\([_A-Za-z][_A-Za-z0-9]*\)$/\1 \2\
+3 \3/p' | sed 's/.* //' | sort | uniq > .libs/libnco.exp
+nm: nco_att_utl.o: 0654-203 Specify an XCOFF object module.
+nm: nco_bnr.o: 0654-203 Specify an XCOFF object module.
+nm: nco_cln_utl.o: 0654-203 Specify an XCOFF object module.
 ************************************************************************
 End AIX
 ************************************************************************
 
 ************************************************************************
 Start LINUX
-Status:
+Status: Appears to work
 ************************************************************************
 zender@dust:~/nco$ pvmgetarch;uname -a
 LINUX
@@ -72,8 +91,6 @@ Old build example:
 gcc  -DLINUX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='dust.ps.uci.edu' -DUSER='zender' -Di386 -I/usr/local/include -U_OPENMP -Wall -O -c ../src/nco/nco_att_utl.c -o /home/zender/obj/LINUX/nco_att_utl.o
 New build example:
 gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I/usr/local/include -g -O2 -c nco_att_utl.c  -fPIC -DPIC -o .libs/nco_att_utl.lo
-
-Status: Appears that /usr/local... takes precedence over $NETCDF_INC/LIB
 ************************************************************************
 End LINUX
 ************************************************************************
@@ -100,7 +117,8 @@ End LINUXALPHA
 
 ************************************************************************
 Start SGIMP64
-Status: Found netcdf.h, unable to link to libnetcdf.a
+Status: Appears to compile, but linker is getting -n32 flag with ABI=64
+needs -64 flag instead
 ************************************************************************
 zender@krein:~/nco$ pvmgetarch;uname -a
 SGIMP64
@@ -118,21 +136,39 @@ cc  -DSGIMP64 -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='krein.math.uci.edu'
 cc -o /home/ess/zender/zender/bin/SGIMP64/ncdiff /home/ess/zender/zender/obj/SGIMP64/ncdiff.o -64 -mips4 -L/home/ess/zender/zender/lib/SGIMP64 -L/usr/local/lib -lnco -lnetcdf -lm
 
 New build example:
+When ABI=64
+ld is getting -n32 argument instead of -64 argument
+I suppose this could be passed as LDFLAGS?
+I do have not tried ABI=32 yet
+
+/bin/ld -n32 -shared  nco_att_utl.o nco_bnr.o nco_cln_utl.o nco_cnf_dmn.o nco_cn
+f_typ.o nco_cnv_arm.o nco_cnv_csm.o nco_ctl.o nco_dbg.o nco_dmn_utl.o nco_fl_utl
+.o nco_lmt.o nco_lst_utl.o nco_mmr.o nco_mss_val.o nco_netcdf.o nco_omp.o nco_pc
+k.o nco_prn.o nco_rec_var.o nco_rth_utl.o nco_scl_utl.o nco_scm.o nco_sng_utl.o 
+nco_var_avg.o nco_var_lst.o nco_var_rth.o nco_var_scv.o nco_var_utl.o   -L/usr/l
+ocal/lib -lsocket -lintl -lm -lc  -soname libnco.so.1 `test -n "sgi1.0" && echo 
+-set_version sgi1.0` -update_registry .libs/so_locations -o .libs/libnco.so.1.0
+ld32: FATAL   12 : Expecting n32 objects: nco_att_utl.o is n64.
+gmake[3]: *** [libnco.la] Error 4
 ************************************************************************
 End SGIMP64
 ************************************************************************
 
 ************************************************************************
 Start SUNMP
-Status: 
+Status: unable to find bash for make distclean, 
+enable-HDF5 fails at link because of problems with DODS support libraries
+disable-HDF5 works fine
+linking of tst.o fails
+Warnings--g++: unrecognized option `-KPIC'
 ************************************************************************
 zender@flagstaff:~/nco$ pvmgetarch;uname -a
 SUNMP
-SunOS flagstaff 5.6 Generic_105181-19 sun4u sparc SUNW,Ultra-2
+SunOS goldhill 5.6 Generic_105181-19 sun4u sparc SUNW,Ultra-2
 
 export GNU_TRP='sparc-sun-solaris2.6'
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
 mv config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
@@ -140,6 +176,45 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.
 Old build example:
 
 New build example:
+
+zender@goldhill:~/nco$ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+make: /bin/bash: Command not found
+make: *** [distclean-recursive] Error 127
+When HDF5 is enabled:
+/usr/ccs/bin/ld -G -h libnco.so.0 -o .libs/libnco.so.0.0.0  nco_att_utl.lo nco_b
+nr.lo nco_cln_utl.lo nco_cnf_dmn.lo nco_cnf_typ.lo nco_cnv_arm.lo nco_cnv_csm.lo
+ nco_ctl.lo nco_dbg.lo nco_dmn_utl.lo nco_fl_utl.lo nco_lmt.lo nco_lst_utl.lo nc
+o_mmr.lo nco_mss_val.lo nco_netcdf.lo nco_omp.lo nco_pck.lo nco_prn.lo nco_rec_v
+ar.lo nco_rth_utl.lo nco_scl_utl.lo nco_scm.lo nco_sng_utl.lo nco_var_avg.lo nco
+_var_lst.lo nco_var_rth.lo nco_var_scv.lo nco_var_utl.lo  -L/home/zender/lib/SUN
+4SOL2 -lrx -lstdc++ -lmfhdf -lnco -lthread -lsocket -lsunmath -lresolv -lintl -l
+m -lnetcdf -lc 
+ld: fatal: symbol `ncopts' is multiply defined:
+        (file /contrib/lib/libmfhdf.a(globdef.o) and file /home/zender/lib/SUN4S
+OL2/libnetcdf.a(v2i.o));
+ld: fatal: symbol `NCadvise' is multiply defined:
+        (file /contrib/lib/libmfhdf.a(error.o) and file /home/zender/lib/SUN4SOL
+2/libnetcdf.a(v2i.o));
+ld: fatal: symbol `ncerr' is multiply defined:
+        (file /contrib/lib/libmfhdf.a(globdef.o) and file /home/zender/lib/SUN4S
+OL2/libnetcdf.a(v2i.o));
+ld: fatal: File processing errors. No output written to .libs/libnco.so.0.0.0
+make[3]: *** [libnco.la] Error 1
+make[3]: Leaving directory `/fs/cgd/home0/zender/nco/src/nco'
+
+Fails to link tst.o:
+g++ -DHAVE_CONFIG_H -I. -I. -I../..   -I/home/zender/include  -g -O2 -c tst.cc
+/bin/ksh ../../libtool --mode=link g++  -g -O2 -L/home/zender/lib/SUN4SOL2 -o tst  tst.o -lnco_cxx -lrx -lstdc++ -lnco -lthread -lsocket -lsunmath -lresolv -lintl -lm -lnetcdf 
+g++ -g -O2 -o tst tst.o  -L/home/zender/lib/SUN4SOL2 /home/zender/lib/SUN4SOL2/libnco_cxx.so -lrx -lstdc++ /home/zender/lib/SUN4SOL2/libnco.so -lthread -lsocket -lsunmath -lresolv -lintl -lm -lnetcdf -R/home/zender/lib/SUN4SOL2 -R/home/zender/lib/SUN4SOL2
+Undefined                       first referenced
+ symbol                             in file
+dbg_lvl_get                         /home/zender/lib/SUN4SOL2/libnco.so
+prg_nm_get                          /home/zender/lib/SUN4SOL2/libnco.so
+prg_get                             /home/zender/lib/SUN4SOL2/libnco.so
+ld: fatal: Symbol referencing errors. No output written to tst
+collect2: ld returned 1 exit status
+
+
 ************************************************************************
 End SUNMP
 ************************************************************************
