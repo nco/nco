@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.22 2002-05-05 03:48:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.23 2002-05-05 03:53:57 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -343,7 +343,6 @@ extern "C" {
   extern char *nmn_get(void);
   extern char *prg_nm_get(void);
   extern int sng_ascii_trn(char *);
-  extern int mss_val_get(int,var_sct *);
   extern int op_prs_rlt(char *);
   extern int nco_op_typ_get(char *);
   extern int prg_get(void);
@@ -376,7 +375,6 @@ extern "C" {
   extern void cast_void_nctype(nc_type,ptr_unn *);
   extern void copyright_prn(char *,char *);
   extern void hst_att_cat(int,char *);
-  extern void mss_val_cp(var_sct *,var_sct *);
   extern void rec_crd_chk(var_sct *,char *,char *,long,long);
   extern void val_conform_type(nc_type,ptr_unn,nc_type,ptr_unn);
   extern void var_add(nc_type,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
@@ -449,14 +447,6 @@ extern "C" {
   ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar double */
   (ptr_unn val, /* I [sct] Pointer union to variable values */
    nc_type type); /* I [enm] Type of values pointed to by pointer union */
-  
-  extern int /* O [enm] Return code */
-  nco_openmp_ini(); /* [fnc] Set up OpenMP multi-threading environment */
-  
-  extern int /* O [enm] Return code */
-  nco_var_prc_crr_prn /* [fnc] Print name of current variable */
-  (int idx, /* I [idx] Index of current variable */
-   char *var_nm); /* I [sng] Variable name */
   
 #ifdef __cplusplus
 } /* end extern "C" */

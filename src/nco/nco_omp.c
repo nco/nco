@@ -1,5 +1,15 @@
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.2 2002-05-05 03:53:57 zender Exp $ */
+
+/* Purpose: OpenMP utilities */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_omp.h" /* OpenMP utilities */
+
 int /* O [enm] Return code */
-nco_openmp_ini() /* [fnc] Set up OpenMP multi-threading environment */
+nco_openmp_ini(void) /* [fnc] Set up OpenMP multi-threading environment */
 {
   /* Purpose: Set up OpenMP multi-threading environment */
   int rcd=0; /* [rcd] Return code */
@@ -50,8 +60,8 @@ nco_openmp_ini() /* [fnc] Set up OpenMP multi-threading environment */
 
 int /* O [enm] Return code */
 nco_var_prc_crr_prn /* [fnc] Print name of current variable */
-(int idx, /* I [idx] Index of current variable */
- char *var_nm) /* I [sng] Variable name */
+(const int idx, /* I [idx] Index of current variable */
+ const char * const var_nm) /* I [sng] Variable name */
 {
   /* Purpose: Print name of current variable */
   int rcd=0; /* [rcd] Return code */
