@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.59 2002-06-16 05:12:03 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.60 2002-06-17 00:06:02 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -615,7 +615,7 @@ unpack/[ ]*\( {return UNPACK;}
   
   /* Copy arbitrary value into variable 
      Placing a uniform value in variable should be unnecessary since variable
-     is intended for use solely as dimensional template for nco_var_conform_dim() 
+     is intended for use solely as dimensional template for nco_var_cnf_dmn() 
      Nevertheless, copy 1.0 into value for safety */
   { /* Change scope to define convenience variables which reduce dereferencing */
     long var_sz; /* [nbr] Number of elements in variable */

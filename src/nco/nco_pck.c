@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.6 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.7 2002-06-17 00:06:02 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -135,9 +135,9 @@ nco_var_upk /* [fnc] Unpack variable in memory */
     (void)nco_get_att(var->nc_id,var->id,scl_fct_sng,var->scl_fct.vp,var->typ_upk);
     scl_fct_scv=ptr_unn_2_scv(var->typ_upk,var->scl_fct);
     /* Convert var to type of scale_factor for expansion */
-    var=nco_var_conform_type(scl_fct_scv.type,var);
+    var=nco_var_cnf_typ(scl_fct_scv.type,var);
     /* Multiply var by scale_factor */
-    (void)var_scv_multiply(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
+    (void)var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
   } /* endif has_scl_fct */
 
   if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
@@ -146,7 +146,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
     (void)nco_get_att(var->nc_id,var->id,add_fst_sng,var->add_fst.vp,var->typ_upk);
     add_fst_scv=ptr_unn_2_scv(var->typ_upk,var->add_fst);
     /* Convert var to type of scale_factor for expansion */
-    var=nco_var_conform_type(add_fst_scv.type,var);
+    var=nco_var_cnf_typ(add_fst_scv.type,var);
     /* Add add_offset to var */
     (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
   } /* endif has_add_fst */
@@ -248,9 +248,9 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
     /* Convert to NC_DOUBLE before 0.5*(min+max) operation */
     min_var=scl_ptr_mk_var(ptr_unn_min,var->type);
-    min_var=nco_var_conform_type((nc_type)NC_DOUBLE,min_var);
+    min_var=nco_var_cnf_typ((nc_type)NC_DOUBLE,min_var);
     max_var=scl_ptr_mk_var(ptr_unn_max,var->type);
-    max_var=nco_var_conform_type((nc_type)NC_DOUBLE,max_var);
+    max_var=nco_var_cnf_typ((nc_type)NC_DOUBLE,max_var);
     /* Copy max_var for use in scale_factor computation */
     max_var_dpl=nco_var_dpl(max_var);
     hlf_var=scl_mk_var(hlf_unn,NC_DOUBLE); /* [sct] NCO variable for value one half */
@@ -261,7 +261,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     if(var->tally == NULL) (void)fprintf(stdout,"%s: ERROR var->tally==NULL in nco_var_pck(), no room for incrementing tally while in nco_var_add()\n",prg_nm_get());
     /* max_var->val is overridden with add_offset answers, no longer valid as max_var */
     (void)nco_var_add((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,var->tally,min_var->val,max_var->val);
-    (void)nco_var_multiply((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,hlf_var->val,max_var->val);
+    (void)nco_var_mlt((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,hlf_var->val,max_var->val);
     /* Reset tally buffer to zero for any subsequent arithmetic */
     (void)nco_zero_long(var->sz,var->tally);
     /* Contents of max_var are actually add_offset */
@@ -283,12 +283,12 @@ nco_var_pck /* [fnc] Pack variable in memory */
        If max-min = 0 then variable is constant value so scale_factor=0.0 and add_offset=var
        If max-min > ndrv then precision is worse than 1.0
        If max-min < ndrv then precision is better than 1.0 */
-    (void)nco_var_subtract((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,min_var->val,max_var_dpl->val);
+    (void)nco_var_sbt((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,min_var->val,max_var_dpl->val);
     /* max-min is currently stored in max_var_dpl */
     max_mns_min_dbl=ptr_unn_2_scl_dbl(max_var_dpl->val,max_var_dpl->type); 
 
     if(max_mns_min_dbl != 0.0){
-      (void)nco_var_divide((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,ndrv_var->val,max_var_dpl->val);
+      (void)nco_var_dvd((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,ndrv_var->val,max_var_dpl->val);
       /* Contents of max_var_dpl are actually scale_factor */
       (void)val_conform_type((nc_type)NC_DOUBLE,max_var_dpl->val,var->type,var->scl_fct);
     }else{
@@ -356,7 +356,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     scl_fct_scv.type=NC_DOUBLE;
     scl_fct_scv.val.d=scl_fct_dbl;
     (void)scv_conform_type(var->type,&scl_fct_scv);
-    if(scl_fct_dbl != 0.0) (void)var_scv_divide(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
+    if(scl_fct_dbl != 0.0) (void)var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
   } /* endif */
 
   /* Tell the world */
@@ -366,7 +366,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
   /* Convert variable to user-specified packed type
      This is where var->type is changed from original to packed type */
-  var=nco_var_conform_type(typ_pck,var);
+  var=nco_var_cnf_typ(typ_pck,var);
 
   if(dbg_lvl_get() >=3){
     (void)fprintf(stderr,"%s: PACKING Packed %s\n",prg_nm_get(),var->nm);

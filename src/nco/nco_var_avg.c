@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.9 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.10 2002-06-17 00:06:02 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -22,7 +22,7 @@ nco_var_avg /* [fnc] reduce given variable over specified dimensions */
      The input variable structure is destroyed and the routine returns the resized, partially reduced variable
      For some operations, such as min, max, ttl, the variable returned by nco_var_avg() is complete and need not be further processed
      But to complete the averaging operation, the output variable must be normalized by its tally array
-     In other words, nco_var_normalize() should be called subsequently if normalization is desired
+     In other words, nco_var_nrm() should be called subsequently if normalization is desired
      Normalization is not done internally to nco_var_avg() in order to allow the user more flexibility
   */ 
 
@@ -296,8 +296,8 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
      Routine is one dimensional array operator acting serially on each element of input buffer op1
      Calling rouine knows exactly how rank of output, op2, is reduced from rank of input
      Routine only does summation rather than averaging in order to remain flexible
-     Operations which require normalization, e.g., averaging, must call nco_var_normalize() 
-     or nco_var_divide() to divide sum set in this routine by tally set in this routine. */
+     Operations which require normalization, e.g., averaging, must call nco_var_nrm() 
+     or nco_var_dvd() to divide sum set in this routine by tally set in this routine. */
 
   /* Each operation has GNUC and non-GNUC blocks:
      GNUC: Utilize (non-ANSI-compliant) compiler support for local automatic arrays

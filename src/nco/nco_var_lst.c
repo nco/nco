@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.8 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.9 2002-06-17 00:06:02 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -189,7 +189,7 @@ var_lst_convert /* [fnc] Make variable structure list from variable name ID list
 } /* end var_lst_convert() */
 
 void
-nco_var_lst_divide /* [fnc] Divide input lists into output lists */
+nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 (var_sct * const * const var, /* I [sct] Variable list (input file) */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */
@@ -352,5 +352,5 @@ nco_var_lst_divide /* [fnc] Divide input lists into output lists */
   if(*nbr_var_prc > 0) *var_prc_ptr=(var_sct **)nco_realloc(var_prc,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_ptr=NULL;
   if(*nbr_var_prc > 0) *var_prc_out_ptr=(var_sct **)nco_realloc(var_prc_out,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_out_ptr=NULL;
 
-} /* end nco_var_lst_divide */
+} /* end nco_var_lst_dvd */
 

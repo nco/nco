@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.67 2002-06-16 05:12:03 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.68 2002-06-17 00:06:02 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -268,7 +268,7 @@ PRINT '(' var_xpr ')' ';' {
     if(((prs_sct *)prs_arg)->var_LHS != NULL){
       /* User intends LHS to cast RHS to same dimensionality
 	 Stretch newly initialized variable to size of LHS template */
-      /*    (void)ncap_var_conform_dim(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
+      /*    (void)ncap_var_cnf_dmn(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
       (void)ncap_var_stretch(&var,&(((prs_sct *)prs_arg)->var_LHS));
       
       if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching former scv_xpr defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
@@ -467,7 +467,7 @@ var_xpr '+' var_xpr {
   minus.type=NC_BYTE;
   (void)scv_conform_type($3->type,&minus);
   var1=ncap_var_scv_sub($3,$1);
-  $$=ncap_var_scv_multiply(var1,minus);
+  $$=ncap_var_scv_mlt(var1,minus);
   nco_var_free(var1);
   nco_var_free($3);
 }
@@ -476,42 +476,42 @@ var_xpr '+' var_xpr {
   nco_var_free($1);
 }
 | var_xpr '*' var_xpr {
-  $$=ncap_var_var_multiply($1,$3); 
+  $$=ncap_var_var_mlt($1,$3); 
   nco_var_free($1); nco_var_free($3); 
 }
 | var_xpr '*' scv_xpr {
-  $$=ncap_var_scv_multiply($1,$3);
+  $$=ncap_var_scv_mlt($1,$3);
   nco_var_free($1);
 }
 | var_xpr '%' scv_xpr {
-  $$=ncap_var_scv_modulus($1,$3);
+  $$=ncap_var_scv_mod($1,$3);
   nco_var_free($1);
 }
 | scv_xpr '*' var_xpr {
-  $$=ncap_var_scv_multiply($3,$1);
+  $$=ncap_var_scv_mlt($3,$1);
   nco_var_free($3);
 }
 | var_xpr '/' var_xpr {
-  $$=ncap_var_var_divide($3,$1); /* NB: Ordering is important */
+  $$=ncap_var_var_dvd($3,$1); /* NB: Ordering is important */
   nco_var_free($1); nco_var_free($3); 
 }
 | var_xpr '/' scv_xpr {
-  $$=ncap_var_scv_divide($1,$3);
+  $$=ncap_var_scv_dvd($1,$3);
   nco_var_free($1);
 }
 | var_xpr '^' scv_xpr {
-  $$=ncap_var_scv_power($1,$3);
+  $$=ncap_var_scv_pwr($1,$3);
   nco_var_free($1);
 }
 | POWER '(' var_xpr ',' scv_xpr ')' {
-  $$=ncap_var_scv_power($3,$5);
+  $$=ncap_var_scv_pwr($3,$5);
   nco_var_free($3);
 }
 | '-' var_xpr %prec UMINUS { 
   scv_sct minus;
   minus.val.b=-1;
   minus.type=NC_BYTE;
-  $$=ncap_var_scv_multiply($2,minus);
+  $$=ncap_var_scv_mlt($2,minus);
   nco_var_free($2);      
 }
 | '+' var_xpr %prec UMINUS {
@@ -525,7 +525,7 @@ var_xpr '+' var_xpr {
   $$=ncap_var_abs($3);
   /* fxm Finish avg,min,max,ttl */
   /* $$=nco_var_avg($3,dim,dmn_nbr,nco_op_typ); */
-  /* if(prs_arg->nco_op_typ == nco_op_avg) (void)nco_var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val); */
+  /* if(prs_arg->nco_op_typ == nco_op_avg) (void)nco_var_dvd(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val); */
   (void)fprintf(stderr,"%s: WARNING RDC tokens not implemented yet\n",prg_nm_get());
   /* $3 is freed in nco_var_avg() */
 } /* end ABS */
@@ -538,7 +538,7 @@ var_xpr '+' var_xpr {
   $$=nco_var_upk($3);
 } /* end UNPACK */
 | FUNCTION '(' var_xpr ')' {
-  $$=ncap_var_function($3,$1);
+  $$=ncap_var_fnc($3,$1);
   nco_var_free($3);
 }  
 | '(' var_xpr ')' {
@@ -550,7 +550,7 @@ var_xpr '+' var_xpr {
   if((((prs_sct *)prs_arg)->var_LHS) != NULL){
     /* User intends LHS to cast RHS to same dimensionality
        Stretch newly initialized variable to size of LHS template */
-    /*    (void)ncap_var_conform_dim(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
+    /*    (void)ncap_var_cnf_dmn(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
     (void)ncap_var_stretch(&$$,&(((prs_sct *)prs_arg)->var_LHS));
 
     if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$$->nm,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);

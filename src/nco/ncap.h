@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.44 2002-06-16 05:12:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.45 2002-06-17 00:06:02 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -136,20 +136,20 @@ ptr_unn ncap_scv_2_ptr_unn(scv_sct);
 scv_sct ncap_scv_abs(scv_sct);
 scv_sct ncap_scv_calc(scv_sct,char,scv_sct);
 sym_sct *ncap_sym_init(char *,double (*fnc_dbl)(double),float (*fnc_flt)(float));
-sym_sct *ncap_scalar_mk_sym(double val);
+sym_sct *ncap_scl_mk_sym(double val);
 sym_sct *ncap_sym_look(char *sym_nm);
 var_sct *ncap_var_abs(var_sct *);
-var_sct *ncap_var_function(var_sct *,sym_sct *);
+var_sct *ncap_var_fnc(var_sct *,sym_sct *);
 var_sct *ncap_var_init(const char * const,prs_sct *);
 var_sct *ncap_var_scv_add(var_sct *,scv_sct);
-var_sct *ncap_var_scv_divide(var_sct *,scv_sct);
-var_sct *ncap_var_scv_modulus(var_sct *,scv_sct);
-var_sct *ncap_var_scv_multiply(var_sct *,scv_sct);
-var_sct *ncap_var_scv_power(var_sct *,scv_sct);
+var_sct *ncap_var_scv_dvd(var_sct *,scv_sct);
+var_sct *ncap_var_scv_mod(var_sct *,scv_sct);
+var_sct *ncap_var_scv_mlt(var_sct *,scv_sct);
+var_sct *ncap_var_scv_pwr(var_sct *,scv_sct);
 var_sct *ncap_var_scv_sub(var_sct *,scv_sct);
 var_sct *ncap_var_var_add(var_sct *var_1,var_sct *var_2);
-var_sct *ncap_var_var_divide(var_sct *var_1,var_sct *var_2);
-var_sct *ncap_var_var_multiply(var_sct *var_1,var_sct *var_2);
+var_sct *ncap_var_var_dvd(var_sct *var_1,var_sct *var_2);
+var_sct *ncap_var_var_mlt(var_sct *var_1,var_sct *var_2);
 var_sct *ncap_var_var_sub(var_sct *var_1,var_sct *var_2);
 void ncap_fnc_add(char *nm, double (*fnc_dbl)());
 void nco_lib_vrs_prn();

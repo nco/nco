@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.6 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.7 2002-06-17 00:06:02 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -9,7 +9,7 @@
 #include "nco_cnf_dmn.h" /* Conform dimensions */
 
 var_sct * /* O [sct] Pointer to conforming variable structure */
-nco_var_conform_dim /* [fnc] Stretch second variable to match dimensions of first variable */
+nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first variable */
 (const var_sct * const var, /* I [ptr] Pointer to variable structure to serve as template */
  var_sct * const wgt, /* I [ptr] Pointer to variable structure to make conform to var */
  var_sct *wgt_crr, /* I/O [ptr] pointer to existing conforming variable structure, if any (destroyed when does not conform to var) */
@@ -17,14 +17,14 @@ nco_var_conform_dim /* [fnc] Stretch second variable to match dimensions of firs
  bool *DO_CONFORM) /* O [flg] Did wgt and var conform? */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* fxm: TODO 226. See if xrf in nco_var_conform_dim() is really necessary, if not, remove it and make wgt arg const var_sct * const */
+  /* fxm: TODO 226. See if xrf in nco_var_cnf_dmn() is really necessary, if not, remove it and make wgt arg const var_sct * const */
 
   /* Purpose: Stretch second variable to match dimensions of first variable
      Dimensions in var which are not in wgt will be present in wgt_out, with values
      replicated from existing dimensions in wgt.
      By default, wgt's dimensions must be subset of var's dimensions (MUST_CONFORM=true)
      If it is permissible for wgt not to conform to var then set MUST_CONFORM=false before calling this routine
-     In this case when wgt and var do not conform then then nco_var_conform_dim sets *DO_CONFORM=False and returns a copy of var with all values set to 1.0
+     In this case when wgt and var do not conform then then nco_var_cnf_dmn sets *DO_CONFORM=False and returns a copy of var with all values set to 1.0
      The calling procedure can then decide what to do with the output
      MUST_CONFORM is True for ncdiff: Variables of like name to be differenced must be same rank
      MUST_CONFORM is False false for ncap, ncflint, ncwa: Some variables to be averaged may not conform to the specified weight, e.g., lon will not conform to gw. This is fine and the returned wgt_out may not be used. */
@@ -245,7 +245,7 @@ nco_var_conform_dim /* [fnc] Stretch second variable to match dimensions of firs
 	  } /* end if */
 	  /* Sanity check */
 	  if(idx_dmn == var->nbr_dim-1){
-	    (void)fprintf(stdout,"%s: ERROR wgt %s has dimension %s but var %s does not deep in nco_var_conform_dim()\n",prg_nm_get(),wgt->nm,wgt->dim[idx]->nm,var->nm);
+	    (void)fprintf(stdout,"%s: ERROR wgt %s has dimension %s but var %s does not deep in nco_var_cnf_dmn()\n",prg_nm_get(),wgt->nm,wgt->dim[idx]->nm,var->nm);
 	    nco_exit(EXIT_FAILURE);
 	  } /* end if err */
 	} /* end loop over variable dimensions */
@@ -291,22 +291,22 @@ nco_var_conform_dim /* [fnc] Stretch second variable to match dimensions of firs
   } /* end if we had to stretch weight to fit variable */
   
   if(*DO_CONFORM == -1){
-    (void)fprintf(stdout,"%s: ERROR *DO_CONFORM == -1 on exit from nco_var_conform_dim()\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR *DO_CONFORM == -1 on exit from nco_var_cnf_dmn()\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
   
   /* Current weight (wgt_out) now conforms to current variable */
   return wgt_out;
   
-} /* end nco_var_conform_dim() */
+} /* end nco_var_cnf_dmn() */
 
 bool /* [flg] Do var_1 and var_2 conform after processing? */
-ncap_var_conform_dim /* [fnc] Broadcast smaller variable into larger */
+ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
 (var_sct **var_1, /* I/O [ptr] First variable */
  var_sct **var_2) /* I/O [ptr] Second variable */
 {
   /* Purpose: Return conforming variables. If this is not possible then die. 
-     Routine is a wrapper for nco_var_conform_dim() which does the hard work */
+     Routine is a wrapper for nco_var_cnf_dmn() which does the hard work */
 
   bool DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
   bool MUST_CONFORM=True; /* [flg] Must var_1 and var_2 conform? */
@@ -316,10 +316,10 @@ ncap_var_conform_dim /* [fnc] Broadcast smaller variable into larger */
   var_1_org=*var_1; /* [ptr] Original location of var_1 */
   var_2_org=*var_2; /* [ptr] Original location of var_2 */
 
-  if(var_1_org->nbr_dim > var_2_org->nbr_dim) *var_2=nco_var_conform_dim(var_1_org,var_2_org,NULL,MUST_CONFORM,&DO_CONFORM); else *var_1=nco_var_conform_dim(var_2_org,var_1_org,NULL,MUST_CONFORM,&DO_CONFORM);
+  if(var_1_org->nbr_dim > var_2_org->nbr_dim) *var_2=nco_var_cnf_dmn(var_1_org,var_2_org,NULL,MUST_CONFORM,&DO_CONFORM); else *var_1=nco_var_cnf_dmn(var_2_org,var_1_org,NULL,MUST_CONFORM,&DO_CONFORM);
   
   /* fxm: Memory leak?
-     nco_var_conform_dim() does not do its own memory handling
+     nco_var_cnf_dmn() does not do its own memory handling
      If original var_1 or var_2 was overwritten (replaced by conforming variable),
      then original must be free()'d now before its location is lost.
      Test for equality between pointers on entry and exit, and
@@ -334,4 +334,4 @@ ncap_var_conform_dim /* [fnc] Broadcast smaller variable into larger */
   } /* endif */
 
   return DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
-} /* end ncap_var_conform_dim() */
+} /* end ncap_var_cnf_dmn() */

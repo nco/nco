@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.4 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.5 2002-06-17 00:06:02 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -65,7 +65,7 @@ var_lst_convert /* [fnc] Make variable structure list from variable name ID list
  var_sct *** const var_out_ptr); /* O [sct] Duplicate variable list (for output file) */
 
 void
-nco_var_lst_divide /* [fnc] Divide input lists into output lists */
+nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 (var_sct * const * const var, /* I [sct] Variable list (input file) */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */

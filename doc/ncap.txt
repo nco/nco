@@ -20,7 +20,7 @@ The question is whether to define as netCDF vars all tokens that are
 numbers, or simply leave them as numbers. It makes sense to
 define all tokens as netCDF vars on input, i.e., turn all tokens
 matching the float rule into netCDF scalars. Then use
-nco_var_conform_dim() and nco_var_conform_type() prior to each arithmetic
+nco_var_cnf_dmn() and nco_var_cnf_typ() prior to each arithmetic
 operation. 
 
 This raises the question of what to name these scalars in the symbol

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.40 2002-06-16 05:12:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.41 2002-06-17 00:06:02 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -81,8 +81,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.40 2002-06-16 05:12:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.40 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.41 2002-06-17 00:06:02 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.41 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -268,7 +268,7 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.5 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.6 2002-06-17 00:06:02 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -43,7 +43,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
   case nco_op_rmssdn: /* Root mean square normalized by N-1 */
   case nco_op_avgsqr: /* Mean square */
     /* Square values in var_prc first */
-    nco_var_multiply(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc->val);
+    nco_var_mlt(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc->val);
     /* Sum the squares */
     (void)nco_var_add(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;

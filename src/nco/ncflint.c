@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.42 2002-06-16 05:12:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.43 2002-06-17 00:06:02 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -77,8 +77,8 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool MUST_CONFORM=False; /* Must nco_var_conform_dim() find truly conforming variables? */
-  bool DO_CONFORM=False; /* Did nco_var_conform_dim() find truly conforming variables? */
+  bool MUST_CONFORM=False; /* Must nco_var_cnf_dmn() find truly conforming variables? */
+  bool DO_CONFORM=False; /* Did nco_var_cnf_dmn() find truly conforming variables? */
   bool NCAR_CSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -100,8 +100,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.42 2002-06-16 05:12:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.42 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.43 2002-06-17 00:06:02 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.43 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -324,7 +324,7 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
@@ -400,8 +400,8 @@ main(int argc,char **argv)
     (void)nco_var_get(in_id_2,ntp_2);
 
     /* Weights must be NC_DOUBLE */
-    ntp_1=nco_var_conform_type((nc_type)NC_DOUBLE,ntp_1);
-    ntp_2=nco_var_conform_type((nc_type)NC_DOUBLE,ntp_2);
+    ntp_1=nco_var_cnf_typ((nc_type)NC_DOUBLE,ntp_1);
+    ntp_2=nco_var_cnf_typ((nc_type)NC_DOUBLE,ntp_2);
 
     /* Check for degenerate case */
     if(ntp_1->val.dp[0] == ntp_2->val.dp[0]){
@@ -415,13 +415,13 @@ main(int argc,char **argv)
     wgt_2=nco_var_dpl(ntp_var_out);
 
     /* Subtract to find interpolation distances */
-    (void)nco_var_subtract(ntp_1->type,ntp_1->sz,ntp_1->has_mss_val,ntp_1->mss_val,ntp_var_out->val,wgt_1->val);
-    (void)nco_var_subtract(ntp_1->type,ntp_1->sz,ntp_1->has_mss_val,ntp_1->mss_val,ntp_1->val,wgt_2->val);
-    (void)nco_var_subtract(ntp_1->type,ntp_1->sz,ntp_1->has_mss_val,ntp_1->mss_val,ntp_1->val,ntp_2->val);
+    (void)nco_var_sbt(ntp_1->type,ntp_1->sz,ntp_1->has_mss_val,ntp_1->mss_val,ntp_var_out->val,wgt_1->val);
+    (void)nco_var_sbt(ntp_1->type,ntp_1->sz,ntp_1->has_mss_val,ntp_1->mss_val,ntp_1->val,wgt_2->val);
+    (void)nco_var_sbt(ntp_1->type,ntp_1->sz,ntp_1->has_mss_val,ntp_1->mss_val,ntp_1->val,ntp_2->val);
 
     /* Normalize to obtain final interpolation weights */
-    (void)nco_var_divide(wgt_1->type,wgt_1->sz,wgt_1->has_mss_val,wgt_1->mss_val,ntp_2->val,wgt_1->val);
-    (void)nco_var_divide(wgt_2->type,wgt_2->sz,wgt_2->has_mss_val,wgt_2->mss_val,ntp_2->val,wgt_2->val);
+    (void)nco_var_dvd(wgt_1->type,wgt_1->sz,wgt_1->has_mss_val,wgt_1->mss_val,ntp_2->val,wgt_1->val);
+    (void)nco_var_dvd(wgt_2->type,wgt_2->sz,wgt_2->has_mss_val,wgt_2->mss_val,ntp_2->val,wgt_2->val);
 
     if(ntp_1 != NULL) ntp_1=nco_var_free(ntp_1);
     if(ntp_2 != NULL) ntp_2=nco_var_free(ntp_2);
@@ -451,11 +451,11 @@ main(int argc,char **argv)
     (void)nco_var_get(in_id_1,var_prc_1[idx]);
     (void)nco_var_get(in_id_2,var_prc_2[idx]);
     
-    wgt_out_1=nco_var_conform_dim(var_prc_1[idx],wgt_1,wgt_out_1,MUST_CONFORM,&DO_CONFORM);
-    wgt_out_2=nco_var_conform_dim(var_prc_2[idx],wgt_2,wgt_out_2,MUST_CONFORM,&DO_CONFORM);
+    wgt_out_1=nco_var_cnf_dmn(var_prc_1[idx],wgt_1,wgt_out_1,MUST_CONFORM,&DO_CONFORM);
+    wgt_out_2=nco_var_cnf_dmn(var_prc_2[idx],wgt_2,wgt_out_2,MUST_CONFORM,&DO_CONFORM);
 
-    var_prc_1[idx]=nco_var_conform_type((nc_type)NC_DOUBLE,var_prc_1[idx]);
-    var_prc_2[idx]=nco_var_conform_type((nc_type)NC_DOUBLE,var_prc_2[idx]);
+    var_prc_1[idx]=nco_var_cnf_typ((nc_type)NC_DOUBLE,var_prc_1[idx]);
+    var_prc_2[idx]=nco_var_cnf_typ((nc_type)NC_DOUBLE,var_prc_2[idx]);
 
     /* Allocate and, if necesssary, initialize space for processed variable */
     var_prc_out[idx]->sz=var_prc_1[idx]->sz;
@@ -465,12 +465,12 @@ main(int argc,char **argv)
     (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
   
     /* Weight variable by taking product of weight with variable */
-    (void)nco_var_multiply(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,wgt_out_1->val,var_prc_1[idx]->val);
-    (void)nco_var_multiply(var_prc_2[idx]->type,var_prc_2[idx]->sz,var_prc_2[idx]->has_mss_val,var_prc_2[idx]->mss_val,wgt_out_2->val,var_prc_2[idx]->val);
+    (void)nco_var_mlt(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,wgt_out_1->val,var_prc_1[idx]->val);
+    (void)nco_var_mlt(var_prc_2[idx]->type,var_prc_2[idx]->sz,var_prc_2[idx]->has_mss_val,var_prc_2[idx]->mss_val,wgt_out_2->val,var_prc_2[idx]->val);
     (void)nco_var_add(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,var_prc_out[idx]->tally,var_prc_1[idx]->val,var_prc_2[idx]->val);
     
     /* Recast output variable to original type */
-    var_prc_2[idx]=nco_var_conform_type(var_prc_out[idx]->type,var_prc_2[idx]);
+    var_prc_2[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc_2[idx]);
 
     /* Copy interpolations to output file */
     if(var_prc_out[idx]->nbr_dim == 0){

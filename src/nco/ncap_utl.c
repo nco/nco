@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.68 2002-06-16 05:12:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.69 2002-06-17 00:06:02 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -125,7 +125,7 @@ ncap_var_var_add(var_sct *var_1,var_sct *var_2)
   
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=nco_var_dpl(var_2);
-  (void)ncap_var_conform_dim(&var_1,&var_nsw);
+  (void)ncap_var_cnf_dmn(&var_1,&var_nsw);
   /* fxm: bug in nco_var_add. missing_value is not carried over to var_nsw in result when var_1->has_mss_val is true */
   if(var_1->has_mss_val){
     /*    (void)nco_var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_nsw->val);*/
@@ -148,36 +148,36 @@ ncap_var_var_sub(var_sct *var_2,var_sct *var_1)
   
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=nco_var_dpl(var_2);
-  (void)ncap_var_conform_dim(&var_1,&var_nsw);
+  (void)ncap_var_cnf_dmn(&var_1,&var_nsw);
   if(var_1->has_mss_val){
-    (void)nco_var_subtract(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_sbt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
   }else{
-    (void)nco_var_subtract(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_sbt(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
   }/* end else */
   return var_nsw;
 } /* end ncap_var_var_sub() */
 
 var_sct *
-ncap_var_var_multiply(var_sct *var_1,var_sct *var_2)
+ncap_var_var_mlt(var_sct *var_1,var_sct *var_2)
 /* var_sct *var_1: input variable structure containing first operand
    var_sct *var_2: input variable structure containing second operand
-   var_sct *ncap_var_var_multiply(): output multiplication of individual elements */
+   var_sct *ncap_var_var_mlt(): output multiplication of individual elements */
 {
   /* Purpose: Multiplication of variables */
   var_sct *var_nsw;
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=nco_var_dpl(var_2);
-  (void)ncap_var_conform_dim(&var_1,&var_nsw);
+  (void)ncap_var_cnf_dmn(&var_1,&var_nsw);
   if(var_1->has_mss_val) {
-     (void)nco_var_multiply(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
+     (void)nco_var_mlt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
   }else{
-     (void)nco_var_multiply(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
+     (void)nco_var_mlt(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
   }
   return var_nsw;
-} /* end ncap_var_var_multiply() */
+} /* end ncap_var_var_mlt() */
 
 var_sct *
-ncap_var_function(var_sct *var_in,sym_sct *app)
+ncap_var_fnc(var_sct *var_in,sym_sct *app)
 {
   /* Purpose: Evaluate fnc_dbl(var) or fnc_flt(var) for each value in variable
      Float and double functions are in app */
@@ -187,7 +187,7 @@ ncap_var_function(var_sct *var_in,sym_sct *app)
   var_sct *var;
 
   /* Promote variable to NC_FLOAT */
-  if(var_in->type < NC_FLOAT) var_in=nco_var_conform_type((nc_type)NC_FLOAT,var_in);
+  if(var_in->type < NC_FLOAT) var_in=nco_var_cnf_typ((nc_type)NC_FLOAT,var_in);
   var=nco_var_dpl(var_in);
  
   op1=var->val;
@@ -223,26 +223,26 @@ ncap_var_function(var_sct *var_in,sym_sct *app)
 
   if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
   return var;
-} /* end ncap_var_function() */
+} /* end ncap_var_fnc() */
 
 var_sct *
-ncap_var_var_divide(var_sct *var_1,var_sct *var_2)
+ncap_var_var_dvd(var_sct *var_1,var_sct *var_2)
 /* var_sct *var_1: input variable structure containing first operand
    var_sct *var_2: input variable structure containing second operand
-   var_sct *ncap_var_divide(): output quotient of individual elements */
+   var_sct *ncap_var_dvd(): output quotient of individual elements */
 {
   /* Routine called by parser */
   var_sct *var_nsw;
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=nco_var_dpl(var_2);
-  (void)ncap_var_conform_dim(&var_1,&var_nsw);
+  (void)ncap_var_cnf_dmn(&var_1,&var_nsw);
   if(var_1->has_mss_val) {
-    (void)nco_var_divide(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_dvd(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
   }else{
-    (void)nco_var_divide(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_dvd(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
   } /* end else */ 
  return var_nsw;
-} /* end ncap_var_var_divide() */
+} /* end ncap_var_var_dvd() */
 
 var_sct *
 ncap_var_scv_add(var_sct *var,scv_sct scv)
@@ -270,7 +270,7 @@ ncap_var_scv_sub(var_sct *var,scv_sct scv)
 } /* end ncap_var_scv_sub() */
 
 var_sct *
-ncap_var_scv_multiply(var_sct *var,scv_sct scv)
+ncap_var_scv_mlt(var_sct *var,scv_sct scv)
 {
   /* Purpose: Multiply variable by value in scv */
   var_sct *var_nsw;
@@ -278,35 +278,35 @@ ncap_var_scv_multiply(var_sct *var,scv_sct scv)
      (void)scv_conform_type(var->type,&scv); */
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   var_nsw=nco_var_dpl(var);
-  (void)var_scv_multiply(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
+  (void)var_scv_mlt(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
   
   return var_nsw;
-} /* end ncap_var_scv_multiply */
+} /* end ncap_var_scv_mlt */
 
 var_sct *
-ncap_var_scv_divide(var_sct *var,scv_sct scv)
+ncap_var_scv_dvd(var_sct *var,scv_sct scv)
 {
   /* Purpose: Divide each element of var by value in scv */
   var_sct *var_nsw;
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   var_nsw=nco_var_dpl(var);
-  (void)var_scv_divide(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
+  (void)var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
   
   return var_nsw;
-} /* end ncap_var_scv_divide */
+} /* end ncap_var_scv_dvd */
 
 var_sct *
-ncap_var_scv_modulus(var_sct *var,scv_sct scv)
+ncap_var_scv_mod(var_sct *var,scv_sct scv)
 {
   /* Purpose: var % scv, take modulus of each element of var with value in scv */
   
   var_sct *var_nsw;
   (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
   var_nsw=nco_var_dpl(var);
-  (void)var_scv_modulus(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
+  (void)var_scv_mod(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
   
   return var_nsw;
-} /* ncap_var_scv_modulus */
+} /* ncap_var_scv_mod */
 
 var_sct *
 ncap_var_abs(var_sct *var)
@@ -319,7 +319,7 @@ ncap_var_abs(var_sct *var)
 } /* end ncap_var_abs */
 
 var_sct *
-ncap_var_scv_power(var_sct *var_in,scv_sct scv)
+ncap_var_scv_pwr(var_sct *var_in,scv_sct scv)
 {
   /* Purpose: Raise var to power in scv
      All values converted to type double before operation */
@@ -329,7 +329,7 @@ ncap_var_scv_power(var_sct *var_in,scv_sct scv)
   var_sct *var;
 
   /* Promote scv and var to NC_FLOAT */
-  if(var_in->type < NC_FLOAT) var_in=nco_var_conform_type((nc_type)NC_FLOAT,var_in);
+  if(var_in->type < NC_FLOAT) var_in=nco_var_cnf_typ((nc_type)NC_FLOAT,var_in);
   var=nco_var_dpl(var_in);
   (void)scv_conform_type(var->type,&scv);
   
@@ -368,7 +368,7 @@ ncap_var_scv_power(var_sct *var_in,scv_sct scv)
 
   if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
   return var;
-} /* end ncap_var_scv_power */
+} /* end ncap_var_scv_pwr */
 
 scv_sct  
 ncap_scv_calc(scv_sct scv_1, char op, scv_sct scv_2)
@@ -635,7 +635,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
   /* Purpose: Make input variables conform or die
      var_1 and var_2 are considered completely symmetrically
      No assumption is made about var_1 relative to var_2
-     Main difference betwee ncap_var_stretch() and nco_var_conform_dim() is
+     Main difference betwee ncap_var_stretch() and nco_var_cnf_dmn() is
      If variables conform, then ncap_var_stretch() will broadcast
      If variables share no dimensions, then ncap_var_stretch() will convolve
 
@@ -645,7 +645,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
      Convolve: Construct array which is product of ranks of two variables
      Stretch: Union of broadcast and convolve
 
-     Logic is pared down version of nco_var_conform_dim()
+     Logic is pared down version of nco_var_cnf_dmn()
      1. USE_DUMMY_WGT has been eliminated: 
      ncap has no reason not to stretch input variables because grammar
      ensures only arithmetic variables will be stretched.
@@ -653,10 +653,10 @@ ncap_var_stretch /* [fnc] Stretch variables */
      2. wgt_crr has been eliminated:
      ncap never does anything multiple times so no equivalent to wgt_crr exists
 
-     3. ncap_var_stretch(), unlike nco_var_conform_dim(), performs memory management
+     3. ncap_var_stretch(), unlike nco_var_cnf_dmn(), performs memory management
      Variables are var_free'd if they are superceded (replaced)
 
-     4. Conformance logic is duplicated from nco_var_conform_dim()
+     4. Conformance logic is duplicated from nco_var_cnf_dmn()
      var_gtr plays role of var
      var_lsr plays role of wgt
      var_lsr_out plays role of wgt_out

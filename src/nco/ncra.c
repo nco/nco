@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.70 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.71 2002-06-17 00:06:02 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -79,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.70 2002-06-16 05:12:04 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.70 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.71 2002-06-17 00:06:02 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.71 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -304,7 +304,7 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
@@ -400,7 +400,7 @@ main(int argc,char **argv)
 	    /* Output variable type is "sticky" so only convert on first record */
 	    if(idx_rec_out == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	    /* Convert var_prc to type of var_prc_out in case type of variable on disk has changed */
-	    var_prc[idx]=nco_var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
+	    var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 	    /* Perform arithmetic operations: avg, min, max, ttl, ... */
 	    nco_opr_drv(idx_rec_out,nco_op_typ,var_prc_out[idx],var_prc[idx]);
 	  } /* end if ncra */
@@ -452,7 +452,7 @@ main(int argc,char **argv)
 	/* Output variable type is "sticky" so only convert on first record */
 	if(idx_fl == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	/* Convert var_prc to type of var_prc_out in case type of variable on disk has changed */
-	var_prc[idx]=nco_var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
+	var_prc[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc[idx]);
 	/* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: idx_fl not idx_rec_out! */
 	nco_opr_drv(idx_fl,nco_op_typ,var_prc_out[idx],var_prc[idx]);
 	
@@ -483,10 +483,10 @@ main(int argc,char **argv)
       case nco_op_sqravg: /* Normalize sum by tally to create mean */
       case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
       case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
-	(void)nco_var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	(void)nco_var_nrm(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
 	break;
       case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square for sdn */
-	(void)nco_var_normalize_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	(void)nco_var_nrm_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
 	break;
       case nco_op_min: /* Minimum is already in buffer, do nothing */
       case nco_op_max: /* Maximum is already in buffer, do nothing */
@@ -502,7 +502,7 @@ main(int argc,char **argv)
 	(void)nco_var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);
 	break;
       case nco_op_sqravg: /* Square mean to create square of the mean (for sdn) */
-	(void)nco_var_multiply(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
+	(void)nco_var_mlt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
 	break;
       default:
 	break;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.8 2002-05-21 03:53:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.9 2002-06-17 00:06:02 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -177,7 +177,7 @@ var_scv_sub(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
 } /* end var_scv_sub() */
 
 void
-var_scv_multiply(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
+var_scv_mlt(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
      /* 
 	nc_type type: I netCDF type of operands
 	const long sz: I size (in elements) of operands
@@ -259,10 +259,10 @@ var_scv_multiply(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_scv_multiply() */
+} /* end var_scv_mlt() */
 
 void
-var_scv_divide(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
+var_scv_dvd(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
      /* 
 	nc_type type: I netCDF type of operands
 	const long sz: I size (in elements) of operands
@@ -344,10 +344,10 @@ var_scv_divide(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_un
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end var_scv_divide() */
+} /* end var_scv_dvd() */
 
 void 
-var_scv_modulus(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
+var_scv_mod(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
      /* 
 	nc_type type: I netCDF type of operands
 	const long sz: I size (in elements) of operands
@@ -432,4 +432,4 @@ var_scv_modulus(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_u
   default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
   
-} /* end var_scv_modulus */
+} /* end var_scv_mod */

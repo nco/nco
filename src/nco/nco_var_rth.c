@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.9 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.10 2002-06-17 00:06:02 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -273,7 +273,7 @@ nco_var_add_no_tally(const nc_type type,const long sz,const int has_mss_val,ptr_
 } /* end nco_var_add_no_tally() */
 
 void
-nco_var_subtract(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+nco_var_sbt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
   const nc_type type: I [type] netCDF type of operands
   const long sz: I [nbr] Size (in elements) of operands
@@ -350,10 +350,10 @@ nco_var_subtract(const nc_type type,const long sz,const int has_mss_val,ptr_unn 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end nco_var_subtract() */
+} /* end nco_var_sbt() */
 
 void
-nco_var_multiply(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+nco_var_mlt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
      /* 
 	const nc_type type: I netCDF type of operands
 	const long sz: I size (in elements) of operands
@@ -431,10 +431,10 @@ nco_var_multiply(const nc_type type,const long sz,const int has_mss_val,ptr_unn 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end nco_var_multiply() */
+} /* end nco_var_mlt() */
 
 void
-nco_var_divide(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+nco_var_dvd(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
   const nc_type type: I netCDF type of operands
   const long sz: I size (in elements) of operands
@@ -512,7 +512,7 @@ nco_var_divide(const nc_type type,const long sz,const int has_mss_val,ptr_unn ms
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end nco_var_divide() */
+} /* end nco_var_dvd() */
 
 void
 nco_var_min_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
@@ -805,7 +805,7 @@ nco_var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
 } /* end nco_var_sqrt() */
 
 void
-nco_var_normalize(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
+nco_var_nrm(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
 /* 
   const nc_type type: I netCDF type of operand
   const long sz: I size (in elements) of operand
@@ -872,10 +872,10 @@ nco_var_normalize(const nc_type type,const long sz,const int has_mss_val,ptr_unn
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end nco_var_normalize() */
+} /* end nco_var_nrm() */
 
 void
-nco_var_normalize_sdn(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
+nco_var_nrm_sdn(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
 /* 
   const nc_type type: I netCDF type of operand
   const long sz: I size (in elements) of operand
@@ -890,7 +890,7 @@ nco_var_normalize_sdn(const nc_type type,const long sz,const int has_mss_val,ptr
 
   /* Normalization is currently defined as op1:=op1/(--tally) */  
 
-  /* nco_var_normalize_sdn() is based on nco_var_normalize() and algorithms should be kept consistent with eachother */
+  /* nco_var_nrm_sdn() is based on nco_var_nrm() and algorithms should be kept consistent with eachother */
 
   long idx;
 
@@ -943,7 +943,7 @@ nco_var_normalize_sdn(const nc_type type,const long sz,const int has_mss_val,ptr
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end of nco_var_normalize_sdn */
+} /* end of nco_var_nrm_sdn */
 
 void
 nco_var_mask(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,const double op1,const int op_typ_rlt,ptr_unn op2,ptr_unn op3)

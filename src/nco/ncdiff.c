@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.50 2002-06-16 05:12:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.51 2002-06-17 00:06:02 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -59,7 +59,7 @@
    ncks -H -m foo3.nc
    ncks -H -m foo4.nc
 
-   Test nco_var_conform_dim:
+   Test nco_var_cnf_dmn:
    ncks -O -v scalar_var in.nc foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; ncdiff -O -v four_dmn_rec_var in.nc foo.nc foo2.nc
  */
 
@@ -89,8 +89,8 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool MUST_CONFORM=True; /* Must nco_var_conform_dim() find truly conforming variables? */
-  bool DO_CONFORM; /* Did nco_var_conform_dim() find truly conforming variables? */
+  bool MUST_CONFORM=True; /* Must nco_var_cnf_dmn() find truly conforming variables? */
+  bool DO_CONFORM; /* Did nco_var_cnf_dmn() find truly conforming variables? */
   bool NCAR_CSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.50 2002-06-16 05:12:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.50 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.51 2002-06-17 00:06:02 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.51 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -296,7 +296,7 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
@@ -412,7 +412,7 @@ main(int argc,char **argv)
       (void)nco_var_get(in_id_2,var_prc_out[idx]);
       
       /* Pass dummy pointer so we do not lose track of original */
-      var_tmp=nco_var_conform_dim(var_prc[idx],var_prc_out[idx],var_tmp,MUST_CONFORM,&DO_CONFORM);
+      var_tmp=nco_var_cnf_dmn(var_prc[idx],var_prc_out[idx],var_tmp,MUST_CONFORM,&DO_CONFORM);
       var_prc_out[idx]=nco_var_free(var_prc_out[idx]);
       var_prc_out[idx]=var_tmp;
     } /* end else */
@@ -423,13 +423,13 @@ main(int argc,char **argv)
     if(var_prc_out[idx]->type != var_prc[idx]->type){
       (void)fprintf(stderr,"%s: WARNING Input variables do not conform in type:\nFile 1 = %s variable %s has type %s\nFile 2 = %s variable %s has type %s\nFile 3 = %s variable %s will have type %s\n",prg_nm,fl_in_1,var_prc[idx]->nm,nco_typ_sng(var_prc[idx]->type),fl_in_2,var_prc_out[idx]->nm,nco_typ_sng(var_prc_out[idx]->type),fl_out,var_prc[idx]->nm,nco_typ_sng(var_prc[idx]->type));
     }  /* endif different type */
-    var_prc_out[idx]=nco_var_conform_type(var_prc[idx]->type,var_prc_out[idx]);
+    var_prc_out[idx]=nco_var_cnf_typ(var_prc[idx]->type,var_prc_out[idx]);
 
     /* The mss_val in fl_1, if any, overrides mss_val in fl_2 */
     if(has_mss_val) mss_val=var_prc[idx]->mss_val; else mss_val=var_prc_out[idx]->mss_val;
     has_mss_val=has_mss_val || var_prc_out[idx]->has_mss_val; 
     
-    (void)nco_var_subtract(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val);
+    (void)nco_var_sbt(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val);
     
     var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
     
