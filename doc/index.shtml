@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.63 2000-09-26 21:48:31 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.64 2000-09-26 22:22:10 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -44,8 +44,8 @@ scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.s
 <p><ul>
 <li><a href="#Definition">What is NCO?</a></li>
 <li><a href="#Contribute">How to Contribute to NCO</a></li>
+<li><a href="#News">Most Recent NCO News</a></li>
 <li><a href="#Version">Version summary</a></li>
-<li><a href="#News">NCO News & Announcements</a></li>
 <li><a href="#Download">Download NCO software</a></li>
 <li><a href="#RTFM">NCO User's Guide</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
@@ -121,6 +121,14 @@ homepage</a> contains mailing lists, discussion forums, and
 instructions for helping the NCO project.
 <hr></p>
 
+<dt><a name="News"></a></dt>
+<h2>NCO News & Announcements</h2>
+<ul>
+<li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code now supports multithreading with OpenMP-compliant compilers</li>
+<li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code contains working packing and unpacking primitives</li>
+</ul>
+<hr></p>
+
 <dt><a name="Version"></a></dt>
 <h2>Version Summary</h2>
 <ul>
@@ -136,17 +144,18 @@ min,max,total,rms,rmssdn,sqrt. Added DODS compliance.</li>
 <li><b>NCO 1.1.48</b>, <a href="./nco_news.shtml#20000515">20000515</a>: Potentially serious bugfix to <tt>ncdiff</tt>, recommend upgrade</li>
 <li><b>NCO 1.1.47</b>, <a href="./nco_news.shtml#20000510">20000510</a>: Improved <tt>ncra</tt> and <tt>ncrcat</tt> to allow lazier
 specifications of input files</li> 
+<li><a href="./nco_news.shtml"> Full text of past NCO announcements</a></li>
 </ul>
-<hr></p>
-
-<dt><a name="News"></a></dt>
-<h2>NCO News & Announcements</h2>
-<p>
-<a href="./nco_news.shtml"> Complete text of Past NCO announcements</a>  
 <hr></p>
 
 <dt><a name="Download"></a></dt>
 <h2>Download NCO distributions</h2>
+
+<p>The 
+<a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> 
+contains up-to-the-minute sources and is the easiest way to stay
+synchronized with NCO features.
+
 <p>Complete source and documentation in tarball format: <a href="ftp://nco.sourceforge.net/pub/nco/nco.tar.gz">nco.tar.gz</a> (901 Kb compressed tar-file)
 <p>Complete source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="ftp://nco.sourceforge.net/pub/nco/nco-1.2.1-1.src.rpm">nco-1.2.1-1.src.rpm</a> (1029 Kb SRPM)
 

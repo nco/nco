@@ -1,12 +1,15 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.5 2000-09-26 21:48:31 zender Exp $ >
+<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.6 2000-09-26 22:22:10 zender Exp $
 
-<! Purpose: NCO news archive >
+Purpose: NCO news archive
 
-<! Usage: >
-<! http://www.cgd.ucar.edu/cms/nco/nco_news.shtml >
-<! file:/home/zender/nco/doc/nco_news.shtml >
-<! /bin/cp -f ~/nco/doc/nco_news.shtml /web/web-data/cms/nco/nco_news.shtml >
-<! rcp -p ~/nco/doc/nco_news.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/nco_news.shtml >
+Usage:
+http://www.cgd.ucar.edu/cms/nco/nco_news.shtml
+file:/home/zender/nco/doc/nco_news.shtml
+/bin/cp -f ~/nco/doc/nco_news.shtml /web/web-data/cms/nco/nco_news.shtml
+
+scp -p ~/nco/doc/nco_news.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/nco_news.shtml
+scp -p ~/nco/doc/nco_news.shtml nco.sourceforge.net:/home/groups/nco/htdocs/nco_news.shtml
+-->
 
 <!doctype html public "-//W3C//DTD HTML 3.2//EN">
 <html>
@@ -28,6 +31,7 @@ NCO version 1.2.2 is released.
 Differences with version 1.2.1 include one new feature:
 Weights are allowed with <tt>ncwa</tt> in min/max/ttl operations.
 
+<a name="20000828"></a>
 <p>2000/08/28: 
 NCO version 1.2.1 is released.
 Differences with version 1.2 include one new feature and one bugfix.
