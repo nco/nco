@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.264 2004-09-18 05:21:59 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.265 2004-09-23 20:05:38 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -468,7 +468,7 @@ href="src/nco_2.9.9-1_i386.changes">nco_2.9.9-1_i386.changes</a> (<!--#fsize fil
 <ul>
 <a href="http://fink.sf.net/pdb/package.php/nco"">Mac&nbsp;OS&nbsp;X/Darwin homepage for NCO</a>.
 <a href="http://fink.sf.net">Fink packages</a> by Takeshi Enomoto:
-<li><a href="http://fink.sf.net/pdb/package.php/nco">nco-2.9.6-darwin-powerpc.deb</a>: Mac&nbsp;OS&nbsp;X&nbsp;10.3, PowerPC package</li>
+<li><a href="http://fink.sf.net/pdb/package.php/nco">nco-2.9.9-darwin-powerpc.deb</a>: Mac&nbsp;OS&nbsp;X&nbsp;10.3, PowerPC package</li>
 </ul>
 <hr></p>
 

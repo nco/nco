@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.262 2004-09-05 06:37:21 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.263 2004-09-23 20:05:23 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -411,8 +411,9 @@ ifneq (${null},$(findstring xl,${CC}))
 # Additional switch to fix compiler warnings on csz.c
 # -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
 # -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
- CFLAGS := -qmaxmem=8192 -qspill=2048
- FFLAGS := -NS2000 -qfixed=132
+# -qsrcmsg prints transgressing source line with finger
+ CFLAGS := -qmaxmem=8192 -qspill=2048 -qsrcmsg
+ FFLAGS := -NS2000 -qfixed=132 -qsrcmsg
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
  LDFLAGS += -bh:5
 #LDFLAGS += -lxlf90 # Required for linking Fortran objects
