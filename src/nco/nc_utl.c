@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.58 2000-05-09 07:01:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.59 2000-05-09 07:20:21 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -583,7 +583,10 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     if(lmt.min_idx < 0 || lmt.min_idx >= dmn_sz || lmt.max_idx < 0){
       /* Allow for possibility that current file is superfluous */
       if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)){
-	flg_no_data=True;
+	/* Do nothing here. flg_no_data will be set later */ 
+	(void)fprintf(stdout,"%s: ERROR Skipping initial files when lmt_typ = dim_idx is not yet fully working. The last remaining problem is keeping track of how many records were skipped in the first n superfluous files\n",prg_nm_get());
+	(void)fprintf(stdout,"\n");
+	exit(EXIT_FAILURE);
       }else{
 	(void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dmn_sz-1L);
 	(void)fprintf(stdout,"\n");
@@ -612,6 +615,10 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       /* No records were skipped in previous files */
       /* Initialize rec_skp to 0L on first call to lmt_evl() 
 	 This is necessary due to intrinsic hysterisis of rec_skp */
+      /* fxm: 20000508: This line must be changed to allow for the possibility of 
+	 an initial block of skipped records in the first n superfluous files
+	 The other thing that must change is the assumption that 
+	 lmt.srt=lmt.min_idx when cnt_crr=0 */
       if(cnt_crr == 0L) lmt.rec_skp=0L;
 	  
       if(lmt.is_usr_spc_min && lmt.is_usr_spc_max){
