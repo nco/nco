@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.75 2004-05-05 00:47:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.76 2004-05-05 19:38:16 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.3 are ready. 
 
@@ -14,14 +14,14 @@ Feature changes:
 1. None
 
 Bug-fixes:
-1. ncra/ncea arithmetic works when missing_value equals zero or any
-   intermediate sum. 
+1. None
 
 Build changes:
-1. Builds with GCC and --enable-*-custom when UDUnits not installed
+1. None
 
 Other user-visible changes:
 1. None
 
 User-invisible changes:
-1. None
+1. Change cvs.nco.sourceforge.net to cvs.sf.net in accord
+   with new SourceForge BIND 9-induced policy
