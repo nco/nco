@@ -1,53 +1,24 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.91 2004-06-15 17:04:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.92 2004-06-16 01:06:54 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release implements a new way to specify output files to NCO.
-Output files may now be specified with -o (or --fl_out or --output),
-or as last positional argument (the traditional behavior). 
-This facilitate processing of large numbers of files by multi-file
-operators (ncra, ncrcat, ncecat) by using the xargs command, e.g.,
-
-/bin/ls | grep day_after_tomorrow_????.nc | xargs ncra -o dat.nc
-
-Using xargs or perl to handle these situations is now documented in
-
-http://nco.sf.net/nco.html#lrg
-
-The new -o fl_out behavior works on all operators.
-ncwa was the only operator that previously used -o for anything.
-It use the -o switch for passing relational operator types for masking.
-The new ncwa single-letter option for this is -t for "truth condition".
-The preferred ncwa switches are now --truth_condition or --msk_cmp_typ
-for "mask comparison type". 
-The old ncwa long options synonyms --cmp, --compare, and --op_cmp were
-removed to reduce the burgeoning number of synonyms.
-The other ncwa -o long-option synonym, --op_rlt, works as usual.
-Please modify ncwa scripts accordingly.
-Unmodified ncwa scripts which expect the old behavior of -o will fail
-with a harmless error stating that too many input filenames are present.
-
 Enjoy,
 Charlie
 
 Feature changes:
-1. All operators accept output filename specified with -o (or --fl_out
-or --output) instead of as last positional argument.
+1. None
 
 Bug-fixes:
 1. None
 
 Build changes:
-1. Implement -m64 option for ABI=64 with LINUXAMD64
-2. Debian packages now install libnco_c++ by default, and libnco_c++
-   version numbers now track libnco
+1. None
 
 Other user-visible changes:
-1. Old ncwa -o switch now implemented with -t switch
-2. Change warning size for large filenames from 80 to 255 characters
+1. None
 
 User-invisible changes:
-1. Added doc/nco_ltr_spp.txt which contains NCO/SDO endorsements
+1. Use NCO_CHECK_FUNCS to search for strdup(), strcasecmp()

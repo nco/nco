@@ -4,7 +4,7 @@
 	than AC_CHECK_FUNCS so they are protected by NEED_* rather than
 	HAVE_* tokens. This improves portability of libnco by reducing
 	number of tokens non-NCO programs need to define in order to link
-	to libnco.a.
+	to libnco.a. This make nco_lib_tst simpler.
 
 	* Add bld/nco_lib_tst.c to test libnco offline
 
