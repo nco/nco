@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.105 2005-01-10 02:22:44 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.106 2005-02-11 02:33:03 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -681,7 +681,7 @@ else
 fi
 # End netCDF test data
 
-# Tell the GNU C compiler to use C99 standard (older gcc versions default to C89)
+# Tell GNU C compiler to use C99 standard (older gcc versions default to C89)
 if (test $ac_compiler_gnu == "yes"); then
   CFLAGS="$CFLAGS -std=c99 -D_BSD_SOURCE"
 fi
