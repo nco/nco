@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.147 2003-08-13 20:13:38 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.148 2003-08-13 21:31:36 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -265,7 +265,7 @@ unpacking variables stored with <tt>scale_factor</tt> and <tt>add_offset</tt>
 
 The best way to acquire NCO is with <a href="http://www.cvshome.org">CVS</a>.
 The second best way is to download the compressed tarfile 
-<a href="http://dust.ess.uci.edu/nco/nco.tar.gz">here</a>.
+<a href="nco.tar.gz">here</a>.
 <p>The 
 <a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay
@@ -311,7 +311,7 @@ Tarballs are usually up-to-date, but the binaries (e.g., RPM, .deb)
 tend to lag the current distribution by many months, if not years: 
 <ul>
 <li>Source and documentation in tarball format: 
-<a href="http://dust.ess.uci.edu/nco/nco.tar.gz">nco.tar.gz</a> (<!--#fsize file="nco.tar.gz"--> compressed tar-file)</li>
+<a href="nco.tar.gz">nco.tar.gz</a> (<!--#fsize file="nco.tar.gz"--> compressed tar-file)</li>
 <!-- 
 <a href="http://prdownloads.sourceforge.net/nco/nco-2.2.0.tar.gz">nco-2.2.0.tar.gz</a> (901 Kb compressed tar-file)</li>
 -->
@@ -322,11 +322,11 @@ tend to lag the current distribution by many months, if not years:
 <li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.8.0</a></li>
 -->
 <a href="http://www.debian.org">Debian GNU/Linux</a>-compatible systems: 
-<li><a href="http://dust.ess.uci.edu/nco/src/nco_2.8.0-1_i386.deb">nco_2.8.0-1_i386.deb</a> (<!--#fsize file="src/nco_2.8.0-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, no documentation (install with <tt>apt-get install nco</tt>)</li>
-<li><a href="http://dust.ess.uci.edu/nco/src/nco-doc_2.8.0-1_all.deb">nco-doc_2.8.0-1_all.deb</a> (<!--#fsize file="src/nco-doc_2.8.0-1_all.deb"-->): Pre-built documentation, all architectures (install with <tt>apt-get install nco-doc</tt>)</li>
-<li><a href="http://dust.ess.uci.edu/nco/src/nco_2.8.0-1.dsc">nco_2.8.0-1.dsc</a> (<!--#fsize file="src/nco_2.8.0-1.dsc"-->): Description</li>
-<li><a href="http://dust.ess.uci.edu/nco/src/nco_2.8.0-1.tar.gz">nco_2.8.0-1.tar.gz</a> (<!--#fsize file="src/nco_2.8.0-1.tar.gz"-->): Gzipped Source Tarball</li>
-<li><a href="http://dust.ess.uci.edu/nco/src/nco_2.8.0-1_i386.changes">nco_2.8.0-1_i386.changes</a> (<!--#fsize file="src/nco_2.8.0-1.changes"-->): Changes</li>
+<li><a href="src/nco_2.8.0-1_i386.deb">nco_2.8.0-1_i386.deb</a> (<!--#fsize file="src/nco_2.8.0-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, no documentation (install with <tt>apt-get install nco</tt>)</li>
+<li><a href="src/nco-doc_2.8.0-1_all.deb">nco-doc_2.8.0-1_all.deb</a> (<!--#fsize file="src/nco-doc_2.8.0-1_all.deb"-->): Pre-built documentation, all architectures (install with <tt>apt-get install nco-doc</tt>)</li>
+<li><a href="src/nco_2.8.0-1.dsc">nco_2.8.0-1.dsc</a> (<!--#fsize file="src/nco_2.8.0-1.dsc"-->): Description</li>
+<li><a href="src/nco_2.8.0-1.tar.gz">nco_2.8.0-1.tar.gz</a> (<!--#fsize file="src/nco_2.8.0-1.tar.gz"-->): Gzipped Source Tarball</li>
+<li><a href="src/nco_2.8.0-1_i386.changes">nco_2.8.0-1_i386.changes</a> (<!--#fsize file="src/nco_2.8.0-1.changes"-->): Changes</li>
 </ul>
 
 <ul>

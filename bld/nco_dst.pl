@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.111 2003-08-13 20:15:57 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.112 2003-08-13 21:31:35 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -67,9 +67,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2003-08-13 20:15:57 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.111 2003-08-13 20:15:57 zender Exp $';
-my $CVS_Revision='$Revision: 1.111 $';
+my $CVS_Date='$Date: 2003-08-13 21:31:35 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.112 2003-08-13 21:31:35 zender Exp $';
+my $CVS_Revision='$Revision: 1.112 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -227,8 +227,8 @@ if($dbg_lvl >= 1){
 # Build distribution from scratch
 if($bld){
     cmd_prc("$rm_cmd -r $dst_pth_bld"); # Remove contents of current directory, if any
-    cmd_prc("$mkdir_cmd $dst_pth_bld"); # Create directory
-    chdir $dst_pth_bld.'/..' or die "$prg_nm: ERROR unable to chdir to $dst_pth_bld: $!\n"; # $! is system error string
+#    cmd_prc("$mkdir_cmd $dst_pth_bld"); # Create directory
+    chdir $dst_pth_pfx or die "$prg_nm: ERROR unable to chdir to $dst_pth_pfx: $!\n"; # $! is system error string
     if($CVSROOT =~ m/pserver/){cmd_prc("$cvs_cmd -d $CVSROOT login");} # Login first
     if($dly_snp){
 	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -D \"1 second ago\" -d $dst_vrs nco"); # Export
@@ -251,12 +251,12 @@ if($bld){
     cmd_prc("$rsh_cmd $www_mch $rm_cmd $www_drc/src/$dst_fl"); # Remove any distribution with same name
     if($dly_snp){cmd_prc("$rsh_cmd $www_mch $rm_cmd -r $www_drc/src/nco-????????.tar.gz");} # Remove previous daily snapshots from WWW server
     cmd_prc("$rcp_cmd $dst_fl $www_mch:$www_drc/src"); # Copy local tarfile to WWW server
-    cmd_prc("$rcp_cmd $HOME/$dst_fl_chg $HOME/$dst_fl_deb$HOME/$dst_fl_doc $HOME/$dst_fl_dsc $HOME/$dst_fl_tgz $www_mch:$www_drc/src"); # Copy Debian files to WWW server
+    cmd_prc("$rcp_cmd $HOME/$dst_fl_chg $HOME/$dst_fl_deb $HOME/$dst_fl_doc $HOME/$dst_fl_dsc $HOME/$dst_fl_tgz $www_mch:$www_drc/src"); # Copy Debian files to WWW server
  
 # Full release procedure (public releases only) includes update Web pages
     if(!$dly_snp){
 	cmd_prc("$rsh_cmd $www_mch $rm_cmd $www_drc/nco.tar.gz");
-	cmd_prc("$rsh_cmd $www_mch \"cd $www_drc; ln -s ./src/$dst_fl nco.tar.gz\"");
+	cmd_prc("$rsh_cmd $www_mch \"cd $www_drc; ln -s -f ./src/$dst_fl nco.tar.gz\"");
  	cmd_prc("$rcp_cmd $dst_pth_bld/doc/index.shtml $www_mch:$www_drc");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco_news.shtml $www_mch:$www_drc");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco.html $dst_pth_bld/doc/nco.info* $dst_pth_bld/doc/nco.dvi $dst_pth_bld/doc/nco.pdf $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.texi $www_mch:$www_drc");
@@ -271,8 +271,10 @@ if($bld){
 # Usually scp_cmd includes -p switch to preserve permissions and times, but sourceforge server does not allow this
 # Hence it generates warnings when used with -p, and is not properly updated
     if($True){
-	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_pfx/$dst_fl $dst_pth_bld/doc/index.shtml $dst_pth_bld/doc/nco_news.shtml $dst_pth_bld/doc/README $dst_pth_bld/doc/TODO $dst_pth_bld/doc/VERSION $dst_pth_bld/doc/ChangeLog $www_mch_mrr:$www_drc_mrr");
+	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_bld/doc/index.shtml $dst_pth_bld/doc/nco_news.shtml $dst_pth_bld/doc/README $dst_pth_bld/doc/TODO $dst_pth_bld/doc/VERSION $dst_pth_bld/doc/ChangeLog $www_mch_mrr:$www_drc_mrr");
 	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_bld/doc/nco.html $dst_pth_bld/doc/nco.info* $dst_pth_bld/doc/nco.dvi $dst_pth_bld/doc/nco.pdf $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.texi $www_mch_mrr:$www_drc_mrr");
+	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_pfx/$dst_fl $HOME/$dst_fl_chg $HOME/$dst_fl_deb $HOME/$dst_fl_doc $HOME/$dst_fl_dsc $HOME/$dst_fl_tgz $www_mch_mrr:$www_drc_mrr/src"); # Copy Debian files to WWW server
+	cmd_prc("$rsh_cmd $www_mch_mrr \"cd $www_drc_mrr; ln -s -f ./src/$dst_fl nco.tar.gz\"");
     } # endif SourceForge
 
 # Housekeeping
