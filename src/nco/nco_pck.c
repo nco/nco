@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.23 2004-08-12 05:00:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.24 2004-08-15 07:08:52 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -40,6 +40,35 @@ nco_pck_typ_get /* [fnc] Convert user-specified packing type to key */
   nco_exit(EXIT_FAILURE);
   return nco_pck_nil; /* Statement should not be reached */
 } /* end nco_pck_typ_get() */
+
+nc_type /* O [enm] Type to pack variable to */
+nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */
+(const nc_type nc_typ_in) /* I [enm] Type of input variable */
+{
+  /* Purpose: Determine best type to pack input variable to */
+  /* fxm: devise better system to allow user to specify output type for packed variable */
+  nc_type nc_typ_pck_out=NC_NAT; /* [enm] Type to pack to */
+
+  switch(nc_typ_in){ 
+  case NC_FLOAT: 
+  case NC_DOUBLE: 
+  case NC_INT: 
+    nc_typ_pck_out=NC_SHORT;
+    break;
+  case NC_SHORT: 
+    nc_typ_pck_out=NC_SHORT;
+    break;
+  case NC_CHAR: 
+    nc_typ_pck_out=NC_CHAR;
+    break;
+  case NC_BYTE: 
+    nc_typ_pck_out=NC_BYTE;
+    break;
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */ 
+
+  return nc_typ_pck_out;
+} /* end nco_typ_pck_get() */
 
 bool /* O [flg] Variable is packed on disk */
 nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
@@ -120,7 +149,7 @@ nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
     var->typ_upk=scl_fct_typ; /* [enm] Type of variable when unpacked (expanded) (in memory) */
     if(nco_is_rth_opr(prg_get()) && dbg_lvl_get() > 2){
       (void)fprintf(stderr,"%s: PACKING Variable %s is type %s packed into type %s\n",prg_nm_get(),var->nm,nco_typ_sng(var->typ_upk),nco_typ_sng(var->typ_dsk));
-      (void)fprintf(stderr,"%s: DEBUG Packed variables processed by all arithmetic operators are unpacked automatically, and then stored unpacke in the output file. If you wish to repack them in the output file, use, e.g., ncap -O -s \"foo=pack(foo);\" out.nc out.nc\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: DEBUG Packed variables processed by all arithmetic operators are unpacked automatically, and then stored unpacked in the output file. If you wish to repack them in the output file, use, e.g., ncap -O -s \"foo=pack(foo);\" out.nc out.nc. If you wish to pack all the variables in a file, use ncpdq fxm.\n",prg_nm_get());
     } /* endif print packing information */
   }else{
     /* Variable is not packed since neither scale factor nor add_offset exist
@@ -153,7 +182,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
   /* Packed variables are guaranteed to have both scale_factor and add_offset
      The scale factor is guaranteed to be of type NC_FLOAT or NC_DOUBLE and of size 1 (a scalar) */
 
-  /* Create scalar value structures from values of scale_factor, add_offset */ 
+  /* Create scalar value structures from values of scale_factor, add_offset */
   if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
     scv_sct scl_fct_scv;
     var->scl_fct.vp=(void *)nco_malloc(nco_typ_lng(var->typ_upk));
@@ -193,7 +222,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
 var_sct * /* O [sct] Packed variable */
 nco_var_pck /* [fnc] Pack variable in memory */
 (var_sct *var, /* I/O [sct] Variable to be packed */
- const nc_type typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+ const nc_type nc_typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
  const bool USE_EXISTING_PCK) /* I [flg] Use existing packing scale_factor and add_offset */
 {
   /* Purpose: Pack variable 
@@ -212,7 +241,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
   if(var->val.vp == NULL) (void)fprintf(stdout,"%s: ERROR nco_var_pck() called with empty var->val.vp\n",prg_nm_get());
   
   /* Packed type must be NC_CHAR or NC_SHORT */
-  if(typ_pck != NC_CHAR && typ_pck != NC_SHORT) (void)fprintf(stdout,"%s: ERROR nco_var_pck() called with invalid packed type typ_pck = %s, \n",prg_nm_get(),nco_typ_sng(typ_pck));
+  if(nc_typ_pck != NC_CHAR && nc_typ_pck != NC_SHORT) (void)fprintf(stdout,"%s: ERROR nco_var_pck() called with invalid packed type nc_typ_pck = %s, \n",prg_nm_get(),nco_typ_sng(nc_typ_pck));
 
   /* Source type must be NC_INT, NC_FLOAT, or NC_DOUBLE */
   if(var->type == NC_SHORT || var->type == NC_CHAR || var->type == NC_BYTE) (void)fprintf(stdout,"%s: ERROR nco_var_pck() called with invalid source type var->type = %s, \n",prg_nm_get(),nco_typ_sng(var->type));
@@ -287,11 +316,11 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
     /* ndrv is 2^{bits per packed value} where bppv = 8 for NC_CHAR and bppv = 16 for NC_SHORT
        Subtract one to leave slop for rounding errors */
-    if(typ_pck == NC_CHAR){
+    if(nc_typ_pck == NC_CHAR){
       ndrv_dbl=256.0-1.0; /* [sct] Double precision value of number of discrete representable values */
-    }else if(typ_pck == NC_SHORT){
+    }else if(nc_typ_pck == NC_SHORT){
       ndrv_dbl=65536.0-1.0; /* [sct] Double precision value of number of discrete representable values */
-    }else if(typ_pck == NC_INT){
+    }else if(nc_typ_pck == NC_INT){
       ndrv_dbl=4294967295.0-1.0; /* [sct] Double precision value of number of discrete representable values */
     } /* end else */
     ndrv_unn.d=ndrv_dbl; /* Generic container for number of discrete representable values */
@@ -379,12 +408,12 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
   /* Tell the world */
   var->pck_ram=True; /* [flg] Variable is packed in memory */
-  var->typ_pck=typ_pck; /* [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+  var->typ_pck=nc_typ_pck; /* [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
   var->typ_upk=var->type; /* [enm] Type of variable when unpacked (expanded) (in memory) */
 
   /* Convert variable to user-specified packed type
      This is where var->type is changed from original to packed type */
-  var=nco_var_cnf_typ(typ_pck,var);
+  var=nco_var_cnf_typ(nc_typ_pck,var);
 
   if(dbg_lvl_get() >=3){
     (void)fprintf(stderr,"%s: PACKING Packed %s, and writing to disk.\n",prg_nm_get(),var->nm);
@@ -435,4 +464,3 @@ nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to
   return var;
   
 } /* end nco_put_var_pck() */
-

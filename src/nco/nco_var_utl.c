@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.53 2004-08-14 21:00:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.54 2004-08-15 07:08:52 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -903,44 +903,27 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     PCK_ATT_CPY=(nco_is_rth_opr(prg_id) && prg_id != ncap && var[idx]->xrf->pck_dsk) ? False : True;
     (void)nco_att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id,PCK_ATT_CPY);
 
-#undef FALSE
-#ifdef FALSE
-    /* Set nco_pck_typ based on program */
-    switch(prg){
-    case ncea:
-      nco_pck_typ=nco_pck_all_new_att;
-      break;
-    case ncap:
-    case ncatted:
-    case ncbo:
-    case ncecat:
-    case ncflint:
-    case ncks:
-    case ncpdq:
-    case ncra:
-    case ncrcat:
-    case ncrename:
-    case ncwa:
-      nco_pck_typ=nco_pck_nil;
-      break;
-    default: nco_dfl_case_prg_id_err(); break;
-    } /* end switch */
+    if(prg_id == ncpdq && False){ /*  */
+      /* If variable will be packed... */
+      if(typ_out != var[idx]->typ_dsk){
+	const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+	const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+	val_unn zero_unn; /* [frc] Generic container for value 0.0 */
+	var_sct *zero_var; /* [sct] NCO variable for value 0.0 */
+	zero_unn.d=0.0; /* [frc] Generic container for value 0.0 */
+	zero_var=scl_mk_var(zero_unn,typ_out); /* [sct] NCO variable for value 0.0 */
+  
+	/* ...then add/overwrite dummy scale_factor and add_offset attributes
+	 Overwrite these with correct values once known
+	 Adding the dummy attributes now reduces likelihood that netCDF layer
+	 will impose file copy penalties when final values are written */
+	(void)nco_put_att(out_id,var[idx]->id,scl_fct_sng,typ_out,1,zero_var->val.vp);
+	(void)nco_put_att(out_id,var[idx]->id,add_fst_sng,typ_out,1,zero_var->val.vp);
+	if(zero_var != NULL) zero_var=nco_var_free(zero_var);
+      } /* endif pck_ram */
+    } /* endif */
 
-    switch(nco_pck_typ){
-    case nco_pck_all_xst_att:
-    case nco_pck_all_new_att:
-      break;
-    case nco_pck_xst_xst_att:
-    case nco_pck_xst_new_att:
-      break;
-    case nco_pck_upk:
-      break;
-    default:
-      break;
-    } /* end switch */
-#endif /* not FALSE */
-
-  } /* end loop over variables to define */
+  } /* end loop over idx variables to define */
   
 } /* end nco_var_dfn() */
 

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.20 2004-07-24 01:00:51 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.21 2004-08-15 07:08:52 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -111,7 +111,7 @@ extern char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in nca
   var_sct *var; /* [sct] Variable */
   nm_lst_sct *sbs_lst; /* [sct] Subscript list */
   int nco_rlt_opr; /* [enm] Comparison operator type */
-  nc_type cnv_type;  /* [enm] used for type conversion functions */
+  nc_type cnv_type;  /* [enm] Used for type conversion functions */
 } /* end YYSTYPE union (type of yylval value) */
 
 /* Tell parser which kind of values each token takes
@@ -588,7 +588,8 @@ var_xpr '+' var_xpr { /* Begin Addition */
 } /* end ABS */
 | PACK '(' var_xpr ')' {
   /* Packing variable does not create duplicate so DO NOT free $3 */
-  $$=nco_var_pck($3,NC_SHORT,False);
+  const nc_type nc_typ_pck_dfl=NC_SHORT; /* [enm] Default type to pack to */
+  $$=nco_var_pck($3,nc_typ_pck_dfl,False);
 } /* end PACK */
 | UNPACK '(' var_xpr ')' {
   /* Unpacking variable does not create duplicate so DO NOT free $3 */

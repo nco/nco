@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.16 2004-08-14 21:00:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.17 2004-08-15 07:08:52 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -43,6 +43,10 @@ enum nco_pck_typ{ /* [enm] Packing type */
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+nc_type /* O [enm] Type to pack variable to */
+nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */
+(const nc_type nc_typ_in); /* I [enm] Type of input variable */
 
 void
 nco_pck_mtd /* [fnc] Alter metadata according to packing specification */

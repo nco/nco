@@ -1,4 +1,11 @@
+2004-08-15  Charlie Zender  <zender@uci.edu>
+
+	* Alter nco_var_dfn() to define dummy scale_factor, add_offset for ncpdq
+
 2004-08-14  Charlie Zender  <zender@uci.edu>
+
+	* Cleanly segregate pack from re-order functionality in ncpdq
+	Assume both are not performed in same ncpdq invocation
 
 	* Pass nco_pck_typ from all operators to nco_var_lst_dvd()
 

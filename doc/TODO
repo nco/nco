@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.377 2004-08-14 20:59:58 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.378 2004-08-15 07:08:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -242,8 +242,10 @@ nco394. strdup() all system-owned memory so var_free() can free strings
 nco395. ncpdq: document rdr shr lists
 nco396. free() memory at end of each operator
 nco397. make ncpack symbolic link to ncpdq? Re-order/pack are completely independent yet need same structure of program
-nco398. ncpdq should not call re-order routines if packing requested and visa versa
-nco399. 
+nco399. ncpdq: add scl_fct add_fst attributes in metadata loop or in single loop after writing variable values
+nco400. ncpdq: modify nco_var_dfn() to make room for scale factor and add offset
+nco401. ncpdq: fix "use ncpdq fxm" hint in nco_pck_dsk_inq() message
+nco402. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

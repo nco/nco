@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.101 2004-08-03 17:06:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.102 2004-08-15 07:08:52 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -111,6 +111,9 @@ ncap_var_write
  prs_sct *prs_arg)
 {
   /* Purpose: Define variable in output file and write variable */
+  const char mss_val_sng[]="missing_value"; /* [sng] Unidata standard string for missing value */
+  const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+  const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   int var_out_id;
   
   (void)nco_redef(prs_arg->out_id);
@@ -118,12 +121,12 @@ ncap_var_write
   /* Define variable */   
   (void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
   /* Put missing value */  
-  if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,"missing_value",var->type,1,var->mss_val.vp);
+  if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,mss_val_sng,var->type,1,var->mss_val.vp);
   
   /* Write/overwrite scale_factor and add_offset attributes */
   if(var->pck_ram){ /* Variable is packed in memory */
-    if(var->has_scl_fct) (void)nco_put_att(prs_arg->out_id,var_out_id,"scale_factor",var->typ_upk,1,var->scl_fct.vp);
-    if(var->has_add_fst) (void)nco_put_att(prs_arg->out_id,var_out_id,"add_offset",var->typ_upk,1,var->add_fst.vp);
+    if(var->has_scl_fct) (void)nco_put_att(prs_arg->out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
+    if(var->has_add_fst) (void)nco_put_att(prs_arg->out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
   } /* endif pck_ram */
   (void)nco_enddef(prs_arg->out_id);
   
