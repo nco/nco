@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.14 1999-10-04 05:13:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.15 1999-10-04 17:28:52 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -251,7 +251,6 @@ typedef struct var_sct_tag{
 #define FORTRAN_multiply_double_precision MULTIPLY_DOUBLE_PRECISION
 #define FORTRAN_divide_real DIVIDE_REAL
 #define FORTRAN_divide_double_precision DIVIDE_DOUBLE_PRECISION
-#define FORTRAN_foo FOO
 #endif /* CRAY */ 
 #ifdef RS6K
 #define FORTRAN_add_real add_real
@@ -267,23 +266,28 @@ typedef struct var_sct_tag{
 #define FORTRAN_multiply_double_precision multiply_double_precision
 #define FORTRAN_divide_real divide_real
 #define FORTRAN_divide_double_precision divide_double_precision
-#define FORTRAN_foo foo
 #endif /* RS6K */ 
-#ifdef LINUX /* NB: g77 subroutines have two underscores by default, while g77 functions (e.g., newdate()) have only one! */ 
-#define FORTRAN_add_real add_real__
-#define FORTRAN_add_double_precision add_double_precision__
-#define FORTRAN_avg_reduce_real avg_reduce_real__
-#define FORTRAN_avg_reduce_double_precision avg_reduce_double_precision__
-#define FORTRAN_normalize_real normalize_real__
-#define FORTRAN_normalize_double_precision normalize_double_precision__
+/* 
+   pgf90 subroutines have one underscore by default
+   pgf90 underscore behavior is altered by -Mnosecond_underscore
+   g77 subroutines have two underscores by default
+   g77 functions (e.g., newdate()) have one underscore by default 
+   g77 underscore behavior is altered by -fno-second-underscore 
+*/ 
+#ifdef LINUX 
+#define FORTRAN_add_real add_real_
+#define FORTRAN_add_double_precision add_double_precision_
+#define FORTRAN_avg_reduce_real avg_reduce_real_
+#define FORTRAN_avg_reduce_double_precision avg_reduce_double_precision_
+#define FORTRAN_normalize_real normalize_real_
+#define FORTRAN_normalize_double_precision normalize_double_precision_
 #define FORTRAN_newdate newdate_
-#define FORTRAN_subtract_real subtract_real__
-#define FORTRAN_subtract_double_precision subtract_double_precision__
-#define FORTRAN_multiply_real multiply_real__
-#define FORTRAN_multiply_double_precision multiply_double_precision__
-#define FORTRAN_divide_real divide_real__
-#define FORTRAN_divide_double_precision divide_double_precision__
-#define FORTRAN_foo foo__
+#define FORTRAN_subtract_real subtract_real_
+#define FORTRAN_subtract_double_precision subtract_double_precision_
+#define FORTRAN_multiply_real multiply_real_
+#define FORTRAN_multiply_double_precision multiply_double_precision_
+#define FORTRAN_divide_real divide_real_
+#define FORTRAN_divide_double_precision divide_double_precision_
 #endif /* LINUX */ 
 #if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SUN4SOL2 ) || ( defined SUNMP ) || ( defined SGI5 ) || ( defined SGI64 ) || ( defined SGIMP64 )
 #define FORTRAN_add_real add_real_
@@ -299,7 +303,6 @@ typedef struct var_sct_tag{
 #define FORTRAN_multiply_double_precision multiply_double_precision_
 #define FORTRAN_divide_real divide_real_
 #define FORTRAN_divide_double_precision divide_double_precision_
-#define FORTRAN_foo foo_
 #endif /* SUN-style */ 
 #endif /* USE_FORTRAN_ARITHMETIC */
 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.34 1999-10-04 06:44:32 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.35 1999-10-04 17:28:51 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -27,7 +27,8 @@ ifndef OPTS
  OPTS := O
 endif
 ifndef USE_FORTRAN_ARITHMETIC
- USE_FORTRAN_ARITHMETIC := N # Whether or not to use Fortran arithmetic routines
+# Whether or not to use Fortran arithmetic routines
+ USE_FORTRAN_ARITHMETIC := Y
 endif
 ifndef NETCDF_INC
  NETCDF_INC := /usr/local/include # Directory containing netcdf.h
@@ -52,9 +53,10 @@ MY_DPN_DIR_RX := $(subst $(slash),$(slash_rx),$(MY_DPN_DIR))
 # Directories to search for source files
 MDL_PTH := $(MY_SRC_DIR)
 # Find all C++, C, and Fortran files in a given directory
-FIND_FNC = $(wildcard $(dir)/*.cc $(dir)/*.c)
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- FIND_FNC += $(wildcard $(dir)/*.F) # Compile Fortran only if necessary
+ FIND_FNC = $(wildcard $(dir)/*.cc $(dir)/*.c $(dir)/*.F) # Compile Fortran only if necessary
+else
+ FIND_FNC = $(wildcard $(dir)/*.cc $(dir)/*.c)
 endif
 # Assemble source files from all directories
 SRC_LST = $(foreach dir, $(MDL_PTH),$(FIND_FNC))
@@ -463,7 +465,7 @@ LINT := lint
 YACC := bison
 ifeq ($(OPTS),O)
  CFLAGS := -O2
- FFLAGS := -O -e
+ FFLAGS := -fast -e
 endif
 ifeq ($(OPTS),D)
  CFLAGS := -g
@@ -641,6 +643,7 @@ dbg:
 	printf "MDL_DPN = $(MDL_DPN)\n"
 	printf "YACC = $(YACC)\n"
 	printf "LEX = $(LEX)\n"
+	printf "USE_FORTRAN_ARITHMETIC = $(USE_FORTRAN_ARITHMETIC)\n"
 distclean: dst_cln
 dst_cln: cln bin_cln doc_cln lib_cln
 	cd $(MY_BLD_DIR); rm -f *~
