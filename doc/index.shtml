@@ -203,8 +203,9 @@ NCO User's Guide</A></H2>
 
 <P>The <I>User's Guide</I> contains all the documentation for NCO. It explains
 the most efficient strategies for using the operators and includes numerous
-specific examples. The online <I>User's Guide</I> is also in the source
-distribution in the file <TT>`nco.html'</TT>. 
+specific examples. The online and Postscript versions of the <I>User's
+Guide</I> are in the source distribution in the files
+<TT>`doc/nco.html'</TT> and <TT>`doc/nco.ps'</TT>, respectively.
 <HR></P>
 
 <DT><A NAME="README"></A></DT>
