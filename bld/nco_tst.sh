@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.56 2003-07-07 01:29:38 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.57 2003-08-01 07:04:07 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -13,9 +13,8 @@
 # Tests of same functionality but for different types should change in minor number
 
 usage() {
-#    echo >&2 "Usage: ${basename $0} ncra | ncea | ncwa | ncflint | ncdiff | net"
-program=`basename $0`
-    printf "Usage: ${program} ncra | ncea | ncwa | ncflint | ncdiff | ncap | net\n"
+    program=`basename $0`
+    printf "Usage: ${program} ncra | ncea | ncwa | ncflint | ncdiff | ncbnr | ncap | net\n"
 } # end usage()
 
 START=0
@@ -26,6 +25,7 @@ NCRA=0
 NCEA=0
 NCFLINT=0
 NCDIFF=0
+NCBNR=0
 NET=0
 
 if [ $# -eq 0 ]; then
@@ -37,6 +37,7 @@ if [ $# -eq 0 ]; then
     NCEA=1
     NCFLINT=1
     NCDIFF=1
+    NCBNR=1
     NET=0 # fxm: Turn on after packing debugged
 else 
     while [ $# -gt 0 ]; do
@@ -67,6 +68,10 @@ else
 	;;
 	ncdiff )
 	    NCDIFF=1
+	    shift
+	;;
+	ncbnr )
+	    NCBNR=1
 	    shift
 	;;
 	net )
@@ -357,6 +362,16 @@ ${MY_BIN_DIR}/ncea -O -C -v pck in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v pck foo.nc`
 echo "ncea 4: scale factor + add_offset packing/unpacking: 3 =?= ${avg}" 
 fi # end ncea
+
+if [ "${NCBNR}" = 1 ]; then
+${MY_BIN_DIR}/ncbnr -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v mss_val foo.nc`
+echo "ncbnr 1: difference with missing value attribute: 1.0e36 =?= ${avg}" 
+
+${MY_BIN_DIR}/ncbnr -O -d lon,0 -v no_mss_val in.nc in.nc foo.nc 2>> foo.tst
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v no_mss_val foo.nc`
+echo "ncbnr 2: difference without missing value attribute: 0 =?= ${avg}" 
+fi # end ncbnr
 
 if [ "${NCDIFF}" = 1 ]; then
 ${MY_BIN_DIR}/ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst

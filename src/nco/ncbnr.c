@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbnr.c,v 1.1 2003-07-31 05:28:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbnr.c,v 1.2 2003-08-01 07:04:07 zender Exp $ */
 
 /* ncbnr -- netCDF binary operator */
 
-/* Purpose: Compute ratio of specified hyperslabs of specfied variables
+/* Purpose: Compute sum, difference, product, or ratio of specified hyperslabs of specfied variables
    from two input netCDF files and output them to a single file. */
 
 /* Copyright (C) 1995--2003 Charlie Zender
@@ -50,8 +50,7 @@
    ncks -H -m foo4.nc
 
    Test nco_var_cnf_dmn:
-   ncks -O -v scalar_var in.nc foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; ncbnr -O -v four_dmn_rec_var in.nc foo.nc foo2.nc
- */
+   ncks -O -v scalar_var in.nc foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; ncbnr -O -v four_dmn_rec_var in.nc foo.nc foo2.nc */
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
 #endif /* !HAVE_CONFIG_H */
@@ -110,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *opt_sng;
   char *time_bfr_srt;
-  char CVS_Id[]="$Id: ncbnr.c,v 1.1 2003-07-31 05:28:00 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.1 $";
+  char CVS_Id[]="$Id: ncbnr.c,v 1.2 2003-08-01 07:04:07 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.2 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

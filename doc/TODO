@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.225 2003-07-12 05:22:36 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.226 2003-08-01 07:04:07 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -226,7 +226,7 @@ ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 259. Variadic function extension to nco_malloc() to support printing debugging messages?
 260. Warn (but work) when coordinate variable has more than two dimensions
 261. Switch from toggling defaults to --no-option format for all Booleans. e.g., --abc should ensure alphabetization is True, and --no-abc should ensure it is false, rather than toggling.
-262. Remove RPM warnings emitted by Makefile on non-RedHat machines
+263. cd ~/nco/data;ncbnr -D 3 -O -v one --op_typ=add in.nc in.nc foo.nc;ncks -H -v one foo.nc
 ************************************************************************
 End NCO Wish list
 ************************************************************************
