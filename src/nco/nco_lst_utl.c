@@ -1,16 +1,22 @@
-char *
-sng_lst_prs(char **sng_lst,const long lmn_nbr, const char *dlm_sng)
-/* 
-   const char **sng_lst: I List of pointers to strings to join together
-   const char *dlm_sng: I delimiter string to use as glue
-   const long lmn_nbr: O number of strings in list
-   char *sng_lst_prs: O Concatenated string formed by joining all input strings
- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.2 2002-05-05 03:09:20 zender Exp $ */
+
+/* Purpose: List utilities */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_lst_utl.h" /* List utilities */
+
+char * /* O [sng] Concatenated string formed by joining all input strings */
+sng_lst_prs /* [fnc] Join list of strings together into one string */
+(const char ** const sng_lst, /* I [sng] List of pointers to strings to join together */
+ const long lmn_nbr, /* O [nbr] Number of strings in list */
+ const char *dlm_sng) /* I [sng] delimiter string to use as glue */
 {
-  /* Routine takes list of strings and joins them together into one string
+  /* Purpose: Join list of strings together into one string
      Elements of input list should all be NUL-terminated strings
-     Elements with the value NUL will be interpreted as strings of zero length
-  */
+     Elements with value NUL are interpreted as strings of zero length */
 
   char *sng; /* Output string */
 
@@ -44,9 +50,9 @@ sng_lst_prs(char **sng_lst,const long lmn_nbr, const char *dlm_sng)
 
 char ** /* O [sng] Array of list elements */
 lst_prs /* [fnc] Create list of strings from given string and arbitrary delimiter */
-(char *sng_in, /* I/O [sng] Delimited argument list (delimiters are changed to NULL on output */
- const char *dlm_sng, /* I [sng] delimiter string */
- int *nbr_lst) /* O [nbr] number of elements in list */
+(char * const sng_in, /* I/O [sng] Delimited argument list (delimiters are changed to NULL on output */
+ const char * const dlm_sng, /* I [sng] delimiter string */
+ int * const nbr_lst) /* O [nbr] number of elements in list */
 {
   /* Purpose: Create list of strings from given string and arbitrary delimiter
      Routine is often called with system memory, e.g., with strings from
@@ -116,12 +122,13 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
   return lst;
 } /* end lst_prs() */
 
-void indexx(int n,int *arrin,int *indx)
-/*     int n,indx[];*/
-/*     float arrin[];*/
-/*     int arrin[];*/
+void 
+indexx /* [fnc] Sort array of integers */
+(const int n, /* I [nbr] Number of elements */
+ const int * const arrin, /* I [idx] Array to sort */
+ int * const indx) /* O [idx] Indices to sorted array */
 {
-  /* Purpose: Sort an array of integers
+  /* Purpose: Sort array of integers
      Based on indexx() from Numerical Recipes
      Routine computes an index table which sorts input array into ascending order
      I made arrin argument and local variable q integers for netCDF purposes
@@ -158,7 +165,11 @@ void indexx(int n,int *arrin,int *indx)
   }
 } /* end indexx() */
 
-void index_alpha(int n,char **arrin,int *indx)
+void 
+index_alpha /* [fnc] Sort array of strings */
+(const int n, /* I [nbr] Number of elements */
+ const char ** const arrin, /* I [sng] Strings to sort */
+ int * const indx); /* O [idx] Indices to sorted array */
 {
 /* Purpose: Sort input array alphanumerically
    This is indexx() from Numerical recipes hacked to alphabetize a list of strings */
@@ -199,8 +210,8 @@ void index_alpha(int n,char **arrin,int *indx)
 nm_id_sct * /* O [sct] Sorted output list */
 lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
 (nm_id_sct *lst, /* I/O [sct] Current list (destroyed) */
- int nbr_lst, /* I [nbr] number of members in list */
- bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
+ const int nbr_lst, /* I [nbr] number of members in list */
+ const bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
 {
   /* Purpose: Sort extraction lists numerically or alphabetically */
   int *srt_idx; /* List to store sorted key map */
@@ -223,8 +234,8 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
     (void)index_alpha(nbr_lst,xtr_nm-1,srt_idx-1);
     xtr_nm=nco_free(xtr_nm);
   }else{
-    /* Heapsort the list by variable ID 
-       This theoretically allows the fastest I/O when creating output file */
+    /* Heapsort list by variable ID 
+       This theoretically allows fastest I/O when creating output file */
     int *xtr_id;
     xtr_id=(int *)nco_malloc(nbr_lst*sizeof(int));
     for(idx=0;idx<nbr_lst;idx++) xtr_id[idx]=lst[idx].id;
