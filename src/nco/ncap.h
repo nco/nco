@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.46 2002-08-27 21:02:08 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.47 2002-08-28 13:20:43 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -80,8 +80,8 @@ typedef struct{ /* prs_sct */
   int out_id; /* [id] Output data file ID */
   aed_sct **att_lst; /* [sct] Attributes in script */
   int *nbr_att; /* [nbr] Number of attributes in script */
-  dmn_sct **dmn; /* [dmn] List of extracted dimensions */
-  int nbr_dmn_xtr; /* [nbr] Number of extracted dimensions */
+  dmn_sct **dmn_in; /* [dmn] List of all  dimensions in input file */
+  int nbr_dmn_in; /* [nbr] Number of  dimensions in above list */
   dmn_sct ***dmn_out; /* pointer to a list of dimensions currently in output file */
   int *nbr_dmn_out;   /* number of dimensions in above list */
   sym_sct **sym_tbl; /* [fnc] Symbol table for functions */
