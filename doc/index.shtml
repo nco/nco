@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.130 2003-01-22 15:59:24 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.131 2003-02-13 02:13:35 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -172,7 +172,8 @@ capable of performing arbitrary arithmetic operations</li>
 <h2>Version Summary</h2>
 <ul>
 <li>Many releases since 2.0.0 are not packaged (i.e., no tarballs or RPMs).
-Retrieve these versions <a name="#Download">using CVS</a>.
+Retrieve these versions <a name="#Download">using CVS</a> or from 
+<a href="ftp://dust.ess.uci.edu/pub/zender/nco">this anonymous FTP site</a>.
 <li><b>NCO 2.7.1</b>, Fallback to B. Sittler's <tt>getopt</tt> for
 long option support. Store fixed, packed variables correctly with <tt>ncap</tt>.
 <li><b>NCO 2.7.0</b>, Support for GNU/POSIX long options,
@@ -231,6 +232,9 @@ specifications of input files</li>
 <dt><a name="Download"></a></dt>
 <h2>Download/CVS NCO Software</h2>
 
+The best way to acquire NCO is with <a href="http://www.cvshome.org">CVS</a>.
+The second best way is to download the compressed tarfile 
+<a href="ftp://dust.ess.uci.edu/pub/zender/nco/nco.tar.gz">here</a>.
 <p>The 
 <a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay
@@ -265,15 +269,21 @@ Once the autotools builds are working more robustly, the confusion
 over versions should largely disappear.
 
 <p>Tarballs and pre-built binaries: NCO development is too shorthanded
-to upload tarballs or provide prebuilt binary executable versions on
-all platforms. 
-However, we sometimes build and distribute binaries for our development
-platform (currently RedHat Linux), and we are happy to link to any
-user-contributed builds for other platforms.
-These tarballs and binaries tend to lag the current distribution by
-many months, if not years: 
+to upload tarballs to SourceForge (a PITA), or to provide prebuilt
+binary executables of any format. 
+Volunteers or organizations interested in porting and providing NCO 
+binaries on a variety of platforms (using, e.g.,  
+<a href="http://sourceforge.net/docman/display_doc.php?docid=762&group_id=1">Compile Farm</a> or 
+<a href="http://www.testdrive.compaq.com">HP Testdrive</a> sites)
+would be very welcome to join the NCO team.
+Tarballs are usually up-to-date, but the binaries (e.g., RPM, .deb) 
+tend to lag the current distribution by many months, if not years: 
 <ul>
-<li>Source and documentation in tarball format: <a href="http://prdownloads.sourceforge.net/nco/nco-2.2.0.tar.gz">nco-2.2.0.tar.gz</a> (901 Kb compressed tar-file)</li>
+<li>Source and documentation in tarball format: 
+<a href="ftp://dust.ess.uci.edu/pub/zender/nco/nco.tar.gz">nco.tar.gz</a> (675 KB compressed tar-file)</li>
+<!-- 
+<a href="http://prdownloads.sourceforge.net/nco/nco-2.2.0.tar.gz">nco-2.2.0.tar.gz</a> (901 Kb compressed tar-file)</li>
+-->
 <li>Source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="http://prdownloads.sourceforge.net/nco/nco-2.0.0-1.src.rpm">nco-2.0.0-1.src.rpm</a> (1029 Kb SRPM)</li>
 </ul>
 
