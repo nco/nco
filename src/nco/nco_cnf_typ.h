@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.3 2002-05-06 03:31:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.4 2002-05-06 03:32:24 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -70,12 +70,12 @@ ncap_var_retype /* [fnc] Promote variable to higher common precision */
 nc_type /* O [enm] Highest precision of arguments */
 ncap_scv_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if necessary */
 (scv_sct * const scv_1, /* I/O [sct] Scalar value */
- scv_sct * const scv_2) /* I/O [sct] Scalar value */
+ scv_sct * const scv_2); /* I/O [sct] Scalar value */
 
 nc_type /* O [enm] Highest precision of arguments */
 ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if necessary */
 (var_sct ** const var, /* I/O [sct] Variable */
- scv_sct * const scv) /* I/O [sct] Scalar value */
+ scv_sct * const scv); /* I/O [sct] Scalar value */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.53 2002-05-06 03:31:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.54 2002-05-06 03:34:43 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -74,14 +74,6 @@
 int 
 main(int argc,char **argv)
 {
-  int cpy_var_dfn(int,int,int,char *);
-  int cpy_var_dfn_lmt(int,int,int,char *,lmt_sct *,int);
-  void cpy_var_val(int,int,char *);
-  void cpy_var_val_lmt(int,int,char *,lmt_sct *,int);
-  void prn_att(int,int);
-  void prn_var_dfn(int,char *);
-  void prn_var_val_lmt(int,char *,lmt_sct *,int,char *,bool,bool,bool);
-   
   bool ALPHABETIZE_OUTPUT=True; /* Option a */
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
@@ -111,8 +103,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.53 2002-05-06 03:31:01 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.53 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.54 2002-05-06 03:34:43 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.54 $";
   
   extern char *optarg;
   

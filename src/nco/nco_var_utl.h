@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.3 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.4 2002-05-06 03:31:01 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -30,6 +30,36 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+  int  /* O [id] Outputfile variable ID */
+  cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
+  (const int in_id, /* I [id] netCDF input file ID */
+   const int out_id, /* I [id] netCDF output file ID */
+   const int rec_dmn_id, /* I [id] Input file record dimension ID  */
+   const char * const var_nm); /* I [sng] Input variable name */
+
+  int /* O [id] Output file variable ID */
+  cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
+  (const int in_id, /* I [id] netCDF input file ID */
+   const int out_id, /* I [id] netCDF output file ID */
+   const int rec_dmn_id, /* I [id] Input file record dimension ID  */
+   const char * const var_nm, /* I [sng] Input variable name */
+   const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
+   const int lmt_nbr); /* I [nbr] Number of hyperslab limits */
+
+  void
+  cpy_var_val /* [fnc] Copy variable data from input to output file */
+  (int in_id, /* I [id] netCDF input file ID */
+   int out_id, /* I [id] netCDF output file ID */
+   char *var_nm); /* I [sng] Variable name */
+
+  void
+  cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
+  (const int in_id, /* I [id] netCDF input file ID */
+   const int out_id, /* I [id] netCDF output file ID */
+   char *var_nm, /* I [sng] Variable name */
+   const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
+   const int lmt_nbr); /* I [nbr] Number of hyperslab limits */
 
   void 
   var_copy /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2 */

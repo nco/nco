@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.2 2002-05-05 03:53:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.3 2002-05-06 03:31:01 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -33,7 +33,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 int /* O [enm] Return code */
-nco_openmp_ini(void) /* [fnc] Set up OpenMP multi-threading environment */
+nco_openmp_ini(void); /* [fnc] Set up OpenMP multi-threading environment */
 
 int /* O [enm] Return code */
 nco_var_prc_crr_prn /* [fnc] Print name of current variable */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.h,v 1.1 2002-05-06 00:44:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.h,v 1.2 2002-05-06 03:31:01 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -26,6 +26,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+  void var_scv_add(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
+  void var_scv_sub(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
+  void var_scv_divide(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
+  void var_scv_modulus(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
+  void var_scv_multiply(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
 
 #ifdef __cplusplus
 } /* end extern "C" */
