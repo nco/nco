@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.3 2003-04-15 06:17:14 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.4 2003-08-27 19:00:57 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -67,4 +67,10 @@ tar xvzf nco_X.Y.Z.orig.tar.gz # Untar original source
 cp -r nco-X.Y.Z.orig nco-X.Y.Z # Create destination for patches
 patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
 
-
+6. NCO is fully Debianized. To keep .debs synchronized with new
+   releases, follow this procedure.
+   1. Tag CVS code after changing files in ~/nco/debian
+   cd ~/nco/debian
+   dch -v 2.8.1-1
+   date -R
+   dpkg-buildpackage -rfakeroot > foo 2>&1

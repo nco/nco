@@ -1,3 +1,9 @@
+nco (2.8.1-1) unstable; urgency=low
+
+  * Variable wildcarding
+
+ -- Charlie Zender <zender@ashes.ess.uci.edu>  Wed, 27 Aug 2003 11:51:16 -0700
+
 nco (2.8.0-1) unstable; urgency=low
 
   * update sources, new operator 'ncbo' replaces 'ncdiff' 
