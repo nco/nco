@@ -1,5 +1,7 @@
 2002-07-03  Charlie Zender  <zender@uci.edu>
 
+	* Added erf(), erfc() to ncap
+
 	* Document ncks -b, -B switches in manual
 
 	* Fix size of extracted dimension list for wgt and var calls to

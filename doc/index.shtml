@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.99 2002-07-02 01:47:26 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.100 2002-07-03 22:40:28 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -166,7 +166,7 @@ fails on my development system (due to antiquated RedHat
 The brave may retrieve these versions using CVS (tags are, e.g., <tt>nco-2_1_2</tt>).
 <li><b>NCO 2.5.1</b>, Not packaged: <tt>ncatted</tt> deletes all
 attributes of <i>att_var</i> when <i>att_nm</i> not specified
-<li><b>NCO 2.5.0</b>, Not packaged: Man pages from Debian distribution
+<li><b>NCO 2.5.0</b>, Not packaged: man(1) pages from Debian distribution
 <li><b>NCO 2.4.6</b>, Not packaged: Free (speech) sort routines
 <li><b>NCO 2.4.5</b>, Not packaged: Arithmetic speedups
 <li><b>NCO 2.4.4</b>, Not packaged: 64-bit AIX builds

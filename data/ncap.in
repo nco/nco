@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.27 2002-05-23 18:28:41 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.28 2002-07-03 22:40:27 zender Exp $ -*-C-*-
 
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 
@@ -58,7 +58,7 @@
    ncap -s "abslog=log(abs(three_dmn_var_dbl))" in.nc foo.nc
 
    The available maths functions are: 
-   acos(); asin(); atan(); cos(); exp(); gamma(); log(); log10(); sin(); sqrt(); tan();
+   acos(), asin(), atan(), cos(), exp(), erf(), erfc(), gamma(), log(), log10(), sin(), sqrt(), tan();
    If argument precision is "less" than type float then result is type float
    If argument is type double then result is also double
    This also applies to pow() function, e.g, pow(var1,3.5) or var1^3.5, e.g.,
@@ -103,6 +103,8 @@ a6 = time+one_dmn_rec_var;
 prs_mdp[time,lat,lon,lev] = P0*hyam + hybm*PS; // Works because prs_mdp in LHS cast
 //prs_mdp = P0*hyam + hybm*PS; // Fails because prs_mdp dimension ordering is ambiguous
 //prs_mdp = (four_dmn_rec_var-four_dmn_rec_var+1)*P0*hyam + (four_dmn_rec_var-four_dmn_rec_var+1)*hybm*PS; // Works because prs_mdp is typecast on RHS
+a7 = erf(1.0);
+a8 = erfc(1.0);
 
 // Henry's tests:
 one@one=10+30;
