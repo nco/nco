@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.247 2004-07-09 05:40:42 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.248 2004-07-22 00:02:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1468,7 +1468,7 @@ The @samp{-n @var{loop}} option tells the @acronym{NCO} operator to
 automatically generate the filnames of the symbolic links.
 This circumvents any @acronym{OS} and shell limits on command line size.
 The symbolic links are easily removed once @acronym{NCO} is finished.
-@cindex @code{history} attribute
+@cindex @code{history}
 One drawback to this method is that the @code{history} attribute
 (@pxref{History attribute}) retains the filename list of the symbolic
 links, rather than the data files themselves. 
@@ -1765,7 +1765,7 @@ We hope to produce foreign language string catalogues in 2004.
 @cindex OpenMP
 @cindex threads
 @cindex shared memory machines
-@cindex @code{nco_openmp_thread_number} attribute
+@cindex @code{nco_openmp_thread_number}
 @cindex @code{--thr_nbr @var{thr_nbr}}
 @cindex @code{--threads @var{thr_nbr}}
 @cindex @code{--omp_num_threads @var{thr_nbr}}
@@ -2870,7 +2870,7 @@ future.
 @section UDUnits Support 
 @cindex UDUnits
 @cindex Unidata
-@cindex @code{units} attribute
+@cindex @code{units}
 @cindex attribute, @code{units}
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
 @cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}]]}
@@ -2905,7 +2905,7 @@ very frequently used in visible spectroscopy, microns:
 wvl[0]=5e-07 meter
 @end example
 @noindent
-@cindex @code{units} attribute
+@cindex @code{units}
 The hyperslab returns the correct values because the @var{wvl} variable
 is stored on disk with a length dimension that UDUnits recognizes in the 
 @code{units} attribute.
@@ -2947,7 +2947,7 @@ At this point, @acronym{NCO} can perform a coordinate hyperslab using
 the same algorithm as if the user had specified the hyperslab without
 requesting units conversion.
 
-@cindex @code{units} attribute
+@cindex @code{units}
 @cindex @code{time} 
 The translation and dimennterpretation of time coordinates shows a more
 powerful, and probably more common, application of the UDUnits feature. 
@@ -3185,7 +3185,7 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @cindex missing values
 @cindex data, missing 
 @cindex averaging data
-@cindex @code{missing_value} attribute
+@cindex @code{missing_value}
 @cartouche
 Availability: @command{ncap}, @command{ncbo}, @command{ncea},
 @command{ncflint}, @command{ncra}, @command{ncwa}@* 
@@ -3866,7 +3866,7 @@ interactive keyboard input.
 @end html
 @node History attribute, Input file list attributes, Suppressing interactive prompts, Common features
 @section History attribute
-@cindex @code{history} attribute
+@cindex @code{history}
 @cindex timestamp
 @cindex global attributes
 @cindex attributes, global
@@ -3913,8 +3913,8 @@ Note that the @samp{-h} switch also turns off writing the
 @end html
 @node Input file list attributes, NCAR CCSM Conventions, History attribute, Common features
 @section Input file list attributes
-@cindex @code{nco_input_file_list} attribute
-@cindex @code{nco_input_file_number} attribute
+@cindex @code{nco_input_file_list}
+@cindex @code{nco_input_file_number}
 @cindex @code{stdin}
 @cindex global attributes
 @cindex attributes, global
@@ -4078,7 +4078,7 @@ The values of @code{time} are defined by the @acronym{ARM} convention
 @math{@var{time} = @var{base_time} + @var{time_offset}}.
 Thus, if @var{output-file} contains the @code{time_offset}
 variable, it will also contain the @code{time} coordinate.
-@cindex @code{history} attribute
+@cindex @code{history}
 @cindex global attributes
 @cindex attributes, global
 @w{A short} message is added to the @code{history} global attribute
@@ -4953,7 +4953,7 @@ This saves time when changing attribute conventions throughout a file.
 Note that @command{ncatted} interprets character attributes
 (i.e., attributes of type @code{NC_CHAR}) as strings.
 
-@cindex @code{history} attribute
+@cindex @code{history}
 @cindex @code{-h}
 Because repeated use of @command{ncatted} can considerably increase the size
 of the @code{history} global attribute (@pxref{History attribute}), the
@@ -4962,7 +4962,7 @@ command to the @code{history} global attribute in the @var{output-file}.
 
 @cindex missing values
 @cindex data, missing 
-@cindex @code{missing_value} attribute
+@cindex @code{missing_value}
 When @command{ncatted} is used to change the @code{missing_value} attribute,
 it changes the associated missing data self-consistently.
 If the internal floating point representation of a missing value, 
@@ -5267,6 +5267,7 @@ omitted in batch scripts.
 @node ncbo netCDF Binary Operator, ncea netCDF Ensemble Averager, ncatted netCDF Attribute Editor, Operator Reference Manual
 @section @command{ncbo} netCDF Binary Operator
 @findex ncbo
+@findex ncdiff
 @cindex binary operations
 @cindex addition
 @cindex subtraction
@@ -5324,12 +5325,12 @@ Examples: @samp{ncbo --op_typ=add 1.nc 2.nc 3.nc}, @samp{ncadd 1.nc 2.nc 3.nc}@*
 Definition: @var{file_3} = @var{file_1} - @var{file_2}@*
 Alternate invocations: @command{ncdiff}, @command{ncsub}, @command{ncsubtract}@*
 @var{op_typ} key values: @samp{sbt}, @samp{-}, @samp{dff}, @samp{diff}, @samp{sub}, @samp{subtract}, @samp{subtraction}@*
-Examples: @samp{ncbo --op_typ=-  1.nc 2.nc 3.nc}, @samp{ncdiff 1.nc 2.nc 3.nc}@*
+Examples: @samp{ncbo --op_typ=- 1.nc 2.nc 3.nc}, @samp{ncdiff 1.nc 2.nc 3.nc}@*
 @item Multiplication
 Definition: @var{file_3} = @var{file_1} * @var{file_2}@* 
 Alternate invocations: @command{ncmult}, @command{ncmultiply}@* 
 @var{op_typ} key values: @samp{mlt}, @samp{*}, @samp{mult}, @samp{multiply}, @samp{multiplication}@*
-Examples: @samp{ncbo --op_typ=mlt  1.nc 2.nc 3.nc}, @samp{ncmult 1.nc 2.nc 3.nc}@*
+Examples: @samp{ncbo --op_typ=mlt 1.nc 2.nc 3.nc}, @samp{ncmult 1.nc 2.nc 3.nc}@*
 @item Division
 Definition: @var{file_3} = @var{file_1} / @var{file_2}@* 
 Alternate invocation: @command{ncdivide}@*
@@ -5914,7 +5915,7 @@ and @code{NC_BYTE}.
 This behavior is hardcoded.
 
 @cindex missing values
-@cindex @code{missing_value} attribute
+@cindex @code{missing_value}
 Depending on your intuition, @command{ncflint} may treat missing values
 unexpectedly.
 Consider a point where the value in one input file, say @var{val1},
@@ -6325,7 +6326,7 @@ ncks -O in.nc out.nc
 Now the file @file{out.nc} contains all the data from @file{in.nc}.
 There are, however, two differences between @file{in.nc} and
 @file{out.nc}.
-@cindex @code{history} attribute
+@cindex @code{history}
 First, the @code{history} global attribute (@pxref{History attribute})
 will contain the command used to create @file{out.nc}.
 @cindex alphabetize output
@@ -6785,8 +6786,8 @@ ncrename -d lon,longitude -v lon,longitude in.nc
 
 @cindex global attributes
 @cindex attributes, global
-@cindex @code{_FillValue} attribute
-@cindex @code{missing_value} attribute
+@cindex @code{_FillValue}
+@cindex @code{missing_value}
 Create netCDF @file{out.nc} identical to @file{in.nc} except the
 attribute @code{_FillValue} is changed to @code{missing_value}
 which possess it), the attribute @code{units} is renamed to

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.257 2004-07-15 15:23:41 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.258 2004-07-22 00:02:17 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1179,7 +1179,7 @@ ${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 ncwa:   ${MY_BIN_DIR}/ncwa
-${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o lib
+${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o ${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap_utl.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 bin: ${MDL_BIN_TRG}
@@ -1438,7 +1438,7 @@ ncap:	LDFLAGS += -lC
 endif # endif AIX VA Compiler Collection
 endif # endif AIX
 # For some reason, ncap_lex.c is not remade when I expect it to be, so I explicitly remove the object file every time
-ncap:	${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o  ncap_yacc.h ${MY_OBJ_DIR}/ncap.o ${MY_OBJ_DIR}/ncap_utl.o ${libnco}.a
+ncap:	${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o ncap_yacc.h ${MY_OBJ_DIR}/ncap.o ${MY_OBJ_DIR}/ncap_utl.o ${libnco}.a
 #        ${YACC} --name-prefix=nco_
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDWIN32))
 	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@_yacc.o ${MY_OBJ_DIR}/$@_lex.o ${LDFLAGS}

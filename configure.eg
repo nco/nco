@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.88 2004-07-07 05:23:54 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.89 2004-07-22 00:02:16 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -225,22 +225,22 @@ export DODS_ROOT="${DATA}/tmp/DODS"
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool libtool.${GNU_TRP}.foo
+/bin/cp -f nco.libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
+scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 gcc/g++ Sysadmins: use this to install/update NCO in /usr/local
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ./configure --enable-optimize-custom --prefix=/usr/local > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool libtool.${GNU_TRP}.foo
+/bin/cp -f nco.libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 sudo make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
+scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 gcc/g++ Developers use --enable-maintainer-mode to verify auto-tools work correctly, and to mandate rebuilding of "special files" (ncap_yacc.c, ncap_lex.c) correctly:
 (requires complete, up-to-date, GNU development toolchain):
@@ -255,11 +255,11 @@ autoconf # Create ./configure from ./configure.in
 # Production
 ./configure --enable-maintainer-mode --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool libtool.${GNU_TRP}.foo
+/bin/cp -f nco.libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
+scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 como:
 export GNU_TRP=`~/nco/autobld/config.guess`
@@ -303,22 +303,22 @@ export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool libtool.${GNU_TRP}.foo
+/bin/cp -f nco.libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
+scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 pgcc/pgCC:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='pgcc' CFLAGS='-fast -fPIC' CXX='pgCC' CXXFLAGS='-fast -fPIC' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > nco.configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log nco.config.log.${GNU_TRP}.foo
-/bin/cp -f libtool libtool.${GNU_TRP}.foo
+/bin/cp -f nco.libtool nco.libtool.${GNU_TRP}.foo
 make clean;make > nco.make.${GNU_TRP}.foo 2>&1
 make check >> nco.make.${GNU_TRP}.foo 2>&1
 make install >> nco.make.${GNU_TRP}.foo 2>&1
-scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
+scp nco.configure.${GNU_TRP}.foo nco.config.log.${GNU_TRP}.foo nco.libtool.${GNU_TRP}.foo nco.make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 ************************************************************************
 End LINUXAMD64
 ************************************************************************
