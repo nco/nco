@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.5 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.6 2004-06-30 18:48:48 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -12,11 +12,15 @@ int /* O [enm] Return code */
 nco_openmp_ini(void) /* [fnc] Set up OpenMP multi-threading environment */
 {
   /* Purpose: Set up OpenMP multi-threading environment */
+  FILE * const fp_err=stderr; // [fl] Output filehandle CEWI
   int rcd=0; /* [rcd] Return code */
+
+  /* Using naked stdin/stdout/stderr in parallel region generates warning
+     Copy appropriate filehandle to variable scoped shared in parallel clause */
 
 #ifdef _OPENMP
   /* System allocates OMP_NUM_THREADS if possible
-     ncwa does not scale well beyond thr_nbr_max_fsh=4 threads because it is bottlenecked by I/O
+     ncwa is I/O bottlenecked beyond about thr_nbr_max_fsh=4 threads
      If OMP_NUM_THREADS > 4 then NCO will not be using threads efficiently
      Strategy: Determine maximum number of threads system will allocate (thr_nbr_max)
      Reduce maximum number of threads available to system to thr_nbr_max_fsh
@@ -34,24 +38,24 @@ nco_openmp_ini(void) /* [fnc] Set up OpenMP multi-threading environment */
 
   thr_nbr_max=omp_get_max_threads(); /* [nbr] Maximum number of threads system/user allow program to use */
   if(thr_nbr_max > thr_nbr_max_fsh){
-    (void)fprintf(stderr,"%s: INFO Reducing number of threads from %d to %d since %s hits I/O bottleneck above %d threads\n",prg_nm_get(),thr_nbr_max,thr_nbr_max_fsh,prg_nm_get(),thr_nbr_max_fsh);
+    (void)fprintf(fp_err,"%s: INFO Reducing number of threads from %d to %d since %s hits I/O bottleneck above %d threads\n",prg_nm_get(),thr_nbr_max,thr_nbr_max_fsh,prg_nm_get(),thr_nbr_max_fsh);
     (void)omp_set_num_threads(thr_nbr_max_fsh); /* [nbr] Maximum number of threads system is allowed */
   } /* endif */      
   (void)omp_set_dynamic(dyn_thr); /* [flg] Allow system to dynamically set number of threads */
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Allowing OS to utilize dynamic threading\n",prg_nm_get());
+  if(dbg_lvl_get() > 0) (void)fprintf(fp_err,"%s: INFO Allowing OS to utilize dynamic threading\n",prg_nm_get());
 #endif /* not _OPENMP */
 
   if(dbg_lvl_get() > 0){
 #ifdef _OPENMP /* OpenMP-compliant compilers define _OPENMP=YYYYMM = year and month of OpenMP specification */
-#pragma omp parallel
+#pragma omp parallel default(none) shared(fp_err)
     { /* begin OpenMP parallel */
 #pragma omp single nowait
       { /* begin OpenMP single */
-	(void)fprintf(stderr,"%s: INFO OpenMP multi-threading using %d threads\n",prg_nm_get(),omp_get_num_threads());
+	(void)fprintf(fp_err,"%s: INFO OpenMP multi-threading using %d threads\n",prg_nm_get(),omp_get_num_threads());
       } /* end OpenMP single */
     } /* end OpenMP parallel */
 #else /* not _OPENMP */
-    (void)fprintf(stderr,"%s: INFO Not attempting OpenMP multi-threading\n",prg_nm_get());
+    (void)fprintf(fp_err,"%s: INFO Not attempting OpenMP multi-threading\n",prg_nm_get());
 #endif /* not _OPENMP */
   } /* endif dbg */
 

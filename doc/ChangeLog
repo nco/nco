@@ -1,3 +1,9 @@
+2004-06-30  Charlie Zender  <zender@uci.edu>
+
+	* Fixed "variable "_iob" has undefined data scope"
+	compiler warnings by passing stdout/stderr filehandles as local
+	variables scoped shared in OpenMP parallel clauses
+
 2004-06-29  Charlie Zender  <zender@uci.edu>
 
 	* Update OpenMP directives in ncra in preparation for adding
