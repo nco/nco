@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.84 2004-06-15 16:46:34 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.85 2004-06-15 22:37:45 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -89,7 +89,7 @@ AC_FUNC_STAT
 AC_FUNC_STRTOD
 
 # Check for library functions, if found then #define HAVE_FUNCTION in config.h
-AC_CHECK_FUNCS([floor gethostname memchr memmove memset mkstemp pow regcomp setlocale sqrt strcasecmp strchr strdup strerror strpbrk strrchr strstr strtol])
+AC_CHECK_FUNCS([floor gethostname memchr memmove memset mkstemp pow regcomp setlocale sqrt strchr strerror strpbrk strrchr strstr strtol])
 
 # Check for header files
 AC_HEADER_STDC
@@ -206,6 +206,7 @@ NCO_CHECK_FUNCS([acoshf asinhf atanhf coshf sinhf tanhf])
 NCO_CHECK_FUNCS([ceilf floorf])
 NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
 NCO_CHECK_FUNCS([getopt_long])
+NCO_CHECK_FUNCS([strdup strcasecmp])
 AC_CHECK_LIB([intl],[gettext])
 AC_CHECK_LIB([resolv],[res_init])
 AC_CHECK_LIB([socket],[main])

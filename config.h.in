@@ -244,13 +244,13 @@
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
 
-/* Define to 1 if you have the `strcasecmp' function. */
+/* Define to 1 if compiler finds external `strcasecmp' function */
 #undef HAVE_STRCASECMP
 
 /* Define to 1 if you have the `strchr' function. */
 #undef HAVE_STRCHR
 
-/* Define to 1 if you have the `strdup' function. */
+/* Define to 1 if compiler finds external `strdup' function */
 #undef HAVE_STRDUP
 
 /* Define to 1 if you have the `strerror' function. */
@@ -418,6 +418,12 @@
 
 /* Define to 1 if compiler needs external `sqrtf' function */
 #undef NEED_SQRTF
+
+/* Define to 1 if compiler needs external `strcasecmp' function */
+#undef NEED_STRCASECMP
+
+/* Define to 1 if compiler needs external `strdup' function */
+#undef NEED_STRDUP
 
 /* Define to 1 if compiler needs external `tanf' function */
 #undef NEED_TANF

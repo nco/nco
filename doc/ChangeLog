@@ -1,5 +1,13 @@
 2004-06-15  Charlie Zender  <zender@uci.edu>
 
+	* Check for strdup() and strcasecmp() with NCO_CHECK_FUNCS rather
+	than AC_CHECK_FUNCS so they are protected by NEED_* rather than
+	HAVE_* tokens. This improves portability of libnco by reducing
+	number of tokens non-NCO programs need to define in order to link
+	to libnco.a.
+
+	* Add bld/nco_lib_tst.c to test libnco offline
+
 	* cvs tag -c nco-2_9_6
 	Changes since nco-2_9_5: Add -o fl_out option, change ncwa -o
 	meaning, AMD64 build tweaks

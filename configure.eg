@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.84 2004-05-24 18:32:56 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.85 2004-06-15 22:37:45 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -79,11 +79,22 @@ AIX bs1201en 1 5 0023F7EA4C00
 powerpc-ibm-aix5.1.0.0
 
 For ABI=64:
-# babyblue, bluesky, blackforest, dave, esmf
+# babyblue, bluesky, blackforest, dave
 export GNU_TRP=`~/nco/autobld/config.guess`
 export OBJECT_MODE='64' # AIX-specific hack
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB=${NETCDF_LIB} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
+
+# Disable shared libraries esmf
+export GNU_TRP=`~/nco/autobld/config.guess`
+export OBJECT_MODE='64' # AIX-specific hack
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB=${NETCDF_LIB} ./configure --disable-shared --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1

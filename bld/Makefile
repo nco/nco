@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.244 2004-06-15 16:46:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.245 2004-06-15 22:37:47 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -371,7 +371,7 @@ ifeq (${UDUNITS},Y)
  CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H
 endif # !UDUNITS
 # Assume strcasecmp() and strdup() routines are present (Comeau is exception)
-CPP_TKN_OS += -DHAVE_STRCASECMP -DHAVE_STRDUP
+CPP_TKN_OS += 
 # fxm: Define HAVE_LIBINTL, HAVE_LOCALE_H, HAVE_GETTEXT, HAVE_OMP_H
 
 # Works on AIX and AIX46K
@@ -620,8 +620,8 @@ YACC := bison
 # Comeau C Compiler
 ifeq (${C++},como)
  CFLAGS := 
- CPPFLAGS := $(filter-out -DHAVE_STRCASECMP,${CPPFLAGS})
- CPPFLAGS := $(filter-out -DHAVE_STRDUP,${CPPFLAGS})
+ CPPFLAGS += -DNEED_STRCASECMP
+ CPPFLAGS += -DNEED_STRDUP
  LDFLAGS := ${COMOROOT}/libcomo/libcomo.a ${LDFLAGS}
 ifeq (${OPTS},O)
  CFLAGS += -O

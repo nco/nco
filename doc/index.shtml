@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.225 2004-06-15 16:46:39 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.226 2004-06-15 22:37:48 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -242,7 +242,7 @@ Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> 
 <li><b>NCO 2.5.4</b>: Add support NEC-SX support, update Cray support, small build changes</li>
 <li><b>NCO 2.5.3</b>: Fix native builds under MS Windows with Cygwin <tt>ncap</tt>, hint to <tt>ncwa</tt></li>
 <li><b>NCO 2.5.2</b>: Add math functions to <tt>ncap</tt>, hint to <tt>ncwa</tt></li>
-<li><b>NCO 2.5.1</b>: <tt>ncatted</tt> deletes all attributes of <i>att_var</i> when <i>att_nm</i> not specified</li>
+<li><b>NCO 2.5.1</b>: <tt>ncatted</tt> deletes all attributes of <tt>att_var</tt> when <tt>att_nm</tt> not specified</li>
 <li><b>NCO 2.5.0</b>: man(1) pages from Debian distribution</li>
 <li><b>NCO 2.4.6</b>: Free (speech) sort routines</li>
 <li><b>NCO 2.4.5</b>: Arithmetic speedups</li>

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.10 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.h,v 1.11 2004-06-15 22:37:48 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -29,18 +29,18 @@
 extern "C" {
 #endif /* __cplusplus */
 
-#ifndef HAVE_STRCASECMP
+#ifdef NEED_STRCASECMP
 int /* O [enm] [-1,0,1] sng_1 [<,=,>] sng_2 */
 strcasecmp /* [fnc] Lexicographical case-insensitive string comparison */
 (const char *sng_1, /* I [sng] First string */
  const char *sng_2); /* I [sng] Second string */
-#endif /* HAVE_STRCASECMP */
+#endif /* !NEED_STRCASECMP */
 
-#ifndef HAVE_STRDUP
+#ifdef NEED_STRDUP
 char * /* O [sng] Copy of input string */
 strdup /* [fnc] Duplicate string */
 (char *sng_in); /* I [sng] String to duplicate */
-#endif /* HAVE_STRDUP */
+#endif /* !NEED_STRDUP */
 
 char * /* O [sng] Parsed command line */
 nco_cmd_ln_sng /* [fnc] Re-construct command line from arguments */
