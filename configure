@@ -11826,12 +11826,47 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
     ;;
-  alpha*-*-*)
+  i345686-*-freebsd*)
+
+cat >>confdefs.h <<\_ACEOF
+#define FREEBSD 1
+_ACEOF
+
+    ;;
+  alpha*-*-linux*)
+
+cat >>confdefs.h <<\_ACEOF
+#define LINUXALPHA 1
+_ACEOF
+
     ;;
   i345686-*-linux*)
 
 cat >>confdefs.h <<\_ACEOF
 #define LINUX 1
+_ACEOF
+
+    ;;
+  powerpc-*-linux*)
+
+cat >>confdefs.h <<\_ACEOF
+#define LINUXPPC 1
+_ACEOF
+
+    ;;
+  sparc64-*-linux*)
+
+cat >>confdefs.h <<\_ACEOF
+#define LINUXSPARC64 1
+_ACEOF
+
+    ;;
+  rs6000-*-lynxos*)
+    ;;
+  *-*-darwin*)
+
+cat >>confdefs.h <<\_ACEOF
+#define MACOSX 1
 _ACEOF
 
     ;;
@@ -11842,8 +11877,6 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
     ;;
-  rs6000-*-lynxos*)
-    ;;
   mips*-sgi-irix*)
 
 cat >>confdefs.h <<\_ACEOF
@@ -11851,21 +11884,14 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
     ;;
-  cygwin*)
-
-cat >>confdefs.h <<\_ACEOF
-#define WIN32 1
-_ACEOF
-
-    ;;
   sparc-*-*)
 
 cat >>confdefs.h <<\_ACEOF
-#define SUN4SOL2 1
+#define SUNMP 1
 _ACEOF
 
     ;;
-  cygwin*)
+  *-*-cygwin*)
 
 cat >>confdefs.h <<\_ACEOF
 #define WIN32 1
