@@ -3,6 +3,8 @@
 	* cvs tag -c nco-2_4_3
 	Changes since nco-2_4_2: History attribute handling
 
+	* Added target non_ncap to Makefile to prevent NCAR AIX breakage
+
 	* Fixed hst_att_cat() to handle non-standard "History" attribute
 	same as standard "history" attribute
 
