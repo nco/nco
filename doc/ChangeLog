@@ -1,3 +1,9 @@
+2004-11-30  Charlie Zender  <zender@uci.edu>
+
+	* Updated config.guess to timestamp 20040611
+
+	* Updated config.sub to timestamp 20040312
+
 2004-11-05  Charlie Zender <zender@dust.ps.uci.edu>
 
 	* Use S_IFLNK instead of S_ISLNK for NEC SX in nco_fl_utl.c
