@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.55 2004-01-17 01:19:44 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.56 2004-01-18 07:59:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.7 are ready. 
 
@@ -12,7 +12,7 @@ Enjoy,
 Charlie
 
 Bug-fixes:
-1. fxm Appends are now order-independent
+1. fxm ncks appends work again are d order-independent(?) (broken in ~2.8.6)
 2. fxm Solaris cc/CC autotools builds work again (broken in ~2.8.6)
 
 Feature changes:

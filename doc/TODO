@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.278 2004-01-17 01:19:44 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.279 2004-01-18 07:59:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -240,7 +240,8 @@ ncks -A -C -v u,v in.nc foo.nc # Place originals with time means
 ncks: ERROR attempt to write 1 dimensional input variable u to 0 dimensional space in output file.
 ncap -O -s "uprmvprm=u*v-uavg*vavg" foo.nc foo.nc # Covariance
 ncra -O -v uprmvprm foo.nc out.nc # Time-mean covariance
-
+This breaks mie!
+307. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************
