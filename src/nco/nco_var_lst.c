@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.38 2004-09-07 04:31:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.39 2004-09-07 04:50:12 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -453,13 +453,13 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	   /* ...unpacking requested for unpacked variable... */
 	   (nco_pck_plc == nco_pck_plc_upk && !var[idx]->pck_ram) ||
 	   /* ...or packing unpacked requested and variable is already packed... */
-	   (nco_pck_plc == nco_pck_plc_all_xst_att && var_prc[idx]->pck_ram) ||
+	   (nco_pck_plc == nco_pck_plc_all_xst_att && var[idx]->pck_ram) ||
 	   /* ...or re-packing packed requested and variable is unpacked... */
-	   (nco_pck_plc == nco_pck_plc_xst_new_att && !var_prc[idx]->pck_ram)
+	   (nco_pck_plc == nco_pck_plc_xst_new_att && !var[idx]->pck_ram)
 	   )
 	  var_op_typ[idx]=fix;
 	/* fxm: ncpdq packing treats all variables as processed */
-	var_op_typ[idx]=prc;
+	/*	var_op_typ[idx]=prc;*/
       }else{
 	/* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
 	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){

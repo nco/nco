@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.273 2004-09-07 04:31:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.274 2004-09-07 04:50:11 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6678,7 +6678,7 @@ a frequently used option, or with switches that imply
 frequently used options.
 @command{ncpack} is a synonym for @command{ncpdq} and behaves the same
 in all respects except that @command{ncpack} implicitly assumes a
-packing type request of @samp{pck_all_new_att}.  
+packing policy request of @samp{pck_all_new_att}.  
 Hence @command{ncpack} may be invoked without any @samp{-P} switch,
 unlike @command{ncpdq}.
 Similarly, @command{ncunpack} is a synonym for @command{ncpdq} 
@@ -6699,8 +6699,8 @@ The following commands are equivalent for packing:
 The following commands are equivalent for unpacking:
 @code{ncpdq -P upk}, @code{ncpdq --pck_plc=unpack}, @code{ncpdq -U},   
 and @code{ncunpack}.
-The user can determines equivalent commands for other packing
-request types, e.g., @samp{all_xst}, by analogy.
+Equivalent commands for other packing policies, e.g., @samp{all_xst}, 
+follow by analogy. 
 @cindex @command{alias}
 @cindex @command{ln -s}
 @cindex symbolic links

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.411 2004-09-07 04:16:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.412 2004-09-07 04:50:11 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -260,7 +260,6 @@ nco440. Verify packing NC_DOUBLE->NC_INT
 nco441. Verify packing NC_DOUBLE->NC_CHAR
 nco442. Verify packing NC_INT->NC_CHAR
 nco443. Verify packing NC_SHORT->NC_CHAR
-nco444. ncpdq: Split var_prc from var_fix in nco_var_lst_dvd()
 nco450. Run ncra on two multiple record files with packed variables and look for pck_dbg memory problems with valgrind
 nco453. Re-think handling of dangling pointers in nco_pck_val()?
 nco454. ncpdq: Combine nco_pck_map,nco_pck_typ into new nco_pck_sct to avoid proliferation of argument passing

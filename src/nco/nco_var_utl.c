@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.64 2004-09-07 04:31:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.65 2004-09-07 04:50:12 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -994,14 +994,14 @@ nco_var_val_cpy /* [fnc] Copy variables data from input to output file */
   
   for(idx=0;idx<nbr_var;idx++){
     var[idx]->xrf->val.vp=var[idx]->val.vp=(void *)nco_malloc(var[idx]->sz*nco_typ_lng(var[idx]->type));
-    if(var[idx]->nbr_dim==0){
+    if(var[idx]->nbr_dim == 0){
       nco_get_var1(in_id,var[idx]->id,var[idx]->srt,var[idx]->val.vp,var[idx]->type);
       nco_put_var1(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->val.vp,var[idx]->type);
     }else{ /* end if variable is a scalar */
       nco_get_vara(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->val.vp,var[idx]->type);
       nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->val.vp,var[idx]->type);
     } /* end if variable is an array */
-    var[idx]->val.vp=nco_free(var[idx]->val.vp); var[idx]->xrf->val.vp=var[idx]->val.vp=NULL;
+    var[idx]->val.vp=var[idx]->xrf->val.vp=nco_free(var[idx]->val.vp);
   } /* end loop over idx */
 
 } /* end nco_var_val_cpy() */
