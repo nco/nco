@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.6 2002-05-08 21:02:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.7 2002-05-12 06:12:26 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -90,10 +90,11 @@ nco_lib_vrs_prn(void) /* [fnc] Print netCDF library version */
   nst_sng[nst_sng_len]='\0';
 
   (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",vrs_sng,nst_sng);
-  vrs_sng=nco_free(vrs_sng);
-  lib_sng=nco_free(lib_sng);
-  nst_sng=nco_free(nst_sng);
   (void)fprintf(stdout,"NCO homepage URL is http://nco.sourceforge.net\n");
+
+  vrs_sng=(char *)nco_free(vrs_sng);
+  lib_sng=(char *)nco_free(lib_sng);
+  nst_sng=(char *)nco_free(nst_sng);
 } /* end nco_lib_vrs_prn() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -107,7 +108,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
 
   /* Get program name (use strrchr() first in case nm_in contains a path) */
   nm_out=(char *)strdup(nm_in);
-  if(strrchr(nm_out,'/') != NULL) nm_out++;
+  if(strrchr(nm_out,'/') != NULL) nm_out=strrchr(nm_out,'/')+1;
 
   /* Classify calling program */
   if(!strcmp(nm_out,"ncra")){*prg=ncra;}
@@ -248,7 +249,7 @@ nco_usg_prn(void)
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/
 
   /* Free the space holding the string */
-  opt_sng=nco_free(opt_sng);
+  opt_sng=(char *)nco_free(opt_sng);
 
 } /* end nco_usg_prn() */
 

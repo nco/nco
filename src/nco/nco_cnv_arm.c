@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.2 2002-05-12 06:12:26 zender Exp $ */
 
 /* Purpose: ARM conventions */
 
@@ -133,7 +133,7 @@ arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   (void)nco_put_vara(nc_id,time_id,&srt,&cnt,(void *)time_offset,NC_DOUBLE);
 
   /* Free time_offset buffer */
-  time_offset=nco_free(time_offset);
+  time_offset=(double *)nco_free(time_offset);
 
 } /* end arm_time_install */
 

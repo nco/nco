@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.6 2002-05-07 08:34:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.7 2002-05-12 06:12:26 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -232,7 +232,7 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
     xtr_nm=(char **)nco_malloc(nbr_lst*sizeof(char *));
     for(idx=0;idx<nbr_lst;idx++) xtr_nm[idx]=lst[idx].nm;
     (void)index_alpha(nbr_lst,xtr_nm-1,srt_idx-1);
-    xtr_nm=nco_free(xtr_nm);
+    xtr_nm=(char **)nco_free(xtr_nm);
   }else{
     /* Heapsort list by variable ID 
        This theoretically allows fastest I/O when creating output file */
@@ -240,7 +240,7 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
     xtr_id=(int *)nco_malloc(nbr_lst*sizeof(int));
     for(idx=0;idx<nbr_lst;idx++) xtr_id[idx]=lst[idx].id;
     (void)indexx(nbr_lst,xtr_id-1,srt_idx-1);
-    xtr_id=nco_free(xtr_id);
+    xtr_id=(int *)nco_free(xtr_id);
   } /* end else */
 
   /* indexx and relatives employ "one-based" arrays 
@@ -249,8 +249,8 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
     lst[idx].id=lst_tmp[srt_idx[idx]-1].id;
     lst[idx].nm=lst_tmp[srt_idx[idx]-1].nm;
   } /* end loop over idx */
-  lst_tmp=nco_free(lst_tmp);
-  srt_idx=nco_free(srt_idx);
+  lst_tmp=(nm_id_sct *)nco_free(lst_tmp);
+  srt_idx=(int *)nco_free(srt_idx);
   
   return lst;
   

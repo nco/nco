@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.3 2002-05-12 01:01:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.4 2002-05-12 06:12:26 zender Exp $ */
 
 /* Purpose: CSM conventions */
 
@@ -37,7 +37,7 @@ ncar_csm_inq /* O [fnc] Check if file obeys CSM conventions */
     att_val[att_sz]='\0';
     if(strstr(att_val,"NCAR-CSM") != NULL) NCAR_CSM=True;
     if(NCAR_CSM && dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: CONVENTION File convention is %s\n",prg_nm_get(),att_val);
-    att_val=nco_free(att_val);
+    att_val=(char *)nco_free(att_val);
   } /* endif */
 
   return NCAR_CSM;

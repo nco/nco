@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.6 2002-05-07 08:56:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.7 2002-05-12 06:12:26 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -102,8 +102,8 @@ var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
   
   /* Free memory for names in exclude list before losing pointers to names */
   /* NB: cannot free memory if list points to names in argv[] */
-  /* for(idx=0;idx<nbr_xcl;idx++) xcl_lst[idx].nm=nco_free(xcl_lst[idx].nm);*/
-  xcl_lst=nco_free(xcl_lst);
+  /* for(idx=0;idx<nbr_xcl;idx++) xcl_lst[idx].nm=(char *)nco_free(xcl_lst[idx].nm);*/
+  xcl_lst=(nm_id_sct *)nco_free(xcl_lst);
   
   return xtr_lst;
 } /* end var_lst_xcl() */

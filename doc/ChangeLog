@@ -1,3 +1,13 @@
+2002-05-11  Charlie Zender  <zender@uci.edu>
+
+	* gcc compiles with spurious errors but links and tests fine
+
+	* g++ compiles fine but unable to link with fabsf fmodf
+
+	* Code builds and test correctly when compiled with icc
+
+	* New code compiles completely warning-free with icc 6.0
+
 2002-05-08  Charlie Zender  <zender@uci.edu>
 
 	* Added ability to write unformatted binary output to

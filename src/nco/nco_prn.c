@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.3 2002-05-08 08:00:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.4 2002-05-12 06:12:26 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -95,11 +95,11 @@ prn_att /* [fnc] Print all attributes of single variable */
   /* Free the space holding attribute values */
   for(idx=0;idx<nbr_att;idx++){
     att[idx].val.vp=nco_free(att[idx].val.vp);
-    att[idx].nm=nco_free(att[idx].nm);
+    att[idx].nm=(char *)nco_free(att[idx].nm);
   } /* end loop over attributes */
 
-  /* Free the rest of the space allocated for attribute info. */
-  if(nbr_att > 0) att=nco_free(att);
+  /* Free rest of space allocated for attribute information */
+  if(nbr_att > 0) att=(att_sct *)nco_free(att);
 
 } /* end prn_att() */
 
@@ -218,10 +218,10 @@ prn_var_dfn /* [fnc] Print variable metadata */
   (void)fflush(stdout);
   
   /* Free the space allocated for dimension info. */
-  for(idx=0;idx<nbr_dim;idx++) dim[idx].nm=nco_free(dim[idx].nm);
+  for(idx=0;idx<nbr_dim;idx++) dim[idx].nm=(char *)nco_free(dim[idx].nm);
   if(nbr_dim > 0){
-    dim=nco_free(dim);
-    dmn_id=nco_free(dmn_id);
+    dim=(dmn_sct *)nco_free(dim);
+    dmn_id=(int *)nco_free(dmn_id);
   } /* end if nbr_dim > 0*/
 
 } /* end prn_var_dfn() */
@@ -598,26 +598,26 @@ prn_var_val_lmt /* [fnc] Print variable data */
   
   /* Free space allocated for dimension */
   for(idx=0;idx<var.nbr_dim;idx++){
-    dim[idx].nm=nco_free(dim[idx].nm);
+    dim[idx].nm=(char *)nco_free(dim[idx].nm);
     dim[idx].val.vp=nco_free(dim[idx].val.vp);
   } /* end loop over dimensions */
   if(var.nbr_dim > 0){
-    dim=nco_free(dim);
-    dmn_cnt=nco_free(dmn_cnt);
-    dmn_id=nco_free(dmn_id);
-    dmn_map=nco_free(dmn_map);
-    dmn_mod=nco_free(dmn_mod);
-    dmn_sbs_ram=nco_free(dmn_sbs_ram);
-    dmn_sbs_dsk=nco_free(dmn_sbs_dsk);
-    dmn_srd=nco_free(dmn_srd);
-    dmn_srt=nco_free(dmn_srt);
-    hyp_mod=nco_free(hyp_mod);
+    dim=(dmn_sct *)nco_free(dim);
+    dmn_cnt=(long *)nco_free(dmn_cnt);
+    dmn_id=(int *)nco_free(dmn_id);
+    dmn_map=(long *)nco_free(dmn_map);
+    dmn_mod=(long *)nco_free(dmn_mod);
+    dmn_sbs_ram=(long *)nco_free(dmn_sbs_ram);
+    dmn_sbs_dsk=(long *)nco_free(dmn_sbs_dsk);
+    dmn_srd=(long *)nco_free(dmn_srd);
+    dmn_srt=(long *)nco_free(dmn_srt);
+    hyp_mod=(long *)nco_free(hyp_mod);
   } /* end if nbr_dim > 0*/
 
   /* Free space allocated for variable */
   var.val.vp=nco_free(var.val.vp);
-  var.nm=nco_free(var.nm);
-  if(strlen(unit_sng) > 0) unit_sng=nco_free(unit_sng);
+  var.nm=(char *)nco_free(var.nm);
+  if(strlen(unit_sng) > 0) unit_sng=(char *)nco_free(unit_sng);
  
 } /* end prn_var_val_lmt() */
 

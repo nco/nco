@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.2 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.3 2002-05-12 06:12:26 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -158,9 +158,9 @@ aed_prc /* [fnc] Process a single attribute edit on a single variable */
     mss_val_new.vp=nco_free(mss_val_new.vp);
     var->mss_val.vp=nco_free(var->mss_val.vp);
     var->val.vp=nco_free(var->val.vp);
-    var->dmn_id=nco_free(var->dmn_id);
-    var->srt=nco_free(var->srt);
-    var->cnt=nco_free(var->cnt);
+    var->dmn_id=(int *)nco_free(var->dmn_id);
+    var->srt=(long *)nco_free(var->srt);
+    var->cnt=(long *)nco_free(var->cnt);
 
     /* Put file back in define mode */
     (void)nco_redef(nc_id);
@@ -321,8 +321,8 @@ hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 
   (void)nco_put_att(out_id,NC_GLOBAL,"history",NC_CHAR,strlen(history_new)+1,(void *)history_new);
 
-  history_crr=nco_free(history_crr);
-  history_new=nco_free(history_new);
+  history_crr=(char *)nco_free(history_crr);
+  history_new=(char *)nco_free(history_new);
 
 } /* end hst_att_cat() */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.9 2002-05-12 01:01:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.10 2002-05-12 06:12:26 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -78,8 +78,8 @@ cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
   
   /* Free the space holding dimension IDs */
-  dmn_in_id=nco_free(dmn_in_id);
-  dmn_out_id=nco_free(dmn_out_id);
+  dmn_in_id=(int *)nco_free(dmn_in_id);
+  dmn_out_id=(int *)nco_free(dmn_out_id);
   
   return var_out_id;
 } /* end cpy_var_dfn() */
@@ -162,8 +162,8 @@ cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
   
   /* Free space holding dimension IDs */
-  dmn_in_id=nco_free(dmn_in_id);
-  dmn_out_id=nco_free(dmn_out_id);
+  dmn_in_id=(int *)nco_free(dmn_in_id);
+  dmn_out_id=(int *)nco_free(dmn_out_id);
   
   return var_out_id;
 } /* end cpy_var_dfn_lmt() */
@@ -254,10 +254,10 @@ cpy_var_val /* [fnc] Copy variable data from input to output file */
   if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
 
   /* Free the space that held dimension IDs */
-  dmn_cnt=nco_free(dmn_cnt);
-  dmn_id=nco_free(dmn_id);
-  dmn_sz=nco_free(dmn_sz);
-  dmn_srt=nco_free(dmn_srt);
+  dmn_cnt=(long *)nco_free(dmn_cnt);
+  dmn_id=(int *)nco_free(dmn_id);
+  dmn_sz=(long *)nco_free(dmn_sz);
+  dmn_srt=(long *)nco_free(dmn_srt);
 
   /* Free the space that held variable */
   void_ptr=nco_free(void_ptr);
@@ -518,23 +518,23 @@ cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
       if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
     } /* end else SRD */
     
-    dmn_in_srt_1=nco_free(dmn_in_srt_1);
-    dmn_in_srt_2=nco_free(dmn_in_srt_2);
-    dmn_out_srt_1=nco_free(dmn_out_srt_1);
-    dmn_out_srt_2=nco_free(dmn_out_srt_2);
-    dmn_cnt_1=nco_free(dmn_cnt_1);
-    dmn_cnt_2=nco_free(dmn_cnt_2);
+    dmn_in_srt_1=(long *)nco_free(dmn_in_srt_1);
+    dmn_in_srt_2=(long *)nco_free(dmn_in_srt_2);
+    dmn_out_srt_1=(long *)nco_free(dmn_out_srt_1);
+    dmn_out_srt_2=(long *)nco_free(dmn_out_srt_2);
+    dmn_cnt_1=(long *)nco_free(dmn_cnt_1);
+    dmn_cnt_2=(long *)nco_free(dmn_cnt_2);
 
   } /* end if WRP */
 
   /* Free space that held dimension IDs */
-  dmn_map=nco_free(dmn_map);
-  dmn_srd=nco_free(dmn_srd);
-  dmn_cnt=nco_free(dmn_cnt);
-  dmn_id=nco_free(dmn_id);
-  dmn_in_srt=nco_free(dmn_in_srt);
-  dmn_out_srt=nco_free(dmn_out_srt);
-  dmn_sz=nco_free(dmn_sz);
+  dmn_map=(long *)nco_free(dmn_map);
+  dmn_srd=(long *)nco_free(dmn_srd);
+  dmn_cnt=(long *)nco_free(dmn_cnt);
+  dmn_id=(int *)nco_free(dmn_id);
+  dmn_in_srt=(long *)nco_free(dmn_in_srt);
+  dmn_out_srt=(long *)nco_free(dmn_out_srt);
+  dmn_sz=(long *)nco_free(dmn_sz);
 
   /* Free space that held variable */
   void_ptr=nco_free(void_ptr);
@@ -693,18 +693,18 @@ var_free /* [fnc] Free all memory associated with variable structure */
   
   var->val.vp=nco_free(var->val.vp);
   var->mss_val.vp=nco_free(var->mss_val.vp);
-  var->tally=nco_free(var->tally);
-  var->dmn_id=nco_free(var->dmn_id);
-  var->dim=nco_free(var->dim);
-  var->srt=nco_free(var->srt);
-  var->end=nco_free(var->end);
-  var->cnt=nco_free(var->cnt);
-  var->srd=nco_free(var->srd);
+  var->tally=(long *)nco_free(var->tally);
+  var->dmn_id=(int *)nco_free(var->dmn_id);
+  var->dim=(dmn_sct **)nco_free(var->dim);
+  var->srt=(long *)nco_free(var->srt);
+  var->end=(long *)nco_free(var->end);
+  var->cnt=(long *)nco_free(var->cnt);
+  var->srd=(long *)nco_free(var->srd);
   var->scl_fct.vp=nco_free(var->scl_fct.vp);
   var->add_fst.vp=nco_free(var->add_fst.vp);
 
   /* Free structure pointer last */
-  var=nco_free(var);
+  var=(var_sct *)nco_free(var);
 
   return NULL;
 
@@ -952,8 +952,8 @@ var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
       (void)memcpy((void *)xtr_lst,(void *)var_lst_tmp,idx*sizeof(nm_id_sct));
       (void)memcpy((void *)(xtr_lst+idx),(void *)(var_lst_tmp+idx+1),(*nbr_xtr-idx)*sizeof(nm_id_sct));
       /* Free the memory for coordinate name in the extract list before losing the pointer */
-      var_lst_tmp[idx].nm=nco_free(var_lst_tmp[idx].nm);
-      var_lst_tmp=nco_free(var_lst_tmp);
+      var_lst_tmp[idx].nm=(char *)nco_free(var_lst_tmp[idx].nm);
+      var_lst_tmp=(nm_id_sct *)nco_free(var_lst_tmp);
     } /* end if */
   } /* end if */
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.2 2002-05-05 19:35:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.3 2002-05-12 06:12:26 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -125,10 +125,10 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
     (void)fprintf(stderr,"cvs_pch_vrs %li\n",cvs_pch_vrs);
   } /* endif dbg */
 
-  cvs_mjr_vrs_sng=nco_free(cvs_mjr_vrs_sng);
-  cvs_mnr_vrs_sng=nco_free(cvs_mnr_vrs_sng);
-  cvs_pch_vrs_sng=nco_free(cvs_pch_vrs_sng);
-  cvs_nm_sng=nco_free(cvs_nm_sng);
+  cvs_mjr_vrs_sng=(char *)nco_free(cvs_mjr_vrs_sng);
+  cvs_mnr_vrs_sng=(char *)nco_free(cvs_mnr_vrs_sng);
+  cvs_pch_vrs_sng=(char *)nco_free(cvs_pch_vrs_sng);
+  cvs_nm_sng=(char *)nco_free(cvs_nm_sng);
 
   return cvs_vrs_sng;
 } /* end cvs_vrs_prs() */
@@ -195,8 +195,8 @@ copyright_prn /* [fnc] Print copyright notice */
   (void)fprintf(stderr,"%s version %s (%s) \"%s\"\n",prg_nm_get(),vrs_rcs,date_cvs,nmn_get());
   (void)fprintf(stdout,"NCO is free software and comes with ABSOLUTELY NO WARRANTY\nNCO is distributed under the terms of the GNU General Public License\n");
 
-  vrs_rcs=nco_free(vrs_rcs);
-  vrs_cvs=nco_free(vrs_cvs);
+  vrs_rcs=(char *)nco_free(vrs_rcs);
+  vrs_cvs=(char *)nco_free(vrs_cvs);
 } /* end copyright_prn() */
 
 char * /* O [sng] Mnemonic that describes current NCO version */

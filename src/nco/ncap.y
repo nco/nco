@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.52 2002-05-12 00:24:15 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.53 2002-05-12 06:12:26 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -591,7 +591,9 @@ yyerror(char *err_sng)
   return 0;
 } /* end yyerror() */
 
-void nco_var_free(var_sct **var)
+void 
+nco_var_free /* [fnc] Safely free variable */
+(var_sct **var) /* [sct] Variable */
 {
   /* Purpose: Safely free variable
      Routine is wrapper for var_free() that simplifies code in calling routine */

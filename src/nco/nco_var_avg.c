@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.5 2002-05-07 08:34:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.6 2002-05-12 06:12:26 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -269,8 +269,8 @@ var_avg /* [fnc] reduce given variable over specified dimensions */
   
   /* Free input variable */
   var=var_free(var);
-  dmn_avg=nco_free(dmn_avg);
-  dmn_fix=nco_free(dmn_fix);
+  dmn_avg=(dmn_sct **)nco_free(dmn_avg);
+  dmn_fix=(dmn_sct **)nco_free(dmn_fix);
 
   /* Return averaged variable */
   return fix;
