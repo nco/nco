@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.267 2004-10-07 23:13:46 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.268 2004-10-12 04:46:30 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -212,6 +212,8 @@ is
 <a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0431203">funding</a>
 our
 <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO&rarr;SDO Project</a>.
+as part of the 
+<a href="http://www.cise.nsf.gov/funding/pgm_display.cfm?pub_id=9473&div=iis">Science and Engineering Informatics (SEI)</a> program.
 Thanks to the wise, generous, and, need I add, good-looking, proposal reviewers and staff of the Divisions of
 <a href="http://www.cise.nsf.gov/div/index.cfm?div=iis">Information and Intelligent Systems (IIS)</a>
 and
