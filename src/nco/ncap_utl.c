@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.27 2002-01-11 06:18:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.28 2002-01-11 23:22:05 hmb Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -118,13 +118,14 @@ ncap_var_write(var_sct *var, prs_sct *prs_arg)
 } /* end ncap_var_write */
 
 sym_sct *
-ncap_sym_init(char *name,double (*function)())
+ncap_sym_init(char *name,double (*function)(double ),float (*functionf)(float ))
 { 
   /* purpose: Allocate space for sym_sct then initialize */
   sym_sct *symbol;
-  symbol=malloc(sizeof(sym_sct));
+  symbol=(sym_sct *)nco_malloc(sizeof(sym_sct));
   symbol->nm=strdup(name);
   symbol->fnc= function;
+  symbol->fncf = functionf;
   return symbol;
 } /* end ncap_sym_init */
 
@@ -253,65 +254,111 @@ ncap_var_attribute_power(var_sct *var_in,parse_sct attribute)
   /* All values converted to type double before operation        */
   long idx;
   long sz;
-  double att_dpl;
   ptr_unn op1;
   var_sct *var;
-  /* convert attribute and var to type DOUBLE */
-  (void)ncap_attribute_conform_type(NC_DOUBLE,&attribute);
-  var_in=var_conform_type(NC_DOUBLE,var_in);
+  /* convert attribute and var to type NC_FLOAT or leave if its a DOUBLE */
+
+  if(var_in->type < NC_FLOAT) var_in=var_conform_type(NC_FLOAT,var_in);
   var=var_dpl(var_in);
+ 
+  (void)ncap_attribute_conform_type(var->type,&attribute);
+  
   op1=var->val;
-  (void)cast_void_nctype(NC_DOUBLE,&op1);
-  if(var->has_mss_val) (void)cast_void_nctype(NC_DOUBLE,&(var->mss_val));
-  
-  att_dpl=attribute.val.d;
   sz=var->sz;
-  if(!var->has_mss_val){
-    for(idx=0;idx<sz;idx++) op1.dp[idx]=pow(op1.dp[idx],att_dpl);
-    
-  }else{
-    double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces dereferencing */
-    for(idx=0;idx<sz;idx++){
-      if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=pow(op1.dp[idx],att_dpl);
-    } /* end for */
-  } /* end else */
+  (void)cast_void_nctype(var->type,&op1);
+  if(var->has_mss_val) (void)cast_void_nctype(var->type,&(var->mss_val));
   
-  if(var->has_mss_val) (void)cast_nctype_void(NC_DOUBLE,&(var->mss_val));
+  
+  switch(var->type){ 
+  case NC_DOUBLE: {
+    double att_dpl=attribute.val.d;
+    if(!var->has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]=pow(op1.dp[idx],att_dpl);
+    
+    }else{
+      double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+        if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=pow(op1.dp[idx],att_dpl);
+      } /* end for */
+    } /* end else */
+   break;
+  }
+  case NC_FLOAT: {
+    float att_flt=attribute.val.f;
+    if(!var->has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.fp[idx]=powf(op1.fp[idx],att_flt);
+    
+    }else{
+      float mss_val_flt=*(var->mss_val.fp); /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+        if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=powf(op1.fp[idx],att_flt);
+      } /* end for */
+    } /* end else */
+   break;
+  }
+  default: nco_dfl_case_nctype_err(); break;
+  }/* end switch */
+
+  if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
   return var;
   
 } /* end ncap_var_attribute_power */
 
+
 var_sct *
-ncap_var_function(var_sct *var_in, double(*fnc)())
+ncap_var_function(var_sct *var_in, sym_sct *app)
 {
-  /* purpose: evalue fnc(var) for each value in variable */
+  /* purpose: evalue fnc(var) or fncf(var) for each value in variable */
+  /* The float and double functions are in app                        */
   long idx;
   long sz;
   ptr_unn op1;
   var_sct *var;
-  /* convert attribute and var to type DOUBLE */
-  var_in=var_conform_type(NC_DOUBLE,var_in);
+  /* convert  var to type NC_FLOAT or leave if its a DOUBLE */
+
+  if(var_in->type < NC_FLOAT) var_in=var_conform_type(NC_FLOAT,var_in);
   var=var_dpl(var_in);
+ 
   op1=var->val;
-  (void)cast_void_nctype(NC_DOUBLE,&op1);
-  if(var->has_mss_val) (void)cast_void_nctype(NC_DOUBLE,&(var->mss_val));
-  
   sz=var->sz;
-  if(!var->has_mss_val){
-    for(idx=0;idx<sz;idx++) op1.dp[idx]=fnc(op1.dp[idx]);
-    
-  }else{
-    double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces dereferencing */
-    for(idx=0;idx<sz;idx++){
-      if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=fnc(op1.dp[idx]);
-    } /* end for */
-  } /* end else */
+
+  (void)cast_void_nctype(var->type,&op1);
+  if(var->has_mss_val) (void)cast_void_nctype(var->type,&(var->mss_val));
   
-  /* (void)cast_nctype_void(NC_DOUBLE,&var->val); */
-  if(var->has_mss_val) (void)cast_nctype_void(NC_DOUBLE,&(var->mss_val));
+  
+  switch(var->type){ 
+  case NC_DOUBLE: {
+    if(!var->has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]=(*(app->fnc))(op1.dp[idx]);
+    
+    }else{
+      double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+        if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=(*(app->fnc))(op1.dp[idx]);
+      } /* end for */
+    } /* end else */
+   break;
+  }
+  case NC_FLOAT: {
+    if(!var->has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.fp[idx]=(*(app->fncf))(op1.fp[idx]);
+    
+    }else{
+      float mss_val_flt=*(var->mss_val.fp); /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+        if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=(*(app->fncf))(op1.fp[idx]);
+      } /* end for */
+    } /* end else */
+   break;
+  }
+  default: nco_dfl_case_nctype_err(); break;
+  }/* end switch */
+
+  if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
   return var;
   
-}/* end ncap_var_function */
+} /* end ncap_var_function */
+
 
 var_sct *
 ncap_var_attribute_add(var_sct *var,parse_sct attribute)
@@ -815,6 +862,7 @@ ncap_var_retype(var_sct* vara, var_sct* varb)
   }
 } /* end ncap_var_retype */
 
+
 bool
 ncap_var_conform_dim(var_sct **vara,var_sct **varb)
 {
@@ -1116,6 +1164,62 @@ var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int n
   *nbr_xtr=n;
   return xtr_new_lst;            
 } /* var_lst_add */
+
+
+nm_id_sct *
+ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
+/* 
+   int nc_id: I netCDF file ID
+   nm_id_sct *xtr_lst: I/O current extraction list 
+   int *nbr_xtr: I/O number of variables in current extraction list: Overwritten by new list 
+   nm_id_sct ncap_var_lst_crd_make: list of co-orinate dimensions 
+ */
+{
+  /* Make a list of just the co-ordinate dimensions from a list containing */
+  /* ordinary vars and co-ordinate vars                                    */ 
+
+  char dmn_nm[NC_MAX_NAME];
+
+  int crd_id;
+  int idx_dim;
+  int idx_var;
+  int nbr_dim;
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int nbr_new_lst=0;
+
+  nm_id_sct *new_lst;
+  
+
+  /* Get number of dimensions */
+  (void)nco_inq(nc_id,&nbr_dim,(int *)NULL,(int *)NULL,(int *)NULL);
+
+  /* ...for each dimension in input file... */
+  for(idx_dim=0;idx_dim<nbr_dim;idx_dim++){
+    /* ...see if it is a coordinate dimension... */
+    (void)nco_inq_dimname(nc_id,idx_dim,dmn_nm);
+     
+    rcd=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
+    if(rcd == NC_NOERR){
+      /* Is this coordinate already on extraction list? */
+      for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
+	if(crd_id == xtr_lst[idx_var].id) {
+	  if(nbr_new_lst == 0) new_lst=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));      	
+            else new_lst=(nm_id_sct *)nco_realloc((void *)new_lst,(nbr_new_lst+1)*sizeof(nm_id_sct));
+      	    new_lst[nbr_new_lst].nm=(char *)strdup(dmn_nm);
+	    new_lst[nbr_new_lst++].id=crd_id;
+            break;
+        }
+        
+      } /*end for */
+    } /* end if */
+  } /* end for */
+
+  *nbr_xtr = nbr_new_lst;
+  
+  return new_lst;
+  
+} /* end ncap_var_lst_crd_make() */
+
 
 void 
 ncap_initial_scan(prs_sct *prs_arg,char *spt_arg_cat, nm_id_sct** xtr_lst_a,int *nbr_lst_a,
