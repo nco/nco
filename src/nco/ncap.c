@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.108 2003-01-20 17:46:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.109 2003-02-25 21:58:03 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.108 2003-01-20 17:46:02 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.108 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.109 2003-02-25 21:58:03 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.109 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -142,7 +142,6 @@ main(int argc,char **argv)
   int in_id;  
   int out_id;  
   int nbr_abb_arg=0;
-  int nbr_dmn_fl;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_spt=0; /* Option s. NB: nbr_spt gets incremented */
   int nbr_var_fl;/* number of vars in a file */
@@ -154,7 +153,6 @@ main(int argc,char **argv)
   int nbr_fl=0;
   int nbr_lst_a=0; /* size of xtr_lst_a */
   int opt;
-  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int sng_lng;
   int var_id;
@@ -164,8 +162,6 @@ main(int argc,char **argv)
   sym_sct **sym_tbl; /* [fnc] Symbol table for functions */
   int sym_tbl_nbr; /* [nbr] Size of symbol table */
   int sym_idx=0; /* [idx] Counter for symbols */
-  
-  
   
   lmt_sct *lmt=NULL_CEWI;
   

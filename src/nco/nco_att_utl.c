@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.19 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.20 2003-02-25 21:58:06 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -272,7 +272,6 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       
       long att_sz;
       long att_lng_in;
-      long att_lng_out;
       
       nc_type att_typ_in;
       nc_type att_typ_out;
@@ -301,7 +300,6 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       aed.type=att_typ_out; /* Type of attribute */
       aed.val.vp=(void *)nco_malloc(nco_typ_lng(aed.type)); /* Pointer to attribute value */
       att_lng_in=att_sz*nco_typ_lng(att_typ_in);
-      att_lng_out=att_sz*nco_typ_lng(att_typ_out);
       mss_tmp.vp=(void *)nco_malloc(att_lng_in);
       (void)nco_get_att(in_id,var_in_id,att_nm,mss_tmp.vp,att_typ_in);
       (void)val_conform_type(att_typ_in,mss_tmp,att_typ_out,aed.val);

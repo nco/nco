@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.10 2003-02-25 19:24:02 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.11 2003-02-25 21:58:06 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -34,7 +34,6 @@ art at 0 */
   nbr_slb=lmt_lst[dpt_crr]->lmt_dmn_nbr;
 
   if(nbr_slb == 1){
-    
     lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[0];
     vp=nco_msa_rec_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
     return vp;
@@ -58,61 +57,61 @@ art at 0 */
     
     char **cp_wrp;
     char *cp_stp;
-    char *slb; 
+    char *slb;
     lmt_sct lmt_ret;
     
     cp_sz=(long *)nco_malloc(nbr_slb*sizeof(long));
     indices=(long *)nco_malloc(nbr_slb*sizeof(long));
     cp_wrp=(char **)nco_malloc(nbr_slb*sizeof(void *));
     
-    for(idx=0;idx < nbr_slb;idx++){
+    for(idx=0;idx<nbr_slb;idx++){
       lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[idx];
       cp_wrp[idx]=(char *)nco_msa_rec_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
       cp_sz[idx]=vara->sz;
     } /* end loop over idx */
     
-    for(idx=0;idx < dpt_crr_max;idx++) var_sz*=(idx < dpt_crr ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt);
+    for(idx=0;idx<dpt_crr_max;idx++) var_sz*=(idx<dpt_crr ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt);
     
     vp=(void *)nco_calloc(var_sz,nco_typ_lng(vara->type));
     
     lcnt=nco_typ_lng(vara->type);
-    for(idx=(dpt_crr+1);idx < dpt_crr_max;idx++) lcnt*=lmt_lst[idx]->dmn_cnt;
+    for(idx=(dpt_crr+1);idx<dpt_crr_max;idx++) lcnt*=lmt_lst[idx]->dmn_cnt;
     
     cp_inc=(ptrdiff_t)(lcnt*lmt_lst[dpt_crr]->dmn_cnt);
     
     cp_max=(ptrdiff_t)(var_sz*nco_typ_lng(vara->type));
     
-    for(idx=0;idx < nbr_slb;idx++) indices[idx]=lmt_lst[dpt_crr]->lmt_dmn[idx]->srt;
+    for(idx=0;idx<nbr_slb;idx++) indices[idx]=lmt_lst[dpt_crr]->lmt_dmn[idx]->srt;
     
     cp_fst=0L;
 
     /* deal first with wrapped dims. With true wrapped dims nbr_slb =2 */
     /* They are also "continuous" , and there is no overlapping        */  
-  if( lmt_lst[dpt_crr]->WRP) {
+  if(lmt_lst[dpt_crr]->WRP) {
       
-      for(slb_idx=0 ; slb_idx < 2 ; slb_idx++){
-	cp_stp = (char*)vp+cp_fst;
+      for(slb_idx=0;slb_idx<2;slb_idx++){
+	cp_stp=(char*)vp+cp_fst;
 	slb=cp_wrp[slb_idx];
 	slb_sz=(ptrdiff_t)(lcnt*(lmt_lst[dpt_crr]->lmt_dmn[slb_idx]->cnt));
       
-        while(cp_stp - (char*)vp < cp_max){
+        while(cp_stp - (char*)vp<cp_max){
 	  (void)memcpy(cp_stp,slb,slb_sz);
 	  slb+=slb_sz;
 	  cp_stp+=cp_inc;
         } /* end while */
-        cp_fst+=slb_sz;        
+        cp_fst+=slb_sz;       
       }
 
     }else{
       /* deal with multiple hyper-slabs */
       while(nco_msa_clc_idx(True,lmt_lst[dpt_crr],&indices[0],&lmt_ret,&slb_idx)){
-	cp_stp = (char*)vp+cp_fst;
+	cp_stp=(char*)vp+cp_fst;
 	slb=cp_wrp[slb_idx]+(ptrdiff_t)(lmt_ret.srt*lcnt);
 	slb_stp=(ptrdiff_t)(lcnt*(lmt_lst[dpt_crr]->lmt_dmn[slb_idx]->cnt));
       
 	slb_sz=(ptrdiff_t)(lmt_ret.cnt*lcnt);
       
-	while(cp_stp - (char*)vp < cp_max){
+	while(cp_stp - (char*)vp<cp_max){
 	  (void)memcpy(cp_stp,slb,slb_sz);
 	  slb+=slb_stp;
 	  cp_stp+=cp_inc;
@@ -120,16 +119,14 @@ art at 0 */
 	cp_fst+=slb_sz;
       } /* end while */
     } /* end else */  
-
  
     (void)nco_free(indices);
     (void)nco_free(cp_sz);
-    for(idx=0;idx < nbr_slb;idx++) (void)nco_free(cp_wrp[idx]);
+    for(idx=0;idx<nbr_slb;idx++) (void)nco_free(cp_wrp[idx]);
     
     vara->sz=var_sz;
     return vp;
   } /* endif multiple hyperslabs */
-  
 
  read_lbl:
   {   
@@ -143,7 +140,7 @@ art at 0 */
     dmn_cnt=(long*)nco_malloc(dpt_crr_max*sizeof(long));
     dmn_srd=(long*)nco_malloc(dpt_crr_max*sizeof(long));
     
-    for(idx=0;idx < dpt_crr_max;idx++){
+    for(idx=0;idx<dpt_crr_max;idx++){
       dmn_srt[idx]=lmt[idx]->srt;
       dmn_cnt[idx]=lmt[idx]->cnt;
       dmn_srd[idx]=lmt[idx]->srd;
@@ -179,7 +176,7 @@ nco_msa_prn_idx(lmt_all *lmt_i)
   
   printf("name=%s total size=%ld\n",lmt_i->dmn_nm,lmt_i->dmn_cnt);
   
-  for(idx=0;idx < size;idx++) indices[idx]=lmt_i->lmt_dmn[idx]->srt;
+  for(idx=0;idx<size;idx++) indices[idx]=lmt_i->lmt_dmn[idx]->srt;
   
   while(nco_msa_clc_idx(False,lmt_i,&indices[0],&lmt,&slb_nbr))
     printf("slb_nbr=%d srt=%ld end=%ld cnt=%ld srd=%ld\n",slb_nbr,lmt.srt,lmt.end,lmt.cnt,lmt.srd);
@@ -247,7 +244,7 @@ nco_msa_clc_idx
       lmt->srd=1L;
     } /* end if */
     
-    for(i=0;i < size;i++){
+    for(i=0;i<size;i++){
       if(min[i]){ 
 	indices[i]+=lmt_a->lmt_dmn[i]->srd;
 	if(indices[i] > lmt_a->lmt_dmn[i]->end) indices[i]=-1;
@@ -268,66 +265,64 @@ nco_msa_clc_idx
   return True;
 } /* end nco_msa_clc_idx() */
 
-
 void
-nco_msa_ram_2_dsk(   /* convert hyperslab indices (in ram) to hyperlsab indices relative */
+nco_msa_ram_2_dsk(  /* convert hyperslab indices (in ram) to hyperlsab indices relative */
 		  long *dmn_sbs_ram,   /* to disk. */
 lmt_all **lmt_mult, 
 int nbr_dim,
 long *dmn_sbs_dsk,
-bool FREE )
-{                /*  It doenst really convert ram indices to disk indices , but given a set 
-                     of ram indices finds the next set of dsk incdices. So it only works if 
-                     the indices fed to it are continuous */
+bool FREE){
+  /*  It doenst really convert ram indices to disk indices , but given a set 
+      of ram indices finds the next set of dsk incdices. So it only works if 
+      the indices fed to it are continuous */
   int idx;
   int jdx;
   int size;
   static int initialize;
   static long **dmn_indices;
   static long *dmn_sbs_prv;
-  static bool min[100]; 
+  static bool min[100];
 
   if(!initialize){
-    dmn_sbs_prv = (long*)nco_malloc(nbr_dim*sizeof(long));
-    dmn_indices = (long**)nco_malloc(nbr_dim*sizeof(long*));
-    for(idx= 0 ; idx < nbr_dim ; idx++){
-      dmn_indices[idx] = (long *)nco_malloc(lmt_mult[idx]->lmt_dmn_nbr*sizeof(long));
-      for(jdx = 0 ; jdx < lmt_mult[idx]->lmt_dmn_nbr ; jdx++)
-	dmn_indices[idx][jdx] = lmt_mult[idx]->lmt_dmn[jdx]->srt; 
-      dmn_sbs_prv[idx] = -1L;
+    dmn_sbs_prv=(long*)nco_malloc(nbr_dim*sizeof(long));
+    dmn_indices=(long**)nco_malloc(nbr_dim*sizeof(long*));
+    for(idx= 0;idx<nbr_dim;idx++){
+      dmn_indices[idx]=(long *)nco_malloc(lmt_mult[idx]->lmt_dmn_nbr*sizeof(long));
+      for(jdx=0;jdx<lmt_mult[idx]->lmt_dmn_nbr;jdx++)
+	dmn_indices[idx][jdx]=lmt_mult[idx]->lmt_dmn[jdx]->srt;
+      dmn_sbs_prv[idx]=-1L;
     } 
-    initialize = 1;
+    initialize=1;
   }
-  for(idx= 0 ; idx <nbr_dim ; idx ++){
-    size = lmt_mult[idx]->lmt_dmn_nbr;
-    if(dmn_sbs_ram[idx] == dmn_sbs_prv[idx] ) continue;
+  for(idx= 0;idx <nbr_dim;idx ++){
+    size=lmt_mult[idx]->lmt_dmn_nbr;
+    if(dmn_sbs_ram[idx] == dmn_sbs_prv[idx]) continue;
 
     if(lmt_mult[idx]->BASIC_DMN) { 
-      dmn_sbs_dsk[idx]=dmn_sbs_ram[idx]; 
-      continue; 
+      dmn_sbs_dsk[idx]=dmn_sbs_ram[idx];
+      continue;
     }
-
      
     /* re-initialize indices if 0*/
     if(dmn_sbs_ram[idx] == 0) 
-      for(jdx=0 ;jdx < size ; jdx++)
-       	dmn_indices[idx][jdx] = lmt_mult[idx]->lmt_dmn[jdx]->srt; 
+      for(jdx=0;jdx<size;jdx++)
+       	dmn_indices[idx][jdx]=lmt_mult[idx]->lmt_dmn[jdx]->srt;
    
     /* Deal with wrapping - we have 2 hyperlsbas to deal with */
      if(lmt_mult[idx]->WRP){ 
-       if(dmn_indices[idx][0] < lmt_mult[idx]->dmn_sz_org){
+       if(dmn_indices[idx][0]<lmt_mult[idx]->dmn_sz_org){
 	 dmn_sbs_dsk[idx]= dmn_indices[idx][0];
          dmn_indices[idx][0]+=lmt_mult[idx]->lmt_dmn[0]->srd;
         }else{
 	 dmn_sbs_dsk[idx]= dmn_indices[idx][1];
          dmn_indices[idx][1]+=lmt_mult[idx]->lmt_dmn[1]->srd;
        }
-     continue;  
+     continue; 
      }
          
-    dmn_sbs_dsk[idx] = nco_msa_min_idx(dmn_indices[idx],min,size);
+    dmn_sbs_dsk[idx]=nco_msa_min_idx(dmn_indices[idx],min,size);
 
-    for(jdx=0;jdx < size;jdx++){
+    for(jdx=0;jdx<size;jdx++){
       if(min[jdx]){ 
 	dmn_indices[idx][jdx]+=lmt_mult[idx]->lmt_dmn[jdx]->srd;
 	if(dmn_indices[idx][jdx] > lmt_mult[idx]->lmt_dmn[jdx]->end) dmn_indices[idx][jdx]=-1;
@@ -335,19 +330,17 @@ bool FREE )
     } /* end for  jdx */
   } /* end for idx */ 
 
-  for(idx=0 ;idx < nbr_dim ; idx++ ) dmn_sbs_prv[idx] = dmn_sbs_ram[idx];
+  for(idx=0;idx<nbr_dim;idx++) dmn_sbs_prv[idx]=dmn_sbs_ram[idx];
 
   /* Free static space on last call */
   if(FREE){
     (void)nco_free(dmn_sbs_prv);
-    for(idx=0 ; idx <nbr_dim ; idx++)
+    for(idx=0;idx <nbr_dim;idx++)
       (void)nco_free(dmn_indices[idx]);
     (void)nco_free(dmn_indices);
-    initialize =0;
+    initialize=0;
   }
-
 }
-    
 
 void 
 nco_msa_clc_cnt(lmt_all *lmt_a)
@@ -366,11 +359,11 @@ nco_msa_clc_cnt(lmt_all *lmt_a)
     return;
   } /* end if */
   /* initialise indices with srt from    */
-  for(idx=0;idx < size;idx++)
+  for(idx=0;idx<size;idx++)
     indices[idx]=lmt_a->lmt_dmn[idx]->srt;
   
   while(nco_msa_min_idx(indices,min,size) != LONG_MAX){
-    for(idx=0;idx < size;idx++){
+    for(idx=0;idx<size;idx++){
       if(min[idx]){ 
 	indices[idx]+=lmt_a->lmt_dmn[idx]->srd;
 	if(indices[idx] > lmt_a->lmt_dmn[idx]->end) indices[idx]=-1;
@@ -383,24 +376,24 @@ nco_msa_clc_cnt(lmt_all *lmt_a)
 
 void
 nco_msa_wrp_splt
-(lmt_all* lmt_a )  /* Split wrapped dimensions  */
+(lmt_all* lmt_a)  /* Split wrapped dimensions  */
 {
   int idx;
   int jdx;
-  int size = lmt_a->lmt_dmn_nbr;
-  long dmn_sz_org = lmt_a->dmn_sz_org;
+  int size=lmt_a->lmt_dmn_nbr;
+  long dmn_sz_org=lmt_a->dmn_sz_org;
   long srt;
-  long end; 
+  long end;
   long cnt;
   long srd;
   long index=0;
   lmt_sct *lmt_wrp;
 
-  for(idx =0 ; idx<size ; idx++) {
+  for(idx=0;idx<size;idx++) {
 
-    if( lmt_a->lmt_dmn[idx]->srt > lmt_a->lmt_dmn[idx]->end) {
+    if(lmt_a->lmt_dmn[idx]->srt > lmt_a->lmt_dmn[idx]->end) {
 
-      lmt_wrp = (lmt_sct *)nco_malloc(2*sizeof(lmt_sct)); 
+      lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
 
       srt= lmt_a->lmt_dmn[idx]->srt;
       end= lmt_a->lmt_dmn[idx]->end;
@@ -408,13 +401,13 @@ nco_msa_wrp_splt
       srd= lmt_a->lmt_dmn[idx]->srd;
     
      
-    for(jdx=0;jdx < cnt ; jdx++){
+    for(jdx=0;jdx<cnt;jdx++){
       index=(srt+srd*jdx)%dmn_sz_org;
-      if(index < srt) break;
+      if(index<srt) break;
     } /* end loop over jdx */
     
-    lmt_wrp[0] = *(lmt_a->lmt_dmn[idx]);
-    lmt_wrp[1] = *(lmt_a->lmt_dmn[idx]);
+    lmt_wrp[0]=*(lmt_a->lmt_dmn[idx]);
+    lmt_wrp[1]=*(lmt_a->lmt_dmn[idx]);
 
     lmt_wrp[0].srt=srt;
     
@@ -440,18 +433,16 @@ nco_msa_wrp_splt
     } /* end else */
 
     /* insert the  new limits into the array */
-    lmt_a->lmt_dmn[idx] = lmt_wrp;
+    lmt_a->lmt_dmn[idx]=lmt_wrp;
 
-    lmt_a->lmt_dmn  = (lmt_sct **) nco_realloc(lmt_a->lmt_dmn,((lmt_a->lmt_dmn_nbr) +1)*sizeof(lmt_sct *));
+    lmt_a->lmt_dmn=(lmt_sct **) nco_realloc(lmt_a->lmt_dmn,((lmt_a->lmt_dmn_nbr) +1)*sizeof(lmt_sct *));
        lmt_a->lmt_dmn[(lmt_a->lmt_dmn_nbr)++]=++lmt_wrp;
 
     }
-
   }
 
   /* Check if we have a genuine wrapped co-ordinate */
   if(size==1 && lmt_a->lmt_dmn_nbr==2) lmt_a->WRP=True;
-
 }
 
 long
@@ -464,9 +455,9 @@ nco_msa_min_idx /* find min values in current */
   long min_val=LONG_MAX;
   
   for(i=0;i< size;i++)
-    if(current[i] != -1 && current[i] < min_val) min_val=current[i];
+    if(current[i] != -1 && current[i]<min_val) min_val=current[i];
   
-  for(i=0;i < size;i++)
+  for(i=0;i<size;i++)
     min[i]=((current[i] != -1 && current[i]== min_val) ? True : False);
   
   return min_val;
@@ -586,7 +577,6 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   return;
 } /* end nco_cpy_var_val_mlt_lmt() */
 
-
 void 
 nco_msa_c_2_f(char *s)
 {
@@ -626,7 +616,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* For regular data */
   long lmn;
   
-  char *unit_sng="";  
+  char *unit_sng=""; 
   char var_sng[MAX_LEN_FMT_SNG];
   
   var_sct var;
@@ -637,7 +627,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   dmn_sct *dim=NULL_CEWI;
      
   /* Get var_id for requested variable  */
-  var.nm = (char *)strdup(var_nm);
+  var.nm=(char *)strdup(var_nm);
   var.nc_id=in_id;
    
   nco_inq_varid(in_id,var_nm,&var.id);
@@ -664,7 +654,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* iniialize lmt_mult with multi-limits frpm lmt_lst  limits */
   /* Get dimension sizes from input file */
   for(idx=0;idx< var.nbr_dim;idx++)
-    for(jdx=0; jdx< lmt_nbr ; jdx++){
+    for(jdx=0;jdx< lmt_nbr;jdx++){
       if(dmn_id[idx] == lmt_lst[jdx].lmt_dmn[0]->id){
 	lmt_mult[idx]= &lmt_lst[jdx];
         break;
@@ -674,8 +664,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* Call the super dooper recursive routine */
   var.val.vp=nco_msa_rec_clc(0,var.nbr_dim,lmt,lmt_mult,&var);
   /* call also initializes var.sz with the final size */
-
-  /*************************************************************************/
 
   /* User supplied dlm_sng, print var (includes nbr_dmim == 0) */  
   if(dlm_sng != NULL){
@@ -687,7 +675,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
        Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var.type),
        and that user is only allowed to affect text between fields. 
        This would be accomplished with:
-       (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var.type),dlm_sng); */
+       (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var.type),dlm_sng);*/
 
     for(lmn=0;lmn<var.sz;lmn++){
       switch(var.type){
@@ -702,8 +690,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end loop over element */
 
   } /* end if dlm_sng */
-
-  /*************************************************************************/
 
   if(PRINT_DIMENSIONAL_UNITS){
     char units_nm[]="units"; /* [sng] Name of units attribute */
@@ -724,7 +710,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end if */
   } /* end if PRINT_DIMENSIONAL_UNITS */
 
-  /*************************************************************************/
   /* if nbr_dim ==0 and dlm_sng==NULL  print variable */
 
   if(var.nbr_dim == 0 && dlm_sng == NULL){ 
@@ -745,31 +730,29 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end switch */
   } /* end if variable is a scalar, byte, or character */
 
-  /*************************************************************************/
-
-  if( var.nbr_dim > 0 && dlm_sng == NULL ) {
+  if(var.nbr_dim > 0 && dlm_sng == NULL) {
 
     long *mod_map_in;
     long *mod_map_out;
-    long *dmn_sbs_ram;              /* indices in the hyperslab */
-    long *dmn_sbs_dsk;           /* indices of the hyperslab relative to original on disk */  
+    long *dmn_sbs_ram;             /* indices in the hyperslab */
+    long *dmn_sbs_dsk;          /* indices of the hyperslab relative to original on disk */  
     long var_dsk;
 
-    mod_map_in =(long*)nco_malloc(var.nbr_dim * sizeof(long));
+    mod_map_in=(long*)nco_malloc(var.nbr_dim * sizeof(long));
     mod_map_out=(long*)nco_malloc(var.nbr_dim * sizeof(long));
     dmn_sbs_ram=(long*)nco_malloc(var.nbr_dim * sizeof(long));
     dmn_sbs_dsk=(long*)nco_malloc(var.nbr_dim * sizeof(long));
 
     /* Create mod_map_in */
-    for(idx=0 ; idx< var.nbr_dim ; idx++) mod_map_in[idx]=1L;
-    for(idx=0 ; idx< var.nbr_dim ; idx++)
-      for(jdx=idx+1 ; jdx < var.nbr_dim ; jdx++)
+    for(idx=0;idx< var.nbr_dim;idx++) mod_map_in[idx]=1L;
+    for(idx=0;idx< var.nbr_dim;idx++)
+      for(jdx=idx+1;jdx<var.nbr_dim;jdx++)
 	mod_map_in[idx] *= lmt_mult[jdx]->dmn_sz_org;
        
     /* Create mod_map_out */
-    for(idx=0 ; idx< var.nbr_dim ; idx++) mod_map_out[idx]=1L;
-    for(idx=0 ; idx< var.nbr_dim ; idx++) 
-      for(jdx=idx ; jdx < var.nbr_dim ; jdx++)
+    for(idx=0;idx< var.nbr_dim;idx++) mod_map_out[idx]=1L;
+    for(idx=0;idx< var.nbr_dim;idx++) 
+      for(jdx=idx;jdx<var.nbr_dim;jdx++)
 	mod_map_out[idx] *= lmt_mult[jdx]->dmn_cnt;
       
     /* Read in co-ord dims if required */
@@ -777,9 +760,9 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       var_sct var_crd;
 
       dim=(dmn_sct *)nco_malloc(var.nbr_dim*sizeof(dmn_sct));
-      for(idx=0 ; idx <var.nbr_dim ; idx++){
+      for(idx=0;idx <var.nbr_dim;idx++){
 	dim[idx].val.vp=NULL;
-        dim[idx].nm = lmt_mult[idx]->dmn_nm; 
+        dim[idx].nm=lmt_mult[idx]->dmn_nm;
         rcd=nco_inq_varid_flg(in_id,dim[idx].nm,&dim[idx].cid);
           /* if not a variable */
         if(rcd != NC_NOERR){
@@ -790,30 +773,30 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	  
         dim[idx].is_crd_dmn=True;
         (void)nco_inq_vartype(in_id,dim[idx].cid, &dim[idx].type);
-        var_crd.nc_id = in_id;
-        var_crd.nm = dim[idx].nm;
-        var_crd.type = dim[idx].type;
-        var_crd.id = dim[idx].cid;
+        var_crd.nc_id=in_id;
+        var_crd.nm=dim[idx].nm;
+        var_crd.type=dim[idx].type;
+        var_crd.id=dim[idx].cid;
         /* Read in co-ord var with limits applied */
-	dim[idx].val.vp=nco_msa_rec_clc(0,1,lmt,lmt_mult+idx ,&var_crd);     
+	dim[idx].val.vp=nco_msa_rec_clc(0,1,lmt,lmt_mult+idx ,&var_crd);    
 
         /* typecast pointer before use */  
         (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
       }/* end for */
     } /* end if */
    
-    for(lmn=0 ; lmn < var.sz ; lmn++) {
+    for(lmn=0;lmn<var.sz;lmn++) {
 
       /* Caculate ram indices from current limit */
-      for(idx= 0 ;idx <var.nbr_dim; idx++) 
-	dmn_sbs_ram[idx] = ( lmn % mod_map_out[idx] ) / ( idx == var.nbr_dim -1 ? 1L : mod_map_out[idx+1]);
+      for(idx= 0;idx <var.nbr_dim;idx++) 
+	dmn_sbs_ram[idx]=(lmn % mod_map_out[idx]) / (idx == var.nbr_dim -1 ? 1L : mod_map_out[idx+1]);
 	
       /* Calculate disk indices from ram indices */
-      (void)nco_msa_ram_2_dsk(dmn_sbs_ram, lmt_mult,var.nbr_dim,dmn_sbs_dsk,(lmn==var.sz -1) );
+      (void)nco_msa_ram_2_dsk(dmn_sbs_ram, lmt_mult,var.nbr_dim,dmn_sbs_dsk,(lmn==var.sz -1));
      
       /* Find variable index relative to disk */
-      var_dsk = 0;
-      for(idx=0 ; idx <var.nbr_dim ; idx++)
+      var_dsk=0;
+      for(idx=0;idx <var.nbr_dim;idx++)
 	var_dsk+= dmn_sbs_dsk[idx]*mod_map_in[idx];
 
 
@@ -824,18 +807,18 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       /* print the dims with indices along with values if they are co-ordinate vars */
       if(PRN_DMN_IDX_CRD_VAL){
         int dmn_idx;
-        long dmn_sbs_prn; 
+        long dmn_sbs_prn;
 	long crd_idx_crr;
 	char dmn_sng[MAX_LEN_FMT_SNG];
       
 	/* Loop over dimensions whose coordinates are to be printed */
-	for(idx=0 ;idx<var.nbr_dim ;idx++){
+	for(idx=0;idx<var.nbr_dim;idx++){
 	  
 	  /* Reverse dimension ordering for Fortran convention */
-	  if(FORTRAN_STYLE) dmn_idx=var.nbr_dim-1-idx; else dmn_idx=idx;
+	  if(FORTRAN_STYLE) dmn_idx=var.nbr_dim-1-idx;else dmn_idx=idx;
 	  
 	  /* Format and print dimension part of output string for non-coordinate variables */
-	  if(dim[dmn_idx].cid == var.id) continue;  /* If variable is also  a coordinate...skip printing till later */
+	  if(dim[dmn_idx].cid == var.id) continue; /* If variable is also  a coordinate...skip printing till later */
 	  if(!dim[dmn_idx].is_crd_dmn){ /* If dimension is not a coordinate... */
  	     if(FORTRAN_STYLE)
 	       (void)fprintf(stdout,"%s[%ld] ",dim[dmn_idx].nm,dmn_sbs_dsk[dmn_idx]+1L);
@@ -846,7 +829,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	  }
                
 	  (void)sprintf(dmn_sng,"%%s(%%ld)=%s ",nco_typ_fmt_sng(dim[dmn_idx].type));
-          dmn_sbs_prn = dmn_sbs_dsk[dmn_idx];
+          dmn_sbs_prn=dmn_sbs_dsk[dmn_idx];
 
 	  if(FORTRAN_STYLE) { 
             (void)nco_msa_c_2_f(dmn_sng);
@@ -919,7 +902,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       /* Now print actual variable name, index and value. */
       (void)sprintf(var_sng,"%%s(%%ld)=%s %%s\n",nco_typ_fmt_sng(var.type)); 
 
-      if(FORTRAN_STYLE){ (void)nco_msa_c_2_f(var_sng); var_dsk++;}
+      if(FORTRAN_STYLE){ (void)nco_msa_c_2_f(var_sng);var_dsk++;}
 
       switch(var.type){
       case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.fp[lmn],unit_sng); break;
@@ -933,7 +916,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
     } /*end loop over elemnts */
 
-    (void)nco_free(mod_map_in); 
+    (void)nco_free(mod_map_in);
     (void)nco_free(mod_map_out);
     (void)nco_free(dmn_sbs_ram);
     (void)nco_free(dmn_sbs_dsk);
@@ -943,10 +926,10 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     (void)fflush(stdout);
 }
 
-  var.val.vp = nco_free(var.val.vp);
-  var.nm = (char *)nco_free(var.nm);
+  var.val.vp=nco_free(var.val.vp);
+  var.nm=(char *)nco_free(var.nm);
  
-  if(var.nbr_dim >0 ) {
+  if(var.nbr_dim > 0){
     (void)nco_free(dmn_id);
     (void)nco_free(lmt_mult);
     (void)nco_free(lmt);

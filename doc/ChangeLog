@@ -1,3 +1,9 @@
+2003-02-25  Charlie Zender  <zender@uci.edu>
+
+	* Remove unused variables from ncap.[cl], nco_msa.c
+
+	* Clean up nco_att_cpy()
+
 2003-02-05  Charlie Zender  <zender@uci.edu>
 
 	* Change from WARNING to level 1 INFO when wrapped limits
