@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.91 2002-04-17 07:23:09 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.92 2002-04-17 07:44:55 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -59,14 +59,14 @@ Try to disable Spammers' machines:
 
 <p><ul>
 <li><a href="#Definition">What is NCO?</a></li>
-<li><a href="#Contribute">How to Contribute to NCO</a></li>
-<li><a href="#News">NCO News & Announcements</a></li>
+<li><a href="#Contribute">How to Contribute</a></li>
+<li><a href="#News">News & Announcements</a></li>
 <li><a href="#Version">Version Summary</a></li>
 <li><a href="#Download">Download/CVS NCO Software</a></li>
-<li><a href="#RTFM">NCO User's Guide</a></li>
+<li><a href="#RTFM">User's Guide</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
 <li><a href="#NCAR">Using NCO at UCI and NCAR</a></li>
-<li><a href="#FAQ">NCO FAQ</a></li>
+<li><a href="#FAQ">FAQ</a></li>
 <li><a href="#Bugs">Known Problems</a></li>
 </ul>
 <hr>
@@ -125,7 +125,7 @@ non-linear operations as well, e.g., total, minimum, maximum, RMS:
 <p><hr width="100%"></p>
 
 <dt><a name="Contribute"></a></dt>
-<h2>How to Contribute to NCO</h2>
+<h2>How to Contribute</h2>
 <p>In March, 2000 NCO became an Open Source project hosted by
 SourceForge.net in order to facilitate collaboration and code
 contribution by a wide variety of people. 
@@ -162,9 +162,7 @@ fails on my development system (due to antiquated RedHat
 <tt>texinfo</tt> software, of all things!)
 The brave may retrieve these versions using CVS (tags are, e.g., <tt>nco-2_1_2</tt>).
 <li><b>NCO 2.2.1</b>, Not packaged: fix <tt>ncap</tt> divide and fmodf bugs
-<li><b>NCO 2.2.0</b>, Tarball only<a
-href="./nco_news.shtml#20020203">20020203</a>: <tt>ncap</tt> public
-debut (has division error, please upgrade)
+<li><b>NCO 2.2.0</b>, <a href="./nco_news.shtml#20020203">20020203</a>: <tt>ncap</tt> public debut (has division error, please upgrade)
 <li><b>NCO 2.1.3</b>, Not packaged: <tt>ncap</tt> implements LHS casting
 <li><b>NCO 2.1.2</b>, Not packaged: C++ API to netcdf, libnco_c++ open for business
 <li><b>NCO 2.1.0</b>, Not packaged: <tt>ncap</tt> full lexer/parser operational
@@ -213,7 +211,7 @@ These binaries tend to lag the most current tarball by a few months:
 <hr></p>
 
 <dt><a name="RTFM"></a></dt>
-<h2>NCO User's Guide</h2> 
+<h2>User's Guide</h2> 
 <p>View the NCO User's Guide in any of these formats
 <ul>
 <li><a href="./nco.dvi">DVI</a> Device Independent (<tt>xdvi</tt>)</li>
@@ -259,22 +257,29 @@ fixes we currently have in mind for NCO.</li>
 <hr></p>
 
 <dt><a name="FAQ"></a></dt>
-<h2>NCO FAQ:</h2>
-<p>These questions show up frequently, here is my canned response:
+<h2>FAQ:</h2>
+<p>These questions show up almost as frequently as my mother.
+But they are more predictable:
 <ul>
 <li><i>Where can I find prebuilt NCO executables?</i>
 If you have an account at NCAR or UCI, try the locations listed above.
 Otherwise you are on your own.</li>
 <li><i>The executables at NCAR are out of date, where can I get the
 latest, greatest version?</i>
-You must build them from source yourself.</li>
-<li><i>Why doesn't NCAR support NCO?</i>
-Not enough people have asked NCAR to support it. 
-If you would like NCO to be installed and maintained on NCAR machines
+You must build them from source yourself. See next question.</li>
+<li><i>I thought NCAR developed NCO, so why doesn't NCAR support it?</i>
+I wrote NCO for fun while I was at NCAR, but not at NCAR's request.
+The primary reason NCAR does not support NCO may be because I actively
+maintained NCO there in the past, creating the impression that NCO
+was officially maintained. I will never make that mistake again!
+Few people have asked NCAR system administrators to support NCO.
+If you would like NCO installed and maintained on NCAR machines
 please send your request to relevant system administrators, e.g.,
 <a href="mailto:consult1@ncar.ucar.edu">NCAR User Support</a>
-or <a href="mailto:support@unidata.ucar.edu">Unidata Support</a>
+or <a href="mailto:support@unidata.ucar.edu">Unidata Support</a>.
 </li>
+<li><i>Is there an easy way to keep up with new NCO releases?</i>
+Subscribe to the <a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a> mailing list.</li>
 </ul>
 <hr></p>
 
