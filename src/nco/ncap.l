@@ -1,5 +1,5 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.18 2002-01-01 00:18:55 zender Exp $ -*-C-*- */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.19 2002-01-01 01:00:10 zender Exp $ -*-C-*- */
 
   /* Purpose: Token generator for ncap parser */
 
@@ -38,11 +38,11 @@
    Irvine, CA 92697-3100
  */
 
-  /* Example Lex text:
+  /* Example lexers:
      /data/zender/ora/lexyacc/ch3-05.l
      GCC lexer is hard-coded in C for speed, but is easy to read:
-     /home/thibaud/usr/local/src/gcc-2.7.2/c-lex.c
-     unidata ncgen.l 
+     ../src/gcc-3.x.x/c-lex.c
+     Unidata ${DATA}/tmp/netcdf-3.5.0/src/ncgen/ncgen.l 
    */
 
   /* NB: flex with -Cf or -Cf not -I if this scanner will not be interactive */
@@ -60,8 +60,8 @@
 #include "ncap.h" /* Symbol table definition */
 #include "ncap.tab.h" /* Symbol definitions from parser */
 
-#define INT_MIN (-2147483647-1)  /* Min value of 4 byte integer -2^32 */
-#define INT_MAX 2147483647       /* Max value of 4 byte integer  2^32 -1 */
+#define INT_MIN (-2147483647-1) /* Mininimum value of 4 byte integer -2^32 */
+#define INT_MAX 2147483647 /* Maximum value of 4 byte integer  2^32 -1 */
 
 /* We want yylex errors to skip current line rather than stop execution
    We do this by provoking error in parser by returning unrecognized token
@@ -112,23 +112,26 @@ static bool RHS;
   /* Replace C-language escape codes with actual byte values */
   (void)sng_ascii_trn(bfr);
   lvalp->str=strdup(bfr);       
-  if( dbg_lvl_get() > 1 ){
-      printf( "Lexing string: %s\n",yytext );
-      printf( "Made   string: %s\n",lvalp->str );
+  if( dbg_lvl_get() > 1){
+      printf( "Lexing string: %s\n",yytext);
+      printf( "Made   string: %s\n",lvalp->str);
   } /* endif */
   return(STRING);
 }
 
 [0-9]*\.[0-9]*([eE][+-]?[0-9]+)?[LlDd]?|[0-9]*([eE][+-]?[0-9]+)[LlDd]? {
   /* Double or long double */
+  /* NB: Tempted to prepend lexer expressions for floats and doubles with [+-]? 
+     so that unary plus/minus is handled in lexer rather than parser.
+     However, this has unintended side effects so let parser handle it for now */
   if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a double %s\n",yytext); 
-  lvalp->attribute.val.d=strtod(yytext,(char **)NULL );
+  lvalp->attribute.val.d=strtod(yytext,(char **)NULL);
   lvalp->attribute.type=NC_DOUBLE;
   return(ATTRIBUTE);
 }
 
 [0-9]*\.[0-9]*([eE][+-]?[0-9]+)?[Ff]|[0-9]*([eE][+-]?[0-9]+)[Ff] {
-  /* Double or long double */
+  /* Float */
   float flt_tkn;
   if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a float %s\n",yytext); 
   if (sscanf((char*)yytext,"%e",&flt_tkn) != 1){
@@ -144,7 +147,6 @@ static bool RHS;
 [0-9]+[lL]? {
   /* Long */
   double dbl_tkn;
-  
   if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing an integer %s\n",yytext); 
   dbl_tkn=strtod((char*)yytext, (char**)(NULL));
   if (dbl_tkn < INT_MIN || dbl_tkn > INT_MAX){
@@ -279,7 +281,7 @@ pow {return POWER;}
       if(rcd == NC_NOERR){ 
 	val.vp=(void*)nco_malloc(att_sz*nco_typ_lng(type));
 	rcd=nco_get_att(prs_arg->in_id,var_id,att_nm,val.vp,type);
-	if ( type == NC_CHAR ){
+	if(type == NC_CHAR){
 	  (void)cast_void_nctype(type,&val);
 	  lvalp->str=(char*)nco_malloc((att_sz+1)*sizeof(char));
 	  strncpy(lvalp->str,val.cp,att_sz);
