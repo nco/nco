@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.78 2004-03-12 00:44:31 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.79 2004-03-12 01:02:17 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -114,8 +114,8 @@ AC_CXX_HAVE_VALARRAY
 
 # Begin Mandatory Link Test with libnetcdf.a
 # Make precious variables for ./configure --help
-AC_ARG_VAR(NETCDF_INC,Location of netCDF headers)
-AC_ARG_VAR(NETCDF_LIB,Location of netCDF library)
+AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
+AC_ARG_VAR(NETCDF_LIB,Location of netCDF library (compile-time))
 # Add user-specified netCDF locations, if any, else add /usr/local/ locations if they exist
 if test "${NETCDF_LIB}"; then
     if test -d "${NETCDF_LIB}"; then
@@ -209,7 +209,7 @@ AC_CHECK_LIB([nco],[nco_open])
 # End Library checks
 
 # Begin DODS support
-AC_ARG_VAR([DODS_ROOT],[Root of DODS installation])
+AC_ARG_VAR([DODS_ROOT],[Root of DODS installation] (compile-time))
 AC_ARG_ENABLE(dods,AS_HELP_STRING([--enable-dods],[Build DODS/OpenDAP clients if possible [[default=yes]]]),enable_dods=${enableval},enable_dods=yes)
 # Check for DODS libraries unless told not to
 if test "${enable_dods}" != 'no'; then
@@ -262,7 +262,7 @@ fi
 
 # Begin HDF5
 # HDF5 support (experimental, for future use)
-AC_ARG_VAR([HDF5_ROOT],Location of HDF5 libraries)
+AC_ARG_VAR([HDF5_ROOT],Location of HDF5 libraries (compile-time))
 AC_ARG_ENABLE(hdf5,AS_HELP_STRING([--enable-hdf5],[Use HDF5 support (WARNING: Experimental, for future use) [[default=no]]]),enable_hdf5=${enableval},enable_hdf5=no)
 
 # Check for HDF5 libraries unless told otherwise
@@ -294,7 +294,7 @@ fi
 
 # Begin i18n
 # i18n support (experimental, for future use)
-AC_ARG_VAR(I18N_SHARE,Root of internationalization (i18n) locale directories)
+AC_ARG_VAR(I18N_SHARE,Root of internationalization (i18n) locale directories (run-time))
 # Add user-specified netCDF locations, if any, else add /usr/local/ locations if they exist
 if test "${I18N_SHARE}"; then
     if test -d "${I18N_SHARE}"; then
@@ -355,11 +355,11 @@ AC_CHECK_FUNC(tdelete,,AC_CHECK_LIB([udport],[tdelete]))
 AC_ARG_ENABLE(udunits,AS_HELP_STRING([--enable-udunits],[Build-in UDUnits support if possible [[default=yes]]]),enable_udunits=${enableval},enable_udunits=yes)
 # Check for UDUnits libraries unless told not to
 if test "${enable_udunits}" != 'no'; then
-    AC_MSG_NOTICE([NB: Following two tests for library and header files must succeed for UDUnits support:])
+    AC_MSG_NOTICE([NB: Following tests of UDUnits library and header must succeed for UDUnits support:])
     AC_CHECK_LIB([udunits],[utInit],,enable_udunits=no)
     AC_CHECK_HEADER([udunits.h],AC_DEFINE([HAVE_UDUNITS_H],1,[Define to 1 if <udunits.h> is present]),enable_udunits=no)
     if test "${enable_udunits}" = 'no'; then
-	AC_MSG_WARN([UDUnits support disabled (missing library or header file)])
+	AC_MSG_WARN([UDUnits support disabled (missing/unusable library or header file)])
     elif test "${enable_udunits}" = 'yes'; then
 	LIBS="${LIBS} -ludunits"
 	AC_DEFINE(ENABLE_UDUNITS,1,Compile operators with UDUnits support)
@@ -367,7 +367,7 @@ if test "${enable_udunits}" != 'no'; then
     fi
 # When empty, utInit() uses environment variable UDUNITS_PATH, if any (see nco_lmt.c)
 # Thus UDUNITS_DAT need not be known at compile time
-    AC_ARG_VAR([UDUNITS_PATH],Location of UDUnits database 'udunits.dat' (run-time variable))
+    AC_ARG_VAR([UDUNITS_PATH],Location of UDUnits database 'udunits.dat' (run-time))
 # Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file 
     AC_CHECK_FILE([$nco_udunits_dat],[AC_DEFINE_UNQUOTED([UDUNITS_DAT],["$nco_udunits_dat"],[Location of UDUnits data file])])
 fi

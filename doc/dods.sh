@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.5 2004-01-30 23:34:04 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.6 2004-03-12 01:02:18 zender Exp $
 
 # Purpose: Install DODS prior to building NCO as DODS-enabled clients
 
@@ -15,9 +15,9 @@ cd ${DATA}/tmp
 wget "ftp://ftp.unidata.ucar.edu/pub/dods/DODS-3.4/source/DODS*.tar.gz"
 # Assume tar is GNU tar, otherwise must gunzip tarballs first
 # NCO only needs these packages pre-installed to enable NCO as DODS clients...
-tar xvzf DODS-dap-3.4.?.tar.gz
-tar xvzf DODS-nc3-dods-3.4.?.tar.gz
-tar xvzf DODS-packages-3.4.?.tar.gz
+tar xvzf DODS-dap-3.4.?.tar.gz      # Provides libdap++.a
+tar xvzf DODS-nc3-dods-3.4.?.tar.gz # Provides libnc-dods.a
+tar xvzf DODS-packages-3.4.?.tar.gz # Provides libcurl.a, libxml2.a
 # ...or, alternatively, build all DODS files including server, Matlab, HDF, ....
 #for fl in `ls DODS*.tar.gz` ; do
 #    tar xvzf ${fl}
