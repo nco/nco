@@ -1,52 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.2 2002-05-06 00:30:08 zender Exp $ */
 
-/* Purpose: NCO utilities for arithmetic involving var structures alone */
+/* Purpose: Variable arithmetic */
 
 /* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public License
-   as published by the Free Software Foundation; either version 2
-   of the License, or (at your option) any later version.
-   
-   As a special exception to the terms of the GPL, you are permitted 
-   to link the NCO source code with the NetCDF and HDF libraries 
-   and distribute the resulting executables under the terms of the GPL, 
-   but in addition obeying the extra stipulations of the netCDF and 
-   HDF library licenses.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-   The file LICENSE contains the GNU General Public License, version 2
-   It may be viewed interactively by typing, e.g., ncks -L
-
-   The author of this software, Charlie Zender, would like to receive
-   your suggestions, improvements, bug-reports, and patches for NCO.
-   Please contact the project at http://sourceforge.net/projects/nco or by writing
-
-   Charlie Zender
-   Department of Earth System Science
-   University of California at Irvine
-   Irvine, CA 92697-3100
- */
-
-/* Standard header files */
-#include <math.h> /* sin cos cos sin 3.14159 */
-#include <stdio.h> /* stderr, FILE, NULL, etc. */
-
-/* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
-#include "nco_netcdf.h" /* netCDF wrapper functions */
-
-/* Personal headers */
-#include "nco.h" /* netCDF operator universal def'ns */
+#include "nco_var_rth.h" /* Variable arithmetic */
 
 void
 var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)

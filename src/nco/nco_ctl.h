@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.1 2002-05-05 01:27:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.2 2002-05-06 00:30:08 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -29,6 +29,10 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+void
+nco_exit /* [fnc] Wrapper for exit() */
+(int rcd); /* I [enm] Return code */
 
 void 
 Exit_gracefully(void); /* [fnc] Clean up timers, file descriptors, then exit */

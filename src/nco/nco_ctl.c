@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.2 2002-05-05 01:27:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.3 2002-05-06 00:30:08 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -7,6 +7,14 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_ctl.h" /* Program flow control functions */
+
+void
+nco_exit /* [fnc] Wrapper for exit() */
+(int rcd) /* I [enm] Return code */
+{
+  /* Purpose: Wrapper for exit() */
+  exit(EXIT_FAILURE);
+} /* nco_exit() */
 
 void 
 Exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, then exit */
