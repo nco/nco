@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.267 2004-09-05 06:37:23 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.268 2004-09-06 00:26:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1674,6 +1674,7 @@ The operators have the following memory requirements:
 @command{ncra} requires @math{MS = 2FR + VR}. 
 @command{ncea} requires @math{MS = 2FT + VT}. 
 @command{ncbo} requires @math{MS <= 2VT}.
+@command{ncpdq} requires @math{MS <= 2VT}.
 @command{ncflint} requires @math{MS <= 2VT}.
 Note that only variables which are processed, i.e., averaged or
 concatenated, contribute to @math{MS}.
@@ -1847,7 +1848,7 @@ compiled with an OpenMP-enabled compiler.
 Threads requests and allocations occur in two stages.
 First, users may request a specific number of threads @var{thr_nbr} with
 the @samp{-t} switch (or its long option equivalents, @samp{--thr_nbr},
-@samp{--threads}, @samp{--omp_num_threads}).
+@samp{--threads}, and @samp{--omp_num_threads}).
 If not user-specified, OpenMP obtains @var{thr_nbr} from the
 @code{OMP_NUM_THREADS} environment variable, if present, or from the
 @acronym{OS}, if not.
@@ -6633,38 +6634,62 @@ The packing (and unpacking) algorithms are described
 @command{ncpdq} extends the functionality of these algorithms by 
 providing high level controls which allow users to pack (and unpack) 
 entire files.
+@cindex @code{-P @var{pck_typ}}
+@cindex @code{--pck_typ @var{pck_typ}}
+@cindex @code{--pack_type @var{pck_typ}}
 For the finest-grained control, the user specifies the desired packing
-functionality with the @var{pck_typ} option, which currently takes one
-of three values:@*  
-
+functionality with the @samp{-P} switch (or its long option equivalents,
+@samp{--pck_typ} and @samp{--pack_type}) and its @var{pck_typ} argument,
+which currently takes one of three values:@*  
 @table @dfn
-@item Packing All Variables
+@item Packing (and Re-Packing) Variables
 Definition: Pack all variables, always generate new packing attributes@*
 Alternate invocation: @code{ncpack}@*
 @var{pck_typ} key values: @samp{all_new}, @samp{pck_all_new_att}@*
-@item Packing All Variables
+@item Packing Variables
 Definition: Pack all variables, keep existing packing attributes if any@*
 Alternate invocation: none@*
 @var{pck_typ} key values: @samp{all_xst}, @samp{pck_all_xst_att}@*
-@item Unpacking
+@item Unpack
 Definition: Unpack all packed variables@*
 Alternate invocation: @code{ncunpack}@*
 @var{pck_typ} key values: @samp{upk}, @samp{unpack}, @samp{pck_upk}@*
 @end table
 @noindent
-For example, the following packing commands are equivalent
-@example
-ncpdq -P all_new in.nc out.nc # Pack (and re-pack) all data
-ncpack in.nc out.nc # Easy to remember!
-@end example
-@noindent
-and these unpacking commands are equivalent
-@example
-ncpdq -P upk in.nc out.nc # Unpack all data
-ncpdq -P unpack in.nc out.nc # Unpack all data
-ncpdq -U in.nc out.nc # Unpack all data
-ncunpack in.nc out.nc # Easy to remember!
-@end example
+Equivalent key values are fully interchangeable.
+Multiple equivalent options are provided to satisfy disparate needs
+and tastes of @acronym{NCO} users working with scripts and from the
+command line.
+
+To reduce required memorization of these complex switches, 
+@command{ncpdq} may also be invoked via a synonym which implies
+a frequently used option, or with switches that imply 
+frequently used options.
+@command{ncpack} is a synonym for @command{ncpdq} and behaves the same
+in all respects except that @command{ncpack} implicitly assumes a
+packing type request of @samp{pck_all_new_att}.  
+Hence @command{ncpack} may be invoked without any @samp{-P} switch,
+unlike @command{ncpdq}.
+Similarly, @command{ncunpack} is a synonym for @command{ncpdq} 
+except that @command{ncpack} implicitly assumes a request to unpack, 
+i.e., @samp{-P pck_upk}.
+@cindex @code{-U}
+@cindex @code{--upk}
+@cindex @code{--unpack}
+Finally, the @command{ncpdq} @samp{-U} switch (or its long option
+equivalents, @samp{--upk} and @samp{--unpack}) requires no argument.
+It simply requests unpacking.
+
+Given the menagerie of synonyms, equivalent options, and implied
+options, a short list of some equivalent commands is appropriate.
+The following commands are equivalent for packing:
+@code{ncpdq -P all_new}, @code{ncpdq --pck_typ=all_new}, and
+@code{ncpack}.
+The following commands are equivalent for unpacking:
+@code{ncpdq -P upk}, @code{ncpdq --pck_typ=unpack}, @code{ncpdq -U},   
+and @code{ncunpack}.
+The user can determines equivalent commands for other packing
+request types, e.g., @samp{all_xst}, by analogy.
 
 @command{ncpdq} re-shapes variables in @var{input-file} by re-ordering
 and/or reversing dimensions specified in the dimension list.
@@ -7746,6 +7771,7 @@ Excellent bug reports.
 
 @html
 <a name="prp"></a> <!-- http://nco.sf.net/nco.html#prp -->
+<a name="prp_sei"></a> <!-- http://nco.sf.net/nco.html#prp_sei -->
 <a name="fnd"></a> <!-- http://nco.sf.net/nco.html#fnd -->
 @end html
 @menu
@@ -7759,34 +7785,38 @@ Excellent bug reports.
 @cindex @acronym{NSF}
 @cindex server-side processing
 @cindex Distributed Data Reduction & Analysis
+@cindex Scientific Data Operators
 @cindex @acronym{DDRA}
 @cindex Server-Side Distributed Data Reduction & Analysis
 @cindex @acronym{SSDDRA}
 @cindex @acronym{CCSM}
 @cindex @acronym{IPCC}
 @cindex @acronym{NSF}
+@cindex @acronym{SDO}
 @cindex @acronym{SEIII}
 @cindex OptIPuter
-We have written an @acronym{NSF}
+We have written and @acronym{NSF} has funded a
 @uref{http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf, proposal}
-to improve Distributed Data Reduction & Analysis (@acronym{DDRA}) with
-@acronym{NCO}. 
-The two main components of this proposal are @acronym{NCO} parallelism
+to improve Distributed Data Reduction & Analysis (@acronym{DDRA}) by
+evolving @acronym{NCO} into a suite of Scientific Data Operators called 
+@acronym{SDO}.
+@cindex parallelism
+The two main components of this project are @acronym{NCO} parallelism
 (OpenMP, @acronym{MPI}) and Server-Side @acronym{DDRA}
-(@acronym{SSDDRA}) implemented through extensions to @acronym{OPeNDAP}
+(@acronym{SSDDRA}) implemented through extensions to @acronym{OPeNDAP} 
 and netCDF4. 
-This project would dramatically reduce bandwidth usage for @acronym{NCO}
+This project will dramatically reduce bandwidth usage for @acronym{NCO}
 @acronym{DDRA}. 
 
 @cindex @acronym{NASA}
 @cindex @acronym{NRA}
 @cindex @acronym{HDF}
-With this first @acronym{NCO} proposal out the door, the content of the
+With this first @acronym{NCO} proposal funded, the content of the
 next @acronym{NCO} proposal is clear.
 We are interested in obtaining @acronym{NASA} support for
 @acronym{HDF}-specific enhancements to @acronym{NCO}. 
 We plan to submit a proposal to the next suitable @acronym{NASA}
-@acronym{NRA}. 
+@acronym{NRA} or @acronym{NSF} opportunity. 
 
 We are considering a lot of interesting ideas for still more proposals.
 Please contact us if you wish to be involved with any future
