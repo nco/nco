@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.14 2003-03-14 15:58:46 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.15 2003-03-17 14:12:50 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -729,7 +729,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   } /* end if variable is a scalar, byte, or character */
 
   if(var.nbr_dim > 0 && dlm_sng == NULL){
-
     long *mod_map_in;
     long *mod_map_out;
     long *dmn_sbs_ram;            /* indices in the hyperslab */
@@ -799,7 +798,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
 
       /* Skip rest of loop unless element is first in string */
-      if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] != 0L) continue;
+      if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] >0 ) goto lbl_char_prn;
 
              
       /* print the dims with indices along with values if they are co-ordinate vars */
@@ -852,48 +851,55 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
       
       /* Print all characters in last dimension each time penultimate dimension subscript changes to its start value */
-      if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] == 0L){
-	char *prn_sng;
-        long dmn_sz=lmt_mult[var.nbr_dim -1]->dmn_cnt;
-        long idx_crr=0;       	
+    lbl_char_prn:
 
-	/* Search for NUL-termination within size of last dimension */
-	if( memchr((void *)(var.val.cp+lmn),'\0',dmn_sz) ){
-	  /* Memory region is NUL-terminated, i.e., a valid string */
-	  /* Print strings inside double quotes */
-	  (void)sprintf(var_sng,"%%s[%%ld--%%ld]=\"%%s\" %%s");
-          if(FORTRAN_STYLE){(void)nco_msa_c_2_f(var_sng);idx_crr++;}
+      if(var.type == NC_CHAR){
+        static bool NULL_IN_SLAB;
+	static char* prn_sng;
+        static int chr_cnt;
+        static long dmn_sz;
+        static long var_dsk_srt;
+        static long var_dsk_end;
 
-	  /*	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+strlen((char *)var.val.cp+lmn),(char *)var.val.cp+lmn,unit_sng); */
+        /* At beginning of Character array */
+	if(dmn_sbs_ram[var.nbr_dim -1] == 0L) {
+          dmn_sz=lmt_mult[var.nbr_dim -1]->dmn_cnt;
+	  prn_sng = (char*)nco_malloc(dmn_sz+1);
+	  var_dsk_srt = var_dsk;
+          var_dsk_end = var_dsk;
+          chr_cnt=0;
+          NULL_IN_SLAB=False;
+	}
+	/* In the middle of the array - save the chars to prn_sng */
+	prn_sng[chr_cnt++]=var.val.cp[lmn];
+        if(var.val.cp[lmn] == '\0' && !NULL_IN_SLAB) { var_dsk_end = var_dsk; NULL_IN_SLAB=True ; }
 
+        /* At end of character array */
+        if(dmn_sbs_ram[var.nbr_dim-1] == dmn_sz-1 ){
 
-	   (void)fprintf(stdout,var_sng,var_nm,(idx_crr+lmn),(idx_crr+lmn+strlen((char *)var.val.cp+lmn)),(char *)var.val.cp+lmn,unit_sng);
+	  if(NULL_IN_SLAB) {
+	    (void)sprintf(var_sng,"%%s[%%ld--%%ld]=\"%%s\" %%s");
+          } else {
+            (void)sprintf(var_sng,"%%s[%%ld--%%ld]='%%s' %%s");
+	    prn_sng[chr_cnt]='\0';
+	    var_dsk_end = var_dsk;   
+          }
+          if(FORTRAN_STYLE){ 
+	    (void)nco_msa_c_2_f(var_sng);
+	    var_dsk_srt++; 
+	    var_dsk_end++; 
+          }
 
-
-	}else{
-	  /* Memory region is not NUL-terminated, print block of chars instead */
-	  /* Print block of chars inside single quotes */
-          prn_sng=(char*)nco_malloc(dmn_sz+1);
-          (void)strncpy(prn_sng,(char *)(var.val.cp+lmn),dmn_sz);
-          *(prn_sng+dmn_sz)='\0';
-          (void)sprintf(var_sng,"%%s[%%ld--%%ld]='%%s' %%s" );
-          if(FORTRAN_STYLE){(void)nco_msa_c_2_f(var_sng);idx_crr++;}
-	  
-          /* Possibly introduce a function which convert non-print chars into escape chars */ 
-          /* i.e the reverse of sng_ascii_trn */
-
-	  /*  (void)fprintf(stdout,var_sng,var_nm,idx_crr,(dmn_sz-1L+idx_crr),prn_sng,unit_sng); */
-	   (void)fprintf(stdout,var_sng,var_nm,idx_crr+lmn ,(dmn_sz-1L+idx_crr+lmn),prn_sng,unit_sng); 
+	  (void)fprintf(stdout,var_sng,var_nm,var_dsk_srt,var_dsk_end,prn_sng,unit_sng);
+	  (void)fprintf(stdout,"\n");
+	  (void)fflush(stdout);
+	  (void)nco_free(prn_sng);
           
-          (void)nco_free(prn_sng);
-	} /* endif */
-    
-	/* Newline separates consecutive values within given variable */
-	(void)fprintf(stdout,"\n");
-	(void)fflush(stdout);
-	/* Skip rest of loop for this element, move to next element */
+        } /* endif */
 	continue;
-      } /* endif */
+      } 
+       
+
 
       /* Now print actual variable name, index and value. */
       (void)sprintf(var_sng,"%%s[%%ld]=%s %%s\n",nco_typ_fmt_sng(var.type));
