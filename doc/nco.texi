@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.72 2000-10-30 05:49:45 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.73 2000-11-15 08:43:41 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -17,6 +17,7 @@ cd ~/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinf
 texi2html -monolithic -verbose nco.texi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco
 cd $DATA/ps;gzip --force nco.ps;scp -p nco.ps.gz www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 texi2dvi nco.texi 
+texi2dvi --pdf nco.texi # Fails with \command macro in section headings
 makeinfo nco.texi 
 texi2html -monolithic -verbose nco.texi 
 dvips -o nco.ps nco.dvi 
@@ -703,11 +704,11 @@ statistical packages, and are often more suitable for archival and
 dissemination to the scientific community.
 @acronym{NCO} performs a suite of operations useful in manipulating data from the
 primary to the second level state.
-@cindex @acroname{NCL}
+@cindex @acronym{NCL}
 @cindex Perl
 @cindex Yorick
 Higher level interpretive languages (e.g., @acronym{IDL}, Yorick,
-Matlab, @acroname{NCL}, Perl, Python),
+Matlab, @acronym{NCL}, Perl, Python),
 and lower level compiled languages (e.g., C, Fortran) can always perform
 any task performed by @acronym{NCO}, but often with more overhead.
 NCO, on the other hand, is limited to a much smaller set of arithmetic

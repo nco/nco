@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.53 2000-10-28 01:26:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.54 2000-11-15 08:43:41 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -37,7 +37,7 @@
    Irvine, CA 92697-3100
  */
 
-#ifndef NC_H /* Header file has not yet been defined in current source file */
+#ifndef NC_H /* Contents have not yet been inserted in current source file */
 #define NC_H
 
 #define bool int
