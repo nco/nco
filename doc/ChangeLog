@@ -1,3 +1,8 @@
+2002-07-28    <zender@uci.edu>
+
+	* Updated to cygwin-gcc-3.1.1-4 and build problems appear to have
+	gone away, but syslimits.h is still not found so GSL cannot build
+
 2002-07-08  Charlie Zender  <zender@uci.edu>
 
 	* Correct ncap symbol table to build on SGI6, SGI64 platforms
