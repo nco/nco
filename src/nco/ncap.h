@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.36 2002-05-06 06:37:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.37 2002-05-17 07:36:34 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -25,7 +25,6 @@
 #include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
 
 /* Personal headers */
-#include "nco.h" /* NCO definitions */
 #include "libnco.h" /* netCDF operator library */
 
 #ifdef __cplusplus

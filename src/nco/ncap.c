@@ -1,43 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.68 2002-05-15 05:06:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.69 2002-05-17 07:36:34 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
 /* Purpose: Compute user-defined derived fields using forward algebraic notation applied to netCDF files */
 
 /* Copyright (C) 1995--2002 Charlie Zender
-   
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public License
-   as published by the Free Software Foundation; either version 2
-   of the License, or (at your option) any later version.
-   
-   As a special exception to the terms of the GPL, you are permitted 
-   to link the NCO source code with the NetCDF and HDF libraries 
-   and distribute the resulting executables under the terms of the GPL, 
-   but in addition obeying the extra stipulations of the netCDF and 
-   HDF library licenses.
-   
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-   
-   The file LICENSE contains the GNU General Public License, version 2
-   It may be viewed interactively by typing, e.g., ncks -L
-   
-   The author of this software, Charlie Zender, would like to receive
-   your suggestions, improvements, bug-reports, and patches for NCO.
-   Please contact the project at http://sourceforge.net/projects/nco or by writing
-   
-   Charlie Zender
-   Department of Earth System Science
-   University of California at Irvine
-   Irvine, CA 92697-3100
-*/
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
    ncap -O -D 1 -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
@@ -53,8 +22,6 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
-/* #include <errno.h> */ /* errno */
-/* #include <malloc.h> */ /* malloc() stuff */
 
 #if ( defined LINUX || defined LINUXALPHA )
 #include <getopt.h> /* GNU getopt() is standard on Linux */
@@ -71,12 +38,12 @@
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
-#include "nco.h" /* NCO definitions */
-#include "libnco.h" /* netCDF operator library */
 #include "ncap.h" /* ncap-specific definitions */
+#include "libnco.h" /* netCDF operator library */
 
 /* Global variables */
-long ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
+int ncl_dpt_crr=0; /* [nbr] Depth of current #include file (incremented in ncap.l) */
+long *ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
 char *fl_spt_glb; /* [fl] Script file */
 
 int 
@@ -117,8 +84,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.68 2002-05-15 05:06:58 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.68 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.69 2002-05-17 07:36:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.69 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -343,6 +310,9 @@ main(int argc,char **argv)
   prs_arg.initial_scan=True; /* [flg] Initial scan of script */
   prs_arg.var_LHS=NULL; /* [var] LHS cast variable */
   
+  /* Initialize line counter */
+  ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
+  ln_nbr_crr[ncl_dpt_crr]=1; /* [cnt] Line number incremented in ncap.l */
   /* Perform initial scan of input script to create three lists of variables:
      list a: RHS variables present in input file
      list b: LHS variables present in input file
@@ -475,7 +445,8 @@ main(int argc,char **argv)
   prs_arg.var_LHS=NULL; /* [var] LHS cast variable */
   
   /* Initialize line counter */
-  ln_nbr_crr=1; /* [cnt] Line number incremented in ncap.l */
+  ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
+  ln_nbr_crr[ncl_dpt_crr]=1; /* [cnt] Line number incremented in ncap.l */
   if(fl_spt == NULL){
     /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0){

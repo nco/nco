@@ -1,42 +1,11 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.47 2002-05-15 06:58:00 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.48 2002-05-17 07:36:34 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
 
   /* Copyright (C) 1995--2002 Charlie Zender
-
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public License
-   as published by the Free Software Foundation; either version 2
-   of the License, or (at your option) any later version.
-   
-   As a special exception to the terms of the GPL, you are permitted 
-   to link the NCO source code with the NetCDF and HDF libraries 
-   and distribute the resulting executables under the terms of the GPL, 
-   but in addition obeying the extra stipulations of the netCDF and 
-   HDF library licenses.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-   The file LICENSE contains the GNU General Public License, version 2
-   It may be viewed interactively by typing, e.g., ncks -L
-
-   The author of this software, Charlie Zender, would like to receive
-   your suggestions, improvements, bug-reports, and patches for NCO.
-   Please contact the project at http://sourceforge.net/projects/nco or by writing
-
-   Charlie Zender
-   Department of Earth System Science
-   University of California at Irvine
-   Irvine, CA 92697-3100
- */
+     This software is distributed under the terms of the GNU General Public License
+     See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
   /* Example lexers:
      /data/zender/ora/lexyacc/ch3-05.l
@@ -49,7 +18,7 @@
      NB: flex with -Cf or -Cf not -I if this scanner will not be interactive */
 
   /* Standard header files */
-#include <assert.h>  /* assert() debugging macro */
+#include <assert.h> /* assert() debugging macro */
 #include <limits.h> /* Integer representation, INT_MIN, INT_MAX... */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
@@ -75,7 +44,8 @@
 #define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
 
   /* Global variables */
-  extern long ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
+  extern int ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
+  extern long *ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
 
   /* File scope variables */
   /* fxm: turn arbitrary size into pre-processor token */
@@ -90,8 +60,7 @@
 
   /* Headers necessary for INCLUDE state */
 #define NCO_MAX_NCL_DPT 10
-  YY_BUFFER_STATE ncl_stk[NCO_MAX_NCL_DPT];
-  int ncl_dpt_crr=0; /* [nbr] Depth of current #include file */
+  YY_BUFFER_STATE ncl_stk[NCO_MAX_NCL_DPT]; /* Include stack */
 %}
 
 /* %x defines exclusive start states <stt>
@@ -116,31 +85,43 @@
 <INCLUDE>[^ \t\n]+ {
   /* Get include file name */
   if(ncl_dpt_crr >= NCO_MAX_NCL_DPT){
-    (void)fprintf(stderr,"%s: ERROR Includes nested too deeply",prg_nm_get());
+    (void)fprintf(stderr,"%s: ERROR File %s nesting depth of %d is too deep",prg_nm_get(),yytext,ncl_dpt_crr);
     nco_exit(EXIT_FAILURE);
   } /* endif */
   if(dbg_lvl_get() >= 0) (void)fprintf(stderr,"%s: WARNING Reading #include'd file %s, descending from nesting depth %d to depth %d\n",prg_nm_get(),yytext,ncl_dpt_crr,ncl_dpt_crr+1);
-  ncl_stk[ncl_dpt_crr++]=YY_CURRENT_BUFFER; 
+  /* Put current input buffer on stack */
+  ncl_stk[ncl_dpt_crr]=YY_CURRENT_BUFFER; 
+  /* Increment nesting level */
+  ncl_dpt_crr++;
+  /* Allocate another entry in line counter array */
+  ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
   if((yyin=fopen(yytext,"r")) == NULL){
     (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),yytext);
     nco_exit(EXIT_FAILURE);
   } /* endif error */
 
-  /* Read from new file--this does NOT change start condition */
+  /* Create new scanner input buffer for include file and switch to it
+     Current start conditions remains active in new input buffer */
   yy_switch_to_buffer(yy_create_buffer(yyin,YY_BUF_SIZE));
   
   /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
   BEGIN INITIAL;
-
 } /* end enter #include file */
 
 <<EOF>> {
   /* Emerge from #include file if nested, else exit lexer */
   if(dbg_lvl_get() >= 0) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from nesting depth %d to depth %d\n",prg_nm_get(),ncl_dpt_crr,ncl_dpt_crr-1);
-  if(--ncl_dpt_crr < 0){
-    yyterminate(); /* Emerged from first level, exit lexer */
+  /* Decrement depth of nesting */
+  if(ncl_dpt_crr > 0) ncl_dpt_crr--; 
+  /* De-allocate entry from line counter array */
+  ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
+  if(ncl_dpt_crr == 0){
+    /* Emerged from first level, exit lexer */
+    yyterminate();
   }else{
+    /* Reclaim storage used by buffer just exited */
     yy_delete_buffer(YY_CURRENT_BUFFER);
+    /* Switch back to parent buffer */
     yy_switch_to_buffer(ncl_stk[ncl_dpt_crr]);
   } /* endelse */
 } /* end <EOF> */
@@ -153,8 +134,8 @@
   BEGIN CCOMMENT;
 }
 <CCOMMENT>\n {
-  /* Throw away comment text but increment lines */
-  ln_nbr_crr++;
+  /* Throw away comment text but increment line counter */
+  ln_nbr_crr[ncl_dpt_crr]++; 
 }
 <CCOMMENT>. {
   /* Throw away everything except end comment text */
@@ -167,7 +148,7 @@
 \n { 
   /* NB: Remaining rules are default state, also known as INITIAL state, or 0 state */
   /* Ignore new lines */
-  ln_nbr_crr++; /* [cnt] Line number incremented in ncap.l */
+  ln_nbr_crr[ncl_dpt_crr]++;
 }
 
 [ \t]+ { 
@@ -623,11 +604,14 @@ bool
 yywrap(void)
 {
   /* Purpose: Routine to replace library-defined yywrap() 
-     yywrap() is called when YY_INPUT returns EOF
-     Default is to return true (one) when called---this terminates scanner 
+     yywrap() is called when YY_INPUT returns EOF, e.g., at end of script
      Returning false (zero) means there is more to scan, and input has
-     been redirected to new source, e.g., yyin points to new file. */
- return 1;
+     been redirected to new source, e.g., yyin points to new file. 
+     Returning true (non-zero) means scanning is complete, so scanner terminates and returns 0 to calling function
+     Default is to return true (one) when called---this terminates scanner */
+  /*  return (ncl_dpt_crr > 0) ? 0 : 1;*/
+  if(dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: DEBUG yywrap() called with ncl_dpt_crr = %d\n",prg_nm_get(),ncl_dpt_crr);
+  return (ncl_dpt_crr <= 1) ? 1 : 0; 
 } /* end yywrap() */
 
 void 

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.56 2002-05-15 05:06:59 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.57 2002-05-17 07:36:34 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -41,7 +41,8 @@ int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 int rcd; /* [enm] Return value for function calls */
 
 /* Global variables */
-extern long ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
+extern int ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
+extern long *ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
 extern char *fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
 extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) */
 
@@ -557,7 +558,7 @@ yyerror(char *err_sng)
   static bool eprovoke_skip;
   
   /* if(eprovoke_skip){eprovoke_skip=False ; return 0;} */
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: %s line %ld",prg_nm_get(),fl_spt_glb,ln_nbr_crr);
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: %s line %ld",prg_nm_get(),fl_spt_glb,ln_nbr_crr[ncl_dpt_crr]);
   if(dbg_lvl_get() > 1) (void)fprintf(stderr," %s",err_sng);
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"\n");
   
