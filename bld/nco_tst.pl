@@ -82,28 +82,28 @@ $expected= 0 ;
 ####################
 $operator="ncea";
 ####################
-$test[0]='ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc';
+$test[0]='ncra -Y ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc';
 $test[1]='ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc';
 $description=" ensemble mean of int across two files";
 $expected= 5 ; 
 &go();
 ####################
 
-$test[0]='ncea -O -v rec_var_flt_mss_val_flt -d time,0 in.nc in.nc foo.nc';
+$test[0]='ncra -Y ncea -O -v rec_var_flt_mss_val_flt -d time,0 in.nc in.nc foo.nc';
 $test[1]='ncks -C -H -s "%e" -v rec_var_flt_mss_val_flt foo.nc';
 $description=" ensemble mean with missing values across two files";
 $expected= 1.0e36 ; 
 &go();
 ####################
 
-$test[0]='ncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 in.nc in.nc foo.nc';
+$test[0]='ncra -Y ncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 in.nc in.nc foo.nc';
 $test[1]='ncks -C -H -s "%e" -v rec_var_flt_mss_val_dbl foo.nc';
 $description=" ensemble min of float across two files";
 $expected= 2 ; 
 &go();
 ####################
 
-$test[0]='ncea -O -C -v pck in.nc foo.nc';
+$test[0]='ncra -Y ncea -O -C -v pck in.nc foo.nc';
 $test[1]='ncks -C -H -s "%e" -v pck foo.nc';
 $description=" scale factor + add_offset packing/unpacking";
 $expected= 3 ; 
@@ -362,7 +362,7 @@ $expected= 5.38516 ;
 &go();
 ####################
 
-$test[0]='ncrcat -O -v rec_var_flt_mss_val_dbl in.nc in.nc foo1.nc 2>foo.tst';
+$test[0]='ncra -Y ncrcat -O -v rec_var_flt_mss_val_dbl in.nc in.nc foo1.nc 2>foo.tst';
 $test[1]='ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc';
 $test[2]='ncwa -O -a time foo.nc foo.nc';
 $test[3]='ncdiff -O -v rec_var_flt_mss_val_dbl foo1.nc foo.nc foo.nc';
