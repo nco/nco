@@ -1,7 +1,7 @@
 %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.11 2001-09-24 11:30:51 hmb Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.12 2001-10-28 23:05:36 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -173,9 +173,9 @@ typedef struct{
     if(dbg_lvl_get() > 1) (void)fprintf(stderr,"NAME: getting %s from netCDF %s\n",$1->nm,((prs_sct *)prs_arg)->fl_in);
 
     /* Get variable ID */
-    var_id=nco_inq_varid(((prs_sct *)prs_arg)->in_id,$1->nm);
-    if(var_id == -1){
-      (void)fprintf(stderr,"can't find %s in %s\n",$1->nm,((prs_sct *)prs_arg)->fl_in);
+    rcd=nco_inq_varid_flg(((prs_sct *)prs_arg)->in_id,$1->nm,&var_id);
+    if(rcd != NC_NOERR){
+      (void)fprintf(stderr,"unable to find %s in %s\n",$1->nm,((prs_sct *)prs_arg)->fl_in);
     }else{
       var=var_fll(((prs_sct *)prs_arg)->in_id,var_id,$1->nm,((prs_sct *)prs_arg)->dim,((prs_sct *)prs_arg)->nbr_dmn_xtr);
       /* Allocate and initialize accumulation space for variable */

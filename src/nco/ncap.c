@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.31 2001-10-08 07:25:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.32 2001-10-28 23:05:36 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.31 2001-10-08 07:25:38 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.31 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.32 2001-10-28 23:05:36 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.32 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -159,7 +159,7 @@ main(int argc,char **argv)
   int nbr_dmn_xtr;
   int nbr_fl=0;
   int opt;
-  int rec_dmn_id=-1;
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int rcd=NC_NOERR; /* [rcd] Return code */
   
   lmt_sct *lmt=NULL_CEWI;

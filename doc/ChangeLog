@@ -1,5 +1,13 @@
 2001-10-28  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_0_3
+	Changes since nco-2_0_2: ncks bugfixes for units printing,
+	and version information
+
+	* Use NC_REC_DMN_UNDEFINED instead of -1 where appropriate
+
+	* Fix argument list to nco_inq_varid() call in ncap 
+
 	* Fix netCDF3 migration bug that could cause core dumps because
 	non-coordinate dimensions where being interpreted as coordinate
 	dimensions in ncks due to changed nature of nc_inq_varid returns

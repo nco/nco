@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.3 2001-10-08 07:25:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.4 2001-10-28 23:05:36 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -71,6 +71,12 @@ typedef long nco_long;
 #define long_CEWI 0L
 #define nco_long_CEWI 0L
 #define short_CEWI 0
+
+  /* netcdf.h NC_GLOBAL is, strictly, the variable ID for global attributes
+     NCO_REC_DMN_UNDEFINED is variable ID of record dimension iff record dimension is undefined
+     Normally using -1 for this ID is fine, but token makes meaning clearer
+     NB: nc_inq() family is defined to return -1 for missing record dimensions */
+#define NCO_REC_DMN_UNDEFINED -1
 
 #ifdef MAIN_PROGRAM_FILE /* Current file contains main() */
 

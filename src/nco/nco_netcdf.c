@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.12 2001-10-28 09:29:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.13 2001-10-28 23:05:36 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -492,7 +492,7 @@ nco_inq_varid(int nc_id,char *var_nm,int *var_id)
   if(rcd == NC_ENOTVAR){
     (void)fprintf(stdout,"ERROR nco_inq_varid() reports requested variable \"%s\" is not in input file\n",var_nm);
     exit(EXIT_FAILURE);
-  }
+  } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varid");
   return rcd;
 } /* end nco_inq_varid */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.101 2001-10-28 09:29:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.102 2001-10-28 23:05:35 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -179,8 +179,6 @@ or variable list is made more specific, or MALLOC_CHECK_=1 is used
 211. Replace -1 by NC_GLOBAL where appropriate, especially in ncatted.c
 212. Ensure structures are always passed by reference (default is pass by value)
 213. Pass const values as const (may improve speed)
-214. Printing units is broken in ncks
-215. Remove as many occurances of -1 in code as possible, this is probably why units printing broke
 ************************************************************************
 End NCO Wish list
 ************************************************************************

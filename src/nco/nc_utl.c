@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.113 2001-10-08 07:25:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.114 2001-10-28 23:05:36 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -785,12 +785,12 @@ rec_var_dbg(int nc_id,char *dbg_sng)
   /* Usage: if(dbg_lvl == 73) rec_var_dbg(out_id,"After ncvarput()"); */
   int nbr_dmn_fl;
   int nbr_var_fl;
-  int rec_dmn_id=-1;
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   long dmn_sz;
 
   (void)fprintf(stderr,"%s: DBG %s\n",prg_nm_get(),dbg_sng);
   (void)nco_inq(nc_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
-  if(rec_dmn_id == -1){
+  if(rec_dmn_id == NCO_REC_DMN_UNDEFINED){
     (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, no record dimension\n",prg_nm_get(),nbr_dmn_fl,nbr_var_fl);
   }else{
     (void)nco_inq_dimlen(nc_id,rec_dmn_id,&dmn_sz);
@@ -830,7 +830,7 @@ att_cpy(int in_id,int out_id,int var_in_id,int var_out_id)
       
     /* Are we about to overwrite an existing attribute? */
     if(rcd == NC_NOERR){
-      if(var_out_id == -1){
+      if(var_out_id == NC_GLOBAL){
 	(void)fprintf(stderr,"%s: WARNING Overwriting global attribute %s\n",prg_nm_get(),att_nm);
       }else{
 	char var_nm[NC_MAX_NAME];

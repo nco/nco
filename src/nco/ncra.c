@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.56 2001-10-08 07:25:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.57 2001-10-28 23:05:36 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.56 2001-10-08 07:25:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.56 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.57 2001-10-28 23:05:36 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.57 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -140,7 +140,7 @@ main(int argc,char **argv)
   int nbr_fl=0;
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rec_dmn_id=-1;
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int nco_op_typ=nco_op_avg; /* [enm] Default operation is averaging */
   int nco_pck_typ=nco_pck_nil; /* [enm] Default packing is none */
   
@@ -312,7 +312,7 @@ main(int argc,char **argv)
 
   /* Create stand-alone limit structure just for record dimension */
   if(prg == ncra || prg == ncrcat){
-    if(rec_dmn_id == -1){
+    if(rec_dmn_id == NCO_REC_DMN_UNDEFINED){
       (void)fprintf(stdout,gettext("%s: ERROR input file %s lacks a record dimension\n"),prg_nm_get(),fl_in);
       if(nbr_fl == 1)(void)fprintf(stdout,gettext("%s: HINT Use ncks instead of %s\n"),prg_nm_get(),prg_nm_get());
       exit(EXIT_FAILURE);

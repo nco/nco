@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.44 2001-10-28 09:29:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.45 2001-10-28 23:05:36 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.44 2001-10-28 09:29:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.44 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.45 2001-10-28 23:05:36 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.45 $";
   
   extern char *optarg;
   
@@ -132,7 +132,7 @@ main(int argc,char **argv)
   int nbr_fl=0;
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int rec_dmn_id;
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
     
   lmt_sct *lmt;
 
@@ -304,7 +304,7 @@ main(int argc,char **argv)
   
   if(OUTPUT_GLOBAL_METADATA){
     (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, id = %i\n",fl_in,nbr_dmn_fl,nbr_var_fl,nbr_glb_att,in_id);
-    if(rec_dmn_id != -1){
+    if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
       char rec_dmn_nm[NC_MAX_NAME];
       long rec_dmn_sz;
       
@@ -405,7 +405,7 @@ prn_att(int in_id,int var_id)
 {
   /* Routine to print all the global attributes in a netCDF file,
      or all attributes for a particular netCDF variable. 
-     If var_id == NC_GLOBAL ( = -1) the global attributes are printed,
+     If var_id == NC_GLOBAL ( = -1) then global attributes are printed,
      otherwise variable's attributes are printed. */
 
   att_sct *att=NULL_CEWI;
@@ -1275,18 +1275,19 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   (void)cast_void_nctype(var.type,&var.val);
 
   if(PRINT_DIMENSIONAL_UNITS){
+    char units_nm[]="units"; /* [sng] Name of units attribute */
     int rcd; /* [rcd] Return code */
     int att_id; /* [id] Attribute ID */
     long att_sz;
     nc_type att_typ;
 
-    /* Does this variable have an attribute named "units"? */
-    rcd=nco_inq_attid(in_id,var.id,"units",&att_id);
-    if(rcd != NC_NOERR){
-      (void)nco_inq_att(in_id,var.id,"units",&att_typ,&att_sz);
+    /* Does variable have character attribute named units_nm? */
+    rcd=nco_inq_attid(in_id,var.id,units_nm,&att_id);
+    if(rcd == NC_NOERR){
+      (void)nco_inq_att(in_id,var.id,units_nm,&att_typ,&att_sz);
       if(att_typ == NC_CHAR){
 	unit_sng=(char *)nco_malloc((att_sz+1)*nco_typ_lng(att_typ));
-	(void)nco_get_att(in_id,var.id,"units",unit_sng,att_typ);
+	(void)nco_get_att(in_id,var.id,units_nm,unit_sng,att_typ);
 	unit_sng[(att_sz+1)*nco_typ_lng(att_typ)-1]='\0';
       } /* end if */
     } /* end if */
@@ -1295,12 +1296,12 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   if(dlm_sng != NULL){
     /* Print each element with user-supplied formatting code */
 
-    /* Replace any C language '\X' escape codes with ASCII bytes */
+    /* Replace C language '\X' escape codes with ASCII bytes */
     (void)sng_ascii_trn(dlm_sng);
 
-    /* Assume the -s argument (dlm_sng) formats the entire string
+    /* Assume -s argument (dlm_sng) formats entire string
        Otherwise, one could assume that field will be printed with format type_fmt_sng(var.type),
-       and that user is only allowed to affect text in between fields. 
+       and that user is only allowed to affect text between fields. 
        This would be accomplished with:
        (void)sprintf(var_sng,"%s%s",type_fmt_sng(var.type),dlm_sng);*/
 
