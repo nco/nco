@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.33 2002-08-19 19:14:35 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.34 2002-08-27 07:43:21 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -25,7 +25,7 @@ CVS:		    Anonymous check out:
 		    cvs -dzender@cvs1:/cvsroot/nco co -kk nco
 Daily tarballs of entire CVS tree for mirroring:
 		    http://cvs.sourceforge.net/cvstarballs/nco-cvsroot.tar.gz
-Compile Farm:       cf.sourceforge.net
+Compile Farm:       cf.sourceforge.net cf.sf.net
 
 # Create tarballs for uploading to sourceforge
 cd /data/zender/tmp
@@ -37,16 +37,31 @@ mv sf.tar.gz /var/ftp/pub/zender/nco
 ncftpput upload.sourceforge.net /incoming/var/ftp/pub/zender/nco/sf.tar.gz
 scp upload.sourceforge.net:/incoming/sf.tar.gz .
 
-# Copy netCDF libraries from NCO group account
-cd ~/nco/bld
-scp nco.sf.net:/home/groups/n/nc/nco/lib/LINUX/libnetcdf.a nco.sf.net:/home/groups/n/nc/nco/include/netcdf.h .
+# Copy netCDF library to NCO group account
+scp -v /data/zender/tmp/netcdf-3.5.0.tar.Z zender@nco.sourceforge.net:/home/groups/n/nc/nco
+# Copy netCDF library from NCO group account to compile farm
+cd ~
+scp -v nco.sf.net:/home/groups/n/nc/nco/netcdf-3.5.0.tar.Z .
+# Build netCDF library on compile farm
+tar xvzf netcdf-3.5.0.tar.Z
+cd netcdf-3.5.0/src
+CPPFLAGS='-Df2cFortran' FC='g77' ./configure --prefix=${HOME}
+make;make install
 
-# Build NCO on Compile Farm
+# Build NCO on Compile Farm, old method:
 cd ~/nco/bld
-NETCDF_INC=~/nco/bld NETCDF_LIB=~/nco/bld gmake
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib make
 # Build nco_c++ on Compile Farm
-cd ~/nco/src/nco_c++
-NETCDF_INC=~/nco/bld NETCDF_LIB=~/nco/bld MY_INC_DIR=. gmake
+cd ${HOME}/nco/src/nco_c++
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib MY_INC_DIR=. gmake
+
+# Autotools on Compile farm:
+export GNU_TRP='powerpc-apple-darwin5.5'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib ./configure --prefix=${HOME} --bindir=${HOME}/bin --datadir=${HOME}/nco/data --libdir=${HOME}/lib --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 Building group NCO: 
 export MY_BIN_DIR='/home/groups/n/nc/nco/nco/bin'
