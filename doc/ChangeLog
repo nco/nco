@@ -1,5 +1,10 @@
 2004-07-19  Charlie Zender  <zender@uci.edu>
 
+	* Introduced restrict type qualifier into pointer unions
+
+	* cvs tag -c nco-2_9_7_pre_restrict
+	Last tag prior to implementing C99 features
+
 	* const'ify arithmetic counters used only for normalization
 
 	* Standardized arithmetic prototypes in preparation for implementing

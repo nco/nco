@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.58 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.59 2004-07-19 21:03:48 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -213,13 +213,13 @@ extern "C" {
 
   /* Pointer union */
   typedef union{ /* ptr_unn */
-    float *fp;
-    double *dp;
-    nco_long *lp; /* NC_INT is stored in native type nco_long */
-    short *sp;
-    unsigned char *cp; /* Range of unsigned char is 0--255 */
-    signed char *bp; /* Range of signed char is -127--127 */
-    void *vp;
+    float * restrict fp;
+    double * restrict dp;
+    nco_long * restrict lp; /* NC_INT is stored in native type nco_long */
+    short * restrict sp;
+    unsigned char * restrict cp; /* Range of unsigned char is 0--255 */
+    signed char * restrict bp; /* Range of signed char is -127--127 */
+    void * restrict vp;
   } ptr_unn;
 
   /* Value union */
