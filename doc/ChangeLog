@@ -1,5 +1,8 @@
 2004-08-04  Charlie Zender  <zender@uci.edu>
 
+	* Fixed diagnostic bug in nco_var_dfn() which would dump core when dbg_lvl=3
+	and prg=ncwa
+
 	* Fix ncwa bug introduced in nco_var_dmn() last week.
 	nco_tst.pl completes successfully again.
 
