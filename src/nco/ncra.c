@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.126 2005-02-14 02:14:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.127 2005-02-26 02:24:25 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -98,8 +98,8 @@ main(int argc,char **argv)
   bool HISTORY_APPEND=True; /* Option h */
   bool ARM_FORMAT=int_CEWI;
   bool NCAR_CCSM_FORMAT=int_CEWI;
-  bool PROCESS_ALL_COORDINATES=False; /* Option c */
-  bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
+  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
   char **fl_lst_abb=NULL; /* Option n */
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *nco_pck_plc_sng=NULL_CEWI; /* [sng] Packing policy Option P */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.126 2005-02-14 02:14:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.126 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.127 2005-02-26 02:24:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.127 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -241,10 +241,10 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
-      PROCESS_ASSOCIATED_COORDINATES=False;
+      EXTRACT_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':
-      PROCESS_ALL_COORDINATES=True;
+      EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
@@ -350,16 +350,16 @@ main(int argc,char **argv)
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
   
   /* Form initial extraction list which may include extended regular expressions */
-  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
+  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,EXTRACT_ALL_COORDINATES,&nbr_xtr);
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
 
   /* Add all coordinate variables to extraction list */
-  if(PROCESS_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
+  if(EXTRACT_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
 
   /* Make sure coordinates associated extracted variables are also on extraction list */
-  if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
+  if(EXTRACT_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
   /* Sort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,False);

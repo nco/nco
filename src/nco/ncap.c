@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.142 2005-02-14 02:14:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.143 2005-02-26 02:24:25 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -94,8 +94,8 @@ main(int argc,char **argv)
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool NCAR_CCSM_FORMAT;
-  bool PROCESS_ALL_COORDINATES=False; /* Option c */
-  bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
+  bool EXTRACT_ALL_COORDINATES=False; /* Option c */
+  bool EXTRACT_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   bool PROCESS_ALL_VARS=True; /* Option v */  
   bool PRN_FNC_TBL=False; /* Option f */  
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.142 2005-02-14 02:14:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.142 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.143 2005-02-26 02:24:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.143 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -272,10 +272,10 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
-      PROCESS_ASSOCIATED_COORDINATES=False;
+      EXTRACT_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':
-      PROCESS_ALL_COORDINATES=True;
+      EXTRACT_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
@@ -592,12 +592,12 @@ main(int argc,char **argv)
   
   /* All dimensions for all variables are now in output
      Add coordinate variables to extraction list
-     If PROCESS_ALL_COORDINATES then write associated dimension to output */
-  if(PROCESS_ASSOCIATED_COORDINATES){
+     If EXTRACT_ALL_COORDINATES then write associated dimension to output */
+  if(EXTRACT_ASSOCIATED_COORDINATES){
     for(idx=0; idx <nbr_dmn_in; idx++){
       if(!dmn_in[idx]->is_crd_dmn) continue;
       
-      if(PROCESS_ALL_COORDINATES && !dmn_in[idx]->xrf){
+      if(EXTRACT_ALL_COORDINATES && !dmn_in[idx]->xrf){
 	/* Add dimensions to output list dmn_out */
 	dmn_new=nco_dmn_out_grow((void *)&prs_arg);
 	*dmn_new=nco_dmn_dpl(dmn_in[idx]);
