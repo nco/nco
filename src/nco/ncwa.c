@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.37 2000-06-30 22:22:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.38 2000-07-15 19:53:58 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -102,10 +102,11 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *msk_nm=NULL;
+  char *nco_op_typ_sng;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.37 2000-06-30 22:22:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.37 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.38 2000-07-15 19:53:58 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.38 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -134,6 +135,7 @@ main(int argc,char **argv)
   int nbr_dmn_out;
   int nbr_dmn_xtr;
   int nbr_fl=0;
+  int nco_op_typ = nco_op_avg; /* flag for average,min,max,ttl operations */
   int opt;
   int op_type=0; /* Option o */ 
   int rec_dmn_id=-1;
@@ -167,7 +169,7 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:xWw:";
+  opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:xWw:y:";
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
     arg_cnt++;
     switch(opt){
@@ -270,6 +272,10 @@ main(int argc,char **argv)
       /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
+	case 'y': /* Option minmax,average */
+      nco_op_typ_sng=(char *)strdup(optarg);
+	  nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
+	  break;
     case '?':
       /* Print proper usage */
       (void)usg_prn();
@@ -277,6 +283,15 @@ main(int argc,char **argv)
       break;
     } /* end switch */
   } /* end while loop */
+
+  /* Only in averaging operation are the totals normalized by tallies */
+  
+  if ( nco_op_typ != nco_op_avg ) {
+	NRM_BY_DNM=False;
+    NORMALIZE_BY_TALLY=False;
+    NORMALIZE_BY_WEIGHT=False;
+    }  
+
 
   /* If called without arguments, print usage and exit successfully */ 
   if(arg_cnt == 0){
@@ -346,7 +361,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_dmn_avg;idx++){
       dmn_avg_lst_in[idx]=(char *)strdup(dmn_lst[idx].nm);
     } /* end loop over idx */
-    (void)fprintf(stdout,"%s: WARNING No dimensions specified with -a, therefore averaging over all dimensions\n",prg_nm);
+    (void)fprintf(stderr,"%s: WARNING No dimensions specified with -a, therefore averaging over all dimensions\n",prg_nm);
   } /* end if nbr_dmn_avg == 0 */
 
   if (nbr_dmn_avg > 0){
@@ -579,7 +594,7 @@ main(int argc,char **argv)
       /* Copy (masked) (weighted) values from var_prc to var_prc_out */ 
       (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type));
       /* Average variable over specified dimensions (tally array is set here) */
-      var_prc_out[idx]=var_avg(var_prc_out[idx],dmn_avg,nbr_dmn_avg);
+      var_prc_out[idx]=var_avg(var_prc_out[idx],dmn_avg,nbr_dmn_avg,nco_op_typ);
       /* var_prc_out[idx]->val holds numerator of averaging expression documented in NCO User's Guide 
 	 Denominator is also tricky due to sundry normalization options 
 	 These logical switches are VERY tricky---be careful modifying them */
@@ -636,7 +651,7 @@ main(int argc,char **argv)
 	  exit(EXIT_FAILURE); 
 	} /* end if */ 
 	/* Average weight over specified dimensions (tally array is set here) */ 
-	wgt_avg=var_avg(wgt_avg,dmn_avg,nbr_dmn_avg);
+	wgt_avg=var_avg(wgt_avg,dmn_avg,nbr_dmn_avg,nco_op_avg);
 	if(MULTIPLY_BY_TALLY){
 	  /* Currently this is not implemented */ 
 	  /* Multiply numerator (weighted sum of variable) by tally 

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.22 2000-07-13 18:32:34 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.23 2000-07-15 19:53:58 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -82,13 +82,59 @@ ncwa -O -v msk_prt_mss_prt -m msk_prt_mss_prt -M 1.0 -o lt -a lon in.nc foo.nc 2
 avg=`ncks -C -H -s "%e" -v msk_prt_mss_prt foo.nc`
 echo "ncwa 14: average masked variable with some missing values: 0.5 =?= $avg" 
 
-ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
-avg=`ncks -C -H -s "%e" -v mss_val foo.nc`
-echo "ncdiff 1: difference with missing value attribute: 1.0e36 =?= $avg" 
+ncwa -O -y min -v rec_var_flt_mss_val_dbl in.nc foo.nc 2>>foo.tst
+avg=`ncks -C -H -s "%e" -v rec_var_flt_mss_val_dbl foo.nc`
+echo "ncwa 15: min swich on type double, some missing values: 2 =?= $avg" 
 
-ncdiff -O -d lon,0 -v no_mss_val in.nc in.nc foo.nc 2>> foo.tst
-avg=`ncks -C -H -s "%f" -v no_mss_val foo.nc`
-echo "ncdiff 2: difference without missing value attribute: 0 =?= $avg" 
+ncwa  -O -y min -v three_dmn_var_dbl -a lon in.nc foo.nc 2>>foo.tst
+ncks -C -H -s "%f," -v three_dmn_var_dbl foo.nc >foo$$
+avg=`cut -d, -f 7 foo$$`
+echo "ncwa 16: Dimension reduction with min switch and missing values: -99 =?= $avg"
+avg=`cut -d, -f 20 foo$$`
+echo "ncwa 17: Dimension reduction with min switch : 77 =?= $avg"
+
+ncwa -O -y min -v three_dmn_var_lng -a lon in.nc foo.nc 2>>foo.tst
+ncks -C -H -s "%d," -v three_dmn_var_lng foo.nc>foo$$
+avg=`cut -d, -f 5 foo$$`
+echo "ncwa 18: Dimension reduction on type long  with min switch and missing values: -99 =?= $avg"
+avg=`cut -d, -f 7 foo$$`
+echo "ncwa 19: Dimension reduction on type long variable: 25 =?= $avg"
+
+ncwa -O -y min -v three_dmn_var_sht -a lon in.nc foo.nc 2>>foo.tst
+ncks -C -H -s "%d," -v three_dmn_var_sht foo.nc>foo$$
+avg=`cut -d, -f 20 foo$$`
+echo "ncwa 20: Dimension reduction on type short variable with min switch and missing values: -99 =?= $avg"
+avg=`cut -d, -f 8 foo$$`
+echo "ncwa 21: Dimension reduction on type short variable: 29 =?= $avg"
+
+ncwa -O -y min -v three_dmn_rec_var  in.nc foo.nc 2>>foo.tst
+avg=`ncks -C -H -s "%f" -v three_dmn_rec_var foo.nc`
+echo "ncwa 22: Dimension reduction with min flag on type float variable: 1 =?= $avg"
+
+ncwa -O -y max  -v four_dmn_rec_var  in.nc foo.nc 2>>foo.tst
+avg=`ncks -C -H -s "%f" -v four_dmn_rec_var foo.nc`
+echo "ncwa 23: Max flag on type float variable: 240 =?= $avg"
+
+ncwa -O -y max  -v three_dmn_var_dbl  -a lat,lon in.nc foo.nc 2>>foo.tst
+ncks -C -H -s "%f," -v three_dmn_var_dbl foo.nc>foo$$
+avg=`cut -d, -f 4 foo$$`
+echo "ncwa 24: Dimension reduction on type double  variable with max switch and missing values: -99 =?= $avg"
+avg=`cut -d, -f 5 foo$$`
+echo "ncwa 25: Dimension reduction on type double variable: 40 =?= $avg"
+
+ncwa -O -y max -v three_dmn_var_lng -a lat in.nc foo.nc 2>>foo.tst
+ncks -C -H -s "%d," -v three_dmn_var_lng foo.nc>foo$$
+avg=`cut -d, -f 9 foo$$`
+echo "ncwa 26: Dimension reduction on type long variable with min switch and missing values: -99 =?= $avg"
+avg=`cut -d, -f 13 foo$$`
+echo "ncwa 27: Dimension reduction on type long variable: 29 =?= $avg"
+
+ncwa -O -y max -v three_dmn_var_sht -a lat in.nc foo.nc 2>>foo.tst
+ncks -C -H -s "%d," -v three_dmn_var_sht foo.nc>foo$$
+avg=`cut -d, -f 37 foo$$`
+echo "ncwa 28: Dimension reduction on type short variable with max switch and missing values: -99 =?= $avg"
+avg=`cut -d, -f 33 foo$$`
+echo "ncwa 29: Dimension reduction on type short, max switch variable: 69 =?= $avg"
 
 ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
@@ -126,7 +172,7 @@ ncra -O -y rms -v rec_var_flt_mss_val_dbl foo2.nc foo2.nc 2>> foo.tst
 avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo2.nc`
 echo "ncra 8: record sdn of float with double missing values across two files: 2 =?= $avg"
 
-ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc 2>> foo.tst
+ ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
 echo "ncea 1: ensemble mean across two files: 5 =?= $avg" 
 
@@ -137,6 +183,14 @@ echo "ncea 2: ensemble mean with missing values across two files: 1.0e36 =?= $av
 ncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v rec_var_flt_mss_val_dbl foo.nc`
 echo "ncea 3: ensemble min of float across two files: 2 =?= $avg" 
+
+ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%e" -v mss_val foo.nc`
+echo "ncdiff 1: difference with missing value attribute: 1.0e36 =?= $avg" 
+
+ncdiff -O -d lon,0 -v no_mss_val in.nc in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%f" -v no_mss_val foo.nc`
+echo "ncdiff 2: difference without missing value attribute: 0 =?= $avg" 
 
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
 ncks -O -v one -p ftp://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst

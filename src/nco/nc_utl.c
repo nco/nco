@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.76 2000-07-13 18:33:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.77 2000-07-15 19:53:58 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -2786,12 +2786,13 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
 } /* end val_conform_type */ 
 
 var_sct *
-var_avg(var_sct *var,dmn_sct **dim,int nbr_dim)
+var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
 /*  
    var_sct *var: I/O pointer to variable structure (destroyed)
    dmn_sct **dim: I pointer to list of dimension structures
    int nbr_dim: I number of structures in list
    var_sct *var_avg(): O pointer to PARTIALLY (non-normalized) averaged variable
+   nco_op_typ : average,min,max,ttl operation to perform, default is average
 */
 {
   /* Routine to average given variable over given dimensions. The input variable 
@@ -3025,7 +3026,24 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim)
        An averaging routine can take advantage of this by casting avg_val to a two dimensional
        variable and averaging over the inner dimension. 
        This is where the tally array is actually set. */ 
-    (void)var_avg_reduce(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
+    switch(nco_op_typ){
+    case nco_op_min:
+      (void)var_avg_reduce_min(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
+      break;
+    case nco_op_max:
+      (void)var_avg_reduce_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
+      break;
+    case nco_op_avg: 
+    case nco_op_ttl:
+    default:
+      (void)var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  		
+      break;
+/* Not yet implemented 
+   case nco_op_avgsqr:
+   break;
+   case nco_op_avgsumsqr:
+   break;       */      
+    } /* end case */
 
     /* Free dynamic memory that held the rearranged input variable values */ 
     (void)free(avg_val.vp);
@@ -3700,7 +3718,7 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
 } /* end var_sqrt() */ 
 
 void
-var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
+var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
 /* 
   nc_type type: I netCDF type of operands
   long sz_op1: I size (in elements) of op1
@@ -3773,7 +3791,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 #else /* !USE_FORTRAN_ARITHMETIC */
 #ifndef __GNUC__
     /* NB: ANSI compliant branch */ 
-    if(!has_mss_val){
+    if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1.fp[blk_off+idx_blk];
@@ -3984,7 +4002,588 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */ 
 
-} /* end var_avg_reduce() */ 
+} /* end var_avg_reduce_ttl() */ 
+
+void
+var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
+/* 
+  nc_type type: I netCDF type of operands
+  long sz_op1: I size (in elements) of op1
+  long sz_op2: I size (in elements) of op2
+  int has_mss_val: I flag for missing values
+  ptr_unn mss_val: I value of missing value
+  long *tally: I/O counter space
+  ptr_unn op1: I values of first operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2))
+  ptr_unn op2: O values resulting from averaging each block of input operand
+ */ 
+{
+  /* Routine to find minium values in each contiguous block of first operand and place
+     result in corresponding element in second operand. Operands are assumed to have
+     conforming types, but not dimensions or sizes. */
+
+  /* var_avg_reduce_min() is derived from var_avg_reduce_ttl()
+     Routines are very similar but tallies are not incremented
+     See var_avg_reduce_ttl() for more algorithmic documentation
+     var_avg_reduce_max() is derived from var_avg_reduce_min() */
+
+#ifndef __GNUC__
+  long blk_off;
+  long idx_op1;
+#endif /* !__GNUC__ */
+  long idx_op2;
+  long idx_blk;
+  long sz_blk;
+
+  double mss_val_dbl=double_CEWI;
+  float mss_val_flt=float_CEWI;
+  signed char mss_val_chr;
+  unsigned char mss_val_byt;
+  
+  nclong mss_val_lng=long_CEWI;
+  short mss_val_shrt=short_CEWI;
+  
+  bool flg_mss=False;
+  
+  sz_blk=sz_op1/sz_op2;
+  
+  /* Typecast pointer to values before access */ 
+  (void)cast_void_nctype(type,&op1);
+  (void)cast_void_nctype(type,&op2);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  if(has_mss_val){
+    switch(type){
+    case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
+    case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
+    case NC_SHORT: mss_val_shrt=*mss_val.sp; break;
+    case NC_LONG: mss_val_lng=*mss_val.lp; break;
+    case NC_BYTE: mss_val_byt=*mss_val.bp; break;
+    case NC_CHAR: mss_val_chr=*mss_val.cp; break;
+    } /* end switch */
+  } /* endif */
+  
+  switch(type){
+  case NC_FLOAT:
+    
+#ifndef __GNUC__
+    /* NB: ANSI compliant branch */ 
+    if(!has_mss_val){ 
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.fp[idx_op2]=op1.fp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.fp[idx_op2] > op1.fp[blk_off+idx_blk]) op2.fp[idx_op2]=op1.fp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.fp[idx_op1] != mss_val_flt) {
+	    if(!flg_mss || op2.fp[idx_op2] > op1.fp[idx_op1]) op2.fp[idx_op2]=op1.fp[idx_op1];
+	    flg_mss=True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */ 
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+    if(True){
+      float op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nctypelen(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.fp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.fp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_flt) {
+	      if(!flg_mss || op2.fp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */ 
+    
+    break;
+  case NC_DOUBLE:
+    
+#ifndef __GNUC__
+    /* NB: ANSI compliant branch */ 
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.dp[idx_op2]=op1.dp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.dp[idx_op2] > op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.dp[idx_op1] != mss_val_dbl) {
+	    if(!flg_mss || (op2.dp[idx_op2] > op1.dp[idx_op1])) op2.dp[idx_op2]=op1.dp[idx_op1];
+	    flg_mss=True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */ 
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+    if(True){
+      double op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nctypelen(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.dp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.dp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk] ;
+	} /* end loop over idx_op2 */
+      }else{
+	float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
+	      if(!flg_mss || (op2.dp[idx_op2] > op1_2D[idx_op2][idx_blk])) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk];	    
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */ 
+    break;
+  case NC_LONG:
+#ifndef __GNUC__
+    /* NB: ANSI compliant branch */ 
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.lp[idx_op2]=op1.lp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.lp[idx_op2] > op1.lp[blk_off+idx_blk])op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
+	tally[idx_op2]=sz_blk;
+      } /* end loop over idx_op2 */
+    }else{
+      float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.lp[idx_op1] != mss_val_lng){
+	    if(!flg_mss || op2.lp[idx_op2] > op1.lp[idx_op1])op2.lp[idx_op2]=op1.lp[idx_op1];
+	    flg_mss= True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */ 
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+    if(True){
+      long op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.lp),sz_op1*nctypelen(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.lp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.lp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	} /* end loop over idx_op2 */
+      }else{
+	float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_lng){
+	      if(!flg_mss || op2.lp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */ 
+    break;
+  case NC_SHORT:
+#ifndef __GNUC__
+    /* NB: ANSI compliant branch */ 
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.sp[idx_op2]=op1.sp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.sp[idx_op2] > op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.sp[idx_op1] != mss_val_shrt){
+	    if(!flg_mss || op2.sp[idx_op2] > op1.sp[idx_op1]) op2.sp[idx_op2]=op1.sp[idx_op1];
+	    flg_mss=True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.sp[idx_op2]=mss_val_shrt;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */ 
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+    if(True){
+      short op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nctypelen(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.sp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	} /* end loop over idx_op2 */
+      }else{
+	float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_shrt){
+	      if(!flg_mss  || op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.sp[idx_op2]=mss_val_shrt;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */ 
+    break;
+  case NC_CHAR:
+    /* Do nothing */ 
+    break;
+  case NC_BYTE:
+    /* Do nothing */ 
+    break;
+  } /* end  switch */ 
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */ 
+  
+} /* end var_avg_reduce_min() */
+
+void
+var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
+/* 
+  nc_type type: I netCDF type of operands
+  long sz_op1: I size (in elements) of op1
+  long sz_op2: I size (in elements) of op2
+  int has_mss_val: I flag for missing values
+  ptr_unn mss_val: I value of missing value
+  long *tally: I/O counter space
+  ptr_unn op1: I values of first operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2))
+  ptr_unn op2: O values resulting from averaging each block of input operand
+ */ 
+{
+  /* Routine to find maximium values in each contiguous block of first operand and place
+     result in corresponding element in second operand. Operands are assumed to have
+     conforming types, but not dimensions or sizes. */
+  
+  /* var_avg_reduce_min() is derived from var_avg_reduce_ttl()
+     Routines are very similar but tallies are not incremented
+     var_avg_reduce_max() is identical to var_avg_reduce_min() except the ">" have been swapped for "<" 
+     See var_avg_reduce_ttl() for more algorithmic documentation
+  */
+
+#ifndef __GNUC__
+  long blk_off;
+  long idx_op1;
+#endif /* !__GNUC__ */
+  long idx_op2;
+  long idx_blk;
+  long sz_blk;
+  
+  double mss_val_dbl=double_CEWI;
+  float mss_val_flt=float_CEWI;
+  signed char mss_val_chr;
+  unsigned char mss_val_byt;
+  
+  nclong mss_val_lng=long_CEWI;
+  short mss_val_shrt=short_CEWI;
+  
+  bool flg_mss=False;
+  
+  sz_blk=sz_op1/sz_op2;
+  
+  /* Typecast pointer to values before access */ 
+  (void)cast_void_nctype(type,&op1);
+  (void)cast_void_nctype(type,&op2);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  if(has_mss_val){
+    switch(type){
+    case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
+    case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
+    case NC_SHORT: mss_val_shrt=*mss_val.sp; break;
+    case NC_LONG: mss_val_lng=*mss_val.lp; break;
+    case NC_BYTE: mss_val_byt=*mss_val.bp; break;
+    case NC_CHAR: mss_val_chr=*mss_val.cp; break;
+    } /* end switch */
+  } /* endif */
+  
+  switch(type){
+  case NC_FLOAT:
+    
+#ifndef __GNUC__
+    /* NB: ANSI compliant branch */ 
+    if(!has_mss_val){ 
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.fp[idx_op2]=op1.fp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.fp[idx_op2] < op1.fp[blk_off+idx_blk]) op2.fp[idx_op2]=op1.fp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.fp[idx_op1] != mss_val_flt) {
+	    if(!flg_mss || op2.fp[idx_op2] < op1.fp[idx_op1]) op2.fp[idx_op2]=op1.fp[idx_op1];
+	    flg_mss=True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */ 
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+    if(True){
+      float op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.fp),sz_op1*nctypelen(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.fp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.fp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	} /* end loop over idx_op2 */
+      }else{
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_flt) {
+	      if(!flg_mss || op2.fp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.fp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.fp[idx_op2]=mss_val_flt;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */ 
+    
+    break;
+  case NC_DOUBLE:
+    
+#ifndef __GNUC__
+    /* NB: ANSI compliant branch */ 
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.dp[idx_op2]=op1.dp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.dp[idx_op2] < op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.dp[idx_op1] != mss_val_dbl) {
+	    if(!flg_mss || (op2.dp[idx_op2] < op1.dp[idx_op1])) op2.dp[idx_op2]=op1.dp[idx_op1];
+	    flg_mss=True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */ 
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+    if(True){
+      double op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.dp),sz_op1*nctypelen(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.dp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.dp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk] ;
+	} /* end loop over idx_op2 */
+      }else{
+	float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
+	      if(!flg_mss || (op2.dp[idx_op2] < op1_2D[idx_op2][idx_blk])) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk];	    
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.dp[idx_op2]=mss_val_dbl;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */ 
+    break;
+  case NC_LONG:
+#ifndef __GNUC__
+    /* NB: ANSI compliant branch */ 
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.lp[idx_op2]=op1.lp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.lp[idx_op2] < op1.lp[blk_off+idx_blk])op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
+	tally[idx_op2]=sz_blk;
+      } /* end loop over idx_op2 */
+    }else{
+      float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.lp[idx_op1] != mss_val_lng){
+	    if(!flg_mss || op2.lp[idx_op2] < op1.lp[idx_op1])op2.lp[idx_op2]=op1.lp[idx_op1];
+	    flg_mss= True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */ 
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+    if(True){
+      long op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.lp),sz_op1*nctypelen(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.lp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.lp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	} /* end loop over idx_op2 */
+      }else{
+	float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_lng){
+	      if(!flg_mss || op2.lp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.lp[idx_op2]=mss_val_lng;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */ 
+    break;
+  case NC_SHORT:
+#ifndef __GNUC__
+    /* NB: ANSI compliant branch */ 
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	op2.sp[idx_op2]=op1.sp[blk_off];
+	for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	  if(op2.sp[idx_op2] < op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
+      } /* end loop over idx_op2 */
+    }else{
+      float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	flg_mss=False;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.sp[idx_op1] != mss_val_shrt){
+	    if(!flg_mss || op2.sp[idx_op2] < op1.sp[idx_op1]) op2.sp[idx_op2]=op1.sp[idx_op1];
+	    flg_mss=True;
+	  } /* end if */
+	} /* end loop over idx_blk */
+	if(!flg_mss) op2.sp[idx_op2]=mss_val_shrt;
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */ 
+    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
+    if(True){
+      short op1_2D[sz_op2][sz_blk];
+      
+      (void)memcpy((void *)op1_2D,(void *)(op1.sp),sz_op1*nctypelen(type));
+      
+      if(!has_mss_val){
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  op2.sp[idx_op2]=op1_2D[idx_op2][0];
+	  for(idx_blk=1;idx_blk<sz_blk;idx_blk++) 
+	    if(op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
+	} /* end loop over idx_op2 */
+      }else{
+	float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	  flg_mss=False;
+	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_shrt){
+	      if(!flg_mss  || op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
+	      flg_mss=True;
+	    } /* end if */
+	  } /* end loop over idx_blk */
+	  if(!flg_mss) op2.sp[idx_op2]=mss_val_shrt;
+	} /* end loop over idx_op2 */
+      } /* end else */
+    } /* end if */
+#endif /* __GNUC__ */ 
+    break;
+  case NC_CHAR:
+    /* Do nothing */ 
+    break;
+  case NC_BYTE:
+    /* Do nothing */ 
+    break;
+  } /* end  switch */ 
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */ 
+
+} /* end var_avg_reduce_max() */
 
 void 
 nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)

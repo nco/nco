@@ -1,3 +1,7 @@
+2000-07-16  Charlie Zender  <zender@uci.edu>
+
+	* Added ncwa min/max/ttl patch
+
 2000-07-09  Charlie Zender  <zender@uci.edu>
 
         * Added section on Contributing/contributors to nco.texi

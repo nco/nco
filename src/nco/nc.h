@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.34 2000-07-13 18:33:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.35 2000-07-15 19:53:58 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -406,7 +406,7 @@ extern nm_id_sct *var_lst_xcl(int,int,nm_id_sct *,int *);
 extern ptr_unn mss_val_mk(nc_type);
 extern unsigned short dbg_lvl_get(void);
 extern var_sct *scl_dbl_mk_var(double);
-extern var_sct *var_avg(var_sct *,dmn_sct **,int);
+extern var_sct *var_avg(var_sct *,dmn_sct **,int,int);
 extern var_sct *var_conform_dim(var_sct *,var_sct *,var_sct *,bool,bool *);
 extern var_sct *var_conform_type(nc_type,var_sct *);
 extern var_sct *var_dup(var_sct *);
@@ -452,7 +452,9 @@ extern void rec_crd_chk(var_sct *,char *,char *,long,long);
 extern void usg_prn(void);
 extern void val_conform_type(nc_type,ptr_unn,nc_type,ptr_unn);
 extern void var_add(nc_type,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
-extern void var_avg_reduce(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
+extern void var_avg_reduce_ttl(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
+extern void var_avg_reduce_min(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
+extern void var_avg_reduce_max(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
 extern void var_copy(nc_type,long,ptr_unn,ptr_unn);
 extern void var_def(int,char *,int,var_sct **,int,dmn_sct **,int);
 extern void var_dmn_xrf(var_sct *);
