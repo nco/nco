@@ -1,11 +1,19 @@
-2003-08-20 Henry Butowsky <henryb@ntlworld>
-	* Rolled out varriable wildcarding to all operators
-	  configure script checks for presence of regular
-	  expressions lib regex.h
-2003-08-16  Charlie Zender  <zender@uci.edu>
+2003-08-21  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_8_1
 	Changes since nco-2_8_0: variable wildcarding
+
+	* Add skeleton ncap.1 man page to satisfy autotools 'make install'
+
+	* Bring bld/Makefile up-to-date with wildcarding, getopt changes
+
+2003-08-20 Henry Butowsky <henryb@ntlworld>
+
+	* Rolled out varriable wildcarding to all operators
+	  configure script checks for presence of regular
+	  expressions lib regex.h
+
+2003-08-16  Charlie Zender  <zender@uci.edu>
 
 	* Verified autotools builds fine again on SGI, AIX
 

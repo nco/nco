@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.11 2003-08-20 14:41:40 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.12 2003-08-21 23:07:44 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -25,10 +25,9 @@
 #include <netcdf.h> /* netCDF definitions */
 #include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
 
-
 #ifdef HAVE_REGEX_H
 #include <regex.h> /* POSIX regular expressions library */
-#endif
+#endif /* HAVE_REGEX_H */
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */

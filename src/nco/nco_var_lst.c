@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.18 2003-08-21 19:49:20 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.19 2003-08-21 23:07:44 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -128,6 +128,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
   
      var_sng=var_lst_in[idx];
      /* if var_sng is  a regular expressiom */
+     /* 20030821: TODO 271 backslash character causes compiler warning about undefined escape sequence no matter where you place it. Put it in separate strchr() search? */
      if ( strpbrk(var_sng,".*^$\[]()<>+?|")  ) {
        
        /* Regular expression library present */

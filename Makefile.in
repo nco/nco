@@ -169,11 +169,11 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive pdf-recursive \
 	all-recursive install-data-recursive install-exec-recursive \
 	installdirs-recursive install-recursive uninstall-recursive \
 	check-recursive installcheck-recursive
-DIST_COMMON = COPYING INSTALL Makefile.am Makefile.in acinclude.m4 \
-	aclocal.m4 autobld/config.guess autobld/config.sub \
-	autobld/depcomp autobld/install-sh autobld/ltmain.sh \
-	autobld/missing autobld/mkinstalldirs autobld/texinfo.tex \
-	config.guess config.h.in config.sub configure configure.in
+DIST_COMMON = Makefile.am Makefile.in acinclude.m4 aclocal.m4 \
+	autobld/config.guess autobld/config.sub autobld/depcomp \
+	autobld/install-sh autobld/ltmain.sh autobld/missing \
+	autobld/mkinstalldirs autobld/texinfo.tex config.guess \
+	config.h.in config.sub configure configure.in
 DIST_SUBDIRS = $(SUBDIRS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -531,7 +531,7 @@ installcheck-am:
 
 maintainer-clean: maintainer-clean-recursive
 	-rm -f $(am__CONFIG_DISTCLEAN_FILES)
-	-rm -rf $(top_srcdir)/autom4te.cache
+	-rm -rf autom4te.cache
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
 mostlyclean: mostlyclean-recursive

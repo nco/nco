@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.231 2003-08-16 00:55:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.232 2003-08-21 23:07:44 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -233,6 +233,7 @@ Permission denied
 268. ncbo: use ncap var_cnf_dmn() technique so fl_1 fl_2 broadcast interchangeably
 269. SGI autotools ncap build fails because HAVE_GETOPT_H gets passed even though getopt_long struct tokens not defined
 270. Automate uploading of tagged .deb builds to ftp://ftp.debian.org
+271. Eliminate nco_var_lst warnings caused by backslash
 ************************************************************************
 End NCO Wish list
 ************************************************************************
