@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.4 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.5 2003-02-18 19:35:48 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -60,6 +60,10 @@ extern "C" {
   void 
   nco_msa_clc_cnt    /* Calculate size of  multiple hyperslab */ 
   (lmt_all* lmt_lst); 
+
+  void
+  nco_msa_wrp_splt   /* Split wrapped dimensions  */
+  (lmt_all* lmt_lst);
   
   void *
   nco_msa_rec_clc /* Multi slab algorithm (recursive routine, returns a single slab pointer */
@@ -74,6 +78,27 @@ extern "C" {
   (long *current,   /* current indices */
    bool *min,       /* element true if a minimum */
    int size);       /* size of current and min */
+
+  void             /* convert hyperlsab indices into indices relative to disk */ 
+  nco_msa_ram_2_dsk( 
+  long *dmn_sbs_ram,   /* Input indices */
+  lmt_all** lmt_mult,   /* input hyperlab limits     */
+  int nbr_dmn,         /* number of dimensions */    
+  long *dmn_sbs_dsk,  /* Output - indices relative to disk */
+  bool FREE);        /* Free static space on last call */
+
+  void
+  nco_msa_prn_var_val   /* [fnc] Print variable data */
+  (const int in_id, /* I [id] netCDF input file ID */
+   const char * const var_nm, /* I [sng] Variable name */
+   const lmt_all * const lmt_lst, /* I [sct] Dimension limits */
+   const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
+   char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
+   const bool FORTRAN_STYLE, /* I [flg] Hyperslab indices obey Fortran convention */
+   const bool PRINT_DIMENSIONAL_UNITS, /* I [flg] Print units attribute, if any */
+   const bool PRN_DMN_IDX_CRD_VAL); /* I [flg] Print dimension/coordinate indices/values */
+
+
   
 #ifdef __cplusplus
 } /* end extern "C" */
