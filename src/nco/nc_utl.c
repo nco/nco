@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.135 2002-04-25 06:47:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.136 2002-04-26 23:20:08 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -931,7 +931,8 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
 
-  /* Packing/Unpacking */
+  /* Portions of variable structure depend on packing propterties
+     pck_dsk_inq() fills in these portions harmlessly */
   (void)pck_dsk_inq(nc_id,var);
 
   return var;
@@ -2108,7 +2109,8 @@ var_dpl(var_sct *var)
  */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* Purpose: nco_malloc() and return duplicate of input var_sct */
+  /* Purpose: nco_malloc() and return duplicate of input var_sct
+     Duplicate is deep copy of original so original may always be free()'d */
 
   var_sct *var_dpl;
 
@@ -2219,18 +2221,21 @@ var_get(int nc_id,var_sct *var)
     } /* end else */
   } /* end OpenMP critical */
 
+  /* Packing properties of variable obtained from pck_dsk_inq() call in var_fll() */
+
   /* Type in memory is now same as type on disk */
   var->type=var->typ_dsk; /* Type of variable in RAM */
   
-  if(dbg_lvl_get() == 3){
-    if(prg_get() == ncra || prg_get() == ncea){
-      /* Packing/Unpacking */
+  /* Packing/Unpacking */
+  if(is_arithmetic_operator(prg_get())){
+    /* fxm: Automatic unpacking is not debugged, just do it with ncap for now */
+    if(prg_get() == ncap && dbg_lvl_get() != 3){
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
       if(var->pck_dsk) var=var_upk(var);
-    } /* endif arithemetic operator with packing capability */
-  } /* endif debug */
+    } /* endif debug */
+  } /* endif arithemetic operator with packing capability */
 
 } /* end var_get() */
 
@@ -2796,6 +2801,74 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
      routine is the contents of the location pointed to by the pointer to the output value. */
   
 } /* end val_conform_type */
+
+int  
+scv_conform_type(nc_type type_new,scv_sct *a)
+{
+  /* Purpose: Convert attribute to type_new using C implicit coercion */
+  nc_type type_old=a->type;
+  
+  scv_sct b;
+  switch (type_new){ 
+  case NC_BYTE:
+    switch(type_old){
+    case NC_FLOAT: b.val.b=(signed char)(a->val).f; break;
+    case NC_DOUBLE: b.val.b=(signed char)(a->val).d; break;
+    case NC_INT: b.val.b=(a->val).l; break;
+    case NC_SHORT: b.val.b=(a->val).s; break;
+    case NC_BYTE: b.val.b=(a->val).b; break;
+    case NC_CHAR: break;
+    case NC_NAT: break;
+    } break;
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_SHORT:
+    switch(type_old){
+    case NC_FLOAT: b.val.s=(short)(a->val).f; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: b.val.s=(short)(a->val).d; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: b.val.s=(a->val).l; break;
+    case NC_SHORT: b.val.s=(a->val).s; break;
+    case NC_BYTE: b.val.s=(a->val).b; break;
+    case NC_CHAR: break;
+    case NC_NAT: break;    
+    } break;
+  case NC_INT:
+    switch(type_old){
+    case NC_FLOAT: b.val.l=(long)(a->val).f; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: b.val.l=(long)(a->val).d; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: b.val.l =a->val.l; break;
+    case NC_SHORT: b.val.l=(a->val).s; break;
+    case NC_BYTE: b.val.l=(a->val).b; break;
+    case NC_CHAR: break;
+    case NC_NAT: break;
+    } break;
+  case NC_FLOAT:
+    switch(type_old){
+    case NC_FLOAT: b.val.f=(a->val).f; break; 
+    case NC_DOUBLE: b.val.f=(a->val).d; break; 
+    case NC_INT: b.val.f=(a->val).l; break;
+    case NC_SHORT: b.val.f=(a->val).s; break;
+    case NC_BYTE: b.val.f=(a->val).b; break;
+    case NC_CHAR: break;
+    case NC_NAT: break;    
+    } break;
+  case NC_DOUBLE:
+    switch(type_old){
+    case NC_FLOAT: b.val.d=(a->val).f; break; 
+    case NC_DOUBLE: b.val.d =(a->val).d; break; 
+    case NC_INT: b.val.d=(a->val).l; break;
+    case NC_SHORT: b.val.d=(a->val).s; break;
+    case NC_BYTE: b.val.d=(a->val).b; break;
+    case NC_CHAR: break;
+    case NC_NAT: break;    
+    } break;
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+  b.type=type_new;
+  *a=b;
+  return 1;      
+} /* end scv_conform_type */
 
 var_sct *
 var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)

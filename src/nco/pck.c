@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.18 2002-04-25 06:47:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.19 2002-04-26 23:20:08 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -46,6 +46,7 @@
 #include <netcdf.h>             /* netCDF definitions */
 #include "nco_netcdf.h"         /* netCDF3.0 wrapper functions */
 #include "nco.h"                 /* netCDF operator universal def'ns */
+#include "ncap.h" /* ncap-specific definitions */
 #include <assert.h>             /* assert() debugging macro */
 
 /* Notes on packing/unpacking:
@@ -197,7 +198,7 @@ var_upk /* [fnc] Unpack variable in memory */
   var->pck_ram=False;
 
   (void)fprintf(stderr,"%s: PACKING Unpacked %s\n",prg_nm_get(),var->nm);
-  (void)fprintf(stderr,"%s: WARNING Writing unpacked data to disk, or repacking and writing packed data, is not yet supported, output disk values of %s will be incorrect.\n",prg_nm_get(),var->nm);
+  (void)fprintf(stderr,"%s: WARNING Writing unpacked data to disk, or repacking and writing packed data, is not yet fully supported, output disk values of %s may be incorrect.\n",prg_nm_get(),var->nm);
 
   return var;
   
@@ -210,7 +211,10 @@ var_pck /* [fnc] Pack variable in memory */
  bool USE_EXISTING_PCK) /* I [flg] Use existing packing scale_factor and add_offset */
 {
   /* Purpose: Pack variable 
-     Routine is inverse of var_upk(): var_pck[var_upk(var)]=var */
+     Routine is inverse of var_upk(): var_pck[var_upk(var)]=var 
+     Currently routine outputs same variable structure as given on input
+     In other words, output structure may be neglected as all changes are made 
+     to input structure */
 
   double scl_fct_dbl=double_CEWI; /* [sct] Double precision value of scale_factor */
   double add_fst_dbl=double_CEWI; /* [sct] Double precision value of add_offset */
@@ -289,6 +293,8 @@ var_pck /* [fnc] Pack variable in memory */
     max_var_dpl=var_dpl(max_var);
     hlf_var=scl_mk_var(hlf_unn,NC_DOUBLE); /* [sct] NCO variable for value one half */
 
+    if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: %s: min_var = %g, max_var = %g\n",prg_nm_get(),var->nm,min_var->val.dp[0],max_var->val.dp[0]);
+
     /* add_offset is 0.5*(min+max) */
     if(var->tally == NULL) (void)fprintf(stdout,"%s: ERROR var->tally==NULL in var_pck(), no room for incrementing tally while in var_add()\n",prg_nm_get());
     /* max_var->val is overridden with add_offset answers, no longer valid as max_var */
@@ -361,40 +367,45 @@ var_pck /* [fnc] Pack variable in memory */
     add_fst_dbl=ptr_unn_2_scl_dbl(var->add_fst,var->type);
   } /* endif */
   
-  if(dbg_lvl_get() >= 3) (void)fprintf(stdout,"%s: %s: scl_fct_dbl = %g, add_fst_dbl = %g\n",prg_nm_get(),var->nm,scl_fct_dbl,add_fst_dbl);
+  if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: %s: scl_fct_dbl = %g, add_fst_dbl = %g\n",prg_nm_get(),var->nm,scl_fct_dbl,add_fst_dbl);
   
-  /* Create NCO variables for scale factor and add_offset
-     This is only necessary if packing arithmetic is performed at different precision than var->type
-     This would only be the case if NC_INT were being packed (unlikely)
-     Otherwise, just use var->scl_fct and var->add_fst directly */
-
-  /*  scl_fct_var=scl_ptr_mk_var(var->scl_fct,var->type);*/
-  /*  scl_fct_var=var_conform_type(var->type,scl_fct_var);*/
-  /*add_fst_var=scl_mk_var(var->add_fst,var->type);*/
-  /*  add_fst_var=var_conform_type(var->type,add_fst_var);*/
-
   /* Packing factors now exist and are guaranteed to be of same type as variable in memory */
 
-  /* Apply scale_factor and add_offset to reduce variable size */
+  /* Apply scale_factor and add_offset to reduce variable size
+     add_offset and scale_factor are always scalars so use var_scv_* functions
+     var_scv_[sub,multiply] functions avoid cost of broadcasting attributes and doing element-by-element operations 
+     Using var_scv_[sub,multiply] instead of ncap_var_scv_[sub,multiply] avoids cost of deep copies
+     Moreover, this keeps variable structure from changing (because ncap_var_scv_* functions all do deep copies before operations) and thus complicating memory management */
   if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
     /* Subtract add_offset from var */
-    (void)var_subtract(var->type,var->sz,var->has_mss_val,var->mss_val,var->add_fst,var->val);
+    scv_sct add_fst_att;
+    add_fst_att.type=NC_DOUBLE;
+    add_fst_att.val.d=add_fst_dbl;
+    (void)scv_conform_type(var->type,&add_fst_att);
+    (void)var_scv_sub(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_att);
   } /* endif */
 
   if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
     /* Divide var by scale_factor */
-    if(scl_fct_dbl != 0.0) (void)var_divide(var->type,var->sz,var->has_mss_val,var->mss_val,var->scl_fct,var->val); 
+    scv_sct scl_fct_att;
+    scl_fct_att.type=NC_DOUBLE;
+    scl_fct_att.val.d=scl_fct_dbl;
+    (void)scv_conform_type(var->type,&scl_fct_att);
+    if(scl_fct_dbl != 0.0) (void)var_scv_divide(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_att);
   } /* endif */
 
   if((var->has_scl_fct || var->has_add_fst) && (var->sz == 1L && var->type == NC_SHORT)){
-    (void)fprintf(stdout,"%s: DEBUG var->val.sp[0]=%d\n",prg_nm_get(),var->val.sp[0]);
+    (void)fprintf(stdout,"%s: DEBUG var_pck() reports var->val.sp[0]=%d\n",prg_nm_get(),var->val.sp[0]);
   } /* endif */
-
-  /* Convert variable to user-specified packed type */
-  var=var_conform_type(typ_pck,var);
 
   /* Tell the world */
   var->pck_ram=True; /* [flg] Variable is packed in memory */
+  var->typ_pck=typ_pck; /* Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+  var->typ_upk=var->type; /* Type of variable when unpacked (expanded) (in memory) */
+
+  /* Convert variable to user-specified packed type
+     This is where var->type is changed from original to packed type */
+  var=var_conform_type(typ_pck,var);
 
   /* For now, free the packing variables */
   /*  if(scl_fct_var != NULL) scl_fct_var=var_free(scl_fct_var); */
@@ -437,13 +448,14 @@ nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to
   if(var->xrf->pck_dsk && !var->xrf->pck_ram) var=var_pck(var,var->typ_pck,USE_EXISTING_PCK);
 
   /* Write/overwrite scale_factor and add_offset attributes */
-  if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
-    ;
-  } /* endif has_scl_fct */
-
-  if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
-    ;
-  } /* endif has_add_fst */
+  if(var->pck_ram){ /* Variable is packed in memory */
+    if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
+      ;
+    } /* endif has_scl_fct */
+    if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
+      ;
+    } /* endif has_add_fst */
+  } /* endif pck_ram */
   
   return var;
   

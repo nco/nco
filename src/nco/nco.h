@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.12 2002-04-25 06:47:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.13 2002-04-26 23:20:08 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -215,6 +215,11 @@ extern "C" {
     signed char b; /* Range of signed char is -127--127 */
   } val_unn;
   
+  typedef struct { /* scv_sct */
+    val_unn val;
+    nc_type type;
+  } scv_sct;      
+
   typedef struct{ /* aed_sct */
     char *att_nm; /* Name of attribute */
     char *var_nm; /* Name of variable, or NULL for global attribute */
@@ -387,6 +392,7 @@ extern "C" {
   extern int nco_op_typ_get(char *);
   extern int nco_pck_typ_get(char *);
   extern int prg_get(void);
+  extern int scv_conform_type(nc_type,scv_sct *);
   extern lmt_sct *lmt_prs(int,char **);
   extern lmt_sct lmt_sct_mk(int,int,lmt_sct *,int,bool);
   extern nco_long FORTRAN_newdate(nco_long *,int *);

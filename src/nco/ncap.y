@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.47 2002-04-26 02:32:56 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.48 2002-04-26 23:20:08 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -101,7 +101,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
   char *vara;
   aed_sct att;
   sym_sct *sym;
-  parse_sct attribute;
+  scv_sct scv;
   var_sct *var;
   nm_lst_sct *sbs_lst;
 } /* end YYSTYPE union (type of yylval value) */
@@ -110,17 +110,19 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
    Token name (traditionally in all caps) becomes #define directive in parser
    so we can refer to token name rather than token's numeric code */
 %token <str> STRING
-%token <attribute> ATTRIBUTE
+%token <scv> SCV
 %token <vara> VAR
 %token <output_var> OUT_VAR
 %token <att> OUT_ATT
 %token <sym> FUNCTION
 %token <sbs_lst> LHS_SBS
-%token POWER ABS ATOSTR IGNORE EPROVOKE
+%token ABS ATOSTR EPROVOKE IGNORE PCK POWER
 
 /* "type" declaration sets type for non-terminal symbols which otherwise need no declaration
-   RHS expression type is same as YYSTYPE union member with name in <> */
-%type <attribute> att_exp
+   Format of "type" declaration is
+   %type <YYSTYPE_member> RHS_exp
+   RHS expression type RHS_exp is same type as YYSTYPE union member with name in <> */
+%type <scv> scv_exp
 %type <str> string_exp
 %type <var> var_exp
 %type <output_var> out_var_exp
@@ -155,15 +157,15 @@ statement_list statement ';' {
 ; /* end statement_list */
 
 statement: /* statement is definition of out_att_exp or out_var_exp (LHS tokens)
-	      in terms of att_exp, var_exp, and string_exp (RHS tokens). 
+	      in terms of scv_exp, var_exp, and string_exp (RHS tokens). 
 	      All permutations are valid so this rule has 6 possible actions */
-out_att_exp '=' att_exp { 
+out_att_exp '=' scv_exp { 
   int aed_idx; 
   aed_sct *ptr_aed;
 
   aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->att_lst,((prs_sct *)prs_arg)->nbr_att,True);
   ptr_aed=((prs_sct *)prs_arg)->att_lst[aed_idx];                               
-  ptr_aed->val=ncap_attribute_2_ptr_unn($3);
+  ptr_aed->val=ncap_scv_2_ptr_unn($3);
   ptr_aed->type=$3.type;
   ptr_aed->sz=1L;
   (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
@@ -183,7 +185,7 @@ out_att_exp '=' att_exp {
   } /* end if */
   $1.var_nm=nco_free($1.var_nm);
   $1.att_nm=nco_free($1.att_nm);
-} /* end out_att_exp '=' att_exp */
+} /* end out_att_exp '=' scv_exp */
 | out_att_exp '=' string_exp 
 {
   int aed_idx; 
@@ -247,13 +249,13 @@ out_att_exp '=' att_exp {
   $1=nco_free($1);
   (void)var_free($3);
 } /* end out_var_exp '=' var_exp */
-| out_var_exp '=' att_exp
+| out_var_exp '=' scv_exp
 {
   int rcd;
   int var_id;
   var_sct *var;
   rcd=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$1,&var_id);
-  if(dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: DEBUG out_var_exp = att_exp rule for %s\n",prg_nm_get(),$1);
+  if(dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: DEBUG out_var_exp = scv_exp rule for %s\n",prg_nm_get(),$1);
   if(rcd == NC_NOERR){
     (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
@@ -266,7 +268,7 @@ out_att_exp '=' att_exp {
     var->nm=strdup($1);
     var->nbr_dim=0;
     var->sz=1;
-    var->val=ncap_attribute_2_ptr_unn($3);
+    var->val=ncap_scv_2_ptr_unn($3);
     var->type=$3.type;
 
     if(((prs_sct *)prs_arg)->var_LHS != NULL){
@@ -275,7 +277,7 @@ out_att_exp '=' att_exp {
       /*    (void)ncap_var_conform_dim(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
       (void)ncap_var_stretch(&var,&(((prs_sct *)prs_arg)->var_LHS));
       
-      if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching former att_exp defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
+      if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching former scv_exp defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
       
     } /* endif LHS_cst */
     
@@ -285,7 +287,7 @@ out_att_exp '=' att_exp {
     (void)yyerror(err_sng);
   } /* endif */
   $1=nco_free($1);
-} /* end out_var_exp '=' att_exp */
+} /* end out_var_exp '=' scv_exp */
 | out_var_exp '=' string_exp
 {
   int rcd;
@@ -314,79 +316,79 @@ out_att_exp '=' att_exp {
 } /* end out_var_exp '=' string_exp */
 ; /* end statement */
 
-att_exp: /* att_exp results from RHS action which involves only att_exp's
+scv_exp: /* scv_exp results from RHS action which involves only scv_exp's
 	    One action exists for each binary and unary attribute-valid operator */
-att_exp '+' att_exp {
-  (void)ncap_att_att_cnf_typ_hgh_prc(&$1,&$3);
-  $$=ncap_attribute_calc($1,'+',$3);                                
+scv_exp '+' scv_exp {
+  (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3);
+  $$=ncap_scv_calc($1,'+',$3);                                
 }
-| att_exp '-' att_exp {
-  (void)ncap_att_att_cnf_typ_hgh_prc(&$1,&$3); 
-  $$=ncap_attribute_calc($1,'-',$3);
+| scv_exp '-' scv_exp {
+  (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3); 
+  $$=ncap_scv_calc($1,'-',$3);
 }
-| att_exp '*' att_exp {
-  (void)ncap_att_att_cnf_typ_hgh_prc(&$1,&$3);
-  $$=ncap_attribute_calc($1,'*',$3);
+| scv_exp '*' scv_exp {
+  (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3);
+  $$=ncap_scv_calc($1,'*',$3);
 }
-| att_exp '/' att_exp {
-  (void)ncap_att_att_cnf_typ_hgh_prc(&$1,&$3); 
-  $$=ncap_attribute_calc($1,'/',$3);  
+| scv_exp '/' scv_exp {
+  (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3); 
+  $$=ncap_scv_calc($1,'/',$3);  
 }
-| att_exp '%' att_exp {
-  (void)ncap_att_att_cnf_typ_hgh_prc(&$1,&$3);
+| scv_exp '%' scv_exp {
+  (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3);
   
-  $$=ncap_attribute_calc($1,'%',$3);  
+  $$=ncap_scv_calc($1,'%',$3);  
 }
-| '-' att_exp  %prec UMINUS {
-  (void)ncap_attribute_minus(&$2);
+| '-' scv_exp  %prec UMINUS {
+  (void)ncap_scv_minus(&$2);
   $$=$2;
 }
-| '+' att_exp  %prec UMINUS {
+| '+' scv_exp  %prec UMINUS {
   $$=$2;
 }
-| att_exp '^' att_exp {
+| scv_exp '^' scv_exp {
   if($1.type <= NC_FLOAT && $3.type <= NC_FLOAT) {
-    (void)ncap_attribute_conform_type(NC_FLOAT,&$1);
-    (void)ncap_attribute_conform_type(NC_FLOAT,&$3);
+    (void)scv_conform_type(NC_FLOAT,&$1);
+    (void)scv_conform_type(NC_FLOAT,&$3);
     $$.val.f=powf($1.val.f,$3.val.f);
     $$.type=NC_FLOAT;
   }else{
-    (void)ncap_attribute_conform_type(NC_DOUBLE,&$1);
-    (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
+    (void)scv_conform_type(NC_DOUBLE,&$1);
+    (void)scv_conform_type(NC_DOUBLE,&$3);
     $$.val.d=pow($1.val.d,$3.val.d);
     $$.type=NC_DOUBLE; 
   }
-} /* end att_exp '^' att_exp */
-| POWER '(' att_exp ',' att_exp ')' {
+} /* end scv_exp '^' scv_exp */
+| POWER '(' scv_exp ',' scv_exp ')' { /* fxm: this is identical to previous clause except for argument numbering, should be functionalized to use common code */
   if($3.type <= NC_FLOAT && $5.type <= NC_FLOAT) {
-    (void)ncap_attribute_conform_type(NC_FLOAT,&$3);
-    (void)ncap_attribute_conform_type(NC_FLOAT,&$5);
+    (void)scv_conform_type(NC_FLOAT,&$3);
+    (void)scv_conform_type(NC_FLOAT,&$5);
     $$.val.f=powf($3.val.f,$5.val.f);
     $$.type=NC_FLOAT;
   }else{ 
-    (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
-    (void)ncap_attribute_conform_type(NC_DOUBLE,&$5);
+    (void)scv_conform_type(NC_DOUBLE,&$3);
+    (void)scv_conform_type(NC_DOUBLE,&$5);
     $$.val.d=pow($3.val.d,$5.val.d);
     $$.type=NC_DOUBLE; 
   }
-} /* end POWER '(' att_exp ',' att_exp ')' */
-| ABS '(' att_exp ')' {
-  $$=ncap_attribute_abs($3);
+} /* end POWER '(' scv_exp ',' scv_exp ')' */
+| ABS '(' scv_exp ')' {
+  $$=ncap_scv_abs($3);
 }
-| FUNCTION '(' att_exp ')' {
+| FUNCTION '(' scv_exp ')' {
   
   if($3.type <= NC_FLOAT) {
-    (void)ncap_attribute_conform_type(NC_FLOAT,&$3);
+    (void)scv_conform_type(NC_FLOAT,&$3);
     $$.val.f=(*($1->fncf))($3.val.f);
     $$.type=NC_FLOAT;
   }else{
     $$.val.d=(*($1->fnc))($3.val.d);
     $$.type=NC_DOUBLE;
   }
-} /* end FUNCTION '(' att_exp ')' */
-| '(' att_exp ')' {$$=$2;}
-| ATTRIBUTE {$$=$1;}
-; /* end att_exp */
+} /* end FUNCTION '(' scv_exp ')' */
+| '(' scv_exp ')' {$$=$2;}
+| SCV {$$=$1;}
+; /* end scv_exp */
 
 out_var_exp: OUT_VAR {$$=$1;}
 ;
@@ -404,7 +406,7 @@ string_exp '+' string_exp {
   $1=nco_free($1);
   $3=nco_free($3);
 } 
-| ATOSTR '(' att_exp ')' {
+| ATOSTR '(' scv_exp ')' {
   char bfr[50];
   switch ($3.type){
   case NC_DOUBLE: sprintf(bfr,"%.10G",$3.val.d); break;
@@ -416,7 +418,7 @@ string_exp '+' string_exp {
   } /* end switch */
   $$=strdup(bfr);      
 }
-| ATOSTR '(' att_exp ',' string_exp ')' {
+| ATOSTR '(' scv_exp ',' string_exp ')' {
   char bfr[150];
   /* Format string according to string expression */
   /* User decides which format corresponds to which type */
@@ -440,12 +442,12 @@ var_exp '+' var_exp {
   $$=ncap_var_var_add($1,$3); 
   var_free($1); var_free($3);
 }
-| var_exp '+' att_exp {
-  $$=ncap_var_attribute_add($1,$3);
+| var_exp '+' scv_exp {
+  $$=ncap_var_scv_add($1,$3);
   var_free($1);
 }            
-| att_exp '+' var_exp {
-  $$=ncap_var_attribute_add($3,$1);
+| scv_exp '+' var_exp {
+  $$=ncap_var_scv_add($3,$1);
   var_free($3);
 }            
 | var_exp '-' var_exp { 
@@ -453,58 +455,58 @@ var_exp '+' var_exp {
   var_free($1); 
   var_free($3);
 }
-| att_exp '-' var_exp { 
+| scv_exp '-' var_exp { 
   var_sct *var1;
-  parse_sct minus;
+  scv_sct minus;
   minus.val.b=-1;
   minus.type=NC_BYTE;
-  (void)ncap_attribute_conform_type($3->type,&minus);
-  var1=ncap_var_attribute_sub($3,$1);
-  $$=ncap_var_attribute_multiply(var1,minus);
+  (void)scv_conform_type($3->type,&minus);
+  var1=ncap_var_scv_sub($3,$1);
+  $$=ncap_var_scv_multiply(var1,minus);
   var_free(var1);
   var_free($3);
 }
-| var_exp '-' att_exp {
-  $$=ncap_var_attribute_sub($1,$3);
+| var_exp '-' scv_exp {
+  $$=ncap_var_scv_sub($1,$3);
   var_free($1);
 }
 | var_exp '*' var_exp {
   $$=ncap_var_var_multiply($1,$3); 
   var_free($1); var_free($3); 
 }
-| var_exp '*' att_exp {
-  $$=ncap_var_attribute_multiply($1,$3);
+| var_exp '*' scv_exp {
+  $$=ncap_var_scv_multiply($1,$3);
   var_free($1);
 }
-| var_exp '%' att_exp {
-  $$=ncap_var_attribute_modulus($1,$3);
+| var_exp '%' scv_exp {
+  $$=ncap_var_scv_modulus($1,$3);
   var_free($1);
 }
-| att_exp '*' var_exp {
-  $$=ncap_var_attribute_multiply($3,$1);
+| scv_exp '*' var_exp {
+  $$=ncap_var_scv_multiply($3,$1);
   var_free($3);
 }
 | var_exp '/' var_exp {
   $$=ncap_var_var_divide($3,$1); /* NB: Ordering is important */
   var_free($1); var_free($3); 
 }
-| var_exp '/' att_exp {
-  $$=ncap_var_attribute_divide($1,$3);
+| var_exp '/' scv_exp {
+  $$=ncap_var_scv_divide($1,$3);
   var_free($1);
 }
-| var_exp '^' att_exp {
-  $$=ncap_var_attribute_power($1,$3);
+| var_exp '^' scv_exp {
+  $$=ncap_var_scv_power($1,$3);
   var_free($1);
 }
-| POWER '(' var_exp ',' att_exp ')' {
-  $$=ncap_var_attribute_power($3,$5);
+| POWER '(' var_exp ',' scv_exp ')' {
+  $$=ncap_var_scv_power($3,$5);
   var_free($3);
 }
 | '-' var_exp %prec UMINUS { 
-  parse_sct minus;
+  scv_sct minus;
   minus.val.b=-1;
   minus.type=NC_BYTE;
-  $$=ncap_var_attribute_multiply($2,minus);
+  $$=ncap_var_scv_multiply($2,minus);
   var_free($2);      
 }
 | '+' var_exp %prec UMINUS {
@@ -513,7 +515,11 @@ var_exp '+' var_exp {
 | ABS '(' var_exp ')' {
   $$=ncap_var_abs($3);
   var_free($3);
-} 
+} /* end ABS */
+| PCK '(' var_exp ')' {
+  /* Packing variable does not create duplicate so DO NOT free $3 */
+  $$=var_pck($3,NC_SHORT,False);
+} /* end PCK */
 | FUNCTION '(' var_exp ')' {
   $$=ncap_var_function($3,$1);
   var_free($3);

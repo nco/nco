@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.20 2002-04-24 06:15:03 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.21 2002-04-26 23:20:07 zender Exp $ -*-C-*-
 
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 
@@ -13,6 +13,8 @@
    ncap -O -D 1 -v -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    ncap -O -D 1 -d lat,0 -d lon,0 -d lev,0 -s "a9=three_dmn_var" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    ncap -O -D 1 -v -s "upk=pck*pck@scale_factor+pck@add_offset" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap -O -D 1 -v -s "upk=pck" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap -O -D 1 -v -s "pck=pack(three_dmn_var)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    ncap -O -D 1 -s "prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    ncks -H -m ${HOME}/nco/data/foo.nc | m */
 
@@ -72,11 +74,20 @@
    ncap -v -s "sign = -three_dmn_rec_var" in.nc foo.nc */
 
 /* Packing and unpacking:
-   Unpacking is relatively straightforward
-   ncap -O -D 1 -v -s "upk=pck*pck@scale_factor+pck@add_offset" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   Packing currently requires a multistep algorithm to generate the required scale_factor and add_offset attributes
-   This algorithm uses other NCO operators (e.g., ncwa) to perform min and max operations
-*/
+   Manual unpacking is relatively straightforward but works only with -D 3
+   because automatic unpacking is now default on ncap. It is now broken
+   because ncap_var_write() tries to write bogus attributes automatically
+   because pck_ram is set in pck_dsk_inq()
+   ncap -O -D 3 -v -s "upk=pck*pck@scale_factor+pck@add_offset" -s "upk_arr=pck_arr*pck_arr@scale_factor+pck_arr@add_offset" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   Automatic unpacking works for scalars, not for arrays
+   ncap -O -D 1 -v -s "upk=pck" -s "upk_arr=pck_arr" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   Automatic packing is not yet working
+   ncap -O -D 1 -v -s "pck=pack(ORO)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap -O -D 1 -v -s "pck=pack(upk)" -s "pck_arr=pack(upk_arr)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncks -H -m ${HOME}/nco/data/foo.nc | m
+   ncks -H -v pck,pck_arr -m ${HOME}/nco/data/foo.nc | m
+   ncks -H -v upk,upk_arr -m ${HOME}/nco/data/foo.nc | m
+ */
 
 // Charlie's Tests:
 // p=hyam*PO + hybm*PS

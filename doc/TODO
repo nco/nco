@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.135 2002-04-24 16:52:16 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.136 2002-04-26 23:20:08 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -40,6 +40,8 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 24. AIX compilation fails with missing symbols for float math functions cosf()...
 25. Turn arbitrarily fixed size array tokens NCAP_ATT_LST_NBR_MAX, NCAP_SPT_NBR_MAX into dynamically allocatable arrays
 26. Make sym_tbl_nbr dynamic
+27. Write and implement ncap_var_var_pow(), currently only ncap_var_att_pow() and ncap_att_att_pow work
+28. Make provision for pack() and unpack() to copy all attributes except scale_factor and add_offset from disk into new variable on disk?
 
 Highest priority NCO-wide items that You can help with:
 41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)
@@ -209,6 +211,7 @@ ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 221. Add Makefile option to strip executables (STR=Y)
 222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
 223. texi2dvi nco.texi works on old RHL not on RHL 7.2
+224. Copy var_nm from command line so program, not system, owns memory. Then modify var_free() to release var_nm structure member
 ************************************************************************
 End NCO Wish list
 ************************************************************************

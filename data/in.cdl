@@ -38,7 +38,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.34 2001-12-03 06:14:37 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.35 2002-04-26 23:20:07 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -112,7 +112,7 @@ variables:
 
 	short pck;
 	pck:long_name = "Packed scalar variable";
-	pck:note = "Packed value is 1s, unpacked is 2.0d0*1s + 1.0d0 = 3.0d0";
+	pck:note = "Packed value is 1s, unpacked is 2.0d0*1s + 1.0d0 = 3.0d0.";
 	pck:scale_factor = 2.0d;
 	pck:add_offset = 1.0d;
 
@@ -122,9 +122,13 @@ variables:
 	pck_arr:scale_factor = 1.0d;
 	pck_arr:add_offset = 0.0d;
 
+	double upk;
+	upk:long_name = "Unpacked scalar variable";
+	upk:note = "Unpacked value is 3.0d0, upk=unpack(pck)= 2.0d0*1s + 1.0d0 = 3.0d0. Packing this variable should create an NC_SHORT scalar = 0s with packing attribute add_offset=3.0d";
+
 	double upk_arr(lon);
 	upk_arr:long_name = "Unpacked array";
-	upk_arr:note = "Unpacked value is -32767.d, 0.d, 1.d, 32767.d, packed is same in short";
+	upk_arr:note = "Unpacked value is -32767.d, 0.d, 1.d, 32767.d, packed is same in short. Packing algorithm should yield an NC_SHORT array = [] with packing attributes scale_factor=1.0d, add_offset=0.0d";
 
 	int val_one_int;
 	val_one_int:long_name = "scalar equal to 1";
@@ -393,7 +397,8 @@ data:
 	one_dmn_var=1.,10.;
 	pck=1;
 	pck_arr=-32767,0,1,32767;
-	upk_arr=-32767,0,1,32767;
+	upk=3.;
+	upk_arr=-32767.,0.,1.,32767.;
 	rec_var_dbl=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_flt=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_flt_mss_val_dbl=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;

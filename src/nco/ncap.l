@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.37 2002-02-03 11:27:19 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.38 2002-04-26 23:20:08 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -157,9 +157,9 @@
      so that unary plus/minus is handled in lexer rather than parser.
      However, this has unintended side effects so let parser handle it for now */
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a double %s\n",yytext); 
-  lval_ptr->attribute.val.d=strtod(yytext,(char **)NULL);
-  lval_ptr->attribute.type=NC_DOUBLE;
-  return ATTRIBUTE;
+  lval_ptr->scv.val.d=strtod(yytext,(char **)NULL);
+  lval_ptr->scv.type=NC_DOUBLE;
+  return SCV;
 } /* end double or long double */
 
 [0-9]*\.[0-9]*([eE][+-]?[0-9]+)?[Ff]|[0-9]*([eE][+-]?[0-9]+)[Ff] {
@@ -171,9 +171,9 @@
     yyerror(err_sng);
     return EPROVOKE;
   } /* endif */
-  lval_ptr->attribute.val.f=flt_tkn;
-  lval_ptr->attribute.type=NC_FLOAT;
-  return ATTRIBUTE;
+  lval_ptr->scv.val.f=flt_tkn;
+  lval_ptr->scv.type=NC_FLOAT;
+  return SCV;
 } /* end float */
 
 [0-9]+[lL]? {
@@ -182,13 +182,13 @@
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing an integer %s\n",yytext); 
   dbl_tkn=strtod((char*)yytext, (char**)(NULL));
   if (dbl_tkn < INT_MIN || dbl_tkn > INT_MAX){
-    lval_ptr->attribute.val.d=dbl_tkn;
-    lval_ptr->attribute.type=NC_DOUBLE;
-    return ATTRIBUTE;
+    lval_ptr->scv.val.d=dbl_tkn;
+    lval_ptr->scv.type=NC_DOUBLE;
+    return SCV;
   }else{
-    lval_ptr->attribute.val.l=(nco_long)dbl_tkn;
-    lval_ptr->attribute.type=NC_INT;
-    return ATTRIBUTE;
+    lval_ptr->scv.val.l=(nco_long)dbl_tkn;
+    lval_ptr->scv.type=NC_INT;
+    return SCV;
   } /* end else */
 } /* end long */
 
@@ -200,9 +200,9 @@
     sprintf(err_sng,"Bad short constant: %s",(char*)yytext);
     yyerror(err_sng);
   }
-  lval_ptr->attribute.val.s=sht_tkn;
-  lval_ptr->attribute.type=NC_SHORT;
-  return ATTRIBUTE;
+  lval_ptr->scv.val.s=sht_tkn;
+  lval_ptr->scv.type=NC_SHORT;
+  return SCV;
 } /* end short */
 
 [0-9]+[Bb] {
@@ -215,18 +215,22 @@
     return EPROVOKE;
   }
   if(byt_tkn < -128 || byt_tkn > 127){
-    lval_ptr->attribute.val.l=byt_tkn;
-    lval_ptr->attribute.type=NC_INT;
-    return ATTRIBUTE;    
+    lval_ptr->scv.val.l=byt_tkn;
+    lval_ptr->scv.type=NC_INT;
+    return SCV;    
   }else{ 
-    lval_ptr->attribute.val.b=byt_tkn;
-    lval_ptr->attribute.type=NC_BYTE;
-    return ATTRIBUTE;                    
+    lval_ptr->scv.val.b=byt_tkn;
+    lval_ptr->scv.type=NC_BYTE;
+    return SCV;                    
   } /* end else */
 } /* end byte */
 
+foo/[ ]*\( {return ABS;} /* TOKEN whitespace (: Token followed any amount of whitespace followed by opening parenthesis signifies function name, not variable name.
+This disambiguates variable and functional namespaces. */
 abs/[ ]*\( {return ABS;}
 atostr/[ ]*\( {return ATOSTR;}
+pck/[ ]*\( {return PCK;}
+pack/[ ]*\( {return PCK;}
 pow/[ ]*\( {return POWER;}
 
 [A-Za-z_][A-Za-z0-9_]*/[ ]*\( {
@@ -288,7 +292,7 @@ pow/[ ]*\( {return POWER;}
        If attribute is present obtain and return value from disk else
        return NC_BYTE of value 0.
        If attribute is NC_CHAR then STRING type is returned
-       for others NC_FLOAT, NC_DOUBLE, NC_BYTE , NC_SHORT an ATTRIBUTE
+       for others NC_FLOAT, NC_DOUBLE, NC_BYTE, NC_SHORT an SCV
        is returned to parser. */
     att_idx=ncap_aed_lookup(var_nm,att_nm,prs_arg->att_lst,prs_arg->nbr_att,False);
     if(att_idx >= 0){
@@ -300,8 +304,8 @@ pow/[ ]*\( {return POWER;}
 	lval_ptr->str[ptr_aed->sz]='\0';
 	return STRING;
       } else {
-	lval_ptr->attribute=ncap_ptr_unn_2_attribute(ptr_aed->type,ptr_aed->val);
-	return ATTRIBUTE;  
+	lval_ptr->scv=ncap_ptr_unn_2_scv(ptr_aed->type,ptr_aed->val);
+	return SCV;  
       } /* end else */        
     } /* end if */
     if(rcd == NC_NOERR){  
@@ -309,9 +313,9 @@ pow/[ ]*\( {return POWER;}
       if (rcd == NC_ENOTATT){
 	(void)sprintf(err_sng,"Warning: Unable to locate RHS attribute %s of variable %s with var ID = %d in file %s. Returning 0-byte.",att_nm,var_nm,var_id,prs_arg->fl_in);
 	(void)yyerror(err_sng);
-	lval_ptr->attribute.val.b=0;
-	lval_ptr->attribute.type=NC_BYTE;
-	return ATTRIBUTE;
+	lval_ptr->scv.val.b=0;
+	lval_ptr->scv.type=NC_BYTE;
+	return SCV;
       } /* end if */
       if(rcd == NC_NOERR){ 
 	val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(type));
@@ -323,17 +327,17 @@ pow/[ ]*\( {return POWER;}
 	  lval_ptr->str[att_sz]='\0'; 
 	  return STRING;
 	}else{
-	  lval_ptr->attribute=ncap_ptr_unn_2_attribute(type,val);
-	  return ATTRIBUTE;   
+	  lval_ptr->scv=ncap_ptr_unn_2_scv(type,val);
+	  return SCV;   
 	} /* end else */ 
       } /* end if */
     }else{ /* ...else rcd reported an error */
       /* Attribute is not in table or on disk so return 0-byte  */
       (void)sprintf(err_sng,"Warning: Unable to locate RHS attribute %s of variable %s with var ID = %d in file %s. Returning 0-byte.",att_nm,var_nm,var_id,prs_arg->fl_in);
       (void)yyerror(err_sng);
-      lval_ptr->attribute.val.b=0;
-      lval_ptr->attribute.type=NC_BYTE;
-      return ATTRIBUTE;
+      lval_ptr->scv.val.b=0;
+      lval_ptr->scv.type=NC_BYTE;
+      return SCV;
     } /* end if */
   }/* end if RHS */
   
@@ -352,7 +356,7 @@ pow/[ ]*\( {return POWER;}
     } /* end else */
   } /* end if */
   
-} /* End attributes. Phew! */
+} /* End scalar values. Phew! */
 
 [A-Za-z_][A-Za-z0-9_]*/\[ {
   /* Recognize variables with subscript */

@@ -1,3 +1,12 @@
+2002-04-26  Charlie Zender  <zender@uci.edu>
+
+	* Automatically call var_upk() in var_get() in ncap only
+
+	* Improved pck/upk values in in.cdl
+
+	* Make var_pck() alter typ_pck, typ_upk elements when finished
+	packing
+
 2002-04-24  Charlie Zender  <zender@uci.edu>
 
 	* Put warnings on some arbitrary limits in ncap
