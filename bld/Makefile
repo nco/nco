@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.259 2004-07-26 05:45:03 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.260 2004-07-27 01:50:01 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -267,7 +267,7 @@ VPATH := $(subst ${space},:,${MDL_PTH})
 CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 
 # Variables having to do with binary executables created by module
-MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncra ncrename ncwa # NCO binary targets
+MDL_BIN_TRG := ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa # NCO binary targets
 MDL_BIN_SYM_LNK := ncdiff ncea ncrcat # Symbolic links
 MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
 MDL_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_BIN_STB}) # distclean removes these files
@@ -1146,7 +1146,7 @@ obj_dir:
 #	-install -d ${MY_BIN_DIR}
 	-mkdir -p ${MY_OBJ_DIR}
 # Targets in bin
-.PHONY:  ncap ncatted ncbo ncecat ncflint ncks ncra ncrename ncwa
+.PHONY:  ncap ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa
 ncatted:   ${MY_BIN_DIR}/ncatted
 ${MY_BIN_DIR}/ncatted:	${MY_OBJ_DIR}/ncatted.o lib
 	${CC} -o $@ $< ${LDFLAGS}
@@ -1166,6 +1166,10 @@ ${MY_BIN_DIR}/ncflint:	${MY_OBJ_DIR}/ncflint.o lib
 	chmod 755 $@${BNR_SFX}
 ncks:   ${MY_BIN_DIR}/ncks
 ${MY_BIN_DIR}/ncks:	${MY_OBJ_DIR}/ncks.o lib
+	${CC} -o $@ $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
+ncpdq:   ${MY_BIN_DIR}/ncpdq
+${MY_BIN_DIR}/ncpdq:	${MY_OBJ_DIR}/ncpdq.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 ncra:   ${MY_BIN_DIR}/ncra

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.69 2004-06-18 23:56:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.70 2004-07-27 01:50:03 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.69 2004-06-18 23:56:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.69 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.70 2004-07-27 01:50:03 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.70 $";
   const char * const opt_sng="Aa:D:hl:Oo:p:Rr-:";
   
   extern char *optarg;
@@ -268,12 +268,11 @@ main(int argc,char **argv)
 
     if(!FORCE_OVERWRITE){
       int rcd_lcl;
-
       struct stat stat_sct;
-      
+
       rcd_lcl=stat(fl_out,&stat_sct);
 
-      /* If file already exists, then query the user whether to overwrite */
+      /* If file already exists, then query user whether to overwrite */
       if(rcd_lcl != -1){
         char usr_reply;
         
@@ -291,12 +290,10 @@ main(int argc,char **argv)
     } /* end if */
     
     /* Copy input file to output file, then search through output, editing attributes along the way
-       This avoids possible XDR translation performance penalty of copying each variable with netCDF */
+       This avoids possible XDR translation performance penalty copying each variable with netCDF */
     (void)nco_fl_cp(fl_in,fl_out);
-
   } /* end if */
 
-  
   /* Open file. Writing must be enabled and file should be in define mode for renaming */
   rcd=nco_open(fl_out,NC_WRITE,&nc_id);
   (void)nco_redef(nc_id);

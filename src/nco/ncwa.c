@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.130 2004-07-26 17:45:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.131 2004-07-27 01:50:03 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -66,11 +66,10 @@
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
-#include "ncap.h"   /* scanner stuff */
+#include "ncap.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
-
-/* Global variables  ( These are/must be identical to the global variables declared in ncap.c */ 
+/* Global variables (keep consistent with global variables declared in ncap.c) */ 
 size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap.l) */
 size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
 char **ncap_fl_spt_glb; /* [fl] Script file */
@@ -116,8 +115,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char *msk_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val, op_typ_rlt */
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.130 2004-07-26 17:45:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.130 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.131 2004-07-27 01:50:03 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.131 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -235,9 +234,9 @@ main(int argc,char **argv)
       {"wgt",no_argument,0,'w'},
       {"wgt_var",no_argument,0,'w'},
       {"operation",required_argument,0,'y'},
+      {"op_typ",required_argument,0,'y'},
       {"mask_string",required_argument,0,'z'},
       {"msk_sng",required_argument,0,'z'},
-      {"op_typ",required_argument,0,'y'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -430,9 +429,6 @@ main(int argc,char **argv)
   /* Make sure coordinates associated extracted variables are also on extraction list */
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
-  /* Remove record coordinate, if any, from extraction list */
-  if(False) xtr_lst=nco_var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
-
   /* Sort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt(xtr_lst,nbr_xtr,False);
     
@@ -461,7 +457,7 @@ main(int argc,char **argv)
     (void)fprintf(stderr,"%s: INFO No dimensions specified with -a, therefore reducing (averaging, taking minimum, etc.) over all dimensions\n",prg_nm);
   } /* end if nbr_dmn_avg == 0 */
 
-  if (nbr_dmn_avg > 0){
+  if(nbr_dmn_avg > 0){
     /* Form list of reducing dimensions */
     dmn_avg_lst=nco_dmn_lst_mk(in_id,dmn_avg_lst_in,nbr_dmn_avg);
 
@@ -519,7 +515,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
     } /* end if */
     
-  }else{
+  }else{ /* nbr_dmn_avg == 0 */
 
     /* Duplicate input dimension structures for output dimension structures */
     nbr_dmn_out=nbr_dmn_xtr;
@@ -574,7 +570,7 @@ main(int argc,char **argv)
   /* Define variables in output file, copy their attributes */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out);
 
-  /* New missing values must be added to output file while in define mode */
+  /* Add new missing values to output file while in define mode */
   if(msk_nm != NULL){
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Define for var_prc_out because mss_val for var_prc will be overwritten in nco_var_refresh */
@@ -890,7 +886,7 @@ main(int argc,char **argv)
 #pragma omp critical
 #endif /* _OPENMP */
       { /* begin OpenMP critical */
-	/* Copy average to output file and free averaging buffer */
+	/* Copy average to output file then free averaging buffer */
 	if(var_prc_out[idx]->nbr_dim == 0){
 	  (void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	}else{ /* end if variable is scalar */
