@@ -1,10 +1,14 @@
 #!/usr/bin/env perl
 
-# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.3 2005-03-29 17:08:33 mangalam Exp $
-# Usage:  (see usage() below for more info)
-# <BUILD_ROOT>/nco/bld/nco_tst.pl # Tests all operators
-# <BUILD_ROOT>/nco/bld/nco_tst.pl ncra # Test one operator
+# 04-05-05: This modification of nco_tst.pl is NOT READY FOR general use yet.  When it is, 
+# this warning will be removed and the dcript will proceed without the warning that will cause
+# it to hang on startup.
 
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.4 2005-04-06 19:45:57 mangalam Exp $
+# Usage:  (see usage() below for more info)
+# <BUILD_ROOT>/nco/bld/nco_bm.pl # Tests all operators
+# <BUILD_ROOT>/nco/bld/nco_bm.pl ncra # Test one operator
+	
 # NB: When adding tests, _be sure to use -O to overwrite files_
 # Otherwise, script hangs waiting for interactive response to overwrite queries
 require 5.6.1 or die "This script requires Perl version >= 5.6.1";
@@ -13,8 +17,25 @@ use Cwd 'abs_path';
 use Getopt::Long; #qw(:config no_ignore_case bundling);
 use strict;
 
+# dump a warning about this script's general unfitness for human beings for now.
+print << "VALLEYODEATH";
+
+WARNING!!
+
+	This script is not ready for general use yet; when it is, 
+	this warning will be removed.  Until then, use at your own risk! 
+	Continue into the Valley of Death? ";
+
+VALLEYODEATH
+print "[Ny] ";
+my $tmp = <STDIN>;
+unless ($tmp =~ /[Yy]/ ) {die "\n\nG'day then, mate.\n\n ";}
+
+my $NUM_FLS = 4; # max number of files in the file creation series
+
 #test nonfatally for useful modules
 my $hiresfound;
+print "\n===== Testing for required modules\n";
 BEGIN {eval "use Time::HiRes qw(usleep ualarm gettimeofday tv_interval)"; $hiresfound = $@ ? 0 : 1}
 #$hiresfound = 0;  # uncomment to simulate not found
 if ($hiresfound == 0) {
@@ -35,30 +56,41 @@ my %subbenchmarks;
 my %totbenchmarks;
 
 #declare vars for strict
-use vars qw($dbg_lvl $wantlog $usage $operator @test $description $expected
+use vars qw($dbg_lvl $wnt_log $usg $operator @test $description $expected
 @all_operators @operators $MY_BIN_DIR %sym_link %testnum %success %failure
-%testnum $result $server_name $server_ip $server_port $sock $udp_report
+%testnum $result $server_name $server_ip $server_port $sock $udp_reprt $tst_fls
+ $dta_dir $bm_dir $timr_app
 );
 
+# for hjm's test runs
 $server_name = "ibonk";
-#$server_ip = "128.200.14.132";
 $server_ip = "68.5.247.102";
+
+# the real udping server
+#$server_name = "sand.ess.uci.edu";
+#$server_ip = "128.200.14.132";
 $server_port = 29659;
-$udp_report = 0;
+$udp_reprt = 0;
 
+my @fle_cre_dta;  # holds the strings for the fle_cre8() routine 
+my @fle_timg; # holds the timing data for the fle_cre8() routines.
+
+$bm_dir = `pwd`; chomp $bm_dir;
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
-$wantlog = 0;
-$usage   = 0;
+$wnt_log = 0;
+$usg   = 0;
+$tst_fls = 0;
 
-&GetOptions("debug=i"    => \$dbg_lvl,    # debug level
-				"log"        => \$wantlog,    # set if want output logged
-				"udpreport"  => \$udp_report,
-				"usage"      => \$usage,      # explains how to use this thang
-				"help"       => \$usage,      # explains how to use this thang
-				"h"          => \$usage,      # explains how to use this thang
+&GetOptions("debug=i"      => \$dbg_lvl,    # debug level
+				"log"          => \$wnt_log,    # set if want output logged
+				"udpreport"    => \$udp_reprt,  # want to punt the timing data back to udpserver on sand
+				"test_files"   => \$tst_fls,    # want to create the test files.
+				"usage"        => \$usg,        # explains how to use this thang
+				"help"         => \$usg,        # explains how to use this thang
+				"h"            => \$usg,        # explains how to use this thang
 );
 
-if ($usage) { usage()};
+if ($usg) { usage()};
 
 if ($iosockfound) {
 	   $sock = IO::Socket::INET->new (
@@ -66,26 +98,113 @@ if ($iosockfound) {
 		PeerAddr => $server_ip,
 		PeerPort => $server_port
 		) or die "\nCan't get the socket!\n\n";
-} else {$udp_report = 0;}
+} else {$udp_reprt = 0;}
 
-if ($wantlog) { 
+if ($wnt_log) { 
 	open(LOG, ">nctest.log") or die "\nCan't open the log file 'nctest.log' - check permissions on it \nor the directory you're in.\n\n";
 }
-for (my $W=0; $W<50; $W++) {
-	 my $t0;
-	 if ($hiresfound) {$t0 = [gettimeofday];}
-	 else {$t0 = time;}
-	 my $E = 0.0;
-    for (my $R=0; $R<999999; $R++) {
-		my $E = $E * 1.788830478347;
+
+# following stanza tests the hires timer - should only be hit by explict code mod
+if (0) {
+	for (my $W=0; $W<50; $W++) {
+		my $t0;
+		if ($hiresfound) {$t0 = [gettimeofday];}
+		else {$t0 = time;}
+		my $E = 0.0;
+		for (my $R=0; $R<999999; $R++) {
+			my $E = $E * 1.788830478347;
+		}
+		
+		my $elapsed;
+		if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
+		else {$elapsed = time - $t0;}
+		print " Run $W - Elapsed time =  $elapsed \n" ; 
 	}
-	 
-    my $elapsed;
-	 if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
-	 else {$elapsed = time - $t0;}
-	print " Run $W - Elapsed time =  $elapsed \n" ; 
+		if ($dbg_lvl == 1) {die "that's all folk!!\n";}
 }
-	if ($dbg_lvl == 1) {die "that's all folk!!\n";}
+# now start the real tests
+# first the file creation tests:
+
+# also want to try to grok /usr/bin/timer, as in the shell scripts
+if (-e "/usr/bin/time" && -x "/usr/bin/time") {
+	$timr_app = "/usr/bin/time";
+	if (`uname` =~ "inux") { $timr_app .= " -v ";}
+} else { # just use whatever the shell thinks is the time app
+	$timr_app = "time"; #could be the bash builtin or another 'time-like app (AIX)
+}
+
+$tst_fls = 1;
+if ($tst_fls > 0 ) {
+	set_dta_dir();      # examine env DATA and talk to user to figure where $DATA  should be
+	fle_cre_dta_init(); # initialize the data strings & timing array
+	print STDOUT << "WHICHFILES";
+	
+Which files to create and populate for this test?
+   Enter 0, A, or the numbers corresponding to the tests wanted in 1 line.
+	  ie. 1 2 4 <Enter>
+
+	0 - none; skip this section
+	1 - example Gene Expression  ~ 50MB  ~few sec
+	2 - small Satellite data set ~100MB  ~several sec
+	3 - 5km Satellite data set   ~300MB  ~min
+	4 - IPCC Daily T85 data set  ~  4GB  ~several min
+	A - All 
+	
+WHICHFILES
+
+	$tmp = <STDIN>; chomp $tmp;
+	if ($tmp ne "0") {
+		# so want to so some
+		if ($tmp =~ "[Aa]") { $tmp = "1234";}
+		if ($tmp =~ /1/){ fle_cre8(0);}
+		if ($tmp =~ /2/){ fle_cre8(1);}
+		if ($tmp =~ /3/){ fle_cre8(2);}
+		if ($tmp =~ /4/){ fle_cre8(3);}
+	} else {
+		print "\nAll file creation tests skipped.  Continuing...\n\n";
+	}
+}
+
+sub fle_cre8 {
+	my $idx = shift;
+	my $t0;
+	my $elapsed;
+
+	my $in_fl = my $out_fl = "$dta_dir/$fle_cre_dta[$idx][2].nc" ;
+	print "==== Creating $fle_cre_dta[$idx][0] data file form template in [$dta_dir]\n";
+	print "Executing : $timr_app ncgen -b -o $out_fl   $fle_cre_dta[$idx][2].cdl\n";
+	
+	if ($hiresfound) {$t0 = [gettimeofday];}
+	else {$t0 = time;}
+	# File creation now timed
+	system  "$timr_app ncgen -b -o $out_fl   $fle_cre_dta[$idx][2].cdl ";
+	if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
+	else {$elapsed = time - $t0;}
+	# log it to common timing array
+	
+	$fle_timg[$idx][0] = "$fle_cre_dta[$idx][2]"; # name root
+	$fle_timg[$idx][1] = $elapsed; # creation time
+	print "\n\n\nElpased = $elapsed\n\n\n";
+	
+	print "\n==== Populating $out_fl file.\nTiming results:\n";
+	
+	print "Executing: $timr_app ncap -O -s $fle_cre_dta[$idx][2] $fle_cre_dta[$idx][2]le_cre_dta[$idx][3] $in_fl $out_fl\n";
+	
+	if ($hiresfound) {$t0 = [gettimeofday];}
+	else {$t0 = time;}
+	system "$timr_app ncap -O -s $fle_cre_dta[$idx][3] $in_fl $out_fl";
+	if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
+	else {$elapsed = time - $t0;}
+	
+	$fle_timg[$idx][2] = $elapsed; # population time
+	
+	
+	print "==========================\nEnd of $fle_cre_dta[$idx][2] section\n==========================\n\n\n";
+}
+	
+
+# die "\n\nKilled just before the older tests start..";
+
 &initialize();
 &perform_tests();
 &summarize_results();
@@ -714,7 +833,7 @@ sub usage {
 	print << 'USAGE';
 	
 Usage:
-nco_test.pl (options) [list of operators to test from the following list]
+nco_bm.pl (options) [list of operators to test from the following list]
 
 ncap ncatted ncbo ncflint ncea ncecat
 ncks ncpdq ncra ncrcat ncrename ncwa          (default tests all)
@@ -729,15 +848,18 @@ where (options) are:
                      NCO Central to add your test, timing, and build results.
 							NB: This option uses udp port 29659 and may set off
 							firewall alarms if used unless that port is open.
-                     
-nco_test.pl is a semi-automated script for testing the accuracy and
+  --test_files.....requests the testing & excercise of the file creation script
+                     'ncgen' and the Left Hand Casting ability of ncap.  Currently
+							gives the option to test 2 files of increasing size and complexity.
+							
+nco_bm.pl is a semi-automated script for testing the accuracy and
 robustness of the nco (netCDF Operators), typically after they are
-built, using the 'make test' command.  In this mode, a user should
+built, using the 'make benchmark' command.  In this mode, a user should
 never have to see this message, so this is all I'll say about it.
 
-In nco debug/testing  mode, it tries to validate the nco's for both
+In nco debug/testing  mode, it tries to validate the NCO's for both
 accuracy and robustness.  It also can collect benchmark statistics via
-sending test resuilts to a 
+sending test results to a UDP server.
 
 NB: When adding tests, be sure to use -O to overwrite files.
 Otherwise, script hangs waiting for interactive response to
@@ -774,7 +896,7 @@ if (scalar @ARGV > 0)
     print "MY_BIN_DIR not specified, use $MY_BIN_DIR? ('y' or specify) ";
     my $ans = <STDIN>;
     chomp $ans;
-    $MY_BIN_DIR = $ans unless (lc($ans) eq "y");
+    $MY_BIN_DIR = $ans unless (lc($ans) eq "y" ||lc($ans) eq "");
   }
   # Die if this path still does not work
   die "$MY_BIN_DIR/$operators[0] doesn't exist\n" unless (-e "$MY_BIN_DIR/$operators[0]");
@@ -818,7 +940,7 @@ if (scalar @ARGV > 0)
 sub verbosity {
 	my $ts = shift;
 	if($dbg_lvl > 0){printf ("$ts");}
-	if ($wantlog) {printf (LOG "$ts");}
+	if ($wnt_log) {printf (LOG "$ts");}
 } # end of verbosity()
 
 
@@ -855,7 +977,7 @@ sub go {
 	
     $result=`$_` ;
 	 
-    my $elapsed;
+	 my $elapsed;
 	 if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
 	 else {$elapsed = time - $t0;}
 
@@ -937,7 +1059,15 @@ sub summarize_results
   my $reportstr = "";
   my $idstring = `uname -a` . "using: " . $CCinfo;
   $reportstr .= "\n\nNCO Test Result Summary for:\n$idstring\n";
-  $reportstr .=  "      Test                            Total Time (s) \n";
+  $reportstr .=  "      Test                       Total Wallclock Time (s) \n";
+  $reportstr .=  "=====================================================\n";
+  
+  for (my $i=0; $i<$NUM_FLS; $i++) {
+  		$reportstr .= sprintf "Creating   %15s:           %6.4f \n", $fle_timg[$i][0], $fle_timg[$i][1];
+  		$reportstr .= sprintf "Populating %15s:           %6.4f \n", $fle_timg[$i][0], $fle_timg[$i][2];
+  }
+  $reportstr .= sprintf "\n\n";
+ 
   
   foreach(@operators) 
   {
@@ -945,8 +1075,122 @@ sub summarize_results
     #printf "$_:\tsuccess: $success{$_} of $total\n";
 	 $reportstr .= sprintf "%10s:  success: %3d of %3d      %6.4f\n", $_, $success{$_}, $total, $totbenchmarks{$_};
   }
+  $reportstr .= sprintf "\nNB: Time in WALLCLOCK seconds, not CPU time; see instantaneous measurements for user & system CPU usage.\n";
   chdir "../bld";
   if ($dbg_lvl == 0) {print $reportstr;}
   else { &verbosity($reportstr); }
-  if ($udp_report) {$sock->send($reportstr);}
+  if ($udp_reprt) {$sock->send($reportstr);}
 }
+
+sub set_dta_dir {
+	my $datadir;
+#	umask 0000;
+	my $umask = umask;
+	print "your umask is $umask\n\n";
+	print "===== Setting up the directory to write the results of the file creation tests.\n";
+	print "Note that this is your current mounted disk space usage:\n\n";
+	my $dsk_spc = `df`;
+	print "$dsk_spc\n";
+	print "Based on the free space above, make sure that the test data will be written\nto a filesystem that can hold it or the test will fail.\n\n";
+	# does user have a DATA dir defined in his env?  It has to be readable and writable to be usable for 
+	# these tests, so if it isn't just bail, with a nasty msg
+	if (defined $ENV{'DATA'}) { # then is it readwritable?
+		if (-w $ENV{'DATA'} && -r $ENV{'DATA'}) {
+			print "Using your environment variable DATA ($ENV{'DATA'}) as the root DATA dir for this series of tests\n\n";
+			$dta_dir = "$ENV{'DATA'}/nco_test";
+			
+			mkdir "$dta_dir",0777;
+		} else {
+			die "You've defined a DATA dir ($ENV{'DATA'}) that can't be written to or read\nfrom or both - please try again.\n\n";
+		}
+	} else {
+		$tmp = 'notset';
+		print "You don't have a DATA dir defined and some of the test files can be several GB. \nWhere would you like to write the test data?  It'll be placed in the indicated dir,\nunder nco_test. \n[$ENV{'HOME'}]  ";
+		$tmp = <STDIN>;
+		chomp $tmp;
+#		print "You entered [$tmp] \n";
+		if ($tmp eq "") {
+			$dta_dir = "$ENV{'HOME'}/nco_test";
+			if (-e "$ENV{'HOME'}/nco_test") {
+				print "[$ENV{'HOME'}/nco_test] already exists - OK to re-use?\n[N/y]";
+				$tmp = <STDIN>;
+				chomp $tmp;
+				if ($tmp =~ "[nN]" || $tmp eq "") {
+					die "\nFine - decide what to use and start over again - bye!\n";
+				} else {
+					print "\n";
+				}
+			} else { # have to make it
+				print "Making $ENV{'HOME'}/nco_test & continuing\n";
+				mkdir "$ENV{'HOME'}/nco_test",0777;
+			}
+#			print "I'll be using $dta_dir for your DATA dir\n";
+		} else {
+			$dta_dir = "$tmp/nco_test"; 
+			# and now test it
+			if (-w $dta_dir && -r $dta_dir) {
+				print "OK - we'll use [$dta_dir] to write to.\n\n";
+			} else { # we'll have to make it
+				print "[$dta_dir] doesn't exist - will try to make it.\n";
+				 "$dta_dir",0777;
+#				system "ls -lad $dta_dir";
+				if (-w $dta_dir && -r $dta_dir) {
+					print "OK - [$dta_dir] is available to write to\n";
+				} else {
+					die "ERROR - [$dta_dir] could not be made - check this and try again.\n\n\n";
+				}
+			}
+		}
+	}	
+} # end of sub set_dta_dir
+
+sub fle_cre_dta_init {
+	for (my $i = 0; $i < $NUM_FLS; $i++) {
+			$fle_timg[$i][1] = $fle_timg[$i][2] = " omitted "; 
+	}
+	
+	$fle_cre_dta[0][0] = "example gene expression"; # option descriptor
+	$fle_cre_dta[0][1] = "~50MB";                   # file size
+	$fle_cre_dta[0][2] = $fle_timg[0][0] = "gne_exp";                 # file name root
+	$fle_cre_dta[0][3] = "'base[rep,treat,cell,params,ge_atoms]=5.67f'";
+	
+	$fle_cre_dta[1][0] = "small satellite";         # option descriptor
+	$fle_cre_dta[1][1] = "~100MB";                  # file size
+	$fle_cre_dta[1][2] = $fle_timg[1][0] = "sml_stl";                 # file name root
+	$fle_cre_dta[1][3] = "'base[rep,treat,cell,params,ge_atoms]=5.67f'";
+	
+	$fle_cre_dta[2][0] = "5km satellite";           # option descriptor
+	$fle_cre_dta[2][1] = "~300MB";                  # file size
+	$fle_cre_dta[2][2] = $fle_timg[2][0] = "stl_5km";                 # file name root
+	$fle_cre_dta[2][3] = "'d2_00[lat,lon]=2.8f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=2.8f;d2_03[lat,lon]=2.8f;d2_04[lat,lon]=2.8f;d2_05[lat,lon]=2.8f;d2_06[lat,lon]=2.8f;d2_07[lat,lon]=2.8f;'";
+	
+	$fle_cre_dta[3][0] = "IPCC Daily";              # option descriptor
+	$fle_cre_dta[3][1] = "~4GB";                    # file size
+	$fle_cre_dta[3][2] = $fle_timg[3][0] = "ipcc_dly_T85";            # file name root
+	$fle_cre_dta[3][3] = "'weepy=0.8f;dopey=0.8f;sleepy=0.8f;grouchy=0.8f;sneezy=0.8f;doc=0.8f;wanky=0.8f;skanky=0.8f;d1_00[time]=1.8f;d1_01[time]=1.8f;d1_02[time]=1.8f;d1_03[time]=1.8f;d1_04[time]=1.8f;d1_05[time]=1.8f;d1_06[time]=1.8f;d1_07[time]=1.8f;d2_00[lat,lon]=16.2f;d2_01[lat,lon]=16.2f;d2_02[lat,lon]=16.2f;d2_03[lat,lon]=16.2f;d2_04[lat,lon]=16.2f;d2_05[lat,lon]=16.2f;d2_06[lat,lon]=16.2f;d2_07[lat,lon]=16.2f;d2_08[lat,lon]=16.2f;d2_09[lat,lon]=16.2f;d2_10[lat,lon]=16.2f;d2_11[lat,lon]=16.2f;d2_12[lat,lon]=16.2f;d2_13[lat,lon]=16.2f;d2_14[lat,lon]=16.2f;d2_15[lat,lon]=16.2f;d3_00[time,lat,lon]=64.0f;d3_01[time,lat,lon]=64.0f;d3_02[time,lat,lon]=64.0f;d3_03[time,lat,lon]=64.0f;d3_04[time,lat,lon]=64.0f;d3_05[time,lat,lon]=64.0f;d3_06[time,lat,lon]=64.0f;d3_07[time,lat,lon]=64.0f;d3_08[time,lat,lon]=64.0f;d3_09[time,lat,lon]=64.0f;d3_10[time,lat,lon]=64.0f;d3_11[time,lat,lon]=64.0f;d3_12[time,lat,lon]=64.0f;d3_13[time,lat,lon]=64.0f;d3_14[time,lat,lon]=64.0f;d3_15[time,lat,lon]=64.0f;d3_16[time,lat,lon]=64.0f;d3_17[time,lat,lon]=64.0f;d3_18[time,lat,lon]=64.0f;d3_19[time,lat,lon]=64.0f;d3_20[time,lat,lon]=64.0f;d3_21[time,lat,lon]=64.0f;d3_22[time,lat,lon]=64.0f;d3_23[time,lat,lon]=64.0f;d3_24[time,lat,lon]=64.0f;d3_25[time,lat,lon]=64.0f;d3_26[time,lat,lon]=64.0f;d3_27[time,lat,lon]=64.0f;d3_28[time,lat,lon]=64.0f;d3_29[time,lat,lon]=64.0f;d3_30[time,lat,lon]=64.0f;d3_31[time,lat,lon]=64.0f;d3_32[time,lat,lon]=64.0f;d3_33[time,lat,lon]=64.0f;d3_34[time,lat,lon]=64.0f;d3_35[time,lat,lon]=64.0f;d3_36[time,lat,lon]=64.0f;d3_37[time,lat,lon]=64.0f;d3_38[time,lat,lon]=64.0f;d3_39[time,lat,lon]=64.0f;d3_40[time,lat,lon]=64.0f;d3_41[time,lat,lon]=64.0f;d3_42[time,lat,lon]=64.0f;d3_43[time,lat,lon]=64.0f;d3_44[time,lat,lon]=64.0f;d3_45[time,lat,lon]=64.0f;d3_46[time,lat,lon]=64.0f;d3_47[time,lat,lon]=64.0f;d3_48[time,lat,lon]=64.0f;d3_49[time,lat,lon]=64.0f;d3_50[time,lat,lon]=64.0f;d3_51[time,lat,lon]=64.0f;d3_52[time,lat,lon]=64.0f;d3_53[time,lat,lon]=64.0f;d3_54[time,lat,lon]=64.0f;d3_55[time,lat,lon]=64.0f;d3_56[time,lat,lon]=64.0f;d3_57[time,lat,lon]=64.0f;d3_58[time,lat,lon]=64.0f;d3_59[time,lat,lon]=64.0f;d3_60[time,lat,lon]=64.0f;d3_61[time,lat,lon]=64.0f;d3_62[time,lat,lon]=64.0f;d3_63[time,lat,lon]=64.0f;d4_00[time,lev,lat,lon]=1.1f;d4_01[time,lev,lat,lon]=1.2f;d4_02[time,lev,lat,lon]=1.3f;d4_03[time,lev,lat,lon]=1.4f;d4_04[time,lev,lat,lon]=1.5f;d4_05[time,lev,lat,lon]=1.6f;d4_06[time,lev,lat,lon]=1.7f;d4_07[time,lev,lat,lon]=1.8f;d4_08[time,lev,lat,lon]=1.9f;d4_09[time,lev,lat,lon]=1.11f;d4_10[time,lev,lat,lon]=1.12f;d4_11[time,lev,lat,lon]=1.13f;d4_12[time,lev,lat,lon]=1.14f;d4_13[time,lev,lat,lon]=1.15f;d4_14[time,lev,lat,lon]=1.16f;d4_15[time,lev,lat,lon]=1.17f;d4_16[time,lev,lat,lon]=1.18f;d4_17[time,lev,lat,lon]=1.19f;d4_18[time,lev,lat,lon]=1.21f;d4_19[time,lev,lat,lon]=1.22f;d4_20[time,lev,lat,lon]=1.23f;d4_21[time,lev,lat,lon]=1.24f;d4_22[time,lev,lat,lon]=1.25f;d4_23[time,lev,lat,lon]=1.26f;d4_24[time,lev,lat,lon]=1.27f;d4_25[time,lev,lat,lon]=1.28f;d4_26[time,lev,lat,lon]=1.29f;d4_27[time,lev,lat,lon]=1.312f;d4_28[time,lev,lat,lon]=1.322f;d4_29[time,lev,lat,lon]=1.332f;d4_30[time,lev,lat,lon]=1.342f;d4_31[time,lev,lat,lon]=1.352f;'";
+}; # end of fle_cre_dta_init()
+
+
+
+# this next bit is for later  too many niggly bits to play with right now.
+## try to get a sense of system load with 'top -b -n1' 
+## probably only works with Linux tho...
+#my $uname = `uname -a`;
+#print "uname = $uname \n";
+#my %sys_stats;
+#my $top_stats;
+#if ($uname =~ "inux"){
+#	$tmp = `top -b -n1 |head -7`;
+#	print $tmp;
+#	my $lincnt;
+#	my @top_lines;
+#	$lincnt = @top_lines = split("\n",$tmp);
+#	print "lincnt = $lincnt\n";
+#	for (my $i=0; $i<$lincnt; $i++){
+#		print "working on: $top_lines[$i]\n";
+#		if ($top_lines[$i] =~ /\S+/) { # if it matches nonwhitespace
+#			
+#		}
+#	}
+#	
+#}
