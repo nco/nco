@@ -1,12 +1,19 @@
-var_sct *
-var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
-/*  
-   var_sct *var: I/O pointer to variable structure (destroyed)
-   dmn_sct **dim: I pointer to list of dimension structures
-   int nbr_dim: I number of structures in list
-   var_sct *var_avg(): O pointer to PARTIALLY (non-normalized) averaged variable
-   nco_op_typ : average,min,max,ttl operation to perform, default is average
-*/
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.3 2002-05-05 20:48:02 zender Exp $ */
+
+/* Purpose: Average variables */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_var_avg.h" /* Average variables */
+
+var_sct * /* O [sct] Partially (non-normalized) reduced variable */
+var_avg /* [fnc] reduce given variable over specified dimensions */
+(var_sct *var, /* I/O [sct] Variable to reduce (e.g., average) (destroyed) */
+ const dmn_sct ** const dim, /* I [sct] Dimensions over which to reduce variable */
+ const int nbr_dim, /* I [sct] Number of dimensions to reduce variable over */
+ const int nco_op_typ) /* I [enm] Operation type, default is average */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Routine to reduce given variable over specified dimensions. 
