@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.34 2002-01-29 08:40:19 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.35 2002-02-02 17:28:01 hmb Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -93,7 +93,7 @@
    The %x defines an exclusive start state for CCOMMENT
    When CCOMMENT state is active, other rules do not match
    NB: State names may not contain hyphens */
-%x CCOMMENT
+%x CCOMMENT LHS_SUBSCRIPT RHS_SUBSCRIPT
 
 /* Following sections after %% are lexer rules
    Each rule is regular expression followed by C-code for action
@@ -354,7 +354,34 @@ pow/[ ]*\( {return POWER;}
   
 } /* End attributes. Phew! */
 
-[A-Za-z_][A-Za-z0-9_]*[ ]*\[[^\]\n]*[\]\n] {
+
+[A-Za-z_][A-Za-z0-9_]*/\[ {
+  /* Recognize variables with subscript */
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable with subscripts%s\n",yytext);
+  if(RHS){
+    lval_ptr->vara=strdup(yytext);
+    BEGIN RHS_SUBSCRIPT;
+    return VAR;
+  }else{ 
+    lval_ptr->output_var=strdup(yytext);
+    BEGIN LHS_SUBSCRIPT;
+    return OUT_VAR;
+  } /* end else */
+} /* end variables */
+
+[A-Za-z_][A-Za-z0-9_]* {
+  /* Recognize plain variables */
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable %s\n",yytext);
+  if(RHS){
+    lval_ptr->vara=strdup(yytext); 
+    return VAR;
+  }else{ 
+    lval_ptr->output_var=strdup(yytext);
+    return OUT_VAR;
+  } /* end else */
+} /* end variables */
+
+<LHS_SUBSCRIPT>\[[^\]\n]*[\]\n] {
   /* Recognize subscripted (hyperslabbed) variables
      Hyperslabbed variables for now indicated with square brackets
      Using square brackets so development does not break functions
@@ -363,94 +390,69 @@ pow/[ ]*\( {return POWER;}
      Subscript syntax is taken from Fortran9X specification:
      x[dmn1,dmn2,...,dmnN]
      x[a:b,c:,:d,e] */
-  const char *sbs_LHS="["; /* [sng] LHS subscript bracket */
-  const char *sbs_RHS="]"; /* [sng] RHS subscript bracket */
   const char *sbs_dlm=","; /* [sng] Subscript delimiter */
-  const char *sbs_rng=":";  /* [sng] Subscript range token */
+  static char *tpl_nm="Internally generated template";
 
-  char *sbs_LHS_ptr; /* [ptr] Location of sbs_LHS */
-  char *sbs_RHS_ptr; /* [ptr] Location of sbs_RHS */
-  char *sbs_rng_ptr; /* [ptr] Location of sbs_rng */
   char **sbs_lst; /* [sng] Array of dimension subscripts */
-  char *var_nm; /* [sng] Variable name */
-
+  char *sbs_sng;
+  
   int dmn_nbr; /* [nbr] Number of dimensions */
-  int dmn_idx; /* [idx] Counter for dimensions */
   int dmn_id; /* [id] Dimension ID */
-  int idx; /* [idx] Counter */
+  int idx;    /* [idx] Counter */
+  int jdx;    /* another counter */
+  int rcd;
+
+  double val=1.0;
+
+  var_sct *var; /* [sct] Variable */
 
   nm_id_sct *dmn_lst; /* [sng] Dimension name-ID list */
   dmn_sct **dmn; /* [dmn] Dimension structure list */
-  dmn_sct **dmn_out; /* [dmn] Dimension structure list */
+  
+  if(yyleng < 3 ) goto end;
 
-  var_nm=strdup(yytext); /* [sng] Variable name */
-  (void)sprintf(err_sng,"Warning: Token %s may contain subscript, hyperslab, or convolution information. This information is not yet correctly handled and results will be unpredictable",var_nm);
-  (void)yyerror(err_sng);       
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing subscripted variable %s\n",var_nm);
-
-  /* Locate subscript brackets */
-  sbs_LHS_ptr=strstr(var_nm,sbs_LHS); /* [ptr] Location of sbs_LHS */
-  assert(sbs_LHS_ptr != NULL);
-  sbs_RHS_ptr=strstr(var_nm,sbs_RHS); /* [ptr] Location of sbs_RHS */
-  assert(sbs_RHS_ptr != NULL);
-  sbs_rng_ptr=strstr(sbs_LHS_ptr,sbs_rng); /* [ptr] Location of sbs_rng */
-  if(sbs_rng_ptr != NULL) (void)fprintf(stderr,"Warning: Subscript ranges not yet implemented, results unpredictable\n");
-
-  /* Brackets no longer needed, NUL-terminate variable name portion of string */
-  *sbs_LHS_ptr='\0'; /* Now string var_nm contains variable name only */
-  /* Brackets no longer needed, NUL-terminate at location of final bracket */
-  *sbs_RHS_ptr='\0'; /* Now string sbs_LHS_ptr+1 contains subscript list only */
-  /* Obtain list of subscripts for each specified dimension */
-  sbs_lst=lst_prs(sbs_LHS_ptr+1,sbs_dlm,&dmn_nbr);
+  sbs_sng = (char *)nco_malloc(yyleng*sizeof(char));
+  strcpy(sbs_sng,&yytext[1]);
+  sbs_sng[yyleng-2]='\0';  
+   
+  sbs_lst=lst_prs(sbs_sng,sbs_dlm,&dmn_nbr);
   /* Translate dimension names into dimension structure list variables */
   dmn_lst=(nm_id_sct *)nco_malloc(dmn_nbr*sizeof(nm_id_sct));
   for(idx=0;idx<dmn_nbr;idx++){
-    (void)nco_inq_dimid(prs_arg->in_id,sbs_lst[idx],&dmn_id);
+    rcd=nco_inq_dimid_flg(prs_arg->in_id,sbs_lst[idx],&dmn_id);
+    if(rcd != NC_NOERR) {
+        (void)sprintf(err_sng,"Warning unrecognized dimension %s in LHS subscripts",sbs_lst[idx]);
+        (void)yyerror(err_sng);
+        goto end;                 
+    }
     dmn_lst[idx].nm=sbs_lst[idx];
     dmn_lst[idx].id=dmn_id;
   } /* end loop over dimensions */
 
+  if(prs_arg->initial_scan){
+    lval_ptr->sbs_lst = (nm_lst_sct *)nco_malloc(sizeof(nm_lst_sct));
+    lval_ptr->sbs_lst->list = dmn_lst;
+    lval_ptr->sbs_lst->nbr=dmn_nbr;
+    BEGIN INITIAL;
+    return LHS_SBS;
+  }
+
+  
   /* Fill in dimension structure for all extracted dimensions */
   dmn=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
-  for(idx=0;idx<dmn_nbr;idx++) dmn[idx]=dmn_fll(prs_arg->in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
-  
-  /* fxm: Must include limit structure information */
+ 
+  for(idx=0 ;idx<dmn_nbr ; idx++){
+    for(jdx = 0; jdx < prs_arg->nbr_dmn_xtr ; jdx++) 
+      if(!strcmp(dmn_lst[idx].nm,prs_arg->dmn[jdx]->nm)) break;
+      if(jdx == prs_arg->nbr_dmn_xtr){
+        (void)sprintf(err_sng,"Warning Unrecognized dimension %s in LHS subscripts",dmn_lst[idx].nm);
+        (void)yyerror(err_sng);
+        goto end;                 
+      } /* end if */
+   dmn[idx] = prs_arg->dmn[jdx];
+  }
 
-  /* Duplicate input dimension structures for output dimension structures */
-  dmn_out=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
-  for(idx=0;idx<dmn_nbr;idx++){
-    dmn_out[idx]=dmn_dpl(dmn[idx]);
-    (void)dmn_xrf(dmn[idx],dmn_out[idx]); 
-  } /* end loop over idx */
-  
-  /* This variable now has a private dimension list, dmn
-     Dimension list holds, in order, dimensions user wants output to have
-     Assign this LHS dimension list to prs_arg to cast all leaves on RHS 
-     Dimension list dmn in prs_sct is list of all disk variable dimensions
-     Casting first expression on RHS is not sufficient (e.g., prs_mdp) */
-  if(RHS){
-    (void)fprintf(stderr,"ERROR: Found hyperslab (subscripted) variable on RHS\n");
-    lval_ptr->vara=var_nm;
-    return VAR;
-  }else{ 
-    static char *tpl_nm="Internally generated template";
 
-    double val=1.0;
-
-    int dmn_idx;
-    int idx;
-
-    var_sct *var; /* [sct] Variable */
-
-    /* Set ouput variable name as usual */
-    lval_ptr->output_var=var_nm;
-
-    /* Enter LHS_cst mode, exit mode when semi-colon is read
-       Test for mode by checking var_LHS != null
-       Create template variable of specified LHS rank
-       Value of variable is arbitrary (and perhaps unecessary), use 1.0 for safety
-       Variable construction code is taken from scl_dbl_mk_var() and var_fll()
-       Allocate and initialize variable structure */
     var=(var_sct *)nco_malloc(sizeof(var_sct));
 
     /* Set defaults */
@@ -459,7 +461,7 @@ pow/[ ]*\( {return POWER;}
     var->nm=(char *)strdup(tpl_nm);
     var->type=NC_DOUBLE;
     var->nbr_dim=dmn_nbr;
-    var->dim=dmn_out;
+    var->dim=dmn;
     /* Allocate space for dimension structures */
     if(var->nbr_dim > 0) var->dmn_id=(int *)nco_malloc(var->nbr_dim*sizeof(int)); else var->dmn_id=(int *)NULL;
     if(var->nbr_dim > 0) var->cnt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->cnt=(long *)NULL;
@@ -470,13 +472,13 @@ pow/[ ]*\( {return POWER;}
     /* Defensive programming */
     var->sz=1L; 
     /* Attach LHS dimensions to variable */
-    for(idx=0;idx<var->nbr_dim;idx++){
-      var->dim[idx]=dmn_out[idx];
-      var->dmn_id[idx]=dmn_out[idx]->id;
-      var->cnt[idx]=dmn_out[idx]->cnt;
-      var->srt[idx]=dmn_out[idx]->srt;
-      var->end[idx]=dmn_out[idx]->end;
-      var->srd[idx]=dmn_out[idx]->srd;
+    for(idx=0;idx<dmn_nbr;idx++){
+      var->dim[idx]=dmn[idx];
+      var->dmn_id[idx]=dmn[idx]->id;
+      var->cnt[idx]=dmn[idx]->cnt;
+      var->srt[idx]=dmn[idx]->srt;
+      var->end[idx]=dmn[idx]->end;
+      var->srd[idx]=dmn[idx]->srd;
       var->sz*=var->cnt[idx];
     } /* end loop over dim */
 
@@ -505,10 +507,10 @@ pow/[ ]*\( {return POWER;}
     /* Link variable into yylex() argument for use in parser */
     prs_arg->var_LHS=var;
 
-    if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Lexer creating LHS cast template for %s: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),var_nm,prs_arg->var_LHS->nm,prs_arg->var_LHS->nbr_dim,prs_arg->var_LHS->sz);
+    if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Lexer creating LHS cast template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),prs_arg->var_LHS->nm,prs_arg->var_LHS->nbr_dim,prs_arg->var_LHS->sz);
 
-    return OUT_VAR;
-  } /* end else */
+
+
 
   if(0){ /* Remove some compiler warning messages */
     /* Following two statements remove "defined but not used" messages in lex.yy.c */
@@ -519,22 +521,23 @@ pow/[ ]*\( {return POWER;}
     yy_full_lp=yy_full_lp;
     yy_full_state=yy_full_state;
   } /* endif False */
+    
+  /* now free the list */
+  (void)nco_free(sbs_sng);    
+  (void)nco_free(dmn_lst);
 
-  /* Do not attempt arithmetic yet, just return error */
-  return EPROVOKE;             
+  end:
+  BEGIN INITIAL;
+
 } /* end subscripted variables */
 
-[A-Za-z_][A-Za-z0-9_]* {
-  /* Recognize variables */
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable %s\n",yytext);
-  if(RHS){
-    lval_ptr->vara=strdup(yytext); 
-    return VAR;
-  }else{ 
-    lval_ptr->output_var=strdup(yytext);
-    return OUT_VAR;
-  } /* end else */
-} /* end variables */
+<RHS_SUBSCRIPT>\[[^\]\n]*[\]\n] {
+  (void)sprintf(err_sng,"Warning RHS subscripts are not yet implemented");
+  (void)yyerror(err_sng);
+  BEGIN INITIAL;
+  }  
+
+
 
 = {
   /* Equals */
