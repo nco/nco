@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.219 2003-09-04 17:32:05 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.220 2003-09-22 18:25:30 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -72,6 +72,28 @@ endif # endif HDF5
 ifndef I18N
  I18N := N
 endif
+ifndef LINUX_CXX
+# C++ compiler for Linux
+ LINUX_CXX := g++
+ #LINUX_CXX := como
+ #LINUX_CXX := icc
+ #LINUX_CXX := insure
+endif # endif LINUX_CXX
+ifndef LINUX_CC
+# C compiler for Linux
+ LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
+ #LINUX_CC := como --c99
+ #LINUX_CC := icc
+ #LINUX_CC := insure
+endif # endif LINUX_CC
+ifndef LINUX_FC
+# Fortran compiler for Linux
+# LINUX_FC := g95 # NB: g95 will not work until .F90 -> .f90 pre-processing rules work
+# LINUX_FC := gcc-g95
+ LINUX_FC := lf95
+# LINUX_FC := ifc
+# LINUX_FC := pgf90
+endif # endif LINUX_FC
 ifndef MK_DPN
  MK_DPN = ${CPP} -M # NB: Recursive expansion required
  MK_DPN_C++ = ${C++} -M # NB: Recursive expansion required
@@ -516,23 +538,17 @@ endif
 
 # Works on LINUX, LINUXALPHA, LINUXARM and FREEBSD
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXARMFREEBSD))
-#C++ := como
-C++ := g++
-#C++ := icc
-#C++ := insure
-# fxm: 19980517: As of gcc-2.8.0 using switch breaks because resolv.h structure have changed
-#CC := como --c99
-#CC := g++
-# 20020909 comp.unix.programmer: -D_BSD_SOURCE tells GCC nameser.h is ANSI-compliant
-# 20030225 gnu.gcc.help: -ansi == -std=c89 so conflicts with -std=c99
-CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
-#CC := icc
-#CC := insure
+C++ := ${LINUX_CXX}
+CC := ${LINUX_CC}
 CPP := ${CC}
-# NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
+# NB: nameser.h needs -Di386, but gcc sends -Di586 (on pentiums)
 CPP_TKN_OS += -Di386
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
-FC := g77
+ifeq (${PVM_ARCH},LINUX)
+ FC := ${LINUX_FC}
+else # LINUXALPHA
+ FC := g77
+endif # LINUXALPHA
 LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)

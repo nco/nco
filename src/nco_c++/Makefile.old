@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.14 2003-09-03 18:12:15 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.15 2003-09-22 18:25:31 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -64,6 +64,28 @@ ifdef GSL_LIB
 else
  GSL_LIB := $(shell gsl-config --libs)
 endif # endif GSL_LIB
+ifndef LINUX_CXX
+# C++ compiler for Linux
+ LINUX_CXX := g++
+ #LINUX_CXX := como
+ #LINUX_CXX := icc
+ #LINUX_CXX := insure
+endif # endif LINUX_CXX
+ifndef LINUX_CC
+# C compiler for Linux
+ LINUX_CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
+ #LINUX_CC := como --c99
+ #LINUX_CC := icc
+ #LINUX_CC := insure
+endif # endif LINUX_CC
+ifndef LINUX_FC
+# Fortran compiler for Linux
+# LINUX_FC := g95 # NB: g95 will not work until .F90 -> .f90 pre-processing rules work
+# LINUX_FC := gcc-g95
+ LINUX_FC := lf95
+# LINUX_FC := ifc
+# LINUX_FC := pgf90
+endif # endif LINUX_FC
 ifndef NETCDF_INC
  NETCDF_INC := /usr/local/include 
 endif
@@ -377,24 +399,16 @@ endif
 
 # Works on LINUX and LINUXALPHA and FREEBSD
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
-#C++ := como
-C++ ?= g++
-#C++ := icc
-#C++ := insure
-#CC := como -c99
-CC := gcc -ansi
-#CC := icc
-#CC := insure
+C++ := ${LINUX_CXX}
+CC := ${LINUX_CC}
 CPP := ${C++}
 # HAVE_INLINE is GNU standard to activate inline functions (used by GSL)
 CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} -I${NETCDF_INC} 
 ifeq (${PVM_ARCH},LINUX)
- FC := pgf90
-# FC := lf95
-# FC := ifc
+ FC := ${LINUX_FC}
 else # LINUXALPHA
  FC := g77
-endif
+endif # LINUXALPHA
 LD := ld
 LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
 LEX := flex
