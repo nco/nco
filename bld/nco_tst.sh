@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.48 2002-12-30 08:00:49 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.49 2003-01-10 17:32:20 rorik Exp $
 
 # Purpose: NCO test battery
 
@@ -12,9 +12,10 @@
 # Tests which differ in functionality should get own major number
 # Tests of same functionality but for different types should change in minor number
 
-function usage {
+usage() {
 #    echo >&2 "Usage: ${basename $0} ncra | ncea | ncwa | ncflint | ncdiff | net"
-    printf "Usage: ${basename ${0}} ncra | ncea | ncwa | ncflint | ncdiff | ncap | net\n"
+program=`basename $0`
+    printf "Usage: ${program} ncra | ncea | ncwa | ncflint | ncdiff | ncap | net\n"
 } # end usage()
 
 START=0
