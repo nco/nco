@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.60 2000-03-09 00:04:33 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.61 2000-03-09 00:14:33 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -602,6 +602,7 @@ rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., su
 	cd /usr/src/redhat/SPECS; \
 	rpm -ba nco.spec; \
 	scp /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm zender@ftp.cgd.ucar.edu:/ftp/pub/zender/nco
+	scp /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm zender@nco.sourceforge.net:/home/groups/ftp/pub/nco
 rpm_cln:
 	rpm --erase $(MDL_RPM_NST_NM)
 # Targets in dat
