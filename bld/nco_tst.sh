@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.12 1999-12-08 23:40:53 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.13 1999-12-14 23:10:34 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -8,13 +8,21 @@
 cd ../data 2> foo.tst
 printf "NCO Test Suite:\n"
 # ncks -O -v PS,gw /fs/cgd/csm/input/atm/SEP1.T42.0596.nc ~/nc/nco/data/nco_tst.nc
+# Subtract PS from itself gives zero valued array
 ncdiff -O -v PS nco_tst.nc nco_tst.nc foo.nc 2>> foo.tst
+# Rename zero-valued PS array to array named negative_one (which will be renamed zero below)
 ncrename -O -v PS,negative_one foo.nc 2>> foo.tst
+# Zero-valued array minus negative one scalar value gives one-valued array
 ncdiff -O -C -v negative_one foo.nc in.nc foo2.nc 2>> foo.tst
+# Rename one-valued array from negative_one to one
 ncrename -O -v negative_one,one foo2.nc 2>> foo.tst
+# Append one-valued to foo.nc
 ncks -A -C -v one foo2.nc foo.nc 2>> foo.tst
+# Append Gaussian weight array to foo.nc
 ncks -A -C -v gw nco_tst.nc foo.nc 2>> foo.tst
+# Rename zero-valued array named negative_one to array named zero
 ncrename -O -v negative_one,zero foo.nc 2>> foo.tst
+# Get rid of working file
 /bin/rm -f foo2.nc 2>> foo.tst
 
 # Average test field

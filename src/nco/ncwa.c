@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.27 1999-12-14 22:39:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.28 1999-12-14 23:10:35 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -35,7 +35,7 @@
 /* 3rd party vendors */
 #ifdef OMP /* OpenMP */
 #include <omp.h> /* OpenMP pragmas */
-#endif /* endif OpenMP */
+#endif /* not OpenMP */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
@@ -78,8 +78,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.27 1999-12-14 22:39:35 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.27 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.28 1999-12-14 23:10:35 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.28 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -487,8 +487,9 @@ main(int argc,char **argv)
     } /* end if */
 
 #ifdef OMP /* OpenMP */
-    (void)fprintf(stderr,"%s: WARNING Attempting OpenMP Parallelization...\n");
+    (void)fprintf(stderr,"%s: DEBUG Attempting OpenMP Parallelization...\n");
 #pragma omp parallel for
+#endif /* not OMP */
     /* Process all variables in current file */ 
     for(idx=0;idx<nbr_var_prc;idx++){
       if(dbg_lvl > 0) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
@@ -635,7 +636,9 @@ main(int argc,char **argv)
       var_prc_out[idx]->val.vp=NULL;
       
     } /* end loop over idx */
-#endif /* endif OpenMP */
+#ifdef OMP /* OpenMP */
+    (void)fprintf(stderr,"%s: DEBUG End of OpenMP Parallelization...\n");
+#endif /* not OMP */
     
     /* Free weights and masks */ 
     if(wgt != NULL) wgt=var_free(wgt);
