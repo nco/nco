@@ -1,3 +1,14 @@
+2003-11-14  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_8_3
+	Changes since nco-2_8_3: memory leaks, regressions fixed
+
+	* Fixed ncwa, ncbo regressions in nco_tst.sh
+
+	* Rorik found and I fixed little nco_var_lst() memory leak
+
+	* Rorik and Henry found and fixed huge ncap memory leak
+
 2003-11-11  Charlie Zender  <zender@uci.edu>
 
 	* Add nco_mmr_stt() hook call to all memory routines

@@ -1,3 +1,9 @@
+nco (2.8.3-1) unstable; urgency=low
+
+  * Fix ncap memory leak, nco_tst.sh regressions
+
+ -- Charlie Zender <zender@ashes.ess.uci.edu>  Fri, 14 Nov 2003 17:17:23 -0800
+
 nco (2.8.2-1) unstable; urgency=medium
 
   * missing_value fix for ncbo

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.167 2003-11-14 17:06:01 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.168 2003-11-15 01:50:00 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -205,7 +205,8 @@ Tarballs are only uploaded to SourceForge, and RPMs are only
 generated, for those releases marked &ldquo;Packaged&rdquo;.
 Retrieve these versions <a name="#Download">using CVS</a> or from 
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
-<li><b>NCO 2.8.3</b> (<i>in progress</i>), Fix big <tt>ncap</tt> memory leak, remove scary packing warnings
+<li><b>NCO 2.8.4</b> (<i>in progress</i>), 
+<li><b>NCO 2.8.3</b> Fix big <tt>ncap</tt> memory leak, fix regressions, remove scary packing warnings, 
 <li><b>NCO 2.8.2</b>, <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly, improve error diagnostics
 <li><b>NCO 2.8.1</b>, <a href="./nco.html#wildcarding">&ldquo;Variable wildcarding&rdquo;</a>&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators
 <li><b>NCO 2.8.0</b>, New &ldquo;binary&rdquo; operator <a href="./nco.html#ncbo"><tt>ncbo</tt></a>, obsoletes <tt>ncdiff</tt>, Debian integration
@@ -329,10 +330,10 @@ distribution by many months, if not years:
 <li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.8.3</a></li>
 -->
 <a href="http://www.debian.org">Debian GNU/Linux</a>-compatible systems: 
-<li><a href="src/nco_2.8.2-1_i386.deb">nco_2.8.2-1_i386.deb</a> (<!--#fsize file="src/nco_2.8.2-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
-<li><a href="src/nco_2.8.2-1.dsc">nco_2.8.2-1.dsc</a> (<!--#fsize file="src/nco_2.8.2-1.dsc"-->): Description</li>
-<li><a href="src/nco_2.8.2-1.tar.gz">nco_2.8.2-1.tar.gz</a> (<!--#fsize file="src/nco_2.8.2-1.tar.gz"-->): Gzipped Source Tarball</li>
-<li><a href="src/nco_2.8.2-1_i386.changes">nco_2.8.2-1_i386.changes</a> (<!--#fsize file="src/nco_2.8.2-1.changes"-->): Changes</li>
+<li><a href="src/nco_2.8.3-1_i386.deb">nco_2.8.3-1_i386.deb</a> (<!--#fsize file="src/nco_2.8.3-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
+<li><a href="src/nco_2.8.3-1.dsc">nco_2.8.3-1.dsc</a> (<!--#fsize file="src/nco_2.8.3-1.dsc"-->): Description</li>
+<li><a href="src/nco_2.8.3-1.tar.gz">nco_2.8.3-1.tar.gz</a> (<!--#fsize file="src/nco_2.8.3-1.tar.gz"-->): Gzipped Source Tarball</li>
+<li><a href="src/nco_2.8.3-1_i386.changes">nco_2.8.3-1_i386.changes</a> (<!--#fsize file="src/nco_2.8.3-1.changes"-->): Changes</li>
 </ul>
 
 <ul>

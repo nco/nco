@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.248 2003-11-15 00:22:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.249 2003-11-15 01:50:00 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -235,11 +235,8 @@ Permission denied
 275. Use nco_mss_val_cnf() in ncflint
 276. Use nco_mss_val_cnf() in ncap
 277. Use nco_mss_val_cnf() in ncwa
-280. Understand memory usage in ncap
-282. nco_tst.sh has two errors with 2.8.3
-ncwa 1: normalize by denominator: 1.0 =?= nan
-ncwa 4: do not normalize by denominator: 256 =?= 0.000000
-283. missing value ncbo problem not quite fixed
+280. Understand memory usage in ncap: is binary op 2*sizeof(x) or 3*sizeof(x)?
+284. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************

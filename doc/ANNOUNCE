@@ -1,12 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.35 2003-11-14 22:32:57 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.36 2003-11-15 01:50:00 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This is a bug-fix release.
-There are no notable feature improvement since version 2.8.2.
+This is a bug-fix release. There are no new features since 2.8.2.
 
 There is one user-visible change:
 1. Support for unpacking and packing is no longer considered beta,

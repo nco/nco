@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.63 2003-11-15 00:22:48 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.64 2003-11-15 01:49:59 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -87,16 +87,16 @@ else
     done # end loop over command line arguments
 fi # end if command line argument
 
-# T42-size test field named one, which is identically 1.0 in foo.nc
+# T42-size test field named one, which is identically 1.0 in foo_T42.nc
 cd ../data 2> foo.tst
 printf "NCO Test Suite: LHS is target value, RHS value is actual value\n"
 
 if [ "${START}" = 1 ]; then
 
 # Create file containing non-trivial arrays (64x128) to test NCO
-${MY_BIN_DIR}/ncks -O -v lat_64,lon_128,gw_64 in.nc foo.nc
-${MY_BIN_DIR}/ncrename -O -d lat_64,lat -d lon_128,lon -v lat_64,lat -v gw_64,gw -v lon_128,lon foo.nc
-${MY_BIN_DIR}/ncap -O -D 1 -s "gw=gw" -s "one[lat,lon]=lat*lon*0.0+1.0" -s "zero[lat,lon]=lat*lon*0.0" foo.nc foo.nc
+${MY_BIN_DIR}/ncks -O -v lat_T42,lon_T42,gw_T42 in.nc foo_T42.nc
+${MY_BIN_DIR}/ncrename -O -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon foo_T42.nc
+${MY_BIN_DIR}/ncap -O -D 1 -s "one[lat,lon]=lat*lon*0.0+1.0" -s "zero[lat,lon]=lat*lon*0.0" foo_T42.nc foo_T42.nc
 
 fi # end start
 
@@ -106,73 +106,73 @@ if [ "${NCKS}" = 1 ]; then
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%c" -v fl_nm in.nc`
 echo "ncks 1: extract filename string: /home/zender/nco/data/in.cdl =?= ${avg}"
 
-${MY_BIN_DIR}/ncks -O -v lev in.nc foo2.nc
-avg=`${MY_BIN_DIR}/ncks -H -C -s "%f," -v lev foo2.nc`
+${MY_BIN_DIR}/ncks -O -v lev in.nc foo.nc
+avg=`${MY_BIN_DIR}/ncks -H -C -s "%f," -v lev foo.nc`
 echo "ncks 2: extract a dimension: 100.000000,500.000000,1000.000000 =?= ${avg}" 
 
-${MY_BIN_DIR}/ncks -O -v three_dmn_var in.nc foo2.nc
-avg=`${MY_BIN_DIR}/ncks -H -C -s "%f" -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,3,3 foo2.nc`
+${MY_BIN_DIR}/ncks -O -v three_dmn_var in.nc foo.nc
+avg=`${MY_BIN_DIR}/ncks -H -C -s "%f" -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,3,3 foo.nc`
 echo "ncks 3: extract a variable with limits 23 =?= ${avg}"
 
-${MY_BIN_DIR}/ncks -O -v int_var in.nc foo2.nc
-avg=`${MY_BIN_DIR}/ncks -H -C -s "%d" -v int_var foo2.nc`
+${MY_BIN_DIR}/ncks -O -v int_var in.nc foo.nc
+avg=`${MY_BIN_DIR}/ncks -H -C -s "%d" -v int_var foo.nc`
 echo "ncks 4: extract variable of type NC_INT 10 =?= ${avg}" 
 
-${MY_BIN_DIR}/ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,0,0 -d lev,2,2 -d lon,0,,2 -d lon,1,,2 in.nc foo2.nc
-avg=`${MY_BIN_DIR}/ncks -H -C -s "%4.1f," -v three_dmn_var foo2.nc`
+${MY_BIN_DIR}/ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,0,0 -d lev,2,2 -d lon,0,,2 -d lon,1,,2 in.nc foo.nc
+avg=`${MY_BIN_DIR}/ncks -H -C -s "%4.1f," -v three_dmn_var foo.nc`
 echo "ncks 5: Multi-slab lat and lon with srd 12.0,13.0,14.0,15.0,20.0,21.0,22.0,23.0 =?= ${avg}"
 
-${MY_BIN_DIR}/ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0,3 -d lon,1,3 in.nc foo2.nc
-avg=`${MY_BIN_DIR}/ncks -H -C -s "%4.1f," -v three_dmn_var foo2.nc`
+${MY_BIN_DIR}/ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0,3 -d lon,1,3 in.nc foo.nc
+avg=`${MY_BIN_DIR}/ncks -H -C -s "%4.1f," -v three_dmn_var foo.nc`
 echo "ncks 6: Multi-slab with redundant hyperslabs 20.0,21.0,22.0,23.0 =?= ${avg}"
 
-${MY_BIN_DIR}/ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0.,,2 -d lon,90.,,2 in.nc foo2.nc
-avg=`${MY_BIN_DIR}/ncks -H -C -s "%4.1f," -v three_dmn_var foo2.nc`
+${MY_BIN_DIR}/ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,2,2 -d lon,0.,,2 -d lon,90.,,2 in.nc foo.nc
+avg=`${MY_BIN_DIR}/ncks -H -C -s "%4.1f," -v three_dmn_var foo.nc`
 echo "ncks 7: Multi-slab with coordinates 20.0,21.0,22.0,23.0 =?= ${avg}"
 
-${MY_BIN_DIR}/ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,800.,200. -d lon,270.,0. in.nc foo2.nc
-avg=`${MY_BIN_DIR}/ncks -H -C -s "%4.1f," -v three_dmn_var foo2.nc`
+${MY_BIN_DIR}/ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,800.,200. -d lon,270.,0. in.nc foo.nc
+avg=`${MY_BIN_DIR}/ncks -H -C -s "%4.1f," -v three_dmn_var foo.nc`
 echo "ncks 8: Double-wrapped hyperslab 23.0,20.0,15.0,12.0 =?= ${avg}"
 
-${MY_BIN_DIR}/ncks -O -C -v three_double_dmn -d lon,2,2 -d time,8,8  in.nc foo2.nc
-avg=`${MY_BIN_DIR}/ncks -H -C -s "%f," -v three_double_dmn foo2.nc`
+${MY_BIN_DIR}/ncks -O -C -v three_double_dmn -d lon,2,2 -d time,8,8  in.nc foo.nc
+avg=`${MY_BIN_DIR}/ncks -H -C -s "%f," -v three_double_dmn foo.nc`
 echo "ncks 9: Hyperslab of a variable that has two identical dims 59.5 =?= ${avg}"
 
-${MY_BIN_DIR}/ncks -O -C -d time_udunits,"1999-12-08 12:00:0.0","1999-12-09 00:00:0.0" in.nc foo2.nc
+${MY_BIN_DIR}/ncks -O -C -d time_udunits,"1999-12-08 12:00:0.0","1999-12-09 00:00:0.0" in.nc foo.nc
 avg=`${MY_BIN_DIR}/ncks -H -C -s "%6.0f" -d time_udunits,"1999-12-08 18:00:0.0","1999-12-09 12:00:0.0",2 -v time_udunits in.nc`
 echo "ncks 10: dimension slice using UDUnits library: 876018 ?=? ${avg} (fails without UDUnits library support)"
 
-${MY_BIN_DIR}/ncks -O -C -d wvl,"0.1 micron","1 micron" in.nc foo2.nc
+${MY_BIN_DIR}/ncks -O -C -d wvl,"0.1 micron","1 micron" in.nc foo.nc
 avg=`${MY_BIN_DIR}/ncks -H -C -d wvl,"0.6 micron","1 micron" -s "%3.1e" -v wvl in.nc`
 echo "ncks 11: dimension slice using UDUnit conversion: 1.0e-06 ?=? ${avg} (fails without UDUnits library support)"
 
-${MY_BIN_DIR}/ncks -O -C -v "^three_*" in.nc foo2.nc
-avg=`${MY_BIN_DIR}/ncks -H -s "%f" -C -v three foo2.nc`
+${MY_BIN_DIR}/ncks -O -C -v "^three_*" in.nc foo.nc
+avg=`${MY_BIN_DIR}/ncks -H -s "%f" -C -v three foo.nc`
 echo "ncks 12: variable wildcards: 3 ?=? ${avg} (fails without regex library)"
 
-${MY_BIN_DIR}/ncks -O -C -v "^[a-z]{3}_[a-z]{3}_[a-z]{3,}$" in.nc foo2.nc
-avg=`${MY_BIN_DIR}/ncks -H -s "%d" -C -v val_one_int foo2.nc`
+${MY_BIN_DIR}/ncks -O -C -v "^[a-z]{3}_[a-z]{3}_[a-z]{3,}$" in.nc foo.nc
+avg=`${MY_BIN_DIR}/ncks -H -s "%d" -C -v val_one_int foo.nc`
 echo "ncks 13: variable wildcards: 1 ?=? ${avg} (fails without regex library)"
 
 fi # end NCKS
 
 # Average test field
 if [ "${NCWA}" = 1 ]; then
-${MY_BIN_DIR}/ncwa -O -a lat,lon -w gw foo.nc foo2.nc
-avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v one foo2.nc`
-echo "ncwa 1: normalize by denominator: 1.0 =?= ${avg}" 
+${MY_BIN_DIR}/ncwa -O -a lat,lon -w gw -d lat,0.0,90.0 foo_T42.nc foo.nc
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v one foo.nc`
+echo "ncwa 1: normalize by denominator upper hemisphere: 1.0 =?= ${avg}" 
 
-#${MY_BIN_DIR}/ncwa -n -O -a lat,lon -w gw foo.nc foo2.nc
-#avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v one foo2.nc`
+#${MY_BIN_DIR}/ncwa -n -O -a lat,lon -w gw foo_T42.nc foo.nc
+#avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v one foo.nc`
 #echo "ncwa 2: normalize by tally but not weight: 0.0312495 =?= ${avg}" 
 
-#${MY_BIN_DIR}/ncwa -W -O -a lat,lon -w gw foo.nc foo2.nc
-#avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v one foo2.nc`
+#${MY_BIN_DIR}/ncwa -W -O -a lat,lon -w gw foo_T42.nc foo.nc
+#avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v one foo.nc`
 #echo "ncwa 3: normalize by weight but not tally: 8192 =?= ${avg}" 
 
-${MY_BIN_DIR}/ncwa -N -O -a lat,lon -w gw foo.nc foo2.nc
-avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v one foo2.nc`
-echo "ncwa 4: do not normalize by denominator: 256 =?= ${avg}" 
+${MY_BIN_DIR}/ncwa -N -O -a lat,lon -w gw in.nc foo.nc
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v mask foo.nc`
+echo "ncwa 4: do not normalize by denominator: 50 =?= ${avg}" 
 
 ${MY_BIN_DIR}/ncwa -O -a lon -v mss_val in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v mss_val foo.nc`
@@ -346,11 +346,11 @@ avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
 echo "ncra 7: record rms of float with double missing values across two files: 5.385164807 =?= ${avg}"
 
 ncrcat -O -v rec_var_flt_mss_val_dbl in.nc in.nc foo1.nc 2>> foo.tst
-${MY_BIN_DIR}/ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo2.nc 2>> foo.tst
-${MY_BIN_DIR}/ncwa -O -a time foo2.nc foo2.nc 2>> foo.tst
-${MY_BIN_DIR}/ncdiff -O -v rec_var_flt_mss_val_dbl foo1.nc foo2.nc foo2.nc 2>> foo.tst
-${MY_BIN_DIR}/ncra -O -y rms -v rec_var_flt_mss_val_dbl foo2.nc foo2.nc 2>> foo.tst
-avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo2.nc`
+${MY_BIN_DIR}/ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc 2>> foo.tst
+${MY_BIN_DIR}/ncwa -O -a time foo.nc foo.nc 2>> foo.tst
+${MY_BIN_DIR}/ncdiff -O -v rec_var_flt_mss_val_dbl foo1.nc foo.nc foo.nc 2>> foo.tst
+${MY_BIN_DIR}/ncra -O -y rms -v rec_var_flt_mss_val_dbl foo.nc foo.nc 2>> foo.tst
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
 echo "ncra 8: record sdn of float with double missing values across two files: 2 =?= ${avg}"
 fi # end ncra
 
@@ -408,8 +408,8 @@ avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v one foo.nc`
 echo "ncflint 1: identity weighting: 1.0 =?= ${avg}" 
 
 ${MY_BIN_DIR}/ncrename -O -v zero,foo in.nc foo1.nc 2>> foo.tst
-${MY_BIN_DIR}/ncrename -O -v one,foo in.nc foo2.nc 2>> foo.tst
-${MY_BIN_DIR}/ncflint -O -i foo,0.5 -v two foo1.nc foo2.nc foo.nc 2>> foo.tst
+${MY_BIN_DIR}/ncrename -O -v one,foo in.nc foo.nc 2>> foo.tst
+${MY_BIN_DIR}/ncflint -O -i foo,0.5 -v two foo1.nc foo.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v two foo.nc`
 echo "ncflint 2: identity interpolation: 2.0 =?= ${avg}" 
 fi # end ncflint
