@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.57 2000-05-09 06:55:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.58 2000-05-09 07:01:51 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -581,9 +581,14 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     
     /* Exit if requested indices are not in valid range */ 
     if(lmt.min_idx < 0 || lmt.min_idx >= dmn_sz || lmt.max_idx < 0){
-      (void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dmn_sz-1L);
-      (void)fprintf(stdout,"\n");
-      exit(EXIT_FAILURE);
+      /* Allow for possibility that current file is superfluous */
+      if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)){
+	flg_no_data=True;
+      }else{
+	(void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dmn_sz-1L);
+	(void)fprintf(stdout,"\n");
+	exit(EXIT_FAILURE);
+      } /* end else */
     } /* end if */
     
     /* Logic depends on whether this is record dimension in multi-file operator */
@@ -597,7 +602,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     }else{
       /* For record dimensions with user-specified limit, allow for possibility 
 	 that limit pertains to record dimension of a multi-file operator, e.g., ncra.
-	 Then a user-specified maximum index may exceed number of records in any one file
+	 Then user-specified maximum index may exceed number of records in any one file
 	 Thus lmt.srt does not necessarily equal lmt.min_idx and lmt.end 
 	 does not necessarily equal lmt.max_idx */ 
       /* Stride is officially supported for ncks (all dimensions)
