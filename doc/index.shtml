@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.137 2003-05-30 20:04:29 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.138 2003-05-31 00:54:09 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -64,7 +64,7 @@ Try to disable Spammers' machines:
 <li><a href="#News">News & Announcements</a></li>
 <li><a href="#Version">Version Summary</a></li>
 <li><a href="#Download">Download/CVS NCO Software</a></li>
-<li><a href="#RTFM">User's Guide</a></li>
+<li><a href="#RTFM">Documentation and User's Guide</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
 <li><a href="#NCAR">Using NCO at UCI, NCAR, and SDSC</a></li>
 <li><a href="#FAQ">FAQ</a></li>
@@ -298,7 +298,7 @@ tend to lag the current distribution by many months, if not years:
 <hr></p>
 
 <dt><a name="RTFM"></a></dt>
-<h2>User's Guide</h2> 
+<h2>Documentation and User's Guide</h2> 
 <p>View the NCO User's Guide in any of the following formats.
 <tt>nco.texi</tt> is the most up-to-date.
 <tt>nco.html</tt>, <tt>nco.info</tt>, <tt>nco.txt</tt>, and
@@ -316,6 +316,15 @@ utilities (but you can generate them yourself from <tt>nco.texi</tt>!)
 <li><a href="./nco.txt">Text</a> Plain text (<tt>more</tt>)</h2> </li>
 <li><a href="./nco.xml">XML</a> Extensible Markup Language (<tt>mozilla</tt>)</h2> </li>
 </ul>
+
+<h3>Other documentation:</h3>
+This 
+<a href="http://www.cgd.ucar.edu/csm/support/Document/pdf/nco.pdf">pamphlet</a> and
+<a href="http://www.cgd.ucar.edu/csm/support/Document/shows/nco/nco_files/v3_document.htm">slide presentation</a> 
+introduce and summarize the NCO operators.
+They were created by Sylvia Murphy of the NCAR 
+<a href="http://www.cgd.ucar.edu/csm/cmps/cmps_home.html">Community Climate System Model Support Network</a>.
+
 <hr></p>
 
 <dt><a name="README/ChangeLog/TODO"></a></dt>
@@ -356,9 +365,10 @@ or <a href="mailto:support@unidata.ucar.edu">Unidata Support</a>.
 <li><i>Is there an easy way to keep up with new NCO releases?</i>
 Subscribe to the <a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a> mailing list (this list is for NCO-related announcements, not for questions) </li>
 <li><i>Where should I ask my questions on how to use NCO?</i>
-On the <a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help</a>
-or the <a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Discussion</a>
-sites.
+On the <a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help</a> site.
+</li>
+<li><i>Where should I post suggestions/comments on NCO features and usage?</i>
+On the <a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Discussion</a> site.
 </li>
 <li><i>Where is NCO development discussed?</i>
 At the <a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developer</a>
