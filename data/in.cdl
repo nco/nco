@@ -15,7 +15,7 @@ variables:
 	:convention = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.3 1998-10-31 21:43:25 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.4 1998-11-02 05:28:11 zender Exp $";
 
 	float lat(lat);
 	float lev(lev);
@@ -154,7 +154,7 @@ variables:
 
 data:
 	lat=-90,90;
-	lev=1000,500,100;
+	lev=100,500,1000;
 	lev_wgt=10,5,1;
 	rlev=1000,500,100;
 	lon=0,90,180,270;

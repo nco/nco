@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.6 1998-10-31 21:06:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.7 1998-11-02 05:28:11 zender Exp $ */
 
 /* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -312,8 +312,8 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
 
   /* Initialize limit structure */ 
   lim.srd=1L;
-  lim.min_val=0.;
-  lim.max_val=0.;
+  lim.min_val=0.0;
+  lim.max_val=0.0;
 
   /* Get dimension ID */ 
   lim.id=ncdimid(nc_id,lim.nm);
@@ -455,8 +455,8 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
     if(lim.min_sng == NULL) lim.min_val=dim_val_dp[min_idx]; else lim.min_val=atof(lim.min_sng);
     if(lim.max_sng == NULL) lim.max_val=dim_val_dp[max_idx]; else lim.max_val=atof(lim.max_sng);
 
-    /* Warn when min_val > max_val */ 
-    /*if(lim.min_val > lim.max_val) (void)fprintf(stderr,"%s: WARNING User-specified minimum \"%s\" coordinate value %g exceeds user-specified maximum coordinate value %g\nWrap-around hyperslabs are not supported yet--Results are unpredictable.\n",prg_nm_get(),lim.nm,lim.min_val,lim.max_val);*/
+    /* Warn when min_val > max_val (i.e., wrapped coordinate)*/ 
+    if(lim.min_val > lim.max_val) (void)fprintf(stderr,"%s: WARNING Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lim.nm,lim.max_val,lim.nm,lim.min_val);
     
     /* Exit when... */ 
     if(

@@ -4,11 +4,15 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.3 1998-10-30 03:39:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.4 1998-11-02 05:28:11 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
-Example usage: 
+After editing any hyperlink locations, use 
+C-c C-u C-a	texinfo-all-menus-update
+C-c C-u C-e	texinfo-every-node-update
+
+Usage: 
 texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o /data2/zender/ps/nco.ps nco.dvi; /bin/cp -f nco.html /src/web/web-data/cms/nco
 texi2html -monolithic -verbose nco.texi; /bin/cp -f nco.html /src/web/web-data/cms/nco
 texi2dvi nco.texi 
@@ -171,7 +175,7 @@ by the Free Software Foundation.
 * Operators::                   Description of all NCO operators
 * General Index::               Index of concepts
 
- --- The Detailed Node Listing ---
+@detailmenu --- The Detailed Node Listing ---
 
 Introduction
 
@@ -210,8 +214,8 @@ Features common to most operators
 * Variable subsetting::         
 * Coordinate variables::        
 * Hyperslabs::                  
-* Stride::                      
 * Wrapped coordinates::         
+* Stride::                      
 * Fortran indexing::            
 * Missing values::              
 * Suppressing interactive prompts::  
@@ -237,6 +241,8 @@ Reference manual for all operators
 
 * Masking condition::           
 * Normalization::               
+
+@end detailmenu
 @end menu
 
 @node Foreword, Summary, Top, Top
@@ -982,8 +988,8 @@ feature is automatic and cannot be controlled by the user.
 * Variable subsetting::         
 * Coordinate variables::        
 * Hyperslabs::                  
-* Stride::                      
 * Wrapped coordinates::         
+* Stride::                      
 * Fortran indexing::            
 * Missing values::              
 * Suppressing interactive prompts::  
@@ -1254,7 +1260,7 @@ automatically specifying that @emph{all} coordinate variables in the
 Thus @samp{-c} allows the user to select all the coordinate variables
 without having to know their names.
 
-@node Hyperslabs, Stride, Coordinate variables, Common features
+@node Hyperslabs, Wrapped coordinates, Coordinate variables, Common features
 @section Hyperslabs 
 @cindex hyperslab
 @cindex dimension limits
@@ -1273,8 +1279,8 @@ The bounds of the hyperslab to be extracted are specified by the
 associated @var{min} and @var{max} values. 
 A half-open range is specified by omitting either the @var{min} or
 @var{max} parameter but including the separating comma. 
-The limit is then then maximum or minimum possible in the unspecified 
-direction. 
+The unspecified limit is interpreted as the maximum or minimum value in
+the unspecified direction.  
 A cross-section at a specific coordinate is extracted by specifying only
 the @var{min} limit and omitting a trailing comma. 
 Dimensions not mentioned are passed with no reduction in range.
@@ -1309,62 +1315,36 @@ Thus, hyperslabs on coordinates of type @code{NC_BYTE} and
 @code{NC_CHAR} are computed numerically rather than lexically, so the
 results are unpredictable. 
 
+@cindex wrapped coordinates
+The relative magnitude of @var{min} and @var{max} indicate to the
+operator whether to expect a @dfn{wrapped coordinate}
+(@pxref{Wrapped coordinates}), such as longitude.
+When @math{@var{min} > @var{max}} NCO expects the coordinate to be
+wrapped, and a warning message will be printed.
+When this occurs, NCO selects all values outside the domain
+[@math{@var{max} < @var{min}}], i.e., all the values exclusive of the
+values which would have been selected if @var{min} and @var{max} were
+swapped. 
+If this seems confusing, test your command on just the coordinate
+variables with @code{ncks}, and then examine the output (also with
+@code{ncks}) to ensure NCO selected the hyperslab you expected.
+
+Because of the way wrapped coordinates are interpreted, it is very
+important to make sure you always specify hyperslabs in the
+monotonically increasing sense, i.e., @math{@var{min} < @var{max}}
+(even if the underlying coordinate variable is monotonically
+decreasing). 
+The only exception to this is when you are indeed specifying a wrapped
+coordinate.  
+The distinction is crucial to understand because the points selected by,
+e.g., @code{-d longitude,50.,340.} are exactly the complement of the
+points selected by @code{-d longitude,340.,50.}.
+
 Not specifying this option is equivalent to specifying full ranges of
 all dimensions. 
 This option may be specified more than once.
 
-@node Stride, Wrapped coordinates, Hyperslabs, Common features
-@section Stride 
-@cindex stride
-@cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
-@cartouche
-@noindent
-Availability: @code{ncks}@*
-Key switches: @samp{-d}@*
-@end cartouche
-@code{ncks} offers support for specifying a @dfn{stride} for any
-hyperslab 
-@footnote{Actually, the @var{stride} argument is valid for all operators
-which accept the @samp{-d} hyperslab option.
-However, using @var{stride} with operators besides @code{ncks} is not 
-supported, and may never be.}.  
-The @var{stride} is the spacing between consecutive points in a
-hyperslab. 
-A @var{stride} of 1 means pick all the elements of the hyperslab, but a
-@var{stride} of 2 means skip every other element, etc.
-
-The @var{stride} is specified as the optional third argument to the
-@samp{-d} hyperslab specification:  
-@code{-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]}.
-Specify @var{stride} as an integer (i.e., no decimal point) following
-the third comma in the @samp{-d} argument.  
-There is no default value for @var{stride}. 
-Thus using @samp{-d time,,2} is valid but @samp{-d time,,2.0} and
-@samp{-d time,,} are not.
-
-For example, consider a file @file{8501_8912.nc} which contains 60
-consecutive months of data. 
-Say you wish to obtain just the March data from this file.
-This data is stored in records 2, 14, @dots{} 50 so the desired
-@var{stride} is 12.
-Without the @var{stride} option, the procedure is very awkward.
-One could use @code{ncks} five times and then use @code{ncrcat} to
-concatenate the resulting files together:
-@example
-foreach idx (02 14 26 38 50) 
-ncks -d time,$idx 8501_8912.nc foo.$idx
-end
-ncrcat foo.?? 8589_03.nc
-rm foo.??
-@end example
-With the @var{stride} option, @code{ncks} performs this hyperslab
-extraction in one operation:
-@example
-ncks -d time,2,,12 8501_8912.nc 8589_03.nc
-@end example
-@xref{ncks netCDF Kitchen Sink} for more information on @code{ncks}.
-
-@node Wrapped coordinates, Fortran indexing, Stride, Common features
+@node Wrapped coordinates, Stride, Hyperslabs, Common features
 @section Wrapped coordinates
 @cindex wrapped coordinates
 @cindex longitude
@@ -1376,7 +1356,7 @@ Key switches: @samp{-d}@*
 @end cartouche
 A @dfn{wrapped coordinate} is a coordinate whose values increase or
 decrease monotonically (nothing unusual so far), but which represents a
-dimension that ends where it began (i.e., wraps around on itself).
+dimension that ends where it begins (i.e., wraps around on itself).
 Longitude (i.e., degrees on a circle) is a familiar example of a wrapped
 coordinate.
 Longitude increases to the East of Greenwich, England, where it is
@@ -1428,7 +1408,58 @@ Should you need to hyperslab @code{lon} again, be sure to give
 dimensional indices as the hyperslab arguments, rather than coordinate
 values (@pxref{Hyperslabs}).
 
-@node Fortran indexing, Missing values, Wrapped coordinates, Common features
+@node Stride, Fortran indexing, Wrapped coordinates, Common features
+@section Stride 
+@cindex stride
+@cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
+@cartouche
+@noindent
+Availability: @code{ncks}@*
+Key switches: @samp{-d}@*
+@end cartouche
+@code{ncks} offers support for specifying a @dfn{stride} for any
+hyperslab 
+@footnote{Actually, the @var{stride} argument is valid for all operators
+which accept the @samp{-d} hyperslab option.
+However, using @var{stride} with operators besides @code{ncks} is not 
+supported, and may never be.}.  
+The @var{stride} is the spacing between consecutive points in a
+hyperslab. 
+A @var{stride} of 1 means pick all the elements of the hyperslab, but a
+@var{stride} of 2 means skip every other element, etc.
+
+The @var{stride} is specified as the optional third argument to the
+@samp{-d} hyperslab specification:  
+@code{-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]}.
+Specify @var{stride} as an integer (i.e., no decimal point) following
+the third comma in the @samp{-d} argument.  
+There is no default value for @var{stride}. 
+Thus using @samp{-d time,,2} is valid but @samp{-d time,,2.0} and
+@samp{-d time,,} are not.
+
+For example, consider a file @file{8501_8912.nc} which contains 60
+consecutive months of data. 
+Say you wish to obtain just the March data from this file.
+This data is stored in records 2, 14, @dots{} 50 so the desired
+@var{stride} is 12.
+Without the @var{stride} option, the procedure is very awkward.
+One could use @code{ncks} five times and then use @code{ncrcat} to
+concatenate the resulting files together:
+@example
+foreach idx (02 14 26 38 50) 
+ncks -d time,$idx 8501_8912.nc foo.$idx
+end
+ncrcat foo.?? 8589_03.nc
+rm foo.??
+@end example
+With the @var{stride} option, @code{ncks} performs this hyperslab
+extraction in one operation:
+@example
+ncks -d time,2,,12 8501_8912.nc 8589_03.nc
+@end example
+@xref{ncks netCDF Kitchen Sink} for more information on @code{ncks}.
+
+@node Fortran indexing, Missing values, Stride, Common features
 @section C & Fortran index conventions
 @cindex index conventions
 @cindex Fortran index convention
