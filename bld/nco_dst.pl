@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.87 2002-08-22 06:40:54 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.88 2002-08-22 20:16:54 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -66,9 +66,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2002-08-22 06:40:54 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.87 2002-08-22 06:40:54 zender Exp $';
-my $CVS_Revision='$Revision: 1.87 $';
+my $CVS_Date='$Date: 2002-08-22 20:16:54 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.88 2002-08-22 20:16:54 zender Exp $';
+my $CVS_Revision='$Revision: 1.88 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -86,6 +86,7 @@ my $mkdir_cmd='mkdir -p'; # Command that behaves like mkdir
 my $mdl_sng='nco'; # Base of module name
 my $rm_cmd='rm -f'; # Command that behaves like rm
 my $rcp_cmd='scp -p'; # Command that behaves like rcp
+my $rcp_cmd_no_prs_prm='scp'; # Command that behaves like rcp and does not try to preserve permissions
 my $rsh_cmd='ssh'; # Command that behaves like rsh
 my $usr_nm=$ENV{'USER'};
 my $vrs_tag='';
@@ -262,12 +263,15 @@ if($bld){
     } # endif 
     
 # Update SourceForge mirror
+# Use rcp_cmd_no_prs_prm because scp appears to quit without notice if too many warnings errors occur copying first files
+# Usually scp_cmd includes -p switch to preserve permissions and times, but sourceforge server does not allow this
+# Hence it generates warnings when used with -p, and is not properly updated
     if($True){
-	cmd_prc("$rcp_cmd $dst_fl $ftp_mch_mrr:$ftp_drc_mrr"); # Copy local tarfile to FTP server
+	cmd_prc("$rcp_cmd_no_prs_prm $dst_fl $ftp_mch_mrr:$ftp_drc_mrr"); # Copy local tarfile to FTP server
 	cmd_prc("$rsh_cmd $ftp_mch_mrr $rm_cmd $ftp_drc_mrr/nco.tar.gz");
 	cmd_prc("$rsh_cmd $ftp_mch_mrr \"cd $ftp_drc_mrr; ln -s $dst_fl nco.tar.gz\"");
-	cmd_prc("$rcp_cmd $dst_pth_bld/doc/index.shtml $dst_pth_bld/doc/nco_news.shtml $dst_pth_bld/doc/README dst_pth_bld/doc/TODO $dst_pth_bld/doc/VERSION $dst_pth_bld/doc/ChangeLog $www_mch_mrr:$www_drc_mrr");
-	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco.html $dst_pth_bld/doc/nco.info* $dst_pth_bld/doc/nco.dvi $dst_pth_bld/doc/nco.pdf $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.texi $www_mch_mrr:$www_drc_mrr");
+	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_bld/doc/index.shtml $dst_pth_bld/doc/nco_news.shtml $dst_pth_bld/doc/README $dst_pth_bld/doc/TODO $dst_pth_bld/doc/VERSION $dst_pth_bld/doc/ChangeLog $www_mch_mrr:$www_drc_mrr");
+	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_bld/doc/nco.html $dst_pth_bld/doc/nco.info* $dst_pth_bld/doc/nco.dvi $dst_pth_bld/doc/nco.pdf $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.texi $www_mch_mrr:$www_drc_mrr");
     } # endif SourceForge
 
 # Housekeeping

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.9 2002-08-22 15:29:28 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.10 2002-08-22 20:16:51 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -21,7 +21,10 @@ Footnotes to summary table:
 02. Fails to find getopt.h, gamma()
 -----------------------------------------------------------------------
 
-Recommended/current ./configure invocation, alphabetized by pvmgetarch:
+Default installation procedure for system-wide installation,
+./configure;make;sudo make install
+
+Recommended/current custom ./configure invocation, alphabetized by pvmgetarch:
 
 ************************************************************************
 Start AIX
@@ -140,5 +143,4 @@ New build example:
 ************************************************************************
 End SUNMP
 ************************************************************************
-
 
