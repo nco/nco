@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.5 1998-10-31 21:54:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.6 1998-11-24 00:30:55 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -48,12 +48,14 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */ 
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
+  bool MUST_CONFORM=False;
   bool NCAR_CSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */ 
   bool NORMALIZE_BY_TALLY=True;
   bool NORMALIZE_BY_WEIGHT=True;
+  bool WGT_MSK_CRD_VAR=False; /* Option I */ 
 
   char **dim_avg_lst_in; /* Option a */ 
   char **var_lst_in;
@@ -70,8 +72,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncwa.c,v 1.5 1998-10-31 21:54:32 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.5 $";
+  char rcs_Id[]="$Id: ncwa.c,v 1.6 1998-11-24 00:30:55 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.6 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -147,7 +149,7 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="Aa:CcD:d:Fhl:M:m:nNo:Op:rRv:xWw:";
+  opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:xWw:";
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
@@ -178,6 +180,9 @@ main(int argc,char **argv)
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
+      break;
+    case 'I':
+      WGT_MSK_CRD_VAR=!WGT_MSK_CRD_VAR;
       break;
     case 'l':
       /* Get the local path prefix for storing files retrieved from the remote file system */
@@ -478,8 +483,7 @@ main(int argc,char **argv)
       if(dbg_lvl > 0) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
 
-      /* begin allocation section that was formerly outside file loop */ 
-      /* Allocate and, if necesssary, initialize the accumulation space for all processed variables */ 
+      /* Allocate and, if necesssary, initialize accumulation space for all processed variables */ 
       var_prc_out[idx]->sz=var_prc[idx]->sz;
       if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)malloc(var_prc_out[idx]->sz*sizeof(long))) == NULL){
 	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
@@ -491,13 +495,12 @@ main(int argc,char **argv)
 	exit(EXIT_FAILURE); 
       } /* end if */ 
       (void)var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
-      /* end allocation section that was formerly outside file loop */ 
       
       (void)var_refresh(in_id,var_prc[idx]);
       /* Retrieve the variable from disk into memory */ 
       (void)var_get(in_id,var_prc[idx]);
-      if(msk_nm != NULL && !var_prc[idx]->is_crd_var && (!NCAR_CSM_FORMAT || strcmp(var_prc[idx]->nm,"gw")) ){
-	msk_out=var_conform_dim(var_prc[idx],msk,msk_out);
+      if(msk_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR) && (!NCAR_CSM_FORMAT || strcmp(var_prc[idx]->nm,"gw")) ){
+	msk_out=var_conform_dim(var_prc[idx],msk,msk_out,MUST_CONFORM);
 	msk_out=var_conform_type(var_prc[idx]->type,msk_out);
 
 	/* mss_val for var_prc has been overwritten in var_refresh() */ 
@@ -506,24 +509,24 @@ main(int argc,char **argv)
 	  var_prc[idx]->mss_val=mss_val_mk(var_prc[idx]->type);
 	} /* end if */
 
-	/* Mask the variable by changing data to the missing value wherever the mask is transparent */ 
+	/* Mask variable by changing data to missing value wherever mask is transparent */ 
 	(void)var_mask(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,msk_val,op_type,msk_out->val,var_prc[idx]->val);
       } /* end if */
-      if(wgt_nm != NULL && !var_prc[idx]->is_crd_var && (!NCAR_CSM_FORMAT || strcmp(var_prc[idx]->nm,"gw")) ){
-	wgt_out=var_conform_dim(var_prc[idx],wgt,wgt_out);
+      if(wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR) && (!NCAR_CSM_FORMAT || strcmp(var_prc[idx]->nm,"gw")) ){
+	wgt_out=var_conform_dim(var_prc[idx],wgt,wgt_out,MUST_CONFORM);
 	wgt_out=var_conform_type(var_prc[idx]->type,wgt_out);
-	/* Weight the variable by taking the product of the weight and the variable */ 
+	/* Weight variable by taking product of weight and variable */ 
 	(void)var_multiply(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,wgt_out->val,var_prc[idx]->val);
       } /* end if */
       /* Copy (masked) (weighted) values from var_prc to var_prc_out */ 
       (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type));
-      /* Average the variable over the specified dimensions (tally array is set here) */
+      /* Average variable over specified dimensions (tally array is set here) */
       var_prc_out[idx]=var_avg(var_prc_out[idx],dim_avg,nbr_dim_avg);
       if(NORMALIZE_BY_TALLY) (void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
-      /* Free the tallying buffer */
+      /* Free tallying buffer */
       (void)free(var_prc_out[idx]->tally); var_prc_out[idx]->tally=NULL;
-      /* Normalize the averages by the average of the weights */ 
-      if(wgt_nm != NULL && NORMALIZE_BY_WEIGHT && !var_prc[idx]->is_crd_var && (!NCAR_CSM_FORMAT || strcmp(var_prc[idx]->nm,"gw")) ){
+      /* Normalize averages by average of weights */ 
+      if(wgt_nm != NULL && NORMALIZE_BY_WEIGHT && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR) && (!NCAR_CSM_FORMAT || strcmp(var_prc[idx]->nm,"gw")) ){
 	wgt_out=var_avg(wgt_out,dim_avg,nbr_dim_avg);
 	(void)var_normalize(wgt_out->type,wgt_out->sz,wgt_out->has_mss_val,wgt_out->mss_val,wgt_out->tally,wgt_out->val);
 	(void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_out->val,var_prc_out[idx]->val);
@@ -531,20 +534,18 @@ main(int argc,char **argv)
       /* Free the current input buffer */
       (void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
 
-      /* begin output block that was formerly outside file loop */ 
-      /* Copy the averages to the output file and free the averaging buffers */ 
+      /* Copy average to output file and free averaging buffer */ 
       if(var_prc_out[idx]->nbr_dim == 0){
 	(void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp);
-      }else{ /* end if variable is a scalar */ 
+      }else{ /* end if variable is scalar */ 
 	(void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp);
-      } /* end if variable is an array */ 
+      } /* end if variable is array */ 
       (void)free(var_prc_out[idx]->val.vp);
       var_prc_out[idx]->val.vp=NULL;
-      /* end output block that was formerly outside file loop */ 
       
     } /* end loop over idx */
     
-    /* Free the weights and masks */ 
+    /* Free weights and masks */ 
     if(wgt != NULL) wgt=var_free(wgt);
     if(wgt_out != NULL) wgt_out=var_free(wgt_out);
     if(wgt_avg != NULL) wgt_avg=var_free(wgt_avg);

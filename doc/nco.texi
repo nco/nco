@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.4 1998-11-02 05:28:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.5 1998-11-24 00:30:52 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -13,7 +13,7 @@ C-c C-u C-a	texinfo-all-menus-update
 C-c C-u C-e	texinfo-every-node-update
 
 Usage: 
-texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o /data2/zender/ps/nco.ps nco.dvi; /bin/cp -f nco.html /src/web/web-data/cms/nco
+texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o /data/zender/ps/nco.ps nco.dvi; /bin/cp -f nco.html /src/web/web-data/cms/nco
 texi2html -monolithic -verbose nco.texi; /bin/cp -f nco.html /src/web/web-data/cms/nco
 texi2dvi nco.texi 
 makeinfo nco.texi 
@@ -21,8 +21,6 @@ texi2html -monolithic -verbose nco.texi
 dvips -o nco.ps nco.dvi 
 
 Example TeXinfo files: 
-/data2/zender/netcdf-2.4.2/src/doc/guide.tex
-/usr/local/src/netcdf-2.4.3/src/doc/guide.tex
 
 @end ignore
 
@@ -179,70 +177,6 @@ by the Free Software Foundation.
 
 Introduction
 
-* Availability::                
-* Compatability::               
-* Libraries::                   
-* netCDF 2.x vs. 3.x::          
-* Reporting bugs::              
-
-Operating systems compatible with NCO
-
-* Windows NT::                  
-
-Operator Strategies
-
-* Philosophy::                  
-* Climate model paradigm::      
-* Output files::                
-* Appending::                   
-* Averaging vs. Concatenating::  
-* Large numbers of input files::  
-* Large files and Memory::      
-* Memory usage::                
-* Operator limitations::        
-
-Differences between averagers and concatenators
-
-* Concatenation::               
-* Averaging::                   
-
-Features common to most operators
-
-* Specifying input files::      
-* Remote storage::              
-* File retention::              
-* Variable subsetting::         
-* Coordinate variables::        
-* Hyperslabs::                  
-* Wrapped coordinates::         
-* Stride::                      
-* Fortran indexing::            
-* Missing values::              
-* Suppressing interactive prompts::  
-* Operator version::            
-* History attribute::           
-* NCAR CSM Conventions::        
-* ARM Conventions::             
-
-Reference manual for all operators
-
-* ncatted netCDF Attribute Editor::  
-* ncdiff netCDF Differencer::   
-* ncea netCDF Ensemble Averager::  
-* ncecat netCDF Ensemble Concatenator::  
-* ncflint netCDF File Interpolator::  
-* ncks netCDF Kitchen Sink::    
-* ncra netCDF Record Averager::  
-* ncrcat netCDF Record Concatenator::  
-* ncrename netCDF Renamer::     
-* ncwa netCDF Weighted Averager  ::  
-
-@code{ncwa} netCDF Weighted Averager
-
-* Masking condition::           
-* Normalization::               
-
-@end detailmenu
 @end menu
 
 @node Foreword, Summary, Top, Top
@@ -3009,7 +2943,7 @@ ncrename -a long_name,title -a Zaire,Congo in.nc out.nc
 SYNTAX
 @example
 ncwa [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
+[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-I] [-l @var{path}] 
 [-M @var{val}] [-m @var{var}] [-N] [-n] [-O] [-o @var{condition}] 
 [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}]
 [-x] @var{input-file} @var{output-file} 
@@ -3028,10 +2962,35 @@ the variables being averaged.
 @cindex rank
 The rank of variables is reduced by the number of dimensions which they
 are averaged over.  
-The averaging dimensions are retained as simple scalars in the output
-file. 
-This allows the user to infer which dimensions may have been averaged
-into the existing data.
+Thus arrays which are one dimensional in the @var{input-file} and are
+averaged by @code{ncwa} appear in the @var{output-file} as scalars.
+This allows the user to infer which dimensions may have been averaged.
+Non-coordinate variables are always masked and weighted if specified.
+
+Coordinate variables, however, may be treated specially.
+By default, an averaged coordinate variable, e.g., @code{latitude},
+appears in @var{output-file} as a scalar which is the simple arithmetic
+average of the input array.  
+In other words, by default @code{ncwa} does not weight or mask
+coordinate variables.  
+This design decision was intended to be helpful but for many
+applications it may be preferable to weight and/or mask coordinate
+variables just like all other variables.   
+Consider the following arguments to @code{ncwa}:  @code{-a latitude -w
+lat_wgt -d latitude,0.,90.} where @code{lat_wgt} is a weight in the
+@code{latitude} dimension.
+Since, by default @code{ncwa} does not weight coordinate variables, the
+value of @code{latitude} in the @var{output-file} will be 45.---which is
+a somewhat appealing result.
+@cindex coordinate variable
+@cindex @code{-I}
+Option @samp{-I} overrides this default behavior and causes @code{ncwa}
+to weight and mask coordinate variables.
+In the above case, this causes the value of @code{latitude} in the
+@var{output-file} would depend on the weights in @var{lat_wgt}.
+If you strongly prefer the former (default) or latter (@samp{-I})
+behavior, send me a note because this default is subject to change.
+
 @ifhtml
 Note for HTML user's: The documentation for <CODE>ncwa</CODE> relies
 heavily on mathematical expressions which cannot be easily represented

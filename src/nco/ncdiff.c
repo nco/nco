@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.3 1998-08-26 22:33:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.4 1998-11-24 00:30:54 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -57,6 +57,7 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */ 
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
+  bool MUST_CONFORM=True;
   bool NCAR_CSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -76,8 +77,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncdiff.c,v 1.3 1998-08-26 22:33:14 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.3 $";
+  char rcs_Id[]="$Id: ncdiff.c,v 1.4 1998-11-24 00:30:54 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.4 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -391,7 +392,7 @@ main(int argc,char **argv)
       } /* end loop over idx_dim */ 
       
       /* Pass in a dummy pointer so we do not lose track of the original */ 
-      var_tmp=var_conform_dim(var_prc[idx],var_prc_out[idx],var_tmp);
+      var_tmp=var_conform_dim(var_prc[idx],var_prc_out[idx],var_tmp,MUST_CONFORM);
       var_prc_out[idx]=var_free(var_prc_out[idx]);
       var_prc_out[idx]=var_tmp;
     } /* end else */

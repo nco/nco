@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.2 1998-08-19 04:27:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.3 1998-11-24 00:30:54 zender Exp $ */
 
 /* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -38,7 +38,7 @@ ncap_var_add(var_sct *var_1,var_sct *var_2)
    var_sct *var_sum;
 
    var_sum=var_dup(var_2);
-   var_sum=var_conform_dim(var_1,var_2,var_sum);
+   var_sum=var_conform_dim(var_1,var_2,var_sum,True);
    var_sum=var_conform_type(var_1->type,var_sum);
    (void)var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_sum->val);
    

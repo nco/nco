@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.7 1998-11-02 05:28:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.8 1998-11-24 00:30:53 zender Exp $ */
 
 /* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -1900,19 +1900,23 @@ var_get(int nc_id,var_sct *var)
 } /* end var_get() */ 
 
 var_sct *
-var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr)
+var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM)
 /*  
    var_sct *var: input pointer to variable structure to serve as template
    var_sct *wgt: input pointer to variable structure to make conform to var
    var_sct *wgt_crr: input/output pointer to existing conforming variable structure (if any) (may be destroyed)
+   bool MUST_CONFORM; input Whether wgt and var must conform
    var_sct *var_conform_dim(): output pointer to conforming variable structure
 */
 {
   /* Routine to return a copy of the second variable which has been stretched and
-     typecast to match the dimensions of the first variable. wgt's dimensions 
-     must be a valid subset of var's dimensions to accomplish this. Dimensions
-     in var which are not in wgt will be present in the wgt_out, with the values
-     replicated from existing dimensions in wgt. */
+     to match the dimensions of the first variable. 
+     Dimensions in var which are not in wgt will be present in the wgt_out, with the values
+     replicated from existing dimensions in wgt.
+     By default, wgt's dimensions must be a subset of var's dimensions (MUST_CONFORM=true).
+     If it is permissible for wgt not to conform to var then set (MUST_CONFORM=false).
+     In this case when wgt and var share no dimensions (wgt and var dimensions are mutually exclusive)
+     then var_conform_dim returns a copy of var with all values set to 1.0. */
 
   /* There are many inelegant ways to accomplish this (without using C++): */   
 
@@ -1920,11 +1924,11 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr)
      weight array until it's the same size as the variable array, and then multiply the two
      together element-by-element in a highly vectorized loop, preferably in fortran. 
      To enhance speed, the (enlarged) weight-values array can be made static, and only destroyed 
-     (and then recreated) when the dimensions of one of the incoming variables change.*/ 
+     (and then recreated) when the dimensions of one of the incoming variables change. */ 
 
   /* Another method for the general case, though an expensive one, is to use C to 
      figure out the multidimensional indices into the one dimensional hyperslab, 
-     a la ncks. Knowing these indices, i can loop over the one-dimensional array
+     a la ncks. Knowing these indices, one can loop over the one-dimensional array
      element by element, choosing the appropriate index into the weight array from 
      those same multidimensional indices. This method can also create a static weight-value
      array that is only destroyed when an incoming variable changes dimensions from the
@@ -1949,10 +1953,12 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr)
      (otherwise which hyperslab of the weight to use would be ill-defined). However, the
      weight may (and often will) have fewer dimensions than the variable. */
 
-  bool CONFORMAL=False;
+  bool CONFORMABLE=False; /* Whether wgt can be made to conform to var */ 
+  bool CONFORMAL=False; /* Whether wgt or wgt_crr already conforms to var */ 
 
   int idx;
   int idx_dim;
+  int wgt_var_dim_shr_nbr=0; /* Number of dimensions shared by wgt and var */ 
 
   var_sct *wgt_out=NULL;
 
@@ -1979,22 +1985,49 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr)
       /* First make sure all dimensions in wgt appear in var */ 
       for(idx=0;idx<wgt->nbr_dim;idx++){
         for(idx_dim=0;idx_dim<var->nbr_dim;idx_dim++){
-          if(wgt->dim_id[idx] == var->dim_id[idx_dim]) break;
-        } /* end loop over dimensions */
-        if(idx_dim == var->nbr_dim){
-	  (void)fprintf(stdout,"%s: ERROR the dimensions of %s are not a subset of those in %s\n",prg_nm_get(),wgt->nm,var->nm);
+          if(wgt->dim_id[idx] == var->dim_id[idx_dim]){
+	    wgt_var_dim_shr_nbr++; /* wgt and var share this dimension */ 
+	    break;
+	  } /* endif */ 
+        } /* end loop over var dimensions */
+      } /* end loop over wgt dimensions */
+      /* Decide whether wgt and var dimensions conform, are mutually exclusive, or are partially exclusive (an error) */  
+      if(wgt_var_dim_shr_nbr == wgt->nbr_dim){
+	/* wgt and var conform */ 
+	CONFORMABLE=True;
+      }else if(wgt_var_dim_shr_nbr == 0){
+	/* Dimensions in wgt and var are mutually exclusive */ 
+	CONFORMABLE=False;
+	if(MUST_CONFORM){
+	  (void)fprintf(stdout,"%s: ERROR dimensions of %s are not a subset of those in %s\n",prg_nm_get(),wgt->nm,var->nm);
 	  exit(EXIT_FAILURE);
-        } /* end if */
-      } /* end loop over dimensions */
-      if(var->nbr_dim == wgt->nbr_dim){
-	for(idx=0;idx<var->nbr_dim;idx++){
-	  if(wgt->dim_id[idx] != var->dim_id[idx]) break;
-	} /* end loop over dimensions */
-      }else idx=-1; /* end if */
+	}else{
+	  wgt_out=var_dup(var);
+	  (void)vec_set(wgt_out->type,wgt_out->sz,wgt_out->val,1.0);
+	} /* endif */ 
+      }else if(wgt_var_dim_shr_nbr > 0 && wgt_var_dim_shr_nbr < wgt->nbr_dim){
+	/* Some, but not all, of wgt dimensions are in var */ 
+	(void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to %s but %d do not\n",prg_nm_get(),wgt_var_dim_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dim_shr_nbr);
+	exit(EXIT_FAILURE);
+      } /* end if */
+      if(CONFORMABLE){
+	if(var->nbr_dim == wgt->nbr_dim){
+	  /* var and wgt conform and are same rank, but do all dim IDs match sequentially? */
+	  for(idx=0;idx<var->nbr_dim;idx++){
+	    if(wgt->dim_id[idx] != var->dim_id[idx]) break;
+	  } /* end loop over dimensions */
+	  /* If so, take shortcut and copy wgt to wgt_out */ 
+	  if(idx == var->nbr_dim) CONFORMAL=True;
+	}else{
+	  /* var and wgt conform but are not same rank, set flag to proceed to generic conform routine */
+	  CONFORMAL=False;
+	} /* end else */ 
+      } /* endif CONFORMABLE */ 
     }else{
-      if(wgt->nbr_dim == 0) idx=0; else idx=1;
+      /* var is scalar, if wgt is too then set flag to copy wgt to wgt_out else proceed to generic conform routine */ 
+      if(wgt->nbr_dim == 0) CONFORMAL=True; else CONFORMAL=False;
     } /* end else */
-    if(idx == var->nbr_dim){
+    if(CONFORMABLE && CONFORMAL){
       wgt_out=var_dup(wgt);
       (void)var_xrf(wgt,wgt_out);
     } /* end if */ 
@@ -2117,7 +2150,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr)
   /* The current weight (wgt_out) now conforms to the current variable */ 
   return wgt_out;
   
-} /* end var_wgt */ 
+} /* end var_conform_dim */ 
 
 void
 var_dim_xrf(var_sct *var)
@@ -3453,10 +3486,10 @@ var_zero(nc_type type,long sz,ptr_unn op1)
 
   switch(type){
   case NC_FLOAT:
-    for(idx=0;idx<sz;idx++) op1.fp[idx]=0.;
+    for(idx=0;idx<sz;idx++) op1.fp[idx]=0.0;
     break;
   case NC_DOUBLE:
-    for(idx=0;idx<sz;idx++) op1.dp[idx]=0.;
+    for(idx=0;idx<sz;idx++) op1.dp[idx]=0.0;
     break;
   case NC_LONG:
     for(idx=0;idx<sz;idx++) op1.lp[idx]=0L;
@@ -3476,6 +3509,48 @@ var_zero(nc_type type,long sz,ptr_unn op1)
      because we have only operated on local copies of them. */ 
 
 } /* end var_zero() */ 
+
+void
+vec_set(nc_type type,long sz,ptr_unn op1,double op2)
+/* 
+  nc_type type: input netCDF type of the operand
+  long sz: input size (in elements) of the operand
+  ptr_unn op1: input values of first operand
+  double op2: input value to fill vector with
+ */ 
+{
+  /* Routine to fill every value of the first operand with the value of the second operand */
+
+  long idx;
+
+  /* Typecast the pointer to the values before access */ 
+  (void)cast_void_nctype(type,&op1);
+
+  switch(type){
+  case NC_FLOAT:
+    for(idx=0;idx<sz;idx++) op1.fp[idx]=op2;
+    break;
+  case NC_DOUBLE:
+    for(idx=0;idx<sz;idx++) op1.dp[idx]=op2;
+    break;
+  case NC_LONG:
+    for(idx=0;idx<sz;idx++) op1.lp[idx]=op2;
+    break;
+  case NC_SHORT:
+    for(idx=0;idx<sz;idx++) op1.sp[idx]=op2;
+    break;
+  case NC_CHAR:
+    /* Do nothing */ 
+    break;
+  case NC_BYTE:
+    /* Do nothing */ 
+    break;
+  } /* end switch */ 
+
+  /* NB: it is not neccessary to un-typecast the pointers to the values after access 
+     because we have only operated on local copies of them. */ 
+
+} /* end vec_set() */ 
 
 void
 zero_long(long sz,long *op1)
@@ -4239,7 +4314,7 @@ usg_prn(void)
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-i var,val] [-l path] [-n ...] [-O] [-p path] [-R] [-r] [-v ...] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc out.nc\n");
     break;
   case ncwa:
-    opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-m mask] [-M val] [-N] [-n] [-O] [-o op_type] [-p path] [-R] [-r] [-v ...] [-W] [-w wgt] [-x] in.nc out.nc\n");
+    opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M val] [-N] [-n] [-O] [-o op_type] [-p path] [-R] [-r] [-v ...] [-W] [-w wgt] [-x] in.nc out.nc\n");
     break;
   case ncap:
     opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-m mask] [-M val] [-o op_type] [-O] [-p path] [-R] [-r] [-v ...] [-w wgt] [-x] in.nc out.nc\n");
@@ -4281,6 +4356,7 @@ usg_prn(void)
     if(prg == ncatted) (void)fprintf(stdout,"-h\t\tDo not append to \"history\" global attribute\n");
   } /* end if */
   if(strstr(opt_sng,"-i")) (void)fprintf(stdout,"-i var,val\tInterpolant and value\n");
+  if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I \tWeight and mask coordinate variables\n");
   if(strstr(opt_sng,"-l")) (void)fprintf(stdout,"-l path\t\tLocal storage path for remotely-retrieved files\n");
   if(strstr(opt_sng,"-M")){
     if(prg == ncwa) (void)fprintf(stdout,"-M val\tMasking value (default is 1.)\n");

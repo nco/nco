@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.3 1998-08-19 04:27:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.4 1998-11-24 00:30:53 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -314,7 +314,7 @@ extern ptr_unn mss_val_mk(nc_type);
 extern unsigned short dbg_lvl_get(void);
 extern var_sct *scl_dbl_mk_var(double);
 extern var_sct *var_avg(var_sct *,dim_sct **,int);
-extern var_sct *var_conform_dim(var_sct *,var_sct *,var_sct *);
+extern var_sct *var_conform_dim(var_sct *,var_sct *,var_sct *,bool);
 extern var_sct *var_conform_type(nc_type,var_sct *);
 extern var_sct *var_dup(var_sct *);
 extern var_sct *var_fll(int,int,char *,dim_sct **,int);
@@ -369,6 +369,7 @@ extern void var_subtract(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
 extern void var_val_cpy(int,int,var_sct **,int);
 extern void var_xrf(var_sct *,var_sct *);
 extern void var_zero(nc_type,long,ptr_unn);
+extern void vec_set(nc_type,long,ptr_unn,double);
 extern void zero_long(long,long *op1);
 
 #endif /* NC_H */ 

@@ -1,3 +1,9 @@
+Mon Nov 23 17:29:02 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
+
+	* Added -I switch to ncwa to enable weighting and masking of
+	coordinates. Rewrote var_conform_dim() to allow mutually exclusive
+	dimensions in ncwa.
+
 1998-11-01  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Added wrapped coordinate caveats to hyperslabe section of
