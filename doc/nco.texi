@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.48 2000-07-27 12:58:23 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.49 2000-07-27 23:27:07 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -222,7 +222,7 @@ Features common to most operators
 * History attribute::           
 * NCAR CSM Conventions::        
 * ARM Conventions::             
-* Averaging Types::
+* Averaging Types::             
 
 Reference manual for all operators
 
@@ -1065,7 +1065,7 @@ feature is automatic and cannot be controlled by the user.
 * History attribute::           
 * NCAR CSM Conventions::        
 * ARM Conventions::             
-* Averaging Types::
+* Averaging Types::             
 @end menu
 
 @node Specifying input files, Remote storage, Common features, Common features
@@ -1901,7 +1901,7 @@ file 99% of the time.
 If you decide you would like any of the above CSM fields processed, you
 must use @code{ncrename} to rename them first.
 
-@node ARM Conventions,Averaging Types, NCAR CSM Conventions, Common features
+@node ARM Conventions, Averaging Types, NCAR CSM Conventions, Common features
 @section ARM Conventions
 @cindex ARM conventions
 @cindex @code{time_offset}
@@ -1945,85 +1945,124 @@ variable, it will also contain the @code{time} coordinate.
 A short message is added to the @code{history} global attribute whenever
 these ARM-specific procedures are executed.
 
-
-@node Averaging Types, ,ARM Conventions, Common features  
+@node Averaging Types,  , ARM Conventions, Common features
 @section Averaging Types
-@cindex Averaging Types
-@cindex @code{time_offset}
-@cindex @code{base_time}
-@cindex @code{time}
+@cindex averaging types
+@cindex @code{avg}
+@cindex @code{min}
+@cindex @code{max}
+@cindex @code{rmssdn}
+@cindex @code{rms}
+@cindex @code{ttl}
+@cindex average
+@cindex mean
+@cindex total
+@cindex minimum
+@cindex maximum
+@cindex root-mean-square
+@cindex standard deviation
 @cartouche
 @noindent
 Availability: @code{ncra},@code{ncea},@code{ncwa} @*
 Key switches: @samp{-y}@*
 @end cartouche
 @noindent
-In addition to the standard averaging, the following functions are
-avaiable:
-
+In addition to standard averaging, the following functions are avaiable:
 @example
--y min       Find minimium field value.
--y max       Find maximium field value.
--y ttl       Sum of the field values
--y avgsqr    Square of the average.
--y avgsumsqr Average of the sum of the Squares
--y rms       The root-mean-square value.
--y rmssdn    Returns the root-mean square where square sum has been averaged
-             over (N-1). 
--y sqrt      Returns the square root of the average.
+-y avg       Mean value (default)
+-y avgsqr    Square of the mean
+-y avgsumsqr Mean of sum of squares
+-y max       Maximium value
+-y min       Minimium value
+-y rms       Root-mean-square value
+-y rmssdn    Root-mean square where normalized by N-1 instead of by N 
+-y sqrt      Square root of the mean
+-y ttl       Sum of values
 @end example
 @noindent
 If a function is not specified then ncra, ncea and ncwa all default to the standard 
-average. Please note that with ncwa the weighted averages option ( -w) should not be
-used at the same time as this option.
-
-
+average. 
+Please note that with @code{ncwa} the weighted averages option @samp{-w}
+should not be used at the same time as this option.
 @noindent
 EXAMPLES
 
-Given the file t1.nc
-
+@noindent
+Find the minimium value of @code{two_dim_var} over all dimensions.
 @example
-netcdf  t1.nc @{
-dimensions:
-       time = 10 ;
-       lat = 3 ;
-       lon = 4 ;
-variables:
-        float time(time) ;
-        float lat(lat)   ;
-        float lon(lon)   ;         
-        float two_dmn_var(time,lon) ;
-        float three_dmn_var(time,lat,lon) ;
-@}
+ncwa -y min -v two_dmn_var in.nc foo.nc 
+@end example
+@noindent
+Find the maximum value of @code{lon} at each time interval.
+@example
+ncwa -y max -v two_dmn_var -a lon in.nc foo.nc
+@end example
+@noindent
+Find the root-mean-square value of @code{three_dmn_var} over time.
+@example
+ncra -y rms -v three_dmn_var in.nc foo.nc
 @end example
 
 @noindent
-Find the minimium value of two_dim_var over all dimensions.
-@example
-ncwa -y min -v two_dmn_var t1.nc foo.nc 
-@end example
-
-@noindent
-Find the max value of lon at each time interval.
-@example
-ncwa -y max -v two_dmn_var -a lon t1.nc foo.nc
-@end example
-
-@noindent
-Find the rms value of three_dmn_var over time.
-@example
-ncra -y rms -v three_dmn_var t1.nc foo.nc
-@end example
-
-@noindent
-Can also use these averaging types across files. If the variable 
-float temperature(lat,lon) is in the three files jan.nc feb.nc march.nc.
-We can now find the maximium temperature at each spot over the three months.
-
+These operations work as expected in multi-file operators.
+Consider the variable @code{temperature} in the three files 
+@file{jan.nc}, @file{feb.nc}, @file{march.nc}. 
+We can now find the three month maximium temperature at every point.
 @example
 ncea -y max -v temperature jan.nc feb.nc march.nc out.nc
 @end example
+
+@noindent
+It is possible to use a combination of these operations to compute
+the standard deviation of a field stored in a single file or across
+multiple files.
+Suppose the variable @code{prs_sfc(time,lat,lon)} 
+contains the time series of the two dimensional surface pressure field 
+which is stored in multiple timesteps per file across multiple files.  
+The procedure to compute the temporal standard deviation of the surface
+pressure at all points in a single file @file{in.nc} involves three
+steps. 
+@example
+ncwa -O -v prs_sfc -a time in.nc out.nc
+ncdiff -O -v prs_sfc in.nc out.nc out.nc
+ncra -O -y rmssdn out.nc out.nc
+@end example
+First the output file @file{out.nc} is contructed containing the
+temporal mean of @code{prs_sfc}.
+Next @file{out.nc} is overwritten with the deviation from the mean.
+Finally @file{out.nc} is overwritten with the root-mean-square of
+itself. 
+Note the use of @samp{-y rmssdn} (rather than @samp{-y rms}) in the
+final step. 
+This ensures the standard deviation is correctly normalized by one fewer
+than the number of time samples.
+
+The procedure to compute the spatial standard deviation of a field
+in a single file @file{in.nc} involves three steps.
+@example
+ncwa -O -v prs_sfc -a lat,lon -w gw in.nc out.nc
+ncdiff -O -v prs_sfc in.nc out.nc out.nc
+ncwa -O -y rmssdn -v prs_sfc -a lat,lon -w gw out.nc out.nc
+@end example
+First the appropriately weighted (with @samp{-w}) spatial mean values
+are written to the output file. 
+This output file is then overwritten with the gridpoint deviations from 
+the spatial mean.
+Finally the appropriately weighted (with @samp{-w}) root-mean-square of
+the spatial deviations is taken. 
+
+The procedure to compute the standard deviation of a time-series across
+multiple files involves one extra step since all the input must first be
+collected into one file. 
+@example
+ncrcat -O -v tpt in.nc in.nc foo1.nc
+ncwa -O -a time foo1.nc foo2.nc
+ncdiff -O -v tpt foo1.nc foo2.nc foo2.nc
+ncra -O -y rmssdn foo2.nc out.nc
+@end example
+The first step assembles all the data into a single file.
+This may require a lot of temporary disk space, but is more or less
+required by the @code{ncdiff} operation in the fourth step.
 
 @node Operators, Contributing, Common features, Top
 @chapter Reference manual for all operators
@@ -3866,7 +3905,7 @@ Min, max, and total operations
 Memory management
 @item Juliana Rew
 Compatibility with large PIDs
-@item Keith Oleson
+@item Keith Lindsay
 Excellent bug reports
 @end table
 

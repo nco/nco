@@ -1,3 +1,8 @@
+2000-07-28  Charlie Zender  <zender@uci.edu>
+
+	* Applied final min/max/ttl patch so min/max/ttl capabilities
+	should now work as expected on ncwa,ncea,ncra
+
 2000-07-16  Charlie Zender  <zender@uci.edu>
 
 	* Added ncwa min/max/ttl patch

@@ -1,6 +1,11 @@
 NCO NEWS -- history of user-visible changes. 
 --------
 
+* Changes in NCO version 1.2:
+** DODS support
+** Support for new operations: min,max,ttl,rms,rmssdn...
+^L
+
 * Changes in NCO version 1.1:
 ^L
 ** New operator ncatted--netCDF Attribute Editor

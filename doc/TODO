@@ -1,15 +1,13 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.62 2000-07-13 18:33:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.63 2000-07-27 23:27:07 zender Exp $ 
 
 *************
 NCO Wish list
 *************
-06. Add error checking to catch file1=(lon,lat) vs. file2=(lat,lon) errors
 28. Use var.nc_id as file ID from now on and rewrite old routines to do so
 32. Implement scale_factor and add_offset
 41. Use GNU getopt_long()
 50. Allow user-specified scalar weights to ncwa
 51. Make getopt() a shared subroutine
-52. Setup ncra,ncea,ncwa to do min,max,ttl,sd,sdn as well as averages
 53. Add -t wall clock timer option? (then again, users can always use, e.g., timex())
 55. var_conform_dim() should be able to expand a (x,64,128) array into an (nx,64,128) array (maybe)
 58. Add -o fl_out switch to supercede positional argument (GNU style)
@@ -18,12 +16,11 @@ NCO Wish list
 66. Make history attribute get appended, rather than overwritten, when in append mode
 69. ncks option for file/field summary: var name list,var min,max,avg,mss_val,# mss_val,
 70. ncxx with no options should do a usg_prn() without an error msg (like ncwa does)
-73. ia.sh contains example of numerically unstable ncwa operations that show need for IEEE trapping/warning
 75. Add warning to ncwa triggered by averaging over lat without weighting by gw with NCAR_CSM_FORMAT
 79. Allow ncrename .$var_nm syntax to work on all operators (so variables not present cause warning, not error)
-81. Convert all data to double precision before arithmetic, then convert back after arithmetic. This is the only way to sensibly handle byte data, and #116 below
+81. Convert long,short,byte,char data to double precision before arithmetic, then convert back after arithmetic. This is the only way to sensibly handle byte data, and #116 below
 82. Make libnco namespace-safe by prefixing all possibly dynamically loaded subroutines with, e.g., nco_
-83. Always build operators to link dynamically to libnco.so
+83. Always build operators to link dynamically to libnco.so (autoconf/autotool?)
 86. Extend stride/wraparound capability to all operators possible
 88. ncks is slow on large files on Crays: ncks -H -v time,date,datesec /tmp/eaton/pcw101/h0009.nc will this be fixed when move beyond netcdf2.4.2 cray libs?
 92. ncrcat -O -v base_time,time_offset arm.cdf arm.cdf foo.nc;ncks -H -C -h foo.nc | m gives bad time_offset on LINUX not SUNMP (problem with LINUX adding record coordinate to open file?)
@@ -47,7 +44,10 @@ i.e., LSM variable timecom caused subtle ncra problems for a while.
 112. Use (int)strtol() instead of atoi()
 113. Rethink normalization switch options in ncwa
 114. Fix var_conform_dim() so that the returned weight always has the same size tally array as the template variable
-115. When the sum of the denominator in ncwa (i.e., the sum of the weight) is zero, SIGFPE will result 
+115. When the sum of the denominator in ncwa (i.e., the sum of the weight) is zero, SIGFPE will result. 
+This is not an NCO bug---user's should not be doing weighted averages
+when the denominator sums to zero. 
+The desired fix here is a graceful exit instead of a core dump.
 116. Weighting an integer by a float causes weight to be converted to integer first, so that weighting, e.g., nlons by gw, will cause zero in denominator since all gw's convert to integer value of 0. This causes core dumps with, e.g., 
 ncwa -O -a lat -w gw foo.nc foo2.nc
 Thus the best fix for #116 is to implement #81 ASAP
@@ -57,7 +57,7 @@ exactly the same way. C versions test both operands agains mss_val,
 Fortran tests only op1. Since running averages are initialized to 0.0 before
 entry, problems arise in C version when missing_value = 0.0. Only fix seems
 to be checking whether tally == 0 before checking whether op2 == mss_val
-123. Add scp and http protocols to fl_get()
+123. Add http protocol to fl_get()
 124. Use `install' program and mkdir -p
 125. Fix install on Cray
 126. Fix nco_dst.pl install for Babyblue/Blackforest
@@ -130,12 +130,13 @@ with nco_dst.pl
 166. Document 'make test' so people know it exists and use it
 167. Improve/redesign test suite so it is more comprehensive and easier to add to
 168. Implement autoconf/automake build environment?
-169. Merge TODO into Task manager and bug manager as appropriate
-170. rgn.sh appears to cause core dump over some ocean basins
-171. Add DODS options to all NCAR architectures
+169. Merge TODO into sourceforge Task manager and bug manager as appropriate
+170. rgn.sh appears to cause core dump over some ocean basins?
+171. Add DODS options to all NCAR architectures (buja?)
 172. Create NCO announce list
 173. Add switch to ncra which allows user to remove degenerate time
 dimension from result
+174. Setup ncra,ncea,ncwa to do standard deviations sdn
 ************************************************************************
 End NCO Wish list
 ************************************************************************

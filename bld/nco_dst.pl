@@ -6,16 +6,16 @@
 # Usage:
 # Export tagged, public versions
 
-# $HOME/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_49
-# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_49
-# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_49
-# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_49
-# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_49
-# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_49
-# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco1_1_49
-# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco1_1_49
-# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_49
-# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_49
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-1_2
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco-1_2
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco-1_2
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco-1_2
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco-1_2
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco-1_2
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco-1_2
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco-1_2
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco-1_2
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco-1_2
 
 # Export daily snapshot
 # $HOME/nco/bld/nco_dst.pl --dbg=2 
@@ -29,7 +29,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.61 2000-06-06 05:52:54 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.62 2000-07-27 23:27:07 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -65,9 +65,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-06-06 05:52:54 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.61 2000-06-06 05:52:54 zender Exp $';
-my $CVS_Revision='$Revision: 1.61 $';
+my $CVS_Date='$Date: 2000-07-27 23:27:07 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.62 2000-07-27 23:27:07 zender Exp $';
+my $CVS_Revision='$Revision: 1.62 $';
 my $CVSROOT=':pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -82,7 +82,7 @@ my $ftp_mch='ftp.cgd.ucar.edu'; # Machine where FTP repository resides
 my $ftp_mch_mrr='nco.sourceforge.net'; # Machine where FTP repository mirror resides
 my $main_trunk_tag='nco';
 my $mkdir_cmd='mkdir -p'; # Command that behaves like mkdir
-my $nco_sng='nco';
+my $mdl_sng='nco'; # Base of module name
 my $rm_cmd='rm -f'; # Command that behaves like rm
 my $rcp_cmd='scp -p'; # Command that behaves like rcp
 my $rsh_cmd='ssh'; # Command that behaves like rsh
@@ -201,17 +201,17 @@ if($vrs_tag eq $main_trunk_tag || $vrs_tag eq ''){$dly_snp=$True;}else{$dly_snp=
 if($dly_snp){
 # The version tag is blank or of the form `nco'
     $nco_vrs=YYYYMMDD();
-    $dst_vrs=$nco_sng.'-'.$nco_vrs;
+    $dst_vrs=$mdl_sng.'-'.$nco_vrs;
 }else{
-# The version tag is of the form `nco1_2_0'
+# The version tag is of the form `nco-1_2_0'
     my ($tag_sng);
     my ($nco_psn);
 
     $tag_sng=$vrs_tag;
     $tag_sng=~s/_/./g; # Use =~ to bind $tag_sng to s/// Camel p. 81
-    $nco_vrs=substr($tag_sng,length($nco_sng),length($tag_sng)-length($nco_sng));
+    $nco_vrs=substr($tag_sng,length($mdl_sng)+1,length($tag_sng)-length($mdl_sng)-1); # The +/- 1 accounts for the dash '-'
     ($nco_vrs_mjr,$nco_vrs_mnr,$nco_vrs_pch)=split(/\./,$nco_vrs);
-    $dst_vrs=$nco_sng.'-'.$nco_vrs;
+    $dst_vrs=$mdl_sng.'-'.$nco_vrs;
     if($nco_vrs_mjr < 1 || $nco_vrs_mjr > 2){die "$prg_nm: ERROR $nco_vrs_mjr < 1 || $nco_vrs_mjr > 2"};
 } # endelse
 $dst_fl=$dst_vrs.'.tar.gz';
