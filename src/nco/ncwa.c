@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.38 2000-07-15 19:53:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.39 2000-07-27 12:51:34 hmb Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.38 2000-07-15 19:53:58 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.38 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.39 2000-07-27 12:51:34 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.39 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -284,15 +284,7 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
 
-  /* Only in averaging operation are the totals normalized by tallies */
   
-  if ( nco_op_typ != nco_op_avg ) {
-	NRM_BY_DNM=False;
-    NORMALIZE_BY_TALLY=False;
-    NORMALIZE_BY_WEIGHT=False;
-    }  
-
-
   /* If called without arguments, print usage and exit successfully */ 
   if(arg_cnt == 0){
     (void)usg_prn();
@@ -668,8 +660,48 @@ main(int argc,char **argv)
 	/* Free wgt_avg, but keep wgt_out, after each use */
 	if(wgt_avg != NULL) wgt_avg=var_free(wgt_avg);
       }else if(NRM_BY_DNM){
-	/* Normalize by tally only and forget about weights */ 
-	(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+	/* Perform min,max,ttl, etc operations */ 
+	switch(nco_op_typ){
+		  	  
+	  case nco_op_min: /* do nothing values already in var_prc_out */
+	  case nco_op_max: /* do nothing values already in var_prc_out */	
+	  case nco_op_ttl: /* do nothing values already in var_prc_out */	
+	  default:
+	break;
+	  
+	  case nco_op_avg:
+	  case nco_op_avgsqr: 
+	  case nco_op_avgsumsqr:
+	  case nco_op_rms:
+	  case nco_op_sqrt:
+		(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+	break;
+	
+	  case nco_op_rmssdn:		
+	  	(void)var_normalize_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
+	break;
+	} /* end switch */
+	
+	/* some options require additional processing */
+	
+	switch(nco_op_typ){
+	
+	  case nco_op_avgsqr:
+		(void)var_multiply(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
+	break;
+		  
+	  case nco_op_sqrt:
+	  case nco_op_rms:
+	  case nco_op_rmssdn:
+		(void)var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);  
+	break;
+	
+	  default:
+	break;
+	
+	} /* end switch */
+	
+	
       }else if(!NRM_BY_DNM){
 	/* No normalization required, we are done */ 
 	;
