@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.45 2000-05-12 07:03:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.46 2000-06-03 01:07:20 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
 
@@ -146,7 +146,7 @@ lmt_prs(int lmt_nbr,char **lmt_arg)
 
   char *dlm_sng=",";
 
-  lmt_sct *lmt;
+  lmt_sct *lmt=NULL_CEWI;
 
   int idx;
   int arg_nbr;
@@ -450,9 +450,9 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
    char *fl_mk_lcl(): O filename locally available file
 */ 
 {
-  /* Routine to locate the input file, retrieve it from a remote storage system if necessary, 
-     create the local storage directory if neccessary, check the file for read-access,
-     return the filename of the file on the local system */ 
+  /* Routine to locate input file, retrieve it from a remote storage system if necessary, 
+     create local storage directory if neccessary, check file for read-access,
+     return name of file on local system */ 
 
   FILE *fp_in;
   char *cln_ptr; /* [ptr] Colon pointer */
@@ -461,23 +461,27 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
   int rcd;
   struct stat stat_sct;
   
-  /* Assume the local filename is the input filename */ 
+  /* Assume local filename is input filename */ 
   fl_nm_lcl=(char *)strdup(fl_nm);
 
-  /* Remove any URL and machine-name components from the local filename */
+  /* Remove any URL and machine-name components from local filename */
   if(strstr(fl_nm_lcl,"ftp://") == fl_nm_lcl){
     char *fl_nm_lcl_tmp;
     char *fl_pth_lcl_tmp;
 
-    /* Rearrange the fl_nm_lcl to get rid of the ftp://hostname part */ 
+    /* Rearrange fl_nm_lcl to get rid of ftp://hostname part */ 
     fl_pth_lcl_tmp=strchr(fl_nm_lcl+6,'/');
     fl_nm_lcl_tmp=fl_nm_lcl;
     fl_nm_lcl=(char *)malloc(strlen(fl_pth_lcl_tmp)+1);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     (void)free(fl_nm_lcl_tmp);
+  }else if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
+
+    /* If file is http protocol then pass file name on unaltered and let DODS deal with it */
+
   }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
     /* 19990804
-       A colon separates the machine name from the filename in rcp and scp requests
+       A colon separates machine name from filename in rcp and scp requests
        However, a colon is also legal in any UNIX filename
        Thus whether a colon signifies an rcp or scp request is somewhat ambiguous 
        NCO treats names with more than one colon as regular filenames
@@ -498,11 +502,13 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     } /* endif period is three or four characters from colon */
   } /* end if */ 
   
-  /* Does the file exist on the local system? */ 
+  /* Does file exist on local system? */ 
   rcd=stat(fl_nm_lcl,&stat_sct);
+
+  /* One exception: let DODS try to access remote HTTP protocol files as local files */
+  if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl) rcd=0;
   
-  /* If not, then check if the file exists on the local system under 
-     the same path interpreted relative to the current working directory */ 
+  /* If not, check if file exists on local system under same path interpreted relative to current working directory */ 
   if(rcd == -1){
     if(fl_nm_lcl[0] == '/'){
       rcd=stat(fl_nm_lcl+1,&stat_sct);
@@ -521,17 +527,13 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     } /* end if */
   } /* end if */ 
   
-  /* Finally, check to see if the file exists on the local system in the
-     directory specified for the storage of remotely retrieved files.
-     This would be the case if some files had already been retrieved in
-     a previous invocation of the program */
+  /* Finally, check to see if file exists on local system in directory specified for storage of remotely retrieved files
+     This would be the case if some files had already been retrieved in a previous invocation of the program */
   if(rcd == -1){
-    /* Where does the filename stub begin? NB: We are assuming that the local filename
-       has a slash in it from now on (because the remote file system always has a slash) */ 
+    /* Where does filename stub begin? NB: Assume local filename has a slash (because remote file system always has a slash) */
     fl_nm_stub=strrchr(fl_nm_lcl,'/')+1;
 
-    /* Construct the local filename from the user-supplied local file path 
-       along with the existing file stub. */
+    /* Construct local filename from user-supplied local file path along with existing file stub */
     if(fl_pth_lcl != NULL){
       char *fl_nm_lcl_tmp;
       
@@ -654,12 +656,13 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     /* Otherwise, a single colon preceded by a period in the filename unambiguously signals to use rcp or scp */
     /* Determining whether to try scp instead of rcp is difficult
        Ideally, NCO would test remote machine for rcp/scp priveleges with a system command like, e.g., "ssh echo ok"
+       To start with, we use scp which has its own fall through to rcp
     */
     if(rmt_cmd == NULL){
       if((cln_ptr=strchr(fl_nm_rmt,':')))
 	if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
 	   ((cln_ptr-3 >= fl_nm_rmt) && *(cln_ptr-3) == '.'))
-	  rmt_cmd=&rcp;
+	  rmt_cmd=&scp;
     } /* end if */
     
     if(rmt_cmd == NULL){
@@ -796,17 +799,29 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
   } /* end if file was already on the local system */ 
 
   /* Make sure we have read permission on local file */
-  if((fp_in=fopen(fl_nm_lcl,"r")) == NULL){
-    (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s\n",prg_nm_get(),fl_nm_lcl);
-    exit(EXIT_FAILURE);
-  }else{
-    (void)fclose(fp_in);
-  } /* end else */ 
+  if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
+    /* Attempt ncopen() on HTTP protocol files. Success means DODS can find file. */
+    ncopts=0;
+    rcd=ncopen(fl_nm_lcl,NC_NOWRITE);
+    ncopts=NC_VERBOSE | NC_FATAL; 
+    if(rcd < 0){
+      (void)fprintf(stderr,"%s: ERROR Attempted HTTP access protocol failed: DODS server is not responding, %s does not exist, or user does not have read permission for it\n",prg_nm_get(),fl_nm_lcl);
+      exit(EXIT_FAILURE);
+    } /* end if err */
+
+   }else{
+     if((fp_in=fopen(fl_nm_lcl,"r")) == NULL){
+       (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s\n",prg_nm_get(),fl_nm_lcl);
+       exit(EXIT_FAILURE);
+     }else{
+       (void)fclose(fp_in);
+     } /* end else */ 
+   } /* end if really a local file */
   
   /* Free input filename space */ 
   (void)free(fl_nm);
 
-  /* Return the local filename */ 
+  /* Return local filename */ 
   return(fl_nm_lcl);
 
 } /* end fl_mk_lcl() */ 

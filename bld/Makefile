@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.64 2000-05-19 17:10:05 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.65 2000-06-03 01:07:20 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -49,6 +49,15 @@ endif
 ifndef USE_FORTRAN_ARITHMETIC
 # Whether or not to use Fortran arithmetic routines
  USE_FORTRAN_ARITHMETIC := N
+endif
+ifdef DODS
+ DODS := Y
+endif
+ifeq ($(DODS),Y)
+ifndef DODS_ROOT
+# Directory containing libdap++.a, libnc-dods.a
+ DODS_ROOT := /usr/local/DODS
+endif
 endif
 ifndef NETCDF_INC
  NETCDF_INC := /usr/local/include # Directory containing netcdf.h
@@ -518,6 +527,19 @@ ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  CPPFLAGS += -DUSE_FORTRAN_ARITHMETIC
 endif
 
+# Link to DODS libraries first, see DODS User's Guide
+# Currently this is invoked by using 'make DODS=Y' on the command
+# 20000602: This fails with Redhat Linux 6.1
+# Possible reasons are libstdc++ and libexpect
+ifeq ($(DODS),Y)
+# NB: Order is important here
+# LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lwww -ltcl -lexpect -lz -lrx $(LDFLAGS)
+ LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lwww -ltcl -lexpect5.28 -lz -lrx $(LDFLAGS)
+# Must use g++ to link
+ CC := g++
+# LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lwww -ltcl -lz -lrx $(LDFLAGS)
+endif
+
 # Link to Electric Fence library, see man efence
 ifeq ($(PVM_ARCH),LINUX)
 ifneq (,$(findstring $(OPTS),DX))
@@ -692,6 +714,8 @@ dbg:
 	printf "LEX = $(LEX)\n"
 	printf "USE_FORTRAN_ARITHMETIC = $(USE_FORTRAN_ARITHMETIC)\n"
 	printf "NCO_VRS = $(NCO_VRS)\n"
+	printf "DODS = $(DODS)\n"
+	printf "DODS_ROOT = $(DODS_ROOT)\n"
 	printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
 distclean: dst_cln
 dst_cln: cln bin_cln doc_cln lib_cln

@@ -1,5 +1,22 @@
 2000-06-02  Charlie Zender  <zender@uci.edu>
 
+	* Added explicity coercion to all lines which generated assignment
+	errors under g++ C++ compiler. This might affect speed of
+	conversions to long, short, char, and byte types from double and
+	float types. These conversions are rare and considered unimportant
+	so any performance penalty is acceptable.
+
+	* Small changes to make code compile cleanly with g++ C++ compiler
+
+	* Changed fl_mk_lcl() to try scp instead of rcp. scp should fall
+	through to rcp is sshd is not running on remote machine.
+
+	* Add Schweitzer's HTTP patch for DODS compatibility to
+	fl_mk_lcl(). Will probably alter implementation in the future so
+	fl_mk_lcl() works without netcdf library as before. NCO should now
+	be DODS compliant when linked to DODS libraries. This allows
+	reading, but not writing, of remote files using HTTP protocol.
+
 	* Tagged nco1_1_49 as clean new version to start work from
 	sourceforge without any overlaps with 1_1_48
 

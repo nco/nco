@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.15 2000-04-05 21:41:51 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.16 2000-06-03 01:07:20 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -109,3 +109,35 @@ echo "ncea 1: ensemble mean across two files: 5 =?= $avg"
 ncea -O -v rec_var_flt_mss_val_flt -d time,0 in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v rec_var_flt_mss_val_flt foo.nc`
 echo "ncea 2: ensemble mean with missing values across two files: 1.0e36 =?= $avg" 
+
+/bin/rm -f foo.nc;mv in.nc in_tmp.nc;
+ncks -O -v one -p ftp://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
+echo "nco 1: FTP protocol: 1 =?= $avg" 
+mv in_tmp.nc in.nc
+
+/bin/rm -f foo.nc;mv in.nc in_tmp.nc;
+ncks -O -v one -p goldhill.cgd.ucar.edu:/home/zender/nco/data -l ./ in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
+echo "nco 2: scp/rcp protocol: 1 =?= $avg" 
+mv in_tmp.nc in.nc
+
+/bin/rm -f foo.nc;mv in.nc in_tmp.nc;
+ncks -O -v one -p mss:/ZENDER/nc -l ./ in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
+echo "nco 3: msrcp protocol: 1 =?= $avg" 
+mv in_tmp.nc in.nc
+
+/bin/rm -f foo.nc;mv in.nc in_tmp.nc;
+ncks -O -v one -p http://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
+echo "nco 1: HTTP protocol: 1 =?= $avg" 
+mv in_tmp.nc in.nc
+
+/bin/rm -f foo.nc;mv in.nc in_tmp.nc;
+ncrcat -O -n 2,4 -d lat,-15.,15. -d lon,120.,130. -d time,355,370 -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
+echo "nco 4: HTTP/DODS protocol: 1 =?= $avg" 
+mv in_tmp.nc in.nc
+
+/data/zender/tmp/ncrcat -n 2,4 -d lat,-15.,15. -d lon,120.,130. -d time,355,370 -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc air.out.nc
