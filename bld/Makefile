@@ -1,8 +1,9 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.247 2004-06-29 07:38:04 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.248 2004-06-30 05:24:36 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
 # scp ~/nco/bld/Makefile goldhill.cgd.ucar.edu:nco/bld
+# scp ~/nco/bld/Makefile esmf.ess.uci.edu:nco/bld
 
 # Copyright (C) 1994--2004 Charlie Zender
 # This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
@@ -417,9 +418,10 @@ else
  FC := xlf95
 endif # endif OMP
 ifeq (${OPTS},O)
+# -O : -O3 is safe, -O5 is dangerous
 # -qstrict: Ensure that -O3 optimizations do not alter program semantics
 # -Q : Inline all appropriate subprograms
- CFLAGS := -O5 -qstrict -Q
+ CFLAGS := -O3 -qstrict -Q
  FFLAGS += -O3 -qstrict -Q
 endif
 ifeq (${OPTS},D)

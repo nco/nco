@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.106 2004-06-18 23:56:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.107 2004-06-30 05:24:37 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -32,15 +32,16 @@
    Irvine, CA 92697-3100 */
 
 /* Usage:
-   ncra -n 3,4,1 -p /data/zender/tmp h0001.nc foo.nc
-   ncra -n 3,4,1 -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
-   ncra -n 3,4,1 -p /ZENDER/tmp -l /data/zender/tmp h0001.nc foo.nc
+   ncra -n 3,4,1 -p ${DATA}/tmp h0001.nc foo.nc
+   ncra -n 3,4,1 -p ${DATA}/tmp -l ${DATA}/tmp/rmt h0001.nc foo.nc
+   ncra -n 3,4,1 -p /ZENDER/tmp -l ${DATA}/tmp h0001.nc foo.nc
    ncra -n 3,4,1 -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc foo.nc
+   scp ~/nco/src/nco/ncra.c esmf.ess.uci.edu:nco/src/nco
 
    ncea in.nc in.nc foo.nc
-   ncea -n 3,4,1 -p /data/zender/tmp h0001.nc foo.nc
-   ncea -n 3,4,1 -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
-   ncea -n 3,4,1 -p /ZENDER/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
+   ncea -n 3,4,1 -p ${DATA}/tmp h0001.nc foo.nc
+   ncea -n 3,4,1 -p ${DATA}/tmp -l ${DATA}/tmp/rmt h0001.nc foo.nc
+   ncea -n 3,4,1 -p /ZENDER/tmp -l ${DATA}/tmp/rmt h0001.nc foo.nc
    ncea -n 3,4,1 -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc foo.nc */
 
 #ifdef HAVE_CONFIG_H
@@ -117,8 +118,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.106 2004-06-18 23:56:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.106 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.107 2004-06-30 05:24:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.107 $";
   const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRv:xy:-:";
 
   dmn_sct **dim;
@@ -477,7 +478,7 @@ main(int argc,char **argv)
 	/* Process all variables in current record */
 	if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
 #ifdef _OPENMP
-#pragma omp parallel for private(idx) shared(nbr_var_prc,dbg_lvl,var_prc,idx_rec,in_id,prg,nco_op_typ,var_prc_out,idx_rec_out,rcd,ARM_FORMAT,out_id,fl_in,fl_out)
+#pragma omp parallel for default(none) private(idx) shared(ARM_FORMAT,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,idx_rec,idx_rec_out,in_id,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
 #endif /* not _OPENMP */
 	for(idx=0;idx<nbr_var_prc;idx++){
 	  if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
@@ -536,7 +537,7 @@ main(int argc,char **argv)
       /* End of ncra, ncrcat section */
     }else{ /* ncea */
 #ifdef _OPENMP
-#pragma omp parallel for private(idx) shared(nbr_var_prc,dbg_lvl,var_prc,in_id,nco_op_typ,var_prc_out,fl_idx,rcd)
+#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,fl_idx,in_id,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
 #endif /* not _OPENMP */
       for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 	if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
@@ -571,7 +572,7 @@ main(int argc,char **argv)
   /* Normalize, multiply, etc where necessary */
   if(prg == ncra || prg == ncea){
 #ifdef _OPENMP
-#pragma omp parallel for private(idx) shared(nbr_var_prc,nco_op_typ,var_prc_out,var_prc)
+#pragma omp parallel for default(none) private(idx) shared(nbr_var_prc,nco_op_typ,var_prc,var_prc_out)
 #endif /* not _OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){
       switch(nco_op_typ) {

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.327 2004-06-29 06:28:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.328 2004-06-30 05:24:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -159,7 +159,7 @@ ncbo -O -y add -D 3 -d date,0,100 /data/zender/tmp/convecPrecip00z.nc /data/zend
 ncap -O  -D3 -s 'cp=pack(cp)' /data/zender/tmp/sum.nc /data/zender/tmp/packed_sum.nc
 ncbo -O -y add -D 3 ${HOME}/debug/hundred.nc ${HOME}/debug/hundred.nc ${HOME}/debug/sum.nc
 ncap -O -D 3 -s 'cp=pack(cp)' ${HOME}/debug/sum.nc ${HOME}/debug/pack_sum.nc
-nco287. Fix/debug OMP OpenMP implementation in ncra
+nco287. Develop dianostics for OMP OpenMP implementation in ncra
 nco292. nco_fl_utl.c: Use autoconf HAVE_NETWORK instead of WIN32
 nco293. nco_fl_utl.c: Use autoconf HAVE_MKDIR_M instead of SUN4
 nco294. Globals variable in NCO operators are prg, prg_nm, dbg_lvl 

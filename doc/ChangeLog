@@ -1,3 +1,8 @@
+2004-06-29  Charlie Zender  <zender@uci.edu>
+
+	* Update OpenMP directives in ncra in preparation for adding
+	robust OpenMP diagnostics
+
 2004-06-28  Charlie Zender  <zender@uci.edu>
 
 	* Remove configure.in AC_CHECK_LIB check for cosf() in libC.a. 
