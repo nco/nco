@@ -1,3 +1,10 @@
+2003-08-03  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_8_0
+	Changes since nco-2_7_4: ncbo
+
+	* Finish first cut at ncbo documentation in nco.texi
+
 2003-08-02  Charlie Zender  <zender@uci.edu>
 
 	* Rename val_conform_type() to val_cnf_typ()

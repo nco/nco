@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.169 2003-08-03 00:42:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.170 2003-08-04 16:57:30 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -63,6 +63,7 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @var{}: Metasyntactic variable, e.g., @var{}
 @w{}: Unbreakable text, e.g., @w{of 1}
 
+Use '@*' to force hard carriage return
 Use '@:', after periods, questions marks, exclamation marks, or colons
 that do not end sentences
 Use '@.', '@!', and `@?' to end sentences that end with single capital letters (e.g., initials)
@@ -1365,7 +1366,6 @@ feature is automatic and cannot be controlled by the user.
 @section Command line options
 @cindex command line options
 @cartouche
-@noindent
 Availability: All operators@*
 Short options: All@*
 Long options: All@*
@@ -1484,7 +1484,6 @@ name that most suits their taste.
 @cindex @code{--path @var{input-path}}
 @cindex @var{input-path}
 @cartouche
-@noindent
 Availability: All operators@*
 Short options: @samp{-n}, @samp{-p}@*
 Long options: @samp{--nintap}, @samp{--pth}, @samp{--path}@*
@@ -1624,7 +1623,6 @@ automatically generate, in order, the filenames @file{85_12.nc},
 @cindex @code{--local @var{output-path}}
 @cindex @code{-l @var{output-path}}
 @cartouche
-@noindent
 Availability: All operators@*
 Short options: @samp{-p}, @samp{-l}@*
 Long options: @samp{--pth}, @samp{--path}, @samp{--lcl}, @samp{--local}@*
@@ -1792,7 +1790,6 @@ the current directory.
 @cindex @code{--rtn}
 @cindex @code{--retain}
 @cartouche
-@noindent
 Availability: All operators@*
 Short options: @samp{-R}@*
 Long options: @samp{--rtn}, @samp{--retain}@*
@@ -1817,7 +1814,6 @@ disabled by specifying @samp{-R} on the command line.
 @cindex @code{--exclude}
 @cindex @code{--xcl}
 @cartouche
-@noindent
 Availability: (@command{ncap}), @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
@@ -1855,7 +1851,6 @@ that @emph{only} user-defined variables should be output.
 @cindex @code{--coords}
 @cindex @code{--crd}
 @cartouche
-@noindent
 Availability: @command{ncap}, @command{ncbo}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks},  @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
@@ -1887,7 +1882,6 @@ without having to know their names.
 @cindex @code{-F}
 @cindex @code{--fortran}
 @cartouche
-@noindent
 Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
 @command{ncwa}@* 
@@ -1929,7 +1923,6 @@ lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0
 @cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}]]}
 @cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}]]}
 @cartouche
-@noindent
 Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
 @command{ncwa}@* 
@@ -2018,7 +2011,6 @@ This option may be specified more than once in a single command
 @cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}]]}
 @cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}]]}
 @cartouche
-@noindent
 Availability: @command{ncks}@*
 Short options: @samp{-d}@*
 Long options: @samp{--dimension}, @samp{--dmn}@*
@@ -2104,7 +2096,6 @@ future.
 @cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}]]}
 @cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}]]}
 @cartouche
-@noindent
 Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
 @command{ncwa}@* 
@@ -2259,7 +2250,6 @@ esoteric units (e.g., furlongs, pounds per square inch, fortnights).
 @cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}]]}
 @cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}]]}
 @cartouche
-@noindent
 Availability: @command{ncks}@*
 Short options: @samp{-d}@*
 Long options: @samp{--dimension}, @samp{--dmn}@*
@@ -2326,7 +2316,6 @@ values (@pxref{Hyperslabs}).
 @cindex @code{--dimension @var{dim},[@var{min}],[@var{max}],@var{stride}}
 @cindex @code{--dmn @var{dim},[@var{min}],[@var{max}],@var{stride}}
 @cartouche
-@noindent
 Availability: @command{ncks}, @command{ncra}, @command{ncrcat}@*
 Short options: @samp{-d}@*
 Long options: @samp{--dimension}, @samp{--dmn}@*
@@ -2407,7 +2396,6 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @cindex averaging data
 @cindex @code{missing_value} attribute
 @cartouche
-@noindent
 Availability: @command{ncap}, @command{ncbo}, @command{ncea},
 @command{ncflint}, @command{ncra}, @command{ncwa}@* 
 Short options: None@*
@@ -2532,7 +2520,6 @@ Suffice it to say that, in all known cases, @acronym{NCO} does ``the right thing
 @cindex @code{--operation @var{op_typ}}
 @cindex @code{--op_typ @var{op_typ}}
 @cartouche
-@noindent
 Availability: @command{ncra}, @command{ncea}, @command{ncwa}@*
 Short options: @samp{-y}@*
 Long options: @samp{--operation}, @samp{--op_typ}@*
@@ -2847,7 +2834,6 @@ required by the @command{ncbo} operation in the third step.
 @section Type conversion
 @cindex type conversion
 @cartouche
-@noindent
 Availability: @command{ncap}, @command{ncbo}, @command{ncea},
 @command{ncra}, @command{ncwa}@* 
 Short options: None@*
@@ -2991,7 +2977,6 @@ will have the value @var{n} when converted to an integer.
 @cindex @code{--apn}
 @cindex @code{--append}
 @cartouche
-@noindent
 Availability: All operators@*
 Short options: @samp{-O}, @samp{-A}@*
 Long options: @samp{--ovr}, @samp{--overwrite}, @samp{--apn}, @samp{--append}@*
@@ -3021,7 +3006,6 @@ interactive keyboard input.
 @cindex @code{--hst}
 @cindex @code{--history}
 @cartouche
-@noindent
 Availability: All operators@*
 Short options: @samp{-h}@*
 Long options: @samp{--hst}, @samp{--history}@*
@@ -3063,7 +3047,6 @@ attribute (@pxref{ncatted netCDF Attribute Editor}).
 @cindex @code{datesec}
 @cindex @code{time}
 @cartouche
-@noindent
 Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncra}, @command{ncwa}@*
 Short options: None@*
@@ -3073,7 +3056,7 @@ them specially.
 If you do not work with @acronym{NCAR CSM} data then you may skip this
 section. 
 The @acronym{CSM} netCDF convention is described at
-@uref{http://www.cgd.ucar.edu/csm/experiments/output.format.html"}.
+@uref{http://www.cgd.ucar.edu/csm/experiments/output.format.html}.
 Most of the @acronym{CSM} netCDF convention is transparent to
 @acronym{NCO} 
 @footnote{
@@ -3137,7 +3120,6 @@ processed, you must use @command{ncrename} to rename them first.
 @cindex @code{base_time}
 @cindex @code{time}
 @cartouche
-@noindent
 Availability: @command{ncrcat}@*
 Short options: None@*
 @end cartouche
@@ -3184,7 +3166,6 @@ these @acronym{ARM}-specific procedures are executed.
 @cindex @code{--version}
 @cindex @code{--vrs}
 @cartouche
-@noindent
 Availability: All operators@*
 Short options: @samp{-r}@*
 Long options: @samp{--revision}, @samp{--version}, or @samp{--vrs}@*
@@ -4194,10 +4175,15 @@ omitted in batch scripts.
 @page
 @node ncbo netCDF Binary Operator, ncea netCDF Ensemble Averager, ncatted netCDF Attribute Editor, Operator Reference Manual
 @section @command{ncbo} netCDF Binary Operator
-@cindex subtraction
-@cindex differencing data
-@cindex anomalies
 @findex ncbo
+@cindex binary operations
+@cindex addition
+@cindex subtraction
+@cindex multiplication
+@cindex adding data
+@cindex subtracting data
+@cindex multiplying data
+@cindex dividing data
 
 @noindent
 SYNTAX
@@ -4214,6 +4200,96 @@ DESCRIPTION
 @command{ncbo} performs binary operations on variables in @var{file_1}
 and the corresponding variables (those with the same name) in
 @var{file_2} and stores the results in @var{file_3}. 
+The binary operation operates on the entire files (modulo any excluded
+variables). 
+One of the four standard arithmetic binary operations currently
+supported must be selected with the @samp{-y @var{op_typ}} switch (or
+long options @samp{--op_typ} or @samp{--operation}).
+@cindex @code{add}
+@cindex @code{subtract}
+@cindex @code{multiply}
+@cindex @code{divide}
+@cindex @code{+}
+@cindex @code{-}
+@cindex @code{*}
+@cindex @code{/}
+@cindex @code{-y @var{op_typ}}
+@cindex @code{--operation @var{op_typ}}
+@cindex @code{--op_typ @var{op_typ}}
+The valid binary operations for @command{ncbo}, their definitions, and
+corresponding values of the @var{op_typ} key are: 
+@table @dfn
+@item Addition
+@c Internal operation code: @{nco_op_add}@*
+Definition: @var{file_3} = @var{file_1} + @var{file_2}@*
+Alternate invocation: @code{ncadd}@*
+@var{op_typ} key values: @samp{add}, @samp{+}, @samp{addition}@*
+Examples: @samp{ncbo --op_typ=add 1.nc 2.nc 3.nc}, @samp{ncadd 1.nc 2.nc 3.nc}@*
+@item Subtraction
+Definition: @var{file_3} = @var{file_1} - @var{file_2}@*
+Alternate invocations: @code{ncdiff}, @code{ncsub}, @code{ncsubtract}@*
+@var{op_typ} key values: @samp{sbt}, @samp{-}, @samp{dff}, @samp{diff}, @samp{sub}, @samp{subtract}, @samp{subtraction}@*
+Examples: @samp{ncbo --op_typ=-  1.nc 2.nc 3.nc}, @samp{ncdiff 1.nc 2.nc 3.nc}@*
+@item Multiplication
+Definition: @var{file_3} = @var{file_1} * @var{file_2}@* 
+Alternate invocations: @code{ncmult}, @code{ncmultiply}@* 
+@var{op_typ} key values: @samp{mlt}, @samp{*}, @samp{mult}, @samp{multiply}, @samp{multiplication}@*
+Examples: @samp{ncbo --op_typ=mlt  1.nc 2.nc 3.nc}, @samp{ncmult 1.nc 2.nc 3.nc}@*
+@item Division
+Definition: @var{file_3} = @var{file_1} / @var{file_2}@* 
+Alternate invocation: @code{ncdivide}@*
+@var{op_typ} key values: @samp{dvd}, @samp{/}, @samp{divide}, @samp{division}@*
+Examples: @samp{ncbo --op_typ=/ 1.nc 2.nc 3.nc}, @samp{ncdivide 1.nc 2.nc 3.nc}@*
+@end table
+@noindent
+Care should be taken when using the shortest form of key values,
+i.e., @samp{+}, @samp{-}, @samp{*}, @samp{/}.
+Some of these single characters may have special meanings to the shell
+@cindex naked characters
+@footnote{A naked (i.e., unprotected or unquoted) @samp{*} is a wildcard
+character.  
+A naked @samp{-} may interpretedconfuse command line parser.
+@samp{+} and @samp{/} are relatively harmless.}.
+@cindex Bash shell
+They should be protected from the shell by placing them in quotes so
+that the shell does not attempt to interpret (glob) them 
+@footnote{The widely used shell Bash correctly interprets all these
+special characters even when they are not quoted. 
+That is, Bash does not prevent @acronym{NCO} from correctly interpreting 
+the intended arithmetic operation when the following arguments are given
+(without quotes) to @command{ncbo}:
+@samp{--op_typ=+}, @samp{--op_typ=-}, @samp{--op_typ=*},
+and @samp{--op_typ=/}}. 
+@cindex globbing
+@cindex shell
+@cindex quotes
+For example, the following commands are equivalent
+@example
+ncbo --op_typ=* 1.nc 2.nc 3.nc # Dangerous? (shell may attempt globbing)
+ncbo --op_typ='*' 1.nc 2.nc 3.nc # Safe ('*' protected from shell)
+ncbo --op_typ="*" 1.nc 2.nc 3.nc # Safe ('*' protected from shell)
+ncbo --op_typ=mlt 1.nc 2.nc 3.nc
+ncbo --op_typ=mult 1.nc 2.nc 3.nc
+ncbo --op_typ=multiply 1.nc 2.nc 3.nc
+ncbo --op_typ=multiplication 1.nc 2.nc 3.nc
+ncmult 1.nc 2.nc 3.nc # First use ln -s ncbo ncmult
+ncmultiply 1.nc 2.nc 3.nc # First use ln -s ncbo ncmult
+@end example
+No particular argument or invocation form is preferred.
+Users are encouraged to use the forms which are most intuitive to them.
+
+Normally, an operation type must be specified with @samp{-y} or
+@command{ncbo} will fail.
+Exceptions to this rule may be created to suit that tastes of 
+your particular site.
+For many years, @command{ncdiff} was the main binary file operator.
+As a result, many users prefer to continue invoking @command{ncdiff}
+rather than memorizing a new command (@samp{ncbo -y @var{sbt}}) which
+behaves identically to the old @command{ncdiff} command.
+The is much to be said for the simplicity of @command{ncdiff}.
+However, from a software maintenance standpoint, maintaining a distinct 
+executable for each binary operation (e.g., @code{ncadd}) is untenable. 
+
 @command{ncbo} subtracts variables in @var{file_2} from the corresponding
 variables (those with the same name) in @var{file_1} and stores the
 results in @var{file_3}. 
@@ -4225,6 +4301,7 @@ from the data in existing dimensions.
 For example, a two dimensional variable in @var{file_2} can be
 subtracted from a four, three, or two (but not one or zero)
 dimensional variable (of the same name) in @code{file_1}. 
+@cindex anomalies
 This functionality allows the user to compute anomalies from the mean.
 Note that variables in @var{file_1} are @emph{not} broadcast to conform
 to the dimensions in @var{file_2}. 
@@ -4234,39 +4311,6 @@ processed variable in @var{file_1} must be greater than or equal to the
 rank of the same variable in @var{file_2}. 
 Furthermore, the size of all dimensions common to both @var{file_1} and
 @var{file_2} must be equal. 
-
-@cindex @code{add}
-@cindex @code{subtract}
-@cindex @code{multiply}
-@cindex @code{divide}
-@cindex addition
-@cindex subtraction
-@cindex multiplication
-@cindex division
-@cindex @code{-y @var{op_typ}}
-@cindex @code{--operation @var{op_typ}}
-@cindex @code{--op_typ @var{op_typ}}
-Set @var{op_typ} to the abbreviated key for the corresponding operation.
-The mathematical definition of each binary operation is given below. 
-@table @code
-@item add
-Addition
-@var{file_3} = @var{file_1} + @var{file_2} 
-@item subtraction
-Subtraction
-@var{file_3} = @var{file_1} - @var{file_2} 
-@item multiplication
-Multiplication
-@var{file_3} = @var{file_1} * @var{file_2} 
-@item division
-Division
-@var{file_3} = @var{file_1} / @var{file_2} 
-@end table
-@noindent
-Normally, an operation type must be specified with @samp{-y} or
-@command{ncbo} will fail.
-Exceptions to this rule may be created to suit that tastes of 
-your particular site.
 
 When computing anomalies from the mean it is often the case that
 @var{file_2} was created by applying an averaging operator to a file
@@ -4305,8 +4349,9 @@ This behavior is hardcoded.
 @code{ORO}).
 See @ref{NCAR CSM Conventions} for a complete description.
 Finally, we note that @command{ncflint} (@pxref{ncflint netCDF File
-Interpolator}) can be also perform file subtraction (as well as
-addition, multiplication and interpolation). 
+Interpolator}) is designed for file interpolation.
+As such, it also performs file subtraction, addition, multiplication,
+albeit in a more convoluted way than @command{ncbo}.
 
 @noindent
 EXAMPLES
@@ -4315,7 +4360,8 @@ Say files @file{85_0112.nc} and @file{86_0112.nc} each contain 12 months
 of data.
 Compute the change in the monthly averages from 1985 to 1986:
 @example
-ncbo 86_0112.nc 85_0112.nc 86m85_0112.nc
+ncbo -op_typ=sub 86_0112.nc 85_0112.nc 86m85_0112.nc
+ncdiff 86_0112.nc 85_0112.nc 86m85_0112.nc
 @end example
 
 The following examples demonstrate the broadcasting feature of
@@ -4340,11 +4386,11 @@ ncwa -a time 85_0112.nc 85.nc
 @noindent
 We are now ready to use @command{ncbo} to compute the anomalies for 1985:
 @example
-ncbo -v T 85_0112.nc 85.nc t_anm_85_0112.nc
+ncdiff -v T 85_0112.nc 85.nc t_anm_85_0112.nc
 @end example
 @noindent
 Each of the 12 records in @file{t_anm_85_0112.nc} now contains the
-monthly deviation of @code{T} from the annual mean of @code{T} for each
+monthly deviation of @code{T} from the annual mean of @code{T} for each 
 gridpoint. 
 
 Say we wish to compute the monthly gridpoint anomalies from the zonal
@@ -4352,20 +4398,20 @@ annual mean.
 A @dfn{zonal mean} is a quantity that has been averaged over the
 longitudinal (or @var{x}) direction.
 First we use @command{ncwa} to average over longitudinal direction
-@code{lon}, creating @file{xavg_85.nc}, the zonal mean of @file{85.nc}. 
+@code{lon}, creating @file{85_x.nc}, the zonal mean of @file{85.nc}. 
 Then we use @command{ncbo} to subtract the zonal annual means from the
 monthly gridpoint data:
 @example
-ncwa -a lon 85.nc xavg_85.nc
-ncbo 85_0112.nc xavg_85.nc tx_anm_85_0112.nc
+ncwa -a lon 85.nc 85_x.nc
+ncdiff 85_0112.nc 85_x.nc tx_anm_85_0112.nc
 @end example
 @noindent
-Assuming @file{85_0112.nc} has dimensions @code{time} and @code{lon}, 
-this example only works if @file{xavg_85.nc} has no @code{time} or
-@code{lon} dimension.
+This examples works assuming @file{85_0112.nc} has dimensions
+@code{time} and @code{lon}, and that @file{85_x.nc} has no @code{time}
+or @code{lon} dimension.
 
-As a final example, say we have five years of monthly data (i.e., 60 
-months) stored in @file{8501_8912.nc} and we wish to create a file
+As a final example, say we have five years of monthly data (i.e., @w{60
+months}) stored in @file{8501_8912.nc} and we wish to create a file 
 which contains the twelve month seasonal cycle of the average monthly
 anomaly from the five-year mean of this data. 
 The following method is just one permutation of many which will
@@ -4720,6 +4766,7 @@ make @file{tst.nc}:
 ncflint -w 3,-2 85.nc 85.nc tst.nc
 @end example
 @noindent
+@cindex null operation
 This is an example of a null operation, so @file{tst.nc} should be
 identical (within machine precision) to @file{85.nc}.
 
@@ -4728,15 +4775,16 @@ then subtract @file{86.nc} from @file{85.nc} to obtain @file{85m86.nc}
 @example
 ncflint -w 1,1 85.nc 86.nc 85p86.nc
 ncflint -w 1,-1 85.nc 86.nc 85m86.nc
-ncbo 85.nc 86.nc 85m86.nc
+ncdiff 85.nc 86.nc 85m86.nc
 @end example
 @noindent
-Thus @command{ncflint} can be used to mimic @command{ncbo} operations.
+Thus @command{ncflint} can be used to mimic some @command{ncbo}
+operations. 
 @cindex broadcasting variables
 However this is not a good idea in practice because @command{ncflint}
 does not broadcast (@pxref{ncbo netCDF Binary Operator}) conforming
 variables during arithmetic. 
-Thus the final two commands would produce identical results except that  
+Thus the final two commands would produce identical results except that   
 @command{ncflint} would fail if any variables needed to be broadcast.
 
 @cindex @code{units}
@@ -5858,13 +5906,14 @@ a total regional area.
 @cindex contributors
 We welcome contributions from anyone.
 The @acronym{NCO} project homepage at
-@uref{https://sourceforge.net/projects/nco}.
+@uref{https://sf.net/projects/nco}
 contains more information on how to contribute. 
 @table @asis
 @item Charlie Zender
 Concept, design and implementation of @acronym{NCO} from 1995--2000.
 Since then, mainly packing, @acronym{NCO} library redesign, @code{ncap}
-features, project coordination, code maintenance and porting.
+features, project coordination, code maintenance and porting,
+documentation, and @code{ncbo}. 
 @item Henry Butowsky
 Non-linear operations and @code{min()}, @code{max()}, @code{total()}
 support in @code{ncra} and @code{ncwa}. 
