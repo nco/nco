@@ -1,3 +1,8 @@
+2002-09-09  Charlie Zender  <zender@uci.edu>
+
+	* Moved float math function definitions to nco_rth_flt.h,
+	created declarations for MACOSX in nco_rth_flt.c
+
 2002-09-08  Charlie Zender  <zender@uci.edu>
 
 	* Implemented pre-processor macros CST_X_PTR_CST_PTR_CST_Y,
