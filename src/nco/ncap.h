@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.15 2002-01-11 06:18:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.16 2002-01-11 23:23:27 hmb Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -44,10 +44,15 @@
 /* YACC seems to initialize all user-defined pointers (like those in symbol table) to NULL
    Symbol type may, therefore, safely be determined by testing for non-NULL members
    This technique is frequently used in Pigeon book */
+
+
 typedef struct {
   char *nm;
-  double (*fnc)();
+  double (*fnc)(double);
+  float  (*fncf)(float);
 } sym_sct;
+
+
 
 typedef struct {
   val_unn val;
@@ -64,6 +69,8 @@ typedef struct{
     int *nbr_att;
     dmn_sct **dmn;
     int nbr_dmn_xtr;
+    sym_sct **sym_tbl;
+    int sym_tbl_nbr;
     bool initial_scan;
 } prs_sct;
 
@@ -79,11 +86,12 @@ extern int yyerror(char *sng);
 extern nm_id_sct *var_lst_copy(nm_id_sct *,int);
 extern nm_id_sct *var_lst_add(int,nm_id_sct *,int *,nm_id_sct *,int);
 extern nm_id_sct *var_lst_sub(int,nm_id_sct *,int *,nm_id_sct *,int);
+nm_id_sct * ncap_var_lst_crd_make(int,nm_id_sct *,int *);
 extern parse_sct ncap_attribute_abs(parse_sct);
 extern parse_sct ncap_attribute_calc(parse_sct,char,parse_sct);
 extern parse_sct ncap_ptr_unn_2_attribute(nc_type,ptr_unn);
 extern ptr_unn ncap_attribute_2_ptr_unn(parse_sct); 
-extern sym_sct *ncap_sym_init(char *,double (*fnc)());
+extern sym_sct *ncap_sym_init(char * ,double (*fnc)(double),float (*fncf)(float));
 extern sym_sct *scalar_mk_sym(double val);
 extern sym_sct *sym_look(char *sym_nm);
 extern var_sct *ncap_var_abs(var_sct *);
@@ -93,7 +101,7 @@ extern var_sct *ncap_var_attribute_modulus(var_sct *,parse_sct);
 extern var_sct *ncap_var_attribute_multiply(var_sct *,parse_sct);
 extern var_sct *ncap_var_attribute_power(var_sct *,parse_sct);
 extern var_sct *ncap_var_attribute_sub(var_sct *,parse_sct);
-extern var_sct *ncap_var_function(var_sct *,double (*fnc)());
+extern var_sct *ncap_var_function(var_sct *,sym_sct *);
 extern var_sct *ncap_var_init(char*,prs_sct*);
 extern var_sct *ncap_var_var_add(var_sct *var_1,var_sct *var_2);
 extern var_sct *ncap_var_var_multiply(var_sct *var_1,var_sct *var_2);
