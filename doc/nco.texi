@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.100 2002-05-31 21:00:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.101 2002-06-16 16:30:16 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -692,7 +692,7 @@ Once you have read the manual, if you are still unable to get @acronym{NCO}
 to perform a documented function, write help request.
 Follow the same procedure as described below for reporting bugs
 (after all, it might be a bug).
-That is, describe what you are trying to do, and inlude the complete
+That is, describe what you are trying to do, and include the complete
 commands (with @samp{-D 5}), error messages, and version of NCO.
 Post your help request to the 
 @uref{http://sourceforge.net/forum/forum.php?forum_id=9830, NCO Help forum}.
