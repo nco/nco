@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.283 2004-01-21 02:10:17 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.284 2004-01-30 23:34:04 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -232,19 +232,6 @@ Make prg, prg_nm, and dbg_lvl local to main(), not global to main.c
 305. Transition ncks to print switches similar to ncdump by default, so
 ncks foo.nc prints all of foo.nc. People do not use ncks because its
 default action is non-intuitive.  
-306. Related to TODO 104. Following breaks appending from large to small file
-New dimensions, if required, do not appear to be created first in output file
-Yet nco_cpy_var_dfn*() code looks correct
-This still works when NCO is built with bld/Makefile! 
-Problem occurs with autotools regardless of shared library setting
-cd ~/nco/data;ncgen -b -o in.nc in.cdl
-ncwa -O -a time -v u,v in.nc foo.nc # Compute time mean of u,v
-ncrename -O -v u,uavg -v v,vavg foo.nc # Rename to avoid conflict
-ncks -A -C -v u,v in.nc foo.nc # Place originals with time means
-ncks: ERROR attempt to write 1 dimensional input variable u to 0 dimensional space in output file.
-ncap -O -s "uprmvprm=u*v-uavg*vavg" foo.nc foo.nc # Covariance
-ncra -O -v uprmvprm foo.nc out.nc # Time-mean covariance
-This breaks mie!
 308. Add shared library flag to nco_ctl.c flags
 309. Free memory allocated in nco_fl_utl.c: fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
 310. Add ENABLE_DEBUG_CUSTOM, ENABLE_OPTIMIZE_CUSTOM, ... to bld/Makefile

@@ -1,11 +1,11 @@
-# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.4 2004-01-16 01:42:17 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.5 2004-01-30 23:34:04 zender Exp $
 
 # Purpose: Install DODS prior to building NCO as DODS-enabled clients
 
 # Usage: 
 # Set installation directory below ($DODS_ROOT)
 # ~/nco/doc/dods.sh
-# Default will retrieve, build, and install DODS in ${DATA}/tmp 
+# Default invocation retrieves, builds, and installs DODS in ${DATA}/tmp 
 
 # ${DATA}/tmp exists on most machines, and equals /tmp when ${DATA} is not defined
 cd ${DATA}/tmp

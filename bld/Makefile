@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.237 2004-01-23 01:12:52 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.238 2004-01-30 23:34:03 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -588,17 +588,34 @@ endif # endif Comeau C Compiler
 # GNU Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
  CFLAGS := -Wall
-# Compilation flags for numerical routines recommended by GSL 0.9 manual, p. 370
-# CFLAGS += -ansi -Werror -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -Dinline= -g -O4
-# Compilation flags recommended by GSL that I do not like
-# -ansi: Equivalent to -std=c89, conflicts with -std=c99
+# Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
+# CFLAGS += -Werror -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4
+# Compilation flags recommended by GSL that I like and use:
+# -D_BSD_SOURCE: Support 4.3 BSD Unix extensions to ANSI C (prevents nameser.h warnings)
+# -D_POSIX_SOURCE: Support POSIX.1 standard additions to ANSI C (prevents fileno warnings)
+# -pedantic: Disallow non-ISO constructs (including type long long) (sometimes useful)
+# -Werror: Consider warnings as errors
+# -W: Extra warnings, including missing return values, comparison of signed with unsigned
+# -Wall: Warn about common programming problems
+# -Wmissing-prototypes: Warn if missing prototypes
+# -Wshadow: Warn if local variable has same name as other local variable
+# -Wpointer-arith: Warn if pointer arithmetic on types without size, e.g., void
+# -Wcast-qual: Warn if const qualifier removed from pointer
+# -Wcast-align: Warn if casting pointer to type of different size
+# -Wwrite-strings: Apply const-qualifier to string constants, die if overwritten
+# -fno-common: Prevent global variables from being simultaneously defined in different files
+# -g: Put debugging symbols in executable
+# -O4: Turn on optimization so unitialized variables are flagged
+# Compilation flags recommended by GSL that I do not like and do not use:
+# -ansi: Support only strict ANSI C. Equivalent to -std=c89, conflicts with -std=c99
 # --no-alias? -fstrict-aliasing
-# -pedantic: Disallow non-ISO constructs, including type long long
 # -Waggregate-return: Warn if functions return aggregates like structures or unions
-# -Wconversion: Intended for obsolete, non-prototyped code. Triggers fabsf(), sqrtf(), warnings.
-# -Wnested-externs: C only?
-# -Wstrict-prototypes: C only?
-# -Wtraditional: C only?
+# -Wconversion: Warn if converting signed to unsigned. Intended for obsolete, non-prototyped code. Triggers fabsf(), sqrtf(), warnings.
+# -Wnested-externs: Warn if extern is encountered within function. C only?
+# -Wstrict-prototypes: Warn if inconsistent prototypes. C only?
+# -Wtraditional: Warn if constructs differ between traditional and ANSI C. C only?
+# -Dinline=: inline is not an ANSI keyword, must undefine inline to work with -ansi
+# -fshort-enums: Make enums as short as possible, ususally non-int. Do not ever invoke this! This breaks ABI and causes subtle problems
 ifeq (${OPTS},O)
  CFLAGS += -O
 endif

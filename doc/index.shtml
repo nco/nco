@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.192 2004-01-17 01:19:45 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.193 2004-01-30 23:34:04 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -202,7 +202,8 @@ Tarballs and RPMs are only rarely uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.8.8</b>: (<i>In progress</i>) 
+<li><b>NCO 2.8.9</b>: (<i>In progress</i>) 
+<li><b>NCO 2.8.8</b>: <tt>--enable-[optimize/debug]-custom</tt> options for GCC work again
 <li><b>NCO 2.8.7</b>: <tt>ncap</tt> packing works again (<a href="#bug_pck">broke in 2.8.4</a>), Cygwin builds work again
 <li><b>NCO 2.8.6</b>: AIX and IRIX builds work again, custom GCC builds with <tt>-Werror</tt>
 <li><b>NCO 2.8.5</b>: Solaris <tt>make install</tt> works, <tt>ncap</tt> changes attribute values correctly, <a href="#bug_DODS">Support DODS 3.4+, deprecate 3.3-</a>, add <tt>--enable-[optimize/debug]-custom</tt> options to <tt>./configure</tt>
@@ -280,18 +281,18 @@ Simply hit return when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>2.8.7</tt> into a
-local directory named <tt>nco-2.8.7</tt>: 
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2.8.7 -d nco-2.8.7 nco</tt></p>
+This command retrieves and places NCO version <tt>2.8.8</tt> into a
+local directory named <tt>nco-2.8.8</tt>: 
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2.8.8 -d nco-2.8.8 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-2_8_7</tt>) and the development version is that the
+(e.g., <tt>nco-2_8_8</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>2.8.7</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>2.8.8</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -319,14 +320,14 @@ distribution by many months, if not years:
 
 <ul>
 <!--
-<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.8.7</a></li>
+<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.8.8</a></li>
 -->
 <a href="http://www.debian.org">Debian GNU/Linux</a>-compatible systems: 
-<li><a href="src/nco_2.8.7-1_i386.deb">nco_2.8.7-1_i386.deb</a> (<!--#fsize file="src/nco_2.8.7-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
-<li><a href="src/nco_2.8.7-1.dsc">nco_2.8.7-1.dsc</a> (<!--#fsize file="src/nco_2.8.7-1.dsc"-->): Description</li>
-<li><a href="src/nco_2.8.7-1.tar.gz">nco_2.8.7-1.tar.gz</a> (<!--#fsize file="src/nco_2.8.7-1.tar.gz"-->): Gzipped Source Tarball</li>
+<li><a href="src/nco_2.8.8-1_i386.deb">nco_2.8.8-1_i386.deb</a> (<!--#fsize file="src/nco_2.8.8-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
+<li><a href="src/nco_2.8.8-1.dsc">nco_2.8.8-1.dsc</a> (<!--#fsize file="src/nco_2.8.8-1.dsc"-->): Description</li>
+<li><a href="src/nco_2.8.8-1.tar.gz">nco_2.8.8-1.tar.gz</a> (<!--#fsize file="src/nco_2.8.8-1.tar.gz"-->): Gzipped Source Tarball</li>
 <li><a
-href="src/nco_2.8.7-1_i386.changes">nco_2.8.7-1_i386.changes</a> (<!--#fsize file="src/nco_2.8.7-1.changes"-->): Changes</li> (I think an error here is expected since there are no changes between the official tarball and the Debian tarball. Anyone know?)
+href="src/nco_2.8.8-1_i386.changes">nco_2.8.8-1_i386.changes</a> (<!--#fsize file="src/nco_2.8.8-1.changes"-->): Changes</li> (I think an error here is expected since there are no changes between the official tarball and the Debian tarball. Anyone know?)
 </ul>
 
 <ul>

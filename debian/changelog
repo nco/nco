@@ -1,3 +1,9 @@
+nco (2.8.8-1) unstable; urgency=low
+
+  * --enable-[optimize/debug]-custom works again on GCC
+
+ -- Charlie Zender <zender@ashes.ess.uci.edu>  Fri, 30 Jan 2004 15:31:09 -0800
+
 nco (2.8.7-1) unstable; urgency=low
 
   * Default GCC builds work again, ncap packing works again

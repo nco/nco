@@ -1,3 +1,13 @@
+2004-01-30  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_8_8
+	Changes since nco-2_8_7: --enable-[optimize/debug]-custom works
+	again 
+
+	* Remove -fshort-enums from GCC switches as per Rorik. 
+	It breaks ABI and caused mysterious failures because libnetcdf.a
+	must be compiled with same size enums as NCO apparently.
+
 2004-01-20  Charlie Zender  <zender@uci.edu>
 
 	* Implement DODS 3.4 switches as default in bld/Makefile
@@ -9,7 +19,7 @@
 
 2004-01-16  Charlie Zender  <zender@uci.edu>
 
-	* nco_netcdf.c: Do not initialize rcd unless not doing so might	cause CEWI
+	* nco_netcdf.c: Do not initialize rcd unless not doing so might cause CEWI
 
 2004-01-15  Charlie Zender  <zender@uci.edu>
 

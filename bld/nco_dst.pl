@@ -6,17 +6,17 @@
 # Usage:
 # Export tagged, public versions
 
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-2_8_7 # Build, do not install
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco-2_8_7 # Install, do not build
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --nst_all nco-2_8_7 # Build and install
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco-2_8_7
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco-2_8_7
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco-2_8_7
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco-2_8_7
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco-2_8_7
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco-2_8_7
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco-2_8_7
-# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco-2_8_7
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-2_8_8 # Build, do not install
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco-2_8_8 # Install, do not build
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln --nst_all nco-2_8_8 # Build and install
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco-2_8_8
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco-2_8_8
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco-2_8_8
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco-2_8_8
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco-2_8_8
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco-2_8_8
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco-2_8_8
+# ${HOME}/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco-2_8_8
 
 # Export daily snapshot
 # ${HOME}/nco/bld/nco_dst.pl --dbg=2 
@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.122 2004-01-13 19:52:57 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.123 2004-01-30 23:34:03 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -67,9 +67,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2004-01-13 19:52:57 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.122 2004-01-13 19:52:57 zender Exp $';
-my $CVS_Revision='$Revision: 1.122 $';
+my $CVS_Date='$Date: 2004-01-30 23:34:03 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.123 2004-01-30 23:34:03 zender Exp $';
+my $CVS_Revision='$Revision: 1.123 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
