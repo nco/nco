@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.104 2005-01-07 23:54:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.105 2005-03-20 21:07:55 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -935,6 +935,15 @@ ncap_var_stretch /* [fnc] Stretch variables */
     if(var_lsr_out->nbr_dim == 0){
       /* Variables are scalars, not arrays */
       (void)memcpy(var_lsr_out_cp,var_lsr_cp,var_lsr_typ_sz);
+    }else if(var_lsr->nbr_dim == 0){
+      /* Lesser-ranked input variable is scalar 
+	 Expansion in this degenerate case needs no index juggling
+	 Code as special case to speed-up important applications of ncap
+	 for synthetic file creation */
+      var_gtr_sz=var_gtr->sz;
+      for(var_gtr_lmn=0;var_gtr_lmn<var_gtr_sz;var_gtr_lmn++){
+	(void)memcpy(var_lsr_out_cp+var_gtr_lmn*var_lsr_typ_sz,var_lsr_cp,var_lsr_typ_sz);
+      } /* end loop over var_gtr_lmn */
     }else{
       /* Variables are arrays, not scalars */
       
@@ -956,9 +965,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
       Since mapping arrays (dmn_var_gtr_map and dmn_var_lsr_map) are ultimately used for a
       memcpy() operation, they could (read: should) be computed as byte offsets, not type offsets.
       This is why netCDF generic hyperslab routines (ncvarputg(), ncvargetg())
-      request imap vector to specify offset (imap) vector in bytes.
-      */
-      
+      request imap vector to specify offset (imap) vector in bytes. */
       for(idx=0;idx<var_lsr->nbr_dim;idx++){
 	for(idx_dmn=0;idx_dmn<var_gtr->nbr_dim;idx_dmn++){
 	  /* Compare names, not dimension IDs */
