@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.21 2002-04-26 23:20:07 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.22 2002-04-27 06:08:27 zender Exp $ -*-C-*-
 
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 
@@ -84,6 +84,8 @@
    Automatic packing is not yet working
    ncap -O -D 1 -v -s "pck=pack(ORO)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    ncap -O -D 1 -v -s "pck=pack(upk)" -s "pck_arr=pack(upk_arr)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap -O -D 1 -v -s "pck=pack(pck)" -s "pck_arr=pack(pck_arr)" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap -O -D 1 -v -s "upk=unpack(pack(unpack(pack(pck))))" -s "upk_arr=unpack(pack(unpack(pack(pck_arr))))" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    ncks -H -m ${HOME}/nco/data/foo.nc | m
    ncks -H -v pck,pck_arr -m ${HOME}/nco/data/foo.nc | m
    ncks -H -v upk,upk_arr -m ${HOME}/nco/data/foo.nc | m

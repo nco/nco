@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.48 2002-04-27 00:15:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.49 2002-04-27 06:08:33 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -135,47 +135,47 @@ ncap_sym_init(char *name,double (*fnc_dbl)(double),float (*fnc_flt)(float))
 } /* end ncap_sym_init */
 
 scv_sct 
-ncap_ptr_unn_2_scv(nc_type type, ptr_unn val)
+ncap_ptr_unn_2_scv(nc_type type,ptr_unn val)
 {
   /* Purpose: Convert a ptr_unn to an attribute scv_sct
      Assumes that val is initially cast to void
      Note does not convert cp (strings) as these are not handled by scv_sct
-     Note: netCDF attributes can contain MULTIPLE values
+     Note: netCDF attributes may contain multiple values
      Only FIRST value in memory block is converted */
   
-  scv_sct a;
+  scv_sct scv;
   (void)cast_void_nctype(type,&val);
   switch(type){
-  case NC_FLOAT: a.val.f=*val.fp; break;
-  case NC_DOUBLE: a.val.d =*val.dp; break;
-  case NC_INT: a.val.l =*val.lp; break;
-  case NC_SHORT: a.val.s=*val.sp; break;
-  case NC_BYTE: a.val.b =*val.bp;  break;
-  case NC_CHAR: break; /* do nothing */
+  case NC_FLOAT: scv.val.f=*val.fp; break;
+  case NC_DOUBLE: scv.val.d =*val.dp; break;
+  case NC_INT: scv.val.l =*val.lp; break;
+  case NC_SHORT: scv.val.s=*val.sp; break;
+  case NC_BYTE: scv.val.b =*val.bp; break;
+  case NC_CHAR: break; /* Do nothing */
   default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
-  a.type=type;
+  scv.type=type;
   /* Do not uncast pointer as we are working with a copy */
-  return a;
+  return scv;
 } /* end ncap_ptr_unn_2_scv */
 
 ptr_unn
-ncap_scv_2_ptr_unn(scv_sct a)
+ncap_scv_2_ptr_unn(scv_sct scv)
 {
   /* Purpose: Convert scv_sct to ptr_unn
      malloc() appropriate space for single type
      NB: Does not work on strings */
   ptr_unn val;
-  nc_type type=a.type;
+  nc_type type=scv.type;
   val.vp=(void *)nco_malloc(nco_typ_lng(type));
   (void)cast_void_nctype(type,&val);
   
   switch(type){
-  case NC_FLOAT: *val.fp=a.val.f; break;
-  case NC_DOUBLE: *val.dp=a.val.d; break;
-  case NC_INT: *val.lp=a.val.l; break;
-  case NC_SHORT: *val.sp=a.val.s; break;
-  case NC_BYTE: *val.bp=a.val.b; break;
+  case NC_FLOAT: *val.fp=scv.val.f; break;
+  case NC_DOUBLE: *val.dp=scv.val.d; break;
+  case NC_INT: *val.lp=scv.val.l; break;
+  case NC_SHORT: *val.sp=scv.val.s; break;
+  case NC_BYTE: *val.bp=scv.val.b; break;
   case NC_CHAR: break; /* do nothing */
   default: nco_dfl_case_nctype_err(); break;
   } /* end switch */

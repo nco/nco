@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.30 2002-04-27 00:15:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.31 2002-04-27 06:08:33 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -76,40 +76,40 @@ typedef struct{ /* prs_sct */
 extern bool ncap_var_conform_dim(var_sct **,var_sct **);
 extern bool ncap_var_stretch(var_sct **,var_sct **);
 extern int ncap_aed_lookup(char *,char *,aed_sct **,int *,bool);
-extern void quick_free(var_sct **);
 extern int ncap_scv_minus(scv_sct *);
-extern nc_type ncap_scv_scv_cnf_typ_hgh_prc(scv_sct *,scv_sct *);
 extern int ncap_var_retype(var_sct *,var_sct *);
 extern int ncap_var_write(var_sct *,prs_sct*);
 extern int yyerror(char *sng);
-extern nm_id_sct *var_lst_free(nm_id_sct *,int );
-extern nm_id_sct *var_lst_copy(nm_id_sct *,int);
-extern nm_id_sct *var_lst_add(int,nm_id_sct *,int *,nm_id_sct *,int);
-extern nm_id_sct *var_lst_sub(int,nm_id_sct *,int *,nm_id_sct *,int);
+extern nc_type ncap_scv_scv_cnf_typ_hgh_prc(scv_sct *,scv_sct *);
 extern nm_id_sct *ncap_var_lst_crd_make(int,nm_id_sct *,int *);
+extern nm_id_sct *var_lst_add(int,nm_id_sct *,int *,nm_id_sct *,int);
+extern nm_id_sct *var_lst_copy(nm_id_sct *,int);
+extern nm_id_sct *var_lst_free(nm_id_sct *,int );
+extern nm_id_sct *var_lst_sub(int,nm_id_sct *,int *,nm_id_sct *,int);
+extern ptr_unn ncap_scv_2_ptr_unn(scv_sct); 
+extern scv_sct ncap_ptr_unn_2_scv(nc_type,ptr_unn);
 extern scv_sct ncap_scv_abs(scv_sct);
 extern scv_sct ncap_scv_calc(scv_sct,char,scv_sct);
-extern scv_sct ncap_ptr_unn_2_scv(nc_type,ptr_unn);
-extern ptr_unn ncap_scv_2_ptr_unn(scv_sct); 
 extern sym_sct *ncap_sym_init(char * ,double (*fnc)(double),float (*fncf)(float));
 extern sym_sct *scalar_mk_sym(double val);
 extern sym_sct *sym_look(char *sym_nm);
 extern var_sct *ncap_var_abs(var_sct *);
+extern var_sct *ncap_var_function(var_sct *,sym_sct *);
+extern var_sct *ncap_var_init(char*,prs_sct *);
 extern var_sct *ncap_var_scv_add(var_sct *,scv_sct);
 extern var_sct *ncap_var_scv_divide(var_sct *,scv_sct);
 extern var_sct *ncap_var_scv_modulus(var_sct *,scv_sct);
 extern var_sct *ncap_var_scv_multiply(var_sct *,scv_sct);
 extern var_sct *ncap_var_scv_power(var_sct *,scv_sct);
 extern var_sct *ncap_var_scv_sub(var_sct *,scv_sct);
-extern var_sct *ncap_var_function(var_sct *,sym_sct *);
-extern var_sct *ncap_var_init(char*,prs_sct *);
 extern var_sct *ncap_var_var_add(var_sct *var_1,var_sct *var_2);
-extern var_sct *ncap_var_var_multiply(var_sct *var_1,var_sct *var_2);
 extern var_sct *ncap_var_var_divide(var_sct *var_1,var_sct *var_2);
+extern var_sct *ncap_var_var_multiply(var_sct *var_1,var_sct *var_2);
 extern var_sct *ncap_var_var_sub(var_sct *var_1,var_sct *var_2);
 extern void fnc_add(char *nm, double (*fnc)());
 extern void ncap_initial_scan(prs_sct*,char *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *);
 extern void nco_lib_vrs_prn();
+extern void quick_free(var_sct **);
 
 extern nc_type /* [enm] Highest precision of arguments */
 ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if necessary */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.136 2002-04-26 23:20:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.137 2002-04-27 06:08:33 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -3295,11 +3295,11 @@ var_max_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
 	if(op2.sp[idx] < op1.sp[idx])
 	  op2.sp[idx]=op1.sp[idx];
     }else{
-      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
-	if(op2.sp[idx] == mss_val_shrt) 
+	if(op2.sp[idx] == mss_val_sht) 
 	  op2.sp[idx]=op1.sp[idx];
-	else if((op1.sp[idx] != mss_val_shrt) && (op2.sp[idx] < op1.sp[idx]))
+	else if((op1.sp[idx] != mss_val_sht) && (op2.sp[idx] < op1.sp[idx]))
 	  op2.sp[idx]=op1.sp[idx]; 
       } /* end for */
     } /* end else */
@@ -3387,11 +3387,11 @@ var_min_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
       for(idx=0;idx<sz;idx++) 
 	if(op2.sp[idx] > op1.sp[idx])  op2.sp[idx]=op1.sp[idx];
     }else{
-      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
-	if(op2.sp[idx] == mss_val_shrt) 
+	if(op2.sp[idx] == mss_val_sht) 
 	  op2.sp[idx]=op1.sp[idx];
-	else if((op1.sp[idx] != mss_val_shrt) && (op2.sp[idx] > op1.sp[idx]))
+	else if((op1.sp[idx] != mss_val_sht) && (op2.sp[idx] > op1.sp[idx]))
 	  op2.sp[idx]=op1.sp[idx]; 
       } /* end for */
     } /* end else */
@@ -3475,9 +3475,9 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.sp[idx]*=op1.sp[idx];
     }else{
-      long mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      long mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
-	if((op2.sp[idx] != mss_val_shrt) && (op1.sp[idx] != mss_val_shrt)) op2.sp[idx]*=op1.sp[idx]; else op2.sp[idx]=mss_val_shrt;
+	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)) op2.sp[idx]*=op1.sp[idx]; else op2.sp[idx]=mss_val_sht;
       } /* end for */
     } /* end else */
     break;
@@ -3564,9 +3564,9 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.sp[idx]/=op1.sp[idx];
     }else{
-      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
-	if((op2.sp[idx] != mss_val_shrt) && (op1.sp[idx] != mss_val_shrt)) op2.sp[idx]/=op1.sp[idx]; else op2.sp[idx]=mss_val_shrt;
+	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)) op2.sp[idx]/=op1.sp[idx]; else op2.sp[idx]=mss_val_sht;
       } /* end for */
     } /* end else */
     break;
@@ -3674,9 +3674,9 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 	tally[idx]++;
       } /* end for */
     }else{
-      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
-	if((op2.sp[idx] != mss_val_shrt) && (op1.sp[idx] != mss_val_shrt)){
+	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)){
 	  op2.sp[idx]+=op1.sp[idx];
 	  tally[idx]++;
 	} /* end if */
@@ -3786,9 +3786,9 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
 	tally[idx]++;
       } /* end for */
     }else{
-      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
-	if(op1.sp[idx] != mss_val_shrt){
+	if(op1.sp[idx] != mss_val_sht){
 	  op2.sp[idx]=(short)sqrt(op1.sp[idx]);
 	  tally[idx]++;
 	} /* end if */
@@ -3854,7 +3854,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   signed char mss_val_byt;
 #endif /* USE_FORTRAN_ARITHMETIC */
   nco_long mss_val_lng=nco_long_CEWI;
-  short mss_val_shrt=short_CEWI;
+  short mss_val_sht=short_CEWI;
 
   sz_blk=sz_op1/sz_op2;
 
@@ -3868,7 +3868,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
     case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
-    case NC_SHORT: mss_val_shrt=*mss_val.sp; break;
+    case NC_SHORT: mss_val_sht=*mss_val.sp; break;
     case NC_INT: mss_val_lng=*mss_val.lp; break;
     case NC_BYTE: mss_val_byt=*mss_val.bp; break;
     case NC_CHAR: mss_val_chr=*mss_val.cp; break;
@@ -4044,12 +4044,12 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
-	  if(op1.sp[idx_op1] != mss_val_shrt){
+	  if(op1.sp[idx_op1] != mss_val_sht){
 	    op2.sp[idx_op2]+=op1.sp[idx_op1];
 	    tally[idx_op2]++;
 	  } /* end if */
 	} /* end loop over idx_blk */
-	if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_shrt;
+	if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_sht;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -4067,12 +4067,12 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       }else{
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_shrt){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_sht){
 	      op2.sp[idx_op2]+=op1_2D[idx_op2][idx_blk];
 	      tally[idx_op2]++;
 	    } /* end if */
 	  } /* end loop over idx_blk */
-	  if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_shrt;
+	  if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_sht;
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
@@ -4126,7 +4126,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
   nco_long mss_val_lng=nco_long_CEWI;
-  short mss_val_shrt=short_CEWI;
+  short mss_val_sht=short_CEWI;
   unsigned char mss_val_chr;
   signed char mss_val_byt;
   
@@ -4143,7 +4143,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
     case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
-    case NC_SHORT: mss_val_shrt=*mss_val.sp; break;
+    case NC_SHORT: mss_val_sht=*mss_val.sp; break;
     case NC_INT: mss_val_lng=*mss_val.lp; break;
     case NC_BYTE: mss_val_byt=*mss_val.bp; break;
     case NC_CHAR: mss_val_chr=*mss_val.cp; break;
@@ -4327,12 +4327,12 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
-	  if(op1.sp[idx_op1] != mss_val_shrt){
+	  if(op1.sp[idx_op1] != mss_val_sht){
 	    if(!flg_mss || op2.sp[idx_op2] > op1.sp[idx_op1]) op2.sp[idx_op2]=op1.sp[idx_op1];
 	    flg_mss=True;
 	  } /* end if */
 	} /* end loop over idx_blk */
-	if(!flg_mss) op2.sp[idx_op2]=mss_val_shrt;
+	if(!flg_mss) op2.sp[idx_op2]=mss_val_sht;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -4352,12 +4352,12 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_shrt){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_sht){
 	      if(!flg_mss  || op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
 	      flg_mss=True;
 	    } /* end if */
 	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.sp[idx_op2]=mss_val_shrt;
+	  if(!flg_mss) op2.sp[idx_op2]=mss_val_sht;
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
@@ -4412,7 +4412,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
   nco_long mss_val_lng=nco_long_CEWI;
-  short mss_val_shrt=short_CEWI;
+  short mss_val_sht=short_CEWI;
   unsigned char mss_val_chr;
   signed char mss_val_byt;
   
@@ -4429,7 +4429,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     switch(type){
     case NC_FLOAT: mss_val_flt=*mss_val.fp; break;
     case NC_DOUBLE: mss_val_dbl=*mss_val.dp; break;
-    case NC_SHORT: mss_val_shrt=*mss_val.sp; break;
+    case NC_SHORT: mss_val_sht=*mss_val.sp; break;
     case NC_INT: mss_val_lng=*mss_val.lp; break;
     case NC_BYTE: mss_val_byt=*mss_val.bp; break;
     case NC_CHAR: mss_val_chr=*mss_val.cp; break;
@@ -4613,12 +4613,12 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	flg_mss=False;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
-	  if(op1.sp[idx_op1] != mss_val_shrt){
+	  if(op1.sp[idx_op1] != mss_val_sht){
 	    if(!flg_mss || op2.sp[idx_op2] < op1.sp[idx_op1]) op2.sp[idx_op2]=op1.sp[idx_op1];
 	    flg_mss=True;
 	  } /* end if */
 	} /* end loop over idx_blk */
-	if(!flg_mss) op2.sp[idx_op2]=mss_val_shrt;
+	if(!flg_mss) op2.sp[idx_op2]=mss_val_sht;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
@@ -4638,12 +4638,12 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != mss_val_shrt){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_sht){
 	      if(!flg_mss  || op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];	      
 	      flg_mss=True;
 	    } /* end if */
 	  } /* end loop over idx_blk */
-	  if(!flg_mss) op2.sp[idx_op2]=mss_val_shrt;
+	  if(!flg_mss) op2.sp[idx_op2]=mss_val_sht;
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
@@ -4763,8 +4763,8 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]/=tally[idx];
     }else{
-      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
-      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.sp[idx]/=tally[idx]; else op1.sp[idx]=mss_val_shrt;
+      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.sp[idx]/=tally[idx]; else op1.sp[idx]=mss_val_sht;
     } /* end else */
     break;
   case NC_CHAR:
@@ -4834,8 +4834,8 @@ var_normalize_sdn(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tal
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]/=(tally[idx]-1);
     }else{
-      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
-      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.sp[idx]/=(tally[idx]-1); else op1.sp[idx]=mss_val_shrt;
+      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.sp[idx]/=(tally[idx]-1); else op1.sp[idx]=mss_val_sht;
     } /* end else */
     break;
   case NC_CHAR:
@@ -5184,9 +5184,9 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.sp[idx]-=op1.sp[idx];
     }else{
-      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
-	if((op2.sp[idx] != mss_val_shrt) && (op1.sp[idx] != mss_val_shrt)) op2.sp[idx]-=op1.sp[idx]; else op2.sp[idx]=mss_val_shrt;
+	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)) op2.sp[idx]-=op1.sp[idx]; else op2.sp[idx]=mss_val_sht;
       } /* end for */
     } /* end else */
     break;
@@ -5260,9 +5260,9 @@ var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.sp[idx]+=op1.sp[idx];
     }else{
-      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
-	if((op2.sp[idx] != mss_val_shrt) && (op1.sp[idx] != mss_val_shrt)) op2.sp[idx]+=op1.sp[idx]; else op2.sp[idx]=mss_val_shrt;
+	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)) op2.sp[idx]+=op1.sp[idx]; else op2.sp[idx]=mss_val_sht;
       } /* end for */
     } /* end else */
     break;

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.49 2002-04-26 23:30:00 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.50 2002-04-27 06:08:33 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -116,7 +116,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 %token <aed> OUT_ATT
 %token <sym> FUNCTION
 %token <sbs_lst> LHS_SBS
-%token ABS ATOSTR EPROVOKE IGNORE PCK POWER
+%token ABS ATOSTR EPROVOKE IGNORE PACK POWER UNPACK
 
 /* "type" declaration sets type for non-terminal symbols which otherwise need no declaration
    Format of "type" declaration is
@@ -516,10 +516,14 @@ var_exp '+' var_exp {
   $$=ncap_var_abs($3);
   var_free($3);
 } /* end ABS */
-| PCK '(' var_exp ')' {
+| PACK '(' var_exp ')' {
   /* Packing variable does not create duplicate so DO NOT free $3 */
   $$=var_pck($3,NC_SHORT,False);
-} /* end PCK */
+} /* end PACK */
+| UNPACK '(' var_exp ')' {
+  /* Unpacking variable does not create duplicate so DO NOT free $3 */
+  $$=var_upk($3);
+} /* end UNPACK */
 | FUNCTION '(' var_exp ')' {
   $$=ncap_var_function($3,$1);
   var_free($3);

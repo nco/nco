@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.136 2002-04-26 23:20:08 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.137 2002-04-27 06:08:33 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -42,6 +42,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 26. Make sym_tbl_nbr dynamic
 27. Write and implement ncap_var_var_pow(), currently only ncap_var_att_pow() and ncap_att_att_pow work
 28. Make provision for pack() and unpack() to copy all attributes except scale_factor and add_offset from disk into new variable on disk?
+29. Rewrite var_pck() to use var_scv() arithmetic operations
 
 Highest priority NCO-wide items that You can help with:
 41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)

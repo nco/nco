@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.39 2002-04-26 23:30:00 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.40 2002-04-27 06:08:33 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -229,9 +229,11 @@ foo/[ ]*\( {return ABS;} /* TOKEN whitespace (: Token followed any amount of whi
 This disambiguates variable and functional namespaces. */
 abs/[ ]*\( {return ABS;}
 atostr/[ ]*\( {return ATOSTR;}
-pck/[ ]*\( {return PCK;}
-pack/[ ]*\( {return PCK;}
+pck/[ ]*\( {return PACK;}
+pack/[ ]*\( {return PACK;}
 pow/[ ]*\( {return POWER;}
+upk/[ ]*\( {return UNPACK;}
+unpack/[ ]*\( {return UNPACK;}
 
 [A-Za-z_][A-Za-z0-9_]*/[ ]*\( {
 /* Compare input with mathematical function names in table and return

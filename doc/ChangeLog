@@ -1,5 +1,8 @@
 2002-04-26  Charlie Zender  <zender@uci.edu>
 
+	* Packing appears to be working, but not recursively, and there
+	are still issues of speed and rounding problems
+
 	* Automatically call var_upk() in var_get() in ncap only
 
 	* Improved pck/upk values in in.cdl
