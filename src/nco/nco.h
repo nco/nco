@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.31 2002-05-05 21:21:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.32 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -81,13 +81,13 @@ extern "C" {
     ncwa
   }; /* end prg enum */
   
-  enum{ /* [enm] Attribute editor mode */
+  enum aed{ /* [enm] Attribute editor mode */
     aed_append,
-      aed_create,
-      aed_delete,
-      aed_modify,
-      aed_overwrite
-      }; /* end enum */
+    aed_create,
+    aed_delete,
+    aed_modify,
+    aed_overwrite
+  }; /* end enum */
   
   enum nco_rlt_opr{ /* [enm] Arithmetic relations (comparisons) for masking */
     nco_op_eq, /* Equality */

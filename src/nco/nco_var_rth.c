@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.2 2002-05-06 00:30:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.3 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -1792,7 +1792,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     (void)cast_void_nctype(type,&mss_val);
   }else{
     (void)fprintf(stdout,"%s: ERROR has_mss_val is inconsistent with purpose of var_ask(), i.e., has_mss_val is not True\n",prg_nm_get());
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* end else */
 
   /* NB: Explicit coercion when comparing op2 to op1 is necessary */

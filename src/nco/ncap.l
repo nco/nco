@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.42 2002-04-27 17:04:07 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.43 2002-05-06 02:17:56 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -501,7 +501,7 @@ unpack/[ ]*\( {return UNPACK;}
      fxm: more efficient and safer to use calloc() and not fill with values? */
   if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type))) == NULL){
     (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for var_LHS() in lexer\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
-    exit(EXIT_FAILURE); 
+    nco_exit(EXIT_FAILURE); 
   } /* end if */
   
   /* Copy arbitrary value into variable 

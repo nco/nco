@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.2 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -98,7 +98,7 @@ aed_prc /* [fnc] Process a single attribute edit on a single variable */
     /* Place var_get() code inline since var struct is not truly complete */
     if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type))) == NULL){
       (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in aed_prc()\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
-      exit(EXIT_FAILURE); 
+      nco_exit(EXIT_FAILURE); 
     } /* end if */
     if(var->sz > 1){
       (void)nco_get_vara(var->nc_id,var->id,var->srt,var->cnt,var->val.vp,var->type);
@@ -113,7 +113,7 @@ aed_prc /* [fnc] Process a single attribute edit on a single variable */
     /* Sanity check */
     if(var->has_mss_val == False){
       (void)fprintf(stdout,"%s: ERROR \"missing_value\" attribute does not exist in aed_prc()\n",prg_nm_get());
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
 
     /* Shortcuts to avoid indirection */
@@ -173,7 +173,7 @@ aed_prc /* [fnc] Process a single attribute edit on a single variable */
       /* Append to existing attribute value */
       if(aed.type != att_typ){
 	(void)fprintf(stdout,"%s: ERROR %s attribute %s is of type %s not %s, unable to append\n",prg_nm_get(),var_nm,aed.att_nm,nco_typ_sng(att_typ),nco_typ_sng(aed.type));
-	exit(EXIT_FAILURE);
+	nco_exit(EXIT_FAILURE);
       } /* end if */
       att_val_new=(void *)nco_malloc((att_sz+aed.sz)*nco_typ_lng(aed.type));
       (void)nco_get_att(nc_id,var_id,aed.att_nm,(void *)att_val_new,aed.type);
@@ -207,9 +207,53 @@ aed_prc /* [fnc] Process a single attribute edit on a single variable */
 } /* end aed_prc() */
 
 void 
+att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF file */
+(const int in_id, /* I [id] netCDF input-file ID */
+ const int out_id, /* I [id] netCDF output-file ID */
+ const int var_in_id, /* I [id] netCDF input-variable ID */
+ const int var_out_id) /* I [id] netCDF output-variable ID */
+{
+  /* Purpose: Copy attributes from input netCDF file to output netCDF file
+     If var_in_id == NC_GLOBAL, then global attributes are copied. 
+     Otherwise only indicated variable's attributes are copied */
+
+  int idx;
+  int nbr_att;
+  int rcd; /* [enm] Return code */
+
+  if(var_in_id == NC_GLOBAL){
+    (void)nco_inq_natts(in_id,&nbr_att);
+  }else{
+    (void)nco_inq_varnatts(in_id,var_in_id,&nbr_att);
+  } /* end else */
+  
+  for(idx=0;idx<nbr_att;idx++){
+    char att_nm[NC_MAX_NAME];
+    
+    (void)nco_inq_attname(in_id,var_in_id,idx,att_nm);
+    rcd=nco_inq_att_flg(out_id,var_out_id,att_nm,(nc_type *)NULL,(long *)NULL);
+      
+    /* Are we about to overwrite an existing attribute? */
+    if(rcd == NC_NOERR){
+      if(var_out_id == NC_GLOBAL){
+	(void)fprintf(stderr,"%s: WARNING Overwriting global attribute %s\n",prg_nm_get(),att_nm);
+      }else{
+	char var_nm[NC_MAX_NAME];
+	
+	(void)nco_inq_varname(out_id,var_out_id,var_nm);
+	(void)fprintf(stderr,"%s: WARNING Overwriting attribute %s for output variable %s\n",prg_nm_get(),att_nm,var_nm);
+      } /* end else */
+    } /* end if */
+
+    (void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
+
+  } /* end loop over attributes */
+} /* end att_cpy() */
+
+void 
 hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
- const char const *hst_sng) /* I [sng] String to add to history attribute */
+ const char * const hst_sng) /* I [sng] String to add to history attribute */
 {
 /* Purpose: Add command line and date stamp to existing history attribute, if any,
    and write them to specified output file */
@@ -282,46 +326,3 @@ hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 
 } /* end hst_att_cat() */
 
-void 
-att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF file */
-(const int in_id, /* I [id] netCDF input-file ID */
- const int out_id, /* I [id] netCDF output-file ID */
- const int var_in_id, /* I [id] netCDF input-variable ID */
- const int var_out_id) /* I [id] netCDF output-variable ID */
-{
-  /* Purpose: Copy attributes from input netCDF file to output netCDF file
-     If var_in_id == NC_GLOBAL, then global attributes are copied. 
-     Otherwise only indicated variable's attributes are copied */
-
-  int idx;
-  int nbr_att;
-  int rcd; /* [enm] Return code */
-
-  if(var_in_id == NC_GLOBAL){
-    (void)nco_inq_natts(in_id,&nbr_att);
-  }else{
-    (void)nco_inq_varnatts(in_id,var_in_id,&nbr_att);
-  } /* end else */
-  
-  for(idx=0;idx<nbr_att;idx++){
-    char att_nm[NC_MAX_NAME];
-    
-    (void)nco_inq_attname(in_id,var_in_id,idx,att_nm);
-    rcd=nco_inq_att_flg(out_id,var_out_id,att_nm,(nc_type *)NULL,(long *)NULL);
-      
-    /* Are we about to overwrite an existing attribute? */
-    if(rcd == NC_NOERR){
-      if(var_out_id == NC_GLOBAL){
-	(void)fprintf(stderr,"%s: WARNING Overwriting global attribute %s\n",prg_nm_get(),att_nm);
-      }else{
-	char var_nm[NC_MAX_NAME];
-	
-	(void)nco_inq_varname(out_id,var_out_id,var_nm);
-	(void)fprintf(stderr,"%s: WARNING Overwriting attribute %s for output variable %s\n",prg_nm_get(),att_nm,var_nm);
-      } /* end else */
-    } /* end if */
-
-    (void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
-
-  } /* end loop over attributes */
-} /* end att_cpy() */

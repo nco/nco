@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.3 2002-05-05 02:55:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.4 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -27,7 +27,7 @@ fl_cp /* [fnc] Copy first file to second */
   rcd=system(cp_cmd);
   if(rcd == -1){
     (void)fprintf(stdout,"%s: ERROR fl_cp() is unable to execute cp command \"%s\"\n",prg_nm_get(),cp_cmd);
-    exit(EXIT_FAILURE); 
+    nco_exit(EXIT_FAILURE); 
   } /* end if */
   cp_cmd=nco_free(cp_cmd);
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
@@ -52,7 +52,7 @@ fl_mv /* [fnc] Move first file to second */
   rcd=system(mv_cmd);
   if(rcd == -1){
     (void)fprintf(stdout,"%s: ERROR fl_mv() is unable to execute mv command \"%s\"\n",prg_nm_get(),mv_cmd);
-    exit(EXIT_FAILURE); 
+    nco_exit(EXIT_FAILURE); 
   } /* end if */
   mv_cmd=nco_free(mv_cmd);
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
@@ -354,7 +354,7 @@ fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 #ifdef WIN32
       /* I have no idea how networking calls work in NT, so just exit */
       (void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported for Windows NT\n",prg_nm_get(),fl_nm_rmt);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
 #else /* not WIN32 */
 	char *fmt;
 	char *usr_nm;
@@ -444,13 +444,13 @@ fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     if(rmt_cmd == &msread || rmt_cmd == &nrnet || rmt_cmd == &msrcp){
       if (fl_nm_rmt[0] != '/' || fl_nm_rmt[1] < 'A' || fl_nm_rmt[1] > 'Z'){
 	(void)fprintf(stderr,"%s: ERROR %s is not on local filesystem and is not a syntactically valid filename on remote file system\n",prg_nm_get(),fl_nm_rmt);
-	exit(EXIT_FAILURE);
+	nco_exit(EXIT_FAILURE);
       } /* end if */
     } /* end if */
     
     if(rmt_cmd == NULL){
       (void)fprintf(stderr,"%s: ERROR unable to determine method for remote retrieval of %s\n",prg_nm_get(),fl_nm_rmt);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
 
     /* Find the path for storing the local file */
@@ -479,7 +479,7 @@ fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       if(rcd != 0){
 	(void)fprintf(stderr,"%s: ERROR Unable to create local directory %s\n",prg_nm_get(),fl_pth_lcl_tmp);
 	if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: HINT Use -l option\n",prg_nm_get());
-	exit(EXIT_FAILURE);
+	nco_exit(EXIT_FAILURE);
       } /* end if */
       /* Free local command space */
       cmd_sys=nco_free(cmd_sys);
@@ -509,7 +509,7 @@ fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"\n");
       if(rcd != 0){
 	(void)fprintf(stderr,"%s: ERROR Synchronous fetch command failed\n",prg_nm_get());
-	exit(EXIT_FAILURE);
+	nco_exit(EXIT_FAILURE);
       } /* end if */
     }else{
       /* This is the appropriate place to insert a shell script invocation 
@@ -542,7 +542,7 @@ fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       } /* end for */
       if(tm_idx == nbr_tm){
 	(void)fprintf(stderr,"%s: ERROR Maximum time (%d seconds = %.1f minutes) for asynchronous file retrieval exceeded.\n",prg_nm_get(),nbr_tm*tm_sleep,nbr_tm*tm_sleep/60.);
-	exit(EXIT_FAILURE);
+	nco_exit(EXIT_FAILURE);
       } /* end if */
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"\n%s Retrieval successful after %d sleeps of %d seconds each = %.1f minutes\n",prg_nm_get(),tm_idx,tm_sleep,tm_idx*tm_sleep/60.);
     } /* end else transfer mode is asynchronous */
@@ -560,13 +560,13 @@ fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     
     if(rcd < 0){ /* fxm: Should compare to NC_NOERR but that would mean needing to #include netcdf.h which I want to avoid */
       (void)fprintf(stderr,"%s: ERROR Attempted HTTP access protocol failed: DODS server is not responding, %s does not exist, or user does not have read permission for it\n",prg_nm_get(),fl_nm_lcl);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if err */
 
    }else{
      if((fp_in=fopen(fl_nm_lcl,"r")) == NULL){
        (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s\n",prg_nm_get(),fl_nm_lcl);
-       exit(EXIT_FAILURE);
+       nco_exit(EXIT_FAILURE);
      }else{
        (void)fclose(fp_in);
      } /* end else */
@@ -603,8 +603,8 @@ fl_lst_mk /* [fnc] Create file list from command line positional arguments */
   /* Are there any remaining arguments that could be filenames? */
   if(arg_crr >= argc){
     (void)fprintf(stdout,"%s: ERROR must specify filename(s)\n",prg_nm_get());
-    (void)usg_prn();
-    exit(EXIT_FAILURE);
+    (void)nco_usg_prn();
+    nco_exit(EXIT_FAILURE);
   } /* end if */
 
   /* See if there appear to be problems with any of the specified files */
@@ -618,8 +618,8 @@ fl_lst_mk /* [fnc] Create file list from command line positional arguments */
   case ncrename:
     if(argc-arg_crr > 2){
       (void)fprintf(stdout,"%s: ERROR received %d filenames; need no more than 2\n",prg_nm_get(),argc-arg_crr);
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     fl_lst_in=(char **)nco_malloc(sizeof(char *));
     fl_lst_in[(*nbr_fl)++]=argv[arg_crr++];
@@ -630,16 +630,16 @@ fl_lst_mk /* [fnc] Create file list from command line positional arguments */
   case ncflint:
     if(argc-arg_crr != 3){
       (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly 3\n",prg_nm_get(),argc-arg_crr);
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     break;
   case ncap:
   case ncwa:
     if(argc-arg_crr != 2){
       (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly 2\n",prg_nm_get(),argc-arg_crr);
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     break;
   case ncra:
@@ -648,8 +648,8 @@ fl_lst_mk /* [fnc] Create file list from command line positional arguments */
   case ncecat:
     if(argc-arg_crr < 2){
       (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least 2\n",prg_nm_get(),argc-arg_crr);
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     break;
   default:
@@ -661,8 +661,8 @@ fl_lst_mk /* [fnc] Create file list from command line positional arguments */
   while(arg_crr < argc-1) fl_lst_in[(*nbr_fl)++]=argv[arg_crr++];
   if(*nbr_fl == 0){
     (void)fprintf(stdout,"%s: ERROR Must specify input filename.\n",prg_nm_get());
-    (void)usg_prn();
-    exit(EXIT_FAILURE);
+    (void)nco_usg_prn();
+    nco_exit(EXIT_FAILURE);
   } /* end if */
   *fl_out=argv[argc-1];
 
@@ -698,7 +698,7 @@ fl_out_open /* [fnc] Open output file subject to availability and user input */
   
   if(FORCE_OVERWRITE && FORCE_APPEND){
     (void)fprintf(stdout,"%s: ERROR FORCE_OVERWRITE and FORCE_APPEND are both set\n",prg_nm_get());
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* end if */
 
   /* Generate unique temporary file name
@@ -753,7 +753,7 @@ fl_out_open /* [fnc] Open output file subject to availability and user input */
   /* If temporary file already exists, prompt user to remove temporary files and exit */
   if(rcd != -1){
     (void)fprintf(stdout,"%s: ERROR temporary file %s already exists, remove and try again\n",prg_nm_get(),fl_out_tmp);
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* end if */
 
   if(FORCE_OVERWRITE){
@@ -792,7 +792,7 @@ fl_out_open /* [fnc] Open output file subject to availability and user input */
       nbr_itr++;
       if(nbr_itr > 10){
 	(void)fprintf(stdout,"\n%s: ERROR %hd failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
-	exit(EXIT_FAILURE);
+	nco_exit(EXIT_FAILURE);
       } /* end if */
       if(nbr_itr > 1) (void)fprintf(stdout,"%s: ERROR Invalid response.\n",prg_nm_get());
       (void)fprintf(stdout,"%s: %s exists---`o'verwrite, `a'ppend/replace, or `e'xit (o/a/e)? ",prg_nm_get(),fl_out);
@@ -805,7 +805,7 @@ fl_out_open /* [fnc] Open output file subject to availability and user input */
     
     switch(usr_reply){
     case 'e':
-      exit(EXIT_SUCCESS);
+      nco_exit(EXIT_SUCCESS);
       break;
     case 'o':
       rcd=nco_create(fl_out_tmp,NC_CLOBBER,out_id);
@@ -840,7 +840,7 @@ fl_out_cls /* [fnc] Close temporary output file, move it to permanent output fil
   rcd=nco_close(nc_id);
   if(rcd != NC_NOERR){
     (void)fprintf(stdout,"%s: ERROR fl_out_cls() is unable to ncclose() file %s\n",prg_nm_get(),fl_out_tmp);
-    exit(EXIT_FAILURE); 
+    nco_exit(EXIT_FAILURE); 
   } /* end if */
   
   (void)fl_mv(fl_out_tmp,fl_out);

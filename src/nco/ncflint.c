@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.36 2002-05-05 20:42:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.37 2002-05-06 02:17:56 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.36 2002-05-05 20:42:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.36 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.37 2002-05-06 02:17:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.37 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -195,8 +195,8 @@ main(int argc,char **argv)
       ntp_lst_in=lst_prs(optarg,",",&nbr_ntp);
       if(nbr_ntp > 2){
 	(void)fprintf(stdout,"%s: ERROR too many arguments to -i\n",prg_nm_get());
-	(void)usg_prn();
-	exit(EXIT_FAILURE);
+	(void)nco_usg_prn();
+	nco_exit(EXIT_FAILURE);
       } /* end if */
       ntp_nm=ntp_lst_in[0];
       ntp_val_out=strtod(ntp_lst_in[1],(char **)NULL);
@@ -218,7 +218,7 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
-      exit(EXIT_SUCCESS);
+      nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
@@ -228,8 +228,8 @@ main(int argc,char **argv)
       ntp_lst_in=lst_prs(optarg,",",&nbr_ntp);
       if(nbr_ntp > 2){
 	(void)fprintf(stdout,"%s: ERROR too many arguments to -w\n",prg_nm_get());
-	(void)usg_prn();
-	exit(EXIT_FAILURE);
+	(void)nco_usg_prn();
+	nco_exit(EXIT_FAILURE);
       }else if(nbr_ntp == 2){
 	wgt_val_1=strtod(ntp_lst_in[0],(char **)NULL);
 	wgt_val_2=strtod(ntp_lst_in[1],(char **)NULL);
@@ -243,18 +243,18 @@ main(int argc,char **argv)
       EXCLUDE_INPUT_LIST=True;
       break;
     default: /* Print proper usage */
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
   } /* end while loop */
   
   if(CMD_LN_NTP_VAR && CMD_LN_NTP_WGT){
     (void)fprintf(stdout,"%s: ERROR interpolating variable (-i) and fixed weight(s) (-w) both set\n",prg_nm_get());
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   }else if(!CMD_LN_NTP_VAR && !CMD_LN_NTP_WGT){
     (void)fprintf(stdout,"%s: ERROR interpolating variable (-i) or fixed weight(s) (-w) must be set\n",prg_nm_get());
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* end else */
 
   /* Process positional arguments and fill in filenames */
@@ -394,7 +394,7 @@ main(int argc,char **argv)
     /* Currently, only support scalar variables */
     if(ntp_1->sz > 1 || ntp_2->sz > 1){
       (void)fprintf(stdout,"%s: ERROR interpolation variable %s must be scalar\n",prg_nm_get(),ntp_nm);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
 
     /* Retrieve the interpolation variable */
@@ -409,7 +409,7 @@ main(int argc,char **argv)
     if(ntp_1->val.dp[0] == ntp_2->val.dp[0]){
       /* fxm: This is an error because weights ... */
       (void)fprintf(stdout,"%s: ERROR %s is identical (%g) in input files\n",prg_nm_get(),ntp_nm,ntp_1->val.dp[0]);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
 
     /* Turn weights into pseudo-variables */

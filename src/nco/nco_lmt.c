@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.2 2002-05-05 02:55:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.3 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -65,7 +65,7 @@ lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
 
     if(rcd == NC_EBADDIM){
       (void)fprintf(stdout,"%s: ERROR attempting to find non-existent dimension with id = %d in lmt_sct_mk()\n",prg_nm_get(),dmn_id);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
 		
     lmt_dim.nm=(char *)strdup(dmn_nm);
@@ -90,7 +90,7 @@ lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
     if(!FORTRAN_STYLE) cnt--; 
     if(cnt < 0L){
       (void)fprintf(stdout,"%s: cnt < 0 in lmt_sct_mk()\n",prg_nm_get());
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     /* cnt < 10 covers negative numbers and SIGFPE from log10(cnt==0) 
        Adding 1 is required for cnt=10,100,1000... */
@@ -158,7 +158,7 @@ lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
   rcd=nco_inq_dimid_flg(nc_id,lmt.nm,&lmt.id);
   if(rcd != NC_NOERR){
     (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",prg_nm_get(),lmt.nm);
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* endif */
 
   /* Logic on whether to allow skipping current file depends on whether limit
@@ -179,18 +179,18 @@ lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
   /* Bomb if dmn_sz < 1 */
   if(dmn_sz < 1){
     (void)fprintf(stdout,"%s: ERROR Size of dimension \"%s\" is %li in input file, but must be > 0 in order to apply limits.\n",prg_nm_get(),lmt.nm,dmn_sz);
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* end if */
   
   if(lmt.srd_sng != NULL){
     if(strchr(lmt.srd_sng,'.') || strchr(lmt.srd_sng,'e') || strchr(lmt.srd_sng,'E') || strchr(lmt.srd_sng,'d') || strchr(lmt.srd_sng,'D')){
       (void)fprintf(stdout,"%s: ERROR Requested stride for \"%s\", %s, must be integer\n",prg_nm_get(),lmt.nm,lmt.srd_sng);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     lmt.srd=strtol(lmt.srd_sng,(char **)NULL,10);
     if(lmt.srd < 1){
       (void)fprintf(stdout,"%s: ERROR Stride for \"%s\" is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.srd);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
   } /* end if */
 
@@ -219,7 +219,7 @@ lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
     (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.min_sng,(min_lmt_typ == lmt_crd_val) ? "coordinate value" : "zero-based dimension index");
     (void)fprintf(stdout,"\"%s\" was interpreted as a %s.\n",lmt.max_sng,(max_lmt_typ == lmt_crd_val) ? "coordinate value" : "zero-based dimension index");
     (void)fprintf(stdout,"(Limit arguments containing a decimal point are interpreted as coordinate values; arguments without a decimal point are interpreted as zero-based dimensional indices.)\n");
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* end if */
   lmt.lmt_typ=min_lmt_typ;
   
@@ -336,7 +336,7 @@ lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
 	goto no_data;
       }else{
 	(void)fprintf(stdout,"%s: ERROR User-specified coordinate value range %g <= %s <= %g does not fall within valid coordinate range %g <= %s <= %g\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val,dmn_min,lmt.nm,dmn_max);
-	exit(EXIT_FAILURE);
+	nco_exit(EXIT_FAILURE);
       } /* end else */
     } /* end if */
 
@@ -475,7 +475,7 @@ lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
        (!rec_dmn_and_mlt_fl_opr && lmt.min_idx >= dmn_sz)){
       (void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dmn_sz-1L);
       (void)fprintf(stdout,"\n");
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     
     /* Logic depends on whether this is record dimension in multi-file operator */
@@ -698,7 +698,7 @@ lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
   if(lmt.cnt == 0){
     if(lmt.lmt_typ == lmt_crd_val) (void)fprintf(stdout,"%s: ERROR Domain %g <= %s <= %g brackets no coordinate values.\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
     if(lmt.lmt_typ == lmt_dmn_idx) (void)fprintf(stdout,"%s: ERROR Empty domain for %s\n",prg_nm_get(),lmt.nm); 
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* end if */
     
   /* Coordinate-valued limits that bracket no values in current file jump here with goto
@@ -769,7 +769,7 @@ lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */
 
   /* Valid syntax adheres to nm,[min_sng][,[max_sng]][,srd_sng] */
 
-  void usg_prn(void);
+  void nco_usg_prn(void);
 
   char **arg_lst;
 
@@ -796,7 +796,7 @@ lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */
        (arg_nbr == 4 && arg_lst[3] == NULL) || /* Stride should be specified */
        False){
       (void)fprintf(stdout,"%s: ERROR in hyperslab specification for dimension %s\n",prg_nm_get(),lmt_arg[idx]);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
 
     /* Initialize structure */

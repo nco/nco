@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.63 2002-05-05 20:42:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.64 2002-05-06 02:17:56 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -82,8 +82,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.63 2002-05-05 20:42:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.63 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.64 2002-05-06 02:17:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.64 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -182,8 +182,8 @@ main(int argc,char **argv)
       fl_lst_abb=lst_prs(optarg,",",&nbr_abb_arg);
       if(nbr_abb_arg < 1 || nbr_abb_arg > 5){
 	(void)fprintf(stdout,gettext("%s: ERROR Incorrect abbreviation for file list\n"),prg_nm);
-	(void)usg_prn();
-	exit(EXIT_FAILURE);
+	(void)nco_usg_prn();
+	nco_exit(EXIT_FAILURE);
       } /* end if */
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
@@ -202,7 +202,7 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
-      exit(EXIT_SUCCESS);
+      nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
@@ -215,8 +215,8 @@ main(int argc,char **argv)
       if(prg == ncra || prg == ncea ) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
     default: /* Print proper usage */
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
   } /* end while loop */
@@ -284,7 +284,7 @@ main(int argc,char **argv)
     if(rec_dmn_id == NCO_REC_DMN_UNDEFINED){
       (void)fprintf(stdout,gettext("%s: ERROR input file %s lacks a record dimension\n"),prg_nm_get(),fl_in);
       if(nbr_fl == 1)(void)fprintf(stdout,gettext("%s: HINT Use ncks instead of %s\n"),prg_nm_get(),prg_nm_get());
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* endif */
     lmt_rec=lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_STYLE);
   } /* endif */
@@ -437,7 +437,7 @@ main(int argc,char **argv)
       /* Error if no records were read and final file has been processed */
       if(idx_rec_out <= 0 && idx_fl == nbr_fl-1){
 	(void)fprintf(stdout,gettext("%s: ERROR No records lay within specified hyperslab\n"),prg_nm_get());
-	exit(EXIT_FAILURE);
+	nco_exit(EXIT_FAILURE);
       } /* end if */
       /* End of ncra, ncrcat section */
     }else{ /* ncea */

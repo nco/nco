@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.2 2002-05-05 03:09:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.3 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -29,7 +29,7 @@ sng_lst_prs /* [fnc] Join list of strings together into one string */
   /* Delimiter must be NUL-terminated (a string) so strlen() works */
   if(dlm_sng == NULL){
     (void)fprintf(stdout,"%s: ERROR sng_lst_prs() reports delimiter string is NULL\n",prg_nm_get());
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* end if */
   dlm_len=strlen(dlm_sng); 
 

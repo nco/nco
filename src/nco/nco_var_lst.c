@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.3 2002-05-05 21:21:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.4 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -36,7 +36,7 @@ var_lst_mk /* [fnc] Create variable extraction list */
       } /* endif */
     } /* end loop over idx */
     
-    if(err_flg) exit(EXIT_FAILURE);
+    if(err_flg) nco_exit(EXIT_FAILURE);
   }else if(!PROCESS_ALL_COORDINATES){
     /* If the user did not specify variables with the -v option,
        and the user did not request automatic processing of all coords,
@@ -312,7 +312,7 @@ var_lst_divide /* [fnc] Divide input lists into output lists */
   /* Sanity check */
   if(*nbr_var_prc+*nbr_var_fix != nbr_var){
     (void)fprintf(stdout,"%s: ERROR nbr_var_prc+nbr_var_fix != nbr_var\n",prg_nm_get());
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* end if */
 
   /* fxm: Remove ncap exception when finished with ncap list processing */
@@ -343,7 +343,7 @@ var_lst_divide /* [fnc] Divide input lists into output lists */
       (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables in order to perform an ensemble concatenation\n",prg_nm_get());
       break;
     } /* end switch */
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* end if */
 
   /* Free unused space and save pointers in output variables */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.2 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -36,7 +36,7 @@ aed_prc /* [fnc] Process a single attribute edit on a single variable */
 void 
 hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
- const char const *hst_sng); /* I [sng] String to add to history attribute */
+ const char * const hst_sng); /* I [sng] String to add to history attribute */
 
 void 
 att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF file */

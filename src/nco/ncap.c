@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.65 2002-05-05 20:42:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.66 2002-05-06 02:17:56 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.65 2002-05-05 20:42:22 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.65 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.66 2002-05-06 02:17:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.66 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -235,8 +235,8 @@ main(int argc,char **argv)
       fl_lst_abb=lst_prs(optarg,",",&nbr_abb_arg);
       if(nbr_abb_arg < 1 || nbr_abb_arg > 3){
 	(void)fprintf(stdout,"%s: ERROR Incorrect abbreviation for file list\n",prg_nm);
-	(void)usg_prn();
-	exit(EXIT_FAILURE);
+	(void)nco_usg_prn();
+	nco_exit(EXIT_FAILURE);
       } /* end if */
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
@@ -251,7 +251,7 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
-      exit(EXIT_SUCCESS);
+      nco_exit(EXIT_SUCCESS);
       break;
     case 's': /* Copy command script for later processing */
       spt_arg[nbr_spt++]=strdup(optarg);
@@ -268,11 +268,11 @@ main(int argc,char **argv)
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       (void)fprintf(stderr,"%s: ERROR %s does not currently implement -x option\n",prg_nm_get(),prg_nm_get());
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
   } /* end while loop */
@@ -480,7 +480,7 @@ main(int argc,char **argv)
     if(nbr_spt == 0){
       (void)fprintf(stderr,"%s: ERROR no script file or command line scripts specified\n",prg_nm_get());
       (void)fprintf(stderr,"%s: HINT Use, e.g., -s \"foo=bar\"\n",prg_nm_get());
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     
     /* Print all command line scripts */
@@ -497,7 +497,7 @@ main(int argc,char **argv)
     /* Open script file for reading */
     if((yyin=fopen(fl_spt,"r")) == NULL){
       (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
 
     /* Copy script file name to global variable */

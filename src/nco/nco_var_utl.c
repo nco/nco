@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.2 2002-05-05 20:42:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.3 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -27,7 +27,7 @@ var_dpl /* [fnc] Duplicate input variable */
   if(var->val.vp != NULL){
     if((var_dpl->val.vp=(void *)malloc(var_dpl->sz*nco_typ_lng(var_dpl->type))) == NULL){
       (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in var_dpl()\n",prg_nm_get(),var_dpl->sz,nco_typ_lng(var_dpl->type),var_dpl->nm);
-      exit(EXIT_FAILURE); 
+      nco_exit(EXIT_FAILURE); 
     } /* end if */
     (void)memcpy((void *)(var_dpl->val.vp),(void *)(var->val.vp),var_dpl->sz*nco_typ_lng(var_dpl->type));
   } /* end if */
@@ -38,7 +38,7 @@ var_dpl /* [fnc] Duplicate input variable */
   if(var->tally != NULL){
     if((var_dpl->tally=(long *)malloc(var_dpl->sz*sizeof(long))) == NULL){
       (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in var_dpl()\n",prg_nm_get(),var_dpl->sz,(long)sizeof(long),var_dpl->nm);
-      exit(EXIT_FAILURE); 
+      nco_exit(EXIT_FAILURE); 
     } /* end if */
     (void)memcpy((void *)(var_dpl->tally),(void *)(var->tally),var_dpl->sz*sizeof(long));
   } /* end if */
@@ -90,7 +90,7 @@ var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
 
   if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->typ_dsk))) == NULL){
     (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in var_get()\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
-    exit(EXIT_FAILURE); 
+    nco_exit(EXIT_FAILURE); 
   } /* end if */
 
 #ifdef _OPENMP
@@ -357,11 +357,11 @@ var_dfn /* [fnc] Define variables and write their attributes to output file */
 } /* end var_dfn() */
 
 void
-var_val_cpy /* [fnc] Copy data of variables in list from input to output file */
+var_val_cpy /* [fnc] Copy variables data from input to output file */
 (const int in_id, /* I [enm] netCDF file ID */
- const int out_id, /* I [enm] netCDF output-file ID */
- var_sct ** const var, /* I [sct] list of pointers to variable structures */
- const int nbr_var) /* I [nbr] number of structures in variable structure list */
+ const int out_id, /* I [enm] netCDF output file ID */
+ var_sct ** const var, /* I/O [sct] Variables to copy to output file */
+ const int nbr_var) /* I [nbr] Number of variables */
 {
   /* Purpose: Copy variable data for every variable in input variable structure list
      from input file to output file */
@@ -548,7 +548,7 @@ var_fll /* [fnc] Allocate variable structure and fill with metadata */
     } /* end for */
     if(dmn_idx == nbr_dim){
       (void)fprintf(stdout,"%s: ERROR dimension %s is not in input dimension list\n",prg_nm_get(),dmn_nm);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
 
     /* fxm: hmb, what is this for? */

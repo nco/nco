@@ -4,7 +4,7 @@ err_prn /* [fnc] Print formatted error messages */
 {
   /* Purpose: Print error message (currently only to stdout) approximately in GNU style, i.e., "program_name: ERROR error message....\n". 
      Routine is intended to make error messages convenient to use in routines without routine itself needing access to copy of program. 
-     Therefore a copy of this routine should be placed in each main.c file, just like the program's usg_prn() routine. */
+     Therefore a copy of this routine should be placed in each main.c file, just like the program's nco_usg_prn() routine. */
 
   /* Routine is more difficult to implement practically than it first seemed, because 
      it assumes all calling routines have their error messages in a single string, when

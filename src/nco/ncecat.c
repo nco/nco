@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.35 2002-05-05 20:42:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.36 2002-05-06 02:17:56 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.35 2002-05-05 20:42:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.35 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.36 2002-05-06 02:17:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.36 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -168,8 +168,8 @@ main(int argc,char **argv)
       fl_lst_abb=lst_prs(optarg,",",&nbr_abb_arg);
       if(nbr_abb_arg < 1 || nbr_abb_arg > 5){
 	(void)fprintf(stdout,"%s: ERROR Incorrect abbreviation for file list\n",prg_nm);
-	(void)usg_prn();
-	exit(EXIT_FAILURE);
+	(void)nco_usg_prn();
+	nco_exit(EXIT_FAILURE);
       } /* end if */
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
@@ -184,7 +184,7 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
-      exit(EXIT_SUCCESS);
+      nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
@@ -193,8 +193,8 @@ main(int argc,char **argv)
       EXCLUDE_INPUT_LIST=True;
       break;
     default: /* Print proper usage */
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
   } /* end while loop */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.1 2002-05-05 03:30:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.2 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -32,7 +32,7 @@ nco_calloc /* [fnc] Wrapper for calloc() */
  const size_t lmn_sz); /* I [nbr] Size of each element */
 
 void * /* O [ptr] Buffer after free'ing */
-nco_free [fnc] /* [fnc] Wrapper for free() */
+nco_free /* [fnc] Wrapper for free() */
 (void *vp); /* I/O [ptr] Buffer to free() */
 
 void * /* O [ptr] Pointer to allocated memory */

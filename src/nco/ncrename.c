@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.31 2001-12-29 05:52:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.32 2002-05-06 02:17:56 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -93,8 +93,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.31 2001-12-29 05:52:50 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.31 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.32 2002-05-06 02:17:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.32 $";
   
   extern char *optarg;
   
@@ -160,15 +160,15 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
-      exit(EXIT_SUCCESS);
+      nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Copy argument for later processing */
       var_rnm_arg[nbr_var_rnm]=optarg;
       nbr_var_rnm++;
       break;
     default: /* Print proper usage */
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
     } /* end switch */
   } /* end while loop */
   
@@ -178,8 +178,8 @@ main(int argc,char **argv)
 
   if(nbr_var_rnm == 0 && nbr_att_rnm == 0 && nbr_dmn_rnm == 0){
     (void)fprintf(stdout,"%s: ERROR must specify something to rename\n",prg_nm);
-    usg_prn();
-    exit(EXIT_FAILURE);
+    nco_usg_prn();
+    nco_exit(EXIT_FAILURE);
   } /* end if */ 
 
   /* Make a uniform list of the user-specified rename structures */
@@ -212,7 +212,7 @@ main(int argc,char **argv)
 	  nbr_itr++;
 	  if(nbr_itr > 10){
 	    (void)fprintf(stdout,"\n%s: ERROR %hd failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
-	    exit(EXIT_FAILURE);
+	    nco_exit(EXIT_FAILURE);
 	  } /* end if */
           (void)fprintf(stdout,"ncrename: overwrite %s (y/n)? ",fl_out);
 	  (void)fflush(stdout);
@@ -223,7 +223,7 @@ main(int argc,char **argv)
         } /* end while */
         
         if(usr_reply == 'n'){
-          exit(EXIT_SUCCESS);
+          nco_exit(EXIT_SUCCESS);
         } /* end if */
       } /* end if */
     } /* end if */
@@ -359,7 +359,7 @@ main(int argc,char **argv)
 	  (void)fprintf(stderr,"%s: WARNING Attribute \"%s\" not present in %s, skipping it.\n",prg_nm,att_rnm_lst[idx].old_nm+1,fl_in);
 	}else{
 	  (void)fprintf(stdout,"%s: ERROR Attribute \"%s\" not present in %s, aborting.\n",prg_nm,att_rnm_lst[idx].old_nm,fl_in);
-	  exit(EXIT_FAILURE);
+	  nco_exit(EXIT_FAILURE);
 	} /* end else */
       } /* end if */
       
@@ -408,8 +408,8 @@ prs_rnm_lst(int nbr_rnm,char **rnm_arg)
     /* Before doing any pointer arithmetic, make sure the pointers 
        are valid. */
     if(comma_1_cp == NULL){
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     
     len_arg_1=comma_1_cp-rnm_arg[idx]; 
@@ -417,8 +417,8 @@ prs_rnm_lst(int nbr_rnm,char **rnm_arg)
     
     /* If the length of either of the arguments is zero then exit */
     if(len_arg_1 <= 0 || len_arg_2 <= 0){
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     
     /* Assign the pointers to the member of the rnm_lst */

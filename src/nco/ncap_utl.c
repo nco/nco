@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.53 2002-05-05 20:42:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.54 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -775,7 +775,7 @@ ncap_initial_scan
     /* Open script file for reading */
     if((yyin=fopen(prs_arg->fl_spt,"r")) == NULL){
       (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),prs_arg->fl_spt);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* endif error */
   } /* endif input from script */
   
@@ -938,7 +938,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
 	  (void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
-	  exit(EXIT_FAILURE);
+	  nco_exit(EXIT_FAILURE);
 	}else{
 	  if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: DEBUG %s and %s share no dimensions: Attempting to convolve...\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
 	  CONVOLVE=True;
@@ -948,7 +948,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
 	  (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr);
-	  exit(EXIT_FAILURE);
+	  nco_exit(EXIT_FAILURE);
 	}else{
 	  if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s, could attempt stretching???\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm);
 	  CONVOLVE=True;
@@ -1067,7 +1067,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	  /* Sanity check */
 	  if(idx_dmn == var_gtr->nbr_dim-1){
 	    (void)fprintf(stdout,"%s: ERROR var_lsr %s has dimension %s but var_gtr %s does not deep in ncap_var_stretch()\n",prg_nm_get(),var_lsr->nm,var_lsr->dim[idx]->nm,var_gtr->nm);
-	    exit(EXIT_FAILURE);
+	    nco_exit(EXIT_FAILURE);
 	  } /* end if err */
 	} /* end loop over greater variable dimensions */
       } /* end loop over lesser variable dimensions */

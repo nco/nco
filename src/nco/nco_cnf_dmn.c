@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.2 2002-05-05 20:42:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.3 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -10,8 +10,8 @@
 
 var_sct * /* O [sct] Pointer to conforming variable structure */
 var_conform_dim /* [fnc] Stretch second variable to match dimensions of first variable */
-(const var_sct const *var, /* I [ptr] Pointer to variable structure to serve as template */
- const var_sct const *wgt, /* I [ptr] Pointer to variable structure to make conform to var */
+(const var_sct * const var, /* I [ptr] Pointer to variable structure to serve as template */
+ const var_sct * const wgt, /* I [ptr] Pointer to variable structure to make conform to var */
  var_sct *wgt_crr, /* I/O [ptr] pointer to existing conforming variable structure, if any (destroyed when does not conform to var) */
  const bool MUST_CONFORM, /* I [flg] Must wgt and var must conform? */
  bool *DO_CONFORM) /* O [flg] Did wgt and var conform? */
@@ -113,7 +113,7 @@ var_conform_dim /* [fnc] Stretch second variable to match dimensions of first va
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
 	  (void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),wgt->nm,var->nm);
-	  exit(EXIT_FAILURE);
+	  nco_exit(EXIT_FAILURE);
 	}else{
 	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %s and template %s share no dimensions: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,var->nm,wgt->nm,var->nm);
 	  USE_DUMMY_WGT=True;
@@ -123,7 +123,7 @@ var_conform_dim /* [fnc] Stretch second variable to match dimensions of first va
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
 	  (void)fprintf(stdout,"%s: ERROR %s is rank %d but template %s is rank %d: Impossible to broadcast\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim);
-	  exit(EXIT_FAILURE);
+	  nco_exit(EXIT_FAILURE);
 	}else{
 	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %s is rank %d but template %s is rank %d: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim,wgt->nm,var->nm);
 	  USE_DUMMY_WGT=True;
@@ -133,7 +133,7 @@ var_conform_dim /* [fnc] Stretch second variable to match dimensions of first va
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
 	  (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr);
-	  exit(EXIT_FAILURE);
+	  nco_exit(EXIT_FAILURE);
 	}else{
 	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s\n",prg_nm_get(),wgt_var_dmn_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dmn_shr_nbr,wgt->nm,var->nm);
 	  USE_DUMMY_WGT=True;
@@ -243,7 +243,7 @@ var_conform_dim /* [fnc] Stretch second variable to match dimensions of first va
 	  /* Sanity check */
 	  if(idx_dmn == var->nbr_dim-1){
 	    (void)fprintf(stdout,"%s: ERROR wgt %s has dimension %s but var %s does not deep in var_conform_dim()\n",prg_nm_get(),wgt->nm,wgt->dim[idx]->nm,var->nm);
-	    exit(EXIT_FAILURE);
+	    nco_exit(EXIT_FAILURE);
 	  } /* end if err */
 	} /* end loop over variable dimensions */
       } /* end loop over weight dimensions */
@@ -289,7 +289,7 @@ var_conform_dim /* [fnc] Stretch second variable to match dimensions of first va
   
   if(*DO_CONFORM == -1){
     (void)fprintf(stdout,"%s: ERROR *DO_CONFORM == -1 on exit from var_conform_dim()\n",prg_nm_get());
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* endif */
   
   /* Current weight (wgt_out) now conforms to current variable */
@@ -327,7 +327,7 @@ ncap_var_conform_dim /* [fnc] Broadcast smaller variable into larger */
 
   if(!DO_CONFORM){
     (void)fprintf(stderr,"%s: Variables do not have have conforming dimensions. Cannot proceed with operation\n",prg_nm_get());
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* endif */
 
   return DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.2 2002-05-05 17:45:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.3 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -90,7 +90,7 @@ op_prs_rlt /* [fnc] Convert Fortran abbreviation for relational operator into NC
     return nco_op_ge;
   }else{
     (void)fprintf(stdout,"%s: ERROR %s not registered in op_prs_rlt()\n",prg_nm_get(),op_sng);
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* end else */
 
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
@@ -148,7 +148,7 @@ zero_long /* [fnc] Zero all values of long array */
     for(idx=0;idx<sz;idx++) op1[idx]=0L;
   }else{
     (void)fprintf(stdout,"%s: ERROR zero_long() asked to zero NULL pointer\n",prg_nm_get());
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* endif */
 
 } /* end zero_long() */

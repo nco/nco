@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.39 2002-01-28 10:06:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.40 2002-05-06 02:17:56 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -142,8 +142,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.39 2002-01-28 10:06:53 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.39 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.40 2002-05-06 02:17:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.40 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -202,11 +202,11 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
-      exit(EXIT_SUCCESS);
+      nco_exit(EXIT_SUCCESS);
       break;
     default: /* Print proper usage */
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
     } /* end switch */
   } /* end while loop */
   
@@ -216,8 +216,8 @@ main(int argc,char **argv)
 
   if(nbr_aed == 0){
     (void)fprintf(stdout,"%s: ERROR must specify an attribute to edit\n",prg_nm);
-    usg_prn();
-    exit(EXIT_FAILURE);
+    nco_usg_prn();
+    nco_exit(EXIT_FAILURE);
   } /* end if */ 
 
   /* Make a uniform list of the user-specified rename structures */
@@ -251,7 +251,7 @@ main(int argc,char **argv)
         } /* end while */
         
         if(usr_reply == 'n'){
-          exit(EXIT_SUCCESS);
+          nco_exit(EXIT_SUCCESS);
         } /* end if */
       } /* end if */
     } /* end if */
@@ -351,7 +351,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
      This is the default mode.
    */
 
-  void usg_prn(void);
+  void nco_usg_prn(void);
 
   char **arg_lst;
 
@@ -379,7 +379,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
        (*(arg_lst[2]) != 'd' && (arg_lst[3] == NULL || (arg_lst[idx_att_val_arg] == NULL && *(arg_lst[3]) != 'c'))) || /* att_typ and att_val must be specified when mode is not delete, except that att_val = "" is valid for character type */
        False){
       (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s\n",prg_nm_get(),aed_arg[idx]);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
 
     /* Initialize structure */
@@ -418,7 +418,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
     default: 
       (void)fprintf(stderr,"%s: ERROR `%s' is not a supported mode\n",prg_nm_get(),arg_lst[2]);
       (void)fprintf(stderr,"%s: HINT: Valid modes are `a' = append, `c' = create,`d' = delete, `m' = modify, and `o' = overwrite",prg_nm_get());
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
 
@@ -438,7 +438,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
       default: 
 	(void)fprintf(stderr,"%s: ERROR `%s' is not a supported netCDF data type\n",prg_nm_get(),arg_lst[3]);
 	(void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, `l' = long, `b' = byte",prg_nm_get());
-	exit(EXIT_FAILURE);
+	nco_exit(EXIT_FAILURE);
 	break;
       } /* end switch */
       

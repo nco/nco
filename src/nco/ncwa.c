@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.75 2002-05-05 20:42:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.76 2002-05-06 02:17:56 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.75 2002-05-05 20:42:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.75 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.76 2002-05-06 02:17:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.76 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -187,8 +187,8 @@ main(int argc,char **argv)
       if(opt_a_flg){
 	(void)fprintf(stdout,"%s: ERROR Option -a appears more than once\n",prg_nm);
 	(void)fprintf(stdout,"%s: HINT Use -a dim1,dim2,... not -a dim1 -a dim2 ...\n",prg_nm);
-	(void)usg_prn();
-	exit(EXIT_FAILURE);
+	(void)nco_usg_prn();
+	nco_exit(EXIT_FAILURE);
       } /* endif */
       dmn_avg_lst_in=lst_prs(optarg,",",&nbr_dmn_avg);
       opt_a_flg=True;
@@ -232,7 +232,7 @@ main(int argc,char **argv)
     case 'n':
       NORMALIZE_BY_WEIGHT=False;
       (void)fprintf(stdout,"%s: ERROR This option has been disabled while I rethink its implementation\n",prg_nm);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -249,7 +249,7 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
-       exit(EXIT_SUCCESS);
+       nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
@@ -257,7 +257,7 @@ main(int argc,char **argv)
     case 'W':
       NORMALIZE_BY_TALLY=False;
       (void)fprintf(stdout,"%s: ERROR This option has been disabled while I rethink its implementation\n",prg_nm);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
       break;
     case 'w': /* Variable to use as weight in reducing.  Default is none */
       wgt_nm=optarg;
@@ -270,8 +270,8 @@ main(int argc,char **argv)
       nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
     case '?': /* Print proper usage */
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
   } /* end while loop */
@@ -345,7 +345,7 @@ main(int argc,char **argv)
 
     if(nbr_dmn_avg > nbr_dmn_xtr){
       (void)fprintf(stdout,"%s: ERROR More reducing dimensions than extracted dimensions\n",prg_nm);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
 
     /* Form list of reducing dimensions from extracted input dimensions */
@@ -372,7 +372,7 @@ main(int argc,char **argv)
 	if(idx_avg != idx){
 	  if(dmn_avg[idx]->id == dmn_avg[idx_avg]->id){
 	    (void)fprintf(stdout,"%s: ERROR %s specified more than once in reducing list\n",prg_nm,dmn_avg[idx]->nm);
-	    exit(EXIT_FAILURE);
+	    nco_exit(EXIT_FAILURE);
 	  } /* end if */
 	} /* end if */
       } /* end loop over idx_avg */
@@ -394,7 +394,7 @@ main(int argc,char **argv)
 
     if(nbr_dmn_out != nbr_dmn_xtr-nbr_dmn_avg){
       (void)fprintf(stdout,"%s: ERROR nbr_dmn_out != nbr_dmn_xtr-nbr_dmn_avg\n",prg_nm);
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     } /* end if */
     
   }else{
@@ -561,12 +561,12 @@ main(int argc,char **argv)
       var_prc_out[idx]->sz=var_prc[idx]->sz;
       if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)malloc(var_prc_out[idx]->sz*sizeof(long))) == NULL){
 	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
-	exit(EXIT_FAILURE); 
+	nco_exit(EXIT_FAILURE); 
       } /* end if */
       (void)zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
       if((var_prc_out[idx]->val.vp=(void *)malloc(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
 	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
-	exit(EXIT_FAILURE); 
+	nco_exit(EXIT_FAILURE); 
       } /* end if */
       (void)var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
       
@@ -669,7 +669,7 @@ main(int argc,char **argv)
 	   a tally array into wgt_avg. See related note about this above. TODO #114.*/
 	if((wgt_avg->tally=(long *)nco_realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long))) == NULL){
 	  (void)fprintf(stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",prg_nm_get(),wgt_avg->sz,(long)sizeof(long),wgt_avg->nm);
-	  exit(EXIT_FAILURE); 
+	  nco_exit(EXIT_FAILURE); 
 	} /* end if */
 	/* Average weight over specified dimensions (tally array is set here) */
 	wgt_avg=var_avg(wgt_avg,dmn_avg,nbr_dmn_avg,nco_op_avg);
@@ -730,7 +730,7 @@ main(int argc,char **argv)
 	;
       }else{
 	(void)fprintf(stdout,"%s: ERROR Unforeseen logical branch in main()\n",prg_nm);
-	exit(EXIT_FAILURE);
+	nco_exit(EXIT_FAILURE);
       } /* end if */
       /* Some non-linear operations require additional processing */
       switch(nco_op_typ){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.43 2002-05-05 20:42:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.44 2002-05-06 02:17:56 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.43 2002-05-05 20:42:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.43 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.44 2002-05-06 02:17:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.44 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -210,7 +210,7 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
-      exit(EXIT_SUCCESS);
+      nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
@@ -219,8 +219,8 @@ main(int argc,char **argv)
       EXCLUDE_INPUT_LIST=True;
       break;
     default: /* Print proper usage */
-      (void)usg_prn();
-      exit(EXIT_FAILURE);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
       break;
     } /* end switch */
   } /* end while loop */
@@ -394,7 +394,7 @@ main(int argc,char **argv)
 	   (var_prc_out[idx]->dim[idx_dim]->cnt != var_prc[idx]->dim[idx_dim]->cnt) || /* Dimension sizes do not match */
 	   False){
 	  (void)fprintf(stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s dimension %d is %s with size %li and count %li\nFile %s variable %s dimension %d is %s with size %li and count %li\n",prg_nm,fl_in_1,var_prc[idx]->nm,idx_dim,var_prc[idx]->dim[idx_dim]->nm,var_prc[idx]->dim[idx_dim]->sz,var_prc[idx]->dim[idx_dim]->cnt,fl_in_2,var_prc_out[idx]->nm,idx_dim,var_prc_out[idx]->dim[idx_dim]->nm,var_prc_out[idx]->dim[idx_dim]->sz,var_prc_out[idx]->dim[idx_dim]->cnt);
-	  exit(EXIT_FAILURE);
+	  nco_exit(EXIT_FAILURE);
 	} /* endif */
       } /* end loop over idx_dim */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.2 2002-05-06 00:30:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.3 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -50,7 +50,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
  int * const prg); /* O [enm] Enumerated number corresponding to nm_in */
 
 void 
-usg_prn(void); /* [fnc] Print correct program usage */
+nco_usg_prn(void); /* [fnc] Print correct program usage */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.2 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -22,7 +22,7 @@ nd2endm /* [fnc] Compute number of days to end of month */
 
   if(mth < 1 || mth > 12 || day < 0){
     (void)fprintf(stdout,"%s: ERROR nd2endm() reports mth = %d, day = %d\n",prg_nm_get(),mth,day);
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* end if */
 
   nbr_day_2_mth_end=mdays[mth-1]-day;

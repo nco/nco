@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.3 2002-05-06 00:30:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.4 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -32,7 +32,7 @@ Exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, then exit */
   (void)fclose(stdin);
   (void)fclose(stdout);
 
-  exit(EXIT_SUCCESS);
+  nco_exit(EXIT_SUCCESS);
 } /* end Exit_gracefully() */
 
 bool /* [flg] Program does arithmetic */
@@ -122,7 +122,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   }else if(!strcmp(nm_out,"ncatted")){*prg=ncatted;
   }else{
     (void)fprintf(stdout,"%s: ERROR %s not registered in prg_prs()\n",nm_out,nm_out);
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* end else */
 
   return nm_out;
@@ -130,7 +130,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
 } /* end prg_prs() */
 
 void 
-usg_prn(void)
+nco_usg_prn(void)
 {
   /* Purpose: Print correct command-line usage of host program (currently to stdout) */
 
@@ -247,5 +247,5 @@ usg_prn(void)
   /* Free the space holding the string */
   opt_sng=nco_free(opt_sng);
 
-} /* end usg_prn() */
+} /* end nco_usg_prn() */
 

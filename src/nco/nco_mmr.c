@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.2 2002-05-05 03:30:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.3 2002-05-06 02:17:56 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -25,13 +25,13 @@ nco_calloc /* [fnc] Wrapper for calloc() */
   ptr=calloc(lmn_nbr,lmn_sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
     (void)fprintf(stdout,"%s: ERROR nco_calloc() unable to allocate %li elements of %li bytes = %li bytes\n",prg_nm_get(),(long)lmn_nbr,(long)lmn_sz,(long)(lmn_nbr*lmn_sz));
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* endif */
   return ptr; /* [ptr] Pointer to new buffer */
 } /* nco_calloc() */
 
 void * /* O [ptr] Buffer after free'ing */
-nco_free [fnc] /* [fnc] Wrapper for free() */
+nco_free /* [fnc] Wrapper for free() */
 (void *vp) /* I/O [ptr] Buffer to free() */
 {
   /* Purpose: Custom wrapper for free()
@@ -62,7 +62,7 @@ nco_malloc /* [fnc] Wrapper for malloc() */
   if(ptr == NULL){
     (void)fprintf(stdout,"%s: ERROR nco_malloc() unable to allocate %li bytes\n",prg_nm_get(),(long)size);
     /* fxm: Should be exit(8) on ENOMEM errors? */
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* endif */
   return ptr; /* [ptr] Pointer to new buffer */
 } /* nco_malloc() */
@@ -96,7 +96,7 @@ nco_realloc /* [fnc] Wrapper for realloc() */
   if(new_ptr == NULL && size != 0){
     (void)fprintf(stdout,"%s: ERROR nco_realloc() unable to realloc() %li bytes\n",prg_nm_get(),(long)size); 
     /* fxm: Should be exit(8) on ENOMEM errors? */
-    exit(EXIT_FAILURE);
+    nco_exit(EXIT_FAILURE);
   } /* endif */
   return new_ptr; /* [ptr] Pointer to new buffer */
 } /* nco_realloc() */
