@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.110 2005-03-04 23:40:17 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.111 2005-03-12 00:16:44 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -221,11 +221,12 @@ AC_CHECK_LIB([intl],[gettext])
 AC_CHECK_LIB([resolv],[res_init])
 AC_CHECK_LIB([socket],[main])
 AC_CHECK_LIB([thread],[main])
-#AC_CHECK_LIB([nsl],[main])
+AC_CHECK_LIB([nsl],[main])
 AC_CHECK_LIB([nco],[nco_open],LIBS="-lcurl  ${LIBS}")
 # End Library checks
 
 # Begin DODS support
+# store pre-DODS LIBS value to restore from later
 AC_ARG_VAR([DODS_ROOT],[Root of DODS installation] (compile-time))
 AC_ARG_ENABLE(dods,AS_HELP_STRING([--enable-dods],[Build DODS/OpenDAP clients if possible [[default=yes]]]),enable_dods=${enableval},enable_dods=yes)
 # Check for DODS libraries unless told not to
@@ -248,15 +249,16 @@ if test "${enable_dods}" != 'no'; then
     AC_CHECK_LIB([ssl],[SSL_new],LIBS="-lcurl -lssl ${LIBS}",enable_dods=no)
     AC_CHECK_LIB(curl,curl_easy_init,,enable_dods=no)
     AC_CHECK_LIB([xml2],[xmlParseDocument],,enable_dods=no)
-# use AC_LANG_PUSH & AC_LANG_POP to allow nc-dods to resolve libdap++ symbols    # This causes libstdc++ to be linked in for (only) this link
-    AC_LANG_PUSH([C++])
-    LIBS="-ldap++ -lnc-dods  ${LIBS}"
-    AC_CHECK_LIB([nc-dods],[nc_open],,enable_dods=no)
-    AC_LANG_POP
-
 # If all libraries were present, enable_dods=yes
 # If not, restore LIBS to previous value
     nco_old_LIBS="${LIBS}"
+
+# use AC_LANG_PUSH & AC_LANG_POP to allow nc-dods to resolve libdap++ symbols    # This causes libstdc++ to be linked in for (only) this link
+    AC_LANG_PUSH([C++])
+    LIBS=" -lrx -ldap++ -lnc-dods -ldap++ ${LIBS}"
+    AC_CHECK_LIB([nc-dods],[nc_open],,enable_dods=no)
+    AC_LANG_POP
+
 # Assume stdc++ is available, (fxm: how to look for it automatically?)
 # NB: -lstdc++ automatically linked by g++, add by hand for other compilers
 # hjm: no, it's not (on linux anyway).  Use AC_LANG_PUSH & AC_LANG_POP 

@@ -23754,7 +23754,73 @@ _ACEOF
 
 fi
 
-#AC_CHECK_LIB([nsl],[main])
+
+echo "$as_me:$LINENO: checking for main in -lnsl" >&5
+echo $ECHO_N "checking for main in -lnsl... $ECHO_C" >&6
+if test "${ac_cv_lib_nsl_main+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lnsl  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+
+int
+main ()
+{
+main ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>conftest.er1
+  ac_status=$?
+  grep -v '^ *+' conftest.er1 >conftest.err
+  rm -f conftest.er1
+  cat conftest.err >&5
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; } &&
+	 { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_nsl_main=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_nsl_main=no
+fi
+rm -f conftest.err conftest.$ac_objext \
+      conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_nsl_main" >&5
+echo "${ECHO_T}$ac_cv_lib_nsl_main" >&6
+if test $ac_cv_lib_nsl_main = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBNSL 1
+_ACEOF
+
+  LIBS="-lnsl $LIBS"
+
+fi
+
 echo "$as_me:$LINENO: checking for nco_open in -lnco" >&5
 echo $ECHO_N "checking for nco_open in -lnco... $ECHO_C" >&6
 if test "${ac_cv_lib_nco_nco_open+set}" = set; then
@@ -23825,6 +23891,7 @@ fi
 # End Library checks
 
 # Begin DODS support
+# store pre-DODS LIBS value to restore from later
 
 # Check whether --enable-dods or --disable-dods was given.
 if test "${enable_dods+set}" = set; then
@@ -24292,6 +24359,10 @@ else
   enable_dods=no
 fi
 
+# If all libraries were present, enable_dods=yes
+# If not, restore LIBS to previous value
+    nco_old_LIBS="${LIBS}"
+
 # use AC_LANG_PUSH & AC_LANG_POP to allow nc-dods to resolve libdap++ symbols    # This causes libstdc++ to be linked in for (only) this link
     ac_ext=cc
 ac_cpp='$CXXCPP $CPPFLAGS'
@@ -24299,7 +24370,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-    LIBS="-ldap++ -lnc-dods  ${LIBS}"
+    LIBS=" -lrx -ldap++ -lnc-dods -ldap++ ${LIBS}"
 
 echo "$as_me:$LINENO: checking for nc_open in -lnc-dods" >&5
 echo $ECHO_N "checking for nc_open in -lnc-dods... $ECHO_C" >&6
@@ -24382,9 +24453,6 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-# If all libraries were present, enable_dods=yes
-# If not, restore LIBS to previous value
-    nco_old_LIBS="${LIBS}"
 # Assume stdc++ is available, (fxm: how to look for it automatically?)
 # NB: -lstdc++ automatically linked by g++, add by hand for other compilers
 # hjm: no, it's not (on linux anyway).  Use AC_LANG_PUSH & AC_LANG_POP
