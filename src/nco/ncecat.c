@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.24 2000-09-20 17:56:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.25 2000-09-20 18:03:51 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -82,8 +82,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.24 2000-09-20 17:56:34 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.24 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.25 2000-09-20 18:03:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.25 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -128,7 +128,7 @@ main(int argc,char **argv)
   /* Start the clock and save the command line */ 
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
-  time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until time_bfr_srt is used for something */
+  time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.55 2000-09-20 16:13:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.56 2000-09-20 18:03:51 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -87,7 +87,7 @@ Exit_gracefully(void)
   /* end the clock */ 
   
   clock=time((time_t *)NULL);
-  time_bfr_end=ctime(&clock);
+  time_bfr_end=ctime(&clock);  time_bfr_end=time_bfr_end; /* Avoid compiler warning until variable is used for something */
 /*  (void)fprintf(stderr,"\tend = %s\n",time_bfr_end);*/
 
   (void)fclose(stderr);

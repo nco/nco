@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.34 2000-09-20 17:56:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.35 2000-09-20 18:03:51 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.34 2000-09-20 17:56:34 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.34 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.35 2000-09-20 18:03:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.35 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -138,7 +138,7 @@ main(int argc,char **argv)
   /* Start the clock and save the command line */ 
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
-  time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until time_bfr_srt is used for something */
+  time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
@@ -910,7 +910,7 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
 	      long greatest_srd_multiplier_1st_hyp_slb; /* greatest integer m such that srt+m*srd < dmn_sz */
 	      long last_good_idx_1st_hyp_slb; /* C index of last valid member of 1st hyperslab (= srt+m*srd) */
 	      long left_over_idx_1st_hyp_slb; /* # elements from first hyperslab to count towards current stride */
-	      long first_good_idx_2nd_hyp_slb; /* C index of first valid member of 2nd hyperslab, if any */
+	      /* long first_good_idx_2nd_hyp_slb; *//* C index of first valid member of 2nd hyperslab, if any */
 
 	      /* NB: Perform these operations with integer arithmatic or else! */
 	      dmn_cnt_1[dmn_idx]=1L+(dmn_sz[dmn_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd; 
@@ -918,7 +918,7 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
 	      greatest_srd_multiplier_1st_hyp_slb=(dmn_sz[dmn_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd;
 	      last_good_idx_1st_hyp_slb=lmt[lmt_idx].srt+lmt[lmt_idx].srd*greatest_srd_multiplier_1st_hyp_slb;
 	      left_over_idx_1st_hyp_slb=dmn_sz[dmn_idx]-last_good_idx_1st_hyp_slb-1L;
-	      first_good_idx_2nd_hyp_slb=(last_good_idx_1st_hyp_slb+lmt[lmt_idx].srd)%dmn_sz[dmn_idx];
+	      /*	      first_good_idx_2nd_hyp_slb=(last_good_idx_1st_hyp_slb+lmt[lmt_idx].srd)%dmn_sz[dmn_idx];*/ /* Variable is unused but instructive anyway */
 	      dmn_in_srt_2[dmn_idx]=lmt[lmt_idx].srd-left_over_idx_1st_hyp_slb-1L;
 	    }else{ /* !SRD */
 	      dmn_in_srt_2[dmn_idx]=0L;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.59 2000-09-20 17:56:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.60 2000-09-20 18:03:51 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.59 2000-09-20 17:56:34 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.59 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.60 2000-09-20 18:03:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.60 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -169,7 +169,7 @@ main(int argc,char **argv)
   /* Start the clock and save the command line */ 
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
-  time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until time_bfr_srt is used for something */
+  time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
 
   time_bfr_srt=time_bfr_srt; /* Avert compiler warning that variable is set but never used */
   NORMALIZE_BY_TALLY=NORMALIZE_BY_TALLY; /* Avert compiler warning that variable is set but never used */
