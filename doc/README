@@ -1,16 +1,17 @@
+$Header: /data/zender/nco_20150216/nco/doc/README,v 1.2 1999-09-11 04:27:28 zender Exp $ -*-text-*-
+
 These instructions supercede the instructions in INSTALL because
 ./configure is not yet working properly.
 NCO will run on all major UNIX systems and Windows NT.
 All you need to build NCO is a C compiler, preferably gcc, although 
-using both a C and a Fortran compiler will result in faster executables. 
+using both a C and a Fortran compiler may result in faster executables.  
 
 The best way to build the operators currently is to type `make' in
 this directory. You must be using GNU make, which will default to
-using `GNUmakefile' as the makefile. Currently ./GNUmakefile and
-./Makefile.alt are identical. They are the makefiles I use to develop
-the NCO operators at NCAR. GNUmakefile has hardcoded switches which
+using `Makefile' in this directory. I use `Makefile' to develop  
+the NCO operators at NCAR. Makefile has hardcoded switches which
 may be only valid at NCAR, but which can serve as a template for your
-environment. Within GNUmakefile, locate the block of code which
+environment. Within Makefile, locate the block of code which
 corresponds to your machine type as defined by $PVM_ARCH and the
 pvmgetarch command. Within this block you may need to edit the -I and
 -L arguments so they include your netCDF library and include
@@ -20,7 +21,7 @@ If you are not using GNU C your C compiler may break on certain pieces
 of code ('cc' on Cray works fine, 'cc' on SunOS4.1.x may break but
 'acc' should work on all Suns, and 'cc' on SGIs may break).
 
-Read ./GNUmakefile for useful switches you can set.  
+Read ./Makefile for useful switches you can set.  
 Compile with `make OPTS=D' to build debugging versions.  
 Environment variables MY_OBJ_DIR, MY_INC_DIR, MY_LIB_DIR and
 MY_BIN_DIR control locations of object files, include files,
