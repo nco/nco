@@ -4,9 +4,11 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.261 2004-08-09 16:49:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.262 2004-08-10 01:26:41 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
+
+URL: http://nco.sf.net/nco.texi
 
 Copyright (C) 1995--2004 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document

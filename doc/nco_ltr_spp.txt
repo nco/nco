@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/nco_ltr_spp.txt,v 1.2 2004-08-05 22:37:51 zender Exp $ -*-Text-*-
+$Header: /data/zender/nco_20150216/nco/doc/nco_ltr_spp.txt,v 1.3 2004-08-10 01:26:41 zender Exp $ -*-Text-*-
 
 # Purpose: Collection of endorsements for institutional NCO funding
 
@@ -70,5 +70,54 @@ Remik Ziemlinski                        Raytheon Company
 NOAA/Geophysical Fluid Dynamics Lab.    Remik.Ziemlinski at noaa d0t gov
 P.O. Box 308                            1.609.452.6500 ext. 6977
 Princeton, NJ 08542 USA                 1.609.987.5063 fax
+************************************************************************
+************************************************************************
+Subject: NSF SEI(GEO) NCO/SDO Proposal Endorsement
+From: Ed Hill <ed@eh3.com>
+To: zender@uci.edu
+Date: Mon, 09 Aug 2004 10:44:11 -0400
+
+Prof Zender,
+
+I'm writing in support of the recent NSF proposal [1] to improve the
+"NCO" suite of NetCDF/HDF data analysis tools.  Our group:
+
+  http://paoc.mit.edu/cmi/
+  http://mitgcm.org/
+
+and many of our collaborators are steadily moving toward the use of both
+hierarchical data formats (such as NetCDF and HDF) and multi-terabyte
+data sets.  Under these circumstances, tools such as NCO become
+increasingly useful and important for our work.
+
+I am impressed with the capabilities offered by current NCO releases and
+would very much like to see it extended (per the above proposal) to take
+fuller advantage of parallel systems.  I believe that such a free, open,
+and extensible set of parallel analysis tools would be an important
+resource for the GFD community.  While nearly all ocean and atmospheric
+models have evolved to take advantage of parallel execution, it seems
+that many of the data analysis tools have lagged.  Thus, for many
+researchers, it is the pre- and post-processing steps that consume the
+most time and can be the greatest barrier to experimental progress.
+
+Thus, I look forward to parallel versions of the NCO tools that will
+take better advantage of both our SMP (threaded) and cluster (MPI-based)
+computing resources.
+
+Best regards,
+Ed Hill
+
+ [1] SEI(GEO): Scientific Data Operators Optimized for 
+     Distributed Interactive and Batch Analysis of Tera-Scale
+     Geophysical Data,  Dr. Charles S. Zender, Department of 
+     Earth System Science, University of California at Irvine
+-- 
+Edward H. Hill III, PhD
+office:  MIT Dept. of EAPS;  Rm 54-1424;  77 Massachusetts Ave.
+             Cambridge, MA 02139-4307
+emails:  eh3@mit.edu                ed@eh3.com
+URLs:    http://web.mit.edu/eh3/    http://eh3.com/
+phone:   617-253-0098
+fax:     617-253-4464
 ************************************************************************
 ************************************************************************
