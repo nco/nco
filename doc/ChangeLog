@@ -1,3 +1,7 @@
+2004-07-25  Charlie Zender  <zender@uci.edu>
+
+	* First complete draft of nco_var_dmn_rdr() compiles warning-free
+
 2004-07-21  Charlie Zender  <zender@uci.edu>
 
 	* Implement infrastructure for dimension re-ordering routine

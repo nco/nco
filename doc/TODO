@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.345 2004-07-23 05:33:21 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.346 2004-07-26 05:45:04 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -206,7 +206,7 @@ nco323. Collect all past ANNOUNCE files and place in reverse chronological order
 nco324. Add release date to "Version Summary" section on homepage
 nco326. Add manual override of writing *tmp* file for intermediate results?
 nco328. Ability to reverse specified dimensions (use negative stride?)
-nco329. Ability to rearrange dimensions
+nco329. Ability to rearrange dimensions nco_var_dmn_rdr()
 nco333. Clean up preprocessor symbols with cd ~/nco/src/nco;ifnames *.c
 nco334. Same as nco354. 
 nco335. ncflint: implement interpolation/mss_val algorithms two and three as options?
@@ -229,7 +229,8 @@ ncwa -O -a wvl -w flx_slr_frc -v sca_cff_mss,ext_cff_mss,abs_cff_mss,ss_alb,ss_c
 nco357. Add OpenMP robustness test to nco_bnch.sh
 nco358. Document ncwa -z switch
 nco359. Allow spaces in between variables names in -v var_lst arguments
-nco360. 
+nco360. AX_CFLAGS_GCC_OPTION(-std=c99) adds -std=c99 to xlc_r not just gcc
+nco361. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.18 2004-02-26 02:50:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.19 2004-07-26 05:45:04 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -16,33 +16,30 @@ nco_var_avg /* [fnc] reduce given variable over specified dimensions */
  const int nco_op_typ) /* I [enm] Operation type, default is average */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* Routine to reduce given variable over specified dimensions. 
-     "Reduce" means to reduce the rank of variable by performing an arithmetic operation
-     The default operation is to average, but nco_op_typ can also be min, max, etc.
-     The input variable structure is destroyed and the routine returns the resized, partially reduced variable
-     For some operations, such as min, max, ttl, the variable returned by nco_var_avg() is complete and need not be further processed
-     But to complete the averaging operation, the output variable must be normalized by its tally array
+  /* Purpose: Reduce given variable over specified dimensions 
+     "Reduce" means to reduce rank of variable by performing an arithmetic operation
+     Output variable is duplicate of input variable, except for averaging dimensions
+     Default operation is averaging, but nco_op_typ can also be min, max, etc.
+     nco_var_avg() overwrites contents, if any, of tally array with number of valid reduction operations
+
+     Input variable structure is destroyed and routine returns resized, partially reduced variable
+     For some operations, such as min, max, ttl, variable returned by nco_var_avg() is complete and need not be further processed
+     For averaging operation, output variable must be normalized by its tally array
      In other words, nco_var_nrm() should be called subsequently if normalization is desired
-     Normalization is not done internally to nco_var_avg() in order to allow the user more flexibility
-  */ 
+     Normalization is not done internally to nco_var_avg() to allow user more flexibility */ 
 
-  /* Create output variable as a duplicate of the input variable, except for dimensions which are to be averaged over */
-
-  /* nco_var_avg() overwrites contents, if any, of tally array with number of valid reduction operations */
-
-  /* There are three variables to keep track of in this routine, their abbreviations are:
+  /* Routine keeps track of three variables whose abbreviations are:
      var: Input variable (already hyperslabbed)
-     avg: A contiguous arrangement of all elements of var that contribute to a single element of fix (a quasi-hyperslab)
-     fix: Output (averaged) variable
-   */
+     avg: Contiguous arrangement of all elements of var contributing to a single element of fix (a quasi-hyperslab)
+     fix: Output (averaged) variable */
 
   dmn_sct **dmn_avg;
   dmn_sct **dmn_fix;
 
   int idx_avg_var[NC_MAX_DIMS];
-  /*  int idx_var_avg[NC_MAX_DIMS];*/
+  /*  int idx_var_avg[NC_MAX_DIMS];*/ /* Variable is unused but instructive anyway */
   int idx_fix_var[NC_MAX_DIMS];
-  /*  int idx_var_fix[NC_MAX_DIMS];*/
+  /*  int idx_var_fix[NC_MAX_DIMS];*/ /* Variable is unused but instructive anyway */
   int idx;
   int idx_dmn;
   int nbr_dmn_avg;
@@ -195,11 +192,11 @@ nco_var_avg /* [fnc] reduce given variable over specified dimensions */
     /* Resize (or just plain allocate) tally array */
     fix->tally=(long *)nco_realloc(fix->tally,fix_sz*sizeof(long));
 
-    /* Re-initialize value and tally arrays */
+    /* Initialize value and tally arrays */
     (void)nco_zero_long(fix_sz,fix->tally);
     (void)nco_var_zero(fix->type,fix_sz,fix->val);
   
-    /* Compute map for each dimension of variable */
+    /* Compute map for each dimension of input variable */
     for(idx=0;idx<nbr_dmn_var;idx++) dmn_var_map[idx]=1L;
     for(idx=0;idx<nbr_dmn_var-1;idx++)
       for(idx_dmn=idx+1;idx_dmn<nbr_dmn_var;idx_dmn++)
@@ -217,7 +214,7 @@ nco_var_avg /* [fnc] reduce given variable over specified dimensions */
       for(idx_dmn=idx+1;idx_dmn<nbr_dmn_avg;idx_dmn++)
 	dmn_avg_map[idx]*=dmn_avg[idx_dmn]->cnt;
     
-    /* var_lmn is the offset into 1-D array */
+    /* var_lmn is offset into 1-D array */
     for(var_lmn=0;var_lmn<var_sz;var_lmn++){
 
       /* dmn_ss are corresponding indices (subscripts) into N-D array */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.14 2004-07-22 15:26:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.15 2004-07-26 05:45:04 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -80,7 +80,6 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
     if(var->nbr_dim == wgt_crr->nbr_dim){
       /* Test whether all wgt and var dimensions match in sequence */
       for(idx=0;idx<var->nbr_dim;idx++){
-	/*	if(wgt_crr->dmn_id[idx] != var->dmn_id[idx]) break;*/
 	if(!strstr(wgt_crr->dim[idx]->nm,var->dim[idx]->nm)) break;
       } /* end loop over dimensions */
       if(idx == var->nbr_dim) *DO_CONFORM=True;
@@ -338,39 +337,210 @@ ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
 
 var_sct * /* O [sct] Pointer to variable with re-ordered dimensions */
 nco_var_dmn_rdr /* [fnc] Change dimension ordering */
-(const var_sct * const var_in, /* I [ptr] Variable whose dimensions to re-order */
- CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_out), /* I [sct] List of dimension structures in new order */
- const int nbr_dmn_out) /* I [nbr] Number of dimension structures in structure list */
+(var_sct * const var_in, /* I [ptr] Variable whose dimensions to re-order */
+ CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_rdr), /* I [sct] List of dimension structures in new order */
+ const int dmn_rdr_nbr) /* I [nbr] Number of dimension structures in structure list */
 {
   /* Purpose: Re-order dimensions in a given variable
-     dmn_out contains is the new order for dimensions
-     NB: free() var_in in calling routine if it is no longer needed */
-  int dmn_in_idx; /* [idx] Counting index for dmn_in */
-  int dmn_out_idx; /* [idx] Counting index for dmn_out */
-  int dmn_in_nbr; /* [nbr] Number of dimensions in input file */
-  int dmn_in_dmn_out_shr_nbr=0; /* [nbr] Number of dimensions shared by dmn_in and dmn_out */
+     dmn_rdr contains is the new order for dimensions
+     NB: free() var_in in calling routine if it is no longer needed
 
-  var_sct *var_out=NULL;
+     Routine keeps track of two variables var_* whose abbreviations are:
+     in: Input variable (already hyperslabbed) with old dimension ordering
+     rdr: User-specified re-ordered dimension list. Possibly subset of dmn_in
+     out: Output (re-ordered) dimensionality specific to each variable
+
+     dmn_rdr is user-specified list of dimensions to be re-arranged 
+     User specifies all or only a subset of all dimensions in input file
+     For example, say user specifies -d lat,lon
+     This ensures lat precedes lon in all variables in output file
+     In this case dmn_rdr is (user-specified) list [lat,lon]
+     Input 0-D variables dimensioned [] output with dmn_out=[] (unaltered)
+     Input 1-D variables dimensioned [lat] output with dmn_out=[lat] (unaltered)
+     Input 2-D variables dimensioned [lat,lon] output with dmn_out=[lat,lon] (unaltered)
+     Input 2-D variables dimensioned [time,lev] output with dmn_out=[time,lev] (unaltered)
+     Input 2-D variables dimensioned [lon,lat] output with dmn_out=[lon,lat] (transposed)
+     Input 3-D variables dimensioned [lon,lat,time] output with dmn_out=[lat,lon,time]
+     Input 3-D variables dimensioned [time,lon,lat] output with dmn_out=[time,lat,lon]
+     Input 3-D variables dimensioned [lon,lev,lat] output with dmn_out=[lat,lev,lon]
+     Input 4-D variables dimensioned [lon,lev,lat,time] output with dmn_out=[lat,lev,lon,time]
+     Hence output dimension dmn_out list depends on each particular variable 
+     Some, or even all, dimensions in dmn_rdr may not be in dmn_in
+     Re-ordering is only necessary for variables where dmn_in and dmn_rdr share at least two dimensions
+     
+     fxm: Add dimension reversal capability to this routine
+     Dimension reversal:
+     Users specify dimension reversal by prefixing dimension name with negative sign
+     Dimensions may be re-ordered, reversed, or both
+     Dimension reversal algorithm could be implemented by fiddling with dimension maps */
+  
+  char *val_in_cp; /* [ptr] Input data location as char pointer */
+  char *val_out_cp; /* [ptr] Output data location as char pointer */
+  
+  const char fnc_nm[]="nco_var_dmn_rdr()"; /* [sng] Function name */
+  const int dmn_rdr_nil=-1; /* [enm] Input dimension is not in re-order list */
+  
+  dmn_sct **dmn_out; /* [sct] List of dimension structures in output order */
+  
+  int *dmn_id_out; /* [id] Contiguous vector of dimension IDs */
+  int dmn_idx; /* [idx] Index over dimensions */
+  int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
+  int dmn_idx_out_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, output->input */
+  int dmn_idx_in_rdr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->re-order */
+  int dmn_idx_rdr_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, re-order->input */
+  int dmn_in_dmn_rdr_shr_nbr=0; /* [nbr] Number of dimensions dmn_in and dmn_rdr share */
+  int dmn_in_idx; /* [idx] Counting index for dmn_in */
+  int dmn_in_nbr; /* [nbr] Number of dimensions in input variable */
+  int dmn_in_nbr_m1; /* [nbr] Number of dimensions in input variable, less one */
+  int dmn_nbr_ass_crr=0; /* [nbr] Number of dimensions currently assigned */
+  int dmn_out_idx; /* [idx] Counting index for dmn_out */
+  int dmn_out_nbr; /* [nbr] Number of dimensions in output variable */
+  int dmn_rdr_idx; /* [idx] Counting index for dmn_rdr */
+  int typ_sz; /* [B] Size of data element in memory */
+  int dmn_in_idx_srt; /* [idx] Starting index of current un-ordered dimension group */
+  
+  long dmn_in_map[NC_MAX_DIMS]; /* [idx] Map for each dimension of input variable */
+  long dmn_out_map[NC_MAX_DIMS]; /* [idx] Map for each dimension of output variable */
+  long dmn_in_ss[NC_MAX_DIMS]; /* [idx] Dimension subscripts into N-D input array */
+  long var_in_lmn; /* [idx] Offset into 1-D input array */
+  long var_out_lmn; /* [idx] Offset into 1-D output array */
+  long *var_in_cnt; /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
+  long var_sz; /* [nbr] Number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */
+  
+  var_sct *var_out=NULL; /* O [sct] Pointer to variable with re-ordered dimensions */
   
   /* Initialize variables to reduce indirection */
-  dmn_in_nbr=var_in->nbr_dim; /* [nbr] Number of dimensions in input file */
-  var_out=nco_var_dpl(var_in);
-
+  /* Number of input and output dimensions are equal for any re-ordering */
+  dmn_out_nbr=dmn_in_nbr=var_in->nbr_dim; /* [nbr] Number of dimensions in input variable */
+  /* Scalars and 1-D variables are never altered by dimension re-ordering */
+  if(dmn_in_nbr <= 1) return var_in;
+  
+  /* Initialize correspondence of input-to-reorder dimensions to "none" */
+  for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++) dmn_idx_in_rdr[dmn_in_idx]=dmn_rdr_nil;
   /* Create complete 1-to-1 ordered list of dimensions in new output variable */
+  /* For each dimension in the re-ordered dimension list... */
+  for(dmn_rdr_idx=0;dmn_rdr_idx<dmn_rdr_nbr;dmn_rdr_idx++){
+    /* Test whether dimension exists in dmn_in dimension list... */
+    for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
+      /* Compare names, not dimension IDs */
+      if(strstr(var_in->dim[dmn_in_idx]->nm,dmn_rdr[dmn_rdr_idx]->nm)){
+	dmn_idx_in_rdr[dmn_in_idx]=dmn_rdr_idx; /* [idx] Dimension correspondence, input->re-order */	  
+	dmn_idx_rdr_in[dmn_rdr_idx]=dmn_in_idx; /* [idx] Dimension correspondence, re-order->input */	  
+	dmn_in_dmn_rdr_shr_nbr++; /* dmn_in and dmn_rdr share this dimension */
+	break;
+      } /* endif */
+    } /* end loop over dmn_in */
+  } /* end loop over dmn_rdr */
+  
+  /* No re-ordering necessary if dmn_in and dmn_rdr share fewer than two dimensions */
+  /* fxm: this will change to 1 dimension when reversing is implemented */
+  if(dmn_in_dmn_rdr_shr_nbr <= 1) return var_in;
+  
+  /* Create full dmn_out list */
+  dmn_out=(dmn_sct **)nco_malloc(dmn_out_nbr*sizeof(dmn_sct *));
 
-  if(dmn_in_nbr > 0){
-    /* For each dimension in the re-ordered dimension list... */
-    for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_out;dmn_out_idx++){
-      /* Test whether dimension exists in dmn_in dimension list... */
-      for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
-	/* Compare names, not dimension IDs */
-	if(strstr(var_in->dim[dmn_in_idx]->nm,dmn_out[dmn_out_idx]->nm)){
-	  dmn_in_dmn_out_shr_nbr++; /* dmn_in and dmn_out share this dimension */
-	  break;
-	} /* endif */
-      } /* end loop over dmn_in */
-    } /* end loop over dmn_out */
-  } /* endif dmn_in_nbr > 0 */
+  /* Initialize output order to input order */
+  for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
+    dmn_idx_in_out[dmn_in_idx]=dmn_in_idx;
+
+  /* For each dimension in re-order dimension list... */
+  for(dmn_rdr_idx=0;dmn_rdr_idx<dmn_rdr_nbr;dmn_rdr_idx++){
+    /* Lower index bound for current group of un-assigned, un-ordered dimensions */
+    if(dmn_rdr_idx == 0) dmn_in_idx_srt=0; else dmn_in_idx_srt=dmn_idx_rdr_in[dmn_rdr_idx-1]+1;
+    /* Assign preceding un-assigned, un-ordered input dimensions to output list */
+    for(dmn_in_idx=dmn_in_idx_srt;dmn_in_idx<dmn_idx_rdr_in[dmn_rdr_idx]-2;dmn_in_idx++)
+      dmn_idx_in_out[dmn_in_idx]=dmn_nbr_ass_crr++;
+    
+    /* Splice shared dimension in after last group of non-shared dimensions */
+    dmn_idx_in_out[dmn_nbr_ass_crr++]=dmn_idx_rdr_in[dmn_rdr_idx];
+  } /* end loop over dmn_rdr */
+  
+  /* Create reverse correspondence */
+  for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
+    dmn_idx_out_in[dmn_idx_in_out[dmn_in_idx]]=dmn_in_idx;
+
+  if(dbg_lvl_get() == 3){
+    for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
+      (void)fprintf(stdout,"%s: DEBUG %s maps dimension %s from %d to %d\n",prg_nm_get(),fnc_nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,dmn_idx_in_out[dmn_in_idx]);
+    } /* end loop over dmn_in */
+  } /* endif dbg */
+  
+  /* Create output variable structure */
+  var_out=nco_var_dpl(var_in); /* O [sct] Pointer to variable with re-ordered dimensions */
+  var_sz=var_out->sz;
+
+  /* Initialize value and tally arrays */
+  (void)nco_zero_long(var_sz,var_out->tally);
+  (void)nco_var_zero(var_out->type,var_sz,var_out->val);
+
+  /* Get ready to re-order */
+  dmn_id_out=var_out->dmn_id;
+  dmn_in_nbr_m1=dmn_in_nbr-1;
+  dmn_out=var_out->dim;
+  typ_sz=nco_typ_lng(var_out->type);
+  val_in_cp=(char *)var_in->val.vp;
+  val_out_cp=(char *)var_out->val.vp;
+  var_in_cnt=var_in->cnt;
+
+  for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
+    /* fxm: Changed dmn_id,cnt,srt,end,srd...anything else need changing? */
+    var_out->dmn_id[dmn_out_idx]=var_in->dmn_id[dmn_idx_out_in[dmn_out_idx]];
+    var_out->cnt[dmn_out_idx]=var_in->cnt[dmn_idx_out_in[dmn_out_idx]];
+    var_out->srt[dmn_out_idx]=var_in->srt[dmn_idx_out_in[dmn_out_idx]];
+    var_out->end[dmn_out_idx]=var_in->end[dmn_idx_out_in[dmn_out_idx]];
+    var_out->srd[dmn_out_idx]=var_in->srd[dmn_idx_out_in[dmn_out_idx]];
+  } /* end loop over dmn_out */
+
+  /* Compute map for each dimension of input variable */
+  for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++) dmn_in_map[dmn_in_idx]=1L;
+  for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr-1;dmn_in_idx++)
+    for(dmn_idx=dmn_in_idx+1;dmn_idx<dmn_in_nbr;dmn_idx++)
+      dmn_in_map[dmn_in_idx]*=var_in->cnt[dmn_idx];
+
+  /* Compute map for each dimension of output variable */
+  for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++) dmn_out_map[dmn_out_idx]=1L;
+  for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr-1;dmn_out_idx++)
+    for(dmn_idx=dmn_out_idx+1;dmn_idx<dmn_out_nbr;dmn_idx++)
+      /* fxm: make sure var_out->cnt exists already */
+      dmn_out_map[dmn_out_idx]*=var_out->cnt[dmn_idx];
+
+  /* There is more than one method to re-order dimensions
+     Output dimensionality is known in advance, unlike nco_var_avg()
+     Hence outer loop may be over dimensions or over elements
+     Method 1: Loop over input elements 
+     1a. Loop over 1-D input array offsets
+     1b. Invert 1-D input array offset to get N-D input subscripts
+     1c. Turn N-D input subscripts into N-D output subscripts
+     1d. Map N-D output subscripts to get 1-D output element
+     1e. Copy input element to output element
+     This method is simplified from method used in nco_var_avg()
+     Method 2: Loop over input dimensions
+     1a. Loop over input dimensions, from slowest to fastest varying
+     1b. 
+   */
+
+  /* Begin Method 1: Loop over input elements */
+  /* var_in_lmn is offset into 1-D array */
+  for(var_in_lmn=0;var_in_lmn<var_sz;var_in_lmn++){
+
+    /* dmn_in_ss are corresponding indices (subscripts) into N-D array */
+    dmn_in_ss[dmn_in_nbr_m1]=var_in_lmn%var_in_cnt[dmn_in_nbr_m1];
+    for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr_m1;dmn_in_idx++){
+      dmn_in_ss[dmn_in_idx]=(long)(var_in_lmn/dmn_in_map[dmn_in_idx]);
+      dmn_in_ss[dmn_in_idx]%=var_in_cnt[dmn_in_idx];
+    } /* end loop over dimensions */
+
+    /* Map variable's N-D array indices to get 1-D index into output data */
+    var_out_lmn=0L;
+    for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++) var_out_lmn+=dmn_in_ss[dmn_idx_out_in[dmn_out_idx]]*dmn_out_map[dmn_out_idx];
+
+    /* Copy current input element into its slot in output array */
+    (void)memcpy(val_out_cp+var_out_lmn*typ_sz,val_in_cp+var_in_lmn*typ_sz,(size_t)typ_sz);
+  } /* end loop over var_in_lmn */
+  /* End Method 1: Loop over input elements */
+
+  /* Begin Method 2: Loop over input dimensions */
+  /* End Method 2: Loop over input dimensions */
 
   return var_out;
 } /* end nco_var_dmn_rdr() */ 
