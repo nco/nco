@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.162 2003-06-24 22:47:37 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.163 2003-07-01 23:00:16 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -4724,6 +4724,7 @@ ncks [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] [-D @var{dbg}]
 @noindent
 DESCRIPTION
 
+@cindex @code{ncextr}
 @command{ncks} combines selected features of @command{ncdump},
 @command{ncextr}, and the nccut and ncpaste specifications into one
 versatile utility. 
@@ -4732,8 +4733,8 @@ prints it as @acronym{ASCII} text to @file{stdout}, writes it in
 flat binary format to @file{binary-file}, and writes (or pastes) it in
 netCDF format to @var{output-file}.
 
-@command{ncks} will print netCDF data in @acronym{ASCII} format to @code{stdout},
-like @command{ncdump}, but with these differences: 
+@command{ncks} will print netCDF data in @acronym{ASCII} format to
+@code{stdout}, like @command{ncdump}, but with these differences: 
 @command{ncks} prints data in a tabular format intended to be easy to
 search for the data you want, one datum per screen line, with all
 dimension subscripts and coordinate values (if any) preceding the datum.
@@ -4741,9 +4742,9 @@ Option @samp{-s} (or lon options @samp{--sng}, @samp{--string},
 @samp{--fmt}, or @samp{--format}) allows the user the format the data
 using C-style format strings. 
 
-Options @samp{-a} (or @samp{--alphabetize}), @samp{-F} , @samp{-H},
-@samp{-M}, @samp{-m}, @samp{-q}, @samp{-s}, and @samp{-u} control the
-formatted appearance of the data.
+Options @samp{-a}, @samp{-F} , @samp{-H}, @samp{-M}, @samp{-m},
+@samp{-q}, @samp{-s}, and @samp{-u} (and their long option counterparts)
+control the formatted appearance of the data.
 
 @cindex global attributes
 @cindex attributes, global
@@ -4838,7 +4839,7 @@ Features common to many operators are described in
 
 @table @samp
 
-@cindex alphabetize output
+@cindex alphabetization
 @cindex sort alphabetically
 @cindex @code{-a}
 @cindex @code{--abc}
@@ -4933,13 +4934,15 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 @end example
 
 @cindex @code{-M}
+@cindex @code{--Mtd}
 @cindex @code{--Metadata}
 @cindex metadata, global 
 @item -M
 Print to screen the global metadata describing the file.
 This includes file summary information and global attributes.
-Also @samp{--Meta}.
+Also @samp{--Mtd} and @samp{--Metadata}.
 
+@cindex @code{ncdump}
 @cindex @code{-m}
 @cindex @code{--mtd}
 @cindex @code{--metadata}
@@ -4948,7 +4951,7 @@ Also @samp{--Meta}.
 Print variable metadata to screen (similar to @code{ncdump -h}). 
 This displays all metadata pertaining to each variable, one variable
 at a time.
-Also @samp{--meta}.
+Also @samp{--mtd} and @samp{--metadata}.
 
 @cindex @code{-q}
 @cindex @code{--quiet}
@@ -4970,7 +4973,7 @@ Also @samp{--quiet}.
 @item -s @var{format}
 String format for text output. 
 Accepts @w{C language} escape sequences and @code{printf()} formats. 
-Equivalently @samp{--string}, @samp{--format}, or @samp{--fmt}. 
+Also @samp{--string}, @samp{--format}, and @samp{--fmt}. 
 
 @cindex @code{-u}
 @cindex @code{--units}

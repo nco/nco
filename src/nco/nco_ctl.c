@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.23 2003-04-26 00:47:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.24 2003-07-01 23:00:19 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -211,11 +211,11 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-l")) (void)fprintf(stdout,"-l, --lcl, --local path\tLocal storage path for remotely-retrieved files\n");
   if(strstr(opt_sng,"-M")){
     if(prg == ncwa) (void)fprintf(stdout,"-M, --msk_val, --mask-value, --mask_value mask_val\tMasking value (default is 1.0)\n");
-    if(prg == ncks) (void)fprintf(stdout,"-M, --Metadata\t\tPrint global metadata\n");
+    if(prg == ncks) (void)fprintf(stdout,"-M, --Mtd, --Metadata\tPrint global metadata\n");
   } /* end if */
   if(strstr(opt_sng,"-m")){
     if(prg == ncwa) (void)fprintf(stdout,"-m, --msk_nm, --msk_var, --mask-variable, --mask_variable mask_var\tMasking variable name\n");
-    if(prg == ncks) (void)fprintf(stdout,"-m, --metadata\t\tPrint variable metadata\n");
+    if(prg == ncks) (void)fprintf(stdout,"-m, --mtd, --metadata\tPrint variable metadata\n");
   } /* end if */
   if(strstr(opt_sng,"-N")) (void)fprintf(stdout,"-N, --nmr, --numerator\tNo normalization\n");
   if(strstr(opt_sng,"-n")){
