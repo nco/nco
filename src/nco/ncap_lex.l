@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.4 2002-08-29 14:41:24 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.5 2002-09-03 01:50:52 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -405,7 +405,7 @@ M_PI {return NAMED_CONSTANT;}
        If attribute is present obtain and return value from disk else return NC_BYTE of value 0
        If attribute is NC_CHAR then return SNG type
        Other types (NC_FLOAT, NC_DOUBLE, NC_BYTE, NC_SHORT) return SCV */
-    //    att_idx=ncap_aed_lookup(var_nm,att_nm,prs_arg->att_lst,prs_arg->nbr_att,False);
+    /* att_idx=ncap_aed_lookup(var_nm,att_nm,prs_arg->att_lst,prs_arg->nbr_att,False); */
     ptr_aed=ncap_aed_lookup(var_nm,att_nm,prs_arg,False);
     if(ptr_aed){
       if(ptr_aed->type == NC_CHAR){
