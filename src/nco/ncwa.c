@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.126 2004-07-15 00:43:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.127 2004-07-20 16:41:11 hmb Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -66,7 +66,14 @@
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
+#include "ncap.h"   /* scanner stuff */
 #include "libnco.h" /* netCDF Operator (NCO) library */
+
+
+/* Global variables  ( These are/must be identical to the global variables declared in ncap.c */ 
+size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap.l) */
+size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
+char **ncap_fl_spt_glb; /* [fl] Script file */
 
 int 
 main(int argc,char **argv)
@@ -107,10 +114,11 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *time_bfr_srt;
   char *wgt_nm=NULL;
-
-  const char * const CVS_Id="$Id: ncwa.c,v 1.126 2004-07-15 00:43:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.126 $";
-  const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
+  char *msk_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val,op_typ_rlt */
+  
+  const char * const CVS_Id="$Id: ncwa.c,v 1.127 2004-07-20 16:41:11 hmb Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.127 $";
+  const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -170,6 +178,8 @@ main(int argc,char **argv)
   var_sct *wgt_avg=NULL;
   var_sct *wgt_out=NULL;
   
+  prs_sct prs_arg;  /* I/O [sct] Global information required in ncwa parser */
+  
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       {"average",required_argument,0,'a'},
@@ -225,6 +235,7 @@ main(int argc,char **argv)
       {"wgt",no_argument,0,'w'},
       {"wgt_var",no_argument,0,'w'},
       {"operation",required_argument,0,'y'},
+      {"mask_string",required_argument,0,'z'},
       {"op_typ",required_argument,0,'y'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
@@ -343,6 +354,9 @@ main(int argc,char **argv)
       nco_op_typ_sng=(char *)strdup(optarg);
       nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
+    case 'z': /* mask string to be parsed */
+      msk_sng=optarg;
+      break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
@@ -357,6 +371,37 @@ main(int argc,char **argv)
       break;
     } /* end switch */
   } /* end while loop */
+
+
+  /* Parse the mask string */
+  if(msk_sng) {
+  
+    int zero=0;
+    /* Set arguments for scan */
+    prs_arg.fl_in=NULL; /* [sng] Input data file */
+    prs_arg.in_id=0; /* [id] Input data file ID */
+    prs_arg.fl_out=NULL; /* [sng] Output data file */
+    prs_arg.out_id=0; /* [id] Output data file ID */
+    prs_arg.att_lst=NULL; /* [sct] Attributes in script */
+    prs_arg.nbr_att=&zero; /* [nbr] Number of attributes in script */
+    prs_arg.dmn_in=NULL; /* [dmn_in] List of all dimensions in input */
+    prs_arg.nbr_dmn_in=0; /* [nbr] Number of  dimensions in input */
+    prs_arg.dmn_out=NULL;     /* pointer to list of dims in output */
+    prs_arg.nbr_dmn_out=&zero; /* number of dims in above list */
+    prs_arg.sym_tbl=NULL; /* [fnc] Symbol table for functions */
+    prs_arg.sym_tbl_nbr=0; /* [nbr] Number of functions in table */
+    prs_arg.ntl_scn=False; /* [flg] Initial scan of script */
+    prs_arg.var_LHS=NULL; /* [var] LHS cast variable */
+    prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
+  
+    /* Initialize line counter */
+    ncap_ln_nbr_crr=(size_t *)nco_realloc(ncap_ln_nbr_crr,ncap_ncl_dpt_crr+1UL); 
+    ncap_ln_nbr_crr[ncap_ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap.l */
+
+    if( ncap_ncwa_scn(&prs_arg,msk_sng,&msk_nm,&msk_val,&op_typ_rlt) == 0 ) nco_exit(EXIT_FAILURE); 
+
+  }
+
 
   /* Ensure we do not attempt to normalize by non-existent weight */
   if(wgt_nm == NULL) NORMALIZE_BY_WEIGHT=False;
@@ -883,3 +928,5 @@ main(int argc,char **argv)
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
+
+
