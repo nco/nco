@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.35 2002-05-06 06:51:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.36 2002-05-07 08:46:59 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -129,6 +129,8 @@ extern "C" {
   
 #ifndef EXIT_SUCCESS /* Most likely this is a SUN4 machine */
 #define EXIT_SUCCESS 0
+#endif /* SUN4 */
+#ifndef EXIT_FAILURE /* Most likely this is a SUN4 machine */
 #define EXIT_FAILURE 1
 #endif /* SUN4 */
 
