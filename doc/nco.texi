@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.200 2004-01-13 19:52:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.201 2004-01-16 01:09:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -96,7 +96,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 2.8.7
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 12 January 2004
+@set update-date 15 January 2004
 @set update-month January 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -4445,17 +4445,41 @@ arises from the signal fluctuations versus the mean signals.
 Sometimes this is called the @dfn{eddy covariance}.
 We will store the covariance in the variable @code{uprmvprm}.
 @example
-ncra -O -v u,v in.nc foo.nc # Compute time mean of u,v
+ncwa -O -a time -v u,v in.nc foo.nc # Compute time mean of u,v
 ncrename -O -v u,uavg -v v,vavg foo.nc # Rename to avoid conflict
 ncks -A -v u,v in.nc foo.nc # Place originals with time means
 ncap -O -s "uprmvprm=u*v-uavg*vavg" foo.nc foo.nc # Covariance
 ncra -O -v uprmvprm foo.nc out.nc # Time-mean covariance
 @end example
-The same answer would be obtained by replacing the step involving
-@command{ncap} with
+The mathmatically inclined will note that the same covariance would be
+obtained by replacing the step involving @command{ncap} with
 @example
 ncap -O -s "uprmvprm=(u-uavg)*(v-vavg)" foo.nc foo.nc # Covariance
 @end example
+
+@cindex appending data
+@cindex time-averaging
+@findex ncks
+@findex ncwa
+@findex ncra
+Whether a degenerate record dimension is a desirable or undesirable
+feature depends on the application.
+Often a degenerate @var{time} dimension is useful, e.g., for
+concatentating, but it may cause problems with arithmetic.
+Such is the case in the above example, where the first step employs
+@command{ncwa} rather than @command{ncra} for the time-averaging.
+Of course the numerical results are the same with both operators.
+The difference is that @command{ncwa} writes no @var{time} dimension to
+the output file, while @command{ncra} would write a degenerate 
+(@w{size 1}) dimension. 
+Appending @code{u} and @code{v} to the output file would cause
+@command{ncks} to try to expand the degenerate time axis of @code{uavg}
+and @code{vavg} to the size of the non-degenerate @var{time} dimension
+in the input file.
+Thus the append (@command{ncks -A}) command would be undefined (and
+should fail) in this case. 
+Knowing when to use @command{ncwa -a time} rather than the default
+@command{ncra} for time-averaging takes, well, time.
 
 @page
 @html
@@ -4988,7 +5012,8 @@ If @var{file_2} were created by averaging @var{file_1} over the
 @code{time} dimension with the @command{ncra} operator rather than with
 the @command{ncwa} operator, then @var{file_2} will have a @code{time}
 dimension of @w{size 1} rather than having no @code{time} dimension at
-all @cindex degenerate dimensions
+all 
+@cindex degenerate dimensions
 @footnote{This is because @command{ncra} collapses the record dimension
 to a size @w{of 1} (making it a @dfn{degenerate} dimension), but does
 not remove it, while @command{ncwa} removes all dimensions it averages
@@ -5917,7 +5942,7 @@ DESCRIPTION
 @command{ncra} averages record variables across an arbitrary number of
 input files.
 @cindex degenerate dimensions
-The record dimension is retained as a degenerate (size 1) dimension in
+The record dimension is retained as a degenerate @w{(size 1)} dimension in
 the output variables.
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 

@@ -1,3 +1,7 @@
+2004-01-15  Charlie Zender  <zender@uci.edu>
+
+	* Correct documentation of covariance procedure
+
 2004-01-13  Charlie Zender  <zender@uci.edu>
 
 	* Change AIX xlC enable-optimized-debug from -O5 to -O3 so shared
