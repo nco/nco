@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.136 2002-12-16 01:59:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.137 2002-12-19 04:59:48 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -256,7 +256,7 @@ I suppose a major version change entitles me to write another Foreword.
 In the last five years a lot of work has been done refining @acronym{NCO}.
 @acronym{NCO} is now an honest-to-goodness open source project.
 It appears to be much healthier for it.
-The illustrious list of institutions which do not endorse @acronym{NCO}
+The list of illustrious institutions which do not endorse @acronym{NCO} 
 continues to grow, and now includes @acronym{UCI}.
 @sp 1
 @noindent
