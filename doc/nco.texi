@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.88 2002-02-18 19:16:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.89 2002-02-28 06:51:59 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1533,8 +1533,9 @@ disabled by specifying @samp{-R} on the command line.
 @cindex @code{-x}
 @cartouche
 @noindent
-Availability: @command{ncdiff}, @command{ncea}, @command{ncecat}, @command{ncflint},
-@command{ncks}, @command{ncra}, @command{ncrcat}, @command{ncwa}@*
+Availability: (@command{ncap}), @command{ncdiff}, @command{ncea},
+@command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncra},
+@command{ncrcat}, @command{ncwa}@* 
 Key switches: @samp{-v}, @samp{-x}@*
 @end cartouche
 Variable subsetting is implemented with the @samp{-v @var{var}[,@dots{}]} and
@@ -1552,6 +1553,12 @@ Remember, if you are stretching the limits of your system's memory by
 averaging or concatenating large files, then the easiest solution is
 often to use the @samp{-v} option to retain only the variables you
 really need (@pxref{Memory usage}).
+Note that, due to its special capabilities, @code{ncap} interprets
+these switches differently
+(@pxref{ncap netCDF Arithmetic Processor}).
+For @code{ncap}, the @samp{-v} switch takes no arguments and indicates
+that @emph{only} user-defined variables should be output.
+@code{ncap} does not accept or understand the @var{-x} switch.
 
 @node Coordinate variables, Fortran indexing, Variable subsetting, Common features
 @section Including/Excluding coordinate variables
@@ -1559,8 +1566,9 @@ really need (@pxref{Memory usage}).
 @cindex @code{-c}
 @cartouche
 @noindent
-Availability: @command{ncdiff}, @command{ncea}, @command{ncecat}, @command{ncflint},
-@command{ncks},  @command{ncra}, @command{ncrcat}, @command{ncwa}@*
+Availability: @command{ncap}, @command{ncdiff}, @command{ncea},
+@command{ncecat}, @command{ncflint}, @command{ncks},  @command{ncra},
+@command{ncrcat}, @command{ncwa}@* 
 Key switches: @samp{-C}, @samp{-c}@*
 @end cartouche
 By default, coordinates variables associated with any variable appearing
@@ -1588,8 +1596,9 @@ without having to know their names.
 @cindex @code{-F}
 @cartouche
 @noindent
-Availability: @command{ncdiff}, @command{ncea}, @command{ncecat}, @command{ncflint},
-@command{ncks},  @command{ncra}, @command{ncrcat}, @command{ncwa}@*
+Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
+@command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
+@command{ncwa}@* 
 Key switches: @samp{-F}@*
 @end cartouche
 By default, @acronym{NCO} uses C-style (0-based) indices for all I/O.
@@ -1625,8 +1634,9 @@ the following output formats:
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
 @cartouche
 @noindent
-Availability: @command{ncdiff}, @command{ncea}, @command{ncecat}, @command{ncflint},
-@command{ncks},  @command{ncra}, @command{ncrcat}, @command{ncwa}@*
+Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
+@command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
+@command{ncwa}@* 
 Key switches: @samp{-d}@*
 @end cartouche
 A @dfn{hyperslab} is a subset of a variable's data.
@@ -1847,8 +1857,8 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @cindex @code{missing_value} attribute
 @cartouche
 @noindent
-Availability: @command{ncdiff}, @command{ncea}, @command{ncflint}, @command{ncra},
-@command{ncwa}@* 
+Availability: @command{ncap}, @command{ncdiff}, @command{ncea},
+@command{ncflint}, @command{ncra}, @command{ncwa}@* 
 Key switches: None@*
 @end cartouche
 
@@ -1968,7 +1978,7 @@ Suffice it to say that, in all known cases, @acronym{NCO} does ``the right thing
 @cindex @code{-y}
 @cartouche
 @noindent
-Availability: @command{ncra},@command{ncea},@command{ncwa} @*
+Availability: @command{ncra},@command{ncea},@command{ncwa}@*
 Key switches: @samp{-y}@*
 @end cartouche
 @noindent
@@ -2266,7 +2276,8 @@ required by the @command{ncdiff} operation in the fourth step.
 @cindex type conversion
 @cartouche
 @noindent
-Availability: @command{ncea}, @command{ncra}, @command{ncwa}@*
+Availability: @command{ncap}, @command{ncdiff}, @command{ncea},
+@command{ncra}, @command{ncwa}@* 
 Key switches: None@*
 @end cartouche
 Type conversion refers to the casting of one fundamental data type 
@@ -2460,12 +2471,14 @@ attribute (@pxref{ncatted netCDF Attribute Editor}).
 @cindex @code{time}
 @cartouche
 @noindent
-Availability: @command{ncdiff}, @command{ncea}, @command{ncecat}, @command{ncflint},
-@command{ncra}, @command{ncwa}@*
+Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
+@command{ncflint}, @command{ncra}, @command{ncwa}@*
 Key switches: None@*
 @end cartouche
-@acronym{NCO} recognizes @acronym{NCAR CSM} history tapes, and treats them specially.
-If you do not work with @acronym{NCAR CSM} data then you may skip this section.
+@acronym{NCO} recognizes @acronym{NCAR CSM} history tapes, and treats
+them specially. 
+If you do not work with @acronym{NCAR CSM} data then you may skip this
+section. 
 The @acronym{CSM} netCDF convention is described at
 @uref{http://www.cgd.ucar.edu/csm/experiments/output.format.html"}.
 Most of the @acronym{CSM} netCDF convention is transparent to @acronym{NCO}
@@ -2642,6 +2655,67 @@ transformations of data and archive the results as easily as possible.
 @cindex derived fields
 The results of the algebraic manipulations are called @dfn{derived fields}.
 
+Unlike the other operators, @code{ncap} does not accept a list of
+variables to be operated on as an argument to @samp{-v} (@pxref{Variable
+subsetting}).
+Rather, the @samp{-v} switch takes no arguments and indicates
+that @code{ncap} should output @emph{only} user-defined variables.
+@code{ncap} does not accept or understand the @var{-x} switch.
+
+@node Left hand casting
+@cindex hybrid coordinate system 
+@cindex left hand casting
+@cindex @acronym{LHS}
+The following examples demonstrate the utility of the @dfn{left hand
+casting} ability of @code{ncap}.
+Consider first a simple, albeit artificial, example.
+If @var{lat} and @var{lon} are one dimensional coordinates of
+dimensions @var{lat} and @var{lon}, respectively, then addition
+of these two one-dimensional arrays is intrinsically ill-defined because
+whether @var{lat_lon} should be dimensioned @var{lat} by @var{lon}
+or @var{lon} by @var{lat} is ambiguous.
+Differing dimensions are said to be @dfn{orthogonal} to one another,
+and sets of dimensions which are mutually exclusive are orthogonal
+as a set and any arithmetic operation between variables in orthogonal
+dimensional spaces is ambiguous without further information.
+
+The ambiguity may be resolved by enumerating the desired dimension 
+ordering of the output expression inside square brackets on the
+left hand side (@acronym{LHS}) of the equals sign.
+This is called @dfn{left hand casting} because the user resolves the 
+dimensional ordering of the @acronym{RHS} of the expression by
+specifying the desired ordering on the @{LHS}.
+@example
+ncap -O -s "lat_lon[lat,lon]=lat+lon" in.nc out.nc
+@end example
+The explicit list of dimensions on the @acronym{LHS}, @code{[lat,lon]}
+resolves the otherwise ambiguous ordering of dimensions in
+@var{lat_lon}. 
+In effect, the @acronym{LHS} @dfn{casts} its rank properties onto the 
+@acronym{RHS}.
+Without @acronym{LHS} casting, the dimensional ordering of @var{lat_lon}
+would be undefined and, hopefully, @code{ncap} would print an error
+message. 
+
+Consider now a slightly more complex example.
+In geophysical models, a coordinate system based on 
+a blend of terrain-following and density-following surfaces is 
+called a @dfn{hybrid coordinate system}.
+This command shows how to manipulate the four fields which define
+the pressure in a hybrid coordinate system: @var{PO} is the domain-mean 
+surface pressure offset (a scalar), @var{PS} is the local surface
+pressure (usually two horizontal spatial dimensions, i.e, latitude
+by longitude), @var{hyam} is the weight given to surfaces of constant
+density (one spatial dimension, pressure, which is orthogonal to
+the horizontal dimensions), and @var{hybm} is the weight 
+given to surfaces of constant elevation (also one spatial dimension):
+This command constructs a four-dimensional pressure @code{prs_mdp}
+from the four input variables of mixed rank and orthogonality:
+@example
+ncap -O -s "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm" in.nc out.nc
+@end example
+
+@node Syntax of @command{ncap} statements
 @cindex statement
 @cindex syntax
 @cindex semi-colon
@@ -2668,6 +2742,7 @@ Single line comments are preceded by @code{//} characters;
 The at-sign @code{@@} is used to delineate an attribute name from a
 variable name.
 
+@unnumberedsubsec @code{ncap} mathematical functions
 @cindex mathematical functions
 @cindex @var{asin(x)}
 @cindex @var{atan(x)}
@@ -2721,13 +2796,6 @@ Standard calculator notation is used for addition @kbd{+}, subtraction
 @noindent
 EXAMPLES
 
-@cindex hybrid coordinate system 
-Construct a four-dimensional pressure @code{prs_mdp} given the
-required hybrid coordinate system parameters:
-@example
-ncap -O -s "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm" in.nc out.nc
-@end example
-
 Define new attribute @var{new} for existing variable @var{one}
 as twice the existing attribute @var{double_att} of variable @var{att_var}:
 @example
@@ -2736,7 +2804,7 @@ ncap -O -s "one@@new=2*att_var@@double_att" in.nc out.nc
 
 Average variables of mixed types (result is of type double):
 @example
-ncap -O -s "average=(three_dmn_rec_var+three_dmn_var_dbl+three_dmn_var_int)/3" in.nc out.nc 
+ncap -O -s "average=(var_float+var_double+var_int)/3" in.nc out.nc 
 @end example
 
 @example
