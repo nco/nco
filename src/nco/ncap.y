@@ -1,7 +1,7 @@
 %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.10 2001-05-08 01:36:03 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.11 2001-09-24 11:30:51 hmb Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -57,6 +57,7 @@
 #include <netcdf.h>             /* netCDF definitions */
 #include "nc.h"                 /* NCO definitions */
 #include "ncap.h"               /* symbol table definition */
+#include "nco_netcdf.h"         /* netCDF3 wrapper calls */
 
 /* Turn on parser debugging option (bison man p. 85) */
 #define YYDEBUG 1
@@ -172,15 +173,15 @@ typedef struct{
     if(dbg_lvl_get() > 1) (void)fprintf(stderr,"NAME: getting %s from netCDF %s\n",$1->nm,((prs_sct *)prs_arg)->fl_in);
 
     /* Get variable ID */
-    var_id=ncvarid(((prs_sct *)prs_arg)->in_id,$1->nm);
+    var_id=nco_inq_varid(((prs_sct *)prs_arg)->in_id,$1->nm);
     if(var_id == -1){
       (void)fprintf(stderr,"can't find %s in %s\n",$1->nm,((prs_sct *)prs_arg)->fl_in);
     }else{
       var=var_fll(((prs_sct *)prs_arg)->in_id,var_id,$1->nm,((prs_sct *)prs_arg)->dim,((prs_sct *)prs_arg)->nbr_dmn_xtr);
       /* Allocate and initialize accumulation space for variable */
-      var->tally=(long *)malloc(var->sz*nctypelen(NC_INT));
+      var->tally=(long *)malloc(var->sz*nco_typ_lng(NC_INT));
       (void)zero_long(var->sz,var->tally);
-      var->val.vp=(void *)malloc(var->sz*nctypelen(var->type));
+      var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type));
       /* Retrieve variable values from disk into memory */
       (void)var_get(((prs_sct *)prs_arg)->in_id,var);
       if(dbg_lvl_get() > 3) (void)fprintf(stderr,"var->nm=%s, var->id=%d, var->nc_id=%d\n",var->nm,var->id,var->nc_id);
