@@ -1,3 +1,14 @@
+1999-05-12  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Tagged this as nco1_1_32
+
+	* Using the new lmt_evl() dim_idx code for operators besides ncra
+	and ncrcat, e.g. ncks, causes problems with wrapped and wrapped
+	stride limits. One line fix to lmt_evl() restored old lmt_evl()
+	dim_idx code to all operators except ncra and ncrcat. The new
+	lmt_evl() code is simply will not (and should not) handle wrapped
+	coordinates for the record dimension in multi-file operators. 
+	
 1999-05-11  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Tagged this as nco1_1_31

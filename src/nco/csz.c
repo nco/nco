@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.17 1999-05-12 03:06:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.18 1999-05-13 03:06:03 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -60,6 +60,13 @@ Exit_gracefully(void)
 
   exit(EXIT_SUCCESS);
 } /* end Exit_gracefully() */ 
+
+char * 
+nmn_get()
+{ 
+  /* Purpose: Return a mnemonic that describes the current NCO version */
+  return "record stride beta 3";
+} /* end nmn_get() */
 
 char *
 cmd_ln_sng(int argc,char **argv)
@@ -134,7 +141,7 @@ lmt_prs(int nbr_lmt,char **lmt_arg)
        (arg_nbr == 3 && arg_lst[1] == NULL && arg_lst[2] == NULL) || /* No min or max when stride not specified */ 
        (arg_nbr == 4 && arg_lst[3] == NULL) || /* Stride should be specified */ 
        False){
-      (void)fprintf(stdout,"%s: ERROR in hyperslab specification %s\n",prg_nm_get(),lmt_arg[idx]);
+      (void)fprintf(stdout,"%s: ERROR in hyperslab specification for dimension %s\n",prg_nm_get(),lmt_arg[idx]);
       exit(EXIT_FAILURE);
     } /* end if */ 
 
@@ -792,8 +799,8 @@ cvs_vrs_prs()
   char *dlr_ptr=NULL;
   char *nco_sng_ptr=NULL;
   char *usc_1_ptr=NULL;
-  char *usc_2_ptr=NULL;
-  char cvs_Name[]="$Name: not supported by cvs2svn $"; 
+  char *usc_2_ptr=NULL
+  char cvs_Name[]="$Name: not supported by cvs2svn $";
   char nco_sng[]="nco"; 
 
   int cvs_nm_sng_len;
@@ -942,10 +949,10 @@ nc_lib_vrs_prn()
 } /* end nc_lib_vrs_prn() */
 
 void
-copyright_prn(char *rcs_Id,char *rcs_Revision)
+copyright_prn(char *RCS_Id,char *RCS_Revision)
 /* 
-   char *rcs_Id: I RCS identification string
-   char *rcs_Revision: I RCS revision string
+   char *RCS_Id: I RCS identification string
+   char *RCS_Revision: I RCS revision string
  */ 
 {
   char *date_sng;
@@ -957,18 +964,18 @@ copyright_prn(char *rcs_Id,char *rcs_Revision)
   
   date_sng_len=10;
   date_sng=(char *)malloc((date_sng_len+1)*sizeof(char));
-  (void)strncpy(date_sng,strchr(rcs_Id,'/')-4,date_sng_len);
+  (void)strncpy(date_sng,strchr(RCS_Id,'/')-4,date_sng_len);
   date_sng[date_sng_len]='\0';
 
-  vrs_sng_len=strrchr(rcs_Revision,'$')-strchr(rcs_Revision,':')-3;
+  vrs_sng_len=strrchr(RCS_Revision,'$')-strchr(RCS_Revision,':')-3;
   vrs_sng=(char *)malloc((vrs_sng_len+1)*sizeof(char));
-  (void)strncpy(vrs_sng,strchr(rcs_Revision,':')+2,vrs_sng_len);
+  (void)strncpy(vrs_sng,strchr(RCS_Revision,':')+2,vrs_sng_len);
   vrs_sng[vrs_sng_len]='\0';
 
   cvs_vrs_sng=cvs_vrs_prs();
 
   (void)fprintf(stderr,"NCO netCDF Operators version %s by Charlie Zender\n",cvs_vrs_sng);
-  (void)fprintf(stderr,"%s version %s (%s)\nCopyright 1995--1999 University Corporation for Atmospheric Research\n",prg_nm_get(),vrs_sng,date_sng);
+  (void)fprintf(stderr,"%s version %s (%s) \"%s\"\nCopyright 1995--1999 University Corporation for Atmospheric Research\n",prg_nm_get(),vrs_sng,date_sng,nmn_get());
   (void)free(vrs_sng);
   (void)free(cvs_vrs_sng);
 } /* end copyright_prn() */

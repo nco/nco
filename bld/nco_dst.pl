@@ -1,20 +1,20 @@
 #!/contrib/bin/perl
 				
-my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.19 1999-05-12 03:06:47 zender Exp $';
+my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.20 1999-05-13 03:06:02 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
 # Usage:
 # Export tagged, public versions
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_31
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_31
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_31
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_31
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_31
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_31
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_31
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_31
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_31
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_32
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_32
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_32
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_32
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_32
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_32
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_32
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_32
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_32
 
 # Export daily snapshot
 # /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 
@@ -52,9 +52,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $RCS_Date='$Date: 1999-05-12 03:06:47 $';
-my $RCS_Id='$Id: nco_dst.pl,v 1.19 1999-05-12 03:06:47 zender Exp $';
-my $RCS_Revision='$Revision: 1.19 $';
+my $RCS_Date='$Date: 1999-05-13 03:06:02 $';
+my $RCS_Id='$Id: nco_dst.pl,v 1.20 1999-05-13 03:06:02 zender Exp $';
+my $RCS_Revision='$Revision: 1.20 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
