@@ -1,7 +1,7 @@
  %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.18 2001-12-28 19:57:05 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.19 2001-12-28 20:09:27 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -151,10 +151,10 @@ statement:     out_att_exp '=' att_exp
                   ptr_aed->type=$3.type;
 		  ptr_aed->sz = 1L;
 		  (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
-                  (void)sprintf(errstr,"Saving attribute %s:%s to %s",$1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->fl_out);
+                  (void)sprintf(errstr,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->fl_out);
 		  (void)yyerror(errstr);
                  if(dbg_lvl_get() > 1) {
-                  (void)fprintf(stderr,"Saving in array attribute %s:%s=",$1.var_nm,$1.att_nm);
+                  (void)fprintf(stderr,"Saving in array attribute %s@%s=",$1.var_nm,$1.att_nm);
                   
                   switch($3.type){
                     case NC_BYTE:  (void)fprintf(stderr,"%d\n",$3.val.b); break;
@@ -183,7 +183,7 @@ statement:     out_att_exp '=' att_exp
                   strcpy(ptr_aed->val.cp,$3);
                   (void)cast_nctype_void(NC_CHAR,&ptr_aed->val);    
 
-                 (void)sprintf(errstr,"Saving in attribute %s:%s=%s",$1.var_nm,$1.att_nm,$3);
+                 (void)sprintf(errstr,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
                  (void)yyerror(errstr);
                  (void)free($1.var_nm);
                  (void)free($1.att_nm);
@@ -203,10 +203,10 @@ statement:     out_att_exp '=' att_exp
                     ptr_aed->val.vp = (void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
 		    (void)var_copy(ptr_aed->type,ptr_aed->sz,$3->val,ptr_aed->val);
                     //cast_nctype_void($3->type,&ptr_aed->val);
-                    (void)sprintf(errstr,"Saving in attribute %s:%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
+                    (void)sprintf(errstr,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
                     (void)yyerror(errstr); 
 		  }else{
-                   (void)sprintf(errstr,"Warning: Cannot store in attribute %s:%s a variable with dimension %d",$1.var_nm,$1.att_nm,$3->nbr_dim );
+                   (void)sprintf(errstr,"Warning: Cannot store in attribute %s@%s a variable with dimension %d",$1.var_nm,$1.att_nm,$3->nbr_dim );
                   (void)yyerror(errstr);
                   }
 		  

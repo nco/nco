@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.103 2001-12-28 19:57:05 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.104 2001-12-28 20:09:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -7,7 +7,6 @@ About 15 high priority items are shown first, then another ~100 items
 ******************************************************************************
 
 ncap-specific items:
-1. Attribute parsing of global attributes appears broken
 2. Fix parsing of mixed-rank expressions
 3. Fix foloowing mixed unsigned char * and char * warnings in ncap.l, ncap.y:
 cc-1164 cc: WARNING File = ../src/nco/ncap.l, Line = 293

@@ -1,5 +1,13 @@
 2001-12-28  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_1_1
+	Changes since nco-2_1_0: ncap uses @ for attributes
+	Mixed rank handling improved but still broken
+
+	* Fix '@' handling for global attributes
+
+	* Make handling of attribute indicator @ consistent in warnings
+
 	* ncap.l: cast void to ptr_aed->type not undefined type
 
 	* Begin clean up of ncap code, eliminate compiler warnings
