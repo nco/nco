@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.17 2004-08-05 05:12:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.18 2004-08-05 05:27:31 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -98,8 +98,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.17 2004-08-05 05:12:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.17 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.18 2004-08-05 05:27:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.18 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:p:Rrt:v:x-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -512,7 +512,7 @@ main(int argc,char **argv)
 #pragma omp parallel for default(none) private(idx) shared(dbg_lvl,dmn_idx_out_in,dmn_rvr_in,fp_stderr,fp_stdout,in_id,nbr_var_prc,out_id,prg_nm,rcd,var_prc,var_prc_out)
 #endif /* not _OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
-      if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
+      if(dbg_lvl > 1) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
       if(dbg_lvl > 0) (void)fflush(fp_stderr);
       
       /* Retrieve variable from disk into memory */
