@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.18 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.19 2004-08-05 00:01:51 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -46,7 +46,7 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
  const bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
 {
   /* Purpose: Sort extraction lists numerically or alphabetically
-     Routine is deprecated in favor of nco_lst_srt() which uses system qsort()
+     Routine is deprecated in favor of nco_lst_srt_nm_id() which uses system qsort()
      lst_heapsort drives Numerical Recipes indexx-style routines
 
      Advantage of indexx* routines is they return list of sorted indices,
@@ -277,7 +277,7 @@ nco_lst_comma2hash /* [fnc] Replace commas with hashes when within braces */
 } /* end nco_lst_comma2hash() */
 
 nm_id_sct * /* O [sct] Sorted output list */
-nco_lst_srt /* [fnc] Sort input list numerically or alphabetically */
+nco_lst_srt_nm_id /* [fnc] Sort name/ID input list numerically or alphabetically */
 (nm_id_sct * const lst, /* I/O [sct] Current list (destroyed) */
  const int nbr_lst, /* I [nbr] number of members in list */
  const bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
@@ -293,7 +293,7 @@ nco_lst_srt /* [fnc] Sort input list numerically or alphabetically */
     qsort(lst,(size_t)nbr_lst,sizeof(lst[0]),nco_cmp_nm_id_id);
   } /* end else */
   return lst;
-} /* end nco_lst_srt() */
+} /* end nco_lst_srt_nm_id() */
 
 char * /* O [sng] Concatenated string formed by joining all input strings */
 sng_lst_prs /* [fnc] Join list of strings together into one string */

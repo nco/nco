@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.13 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.14 2004-08-05 00:01:51 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -83,7 +83,7 @@ nco_lst_comma2hash /* [fnc] Convert {...,...} to {...#...} in regular expression
 (char * const rx_sng); /* [sng] Regular expression */
 
 nm_id_sct * /* O [sct] Sorted output list */
-nco_lst_srt /* [fnc] Sort input list numerically or alphabetically */
+nco_lst_srt_nm_id /* [fnc] Sort name/ID input list numerically or alphabetically */
 (nm_id_sct * const lst, /* I/O [sct] Current list (destroyed) */
  const int nbr_lst, /* I [nbr] number of members in list */
  const bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */
