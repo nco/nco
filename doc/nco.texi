@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.118 2002-09-07 05:41:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.119 2002-09-07 06:16:39 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -4613,7 +4613,7 @@ is given above (@pxref{Operation Types}).
 @end menu
 
 @node Masking condition, Normalization, ncwa netCDF Weighted Averager, ncwa netCDF Weighted Averager
-@unnumberedsubsec Masking condition
+@subsection Masking condition
 @cindex masking condition
 @tex
 Each $x_i$ also has an associated masking weight $m_i$ whose value is 0
@@ -4691,7 +4691,7 @@ weight $w_i =0.0$ as well).
 @end tex
 
 @node Normalization,  , Masking condition, ncwa netCDF Weighted Averager
-@unnumberedsubsec Normalization
+@subsection Normalization
 @cindex normalization
 @command{ncwa} has one switch which controls the normalization of the
 averages appearing in the @var{output-file}.
