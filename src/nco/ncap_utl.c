@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.28 2002-01-11 23:22:05 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.29 2002-01-13 02:01:29 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -1187,8 +1187,7 @@ ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
   int rcd=NC_NOERR; /* [rcd] Return code */
   int nbr_new_lst=0;
 
-  nm_id_sct *new_lst;
-  
+  nm_id_sct *new_lst=NULL_CEWI;
 
   /* Get number of dimensions */
   (void)nco_inq(nc_id,&nbr_dim,(int *)NULL,(int *)NULL,(int *)NULL);
@@ -1219,7 +1218,6 @@ ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
   return new_lst;
   
 } /* end ncap_var_lst_crd_make() */
-
 
 void 
 ncap_initial_scan(prs_sct *prs_arg,char *spt_arg_cat, nm_id_sct** xtr_lst_a,int *nbr_lst_a,

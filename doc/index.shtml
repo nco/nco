@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.77 2001-08-10 16:12:04 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.78 2002-01-13 02:01:29 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -141,10 +141,9 @@ instructions for helping the NCO project.
 <dt><a name="News"></a></dt>
 <h2>NCO News & Announcements</h2>
 <ul>
-<li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code now uses only netCDF3 API to increase I/O performance</li>
+<li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code includes libnco_c++, a new C++ interface to netCDF</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code now supports multithreading with OpenMP-compliant compilers</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code contains working packing and unpacking primitives</li>
-<li>NCO is available on <tt>prospect.ucar.edu</tt>
 <li><a href="./nco_news.shtml"> Full text of past NCO announcements</a></li>
 </ul>
 <hr></p>
@@ -152,18 +151,23 @@ instructions for helping the NCO project.
 <dt><a name="Version"></a></dt>
 <h2>Version Summary</h2>
 <ul>
-<li><b>NCO 2.0.2</b>, in alpha-testing: Add packing/unpacking capabilities based on
+<li>No releases since 2.0.0 have been packaged (e.g., with
+tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>, is
+broken (<tt>texinfo</tt> tools are out of date on RedHat Linux).
+The brave may retrieve these versions using CVS (tags are, e.g., <tt>nco-2_1_2</tt>).
+<li><b>NCO 2.1.2</b>, Not packaged: C++ API to netcdf, libnco_c++ open for business
+<li><b>NCO 2.1.0</b>, Not packaged: <tt>ncap</tt> full lexer/parser operational
+<li><b>NCO 2.0.3</b>, Not packaged: small fixes to 2.0.0 (e.g., <tt>ncks</tt> printing)
+<li><b>NCO 2.0.2</b>, Not packaged: Add packing/unpacking capabilities based on
 <tt>scale_factor</tt> and <tt>add_offset</tt> convention</li>
-<li><b>NCO 2.0.1</b>, in beta-testing: Add user-configurable multi-threaded capability to arithmetic-intensive operators <tt>ncwa</tt>, <tt>ncea</tt>, and <tt>ncra</tt></li>
+<li><b>NCO 2.0.1</b>, Not packaged: Add user-configurable multi-threaded capability to arithmetic-intensive operators <tt>ncwa</tt>, <tt>ncea</tt>, and <tt>ncra</tt></li>
 <li><b>NCO 2.0.0</b>, <a href="./nco_news.shtml#20010507">20010507</a>: Switched all internal calls to netCDF 3.x API</li>
 <li><b>NCO 1.2.2</b>, <a href="./nco_news.shtml#20010211">20010211</a>: Allow weights with
 <tt>ncwa</tt> in min/max/ttl operations, easier building with HDF4. 
 <tt>ncrename</tt> can now work on specific variables rather than whole file.
 <tt>ncks</tt> has <tt>-q</tt> option for cleaner printing</li>
-<li><b>NCO 1.2.1</b>, <a href="./nco_news.shtml#20000828">20000828</a>: Added type-conversion of integers to floating point before
-arithmetic, fixed broken <tt>-v</tt> option</li>
-<li><b>NCO 1.2</b>, <a href="./nco_news.shtml#20000730">20000730</a>: Added non-linear operations <tt>ncra/ncea</tt> and <tt>ncwa</tt>:
-min,max,total,rms,rmssdn,sqrt. Added DODS compliance.</li>
+<li><b>NCO 1.2.1</b>, <a href="./nco_news.shtml#20000828">20000828</a>: Added type-conversion of integers to floating point before arithmetic, fixed broken <tt>-v</tt> option</li>
+<li><b>NCO 1.2</b>, <a href="./nco_news.shtml#20000730">20000730</a>: Added non-linear operations to <tt>ncra/ncea</tt> and <tt>ncwa</tt>: min,max,total,rms,rmssdn,sqrt. Added <a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> compliance.</li>
 <li><b>NCO 1.1.48</b>, <a href="./nco_news.shtml#20000515">20000515</a>: Potentially serious bugfix to <tt>ncdiff</tt>, recommend upgrade</li>
 <li><b>NCO 1.1.47</b>, <a href="./nco_news.shtml#20000510">20000510</a>: Improved <tt>ncra</tt> and <tt>ncrcat</tt> to allow lazier
 specifications of input files</li> 

@@ -1,3 +1,7 @@
+2002-01-12  Charlie Zender  <zender@uci.edu>
+
+	* First build of ncap on LINUXALPHA architecture
+
 2001-12-31  Charlie Zender  <zender@uci.edu>
 
 	* More ncap.* cleanup. Alter some variable names to conform to
