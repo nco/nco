@@ -80,7 +80,8 @@ VERSION = @VERSION@
 YACC = @YACC@
 path_to_ncgen = @path_to_ncgen@
 
-SUBDIRS = src man doc
+SUBDIRS = src man
+EXTRA_DIST = autobld data
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/autobld/mkinstalldirs
 CONFIG_HEADER = config.h
