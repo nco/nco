@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.110 2002-09-05 17:58:07 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.111 2002-09-06 07:24:50 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -13,6 +13,11 @@ NB: texi2dvi nco.texi does not work on RHL 7.2
 After editing any hyperlink locations, use 
 C-c C-u C-a	texinfo-all-menus-update
 C-c C-u C-e	texinfo-every-node-update
+
+Multiple files:
+M-x texinfo-multiple-files-update
+C-u M-x texinfo-multiple-files-update
+C-u 8 M-x texinfo-multiple-files-update
 
 Usage: 
 cd ~/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi
@@ -28,6 +33,7 @@ cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco
 
 Resources:
 Octave TeXInfo manual is a good example of clean TeXInfo structure
+/usr/share/doc/octave-2.1.34/interpreter/octave.texi
 
 Copyright (C) 1995--2002 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
@@ -182,89 +188,6 @@ Texts. The license is available online at
 * Operators::                   
 * Contributing::                
 * General Index::               
-
-@detailmenu
- --- The Detailed Node Listing ---
-
-Introduction
-
-* Availability::                
-* Compatability::               
-* Libraries::                   
-* netCDF 2.x vs. 3.x::          
-* Help and Bug reports::        
-
-Operating systems compatible with @acronym{NCO}
-
-* Windows Operating System::    
-
-Operator Strategies
-
-* Philosophy::                  
-* Climate model paradigm::      
-* Output files::                
-* Appending::                   
-* Addition Subtraction Multiplication and Interpolation::  
-* Averaging vs. Concatenating::  
-* Large numbers of input files::  
-* Large files and Memory::      
-* Memory usage::                
-* Operator limitations::        
-
-Averagers vs. Concatenators
-
-* Concatenation::               
-* Averaging::                   
-* Interpolating::               
-
-Features common to most operators
-
-* Specifying input files::      
-* Remote storage::              
-* File retention::              
-* Variable subsetting::         
-* Coordinate variables::        
-* Fortran indexing::            
-* Hyperslabs::                  
-* Wrapped coordinates::         
-* Stride::                      
-* Missing values::              
-* Operation Types::             
-* Type conversion::             
-* Suppressing interactive prompts::  
-* History attribute::           
-* NCAR CSM Conventions::        
-* ARM Conventions::             
-* Operator version::            
-
-Accessing files stored remotely
-
-* DODS::                        
-
-Reference manual for all operators
-
-* ncap netCDF Arithmetic Processor::  
-* ncatted netCDF Attribute Editor::  
-* ncdiff netCDF Differencer::   
-* ncea netCDF Ensemble Averager::  
-* ncecat netCDF Ensemble Concatenator::  
-* ncflint netCDF File Interpolator::  
-* ncks netCDF Kitchen Sink::    
-* ncra netCDF Record Averager::  
-* ncrcat netCDF Record Concatenator::  
-* ncrename netCDF Renamer::     
-* ncwa netCDF Weighted Averager::  
-
-Scripting Mathematical Processing with @code{ncap}
-
-* Intrinsic mathematical functions::  
-
-@command{ncwa} netCDF Weighted Averager
-
-* Masking condition::           
-* Normalization::               
-
-@end detailmenu
 @end menu
 
 @node Foreword, Summary, Top, Top
@@ -2686,12 +2609,17 @@ Rather, the @samp{-v} switch takes no arguments and indicates
 that @command{ncap} should output @emph{only} user-defined variables.
 @command{ncap} does not accept or understand the @var{-x} switch.
 
-@subsection Scripting Mathematical Processing with @code{ncap}
+@c @subsection Scripting Mathematical Processing with @code{ncap}
+
 @menu
+* Left hand casting::           
+* Syntax of ncap statements::   
+* Intrinsic functions::         
 * Intrinsic mathematical functions::  
 @end menu
 
-@node Left hand casting, Intrinsic mathematical functions, ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
+@node Left hand casting, Syntax of ncap statements, ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
+@subsection Left hand casting @code{ncap}
 @cindex hybrid coordinate system 
 @cindex left hand casting
 @cindex @acronym{LHS}
@@ -2744,7 +2672,8 @@ from the four input variables of mixed rank and orthogonality:
 ncap -O -s "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm" in.nc out.nc
 @end example
 
-@node Syntax of ncap statements, Intrinsic mathematical functions, ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
+@node Syntax of ncap statements, Intrinsic functions, Left hand casting, ncap netCDF Arithmetic Processor
+@subsection Syntax of @code{ncap} statements
 @cindex statement
 @cindex syntax
 Mastering @command{ncap} is relatively simple.
@@ -2792,7 +2721,8 @@ The at-sign @code{@@} is used to delineate an attribute name from a
 variable name.
 @end table 
 
-@node Intrinsic functions, Intrinsic mathematical functions, ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
+@node Intrinsic functions, Intrinsic mathematical functions, Syntax of ncap statements, ncap netCDF Arithmetic Processor
+@subsection Intrinsic functions
 @command{ncap} contains a small but growing library of intrinsic
 functions.
 In addition to the standard mathematical functions (@pxref{Intrinsic
@@ -2873,7 +2803,8 @@ of the type intended for the unpacked data, e.g., @code{float} or
 @code{double}. 
 @end table
 
-@node Intrinsic mathematical functions,  , ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
+@node Intrinsic mathematical functions,  , Intrinsic functions, ncap netCDF Arithmetic Processor
+@subsection Intrinsic mathematical functions
 @unnumberedsubsec Mathematical functions
 @cindex mathematical functions
 @cindex @var{abs(x)}
@@ -3032,7 +2963,6 @@ statements chained together as a single @samp{-s} argument.
 @example
 ncap -O -s "" in.nc out.nc
 @end example
-
 @page
 @node ncatted netCDF Attribute Editor, ncdiff netCDF Differencer, ncap netCDF Arithmetic Processor, Operators
 @section @command{ncatted} netCDF Attribute Editor
