@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.228 2004-06-20 06:54:27 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.229 2004-06-24 01:36:55 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -337,6 +337,7 @@ distribution by many months, if not years:
 <!--
 <li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.9.6</a></li>
 -->
+<a name="dbn"></a>
 <a href="http://www.debian.org">Debian GNU/Linux</a>-compatible systems: 
 <li><a href="src/nco_2.9.6-1_i386.deb">nco_2.9.6-1_i386.deb</a> (<!--#fsize file="src/nco_2.9.6-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
 <li><a href="src/nco_2.9.6-1.dsc">nco_2.9.6-1.dsc</a> (<!--#fsize file="src/nco_2.9.6-1.dsc"-->): Description</li>
@@ -346,6 +347,7 @@ href="src/nco_2.9.6-1_i386.changes">nco_2.9.6-1_i386.changes</a> (<!--#fsize fil
 </ul>
 
 <ul>
+<a name="redhat"></a>
 <a href="www.redhat.com">Redhat 7.0 GNU/Linux</a>-compatible Intel
 systems <a href="http://www.rpm.org">RPMs</a>:
 <li><a href="http://prdownloads.sf.net/nco/nco-2.0.0-1.i386.rpm">nco-2.0.0-1.i386.rpm</a>: Pre-built executable RPM (install with <tt>rpm -i nco</tt>)</li>
