@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.5 1998-12-04 22:22:57 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.6 1999-01-07 00:59:13 zender Exp $
 
 # Purpose: NCO test battery
 # This script currently only works at NCAR
@@ -57,6 +57,10 @@ echo "ncwa 9: average masked, weighted coordinate: 100.0 =?= $avg"
 ncwa -O -v lev_var -m lev -M 100.0 -o gt -a lev -w lev_wgt in.nc foo.nc 2>>foo.tst 
 avg=`ncks -C -H -s "%e" -v lev_var foo.nc`
 echo "ncwa 10: average masked, weighted variable: 666.6667 =?= $avg" 
+
+ncwa -O -v lat -a lat -w gw -d lat,0 in.nc foo.nc 2>>foo.tst 
+avg=`ncks -C -H -s "%e" -v lat foo.nc`
+echo "ncwa 11: weight conforms to var first time: -90.0 =?= $avg" 
 
 ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v mss_val foo.nc`

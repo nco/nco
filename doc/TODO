@@ -58,6 +58,7 @@ NC_CHAR have a record dimension causes core dumps or other problems.
 i.e., LSM variable timecom caused subtle ncra problems for a while.
 112. Use strtol and strtod instead of atol and atof
 113. Rethink normalization switch options in ncwa
+114. Fix var_conform_dim() so that the returned weight always has the same size tally array as the template variable
 ************************************************************************
 End NCO Wish list
 ************************************************************************

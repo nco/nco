@@ -19,7 +19,7 @@ variables:
 	:convention = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.5 1998-12-03 05:40:28 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.6 1999-01-07 00:59:14 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -129,9 +129,17 @@ variables:
 	mask:long_name = "mask variable like ORO";
 	mask:units = "Fraction";
 
+	float ORO(lat,lon);
+	ORO:long_name = "Orography";
+	ORO:units = "Fraction";
+
 	float weight(lat);
-	weight:long_name = "weight variable like gw";
+	weight:long_name = "Gaussian weight";
 	weight:units = "Fraction";
+
+	float gw(lat);
+	gw:long_name = "gw variable like gw";
+	gw:units = "Fraction";
 
 	float rec_var_flt(time);
 	rec_var_flt:long_name = "record variable, float";
@@ -195,6 +203,8 @@ data:
 	band_var=1,2,3,4,5,6;
 	two_dim_var=1.5,5.5,9.5,13.5,17.5,21.5;
 	weight=10.,10.;
+	gw=10.,10.;
+	ORO=1.,1.,1.,1.,1.,1.,1.,1.;
 	mask=0.,1.,0.,0.,1.,1.,0.,2.;
 //	mask=1.,1.,1.,1.,1.,1.,1.,1.;
 //	mask=0.,0.,0.,0.,0.,0.,0.,0.;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.13 1998-12-06 02:14:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.14 1999-01-07 00:59:16 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -276,7 +276,7 @@ void
 lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
 /* 
    int nc_id: input netCDF file ID
-   lim_sct *lim_ptr: input/ouput structure from lim_prs() to hold dimension limit info.
+   lim_sct *lim_ptr: input/output structure from lim_prs() to hold dimension limit info.
    bool FORTRAN_STYLE: input switch to determine syntactical interpretation of dimensional indices
  */ 
 {
@@ -1903,6 +1903,8 @@ var_get(int nc_id,var_sct *var)
 
 var_sct *
 var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,bool *DO_CONFORM)
+     /* DBG XXX:  TODO #114. Fix var_conform_dim() so that the returned weight always has the same size tally array as the template variable */ 
+
 /*  
    var_sct *var: input pointer to variable structure to serve as template
    var_sct *wgt: input pointer to variable structure to make conform to var
@@ -2037,7 +2039,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	} /* endif */ 
       } /* end if */
       if(USE_DUMMY_WGT){
-	/* Variables do not truly conform, but this might be OK, depending on the application, soset the conform flag to false and ... */ 
+	/* Variables do not truly conform, but this might be OK, depending on the application, so set the conform flag to false and ... */ 
 	*DO_CONFORM=False;
 	/* ... return a dummy weight of 1.0, which allows program logic to pretend variable is weighted, but does not change answers */  
 	wgt_out=var_dup(var);
@@ -2497,7 +2499,7 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
 
   /* Create lists of the averaging and fixed dimensions (in order of their appearance 
      in the variable). We do not know a priori how many dimensions remain in the 
-     ouput (averaged) variable, but nbr_dim_var is an upper bound. Similarly, we do
+     output (averaged) variable, but nbr_dim_var is an upper bound. Similarly, we do
      not know a priori how many of the dimensions in the input list of averaging 
      dimensions (dim) actually occur in the current variable, so we do not know
      nbr_dim_avg, but nbr_dim is an upper bound on it. */

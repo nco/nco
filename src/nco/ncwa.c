@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.12 1998-12-04 22:23:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.13 1999-01-07 00:59:17 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -75,8 +75,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncwa.c,v 1.12 1998-12-04 22:23:02 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.12 $";
+  char rcs_Id[]="$Id: ncwa.c,v 1.13 1999-01-07 00:59:17 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.13 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -471,6 +471,11 @@ main(int argc,char **argv)
       
       /* Retrieve the weighting variable */ 
       (void)var_get(in_id,wgt);
+      /* DBG XXX Perhaps should allocate default tally array for wgt here.
+       That way, when wgt conforms to the first var_prc_out and it therefore
+       does not get a tally array copied by var_dup() in var_conform_dim(), 
+       it will at least have space for a tally array. TODO #114. */ 
+
     } /* end if */
 
     /* Find the mask variable in the input file */
@@ -522,6 +527,8 @@ main(int argc,char **argv)
 	} /* end if */
       } /* end if */
       if(wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
+	/* DBG XXX var_conform_dim() has a bug where it does not allocate a tally array
+	 for weights that do already conform to var_prc. TODO #114. */ 
 	wgt_out=var_conform_dim(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
 	wgt_out=var_conform_type(var_prc[idx]->type,wgt_out);
 	/* Weight variable by taking product of weight and variable */ 
@@ -546,6 +553,15 @@ main(int argc,char **argv)
 	  /* Mask by changing weight to missing value where condition is false */ 
 	  (void)var_mask(wgt_out->type,wgt_out->sz,wgt_out->has_mss_val,wgt_out->mss_val,msk_val,op_type,msk_out->val,wgt_out->val);
 	} /* endif weight must be masked */ 
+	/* DBG XXX temporary kludge to make sure weight has tally space.
+	   wgt_out may occasionally lack a valid tally array in ncwa because
+	   it is created, sometimes, before the tally array for var_prc_out[idx] is 
+	   created, and thus the var_dup() call in var_conform_dim() does not copy
+	   a tally array into wgt_out. See related note about this above. TODO #114.*/ 
+	if((wgt_out->tally=(long *)realloc(wgt_out->tally,wgt_out->sz*sizeof(long))) == NULL){
+	  (void)fprintf(stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",prg_nm_get(),wgt_out->sz,(long)sizeof(long),wgt_out->nm);
+	  exit(EXIT_FAILURE); 
+	} /* end if */ 
 	/* Average weight over specified dimensions (tally array is set here) */ 
 	wgt_out=var_avg(wgt_out,dim_avg,nbr_dim_avg);
 	if(MULTIPLY_BY_TALLY){
