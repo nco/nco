@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.30 1999-09-02 23:36:32 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.31 1999-09-27 05:22:27 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -174,7 +174,8 @@ by the Free Software Foundation.
 * Operators::                   Description of all NCO operators
 * General Index::               Index of concepts
 
-@detailmenu --- The Detailed Node Listing ---
+@detailmenu
+ --- The Detailed Node Listing ---
 
 Introduction
 
