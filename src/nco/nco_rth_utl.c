@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.14 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.15 2004-04-13 17:57:56 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -37,7 +37,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
   case nco_op_sqrt: /* Squareroot will produce the squareroot of the mean */
   case nco_op_ttl: /* Total */
   case nco_op_sqravg: /* Square of the mean */
-    (void)nco_var_add_tll(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)nco_var_add_tll_old(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   case nco_op_rms: /* Root mean square */
   case nco_op_rmssdn: /* Root mean square normalized by N-1 */
@@ -45,7 +45,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
     /* Square values in var_prc first */
     nco_var_mlt(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc->val);
     /* Sum the squares */
-    (void)nco_var_add_tll(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)nco_var_add_tll_old(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   } /* end switch */
 } /* end nco_opr_drv() */

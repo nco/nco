@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.209 2004-04-07 00:46:22 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.210 2004-04-13 17:57:52 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -578,6 +578,27 @@ The
 affected. 
 We recommend that all <tt>ncap</tt> users upgrade to version 2.9.2.
 </li>
+
+<a name="bug_mss_val_zro_ncra"></a>
+<li><i>Problems with <tt>ncra</tt> when <tt>missing_value</tt> = 0.0:</i>
+The algorithm <tt>ncra</tt> uses to perform arithmetic breaks when
+used on variables whose <tt>missing_value</tt> is&nbsp;0.0.
+This is NCO <a href="./TODO">TODO</a>&nbsp;#121.
+The running average (or total, etc.) algorithm initializes the answer
+to 0.0.
+This must be done since the answer accumulates in place as
+<tt>ncra</tt> proceeds across records and files. 
+(The last step is to normalize this accumulation by the total number of 
+records).
+The accumulator compares the current running average and the new
+record to the <tt>missing_value</tt>.
+If either comparison matches, then nothing accumulates for that
+record. 
+This zero initialization leads to a state where it is impossible for 
+accumulator to ever recognize valid data.
+As a result nothing accumulates and the answer is always zero.
+The workaround for this bug is to change <tt>missing_value</tt> to
+anything besides zero.
 
 <a name="bug_pck_ncwa"></a>
 <li><i>Packing problems with <tt>ncwa</tt>:</i>

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.218 2004-04-05 15:25:05 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.219 2004-04-13 17:57:52 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2957,6 +2957,7 @@ There are four steps in the @acronym{NCO} treatment of missing data:
 @item 
 Identifying variables which may contain missing data. 
 
+<a name="bug_mss_val_zro_ncra"></a> <!-- http://nco.sf.net/nco.html#bug_mss_val_zro_ncra -->
 @acronym{NCO} follows the convention that missing data should be stored
 with the @var{missing_value} specified in the variable's
 @code{missing_value} attribute
