@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.262 2004-09-11 05:44:08 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.263 2004-09-15 15:50:44 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -207,7 +207,9 @@ donations on NCO development:
 <p>
 The
 <a href="http://www.nsf.gov">National Science Foundation (NSF)</a>
-is funding our
+is
+<a href="http://www.nsf.gov/awardsearch/showAward.do?AwardNumber=0431203">funding</a>
+our
 <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO&rarr;SDO Project</a>.
 Thanks to the wise, generous, and, need I add, good-looking, proposal reviewers and staff of the Divisions of
 <a href="http://www.cise.nsf.gov/div/index.cfm?div=iis">Information and Intelligent Systems (IIS)</a>
@@ -233,6 +235,7 @@ to help design, implement, and release major code changes.
 We seek a
 <a href="http://dust.ess.uci.edu/hire/sdn_grd_02_adv.pdf">graduate student researcher</a> 
 to pursue innovative Ph.D. research in using 
+<a href="http://www3.niu.edu/mpi">&ldquo;grid-aware&rdquo;</a>
 <a href="http://www.mpi-forum.org">distributed memory</a>, 
 <a href="http://www.openmp.org">shared memory</a>, and 
 <a href="http://opendap.org">client-server</a> software

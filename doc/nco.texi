@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.276 2004-09-09 01:14:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.277 2004-09-15 15:50:44 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7953,8 +7953,8 @@ Excellent bug reports.
 @cindex @acronym{SDO}
 @cindex @acronym{SEIII}
 @cindex OptIPuter
-We have written and @acronym{NSF} has funded a
-@uref{http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf, proposal}
+@acronym{NSF} has funded a
+@uref{http://nco.sf.net#prp_sei, project}
 to improve Distributed Data Reduction & Analysis (@acronym{DDRA}) by
 evolving @acronym{NCO} into a suite of Scientific Data Operators called 
 @acronym{SDO}.
