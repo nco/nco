@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.214 2003-04-29 00:49:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.215 2003-05-06 17:50:10 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -69,13 +69,10 @@ Highest priority NCO-wide items that You can help with:
 97. Add x_op=average... attributes to averagers for ncar_csm
 124. Use `install' program and mkdir -p in bld/Makefile method
 128. Ensure target 'dir' is made before *.d dependency files 
-150. Fully automate RPM production, e.g., 'make rpm' should build rpms and upload to redhat.com
 152. Change make or nco_dst.pl to add docs to /usr/doc in RPM
 164. Spiff up NCO homepage web page (Logo?)
 165. Create Makefile dependency to do 'make dir' if lib, obj, bin directories do not exist
-177. Make RPM production allowable by non-root, since building RPMs as sudo root screws up permissions in obj/bin directories of user
 178. Make _FillValue behave same as missing_value
-179. add netCDF to required packages list in RPM build
 191. Create short man page for ncap which points user to info pages or online manual
 212. Ensure structures are always passed by reference (default is pass by value)
 257. Create PayPal account to fund NCO development
@@ -147,6 +144,7 @@ cd ~/nco/data
 ncks -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 ncrcat -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 149. Add ncks hyperslab tests to nco_tst to catch inconsistencies like #148
+150. Fully automate RPM production, e.g., 'make rpm' should build rpms and upload to redhat.com
 151. Figure out how to dynamically modify web pages so files with
 changing version numbers can be directly linked
 154. Add mirror capability to web pages
@@ -169,6 +167,8 @@ is non-unity.
 173. Add switch to ncra which allows user to remove degenerate time dimension from result
 174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
 176. Replace Bison, Flex components of ncap with smaller C++ parser?
+177. Make RPM production allowable by non-root, since building RPMs as sudo root screws up permissions in obj/bin directories of user
+179. add netCDF to required packages list in RPM build
 182. Add -L switch to print license terms
 187. Are OpenMP critical regions sufficient for netCDF or must all other threads stop completely?
 188. Make binary RPMS build with DODS option
@@ -219,6 +219,7 @@ ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 255. Desktop icon for NCO
 256. Turn udunits into .deb
 257. Put hybrid_sigma_pressure etc. definitions into in.cdl
+258. Develop syntax/procedure for specifying lists of hyperslabs for single pass, low memory consumption MSA jobs like Martin Schultz's in Discussion forum on 20030506
 ************************************************************************
 End NCO Wish list
 ************************************************************************
