@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.7 2000-08-13 21:51:44 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.8 2000-08-25 16:45:14 zender Exp $
 # Purpose: RPM spec file for NCO
 # Usage: 
 # Before nco.spec is invoked (with 'rpm -ba nco.spec'), the source tarball 
@@ -7,7 +7,7 @@
 # ncftpput incoming.redhat.com /libc6 /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm 
 # ncftpput dust.ps.uci.edu /pub/zender/nco /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm 
 
-Summary: A suite of arithmetic and metadata operators for netCDF files
+Summary: Arithmetic and metadata operators for netCDF and HDF4 files
 Name: nco
 Version: 1.2
 Release: 1
@@ -16,7 +16,7 @@ Group: Applications/Scientific
 Source: ftp://nco.sourceforge.net/pub/nco/nco-1.2.tar.gz
 URL: http://nco.sourceforge.net
 # Distribution: None in particular
-Vendor: Zendor
+Vendor: Charlie Zender
 Packager: Charlie Zender <zender@uci.edu>
 # Prefix tag is required to allow installation to be relocatable
 Prefix: /usr

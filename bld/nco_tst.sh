@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.26 2000-08-15 06:40:05 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.27 2000-08-25 16:45:14 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -154,7 +154,7 @@ echo "ncwa 33: ttl would overflow without dbl_prc patch, wraps anyway: -31536S =
 
 ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
-echo "ncra 1: record mean of float across two files: 5 =?= $avg" 
+echo "ncra 1: record mean of long across two files: 5 =?= $avg" 
 
 ncra -O -v rec_var_flt_mss_val_dbl in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
@@ -188,9 +188,9 @@ ncra -O -y rms -v rec_var_flt_mss_val_dbl foo2.nc foo2.nc 2>> foo.tst
 avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo2.nc`
 echo "ncra 8: record sdn of float with double missing values across two files: 2 =?= $avg"
 
- ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc 2>> foo.tst
+ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
-echo "ncea 1: ensemble mean across two files: 5 =?= $avg" 
+echo "ncea 1: ensemble mean of long across two files: 5 =?= $avg" 
 
 ncea -O -v rec_var_flt_mss_val_flt -d time,0 in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v rec_var_flt_mss_val_flt foo.nc`

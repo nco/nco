@@ -29,7 +29,7 @@ variables:
 	:convention = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.20 2000-08-15 06:40:06 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.21 2000-08-25 16:45:14 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -62,6 +62,10 @@ variables:
 	mss_val:long_name = "partial missing value example";
 	mss_val:missing_value = 1.0e36f;
 
+	float fll_val(lon);
+	fll_val:long_name = "_FillValue example";
+	fll_val:_FillValue = -999.0f;
+
 	float no_mss_val(lon);
 	no_mss_val:long_name = "no missing value";
 
@@ -71,19 +75,19 @@ variables:
 
 	long val_one_lng;
 	val_one_lng:long_name = "scalar equal to 1L";
-	val_one_lng:missing_value = -99;
+	val_one_lng:missing_value = -99l;
 
 	long val_one_one_lng(lat);
 	val_one_one_lng:long_name = "1L, 1L";
-	val_one_one_lng:missing_value = -99;
+	val_one_one_lng:missing_value = -99l;
 
 	short val_max_max_sht(lat);
 	val_max_max_sht:long_name = "17000L, 17000L";
-	val_max_max_sht:missing_value = -99;
+	val_max_max_sht:missing_value = -99s;
 
 	long val_one_mss_lng(lat);
 	val_one_mss_lng:long_name = "1L, mss_val";
-	val_one_mss_lng:missing_value = -99;
+	val_one_mss_lng:missing_value = -99l;
 
 	float val_half;
 	val_half:long_name = "Scalar with value 0.5";
@@ -312,6 +316,7 @@ data:
 //	mask=1.,1.,1.,1.,1.,1.,1.,1.;
 	msk_prt_mss_prt=0.5,1.0e36,1.5,1.0e36;
 	mss_val=73,1.0e36,73,1.0e36;
+	fll_val=73,-999,73,-999;
 	mss_val_all=1.0e36,1.0e36,1.0e36,1.0e36;
 	negative_one=-1.;
 	no_mss_val=73,1.0e36,73,1.0e36;

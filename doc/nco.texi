@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.60 2000-08-15 06:40:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.61 2000-08-25 16:45:14 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -317,14 +317,19 @@ itself.
 @cindex source code
 The complete NCO source distribution is currently distributed as a
 @dfn{compressed tarfile} from
+@uref{http://sourceforge.net/projects/nco}
+and 
+@uref{ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz}.
+@ignore
 @ifhtml
 <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz"> ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz</a>
 and <a href="https://sourceforge.net/projects/nco"> https://sourceforge.net/projects/nco</a>.
 @end ifhtml
 @ifclear html
 @code{ftp://ftp.cgd.ucar.edu/@-pub/@-zender/@-nco/@-nco.@-tar.@-gz} and
-@code{https://sourceforge.net/@-projects/@-nco}.
+@code{http://sourceforge.net/@-projects/@-nco}.
 @end ifclear
+@end ignore
 The compressed tarfile must be uncompressed and untarred before building
 NCO.
 Uncompress the file with @samp{gunzip nco.tar.gz}. 
@@ -2304,8 +2309,10 @@ most pure.
 Thus, unlike C and Fortran, but like many other higher level interpreted
 languages, NCO arithmetic operators will perform automatic type
 conversion when all the following conditions are met
-@footnote{Until August 2000, NCO never performed type conversions before  
-arithmetic.}:
+@footnote{Operators began performing type conversions before arithmetic
+in NCO version 1.2, August, 2000. 
+Previous version never performed unnecessary type conversion for
+arithmetic.}: 
 @enumerate
 @item The operator is @code{ncea}, @code{ncflint}, @code{ncra}, or
 @code{ncwa}. 
@@ -2537,11 +2544,11 @@ This is useful in making sure you are working with the most recent
 operators.
 The version of NCO you are using might be, e.g., 1.2.
 However using @samp{-r} on, say, @code{ncks}, will produce something
-like @samp{NCO netCDF Operators version -1.2
+like @samp{NCO netCDF Operators version 1.2
 Copyright (C) 1995--2000 Charlie Zender
-ncks version 1.30 (2000/07/31) "Whistler"}.
+ncks version 1.30 (2000/07/31) "Bolivia"}.
 This tells you @code{ncks} contains all patches up to version 1.30,
-which dates from July 7, 2000.
+which dates from July 31, 2000.
 
 @node Operators, Contributing, Common features, Top
 @chapter Reference manual for all operators
@@ -2767,8 +2774,9 @@ when @var{att_val} contains characters which would confuse the calling
 shell, such as spaces, commas, and wildcard characters. 
 
 @cindex Perl
+@cindex ASCII
 NCO processing of NC_CHAR attributes is a bit like Perl in that
-it attempts to do you want by default (but this sometimes causes
+it attempts to do what you want by default (but this sometimes causes 
 unexpected results if you want unusual data storage).
 @cindex @code{printf()}
 @cindex @code{\n} (ASCII LF, linefeed)

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.36 2000-08-15 06:58:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.37 2000-08-25 16:45:14 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -98,8 +98,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.36 2000-08-15 06:58:35 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.36 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.37 2000-08-25 16:45:14 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.37 $";
   char *nco_op_typ_sng=NULL_CEWI; /* Operation type */
   
   dmn_sct **dim;
@@ -156,7 +156,7 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="ACcD:d:Fhl:n:Op:rRv:x:y:";
+  opt_sng="ACcD:d:Fhl:n:Op:rRv:xy:";
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
@@ -396,9 +396,12 @@ main(int argc,char **argv)
 	  /* Retrieve the variable values from disk into memory */ 
 	  (void)var_get(in_id,var_prc[idx]);
 	  
-	  /* Perform arithmetic operations: min, max, total, or average */ 
 	  if(prg == ncra){
+	    /* fxm: Is this var_conform_type() really necessary? */
 	    var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
+	    /* Convert char, short, long, int types to doubles before arithmetic */
+	    /*	    (void)nco_cnv_var_dbl(var_prc+idx,var_prc_out+idx,nco_op_typ);*/
+	    /* Perform arithmetic operations: avg, min, max, ttl, ... */ 
 	    nco_opr_drv(idx_rec_out,nco_op_typ,var_prc_out[idx],var_prc[idx]);
 	  } /* end if ncra */
 	  	  	  
@@ -438,8 +441,11 @@ main(int argc,char **argv)
 	/* Retrieve variable from disk into memory */ 
 	(void)var_get(in_id,var_prc[idx]);
 	
-	/* Perform min max or add operations */ 
+	/* fxm: Is this var_conform_type() really necessary? */
 	var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
+	/* Convert char, short, long, int types to doubles before arithmetic */
+	(void)nco_cnv_var_dbl(var_prc+idx,var_prc_out+idx,nco_op_typ);
+	/* Perform arithmetic operations: avg, min, max, ttl, ... */ 
 	nco_opr_drv(idx_fl,nco_op_typ,var_prc_out[idx],var_prc[idx]);
 	
 	/* Free current input buffer */
@@ -503,13 +509,13 @@ main(int argc,char **argv)
   /* Copy averages to output file and free averaging buffers */ 
   if(prg == ncra || prg == ncea){
     for(idx=0;idx<nbr_var_prc;idx++){
+      /* Revert to original type if required */
+      /*      var_prc_out[idx]=nco_cnv_dbl_var(var_prc_out[idx]);*/
       if(var_prc_out[idx]->nbr_dim == 0){
 	(void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp);
       }else{ /* end if variable is a scalar */ 
-	
 	/* Size of record dimension is 1 in output file */ 
 	if(prg == ncra) var_prc_out[idx]->cnt[0]=1L;
-	
 	(void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp);
       } /* end if variable is an array */ 
       (void)free(var_prc_out[idx]->val.vp);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.86 2000-08-15 06:58:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.87 2000-08-25 16:45:14 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -351,7 +351,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     long dmn_srt=0L;
 
     /* Get variable ID of coordinate */ 
-    dim.cid=ncvarid(nc_id,lmt.nm);
+    dim.cid=ncvarid_or_die(nc_id,lmt.nm);
     
     /* Get coordinate type */
     (void)ncvarinq(nc_id,dim.cid,(char *)NULL,&dim.type,(int *)NULL,(int *)NULL,(int *)NULL);
@@ -912,7 +912,7 @@ att_cpy(int in_id,int out_id,int var_in_id,int var_out_id)
 
   int idx;
   int nbr_att;
-  int rcd;
+  int rcd; /* [enm] Return code */
 
   if(var_in_id == NC_GLOBAL){
     (void)ncinquire(in_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
@@ -1050,7 +1050,7 @@ var_refresh(int nc_id,var_sct *var)
 
   /* Refresh the ID for this variable */ 
   var->nc_id=nc_id;
-  var->id=ncvarid(var->nc_id,var->nm);
+  var->id=ncvarid_or_die(var->nc_id,var->nm);
 
   /* Refresh the number of dimensions for the variable. */
   (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,&var->nbr_dim,(int *)NULL,(int *)NULL);
@@ -1387,7 +1387,7 @@ lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
      lmt_sct_mk() is called by ncra() to generate limit structure for record dimension */ 
   
   int idx;
-  int rcd;
+  int rcd; /* [rcd] Return code */
   
   lmt_sct lmt_dim;
 
@@ -1657,7 +1657,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
   char tmp_sng_2[]="tmp"; /* Extra string appended to temporary filenames */
   char *pid_sng; /* String containing decimal representation of PID */
 
-  int rcd;
+  int rcd; /* [rcd] Return code */
 
   long fl_out_tmp_lng; /* [nbr] Length of temporary file name */
   long pid_sng_lng; /* [nbr] Theoretical length of decimal representation of this PID */
@@ -1802,7 +1802,7 @@ fl_out_cls(char *fl_out,char *fl_out_tmp,int nc_id)
  */ 
 {
   /* Routine to close the temporary output file and move it to the permanent output file */ 
-  int rcd;
+  int rcd; /* [rcd] Return code */
 
   rcd=ncclose(nc_id);
   if(rcd == -1){
@@ -2586,7 +2586,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
 /*  
    nc_type *var_out_type: I type to convert variable structure to
    var_sct *var_in: I/O pointer to variable structure (may be destroyed)
-   var_sct *var_conform_type(): O point to variable structure of type var_out_type
+   var_sct *var_conform_type(): O pointer to variable structure of type var_out_type
 */
 {
   /* Purpose: Return copy of input variable typecast to a desired type */ 
@@ -3137,7 +3137,7 @@ arm_base_time_get(int nc_id)
 
   nclong base_time;
 
-  base_time_id=ncvarid(nc_id,"base_time");
+  base_time_id=ncvarid_or_die(nc_id,"base_time");
   (void)ncvarget1(nc_id,base_time_id,0L,&base_time);
 
   return base_time;
@@ -5133,7 +5133,7 @@ ncar_csm_inq(int nc_id)
   char *att_val;
 
   int att_sz;
-  int rcd;
+  int rcd; /* [rcd] Return code */
 
   nc_type att_typ;
 
@@ -5246,7 +5246,7 @@ arm_time_mk(int nc_id,double time_offset)
   if(base_time_id == -1){
     (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"base_time\", exiting arm_time_mk()...\n",prg_nm_get());
     return -1;
-  };
+  }; /* end if */
   (void)ncvarget1(nc_id,base_time_id,0L,&base_time);
   arm_time=base_time+time_offset;
 
@@ -5285,7 +5285,7 @@ arm_time_install(int nc_id,nclong base_time_srt)
   if(time_offset_id == -1){
     (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"time_offset\", exiting arm_time_install()...\n",prg_nm_get());
     return;
-  };
+  }; /* endif */
 
   /* See if the time variable already exists */ 
   ncopts=0;
@@ -5294,14 +5294,14 @@ arm_time_install(int nc_id,nclong base_time_srt)
   if(time_id != -1){
     (void)fprintf(stderr,"%s: WARNING ARM file already has variable \"time\"\n",prg_nm_get());
     return;
-  };
+  }; /* endif */
 
   /* See if the time dimension exists */ 
   time_dmn_id=ncdimid(nc_id,"time");
   if(time_dmn_id == -1){
     (void)fprintf(stderr,"%s: WARNING ARM file does not have dimension \"time\"\n",prg_nm_get());
     return;
-  };
+  }; /* endif */
   /* Get dimension size */ 
   (void)ncdiminq(nc_id,time_dmn_id,(char *)NULL,&cnt);
 
@@ -6055,4 +6055,53 @@ int ncvarid_or_die /* O [enm] Variable ID */
   return var_id;
 } /* ncvarid_or_die() */
 
+int /* O [enm] Return code */
+nco_cnv_var_dbl  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
+(var_sct **var_prc_ptr, /* I [var] Variable */
+ var_sct **var_prc_out_ptr, /* I [var] Variable */
+ int nco_op_typ) /* I [enm] Operation type */ 
+{
+  /* Purpose: Convert char, short, long, int types to doubles before arithmetic
+     Conversions are performed unless arithmetic operation type is min or max
+     Floats (and doubles, of course) are not converted for performance reason 
+     Two variables are converted, one is var_prc and the other is var_prc_out
+     var_prc_out is assumed to be a copy of var_prc
+     Remember to convert back after weighting and arithmetic are complete! */
 
+  int rcd=0; /* O [enm] netCDF error code */
+
+  var_sct *var_prc; /* [var] Variable */
+  var_sct *var_prc_out; /* [var] Variable */
+
+  var_prc=*var_prc_ptr;
+  var_prc_out=*var_prc_out_ptr;
+
+  if(var_prc->type != NC_FLOAT && var_prc->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max){
+    var_prc->typ_prv=var_prc->type;
+    var_prc=var_conform_type(NC_DOUBLE,var_prc);
+    var_prc_out->typ_prv=var_prc_out->type;
+    var_prc_out=var_conform_type(NC_DOUBLE,var_prc_out);
+
+    *var_prc_ptr=var_prc;
+    *var_prc_out_ptr=var_prc_out;
+
+  } /* endif */
+  
+  return rcd;
+} /* nco_cnv_var_dbl() */
+
+var_sct * /* O [sct] Variable reverted to previous type */
+nco_cnv_dbl_var  /* [fnc] Revert variable to previous type */
+(var_sct *var) /* I [sct] Variable to be reverted */
+{
+  /* Purpose: Revert variable to previous type */
+
+  int rcd=0; /* O [enm] netCDF error code */
+
+  if(var->typ_prv != 0){ /* fxm: Hardcoded 0 is unsafe */
+    var=var_conform_type(var->typ_prv,var);
+    var->typ_prv=0;
+  } /* endif */
+
+  return var;
+} /* nco_cnv_dbl_var() */

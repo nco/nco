@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.41 2000-08-15 06:58:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.42 2000-08-25 16:45:14 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -487,10 +487,20 @@ extern void var_zero(nc_type,long,ptr_unn);
 extern void vec_set(nc_type,long,ptr_unn,double);
 extern void zero_long(long,long *op1);
 
+extern int /* O [enm] Return code */
+nco_cnv_var_dbl  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
+(var_sct **var_prc_ptr, /* I [var] Variable */
+ var_sct **var_prc_out_ptr, /* I [var] Variable */
+ int nco_op_typ); /* I [enm] Operation type */ 
+
 extern int ncvarid_or_die /* O [enm] Variable ID */
 (int nc_id, /* I [enm] File ID */ 
  char *var_nm); /* I [sng] Variable name */ 
  
+extern var_sct * /* O [sct] Variable reverted to previous type */
+nco_cnv_dbl_var  /* [fnc] Revert variable to previous type */
+(var_sct *var); /* I [sct] Variable to be reverted */
+
 #endif /* NC_H */ 
 
 

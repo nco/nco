@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.68 2000-08-15 06:40:06 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.69 2000-08-25 16:45:14 zender Exp $ 
 
 *************
 NCO Wish list
@@ -129,6 +129,8 @@ with nco_dst.pl
 176. Replace Bison, Flex components of ncap with smaller C++ parser
 177. Make RPM production allowable by non-root, since building RPMs as 
 sudo root screws up permissions in obj/bin directories of user
+178. Make _FillValue behave same as missing_value
+179. add netCDF to required packages list in RPM build
 ************************************************************************
 End NCO Wish list
 ************************************************************************

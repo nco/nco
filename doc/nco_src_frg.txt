@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.18 2000-08-15 06:40:06 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.19 2000-08-25 16:45:14 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -10,6 +10,7 @@ Shell/Web Server:   nco.sourceforge.net:/home/users/zender
 Project Websites:   http://nco.sourceforge.net
 		    http://sourceforge.net/projects/nco
 		    http://sourceforge.net/project/?group_id=3331
+		    http://freshmeat.net/projects/nco
 Project FTP:        ftp://nco.sourceforge.net/pub/nco
 		    nco.sourceforge.net:/home/groups/ftp/pub/nco
 CVS:		    Anonymous check out:

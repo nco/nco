@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.56 2000-08-15 06:40:06 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.57 2000-08-25 16:45:14 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -33,8 +33,8 @@ scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.s
 
 <td align="right" valign="top">
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
-[<a href="http://www.cgd.ucar.edu/csm/cmps">CMPS</a>]
-[<a href="http://www.cgd.ucar.edu/cas/ncl-csm">CSM Processor</a>]
+[<a href="http://www.unidata.ucar.edu/packages/netcdf">DODS</a>] 
+[<a href="http://www.cgd.ucar.edu/csm/support">CCSM Support Network</a>]
 </td></tr></table>
 
 <p><hr width="100%"></p>
@@ -236,7 +236,7 @@ fixes we currently have in mind for NCO.</li>
 
 <dt><a name="NCAR"></a></dt>
 <h2>Using NCO at UCI and NCAR</h2>
-<p>User's at UC Irvine and NCAR will find pre-built, up-to-date NCO
+<p>Users at UC Irvine and NCAR will find pre-built, up-to-date NCO
 executables in the following locations:
 <ul>
 <li>ACD <tt>dust.acd.ucar.edu</tt> (Linux 2.2.5): <tt>/gs/zender/bin/LINUX</tt></li>
@@ -295,8 +295,8 @@ As of NCO 1.1.38, this is the default.</li>
 
 <td align="right" valign="top">
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
-[<a href="http://www.cgd.ucar.edu/csm/cmps">CMPS</a>]
-[<a href="http://www.cgd.ucar.edu/cas/ncl-csm">CSM Processor</a>]
+[<a href="http://www.unidata.ucar.edu/packages/netcdf">DODS</a>] 
+[<a href="http://www.cgd.ucar.edu/csm/support">CCSM Support Network</a>]
 </td></tr></table>
 
 </body>
