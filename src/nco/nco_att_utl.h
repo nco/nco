@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.6 2002-08-19 06:44:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.7 2002-08-21 11:47:42 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -48,7 +48,8 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 (const int in_id, /* I [id] netCDF input-file ID */
  const int out_id, /* I [id] netCDF output-file ID */
  const int var_in_id, /* I [id] netCDF input-variable ID */
- const int var_out_id); /* I [id] netCDF output-variable ID */
+ const int var_out_id, /* I [id] netCDF output-variable ID */
+ const bool PCK_ATT_CPY); /* I [flg] Copy attributes "scale_factor", "add_offset" */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.18 2002-08-21 02:22:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.19 2002-08-21 11:47:43 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -641,15 +641,29 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
     } /* end else */
   } /* end OpenMP critical */
 
-  /* Packing properties of variable obtained from pck_dsk_inq() call in nco_var_fll() */
+  /* Packing properties of variable initially obtained from pck_dsk_inq() call in nco_var_fll()
+     Multifile operators call nco_var_get() multiple times for each variable
+     In between subsequent calls to nco_var_get(), variable may be unpacked 
+     When this occurs, packing flags in variable structure will not match disk
+     Thus it is important to refresh (some) packing attributes on each read */
 
-  /* Type in memory is now same as type on disk */
+  /* Synchronize missing value type with (possibly) new disk type pck_dbg */
+  /* fxm: pck_dbg big bug on non-packed types in ncra here, double conversion
+     of missing_value occurs */
+  if(var->pck_dsk) var=nco_cnv_mss_val_typ(var,var->typ_dsk);
+
+  /* Type of variable and missing value in memory are now same as type on disk */
   var->type=var->typ_dsk; /* Type of variable in RAM */
+
+  /* Packing in RAM is now same as packing on disk pck_dbg 
+     fxm: Following call to pck_dsk_inq() is never necessary for non-packed variables */
+  (void)pck_dsk_inq(nc_id,var);
   
   /* Packing/Unpacking */
   if(is_rth_opr(prg_get())){
     /* fxm: Automatic unpacking is not debugged, just do it with ncap for now */
-    if(prg_get() == ncap && dbg_lvl_get() != 3){
+    /*    if(prg_get() == ncap && dbg_lvl_get() != 3){ pck_dbg */
+    if(dbg_lvl_get() != 3){
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
@@ -784,7 +798,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
  const dmn_sct * const * const dmn_ncl, /* I [sct] Dimensions included in output file */
  const int nbr_dmn_ncl) /* I [nbr] Number of dimensions in list */
 {
-  /* Purpose: Define variables in output file, and copy their attributes */
+  /* Purpose: Define variables in output file, copy their attributes */
 
   /* This function is unusual (for me) in that dimension arguments are only intended
      to be used by certain programs, those that alter the rank of input variables. 
@@ -798,12 +812,19 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
      So local variable var usually refers to var_prc_out in calling function 
      Hence names may look reversed in this function, and xrf is frequently used */
 
+  bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
+
   int idx_dmn;
   int dmn_id_vec[NC_MAX_DIMS];
   int idx;
   int rcd=NC_NOERR; /* [rcd] Return code */
+
+  nc_type typ_out; /* [enm] Type in output file */
   
   for(idx=0;idx<nbr_var;idx++){
+
+    /* Assume arithmetic operators store values as unpacked pck_dbg */
+    if(is_rth_opr(prg_get())) typ_out=var[idx]->typ_upk; else typ_out=var[idx]->type;
 
     /* Is requested variable already in output file? */
     rcd=nco_inq_varid_flg(out_id,var[idx]->nm,&var[idx]->id);
@@ -815,7 +836,6 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       if(dmn_ncl != NULL || prg_get() == ncwa){
 	int nbr_var_dim=0;
 	int idx_ncl;
-
 	/* Rank of output variable may need to be reduced */
 	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
 	  /* Is dimension allowed in output file? */
@@ -824,13 +844,13 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	  } /* end loop over idx_ncl */
 	  if(idx_ncl != nbr_dmn_ncl) dmn_id_vec[nbr_var_dim++]=var[idx]->dim[idx_dmn]->id;
 	} /* end loop over idx_dmn */
-	(void)nco_def_var(out_id,var[idx]->nm,var[idx]->type,nbr_var_dim,dmn_id_vec,&var[idx]->id);
-
-      }else{ /* Straightforward definition */
+	(void)nco_def_var(out_id,var[idx]->nm,typ_out,nbr_var_dim,dmn_id_vec,&var[idx]->id);
+      }else{ /* ...operator is not ncwa which needs special handling... */
+	/* More straightforward definition used by operators besides ncwa */
 	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
 	  dmn_id_vec[idx_dmn]=var[idx]->dim[idx_dmn]->id;
 	} /* end loop over idx_dmn */
-	(void)nco_def_var(out_id,var[idx]->nm,var[idx]->type,var[idx]->nbr_dim,dmn_id_vec,&var[idx]->id);
+	(void)nco_def_var(out_id,var[idx]->nm,typ_out,var[idx]->nbr_dim,dmn_id_vec,&var[idx]->id);
       } /* end else */
       
       /* endif if variable has not yet been defined in output file */
@@ -841,7 +861,6 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     } /* end if */
 
     /* Copy all attributes except in cases where packing/unpacking is involved
-
        0. Variable is unpacked on input, unpacked on output
        --> Copy all attributes
        1. Variable is packed on input, is not altered, and remains packed on output
@@ -853,6 +872,12 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        4. Variable is not packed on input, packing is performed, and output is packed
        --> Copy all attributes, define scale_factor and add_offset now, write their values later
     */
+
+    /* var refers to output variable structure, var->xrf refers to input variable structure */
+    /* Do not copy packing attributes "scale_factor" and "add_offset" 
+       if variable is packed in input file but unpacked in output file */
+    PCK_ATT_CPY=(is_rth_opr(prg_get()) && var[idx]->xrf->pck_dsk) ? False : True;
+    (void)nco_att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id,PCK_ATT_CPY);
 
 #undef FALSE
 #ifdef FALSE
@@ -887,9 +912,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     } /* end switch */
 #endif /* not FALSE */
 
-    /* var refers to output variable structure, var->xrf refers to input variable structure */
-    (void)nco_att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id);
-  } /* end loop over idx */
+  } /* end loop over variables to define */
   
 } /* end nco_var_dfn() */
 

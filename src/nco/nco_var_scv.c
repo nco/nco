@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.9 2002-06-17 00:06:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.10 2002-08-21 11:47:43 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -84,7 +84,7 @@ var_scv_add(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -168,7 +168,7 @@ var_scv_sub(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -253,7 +253,7 @@ var_scv_mlt(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -338,7 +338,7 @@ var_scv_dvd(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -429,7 +429,7 @@ var_scv_mod(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
 } /* end var_scv_mod */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.84 2002-08-13 08:00:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.85 2002-08-21 11:47:41 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -85,8 +85,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.84 2002-08-13 08:00:37 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.84 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.85 2002-08-21 11:47:41 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.85 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -483,7 +483,7 @@ main(int argc,char **argv)
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
   
   /* Copy global attributes */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -491,6 +491,7 @@ main(int argc,char **argv)
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
   
+  /* Take output file out of define mode */
   (void)nco_enddef(out_id); 
 
   /* Set arguments for second scan and script execution */
@@ -546,7 +547,6 @@ main(int argc,char **argv)
 
   rcd=nco_redef(out_id);
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr_2,(dmn_sct **)NULL,0);
-  /* (void)nco_var_dfn(in_id,fl_out,out_id,var_fix,nbr_var_fix,(dmn_sct **)NULL,0); */
   
   /* Turn off default filling behavior to enhance efficiency */
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -556,7 +556,6 @@ main(int argc,char **argv)
   
   /* Copy variable data for non-processed variables */
   (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
-  /* (void)nco_var_val_cpy(in_id,out_id,var_out,nbr_xtr_2); */
   
   (void)nco_redef(out_id);
   /* Copy new attributes overwriting old ones */
@@ -568,7 +567,9 @@ main(int argc,char **argv)
     } /* end if */
   } /* end for */
   
+  /* Take output file out of define mode */
   rcd=nco_enddef(out_id);
+
   /* Close input netCDF file */
   rcd=nco_close(in_id);
   

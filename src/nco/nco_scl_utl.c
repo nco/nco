@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.6 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.7 2002-08-21 11:47:42 zender Exp $ */
 
 /* Purpose: Scalar utilities */
 
@@ -55,7 +55,7 @@ scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
   case NC_SHORT: val_ptr_unn.sp=&val.s; break;
   case NC_CHAR: val_ptr_unn.cp=&val.c; break;
   case NC_BYTE: val_ptr_unn.bp=&val.b; break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* Un-typecast pointer to values after access */
@@ -147,7 +147,7 @@ ptr_unn_2_scv /* [fnc] Convert ptr_unn to scalar value structure */
   case NC_SHORT: scv.val.s=*val.sp; break;
   case NC_BYTE: scv.val.b =*val.bp; break;
   case NC_CHAR: break; /* Do nothing */
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   scv.type=type;
   /* Do not uncast pointer as we are working with a copy */

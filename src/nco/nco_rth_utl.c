@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.7 2002-08-14 19:45:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.8 2002-08-21 11:47:42 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -128,7 +128,7 @@ vec_set /* [fnc] Fill every value of first operand with value of second operand 
   case NC_BYTE:
     /* Do nothing */
     break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 

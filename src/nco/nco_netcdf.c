@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.25 2002-06-07 01:39:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.26 2002-08-21 11:47:42 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -70,7 +70,7 @@ nco_typ_lng /* [fnc]   */
     return sizeof(unsigned char); 
   case NC_BYTE: 
     return sizeof(signed char); 
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */ 
   
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
@@ -98,7 +98,7 @@ nco_typ_sng /* [fnc]   */
     return "NC_CHAR";
   case NC_BYTE:
     return "NC_BYTE";
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
@@ -124,7 +124,7 @@ c_typ_nm /* [fnc] Return string describing native C type */
     return "unsigned char";
   case NC_BYTE:
     return "signed char";
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
@@ -149,7 +149,7 @@ f77_typ_nm /* [fnc] Return string describing native Fortran77 type */
     return "character";
   case NC_BYTE:
     return "character";
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
@@ -174,7 +174,7 @@ f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
     return "character(1)";
   case NC_BYTE:
     return "character(1)";
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
@@ -182,7 +182,7 @@ f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
 } /* end f90_typ_nm() */
 
 void 
-nco_dfl_case_nctype_err(void) /* [fnc]   */
+nco_dfl_case_nc_type_err(void) /* [fnc]   */
 {
   /* Purpose: Convenience routine for printing error and exiting when
      switch(nctype) statement receives an illegal default case
@@ -193,18 +193,18 @@ nco_dfl_case_nctype_err(void) /* [fnc]   */
      All these default statements can be removed with netCDF3 interface
      so perhaps these should be surrounded with #ifdef NETCDF2_ONLY
      constructs, but they actually do make sense for netCDF3 as well
-     so I have implemented a uniform error function, nco_dfl_case_nctype_err(), 
+     so I have implemented a uniform error function, nco_dfl_case_nc_type_err(), 
      to be called by all routines which emit errors only when compiled with
      NETCDF2_ONLY.
      This makes the behavior easy to modify or remove in the future.
 
      Placing this in its own routine also has the virtue of saving many lines 
      of code since this function is used in many many switch() statements. */
-  char sbr_nm[]="nco_dfl_case_nctype_err()";
+  char sbr_nm[]="nco_dfl_case_nc_type_err()";
   (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal.\nNot handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype definition is braindead in netCDF2.x). Exiting...\n",sbr_nm);
   abort();
   exit(EXIT_FAILURE);
-} /* end nco_dfl_case_nctype_err() */
+} /* end nco_dfl_case_nc_type_err() */
 
 /* Begin file-level routines */
 int
@@ -588,7 +588,7 @@ nco_get_var1(int nc_id,int var_id,const long *srt,void *vp,nc_type var_typ)
   case NC_SHORT: rcd=nc_get_var1_short(nc_id,var_id,(size_t *)srt,(short *)vp); break;
   case NC_CHAR: rcd=nc_get_var1_text(nc_id,var_id,(size_t *)srt,(char *)vp); break;
   case NC_BYTE: rcd=nc_get_var1_schar(nc_id,var_id,(size_t *)srt,(signed char *)vp); break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var1");
   return rcd;
@@ -606,7 +606,7 @@ nco_put_var1(int nc_id,int var_id,const long *srt,void *vp,nc_type type)
   case NC_SHORT: rcd=nc_put_var1_short(nc_id,var_id,(size_t *)srt,(short *)vp); break;
   case NC_CHAR: rcd=nc_put_var1_text(nc_id,var_id,(size_t *)srt,(const char *)vp); break;
   case NC_BYTE: rcd=nc_put_var1_schar(nc_id,var_id,(size_t *)srt,(signed char *)vp); break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var1");
   return rcd;
@@ -624,7 +624,7 @@ nco_get_vara(int nc_id,int var_id,const long *srt,const long *cnt,void *vp,nc_ty
   case NC_SHORT: rcd=nc_get_vara_short(nc_id,var_id,(size_t *)srt,(size_t *)cnt,(short *)vp); break;
   case NC_CHAR: rcd=nc_get_vara_text(nc_id,var_id,(size_t *)srt,(size_t *)cnt,(char *)vp); break;
   case NC_BYTE: rcd=nc_get_vara_schar(nc_id,var_id,(size_t *)srt,(size_t *)cnt,(signed char *)vp); break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_vara");
   return rcd;
@@ -642,7 +642,7 @@ nco_put_vara(int nc_id,int var_id,const long *srt,const long *cnt,void *vp,nc_ty
   case NC_SHORT: rcd=nc_put_vara_short(nc_id,var_id,(size_t *)srt,(size_t *)cnt,(short *)vp); break;
   case NC_CHAR: rcd=nc_put_vara_text(nc_id,var_id,(size_t *)srt,(size_t *)cnt,(const char *)vp); break;
   case NC_BYTE: rcd=nc_put_vara_schar(nc_id,var_id,(size_t *)srt,(size_t *)cnt,(signed char *)vp); break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara");
   return rcd;
@@ -661,7 +661,7 @@ nco_get_varm(int nc_id,int var_id,const long *srt,const long *cnt,const long *sr
   case NC_SHORT: rcd=nc_get_varm_short(nc_id,var_id,(size_t *)srt,(size_t *)cnt,(ptrdiff_t *)srd,(ptrdiff_t *)map,(short *)vp); break;
   case NC_CHAR: rcd=nc_get_varm_text(nc_id,var_id,(size_t *)srt,(size_t *)cnt,(ptrdiff_t *)srd,(ptrdiff_t *)map,(char *)vp); break;
   case NC_BYTE: rcd=nc_get_varm_schar(nc_id,var_id,(size_t *)srt,(size_t *)cnt,(ptrdiff_t *)srd,(ptrdiff_t *)map,(signed char *)vp); break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_varm");
   return rcd;
@@ -679,7 +679,7 @@ nco_put_varm(int nc_id,int var_id,const long *srt,const long *cnt,const long *sr
   case NC_SHORT: rcd=nc_put_varm_short(nc_id,var_id,(size_t *)srt,(size_t *)cnt,(ptrdiff_t *)srd,(ptrdiff_t *)map,(short *)vp); break;
   case NC_CHAR: rcd=nc_put_varm_text(nc_id,var_id,(size_t *)srt,(size_t *)cnt,(ptrdiff_t *)srd,(ptrdiff_t *)map,(const char *)vp); break;
   case NC_BYTE: rcd=nc_put_varm_schar(nc_id,var_id,(size_t *)srt,(size_t *)cnt,(ptrdiff_t *)srd,(ptrdiff_t *)map,(signed char *)vp); break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_varm");
   return rcd;
@@ -810,7 +810,7 @@ nco_put_att(int nc_id,int var_id,const char *att_nm,nc_type att_typ,long att_len
   case NC_SHORT: rcd=nc_put_att_short(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(short *)vp); break;
   case NC_CHAR: rcd=nc_put_att_text(nc_id,var_id,att_nm,(size_t)att_len,(const char *)vp); break;
   case NC_BYTE: rcd=nc_put_att_schar(nc_id,var_id,att_nm,att_typ,(size_t) att_len,(signed char *)vp); break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_att");
   return rcd;
@@ -828,7 +828,7 @@ nco_get_att(int nc_id,int var_id,const char *att_nm,void *vp,nc_type att_typ)
   case NC_SHORT: rcd=nc_get_att_short(nc_id,var_id,att_nm,(short *)vp); break;
   case NC_CHAR: rcd=nc_get_att_text(nc_id,var_id,att_nm,(char *)vp); break;
   case NC_BYTE: rcd=nc_get_att_schar(nc_id,var_id,att_nm,(signed char *)vp); break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_att");
   return rcd;

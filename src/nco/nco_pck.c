@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.8 2002-08-19 06:44:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.9 2002-08-21 11:47:42 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -41,7 +41,9 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
   /* Purpose: Check whether variable is packed on disk and set variable members 
      pck_dsk, has_scl_fct, has_add_fst, and typ_upk accordingly
      pck_dsk_inq() should be called early in application, e.g., in nco_var_fll() 
-     Call pck_dsk_inq() before copying input list to output list */
+     Call pck_dsk_inq() before copying input list to output list 
+     Multi-file operators which handle packing must call this routine prior
+     to each read of a variable, in case that variable has been unpacked. */
   /* ncea -O -D 3 -v pck ~/nco/data/in.nc ~/nco/data/foo.nc */
 
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
@@ -60,7 +62,7 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
      same as flags for variables with _no_ scaling information
      Set has_scl_fct, has_add_fst in var_dfl_set()
      typ_upk:
-     1. is required by ncra nco_cnv_mss_val_typ_upk() 
+     1. is required by ncra nco_cnv_mss_val_typ() 
      2. depends on var->type and so should not be set in var_dfl_set()
      3. is therefore set to default here */
   var->typ_upk=var->type; /* [enm] Type of variable when unpacked (expanded) (in memory) */

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.44 2002-08-19 06:44:36 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.45 2002-08-21 11:47:37 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -36,7 +36,7 @@ if [ $# -eq 0 ]; then
     NCEA=1
     NCFLINT=1
     NCDIFF=1
-    NET=1
+    NET=0 # fxm: Turn on after packing debugged
 else 
     while [ $# -gt 0 ]; do
     case $1 in
@@ -84,7 +84,7 @@ fi # end if command line argument
 cd ../data 2> foo.tst
 printf "NCO Test Suite: LHS is target value, RHS value is actual value\n"
 
-if [ "$START" = 1 ]; then
+if [ "${START}" = 1 ]; then
 
 # ncks -O -v PS,gw /fs/cgd/csm/input/atm/SEP1.T42.0596.nc ~/nco/data/nco_tst.nc
 # Subtract PS from itself gives zero valued array
@@ -106,10 +106,10 @@ ${MY_BIN_DIR}/ncrename -O -v negative_one,zero foo.nc 2>> foo.tst
 fi # end start
 
 # ncks testing
-if [ "$NCKS" = 1 ]; then
+if [ "${NCKS}" = 1 ]; then
 
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%c" -v fl_nm in.nc`
-echo "ncks 1: extract filename string: /home/zender/nc/nco/data/in.cdl =?= $avg"
+echo "ncks 1: extract filename string: /home/zender/nco/data/in.cdl =?= $avg"
 
 ${MY_BIN_DIR}/ncks -O -v lev in.nc foo2.nc
 avg=`ncks -H -C -s "%f," -v lev foo2.nc`
@@ -126,7 +126,7 @@ echo "ncks 4: extract variable of type NC_INT 10 =?= $avg"
 fi # end NCKS
 
 # Average test field
-if [ "$NCWA" = 1 ]; then
+if [ "${NCWA}" = 1 ]; then
 ${MY_BIN_DIR}/ncwa -O -a lat,lon -w gw foo.nc foo2.nc
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v one foo2.nc`
 echo "ncwa 1: normalize by denominator: 1.0 =?= $avg" 
@@ -261,7 +261,7 @@ avg=`${MY_BIN_DIR}/ncks -C -H -s "%g" -v lat foo.nc`
 echo "ncwa 35: max with weights: 900 =?= $avg" 
 fi  # end ncwa
 
-if [ "$NCRA" = 1 ]; then
+if [ "${NCRA}" = 1 ]; then
 ${MY_BIN_DIR}/ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
 echo "ncra 1: record mean of int across two files: 5 =?= $avg" 
@@ -281,6 +281,10 @@ echo "ncra 2.6: record mean of integer with integer missing values: 5 =?= $avg"
 ${MY_BIN_DIR}/ncra -O -v rec_var_int_mss_val_flt in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%d" -v rec_var_int_mss_val_flt foo.nc`
 echo "ncra 2.7: record mean of integer with float missing values: 5 =?= $avg" 
+
+${MY_BIN_DIR}/ncra -O -v rec_var_dbl_mss_val_dbl_pck in.nc foo.nc 2>> foo.tst
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_dbl_mss_val_dbl_pck foo.nc`
+echo "ncra 2.8: record mean of packed double with double missing values: 5 =?= $avg"
 
 ${MY_BIN_DIR}/ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
@@ -309,9 +313,9 @@ ${MY_BIN_DIR}/ncdiff -O -v rec_var_flt_mss_val_dbl foo1.nc foo2.nc foo2.nc 2>> f
 ${MY_BIN_DIR}/ncra -O -y rms -v rec_var_flt_mss_val_dbl foo2.nc foo2.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo2.nc`
 echo "ncra 8: record sdn of float with double missing values across two files: 2 =?= $avg"
-fi #end ncra
+fi # end ncra
 
-if [ "$NCEA" = 1 ]; then
+if [ "${NCEA}" = 1 ]; then
 ${MY_BIN_DIR}/ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
 echo "ncea 1: ensemble mean of int across two files: 5 =?= $avg" 
@@ -324,13 +328,12 @@ ${MY_BIN_DIR}/ncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 in.nc in.nc fo
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v rec_var_flt_mss_val_dbl foo.nc`
 echo "ncea 3: ensemble min of float across two files: 2 =?= $avg" 
 
-# fxm: Use ncea to prototype packing support in non-ncap arithmetic operators
-# ${MY_BIN_DIR}/ncea -O -C -v pck in.nc foo.nc 2>> foo.tst
-# avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v pck foo.nc`
-# echo "ncea 4: scale factor + add_offset packing/unpacking (expect breakage here use ncap instead): 3 =?= $avg" 
+${MY_BIN_DIR}/ncea -O -C -v pck in.nc foo.nc 2>> foo.tst
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v pck foo.nc`
+echo "ncea 4: scale factor + add_offset packing/unpacking (expect breakage here use ncap instead): 3 =?= $avg" 
 fi # end ncea
 
-if [ "$NCDIFF" = 1 ]; then
+if [ "${NCDIFF}" = 1 ]; then
 ${MY_BIN_DIR}/ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v mss_val foo.nc`
 echo "ncdiff 1: difference with missing value attribute: 1.0e36 =?= $avg" 
@@ -340,7 +343,7 @@ avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v no_mss_val foo.nc`
 echo "ncdiff 2: difference without missing value attribute: 0 =?= $avg" 
 fi # end ncdiff
 
-if [ "$NCFLINT" = 1 ]; then
+if [ "${NCFLINT}" = 1 ]; then
 ${MY_BIN_DIR}/ncflint -O -w 3,-2 -v one in.nc in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v one foo.nc`
 echo "ncflint 1: identity weighting: 1.0 =?= $avg" 
@@ -353,11 +356,11 @@ echo "ncflint 2: identity interpolation: 2.0 =?= $avg"
 fi # end ncflint
 
 # ncap testing
-if [ "$NCAP" = 1 ]; then
+if [ "${NCAP}" = 1 ]; then
 ${MY_BIN_DIR}/ncap -O -D 1 -v -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
 fi # end NCAP
 
-if [ "$NET" = 1 ]; then
+if [ "${NET}" = 1 ]; then
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
 ${MY_BIN_DIR}/ncks -O -v one -p ftp://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
@@ -385,5 +388,5 @@ mv in_tmp.nc in.nc
 ${MY_BIN_DIR}/ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v lon foo.nc 2>> foo.tst`
 echo "nco 5: HTTP/DODS protocol: 0 =?= $avg (Will fail if not compiled on Linux with 'make DODS=Y')" 
-fi #end net
+fi # end net
 

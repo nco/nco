@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.9 2002-07-04 03:40:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.10 2002-08-21 11:47:42 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -7,6 +7,10 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_prn.h" /* Printing variables, attributes, metadata */
+
+/* fxm: strings statically allocated with MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
+/* Length should be computed at run time but is a pain */
+#define MAX_LEN_FMT_SNG 100
 
 void 
 nco_prn_att /* [fnc] Print all attributes of single variable */
@@ -22,6 +26,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
 
   char dlm_sng[3];
   char src_sng[NC_MAX_NAME];
+  char att_sng[MAX_LEN_FMT_SNG];
 
   long att_lmn;
   long att_sz;
@@ -60,31 +65,31 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
     (void)cast_void_nctype(att[idx].type,&att[idx].val);
 
     (void)strcpy(dlm_sng,", ");
+    (void)sprintf(att_sng,"%s%%s\n",nco_typ_fmt_sng(att[idx].type));
     switch(att[idx].type){
     case NC_FLOAT:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%g%s",att[idx].val.fp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.fp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_DOUBLE:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%g%s",att[idx].val.dp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.dp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_SHORT:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%hi%s",att[idx].val.sp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.sp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_INT:
-      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%li%s",(long)att[idx].val.lp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
+      for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,(long)att[idx].val.lp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");
       break;
     case NC_CHAR:
       for(att_lmn=0;att_lmn<att_sz;att_lmn++){
         char char_foo;
-
-	/* Assume \0 is a string terminator and do not print it */
+	/* Assume \0 is string terminator and do not print it */
 	if((char_foo=att[idx].val.cp[att_lmn]) != '\0') (void)fprintf(stdout,"%c",char_foo);
       } /* end loop over element */
       break;
     case NC_BYTE:
       for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%c",att[idx].val.bp[att_lmn]);
       break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
     (void)fprintf(stdout,"\n");
     
@@ -103,12 +108,12 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
 
 } /* end nco_prn_att() */
 
-char * /* O [sng] sprintf() format string for type type */
-nco_type_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
-(const nc_type type) /* I [enm] netCDF type to provide format string for */
+char * /* O [sng] sprintf() format string for type typ */
+nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
+(const nc_type typ) /* I [enm] netCDF type to provide format string for */
 {
   /* Purpose: Provide sprintf() format string for specified type */
-  switch (type) {
+  switch (typ) {
   case NC_FLOAT:
     return "%g"; /* %g defaults to 6 digits of precision */
   case NC_DOUBLE:
@@ -127,12 +132,12 @@ nco_type_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
     /*    return "%u";*/
     /* NB: Uncertain wheter %hhi is ANSI standard or GNU extension */
     return "%hhi"; /* Takes unsigned char as arg and prints 0..255 */
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
-  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
+  /* Some C compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
-} /* end nco_type_fmt_sng() */
+} /* end nco_typ_fmt_sng() */
 
 void
 nco_prn_var_dfn /* [fnc] Print variable metadata */
@@ -149,7 +154,7 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   int rec_dmn_id;
   int var_id;
   
-  nc_type var_type;
+  nc_type var_typ;
   
   dmn_sct *dim=NULL_CEWI;
 
@@ -157,13 +162,13 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
   rcd=nco_inq_varid(in_id,var_nm,&var_id);
 
   /* Get number of dimensions, type, and number of attributes for variable */
-  (void)nco_inq_var(in_id,var_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,&nbr_att);
+  (void)nco_inq_var(in_id,var_id,(char *)NULL,&var_typ,&nbr_dim,(int *)NULL,&nbr_att);
 
   /* Get the ID of the record dimension, if any */
   (void)nco_inq(in_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
 
   /* Print the header for variable */
-  (void)fprintf(stdout,"%s: # dim. = %i, %s, # att. = %i, ID = %i\n",var_nm,nbr_dim,nco_typ_sng(var_type),nbr_att,var_id);
+  (void)fprintf(stdout,"%s: # dim. = %i, %s, # att. = %i, ID = %i\n",var_nm,nbr_dim,nco_typ_sng(var_typ),nbr_att,var_id);
 
   if(nbr_dim > 0){
     /* Allocate space for dimension info */
@@ -207,13 +212,13 @@ nco_prn_var_dfn /* [fnc] Print variable metadata */
       (void)sprintf(sng_foo,"%li*",dim[idx].sz);
       (void)strcat(sz_sng,sng_foo);
     } /* end loop over dim */
-    (void)sprintf(sng_foo,"%li*nco_typ_lng(%s)",dim[idx].sz,nco_typ_sng(var_type));
+    (void)sprintf(sng_foo,"%li*nco_typ_lng(%s)",dim[idx].sz,nco_typ_sng(var_typ));
     (void)strcat(sz_sng,sng_foo);
-    (void)fprintf(stdout,"%s memory size is %s = %li*%zu = %li bytes\n",var_nm,sz_sng,var_sz,nco_typ_lng(var_type),var_sz*nco_typ_lng(var_type));
+    (void)fprintf(stdout,"%s memory size is %s = %li*%zu = %li bytes\n",var_nm,sz_sng,var_sz,nco_typ_lng(var_typ),var_sz*nco_typ_lng(var_typ));
   }else{
     long var_sz=1L;
 
-    (void)fprintf(stdout,"%s memory size is %ld*nco_typ_lng(%s) = %ld*%zu = %ld bytes\n",var_nm,var_sz,nco_typ_sng(var_type),var_sz,nco_typ_lng(var_type),var_sz*nco_typ_lng(var_type));
+    (void)fprintf(stdout,"%s memory size is %ld*nco_typ_lng(%s) = %ld*%zu = %ld bytes\n",var_nm,var_sz,nco_typ_sng(var_typ),var_sz,nco_typ_lng(var_typ),var_sz*nco_typ_lng(var_typ));
   } /* end if variable is a scalar */
   (void)fflush(stdout);
   
@@ -245,9 +250,6 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   bool WRP=False; /* Coordinate is wrapped */
 
   char *unit_sng="";
-  /* fxm: strings statically allocated with MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
-  /* Length should be computed at run time but is a pain */
-#define MAX_LEN_FMT_SNG 100
   char var_sng[MAX_LEN_FMT_SNG];
   
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -404,10 +406,10 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
     (void)sng_ascii_trn(dlm_sng);
 
     /* Assume -s argument (dlm_sng) formats entire string
-       Otherwise, one could assume that field will be printed with format nco_type_fmt_sng(var.type),
+       Otherwise, one could assume that field will be printed with format nco_typ_fmt_sng(var.type),
        and that user is only allowed to affect text between fields. 
        This would be accomplished with:
-       (void)sprintf(var_sng,"%s%s",nco_type_fmt_sng(var.type),dlm_sng);*/
+       (void)sprintf(var_sng,"%s%s",nco_typ_fmt_sng(var.type),dlm_sng); */
 
     for(lmn=0;lmn<var.sz;lmn++){
       switch(var.type){
@@ -417,7 +419,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
       case NC_INT: (void)fprintf(stdout,dlm_sng,var.val.lp[lmn]); break;
       case NC_CHAR: (void)fprintf(stdout,dlm_sng,var.val.cp[lmn]); break;
       case NC_BYTE: (void)fprintf(stdout,dlm_sng,var.val.bp[lmn]); break;
-      default: nco_dfl_case_nctype_err(); break;
+      default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
     } /* end loop over element */
 
@@ -426,18 +428,18 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   if(var.nbr_dim == 0 && dlm_sng == NULL){ 
     /* Variable is a scalar, byte, or character */
     lmn=0;
-    (void)sprintf(var_sng,"%%s = %s %%s\n",nco_type_fmt_sng(var.type));
+    (void)sprintf(var_sng,"%%s = %s %%s\n",nco_typ_fmt_sng(var.type));
     switch(var.type){
     case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var.val.fp[lmn],unit_sng); break;
     case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng); break;
     case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng); break;
     case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.lp[lmn],unit_sng); break;
     case NC_CHAR:
-      (void)sprintf(var_sng,"%%s='%s' %%s\n",nco_type_fmt_sng(var.type));
+      (void)sprintf(var_sng,"%%s='%s' %%s\n",nco_typ_fmt_sng(var.type));
       (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
       break;
     case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng); break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* end if variable is a scalar, byte, or character */
 
@@ -530,7 +532,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 	  /* Format and print dimension part of output string for non-coordinate variables */
 	  if(dim[dmn_idx].cid != var.id){ /* If variable is not a coordinate... */
 	    if(dim[dmn_idx].is_crd_dmn){ /* If dimension is a coordinate... */
-	      (void)sprintf(dmn_sng,"%%s%c%%ld%c=%s ",arr_lft_dlm,arr_rgt_dlm,nco_type_fmt_sng(dim[dmn_idx].type));
+	      (void)sprintf(dmn_sng,"%%s%c%%ld%c=%s ",arr_lft_dlm,arr_rgt_dlm,nco_typ_fmt_sng(dim[dmn_idx].type));
 	      /* Account for hyperslab offset in coordinate values*/
 	      crd_idx_crr=dmn_sbs_ram[dmn_idx];
 	      switch(dim[dmn_idx].type){
@@ -540,7 +542,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 	      case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.lp[crd_idx_crr]); break;
 	      case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]); break;
 	      case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
-	      default: nco_dfl_case_nctype_err(); break;
+	      default: nco_dfl_case_nc_type_err(); break;
 	      } /* end switch */
 	    }else{ /* if dimension is not a coordinate... */
 	      (void)sprintf(dmn_sng,"%%s%c%%ld%c ",arr_lft_dlm,arr_rgt_dlm);
@@ -552,7 +554,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
       
       /* Finally, print value of current element of variable */	
       idx_crr=lmn+hyp_srt+ftn_idx_off; /* Current index into equivalent 1-D array */
-      (void)sprintf(var_sng,"%%s%c%%ld%c=%s %%s\n",arr_lft_dlm,arr_rgt_dlm,nco_type_fmt_sng(var.type));
+      (void)sprintf(var_sng,"%%s%c%%ld%c=%s %%s\n",arr_lft_dlm,arr_rgt_dlm,nco_typ_fmt_sng(var.type));
       
       if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] == 0L){
 	/* Print all characters in last dimension each time penultimate dimension subscript changes to its start value
@@ -587,7 +589,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
       case NC_INT: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.lp[lmn],unit_sng); break;
       case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.cp[lmn],unit_sng); break;
       case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,idx_crr,(unsigned char)var.val.bp[lmn],unit_sng); break;
-      default: nco_dfl_case_nctype_err(); break;
+      default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
     } /* end loop over element */
   } /* end if variable is an array, not a scalar */

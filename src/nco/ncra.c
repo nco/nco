@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.72 2002-08-19 06:44:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.73 2002-08-21 11:47:43 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -79,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.72 2002-08-19 06:44:37 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.72 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.73 2002-08-21 11:47:43 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.73 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -310,7 +310,7 @@ main(int argc,char **argv)
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
 
   /* Copy global attributes */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -318,8 +318,8 @@ main(int argc,char **argv)
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
-  /* Define variables in output file, and copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,NULL,0);
+  /* Define variables in output file, copy their attributes */
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
 
   /* Turn off default filling behavior to enhance efficiency */
   (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -420,7 +420,7 @@ main(int argc,char **argv)
 	  /* Make sure record coordinate, if any, is monotonic */
 	  if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,idx_rec_out);
 	  /* Convert missing_value, if any, back to disk type */
-	  if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk) var_prc[idx]=nco_cnv_mss_val_typ_upk(var_prc[idx]);
+	  if(var_prc[idx]->has_mss_val && var_prc[idx]->type != var_prc[idx]->typ_upk) var_prc[idx]=nco_cnv_mss_val_typ(var_prc[idx],var_prc[idx]->typ_upk);
 	  /* Free current input buffer */
 	  var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	} /* end (OpenMP parallel for) loop over variables */

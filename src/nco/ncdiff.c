@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.51 2002-06-17 00:06:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.52 2002-08-21 11:47:42 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.51 2002-06-17 00:06:02 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.51 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.52 2002-08-21 11:47:42 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.52 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -302,7 +302,7 @@ main(int argc,char **argv)
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
 
   /* Copy global attributes */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -310,8 +310,8 @@ main(int argc,char **argv)
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
-  /* Define variables in output file, and copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,NULL,0);
+  /* Define variables in output file, copy their attributes */
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
 
   /* Turn off default filling behavior to enhance efficiency */
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);

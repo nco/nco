@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.46 2002-07-04 03:40:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.47 2002-08-21 11:47:42 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -141,8 +141,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.46 2002-07-04 03:40:36 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.46 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.47 2002-08-21 11:47:42 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.47 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -219,10 +219,10 @@ main(int argc,char **argv)
     nco_exit(EXIT_FAILURE);
   } /* end if */ 
 
-  /* Make a uniform list of the user-specified rename structures */
+  /* Make uniform list of user-specified attribute edit structures */
   if(nbr_aed > 0) aed_lst=prs_aed_lst(nbr_aed,aed_arg);
 
-  /* We now have the final list of attributes to edit. */
+  /* We now have final list of attributes to edit */
   
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
@@ -306,16 +306,14 @@ main(int argc,char **argv)
   return EXIT_SUCCESS;
 } /* end main() */
 
-aed_sct *
-prs_aed_lst(int nbr_aed,char **aed_arg)
-/* 
-   int nbr_aed: input number of attributes
-   char **aed_arg: input list of user-specified dimension attributes
-   aed_sct *prs_aed_lst(): output structure holding user-specified strings for attributes
- */
+aed_sct * /* O [sct] List of attribute edit structures */
+prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */
+(int nbr_aed, /* I [nbr] Number of attributes in list */
+ char **aed_arg) /* I [sng] List of user-specified attribute edits */
 {
-  /* Routine to set name, type, size, and value elements of a comma separated list of attribute info. 
-     This routine merely evaluates syntax of input expressions but does not validate attributes or variables against those present in input netCDF file. */
+  /* Purpose: Parse name, type, size, and value elements of comma-separated list of attribute edit information
+     Routine merely evaluates syntax of input expressions
+     Routine does not validate attributes or variables against those present in input netCDF file */
 
   /* Options are:
      -a att_nm,var_nm,mode,att_typ,att_val (modifies attribute att_nm for the single variable var_nm)
@@ -347,7 +345,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 
      -o: Attribute overwrite mode
      Write attribute att_nm with value att_val to variable var_nm, overwriting existing attribute att_nm, if any.
-     This is the default mode.
+     This is default mode.
    */
 
   void nco_usg_prn(void);
@@ -487,7 +485,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=(short)val_arg_dbl[lmn];} break; 
 	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=(unsigned char)val_arg_dbl[lmn];} break; 
 	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=(signed char)val_arg_dbl[lmn];} break; 
-	default: nco_dfl_case_nctype_err(); break;
+	default: nco_dfl_case_nc_type_err(); break;
 	} /* end switch */
 	
 	/* Free array used to hold double values */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.7 2002-07-03 20:37:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.8 2002-08-21 11:47:42 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -267,7 +267,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       case NC_SHORT: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.sp[idx];} break;
       case NC_CHAR: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.cp[idx];} break;
       case NC_BYTE: for(idx=0L;idx<dmn_sz;idx++) {dmn_val_dp[idx]=old_val.bp[idx];} break;
-      default: nco_dfl_case_nctype_err(); break;
+      default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
 
       /* Un-typecast pointer to values after access */

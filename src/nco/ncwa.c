@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.86 2002-08-14 19:45:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.87 2002-08-21 11:47:43 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.86 2002-08-14 19:45:02 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.86 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.87 2002-08-21 11:47:43 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.87 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -436,7 +436,7 @@ main(int argc,char **argv)
   if(dbg_lvl > 4) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
 
   /* Copy all global attributes */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -444,7 +444,7 @@ main(int argc,char **argv)
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
 
-  /* Define variables in output file, and copy their attributes */
+  /* Define variables in output file, copy their attributes */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out);
 
   /* New missing values must be added to output file while in define mode */
@@ -645,7 +645,7 @@ main(int argc,char **argv)
 	  case NC_SHORT: mss_val_dbl=wgt_avg->mss_val.sp[0]; break;
 	  case NC_CHAR: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
 	  case NC_BYTE: mss_val_dbl=wgt_avg->mss_val.bp[0]; break;
-	  default: nco_dfl_case_nctype_err(); break;
+	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* end switch */
 	  /* Second mask wgt_avg where variable is missing value */
 	  (void)nco_var_mask(wgt_avg->type,wgt_avg->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,mss_val_dbl,nco_op_ne,var_prc[idx]->val,wgt_avg->val);

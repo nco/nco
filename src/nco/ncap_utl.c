@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.69 2002-06-17 00:06:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.70 2002-08-21 11:47:41 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -108,7 +108,7 @@ ncap_scv_2_ptr_unn(scv_sct scv)
   case NC_SHORT: *val.sp=scv.val.s; break;
   case NC_BYTE: *val.bp=scv.val.b; break;
   case NC_CHAR: break; /* do nothing */
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   (void)cast_nctype_void(type,&val);
   return val;
@@ -218,7 +218,7 @@ ncap_var_fnc(var_sct *var_in,sym_sct *app)
     } /* end else */
    break;
   }
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   }/* end switch */
 
   if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
@@ -363,7 +363,7 @@ ncap_var_scv_pwr(var_sct *var_in,scv_sct scv)
     } /* end else */
     break;
   } /* end NC_FLOAT */
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   }/* end switch */
 
   if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
@@ -424,7 +424,7 @@ ncap_scv_calc(scv_sct scv_1, char op, scv_sct scv_2)
       case '*': scv_out.val.d=scv_1.val.d * scv_2.val.d;break;
       case '%': scv_out.val.d=fmod(scv_1.val.d,fabs(scv_2.val.d));break;
     } break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   }/* end switch */    
   
   return scv_out;
@@ -457,7 +457,7 @@ ncap_scv_abs(scv_sct scv)
   case NC_DOUBLE:
     scv_out.val.d=fabs(scv.val.d);
     break;
-  default: nco_dfl_case_nctype_err(); break;    
+  default: nco_dfl_case_nc_type_err(); break;    
   } /* end switch */
   return scv_out;
 } /* end ncap_scv_abs */
@@ -484,7 +484,7 @@ ncap_scv_minus(scv_sct *scv)
   case NC_DOUBLE:
     scv->val.d=-scv->val.d;
     break;
-  default: nco_dfl_case_nctype_err(); break;   
+  default: nco_dfl_case_nc_type_err(); break;   
   } /* end switch */    
   return scv->type;
 } /* end ncap_scv_minus() */

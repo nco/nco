@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.14 2002-08-19 06:44:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.15 2002-08-21 11:47:42 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -140,7 +140,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     case NC_SHORT: for(idx=0L;idx<var_sz;idx++) {if(var_val.sp[idx] == *mss_val_crr.sp) var_val.sp[idx]=*mss_val_new.sp;} break;
     case NC_CHAR: for(idx=0L;idx<var_sz;idx++) {if(var_val.cp[idx] == *mss_val_crr.cp) var_val.cp[idx]=*mss_val_new.cp;} break;
     case NC_BYTE: for(idx=0L;idx<var_sz;idx++) {if(var_val.bp[idx] == *mss_val_crr.bp) var_val.bp[idx]=*mss_val_new.bp;} break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
 
     /* Un-typecast the pointer to values after access */
@@ -224,11 +224,16 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 (const int in_id, /* I [id] netCDF input-file ID */
  const int out_id, /* I [id] netCDF output-file ID */
  const int var_in_id, /* I [id] netCDF input-variable ID */
- const int var_out_id) /* I [id] netCDF output-variable ID */
+ const int var_out_id, /* I [id] netCDF output-variable ID */
+ const bool PCK_ATT_CPY) /* I [flg] Copy attributes "scale_factor", "add_offset" */
 {
   /* Purpose: Copy attributes from input netCDF file to output netCDF file
      If var_in_id == NC_GLOBAL, then global attributes are copied. 
-     Otherwise only indicated variable's attributes are copied */
+     Otherwise only indicated variable's attributes are copied
+     If PCK_ATT_CPY is false, then copy all attributes except "scale_factor", "add_offset" */
+
+  char att_nm[NC_MAX_NAME];
+  char var_nm[NC_MAX_NAME];
 
   int idx;
   int nbr_att;
@@ -240,25 +245,72 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     (void)nco_inq_varnatts(in_id,var_in_id,&nbr_att);
   } /* end else */
   
+  /* Jump back to here if current attribute is treated specially */
   for(idx=0;idx<nbr_att;idx++){
-    char att_nm[NC_MAX_NAME];
-    
     (void)nco_inq_attname(in_id,var_in_id,idx,att_nm);
     rcd=nco_inq_att_flg(out_id,var_out_id,att_nm,(nc_type *)NULL,(long *)NULL);
       
+    /* Do not copy attributes "scale_factor", "add_offset" */
+    if(!PCK_ATT_CPY && (!strcmp(att_nm,"scale_factor") || !strcmp(att_nm,"add_offset"))) continue;
+    
     /* Are we about to overwrite an existing attribute? */
     if(rcd == NC_NOERR){
       if(var_out_id == NC_GLOBAL){
 	(void)fprintf(stderr,"%s: WARNING Overwriting global attribute %s\n",prg_nm_get(),att_nm);
       }else{
-	char var_nm[NC_MAX_NAME];
-	
 	(void)nco_inq_varname(out_id,var_out_id,var_nm);
 	(void)fprintf(stderr,"%s: WARNING Overwriting attribute %s for output variable %s\n",prg_nm_get(),att_nm,var_nm);
       } /* end else */
     } /* end if */
 
-    (void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
+    if(PCK_ATT_CPY || strcmp(att_nm,"missing_value")){
+      /* Copy attribute using fast library routine */
+      (void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
+    }else{
+      /* Convert "missing_value" attribute to unpacked type then copy pck_dbg */
+      aed_sct aed;
+      
+      long att_sz;
+      long att_lng_in;
+      long att_lng_out;
+      
+      nc_type att_typ_in;
+      nc_type att_typ_out;
+      
+      ptr_unn mss_tmp;
+      
+      (void)nco_inq_att(in_id,var_in_id,att_nm,&att_typ_in,&att_sz);
+      
+      if(att_sz != 1L){
+	(void)fprintf(stderr,"%s: ERROR input \"%s\" attribute has %li elements, but nco_att_cpy() only works for size of 1\n",prg_nm_get(),att_nm,att_sz);
+	nco_exit(EXIT_FAILURE); 
+      } /* end if */
+      
+      /* Convert "missing_value" to unpacked type before copying pck_dbg */
+      /* fxm: Conversion and storage routine not done yet---use nco_aed_prc() */
+      aed.att_nm=att_nm; /* Name of attribute */
+      if(var_out_id == NC_GLOBAL){
+	aed.var_nm=NULL;
+      }else{
+	(void)nco_inq_varname(out_id,var_out_id,var_nm);
+	aed.var_nm=var_nm; /* Name of variable, or NULL for global attribute */
+      } /* end if */
+      aed.id=out_id; /* Variable ID or NC_GLOBAL ( = -1) for global attribute */
+      aed.sz=att_sz; /* Number of elements in attribute */
+      (void)nco_inq_vartype(out_id,var_out_id,&att_typ_out);
+      aed.type=att_typ_out; /* Type of attribute */
+      aed.val.vp=(void *)nco_malloc(nco_typ_lng(aed.type)); /* Pointer to attribute value */
+      att_lng_in=att_sz*nco_typ_lng(att_typ_in);
+      att_lng_out=att_sz*nco_typ_lng(att_typ_out);
+      mss_tmp.vp=(void *)nco_malloc(att_lng_in);
+      (void)nco_get_att(in_id,var_in_id,att_nm,mss_tmp.vp,att_typ_in);
+      (void)val_conform_type(att_typ_in,mss_tmp,att_typ_out,aed.val);
+      aed.mode=aed_overwrite; /* Action to perform with attribute */
+      (void)nco_aed_prc(out_id,var_out_id,aed); 
+      /* Release temporary memory */
+      aed.val.vp=nco_free(aed.val.vp);
+      mss_tmp.vp=nco_free(mss_tmp.vp);
+    } /* PCK_ATT_CPY */
 
   } /* end loop over attributes */
 } /* end nco_att_cpy() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.9 2002-08-19 06:44:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.10 2002-08-21 11:47:42 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -33,7 +33,7 @@ cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
   case NC_BYTE:
     ptr->bp=(signed char *)ptr->vp;
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 } /* end cast_void_nctype() */
 
@@ -62,7 +62,7 @@ cast_nctype_void /* [fnc] Cast generic pointer in ptr_unn structure from type ty
   case NC_BYTE:
     ptr->vp=(void *)ptr->bp;
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 } /* end cast_nctype_void() */
 
@@ -95,12 +95,13 @@ nco_cnv_var_typ_dsk  /* [fnc] Revert variable to on-disk type */
 } /* nco_cnv_var_typ_dsk() */
 
 var_sct * /* O [sct] Variable with mss_val converted to typ_upk */
-nco_cnv_mss_val_typ_upk  /* [fnc] Convert missing_value, if any, to typ_upk */
-(var_sct *var) /* I [sct] Variable with missing_value to be converted */
+nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to typ_upk */
+(var_sct *var, /* I [sct] Variable with missing_value to be converted */
+ const nc_type mss_val_out_typ) /* I [enm] Type of mss_val on output */
 {
   /* Purpose: Convert variable missing_value field, if any, to typ_upk
      Routine is currently called only by ncra, for following reason:
-     Most applications should call nco_var_cnf_typ() without calling nco_cnv_mss_val_typ_upk()
+     Most applications should call nco_var_cnf_typ() without calling nco_cnv_mss_val_typ()
      since that routine converts misssing_value type along with variable type
      The important exception to this is ncra
      ncra refreshes variable metadata (including missing_value, if any) 
@@ -111,33 +112,40 @@ nco_cnv_mss_val_typ_upk  /* [fnc] Convert missing_value, if any, to typ_upk */
      When next record is read and variable is promoted to arithmetic type (double),
      this routine will automatically try to convert the missing_value, assuming
      it is same type as variable.
+     Performing type conversion on memory already converted is a no-no
+     It will result in unpredictable and incorrect answers
      Thus it is very important to synchronize type of variable and missing_value 
+     In the case described above, ncra simply calls this routine to convert 
+     missing_value to typ_upk at the end of each record.
+     Routine is dangerous because it _allows_ mss_val and variable to be different types
+     Make sure you have a very good reason to ask it to do this!
      Better permanent solution is to add missing_value type to variable structure */
 
-  const nc_type var_in_typ=var->type; /* [enm] Type of variable and mss_val on input */
-  const nc_type var_out_typ=var->typ_upk; /* [enm] Type of variable and mss_val on output */
+  nc_type var_in_typ; /* [enm] Type of variable and mss_val on input */
+
+  ptr_unn mss_val_in;
+  ptr_unn mss_val_out;
+
+  /* Skip if no missing_value or if missing_value is already typ_upk */
+  if(!var->has_mss_val || var_in_typ == mss_val_out_typ) return var;
+
+  var_in_typ=var->type; /* [enm] Type of variable and mss_val on input */
 
   /* Simple error-checking and diagnostics */
   if(dbg_lvl_get() > 2){
-    (void)fprintf(stderr,"%s: DEBUG %s missing_value attribute of variable %s from type %s to type %s\n",prg_nm_get(),var_out_typ > var_in_typ ? "Promoting" : "Demoting",var->nm,nco_typ_sng(var_in_typ),nco_typ_sng(var_out_typ));
+    (void)fprintf(stderr,"%s: DEBUG %s missing_value attribute of variable %s from type %s to type %s\n",prg_nm_get(),mss_val_out_typ > var_in_typ ? "Promoting" : "Demoting",var->nm,nco_typ_sng(var_in_typ),nco_typ_sng(mss_val_out_typ));
   } /* end if */
   
-  /* Skip if no missing_value or if missing_value is already typ_upk */
-  if(var->has_mss_val && var_in_typ != var_out_typ){
-    ptr_unn mss_val_in;
-    ptr_unn mss_val_out;
-
-    /* Sequence of following commands is important (copy before overwriting!) */
-    mss_val_in=var->mss_val;
-    mss_val_out.vp=(void *)nco_malloc(nco_typ_lng(var_out_typ));
-    (void)val_conform_type(var_in_typ,mss_val_in,var_out_typ,mss_val_out);
-    var->mss_val=mss_val_out;
-    /* Free original */
-    mss_val_in.vp=nco_free(mss_val_in.vp);
-  } /* end if */
+  /* Sequence of following commands is important (copy before overwriting!) */
+  mss_val_in=var->mss_val;
+  mss_val_out.vp=(void *)nco_malloc(nco_typ_lng(mss_val_out_typ));
+  (void)val_conform_type(var_in_typ,mss_val_in,mss_val_out_typ,mss_val_out);
+  var->mss_val=mss_val_out;
+  /* Free original */
+  mss_val_in.vp=nco_free(mss_val_in.vp);
   
   return var; /* O [sct] Variable with mss_val converted to typ_upk */
-} /* nco_cnv_mss_val_typ_upk() */
+} /* nco_cnv_mss_val_typ() */
 
 var_sct * /* O [sct] Pointer to variable structure of type var_out_typ */
 nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type */
@@ -148,7 +156,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   /* Purpose: Return copy of input variable typecast to desired type
      Routine assumes variable and missing_value are same type in memory
      This is currently always true except for a brief time in ncra
-     This condition is unsafe and is described more fully in nco_cnv_mss_val_typ_upk() */
+     This condition is unsafe and is described more fully in nco_cnv_mss_val_typ() */
   long idx;
   long sz;
   
@@ -210,7 +218,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.bp[idx];} break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_DOUBLE:
     switch(var_in_typ){
@@ -220,7 +228,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.dp[idx]=val_in.bp[idx];} break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_INT:
     switch(var_in_typ){
@@ -230,7 +238,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.lp[idx]=val_in.bp[idx];} break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_SHORT:
     switch(var_in_typ){
@@ -240,7 +248,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.bp[idx];} break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_CHAR:
     switch(var_in_typ){
@@ -250,7 +258,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.bp[idx];} break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_BYTE:
     switch(var_in_typ){
@@ -260,9 +268,9 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.bp[idx];} break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
   /* Un-typecast pointer to values after access */
@@ -305,7 +313,7 @@ val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     case NC_SHORT: *val_out.fp=*val_in.sp; break;
     case NC_CHAR: *val_out.fp=strtod((const char *)val_in.cp,(char **)NULL); break;
     case NC_BYTE: *val_out.fp=*val_in.bp; break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_DOUBLE:
     switch(typ_in){
@@ -315,7 +323,7 @@ val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     case NC_SHORT: *val_out.dp=*val_in.sp; break;
     case NC_CHAR: *val_out.dp=strtod((const char *)val_in.cp,(char **)NULL); break;
     case NC_BYTE: *val_out.dp=*val_in.bp; break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_INT:
     switch(typ_in){
@@ -325,7 +333,7 @@ val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     case NC_SHORT: *val_out.lp=*val_in.sp; break;
     case NC_CHAR: *val_out.lp=(long)strtod((const char *)val_in.cp,(char **)NULL); break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_BYTE: *val_out.lp=*val_in.bp; break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_SHORT:
     switch(typ_in){
@@ -335,7 +343,7 @@ val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     case NC_SHORT: *val_out.sp=*val_in.sp; break;
     case NC_CHAR: *val_out.sp=(short)strtod((const char *)val_in.cp,(char **)NULL); break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_BYTE: *val_out.sp=*val_in.bp; break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_CHAR:
     switch(typ_in){
@@ -345,7 +353,7 @@ val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     case NC_SHORT: *val_out.cp=*val_in.sp; break;
     case NC_CHAR: *val_out.cp=*val_in.cp; break;
     case NC_BYTE: *val_out.cp=*val_in.bp; break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } break;
   case NC_BYTE:
     switch(typ_in){
@@ -355,9 +363,9 @@ val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
     case NC_SHORT: *val_out.bp=*val_in.sp; break;
     case NC_CHAR: *val_out.bp=*val_in.cp; break;
     case NC_BYTE: *val_out.bp=*val_in.bp; break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
   /* NB: There is no need to un-typecast input pointers because they were passed by
@@ -430,7 +438,7 @@ scv_conform_type /* [fnc] Convert scalar attribute to typ_new using C implicit c
     case NC_CHAR: break;
     case NC_NAT: break;    
     } break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   scv_new.type=typ_new;
   *scv_old=scv_new;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.41 2002-06-17 00:06:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.42 2002-08-21 11:47:42 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -81,8 +81,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.41 2002-06-17 00:06:02 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.41 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.42 2002-08-21 11:47:42 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.42 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -274,7 +274,7 @@ main(int argc,char **argv)
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
 
   /* Copy global attributes */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
+  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
@@ -347,7 +347,7 @@ main(int argc,char **argv)
     
   } /* end if */
 
-  /* Define variables in output file, and copy their attributes */
+  /* Define variables in output file, copy their attributes */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
 
   /* Turn off default filling behavior to enhance efficiency */

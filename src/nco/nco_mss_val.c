@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.5 2002-08-19 06:44:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.6 2002-08-21 11:47:42 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -29,7 +29,7 @@ nco_mss_val_mk /* [fnc] Return default missing value for type type */
   case NC_SHORT: *mss_val.sp=NC_FILL_SHORT; break;
   case NC_CHAR: *mss_val.cp=NC_FILL_CHAR; break;
   case NC_BYTE: *mss_val.bp=NC_FILL_BYTE; break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* Un-typecast pointer to values after access */
@@ -48,9 +48,7 @@ nco_mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
   /* Purpose: Copy missing value from var1 to var2
      On exit, var2 contains has_mss_val, and mss_val identical to var1
      Type of mss_val in var2 will agree with type of var2
-     This maintains assumed consistency between type of variable and
-     type of mss_val in all var_sct's
-   */
+     This maintains assumed consistency between type of variable and type of mss_val in all var_sct's */
 
   if(!var1->has_mss_val){
     var2->has_mss_val=False;

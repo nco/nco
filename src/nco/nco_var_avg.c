@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.10 2002-06-17 00:06:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.11 2002-08-21 11:47:42 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -331,7 +331,7 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     case NC_INT: mss_val_lng=*mss_val.lp; break;
     case NC_BYTE: mss_val_byt=*mss_val.bp; break;
     case NC_CHAR: mss_val_chr=*mss_val.cp; break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
 
@@ -536,7 +536,7 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
     /* Do nothing except avoid compiler warnings */
     mss_val_byt=mss_val_byt;
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -592,7 +592,7 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
     case NC_INT: mss_val_lng=*mss_val.lp; break;
     case NC_BYTE: mss_val_byt=*mss_val.bp; break;
     case NC_CHAR: mss_val_chr=*mss_val.cp; break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
   
@@ -816,7 +816,7 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
     /* Do nothing except avoid compiler warnings */
     mss_val_byt=mss_val_byt;
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -872,7 +872,7 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
     case NC_INT: mss_val_lng=*mss_val.lp; break;
     case NC_BYTE: mss_val_byt=*mss_val.bp; break;
     case NC_CHAR: mss_val_chr=*mss_val.cp; break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
   
@@ -1096,7 +1096,7 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
     /* Do nothing except avoid compiler warnings */
     mss_val_byt=mss_val_byt;
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end  switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 

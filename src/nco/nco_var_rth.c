@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.10 2002-06-17 00:06:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.11 2002-08-21 11:47:42 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -81,7 +81,7 @@ nco_var_abs(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -186,7 +186,7 @@ nco_var_add(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -264,7 +264,7 @@ nco_var_add_no_tally(const nc_type type,const long sz,const int has_mss_val,ptr_
   case NC_BYTE:
     /* Do nothing */
     break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -344,7 +344,7 @@ nco_var_sbt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
   case NC_BYTE:
     /* Do nothing */
     break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
   
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -425,7 +425,7 @@ nco_var_mlt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -506,7 +506,7 @@ nco_var_dvd(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -602,7 +602,7 @@ nco_var_min_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn m
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 } /* end nco_var_min_bnr() */
 
@@ -696,7 +696,7 @@ nco_var_max_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn m
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 } /* end nco_var_max_bnr() */
 
@@ -796,7 +796,7 @@ nco_var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -866,7 +866,7 @@ nco_var_nrm(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -937,7 +937,7 @@ nco_var_nrm_sdn(const nc_type type,const long sz,const int has_mss_val,ptr_unn m
   case NC_BYTE:
     /* Do nothing */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
@@ -990,7 +990,7 @@ nco_var_mask(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
     case NC_INT: mss_val_lng=*mss_val.lp; break;
     case NC_BYTE: mss_val_byt=*mss_val.bp; break;
     case NC_CHAR: mss_val_chr=*mss_val.cp; break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
   } /* endif */
 
@@ -1056,7 +1056,7 @@ nco_var_mask(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
     case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (signed char)op1) op3.bp[idx]=mss_val_byt; break;
     } /* end switch */
     break;
-  default: nco_dfl_case_nctype_err(); break;
+  default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* It is not neccessary to un-typecast pointers to values after access 
@@ -1098,7 +1098,7 @@ nco_var_zero(const nc_type type,const long sz,ptr_unn op1)
   case NC_BYTE:
     /* Do nothing */
     break;
-    default: nco_dfl_case_nctype_err(); break;
+    default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 

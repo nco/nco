@@ -1,3 +1,20 @@
+2002-08-20  Charlie Zender  <zender@uci.edu>
+
+	* Print attributes with same formatting as variables
+
+	* Added hooks for packing support in arithmetic operators:
+	Code was changed in locations marked with "pck_dbg"
+	1. Change type of output in nco_def_var() from var->type to
+	var->typ_upk when is_rth_opr() is true
+	2. Unpack variable in nco_var_get() when is_rth_opr() is true
+	3. nco_att_cpy() does not copy attributes "scale_factor",
+	"add_offset" for unpacked output variables
+	4. nco_att_cpy() ensures "missing_value" is converted to unpacked
+	type before copying
+	5. nco_var_get() refreshes var->pck_ram on each read
+	6. Use nco_cnv_mss_val_typ() to keep type of missing_value in sync
+	Unpacking appears to be working for all arithmetic operators!
+	
 2002-08-19  Charlie Zender  <zender@uci.edu>
 
 	* Added .cvsignore to dirs affected by autoconf

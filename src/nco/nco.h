@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.42 2002-08-19 06:44:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.43 2002-08-21 11:47:42 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -266,7 +266,7 @@ extern "C" {
     int nbr_att; /* [nbr] Number of attributes */
     int has_mss_val; /* [flg] Is there a missing_value attribute? */
     ptr_unn mss_val; /* [frc] Value of missing_value attribute, if any (mss_val stored in this structure must be same type as variable) */
-    int cid; /* [id] Dimension ID of the associated coordinate, if any */
+    int cid; /* [id] Dimension ID of associated coordinate, if any */
     char fmt[5]; /* [sng] Hint for printf()-style formatting */
     dmn_sct **dim; /* [sct] Pointers to full dimension structures */
     int *dmn_id; /* [id] Contiguous vector of dimension IDs */
