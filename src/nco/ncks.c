@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.20 2000-01-17 01:53:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.21 2000-01-28 00:09:11 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.20 2000-01-17 01:53:57 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.20 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.21 2000-01-28 00:09:11 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.21 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -1444,7 +1444,8 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int nbr_lmt,char *dlm_sng,bo
 	  /* Memory region is NUL-terminated, i.e., a valid string */ 
 	  /* Print strings inside double quotes */ 
 	  (void)sprintf(var_sng,"%%s%c%%li--%%li%c=\"%%s\" %%s",arr_lft_dlm,arr_rgt_dlm);
-	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+strlen(var.val.cp+lmn),var.val.cp+lmn,unit_sng);
+	  /* var.val.cp is signed char * but strlen() requires const char * */
+	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+strlen((char *)var.val.cp+lmn),(char *)var.val.cp+lmn,unit_sng);
 	}else{
 	  /* Memory region is not NUL-terminated, print block of chars instead */
 	  /* Print block of chars inside single quotes */ 

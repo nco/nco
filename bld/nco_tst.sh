@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.13 1999-12-14 23:10:34 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.14 2000-01-28 00:09:11 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -16,7 +16,7 @@ ncrename -O -v PS,negative_one foo.nc 2>> foo.tst
 ncdiff -O -C -v negative_one foo.nc in.nc foo2.nc 2>> foo.tst
 # Rename one-valued array from negative_one to one
 ncrename -O -v negative_one,one foo2.nc 2>> foo.tst
-# Append one-valued to foo.nc
+# Append one-valued array to foo.nc
 ncks -A -C -v one foo2.nc foo.nc 2>> foo.tst
 # Append Gaussian weight array to foo.nc
 ncks -A -C -v gw nco_tst.nc foo.nc 2>> foo.tst
