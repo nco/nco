@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.95 2001-07-30 18:40:45 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.96 2001-08-10 16:12:04 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -220,7 +220,8 @@ ${MY_DPN_DIR}/%.d : %.cc
 # The first LDFLAGS is for typical C programs with netCDF, math, and networking
 # The second LDFLAGS enables C/Fortran linking
 
-ifeq (${PVM_ARCH},AIX)
+# Works on AIX and AIX46K
+ifneq (,$(findstring AIX,${PVM_ARCH}))
 C++ := xlC
 CC := cc
 # Additional switch to fix compiler warnings on csz.c

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.76 2001-05-08 05:26:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.77 2001-08-10 16:12:04 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -34,8 +34,7 @@ Try to disable Spammers' machines:
    <title>NCO Homepage</title>
    <meta name="Generator" content="Old fashioned typing">
    <meta name="Author" content="Charles S. Zender">
-   <meta name="Keywords" content="NCO Homepage, netCDF, netCDF
-   operator, GCM, HDF, scientific data">
+   <meta name="Keywords" content="NCO Homepage, netCDF, netCDF operator, GCM, HDF, scientific data">
 </head>
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
