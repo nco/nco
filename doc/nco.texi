@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.17 1999-01-29 19:45:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.18 1999-01-29 22:11:46 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -48,8 +48,8 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.1.20
-@set doc-edition 1.1.20
+@set nco-edition 1.1.21
+@set doc-edition 1.1.21
 @set copyright-years 1995, 1996, 1997, 1998, 1999
 @set update-year 1999
 @set update-date 23 January 1999
@@ -538,10 +538,10 @@ maintaining because HDF
 self-describing data format similar to, but more elaborate than, netCDF.}
 (available from 
 @ifhtml
-<a href="http://hdf.ncsa.uiuc.edu">HDF</a>.
+<a href="http://hdf.ncsa.uiuc.edu">HDF</a>
 @end ifhtml
 @ifclear html
-@code{http://hdf.ncsa.uiuc.edu}.
+@code{http://hdf.ncsa.uiuc.edu}
 @end ifclear
 ) supports only the netCDF 2.x library calls.  
 If NCO is built with only netCDF 2.x calls then some NCO operators will
