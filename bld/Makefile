@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.25 1999-05-10 06:36:23 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.26 1999-08-04 16:52:04 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -22,7 +22,7 @@ ifndef OPTS
 ifneq ($(PVM_ARCH),SGI64)
  OPTS := O
 else
-# 98/08/20: TODO #110 Winterpark NCO core dumps when compiled with -O2
+# 1998/08/20: TODO #110 Winterpark NCO core dumps when compiled with -O2
  OPTS := R
 endif
 endif

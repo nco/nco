@@ -1,20 +1,20 @@
 #!/contrib/bin/perl
 				
-my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.23 1999-07-03 21:58:21 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.24 1999-08-04 16:52:04 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
 # Usage:
 # Export tagged, public versions
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_34
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_34
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_34
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_34
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_34
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_34
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_34
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_34
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_34
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_36
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_36
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_36
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_36
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_36
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_36
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_36
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_36
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_36
 
 # Export daily snapshot
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 
@@ -52,9 +52,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $RCS_Date='$Date: 1999-07-03 21:58:21 $';
-my $RCS_Id='$Id: nco_dst.pl,v 1.23 1999-07-03 21:58:21 zender Exp $';
-my $RCS_Revision='$Revision: 1.23 $';
+my $CVS_Date='$Date: 1999-08-04 16:52:04 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.24 1999-08-04 16:52:04 zender Exp $';
+my $CVS_Revision='$Revision: 1.24 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -86,10 +86,10 @@ if($PVM_ARCH =~ m/SUN/){ # See Camel p. 81 for =~ and m//
 if($dst_pth eq '/home/zender'){die "$prg_nm: ERROR \$dst_pth eq $dst_pth";} # This would be disasterous
 
 $prg_dsc='NCO distribution maker'; # Program description
-($prg_nm,$prg_vrs)=$RCS_Id =~ /: (.+).pl,v ([\d.]+)/; # Program name and version
-$prg_vrs.='*' if length('$Locker:  $ ') > 12; # Tack '*' if it is not checked in into RCS.
-($prg_nm,$pth_in,$fl_sfx)=fileparse($0,''); # $0 is program name Camel p. 136.
-($prg_date)=unpack '@7 a19',$RCS_Date;
+($prg_nm,$prg_vrs)=$CVS_Id =~ /: (.+).pl,v ([\d.]+)/; # Program name and version
+$prg_vrs.='*' if length('$Locker:  $ ') > 12; # Tack '*' if it is not checked in into CVS.
+($prg_nm,$pth_in,$fl_sfx)=fileparse($0,''); # $0 is program name Camel p. 136
+if(length($CVS_Date) > 6){($prg_date)=unpack '@7 a19',$CVS_Date;}else{$prg_date='Unknown';}
 
 # Parse command line arguments: '!' means Boolean, '|' is OR, '=' specifies required argument: 'i' is integer, 'f' is float
 $rcd=GetOptions(

@@ -1,3 +1,20 @@
+1999-08-04  Charlie Zender  <zender@dust.acd.ucar.edu>
+
+	* Tagged this as nco1_1_36
+
+	* Improved patch to fl_mk_lcl() so it "does the right thing"
+	when determining whether to try to rcp files
+
+1999-08-03  Charlie Zender  <zender@dust.acd.ucar.edu>
+
+	* Patched fl_mk_lcl() to exit gracefully on filenames with
+	multiple colons (which are legal in UNIX). Files with single
+	colons in their names, as opposed to rcp requests, still cause
+	core dumps and will continue to do so until I write a routine
+	which determines whether to treat the filename as an rcp 
+	request based on some sort of valid hostname recognition
+	algorithm. 
+
 1999-07-29  Charlie Zender  <zender@dust.acd.ucar.edu>
 
 	* Tagged this as nco1_1_35

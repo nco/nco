@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.21 1999-07-01 23:13:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.22 1999-08-04 16:52:04 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -378,6 +378,8 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
      return the filename of the file on the local system */ 
 
   FILE *fp_in;
+  char *cln_ptr; /* [ptr] Colon pointer */
+  char *prd_ptr; /* [ptr] Period pointer */
   char *fl_nm_lcl;
   char *fl_nm_stub;
   int rcd;
@@ -397,16 +399,27 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     fl_nm_lcl=(char *)malloc(strlen(fl_pth_lcl_tmp)+1);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     (void)free(fl_nm_lcl_tmp);
-  }else if(strchr(fl_nm_lcl,':')){
-    char *fl_nm_lcl_tmp;
-    char *fl_pth_lcl_tmp;
-
-    /* Rearrange the fl_nm_lcl to get rid of the hostname: part */ 
-    fl_pth_lcl_tmp=strchr(fl_nm_lcl+6,'/');
-    fl_nm_lcl_tmp=fl_nm_lcl;
-    fl_nm_lcl=(char *)malloc(strlen(fl_pth_lcl_tmp)+1);
-    (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
-    (void)free(fl_nm_lcl_tmp);
+  }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
+    /* 19990804
+       A colon separates the machine name from the filename in rcp requests
+       However, a colon is also legal in any UNIX filename
+       Thus determining when a colon signifies an rcp request is somewhat ambiguous 
+       NCO treats names with more than one colon as regular filenames
+       In order for a colon to be interpreted as a machine name delimiter,
+       it must be preceded by a period within three or four spaces, e.g., uci.edu:
+    */
+    if(((cln_ptr-4 >= fl_nm_lcl) && *(cln_ptr-4) == '.') ||
+       ((cln_ptr-3 >= fl_nm_lcl) && *(cln_ptr-3) == '.')){
+      char *fl_nm_lcl_tmp;
+      char *fl_pth_lcl_tmp;
+      
+      /* Rearrange the fl_nm_lcl to get rid of the hostname: part */ 
+      fl_pth_lcl_tmp=strchr(fl_nm_lcl+6,'/');
+      fl_nm_lcl_tmp=fl_nm_lcl;
+      fl_nm_lcl=(char *)malloc(strlen(fl_pth_lcl_tmp)+1);
+      (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
+      (void)free(fl_nm_lcl_tmp);
+    } /* endif period is three or four characters from colon */
   } /* end if */ 
   
   /* Does the file exist on the local system? */ 
@@ -442,7 +455,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     fl_nm_stub=strrchr(fl_nm_lcl,'/')+1;
 
     /* Construct the local filename from the user-supplied local file path 
-       along with the existing file stub.*/
+       along with the existing file stub. */
     if(fl_pth_lcl != NULL){
       char *fl_nm_lcl_tmp;
       
@@ -503,8 +516,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     /* The remote filename is the input filename by definition */ 
     fl_nm_rmt=fl_nm;
     
-    /* A URL specifier in the filename unambiguously signals to use anonymous ftp */ 
-    if(rmt_cmd == NULL){
+    /* A URL specifier in the filename unambiguously signals to use anonymous ftp */     if(rmt_cmd == NULL){
       if(strstr(fl_nm_rmt,"ftp://") == fl_nm_rmt){
 #ifdef WIN32
       /* I have no idea how networking calls work in NT, so just exit */
@@ -561,11 +573,14 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       } /* end if */
     } /* end if */
 
-    /* Otherwise, a single colon in the filename unambiguously signals to use rcp */ 
+    /* Otherwise, a single colon preceded by a period in the filename unambiguously signals to use rcp */
     if(rmt_cmd == NULL){
-      if(strchr(fl_nm_rmt,':'))	rmt_cmd=&rcp;
+      if((cln_ptr=strchr(fl_nm_rmt,':')))
+	if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
+	   ((cln_ptr-3 >= fl_nm_rmt) && *(cln_ptr-3) == '.'))
+	  rmt_cmd=&rcp;
     } /* end if */
-
+    
     if(rmt_cmd == NULL){
       /* Does the msread command exist on the local system? */ 
       rcd=stat("/usr/local/bin/msread",&stat_sct);
@@ -601,14 +616,14 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_len);
     fl_pth_lcl_tmp[fl_pth_lcl_len]='\0';
     
-    /* Warn the user when the local filepath was machine-derived from the remote name */ 
+    /* Warn the user when the local filepath was machine-derived from the remote name */
     if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: WARNING deriving local filepath from remote filename, using %s\n",prg_nm_get(),fl_pth_lcl_tmp);
 
     /* Does the local filepath already exist on the local system? */
     rcd=stat(fl_pth_lcl_tmp,&stat_sct);
-    /* If not, then create the local filepath */ 
+    /* If not, then create the local filepath */
     if(rcd != 0){
-      /* Allocate enough room for the joining space ' ' and the terminating NULL */ 
+      /* Allocate enough room for the joining space ' ' and the terminating NULL */
       cmd_sys=(char *)malloc((strlen(cmd_mkdir)+fl_pth_lcl_len+2)*sizeof(char));
       (void)strcpy(cmd_sys,cmd_mkdir);
       (void)strcat(cmd_sys," ");
