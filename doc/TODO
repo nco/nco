@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.385 2004-09-01 00:40:09 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.386 2004-09-01 07:03:53 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -252,6 +252,7 @@ nco401. ncpdq: fix "use ncpdq fxm" hint in nco_pck_dsk_inq() message
 nco402. Leave alone [un-]packing of fixed variables in arithmetic operators
         See notes about this in nco_var_dfn()
 nco403. ncpdq: Do not pack already packed variables
+        ncpdq -O -D 3 -P all_new -v pck ~/nco/data/in.nc ~/foo.nc
 nco404. Does Ersoy's XML stylesheet nco.css work?
 nco406. Add advantages/disadvantages of NCO (compared to e.g., ANTS) description
 nco408. How to get new SDO tasks done? How to advertise pay-per-feature requests? How to evaluate responses? GNOME has something similar

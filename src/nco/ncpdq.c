@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.36 2004-08-17 05:03:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.37 2004-09-01 07:04:02 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -104,10 +104,9 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.36 2004-08-17 05:03:54 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.36 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.37 2004-09-01 07:04:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.37 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:P:p:Rrt:v:x-:";
-
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -350,7 +349,7 @@ main(int argc,char **argv)
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
   } /* end loop over idx */
 
-  /* From this point forward we assume ncpdq operator will pack or re-order, not both */
+  /* From this point forward, assume ncpdq operator packs or re-orders, not both */
   if(dmn_rdr_nbr > 0 && nco_pck_typ != nco_pck_nil){
     (void)fprintf(fp_stdout,"%s: ERROR %s does not support simultaneous dimension re-ordering  (-a switch) and packing (-P switch).\nHINT: Invoke %s twice, once to re-order (with -a), and once to pack (with -P).\n",prg_nm,prg_nm,prg_nm);
     nco_exit(EXIT_FAILURE);
@@ -796,11 +795,11 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
   case nco_pck_all_new_att:
     if(var_in->pck_ram){
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s reports variable %s is already packed\n",prg_nm_get(),fnc_nm,var_in->nm);
-      /* If variable is already packed, we will first unpack it, and then re-pack it 
-	 The final packing type may differ from the original */
+      /* Variable is already packed---unpack then re-pack it 
+	 Final packing type may differ from original */
       var_out->type=nco_typ_pck_get(var_in->typ_upk);
     }else{
-      /* If variable is not yet packed then pack to default type */
+      /* Variable is not yet packed so pack to default type */
       var_out->type=nc_typ_pck_out;
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s will pack variable metadata %s from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
     } /* endif */
@@ -835,10 +834,30 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
   case nco_pck_xst_new_att:
   case nco_pck_all_new_att:
     USE_EXISTING_PCK=False;
-    /* If variable is already packed then unpack and re-pack it */
     if(var_in->pck_ram){
+      /* Variable is already packed---unpack then re-pack it */
+      var_sct *var_tmp; /* [sct] Temporary variable to be unpacked */
+
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s unpacking variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_pck),nco_typ_sng(var_out->typ_upk));
-      var_out=nco_var_upk(var_out); 
+      /* Output file does not contain packing attributes yet 
+	 Hence unpacking var_out directly is impossible 
+	 Instead, make var_tmp a copy of var_in and unpack var_tmp 
+	 Then copy needed elements of var_tmp to var_out 
+	 Then delete the rest of var_tmp 
+	 Fields modified in nco_var_upk() must be explicitly updated in var_out */
+      var_tmp=nco_var_dpl(var_in);
+      var_tmp=nco_var_upk(var_tmp); 
+      /* typ_out=var_out->type; *//* [enm] Type in output file */
+      var_out->val=var_tmp->val;
+      var_out->pck_ram=var_tmp->pck_ram;
+      var_out->has_scl_fct=var_tmp->has_scl_fct;
+      var_out->has_add_fst=var_tmp->has_add_fst;
+      var_out->scl_fct.vp=nco_free(var_out->scl_fct.vp);
+      var_out->add_fst.vp=nco_free(var_out->add_fst.vp);
+      /* fxm: Prevent nco_var_free() from free()'ing var_tmp->val 
+	 free() this memory with var_out instead */
+      var_tmp->val.vp=NULL;
+      if(var_tmp != NULL) var_tmp=nco_var_free(var_tmp);
     }else{
       /* Recall that nco_var_pck() expects to alter var_out->type itself */
       var_out->type=var_in->typ_dsk;
