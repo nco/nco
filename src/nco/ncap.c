@@ -1,12 +1,33 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.112 2003-04-07 02:46:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.113 2003-06-16 16:37:27 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
 /* Purpose: Compute user-defined derived fields using forward algebraic notation applied to netCDF files */
 
 /* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
-   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+   This software is distributed under the terms of the GNU General Public License Version 2
+   The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
+   and in the file nco/doc/LICENSE in the NCO source distribution.
+   
+   As a special exception to the terms of the GPL, you are permitted 
+   to link the NCO source code with the DODS, HDF, netCDF, and UDUnits
+   libraries and to distribute the resulting executables under the terms 
+   of the GPL, but in addition obeying the extra stipulations of the 
+   DODS, HDF, netCDF, and UDUnits licenses.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+   See the GNU General Public License for more details.
+   
+   The original author of this software, Charlie Zender, wants to improve it
+   with the help of your suggestions, improvements, bug-reports, and patches.
+   Please contact the NCO project at http://nco.sf.net or by writing
+   Charlie Zender
+   Department of Earth System Science
+   University of California at Irvine
+   Irvine, CA 92697-3100 */
 
 /* Usage:
    ncap -O -D 1 -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
@@ -72,8 +93,8 @@ main(int argc,char **argv)
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-  bool PROCESS_ALL_VARS=True;     /* option v */  
-  bool PRINT_FUNCTION_TABLE=False;
+  bool PROCESS_ALL_VARS=True; /* Option v */  
+  bool PRN_FNC_TBL=False; /* Option r */  
   
   char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option n */
@@ -91,8 +112,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.112 2003-04-07 02:46:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.112 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.113 2003-06-16 16:37:27 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.113 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -141,7 +162,7 @@ main(int argc,char **argv)
   int jdx;
   int in_id;  
   int out_id;  
-  int nbr_abb_arg=0;
+  int abb_arg_nbr=0;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_spt=0; /* Option s. NB: nbr_spt gets incremented */
   int nbr_var_fl;/* number of vars in a file */
@@ -187,7 +208,8 @@ main(int argc,char **argv)
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
       {"crd",no_argument,0,'c'},
-      {"nocoords",no_argument,0,'C'},
+      {"no-coords",no_argument,0,'C'},
+      {"no-crd",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
       {"dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
@@ -261,9 +283,9 @@ main(int argc,char **argv)
     case 'n': /* NINTAP-style abbreviation of files to process */
       /* Currently not used in ncap but should be to allow processing multiple input files by same script */
       (void)fprintf(stderr,"%s: ERROR %s does not currently implement -n option\n",prg_nm_get(),prg_nm_get());
-      fl_lst_abb=lst_prs(optarg,",",&nbr_abb_arg);
-      if(nbr_abb_arg < 1 || nbr_abb_arg > 3){
-	(void)fprintf(stdout,"%s: ERROR Incorrect abbreviation for file list\n",prg_nm);
+      fl_lst_abb=lst_prs(optarg,",",&abb_arg_nbr);
+      if(abb_arg_nbr < 1 || abb_arg_nbr > 3){
+	(void)fprintf(stderr,"%s: ERROR Incorrect abbreviation for file list\n",prg_nm);
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
       } /* end if */
@@ -280,7 +302,7 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
-      PRINT_FUNCTION_TABLE=True;
+      PRN_FNC_TBL=True;
       break;
     case 's': /* Copy command script for later processing */
       spt_arg[nbr_spt++]=(char *)strdup(optarg);
@@ -391,19 +413,14 @@ main(int argc,char **argv)
 #endif /* not AIX || CRAY || SGI* || WIN32 */
   assert(sym_idx == sym_tbl_nbr);
   
-  
-  if(PRINT_FUNCTION_TABLE){
-    
-    printf("\n  Available Maths functions:\n");
-    printf("  ----------------------\n");
-    printf("  NAME    FLOAT   DOUBLE\n");          
-    for(idx = 0;idx < sym_tbl_nbr; idx++)
-      printf("  %-7s %-7c %-7c\n", sym_tbl[idx]->nm, (sym_tbl[idx]->fnc_flt ? 'y' : 'n'), (sym_tbl[idx]->fnc_dbl ? 'y' : 'n'));
-    printf("  ----------------------\n");
+  if(PRN_FNC_TBL){
+    /* ncap TODO #43: alphabetize this list */ 
+    (void)fprintf(stdout,"\nAvailable Maths functions:\n");
+    (void)fprintf(stdout,"Name\tFloat\tDouble\n");          
+    for(idx=0;idx<sym_tbl_nbr;idx++)
+      (void)fprintf(stdout,"%s\t%c\t%c\n",sym_tbl[idx]->nm,(sym_tbl[idx]->fnc_flt ? 'y' : 'n'),(sym_tbl[idx]->fnc_dbl ? 'y' : 'n'));
     nco_exit(EXIT_SUCCESS);
-    
-  }
-  
+  } /* end if PRN_FNC_TBL */
   
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
@@ -412,7 +429,7 @@ main(int argc,char **argv)
   if(lmt_nbr > 0) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   
   /* Parse filename */
-  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */

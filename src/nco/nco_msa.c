@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.15 2003-03-17 14:12:50 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.16 2003-06-16 16:37:27 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -14,11 +14,10 @@
 
 void *
 nco_msa_rec_clc /* [fnc] Multi slab algorithm (recursive routine, returns a single slab pointer */
-(int dpt_crr, /* current depth, we st
-art at 0 */
+(int dpt_crr, /* current depth, we start at 0 */
  int dpt_crr_max, /* maximium depth (i.e the number of dims in variable (does not change)*/	      
  lmt_sct **lmt, /* limits of the current hyperslabs these change as we recurse */
- lmt_all **lmt_lst, /* list of limits in each dimension (this remains STATIC as we recurse) */
+ lmt_all_sct **lmt_lst, /* list of limits in each dimension (this remains STATIC as we recurse) */
  var_sct *vara) /* Info for routine to read var info and pass info between calls */
 {
   /* Purpose: Multi slab algorithm (recursive routine, returns a single slab pointer */
@@ -161,7 +160,7 @@ art at 0 */
 } /* end nco_msa_rec_clc() */
 
 void 
-nco_msa_prn_idx(lmt_all *lmt_i)
+nco_msa_prn_idx(lmt_all_sct *lmt_i)
 {
   int slb_nbr;
   int idx;
@@ -182,7 +181,7 @@ nco_msa_prn_idx(lmt_all *lmt_i)
 bool /* if false then there are no more limits */
 nco_msa_clc_idx
 (bool NORMALIZE,
- lmt_all *lmt_a, /* I list of lmts for each dimension  */
+ lmt_all_sct *lmt_a, /* I list of lmts for each dimension  */
  long *indices, /* I/O so routine can keep track of where its at */
  lmt_sct *lmt, /* O  output hyperslab */
  int *slb) /* slab which the above limit refers to */ 
@@ -265,7 +264,7 @@ nco_msa_clc_idx
 void
 nco_msa_ram_2_dsk(  /* convert hyperslab indices (in ram) to hyperlsab indices relative */
 		  long *dmn_sbs_ram,   /* to disk. */
-lmt_all **lmt_mult, 
+lmt_all_sct **lmt_mult, 
 int nbr_dim,
 long *dmn_sbs_dsk,
 bool FREE){
@@ -340,11 +339,11 @@ bool FREE){
 }
 
 void 
-nco_msa_clc_cnt(lmt_all *lmt_a)
+nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
 {
   int idx;
   long cnt=0;
-  int  size=lmt_a->lmt_dmn_nbr;
+  int  size=lmt_lst->lmt_dmn_nbr;
   long *indices;
   bool *min;
   
@@ -352,33 +351,33 @@ nco_msa_clc_cnt(lmt_all *lmt_a)
   min=(bool *)nco_malloc(size*sizeof(bool));
   
   if(size == 1){
-    lmt_a->dmn_cnt=lmt_a->lmt_dmn[0]->cnt;
+    lmt_lst->dmn_cnt=lmt_lst->lmt_dmn[0]->cnt;
     return;
   } /* end if */
   /* initialise indices with srt from    */
   for(idx=0;idx<size;idx++)
-    indices[idx]=lmt_a->lmt_dmn[idx]->srt;
+    indices[idx]=lmt_lst->lmt_dmn[idx]->srt;
   
   while(nco_msa_min_idx(indices,min,size) != LONG_MAX){
     for(idx=0;idx<size;idx++){
       if(min[idx]){
-	indices[idx]+=lmt_a->lmt_dmn[idx]->srd;
-	if(indices[idx] > lmt_a->lmt_dmn[idx]->end) indices[idx]=-1;
+	indices[idx]+=lmt_lst->lmt_dmn[idx]->srd;
+	if(indices[idx] > lmt_lst->lmt_dmn[idx]->end) indices[idx]=-1;
       }
     } /* end loop over idx */
     cnt++;
   } /* end while */
-  lmt_a->dmn_cnt=cnt;
+  lmt_lst->dmn_cnt=cnt;
 } /* end nco_msa_clc_cnt() */
 
 void
 nco_msa_wrp_splt
-(lmt_all* lmt_a)  /* Split wrapped dimensions  */
+(lmt_all_sct *lmt_lst) /* Split wrapped dimensions */
 {
   int idx;
   int jdx;
-  int size=lmt_a->lmt_dmn_nbr;
-  long dmn_sz_org=lmt_a->dmn_sz_org;
+  int size=lmt_lst->lmt_dmn_nbr;
+  long dmn_sz_org=lmt_lst->dmn_sz_org;
   long srt;
   long cnt;
   long srd;
@@ -387,21 +386,21 @@ nco_msa_wrp_splt
 
   for(idx=0;idx<size;idx++){
 
-    if(lmt_a->lmt_dmn[idx]->srt > lmt_a->lmt_dmn[idx]->end){
+    if(lmt_lst->lmt_dmn[idx]->srt > lmt_lst->lmt_dmn[idx]->end){
 
       lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
 
-      srt=lmt_a->lmt_dmn[idx]->srt;
-      cnt=lmt_a->lmt_dmn[idx]->cnt;
-      srd=lmt_a->lmt_dmn[idx]->srd;
+      srt=lmt_lst->lmt_dmn[idx]->srt;
+      cnt=lmt_lst->lmt_dmn[idx]->cnt;
+      srd=lmt_lst->lmt_dmn[idx]->srd;
      
     for(jdx=0;jdx<cnt;jdx++){
       index=(srt+srd*jdx)%dmn_sz_org;
       if(index<srt) break;
     } /* end loop over jdx */
     
-    lmt_wrp[0]=*(lmt_a->lmt_dmn[idx]);
-    lmt_wrp[1]=*(lmt_a->lmt_dmn[idx]);
+    lmt_wrp[0]=*(lmt_lst->lmt_dmn[idx]);
+    lmt_wrp[1]=*(lmt_lst->lmt_dmn[idx]);
 
     lmt_wrp[0].srt=srt;
     
@@ -427,16 +426,16 @@ nco_msa_wrp_splt
     } /* end else */
 
     /* insert the  new limits into the array */
-    lmt_a->lmt_dmn[idx]=lmt_wrp;
+    lmt_lst->lmt_dmn[idx]=lmt_wrp;
 
-    lmt_a->lmt_dmn=(lmt_sct **) nco_realloc(lmt_a->lmt_dmn,((lmt_a->lmt_dmn_nbr) +1)*sizeof(lmt_sct *));
-       lmt_a->lmt_dmn[(lmt_a->lmt_dmn_nbr)++]=++lmt_wrp;
+    lmt_lst->lmt_dmn=(lmt_sct **) nco_realloc(lmt_lst->lmt_dmn,((lmt_lst->lmt_dmn_nbr) +1)*sizeof(lmt_sct *));
+       lmt_lst->lmt_dmn[(lmt_lst->lmt_dmn_nbr)++]=++lmt_wrp;
 
     }
   }
 
   /* Check if we have a genuine wrapped co-ordinate */
-  if(size==1 && lmt_a->lmt_dmn_nbr==2) lmt_a->WRP=True;
+  if(size==1 && lmt_lst->lmt_dmn_nbr==2) lmt_lst->WRP=True;
 }
 
 long
@@ -464,7 +463,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const bool NCO_BNR_WRT, /* I [flg] Write binary file */
  char *var_nm, /* I [sng] Variable name */
- lmt_all * const lmt_lst, /* I multi-hyperslab limits */
+ lmt_all_sct * const lmt_lst, /* I multi-hyperslab limits */
  int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
 {
   /* Purpose: Copy variable data from input netCDF file to output netCDF file 
@@ -492,7 +491,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   
   void *void_ptr;
   
-  lmt_all **lmt_mult;
+  lmt_all_sct **lmt_mult;
   lmt_sct **lmt;
   
   /* Get var_id for requested variable from both files */
@@ -524,7 +523,7 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   dmn_map_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   
-  lmt_mult=(lmt_all **)nco_malloc(nbr_dim*sizeof(lmt_all *));
+  lmt_mult=(lmt_all_sct **)nco_malloc(nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(nbr_dim*sizeof(lmt_sct *));
   
   /* Get dimension IDs from input file */
@@ -585,7 +584,7 @@ void
 nco_msa_prn_var_val   /* [fnc] Print variable data */
 (const int in_id, /* I [id] netCDF input file ID */
  const char * const var_nm, /* I [sng] Variable name */
- lmt_all *   const lmt_lst, /* I [sct] Dimension limits */
+ lmt_all_sct *   const lmt_lst, /* I [sct] Dimension limits */
  const int lmt_nbr, /* I [nbr] number of dimensions with user-specified limits */
  char * const dlm_sng, /* I [sng] User-specified delimiter string, if any */
  const bool FORTRAN_STYLE, /* I [flg] Hyperslab indices obey Fortran convention */
@@ -615,7 +614,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   
   var_sct var;
 
-  lmt_all **lmt_mult=NULL_CEWI;
+  lmt_all_sct **lmt_mult=NULL_CEWI;
   lmt_sct **lmt=NULL_CEWI;
   
   dmn_sct *dim=NULL_CEWI;
@@ -639,7 +638,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
   dmn_id=(int *)nco_malloc(var.nbr_dim*sizeof(int));
   
-  lmt_mult=(lmt_all **)nco_malloc(var.nbr_dim*sizeof(lmt_all *));
+  lmt_mult=(lmt_all_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_all_sct *));
   lmt=(lmt_sct **)nco_malloc(var.nbr_dim*sizeof(lmt_sct *));
   
   /* Get dimension IDs from input file */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.218 2003-06-06 18:02:34 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.219 2003-06-16 16:37:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -62,6 +62,12 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 38. Finish dimension-reducing operations (min/max/avg)
 41. Make ncap function prototypes consistent with rest of NCO
 42. Add switch allowing derived variable to take on all attributes of specified variable
+43. Alphabetize function list in ncap
+44. Fix four (incorrect?) warnings with Linux/GCC build caused by passing pointer plus integer:
+../src/nco/ncks.c:392: warning: implicit declaration of function `nco_msa_wrp_splt'
+../src/nco/ncks.c:396: warning: implicit declaration of function `nco_msa_clc_cnt'
+../src/nco/ncks.c:436: warning: implicit declaration of function `nco_cpy_var_val_mlt_lmt'
+../src/nco/ncks.c:476: warning: implicit declaration of function `nco_msa_prn_var_val'
 
 Highest priority NCO-wide items that You can help with:
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables

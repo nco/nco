@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.8 2003-01-01 02:42:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.9 2003-06-16 16:37:27 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -185,11 +185,6 @@ copyright_prn /* [fnc] Print copyright notice */
     (void)fprintf(stderr,"%s version %s built %s on %s by %s\n",prg_nm_get(),vrs_cpp,date_cpp,hst_cpp,usr_cpp);
   } /* endif */
 
-  /*  (void)fprintf(stderr,"NCO netCDF Operators version %s by Charlie Zender\n",vrs_cvs);
-  (void)fprintf(stderr,"%s version %s (%s) \"%s\"\n",prg_nm_get(),vrs_rcs,date_cvs,nmn_get());
-  (void)fprintf(stderr,"Copyright 1995--1999 University Corporation for Atmospheric Research\n");
-  (void)fprintf(stderr,"Portions copyright 1999--2000 Regents of the University of California\n"); */
-
   (void)fprintf(stderr,"NCO netCDF Operators version %s\n",vrs_cvs);
   (void)fprintf(stderr,"Copyright (C) 1995--2003 Charlie Zender\n");
   (void)fprintf(stderr,"%s version %s (%s) \"%s\"\n",prg_nm_get(),vrs_rcs,date_cvs,nmn_get());
@@ -203,6 +198,6 @@ char * /* O [sng] Mnemonic that describes current NCO version */
 nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic that describes current NCO version */
-  return "The ocean view from Diedrich's Coffee House in Laguna Beach is rippling with pre-storm activity";
+  return "The ocean at Laguna Beach is socked-in with gloomy marine stratocumulus mists. The shallow breakers recede like headstones in a watery cemetery. No wonder Boris Karloff loves LA!";
 } /* end nmn_get() */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.21 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.22 2003-06-16 16:37:27 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -562,7 +562,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
  const int fl_nbr, /* I [nbr] Ordinal index of file in input file list */
  int * const nbr_fl, /* I/O [nbr] number of files to be processed */
  char * const * const fl_lst_in, /* I [sng] User-specified filenames */
- const int nbr_abb_arg, /* I [nbr] Number of abbreviation arguments */
+ const int abb_arg_nbr, /* I [nbr] Number of abbreviation arguments */
  CST_X_PTR_CST_PTR_CST_Y(char,fl_lst_abb), /* I [sng] NINTAP-style arguments, if any */
  const char * const fl_pth) /* I [sng] Path prefix for files in fl_lst_in */
 {
@@ -593,25 +593,25 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       /* Parse abbreviation list analogously to CCM Processor ICP "NINTAP" */
       if(nbr_fl != NULL) *nbr_fl=(int)strtol(fl_lst_abb[0],(char **)NULL,10);
       
-      if(nbr_abb_arg > 1){
+      if(abb_arg_nbr > 1){
 	fl_nm_nbr_dgt=(int)strtol(fl_lst_abb[1],(char **)NULL,10);
       }else{
 	fl_nm_nbr_dgt=3;
       }/* end if */
       
-      if(nbr_abb_arg > 2){
+      if(abb_arg_nbr > 2){
 	fl_nm_nbr_ncr=(int)strtol(fl_lst_abb[2],(char **)NULL,10);
       }else{
 	fl_nm_nbr_ncr=1;
       } /* end if */
       
-      if(nbr_abb_arg > 3){
+      if(abb_arg_nbr > 3){
 	fl_nm_nbr_max=(int)strtol(fl_lst_abb[3],(char **)NULL,10);
       }else{
 	fl_nm_nbr_max=0;
       } /* end if */
       
-      if(nbr_abb_arg > 4){
+      if(abb_arg_nbr > 4){
 	fl_nm_nbr_min=(int)strtol(fl_lst_abb[4],(char **)NULL,10);
       }else{
 	fl_nm_nbr_min=1;

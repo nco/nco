@@ -1,6 +1,24 @@
+2003-06-15  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_7_4
+	Changes since nco-2_7_3: Better AIX autotools support
+
+	* Update copyright headers
+
+	* Change GPL version 2 or later license to version 2 only.
+
+	* Clean up some MSA namespace
+
+	* Document supported non-ANSI functions (e.g., acosh(), trunc())
+	in nco.texi 
+
+	* Changed --nocoords to --no-coord or --no-crd. 
+	Decided all disabling actions will have same keyword as enabling
+	action except switch will start with --no-XXX
+
 2003-05-30  Charlie Zender  <zender@uci.edu>
 
-	* Add CPP_TKN_OS += -I/usr/vacpp/include for nco_C++ on AIX
+	* Add CPP_TKN_OS += -I/usr/vacpp/include for nco_c++ on AIX
 
 	* AIX autotools modifications by Jim
 

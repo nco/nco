@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.21 2003-05-21 22:45:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.22 2003-06-16 16:37:27 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -332,7 +332,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   char sng_history[]="history"; /* [sng] Possible name of history attribute */
   
   int idx;
-  int nbr_glb_att;
+  int glb_att_nbr;
 
   long att_sz=0;
 
@@ -349,15 +349,15 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   (void)strncpy(time_stamp_sng,ctime_sng,TIME_STAMP_SNG_LNG-1);
 
   /* Get number of global attributes in file */
-  (void)nco_inq(out_id,(int *)NULL,(int *)NULL,&nbr_glb_att,(int *)NULL);
+  (void)nco_inq(out_id,(int *)NULL,(int *)NULL,&glb_att_nbr,(int *)NULL);
 
-  for(idx=0;idx<nbr_glb_att;idx++){
+  for(idx=0;idx<glb_att_nbr;idx++){
     (void)nco_inq_attname(out_id,NC_GLOBAL,idx,att_nm);
     if(!strcasecmp(att_nm,sng_history)) break;
   } /* end loop over att */
 
   /* Fill in history string */
-  if(idx == nbr_glb_att){
+  if(idx == glb_att_nbr){
     /* Global attribute "[hH]istory" does not yet exist */
 
     /* Add 3 for formatting characters */

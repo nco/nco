@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.90 2003-04-07 02:46:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.91 2003-06-16 16:37:27 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.90 2003-04-07 02:46:40 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.90 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.91 2003-06-16 16:37:27 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.91 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -107,7 +107,7 @@ main(int argc,char **argv)
   int idx_fl;
   int in_id;  
   int out_id;  
-  int nbr_abb_arg=0;
+  int abb_arg_nbr=0;
   int nbr_dmn_fl;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_var_fl;
@@ -148,7 +148,8 @@ main(int argc,char **argv)
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
       {"crd",no_argument,0,'c'},
-      {"nocoords",no_argument,0,'C'},
+      {"no-coords",no_argument,0,'C'},
+      {"no-crd",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
       {"dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
@@ -223,8 +224,8 @@ main(int argc,char **argv)
       fl_pth_lcl=optarg;
       break;
     case 'n': /* NINTAP-style abbreviation of files to average */
-      fl_lst_abb=lst_prs(optarg,",",&nbr_abb_arg);
-      if(nbr_abb_arg < 1 || nbr_abb_arg > 5){
+      fl_lst_abb=lst_prs(optarg,",",&abb_arg_nbr);
+      if(abb_arg_nbr < 1 || abb_arg_nbr > 5){
 	(void)fprintf(stdout,gettext("%s: ERROR Incorrect abbreviation for file list\n"),prg_nm);
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
@@ -282,7 +283,7 @@ main(int argc,char **argv)
   /* Make netCDF errors fatal and print the diagnostic */ 
       
   /* Parse filename */
-  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */
@@ -411,7 +412,7 @@ main(int argc,char **argv)
   /* Loop over input files */
   for(idx_fl=0;idx_fl<nbr_fl;idx_fl++){
     /* Parse filename */
-    if(idx_fl != 0) fl_in=nco_fl_nm_prs(fl_in,idx_fl,(int *)NULL,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
+    if(idx_fl != 0) fl_in=nco_fl_nm_prs(fl_in,idx_fl,(int *)NULL,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
     if(dbg_lvl > 0) (void)fprintf(stderr,gettext("\nInput file %d is %s; "),idx_fl,fl_in);
     /* Make sure file is on local system and is readable or die trying */
     if(idx_fl != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);

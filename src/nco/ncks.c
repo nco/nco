@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.84 2003-06-06 18:02:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.85 2003-06-16 16:37:27 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -7,38 +7,28 @@
 
 /* Copyright (C) 1995--2003 Charlie Zender
 
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public License
-   as published by the Free Software Foundation; either version 2
-   of the License, or (at your option) any later version.
+   This software is distributed under the terms of the GNU General Public License Version 2
+   The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
+   and in the file nco/doc/LICENSE in the NCO source distribution.
    
    As a special exception to the terms of the GPL, you are permitted 
-   to link the NCO source code with the NetCDF and HDF libraries 
-   and distribute the resulting executables under the terms of the GPL, 
-   but in addition obeying the extra stipulations of the netCDF and 
-   HDF library licenses.
+   to link the NCO source code with the DODS, HDF, netCDF, and UDUnits
+   libraries and to distribute the resulting executables under the terms 
+   of the GPL, but in addition obeying the extra stipulations of the 
+   DODS, HDF, netCDF, and UDUnits licenses.
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+   See the GNU General Public License for more details.
    
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-   The file LICENSE contains the GNU General Public License, version 2
-   It may be viewed interactively by typing, e.g., ncks -L
-
-   The author of this software, Charlie Zender, would like to receive
-   your suggestions, improvements, bug-reports, and patches for NCO.
-   Please contact the project at http://nco.sf.net or by writing
-
+   The original author of this software, Charlie Zender, wants to improve it
+   with the help of your suggestions, improvements, bug-reports, and patches.
+   Please contact the NCO project at http://nco.sf.net or by writing
    Charlie Zender
    Department of Earth System Science
    University of California at Irvine
-   Irvine, CA 92697-3100
- */
+   Irvine, CA 92697-3100 */
 
 /* Usage:
    ncks in.nc 
@@ -115,8 +105,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.84 2003-06-06 18:02:37 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.84 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.85 2003-06-16 16:37:27 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.85 $";
   
   extern char *optarg;
   
@@ -128,10 +118,10 @@ main(int argc,char **argv)
   int idx;
   int jdx;
   int in_id;  
-  int nbr_abb_arg=0;
+  int abb_arg_nbr=0;
   int nbr_dmn_fl;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int nbr_glb_att;
+  int glb_att_nbr;
   int nbr_var_fl;
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nbr_fl=0;
@@ -140,8 +130,8 @@ main(int argc,char **argv)
     
   lmt_sct *lmt;
 
-  lmt_all *lmt_lst;        /* Container for lmt */
-  lmt_all *lmt_tmp;         /* temporary pointer */
+  lmt_all_sct *lmt_lst; /* Container for lmt */
+  lmt_all_sct *lmt_tmp; /* Temporary pointer */
 
   char dmn_nm[NC_MAX_NAME];
   long dmn_sz;
@@ -162,7 +152,8 @@ main(int argc,char **argv)
       {"fl_bnr",required_argument,0,'b'},
       {"coords",no_argument,0,'c'},
       {"crd",no_argument,0,'c'},
-      {"nocoords",no_argument,0,'C'},
+      {"no-coords",no_argument,0,'C'},
+      {"no-crd",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
       {"dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
@@ -310,14 +301,14 @@ main(int argc,char **argv)
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   
   /* Parse filename */
-  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */
   nco_open(fl_in,NC_NOWRITE,&in_id);
   
   /* Get number of variables, dimensions, and global attributes in file */
-  (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&nbr_glb_att,&rec_dmn_id);
+  (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);
   
   /* Form initial extraction list from user input */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
@@ -337,7 +328,7 @@ main(int argc,char **argv)
   /* We now have final list of variables to extract. Phew. */
   
   /* Place all dims in lmt_lst */
-  lmt_lst=(lmt_all *)nco_malloc(nbr_dmn_fl*sizeof(lmt_all));
+  lmt_lst=(lmt_all_sct *)nco_malloc(nbr_dmn_fl*sizeof(lmt_all_sct));
 
   for(idx=0;idx<nbr_dmn_fl;idx++){
     (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
@@ -393,7 +384,7 @@ main(int argc,char **argv)
   /* Find and store the final size of each dimension */
   for(idx=0;idx<nbr_dmn_fl;idx++){
     (void)nco_msa_clc_cnt(lmt_lst+idx);
-    /* if(lmt_lst[idx].lmt_dmn_nbr>1) (void)nco_msa_prn_idx(&lmt_lst[idx]); */
+    /* if(lmt_lst[idx].lmt_dmn_nbr > 1) (void)nco_msa_prn_idx(&lmt_lst[idx]); */
   } /* end loop over dimensions */
   
   if(fl_out != NULL){
@@ -445,7 +436,7 @@ main(int argc,char **argv)
   } /* end if fl_out != NULL */
   
   if(OUTPUT_GLOBAL_METADATA){
-    (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, id = %i\n",fl_in,nbr_dmn_fl,nbr_var_fl,nbr_glb_att,in_id);
+    (void)fprintf(stdout,"Opened file %s: dimensions = %i, variables = %i, global atts. = %i, id = %i\n",fl_in,nbr_dmn_fl,nbr_var_fl,glb_att_nbr,in_id);
     if(rec_dmn_id != NCO_REC_DMN_UNDEFINED){
       char rec_dmn_nm[NC_MAX_NAME];
       long rec_dmn_sz;

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.160 2003-05-30 20:01:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.161 2003-06-16 16:37:26 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -15,6 +15,13 @@ or any later version published by the Free Software Foundation;
 with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
 Texts. The license is available online at 
 http://www.gnu.ai.mit.edu/copyleft/fdl.html
+
+The original author of this software, Charlie Zender, wants to improve it
+with the help of your suggestions, improvements, bug-reports, and patches.
+Charlie Zender <zender at uci dot edu>
+Department of Earth System Science
+University of California at Irvine
+Irvine, CA 92697-3100
 
 After editing any hyperlink locations, use 
 C-c C-u C-a	texinfo-all-menus-update
@@ -46,7 +53,7 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @code{}: Program text, e.g., @code{if(foo) x=y;}
 @command{}: Commands, e.g., @command{ncra}
 @dfn{}: Define use of term, e.g., @dfn{supercalifragilisticexpialidocious}
-@email{}: E-mail address, e.g., @email{zender@uci.edu}
+@email{}: E-mail address, e.g., @email{zender at uci dot edu}
 @env{}: Environment variable, e.g., @env{HOME}
 @file{}: Filename, e.g., @url{in.nc}
 @kbd{}: Keyboard input, e.g., @kbd{ncra in.nc out.nc}
@@ -168,11 +175,18 @@ This is the first edition of the @cite{NCO User's Guide},@*
 and is consistent with version~2 of @file{texinfo.tex}.
 
 Permission is granted to copy, distribute and/or modify this document
-under the terms of the @acronym{GNU} Free Documentation License, Version 1.1
+under the terms of the @acronym{GNU} Free Documentation License, @w{Version 1.1}
 or any later version published by the Free Software Foundation;
 with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
 Texts. The license is available online at 
 @uref{http://www.gnu.ai.mit.edu/copyleft/fdl.html}
+
+The original author of this software, Charlie Zender, wants to improve it
+with the help of your suggestions, improvements, bug-reports, and patches.@*
+Charlie Zender <zender at uci dot edu>@*
+Department of Earth System Science@*
+University of California at Irvine@*
+Irvine, CA 92697-3100@*
 
 @ignore
 Permission is granted to process this file through TeX and print the
@@ -237,6 +251,13 @@ or any later version published by the Free Software Foundation;
 with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
 Texts. The license is available online at 
 @uref{http://www.gnu.ai.mit.edu/copyleft/fdl.html}
+@sp 2
+The original author of this software, Charlie Zender, wants to improve it
+with the help of your suggestions, improvements, bug-reports, and patches.@*
+Charlie Zender <zender at uci dot edu>@*
+Department of Earth System Science@*
+University of California at Irvine@*
+Irvine, CA 92697-3100@*
 @sp 2
 @c Cover art by Robynn Rudel
 @end titlepage
@@ -462,15 +483,15 @@ and any patches you required.
 
 @cindex @acronym{UNIX}
 The major prerequisite for installing @acronym{NCO} on a particular
-platform is the successful, prior installation of the netCDF libraries
-themselves. 
-Unidata has shown a commitment to maintaining netCDF on all popular
-@acronym{UNIX} platforms, and is moving towards full support for the
-Microsoft Windows operating system (@acronym{OS}).
+platform is the successful, prior installation of the netCDF library
+(and, as of 2003, the UDUnits library).
+Unidata has shown a commitment to maintaining netCDF and UDUnits on all
+popular @acronym{UNIX} platforms, and is moving towards full support for
+the Microsoft Windows operating system (@acronym{OS}).
 Given this, the only difficulty in implementing @acronym{NCO} on a
 particular platform is standardization of various C and Fortran
 interface and system calls.
-The @acronym{NCO} code is tested for @acronym{ANSI} compliance by
+@acronym{NCO} code is tested for @acronym{ANSI} compliance by
 compiling with @w{C compilers} including those from 
 @cindex @command{CC}
 @cindex @command{c++}
@@ -512,8 +533,8 @@ Intel (@samp{icc}),
 and
 Sun (@samp{CC -LANG:std}).
 @cindex @file{Makefile}
-See the files @file{nco/bld/Makefile} and
-@file{nco/src/nco_c++/Makefile.old} for more details.
+See @file{nco/bld/Makefile} and @file{nco/src/nco_c++/Makefile.old} for
+more details. 
 
 @cindex @acronym{ANSI}
 @cindex C99
@@ -1399,8 +1420,8 @@ Thus the following are all valid for the @samp{-D} (short version)
 or @samp{--dbg_lvl} (long version) command line option.
 @example
 ncks -D 3 in.nc        # Short option
-ncks --dbg_lvl 3 in.nc # Long option
 ncks --dbg_lvl=3 in.nc # Long option, preferred form
+ncks --dbg_lvl 3 in.nc # Long option, alternate form
 @end example
 @noindent
 The last example is preferred for two reasons.
@@ -1828,7 +1849,8 @@ that @emph{only} user-defined variables should be output.
 @section Including/Excluding coordinate variables
 @cindex @code{-C}
 @cindex @code{-c}
-@cindex @code{--nocoords}
+@cindex @code{--no-coords}
+@cindex @code{--no-crd}
 @cindex @code{--coords}
 @cindex @code{--crd}
 @cartouche
@@ -1837,7 +1859,7 @@ Availability: @command{ncap}, @command{ncdiff}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks},  @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-C}, @samp{-c}@*
-Long options: @samp{--nocoords}, @samp{--crd}, @samp{--coords}@*
+Long options: @samp{--no-coords}, @samp{--no-crd}, @samp{--crd}, @samp{--coords}@*
 @end cartouche
 By default, coordinates variables associated with any variable appearing
 in the @var{output-file} will also appear in the @var{output-file}, even
@@ -2013,7 +2035,7 @@ spaced multi-dimensional array of data.
 Multislabs are constructed from multiple @kbd{-d} options and may
 therefore have non-regularly spaced arrays.
 For example, suppose it is desired to operate on all longitudes
-from 10.0 to 20.0 and from 80.0 to 90.0 degrees.
+from 10.0 to 20.0 and from 80.0 to @w{90.0 degrees}.
 The combined range of longitudes is not selectable in a single 
 hyperslab specfication of the form 
 @samp{-d @var{lon},@var{min},@var{max}} or  
@@ -2075,7 +2097,6 @@ future.
 @section UDUnits Support 
 @cindex UDUnits
 @cindex Unidata
-@cindex @code{UDUNITS}
 @cindex @code{units} attribute
 @cindex attribute, @code{units}
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
@@ -2096,10 +2117,10 @@ user-specified physical dimensions into the physical dimensions of data
 stored in netCDF files.
 Unidata provides UDUnits under the same terms as netCDF, so sites should
 install both.
-Compiling @acronym{NCO} with UDUnits support is currently optional but may become
-required in a future version of @acronym{NCO}.
+Compiling @acronym{NCO} with UDUnits support is currently optional but
+may become required in a future version of @acronym{NCO}.
 
-Two examples suffice to demonstrate the power and convenience of UDUnits
+Two examples suffice to demonstrate the power and convenience of UDUnits 
 support. 
 @cindex MKS units
 First, consider extraction of a variable containing non-record
@@ -2127,14 +2148,15 @@ does not break the @emph{value-space-unit} string into separate
 arguments before passing them to @acronym{NCO}. 
 Double quotes (@kbd{"foo"}) or single quotes (@kbd{'foo'}) are equally
 valid for this purpose. 
-Second, @acronym{NCO} recognizes that units translation is requested because each
-hyperslab argument contains text characters and non-initial spaces. 
-Third, @acronym{NCO} determines whether the @var{wvl} is dimensioned with a
-coordinate variable that has a @code{units} attribute. 
+Second, @acronym{NCO} recognizes that units translation is requested
+because each hyperslab argument contains text characters and non-initial
+spaces.  
+Third, @acronym{NCO} determines whether the @var{wvl} is dimensioned
+with a coordinate variable that has a @code{units} attribute. 
 @cindex coordinate variable 
 In this case, @var{wvl} itself is a coordinate variable.
 The value of its @code{units} attribute is @code{meter}. 
-Thus @var{wvl} passes this test so a UDUnits conversion will be attempted.
+Thus @var{wvl} passes this test so UDUnits conversion is attempted. 
 If the coordinate associated with the variable does not contain a 
 @code{units} attribute, then @acronym{NCO} aborts.
 Fourth, @acronym{NCO} passes the specified and desired dimension strings  
@@ -2146,12 +2168,12 @@ microns to meters to @acronym{NCO}.
 If the units are incommensurate (i.e., not expressible in the same
 fundamental MKS units), or are not listed in the UDUnits database, then 
 NCO aborts since it cannot determine the user's intent.
-Finally, @acronym{NCO} uses the scaling information to convert the user-specified 
-hyperslab limits into the same physical dimensions as those of the
-corresponding cooridinate variable on disk.
-At this point, @acronym{NCO} can perform a coordinate hyperslab using the same
-algorithm as if the user had specified the hyperslab without requesting
-units conversion.
+Finally, @acronym{NCO} uses the scaling information to convert the
+user-specified hyperslab limits into the same physical dimensions as
+those of the corresponding cooridinate variable on disk.
+At this point, @acronym{NCO} can perform a coordinate hyperslab using
+the same algorithm as if the user had specified the hyperslab without
+requesting units conversion.
 
 @cindex @code{units} attribute
 @cindex @code{time} 
@@ -2254,25 +2276,26 @@ Greenwich.
 The longitude values of most geophysical data are either in the range
 [0,360), or [@minus{}180,180).
 In either case, the Westernmost and Easternmost longitudes are
-numerically separated by 360 degrees, but represent contiguous regions
-on the globe.
-For example, the Saharan desert stretches from roughly 340 to 50 degrees
-East.
+numerically separated by @w{360 degrees}, but represent contiguous
+regions on the globe.
+For example, the Saharan desert stretches from roughly 340 to 
+@w{50 degrees} East.
 Extracting the hyperslab of data representing the Sahara from a global
 dataset presents special problems when the global dataset is stored
-consecutively in longitude from @w{0 to 360} degrees.
+consecutively in longitude from 0 to @w{360 degrees}.
 This is because the data for the Sahara will not be contiguous in the
 @var{input-file} but is expected by the user to be contiguous in the
 @var{output-file}. 
-In this case, @command{ncks} must invoke special software routines to assemble
-the desired output hyperslab from multiple reads of the @var{input-file}.
+In this case, @command{ncks} must invoke special software routines to
+assemble the desired output hyperslab from multiple reads of the
+@var{input-file}. 
 
 Assume the domain of the monotonically increasing longitude coordinate
 @code{lon} is @math{0 < @var{lon} < 360}. 
 @command{ncks} will extract a hyperslab which crosses the Greenwich
 meridian simply by specifying the westernmost longitude as @var{min} and
 the easternmost longitude as @var{max}.
-Thus, the following commands extract a hyperslab containing the Saharan desert:
+The following commands extract a hyperslab containing the Saharan desert:
 @example
 ncks -d lon,340.,50. in.nc out.nc
 ncks -d lon,340.,50. -d lat,10.,35. in.nc out.nc
@@ -2429,8 +2452,9 @@ which elements of @var{var} are to be treated as missing data.
 If not, then @acronym{NCO} will internally convert @var{att_type} to
 @var{var_type} by using the implicit conversion rules of C, or, if  
 @var{att_type} is @code{NC_CHAR}
-@footnote{For example, the @acronym{DOE} @acronym{ARM} program often uses @var{att_type} = 
-@code{NC_CHAR} and @var{missing_value} = @samp{-99999.}.
+@footnote{For example, the @acronym{DOE} @acronym{ARM} program often
+uses @var{att_type} = @code{NC_CHAR} and @var{missing_value} =
+@samp{-99999.}. 
 }, by typecasting the results of the @w{C function}
 @code{strtod(@var{missing_value})}. 
 @cindex @command{ncatted}
@@ -3491,32 +3515,74 @@ Converts @var{x} to external type @code{NC_SHORT}, a C-type @code{short}.
 @subsection Intrinsic mathematical functions
 @code{ncap} supports the standard mathematical functions supplied with
 most operating systems.
-@cindex mathematical functions
+@cindex addition
+@cindex subtraction
+@cindex multiplication
+@cindex division
+@cindex exponentiation
+@cindex modulus
+@cindex @code{+} (addition)
+@cindex @code{-} (subtraction)
+@cindex @code{*} (multiplication)
+@cindex @code{/} (division)
+@cindex @code{^} (exponentiation)
+@cindex @code{%} (modulus)
+Standard calculator notation is used for addition @kbd{+}, subtraction
+@kbd{-}, multiplication @kbd{*}, division @kbd{/}, exponentiation
+@kbd{^}, and modulus @kbd{%}.
+The available elementary mathematical functions are: 
+@cindex @var{nearbyint}
+@cindex @var{rint}
+@cindex @var{round}
+@cindex @var{trunc}
 @cindex @var{abs}
+@cindex @var{acosh}
 @cindex @var{acos}
+@cindex @var{asinh}
 @cindex @var{asin}
+@cindex @var{atanh}
 @cindex @var{atan}
+@cindex @var{ceil}
+@cindex @var{cerf}
+@cindex @var{cosh}
 @cindex @var{cos}
+@cindex @var{erf}
 @cindex @var{exp}
+@cindex @var{floor}
 @cindex @var{gamma}
-@cindex @var{log}
 @cindex @var{log10}
+@cindex @var{log}
+@cindex @var{sinh}
 @cindex @var{sin}
 @cindex @var{sqrt}
+@cindex @var{tanh}
 @cindex @var{tan}
+@cindex mathematical functions
+@cindex nearest integer function (inexact)
+@cindex nearest integer function (exact)
+@cindex rounding functions
+@cindex truncation function
 @cindex absolute value
 @cindex arccosine function
 @cindex arcsine function
 @cindex arctangent function
+@cindex ceiling function
+@cindex complementary error function
 @cindex cosine function
+@cindex error function
 @cindex exponentiation function
+@cindex floor function
 @cindex gamma function
-@cindex logarithm, natural
+@cindex hyperbolic arccosine function
+@cindex hyperbolic arcsine function
+@cindex hyperbolic arctangent function
+@cindex hyperbolic cosine function
+@cindex hyperbolic sine function
+@cindex hyperbolic tangent
 @cindex logarithm, base 10
+@cindex logarithm, natural
 @cindex sine function
 @cindex square root function
-@cindex tangent
-The available elementary mathematical functions are: 
 @table @code
 @c fxm finish me
 @item abs(x)
@@ -3525,9 +3591,15 @@ Absolute value of @var{x}.
 @item acos(x)
 @dfn{Arc-cosine}
 Arc-cosine of @var{x} where @var{x} is specified in radians.
+@item acosh(x)
+@dfn{Hyperbolic arc-cosine}
+Hyperbolic arc-cosine of @var{x} where @var{x} is specified in radians.
 @item asin(x)
 @dfn{Arc-sine}
 Arc-sine of @var{x} where @var{x} is specified in radians.
+@item asinh(x)
+@dfn{Hyperbolic arc-sine}
+Hyperbolic arc-sine of @var{x} where @var{x} is specified in radians.
 @item atan(x)
 @dfn{Arc-tangent}
 Arc-tangent of @var{x} where @var{x} is specified in radians between 
@@ -3537,9 +3609,42 @@ $-\pi/2$ and $\pi/2$.
 @ifinfo
 @math{-pi/2} and @math{pi/2}.
 @end ifinfo
+@item atanh(x)
+@dfn{Hyperbolic arc-tangent}
+Hyperbolic arc-tangent of @var{x} where @var{x} is specified in radians between 
+@tex
+$-\pi/2$ and $\pi/2$.
+@end tex
+@ifinfo
+@math{-pi/2} and @math{pi/2}.
+@end ifinfo
+@item ceil(x)
+@dfn{Ceil}
+Ceiling of @var{x}.
+@item cerf(x)
+@dfn{Complementary error function}
+Complementary error function of @var{x} where @var{x} is specified between
+@tex
+$-1$ and $1$.
+@end tex
+@ifinfo
+@math{-1} and @math{1}.
+@end ifinfo
 @item cos(x)
 @dfn{Cosine}
 Cosine of @var{x} where @var{x} is specified in radians.
+@item cosh(x)
+@dfn{Hyperbolic cosine}
+Hyperbolic cosine of @var{x} where @var{x} is specified in radians.
+@item erf(x)
+@dfn{Error function}
+Error function of @var{x} where @var{x} is specified between
+@tex
+$-1$ and $1$.
+@end tex
+@ifinfo
+@math{-1} and @math{1}.
+@end ifinfo
 @item exp(x)
 @dfn{Exponential}
 Exponential of @var{x},
@@ -3549,6 +3654,9 @@ $e^{x}$.
 @ifinfo
 @math{e^x}
 @end ifinfo
+@item floor(x)
+@dfn{Floor}
+Floor of @var{x}.
 @item gamma(x)
 @dfn{Gamma function}
 Gamma function of @var{x},
@@ -3576,9 +3684,25 @@ $\log_{10}(x)$.
 @ifinfo
 @math{log10(x)}
 @end ifinfo
+@item nearbyint(x)
+@dfn{Round inexactly}
+Nearest integer to @var{x} is returned in floating point format.
+@cindex inexact conversion
+No exceptions are raised for @dfn{inexact conversions}.
+@item rint(x)
+@dfn{Round exactly}
+Nearest integer to @var{x} is returned in floating point format.
+Exceptions are raised for @dfn{inexact conversions}.
+@item round(x)
+@dfn{Round}
+Nearest integer to @var{x} is returned in floating point format.
+Round halfway cases away from zero, regardless of current IEEE rounding direction. 
 @item sin(x)
 @dfn{Sine}
 Sine of @var{x} where @var{x} is specified in radians.
+@item sinh(x)
+@dfn{Hyperbolic sine}
+Hyperbolic sine of @var{x} where @var{x} is specified in radians.
 @item sqrt(x)
 @dfn{Square Root}
 Square Root of @var{x},
@@ -3588,26 +3712,55 @@ $\sqrt{x}$.
 @ifinfo
 @math{sqrt(x)}
 @end ifinfo
-@item tan(x);
+@item tan(x)
 @dfn{Tangent}
 Tangent of @var{x} where @var{x} is specified in radians.
+@item tanh(x)
+@dfn{Hyperbolic tangent}
+Hyperbolic tangent of @var{x} where @var{x} is specified in radians.
+@item trunc(x)
+@dfn{Truncate}
+Nearest integer to @var{x} is returned in floating point format.
+Round halfway cases toward zero, regardless of current IEEE rounding direction. 
 @end table
 @noindent
-@cindex addition
-@cindex subtraction
-@cindex multiplication
-@cindex division
-@cindex exponentiation
-@cindex modulus
-@cindex @code{+} (addition)
-@cindex @code{-} (subtraction)
-@cindex @code{*} (multiplication)
-@cindex @code{/} (division)
-@cindex @code{^} (exponentiation)
-@cindex @code{%} (modulus)
-Standard calculator notation is used for addition @kbd{+}, subtraction
-@kbd{-}, multiplication @kbd{*}, division @kbd{/}, exponentiation
-@kbd{^}, and modulus @kbd{%}.
+The complete list of mathematical functions supported is
+platform-specific.  
+Functions mandated by @w{ANSI C} are @emph{guaranteed} to be present
+and are indicated with an asterisk 
+@cindex @code{ANSI C}
+@cindex @code{float}
+@cindex precision
+@cindex quadruple precision
+@cindex single precision
+@cindex double precision
+@cindex @code{long double}
+@cindex NC_DOUBLE
+@footnote{
+@w{ANSI C} compilers are guaranteed to support double precision versions
+of these functions.
+These functions normally operate on netCDF variables of type NC_DOUBLE
+without having to perform intrinsic conversions.
+For example, ANSI compilers provide @code{sin} for the sine of C-type
+@code{double} variables. 
+The ANSI standard does not require, but many compilers provide,
+an extended set of mathematical functions that apply to single
+(@code{float}) and quadruple (@code{long double}) precision variables. 
+Using these functions (e.g., @code{sinf} for @code{float}, 
+@code{sinl} for @code{long double}), when available, is more efficient
+than casting variables to type @code{double}, performing the operation,
+and then recasting.
+@acronym{NCO} uses the faster intrinsic functions when they are
+available, and uses the casting method when they are not.
+}.
+and are indicated with an asterisk. 
+To see a complete list of functions supported on your platform,
+use @code{ncap -r}.
+This prints a list of functions and whether they are supported
+for netCDF variables of intrinsic type NC_FLOAT and NC_DOUBLE.
+@cindex Linux
+@footnote{Linux supports more of these intrinsic functions than
+other OSs.}
 
 @noindent
 EXAMPLES
@@ -5372,19 +5525,22 @@ coordinate variables like all other variables.
 This design decision was intended to be helpful but for some
 applications it may be preferable not to weight or mask coordinate
 variables just like all other variables.   
-Consider the following arguments to @command{ncwa}: @code{-a latitude -w
-lat_wgt -d latitude,0.,90.} where @code{lat_wgt} is a weight in the
-@code{latitude} dimension.
+Consider the following arguments to @command{ncwa}: 
+@code{-a latitude -w lat_wgt -d latitude,0.,90.} where @code{lat_wgt} is
+a weight in the @code{latitude} dimension.
 Since, by default @command{ncwa} weights coordinate variables, the
 value of @code{latitude} in the @var{output-file} depends on the weights 
-in @var{lat_wgt} and is not likely to be 45.0---the midpoint latitude of
-the hyperslab.
+in @var{lat_wgt} and is not likely to @w{be 45.0}, the midpoint latitude
+of the hyperslab.
 @cindex coordinate variable
 @cindex @code{-I}
-Option @samp{-I} overrides this default behavior and causes @command{ncwa}
-not to weight or mask coordinate variables.
+Option @samp{-I} overrides this default behavior and causes
+@command{ncwa} not to weight or mask coordinate variables
+@footnote{The default behavior of (@samp{-I}) changed on
+1998/12/01---before this date the default was not to weight or mask
+coordinate variables.}.
 In the above case, this causes the value of @code{latitude} in the
-@var{output-file} to be 45.0---which is a somewhat appealing result.
+@var{output-file} to @w{be 45.0}, an appealing result.
 Thus, @samp{-I} specifies simple arithmetic averages for the coordinate
 variables. 
 In the case of latitude, @samp{-I} specifies that you prefer to archive
@@ -5392,11 +5548,8 @@ the central latitude of the hyperslab over which variables were averaged
 rather than the area weighted centroid of the hyperslab
 @footnote{If @code{lat_wgt} contains Gaussian weights then the value of 
 @code{latitude} in the @var{output-file} will be the area-weighted
-centroid of the hyperslab. For the example given, this is about 30
-degrees.}. 
-Note that the default behavior of (@samp{-I}) changed on
-1998/12/01---before this date the default was not to weight or mask
-coordinate variables.
+centroid of the hyperslab. 
+For the example given, this is about @w{30 degrees.}}.  
 The mathematical definition of operations involving rank reduction 
 is given above (@pxref{Operation Types}).
 
@@ -5671,7 +5824,7 @@ Non-linear operations and @code{min()}, @code{max()}, @code{total()}
 support in @code{ncra} and @code{ncwa}. 
 Type conversion for arithmetic.
 Migration to netCDF3 API.
-@command{ncap} parser, lexer, and I/O.
+@command{ncap} parser, lexer, @w{and I/O}.
 Multislabbing algorithm.
 Various hacks.
 @item Rorik Peterson

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.50 2003-03-24 17:30:31 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.51 2003-06-16 16:37:27 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -175,17 +175,17 @@ extern "C" {
     long srd; /* Stride of hyperslab */
   } lmt_sct;
 
-/* Container for limit structures */
-typedef struct {
- char *dmn_nm;      /* dimension name */
- long dmn_cnt;      /* total number of hyperslabs to extract */
- long dmn_sz_org;   /* size of dimension in INPUT file */
- int lmt_dmn_nbr;   /* number of lmt args */
- bool BASIC_DMN;    /* Limit is the same as dimension in input file */
- bool WRP;          /* Limit is wrapped - (only true if wrapping ,lmt_dmn_nbr=2 */ 
- lmt_sct **lmt_dmn; /* list of limit structures associated with each dimension */  
-} lmt_all;
-
+  /* Container holding all limit structures indexible by dimension */
+  typedef struct { /* lmt_all_sct */
+    char *dmn_nm; /* [sng] Dimension name */
+    long dmn_cnt; /* [nbr] Total number of hyperslabs to extract */
+    long dmn_sz_org; /* [nbr] Size of dimension in INPUT file */
+    int lmt_dmn_nbr; /* [nbr] Number of lmt args */
+    bool BASIC_DMN; /* [flg] Limit is same as dimension in input file */
+    bool WRP; /* [flg] Limit is wrapped - (only true if wrapping ,lmt_dmn_nbr=2 */ 
+    lmt_sct **lmt_dmn; /* [sct] List of limit structures associated with each dimension */  
+  } lmt_all_sct;
+  
   /* Name ID structure */
   typedef struct{ /* nm_id_sct */
     char *nm;
