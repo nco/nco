@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.26 2004-08-11 04:55:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.27 2004-08-12 01:11:57 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -30,12 +30,10 @@
    Irvine, CA 92697-3100 */
 
 /* Usage:
-   ncpdq -O ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
    ncpdq -O -D 3 -a lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
    ncpdq -O -D 3 -a lon,lev,lat -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-   ncpdq -O -D 3 -a lat,lev,lon -v PS ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-   ncpdq -O -D 3 -a lon,lev,lat -v PS ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-*/
+   ncpdq -O -D 3 -a lon,time -x -v three_double_dmn ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+   ncpdq -O -D 3 -P all_new -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -66,6 +64,12 @@
 int 
 main(int argc,char **argv)
 {
+  void
+    nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
+    (const var_sct * const var_in, /* I [ptr] Variable with metadata and data in original order */
+     var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be re-ordered */
+     int nco_pck_typ); /* I [enm] Packing type */
+
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
@@ -99,8 +103,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.26 2004-08-11 04:55:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.26 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.27 2004-08-12 01:11:57 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.27 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:P:p:Rrt:v:x-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -250,6 +254,7 @@ main(int argc,char **argv)
     case 'P': /* Packing type */
       nco_pck_typ_sng=(char *)strdup(optarg);
       nco_pck_typ=nco_pck_typ_get(nco_pck_typ_sng);
+      if(dbg_lvl > 2) (void)fprintf(stderr,"%s: DEBUG Packing type %s enum %d requested\n",prg_nm_get(),nco_pck_typ_sng,nco_pck_typ);
       break;
     case 'p': /* Common file path */
       fl_pth=optarg;
@@ -587,6 +592,11 @@ main(int argc,char **argv)
   /* Once new record dimension, if any, is known, define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
   
+  /* Alter metadata for variables that will be packed */
+  for(idx=0;idx<nbr_var_prc;idx++){
+    nco_pck_mtd(var_prc[idx],var_prc_out[idx],nco_pck_typ);
+  } /* end loop over var_prc */
+  
   /* Define variables in output file, copy their attributes */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0);
   
@@ -686,4 +696,28 @@ main(int argc,char **argv)
   return EXIT_SUCCESS;
 } /* end main() */
 
+/* fxm: put nco_pck_mtd() in nco_pck.c once it is finished */
+void
+nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
+(const var_sct * const var_in, /* I [ptr] Variable with metadata and data in original order */
+ var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be re-ordered */
+ int nco_pck_typ) /* I [enm] Packing type */
+{
+  /* Purpose: Alter metadata according to packing specification */
+  bool USE_EXISTING_PCK=False; /* I [flg] Use existing packing scale_factor and add_offset */
+  
+  switch(nco_pck_typ){
+  case nco_pck_xst_xst_att:
+  case nco_pck_all_xst_att:
+    USE_EXISTING_PCK=True;
+    break;
+  case nco_pck_xst_new_att:
+  case nco_pck_all_new_att:
+    USE_EXISTING_PCK=False;
+    break;
+  case nco_pck_upk:
+  default:
+    break;
+  } /* end case */
+} /* end nco_pck_mtd() */
 

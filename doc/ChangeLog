@@ -1,3 +1,7 @@
+2004-08-11  Charlie Zender  <zender@uci.edu>
+
+	* Create nco_pck_mtd() to off-load metadata manipulation
+
 2004-08-10  Charlie Zender  <zender@uci.edu>
 
 	* Copy packing infrastructure from ncra to ncpdq
