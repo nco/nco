@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.30 1999-10-15 18:01:33 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.31 1999-10-15 21:29:16 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -75,6 +75,9 @@ to be checking whether tally == 0 before checking whether op2 == mss_val
 the missing_value. This is crucial. Must be fixed. Must verify it
 works regardless of whether wgt itself has mss_val.
 123. Add scp protocol to fl_get()
+124. Use `install' program and mkdir -p
+125. Fix install on Cray
+126. Fix install on Blackforest
 ************************************************************************
 End NCO Wish list
 ************************************************************************
