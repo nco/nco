@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.34 2000-12-30 02:23:03 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.35 2001-01-05 18:04:01 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -180,15 +180,15 @@ echo "ncwa 20: Dimension reduction on type short variable with min switch and mi
 avg=`cut -d, -f 8 foo$$`
 echo "ncwa 21: Dimension reduction on type short variable: 29 =?= $avg"
 
-ncwa -O -y min -v three_dmn_rec_var  in.nc foo.nc 2>>foo.tst
+ncwa -O -y min -v three_dmn_rec_var in.nc foo.nc 2>>foo.tst
 avg=`ncks -C -H -s "%f" -v three_dmn_rec_var foo.nc`
 echo "ncwa 22: Dimension reduction with min flag on type float variable: 1 =?= $avg"
 
-ncwa -O -y max  -v four_dmn_rec_var  in.nc foo.nc 2>>foo.tst
+ncwa -O -y max -v four_dmn_rec_var in.nc foo.nc 2>>foo.tst
 avg=`ncks -C -H -s "%f" -v four_dmn_rec_var foo.nc`
 echo "ncwa 23: Max flag on type float variable: 240 =?= $avg"
 
-ncwa -O -y max  -v three_dmn_var_dbl  -a lat,lon in.nc foo.nc 2>>foo.tst
+ncwa -O -y max -v three_dmn_var_dbl -a lat,lon in.nc foo.nc 2>>foo.tst
 ncks -C -H -s "%f," -v three_dmn_var_dbl foo.nc >foo$$
 avg=`cut -d, -f 4 foo$$`
 echo "ncwa 24: Dimension reduction on type double  variable with max switch and missing values: -99 =?= $avg"

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.86 2001-01-03 01:58:06 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.87 2001-01-05 18:04:01 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -15,6 +15,8 @@
 # cd ~/nco/bld;make OPTS=D;cd -
 # DODS support:
 # cd ~/nco/bld;make DODS=Y;cd -
+# netCDF2 interface:
+# cd ~/nco/bld;make NETCDF2=Y;cd -
 # HDF4 version of netCDF libraries:
 # cd ~/nco/bld;make cln bin_cln all HDF4=Y;cd -
 
@@ -585,6 +587,12 @@ ifneq (CC,g++)
 endif
 endif
 # endif DODS
+
+# Test netCDF2 interface
+ifeq ($(NETCDF2),Y)
+ CPPFLAGS := $(CPPFLAGS) -DNETCDF2_ONLY
+endif
+# endif NETCDF2
 
 # If intended to use for HDF files, remove all netCDF3 calls
 ifeq ($(HDF4),Y)

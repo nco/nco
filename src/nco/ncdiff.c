@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.34 2000-10-20 23:16:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.35 2001-01-05 18:04:01 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.34 2000-10-20 23:16:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.34 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.35 2001-01-05 18:04:01 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.35 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -384,7 +384,9 @@ main(int argc,char **argv)
     /* Assume var1 and var2 conform if they are same rank */
     if(var_prc_out[idx]->nbr_dim == var_prc[idx]->nbr_dim){
       nc_type var_type;
+#ifndef NETCDF2_ONLY
       int rcd;
+#endif /* not NETCDF2_ONLY */
 
       /* Routine var_refresh() does not set type for var_prc_out, do so manually */
 #ifdef NETCDF2_ONLY

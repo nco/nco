@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.71 2000-12-30 02:23:03 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.72 2001-01-05 18:04:01 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -14,7 +14,7 @@ scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.s
 <html>
 <head>
    <title>NCO Homepage</title>
-   <meta name="GENERATOR" content="Mozilla/3.04Gold (X11; I; Linux 2.0.0 i686) [Netscape]">
+   <meta name="Generator" content="Old fashioned typing">
    <meta name="Author" content="Charles S. Zender">
    <meta name="Keywords" content="NCO Homepage, netCDF, netCDF
    operator, GCM, HDF, scientific data">
