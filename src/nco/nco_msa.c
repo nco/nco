@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.8 2003-02-20 16:47:38 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.9 2003-02-24 17:42:05 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -588,15 +588,12 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
 void 
 nco_msa_c_2_f(char *s)
 {
-  while (*s) {
-    if (*s == '(' ) *s = '[' ;
-    if( *s == ')' ) *s = ']' ;
+  while(*s){
+    if(*s == '(') *s='[';
+    if(*s == ')') *s=']';
     s++;
-  } 
-
-
-}
-
+  } /* end while */
+} /* end nco_msa_c_2_f() */
 
 void
 nco_msa_prn_var_val   /* [fnc] Print variable data */
@@ -609,21 +606,16 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
  const bool PRINT_DIMENSIONAL_UNITS, /* I [flg] Print units attribute, if any */
  const bool PRN_DMN_IDX_CRD_VAL) /* I [flg] Print dimension/coordinate indices/values */
 {
-
-  /* Summary of Function */
- 
+  /* Purpose:
+     Get variable with limits from input file
+     User supplied dlm_sng, print var (includes nbr_dmim == 0)
+     Get dimensional units
+     if nbr_dim ==0 and dlm_sng==NULL  print variable
+     if PRN.. = False print var taking account of FORTRAN (need var indices)
+     if PRN_DMN_IDX_CRD_VAL then read in co-ord dims
+     if PRN.. = True print var taking account of FORTRAN (Use dims to calculate var indices */
+  
   /* Get variable with limits from input file */
-  /* User supplied dlm_sng, print var (includes nbr_dmim == 0)
-  /* Get dimensional units      */
-  /* if nbr_dim ==0 and dlm_sng==NULL  print variable */
-  /* if PRN.. = False print var taking account of FORTRAN (need var indices) */
-  /* if PRN_DMN_IDX_CRD_VAL then read in co-ord dims */ 
-  /* if PRN.. = True print var taking account of FORTRAN  (Use dims to calculate var indices */
-  
-/**************************************************************************/
-
-/* Get variable with limits from input file */
-  
   int rcd;
   int idx;
   int jdx;
@@ -634,7 +626,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   
   char *unit_sng="";  
   char var_sng[MAX_LEN_FMT_SNG];
-
   
   var_sct var;
 
@@ -652,17 +643,13 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* Get type and number of dimensions for variable */
 
   (void)nco_inq_var(in_id,var.id,(char *)NULL,&var.type,&var.nbr_dim,(int *)NULL,(int *)NULL);
-
   
   /* deal with scalar vars */
   if(var.nbr_dim == 0){
     var.sz=1L;
     var.val.vp=nco_malloc(nco_typ_lng(var.type));
     (void)nco_get_var1(in_id,var.id ,0L,var.val.vp,var.type);
-
   } /* end if */
- 
- 
 
   dmn_id=(int *)nco_malloc(var.nbr_dim*sizeof(int));
   
@@ -682,17 +669,13 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       }
     } /* end loop over jdx */
 
-  
-  
   /* Call the super dooper recursive routine */
   var.val.vp=nco_msa_rec_clc(0,var.nbr_dim,lmt,lmt_mult,&var);
-/* call also initializes var.sz with the final size */
+  /* call also initializes var.sz with the final size */
 
+  /*************************************************************************/
 
-/*************************************************************************/
-
-/* User supplied dlm_sng, print var (includes nbr_dmim == 0) */  
-  
+  /* User supplied dlm_sng, print var (includes nbr_dmim == 0) */  
   if(dlm_sng != NULL){
     /* Print each element with user-supplied formatting code */
     PRN_DMN_IDX_CRD_VAL =False;
@@ -719,7 +702,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 
   } /* end if dlm_sng */
 
-/*************************************************************************/
+  /*************************************************************************/
 
   if(PRINT_DIMENSIONAL_UNITS){
     char units_nm[]="units"; /* [sng] Name of units attribute */
@@ -740,10 +723,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end if */
   } /* end if PRINT_DIMENSIONAL_UNITS */
 
-
-/*************************************************************************/
-/* if nbr_dim ==0 and dlm_sng==NULL  print variable */
-
+  /*************************************************************************/
+  /* if nbr_dim ==0 and dlm_sng==NULL  print variable */
 
   if(var.nbr_dim == 0 && dlm_sng == NULL){ 
     /* Variable is a scalar, byte, or character */
@@ -763,7 +744,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     } /* end switch */
   } /* end if variable is a scalar, byte, or character */
 
-/*************************************************************************/
+  /*************************************************************************/
 
   if( var.nbr_dim > 0 && dlm_sng == NULL ) {
 
@@ -773,12 +754,10 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     long *dmn_sbs_dsk;           /* indices of the hyperslab relative to original on disk */  
     long var_dsk;
 
-
     mod_map_in =(long*)nco_malloc(var.nbr_dim * sizeof(long));
     mod_map_out=(long*)nco_malloc(var.nbr_dim * sizeof(long));
     dmn_sbs_ram=(long*)nco_malloc(var.nbr_dim * sizeof(long));
     dmn_sbs_dsk=(long*)nco_malloc(var.nbr_dim * sizeof(long));
-   
 
     /* Create mod_map_in */
     for(idx=0 ; idx< var.nbr_dim ; idx++) mod_map_in[idx]=1L;
@@ -786,14 +765,12 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       for(jdx=idx+1 ; jdx < var.nbr_dim ; jdx++)
 	mod_map_in[idx] *= lmt_mult[jdx]->dmn_sz_org;
        
-       
     /* Create mod_map_out */
     for(idx=0 ; idx< var.nbr_dim ; idx++) mod_map_out[idx]=1L;
     for(idx=0 ; idx< var.nbr_dim ; idx++) 
       for(jdx=idx ; jdx < var.nbr_dim ; jdx++)
 	mod_map_out[idx] *= lmt_mult[jdx]->dmn_cnt;
       
-
     /* Read in co-ord dims if required */
     if(PRN_DMN_IDX_CRD_VAL) { 
       var_sct var_crd;
@@ -824,7 +801,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       }/* end for */
     } /* end if */
    
-
     for(lmn=0 ; lmn < var.sz ; lmn++) {
 
       /* Caculate ram indices from current limit */
@@ -839,7 +815,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       for(idx=0 ; idx <var.nbr_dim ; idx++)
 	var_dsk+= dmn_sbs_dsk[idx]*mod_map_in[idx];
              
-
       /* print the dims with indices along with values if they are co-ordinate vars */
       if(PRN_DMN_IDX_CRD_VAL){
         int dmn_idx;
@@ -872,7 +847,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	     dmn_sbs_prn++;
 	  }
          
- 	      /* Account for hyperslab offset in coordinate values*/
+	  /* Account for hyperslab offset in coordinate values*/
 	  crd_idx_crr=dmn_sbs_ram[dmn_idx];
 	  switch(dim[dmn_idx].type){
 	  case NC_FLOAT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.fp[crd_idx_crr]); break;
@@ -885,13 +860,11 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	      } /* end switch */
 	} /* end loop over dimensions */
       } /* end if PRN_DMN_IDX_CRD_VAL */
-      
 
       /* Now print actual variable name, index and value. */
       (void)sprintf(var_sng,"%%s(%%ld)=%s %%s\n",nco_typ_fmt_sng(var.type)); 
 
       if(FORTRAN_STYLE){ (void)nco_msa_c_2_f(var_sng); var_dsk++;}
-
 
       switch(var.type){
       case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var_dsk,var.val.fp[lmn],unit_sng); break;
@@ -903,9 +876,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       default: nco_dfl_case_nc_type_err(); break;
       } /* end switch */
 
-
-      
-   
     } /*end loop over elemnts */
 
     (void)nco_free(mod_map_in); 
@@ -918,8 +888,6 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     (void)fflush(stdout);
   }
 
-  
-
   var.val.vp = nco_free(var.val.vp);
   var.nm = (char *)nco_free(var.nm);
  
@@ -931,10 +899,8 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   if(PRN_DMN_IDX_CRD_VAL) {
     for(idx=0 ; idx < var.nbr_dim ; idx++)
       dim[idx].val.vp =nco_free(dim[idx].val.vp);
-      dim=(dmn_sct *)nco_free(dim);
-    }
-
-    
+    dim=(dmn_sct *)nco_free(dim);
+  }
 
 } /* nco_msa_prn_var_val */
   
