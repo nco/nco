@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.46 2004-10-16 04:35:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.47 2004-10-16 21:32:37 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -822,6 +822,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 (const char * const fl_out, /* I [sng] Name of file to open */
  const bool FORCE_APPEND, /* I [flg] Append to existing file, if any */
  const bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
+ const bool FORCE_64BIT_OFFSET, /* I [flg] Create output file with 64-bit offsets */
  int * const out_id) /* O [id] File ID */
 {
   /* Purpose: Open output file subject to availability and user input 
@@ -834,6 +835,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   const char tmp_sng_1[]="pid"; /* Extra string appended to temporary filenames */
   const char tmp_sng_2[]="tmp"; /* Extra string appended to temporary filenames */
 
+  int nccreate_mode=NC_CLOBBER; /* [enm] Mode flag for nco_create() call */
   int rcd; /* [rcd] Return code */
 
   long fl_out_tmp_lng; /* [nbr] Length of temporary file name */
@@ -911,10 +913,9 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 
   if(FORCE_OVERWRITE){
     /* Default create mode creates 32-bit offset (classic) file */
-    rcd=nco_create(fl_out_tmp,NC_CLOBBER,out_id);
-    /* Explicitly specify 64-bit offset file */
-    /*    rcd=nco_create(fl_out_tmp,NC_CLOBBER | NC_64BIT_OFFSET,out_id);*/
-    /*    rcd=nc_create(fl_out_tmp,NC_CLOBBER|NC_SHARE,out_id);*/
+    if(FORCE_64BIT_OFFSET) nccreate_mode|=NC_64BIT_OFFSET;
+    rcd=nco_create(fl_out_tmp,nccreate_mode,out_id);
+    /*    rcd=nco_create(fl_out_tmp,NC_CLOBBER|NC_SHARE,out_id);*/
     return fl_out_tmp;
   } /* end if */
 
@@ -989,9 +990,10 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       break;
     case 'O':
     case 'o':
-      rcd=nco_create(fl_out_tmp,NC_CLOBBER,out_id);
-      /*    rcd=nco_create(fl_out_tmp,NC_CLOBBER | NC_64BIT_OFFSET,out_id);*/
-      /*    rcd=nc_create(fl_out_tmp,NC_CLOBBER|NC_SHARE,out_id);*/
+      /* Default create mode creates 32-bit offset (classic) file */
+      if(FORCE_64BIT_OFFSET) nccreate_mode|=NC_64BIT_OFFSET;
+      rcd=nco_create(fl_out_tmp,nccreate_mode,out_id);
+      /*    rcd=nco_create(fl_out_tmp,NC_CLOBBER|NC_SHARE,out_id);*/
       break;
     case 'A':
     case 'a':
@@ -1004,9 +1006,10 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     } /* end switch */
     
   }else{ /* Output file does not yet already exist */
-    rcd=nco_create(fl_out_tmp,NC_NOCLOBBER,out_id);
-    /*    rcd=nco_create(fl_out_tmp,NC_NOCLOBBER | NC_64BIT_OFFSET,out_id);*/
-    /*    rcd=nc_create(fl_out_tmp,NC_NOCLOBBER|NC_SHARE,out_id);*/
+    nccreate_mode=NC_NOCLOBBER;
+    if(FORCE_64BIT_OFFSET) nccreate_mode|=NC_64BIT_OFFSET;
+    rcd=nco_create(fl_out_tmp,nccreate_mode,out_id);
+    /*    rcd=nco_create(fl_out_tmp,NC_NOCLOBBER|NC_SHARE,out_id);*/
   } /* end if output file does not already exist */
   
   return fl_out_tmp;

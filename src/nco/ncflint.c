@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.83 2004-09-07 04:31:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.84 2004-10-16 21:32:37 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -74,6 +74,7 @@ main(int argc,char **argv)
   bool FILE_1_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FILE_2_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  bool FORCE_64BIT_OFFSET=False; /* Option Z */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
@@ -101,9 +102,9 @@ main(int argc,char **argv)
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.83 2004-09-07 04:31:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.83 $";
-  const char * const opt_sng="ACcD:d:Fhi:l:Oo:p:rRv:xw:-:";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.84 2004-10-16 21:32:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.84 $";
+  const char * const opt_sng="ACcD:d:Fhi:l:Oo:p:rRv:xw:Z-:";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -189,6 +190,7 @@ main(int argc,char **argv)
       {"vrs",no_argument,0,'r'},
       {"weight",required_argument,0,'w'},
       {"wgt_var",no_argument,0,'w'},
+      {"64-bit-offset",no_argument,0,'Z'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -283,6 +285,9 @@ main(int argc,char **argv)
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
+      break;
+    case 'Z': /* [flg] Create output file with 64-bit offsets */
+      FORCE_64BIT_OFFSET=True;
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -379,7 +384,7 @@ main(int argc,char **argv)
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc_1,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
-  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FORCE_64BIT_OFFSET,&out_id);
 
   /* Copy global attributes */
   (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);

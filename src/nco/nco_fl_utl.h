@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.22 2004-07-09 16:36:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.23 2004-10-16 21:32:37 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -92,6 +92,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 (const char * const fl_out, /* I [sng] Name of file to open */
  const bool FORCE_APPEND, /* I [flg] Append to existing file, if any */
  const bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
+ const bool FORCE_64BIT_OFFSET, /* I [flg] Create output file with 64-bit offsets */
  int * const out_id); /* O [id] File ID */
 
 void

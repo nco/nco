@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.148 2004-09-07 04:31:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.149 2004-10-16 21:32:37 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -80,6 +80,7 @@ main(int argc,char **argv)
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
+  bool FORCE_64BIT_OFFSET=False; /* Option Z */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_IDX_CNV=False; /* Option F */
@@ -115,9 +116,9 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char *msk_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val, op_typ_rlt */
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.148 2004-09-07 04:31:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.148 $";
-  const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.149 2004-10-16 21:32:37 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.149 $";
+  const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out=NULL_CEWI;
@@ -237,6 +238,7 @@ main(int argc,char **argv)
       {"op_typ",required_argument,0,'y'},
       {"mask_string",required_argument,0,'z'},
       {"msk_sng",required_argument,0,'z'},
+      {"64-bit-offset",no_argument,0,'Z'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -356,6 +358,9 @@ main(int argc,char **argv)
       break;
     case 'z': /* Mask string to be parsed */
       msk_sng=optarg;
+      break;
+    case 'Z': /* [flg] Create output file with 64-bit offsets */
+      FORCE_64BIT_OFFSET=True;
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -543,7 +548,7 @@ main(int argc,char **argv)
   } /* end if */
   
   /* Open output file */
-  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
+  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,FORCE_64BIT_OFFSET,&out_id);
   if(dbg_lvl > 4) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
 
   /* Copy all global attributes */
