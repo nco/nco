@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.56 2000-09-20 18:03:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.57 2000-09-26 01:09:14 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -1355,15 +1355,17 @@ nco_omp_ini() /* [fnc] Print introductory thread information */
   /* Purpose: Print introductory thread information */
   int rcd=0; /* [rcd] Return code */
 
-#ifdef OMP /* OpenMP */
+#ifdef _OPENMP /* OpenMP-compliant compilers define _OPENMP=YYYYMM = year and month of OpenMP specification */
 #pragma omp parallel
   { /* begin OpenMP parallel */
-#pragma omp master 
+#pragma omp single nowait
+    { /* begin OpenMP single */
     (void)fprintf(stderr,"%s: INFO OpenMP multi-threading using %d threads\n",prg_nm_get(),omp_get_num_threads());
+    } /* end OpenMP single */
   } /* end OpenMP parallel */
-#else /* not OpenMP */
+#else /* not _OPENMP */
   (void)fprintf(stderr,"%s: INFO Not attempting OpenMP multi-threading\n",prg_nm_get());
-#endif /* not OpenMP */
+#endif /* not _OPENMP */
 
   return rcd;
 } /* end nco_omp_ini() */
@@ -1376,11 +1378,11 @@ nco_var_prc_crr_prn /* [fnc] Print name of current variable */
   /* Purpose: Print name of current variable */
   int rcd=0; /* [rcd] Return code */
 
-#ifdef OMP /* OpenMP */
+#ifdef _OPENMP
   (void)fprintf(stderr,"%s: INFO Thread #%d processing var_prc[%d] = \"%s\"\n",prg_nm_get(),omp_get_thread_num(),idx,var_nm);
-#else /* not OpenMP */
+#else /* not _OPENMP */
   (void)fprintf(stderr,"%s, ",var_nm);
-#endif /* not OpenMP */
+#endif /* not _OPENMP */
 
   return rcd;
 } /* end nco_var_prc_crr_prn() */
