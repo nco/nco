@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.2 1998-08-19 04:27:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.3 1998-08-26 22:33:14 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -76,8 +76,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncdiff.c,v 1.2 1998-08-19 04:27:26 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.2 $";
+  char rcs_Id[]="$Id: ncdiff.c,v 1.3 1998-08-26 22:33:14 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.3 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -400,7 +400,7 @@ main(int argc,char **argv)
 
     /* Make sure var2 conforms to type of var1 */ 
     if(var_prc_out[idx]->type != var_prc[idx]->type){
-      (void)fprintf(stdout,"%s: WARNING Input variables do not conform in type:\nFile 1 = %s variable %s has type %s\nFile 2 = %s variable %s has type %s\nFile 3 = %s variable %s will have type %s\n",prg_nm,fl_in_1,var_prc[idx]->nm,nc_type_nm(var_prc[idx]->type),fl_in_2,var_prc_out[idx]->nm,nc_type_nm(var_prc_out[idx]->type),fl_out,var_prc[idx]->nm,nc_type_nm(var_prc[idx]->type));
+      (void)fprintf(stderr,"%s: WARNING Input variables do not conform in type:\nFile 1 = %s variable %s has type %s\nFile 2 = %s variable %s has type %s\nFile 3 = %s variable %s will have type %s\n",prg_nm,fl_in_1,var_prc[idx]->nm,nc_type_nm(var_prc[idx]->type),fl_in_2,var_prc_out[idx]->nm,nc_type_nm(var_prc_out[idx]->type),fl_out,var_prc[idx]->nm,nc_type_nm(var_prc[idx]->type));
     }  /* endif different type */ 
     var_prc_out[idx]=var_conform_type(var_prc[idx]->type,var_prc_out[idx]);
 

@@ -1,3 +1,9 @@
+Wed Aug 26 16:30:27 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
+
+	* Fixed bld/nco_tst.sh to work again at NCAR. `make test' now
+	performs non-trivial tests of ncwa and ncdiff. Only works at
+	NCAR (a necessary input file is rather large). 
+
 Wed Aug 19 11:26:25 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
 
 	* Fixed bug where pvmgetarch returned "SGI" on UNICOS 10.0.0.

@@ -1,44 +1,51 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.1.1.1 1998-08-18 05:35:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.2 1998-08-26 22:33:13 zender Exp $
 
-# Purpose: a battery of tests for the nc operators
+# Purpose: NCO test battery
+# This script currently only works at NCAR
 
-# Create a T42 size test field named one, which is identically 1.
-ncdiff -O -v ORO,PS,gw /data2/zender/ccm/SEP1.nc /data2/zender/ccm/SEP1.nc /data2/zender/ccm/foo.nc 2> /dev/null
-ncrename -O -v PS,negative_one /data2/zender/ccm/foo.nc 2> /dev/null
-ncdiff -O -v ORO,negative_one,gw /data2/zender/ccm/foo.nc /home/zender/nc/in.nc /data2/zender/ccm/foo.nc 2> /dev/null
-ncrename -O -v negative_one,one /data2/zender/ccm/foo.nc 2> /dev/null
+# Create T42-size test field named one, which is identically 1.0 in foo.nc
+cd ../data 2> foo.tst
+printf "NCO Test Suite:\n"
+ncdiff -O -v PS /fs/cgd/csm/input/atm/SEP1.T42.0596.nc /fs/cgd/csm/input/atm/SEP1.T42.0596.nc foo.nc 2>> foo.tst
+ncrename -O -v PS,negative_one foo.nc 2>> foo.tst
+ncdiff -O -C -v negative_one foo.nc in.nc foo2.nc 2>> foo.tst
+ncrename -O -v negative_one,one foo2.nc 2>> foo.tst
+ncks -A -C -v one foo2.nc foo.nc 2>> foo.tst
+ncks -A -C -v gw /fs/cgd/csm/input/atm/SEP1.T42.0596.nc foo.nc 2>> foo.tst
+ncrename -O -v negative_one,zero foo.nc 2>> foo.tst
+/bin/rm -f foo2.nc 2>> foo.tst
 
-# Average the test field
-ncwa -O -a lat,lon -w gw /data2/zender/ccm/foo.nc /data2/zender/ccm/foo2.nc 2> /dev/null
-avg=`ncks -C -H -s "" -v one /data2/zender/ccm/foo2.nc`
-echo "ncwa 1: normalize by tally and weight: 1 =?= $avg" 
+# Average test field
+ncwa -O -a lat,lon -w gw foo.nc foo2.nc
+avg=`ncks -C -H -s "%f" -v one foo2.nc`
+echo "ncwa 1: normalize by tally and weight: 1.0 =?= $avg" 
 
-ncwa -n -O -a lat,lon -w gw /data2/zender/ccm/foo.nc /data2/zender/ccm/foo2.nc 2> /dev/null
-avg=`ncks -C -H -s "" -v one /data2/zender/ccm/foo2.nc`
-echo "ncwa 2: normalize by tally but not weight: .0312495 =?= $avg" 
+ncwa -n -O -a lat,lon -w gw foo.nc foo2.nc
+avg=`ncks -C -H -s "%f" -v one foo2.nc`
+echo "ncwa 2: normalize by tally but not weight: 0.0312495 =?= $avg" 
 
-ncwa -W -O -a lat,lon -w gw /data2/zender/ccm/foo.nc /data2/zender/ccm/foo2.nc 2> /dev/null
-avg=`ncks -C -H -s "" -v one /data2/zender/ccm/foo2.nc`
+ncwa -W -O -a lat,lon -w gw foo.nc foo2.nc
+avg=`ncks -C -H -s "%f" -v one foo2.nc`
 echo "ncwa 3: normalize by weight but not tally: 8192 =?= $avg" 
 
-ncwa -N -O -a lat,lon -w gw /data2/zender/ccm/foo.nc /data2/zender/ccm/foo2.nc 2> /dev/null
-avg=`ncks -C -H -s "" -v one /data2/zender/ccm/foo2.nc`
+ncwa -N -O -a lat,lon -w gw foo.nc foo2.nc
+avg=`ncks -C -H -s "%f" -v one foo2.nc`
 echo "ncwa 4: no normalization by tally or weight: 256 =?= $avg" 
 
-ncwa -O -a lon -v mss_val /home/zender/nc/in.nc /home/zender/nc/foo.nc 2> /dev/null
-avg=`ncks -C -H -s "" -v mss_val /home/zender/nc/foo.nc`
+ncwa -O -a lon -v mss_val in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%f" -v mss_val foo.nc`
 echo "ncwa 5: average with missing value attribute: 73 =?= $avg" 
 
-ncwa -O -a lon -v no_mss_val /home/zender/nc/in.nc /home/zender/nc/foo.nc 2> /dev/null
-avg=`ncks -C -H -s "" -v no_mss_val /home/zender/nc/foo.nc`
-echo "ncwa 6: average without missing value attribute: 5e35 =?= $avg" 
+ncwa -O -a lon -v no_mss_val in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%e" -v no_mss_val foo.nc`
+echo "ncwa 6: average without missing value attribute: 5.0e35 =?= $avg" 
 
-ncdiff -O -d lon,1 -v mss_val /home/zender/nc/in.nc /home/zender/nc/in.nc /home/zender/nc/foo.nc 2> /dev/null
-avg=`ncks -C -H -s "" -v mss_val /home/zender/nc/foo.nc`
-echo "ncwa 7: difference with missing value attribute: 1.e36 =?= $avg" 
+ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%e" -v mss_val foo.nc`
+echo "ncdiff 1: difference with missing value attribute: 1.0e36 =?= $avg" 
 
-ncdiff -O -d lon,0 -v no_mss_val /home/zender/nc/in.nc /home/zender/nc/in.nc /home/zender/nc/foo.nc 2> /dev/null
-avg=`ncks -C -H -s "" -v no_mss_val /home/zender/nc/foo.nc`
-echo "ncwa 8: difference without missing value attribute: 0 =?= $avg" 
+ncdiff -O -d lon,0 -v no_mss_val in.nc in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%f" -v no_mss_val foo.nc`
+echo "ncdiff 2: difference without missing value attribute: 0 =?= $avg" 

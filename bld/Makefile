@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.11 1998-08-21 05:05:21 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.12 1998-08-26 22:33:12 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -430,8 +430,13 @@ data:	$(MY_DAT_DIR)/in.nc
 	for fl in $(MDL_DAT_STB); do cd $(MY_DAT_DIR); ln -s in.nc $$fl; done
 $(MY_DAT_DIR)/in.nc : $(MY_DAT_DIR)/in.cdl
 	cd $(MY_DAT_DIR); ncgen -b -o in.nc in.cdl
+test:	$(MY_DAT_DIR)/in.nc
+	cd $(MY_BLD_DIR); nco_tst.sh
+testclean:
+	cd $(MY_DAT_DIR); rm -f foo*
 dataclean:
 	rm -f $(MDL_DAT)
+	cd $(MY_DAT_DIR); rm -f foo*
 
 # Targets in doc
 # Each make directive line spawns a separate shell so must use `cd dir;cmd' format
@@ -463,7 +468,7 @@ debug:
 distclean: clean docclean dataclean binclean libclean
 	cd $(MY_BLD_DIR); rm -f *~
 	cd $(MY_DAT_DIR); rm -f in.nc *~
-clean: objclean
+clean: objclean testclean
 	cd $(MY_DOC_DIR); rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
 
 # Reset internal YACC and LEX patterns
