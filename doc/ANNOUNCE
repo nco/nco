@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.82 2004-05-24 18:33:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.83 2004-06-02 01:12:13 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.4 are ready. 
 
@@ -14,12 +14,10 @@ Feature changes:
 1. None
 
 Bug-fixes:
-1. None
+1. fxm Fix non-associativity problem with missing values in ncflint
 
 Build changes:
-1. Default configure.in AIX GCC ABI is 64-bit with -maix64
-2. Support newer AC_INIT syntax
-3. -r prints shared/static configuration
+1. fxm Install nco_*.hh and libnco_c++.hh in include directory
 
 Other user-visible changes:
 1. None

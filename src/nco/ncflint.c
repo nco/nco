@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.71 2004-05-06 04:45:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.72 2004-06-02 01:12:13 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -100,8 +100,8 @@ main(int argc,char **argv)
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.71 2004-05-06 04:45:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.71 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.72 2004-06-02 01:12:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.72 $";
   const char * const opt_sng="ACcD:d:Fhi:l:Op:rRv:xw:-:";
   
   dmn_sct **dim;
@@ -115,6 +115,7 @@ main(int argc,char **argv)
   extern int optind;
   
   int fll_md_old; /* [enm] Old fill mode */
+  int has_mss_val=False;
   int idx;
   int idx_fl;
   int in_id;  
@@ -440,7 +441,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
-    /* Retrieve the interpolation variable */
+    /* Retrieve interpolation variable */
     (void)nco_var_get(in_id_1,ntp_1);
     (void)nco_var_get(in_id_2,ntp_2);
 
@@ -450,8 +451,7 @@ main(int argc,char **argv)
 
     /* Check for degenerate case */
     if(ntp_1->val.dp[0] == ntp_2->val.dp[0]){
-      /* fxm: This is an error because weights ... */
-      (void)fprintf(stdout,"%s: ERROR %s is identical (%g) in input files\n",prg_nm_get(),ntp_nm,ntp_1->val.dp[0]);
+      (void)fprintf(stdout,"%s: ERROR Interpolation variable %s is identical (%g) in input files, therefore unable to interpolate.\n",prg_nm_get(),ntp_nm,ntp_1->val.dp[0]);
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
@@ -512,9 +512,12 @@ main(int argc,char **argv)
     /* Weight variable by taking product of weight with variable */
     (void)nco_var_mlt(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,wgt_out_1->val,var_prc_1[idx]->val);
     (void)nco_var_mlt(var_prc_2[idx]->type,var_prc_2[idx]->sz,var_prc_2[idx]->has_mss_val,var_prc_2[idx]->mss_val,wgt_out_2->val,var_prc_2[idx]->val);
-    (void)nco_var_add_tll_ncflint(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,var_prc_out[idx]->tally,var_prc_1[idx]->val,var_prc_2[idx]->val);
+    /* Change missing_value of var_prc_2, if any, to missing_value of var_prc_1, if any */
+    has_mss_val=nco_mss_val_cnf(var_prc_1[idx],var_prc_2[idx]);
+    /* NB: fxm: use tally to determine when to "unweight" answer? TODO  */
+    (void)nco_var_add_tll_ncflint(var_prc_1[idx]->type,var_prc_1[idx]->sz,has_mss_val,var_prc_1[idx]->mss_val,var_prc_out[idx]->tally,var_prc_1[idx]->val,var_prc_2[idx]->val);
     
-    /* Recast output variable to original type */
+    /* Re-cast output variable to original type */
     var_prc_2[idx]=nco_var_cnf_typ(var_prc_out[idx]->type,var_prc_2[idx]);
 
     /* Copy interpolations to output file */

@@ -1,3 +1,10 @@
+2004-06-01  Charlie Zender  <zender@uci.edu>
+
+	* nco.texi: Documented funny ncflint behavior when one variable is missing 
+
+	* Implement nco_mss_val_cnf() in ncflint to handle corner cases
+	where same variable has different missing values in each file
+
 2004-05-22  Charlie Zender  <zender@uci.edu>
 
 	* Print shared/static configuration with -r

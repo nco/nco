@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.305 2004-05-29 05:12:27 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.306 2004-06-02 01:12:13 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -195,7 +195,15 @@ nco327. Consolidate/coordinate letters of support for prp_nco
 nco328. Ability to reverse specified dimensions (use negative stride?)
 nco329. Ability to rearrange dimensions
 nco333. Clean up preprocessor symbols with cd ~/nco/src/nco;ifnames *.c
-nco334. 
+nco334. ncflint substitutes 0 for missing values in first file, handles missing value in second file correctly. This is because val_2 is default value in nco_var_add_tll_ncflint(). This routine needs re-writing, possibly passing all values is best.
+ncks -O -C -d lon,1 -v mss_val ~/nco/data/in.nc ~/foo_x.nc # Put mss_val=1.0e36 in foo_x
+ncks -O -C -d lon,0 -v mss_val ~/nco/data/in.nc ~/foo_y.nc # Put 73 in foo_y
+ncflint -O -w 0.5,0.5 ~/foo_x.nc ~/foo_y.nc ~/foo_xy.nc # mss_val appears first
+ncflint -O -w 0.5,0.5 ~/foo_y.nc ~/foo_x.nc ~/foo_yx.nc # mss_val appears second
+ncks -m -H ~/foo_xy.nc # Fails
+ncks -m -H ~/foo_yx.nc # Succeeds
+nco335. Unweight arrival points in ncflint where one file was pure missing data?
+nco336. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -241,7 +249,8 @@ bld29. RedHat 9 does not build with --enable-*-customize because of flex warning
 bld30. Search for libstdc++ with AIX/DODS/GCC breaks NCO build
 bld32. Why have --enable-shared and --enable-static both default true? override one?
 bld33. Use PACKAGE_BUGREPORT, PACKAGE_NAME, PACKAGE_STRING, PACKAGE_TARNAME, PACKAGE_VERSION?
-bld34. Make sure make install installs libnco_c++.hh in 
+bld34. Make sure make install installs nco_*.hh and libnco_c++.hh in include dir
+bld35. 
 
 ************************************************************************
 End NCO Wish list

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.224 2004-05-24 18:33:19 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.225 2004-06-02 01:12:13 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5464,13 +5464,13 @@ DESCRIPTION
 
 @command{ncflint} creates an output file that is a linear combination of 
 the input files.
-This linear combination can be a weighted average, a normalized weighted
+This linear combination is a weighted average, a normalized weighted
 average, or an interpolation of the input files.
 Coordinate variables are not acted upon in any case, they are simply
 copied from @var{file_1}.
 
 There are two conceptually distinct methods of using @command{ncflint}.
-The first method is to specify the weight each input file is to have in 
+The first method is to specify the weight each input file contributes to 
 the output file.
 In this method, the value @var{val3} of a variable in the output file
 @var{file_3} is determined from its values @var{val1} and @var{val2} in
@@ -5511,13 +5511,15 @@ This is really the inverse of the first method in the following sense.
 When the user specifies the weights directly, @command{ncflint} has no
 work to do besides multiplying the input values by their respective
 weights and adding the results together to produce the output values.  
-This assumes it is the weights that are known a priori.
+It makes sense to use this when the weights are known 
+@emph{@w{a priori}}.
+
 @cindex arrival value 
-In another class of cases it is the @dfn{arrival value} (i.e.,
-@var{val3}) of a particular variable @var{var} that is known a priori.
+Another class of problems has the @dfn{arrival value} (i.e., @var{val3})
+of a particular variable @var{var} known @emph{@w{a priori}}. 
 In this case, the implied weights can always be inferred by examining
 the values of @var{var} in the input files. 
-This results in one equation in two unknowns, @var{wgt1} and @var{wgt2}: 
+This results in one equation in two unknowns, @var{wgt1} and @var{wgt2}:  
 @set flg
 @tex
 $val3 = wgt1 \times val1 + wgt2 \times val2$
@@ -5538,7 +5540,7 @@ constraint of normalization on the weights:
 @math{@var{wgt1} + @var{wgt2} = 1}.
 Thus, to use the interpolation option, the user specifies @var{var}
 and @var{val3} with the @samp{-i} option.
-@command{ncflint} will compute @var{wgt1} and @var{wgt2}, and use these
+@command{ncflint} then computes @var{wgt1} and @var{wgt2}, and uses these
 weights on all variables to generate the output file.
 Although @var{var} may have any number of dimensions in the input
 files, it must represent a single, scalar value.  
@@ -5556,6 +5558,40 @@ command is an error.
 @command{ncflint} does not interpolate variables of type @code{NC_CHAR}
 and @code{NC_BYTE}. 
 This behavior is hardcoded.
+
+@cindex missing values
+@cindex @code{missing_value} attribute
+Valid data are weighted by @var{wgt1} and @var{wgt2}, respectively,
+regardless of whether the data in both files are valid.
+This causes @command{ncflint} to behave non-intuitively with 
+missing values.
+Consider a point where the value in one input file, say @var{val1},
+equals the missing value @var{mss_val_1} and, at the same point,
+the corresponding value in the other input file @var{val2} is not
+misssing (i.e., does not equal @var{mss_val_2}).
+Then the output is the weighted valid data point, 
+@set flg
+@tex
+$val3 = wgt2 \times val2$
+@clear flg
+@end tex
+@ifinfo
+@math{@var{val3} = @var{wgt2}*@var{val2}} 
+@clear flg
+@end ifinfo
+@ifset flg
+@c texi2html does not like @math{}
+@var{val3} = @var{wgt2}*@var{val2} 
+@clear flg
+@end ifset
+.
+Some might expect the answer to be unweighted in this case, i.e., 
+@math{@var{val3} = @var{val2}}, since one cannot interpolate with
+only one valid datum.
+Others might expect the answer to be the missing value, since an
+interpolation with only one valid datum is undefined.
+However, the current implementation uses neither of these approaches.
+If you have strong opinions on this matter, let us know.
 
 @noindent
 EXAMPLES
