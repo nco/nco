@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.37 1999-12-15 02:51:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.38 1999-12-15 03:53:14 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -15,7 +15,7 @@ C-c C-u C-e	texinfo-every-node-update
 Usage: 
 cd ~/nc/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o $DATA/ps/nco.ps nco.dvi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 texi2html -monolithic -verbose nco.texi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco
-cd $DATA/ps;gzip --force nco.ps;scp -p nco.ps.gz www.cgd.ucar.edu:/web/web-data/cms/nco
+cd $DATA/ps;gzip --force nco.ps;scp -p nco.ps.gz www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 texi2dvi nco.texi 
 makeinfo nco.texi 
 texi2html -monolithic -verbose nco.texi 
@@ -49,8 +49,8 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.1.42
-@set doc-edition 1.1.42
+@set nco-edition 1.1.43
+@set doc-edition 1.1.43
 @set NCAR-copyright-years 1995, 1996, 1997, 1998, 1999
 @set UC-copyright-years 1999
 @set update-year 1999
@@ -2167,8 +2167,9 @@ NCO processing of NC_CHAR attributes is a bit like Perl in that
 it attempts to do you want by default (but this sometimes causes
 unexpected results if you want unusual data storage).
 @cindex @code{printf()}
-@cindex @code{\n} (linefeed)
-@cindex @code{\t} (horizontal tab)
+@cindex @code{\n} (ASCII LF, linefeed)
+@cindex characters, special
+@cindex @code{\t} (ASCII HT, horizontal tab)
 If the @var{att_type} is NC_CHAR then the argument is interpreted as a
 string and it may contain C-language escape sequences, e.g., @code{\n},
 which NCO will interpret before writing anything to disk.
@@ -2182,17 +2183,42 @@ The most frequently used C-language escape sequences are @code{\n} (for
 linefeed) and @code{\t} (for horizontal tab).
 These sequences in particular allow convenient editing of formatted text
 attributes. 
+@cindex @code{\a} (ASCII BEL, bell)
+@cindex @code{\b} (ASCII BS, backspace)
+@cindex @code{\f} (ASCII FF, formfeed)
+@cindex @code{\r} (ASCII CR, carriage return)
+@cindex @code{\v} (ASCII VT, vertical tab)
+@cindex @code{\\} (ASCII \, backslash)
 The other valid ASCII codes are @code{\a}, @code{\b}, @code{\f},
 @code{\r}, @code{\v}, and @code{\\}. 
+@xref{ncks netCDF Kitchen Sink}, for more examples of string formatting
+(with the @code{ncks} @samp{-s} option) with special characters. 
 
+@cindex @code{\'} (protected end quote)
+@cindex @code{\"} (protected double quote)
+@cindex @code{\?} (protected question mark)
+@cindex @code{\\} (protected backslash)
+@cindex @code{'} (end quote)
+@cindex @code{"} (double quote)
+@cindex @code{?} (question mark)
+@cindex @code{\} (backslash)
+@cindex special characters
+@cindex ASCII
 Analogous to @code{printf}, other special characters are also allowed by
 @code{ncatted} if they are "protected" by a backslash.
-The characters @code{"}, @code{'}, @code{?}, and @code{\} should be 
-input as @code{\"}, @code{\'}, @code{\?}, and @code{\\}, respectively,
-in order to be correctly stored in the file.
-Some characters which do not require protection by a backslash are
-@code{$}, @code{|}, @code{@{}, and @code{@}}.
+The characters @code{"}, @code{'}, @code{?}, and @code{\} may be 
+input to the shell as @code{\"}, @code{\'}, @code{\?}, and @code{\\}.
+NCO simply strips away the leading backslash from these characters
+before editing the attribute.
+No other characters require protection by a backslash.
+Backslashes which precede any other character (e.g., @code{3}, @code{m},
+@code{$}, @code{|}, @code{&}, @code{@@}, @code{%}, @code{@{}, and
+@code{@}}) will not be filtered and will be included in the attribute.
 
+@cindex strings
+@cindex NUL-termination
+@cindex NUL
+@cindex @code{0} (NUL)
 Note that the NUL character @code{\0} which terminates C language
 strings is assumed and need not be explicitly specified.
 If @code{\0} is input, it will not be translated (because it would
@@ -2237,6 +2263,19 @@ Overwrite the @code{quanta} attribute of variable
 @example
 ncatted -O -a quanta,energy,o,s,"010,101,111,121" in.nc
 @end example
+
+Demonstrate input of C-language escape sequences (e.g., @code{\n}) and
+other special characters (e.g., @code{\"}) 
+@example
+ncatted -h -a special,global,o,c,
+'\nDouble quote: \"\nTwo consecutive double quotes: \"\"\n
+Single quote: Beyond my shell abilities!\nBackslash: \\\n
+Two consecutive backslashes: \\\\\nQuestion mark: \?\n' in.nc
+@end example
+Note that the entire attribute is protected from the shell by single
+quotes. 
+These outer single quotes are necessary for interactive use, but may be
+omitted in batch scripts.
 
 @page
 @node ncdiff netCDF Differencer, ncea netCDF Ensemble Averager, ncatted netCDF Attribute Editor, Operators
@@ -2930,6 +2969,8 @@ ncks -s "%f, " -H -C -v three_dim_var in.nc
 @noindent
 The second and third options are useful when pasting data into text
 files like reports or papers.  
+@xref{ncatted netCDF Attribute Editor}, for more details on string
+formatting and special characters. 
 
 Create netCDF @file{out.nc} containing all variables, and any associated
 coordinates, except variable @code{time}, from netCDF @file{in.nc}:
@@ -2962,7 +3003,7 @@ closed interval @math{.3 < @var{band} < .5} in coordinate @code{band}; and
 cross-section closest to 1000. in coordinate @code{lev}.  
 Note that limits applied to coordinate values are specified with a
 decimal point, and limits applied to dimension indices do not have a
-decimal point @xref{Hyperslabs}. 
+decimal point @xref{Hyperslabs}.
 @example
 ncks -H -d time,5 -d lat,,0. -d lon,330., -d band,.3,.5 
 -d lev,1000. in.nc out.nc 
