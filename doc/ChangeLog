@@ -1,3 +1,7 @@
+2004-02-10  Charlie Zender  <zender@uci.edu>
+
+	* Make Convention CF-1.0 behave same as existing CSM convention
+
 2004-02-08  Charlie Zender  <zender@uci.edu>
 
 	* Make TODO list easier to understand to facilitate contributions

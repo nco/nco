@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.195 2004-02-09 07:54:39 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.196 2004-02-13 06:33:49 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -147,17 +147,17 @@ e.g., total, minimum, maximum, RMS:
 <dt><a name="Contribute"></a></dt>
 <h2>How to Contribute</h2>
 <p>In March, 2000, NCO became an Open Source project hosted by
-SourceForge.net in order to facilitate collaboration and code
-contribution by a wide variety of people. 
+<a href="http://sf.net">SourceForge.net</a>.
+This greatly facilitated collaboration and code contribution by a wide
+variety of people.  
 There is a <a href="./TODO">TODO list</a> about 200 items long! 
-No matter what your programming background there is a task you can
-help with. 
-From improving this cheesy webpage, to adding documentation, 
-to helping design the new features and interfaces for future NCO
-capability, we need your help! 
+No matter what your programming background there is a task you can help with. 
+From re-organizing the TODO list itself, to improving this cheesy
+webpage, to documentation, to designing and implementing new features
+and interfaces, we need your help!   
 The <a href="http://sourceforge.net/projects/nco">NCO project
 homepage</a> contains mailing lists, discussion forums, and
-instructions for helping the NCO project.
+instructions to make contributing to NCO easy.
 
 <p>NCO development is completely voluntary and has never benefitted
 from institutional support.
@@ -177,7 +177,7 @@ pay-per-feature basis.
 </form>
 These homepage donation counters track the influence of your monetary
 donations on NCO development: 
-<dt>Donations received between 20030624 and 200301219: US$0.00.
+<dt>Donations received between 20030624 and 20040210: US$0.00.
 <dt>NCO features "incentivized" by these donations: None.
 <hr></p>
 
@@ -195,15 +195,14 @@ donations on NCO development:
 <dt><a name="Version"></a></dt>
 <h2>Version Summary</h2>
 Most releases since version&nbsp;2.0.0 are not &ldquo;packaged&rdquo;.
-This means that they are simply tagged in the CVS repository and that
-tarballs are generated and stored 
+These newer releases are simply tagged in the CVS repository.
+Their tarballs and stored 
 <a href="http://dust.ess.uci.edu/nco/src">here</a>. 
 Tarballs and RPMs are only rarely uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.9.0</b>: (<i>In progress</i>)
-<li><b>NCO 2.8.9</b>: Complete <tt>ncap</tt> modulo operator (<tt>A%B</tt>) and generic exponentiation (<tt>A^B</tt>), fix attribute divided by variable (<tt>A/B</tt>)
+<li><b>NCO 2.8.9</b>: (<i>In progress</i>) Complete <tt>ncap</tt> modulo operator (<tt>A%B</tt>) and generic exponentiation (<tt>A^B</tt>), fix attribute divided by variable (<tt>A/B</tt>)
 <li><b>NCO 2.8.8</b>: <tt>--enable-[optimize/debug]-custom</tt> options for GCC work again (broke in 2.8.6)
 <li><b>NCO 2.8.7</b>: <tt>ncap</tt> packing works again (<a href="#bug_pck">broke in 2.8.4</a>), Cygwin builds work again
 <li><b>NCO 2.8.6</b>: AIX and IRIX builds work again, custom GCC builds with <tt>-Werror</tt>

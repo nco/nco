@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.207 2004-02-09 07:54:39 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.208 2004-02-13 06:33:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -836,6 +836,7 @@ This is scheduled to occur sometime in 2005, with the release of netCDF
 
 @html
 <a name="hlp"></a> <!-- http://nco.sf.net/nco.html#hlp -->
+<a name="bug"></a> <!-- http://nco.sf.net/nco.html#bug -->
 @end html
 @node Help and Bug reports,  , netCDF 2.x vs. 3.x, Introduction
 @section Help and Bug reports
@@ -844,14 +845,22 @@ This is scheduled to occur sometime in 2005, with the release of netCDF
 @cindex core dump
 @cindex help
 @cindex features, requesting
-We generally receive three categories of mail from users: requests for
-help, bug reports, and requests for new features.
+We generally receive three categories of mail from users: help requests,
+bug reports, and feature requests.
 Notes saying the equivalent of "Hey, @acronym{NCO} continues to work
 great and it saves me more time everyday than it took to write this
 note" are a distant fourth.
+
 There is a different protocol for each type of request.
-Our request is that you communicate with the project via @acronym{NCO}
-Project Forums.
+The common procedural etiquette is to communicate with us via
+@acronym{NCO} Project Forums.
+Unless your request comes with money or you have damaging information
+about our personal lives, use the Forums.
+They preserve a record of the questions and answers so that others
+might learn from our exchange.
+Also, should @acronym{NCO} ever be funded (as is our hope), this record
+will provide program officers with information they need to evaluate us.
+
 Before posting to the @acronym{NCO} forums described below, you might
 first @uref{https://sourceforge.net/account/register.php, register}
 your name and email address with SourceForge.net or else all of your
@@ -859,16 +868,13 @@ postings will be attributed to "nobody".
 Once registered you may choose to "monitor" any forum and to receive
 (or not) email when there are any postings.
 
-If you would like @acronym{NCO} to include a new feature, first check to
-see if that feature is already on the 
-@uref{file:./TODO, TODO} list.
-If it is, please consider implementing that feature yourself and sending
-us the patch!
-If the feature is not yet on the list then send a note to the
+If you want us to include a new feature in @acronym{NCO}, check first to 
+see if that feature is already on the @uref{file:./TODO, TODO} list.
+If it is, why not implement that feature yourself and send us the patch?
+If the feature is not yet on the list, then send a note to the
 @uref{http://sourceforge.net/forum/forum.php?forum_id=9829, NCO Discussion forum}.
 
-Please read the manual before reporting a bug or posting a request for
-help.  
+Read the manual before reporting a bug or posting a help request.
 Sending questions whose answers are not in the manual is the best
 way to motivate us to write more documentation.  
 We would also like to accentuate the contrapositive of this statement.  
@@ -882,15 +888,18 @@ Once you have read the manual, if you are still unable to get
 Follow the same procedure as described below for reporting bugs
 (after all, it might be a bug).
 That is, describe what you are trying to do, and include the complete
-commands (with @samp{-D 5}), error messages, and version of
+commands (with @samp{-r -D 5}), error messages, and version of
 @acronym{NCO}. 
 Post your help request to the 
 @uref{http://sourceforge.net/forum/forum.php?forum_id=9830, NCO Help forum}.
 
 If you think you are using the right command, but @acronym{NCO} is
 misbehaving, then you might have found a bug. 
-@w{A core} dump, sementation violation, or incorrect numerical answers is
-always considered a high priority bug.
+Incorrect numerical answers are the highest priority.
+We usually fix those within one or two days.
+Core dumps and sementation violations receive lower priority.
+They are always fixed. 
+
 How do you simplify a problem that may be revealing a bug?
 Cut out extraneous variables, dimensions, and metadata from the
 offending files and re-run the command until it no longer breaks.  
@@ -898,7 +907,10 @@ Then back up one step and report the problem.
 Usually the file(s) will be very small, i.e., one variable with one or
 two small dimensions ought to suffice.
 Include in the report your run-time environment, the exact error
-messages (and run the operator with @samp{-D 5} to increase the
+messages.
+Run the operator with @samp{-r -D 5}
+ to print the version
+and compile time inforincrease the
 verbosity of the debugging output), and a copy, or the publically
 accessible location, of the file(s).
 Post the bug report to the 
@@ -1556,7 +1568,7 @@ feature is automatic and cannot be controlled by the user.
 * Type conversion::             
 * Suppressing interactive prompts::  
 * History attribute::           
-* NCAR CSM Conventions::        
+* NCAR CCSM Conventions::        
 * ARM Conventions::             
 * Operator version::            
 @end menu
@@ -3543,7 +3555,7 @@ existing @var{output-file} without prompting the user interactively.
 These switches are useful in batch environments because they suppress
 interactive keyboard input.
 
-@node History attribute, NCAR CSM Conventions, Suppressing interactive prompts, Common features
+@node History attribute, NCAR CCSM Conventions, Suppressing interactive prompts, Common features
 @section History attribute
 @cindex @code{history} attribute
 @cindex timestamp
@@ -3583,10 +3595,10 @@ To avoid information overkill, all operators have an optional switch
 (@samp{-h}) to override automatically appending the @code{history}
 attribute (@pxref{ncatted netCDF Attribute Editor}).  
 
-@node NCAR CSM Conventions, ARM Conventions, History attribute, Common features
-@section @acronym{NCAR CSM} Conventions
-@cindex @acronym{NCAR CSM} conventions
-@cindex @acronym{CSM} conventions
+@node NCAR CCSM Conventions, ARM Conventions, History attribute, Common features
+@section @acronym{NCAR CCSM} Conventions
+@cindex @acronym{NCAR CCSM} conventions
+@cindex @acronym{CCSM} conventions
 @cindex UDUnits
 @cindex @code{gw}
 @cindex @code{ORO}
@@ -3598,13 +3610,13 @@ Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncra}, @command{ncwa}@*
 Short options: None@*
 @end cartouche
-@acronym{NCO} recognizes @acronym{NCAR CSM} history tapes, and treats
+@acronym{NCO} recognizes @acronym{NCAR CCSM} history tapes, and treats
 them specially. 
-If you do not work with @acronym{NCAR CSM} data then you may skip this
+If you do not work with @acronym{NCAR CCSM} data then you may skip this
 section. 
-The @acronym{CSM} netCDF convention is described at
+The @acronym{CCSM} netCDF convention is described at
 @uref{http://www.cgd.ucar.edu/csm/experiments/output.format.html}.
-Most of the @acronym{CSM} netCDF convention is transparent to
+Most of the @acronym{CCSM} netCDF convention is transparent to
 @acronym{NCO} 
 @footnote{
 The exception is appending/altering the attributes @code{x_op},
@@ -3615,7 +3627,7 @@ This feature is scheduled for future inclusion in @acronym{NCO}.
 There are no known pitfalls associated with using any @acronym{NCO}
 operator on files adhering to this convention
 @footnote{
-The @acronym{CSM} convention recommends @code{time} be stored in the format
+The @acronym{CCSM} convention recommends @code{time} be stored in the format
 @var{time} since @var{base_time}, e.g., the @code{units} attribute of
 @code{time} might be @samp{days since 1992-10-8 15:15:42.5 -6:00}. 
 @w{A problem} with this format occurs when using @command{ncrcat} to
@@ -3626,42 +3638,44 @@ be concatenated should be corrected to the @var{base_time} offset
 specified in the @code{units} attribute of @code{time} from the first
 file. 
 The analogous problem has been fixed in @acronym{ARM} files 
-(@pxref{ARM Conventions}) and could be fixed for @acronym{CSM} files if
+(@pxref{ARM Conventions}) and could be fixed for @acronym{CCSM} files if
 there is sufficient lobbying.
 }.
 However, to facilitate maximum user friendliness, @acronym{NCO} does
-treat certain variables in some @acronym{CSM} files specially. 
-The special functions are not required by the @acronym{CSM} netCDF
+treat certain variables in some @acronym{CCSM} files specially. 
+The special functions are not required by the @acronym{CCSM} netCDF
 convention, but experience has shown they do make life easier.
 
 Currently, @acronym{NCO} determines whether a datafile is a
-@acronym{CSM} output datafile simply by checking whether value of the
+@acronym{CCSM} output datafile simply by checking whether value of the
 global attribute @code{convention} (if it exists) equals
 @samp{NCAR-CSM}.   
 Should @code{convention} equal @samp{NCAR-CSM} in the (first)
 @var{input-file}, @acronym{NCO} will attempt to treat certain variables
-specially, because of their meaning in @acronym{CSM} files. 
+specially, because of their meaning in @acronym{CCSM} files. 
 @acronym{NCO} will not average the following variables often found in
-@acronym{CSM} files: 
+@acronym{CCSM} files: 
 @code{ntrm}, @code{ntrn}, @code{ntrk}, @code{ndbase}, @code{nsbase},
 @code{nbdate}, @code{nbsec}, @code{mdt}, @code{mhisf}.
 These variables contain scalar metadata such as the resolution of the
-host @acronym{CSM} model and it makes no sense to change their values.
+host @acronym{CCSM} model and it makes no sense to change their values.
 Furthermore, the @command{ncbo} operator does not operate on (i.e., add,
 subtract, etc.) the following variables: 
 @code{gw}, @code{ORO}, @code{date}, @code{datesec}, @code{hyam},
 @code{hybm}, @code{hyai}, @code{hybi}. 
 These variables represent the Gaussian weights, the orography field,
 time fields, and hybrid pressure coefficients.
-These are fields which you want to remain unaltered in the output
-file 99% of the time.
-If you decide you would like any of the above @acronym{CSM} fields
-processed, you must use @command{ncrename} to rename them first.
+These are fields which you virtually always want to remain unaltered in
+the output file.
+If you decide you would like any of the above @acronym{CCSM} fields
+processed, you must spoof @acronym{NCO}.
+For example rename the variables first with @command{ncrename}, 
+or alter the @code{convention} attribute.
 
 @html
 <a name="ARM"></a> <!-- http://nco.sf.net/nco.html#ARM -->
 @end html
-@node ARM Conventions, Operator version, NCAR CSM Conventions, Common features
+@node ARM Conventions, Operator version, NCAR CCSM Conventions, Common features
 @section @acronym{ARM} Conventions
 @cindex @acronym{ARM} conventions
 @cindex @code{time_offset}
@@ -5060,11 +5074,11 @@ of type @code{NC_CHAR} or @code{NC_BYTE}.
 This ensures that coordinates like (e.g., latitude and longitude) are 
 physically meaningful in the output file, @var{file_3}. 
 This behavior is hardcoded.
-@cindex @acronym{NCAR CSM} conventions
-@cindex @acronym{CSM} conventions
-@command{ncbo} applies special rules to some @acronym{NCAR CSM} fields
+@cindex @acronym{NCAR CCSM} conventions
+@cindex @acronym{CCSM} conventions
+@command{ncbo} applies special rules to some @acronym{NCAR CCSM} fields
 (e.g., @code{ORO}).
-See @ref{NCAR CSM Conventions} for a complete description.
+See @ref{NCAR CCSM Conventions} for a complete description.
 Finally, we note that @command{ncflint} (@pxref{ncflint netCDF File
 Interpolator}) is designed for file interpolation.
 As such, it also performs file subtraction, addition, multiplication,
@@ -6725,11 +6739,11 @@ Excellent bug reports.
 @end table
 
 @c @ignore
-@c @node CSM Example, General Index, Operators, Top
-@c @chapter Example: Analyzing a @acronym{CSM} run
+@c @node CCSM Example, General Index, Operators, Top
+@c @chapter Example: Analyzing a @acronym{CCSM} run
 
 @c This chapter presents an in depth example of using @acronym{NCO} to
-@c analyze the results of a @acronym{CSM} run.
+@c analyze the results of a @acronym{CCSM} run.
 @c @end ignore
 
 @c @node Name Index, General Index, Operators, Top

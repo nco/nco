@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.13 2004-02-09 07:54:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.14 2004-02-13 06:33:50 zender Exp $ */
 
 /* Purpose: CCSM conventions */
 
@@ -35,7 +35,10 @@ nco_ncar_csm_inq /* O [fnc] Check if file obeys CCSM conventions */
     (void)nco_get_att(nc_id,NC_GLOBAL,cnv_sng,att_val,att_typ);
     /* NUL-terminate convention attribute before using strcmp() */
     att_val[att_sz]='\0';
-    if(strstr(att_val,"NCAR-CCSM") != NULL) NCAR_CCSM=True;
+    /* CCM3, CCSM1 conventions */
+    if(strstr(att_val,"NCAR-CSM") != NULL) NCAR_CCSM=True; /* Backwards compatibility */
+    /* Climate-Forecast conventions */
+    if(strstr(att_val,"CF-1.0") != NULL) NCAR_CCSM=True; /* NB: Not fully implemented TODO nco145 */
     if(NCAR_CCSM && dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: CONVENTION File convention is %s\n",prg_nm_get(),att_val);
     att_val=(char *)nco_free(att_val);
   } /* endif */
