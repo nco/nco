@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.38 2004-01-21 02:10:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.39 2004-01-23 01:13:07 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -95,9 +95,11 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
   (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",lbr_vrs_sng,cmp_dat_sng);
   (void)fprintf(stdout,"Homepage URL: http://nco.sf.net\n");
   (void)fprintf(stdout,"User's Guide: http://nco.sf.net/nco.html\n");
-  /* Configuration option tokens must be consistent among configure.in, bld/Makefile, and nco_ctl.c */
-  /* TKN2YESNO is insufficient when TKN is undefined */
+  /* TKN2YESNO is insufficient when TKN is undefined
+     Full macro language like M4 might be useful here, though probably too much trouble */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
+  /* Configuration option tokens must be consistent among configure.in, bld/Makefile, and nco_ctl.c
+     Arrange tokens alphabetically by first word in English text description */
   (void)fprintf(stderr,"Configuration Option:\tActive?\tReference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nDODS/OpenDAP clients\t%s\thttp://nco.sf.net/nco.html#DODS\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (not ready)\nOpenMP Multi-threading\t%s\thttp://nco.sf.net/nco.html#omp (alpha testing)\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
 #if defined(ENABLE_DEBUG_CUSTOM) && (ENABLE_DEBUG_CUSTOM)
 		"Yes",

@@ -23734,7 +23734,8 @@ else
   enable_dods=no
 fi
 
-  # Assume stdc++ is available, (fxm: how to look for it automatically?)
+# Assume stdc++ is available, (fxm: how to look for it automatically?)
+# NB: -lstdc++ automatically linked by g++, add by hand for other compilers
     LIBS="-lstdc++ ${LIBS}"
 # Duplicate library links required to resolve dependencies when -lnc-dods is used
     LIBS="-ldap++ -lnc-dods -ldap++ ${LIBS}"

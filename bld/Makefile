@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.236 2004-01-21 02:10:17 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.237 2004-01-23 01:12:52 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1218,7 +1218,7 @@ autotools: dst_cln
 	- cd ..; aclocal;autoheader;automake --foreign;autoconf ; ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man ; ${MAKE} install
 rootclean: root_cln
 root_cln:
-	- cd ..; rm -f aclocal.m4 config.h.in config.h config.guess config.log config.status config.sub libtool Makefile Makefile.in stamp-h1; rm -r -f autom4te.cache conftest
+	- cd ..; rm -f config.h.in config.h config.guess config.log config.status config.sub libtool Makefile stamp-h1; rm -r -f autom4te.cache conftest
 # Targets in src
 src: ${MDL_NCAP}
 src_cln:
