@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.38 1999-10-04 17:58:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.39 1999-10-12 07:37:51 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -555,12 +555,12 @@ all: dir lib $(MDL_BIN_TRG) data
 .DELETE_ON_ERROR:
 # Target directories which may not exist
 dir: bin_dir obj_dir lib_dir
-lib_dir:
-	- if test -d $(MY_LIB_DIR); then printf "" ; else mkdir $(MY_LIB_DIR); fi
 bin_dir:
-	- if test -d $(MY_BIN_DIR); then printf "" ; else mkdir $(MY_BIN_DIR); fi
+	-mkdir -p $(MY_BIN_DIR)
+lib_dir:
+	-mkdir -p $(MY_LIB_DIR)
 obj_dir:
-	- if test -d $(MY_OBJ_DIR); then printf "" ; else mkdir $(MY_OBJ_DIR); fi
+	-mkdir -p $(MY_OBJ_DIR)
 
 # Targets in bin
 ncra:	$(MY_OBJ_DIR)/ncra.o $(libnco).a
@@ -594,6 +594,7 @@ binclean: bin_cln
 bin_cln: 
 	rm -f $(MDL_BIN)
 # Targets in bld
+buildclean: bld_cln
 bld_cln:
 	cd $(MY_BLD_DIR); rm -f TAGS
 # Targets in dat
@@ -628,14 +629,17 @@ docclean: doc_cln
 doc_cln:
 	cd $(MY_DOC_DIR); rm -f nco.info* nco.dvi nco.html* nco.ps *~
 # Targets in dpn
+depend: dpn
 dpn: $(MDL_DPN)
 dpn_cln:
 	rm -f $(MDL_DPN)
 # Targets in inc
+include: inc
 inc: $(MDL_INC)
 inc_cln:
 	rm -f $(MDL_INC)
 # Targets in lib
+library: lib
 lib: inc $(libnco).a
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 $(libnco).a: $(libnco).a($(MY_OBJ_DIR)/nc_utl.o) \
@@ -650,6 +654,7 @@ libclean: lib_cln
 lib_cln:
 	rm -f $(libnco).a
 # Targets in obj
+object: obj
 obj: $(MDL_OBJ)
 objclean: obj_cln
 obj_cln:
@@ -659,6 +664,7 @@ src: $(MDL_NCAP)
 src_cln:
 	rm -f $(MDL_NCAP)
 
+# Housekeeping
 clean: cln
 cln: dat_cln dpn_cln obj_cln tst_cln
 	cd $(MY_DOC_DIR); rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
@@ -728,6 +734,17 @@ readnet:	$(READNET_OBJ)
 	$(F77) $(CPP_FLAGS) -o $(MY_BIN_DIR)/readnet $(READNET_OBJ) $(LDFLAGS) 
 	chmod 755 $(MY_BIN_DIR)/readnet
 
+# Create dependency files only if they will not be immediately deleted
+INCLUDE_DPN := TRUE
+GOALS_WHICH_DELETE_DEPENDENCY_FILES := cln clean distclean dst_cln dpn_cln tags uninstall
+ifeq (,$(findstring $(MAKECMDGOALS),$(GOALS_WHICH_DELETE_DEPENDENCY_FILES)))
+ INCLUDE_DPN := TRUE
+else
+ INCLUDE_DPN := FALSE
+endif
+ifeq ($(INCLUDE_DPN),TRUE)
+-include $(MDL_DPN)
+endif
 
 
 
