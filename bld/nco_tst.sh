@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.49 2003-01-10 17:32:20 rorik Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.50 2003-02-18 20:21:05 hmb Exp $
 
 # Purpose: NCO test battery
 
@@ -139,6 +139,10 @@ echo "ncks 7: Multi-slab with coordinates 20.0,21.0,22.0,23.0 =?= ${avg}"
 ${MY_BIN_DIR}/ncks -O -C -v three_dmn_var -d lat,1,1 -d lev,800.,200. -d lon,270.,0. in.nc foo2.nc
 avg=`${MY_BIN_DIR}/ncks -H -C -s "%4.1f," -v three_dmn_var foo2.nc`
 echo "ncks 8: Double-wrapped hyperslab 23.0,20.0,15.0,12.0 =?= ${avg}"
+
+${MY_BIN_DIR}/ncks -O -C -v three_double_dim -d lon,2,2 -d time,8,8  in.nc foo2.nc
+avg=`${MY_BIN_DIR}/ncks -H -C -s "%f," -v three_double_dim foo2.nc`
+echo "ncks 9: Hyperslab of a variable that has two identical dims 59.5 =?= ${avg}"
 
 fi # end NCKS
 
