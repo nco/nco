@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.371 2004-08-07 21:16:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.372 2004-08-08 00:30:51 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -239,7 +239,9 @@ nco378. Make \dfr, \me, \mi upright characters in nco.texi
 nco379. ncpdq: Add packing/unpacking capabilities
 nco385. ncpdq: dynamically allocate arrays in nco_var_dmn_rdr_mtd(), nco_var_dmn_rdr_val()?
 nco386. Remove purely diagnostic arrays from nco_var_dmn_rdr_mtd(), nco_var_dmn_rdr_val()?
-nco387. 
+nco387. Test whether ncpdq works with -d. 
+nco388. Add ncpdq to appropriate documentation "Availability" clauses.
+nco389. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

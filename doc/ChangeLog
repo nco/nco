@@ -1,5 +1,7 @@
 2004-08-07  Charlie Zender  <zender@uci.edu>
 
+	* Added lots more yummy ncpdq documentation
+
 	* cvs tag -c nco-2_9_8
 	Changes since nco-2_9_7: 1. ncpdq, 2. ncwa --msk_sng consolidated
 	mask switch, and 3. C99 

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.257 2004-08-07 23:38:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.258 2004-08-08 00:30:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -95,8 +95,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 2.9.7
-@set doc-edition 2.9.7
+@set nco-edition 2.9.8
+@set doc-edition 2.9.8
 @set copyright-years 1995--2004
 @set update-year 2004
 @set update-date 7 August 2004
@@ -1832,9 +1832,11 @@ We hope to produce foreign language string catalogues in 2004.
 @cindex @code{--omp_num_threads @var{thr_nbr}}
 @cindex @code{-t @var{thr_nbr}}
 @cartouche
-Availability: @command{ncea}, @command{ncra}, @command{ncrcat}, @command{ncwa}@*
+Availability: @command{ncea}, @command{ncpdq}, @command{ncra},
+@command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-t}@*
-Long options: @samp{--thr_nbr}, @samp{--threads}, @samp{--omp_num_threads}@*
+Long options: @samp{--thr_nbr}, @samp{--threads},
+@samp{--omp_num_threads}@* 
 @end cartouche
 @acronym{NCO} support for shared memory machines using the OpenMP
 standard is nascent.
@@ -2006,7 +2008,7 @@ name that most suits their taste.
 @cindex @var{input-path}
 @cartouche
 Availability (@code{-n}): @command{ncea}, @command{ncecat}, @command{ncra}, @command{ncrcat}@*
-Availability (@code{-n}): All operators@*
+Availability (@code{-p}): All operators@*
 Short options: @samp{-n}, @samp{-p}@*
 Long options: @samp{--nintap}, @samp{--pth}, @samp{--path}@*
 @end cartouche
@@ -2516,8 +2518,8 @@ when your other preferred methods are not available locally.
 @cindex @code{--xcl}
 @cartouche
 Availability: (@command{ncap}), @command{ncbo}, @command{ncea},
-@command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncra},
-@command{ncrcat}, @command{ncwa}@* 
+@command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
+@command{ncra}, @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-v}, @samp{-x}@*
 Long options: @samp{--variable}, @samp{--exclude} or @samp{--xcl}@*
 @end cartouche
@@ -2679,8 +2681,8 @@ filename expansion (globbing).
 @cindex @code{--crd}
 @cartouche
 Availability: @command{ncap}, @command{ncbo}, @command{ncea},
-@command{ncecat}, @command{ncflint}, @command{ncks},  @command{ncra},
-@command{ncrcat}, @command{ncwa}@* 
+@command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncpdq},
+@command{ncra}, @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-C}, @samp{-c}@*
 Long options: @samp{--no-coords}, @samp{--no-crd}, @samp{--crd}, @samp{--coords}@*
 @end cartouche
@@ -2714,8 +2716,8 @@ without having to know their names.
 @cindex @code{--fortran}
 @cartouche
 Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
-@command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
-@command{ncwa}@* 
+@command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
+@command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-F}@*
 Long options: @samp{--fortran}@*
 @end cartouche
@@ -2730,11 +2732,14 @@ In Fortran, indices count @w{from 1} (rather @w{than 0}), and
 dimensions are ordered from fastest (inner-most) to slowest 
 (outer-most) varying.  
 @cindex transpose
-Hence @w{C and} Fortran data storage conventions represent transposes 
-of eachother.
+Hence @w{C and} Fortran data storage conventions represent mathematical
+transposes of eachother.
 @cindex record variable
-Note that record variables, if any, in a netCDF file, contain the
-record dimension as the most slowly varying dimension. 
+Note that record variables contain the record dimension as the most
+slowly varying dimension.  
+See @ref{ncpdq netCDF Permute Dimensions Quickly} for techniques
+to re-order (including transposes) dimensionse and to reverse data
+storage order.
 
 @cindex record dimension
 Consider a file @file{85.nc} containing @w{12 months} of data in the
@@ -2772,8 +2777,8 @@ lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0
 @cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}]]}
 @cartouche
 Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
-@command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
-@command{ncwa}@* 
+@command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
+@command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-d}@*
 Long options: @samp{--dimension}, @samp{--dmn}@*
 @end cartouche
@@ -2952,8 +2957,8 @@ future.
 @cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}]]}
 @cartouche
 Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
-@command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
-@command{ncwa}@* 
+@command{ncflint}, @command{ncks}, @command{ncpdq}, @command{ncra},
+@command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-d}@*
 Long options: @samp{--dimension}, @samp{--dmn}@*
 @end cartouche
@@ -3263,7 +3268,7 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @cindex @code{missing_value}
 @cartouche
 Availability: @command{ncap}, @command{ncbo}, @command{ncea},
-@command{ncflint}, @command{ncra}, @command{ncwa}@* 
+@command{ncflint}, @command{ncpdq}, @command{ncra}, @command{ncwa}@* 
 Short options: None@*
 @end cartouche
 
@@ -6582,12 +6587,28 @@ one record dimension amongst all the output variables
 @footnote{This limitation, imposed by the netCDF storage layer,
 may be relaxed in the future with netCDF4.}.
 
+Two special cases of dimension re-ordering and reversal deserve special
+mention. 
+First, it may be desirable to completely reverse the storage order of a
+variable. 
+To do this, include all the variable's dimensions in the dimension
+re-order list in their original order, and prefix each dimension name
+with the negative sign.  
+@cindex transpose
+Second, it may useful to transpose a variable's storage order, e.g.,
+@w{from C} to Fortran data storage order (@pxref{Fortran indexing}).
+To do this, include all the variable's dimensions in the dimension
+re-order list in reversed order.
+Explicit examples of both these techniques appear below.
+
 @tex
 NB: fxm ncpdq documentation will evolve through Fall 2004.
+I will upload updates to documentation linked to by the NCO homepage.
+ncpdq is a powerful operator, and 
 I am unfamiliar with the terminology needed to describe what ncpdq does.
 Sequences, sets, sheesh!
 I just know that it does "The right thing" according to my gut feelings.
-There, do you feel more comfortable?
+Now do you feel more comfortable using it?
 
 Let $\dmnvct(\xxx)$ represent the dimensionality of the variable $\xxx$. 
 Dimensionality describes the order and sizes of dimensions.
@@ -6687,11 +6708,6 @@ lat[0]=90
 lat[1]=-90
 @end example
 This operation reversed the latitude dimension of all variables.
-Re-ordering and reversal may be performed simultaneously, e.g.,
-@example
-ncpdq -a lon,-lat,time,-lev in.nc out.nc
-@end example
-
 Whitespace immediately preceding the negative sign that specifies
 dimension reversal may be dangerous.
 @cindex long options
@@ -6704,6 +6720,53 @@ ncpdq -a -lat in.nc out.nc # Dangerous? Whitespace before "-lat"
 ncpdq -a "-lat" in.nc out.nc # OK. Quotes protect "-" in "-lat"
 ncpdq -a lon,-lat in.nc out.nc # OK. No whitespace before "-"
 ncpdq --rdr=-lat in.nc out.nc # Preferred. Uses "=" not whitespace
+@end example
+
+To create the mathematical transpose of a variable, place all its
+dimensions in the dimension re-order list in reversed order.
+This example creates the transpose of @code{three_dmn_var}: 
+@example
+% ncpdq -a lon,lev,lat -v three_dmn_var in.nc out.nc
+% ncks -H -C -v three_dmn_var in.nc
+lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
+lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
+lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2 
+...
+lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
+lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
+lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
+% ncks -H -C -v three_dmn_var out.nc
+lon[0]=0 lev[0]=100 lat[0]=-90 three_dmn_var[0]=0
+lon[0]=0 lev[0]=100 lat[1]=90 three_dmn_var[1]=12
+lon[0]=0 lev[1]=500 lat[0]=-90 three_dmn_var[2]=4
+...
+lon[3]=270 lev[1]=500 lat[1]=90 three_dmn_var[21]=19
+lon[3]=270 lev[2]=1000 lat[0]=-90 three_dmn_var[22]=11
+lon[3]=270 lev[2]=1000 lat[1]=90 three_dmn_var[23]=23
+@end example
+
+To completely reverse the storage order of a variable, include
+all its dimensions in the re-order list, each prefixed by a negative
+sign. 
+This example reverses the storage order of @code{three_dmn_var}: 
+@example
+% ncpdq -a -lat,-lev,-lon -v three_dmn_var in.nc out.nc
+% ncks -H -C -v three_dmn_var in.nc
+lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
+lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
+lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2 
+...
+lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
+lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
+lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
+% ncks -H -C -v three_dmn_var out.nc
+lat[0]=90 lev[0]=1000 lon[0]=270 three_dmn_var[0]=23
+lat[0]=90 lev[0]=1000 lon[1]=180 three_dmn_var[1]=22
+lat[0]=90 lev[0]=1000 lon[2]=90 three_dmn_var[2]=21
+...
+lat[1]=-90 lev[2]=100 lon[1]=180 three_dmn_var[21]=2
+lat[1]=-90 lev[2]=100 lon[2]=90 three_dmn_var[22]=1
+lat[1]=-90 lev[2]=100 lon[3]=0 three_dmn_var[23]=0
 @end example
 
 @page
