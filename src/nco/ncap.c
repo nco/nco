@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.58 2002-02-05 07:34:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.59 2002-02-05 07:39:15 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.58 2002-02-05 07:34:37 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.58 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.59 2002-02-05 07:39:15 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.59 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -176,8 +176,6 @@ main(int argc,char **argv)
   int spt_arg_lng=int_CEWI;
   int nbr_att=0; /* [nbr] Size of att_lst */ 
   
-  const int att_lst_max=500; /* fxm: turn arbitrary size into pre-processor token */
-  
   sym_sct **sym_tbl; /* [fnc] Symbol table for functions */
   int sym_tbl_nbr; /* [nbr] Size of symbol table */
   int sym_idx=0; /* [idx] Counter for symbols */
@@ -201,7 +199,8 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   
-  aed_sct *att_lst[att_lst_max]; /* Structure filled in by yyparse(), contains attributes to write to disk */
+#define NCAP_ATT_LST_MAX 500 /* fxm: turn arbitrary size into pre-processor token */
+  aed_sct *att_lst[NCAP_ATT_LST_MAX]; /* Structure filled in by yyparse(), contains attributes to write to disk */
   prs_sct prs_arg; /* [sct] Global information required in parser routines */
   
   /* Start clock and save command line */ 
