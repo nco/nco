@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.298 2004-05-05 00:47:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.299 2004-05-07 01:16:00 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -194,7 +194,7 @@ nco326. Add manual override of writing *tmp* file for intermediate results
 nco327. Consolidate/coordinate letters of support for prp_nco
 nco328. Ability to reverse specified dimensions (use negative stride?)
 nco329. Ability to rearrange dimensions
-nco330. 
+nco330. ncbo -c seems to extract _only_ coordinates
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
