@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.47 2004-01-01 22:50:29 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.48 2004-01-02 23:26:48 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.5 are ready. 
 
@@ -18,25 +18,26 @@ air.sig995.1975.nc foo.nc
 Why use your local CPU when you can slow down a remote DODS server
 instead? :)  
 
+Thanks to Rorik and Henry for their continuing contributions.
+
 Enjoy,
 Charlie
 
 Bug-fixes:
 1. make install works on Solaris. Used to die with symlinks. (Rorik)
+2. Changing attribute values with ncap works as advertised (Henry)
+3. fxm: Unpacking works correctly with arithmetic operators
 
 Feature changes:
-1. Changing attribute values with ncap should work as advertised (Henry)
-2. -r switch prints compile-time configuration for all operators (Charlie)
-3. Build with ./configure --enable-optimize-custom, if possible, 
+1. -r switch prints compile-time configuration for all operators
+2. Build with ./configure --enable-optimize-custom, if possible, 
    for best performance (Charlie)
 
 Other user-visible changes:
-1. Build procedure assumes DODS v. 3.4+ is installed. (Rorik)
-   Building with DODS v. 3.3- is no longer supported.
+1. Build procedure assumes DODS v. 3.4+ is installed (Rorik)
+   Building with DODS v. 3.3- is no longer supported
    Added doc/dods.sh as guide DODS installation prior to building NCO 
-2. Re-arranged ./configure script, renamed options, and improved
-   ./configure support for custom optimization and debugging.
+2. Added and renamed options to ./configure script
 
 User-invisible changes:
-1. Builds almost cleanly with --enable-debug-custom (Charlie)
-
+1. Builds almost cleanly with --enable-debug-custom

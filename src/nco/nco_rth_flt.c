@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.7 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.8 2004-01-02 23:26:48 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -14,6 +14,7 @@
    Names of these optional float functions end in "f", as specified by ANSI
    Create any needed float functions simply by coercing I/O of double versions
    MacOS X does not provide float versions of _any_ standard function! */
+/* fxm: TODO #37 inline these definitions? */
 #ifdef NEED_FMODF
 float fmodf(float x,float y){return (float)(fmod((double)x,(double)y));}
 #endif /* !NEED_FMODF */ 
@@ -83,4 +84,3 @@ float tanf(float x){return (float)(tan((double)x));}
 #ifdef NEED_TANHF
 float tanhf(float x){return (float)(tanh((double)x));}
 #endif /* !NEED_TANHF */ 
-
