@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.334 2004-07-01 22:42:11 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.335 2004-07-02 01:05:31 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -205,7 +205,13 @@ nco346. Add LFS documentation to nco.texi
 nco347. Add OpenMP documentation to nco.texi
 nco348. Create OpenMP robustness test
 cd ${DATA}/mie/mie15
-/bin/ls | grep aer_h2o_lqd_${SZ_SNG}_${CASEID}_'0[0-4]\.[0-9][0-9]00000_0[0-5]\.[0-9][0-9]00000.nc' | ncea -D 2 -O -v ${var_lst} -p ${DATA_MIE}/mie/${CASEID} -o ${DATA_MIE}/aca/aer_h2o_lqd_${SZ_SNG}_${CASEID}_avg.nc
+1. Create non-threaded answer:
+var_lst="abs_cff_mss"
+cd ${DATA_MIE}/mie/${CASEID}
+/bin/ls | grep aer_h2o_lqd_${SZ_SNG}_${CASEID}_'0[0-4]\.[0-9][0-9]00000_0[0-5]\.[0-9][0-9]00000.nc' | ncea -D 1 -O -v ${var_lst} -p ${DATA_MIE}/mie/${CASEID} -o ~/foo.nc
+ncks -H -C -v ${var_lst} ~/foo.nc > foo 2>&1
+2. Create threaded answer:
+
 nco350. ncea and ncrcat fail all nco_tst.pl test cases when called from top level "make test", because "make test" passes MY_BIN_DIR=../src/nco and the symbolic links to ncea and ncrcat are not in ../src/nco
 nco351. 
 

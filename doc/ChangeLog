@@ -1,5 +1,9 @@
 2004-07-01  Charlie Zender  <zender@uci.edu>
 
+	* Improve LFS test in big.cdl. 
+	Created version that creates large files (> 4 GB) on small-RAM 
+	(< 4 GB) systems, and NCO seem OK to deal with resulting files. 
+
 	* Added $dbg_lvl variable to print nco_tst.pl tests during execution
 
 	* Fixed nco_tst.pl test hanging while waiting for interactive
