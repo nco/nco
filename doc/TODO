@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.274 2004-01-12 18:11:06 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.275 2004-01-12 20:16:36 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -230,6 +230,7 @@ Make prg, prg_nm, and dbg_lvl local to main(), not global to main.c
 301. Unable to use DDD on autotools NCO executable with --enable-debug-custom
 302. Add speedy GCC optimization flags to --enable-optimize-custom
 303. Make test suite more comprehensive
+304. Use/improve flex --header-file=ncap_lex.h to de-lint compiler warnings instead of __GNUC__-specific hacks in ncap_lex.l
 ************************************************************************
 End NCO Wish list
 ************************************************************************

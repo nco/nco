@@ -1,3 +1,12 @@
+2004-01-12  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_8_6
+	Changes since nco-2_8_5: Add -Werror to GCC compiles, fix AIX and
+	SGI builds
+
+	* Wrap new ncap_lex.l content in ifdef __GNUC__ since breaks on
+	AIX, SGI. AIX and SGI now build again.
+
 2004-01-11  Charlie Zender  <zender@uci.edu>
 
 	* NCO compiles warning free again so add -Werror to GCC custom flags
