@@ -1,5 +1,5 @@
 info_TEXINFOS = nco.texi
-EXTRA_DIST = nco.pdf nco.ps nco.html
+EXTRA_DIST = nco.pdf nco.ps nco.html VERSION
 
 # our own additions for NCO; they may be supported by automake later on
 html_docs = nco.html
