@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.275 2004-09-08 00:42:25 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.276 2004-09-09 01:14:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -101,7 +101,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 2.9.9
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 5 September 2004
+@set update-date 8 September 2004
 @set update-month September 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -630,9 +630,22 @@ We have accordingly replaced all Fortran subroutines with @w{C functions}.
 This greatly simplifies the task of building @acronym{NCO} on nominally
 unsupported platforms.  
 @cindex C language
-As of August 1999, @acronym{NCO} is built entirely @w{in C} by default.
-This allows @acronym{NCO} to compile on any machine with an
+As of August 1999, @acronym{NCO} built entirely @w{in C} by default.
+This allowed @acronym{NCO} to compile on any machine with an
 @acronym{ANSI} @w{C compiler}. 
+@cindex C99
+@cindex C89
+@cindex @code{restrict}
+In August 2004, the first C99 feature, the @code{restrict} type
+qualifier, entered @acronym{NCO} in version 2.9.8. 
+@w{C compilers} can obtain better performance with C99 restricted 
+pointers since they inform the compiler when it may make Fortran-like
+assumptions regarding pointer contents alteration.
+Subsequently, @acronym{NCO} requires a C99 compiler to build correctly
+@footnote{@acronym{NCO} may still build with an 
+@acronym{ANSI} or @acronym{ISO} C89 or C94/95-compliant compiler if the
+@w{C pre-processor} undefines the @code{restrict} type qualifier, e.g.,
+by invoking the compiler with @samp{-Drestrict=''}.}.
 @cindex automagic
 Furthermore, @acronym{NCO} automagically takes advantage of extensions
 to @w{@acronym{ANSI} C} when compiled with the @acronym{GNU} compiler
