@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.10 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.11 2002-07-08 08:16:32 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -324,7 +324,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       if(strstr(fl_nm_rmt,"ftp://") == fl_nm_rmt){
 #ifdef WIN32
       /* I have no idea how networking calls work in NT, so just exit */
-      (void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported for Windows NT\n",prg_nm_get(),fl_nm_rmt);
+      (void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported for Microsoft Windows operating systems\n",prg_nm_get(),fl_nm_rmt);
       nco_exit(EXIT_FAILURE);
 #else /* not WIN32 */
 	char *fmt;
