@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.9 2001-10-09 08:43:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.10 2001-10-11 02:02:52 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -142,6 +142,8 @@ c_type_nm(nc_type type)
    char *c_type_nm(): O string describing type
 */
 {
+  /* Purpose: Divine internal (native) C type string from netCDF external type enum
+     fxm: This breaks on Crays where both NC_FLOAT and NC_DOUBLE are native type float */
   switch(type){
   case NC_FLOAT:
     return "float";
@@ -169,6 +171,8 @@ fortran_type_nm(nc_type type)
    char *fortran_type_nm(): O string describing type
 */
 {
+  /* Purpose: Divine internal (native) Fortran type string from netCDF external type enum
+     fxm: This breaks on Crays where both NC_FLOAT and NC_DOUBLE are native type real */
   switch(type){
   case NC_FLOAT:
     return "real";
