@@ -25220,8 +25220,8 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
     GCC_CFLAGS='-Werror -Wall -Wunused -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -g -O4'
     GCC_CXXFLAGS="${GCC_CFLAGS}"
 # Compilation flags recommended by GSL that I like and use:
-# -D_POSIX_SOURCE: Tells GCC that fileno is ANSI-compliant
-# -D_BSD_SOURCE: Tells GCC that nameser.h is ANSI-compliant
+# -D_BSD_SOURCE: Support 4.3 BSD Unix extensions to ANSI C (prevents nameser.h warnings)
+# -D_POSIX_SOURCE: Support POSIX.1 standard additions to ANSI C (prevents fileno warnings)
 # -pedantic: Disallow non-ISO constructs (including type long long) (sometimes useful)
 # -Werror: Consider warnings as errors
 # -W: Extra warnings, including missing return values, comparison of signed with unsigned
@@ -25237,7 +25237,7 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # -g: Put debugging symbols in executable
 # -O4: Turn on optimization so unitialized variables are flagged
 # Compilation flags recommended by GSL that I do not like and do not use:
-# -ansi: Equivalent to -std=c89, conflicts with -std=c99
+# -ansi: Support only strict ANSI C. Equivalent to -std=c89, conflicts with -std=c99
 # --no-alias? -fstrict-aliasing
 # -Waggregate-return: Warn if functions return aggregates like structures or unions
 # -Wconversion: Warn if converting signed to unsigned. Intended for obsolete, non-prototyped code. Triggers fabsf(), sqrtf(), warnings.
