@@ -1,9 +1,7 @@
 Document: nco
-Title: Debian nco Manual
+Title: NCO Manual
 Author: rorik@users.sourceforge.net
-Abstract: This manual describes what nco is
- and how it can be used to
- manage online manuals on Debian systems.
+Abstract:  This manual describes NCO, the netCDF Operators.  NCO is a suite of programs, or operators, that take netCDF files as input, perform an operation (e.g. averaging or hyperslabbing) and produce a netCDF file as output.
 Section: math
 
 Format: HTML
