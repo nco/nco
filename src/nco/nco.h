@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.18 2002-05-02 06:08:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.19 2002-05-05 01:27:33 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -348,11 +348,8 @@ extern "C" {
   extern char *fl_out_open(char *,bool,bool,int *);
   extern char *nmn_get(void);
   extern char *prg_nm_get(void);
-  extern char *prg_prs(char *,int *);
   extern char *sng_lst_prs(char **,const long, const char *);
   extern int sng_ascii_trn(char *);
-  extern dmn_sct *dmn_dpl(dmn_sct *);
-  extern dmn_sct *dmn_fll(int,int,char *);
   extern int mss_val_get(int,var_sct *);
   extern int op_prs_rlt(char *);
   extern int nco_op_typ_get(char *);
@@ -361,8 +358,6 @@ extern "C" {
   extern lmt_sct lmt_sct_mk(int,int,lmt_sct *,int,bool);
   extern nco_long FORTRAN_newdate(nco_long *,int *);
   extern nco_long newdate(nco_long,int);
-  extern nm_id_sct *dmn_lst_ass_var(int,nm_id_sct *,int,int *);
-  extern nm_id_sct *dmn_lst_mk(int,char **,int);
   extern nm_id_sct *lst_heapsort(nm_id_sct *,int,bool);
   extern nm_id_sct *var_lst_add_crd(int,int,int,nm_id_sct *,int *);
   extern nm_id_sct *var_lst_ass_crd_add(int,nm_id_sct *,int *);
@@ -377,7 +372,6 @@ extern "C" {
   extern var_sct *var_dpl(var_sct *);
   extern var_sct *var_fll(int,int,char *,dmn_sct **,int);
   extern var_sct *var_free(var_sct *);
-  extern void Exit_gracefully(void);
   extern void FORTRAN_add_double_precision(long *,int *,double *,long *,double *,double *);
   extern void FORTRAN_add_real(long *,int *,float *,long *,float *,float *);
   extern void FORTRAN_avg_reduce_double_precision(long *,long *,int *,double *,long *,double *,double *);
@@ -393,9 +387,6 @@ extern "C" {
   extern void cast_nctype_void(nc_type,ptr_unn *);
   extern void cast_void_nctype(nc_type,ptr_unn *);
   extern void copyright_prn(char *,char *);
-  extern void dmn_dfn(char *,int,dmn_sct **,int);
-  extern void dmn_lmt_mrg(dmn_sct **,int,lmt_sct *,int);
-  extern void dmn_xrf(dmn_sct *,dmn_sct *);
   extern void fl_cmp_err_chk(void);
   extern void fl_cp(char *,char *);
   extern void fl_mv(char *,char *);
@@ -406,14 +397,12 @@ extern "C" {
   extern void indexx(int,int *,int *);
   extern void lmt_evl(int,lmt_sct *,long,bool);
   extern void mss_val_cp(var_sct *,var_sct *);
-  extern void nco_lib_vrs_prn(void);
   extern void ncar_csm_date(int,var_sct **,int);
   extern void *nco_calloc(size_t lmn_nbr,size_t lmn_sz);
   extern void *nco_free(void *vp);
   extern void *nco_malloc(size_t size);
   extern void *nco_realloc(void *ptr, size_t size);
   extern void rec_crd_chk(var_sct *,char *,char *,long,long);
-  extern void usg_prn(void);
   extern void val_conform_type(nc_type,ptr_unn,nc_type,ptr_unn);
   extern void var_add(nc_type,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
   extern void var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2);
@@ -494,10 +483,6 @@ extern "C" {
   (int idx, /* I [idx] Index of current variable */
    char *var_nm); /* I [sng] Variable name */
   
-  extern bool /* O [flg] Operator is arithmetic */
-  is_arithmetic_operator /* [fnc] Operator is arithmetic */
-  (int prg_id); /* [enm] Operator key */
-
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

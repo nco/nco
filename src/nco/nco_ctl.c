@@ -1,12 +1,99 @@
-char *
-prg_prs(char *nm_in,int *prg)
-/* 
-   char *nm_in: I name of program to categorize, e.g., argv[0] (might include a path prefix)
-   int *prg: O enumeration number corresponding to nm_in
-   char *prg_prs(): O nm_in stripped of any path (i.e., program name stub)
- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.2 2002-05-05 01:27:33 zender Exp $ */
+
+/* Purpose: Program flow control functions */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_ctl.h" /* Program flow control functions */
+
+void 
+Exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, then exit */
 {
-  /* Routine to set program name and enum */
+  char *time_bfr_end;
+  time_t clock;
+  
+  /* end the clock */ 
+  
+  clock=time((time_t *)NULL);
+  time_bfr_end=ctime(&clock);  time_bfr_end=time_bfr_end; /* Avoid compiler warning until variable is used for something */
+/*  (void)fprintf(stderr,"\tend = %s\n",time_bfr_end);*/
+
+  (void)fclose(stderr);
+  (void)fclose(stdin);
+  (void)fclose(stdout);
+
+  exit(EXIT_SUCCESS);
+} /* end Exit_gracefully() */
+
+bool /* [flg] Program does arithmetic */
+is_arithmetic_operator /* [fnc] Query whether program does arithmetic */
+(const int prg_id) /* [enm] Program ID */
+{
+  /* Purpose: Does program do arithmetic? */
+  switch(prg_id){
+  case ncap: 
+  case ncdiff:
+  case ncea:
+  case ncflint:
+  case ncra:
+  case ncwa:
+    return True;
+    break;
+  case ncatted: 
+  case ncecat: 
+  case ncks: 
+  case ncrcat: 
+  default:
+    return False;
+    break;
+  } /* end switch */
+} /* end is_arithmetic_operator() */
+
+void
+nco_lib_vrs_prn(void) /* [fnc] Print netCDF library version */
+{
+  /* Purpose: Print netCDF library version */
+
+  char *lib_sng;
+  char *nst_sng;
+  char *vrs_sng;
+  char *of_ptr;
+  char *dlr_ptr;
+
+  int vrs_sng_len;
+  int nst_sng_len;
+
+  /* As of netCDF 3.4, nc_inq_libvers() returned strings such as "3.4 of May 16 1998 14:06:16 $" */  
+  lib_sng=(char *)strdup(nc_inq_libvers());
+  of_ptr=strstr(lib_sng," of ");
+  if(of_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nco_lib_vrs_prn() reports of_ptr == NULL\n",prg_nm_get());
+  vrs_sng_len=(int)(of_ptr-lib_sng);
+  vrs_sng=(char *)nco_malloc(vrs_sng_len+1);
+  strncpy(vrs_sng,lib_sng,vrs_sng_len);
+  vrs_sng[vrs_sng_len]='\0';
+
+  dlr_ptr=strstr(lib_sng," $");
+  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nco_lib_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
+  nst_sng_len=(int)(dlr_ptr-of_ptr-4); /* 4 is the length of " of " */
+  nst_sng=(char *)nco_malloc(nst_sng_len+1);
+  strncpy(nst_sng,of_ptr+4,nst_sng_len); /* 4 is the length of " of " */
+  nst_sng[nst_sng_len]='\0';
+
+  (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",vrs_sng,nst_sng);
+  vrs_sng=nco_free(vrs_sng);
+  lib_sng=nco_free(lib_sng);
+  nst_sng=nco_free(nst_sng);
+  (void)fprintf(stdout,"NCO homepage URL is http://nco.sourceforge.net\n");
+} /* end nco_lib_vrs_prn() */
+
+char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
+prg_prs /* [fnc] Strip program name to stub and return program ID */
+(const char * const nm_in, /* I [sng] Name of program, i.e., argv[0] (may include path prefix) */
+ int * const prg) /* O [enm] Enumerated number corresponding to nm_in */
+{
+  /* Purpose: Set program name and enum */
 
   char *nm_out;
 
@@ -153,63 +240,4 @@ usg_prn(void)
   opt_sng=nco_free(opt_sng);
 
 } /* end usg_prn() */
-
-void
-nco_lib_vrs_prn()
-{
-  /* Purpose: Print netCDF library version */
-
-  char *lib_sng;
-  char *nst_sng;
-  char *vrs_sng;
-  char *of_ptr;
-  char *dlr_ptr;
-
-  int vrs_sng_len;
-  int nst_sng_len;
-
-  /* As of netCDF 3.4, nc_inq_libvers() returned strings such as "3.4 of May 16 1998 14:06:16 $" */  
-  lib_sng=(char *)strdup(nc_inq_libvers());
-  of_ptr=strstr(lib_sng," of ");
-  if(of_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nco_lib_vrs_prn() reports of_ptr == NULL\n",prg_nm_get());
-  vrs_sng_len=(int)(of_ptr-lib_sng);
-  vrs_sng=(char *)nco_malloc(vrs_sng_len+1);
-  strncpy(vrs_sng,lib_sng,vrs_sng_len);
-  vrs_sng[vrs_sng_len]='\0';
-
-  dlr_ptr=strstr(lib_sng," $");
-  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nco_lib_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
-  nst_sng_len=(int)(dlr_ptr-of_ptr-4); /* 4 is the length of " of " */
-  nst_sng=(char *)nco_malloc(nst_sng_len+1);
-  strncpy(nst_sng,of_ptr+4,nst_sng_len); /* 4 is the length of " of " */
-  nst_sng[nst_sng_len]='\0';
-
-  (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",vrs_sng,nst_sng);
-  vrs_sng=nco_free(vrs_sng);
-  lib_sng=nco_free(lib_sng);
-  nst_sng=nco_free(nst_sng);
-  (void)fprintf(stdout,"NCO homepage URL is http://nco.sourceforge.net\n");
-} /* end nco_lib_vrs_prn() */
-
-bool
-is_arithmetic_operator(int prg_id)
-{
-  switch(prg_id){
-  case ncap: 
-  case ncdiff:
-  case ncea:
-  case ncflint:
-  case ncra:
-  case ncwa:
-    return True;
-    break;
-  case ncatted: 
-  case ncecat: 
-  case ncks: 
-  case ncrcat: 
-  default:
-    return False;
-    break;
-  } /* end switch */
-} /* end is_arithmetic_operator() */
 
