@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.432 2004-10-16 04:34:58 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.433 2004-10-16 19:03:50 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -274,7 +274,8 @@ nco467. Keep track of CDO "Climate Data Operators" http://www.mpimet.mpg.de/~cdo
 nco468. Make -H toggle variable printing so ncks -M only prints metadata 
 nco469. Use default _FillValue e.g., NC_FILL_FLOAT, or values from <limits.h>, <float.h>?
 nco470. implement netcdf-3.6 flags in nc_create()? When, how to transition?
-nco471. 
+nco471. Re-write nco_tst.pl so -H (nco468) does not cause errors
+nco472. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
