@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.24 2000-09-05 20:40:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.25 2000-09-20 17:56:34 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -130,8 +130,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.24 2000-09-05 20:40:09 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.24 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.25 2000-09-20 17:56:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.25 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -187,7 +187,7 @@ main(int argc,char **argv)
   /* Start the clock and save the command line */ 
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
-  time_bfr_srt=ctime(&clock);
+  time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until time_bfr_srt is used for something */
 
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);

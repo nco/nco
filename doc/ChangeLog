@@ -1,5 +1,8 @@
 2000-09-20  Charlie Zender  <zender@uci.edu>
 
+	* Finally removed 1995-1996-era SGI enum workarounds from nc.h
+	SGI compiler on dataproc seems 
+
 	* Jim Rosinski and Stacy Walters have both pointed out that netCDF
 	is not thread-safe. Therefore the OpenMP implementation is bound
 	to fail until critical locks are added.

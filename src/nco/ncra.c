@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.43 2000-09-20 16:13:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.44 2000-09-20 17:56:34 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -98,8 +98,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.43 2000-09-20 16:13:05 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.43 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.44 2000-09-20 17:56:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.44 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -153,7 +153,7 @@ main(int argc,char **argv)
   /* Start the clock and save the command line */
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
-  time_bfr_srt=ctime(&clock);
+  time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until time_bfr_srt is used for something */
 
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
