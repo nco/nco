@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.32 2004-06-18 23:56:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.33 2004-06-19 01:04:03 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -172,7 +172,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	long chr_nbr; /* [nbr] Number of characters */
 	size_t fl_nm_lng; /* [nbr] Filename length */
 	
-	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG nco_fl_lst_mk() reports input files not specified as positional arguments...attempting to read from stdin fxm TODO#339\n",prg_nm_get());
+	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG nco_fl_lst_mk() reports input files not specified as positional arguments. Attempting to read from stdin instead...\n",prg_nm_get());
 	
 	/* Initialize information to read stdin */
 	chr_nbr=0L; /* [nbr] Number of characters */

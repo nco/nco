@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.33 2004-06-19 00:49:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.34 2004-06-19 01:04:03 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -320,12 +320,14 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
  CST_X_PTR_CST_PTR_CST_Y(char,fl_lst_in), /* I [sng] Input file list */
  const int fl_nbr) /* I [nbr] Number of files in input file list */
 {
-  /* Purpose: Write input file list to global metadata fxm TODO nco339 */
+  /* Purpose: Write input file list to global metadata */
   aed_sct fl_in_lst_aed;
   aed_sct fl_in_nbr_aed;
+  char att_nm_lst[]="input_file_list";
+  char att_nm_nbr[]="input_file_number";
   char spc_sng[]=" "; /* [sng] Intervening space */
   char *fl_in_lst_sng;
-  int fl_in_nbr;
+  long fl_nbr_lng; /* [nbr] Number of files in input file list */
   int fl_idx;
   size_t fl_in_lst_sng_lng; /* [nbr] Filename list string length */
   ptr_unn att_val;
@@ -344,11 +346,11 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   } /* end loop over fl */
   
   /* Copy fl_nbr so can take address without endangering number */
-  fl_in_nbr=fl_nbr;
+  fl_nbr_lng=fl_nbr;
   /* Insert number of files into value */
-  att_val.lp=(nco_long *)&fl_in_nbr;
+  att_val.lp=(nco_long *)(&fl_nbr_lng);
   /* Initialize input_file_list attribute edit structure */
-  fl_in_nbr_aed.att_nm="input_file_number";
+  fl_in_nbr_aed.att_nm=att_nm_nbr;
   fl_in_nbr_aed.var_nm=NULL;
   fl_in_nbr_aed.id=NC_GLOBAL;
   fl_in_nbr_aed.sz=1L;
@@ -357,12 +359,12 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   fl_in_nbr_aed.val=att_val;
   fl_in_nbr_aed.mode=aed_overwrite;
   /* Write input_file_number attribute to disk */
-  (void)nco_aed_prc(out_id,NC_GLOBAL,fl_in_lst_aed);
+  (void)nco_aed_prc(out_id,NC_GLOBAL,fl_in_nbr_aed);
 
   /* Insert file list into value */
   att_val.cp=(unsigned char *)fl_in_lst_sng;
   /* Initialize input_file_list attribute edit structure */
-  fl_in_lst_aed.att_nm="input_file_list";
+  fl_in_lst_aed.att_nm=att_nm_lst;
   fl_in_lst_aed.var_nm=NULL;
   fl_in_lst_aed.id=NC_GLOBAL;
   fl_in_lst_aed.sz=(long)strlen(fl_in_lst_sng)+1L;
