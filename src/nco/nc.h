@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.12 1999-05-13 03:06:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.13 1999-08-30 07:07:22 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -225,6 +225,7 @@ typedef struct var_sct_tag{
   struct var_sct_tag *xrf; /* cross-reference to associated variable structure (usually the structure for the variable on output) */ 
 } var_sct;
 
+#ifdef USE_FORTRAN_ARITHMETIC
 #ifdef CRAY
 #define FORTRAN_add_real ADD_REAL
 #define FORTRAN_add_double_precision ADD_DOUBLE_PRECISION
@@ -257,7 +258,7 @@ typedef struct var_sct_tag{
 #define FORTRAN_divide_double_precision divide_double_precision
 #define FORTRAN_foo foo
 #endif /* RS6K */ 
-#ifdef LINUX /* NB: g77 subroutines have two underscores, while g77 functions (e.g., newdate()) have only one! */ 
+#ifdef LINUX /* NB: g77 subroutines have two underscores by default, while g77 functions (e.g., newdate()) have only one! */ 
 #define FORTRAN_add_real add_real__
 #define FORTRAN_add_double_precision add_double_precision__
 #define FORTRAN_avg_reduce_real avg_reduce_real__
@@ -289,10 +290,11 @@ typedef struct var_sct_tag{
 #define FORTRAN_divide_double_precision divide_double_precision_
 #define FORTRAN_foo foo_
 #endif /* SUN-style */ 
+#endif /* USE_FORTRAN_ARITHMETIC */
 
 /* Function prototypes */ 
-extern bool ncar_csm_inq(int);
 extern bool arm_inq(int);
+extern bool ncar_csm_inq(int);
 extern char **fl_lst_mk(char **,int,int,int *,char **);
 extern char **lst_prs(char *,const char *,int *);
 extern char *c_type_nm(nc_type);
@@ -310,12 +312,14 @@ extern dim_sct *dim_dup(dim_sct *);
 extern dim_sct *dim_fll(int,int,char *);
 extern double arm_time_mk(int,double);
 extern int mss_val_get(int,var_sct *);
+extern int nd2endm(int,int);
 extern int op_prs(char *);
 extern int prg_get(void);
 extern lmt_sct *lmt_prs(int,char **);
 extern lmt_sct lmt_dim_mk(int,int,lmt_sct *,int,bool);
-extern nclong arm_base_time_get(int);
 extern nclong FORTRAN_newdate(nclong *,int *);
+extern nclong arm_base_time_get(int);
+extern nclong newdate(nclong,int);
 extern nm_id_sct *dim_lst_ass_var(int,nm_id_sct *,int,int *);
 extern nm_id_sct *dim_lst_mk(int,char **,int);
 extern nm_id_sct *lst_heapsort(nm_id_sct *,int,bool);
@@ -360,8 +364,8 @@ extern void fl_mv(char *,char *);
 extern void fl_out_close(char *,char *,int);
 extern void fl_rm(char *);
 extern void hst_att_cat(int,char *);
-extern void indexx(int,int *,int *);
 extern void index_alpha(int,char **,int *);
+extern void indexx(int,int *,int *);
 extern void lmt_evl(int,lmt_sct *,long,bool);
 extern void nc_lib_vrs_prn(void);
 extern void ncar_csm_date(int,var_sct **,int);
@@ -389,4 +393,7 @@ extern void vec_set(nc_type,long,ptr_unn,double);
 extern void zero_long(long,long *op1);
 
 #endif /* NC_H */ 
+
+
+
 

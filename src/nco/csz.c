@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.23 1999-08-04 18:53:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.24 1999-08-30 07:07:22 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -1012,6 +1012,7 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
 
   (void)fprintf(stderr,"NCO netCDF Operators version %s by Charlie Zender\n",cvs_vrs_sng);
   (void)fprintf(stderr,"%s version %s (%s) \"%s\"\nCopyright 1995--1999 University Corporation for Atmospheric Research\n",prg_nm_get(),vrs_sng,date_sng,nmn_get());
+  (void)fprintf(stderr,"Portions copyright 1999 Regents of the University of California\n");
   (void)free(vrs_sng);
   (void)free(cvs_vrs_sng);
 } /* end copyright_prn() */
@@ -1019,8 +1020,8 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
 void
 fl_cp(char *fl_src,char *fl_dst)
 /* 
-   char *fl_src: I name of the source file to copy
-   char *fl_dst: I name of the destination file
+   char *fl_src: I [sng] Name of the source file to copy
+   char *fl_dst: I [sng] Name of the destination file
  */ 
 {
   /* Routine to copy the first file to the second */ 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.12 1999-07-01 23:13:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.13 1999-08-30 07:07:23 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -80,8 +80,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.12 1999-07-01 23:13:18 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.12 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.13 1999-08-30 07:07:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.13 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -126,15 +126,6 @@ main(int argc,char **argv)
   var_sct **var_out;
   var_sct **var_prc;
   var_sct **var_prc_out;
-  
-  /* NB: assert causes inscrutable crashes (because it's a macro?)
-     during compilation under sunos. */ 
-  /*
-     #ifndef SUN4
-     (void)assert(argc > 0);
-     (void)assert(argv != 0);
-     #end if
-     */
   
   /* Start the clock and save the command line */  
   cmd_ln=cmd_ln_sng(argc,argv);

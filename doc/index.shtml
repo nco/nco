@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.20 1999-08-04 18:53:03 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.21 1999-08-30 07:07:21 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
@@ -145,6 +145,20 @@ User's Guide</A>. </P>
 
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
+
+<P>1999/08/29: 
+NCO now builds completely with pure C source files by default.
+In the past, NCO used Fortran routines to perform floating point
+arithmetic and pure C builds could be manually enabled by specifying
+-DC_ONLY in the build environment. 
+The interface between Fortran and C, however, was very difficult to
+maintain on the wide variety of platforms supported by NCO.
+Now pure C builds are the default and Fortran arithmetic must be
+manually enabled by specifying -DUSE_FORTRAN_ARITHMETIC in the build
+environment. 
+See the User's Guide for details.
+The Fortran code is no longer supported and will probably be
+deprecated in future releases.
 
 <P>1999/08/05: 
 NCAR users will be pleased to know that NCO now takes advantage

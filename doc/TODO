@@ -33,7 +33,6 @@ NCO Wish list (or, improvements I could make while on airplanes if only I had a 
 95. Can udunits accomplish CCM "time since..." conversions for ncrcat?
 97. Add x_op=average... attributes to averagers for ncar_csm
 99. Allow ncatted to print out a file in ncatted format
-100. Write replacement for BEE's date() functions that works with C_ONLY flag
 101. Change tokens so g77 will work with OSs besides LINUX, e.g., SUNMP
 103. Implement trapezoidal rule option in ncra, ncea
 104. Investigate/Document reliability of -A operator when appending from large rank variables to small rank files. Add error message when variables are same size but one has a degenerate dimension.
@@ -47,12 +46,6 @@ ncdump foo.nc
 108. Find concise way to reproduce flaky IRIX problems: 
 ncdiff -O -v float_var in.nc in.nc foo.nc; ncks -H foo.nc
 109. Change copyright printing so order is NCO vrs, netCDF vrs, URL, Copyright
-110. Another intermittent problem on SGI64: Core dumps
-/contrib/bin/ncra -D 3 -O -p /fs/cgd/home0/zender/tmp in.nc foo.nc
-/contrib/bin/ncra -D 5 -O -v time -p /fs/cgd/home0/zender/tmp in.nc foo.nc
-This will not core dump when compiled with -g or -X, only with -O2
-The dump occurs in nc_fortran.F:add_var_real(), so using -DC_ONLY is a
-valid workaround.
 111. Investigate whether using ncwa to average files where variables of type 
 NC_CHAR have a record dimension causes core dumps or other problems.
 i.e., LSM variable timecom caused subtle ncra problems for a while.

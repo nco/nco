@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.27 1999-08-04 18:53:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.28 1999-08-30 07:07:21 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -404,28 +404,38 @@ SunOS @code{cc} compilers, which are strictly ANSI compliant and do not
 allow variable-size arrays, a nice feature supported by GNU, UNICOS,
 Solaris, and AIX compilers. 
 
-Most of the arithmetic-intensive operations in NCO (e.g.,
-multiplication, averaging) are performed in Fortran by default. 
+The most time-intensive portion of NCO execution is spent in
+arithmetic operations, e.g., multiplication, averaging, subtraction.
+Until August, 1999, these operations were performed in Fortran by
+default.  
 This was a design decision based on the speed of Fortran-based object
 code vs. C-based object code in late 1994.
 Since 1994 native C compilers have improved their vectorization
-capabilities and it may be advantageous to replace all Fortran
-subroutines with C subroutines, (or it may just simplify the task of
-compiling on an unsupported platform).
+capabilities and it has become advantageous to replace all Fortran 
+subroutines with C subroutines.
+Furthermore, this greatly simplifies the task of compiling on nominally 
+unsupported platforms. 
+As of August 1999, NCO is built entirely in C by default.
+This allows NCO to compile on any machine with an ANSI C compiler.
+Furthermore, NCO automatically takes advantage of extensions to ANSI C  
+when compiled with the GNU compiler collection, GNU CC.
+
+It is still possible to request Fortran routines to perform arithmetic
+operations, however.
 @cindex preprocessor tokens
-@cindex @code{C_ONLY}
+@cindex @code{USE_FORTRAN_ARITHMETIC}
 This can be accomplished by defining the preprocessor token
-@code{C_ONLY} and rebuilding NCO.
+@code{USE_FORTRAN_ARITHMETIC} and rebuilding NCO.
 @cindex performance
-As its name suggests, the @code{C_ONLY} token replaces all the Fortran
-calls in NCO with C calls.
-Although removing all Fortran calls enhances the portability and
-simplifies the maintenance of the NCO operators, it may also slow down
+As its name suggests, the @code{USE_FORTRAN_ARITHMETIC} token instructs NCO to
+attempts to interface the C routines with Fortran arithmetic.
+Although using Fortran calls instead of C reduces the portability and
+and increases the maintenance of the NCO operators, it may also increase 
 the performance of the numeric operators.
 Presumably this will depend on your machine type, the quality of the C
-compiler, and the size of the data files
+and Fortran compilers, and the size of the data files
 @footnote{If you decide to test the efficiency of the averagers compiled
-with @code{C_ONLY} versus the default Fortran averagers I would be most
+with @code{USE_FORTRAN_ARITHMETIC} versus the default C averagers I would be most
 interested to hear the results.
 Please E-mail me the results including the size of the datasets, the
 platform, and the change in the wallclock time for execution.}.
@@ -438,7 +448,7 @@ platform, and the change in the wallclock time for execution.}.
 @subsection Compiling NCO for Windows NT
 @cindex Windows NT
 
-@cindex @code{C_ONLY}
+@cindex @code{USE_FORTRAN_ARITHMETIC}
 NCO has been successfully ported and tested on the Microsoft Windows NT
 4.0 operating system.
 The switches necessary to accomplish this are included in the standard
@@ -453,17 +463,20 @@ These GNU compilers may be used to build the netCDF distribution
 itself.}, the compilation process is very similar to installing NCO on a
 UNIX system.  
 @cindex preprocessor tokens
-@cindex @code{C_ONLY}
+@cindex @code{USE_FORTRAN_ARITHMETIC}
 @cindex @code{Cygwin}
 @cindex @code{WIN32}
 @cindex @file{GNUmakefile}
 The preprocessor token @code{PVM_ARCH} should be set to @code{WIN32}.  
 Note that defining @code{WIN32} has the side effect of disabling
 Internet features of NCO (see below). 
-As mentioned above, unless you have a Fortran compiler (like g77)
-available, also define the preprocessor token @code{C_ONLY} in the 
-makefile which comes with NCO, @file{Makefile}, or in the compilation
-shell. 
+Unless you have a Fortran compiler (like g77 or f90) available, no other
+tokens are required. 
+Users with fast Fortran compilers may wish to activate the Fortran
+arithmetic routines.
+To do this, define the preprocessor token @code{USE_FORTRAN_ARITHMETIC}
+in the makefile which comes with NCO, @file{Makefile}, or in the
+compilation shell. 
 
 @cindex @code{UNIX}
 The least portable section of the code is the use of standard UNIX and

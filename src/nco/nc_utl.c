@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.30 1999-07-03 21:58:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.31 1999-08-30 07:07:22 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -2972,9 +2972,9 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
   
   switch(type){
   case NC_FLOAT:
-#ifndef C_ONLY
+#ifdef USE_FORTRAN_ARITHMETIC
     (void)FORTRAN_multiply_real(&sz,&has_mss_val,mss_val.fp,op1.fp,op2.fp);
-#else
+#else /* !USE_FORTRAN_ARITHMETIC */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.fp[idx]*=op1.fp[idx];
     }else{
@@ -2982,12 +2982,12 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
 	if((op2.fp[idx] != *mss_val.fp) && (op1.fp[idx] != *mss_val.fp)) op2.fp[idx]*=op1.fp[idx]; else op2.fp[idx]=*mss_val.fp;
       } /* end for */ 
     } /* end else */
-#endif /* !F77 */
+#endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_DOUBLE:
-#ifndef C_ONLY
+#ifdef USE_FORTRAN_ARITHMETIC
     (void)FORTRAN_multiply_double_precision(&sz,&has_mss_val,mss_val.dp,op1.dp,op2.dp);
-#else
+#else /* !USE_FORTRAN_ARITHMETIC */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.dp[idx]*=op1.dp[idx];
     }else{
@@ -2995,7 +2995,7 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
 	if((op2.dp[idx] != *mss_val.dp) && (op1.dp[idx] != *mss_val.dp)) op2.dp[idx]*=op1.dp[idx]; else op2.dp[idx]=*mss_val.dp;
       } /* end for */ 
     } /* end else */
-#endif /* !F77 */
+#endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_LONG:
     if(!has_mss_val){
@@ -3055,9 +3055,9 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
   
   switch(type){
   case NC_FLOAT:
-#ifndef C_ONLY
+#ifdef USE_FORTRAN_ARITHMETIC
     (void)FORTRAN_divide_real(&sz,&has_mss_val,mss_val.fp,op1.fp,op2.fp);
-#else
+#else /* !USE_FORTRAN_ARITHMETIC */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.fp[idx]/=op1.fp[idx];
     }else{
@@ -3065,12 +3065,12 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
 	if((op2.fp[idx] != *mss_val.fp) && (op1.fp[idx] != *mss_val.fp)) op2.fp[idx]/=op1.fp[idx]; else op2.fp[idx]=*mss_val.fp;
       } /* end for */ 
     } /* end else */
-#endif /* !F77 */
+#endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_DOUBLE:
-#ifndef C_ONLY
+#ifdef USE_FORTRAN_ARITHMETIC
     (void)FORTRAN_divide_double_precision(&sz,&has_mss_val,mss_val.dp,op1.dp,op2.dp);
-#else
+#else /* !USE_FORTRAN_ARITHMETIC */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.dp[idx]/=op1.dp[idx];
     }else{
@@ -3078,7 +3078,7 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
 	if((op2.dp[idx] != *mss_val.dp) && (op1.dp[idx] != *mss_val.dp)) op2.dp[idx]/=op1.dp[idx]; else op2.dp[idx]=*mss_val.dp;
       } /* end for */ 
     } /* end else */
-#endif /* !F77 */
+#endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_LONG:
     if(!has_mss_val){
@@ -3139,9 +3139,9 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 
   switch(type){
   case NC_FLOAT:
-#ifndef C_ONLY
+#ifdef USE_FORTRAN_ARITHMETIC
     (void)FORTRAN_add_real(&sz,&has_mss_val,mss_val.fp,tally,op1.fp,op2.fp);
-#else
+#else /* !USE_FORTRAN_ARITHMETIC */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++){
 	op2.fp[idx]+=op1.fp[idx];
@@ -3155,12 +3155,12 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 	} /* end if */
       } /* end for */ 
     } /* end else */
-#endif /* !F77 */
+#endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_DOUBLE:
-#ifndef C_ONLY
+#ifdef USE_FORTRAN_ARITHMETIC
     (void)FORTRAN_add_double_precision(&sz,&has_mss_val,mss_val.dp,tally,op1.dp,op2.dp);
-#else
+#else /* !USE_FORTRAN_ARITHMETIC */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++){
 	op2.dp[idx]+=op1.dp[idx];
@@ -3174,7 +3174,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 	} /* end if */
       } /* end for */ 
     } /* end else */
-#endif /* !F77 */
+#endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_LONG:
     if(!has_mss_val){
@@ -3236,6 +3236,10 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
      value in the corresponding element in the second operand. The operands are assumed to have 
      conforming types, but not dimensions or sizes. */
 
+#ifndef __GNUC__
+  long blk_off;
+  long idx_op1;
+#endif /* !__GNUC__ */
   long idx_op2;
   long idx_blk;
   long sz_blk;
@@ -3249,35 +3253,30 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 
   switch(type){
   case NC_FLOAT:
-#ifndef C_ONLY
+#ifdef USE_FORTRAN_ARITHMETIC
     (void)FORTRAN_avg_reduce_real(&sz_blk,&sz_op2,&has_mss_val,mss_val.fp,tally,op1.fp,op2.fp);
-#else
-#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 ) || ( defined SGIMP64 )
+#else /* !USE_FORTRAN_ARITHMETIC */
+#ifndef __GNUC__
     /* NB: ANSI compliant branch */ 
-    if(True){
-      long blk_off;
-      long idx_op1;
-
-      if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  blk_off=idx_op2*sz_blk;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1.fp[blk_off+idx_blk];
-	  tally[idx_op2]=sz_blk;
-	} /* end loop over idx_op2 */
-      }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  blk_off=idx_op2*sz_blk;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    idx_op1=blk_off+idx_blk;
-	    if(op1.fp[idx_op1] != *mss_val.fp){
-	      op2.fp[idx_op2]+=op1.fp[idx_op1];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	} /* end loop over idx_op2 */
-      } /* end else */
-    } /* end if */ 
-#else /* !SUN4 */ 
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.fp[idx_op2]+=op1.fp[blk_off+idx_blk];
+	tally[idx_op2]=sz_blk;
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.fp[idx_op1] != *mss_val.fp){
+	    op2.fp[idx_op2]+=op1.fp[idx_op1];
+	    tally[idx_op2]++;
+	  } /* end if */
+	} /* end loop over idx_blk */
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */ 
     /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
     if(True){
       float op1_2D[sz_op2][sz_blk];
@@ -3300,39 +3299,34 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* !SUN4 */ 
-#endif /* !F77 */
+#endif /* __GNUC__ */ 
+#endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_DOUBLE:
-#ifndef C_ONLY
+#ifdef USE_FORTRAN_ARITHMETIC
     (void)FORTRAN_avg_reduce_double_precision(&sz_blk,&sz_op2,&has_mss_val,mss_val.dp,tally,op1.dp,op2.dp);
-#else
-#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 ) || ( defined SGIMP64 )
+#else /* !USE_FORTRAN_ARITHMETIC */
+#ifndef __GNUC__
     /* NB: ANSI compliant branch */ 
-    if(True){
-      long blk_off;
-      long idx_op1;
-
-      if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  blk_off=idx_op2*sz_blk;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.dp[idx_op2]+=op1.dp[blk_off+idx_blk];
-	  tally[idx_op2]=sz_blk;
-	} /* end loop over idx_op2 */
-      }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  blk_off=idx_op2*sz_blk;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    idx_op1=blk_off+idx_blk;
-	    if(op1.dp[idx_op1] != *mss_val.dp){
-	      op2.dp[idx_op2]+=op1.dp[idx_op1];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	} /* end loop over idx_op2 */
-      } /* end else */
-    } /* end if */ 
-#else /* !SUN4 */ 
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.dp[idx_op2]+=op1.dp[blk_off+idx_blk];
+	tally[idx_op2]=sz_blk;
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.dp[idx_op1] != *mss_val.dp){
+	    op2.dp[idx_op2]+=op1.dp[idx_op1];
+	    tally[idx_op2]++;
+	  } /* end if */
+	} /* end loop over idx_blk */
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */ 
     /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
     if(True){
       double op1_2D[sz_op2][sz_blk];
@@ -3355,36 +3349,31 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* !SUN4 */ 
-#endif /* !F77 */
+#endif /* __GNUC__ */ 
+#endif /* !USE_FORTRAN_ARITHMETIC */
     break;
   case NC_LONG:
-#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 ) || ( defined SGIMP64 )
+#ifndef __GNUC__
     /* NB: ANSI compliant branch */ 
-    if(True){
-      long blk_off;
-      long idx_op1;
-
-      if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  blk_off=idx_op2*sz_blk;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.lp[idx_op2]+=op1.lp[blk_off+idx_blk];
-	  tally[idx_op2]=sz_blk;
-	} /* end loop over idx_op2 */
-      }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  blk_off=idx_op2*sz_blk;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    idx_op1=blk_off+idx_blk;
-	    if(op1.lp[idx_op1] != *mss_val.lp){
-	      op2.lp[idx_op2]+=op1.lp[idx_op1];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	} /* end loop over idx_op2 */
-      } /* end else */
-    } /* end if */ 
-#else /* !SUN4 */ 
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.lp[idx_op2]+=op1.lp[blk_off+idx_blk];
+	tally[idx_op2]=sz_blk;
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.lp[idx_op1] != *mss_val.lp){
+	    op2.lp[idx_op2]+=op1.lp[idx_op1];
+	    tally[idx_op2]++;
+	  } /* end if */
+	} /* end loop over idx_blk */
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */ 
     /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
     if(True){
       long op1_2D[sz_op2][sz_blk];
@@ -3407,35 +3396,30 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* !SUN4 */ 
+#endif /* __GNUC__ */ 
     break;
   case NC_SHORT:
-#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 ) || ( defined SGIMP64 )
+#ifndef __GNUC__
     /* NB: ANSI compliant branch */ 
-    if(True){
-      long blk_off;
-      long idx_op1;
-
-      if(!has_mss_val){
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  blk_off=idx_op2*sz_blk;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.sp[idx_op2]+=op1.sp[blk_off+idx_blk];
-	  tally[idx_op2]=sz_blk;
-	} /* end loop over idx_op2 */
-      }else{
-	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
-	  blk_off=idx_op2*sz_blk;
-	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    idx_op1=blk_off+idx_blk;
-	    if(op1.sp[idx_op1] != *mss_val.sp){
-	      op2.sp[idx_op2]+=op1.sp[idx_op1];
-	      tally[idx_op2]++;
-	    } /* end if */
-	  } /* end loop over idx_blk */
-	} /* end loop over idx_op2 */
-      } /* end else */
-    } /* end if */ 
-#else /* !SUN4 */ 
+    if(!has_mss_val){
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++) op2.sp[idx_op2]+=op1.sp[blk_off+idx_blk];
+	tally[idx_op2]=sz_blk;
+      } /* end loop over idx_op2 */
+    }else{
+      for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
+	blk_off=idx_op2*sz_blk;
+	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
+	  idx_op1=blk_off+idx_blk;
+	  if(op1.sp[idx_op1] != *mss_val.sp){
+	    op2.sp[idx_op2]+=op1.sp[idx_op1];
+	    tally[idx_op2]++;
+	  } /* end if */
+	} /* end loop over idx_blk */
+      } /* end loop over idx_op2 */
+    } /* end else */
+#else /* __GNUC__ */ 
     /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */ 
     if(True){
       short op1_2D[sz_op2][sz_blk];
@@ -3458,7 +3442,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
-#endif /* !SUN4 */ 
+#endif /* __GNUC__ */ 
     break;
   case NC_CHAR:
     /* Do nothing */ 
@@ -3497,9 +3481,9 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
 
   switch(type){
   case NC_FLOAT:
-#ifndef C_ONLY
+#ifdef USE_FORTRAN_ARITHMETIC
     (void)FORTRAN_normalize_real(&sz,&has_mss_val,mss_val.fp,tally,op1.fp);
-#else
+#else /* !USE_FORTRAN_ARITHMETIC */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]/=tally[idx];
     }else{
@@ -3507,12 +3491,12 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
 	if(tally[idx] != 0L) op1.fp[idx]/=tally[idx]; else op1.fp[idx]=*mss_val.fp;
       } /* end for */ 
     } /* end else */
-#endif /* !F77 */ 
+#endif /* !USE_FORTRAN_ARITHMETIC */ 
     break;
   case NC_DOUBLE:
-#ifndef C_ONLY
+#ifdef USE_FORTRAN_ARITHMETIC
     (void)FORTRAN_normalize_double_precision(&sz,&has_mss_val,mss_val.dp,tally,op1.dp);
-#else
+#else /* !USE_FORTRAN_ARITHMETIC */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]/=tally[idx];
     }else{
@@ -3520,7 +3504,7 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
 	if(tally[idx] != 0L) op1.dp[idx]/=tally[idx]; else op1.dp[idx]=*mss_val.dp;
       } /* end for */ 
     } /* end else */
-#endif /* !F77 */ 
+#endif /* !USE_FORTRAN_ARITHMETIC */ 
     break;
   case NC_LONG:
     if(!has_mss_val){
@@ -3804,9 +3788,9 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
 
   switch(type){
   case NC_FLOAT:
-#ifndef C_ONLY
+#ifdef USE_FORTRAN_ARITHMETIC
     (void)FORTRAN_subtract_real(&sz,&has_mss_val,mss_val.fp,op1.fp,op2.fp);
-#else
+#else /* !USE_FORTRAN_ARITHMETIC */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.fp[idx]-=op1.fp[idx];
     }else{
@@ -3814,12 +3798,12 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
 	if((op2.fp[idx] != *mss_val.fp) && (op1.fp[idx] != *mss_val.fp)) op2.fp[idx]-=op1.fp[idx]; else op2.fp[idx]=*mss_val.fp;
       } /* end for */ 
     } /* end else */
-#endif /* !F77 */ 
+#endif /* !USE_FORTRAN_ARITHMETIC */ 
     break;
   case NC_DOUBLE:
-#ifndef C_ONLY
+#ifdef USE_FORTRAN_ARITHMETIC
     (void)FORTRAN_subtract_double_precision(&sz,&has_mss_val,mss_val.dp,op1.dp,op2.dp);
-#else
+#else /* !USE_FORTRAN_ARITHMETIC */
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.dp[idx]-=op1.dp[idx];
     }else{
@@ -3827,7 +3811,7 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
 	if((op2.dp[idx] != *mss_val.dp) && (op1.dp[idx] != *mss_val.dp)) op2.dp[idx]-=op1.dp[idx]; else op2.dp[idx]=*mss_val.dp;
       } /* end for */ 
     } /* end else */
-#endif /* !F77 */ 
+#endif /* !USE_FORTRAN_ARITHMETIC */ 
     break;
   case NC_LONG:
     if(!has_mss_val){
@@ -3952,12 +3936,11 @@ ncar_csm_date(int nc_id,var_sct **var,int nbr_var)
   day=(int)(var[time_idx]->val.dp[0]);
   
   /* Recompute the date variable based on the new (averaged) day number */ 
-#ifndef C_ONLY
+#ifdef USE_FORTRAN_ARITHMETIC
   date=FORTRAN_newdate(&nbdate,&day);
-#else
-  /* Debug dbg XXX: Rewrite this routine in C */ 
-  date=nbdate;
-#endif /* !F77 */ 
+#else /* !USE_FORTRAN_ARITHMETIC */
+  date=newdate(nbdate,day);
+#endif /* !USE_FORTRAN_ARITHMETIC */ 
   if(var[date_idx]->val.lp != NULL) return; else var[date_idx]->val.lp[0]=date;
   
 } /* end ncar_csm_date */ 
@@ -4636,3 +4619,110 @@ op_prs(char *op_sng)
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */ 
   return 1;
 } /* end op_prs() */ 
+
+int nd2endm(int mth,int day)
+{
+  /* Purpose: Returns the number of days to the end of the month  
+     This number added to the input arguement day gives the last day of month mth
+     Original fortran: Brian Eaton cal_util.F:nd2endm()
+     C version: Charlie Zender
+ */ 
+  int nbr_day_2_mth_end;
+  int mdays[]={31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+
+  if(mth < 1 || mth > 12 || day < 0){
+    (void)fprintf(stdout,"%s: ERROR nd2endm() reports mth = %d, day = %d\n",prg_nm_get(),mth,day);
+    exit(EXIT_FAILURE);
+  } /* end if */
+
+  nbr_day_2_mth_end=mdays[mth-1]-day;
+
+  return nbr_day_2_mth_end;
+} /* nd2endm */
+
+nclong newdate(nclong date,int day_srt) 
+{
+  /* Purpose: Find the date a specified number of days (possibly negative) from the given date 
+     Original fortran: Brian Eaton cal_util.F:newdate()
+     C version: Charlie Zender
+  */
+  /* Local */
+  int date_srt; /* Initial value of date (may change sign) */
+  int yr_crr; /* Year of date */
+  int mth_crr; /* Month of date */
+  int mth_srt; /* Save the initial value of month */
+  int day_crr; /* Day of date */
+  int day_ncr; /* Running count of days to increment date by */
+  int mth_idx; /* Index */
+  int mth_tmp; /* Current month as we increment date */
+  int day_2_eom; /* Days to end of month */
+
+  int mth_day_nbr[]={ 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
+		31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
+  nclong newdate_YYMMDD; /* New date in YYMMDD format */
+
+  if(day_srt == 0) return date;
+
+  date_srt=date;
+  yr_crr=date_srt/10000;
+  if(date_srt < 0) date_srt=-date_srt;
+  mth_crr=(date_srt%10000)/100;
+  mth_srt=mth_crr;
+  day_crr=date_srt%100;
+      
+  if(day_srt > 0){
+    day_ncr=day_srt;
+    yr_crr+=day_ncr/365;
+    day_ncr=day_ncr%365;
+    for(mth_idx=mth_srt;mth_idx<=mth_srt+12;mth_idx++){
+      mth_tmp=mth_idx;
+      if(mth_idx > 12) mth_tmp=mth_idx-12;
+      day_2_eom=nd2endm(mth_tmp,day_crr);
+      if(day_ncr > day_2_eom){
+	mth_crr++;
+	if(mth_crr > 12){
+	  mth_crr=1;
+	  yr_crr++;
+	} /* end if */
+	day_crr=1;
+	day_ncr-=day_2_eom+1;
+	if(day_ncr == 0) goto end_day_srtgt0;
+      }else{
+	day_crr=day_crr+day_ncr;
+	goto end_day_srtgt0;
+      } /* end if */
+    } /* end loop over */
+  end_day_srtgt0: /* label */
+  }else if(day_srt < 0){
+    day_ncr=-day_srt;
+    yr_crr=yr_crr-day_ncr/365;
+    day_ncr=day_ncr%365;
+    mth_srt=mth_crr;
+    for(mth_idx=mth_srt+12;mth_idx>=mth_srt;mth_idx--){
+      if(day_ncr >= day_crr){
+	mth_crr--;
+	if(mth_crr < 1){
+	  mth_crr=12;
+	  yr_crr--;
+	} /* end if */
+	day_ncr-=day_crr;
+	day_crr=mth_day_nbr[mth_crr-1];
+	if(day_ncr == 0) goto end_day_srtlt0;
+      }else{
+	day_crr-=day_ncr;
+	goto end_day_srtlt0;
+      } /* end if */
+    } /* end loop over */
+  end_day_srtlt0: /* label */
+  } /* end if */
+
+  if(yr_crr >= 0){
+    newdate_YYMMDD=yr_crr*10000+mth_crr*100+day_crr;
+  }else{
+    newdate_YYMMDD=-yr_crr*10000+mth_crr*100+day_crr;
+    newdate_YYMMDD=-newdate_YYMMDD;
+  } /* end if */
+
+  return newdate_YYMMDD;
+} /* end newdate() */

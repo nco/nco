@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.26 1999-08-04 16:52:04 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.27 1999-08-30 07:07:20 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -26,11 +26,8 @@ else
  OPTS := R
 endif
 endif
-ifndef C_ONLY
- C_ONLY := N
-endif
-ifeq ($(C_ONLY),Y)
- CPPFLAGS += -DC_ONLY
+ifndef USE_FORTRAN_ARITHMETIC
+ USE_FORTRAN_ARITHMETIC := N
 endif
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
@@ -147,7 +144,7 @@ ifeq ($(PVM_ARCH),LINUX)
 NETCDF_INC := /usr/local/include
 NETCDF_LIB := /usr/local/lib
 C++ := g++
-# 98/05/17 As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
+# 1998/05/17 As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
 #CC := gcc -ansi
 CC := gcc
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
@@ -301,7 +298,7 @@ endif
 ifeq ($(OPTS),X)
  CFLAGS := -64 -mips4 -g -trapuv
  FFLAGS := -64 -mips4 -g -extend_source -check_bounds -trapuv
-# 98/08/20: Using range checking results in unresolved symbol errors unless linking to this library
+# 1998/08/20: Using range checking results in unresolved symbol errors unless linking to this library
  LDFLAGS += -L/usr/lib64 -lftn
 endif
 $(MY_OBJ_DIR)/%.o : %.F
@@ -315,8 +312,8 @@ NETCDF_INC := /usr/local/include
 NETCDF_LIB := /usr/local/lib64/r4i4
 C++ := c++
 CC := cc
-# spoof SGI64, force C_ONLY
-CPPFLAGS := -DSGI64 -DC_ONLY $(MY_INC_DIR) -I$(NETCDF_INC)
+# spoof SGI64
+CPPFLAGS := -DSGI64 $(MY_INC_DIR) -I$(NETCDF_INC)
 FC := f77
 LD := ld
 LDFLAGS := -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
@@ -338,7 +335,7 @@ endif
 ifeq ($(OPTS),X)
  CFLAGS := -64 -mips4 -g -trapuv
  FFLAGS := -64 -mips4 -g -extend_source -check_bounds -trapuv
-# 98/08/20: Using range checking results in unresolved symbol errors unless linking to this library
+# 1998/08/20: Using range checking results in unresolved symbol errors unless linking to this library
  LDFLAGS += -L/usr/lib64 -lftn
 endif
 $(MY_OBJ_DIR)/%.o : %.F
@@ -398,7 +395,7 @@ endif
 ifeq ($(OPTS),X)
  CFLAGS := -g 
  FFLAGS := -g -e
-# NB: 98/06/01 -C (range-checking) is not supported by Sun f90
+# NB: 1998/06/01 -C (range-checking) is not supported by Sun f90
 ifeq ($(FC),f77)
  FFLAGS += $(FFLAGS) -C
 endif
@@ -434,7 +431,7 @@ endif
 ifeq ($(OPTS),X)
  CFLAGS := -g 
  FFLAGS := -g -e
-# NB: 98/06/01 -C (range-checking) is not supported by Sun f90
+# NB: 1998/06/01 -C (range-checking) is not supported by Sun f90
 ifeq ($(FC),f77)
  FFLAGS += $(FFLAGS) -C
 endif
@@ -448,7 +445,6 @@ endif
 ifeq ($(PVM_ARCH),WIN32)
 NETCDF_INC := /usr/local/include
 NETCDF_LIB := /usr/local/lib
-C_ONLY := N
 C++ := g++
 CC := gcc -ansi
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
@@ -472,8 +468,8 @@ $(MY_OBJ_DIR)/%.o : %.f
 	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
 endif
 
-ifeq ($(C_ONLY),Y)
- CPPFLAGS += -DC_ONLY
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ CPPFLAGS += -DUSE_FORTRAN_ARITHMETIC
 endif
 
 # Define any remaining variables
@@ -522,7 +518,7 @@ binclean:
 
 # Targets in lib
 libnco : $(libnco).a
-ifeq ($(C_ONLY),Y)
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 $(libnco).a : $(libnco).a($(MY_OBJ_DIR)/nc_utl.o) \
 	$(libnco).a($(MY_OBJ_DIR)/csz.o)
 else

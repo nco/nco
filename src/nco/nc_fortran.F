@@ -1,8 +1,9 @@
-c     $Header: /data/zender/nco_20150216/nco/src/nco/nc_fortran.F,v 1.5 1999-05-10 06:36:23 zender Exp $
+c     $Header: /data/zender/nco_20150216/nco/src/nco/nc_fortran.F,v 1.6 1999-08-30 07:07:22 zender Exp $
 
 c     Fortran arithmetic utilities for netCDF operators
 
 c     (c) Copyright 1995--1999 University Corporation for Atmospheric Research
+c     Portions (c) Copyright 1999 Regents of the University of California
 c     The file LICENSE contains the full copyright notice 
 c     Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.10 1999-07-01 23:13:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.11 1999-08-30 07:07:23 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -74,8 +74,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.10 1999-07-01 23:13:18 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.10 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.11 1999-08-30 07:07:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.11 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -98,15 +98,6 @@ main(int argc,char **argv)
   nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */ 
 
   time_t clock;
-
-  /* NB: assert causes inscrutable crashes (because it's a macro?)
-     during compilation under sunos. */ 
-/*
-#ifndef SUN4
-  (void)assert(argc > 0);
-  (void)assert(argv != 0);
-#end if
-*/
 
   /* Start the clock and save the command line */  
   cmd_ln=cmd_ln_sng(argc,argv);
