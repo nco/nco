@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.34 2002-01-27 06:14:05 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.35 2002-01-28 02:09:39 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -77,12 +77,9 @@ int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 int rcd; /* [enm] Return value for function calls */
 
 /* Global variables */
-extern long ln_nbr_crr; /* [cnt] Line number incremented in ncap.l */
-extern char *fl_spt_glb; /* [fl] Script file */
-
-/* File scope variables */
-/* fxm: turn arbitrary size into pre-processor token */
-char err_sng[200]; /* Error string for short error messages */
+extern long ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
+extern char *fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
+extern char err_sng[200]; /* [sng] Buffer for error string (declared in ) */
 
 /* End C declarations section */
 %}

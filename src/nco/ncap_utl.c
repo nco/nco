@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.37 2002-01-25 07:58:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.38 2002-01-28 02:09:39 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -1249,15 +1249,15 @@ ncap_initial_scan
  nm_id_sct** xtr_lst_b,int *nbr_lst_b,nm_id_sct** xtr_lst_c, int *nbr_lst_c)
 {
   /* Purpose: Scan command script and return three lists
-     list a -- RHS variables present in input file
-     list b -- LHS variables present in input file
-     list c -- variables of attributes on LHS which are present in input file */
+     list a: RHS variables present in input file
+     list b: LHS variables present in input file
+     list c: Variables of attributes on LHS which are present in input file */
   
-/* We are calling scanner so get TOKENS and YYSTYPE produced by Bison */
+  /* Get TOKENS and YYSTYPE prior to calling scanner */
 #include "ncap.tab.h" /* ncap.tab.h is produced from ncap.y by parser generator */
 
-  extern FILE *yyin;
-  extern int yylex(YYSTYPE *,prs_sct *);
+  extern FILE *yyin; /* [fnc] File handle for script file */
+  extern int yylex(YYSTYPE *,prs_sct *); /* [fnc] Scanner entrypoint */
   
 /* Following declaration gets rid of implicit declaration compiler warning
    It is a condensation of the lexer declaration from lex.yy.c:
@@ -1268,18 +1268,18 @@ ncap_initial_scan
   
   char *var_nm;  
 
-  int var_idx;
-  int tkn_crr; /* [tkn] Current token */
   int n_lst_a=0;
   int n_lst_b=0;
   int n_lst_c=0;
+  int tkn_crr=-1; /* [tkn] Current token, must initialize to non-zero value */
   int var_id;
+  int var_idx;
 
   nm_id_sct *lst_a=NULL_CEWI;
   nm_id_sct *lst_b=NULL_CEWI;
   nm_id_sct *lst_c=NULL_CEWI;
   
-  YYSTYPE lvalp;
+  YYSTYPE lval; /* [tkn] Token */
 
   if(spt_arg_cat){
     yy_scan_string(spt_arg_cat);
@@ -1291,17 +1291,18 @@ ncap_initial_scan
     } /* endif error */
   } /* endif input from script */
   
-  /* Obtain first token from lexer */
-  tkn_crr=yylex(&lvalp,prs_arg);
-  
+  /* While there are more tokens... */
   while(tkn_crr != 0){
+    /* ...obtain next token from lexer... */
+    tkn_crr=yylex(&lval,prs_arg);
+    /* ...determine which variables and attributes exist in input file... */
     switch (tkn_crr){
     case IGNORE: break; /* Do nothing  */
     case ATTRIBUTE: break; /* Do nothing  */
     case EPROVOKE: break; /* Do nothing */
     case VAR: 
       /* Search for RHS variables in input file */
-      var_nm=lvalp.vara;
+      var_nm=lval.vara;
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
 	for(var_idx=0;var_idx<n_lst_a;var_idx++)
@@ -1315,7 +1316,7 @@ ncap_initial_scan
       break; 
     case OUT_VAR: 
       /* Search for LHS variables in input file */
-      var_nm=lvalp.output_var;
+      var_nm=lval.output_var;
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
 	for(var_idx=0;var_idx<n_lst_b;var_idx++)
@@ -1329,7 +1330,7 @@ ncap_initial_scan
       break;
     case OUT_ATT:
       /* Search for LHS attribute's parent variable in input file */
-      var_nm=lvalp.att.var_nm;     
+      var_nm=lval.att.var_nm;     
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
 	for(var_idx=0;var_idx<n_lst_c;var_idx++)
@@ -1343,14 +1344,13 @@ ncap_initial_scan
       break;
     default: break;
     } /* end switch */
-    tkn_crr=yylex(&lvalp,prs_arg);
   } /* end while */
   
   if(n_lst_a>0){*xtr_lst_a=lst_a;*nbr_lst_a=n_lst_a;}
   if(n_lst_b>0){*xtr_lst_b=lst_b;*nbr_lst_b=n_lst_b;}
   if(n_lst_c>0){*xtr_lst_c=lst_c;*nbr_lst_c=n_lst_c;}
   
-} /* end ncap_initial_scan */
+} /* end ncap_initial_scan() */
 
 bool /* O [flg] Variables now conform */
 ncap_var_stretch /* [fnc] Stretch variables */

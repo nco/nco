@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.53 2002-01-27 06:14:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.54 2002-01-28 02:09:39 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.53 2002-01-27 06:14:05 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.53 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.54 2002-01-28 02:09:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.54 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -164,7 +164,7 @@ main(int argc,char **argv)
   
   const int att_lst_max=500; /* fxm: turn arbitrary size into pre-processor token */
   
-  sym_sct **sym_tbl; /* [fnc] Function table for float and double functions */
+  sym_sct **sym_tbl; /* [fnc] Symbol table for functions */
   int sym_tbl_nbr; /* [nbr] Size of symbol table */
   int sym_idx=0; /* [idx] Counter for symbols */
   
@@ -226,7 +226,9 @@ main(int argc,char **argv)
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
-    case 'n': /* Get the NINTAP-style abbreviation of files to average */
+    case 'n': /* NINTAP-style abbreviation of files to process */
+      /* Currently not used in ncap but should be to allow processing multiple input files by same script */
+      (void)fprintf(stderr,"%s: ERROR %s does not currently implement -n option\n",prg_nm_get(),prg_nm_get());
       fl_lst_abb=lst_prs(optarg,",",&nbr_abb_arg);
       if(nbr_abb_arg < 1 || nbr_abb_arg > 3){
 	(void)fprintf(stdout,"%s: ERROR Incorrect abbreviation for file list\n",prg_nm);
@@ -261,6 +263,8 @@ main(int argc,char **argv)
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
+      (void)fprintf(stderr,"%s: ERROR %s does not currently implement -x option\n",prg_nm_get(),prg_nm_get());
+      exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
       (void)usg_prn();
@@ -324,21 +328,20 @@ main(int argc,char **argv)
   prs_arg.in_id=in_id; /* [id] Input data file ID */
   prs_arg.fl_out=NULL; /* [sng] Output data file */
   prs_arg.out_id=-1; /* [id] Output data file ID */
-  prs_arg.fl_spt=fl_spt;
+  prs_arg.fl_spt=fl_spt; /* Instruction file to be parsed */
   prs_arg.att_lst=att_lst;
   prs_arg.nbr_att=&nbr_att;
   prs_arg.dmn=dmn; /* [dmn] List of extracted dimensions */
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr; /* [nbr] Number of extracted dimensions */
-  prs_arg.sym_tbl=sym_tbl;
-  prs_arg.sym_tbl_nbr=sym_tbl_nbr;
+  prs_arg.sym_tbl=sym_tbl; /* [fnc] Symbol table for functions */
+  prs_arg.sym_tbl_nbr=sym_tbl_nbr; /* [nbr] Number of functions in table */
   prs_arg.initial_scan=True;
   
-  /* Create three lists of variables:
-     list a variables on RHS of = sign
-     list b variables on LHS
-     list c variables of attributes on LHS
-     All variables are present in input file */
-  (void)ncap_initial_scan(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c, &nbr_lst_c);
+  /* Perform initial scan of input script to create three lists of variables:
+     list a: RHS variables present in input file
+     list b: LHS variables present in input file
+     list c: Variables of attributes on LHS which are present in input file */
+  (void)ncap_initial_scan(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c,&nbr_lst_c);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
   rcd=nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
@@ -439,19 +442,22 @@ main(int argc,char **argv)
   (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
   
   (void)nco_enddef(out_id); 
-  /* Set arguments to parser */
-  prs_arg.fl_in=fl_in;
-  prs_arg.in_id=in_id;
-  prs_arg.fl_out=fl_out;
-  prs_arg.out_id=out_id;
-  prs_arg.fl_spt=fl_spt;
+
+  /* Set arguments for second scan and script execution */
+  prs_arg.fl_in=fl_in; /* [sng] Input data file */
+  prs_arg.in_id=in_id; /* [id] Input data file ID */
+  prs_arg.fl_out=fl_out; /* [sng] Output data file */
+  prs_arg.out_id=out_id; /* [id] Output data file ID */
+  prs_arg.fl_spt=fl_spt; /* Instruction file to be parsed */
   prs_arg.att_lst=att_lst;
   prs_arg.nbr_att=&nbr_att;
-  prs_arg.dmn=dmn_out;
-  prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
-  prs_arg.sym_tbl=sym_tbl;
-  prs_arg.sym_tbl_nbr=sym_tbl_nbr;
-  prs_arg.initial_scan=False;
+  prs_arg.dmn=dmn_out; /* [dmn] List of extracted dimensions */
+  prs_arg.nbr_dmn_xtr=nbr_dmn_xtr; /* [nbr] Number of extracted dimensions */
+  prs_arg.sym_tbl=sym_tbl; /* [fnc] Symbol table for functions */
+  prs_arg.sym_tbl_nbr=sym_tbl_nbr; /* [nbr] Number of functions in table */
+  prs_arg.initial_scan=False; /* [flg] Initial scan of script */
+  prs_arg.dmn_LHS_cst=NULL; /* [dmn] LHS cast dimensions */
+  prs_arg.dmn_nbr_LHS=0; /* [nbr] Number of LHS dimensions */
   
   /* Initialize line counter */
   ln_nbr_crr=1; /* [cnt] Line number incremented in ncap.l */

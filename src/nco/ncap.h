@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.23 2002-01-27 06:14:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.24 2002-01-28 02:09:39 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -66,9 +66,11 @@ typedef struct{ /* prs_sct */
   int *nbr_att;
   dmn_sct **dmn; /* [dmn] List of extracted dimensions */
   int nbr_dmn_xtr; /* [nbr] Number of extracted dimensions */
-  sym_sct **sym_tbl;
-  int sym_tbl_nbr;
-  bool initial_scan;
+  sym_sct **sym_tbl; /* [fnc] Symbol table for functions */
+  int sym_tbl_nbr; /* [nbr] Number of functions in table */
+  bool initial_scan; /* [flg] Initial scan of script */
+  dmn_sct **dmn_LHS_cst; /* [dmn] LHS cast dimensions */
+  int dmn_nbr_LHS; /* [nbr] Number of LHS dimensions */
 } prs_sct;
 
 /* These funtions are either in ncap.y or ncap_utl.c */

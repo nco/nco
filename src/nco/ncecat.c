@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.32 2002-01-22 08:54:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.33 2002-01-28 02:09:39 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.32 2002-01-22 08:54:46 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.32 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.33 2002-01-28 02:09:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.33 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -164,7 +164,7 @@ main(int argc,char **argv)
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
-    case 'n': /* Get the NINTAP-style abbreviation of files to average */
+    case 'n': /* NINTAP-style abbreviation of files to process */
       fl_lst_abb=lst_prs(optarg,",",&nbr_abb_arg);
       if(nbr_abb_arg < 1 || nbr_abb_arg > 5){
 	(void)fprintf(stdout,"%s: ERROR Incorrect abbreviation for file list\n",prg_nm);

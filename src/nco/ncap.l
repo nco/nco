@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.31 2002-01-27 08:16:01 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.32 2002-01-28 02:09:39 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -70,12 +70,15 @@
      This causes yyerror to print current error and skip next error
      fxm: Hackish, but I see no other way */ 
 
-  extern long int ln_nbr_crr; /* [cnt] Line number incremented in ncap.l */
-
   /* Re-prototype yylex() to accept re-entrant arguments (Flex p. 12, Bison p. 60) */
-#define YY_DECL int yylex(YYSTYPE *lvalp,prs_sct *prs_arg)
+#define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
 
-  char err_sng[200]; /* [sng] Buffer for error messages defined in lexer */
+  /* Global variables */
+  extern long ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
+
+  /* File scope variables */
+  /* fxm: turn arbitrary size into pre-processor token */
+  char err_sng[200]; /* [sng] Buffer for error string */
 
   /* Is lexer on left or right hand side of equals sign?
      LHS should contain only a variable or attribute
@@ -86,7 +89,7 @@
 
   /* Has a LHS-cast been requested on current input line?
      If so, variables and attributes on RHS must be cast to LHS properties */
-  static bool LHS_cast; /* [flg] Cast RHS structures to LHS properties */
+  static bool LHS_cst; /* [flg] Cast RHS structures to LHS properties */
 %}
 
 /* Handle C comments LMB92 p. 172, p. 43
@@ -142,10 +145,10 @@
   
   /* Replace C-language escape codes with actual byte values */
   (void)sng_ascii_trn(bfr);
-  lvalp->str=strdup(bfr);       
+  lval_ptr->str=strdup(bfr);       
   if(dbg_lvl_get() > 1){
     printf("Lexing string: %s\n",yytext);
-    printf("Made   string: %s\n",lvalp->str);
+    printf("Made   string: %s\n",lval_ptr->str);
   } /* endif */
   return(STRING);
 } /* end quoted strings */
@@ -156,8 +159,8 @@
      so that unary plus/minus is handled in lexer rather than parser.
      However, this has unintended side effects so let parser handle it for now */
   if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a double %s\n",yytext); 
-  lvalp->attribute.val.d=strtod(yytext,(char **)NULL);
-  lvalp->attribute.type=NC_DOUBLE;
+  lval_ptr->attribute.val.d=strtod(yytext,(char **)NULL);
+  lval_ptr->attribute.type=NC_DOUBLE;
   return(ATTRIBUTE);
 } /* end double or long double */
 
@@ -170,8 +173,8 @@
     yyerror(err_sng);
     return(EPROVOKE);
   } /* endif */
-  lvalp->attribute.val.f=flt_tkn;
-  lvalp->attribute.type=NC_FLOAT;
+  lval_ptr->attribute.val.f=flt_tkn;
+  lval_ptr->attribute.type=NC_FLOAT;
   return(ATTRIBUTE);    
 } /* end float */
 
@@ -181,12 +184,12 @@
   if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing an integer %s\n",yytext); 
   dbl_tkn=strtod((char*)yytext, (char**)(NULL));
   if (dbl_tkn < INT_MIN || dbl_tkn > INT_MAX){
-    lvalp->attribute.val.d=dbl_tkn;
-    lvalp->attribute.type=NC_DOUBLE;
+    lval_ptr->attribute.val.d=dbl_tkn;
+    lval_ptr->attribute.type=NC_DOUBLE;
     return(ATTRIBUTE);
   }else{
-    lvalp->attribute.val.l=(nco_long)dbl_tkn;
-    lvalp->attribute.type=NC_INT;
+    lval_ptr->attribute.val.l=(nco_long)dbl_tkn;
+    lval_ptr->attribute.type=NC_INT;
     return(ATTRIBUTE);
   } /* end else */
 } /* end long */
@@ -199,8 +202,8 @@
     sprintf(err_sng,"bad short constant: %s",(char*)yytext);
     yyerror(err_sng);
   }
-  lvalp->attribute.val.s=sht_tkn;
-  lvalp->attribute.type=NC_SHORT;
+  lval_ptr->attribute.val.s=sht_tkn;
+  lval_ptr->attribute.type=NC_SHORT;
   return(ATTRIBUTE);    
 } /* end short */
 
@@ -214,12 +217,12 @@
     return(EPROVOKE);
   }
   if(byt_tkn < -128 || byt_tkn >127){
-    lvalp->attribute.val.l=byt_tkn;
-    lvalp->attribute.type=NC_INT;
+    lval_ptr->attribute.val.l=byt_tkn;
+    lval_ptr->attribute.type=NC_INT;
     return(ATTRIBUTE);    
   }else{ 
-    lvalp->attribute.val.b=byt_tkn;
-    lvalp->attribute.type=NC_BYTE;
+    lval_ptr->attribute.val.b=byt_tkn;
+    lval_ptr->attribute.type=NC_BYTE;
     return(ATTRIBUTE);                    
   } /* end else */
 } /* end byte */
@@ -234,7 +237,7 @@ pow/[ ]*\( {return POWER;}
    int i;
    for(i=0;i<prs_arg->sym_tbl_nbr;i++)
      if(!strcmp(yytext,(prs_arg->sym_tbl[i]->nm))){ 
-        lvalp->sym=prs_arg->sym_tbl[i];
+        lval_ptr->sym=prs_arg->sym_tbl[i];
         return FUNCTION;
      } /* endif */
    (void)sprintf(err_sng,"Warning: Unable to locate function %s. Is this really a variable ?",yytext);
@@ -273,8 +276,8 @@ pow/[ ]*\( {return POWER;}
      For initial scan, just return attributes on RHS */
   if(prs_arg->initial_scan){
     if(!RHS){
-      lvalp->att.att_nm=strdup(att_nm);
-      lvalp->att.var_nm=strdup(var_nm);
+      lval_ptr->att.att_nm=strdup(att_nm);
+      lval_ptr->att.var_nm=strdup(var_nm);
       return(OUT_ATT);
     }else{
       return(IGNORE);
@@ -294,12 +297,12 @@ pow/[ ]*\( {return POWER;}
       ptr_aed=prs_arg->att_lst[att_idx]; 
       if (ptr_aed->type == NC_CHAR){
 	(void)cast_void_nctype(ptr_aed->type,&ptr_aed->val);
-	lvalp->str=(char *)nco_malloc((ptr_aed->sz+1)*nco_typ_lng(NC_CHAR));
-	strncpy(lvalp->str,(char *)(ptr_aed->val.cp),ptr_aed->sz);
-	lvalp->str[ptr_aed->sz]='\0';
+	lval_ptr->str=(char *)nco_malloc((ptr_aed->sz+1)*nco_typ_lng(NC_CHAR));
+	strncpy(lval_ptr->str,(char *)(ptr_aed->val.cp),ptr_aed->sz);
+	lval_ptr->str[ptr_aed->sz]='\0';
 	return(STRING);
       } else {
-	lvalp->attribute=ncap_ptr_unn_2_attribute(ptr_aed->type,ptr_aed->val);
+	lval_ptr->attribute=ncap_ptr_unn_2_attribute(ptr_aed->type,ptr_aed->val);
 	return(ATTRIBUTE);  
       } /* end else */        
     } /* end if */
@@ -308,8 +311,8 @@ pow/[ ]*\( {return POWER;}
       if (rcd == NC_ENOTATT){
 	(void)sprintf(err_sng,"Warning: Unable to locate RHS attribute %s of variable %s with var ID = %d in file %s. Returning 0-byte.",att_nm,var_nm,var_id,prs_arg->fl_in);
 	(void)yyerror(err_sng);
-	lvalp->attribute.val.b=0;
-	lvalp->attribute.type=NC_BYTE;
+	lval_ptr->attribute.val.b=0;
+	lval_ptr->attribute.type=NC_BYTE;
 	return(ATTRIBUTE);
       } /* end if */
       if(rcd == NC_NOERR){ 
@@ -317,12 +320,12 @@ pow/[ ]*\( {return POWER;}
 	rcd=nco_get_att(prs_arg->in_id,var_id,att_nm,val.vp,type);
 	if(type == NC_CHAR){
 	  (void)cast_void_nctype(type,&val);
-	  lvalp->str=(char *)nco_malloc((att_sz+1)*sizeof(char));
-	  strncpy(lvalp->str,(char *)val.cp,att_sz);
-	  lvalp->str[att_sz]='\0'; 
+	  lval_ptr->str=(char *)nco_malloc((att_sz+1)*sizeof(char));
+	  strncpy(lval_ptr->str,(char *)val.cp,att_sz);
+	  lval_ptr->str[att_sz]='\0'; 
 	  return(STRING);
 	}else{
-	  lvalp->attribute=ncap_ptr_unn_2_attribute(type,val);
+	  lval_ptr->attribute=ncap_ptr_unn_2_attribute(type,val);
 	  return(ATTRIBUTE);   
 	} /* end else */ 
       } /* end if */
@@ -330,8 +333,8 @@ pow/[ ]*\( {return POWER;}
       /* Attribute is not in table or on disk so return 0-byte  */
       (void)sprintf(err_sng,"Warning: Unable to locate RHS attribute %s of variable %s with var ID = %d in file %s. Returning 0-byte.",att_nm,var_nm,var_id,prs_arg->fl_in);
       (void)yyerror(err_sng);
-      lvalp->attribute.val.b=0;
-      lvalp->attribute.type=NC_BYTE;
+      lval_ptr->attribute.val.b=0;
+      lval_ptr->attribute.type=NC_BYTE;
       return(ATTRIBUTE);
     } /* end if */
   }/* end if RHS */
@@ -342,8 +345,8 @@ pow/[ ]*\( {return POWER;}
   if(!RHS){
     rcd_out=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
     if(rcd == NC_NOERR || rcd_out == NC_NOERR){
-      lvalp->att.att_nm=strdup(att_nm);
-      lvalp->att.var_nm=strdup(var_nm);
+      lval_ptr->att.att_nm=strdup(att_nm);
+      lval_ptr->att.var_nm=strdup(var_nm);
       return(OUT_ATT);
     }else{
       (void)sprintf(err_sng,"#Warning: unable to locate variable %s. So cannot create attribute %s",var_nm,yytext);
@@ -413,16 +416,18 @@ pow/[ ]*\( {return POWER;}
   
   /* This variable now has a private dimension list, dmn
      Dimension list holds, in order, dimensions user wants output to have
-     Global dimension in prs_sct holds list of all disk variable dimensions
-     Use this local LHS dimension list to cast all leaves on RHS 
+     Assign this LHS dimension list to prs_arg to cast all leaves on RHS 
+     Dimension list dmn in prs_sct is list of all disk variable dimensions
      Casting first expression on RHS is not sufficient (e.g., prs_mdp) */
   if(RHS){
     (void)fprintf(stderr,"ERROR: Found hyperslab (subscripted) variable on RHS\n");
-    lvalp->vara=var_nm;
+    lval_ptr->vara=var_nm;
     return(VAR);
   }else{ 
-    LHS_cast=True;
-    lvalp->output_var=var_nm;
+    LHS_cst=True; /* [flg] Cast RHS structures to LHS properties */
+    lval_ptr->output_var=var_nm;
+    prs_arg->dmn_LHS_cst=dmn;
+    prs_arg->dmn_nbr_LHS=dmn_nbr;
     return(OUT_VAR);
   } /* end else */
 
@@ -444,10 +449,10 @@ pow/[ ]*\( {return POWER;}
   /* Recognize variables */
   if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing variable %s\n",yytext);
   if(RHS){
-    lvalp->vara=strdup(yytext); 
+    lval_ptr->vara=strdup(yytext); 
     return(VAR);
   }else{ 
-    lvalp->output_var=strdup(yytext);
+    lval_ptr->output_var=strdup(yytext);
     return(OUT_VAR);
   } /* end else */
   

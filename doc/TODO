@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.115 2002-01-27 06:14:05 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.116 2002-01-28 02:09:38 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -7,69 +7,29 @@ About 15 high priority items are shown first, then another ~100 items
 ******************************************************************************
 
 ncap-specific items:
-3. Fix foloowing mixed unsigned char * and char * warnings in ncap.l, ncap.y:
-cc-1164 cc: WARNING File = ../src/nco/ncap.l, Line = 293
-  Argument of type "unsigned char *" is incompatible with parameter of type
-          "const char *".
-                strncpy(lvalp->str,ptr_aed->val.cp,ptr_aed->sz);
-                                   ^
-cc-1164 cc: WARNING File = ../src/nco/ncap.l, Line = 321
-  Argument of type "unsigned char *" is incompatible with parameter of type
-          "const char *".
-                    strncpy(lvalp->str,val.cp,att_sz);
-                                       ^
-cc-1515 cc: WARNING File = ../src/nco/ncap.y, Line = 182
-  A value of type "char *" cannot be assigned to an entity of type
-          "unsigned char *".
-                    ptr_aed->val.cp = (char *)nco_malloc((slen+1)*nco_typ_lng(NC_CHAR));
-                                    ^
-cc-1164 cc: WARNING File = ../src/nco/ncap.y, Line = 183
-  Argument of type "unsigned char *" is incompatible with parameter of type
-          "char *".
-                    strcpy(ptr_aed->val.cp,yyvsp[0].str);
-                           ^
-
-cc-1515 cc: WARNING File = ../src/nco/ncap.y, Line = 279
-  A value of type "char *" cannot be assigned to an entity of type
-          "unsigned char *".
-                     var->val.cp=strdup(yyvsp[0].str);
-                                ^
-icc  -DLINUX -DNO_NETCDF_2 -DVERSION='20020126' -DHOSTNAME='lanina.ps.uci.edu' -DUSER='zender' -Di386 -I/usr/local/include -U_OPENMP  -O -c ../src/nco/ncap.tab.c -o /home/zender/obj/LINUX/ncap.tab.o
-../src/nco/ncap.tab.c:
-"../src/nco/ncap.y", line 192: warning #556: a value of type "char *" cannot be assigned to an entity of type "unsigned char *"
-    ptr_aed->val.cp=(char *)nco_malloc((sng_lng+1)*nco_typ_lng(NC_CHAR));
-                   ^
-
-"../src/nco/ncap.y", line 193: warning #167: argument of type "unsigned char *" is incompatible with parameter of type "char *"
-    strcpy(ptr_aed->val.cp,yyvsp[0].str);
-           ^
-
-"../src/nco/ncap.y", line 284: warning #556: a value of type "char *" cannot be assigned to an entity of type "unsigned char *"
-      var->val.cp=strdup(yyvsp[0].str);
-                 ^
-
-icc  -DLINUX -DNO_NETCDF_2 -DVERSION='20020126' -DHOSTNAME='lanina.ps.uci.edu' -DUSER='zender' -Di386 -I/usr/local/include -U_OPENMP  -O -c ../src/nco/ncap_lex.c -o /home/zender/obj/LINUX/ncap_lex.o
-../src/nco/ncap_lex.c:
-"../src/nco/ncap.l", line 300: warning #167: argument of type "unsigned char *" is incompatible with parameter of type "const char *"
-        strncpy(lvalp->str,ptr_aed->val.cp,ptr_aed->sz);
-
-"../src/nco/ncap.l", line 323: warning #167: argument of type "unsigned char *" is incompatible with parameter of type "const char *"
-          strncpy(lvalp->str,val.cp,att_sz);
- 
 4. Fix memory leak in ncap_var_conform_dim() or delete routine completely after replacing it with ncap_var_stretch()	
 5. Implement convolution of non-conforming expressions in ncap_var_stretch()
-6. Handle C comments /*...*/, especially across multiple lines, in ncap scripts
 7. Combine binary operations into binary_op_var_var and binary_op_var_att types to reduce number of functions
-8. Fix last Linux compilation warning:
-ncap.tab.c:
+8. Cure final few bothersome compilation warnings, mainly in bison.simple:
+ncap.tab.c (warning with Linux):
 /usr/lib/bison.simple:432: warning: implicit declaration of function `yylex'
 This must be something like
 extern int yylex(YYSTYPE *,prs_arg); /* Prototype for lexer */
 but where?
-9. Fix warnings found with icc (shown above)
+ncap.tab.c (IRIX warnings caused by using IRIX cc rather than GNU gcc, so 
+function prototypes are dumbed-down in bison.simple, and size should be
+cast to (unsigned char)):
+cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 334
+  The indicated argument is incompatible with the corresponding formal parameter.
+        __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
+cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
+  The indicated argument is incompatible with the corresponding formal parameter.
+        __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
+ld64: WARNING 15 : Multiply defined:(err_sng) in /home/ess/zender/zender/obj/SGIMP64/ncap.tab.o and /home/ess/zender/zender/obj/SGIMP64/ncap_lex.o (2nd definition ignored).
+9. Add outer loop over files so script may apply to each file
 
 Top priority items You can help with:
-41. Use GNU getopt_long()
+41. Use getopt_long() from FSF or Sittler (BSD version)
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
 83. Always build operators to link dynamically to libnco.so (autoconf/autotool?)
 95. Handle CCM "time since..." conversions in ncrcat (use Unidata udunits)?

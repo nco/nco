@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.125 2002-01-25 17:27:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.126 2002-01-28 02:09:38 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -5809,7 +5809,7 @@ usg_prn(void)
     opt_sng=(char *)strdup("[-A] [-a ...] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M val] [-N] [-O] [-o op_typ] [-p path] [-R] [-r] [-v ...] [-w wgt] [-x] [-y op_typ] in.nc out.nc\n");
     break;
   case ncap:
-    opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-O] [-p path] [-R] [-r] [-s] [-S] [-v] in.nc out.nc\n");
+    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-O] [-p path] [-R] [-r] [-s algebra] [-S fl.nco] [-v] in.nc out.nc\n");
     break;
   case ncks:
     opt_sng=(char *)strdup("[-A] [-a] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-O] [-p path] [-q] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [out.nc]\n");
@@ -5874,15 +5874,14 @@ usg_prn(void)
   if(strstr(opt_sng,"-r")) (void)fprintf(stdout,"-r\t\tProgram version and copyright notice\n");
   if(strstr(opt_sng,"-s")){
     if(prg != ncap) (void)fprintf(stdout,"-s format\tString format for text output\n");
-    if(prg == ncap) (void)fprintf(stdout,"-s algebra\tAlgebraic command string defining a single output variable\n");
+    if(prg == ncap) (void)fprintf(stdout,"-s algebra\tAlgebraic command defining single output variable\n");
   } /* end if */
-  if(strstr(opt_sng,"-S")) (void)fprintf(stdout,"-S fl_cmd\tScript file containing multiple algebraic commands\n");
+  if(strstr(opt_sng,"-S")) (void)fprintf(stdout,"-S fl.nco\tScript file containing multiple algebraic commands\n");
   if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u\t\tUnits of variables, if any, will be printed\n");
   if(strstr(opt_sng,"-v")){
     if(prg == ncrename) (void)fprintf(stdout,"-v old_var,new_var Variable's old and new names\n");
-	if(prg == ncap) (void)fprintf(stdout,"-v\t\tInclude in the output file ONLY variables defined in the command script\n");
+	if(prg == ncap) (void)fprintf(stdout,"-v\t\tOutput file includes ONLY user-defined variables\n");
     if(prg != ncrename && prg != ncap) (void)fprintf(stdout,"-v var1[,var2[...]] Variables to process\n");
-	
   } /* end if */
   /*  if(strstr(opt_sng,"-W")) (void)fprintf(stdout,"-W\t\tNormalize by weight but not tally\n");*/
   if(strstr(opt_sng,"-w")){
