@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.108 2004-06-30 18:48:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.109 2004-06-30 19:57:27 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -118,8 +118,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.108 2004-06-30 18:48:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.108 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.109 2004-06-30 19:57:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.109 $";
   const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRv:xy:-:";
 
   dmn_sct **dim;
@@ -130,7 +130,7 @@ main(int argc,char **argv)
 
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */
-  FILE * const fp_err=stderr; // [fl] Output filehandle CEWI
+  FILE * const fp_stderr=stderr; // [fl] stderr filehandle CEWI
 
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
@@ -482,11 +482,11 @@ main(int argc,char **argv)
 	/* Process all variables in current record */
 	if(dbg_lvl > 1) (void)fprintf(stderr,gettext("Record %ld of %s is input record %ld\n"),idx_rec,fl_in,idx_rec_out);
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx) shared(ARM_FORMAT,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_err,idx_rec,idx_rec_out,in_id,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx) shared(ARM_FORMAT,base_time_crr,base_time_srt,dbg_lvl,fl_in,fl_out,fp_stderr,idx_rec,idx_rec_out,in_id,nbr_var_prc,nco_op_typ,out_id,prg,rcd,var_prc,var_prc_out)
 #endif /* not _OPENMP */
 	for(idx=0;idx<nbr_var_prc;idx++){
 	  if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	  if(dbg_lvl > 0) (void)fflush(fp_err);
+	  if(dbg_lvl > 0) (void)fflush(fp_stderr);
 	  /* Update hyperslab start indices to current record for each variable */
 	  var_prc[idx]->srt[0]=idx_rec;
 	  var_prc[idx]->end[0]=idx_rec;
@@ -541,11 +541,11 @@ main(int argc,char **argv)
       /* End of ncra, ncrcat section */
     }else{ /* ncea */
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,fl_idx,fp_err,in_id,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,fl_idx,fp_stderr,in_id,nbr_var_prc,nco_op_typ,rcd,var_prc,var_prc_out)
 #endif /* not _OPENMP */
       for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 	if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
-	if(dbg_lvl > 0) (void)fflush(fp_err);
+	if(dbg_lvl > 0) (void)fflush(fp_stderr);
 	/* Retrieve variable from disk into memory */
 	(void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 	

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.118 2004-06-18 23:56:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.119 2004-06-30 19:57:27 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -107,8 +107,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.118 2004-06-18 23:56:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.118 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.119 2004-06-30 19:57:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.119 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRt:v:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -120,6 +120,11 @@ main(int argc,char **argv)
   extern char *optarg;
   extern int optind;
   
+  /* Using naked stdin/stdout/stderr in parallel region generates warning
+     Copy appropriate filehandle to variable scoped shared in parallel clause */
+  FILE * const fp_stderr=stderr; // [fl] stderr filehandle CEWI
+  FILE * const fp_stdout=stdout; // [fl] stdout filehandle CEWI
+
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
   int idx_avg;
@@ -616,12 +621,11 @@ main(int argc,char **argv)
      ncks -H -C -v one,two,three,four foo.nc | m
   */
 #ifdef _OPENMP
-/* Adding a default(none) clause causes a weird error: "Error: Variable __iob used without scope declaration in a parallel region with DEFAULT(NONE) scope". This appears to be a compiler bug. */
   /* OpenMP notes:
      firstprivate(): msk_out and wgt_out must be NULL on first call to nco_var_cnf_dmn()
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-#pragma omp parallel for firstprivate(msk_out,wgt_out) private(idx,DO_CONFORM_MSK,DO_CONFORM_WGT,wgt_avg) shared(nbr_var_prc,dbg_lvl,var_prc,var_prc_out,in_id,nco_op_typ,msk_nm,WGT_MSK_CRD_VAR,MUST_CONFORM,msk_val,op_typ_rlt,wgt_nm,dmn_avg,nbr_dmn_avg,NRM_BY_DNM,out_id,wgt,msk,MULTIPLY_BY_TALLY,prg_nm,rcd)
+#pragma omp parallel for default(none) firstprivate(msk_out,wgt_out) private(DO_CONFORM_MSK,DO_CONFORM_WGT,idx,wgt_avg) shared(MULTIPLY_BY_TALLY,MUST_CONFORM,NRM_BY_DNM,WGT_MSK_CRD_VAR,dbg_lvl,dmn_avg,fp_stderr,fp_stdout,in_id,msk,msk_nm,msk_val,nbr_dmn_avg,nbr_var_prc,nco_op_typ,op_typ_rlt,out_id,prg_nm,rcd,var_prc,var_prc_out,wgt,wgt_nm)
 #endif /* not _OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
