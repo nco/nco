@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.171 2002-09-10 04:42:30 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.172 2002-09-10 04:43:24 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -281,7 +281,7 @@ ${MY_DPN_DIR}/%.d : %.cc
 # Manually define autotools tokens normally defined in HAVE_CONFIG_H
 # Initialize OS-specific tokens to empty
 CPP_TKN_OS := 
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32MACOSX))
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDMACOSXWIN32))
  CPP_TKN_OS += -DHAVE_GETOPT_H
 endif # !LINUX
 ifneq (${PVM_ARCH},CRAY)
@@ -441,7 +441,7 @@ endif
 # endif CRAY
 
 # Works on LINUX, LINUXALPHA, and FREEBSD
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDMACOSX))
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
 #C++ := como
 C++ := g++
 #C++ := icc
