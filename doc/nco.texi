@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.246 2004-07-07 05:50:01 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.247 2004-07-09 05:40:42 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1769,17 +1769,17 @@ We hope to produce foreign language string catalogues in 2004.
 @cindex @code{--thr_nbr @var{thr_nbr}}
 @cindex @code{--threads @var{thr_nbr}}
 @cindex @code{--omp_num_threads @var{thr_nbr}}
-@cindex @code{-T @var{thr_nbr}}
+@cindex @code{-t @var{thr_nbr}}
 @cartouche
 Availability: @command{ncea}, @command{ncra}, @command{ncrcat}, @command{ncwa}@*
-Short options: @samp{-T}@*
+Short options: @samp{-t}@*
 Long options: @samp{--thr_nbr}, @samp{--threads}, @samp{--omp_num_threads}@*
 @end cartouche
 @acronym{NCO} support for shared memory machines using the OpenMP
 standard is nascent.
 We hope to implement robust threading in 2004.
 
-Users may request a specific number of threads with the @samp{-T}
+Users may request a specific number of threads with the @samp{-t}
 switch (or its long option equivalents, @samp{--thr_nbr},
 @samp{--threads}, @samp{--omp_num_threads}).
 If not user-specified, @acronym{NCO} obtains @var{thr_nbr} from the
@@ -5608,7 +5608,7 @@ SYNTAX
 ncea [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-T thr_nbr] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
+[-t thr_nbr] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -6457,7 +6457,7 @@ SYNTAX
 ncra [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
-[-T thr_nbr] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
+[-t thr_nbr] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -6827,7 +6827,7 @@ ncwa [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}]
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-I] [-l @var{path}] 
 [-M @var{mask_val}] [-m @var{mask_var}] [-N] [-n] [-O] 
 [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{condition}]
-[-T thr_nbr] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}] 
+[-t thr_nbr] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}] 
 @var{input-file} [@var{output-file}]
 @end example
 
@@ -7054,6 +7054,7 @@ Thus @samp{-N} tells @command{ncwa} to return just the numerator of the
 arithmetic expression defining the operation (@pxref{Operation Types}). 
 
 @ignore
+@c NB: these masking features are deprecated
 The second normalization option tells @command{ncwa} to multiply the
 weighted average the variable (given by the averaging expression)
 by the @w{tally, @var{M}}.
@@ -7186,8 +7187,28 @@ ncwa -N -v area -m ORO -M 0.5 -T lt -a lat,lon
 Weighting @var{area} (e.g., by @var{gw}) is not appropriate because
 @var{area} is @emph{already} area-weighted by definition.
 Thus the @samp{-N} switch, or, equivalently, the @samp{-y ttl} switch,  
-are all that are needed to correctly integrate the cell areas into
-a total regional area.
+correctly integrate the cell areas into a total regional area.
+
+@cindex mask condition
+@cindex truth condition
+Mask a file to contain @var{missing_value} everywhere except where
+@math{@var{thr_min} <= @var{msk_var} <= @var{thr_max}}:
+@example
+# Set masking variable and its scalar thresholds
+export msk_var='three_dmn_var_dbl' # Masking variable
+export thr_max='20' # Maximum allowed value
+export thr_min='10' # Minimum allowed value
+ncecat -O in.nc out.nc # Wrap out.nc in degenerate "record" dimension
+ncwa -O -a record -m $@{msk_var@} -T le -M $@{thr_max@} out.nc out.nc
+ncecat -O out.nc out.nc # Wrap out.nc in degenerate "record" dimension
+ncwa -O -a record -m $@{msk_var@} -T ge -M $@{thr_min@} out.nc out.nc
+@end example
+After the first use of @command{ncwa}, @file{out.nc} contains
+@var{missing_value} where @code{$@{msk_var@} >= $@{thr_max@}}.
+The process is then repeated on the remaining data to filter out 
+points where @code{$@{msk_var@} <= $@{thr_min@}}.
+The resulting @file{out.nc} contains valid data only
+where @math{@var{thr_min} <= @var{msk_var} <= @var{thr_max}}.
 
 @html
 <a name="ctr"></a> <!-- http://nco.sf.net/nco.html#ctr -->

@@ -1,3 +1,7 @@
+2004-07-08  Charlie Zender  <zender@uci.edu>
+
+	* nco.texi: Correct mix-up of -T and -t options in documentation
+
 2004-07-06  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_9_7
