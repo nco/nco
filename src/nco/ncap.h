@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.63 2004-03-25 12:05:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.64 2004-07-20 16:44:11 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -111,7 +111,21 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
  int * const nbr_lst_d); /* O [nbr] Number of LHS dimensions in input file */
  /* end ncap_ntl_scn() prototype */
 
+
+int 
+ncap_ncwa_scn (
+prs_sct * const prs_arg,
+const char * const msk_sng,
+char **msk_nm,
+double *msk_val,
+int *op_typ_rlt);            
+
+
+  
 /* End funtions in ncap_lex.l */
+
+
+
 
 /* Begin funtions in ncap_yacc.y */
 
@@ -203,6 +217,8 @@ var_sct *ncap_scv_var_mod(scv_sct scv,var_sct *var);
 var_sct *ncap_scv_var_pwr(scv_sct scv,var_sct *var);
 void ncap_fnc_add(char *nm, double (*fnc_dbl)());
 void nco_lbr_vrs_prn();
+
+
 
 /* End funtions in ncap_utl.c */
 
