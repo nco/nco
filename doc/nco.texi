@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.105 2002-07-03 20:44:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.106 2002-07-04 02:28:20 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2768,7 +2768,7 @@ Last dimension is most rapidly varying;
 @cindex assignment statement
 @cindex semi-colon
 @cindex @code{;} (end of statement)
-Assignment statements end with a semi-colon @samp{;}.
+A semi-colon @samp{;} indicates the end of an assignment statement.
 @item Comments
 @cindex comments
 @cindex @code{/*...*/} (comment)
@@ -3006,9 +3006,26 @@ Average variables of mixed types (result is of type double):
 ncap -O -s "average=(var_float+var_double+var_int)/3" in.nc out.nc 
 @end example
 
+Multiple commands may be given to @command{ncap} in three ways.
+First, the commands may be placed in a script which is executed, e.g.,
+@file{tst.nco}. 
+Second, the commands may be individually specified with multiple
+@samp{-s} arguments to the same @command{ncap} invocation.
+Third, the commands may be chained together into a single @samp{-s}
+argument to @command{ncap}.
+Assuming the file @file{tst.nco} contains the commands
+@code{a=3;b=4;c=sqrt(a^2+b^2);}, then the following @command{ncap}
+invocations produce identical results:
 @example
-ncap -O -s "" in.nc out.nc
+ncap -O -v -S tst.nco in.nc out.nc
+ncap -O -v -s "a=3" -s "b=4" -s "c=sqrt(a^2+b^2)" in.nc out.nc
+ncap -O -v -s "a=3;b=4;c=sqrt(a^2+b^2)" in.nc out.nc
 @end example
+The second and third examples show that @command{ncap} does not require
+that a trailing semi-colon @samp{;} be placed at the end of a @samp{-s}
+argument, although a trailing semi-colon @samp{;} is always allowed.
+However, semi-colons are required to separate individual assignment
+statements chained together as a single @samp{-s} argument. 
 
 @example
 ncap -O -s "" in.nc out.nc
