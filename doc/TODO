@@ -79,6 +79,11 @@ ncks -H -v time foo.nc
 120. Allow superfluous, but conforming, files at beginning of ncra, ncrcat,
 just like they are already allowed at end. 
 This means relaxing restriction that first requested record must be in first file.
+121. Now ncks has some problems with wrapping:
+ncks -O -d time,9,0 -v time in.nc foo.nc 			works
+ncks -O -d time,9,7 -v time in.nc foo.nc 			works
+ncks -O -d time,9,8 -v time in.nc foo.nc 			fails
+ncks -O -d time,9,7,2 -v time in.nc foo.nc 			fails
 ************************************************************************
 End NCO Wish list
 ************************************************************************
