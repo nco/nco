@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.43 2002-01-01 00:18:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.44 2002-01-11 23:18:34 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -95,6 +95,34 @@ main(int argc,char **argv)
   
   extern FILE *yyin;
   
+  /* These declarations may be needed on some platforms */
+  /*
+  extern double acos();
+  extern double asin();
+  extern double atan();
+  extern double cos();
+  extern double exp();
+  extern double gamma();
+  extern double log();
+  extern double log10();
+  extern double sin();
+  extern double sqrt();
+  extern double tan();
+
+  extern float acosf(float);
+  extern float asinf(float);
+  extern float atanf(float);
+  extern float cosf(float);
+  extern float expf(float);
+  extern float gammaf(float);
+  extern float logf(float);
+  extern float log10f(float);
+  extern float sinf(float);
+  extern float sqrtf(float);
+  extern float tanf(float);
+  */
+
+  
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FORCE_APPEND=False; /* Option A */
@@ -105,7 +133,7 @@ main(int argc,char **argv)
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
-  
+  bool PROCESS_ALL_VARS=True;     /* option v */  
   char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
@@ -121,8 +149,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.43 2002-01-01 00:18:55 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.43 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.44 2002-01-11 23:18:34 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.44 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -157,6 +185,9 @@ main(int argc,char **argv)
   
   const int att_lst_max=500;
   
+  sym_sct **sym_tbl;   /* function table for float and double functions*/
+  int sym_tbl_nbr;     /* size of sym_tbl */
+  
   lmt_sct *lmt=NULL_CEWI;
   
   nm_id_sct *dmn_lst;
@@ -188,7 +219,7 @@ main(int argc,char **argv)
   
   /* Parse command line arguments */
   
-  opt_sng="ACcD:d:Fhl:n:Op:r:s:S:v:x";
+  opt_sng="ACcD:d:Fhl:n:Op:r:s:S:vx";
   
   while( (opt=getopt(argc,argv,opt_sng))!= EOF){
     switch(opt){
@@ -246,7 +277,9 @@ main(int argc,char **argv)
       fl_spt=optarg;
       break;
     case 'v': /* Variables to extract/exclude */
-      var_lst_in=lst_prs(optarg,",",&nbr_xtr);
+      PROCESS_ALL_VARS=False;
+      nbr_xtr = 0;
+      //var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
@@ -262,18 +295,35 @@ main(int argc,char **argv)
   for(idx=0;idx<nbr_spt;idx++){
     slen=strlen(spt_arg[idx]);
     if(idx == 0){
-      spt_arg_cat=nco_malloc(slen+3);
+      spt_arg_cat=(char *)nco_malloc(slen+3);
       strcpy(spt_arg_cat,spt_arg[idx]);
       strcat(spt_arg_cat,";\n");
       spt_arg_len=slen+3;
     } else { 
       spt_arg_len+=slen+2;
-      spt_arg_cat=nco_realloc(spt_arg_cat,spt_arg_len);
+      spt_arg_cat=(char *)nco_realloc(spt_arg_cat,spt_arg_len);
       strcat(spt_arg_cat,spt_arg[idx]);
       strcat(spt_arg_cat,";\n");
     } /* end else */
   } /* end if */    
+
+  /* Create function table */
+  sym_tbl_nbr = 11;
+  sym_tbl = (sym_sct **)nco_malloc(sizeof(sym_sct *)*sym_tbl_nbr);
   
+  sym_tbl[0] = ncap_sym_init("cos",cos,cosf);  
+  sym_tbl[1] = ncap_sym_init("sin",sin,sinf);
+  sym_tbl[2] = ncap_sym_init("tan",tan,tanf);
+  sym_tbl[3] = ncap_sym_init("acos",acos,acosf);  
+  sym_tbl[4] = ncap_sym_init("asin",asin,asinf);
+  sym_tbl[5] = ncap_sym_init("atan",atan,atanf);
+  sym_tbl[6] = ncap_sym_init("exp",exp,expf);
+  sym_tbl[7] = ncap_sym_init("log",log,logf);
+  sym_tbl[8] = ncap_sym_init("log10",log10,log10f);
+  sym_tbl[9] = ncap_sym_init("sqrt",sqrt,sqrtf);
+  sym_tbl[10] = ncap_sym_init("gamma",gamma,gammaf);
+ 
+
   /* Process positional arguments and fill in filenames */
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   
@@ -301,6 +351,8 @@ main(int argc,char **argv)
   prs_arg.nbr_att=&nbr_att;
   prs_arg.dmn=dmn;
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
+  prs_arg.sym_tbl= sym_tbl;
+  prs_arg.sym_tbl_nbr = sym_tbl_nbr;
   prs_arg.initial_scan=True;
   
   (void)ncap_initial_scan(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c, &nbr_lst_c);
@@ -308,39 +360,53 @@ main(int argc,char **argv)
   /* Get number of variables, dimensions, and record dimension ID of input file */
   rcd=nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
   
-  /* Form initial extraction list from user input */
-  xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
+
+  if(PROCESS_ALL_VARS) {  
+     /* Form initial extraction list from user input */
+     xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
+     if(nbr_lst_b>0) xtr_lst=var_lst_sub(in_id,xtr_lst,&nbr_xtr,xtr_lst_b,nbr_lst_b);
+    
+    /* copy list for later */
+    xtr_lst_2=var_lst_copy(xtr_lst,nbr_xtr);
+    nbr_xtr_2=nbr_xtr;
+  }
+
+  if(!PROCESS_ALL_VARS){
+
+    /* We create two lists of vars xtr_lst : to be used to find the dimensions
+                                 xtr_lst_2 : The extract list     
+
+       xtr_lst = list a + list c + co_ordinate vars 
+       xtr_lst_2 = list c + co-ordinate vars - list b 
+           
+    */          
+       
+    /* Add list c to extraction list */
+   if(nbr_lst_c>0) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_c,nbr_lst_c);
   
-  /* Change included variables to excluded variables */
-  if(EXCLUDE_INPUT_LIST) xtr_lst=var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
+   /* Add list a to extraction list */
+   if(nbr_lst_a>0) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
   
-  /* Add list c to extraction list */
-  if(nbr_lst_c>0) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_c,nbr_lst_c);
-  
-  /* Add list a to extraction list */
-  if(nbr_lst_a>0) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
-  
-  /* Add all coordinate variables to extraction list */
-  if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
+   /* Add all coordinate variables to extraction list */
+   if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
   
   /* Make sure coordinates associated extracted variables are also on extraction list */
-  if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
-  
-  /* Remove record coordinate, if any, from extraction list */
-  if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
-  
+   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
+   
+   /* now make a list of just co-ordinate vars */
+   if(nbr_xtr >0 && (PROCESS_ALL_COORDINATES || PROCESS_ASSOCIATED_COORDINATES)) {
+     nbr_xtr_2=nbr_xtr;
+     xtr_lst_2=ncap_var_lst_crd_make(in_id,xtr_lst,&nbr_xtr_2);
+   } 
+   /* now add list c to the new list */
+   if(nbr_lst_c>0) xtr_lst_2=var_lst_add(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_c,nbr_lst_c);
+   
+   /* now subtract list b from this list */   
+   if(nbr_lst_b > 0) xtr_lst_2=var_lst_sub(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
+  }/* end if */
+
   /* Finally, heapsort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
-  
-  
-  /* Copy list for later */
-  xtr_lst_2=var_lst_copy(xtr_lst,nbr_xtr);
-  nbr_xtr_2=nbr_xtr;
-  
-  /* Subtract list a from copied list */
-  if(nbr_lst_a>0) xtr_lst_2=var_lst_sub(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_a,nbr_lst_a);
-  /* Subtract list b */
-  if(nbr_lst_b>0) xtr_lst_2=var_lst_sub(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
   
   /* Finally, heapsort extraction list by variable ID for fastest I/O */
   if(nbr_xtr_2 > 1) xtr_lst_2=lst_heapsort(xtr_lst_2,nbr_xtr_2,False);
@@ -390,21 +456,11 @@ main(int argc,char **argv)
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
+  
+  /* Define dimensions in output file */
   (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
   
-  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr_2,(dmn_sct **)NULL,0);
-  //(void)var_dfn(in_id,fl_out,out_id,var_fix,nbr_var_fix,(dmn_sct **)NULL,0);
-  
-  /* Turn off default filling behavior to enhance efficiency */
-  rcd=nc_set_fill(out_id,NC_NOFILL,(int *)NULL);
-  
-  /* Take output file out of define mode */
-  rcd=nco_enddef(out_id);
-  
-  /* Copy variable data for non-processed variables */
-  (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
-  //(void)var_val_cpy(in_id,out_id,var_out,nbr_xtr_2);
-  
+  (void)nco_enddef(out_id); 
   /* Set arguments to parser */
   prs_arg.fl_in=fl_in;
   prs_arg.in_id=in_id;
@@ -415,6 +471,8 @@ main(int argc,char **argv)
   prs_arg.nbr_att =&nbr_att;
   prs_arg.dmn=dmn_out;
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
+  prs_arg.sym_tbl= sym_tbl;
+  prs_arg.sym_tbl_nbr = sym_tbl_nbr;
   prs_arg.initial_scan=False;
   
   if(fl_spt == NULL){
@@ -441,9 +499,22 @@ main(int argc,char **argv)
     ln_nbr_crr=1;
     rcd=yyparse((void *)&prs_arg);
   } /* end else */
-  /* Define dimensions in output file */
+
   rcd=nco_redef(out_id);
+  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr_2,(dmn_sct **)NULL,0);
+  //(void)var_dfn(in_id,fl_out,out_id,var_fix,nbr_var_fix,(dmn_sct **)NULL,0);
   
+  /* Turn off default filling behavior to enhance efficiency */
+  rcd=nc_set_fill(out_id,NC_NOFILL,(int *)NULL);
+  
+  /* Take output file out of define mode */
+  rcd=nco_enddef(out_id);
+  
+  /* Copy variable data for non-processed variables */
+  (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
+  //(void)var_val_cpy(in_id,out_id,var_out,nbr_xtr_2);
+  
+  (void)nco_redef(out_id);
   /* Copy new attributes overwriting old ones */
   for(idx=0;idx<nbr_att;idx++){
     rcd=nco_inq_varid_flg(out_id,att_lst[idx]->var_nm,&var_id);
