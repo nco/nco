@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.133 2002-04-19 05:55:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.134 2002-04-24 06:15:04 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -2635,7 +2635,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
   (void)cast_void_nctype(var_in->type,&val_in);
   (void)cast_void_nctype(var_out->type,&var_out->val);
   
-  /* Copy and typecast entire array of values, using implicit coercion rules of C */
+  /* Copy and typecast entire array of values, using C implicit coercion */
   switch(var_out_type){
   case NC_FLOAT:
     switch(var_in_type){

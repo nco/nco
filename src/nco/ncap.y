@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.45 2002-04-02 19:20:38 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.46 2002-04-24 06:15:04 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -317,23 +317,23 @@ out_att_exp '=' att_exp {
 att_exp: /* att_exp results from RHS action which involves only att_exp's
 	    One action exists for each binary and unary attribute-valid operator */
 att_exp '+' att_exp {
-  (void)ncap_retype(&$1,&$3);
+  (void)ncap_att_att_cnf_typ_hgh_prc(&$1,&$3);
   $$=ncap_attribute_calc($1,'+',$3);                                
 }
 | att_exp '-' att_exp {
-  (void)ncap_retype(&$1,&$3); 
+  (void)ncap_att_att_cnf_typ_hgh_prc(&$1,&$3); 
   $$=ncap_attribute_calc($1,'-',$3);
 }
 | att_exp '*' att_exp {
-  (void)ncap_retype(&$1,&$3);
+  (void)ncap_att_att_cnf_typ_hgh_prc(&$1,&$3);
   $$=ncap_attribute_calc($1,'*',$3);
 }
 | att_exp '/' att_exp {
-  (void)ncap_retype(&$1,&$3); 
+  (void)ncap_att_att_cnf_typ_hgh_prc(&$1,&$3); 
   $$=ncap_attribute_calc($1,'/',$3);  
 }
 | att_exp '%' att_exp {
-  (void)ncap_retype(&$1,&$3);
+  (void)ncap_att_att_cnf_typ_hgh_prc(&$1,&$3);
   
   $$=ncap_attribute_calc($1,'%',$3);  
 }
@@ -350,11 +350,11 @@ att_exp '+' att_exp {
     (void)ncap_attribute_conform_type(NC_FLOAT,&$3);
     $$.val.f=powf($1.val.f,$3.val.f);
     $$.type=NC_FLOAT;
-  } else { 
-  (void)ncap_attribute_conform_type(NC_DOUBLE,&$1);
-  (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
-  $$.val.d=pow($1.val.d,$3.val.d);
-  $$.type=NC_DOUBLE; 
+  }else{
+    (void)ncap_attribute_conform_type(NC_DOUBLE,&$1);
+    (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
+    $$.val.d=pow($1.val.d,$3.val.d);
+    $$.type=NC_DOUBLE; 
   }
 } /* end att_exp '^' att_exp */
 | POWER '(' att_exp ',' att_exp ')' {
@@ -363,11 +363,11 @@ att_exp '+' att_exp {
     (void)ncap_attribute_conform_type(NC_FLOAT,&$5);
     $$.val.f=powf($3.val.f,$5.val.f);
     $$.type=NC_FLOAT;
-  } else { 
-  (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
-  (void)ncap_attribute_conform_type(NC_DOUBLE,&$5);
-  $$.val.d=pow($3.val.d,$5.val.d);
-  $$.type=NC_DOUBLE; 
+  }else{ 
+    (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
+    (void)ncap_attribute_conform_type(NC_DOUBLE,&$5);
+    $$.val.d=pow($3.val.d,$5.val.d);
+    $$.type=NC_DOUBLE; 
   }
 } /* end POWER '(' att_exp ',' att_exp ')' */
 | ABS '(' att_exp ')' {
@@ -379,9 +379,9 @@ att_exp '+' att_exp {
     (void)ncap_attribute_conform_type(NC_FLOAT,&$3);
     $$.val.f=(*($1->fncf))($3.val.f);
     $$.type=NC_FLOAT;
-  } else {
-  $$.val.d=(*($1->fnc))($3.val.d);
-  $$.type=NC_DOUBLE;
+  }else{
+    $$.val.d=(*($1->fnc))($3.val.d);
+    $$.type=NC_DOUBLE;
   }
 } /* end FUNCTION '(' att_exp ')' */
 | '(' att_exp ')' {$$=$2;}

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.133 2002-04-19 06:07:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.134 2002-04-24 06:15:04 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -43,6 +43,7 @@ zender@flagstaff:~/nco/bld$ gdb `which ncap`
 nco/data/foo.nc
 Starting program: /home/zender/bin/SUNMP/ncap -O -D 1 -v -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
 ncap: CONVENTION File convention is NCAR-CSM
+23. Make LHS type most precise of RHS types
 
 Program received signal SIGSEGV, Segmentation fault.
 0x6fca4734 in strlen ()

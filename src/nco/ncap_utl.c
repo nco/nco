@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.43 2002-04-17 07:23:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.44 2002-04-24 06:15:04 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -244,8 +244,10 @@ ncap_var_attribute_multiply(var_sct *var,parse_sct attribute)
 {
   /* Purpose: Multiply variable by value in attribute */
   var_sct *var_nsw;
+  /* fxm: 20020421 Old method was to always convert attribute to var precision 
+     (void)ncap_attribute_conform_type(var->type,&attribute); */
+  (void)ncap_var_att_cnf_typ_hgh_prc(&var,&attribute);
   var_nsw=var_dpl(var);
-  (void)ncap_attribute_conform_type(var->type,&attribute);
   (void)var_attribute_multiply(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&attribute);
   
   return var_nsw;
@@ -357,8 +359,8 @@ ncap_var_attribute_add(var_sct *var,parse_sct attribute)
 {
   /* Purpose: add the value in attribute to each element of var */
   var_sct *var_nsw;
+  (void)ncap_var_att_cnf_typ_hgh_prc(&var,&attribute);
   var_nsw=var_dpl(var);
-  (void)ncap_attribute_conform_type(var->type,&attribute);
   (void)var_attribute_add(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&attribute);
   
   return var_nsw;
@@ -369,9 +371,9 @@ ncap_var_attribute_sub(var_sct *var,parse_sct attribute)
 {
   /* Purpose: Subtract the value in attribute from each element of var */
   var_sct *var_nsw;
+  (void)ncap_var_att_cnf_typ_hgh_prc(&var,&attribute);
   var_nsw=var_dpl(var);
   (void)ncap_attribute_minus(&attribute);
-  (void)ncap_attribute_conform_type(var->type,&attribute);
   (void)var_attribute_add(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&attribute);
   
   return var_nsw;
@@ -401,8 +403,8 @@ ncap_var_attribute_divide(var_sct *var,parse_sct attribute)
 {
   /* Purpose: Divide each element of var by value in attribute */
   var_sct *var_nsw;
+  (void)ncap_var_att_cnf_typ_hgh_prc(&var,&attribute);
   var_nsw=var_dpl(var);
-  (void)ncap_attribute_conform_type(var->type,&attribute);
   (void)var_attribute_divide(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&attribute);
   
   return var_nsw;
@@ -414,8 +416,8 @@ ncap_var_attribute_modulus(var_sct *var,parse_sct attribute)
   /* Purpose: var % attribute, take modulus of each element of var with value in attribute */
   
   var_sct *var_nsw;
+  (void)ncap_var_att_cnf_typ_hgh_prc(&var,&attribute);
   var_nsw=var_dpl(var);
-  (void)ncap_attribute_conform_type(var->type,&attribute);
   (void)var_attribute_modulus(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&attribute);
   
   return var_nsw;
@@ -433,8 +435,7 @@ ncap_var_abs(var_sct *var)
 
 void
 var_attribute_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,parse_sct *attribute)
-     /* 
-	nc_type type: I netCDF type of operands
+     /*	nc_type type: I netCDF type of operands
 	long sz: I size (in elements) of operands
 	int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
@@ -445,7 +446,7 @@ var_attribute_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
   /* Purpose: multiply all values in op1 by value in attrib
      Store result in first operand */    
   
-  /* Addition  is currently defined as op1:=op1+attribute */  
+  /* Addition is currently defined as op1:=op1+attribute */  
   
   long idx;
   
@@ -528,7 +529,7 @@ var_attribute_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_
      */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* Purpose: multiply all values in op1 by value in attrib
+  /* Purpose: multiply all values in op1 by value in attribute
      Store result in first operand */    
   
   /* Multiplication  is currently defined as op1:=op1*attribute */  
@@ -894,7 +895,7 @@ ncap_var_conform_dim /* [fnc] Broadcast smaller variable into larger */
   if(var_1_org->nbr_dim > var_2_org->nbr_dim) *var_2=var_conform_dim(var_1_org,var_2_org,NULL,MUST_CONFORM,&DO_CONFORM); else *var_1=var_conform_dim(var_2_org,var_1_org,NULL,MUST_CONFORM,&DO_CONFORM);
   
   /* fxm: Memory leak?
-     var_conform_dim does not do its own memory handling
+     var_conform_dim() does not do its own memory handling
      If original var_1 or var_2 was overwritten (replaced by conforming variable),
      then original must be free()'d now before its location is lost.
      Test for equality between pointers on entry and exit, and
@@ -911,76 +912,104 @@ ncap_var_conform_dim /* [fnc] Broadcast smaller variable into larger */
   return DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
 } /* end ncap_var_conform_dim() */
 
-int 
-ncap_retype(parse_sct *a,parse_sct *b)
+nc_type
+ncap_att_att_cnf_typ_hgh_prc(parse_sct *a,parse_sct *b)
 {
-  /* Purpose: Convert attribute type if necessary so attributes are of same type */
-  if(a->type == b->type) return a->type;
-  if((a->type) > (b->type)){(void)ncap_attribute_conform_type(a->type,b);}
-  else{(void)ncap_attribute_conform_type(b->type,a);}
-  return a->type;    
-} /* end ncap_retype */
+  /* Purpose: Promote attributes to higher of two precisions, if necessary */
+  if(a->type == b->type){
+    return a->type;
+  }else if(a->type > b->type){
+    (void)ncap_attribute_conform_type(a->type,b);
+    return a->type;
+  }else{
+    (void)ncap_attribute_conform_type(b->type,a);
+    return b->type;
+  } /* endif */
+} /* end ncap_att_att_cnf_typ_hgh_prc */
+
+nc_type /* [enm] Highest precision of arguments */
+ncap_var_att_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if necessary */
+(var_sct **var, /* I/O Pointer to pointer to variable structure */
+ parse_sct *att) /* I/O Pointer to attribute */
+{
+  /* Purpose: If types of variable and attribute differ, convert argument with 
+     lower precision to type of argument with higher precision.
+     Otherwise do nothing. 
+     fxm: Assumes nc_type increases monotonically with precision */
+
+  /* Do nothing if types match */
+  if((*var)->type == att->type){
+    return (*var)->type;
+  }else if((*var)->type > att->type){
+    (void)ncap_attribute_conform_type((*var)->type,att); 
+    return (*var)->type;
+  }else{
+    *var=var_conform_type(att->type,*var);
+    return att->type;
+  } /* endif */
+
+} /* end ncap_var_att_cnf_typ_hgh_prc() */
 
 int  
 ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
 {
-  /* Purpose: Convert an attribute to type_new using implicit C convertions */
+  /* Purpose: Convert attribute to type_new using C implicit coercion */
   nc_type type_old=a->type;
   
   parse_sct b;
   switch (type_new){ 
   case NC_BYTE:
     switch(type_old){
-    case NC_FLOAT: b.val.b=(signed char)(a->val).f; break; 
-    case NC_DOUBLE: b.val.b=(signed char)(a->val).d; break; 
+    case NC_FLOAT: b.val.b=(signed char)(a->val).f; break;
+    case NC_DOUBLE: b.val.b=(signed char)(a->val).d; break;
     case NC_INT: b.val.b=(a->val).l; break;
     case NC_SHORT: b.val.b=(a->val).s; break;
     case NC_BYTE: b.val.b=(a->val).b; break;
     case NC_CHAR: break;
-    case NC_NAT:  break;    
+    case NC_NAT: break;
     } break;
   case NC_CHAR:
     /* Do nothing */
     break;
   case NC_SHORT:
     switch(type_old){
-    case NC_FLOAT: b.val.s=(short)(a->val).f; break; 
-    case NC_DOUBLE: b.val.s=(short)(a->val).d; break; 
+    case NC_FLOAT: b.val.s=(short)(a->val).f; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: b.val.s=(short)(a->val).d; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_INT: b.val.s=(a->val).l; break;
     case NC_SHORT: b.val.s=(a->val).s; break;
     case NC_BYTE: b.val.s=(a->val).b; break;
     case NC_CHAR: break;
-    case NC_NAT:  break;    
+    case NC_NAT: break;    
     } break;
   case NC_INT:
     switch(type_old){
-    case NC_FLOAT: b.val.l=(long)(a->val).f; break; 
-    case NC_DOUBLE: b.val.l=(long)(a->val).d; break; 
-    case NC_INT:    b.val.l =a->val.l; break;
+    case NC_FLOAT: b.val.l=(long)(a->val).f; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: b.val.l=(long)(a->val).d; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_INT: b.val.l =a->val.l; break;
     case NC_SHORT: b.val.l=(a->val).s; break;
     case NC_BYTE: b.val.l=(a->val).b; break;
     case NC_CHAR: break;
-    case NC_NAT:  break;
+    case NC_NAT: break;
     } break;
   case NC_FLOAT:
     switch(type_old){
-    case NC_FLOAT:  b.val.f=(a->val).f; break; 
+    case NC_FLOAT: b.val.f=(a->val).f; break; 
     case NC_DOUBLE: b.val.f=(a->val).d; break; 
-    case NC_INT: (b.val).f=(a->val).l; break;
-    case NC_SHORT: (b.val).f=(a->val).s; break;
-    case NC_BYTE: (b.val).f=(a->val).b; break;
+    case NC_INT: b.val.f=(a->val).l; break;
+    case NC_SHORT: b.val.f=(a->val).s; break;
+    case NC_BYTE: b.val.f=(a->val).b; break;
     case NC_CHAR: break;
-    case NC_NAT:  break;    
+    case NC_NAT: break;    
     } break;
   case NC_DOUBLE:
     switch(type_old){
-    case NC_FLOAT:  b.val.d=(a->val).f; break; 
-    case NC_DOUBLE: b.val.d =(a->val).d;  break; 
-    case NC_INT:    b.val.d=(a->val).l; break;
-    case NC_SHORT:  b.val.d=(a->val).s; break;
-    case NC_BYTE:   b.val.d=(a->val).b; break;
+    case NC_FLOAT: b.val.d=(a->val).f; break; 
+    case NC_DOUBLE: b.val.d =(a->val).d; break; 
+    case NC_INT: b.val.d=(a->val).l; break;
+    case NC_SHORT: b.val.d=(a->val).s; break;
+    case NC_BYTE: b.val.d=(a->val).b; break;
     case NC_CHAR: break;
-    case NC_NAT:  break;    
+    case NC_NAT: break;    
     } break;
   default: nco_dfl_case_nctype_err(); break;
   } /* end switch */

@@ -1,3 +1,13 @@
+2002-04-23  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_2_3
+	Changes since nco-2_2_2: Support unpacking variables in ncap
+
+	* Altered ncap algorithm so that now binary var/att expressions
+	take highest precision type rather than always using var type.
+	This allows unpacking algorithm to work straightforwarly using
+	scale_factor and add_offset convention.
+
 2002-04-18  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_2_2

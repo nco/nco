@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.19 2002-04-19 05:55:25 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.20 2002-04-24 06:15:03 zender Exp $ -*-C-*-
 
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 
@@ -11,12 +11,12 @@
 
 /* Usage:
    ncap -O -D 1 -v -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncap -O -d lat,0 -d lon,0 -d lev,0 -D 1 -s "a9=three_dmn_var" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncap -O -D 1 -v -s "a8[lat,lon,lev] = 1" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-   ncap -O -s "prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap -O -D 1 -d lat,0 -d lon,0 -d lev,0 -s "a9=three_dmn_var" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap -O -D 1 -v -s "upk=pck*pck@scale_factor+pck@add_offset" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   ncap -O -D 1 -s "prs_mdp[time,lat,lon,lev]=P0*hyam+hybm*PS" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    ncks -H -m ${HOME}/nco/data/foo.nc | m */
 
-/* The ncap operator is a handy attribute editor.
+/* ncap is a handy attribute editor:
    Define new attribute:
    ncap -s "one@new = 2*att_var@double_att" in.nc foo.nc
 
@@ -70,6 +70,13 @@
 
    Unary +/- signs work intuitively with attributes and variables:
    ncap -v -s "sign = -three_dmn_rec_var" in.nc foo.nc */
+
+/* Packing and unpacking:
+   Unpacking is relatively straightforward
+   ncap -O -D 1 -v -s "upk=pck*pck@scale_factor+pck@add_offset" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+   Packing currently requires a multistep algorithm to generate the required scale_factor and add_offset attributes
+   This algorithm uses other NCO operators (e.g., ncwa) to perform min and max operations
+*/
 
 // Charlie's Tests:
 // p=hyam*PO + hybm*PS
