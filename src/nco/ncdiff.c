@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.66 2003-04-07 02:46:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.67 2003-05-07 01:09:54 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -32,7 +32,7 @@
 
    The author of this software, Charlie Zender, would like to receive
    your suggestions, improvements, bug-reports, and patches for NCO.
-   Please contact the project at http://sourceforge.net/projects/nco or by writing
+   Please contact the project at http://nco.sf.net or by writing
 
    Charlie Zender
    Department of Earth System Science
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.66 2003-04-07 02:46:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.66 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.67 2003-05-07 01:09:54 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.67 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

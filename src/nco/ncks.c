@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.82 2003-04-07 02:46:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.83 2003-05-07 01:09:55 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -32,7 +32,7 @@
 
    The author of this software, Charlie Zender, would like to receive
    your suggestions, improvements, bug-reports, and patches for NCO.
-   Please contact the project at http://sourceforge.net/projects/nco or by writing
+   Please contact the project at http://nco.sf.net or by writing
 
    Charlie Zender
    Department of Earth System Science
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.82 2003-04-07 02:46:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.82 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.83 2003-05-07 01:09:55 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.83 $";
   
   extern char *optarg;
   
