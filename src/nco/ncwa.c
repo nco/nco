@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.19 1999-07-01 23:13:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.20 1999-08-31 22:25:56 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -9,7 +9,7 @@
 /* Purpose: Compute averages of specified hyperslabs of specfied variables
    in a single input netCDF file and output them to a single file. */
 
-/* NB: As of 98/12/02, -n and -W switches were deactivated but code left in place
+/* NB: As of 1998/12/02, -n and -W switches were deactivated but code left in place
    while I rethink the normalization switches */ 
 
 /* Usage:
@@ -73,8 +73,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.19 1999-07-01 23:13:18 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.19 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.20 1999-08-31 22:25:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.20 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -293,6 +293,16 @@ main(int argc,char **argv)
   /* Merge the hyperslab limit information into the dimension structures */ 
   if(nbr_lmt > 0) (void)dim_lmt_merge(dim,nbr_dim_xtr,lmt,nbr_lmt);
 
+  /* Not specifying any dimensions is interpreted as specifying all dimensions */
+  if (nbr_dim_avg == 0){
+    nbr_dim_avg=nbr_dim_xtr;
+    dim_avg_lst_in=(char **)malloc(nbr_dim_avg*sizeof(char *));
+    for(idx=0;idx<nbr_dim_avg;idx++){
+      dim_avg_lst_in[idx]=(char *)strdup(dim_lst[idx].nm);
+    } /* end loop over idx */
+    (void)fprintf(stdout,"%s: WARNING No dimensions specified with -a, therefore averaging over all dimensions\n",prg_nm);
+  } /* end if nbr_dim_avg == 0 */
+
   if (nbr_dim_avg > 0){
     /* Form a list of the averaging dimensions */ 
     dim_avg_lst=dim_lst_mk(in_id,dim_avg_lst_in,nbr_dim_avg);
@@ -452,7 +462,7 @@ main(int argc,char **argv)
       
       /* Retrieve the weighting variable */ 
       (void)var_get(in_id,wgt);
-      /* DBG XXX Perhaps should allocate default tally array for wgt here.
+      /* fxm: Perhaps should allocate default tally array for wgt here.
        That way, when wgt conforms to the first var_prc_out and it therefore
        does not get a tally array copied by var_dup() in var_conform_dim(), 
        it will at least have space for a tally array. TODO #114. */ 
@@ -508,7 +518,7 @@ main(int argc,char **argv)
 	} /* end if */
       } /* end if */
       if(wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
-	/* DBG XXX var_conform_dim() has a bug where it does not allocate a tally array
+	/* fxm: var_conform_dim() has a bug where it does not allocate a tally array
 	 for weights that do already conform to var_prc. TODO #114. */ 
 	wgt_out=var_conform_dim(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
 	wgt_out=var_conform_type(var_prc[idx]->type,wgt_out);
@@ -534,7 +544,7 @@ main(int argc,char **argv)
 	  /* Mask by changing weight to missing value where condition is false */ 
 	  (void)var_mask(wgt_out->type,wgt_out->sz,wgt_out->has_mss_val,wgt_out->mss_val,msk_val,op_type,msk_out->val,wgt_out->val);
 	} /* endif weight must be masked */ 
-	/* DBG XXX temporary kludge to make sure weight has tally space.
+	/* fxm: temporary kludge to make sure weight has tally space.
 	   wgt_out may occasionally lack a valid tally array in ncwa because
 	   it is created, sometimes, before the tally array for var_prc_out[idx] is 
 	   created, and thus the var_dup() call in var_conform_dim() does not copy

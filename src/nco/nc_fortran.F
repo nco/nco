@@ -1,4 +1,4 @@
-c     $Header: /data/zender/nco_20150216/nco/src/nco/nc_fortran.F,v 1.6 1999-08-30 07:07:22 zender Exp $
+c     $Header: /data/zender/nco_20150216/nco/src/nco/nc_fortran.F,v 1.7 1999-08-31 22:25:55 zender Exp $
 
 c     Fortran arithmetic utilities for netCDF operators
 
@@ -351,6 +351,7 @@ c------------------------------Main code--------------------------------
                   cnt(idx_op2)=cnt(idx_op2)+1
                endif
             end do
+            if (cnt(idx_op2).eq.0) op2(idx_op2)=mss_val
          end do
       endif
       return
@@ -390,6 +391,7 @@ c------------------------------Main code--------------------------------
                   cnt(idx_op2)=cnt(idx_op2)+1
                endif
             end do
+            if (cnt(idx_op2).eq.0) op2(idx_op2)=mss_val
          end do
       endif
       return

@@ -1,0 +1,169 @@
+<! $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.1 1999-08-31 22:25:55 zender Exp $ >
+
+<! Purpose: NCO news archive >
+
+<! Usage: >
+<! http://www.cgd.ucar.edu/cms/nco/nco_news.shtml >
+<! file:/home/zender/nc/nco/doc/nco_news.shtml >
+<! /bin/cp -f ~/nc/nco/doc/nco_news.shtml /web/web-data/cms/nco/nco_news.shtml >
+<! rcp -p ~/nc/nco/doc/nco_news.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/nco_news.shtml >
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>NCO Homepage</TITLE>
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.04Gold (X11; I; Linux 2.0.0 i686) [Netscape]">
+   <META NAME="Author" CONTENT="Charles S. Zender">
+   <META NAME="Keywords" CONTENT="NCO news, netCDF, netCDF operator, GCM, scientific data">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFF8DC" LINK="#0000FF" VLINK="#008080" ALINK="#FF0000">
+
+<DT><A NAME="News"></A></DT>
+<H2>NCO News</H2>
+
+<P>1999/08/31: 
+A bug involving <TT>ncwa</TT>, weights, and missing values has been
+identified and fixed.
+When <TT>ncwa</TT> was used to average variables with user-specified
+weights (i.e., <IT>-w wgt</IT> was used) and <IT>every</IT> value in a
+target hyperslab was the missing value (i.e., <IT>missing_value</IT>),
+then <TT>ncwa</TT> would erroneously set the average value of the
+target hyperslab to 0.0 rather than to <IT>missing_value</IT>. 
+Thus some values which should have been <IT>missing_value</IT> in the
+output file were, instead, set to 0.0. 
+No operators besides <TT>ncwa</TT> were affected by this bug.
+This bug is fixed in nco-1.1.38.
+
+A new feature has been implemented in <TT>ncwa</TT>.
+<TT>ncwa</TT> used to exit with an error whenever it was called
+without any user-specified dimensions to average, i.e., when the
+<TT>-a</TT> was not invoked. 
+Now when <TT>ncwa</TT> is invoked without any user-specified
+dimensions, it averages over all dimensions.
+Thus the behavior of <TT>-a</TT> is now analogous to that of
+<TT>-d</TT> and of <TT>-v</TT>.
+See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> for details.
+
+<P>1999/08/29: 
+NCO now builds completely with pure C source files by default.
+In the past, NCO used Fortran routines to perform floating point
+arithmetic and pure C builds could be manually enabled by specifying
+-DC_ONLY in the build environment. 
+The interface between Fortran and C, however, was very difficult to
+maintain on the wide variety of platforms supported by NCO.
+Now pure C builds are the default and Fortran arithmetic must be
+manually enabled by specifying -DUSE_FORTRAN_ARITHMETIC in the build
+environment. 
+See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> for details.
+The Fortran code is no longer supported and will probably be
+deprecated in future releases.
+
+<P>1999/08/05: 
+NCAR users will be pleased to know that NCO now takes advantage
+of the local <TT>msrcp</TT> command, if it exists in a standard
+location on the local network.
+This allows all operators to retrieve files from the NCAR mass storage
+unit when <TT>msrcp</TT> is available on the local system.
+This change is transparent to the user, so that commands should still
+specify the paths to the files on the mass store with, e.g.,
+<TT>ncks -O -R -l ./ /ZENDER/nc/in.nc foo.nc</TT>.
+See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> for more details.
+
+<P>1999/07/03: 
+<TT>ncatted</TT> now replaces missing values of variables whose
+<IT>missing_value</IT> attribute is changed.
+When the internal floating point representation of a missing value, 
+e.g., 1.0e36, differs between machines then netCDF files produced
+on those machines will have incompatible missing values.
+<TT>ncatted</TT> now changes the <IT>missing_value</IT> attribute
+and the missing data self-consistently.
+This allows the user to change the missing values in files from
+different machines to a single value so that the files may then be 
+concatenated together with, e.g., by <TT>ncrcat</TT>, without losing
+any information.  
+
+<P>1999/05/09: 
+<TT>ncks</TT> now alphabetizes output by default.
+To turn off alphabetization and return to the previous behavior
+(variables reported in the order they were written to disk) simply
+specify <TT>`-a'</TT> on the command line. 
+Yes, that means the behavior of <TT>`-a'</TT> has been toggled.
+
+<P>
+<TT>ncrcat</TT> and <TT>ncra</TT> now support a <IT>stride</IT> in the
+record dimension (and only the record dimension!), e.g., 
+<TT>ncra -d time,1,100,12 in1.nc in2.nc ... out.nc</TT>
+should now work correctly. 
+Strides in any dimension remain available with <TT>ncks</TT>, of
+course. 
+
+<P>
+<TT>ncrcat</TT> and <TT>ncra</TT> now support index-based
+hyperslabbing in the record dimension across files, e.g.,  
+<TT>ncra -d time,1,100 in1.nc in2.nc ... out.nc</TT>
+The <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> claimed this feature had already been implemented,
+but, due to an oversight, that was not true.
+Attempting to use this new feature in older versions of NCO resulted
+in an "index out of range" error.
+Thanks to John Truesdale <jet@ncar.ucar.edu> for pointing this out. 
+
+<P>1999/04/20: 
+Fixed bug where <TT>ncrcat</TT> and <TT>ncra</TT> omitted the last slice of the
+record dimension when <TT>`-F'</TT> (Fortran indexing) was user-specified AND
+user-specified hyperslab information was provided for some
+dimensions BUT not for the record dimension. This bug only
+affected <TT>ncrcat</TT> and <TT>ncra</TT> and only under these conditions. Thanks
+to John Sheldon <jps@server1.gfdl.gov> for pointing this out. 
+	
+<P>1999/04/04: By default, extracted variables appear in the same order
+in which they were written to the source netCDF file.
+However, this order is often essentially random, making it hard to
+locate a particular variable in a dump of many variables.
+To help address this, <TT>ncks</TT> will now alphabetize variables.
+Simply specify <TT>`-a'</TT> on the command line.
+
+<P>1999/01/21: An optional token has been added to NCO which eliminates
+all netCDF 3.x calls and thus restores compatibility of NCO with HDF
+files. 
+
+<P>1998/12/02: <TT>ncwa</TT> has been updated again since a user
+discovered a bug which occurred when a weight (<TT>`-w'</TT>) and a
+mask (<TT>`-m'</TT>) were both given to <TT>ncwa</TT>. Unfortunately, 
+<TT>ncwa</TT> sometimes produced incorrect answers in this scenario so
+if you ever used weights and masks at the same time you are strongly
+urged to upgrade your NCO and rerun the commands. This bug only
+affected variables averaged with both the weight and mask options
+enabled at the same time, no other variables would have been affected. 
+
+<P>The <TT>`-n'</TT> and <TT>`-W'</TT> normalization options to
+<TT>ncwa</TT> have been removed, possibly permanently, but at least
+until their implementation is simplified and redesigned. The
+<TT>`-N'</TT> option to <TT>ncwa</TT> remains the same. All the new
+behavior is fully documented in the rewritten and expanded
+<TT>ncwa</TT> section in the 
+<A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO User's
+Guide</A>.
+
+<P>1998/11/24: Choose whether to weight your coordinates in <TT>ncwa</TT>
+A <TT>`-I'</TT> switch has been added to <TT>ncwa</TT>.
+Henforth, by default, <TT>ncwa</TT> applies weights or masks to
+coordinate variables just like any other variable.
+Previously, <TT>ncwa</TT> did not weight coordinate variables at all,
+and always produced simple arithmetic averages of coordinate
+variables.  
+Use <TT>`ncwa -I'</TT> to recover the old behavior (i.e., arithmetic
+rather than masked, weighted averages of coordinate variables).
+A problem where <TT>ncwa</TT> would refuse to average variables which
+did not contain any of the averaged dimensions has also been fixed.
+
+<P>1998/07/07: Reduce bloating!     
+The <TT>`-h'</TT> switch has been enabled on all operators.
+Using this switch suppresses the automatic history feature in NCO.
+Now you can decide whether each change to a file warrants an
+additional line in the history attribute. 
+The functionality of the old <TT>`ncks -h'</TT> switch is now
+invoked with <TT>`ncks -m'</TT> (the mnemonic is `metadata'). 
+<HR></P>
+
+</BODY>
+</HTML>

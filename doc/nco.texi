@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.28 1999-08-30 07:07:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.29 1999-08-31 22:25:55 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -3421,6 +3421,14 @@ variables:
         float gw(lat) ;
 @} 
 @end example
+
+Average all variables in @file{in.nc} over all dimensions @file{out.nc}:
+@example
+ncwa in.nc out.nc
+@end example
+@noindent
+Every variable in @file{in.nc} is reduced to a scalar in @file{out.nc}
+because averaging was performed over all dimensions were averaged over. 
 
 Store the zonal (longitudinal) average of @file{in.nc} in @file{out.nc}:
 @example

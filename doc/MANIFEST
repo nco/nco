@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.3 1999-01-29 19:24:06 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.4 1999-08-31 22:25:55 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -40,7 +40,8 @@ nco/doc/TODO		List of tasks for future releases
 nco/doc/VERSION		NCO version 
 nco/doc/ChangeLog	Chronological log of NCO changes
 nco/doc/dir		Example Info file to load nco.info
-nco/doc/index.shtml	NCO Website homepage
+nco/doc/index.shtml	NCO website homepage
+nco/doc/nco_news.shtml	NCO news archive
 nco/doc/ncap.txt	Description of the ncap operator (not yet used)
 nco/doc/nco.texi	NCO User's Guide: TeXInfo format
 nco/doc/nco.info	NCO User's Guide: Info format

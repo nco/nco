@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.33 1999-08-31 15:42:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.34 1999-08-31 22:25:56 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -1767,7 +1767,7 @@ var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dim_sct **di
     /* If the variable has not been defined, define it */
     if(var[idx]->id == -1){
       
-      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicityly set to the actual number of ouput dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dim_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_def() was designed to call the simple branch when dim_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in the output file, nbr_dim_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */ 
+      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of ouput dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dim_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_def() was designed to call the simple branch when dim_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in the output file, nbr_dim_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */ 
       if(dim_ncl != NULL || prg_get() == ncwa){
 	int nbr_var_dim=0;
 	int idx_ncl;
@@ -3243,6 +3243,14 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
   long idx_op2;
   long idx_blk;
   long sz_blk;
+#ifndef USE_FORTRAN_ARITHMETIC
+  double mss_val_double;
+  float mss_val_float;
+  nclong mss_val_long;
+  short mss_val_short;
+  signed char mss_val_char;
+  unsigned char mss_val_byte;
+#endif /* USE_FORTRAN_ARITHMETIC */
 
   sz_blk=sz_op1/sz_op2;
 
@@ -3250,6 +3258,19 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
   (void)cast_void_nctype(type,&op1);
   (void)cast_void_nctype(type,&op2);
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+
+#ifndef USE_FORTRAN_ARITHMETIC
+  if(has_mss_val){
+    switch(type){
+    case NC_FLOAT: mss_val_float=*mss_val.fp; break;
+    case NC_DOUBLE: mss_val_double=*mss_val.dp; break;
+    case NC_SHORT: mss_val_short=*mss_val.sp; break;
+    case NC_LONG: mss_val_long=*mss_val.lp; break;
+    case NC_BYTE: mss_val_byte=*mss_val.bp; break;
+    case NC_CHAR: mss_val_char=*mss_val.cp; break;
+    } /* end switch */
+  } /* endif */
+#endif /* USE_FORTRAN_ARITHMETIC */
 
   switch(type){
   case NC_FLOAT:
@@ -3269,11 +3290,12 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 	blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	  idx_op1=blk_off+idx_blk;
-	  if(op1.fp[idx_op1] != *mss_val.fp){
+	  if(op1.fp[idx_op1] != mss_val_float){
 	    op2.fp[idx_op2]+=op1.fp[idx_op1];
 	    tally[idx_op2]++;
 	  } /* end if */
 	} /* end loop over idx_blk */
+	if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_float;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */ 
@@ -3291,11 +3313,12 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
       }else{
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
-	    if(op1_2D[idx_op2][idx_blk] != *mss_val.fp){
+	    if(op1_2D[idx_op2][idx_blk] != mss_val_float){
 	      op2.fp[idx_op2]+=op1_2D[idx_op2][idx_blk];
 	      tally[idx_op2]++;
 	    } /* end if */
 	  } /* end loop over idx_blk */
+	  if(tally[idx_op2] == 0L) op2.fp[idx_op2]=mss_val_float;
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
@@ -3324,6 +3347,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 	    tally[idx_op2]++;
 	  } /* end if */
 	} /* end loop over idx_blk */
+	if(tally[idx_op2] == 0L) op2.dp[idx_op2]=mss_val_double;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */ 
@@ -3346,6 +3370,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 	      tally[idx_op2]++;
 	    } /* end if */
 	  } /* end loop over idx_blk */
+	  if(tally[idx_op2] == 0L) op2.dp[idx_op2]=mss_val_double;
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
@@ -3371,6 +3396,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 	    tally[idx_op2]++;
 	  } /* end if */
 	} /* end loop over idx_blk */
+	if(tally[idx_op2] == 0L) op2.lp[idx_op2]=mss_val_long;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */ 
@@ -3393,6 +3419,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 	      tally[idx_op2]++;
 	    } /* end if */
 	  } /* end loop over idx_blk */
+	  if(tally[idx_op2] == 0L) op2.lp[idx_op2]=mss_val_long;
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */
@@ -3417,6 +3444,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 	    tally[idx_op2]++;
 	  } /* end if */
 	} /* end loop over idx_blk */
+	if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_short;
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */ 
@@ -3439,6 +3467,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 	      tally[idx_op2]++;
 	    } /* end if */
 	  } /* end loop over idx_blk */
+	  if(tally[idx_op2] == 0L) op2.sp[idx_op2]=mss_val_short;
 	} /* end loop over idx_op2 */
       } /* end else */
     } /* end if */

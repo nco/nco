@@ -1,5 +1,7 @@
 1999-08-31  Charlie Zender  <zender@dust.acd.ucar.edu>
 
+	* Tagged this as nco1_1_38
+
 	* ncwa now averages over all dimensions when none are specified
 	with -a
 
@@ -14,7 +16,8 @@
 	* Removed C_ONLY token and made builds completely C-based by
 	default. Introduced new token USE_FORTRAN_ARITHMETIC to build
 	old style NCO with fortran arithmetic routines. Seems to work
-	fine. 
+	fine. Translated Fortran date routines newdate() and days2eom() to 
+	C as part of this. 
 
 1999-08-04  Charlie Zender  <zender@dust.acd.ucar.edu>
 
