@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.125 2002-02-19 00:40:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.126 2002-02-24 18:49:34 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -12,7 +12,7 @@ ncap-specific items:
 8. Cure final few bothersome compilation warnings, mainly in bison.simple.
 Note that fixing these via hardcoded prototypes should allow for pure_parser
 to be turned off, since this apparently changes the prototypes.
-ncap.tab.c (warning with Linux):
+ncap.tab.c (warning with Linux when compiling parser):
 /usr/lib/bison.simple:432: warning: implicit declaration of function `yylex'
 This must be something like
 extern int yylex(YYSTYPE *,prs_arg); /* Prototype for lexer */

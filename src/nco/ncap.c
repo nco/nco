@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.61 2002-02-12 07:49:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.62 2002-02-24 18:49:34 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -42,19 +42,7 @@
 /* Usage:
    ncap -O -D 1 -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
    ncap -O -D 1 -s a=b+c -s "b=c-d/2." -S ncap.in in.nc foo.nc
-   ncap -O -D 1 -s two=one+two in.nc foo.nc
-*/
-
-/* fxm 20000730:
-   I currently get four compiler warnings I do not understand on Linux
-   Two are in bison.simple and occur when compiling ../src/nco/ncap.tab.c:
-   /usr/lib/bison.simple:432: warning: implicit declaration of function `yylex'
-   /usr/lib/bison.simple:458: warning: implicit declaration of function `yyprint'
-   One occurs when compiling the lexer lex.yy.c = ncap_lex.c:
-   lex.yy.c:1060: warning: `yyunput' defined but not used
-   Once occurs when compiling ncap.c which calls the parser:
-   ../src/nco/ncap.c:423: warning: implicit declaration of function `yyparse'
-*/
+   ncap -O -D 1 -s two=one+two in.nc foo.nc */
 
 /* Standard C headers */
 #include <assert.h>  /* assert() debugging macro */
@@ -87,7 +75,7 @@
 #include "ncap.h" /* ncap-specific definitions */
 
 /* Global variables */
-long ln_nbr_crr; /* [cnt] Line number incremented in ncap.l */
+long ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
 char *fl_spt_glb; /* [fl] Script file */
 
 int 
@@ -127,8 +115,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.61 2002-02-12 07:49:10 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.61 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.62 2002-02-24 18:49:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.62 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -212,7 +200,7 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="ACcD:d:Fhl:n:Op:r:s:S:v";
+  opt_sng="ACcD:d:Fhl:n:Op:Rrs:S:vx";
   while((opt=getopt(argc,argv,opt_sng)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
@@ -265,14 +253,14 @@ main(int argc,char **argv)
       exit(EXIT_SUCCESS);
       break;
     case 's': /* Copy command script for later processing */
-      spt_arg[nbr_spt++]= strdup(optarg);
+      spt_arg[nbr_spt++]=strdup(optarg);
       break;
     case 'S': /* Read command script from file rather than from command line */
       fl_spt=optarg;
       break;
     case 'v': /* Variables to extract/exclude */
       PROCESS_ALL_VARS=False;
-      nbr_xtr = 0;
+      nbr_xtr=0;
       /* var_lst_in=lst_prs(optarg,",",&nbr_xtr); */
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */

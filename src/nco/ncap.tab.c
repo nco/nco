@@ -19,7 +19,7 @@
 #define	UMINUS	269
 
 #line 1 "../src/nco/ncap.y"
- /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.tab.c,v 1.1 2002-02-20 05:56:26 zender Exp $ -*-C-*- */
+ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.tab.c,v 1.2 2002-02-24 18:49:34 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -65,8 +65,7 @@
      /home/thibaud/usr/local/src/gcc-2.7.2/c-parse.y
      /data/zender/gcc-2.7.2/c-parse.y
      parser_build_binary_op is in /data/zender/gcc-2.7.2/c-typeck.c
-     unidata ncgen.y
-  */
+     unidata ncgen.y */
 
 /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */
@@ -101,7 +100,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 
 /* End C declarations section */
 
-#line 98 "../src/nco/ncap.y"
+#line 97 "../src/nco/ncap.y"
 typedef union{
   char *str;
   char *output_var;
@@ -194,11 +193,11 @@ static const short yyrhs[] = {    28,
 
 #if YYDEBUG != 0
 static const short yyrline[] = { 0,
-   142,   145,   151,   152,   153,   157,   187,   208,   232,   250,
-   289,   317,   323,   327,   331,   335,   340,   344,   347,   360,
-   373,   376,   387,   388,   391,   394,   397,   407,   419,   434,
-   437,   443,   447,   451,   456,   467,   471,   475,   479,   483,
-   487,   491,   495,   499,   503,   510,   513,   517,   521,   524
+   141,   144,   150,   151,   152,   156,   186,   207,   231,   249,
+   288,   316,   322,   326,   330,   334,   339,   343,   346,   359,
+   372,   375,   386,   387,   390,   393,   396,   406,   418,   433,
+   436,   442,   446,   450,   455,   466,   470,   474,   478,   482,
+   486,   490,   494,   498,   502,   509,   512,   516,   520,   523
 };
 #endif
 
@@ -886,7 +885,7 @@ yyreduce:
   switch (yyn) {
 
 case 2:
-#line 146 "../src/nco/ncap.y"
+#line 145 "../src/nco/ncap.y"
 {
   /* Purpose: Actions to be performed at end-of-statement go here */
   /* Clean up from and exit LHS_cst mode */
@@ -894,19 +893,19 @@ case 2:
 ;
     break;}
 case 3:
-#line 151 "../src/nco/ncap.y"
+#line 150 "../src/nco/ncap.y"
 {(void)quick_free(&((prs_sct *)prs_arg)->var_LHS);;
     break;}
 case 4:
-#line 152 "../src/nco/ncap.y"
+#line 151 "../src/nco/ncap.y"
 {(void)quick_free(&((prs_sct *)prs_arg)->var_LHS);;
     break;}
 case 5:
-#line 153 "../src/nco/ncap.y"
+#line 152 "../src/nco/ncap.y"
 {(void)quick_free(&((prs_sct *)prs_arg)->var_LHS);;
     break;}
 case 6:
-#line 160 "../src/nco/ncap.y"
+#line 159 "../src/nco/ncap.y"
 { 
   int aed_idx; 
   aed_sct *ptr_aed;
@@ -936,7 +935,7 @@ case 6:
 ;
     break;}
 case 7:
-#line 188 "../src/nco/ncap.y"
+#line 187 "../src/nco/ncap.y"
 {
   int aed_idx; 
   int sng_lng;
@@ -959,7 +958,7 @@ case 7:
 ;
     break;}
 case 8:
-#line 209 "../src/nco/ncap.y"
+#line 208 "../src/nco/ncap.y"
 { 
   /* Storing 0-dimensional variables in attribute is OK */ 
   int aed_idx;
@@ -985,7 +984,7 @@ case 8:
 ;
     break;}
 case 9:
-#line 233 "../src/nco/ncap.y"
+#line 232 "../src/nco/ncap.y"
 {
   int rcd;
   int var_id;
@@ -1005,7 +1004,7 @@ case 9:
 ;
     break;}
 case 10:
-#line 251 "../src/nco/ncap.y"
+#line 250 "../src/nco/ncap.y"
 {
   int rcd;
   int var_id;
@@ -1046,7 +1045,7 @@ case 10:
 ;
     break;}
 case 11:
-#line 290 "../src/nco/ncap.y"
+#line 289 "../src/nco/ncap.y"
 {
   int rcd;
   int var_id;
@@ -1074,35 +1073,35 @@ case 11:
 ;
     break;}
 case 12:
-#line 319 "../src/nco/ncap.y"
+#line 318 "../src/nco/ncap.y"
 {
   (void)ncap_retype(&yyvsp[-2].attribute,&yyvsp[0].attribute);
   yyval.attribute=ncap_attribute_calc(yyvsp[-2].attribute,'+',yyvsp[0].attribute);                                
 ;
     break;}
 case 13:
-#line 323 "../src/nco/ncap.y"
+#line 322 "../src/nco/ncap.y"
 {
   (void)ncap_retype(&yyvsp[-2].attribute,&yyvsp[0].attribute); 
   yyval.attribute=ncap_attribute_calc(yyvsp[-2].attribute,'-',yyvsp[0].attribute);
 ;
     break;}
 case 14:
-#line 327 "../src/nco/ncap.y"
+#line 326 "../src/nco/ncap.y"
 {
   (void)ncap_retype(&yyvsp[-2].attribute,&yyvsp[0].attribute);
   yyval.attribute=ncap_attribute_calc(yyvsp[-2].attribute,'*',yyvsp[0].attribute);
 ;
     break;}
 case 15:
-#line 331 "../src/nco/ncap.y"
+#line 330 "../src/nco/ncap.y"
 {
   (void)ncap_retype(&yyvsp[-2].attribute,&yyvsp[0].attribute); 
   yyval.attribute=ncap_attribute_calc(yyvsp[-2].attribute,'/',yyvsp[0].attribute);  
 ;
     break;}
 case 16:
-#line 335 "../src/nco/ncap.y"
+#line 334 "../src/nco/ncap.y"
 {
   (void)ncap_retype(&yyvsp[-2].attribute,&yyvsp[0].attribute);
   
@@ -1110,20 +1109,20 @@ case 16:
 ;
     break;}
 case 17:
-#line 340 "../src/nco/ncap.y"
+#line 339 "../src/nco/ncap.y"
 {
   (void)ncap_attribute_minus(&yyvsp[0].attribute);
   yyval.attribute=yyvsp[0].attribute;
 ;
     break;}
 case 18:
-#line 344 "../src/nco/ncap.y"
+#line 343 "../src/nco/ncap.y"
 {
   yyval.attribute=yyvsp[0].attribute;
 ;
     break;}
 case 19:
-#line 347 "../src/nco/ncap.y"
+#line 346 "../src/nco/ncap.y"
 {
   if(yyvsp[-2].attribute.type <= NC_FLOAT && yyvsp[0].attribute.type <= NC_FLOAT) {
     (void)ncap_attribute_conform_type(NC_FLOAT,&yyvsp[-2].attribute);
@@ -1139,7 +1138,7 @@ case 19:
 ;
     break;}
 case 20:
-#line 360 "../src/nco/ncap.y"
+#line 359 "../src/nco/ncap.y"
 {
   if(yyvsp[-3].attribute.type <= NC_FLOAT && yyvsp[-1].attribute.type <= NC_FLOAT) {
     (void)ncap_attribute_conform_type(NC_FLOAT,&yyvsp[-3].attribute);
@@ -1155,13 +1154,13 @@ case 20:
 ;
     break;}
 case 21:
-#line 373 "../src/nco/ncap.y"
+#line 372 "../src/nco/ncap.y"
 {
   yyval.attribute=ncap_attribute_abs(yyvsp[-1].attribute);
 ;
     break;}
 case 22:
-#line 376 "../src/nco/ncap.y"
+#line 375 "../src/nco/ncap.y"
 {
   
   if(yyvsp[-1].attribute.type <= NC_FLOAT) {
@@ -1175,23 +1174,23 @@ case 22:
 ;
     break;}
 case 23:
-#line 387 "../src/nco/ncap.y"
+#line 386 "../src/nco/ncap.y"
 {yyval.attribute=yyvsp[-1].attribute;;
     break;}
 case 24:
-#line 388 "../src/nco/ncap.y"
+#line 387 "../src/nco/ncap.y"
 {yyval.attribute=yyvsp[0].attribute;;
     break;}
 case 25:
-#line 391 "../src/nco/ncap.y"
+#line 390 "../src/nco/ncap.y"
 {yyval.output_var=yyvsp[0].output_var;;
     break;}
 case 26:
-#line 394 "../src/nco/ncap.y"
+#line 393 "../src/nco/ncap.y"
 {yyval.att=yyvsp[0].att;;
     break;}
 case 27:
-#line 398 "../src/nco/ncap.y"
+#line 397 "../src/nco/ncap.y"
 {
   size_t sng_lng;
   sng_lng=strlen(yyvsp[-2].str)+strlen(yyvsp[0].str);
@@ -1203,7 +1202,7 @@ case 27:
 ;
     break;}
 case 28:
-#line 407 "../src/nco/ncap.y"
+#line 406 "../src/nco/ncap.y"
 {
   char bfr[50];
   switch (yyvsp[-1].attribute.type){
@@ -1218,7 +1217,7 @@ case 28:
 ;
     break;}
 case 29:
-#line 419 "../src/nco/ncap.y"
+#line 418 "../src/nco/ncap.y"
 {
   char bfr[150];
   /* Format string according to string expression */
@@ -1236,32 +1235,32 @@ case 29:
 ;
     break;}
 case 30:
-#line 434 "../src/nco/ncap.y"
+#line 433 "../src/nco/ncap.y"
 {yyval.str=yyvsp[0].str;;
     break;}
 case 31:
-#line 439 "../src/nco/ncap.y"
+#line 438 "../src/nco/ncap.y"
 { 
   yyval.var=ncap_var_var_add(yyvsp[-2].var,yyvsp[0].var); 
   var_free(yyvsp[-2].var); var_free(yyvsp[0].var);
 ;
     break;}
 case 32:
-#line 443 "../src/nco/ncap.y"
+#line 442 "../src/nco/ncap.y"
 {
   yyval.var=ncap_var_attribute_add(yyvsp[-2].var,yyvsp[0].attribute);
   var_free(yyvsp[-2].var);
 ;
     break;}
 case 33:
-#line 447 "../src/nco/ncap.y"
+#line 446 "../src/nco/ncap.y"
 {
   yyval.var=ncap_var_attribute_add(yyvsp[0].var,yyvsp[-2].attribute);
   var_free(yyvsp[0].var);
 ;
     break;}
 case 34:
-#line 451 "../src/nco/ncap.y"
+#line 450 "../src/nco/ncap.y"
 { 
   yyval.var=ncap_var_var_sub(yyvsp[-2].var,yyvsp[0].var);
   var_free(yyvsp[-2].var); 
@@ -1269,7 +1268,7 @@ case 34:
 ;
     break;}
 case 35:
-#line 456 "../src/nco/ncap.y"
+#line 455 "../src/nco/ncap.y"
 { 
   var_sct *var1;
   parse_sct minus;
@@ -1283,70 +1282,70 @@ case 35:
 ;
     break;}
 case 36:
-#line 467 "../src/nco/ncap.y"
+#line 466 "../src/nco/ncap.y"
 {
   yyval.var=ncap_var_attribute_sub(yyvsp[-2].var,yyvsp[0].attribute);
   var_free(yyvsp[-2].var);
 ;
     break;}
 case 37:
-#line 471 "../src/nco/ncap.y"
+#line 470 "../src/nco/ncap.y"
 {
   yyval.var=ncap_var_var_multiply(yyvsp[-2].var,yyvsp[0].var); 
   var_free(yyvsp[-2].var); var_free(yyvsp[0].var); 
 ;
     break;}
 case 38:
-#line 475 "../src/nco/ncap.y"
+#line 474 "../src/nco/ncap.y"
 {
   yyval.var=ncap_var_attribute_multiply(yyvsp[-2].var,yyvsp[0].attribute);
   var_free(yyvsp[-2].var);
 ;
     break;}
 case 39:
-#line 479 "../src/nco/ncap.y"
+#line 478 "../src/nco/ncap.y"
 {
   yyval.var=ncap_var_attribute_modulus(yyvsp[-2].var,yyvsp[0].attribute);
   var_free(yyvsp[-2].var);
 ;
     break;}
 case 40:
-#line 483 "../src/nco/ncap.y"
+#line 482 "../src/nco/ncap.y"
 {
   yyval.var=ncap_var_attribute_multiply(yyvsp[0].var,yyvsp[-2].attribute);
   var_free(yyvsp[0].var);
 ;
     break;}
 case 41:
-#line 487 "../src/nco/ncap.y"
+#line 486 "../src/nco/ncap.y"
 {
   yyval.var=ncap_var_var_divide(yyvsp[-2].var,yyvsp[0].var); 
   var_free(yyvsp[-2].var); var_free(yyvsp[0].var); 
 ;
     break;}
 case 42:
-#line 491 "../src/nco/ncap.y"
+#line 490 "../src/nco/ncap.y"
 {
   yyval.var=ncap_var_attribute_divide(yyvsp[-2].var,yyvsp[0].attribute);
   var_free(yyvsp[-2].var);
 ;
     break;}
 case 43:
-#line 495 "../src/nco/ncap.y"
+#line 494 "../src/nco/ncap.y"
 {
   yyval.var=ncap_var_attribute_power(yyvsp[-2].var,yyvsp[0].attribute);
   var_free(yyvsp[-2].var);
 ;
     break;}
 case 44:
-#line 499 "../src/nco/ncap.y"
+#line 498 "../src/nco/ncap.y"
 {
   yyval.var=ncap_var_attribute_power(yyvsp[-3].var,yyvsp[-1].attribute);
   var_free(yyvsp[-3].var);
 ;
     break;}
 case 45:
-#line 503 "../src/nco/ncap.y"
+#line 502 "../src/nco/ncap.y"
 { 
   parse_sct minus;
   minus.val.b=-1;
@@ -1356,33 +1355,33 @@ case 45:
 ;
     break;}
 case 46:
-#line 510 "../src/nco/ncap.y"
+#line 509 "../src/nco/ncap.y"
 {
   yyval.var=yyvsp[0].var;
 ;
     break;}
 case 47:
-#line 513 "../src/nco/ncap.y"
+#line 512 "../src/nco/ncap.y"
 {
   yyval.var=ncap_var_abs(yyvsp[-1].var);
   var_free(yyvsp[-1].var);
 ;
     break;}
 case 48:
-#line 517 "../src/nco/ncap.y"
+#line 516 "../src/nco/ncap.y"
 {
   yyval.var=ncap_var_function(yyvsp[-1].var,yyvsp[-3].sym);
   var_free(yyvsp[-1].var);
 ;
     break;}
 case 49:
-#line 521 "../src/nco/ncap.y"
+#line 520 "../src/nco/ncap.y"
 {
   yyval.var=yyvsp[-1].var;
 ;
     break;}
 case 50:
-#line 524 "../src/nco/ncap.y"
+#line 523 "../src/nco/ncap.y"
 { 
   yyval.var=ncap_var_init(yyvsp[0].vara,(prs_sct *)prs_arg);
   if (yyval.var==(var_sct *)NULL) YYERROR;
@@ -1623,7 +1622,7 @@ yyerrhandle:
     }
   return 1;
 }
-#line 544 "../src/nco/ncap.y"
+#line 543 "../src/nco/ncap.y"
 
 /* Begin User Subroutines section */
 
