@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.43 2000-01-28 01:15:04 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.44 2000-02-03 16:56:21 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -66,7 +66,7 @@ exactly the same way. C versions test both operands agains mss_val,
 Fortran tests only op1. Since running averages are initialized to 0.0 before
 entry, problems arise in C version when missing_value = 0.0. Only fix seems
 to be checking whether tally == 0 before checking whether op2 == mss_val
-123. Add scp protocol to fl_get()
+123. Add scp and http protocols to fl_get()
 124. Use `install' program and mkdir -p
 125. Fix install on Cray
 126. Fix nco_dst.pl install for Babyblue/Blackforest
@@ -102,6 +102,13 @@ may be specified for "date" even though "time" is the coordinate.
 Proxies must be one dimensional and monotonic, of course.
 147. Use builtin tempnam() or tmpnam() so file is built in fast
 directory rather than, say, an NFS-mounted directory like /fs/cgd
+148. Put in more useful error diagnostics for Schweitzer's data holes
+These only appear in ncra/ncrcat because ncks treats same hyperslab as a wrap!
+Must define a consistent convention here
+cd ~/nc/nco/data
+ncks -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
+ncrcat -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
+149. Add ncks hyperslab tests to nco_tst to catch inconsistencies like #148
 ************************************************************************
 End NCO Wish list
 ************************************************************************

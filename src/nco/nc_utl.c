@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.50 2000-01-28 01:35:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.51 2000-02-03 16:56:22 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -444,10 +444,10 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       /* Find brackets to specified extrema */ 
       /* Should no coordinate values match the given criteria, flag that index with a -1L
 	 We defined the valid syntax such that a single half range with -1L is not an error
-	 This causes "-d lon,100.,-100." to select [-180.] when lon=[-180.,-90.,0.,90.] because one
-	 of the specified half-ranges is valid (there are coordinates < -100.).
-	 However, "-d lon,100.,-200." should fail when lon=[-180.,-90.,0.,90.] because both 
-	 of the specified half-ranges are invalid (no coordinate is > 100. or < -200.).
+	 This causes "-d lon,100.0,-100.0" to select [-180.0] when lon=[-180.0,-90.0,0.0,90.0] because one
+	 of the specified half-ranges is valid (there are coordinates < -100.0).
+	 However, "-d lon,100.0,-200.0" should fail when lon=[-180.0,-90.0,0.0,90.0] because both 
+	 of the specified half-ranges are invalid (no coordinate is > 100.0 or < -200.0).
 	 The -1L flags are replaced with the correct indices (0L or dim_sz-1L) following the search loop block
 	 Overwriting the -1L flags with 0L or dim_sz-1L later is more heuristic than setting them = 0L here,
 	 since 0L is a valid search result.
@@ -525,7 +525,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
        Thus we must update min_idx and max_idx here for each file
        This causes min_idx and max_idx to be out of sync with min_sng and max_sng, 
        which are only set in lmt_dim_mk() for the first file.
-       In hindsight, artificially generating min_sng and max_sng is probably a bad idea.
+       In hindsight, artificially generating min_sng and max_sng may be a bad idea
     */
     /* Following logic is messy, but hard to simplify */ 
     if(lmt.min_sng == NULL || !lmt.is_usr_spc_lmt){
@@ -568,15 +568,13 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       lmt.srt=lmt.min_idx;
       lmt.end=lmt.max_idx;
     }else{
-      /* For record dimensions with user-specified limit, we must
-	 allow for possibility that limit pertains to record dimension of 
-	 a multi-file operator, e.g., ncra.
-	 In this case, user-specified maximum index may exceed
-	 number of records in this particular file.
+      /* For record dimensions with user-specified limit, allow for possibility 
+	 that limit pertains to record dimension of a multi-file operator, e.g., ncra.
+	 Then a user-specified maximum index may exceed number of records in any one file
 	 Thus lmt.srt does not necessarily equal lmt.min_idx and lmt.end 
 	 does not necessarily equal lmt.max_idx */ 
-      /* Stride is officially supported for ncks (all dimensions), and 
-	 ncra, and ncrcat (record dimension only */
+      /* Stride is officially supported for ncks (all dimensions)
+	 and for ncra and ncrcat (record dimension only) */
       if(lmt.srd != 1L && prg_get() != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for a non-record dimension is only supported by ncks, use at your own risk...\n",prg_nm_get());
 
       /* No records were skipped in previous files */
@@ -735,7 +733,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
      This occurs when srd is large enough, or max_idx small enough, 
      such that no values are selected in the second read. 
      e.g., "-d lon,60,0,10" if sz(lon)=128 has dim_cnt_2 == 0
-     Since netCDF library reports an error reading and writing cnt=0 dimensions, a kludge is necessary.
+     Since netCDF library reports an error reading and writing cnt=0 dimensions, a kludge is necessary
      Syntax ensures it is always the second read, not the first, which is obviated
      Therefore we convert these degenerate cases into non-wrapped coordinates to be processed by a single read 
      For these degenerate cases only, [srt,end] are not a permutation of [min_idx,max_idx]
@@ -746,18 +744,18 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
      (lmt.cnt == (1L+(dim_sz-lmt.srt-1L)/lmt.srd)) && /* dim_cnt_1 == cnt -> dim_cnt_2 == 0 */ 
      True){
     long greatest_srd_multiplier_1st_hyp_slb; /* greatest integer m such that srt+m*srd < dim_sz */
-    long last_good_idx_1st_hyp_slb; /* C index of last valid member of 1st hyperslab (= srt+m*srd) */ 
-    long left_over_idx_1st_hyp_slb; /* # elements from first hyperslab to count towards current stride */ 
-    long first_good_idx_2nd_hyp_slb; /* C index of first valid member of 2nd hyperslab, if any */ 
+    long last_good_idx_1st_hyp_slb; /* C index of last valid member of 1st hyperslab (= srt+m*srd) */
+    long left_over_idx_1st_hyp_slb; /* # elements from first hyperslab to count towards current stride */
+    long first_good_idx_2nd_hyp_slb; /* C index of first valid member of 2nd hyperslab, if any */
 
-    /* NB: Perform these operations with integer arithmatic or else! */ 
-    /* Wrapped dimensions with a stride may not start at idx 0 on second read */ 
+    /* NB: Perform these operations with integer arithmatic or else! */
+    /* Wrapped dimensions with a stride may not start at idx 0 on second read */
     greatest_srd_multiplier_1st_hyp_slb=(dim_sz-lmt.srt-1L)/lmt.srd;
     last_good_idx_1st_hyp_slb=lmt.srt+lmt.srd*greatest_srd_multiplier_1st_hyp_slb;
     left_over_idx_1st_hyp_slb=dim_sz-last_good_idx_1st_hyp_slb-1L;
     first_good_idx_2nd_hyp_slb=(last_good_idx_1st_hyp_slb+lmt.srd)%dim_sz;
 
-    /* Conditions causing dim_cnt_2 == 0 */ 
+    /* Conditions causing dim_cnt_2 == 0 */
     if(first_good_idx_2nd_hyp_slb > lmt.end) lmt.end=last_good_idx_1st_hyp_slb;
   } /* end if */ 
 
@@ -774,7 +772,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
        This state must not cause ncra or ncrcat to retrieve any data
        Since ncra and ncrcat use loops for the record dimension, this
        may be accomplished by returning loop control values that cause
-       the loop always be skipped, never entered, lmt_rec.srt > lmt_rec.end */
+       the loop always to be skipped, never entered, e.g., lmt_rec.srt > lmt_rec.end */
     lmt.srt=-1;
     lmt.end=lmt.srt-1;
     lmt.cnt=-1;
@@ -805,6 +803,10 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     (void)fprintf(stderr,"srd = %li\n\n",lmt.srd);
   } /* end dbg */
   
+  if(lmt.srt > lmt.end){
+    (void)fprintf(stderr,"WARNING: Possible instance of Schweitzer data hole requiring better diagnostics TODO #148");
+  } /* end dbg */
+
 } /* end lmt_evl() */ 
 
 void

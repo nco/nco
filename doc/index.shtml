@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.35 2000-01-28 01:51:27 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.36 2000-02-03 16:56:21 zender Exp $
 
 Purpose: NCO homepage
 
@@ -157,8 +157,11 @@ User's Guide</A>. </P>
 Fixed longstanding NCO bug which caused infrequent but unpredictable
 core dumps on machines with PIDs longer than 6 digits, e.g., all
 recent SGI machines.
-It is recommended that all users upgrade to the the new version.
+A core dump could occur on these machines when the PID was seven
+digits long and the filename length was one less than a multiple of
+eight. 
 Kudos to Juliana Rew and Brian Eaton for identifying this bug.
+It is recommended that all users upgrade to the the new version.
 NCO is now distributed under the terms of the GNU General Public
 License (GPL).
 

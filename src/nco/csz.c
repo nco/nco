@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.38 2000-01-28 01:51:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.39 2000-02-03 16:56:21 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
 
@@ -89,8 +89,8 @@ Exit_gracefully(void)
 char * 
 nmn_get()
 { 
-  /* Purpose: Return a mnemonic that describes the current NCO version */
-  return "Son of Zot";
+  /* Purpose: Return mnemonic that describes current NCO version */
+  return "Sinatra";
 } /* end nmn_get() */
 
 char *
