@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.120 2004-06-30 22:35:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.121 2004-07-01 01:11:21 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -37,6 +37,7 @@
    ncwa -O -a lon /home/zender/nco/data/in.nc foo.nc
    ncwa -O -R -p /ZENDER/tmp -l /home/zender/nco/data in.nc foo.nc
    ncwa -O -a lat -w gw -d lev,17 -v T -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc
+
    ncwa -O -C -a lat,lon,time -w gw -v PS -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc;ncks -H foo.nc
  */
 
@@ -107,8 +108,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.120 2004-06-30 22:35:52 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.120 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.121 2004-07-01 01:11:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.121 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRt:v:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -125,28 +126,29 @@ main(int argc,char **argv)
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
+  int abb_arg_nbr=0;
+  int fl_idx=int_CEWI;
+  int fl_nbr=0;
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
   int idx_avg;
-  int fl_idx=int_CEWI;
   int in_id=int_CEWI;  
-  int out_id;  
-  int abb_arg_nbr=0;
-  int nbr_dmn_fl;
-  int nbr_dmn_avg=0;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int nbr_var_fl;
-  int nbr_var_fix; /* nbr_var_fix gets incremented */
-  int nbr_var_prc; /* nbr_var_prc gets incremented */
-  int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
+  int nbr_dmn_avg=0;
+  int nbr_dmn_fl;
   int nbr_dmn_out;
   int nbr_dmn_xtr;
-  int fl_nbr=0;
+  int nbr_var_fix; /* nbr_var_fix gets incremented */
+  int nbr_var_fl;
+  int nbr_var_prc; /* nbr_var_prc gets incremented */
+  int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nco_op_typ=nco_op_avg; /* Operation type */
-  int opt;
   int op_typ_rlt=0; /* Option o */
+  int opt;
+  int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=-1;
+  int thr_nbr=0; /* [nbr] Thread number */
   
   lmt_sct *lmt;
   
@@ -515,6 +517,10 @@ main(int argc,char **argv)
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
 
+  /* Initialize thread information */
+  thr_nbr=nco_openmp_ini();
+  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
+  
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
 
@@ -589,9 +595,6 @@ main(int argc,char **argv)
       /* Retrieve mask variable */
       (void)nco_var_get(in_id,msk); /* Routine contains OpenMP critical regions */
     } /* end if */
-
-    /* Set up OpenMP multi-threading environment */
-    rcd+=nco_openmp_ini();
 
   /* 
      cd ~/nco/bld;make OPTS=D;cd -

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.16 2004-06-18 16:33:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.17 2004-07-01 01:11:21 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -77,6 +77,11 @@ rnm_sct * /* O [sng] Structured list of old, new names */
 nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
 (const int nbr_rnm, /* I [nbr] Number of elements in rename list */
  CST_X_PTR_CST_PTR_CST_Y(char,rnm_arg)); /* I [sng] Unstructured list of old, new names */
+
+void 
+nco_thr_att_cat /* [fnc] Add threading global attribute */
+(const int out_id, /* I [id] netCDF output-file ID */
+ const int thr_nbr); /* I [nbr] Thread number */
 
 #ifdef __cplusplus
 } /* end extern "C" */

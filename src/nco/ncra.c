@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.110 2004-06-30 22:35:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.111 2004-07-01 01:11:21 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -78,9 +78,6 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
-#ifdef _OPENMP
-#include <omp.h> /* OpenMP pragmas */
-#endif /* not _OPENMP */
 
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
@@ -118,8 +115,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.110 2004-06-30 22:35:52 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.110 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.111 2004-07-01 01:11:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.111 $";
   const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRv:xy:-:";
 
   dmn_sct **dim;
@@ -132,25 +129,26 @@ main(int argc,char **argv)
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
 
+  int abb_arg_nbr=0;
+  int fl_idx;
+  int fl_nbr=0;
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
-  int fl_idx;
   int in_id;  
-  int out_id;  
-  int abb_arg_nbr=0;
-  int nbr_dmn_fl;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
-  int nbr_var_fl;
+  int nbr_dmn_fl;
+  int nbr_dmn_xtr;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
+  int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
-  int nbr_dmn_xtr;
-  int fl_nbr=0;
-  int opt;
-  int rcd=NC_NOERR; /* [rcd] Return code */
-  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int nco_op_typ=nco_op_avg; /* [enm] Default operation is averaging */
   int nco_pck_typ=nco_pck_nil; /* [enm] Default packing is none */
+  int opt;
+  int out_id;  
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
+  int thr_nbr=0; /* [nbr] Thread number */
   
   lmt_sct *lmt=NULL_CEWI;
   lmt_sct lmt_rec;
@@ -413,8 +411,12 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
 
   /* Add input file list global attribute */
-  if(FL_LST_IN_APPEND  && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
+  if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
 
+  /* Initialize thread information */
+  thr_nbr=nco_openmp_ini();
+  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
+  
   /* Define dimensions in output file */
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
@@ -449,9 +451,6 @@ main(int argc,char **argv)
       (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
     } /* end if */
   } /* end loop over idx */
-  
-  /* Print introductory thread information */
-  if(dbg_lvl > 0) rcd+=nco_openmp_ini();
   
   /* Loop over input files */
   for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){

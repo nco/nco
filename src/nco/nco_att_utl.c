@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.34 2004-06-19 01:04:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.35 2004-07-01 01:11:21 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -323,11 +323,11 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   /* Purpose: Write input file list to global metadata */
   aed_sct fl_in_lst_aed;
   aed_sct fl_in_nbr_aed;
-  char att_nm_lst[]="input_file_list";
-  char att_nm_nbr[]="input_file_number";
+  char att_nm_lst[]="nco_input_file_list";
+  char att_nm_nbr[]="nco_input_file_number";
   char spc_sng[]=" "; /* [sng] Intervening space */
   char *fl_in_lst_sng;
-  long fl_nbr_lng; /* [nbr] Number of files in input file list */
+  nco_long fl_nbr_lng; /* [nbr] Number of files in input file list */
   int fl_idx;
   size_t fl_in_lst_sng_lng; /* [nbr] Filename list string length */
   ptr_unn att_val;
@@ -348,8 +348,8 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   /* Copy fl_nbr so can take address without endangering number */
   fl_nbr_lng=fl_nbr;
   /* Insert number of files into value */
-  att_val.lp=(nco_long *)(&fl_nbr_lng);
-  /* Initialize input_file_list attribute edit structure */
+  att_val.lp=&fl_nbr_lng;
+  /* Initialize nco_input_file_number attribute edit structure */
   fl_in_nbr_aed.att_nm=att_nm_nbr;
   fl_in_nbr_aed.var_nm=NULL;
   fl_in_nbr_aed.id=NC_GLOBAL;
@@ -358,12 +358,12 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   /* Insert value into attribute structure */
   fl_in_nbr_aed.val=att_val;
   fl_in_nbr_aed.mode=aed_overwrite;
-  /* Write input_file_number attribute to disk */
+  /* Write nco_input_file_number attribute to disk */
   (void)nco_aed_prc(out_id,NC_GLOBAL,fl_in_nbr_aed);
 
   /* Insert file list into value */
   att_val.cp=(unsigned char *)fl_in_lst_sng;
-  /* Initialize input_file_list attribute edit structure */
+  /* Initialize nco_input_file_list attribute edit structure */
   fl_in_lst_aed.att_nm=att_nm_lst;
   fl_in_lst_aed.var_nm=NULL;
   fl_in_lst_aed.id=NC_GLOBAL;
@@ -372,7 +372,7 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   /* Insert value into attribute structure */
   fl_in_lst_aed.val=att_val;
   fl_in_lst_aed.mode=aed_overwrite;
-  /* Write input_file_list attribute to disk */
+  /* Write nco_input_file_list attribute to disk */
   (void)nco_aed_prc(out_id,NC_GLOBAL,fl_in_lst_aed);
   
   /* Free string holding file list attribute */
@@ -768,3 +768,34 @@ nco_prs_rnm_lst /* [fnc] Set old_nm, new_nm elements of rename structure */
 
   return rnm_lst;
 } /* end nco_prs_rnm_lst() */
+
+void 
+nco_thr_att_cat /* [fnc] Add threading global attribute */
+(const int out_id, /* I [id] netCDF output-file ID */
+ const int thr_nbr) /* I [nbr] Thread number */
+{
+  /* Purpose: Write thread information to global metadata */
+  aed_sct thr_nbr_aed;
+  char att_nm_nbr[]="nco_openmp_thread_number";
+  char spc_sng[]=" "; /* [sng] Intervening space */
+  nco_long thr_nbr_lng; /* [nbr] Thread number copy */
+  ptr_unn att_val;
+  
+  /* Copy thr_nbr so can take address without endangering number */
+  thr_nbr_lng=thr_nbr;
+  /* Insert thread number into value */
+  att_val.lp=&thr_nbr_lng;
+  /* Initialize nco_openmp_thread_number attribute edit structure */
+  thr_nbr_aed.att_nm=att_nm_nbr;
+  thr_nbr_aed.var_nm=NULL;
+  thr_nbr_aed.id=NC_GLOBAL;
+  thr_nbr_aed.sz=1L;
+  thr_nbr_aed.type=NC_INT;
+  /* Insert value into attribute structure */
+  thr_nbr_aed.val=att_val;
+  thr_nbr_aed.mode=aed_overwrite;
+  /* Write nco_openmp_thread_number attribute to disk */
+  (void)nco_aed_prc(out_id,NC_GLOBAL,thr_nbr_aed);
+
+} /* end nco_thr_att_cat() */
+ 
