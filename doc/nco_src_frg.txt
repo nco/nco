@@ -1,6 +1,11 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.1 2000-03-07 22:32:02 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.2 2000-03-07 22:34:25 zender Exp $ -*-text-*-
 
-# Purpose: Information used on Sourceforge site
+# Purpose: Sourceforge information for NCO netCDF Operators project
+
+Project Full Name:  NCO netCDF Operators
+Project Unix Name:  nco
+CVS Server:         cvs.nco.sourceforge.net
+Shell/Web Server:   nco.sourceforge.net
 
 The purpose of this project is to create and improve tools for data
 analysis by using an Open Source development strategy. This starting
@@ -21,3 +26,4 @@ are equally useful in fields like finance. The NCO User's Guide
 illustrates NCO use with examples from the field of climate modeling
 and analysis. The NCO homepage is currently 
 http://www.cgd.ucar.edu/cms/nco.
+

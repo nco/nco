@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.21 2000-01-28 00:09:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.22 2000-03-07 22:32:02 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.21 2000-01-28 00:09:11 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.21 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.22 2000-03-07 22:32:02 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.22 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -1294,10 +1294,10 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int nbr_lmt,char *dlm_sng,bo
     (void)sng_ascii_trn(dlm_sng);
 
     /* Assume the -s argument (dlm_sng) formats the entire string
-       Otherwise, one could assume the field will be printed with format type_fmt_sng(var.type),
-       and the user is only allowed to affect the text in between the fields. 
-       This would be accomplished with the following: */ 
-    /*    (void)sprintf(var_sng,"%s%s",type_fmt_sng(var.type),dlm_sng);*/
+       Otherwise, one could assume that field will be printed with format type_fmt_sng(var.type),
+       and that user is only allowed to affect text in between fields. 
+       This would be accomplished with:
+       (void)sprintf(var_sng,"%s%s",type_fmt_sng(var.type),dlm_sng);*/
 
     for(lmn=0;lmn<var.sz;lmn++){
       switch(var.type){
