@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.16 2004-01-12 18:11:07 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.17 2004-01-12 19:37:01 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -63,8 +63,9 @@
      fxm: Hackish, but I see no other way */ 
 
 /* NCO prototypes yylex() in three separate places---Ensure that all prototypes agree!
-   The alternative, prototyping yylex() once in ncap.h, requires YYSTYPE (ncap_yacc.h) too
+   The alternative, prototyping yylex() once in ncap.h, requires YY*STYPE (ncap_yacc.h) too
    That is unappealing since we want ncap.h segregable from parser and scanner dependencies
+   (Asterisks inserted into token names in comments so that cpp does not expand token)
    1. Top of ncap_lex.l via YY*DECL token
       Define YY*DECL token so yylex() accepts re-entrant arguments (Flex p. 12, Bison p. 60) 
       Use YY*DECL on line following it definition to make prototype visible ncap_lex.c
