@@ -1,26 +1,26 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.56 2003-06-24 22:47:37 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.57 2003-11-16 20:13:23 zender Exp $ -*-text-*-
 
-# Purpose: Sourceforge information for NCO netCDF Operators project
+# Purpose: Potpurri of Sourceforge information for NCO netCDF Operators project
 
 Project Full Name:  NCO netCDF Operators
 Project Unix Name:  nco
-CVS Server:         cvs.nco.sourceforge.net
-Shell/Web Server:   nco.sourceforge.net:/home/users/z/ze/zender
-		    nco.sourceforge.net:/home/groups/n/nc/nco
-Project Websites:   http://nco.sourceforge.net
+CVS Server:         cvs.nco.sf.net
+Shell/Web Server:   nco.sf.net:/home/users/z/ze/zender
+		    nco.sf.net:/home/groups/n/nc/nco
+Project Websites:   http://nco.sf.net
 		    http://sourceforge.net/projects/nco
 		    http://sourceforge.net/project/?group_id=3331
 		    http://freshmeat.net/projects/nco
-Project FTP:        ftp://nco.sourceforge.net/pub/nco
-		    nco.sourceforge.net:/home/groups/ftp/pub/nco
+Project FTP:        ftp://nco.sf.net/pub/nco
+		    nco.sf.net:/home/groups/ftp/pub/nco
 CVS:		    Anonymous check out:
-		    cvs -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco login 
-		    cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco
+		    cvs -d:pserver:anonymous@cvs.nco.sf.net:/cvsroot/nco login 
+		    cvs -z3 -d:pserver:anonymous@cvs.nco.sf.net:/cvsroot/nco co -kk nco
 		    Developer check out (note absence of pserver protocol allows ssh to be used)
 		    export CVS_RSH=ssh 
-		    export CVSROOT=zender@cvs.nco.sourceforge.net:/cvsroot/nco
-		    cvs -z3 -dzender@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco
-		    cvs -z3 -dzender@cvs.nco.sourceforge.net:/cvsroot/nco co -kk -r netcdf3 -d nco-1_3 nco 
+		    export CVSROOT=zender@cvs.nco.sf.net:/cvsroot/nco
+		    cvs -z3 -dzender@cvs.nco.sf.net:/cvsroot/nco co -kk nco
+		    cvs -z3 -dzender@cvs.nco.sf.net:/cvsroot/nco co -kk -r netcdf3 -d nco-1_3 nco 
 		    Checkouts inside sourceforge firewall:
 		    cvs -dzender@cvs1:/cvsroot/nco co -kk nco
 Daily tarballs of entire CVS tree for mirroring:
@@ -39,7 +39,7 @@ ncftpput upload.sourceforge.net /incoming /var/www/html/nco/sf.tar.gz
 scp upload.sourceforge.net:/incoming/sf.tar.gz .
 
 # Copy docs from compile farm to NCO websites
-cd ~/nco/doc;scp -C nco.dvi nco.html nco.info* nco.pdf nco.ps* zender@nco.sourceforge.net:/home/groups/n/nc/nco/htdocs
+cd ~/nco/doc;scp -C nco.dvi nco.html nco.info* nco.pdf nco.ps* zender@nco.sf.net:/home/groups/n/nc/nco/htdocs
 cd ~/nco/doc;scp -C nco.dvi nco.html nco.info* nco.pdf nco.ps* zender@dust.ess.uci.edu:/var/www/html/nco
 
 # Copy netCDF library to HP account
@@ -53,8 +53,8 @@ CC='/bin/c89' CPPFLAGS='-D_HPUX_SOURCE' CXX='aCC' FC='/opt/fortran/bin/fort77' F
 make;make install
 
 # Copy netCDF library to NCO group account
-scp -C /data/zender/tmp/netcdf-3.5.0.tar.Z zender@nco.sourceforge.net:/home/groups/n/nc/nco
-scp -C ~/nco/data/nco_tst.nc zender@nco.sourceforge.net:/home/groups/n/nc/nco/nco/data
+scp -C /data/zender/tmp/netcdf-3.5.0.tar.Z zender@nco.sf.net:/home/groups/n/nc/nco
+scp -C ~/nco/data/nco_tst.nc zender@nco.sf.net:/home/groups/n/nc/nco/nco/data
 # Copy netCDF library from NCO group account to compile farm
 scp -C nco.sf.net:/home/groups/n/nc/nco/netcdf-3.5.0.tar.Z ~
 scp -C nco.sf.net:/home/groups/n/nc/nco/nco/data/nco_tst.nc ~/nco/data
@@ -154,16 +154,7 @@ Contributors with active projects:
 Name, E-mail, Sourceforge name, Project
 Henry Butowsky <henryb at ntlworld dot com> ncap, multislabbing
 Rorik Peterson <ffrap1 at uaf dot edu> autoconf, getopt
-James Watson <jwatson at csee dot uq dot edu dot au> autoconf
-gautam <gautamdhar at hotmail dot com> getopt?
-Jason Dale Robey <jrobey at users dot sourceforge dot net> getopt? (Bad email,
-never contacted)
-S dot  Srinivasan <s dot srinivasan at ematic dot com>
-Gian Luca Bignardi <pac77 at libero dot it> GTK+ GUI wrapper?
-Jeff Turner <jturner at alum dot rpi dot edu> getopt, _FillValue?
-Igor Crane <igor_crane at hotmail dot com> ncap?
-John Parish <gerbil at planetquake dot com> http? C++ interface?
-Mohan Thiyagarajah <mthiyagarajah at yahoo dot com> C++ interface? namespace/nc_utl?
+Jim Edwards <jedwards at ncar dot ucar dot edu>
 Brian Mays <brian at debian dot org> Debian packaging
 George Shapovalov <george at gentoo dot org> Gentoo 
 

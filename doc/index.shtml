@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.168 2003-11-15 01:50:00 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.169 2003-11-16 20:13:23 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -267,7 +267,7 @@ unpacking variables stored with <tt>scale_factor</tt> and <tt>add_offset</tt>
 </ul>
 <hr></p>
 
-<dt><a name="Download"></a></dt>
+<dt><a name="Download"></a><a name="dwn"></a></dt>
 <h2>Download/CVS NCO Software</h2>
 
 The best way to acquire NCO is with <a href="http://www.cvshome.org">CVS</a>.
@@ -283,23 +283,21 @@ especially <a href="http://www.cvshome.org">CVS</a> and
 You must first log into the NCO CVS server:
 <p><tt>cvs -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco login</tt></p>
 Simply hit return when asked for the CVS password.
-This logging in procedure is only required the first time you access
-the CVS server.
+This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
-Usually you will wish to retrieve a recent tagged (i.e., released)
-version.
-This command retrieves and places NCO version <tt>2.5.3</tt> into a
-local directory named <tt>nco-2.5.3</tt>: 
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2_5_3 -d nco-2.5.3 nco</tt></p>
+Usually you wish to retrieve a recent tagged (i.e., released) version.
+This command retrieves and places NCO version <tt>2.8.3</tt> into a
+local directory named <tt>nco-2.8.3</tt>: 
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2_8_3 -d nco-2.8.3 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-2_5_3</tt>) and the development version is that the
+(e.g., <tt>nco-2_8_3</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>2.5.3</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>2.8.3</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.

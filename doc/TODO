@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.249 2003-11-15 01:50:00 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.250 2003-11-16 20:13:23 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -236,7 +236,7 @@ Permission denied
 276. Use nco_mss_val_cnf() in ncap
 277. Use nco_mss_val_cnf() in ncwa
 280. Understand memory usage in ncap: is binary op 2*sizeof(x) or 3*sizeof(x)?
-284. 
+284. chmod a+x x debian/rules in CVS repository
 ************************************************************************
 End NCO Wish list
 ************************************************************************
