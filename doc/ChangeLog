@@ -1,3 +1,9 @@
+2001-02-16  Charlie Zender  <zender@uci.edu>
+
+	* After many minor tweaks, made commits and retagged nco-1_2_2
+	and this is the version that will be merged into 1_3_1 to create
+	1_3_2
+
 2001-02-11  Charlie Zender  <zender@uci.edu>
 
 	* Figured out that texi2dvi --pdf really does work nicely and am
