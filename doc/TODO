@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.243 2003-11-10 19:01:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.244 2003-11-11 02:11:52 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -241,6 +241,7 @@ ncks -m -C -H -v mss_val ~/foo.nc
 276. Use nco_mss_val_cnf() in ncap
 277. Use nco_mss_val_cnf() in ncwa
 278. ncbo memory usage packing/unpacking issue 20031110
+279. Write optional memory management statistics into nco_malloc/free to track memory usage
 ************************************************************************
 End NCO Wish list
 ************************************************************************

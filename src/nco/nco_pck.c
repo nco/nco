@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.14 2003-08-02 23:12:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.15 2003-11-11 02:11:54 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -177,13 +177,9 @@ nco_var_upk /* [fnc] Unpack variable in memory */
   var->scl_fct.vp=nco_free(var->scl_fct.vp);
   var->add_fst.vp=nco_free(var->add_fst.vp);
 
-  if(dbg_lvl_get() >= 2){
-    (void)fprintf(stderr,"%s: PACKING Unpacked %s\n",prg_nm_get(),var->nm);
-    (void)fprintf(stderr,"%s: WARNING Writing unpacked data to disk, or repacking and writing packed data, is not yet fully supported, output disk values of %s may be incorrect.\n",prg_nm_get(),var->nm);
-  } /* endif dbg */
+  if(dbg_lvl_get() >= 2) (void)fprintf(stderr,"%s: PACKING Unpacked %s\n",prg_nm_get(),var->nm);
 
   return var;
-  
 } /* end nco_var_upk() */
 
 var_sct * /* O [sct] Packed variable */
