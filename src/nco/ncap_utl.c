@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.105 2005-03-20 21:07:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.106 2005-03-21 04:56:42 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -937,7 +937,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
       (void)memcpy(var_lsr_out_cp,var_lsr_cp,var_lsr_typ_sz);
     }else if(var_lsr->nbr_dim == 0){
       /* Lesser-ranked input variable is scalar 
-	 Expansion in this degenerate case needs no index juggling
+	 Expansion in this degenerate case needs no index juggling (reverse-mapping)
 	 Code as special case to speed-up important applications of ncap
 	 for synthetic file creation */
       var_gtr_sz=var_gtr->sz;

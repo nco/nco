@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.40 2005-01-07 23:54:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.41 2005-03-21 04:56:42 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -207,9 +207,16 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 
     if(wgt_out->nbr_dim == 0){
       /* Variable (and weight) are scalars, not arrays */
-
       (void)memcpy(wgt_out_cp,wgt_cp,wgt_typ_sz);
-
+    }else if(wgt->nbr_dim == 0){
+      /* Lesser-ranked input variable is scalar 
+	 Expansion in this degenerate case needs no index juggling (reverse-mapping)
+	 Code as special case to speed-up important applications of ncap
+	 for synthetic file creation */
+      var_sz=var->sz;
+      for(var_lmn=0;var_lmn<var_sz;var_lmn++){
+	(void)memcpy(wgt_out_cp+var_lmn*wgt_typ_sz,wgt_cp,wgt_typ_sz);      
+      } /* end loop over var_lmn */
     }else{
       /* Variable (and weight) are arrays, not scalars */
       

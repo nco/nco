@@ -1,8 +1,11 @@
 2005-03-20  Charlie Zender  <zender@uci.edu>
 
+	* Apply same optimization to nco_var_cnf_dmn()
+
 	* Handle expansion of scalar variable as special case in
 	ncap_var_stretch() to speed up important cases of variable
-	synthesis 
+	synthesis. This speeds up user-time ipcc_dly_T85 benchmark
+	by ~300%.
 
 2005-03-14  Charlie Zender  <zender@uci.edu>
 
