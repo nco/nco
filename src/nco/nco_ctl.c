@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.21 2003-04-07 02:46:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.22 2003-04-20 22:29:26 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -191,9 +191,9 @@ nco_usg_prn(void)
     if(prg == ncks) (void)fprintf(stdout,"-a, --abc, --alphabetize\tDisable alphabetization of extracted variables\n");
     if(prg == ncatted) (void)fprintf(stdout,"-a, --attribute att_nm,var_nm,mode,att_typ,att_val Attribute specification:\n\t\t\tmode = a,c,d,m,o and att_typ = f,d,l,s,c,b\n");
   } /* end if */
-  if(strstr(opt_sng,"-B")) (void)fprintf(stdout,"-B, --bnr, --binary\t\tWrite data to unformatted binary file\n");
+  if(strstr(opt_sng,"-B")) (void)fprintf(stdout,"-B, --bnr, --binary\tWrite data to unformatted binary file\n");
   if(strstr(opt_sng,"-b")) (void)fprintf(stdout,"-b, --fl_bnr, --binary-file fl_bnr\tUnformatted binary file to write\n");
-  if(strstr(opt_sng,"-c")) (void)fprintf(stdout,"-c, --crd, --coords\t\tCoordinate variables will all be processed\n");
+  if(strstr(opt_sng,"-c")) (void)fprintf(stdout,"-c, --crd, --coords\tCoordinate variables will all be processed\n");
   if(strstr(opt_sng,"-C")) (void)fprintf(stdout,"-C, --nocoords\t\tAssociated coordinate variables should not be processed\n");
   if(strstr(opt_sng,"-D")) (void)fprintf(stdout,"-D, --dbg_lvl, --debug-level dbg_lvl\tDebugging level\n");
   if(strstr(opt_sng,"-d")){
@@ -203,7 +203,7 @@ nco_usg_prn(void)
     else (void)fprintf(stdout,"-d, --dmn, --dimension dim,[min][,[max]] Dimension's limits in hyperslab\n");
   } /* end if -d */
   if(strstr(opt_sng,"-F")) (void)fprintf(stdout,"-F, --ftn, --fortran\tFortran indexing conventions (1-based) for I/O\n");
-  if(strstr(opt_sng,"-H")) (void)fprintf(stdout,"-H, --prn, --print\t\tPrint data\n");
+  if(strstr(opt_sng,"-H")) (void)fprintf(stdout,"-H, --prn, --print\tPrint data\n");
   if(strstr(opt_sng,"-h")) (void)fprintf(stdout,"-h, --hst, --history\tDo not append to \"history\" global attribute\n");
   if(strstr(opt_sng,"-i")) (void)fprintf(stdout,"-i, --ntp, --interpolate var,val\tInterpolant and value\n");
   if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I, --wgt_msk_crd_var \tDo not weight or mask coordinate variables\n");
@@ -216,16 +216,16 @@ nco_usg_prn(void)
     if(prg == ncwa) (void)fprintf(stdout,"-m, --msk_nm, --msk_var, --mask-variable, --mask_variable mask_var\tMasking variable name\n");
     if(prg == ncks) (void)fprintf(stdout,"-m, --metadata\t\tPrint variable metadata\n");
   } /* end if */
-  if(strstr(opt_sng,"-N")) (void)fprintf(stdout,"-N, --nmr, --numerator\t\tNo normalization\n");
+  if(strstr(opt_sng,"-N")) (void)fprintf(stdout,"-N, --nmr, --numerator\tNo normalization\n");
   if(strstr(opt_sng,"-n")){
     /*    if(prg == ncwa) (void)fprintf(stdout,"-n\t\tNormalize by tally but not weight\n");*/
     if(prg != ncwa) (void)fprintf(stdout,"-n, --nintap nbr_files,[nbr_numeric_chars[,increment]] NINTAP-style abbreviation of file list\n");
   } /* end if */
   if(strstr(opt_sng,"-o")) (void)fprintf(stdout,"-o op_typ\t\tRelational operator for masking: eq,ne,ge,le,gt,lt\n");
-  if(strstr(opt_sng,"-O")) (void)fprintf(stdout,"-O, --ovr, --overwrite\t\tOverwrite existing output file, if any\n");
-  if(strstr(opt_sng,"-p")) (void)fprintf(stdout,"-p, --pth, --path path\t\tPath prefix for all input filenames\n");
+  if(strstr(opt_sng,"-O")) (void)fprintf(stdout,"-O, --ovr, --overwrite\tOverwrite existing output file, if any\n");
+  if(strstr(opt_sng,"-p")) (void)fprintf(stdout,"-p, --pth, --path path\tPath prefix for all input filenames\n");
   if(strstr(opt_sng,"-q")) (void)fprintf(stdout,"-q, --quiet\t\tToggle printing of dimension indices and coordinate values\n");
-  if(strstr(opt_sng,"-R")) (void)fprintf(stdout,"-R, --rtn, --retain\t\tRetain remotely-retrieved files after use\n");
+  if(strstr(opt_sng,"-R")) (void)fprintf(stdout,"-R, --rtn, --retain\tRetain remotely-retrieved files after use\n");
   if(strstr(opt_sng,"-r")) (void)fprintf(stdout,"-r, --revision, --vrs, --version\tProgram version and copyright notice\n");
   if(strstr(opt_sng,"-s")){
     if(prg != ncap) (void)fprintf(stdout,"-s, --sng, --string, --fmt, --format format\tString format for text output\n");
