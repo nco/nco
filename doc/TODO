@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.304 2004-05-25 16:29:16 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.305 2004-05-29 05:12:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -241,7 +241,7 @@ bld29. RedHat 9 does not build with --enable-*-customize because of flex warning
 bld30. Search for libstdc++ with AIX/DODS/GCC breaks NCO build
 bld32. Why have --enable-shared and --enable-static both default true? override one?
 bld33. Use PACKAGE_BUGREPORT, PACKAGE_NAME, PACKAGE_STRING, PACKAGE_TARNAME, PACKAGE_VERSION?
-bld34. 
+bld34. Make sure make install installs libnco_c++.hh in 
 
 ************************************************************************
 End NCO Wish list
