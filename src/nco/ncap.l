@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.41 2002-04-27 06:16:06 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.42 2002-04-27 17:04:07 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -143,12 +143,12 @@
   
   /* Replace C-language escape codes with actual byte values */
   (void)sng_ascii_trn(bfr);
-  lval_ptr->str=strdup(bfr);       
+  lval_ptr->sng=strdup(bfr);       
   if(dbg_lvl_get() > 3){
     printf("Lexing string: %s\n",yytext);
-    printf("Made   string: %s\n",lval_ptr->str);
+    printf("Made   string: %s\n",lval_ptr->sng);
   } /* endif */
-  return STRING;
+  return SNG;
 } /* end quoted strings */
 
 [0-9]*\.[0-9]*([eE][+-]?[0-9]+)?[LlDd]?|[0-9]*([eE][+-]?[0-9]+)[LlDd]? {
@@ -291,9 +291,8 @@ unpack/[ ]*\( {return UNPACK;}
   if(RHS){
     /* First check if attribute has already been saved in symbol table
        If so then obtain and return value, else check input file
-       If attribute is present obtain and return value from disk else
-       return NC_BYTE of value 0.
-       If attribute is NC_CHAR then STRING type is returned
+       If attribute is present obtain and return value from disk else return NC_BYTE of value 0
+       If attribute is NC_CHAR then SNG type is returned
        for others NC_FLOAT, NC_DOUBLE, NC_BYTE, NC_SHORT an SCV
        is returned to parser. */
     att_idx=ncap_aed_lookup(var_nm,att_nm,prs_arg->att_lst,prs_arg->nbr_att,False);
@@ -301,10 +300,10 @@ unpack/[ ]*\( {return UNPACK;}
       ptr_aed=prs_arg->att_lst[att_idx]; 
       if (ptr_aed->type == NC_CHAR){
 	(void)cast_void_nctype(ptr_aed->type,&ptr_aed->val);
-	lval_ptr->str=(char *)nco_malloc((ptr_aed->sz+1)*nco_typ_lng(NC_CHAR));
-	strncpy(lval_ptr->str,(char *)(ptr_aed->val.cp),ptr_aed->sz);
-	lval_ptr->str[ptr_aed->sz]='\0';
-	return STRING;
+	lval_ptr->sng=(char *)nco_malloc((ptr_aed->sz+1)*nco_typ_lng(NC_CHAR));
+	strncpy(lval_ptr->sng,(char *)(ptr_aed->val.cp),ptr_aed->sz);
+	lval_ptr->sng[ptr_aed->sz]='\0';
+	return SNG;
       } else {
 	lval_ptr->scv=ptr_unn_2_scv(ptr_aed->type,ptr_aed->val);
 	return SCV;  
@@ -324,10 +323,10 @@ unpack/[ ]*\( {return UNPACK;}
 	rcd=nco_get_att(prs_arg->in_id,var_id,att_nm,val.vp,type);
 	if(type == NC_CHAR){
 	  (void)cast_void_nctype(type,&val);
-	  lval_ptr->str=(char *)nco_malloc((att_sz+1)*sizeof(char));
-	  strncpy(lval_ptr->str,(char *)val.cp,att_sz);
-	  lval_ptr->str[att_sz]='\0'; 
-	  return STRING;
+	  lval_ptr->sng=(char *)nco_malloc((att_sz+1)*sizeof(char));
+	  strncpy(lval_ptr->sng,(char *)val.cp,att_sz);
+	  lval_ptr->sng[att_sz]='\0'; 
+	  return SNG;
 	}else{
 	  lval_ptr->scv=ptr_unn_2_scv(type,val);
 	  return SCV;   
@@ -364,11 +363,11 @@ unpack/[ ]*\( {return UNPACK;}
   /* Recognize variables with subscript */
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable with subscripts%s\n",yytext);
   if(RHS){
-    lval_ptr->vara=strdup(yytext);
+    lval_ptr->var_nm_RHS=strdup(yytext);
     BEGIN RHS_SUBSCRIPT;
     return VAR;
   }else{ 
-    lval_ptr->output_var=strdup(yytext);
+    lval_ptr->var_nm_LHS=strdup(yytext);
     BEGIN LHS_SUBSCRIPT;
     return OUT_VAR;
   } /* end else */
@@ -378,10 +377,10 @@ unpack/[ ]*\( {return UNPACK;}
   /* Recognize plain variables */
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable %s\n",yytext);
   if(RHS){
-    lval_ptr->vara=strdup(yytext); 
+    lval_ptr->var_nm_RHS=strdup(yytext); 
     return VAR;
   }else{ 
-    lval_ptr->output_var=strdup(yytext);
+    lval_ptr->var_nm_LHS=strdup(yytext);
     return OUT_VAR;
   } /* end else */
 } /* end variables without subscripts */

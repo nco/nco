@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.32 2002-04-27 06:16:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.33 2002-04-27 17:04:07 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -45,17 +45,20 @@
    Symbol type may, therefore, be determined safely by testing for non-NULL members
    This technique is frequently used in Pigeon book */
 
+/* Symbol structure */
 typedef struct { /* sym_sct */
   char *nm;
-  double (*fnc)(double);
-  float (*fncf)(float);
+  double (*fnc_dbl)(double);
+  float (*flt_flt)(float);
 } sym_sct;
 
+/* Name list structure */
 typedef struct { /* nm_lst_sct */
   nm_id_sct *list;
   int nbr;
 } nm_lst_sct;
 
+/* Parse structure */
 typedef struct{ /* prs_sct */
   char *fl_in; /* [sng] Input data file */
   int in_id; /* [id] Input data file ID */
@@ -89,7 +92,7 @@ extern nm_id_sct *var_lst_sub(int,nm_id_sct *,int *,nm_id_sct *,int);
 extern ptr_unn ncap_scv_2_ptr_unn(scv_sct); 
 extern scv_sct ncap_scv_abs(scv_sct);
 extern scv_sct ncap_scv_calc(scv_sct,char,scv_sct);
-extern sym_sct *ncap_sym_init(char * ,double (*fnc)(double),float (*fncf)(float));
+extern sym_sct *ncap_sym_init(char * ,double (*fnc_dbl)(double),float (*flt_flt)(float));
 extern sym_sct *scalar_mk_sym(double val);
 extern sym_sct *sym_look(char *sym_nm);
 extern var_sct *ncap_var_abs(var_sct *);
@@ -105,10 +108,10 @@ extern var_sct *ncap_var_var_add(var_sct *var_1,var_sct *var_2);
 extern var_sct *ncap_var_var_divide(var_sct *var_1,var_sct *var_2);
 extern var_sct *ncap_var_var_multiply(var_sct *var_1,var_sct *var_2);
 extern var_sct *ncap_var_var_sub(var_sct *var_1,var_sct *var_2);
-extern void fnc_add(char *nm, double (*fnc)());
+extern void fnc_add(char *nm, double (*fnc_dbl)());
 extern void ncap_initial_scan(prs_sct*,char *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *);
 extern void nco_lib_vrs_prn();
-extern void quick_free(var_sct **);
+extern void nco_var_free(var_sct **);
 
 extern nc_type /* [enm] Highest precision of arguments */
 ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if necessary */

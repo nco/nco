@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.50 2002-04-27 06:16:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.51 2002-04-27 17:04:07 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -61,7 +61,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   int var_id;
   int rcd;
   int fl_id;
-  var_sct *vara;
+  var_sct *var;
   
   /* Check output file for var */  
   rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
@@ -79,17 +79,17 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   } /* end else */
   
   if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: parser VAR action called ncap_var_init() to retrieve %s from disk\n",prg_nm_get(),var_nm);
-  vara=var_fll(fl_id,var_id,var_nm,prs_arg->dmn,prs_arg->nbr_dmn_xtr);
-  vara->nm=nco_malloc((strlen(var_nm)+1)*sizeof(char)); strcpy(vara->nm,var_nm);
-  vara->tally=(long *)malloc(vara->sz*sizeof(long));
-  (void)zero_long(vara->sz,vara->tally);
-  vara->val.vp=(void *)malloc(vara->sz*nco_typ_lng(vara->type));
+  var=var_fll(fl_id,var_id,var_nm,prs_arg->dmn,prs_arg->nbr_dmn_xtr);
+  var->nm=nco_malloc((strlen(var_nm)+1)*sizeof(char)); strcpy(var->nm,var_nm);
+  var->tally=(long *)malloc(var->sz*sizeof(long));
+  (void)zero_long(var->sz,var->tally);
+  var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type));
   /* Retrieve variable values from disk into memory */
-  (void)var_get(fl_id,vara);
+  (void)var_get(fl_id,var);
   /* (void)var_free(var_nm);*/
   /* free(var_nm->nm);*/
-  /* vara=var_upk(vara); */
-  return vara;
+  /* var=var_upk(var); */
+  return var;
 } /* end ncap_var_init */
 
 int 
@@ -123,14 +123,14 @@ ncap_var_write(var_sct *var,prs_sct *prs_arg)
 } /* end ncap_var_write */
 
 sym_sct *
-ncap_sym_init(char *name,double (*fnc_dbl)(double),float (*fnc_flt)(float))
+ncap_sym_init(char *name,double (*fnc_dbl)(double),float (*flt_flt)(float))
 { 
   /* Purpose: Allocate space for sym_sct then initialize */
   sym_sct *symbol;
   symbol=(sym_sct *)nco_malloc(sizeof(sym_sct));
   symbol->nm=strdup(name);
-  symbol->fnc=fnc_dbl;
-  symbol->fncf=fnc_flt;
+  symbol->fnc_dbl=fnc_dbl;
+  symbol->flt_flt=flt_flt;
   return symbol;
 } /* end ncap_sym_init */
 
@@ -223,7 +223,7 @@ ncap_var_var_multiply(var_sct *var_1,var_sct *var_2)
 var_sct *
 ncap_var_function(var_sct *var_in, sym_sct *app)
 {
-  /* Purpose: Evaluate fnc(var) or fncf(var) for each value in variable
+  /* Purpose: Evaluate fnc_dbl(var) or flt_flt(var) for each value in variable
      Float and double functions are in app */
   long idx;
   long sz;
@@ -242,22 +242,22 @@ ncap_var_function(var_sct *var_in, sym_sct *app)
   switch(var->type){ 
   case NC_DOUBLE: {
     if(!var->has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.dp[idx]=(*(app->fnc))(op1.dp[idx]);
+      for(idx=0;idx<sz;idx++) op1.dp[idx]=(*(app->fnc_dbl))(op1.dp[idx]);
     }else{
       double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
-        if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=(*(app->fnc))(op1.dp[idx]);
+        if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=(*(app->fnc_dbl))(op1.dp[idx]);
       } /* end for */
     } /* end else */
    break;
   }
   case NC_FLOAT: {
     if(!var->has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.fp[idx]=(*(app->fncf))(op1.fp[idx]);
+      for(idx=0;idx<sz;idx++) op1.fp[idx]=(*(app->flt_flt))(op1.fp[idx]);
     }else{
       float mss_val_flt=*(var->mss_val.fp); /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
-        if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=(*(app->fncf))(op1.fp[idx]);
+        if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=(*(app->flt_flt))(op1.fp[idx]);
       } /* end for */
     } /* end else */
    break;
@@ -415,17 +415,16 @@ ncap_var_scv_power(var_sct *var_in,scv_sct scv)
 } /* end ncap_var_scv_power */
 
 int 
-ncap_var_retype(var_sct* vara, var_sct* varb)
+ncap_var_retype(var_sct *var_1, var_sct *var_2)
 {
-  /* Purpose: Convert a variable if necessary so the vars are of the same type */
-  
-  if(vara->type == varb->type) return vara->type;
-  if(vara->type > varb->type){
-    varb=var_conform_type(vara->type,varb);
-    return vara->type;
+  /* Purpose: Convert variable, if necessary, so variables are of same type */
+  if(var_1->type == var_2->type) return var_1->type;
+  if(var_1->type > var_2->type){
+    var_2=var_conform_type(var_1->type,var_2);
+    return var_1->type;
   }else{
-    vara=var_conform_type(varb->type,vara);
-    return varb->type;
+    var_1=var_conform_type(var_2->type,var_1);
+    return var_2->type;
   } /* endif */
 } /* end ncap_var_retype */
 
@@ -827,7 +826,7 @@ ncap_initial_scan
     case EPROVOKE: break; /* Do nothing */
     case VAR: 
       /* Search for RHS variables in input file */
-      var_nm=lval.vara;
+      var_nm=lval.var_nm_RHS;
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
 	for(var_idx=0;var_idx<n_lst_a;var_idx++)
@@ -841,7 +840,7 @@ ncap_initial_scan
       break; 
     case OUT_VAR: 
       /* Search for LHS variables in input file */
-      var_nm=lval.output_var;
+      var_nm=lval.var_nm_LHS;
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
 	for(var_idx=0;var_idx<n_lst_b;var_idx++)

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.50 2002-04-27 06:08:33 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.51 2002-04-27 17:04:07 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -96,9 +96,9 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 /* Define YYSTYPE union (type of lex variable yylval value)
    This specifies all possible data types for semantic values */
 %union{
-  char *str;
-  char *output_var;
-  char *vara;
+  char *sng;
+  char *var_nm_LHS;
+  char *var_nm_RHS;
   aed_sct aed;
   sym_sct *sym;
   scv_sct scv;
@@ -109,10 +109,10 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 /* Tell parser which kind of values each token takes
    Token name (traditionally in all caps) becomes #define directive in parser
    so we can refer to token name rather than token's numeric code */
-%token <str> STRING
+%token <sng> SNG
 %token <scv> SCV
-%token <vara> VAR
-%token <output_var> OUT_VAR
+%token <var_nm_RHS> VAR
+%token <var_nm_LHS> OUT_VAR
 %token <aed> OUT_ATT
 %token <sym> FUNCTION
 %token <sbs_lst> LHS_SBS
@@ -120,13 +120,13 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 
 /* "type" declaration sets type for non-terminal symbols which otherwise need no declaration
    Format of "type" declaration is
-   %type <YYSTYPE_member> RHS_exp
-   RHS expression type RHS_exp is same type as YYSTYPE union member with name in <> */
-%type <scv> scv_exp
-%type <str> string_exp
-%type <var> var_exp
-%type <output_var> out_var_exp
-%type <aed> out_att_exp
+   %type <YYSTYPE_member> RHS_xpr
+   RHS expression type RHS_xpr is same type as YYSTYPE union member with name in <> */
+%type <scv> scv_xpr
+%type <sng> sng_xpr
+%type <var> var_xpr
+%type <var_nm_LHS> out_var_xpr
+%type <aed> out_att_xpr
 
 /* "left", "right", and "nonassoc" perform same function as "token" and,
    in addition, specify associativity and relative precedence of symbols */
@@ -148,18 +148,18 @@ statement_list:
 statement_list statement ';' {
   /* Purpose: Actions to be performed at end-of-statement go here */
   /* Clean up from and exit LHS_cst mode */
-  (void)quick_free(&((prs_sct *)prs_arg)->var_LHS);
+  (void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);
 } /* end statement ';' */
-| statement_list error ';' {(void)quick_free(&((prs_sct *)prs_arg)->var_LHS);}
-| statement ';' {(void)quick_free(&((prs_sct *)prs_arg)->var_LHS);}
-| error ';' {(void)quick_free(&((prs_sct *)prs_arg)->var_LHS);}
+| statement_list error ';' {(void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);}
+| statement ';' {(void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);}
+| error ';' {(void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);}
 /* Catch most errors then read up to next semi-colon */
 ; /* end statement_list */
 
-statement: /* statement is definition of out_att_exp or out_var_exp (LHS tokens)
-	      in terms of scv_exp, var_exp, and string_exp (RHS tokens). 
+statement: /* statement is definition of out_att_xpr or out_var_xpr (LHS tokens)
+	      in terms of scv_xpr, var_xpr, and sng_xpr (RHS tokens). 
 	      All permutations are valid so this rule has 6 possible actions */
-out_att_exp '=' scv_exp { 
+out_att_xpr '=' scv_xpr { 
   int aed_idx; 
   aed_sct *ptr_aed;
 
@@ -185,8 +185,8 @@ out_att_exp '=' scv_exp {
   } /* end if */
   $1.var_nm=nco_free($1.var_nm);
   $1.att_nm=nco_free($1.att_nm);
-} /* end out_att_exp '=' scv_exp */
-| out_att_exp '=' string_exp 
+} /* end out_att_xpr '=' scv_xpr */
+| out_att_xpr '=' sng_xpr 
 {
   int aed_idx; 
   int sng_lng;
@@ -206,8 +206,8 @@ out_att_exp '=' scv_exp {
   $1.var_nm=nco_free($1.var_nm);
   $1.att_nm=nco_free($1.att_nm);
   $3=nco_free($3);
-} /* end out_att_exp '=' string_exp */
-| out_att_exp '=' var_exp
+} /* end out_att_xpr '=' sng_xpr */
+| out_att_xpr '=' var_xpr
 { 
   /* Storing 0-dimensional variables in attribute is OK */ 
   int aed_idx;
@@ -230,8 +230,8 @@ out_att_exp '=' scv_exp {
   $1.var_nm=nco_free($1.var_nm);
   $1.att_nm=nco_free($1.att_nm);
   (void)var_free($3); 
-} /* end out_att_exp '=' var_exp */
-| out_var_exp '=' var_exp 
+} /* end out_att_xpr '=' var_xpr */
+| out_var_xpr '=' var_xpr 
 {
   int rcd;
   int var_id;
@@ -248,14 +248,14 @@ out_att_exp '=' scv_exp {
   } /* end else */
   $1=nco_free($1);
   (void)var_free($3);
-} /* end out_var_exp '=' var_exp */
-| out_var_exp '=' scv_exp
+} /* end out_var_xpr '=' var_xpr */
+| out_var_xpr '=' scv_xpr
 {
   int rcd;
   int var_id;
   var_sct *var;
   rcd=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$1,&var_id);
-  if(dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: DEBUG out_var_exp = scv_exp rule for %s\n",prg_nm_get(),$1);
+  if(dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: DEBUG out_var_xpr = scv_xpr rule for %s\n",prg_nm_get(),$1);
   if(rcd == NC_NOERR){
     (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
@@ -277,7 +277,7 @@ out_att_exp '=' scv_exp {
       /*    (void)ncap_var_conform_dim(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
       (void)ncap_var_stretch(&var,&(((prs_sct *)prs_arg)->var_LHS));
       
-      if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching former scv_exp defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
+      if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching former scv_xpr defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
       
     } /* endif LHS_cst */
     
@@ -287,8 +287,8 @@ out_att_exp '=' scv_exp {
     (void)yyerror(err_sng);
   } /* endif */
   $1=nco_free($1);
-} /* end out_var_exp '=' scv_exp */
-| out_var_exp '=' string_exp
+} /* end out_var_xpr '=' scv_xpr */
+| out_var_xpr '=' sng_xpr
 {
   int rcd;
   int var_id;
@@ -313,40 +313,40 @@ out_att_exp '=' scv_exp {
   } /* endelse */
   $1=nco_free($1);
   $3=nco_free($3);
-} /* end out_var_exp '=' string_exp */
+} /* end out_var_xpr '=' sng_xpr */
 ; /* end statement */
 
-scv_exp: /* scv_exp results from RHS action which involves only scv_exp's
+scv_xpr: /* scv_xpr results from RHS action which involves only scv_xpr's
 	    One action exists for each binary and unary attribute-valid operator */
-scv_exp '+' scv_exp {
+scv_xpr '+' scv_xpr {
   (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3);
   $$=ncap_scv_calc($1,'+',$3);                                
 }
-| scv_exp '-' scv_exp {
+| scv_xpr '-' scv_xpr {
   (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3); 
   $$=ncap_scv_calc($1,'-',$3);
 }
-| scv_exp '*' scv_exp {
+| scv_xpr '*' scv_xpr {
   (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3);
   $$=ncap_scv_calc($1,'*',$3);
 }
-| scv_exp '/' scv_exp {
+| scv_xpr '/' scv_xpr {
   (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3); 
   $$=ncap_scv_calc($1,'/',$3);  
 }
-| scv_exp '%' scv_exp {
+| scv_xpr '%' scv_xpr {
   (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3);
   
   $$=ncap_scv_calc($1,'%',$3);  
 }
-| '-' scv_exp  %prec UMINUS {
+| '-' scv_xpr  %prec UMINUS {
   (void)ncap_scv_minus(&$2);
   $$=$2;
 }
-| '+' scv_exp  %prec UMINUS {
+| '+' scv_xpr  %prec UMINUS {
   $$=$2;
 }
-| scv_exp '^' scv_exp {
+| scv_xpr '^' scv_xpr {
   if($1.type <= NC_FLOAT && $3.type <= NC_FLOAT) {
     (void)scv_conform_type(NC_FLOAT,&$1);
     (void)scv_conform_type(NC_FLOAT,&$3);
@@ -357,9 +357,9 @@ scv_exp '+' scv_exp {
     (void)scv_conform_type(NC_DOUBLE,&$3);
     $$.val.d=pow($1.val.d,$3.val.d);
     $$.type=NC_DOUBLE; 
-  }
-} /* end scv_exp '^' scv_exp */
-| POWER '(' scv_exp ',' scv_exp ')' { /* fxm: this is identical to previous clause except for argument numbering, should be functionalized to use common code */
+  } /* end else */
+} /* end scv_xpr '^' scv_xpr */
+| POWER '(' scv_xpr ',' scv_xpr ')' { /* fxm: this is identical to previous clause except for argument numbering, should be functionalized to use common code */
   if($3.type <= NC_FLOAT && $5.type <= NC_FLOAT) {
     (void)scv_conform_type(NC_FLOAT,&$3);
     (void)scv_conform_type(NC_FLOAT,&$5);
@@ -370,34 +370,33 @@ scv_exp '+' scv_exp {
     (void)scv_conform_type(NC_DOUBLE,&$5);
     $$.val.d=pow($3.val.d,$5.val.d);
     $$.type=NC_DOUBLE; 
-  }
-} /* end POWER '(' scv_exp ',' scv_exp ')' */
-| ABS '(' scv_exp ')' {
+  } /* end else */
+} /* end POWER '(' scv_xpr ',' scv_xpr ')' */
+| ABS '(' scv_xpr ')' {
   $$=ncap_scv_abs($3);
 }
-| FUNCTION '(' scv_exp ')' {
-  
+| FUNCTION '(' scv_xpr ')' {
   if($3.type <= NC_FLOAT) {
     (void)scv_conform_type(NC_FLOAT,&$3);
-    $$.val.f=(*($1->fncf))($3.val.f);
+    $$.val.f=(*($1->flt_flt))($3.val.f);
     $$.type=NC_FLOAT;
   }else{
-    $$.val.d=(*($1->fnc))($3.val.d);
+    $$.val.d=(*($1->fnc_dbl))($3.val.d);
     $$.type=NC_DOUBLE;
-  }
-} /* end FUNCTION '(' scv_exp ')' */
-| '(' scv_exp ')' {$$=$2;}
+  } /* end else */
+} /* end FUNCTION '(' scv_xpr ')' */
+| '(' scv_xpr ')' {$$=$2;}
 | SCV {$$=$1;}
-; /* end scv_exp */
+; /* end scv_xpr */
 
-out_var_exp: OUT_VAR {$$=$1;}
+out_var_xpr: OUT_VAR {$$=$1;}
 ;
 
-out_att_exp: OUT_ATT {$$=$1;}
+out_att_xpr: OUT_ATT {$$=$1;}
 ;
       
-string_exp: /* string_exp is any combination of string_exp or attribute */
-string_exp '+' string_exp {
+sng_xpr: /* sng_xpr is any combination of sng_xpr or attribute */
+sng_xpr '+' sng_xpr {
   size_t sng_lng;
   sng_lng=strlen($1)+strlen($3);
   $$=(char*)nco_malloc((sng_lng+1)*sizeof(char));
@@ -406,7 +405,7 @@ string_exp '+' string_exp {
   $1=nco_free($1);
   $3=nco_free($3);
 } 
-| ATOSTR '(' scv_exp ')' {
+| ATOSTR '(' scv_xpr ')' {
   char bfr[50];
   switch ($3.type){
   case NC_DOUBLE: sprintf(bfr,"%.10G",$3.val.d); break;
@@ -418,7 +417,7 @@ string_exp '+' string_exp {
   } /* end switch */
   $$=strdup(bfr);      
 }
-| ATOSTR '(' scv_exp ',' string_exp ')' {
+| ATOSTR '(' scv_xpr ',' sng_xpr ')' {
   char bfr[150];
   /* Format string according to string expression */
   /* User decides which format corresponds to which type */
@@ -433,29 +432,29 @@ string_exp '+' string_exp {
   $5=nco_free($5);
   $$=strdup(bfr);      
 }
-| STRING {$$=$1;}
-; /* end string_exp */
+| SNG {$$=$1;}
+; /* end sng_xpr */
 
-var_exp: /* var_exp results from RHS action which involves a var_exp, i.e.,
+var_xpr: /* var_xpr results from RHS action which involves a var_xpr, i.e.,
 	    OP var, var OP var, var OP att, att OP var */
-var_exp '+' var_exp { 
+var_xpr '+' var_xpr { 
   $$=ncap_var_var_add($1,$3); 
   var_free($1); var_free($3);
 }
-| var_exp '+' scv_exp {
+| var_xpr '+' scv_xpr {
   $$=ncap_var_scv_add($1,$3);
   var_free($1);
 }            
-| scv_exp '+' var_exp {
+| scv_xpr '+' var_xpr {
   $$=ncap_var_scv_add($3,$1);
   var_free($3);
 }            
-| var_exp '-' var_exp { 
+| var_xpr '-' var_xpr { 
   $$=ncap_var_var_sub($1,$3);
   var_free($1); 
   var_free($3);
 }
-| scv_exp '-' var_exp { 
+| scv_xpr '-' var_xpr { 
   var_sct *var1;
   scv_sct minus;
   minus.val.b=-1;
@@ -466,69 +465,69 @@ var_exp '+' var_exp {
   var_free(var1);
   var_free($3);
 }
-| var_exp '-' scv_exp {
+| var_xpr '-' scv_xpr {
   $$=ncap_var_scv_sub($1,$3);
   var_free($1);
 }
-| var_exp '*' var_exp {
+| var_xpr '*' var_xpr {
   $$=ncap_var_var_multiply($1,$3); 
   var_free($1); var_free($3); 
 }
-| var_exp '*' scv_exp {
+| var_xpr '*' scv_xpr {
   $$=ncap_var_scv_multiply($1,$3);
   var_free($1);
 }
-| var_exp '%' scv_exp {
+| var_xpr '%' scv_xpr {
   $$=ncap_var_scv_modulus($1,$3);
   var_free($1);
 }
-| scv_exp '*' var_exp {
+| scv_xpr '*' var_xpr {
   $$=ncap_var_scv_multiply($3,$1);
   var_free($3);
 }
-| var_exp '/' var_exp {
+| var_xpr '/' var_xpr {
   $$=ncap_var_var_divide($3,$1); /* NB: Ordering is important */
   var_free($1); var_free($3); 
 }
-| var_exp '/' scv_exp {
+| var_xpr '/' scv_xpr {
   $$=ncap_var_scv_divide($1,$3);
   var_free($1);
 }
-| var_exp '^' scv_exp {
+| var_xpr '^' scv_xpr {
   $$=ncap_var_scv_power($1,$3);
   var_free($1);
 }
-| POWER '(' var_exp ',' scv_exp ')' {
+| POWER '(' var_xpr ',' scv_xpr ')' {
   $$=ncap_var_scv_power($3,$5);
   var_free($3);
 }
-| '-' var_exp %prec UMINUS { 
+| '-' var_xpr %prec UMINUS { 
   scv_sct minus;
   minus.val.b=-1;
   minus.type=NC_BYTE;
   $$=ncap_var_scv_multiply($2,minus);
   var_free($2);      
 }
-| '+' var_exp %prec UMINUS {
+| '+' var_xpr %prec UMINUS {
   $$=$2;
 }
-| ABS '(' var_exp ')' {
+| ABS '(' var_xpr ')' {
   $$=ncap_var_abs($3);
   var_free($3);
 } /* end ABS */
-| PACK '(' var_exp ')' {
+| PACK '(' var_xpr ')' {
   /* Packing variable does not create duplicate so DO NOT free $3 */
   $$=var_pck($3,NC_SHORT,False);
 } /* end PACK */
-| UNPACK '(' var_exp ')' {
+| UNPACK '(' var_xpr ')' {
   /* Unpacking variable does not create duplicate so DO NOT free $3 */
   $$=var_upk($3);
 } /* end UNPACK */
-| FUNCTION '(' var_exp ')' {
+| FUNCTION '(' var_xpr ')' {
   $$=ncap_var_function($3,$1);
   var_free($3);
 }  
-| '(' var_exp ')' {
+| '(' var_xpr ')' {
   $$=$2;
 }
 | VAR { 
@@ -548,7 +547,7 @@ var_exp '+' var_exp {
   /* Sanity check */
   if ($$==(var_sct *)NULL) YYERROR;
 }
-; /* end var_exp */
+; /* end var_xpr */
 
 /* End Rules section */
 %%
@@ -592,8 +591,9 @@ yyerror(char *err_sng)
   return 0;
 } /* end yyerror() */
 
-void quick_free(var_sct **var)
+void nco_var_free(var_sct **var)
 {
-  /* Purpose: Safely free variable */
+  /* Purpose: Safely free variable
+     Routine is wrapper for var_free() that simplifies code in calling routine */
   if(*var != NULL) *var=var_free(*var);
-} /* end quick_free() */
+} /* end nco_var_free() */
