@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.76 2001-11-01 00:47:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.77 2001-12-03 06:43:14 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -102,7 +102,7 @@ char * /* O [sng] Mnemonic that describes current NCO version */
 nmn_get()
 { 
   /* Purpose: Return mnemonic that describes current NCO version */
-  return "the great netCDF3 migration";
+  return "rocket science";
 } /* end nmn_get() */
 
 char * /* O [sng] Parsed command line */

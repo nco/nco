@@ -1,20 +1,25 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.6 2001-05-08 01:36:03 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.7 2001-12-03 06:43:14 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.0 are ready. 
-Improvements to version 1.2.2 are entirely internal.
-NCO 2.x is now completely based on the netCDF 3.x API.
-This should result in I/O performance gains.
-NCO 1.2.x will continue to be maintained for its 
-ability to work with HDF4 files, but no new features
-will be added.
+The netCDF operators NCO version 2.1.0 are ready. 
+Changes since version 2.0.0 include bugfixes and a 
+rough but working (and powerful!) ncap implementation.
+ncap is the netCDF arithmetic processor, an operator
+which uses a built-in parser to perform arbitrary
+arithmetic commands on a netCDF file.
+ncap is completely undocumented but see
+nco/data/ncap.in for a sample run script. 
+NCO version >= 2.0.1 requires netCDF version >= 3.5.
 Get the new version of NCO and read the user's guide on
 
 http://nco.sourceforge.net
 
 Summary of changes:
 
-1. Switched all internal calls to netCDF 3.x API (Butowsky)
-2. Added hooks for internationalization to ncra (Zender)
+1. Fix ncks units printing bug introduced in 2.0 (Zender)
+2. Improved version information with, e.g., ncks -r (Zender)
+3. Use new NC_NAT token requires netCDF 3.5 (Zender)
+4. ncap: Major progress towards completion including I/O ability, 
+attribute handling, fuller lexer/parser, error diagnostics (Butowsky)
 
 Enjoy,
 Charlie

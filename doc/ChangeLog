@@ -4,6 +4,8 @@
 	Changes since nco-2_0_3: ncrename interactive query limiter
 	ncap extravaganza
 
+	* Move Henry's tests into ncap.in script
+
 	* Allow global:att_nm to signify global attributes in ncap
 
 	* Removed file query cruft from ncrename and added maximum
