@@ -67,6 +67,8 @@ Thus the best fix for #116 is to implement #81 ASAP
 (including stride) of ncra and ncrcat:
 ncrcat -d time,1,100 in1.nc in2.nc ... out.nc
 ncrcat -d time,1,100,12 in1.nc in2.nc ... out.nc
+118. Return state of cnt,srt,end should be predictable for lim_rec in files
+which contain no usable records (but are still searched anyway)
 ************************************************************************
 End NCO Wish list
 ************************************************************************
