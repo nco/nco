@@ -1,3 +1,8 @@
+1999-11-02  Charlie Zender  <zender@dust.ps.uci.edu>
+
+	* Fixed some problems with AIX build environment, switched to
+	-DAIX on the IBM SP cluster environment
+
 1999-10-21  Charlie Zender  <zender@dust.ps.uci.edu>
 	
 	* Defined MY_BLD_DIR in Makefile before it is used
