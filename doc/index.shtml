@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.258 2004-09-08 02:31:42 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.259 2004-09-08 16:55:54 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -73,9 +73,9 @@ little money, click on the PayPal button:
 <p><h2>Current version is <!--#include virtual="VERSION"--> last updated on <!--#flastmod file="VERSION"--> </h2>
 
 <p><ul>
+<li><a href="#News">News &amp; Announcements</a></li>
 <li><a href="#Definition">What is NCO?</a></li>
 <li><a href="#Contribute">How to Contribute</a></li>
-<li><a href="#News">News &amp; Announcements</a></li>
 <li><a href="#prp_sei">NCO&rarr;SDO Project</a></li>
 <li><a href="#Version">Version Summary</a></li>
 <li><a href="#Download">Download/CVS NCO Software</a></li>
@@ -86,6 +86,27 @@ little money, click on the PayPal button:
 <li><a href="#Bugs">Common NCO Build/Run Problems</a></li>
 </ul>
 <hr>
+
+<dt><a name="News"></a></dt>
+<h2>NCO News &amp; Announcements</h2>
+
+<ul>
+<li>September&nbsp;7, 2004: NCO 2.9.9 released&mdash;<tt>ncpdq</tt> now packs data quietly</li>
+
+<li>August&nbsp;21, 2004:
+<a href="http://www.nsf.gov">National Science Foundation (NSF)</a>
+decides to fund the
+<a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO&rarr;SDO Proposal</a>!</li>
+
+<li>August&nbsp;7, 2004: NCO 2.9.8 debuts <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> operator&mdash;performs arbitrary dimension re-ordering and reversal</li>
+
+<li>March&nbsp;4, 2004: Submitted to NSF the first
+<a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">proposal</a>
+for Institutional funding for NCO.</li>
+
+<li><a href="./nco_news.shtml">Past NCO News &amp; Announcements</a></li>
+</ul>
+<hr></p>
 
 <dt><a name="Definition"></a></dt>
 <h2>What is NCO?</h2>
@@ -139,7 +160,7 @@ e.g., total, minimum, maximum, RMS:
 <li><a href="./nco.html#ncecat"><b>ncecat</b></a> netCDF Ensemble Concatenator</li>
 <li><a href="./nco.html#ncflint"><b>ncflint</b></a> netCDF File Interpolator</li>
 <li><a href="./nco.html#ncks"><b>ncks</b></a> netCDF Kitchen Sink</li>
-<li><a href="./nco.html#ncpdq"><b>ncpdq</b></a> netCDF Permute Dimensions Quickly</li>
+<li><a href="./nco.html#ncpdq"><b>ncpdq</b></a> netCDF Permute Dimensions Quickly, Pack Data Quietly</li>
 <li><a href="./nco.html#ncra"><b>ncra</b></a> netCDF Record Averager</li>
 <li><a href="./nco.html#ncrcat"><b>ncrcat</b></a> netCDF Record Concatenator</li>
 <li><a href="./nco.html#ncrename"><b>ncrename</b></a> netCDF Renamer</li>
@@ -178,25 +199,6 @@ These homepage donation counters track the influence of your monetary
 donations on NCO development: 
 <dt>Donations received between 20030624 and 20040807: US$10.00.</dt>
 <dt>NCO features "incentivized" by these donations: None.</dt>
-<hr></p>
-
-<dt><a name="News"></a></dt>
-<h2>NCO News &amp; Announcements</h2>
-
-<ul>
-<li>August&nbsp;21, 2004:
-<a href="http://www.nsf.gov">National Science Foundation (NSF)</a>
-decides to fund the
-<a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO&rarr;SDO Proposal</a>!</li>
-
-<li>August&nbsp;7, 2004: New operator <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released&mdash;performs arbitrary dimension re-ordering and reversal</li>
-
-<li>March&nbsp;4, 2004: Submitted to NSF the first
-<a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">proposal</a>
-for Institutional funding for NCO.</li>
-
-<li><a href="./nco_news.shtml">Past NCO News &amp; Announcements</a></li>
-</ul>
 <hr></p>
 
 <dt><a name="prp_sei"></a></dt>
@@ -262,7 +264,8 @@ Tarballs and RPMs are no long uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 3.0.0</b>: (<i>In progress</i>)
+<li><b>NCO/SDO 3.1.x</b>: (<i>Future plans</i>) MPI-Grid
+<li><b>NCO 3.0.0</b>: (<i>In progress</i>) NCO stabilization, <tt>ncks</tt> tweaks
 <li><b>NCO 2.9.9</b>: <tt>ncpdq</tt> packs/unpacks entire files, <tt>ncbo</tt> is threaded
 <li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released, <tt>ncwa --msk_sng</tt> consolidated mask switch, C99 compiler required
 <li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>nco_input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS), write <tt>nco_openmp_thread_number</tt> attribute
