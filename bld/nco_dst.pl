@@ -24,13 +24,13 @@
 
 # Machines requiring interactive builds
 # cd ${HOME}/nco;cvs update;cd bld;make;make tst
-# scp ${HOME}/nco/bld/nco_dst.pl dust.ps.uci.edu:/home/zender/nco/bld/nco_dst.pl
+# scp ${HOME}/nco/bld/nco_dst.pl dust.ess.uci.edu:/home/zender/nco/bld/nco_dst.pl
 
 BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.99 2003-03-31 06:52:18 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.100 2003-05-24 00:20:14 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -66,9 +66,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2003-03-31 06:52:18 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.99 2003-03-31 06:52:18 zender Exp $';
-my $CVS_Revision='$Revision: 1.99 $';
+my $CVS_Date='$Date: 2003-05-24 00:20:14 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.100 2003-05-24 00:20:14 zender Exp $';
+my $CVS_Revision='$Revision: 1.100 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -79,7 +79,7 @@ my $cvs_cmd='cvs'; # Command that behaves like cvs (Use cvs -t for verbose outpu
 my $data_nm=$ENV{'DATA'};
 my $ftp_drc='/var/ftp/pub/zender/nco'; # Directory on FTP machine where repository resides
 my $ftp_drc_mrr='/home/groups/ftp/pub/nco'; # Directory on FTP mirror machine where repository resides
-my $ftp_mch='dust.ps.uci.edu'; # Machine where FTP repository resides
+my $ftp_mch='dust.ess.uci.edu'; # Machine where FTP repository resides
 my $ftp_mch_mrr='nco.sourceforge.net'; # Machine where FTP repository mirror resides
 my $main_trunk_tag='nco';
 my $mkdir_cmd='mkdir -p'; # Command that behaves like mkdir
@@ -90,7 +90,7 @@ my $rcp_cmd_no_prs_prm='scp'; # Command that behaves like rcp and does not try t
 my $rsh_cmd='ssh'; # Command that behaves like rsh
 my $usr_nm=$ENV{'USER'};
 my $vrs_tag='';
-my $www_mch='dust.ps.uci.edu'; # WWW machine for package
+my $www_mch='dust.ess.uci.edu'; # WWW machine for package
 my $www_drc='/var/www/html/nco'; # WWW directory for package
 my $www_mch_mrr='nco.sourceforge.net'; # WWW machine for package mirror
 my $www_drc_mrr='/home/groups/n/nc/nco/htdocs'; # WWW directory for package mirror
