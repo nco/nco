@@ -75,6 +75,8 @@ AC_CHECK_FUNCS([gethostname memchr memmove pow setlocale sqrt strcasecmp strchr 
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([libintl.h limits.h locale.h netinet/in.h stdlib.h string.h unistd.h getopt.h netcdf.h])
+dnl headers needed for POSIX regex
+AC_CHECK_HEADERS([regex.h sys/types.h])
 AC_LANG_PUSH(C++)
 AC_CHECK_HEADERS(cstdlib)
 AC_LANG_POP(C++)
