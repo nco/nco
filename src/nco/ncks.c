@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.18 1999-12-30 02:01:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.19 2000-01-10 08:00:26 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -18,6 +18,7 @@
    ncks -s "%+16.10f\n" -H -C -v three_dim_var in.nc
    ncks -H -v fl_nm,fl_nm_arr ~/nc/nco/data/in.nc
    ncks -H -d fl_dim,1 -d char_dim,6,12 -v fl_nm,fl_nm_arr ~/nc/nco/data/in.nc
+   ncks -H -m -v char_var_nul,char_var_space,char_var_multinul ~/nc/nco/data/in.nc
    ncks -H -C -v three_dim_rec_var -d time,,,2 in.nc
    ncks -H -C -v lon -d lon,3,1 in.nc
 */ 
@@ -78,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.18 1999-12-30 02:01:33 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.18 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.19 2000-01-10 08:00:26 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.19 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -1072,11 +1073,11 @@ prn_var_def(int in_id,char *var_nm)
     } /* end loop over dim */
     (void)sprintf(sng_foo,"%li*nctypelen(%s)",dim[idx].sz,nc_type_nm(var_type));
     (void)strcat(sz_sng,sng_foo);
-    (void)fprintf(stdout,"%s mem. size is %s = %li*%i = %li bytes\n",var_nm,sz_sng,var_sz,nctypelen(var_type),var_sz*nctypelen(var_type));
+    (void)fprintf(stdout,"%s memory size is %s = %li*%i = %li bytes\n",var_nm,sz_sng,var_sz,nctypelen(var_type),var_sz*nctypelen(var_type));
   }else{
     long var_sz=1L;
 
-    (void)fprintf(stdout,"%s mem. size is %li*nctypelen(%s) = %li*%i = %li bytes\n",var_nm,var_sz,nc_type_nm(var_type),var_sz,nctypelen(var_type),var_sz*nctypelen(var_type));
+    (void)fprintf(stdout,"%s memory size is %li*nctypelen(%s) = %li*%i = %li bytes\n",var_nm,var_sz,nc_type_nm(var_type),var_sz,nctypelen(var_type),var_sz*nctypelen(var_type));
   } /* end if variable is a scalar */ 
   (void)fflush(stdout);
   
@@ -1295,7 +1296,10 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int nbr_lmt,char *dlm_sng,bo
     case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng); break;
     case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng); break;
     case NC_LONG: (void)fprintf(stdout,var_sng,var_nm,var.val.lp[lmn],unit_sng); break;
-    case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng); break;
+    case NC_CHAR:
+      (void)sprintf(var_sng,"%%s='%s' %%s\n",type_fmt_sng(var.type));
+      (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng); break;
+      break;
     case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,var.val.bp[lmn],unit_sng); break;
     } /* end switch */ 
   } /* end if variable is a scalar, byte, or character */ 
@@ -1307,17 +1311,17 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int nbr_lmt,char *dlm_sng,bo
     char arr_rgt_dlm;
     char dim_sng[MAX_LEN_FMT_SNG];
 
+    int crd_idx_crr; /* Current coordinate index */
     int dim_idx;
     int dim_idx_prn_srt; /* Index of first dimension to explicitly print */
-    int crd_idx_crr; /* Current coordinate index */
-    int mod_idx;
     int dim_nbr_prn; /* Number of dimensions deconvolved */ 
+    int mod_idx;
 
     long dim_sbs_prn; /* Subscript adjusted for C-Fortran indexing convention */
-    long idx_crr; /* Current index into equivalent 1-D array */
     long hyp_srt=0L;
+    long idx_crr; /* Current index into equivalent 1-D array */
 
-    short f77_idx;
+    short ftn_idx_off;
 
     /* Variable is an array */ 
    
@@ -1338,11 +1342,11 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int nbr_lmt,char *dlm_sng,bo
     } /* end if */
 
     if(FORTRAN_STYLE){
-      f77_idx=1;
+      ftn_idx_off=1;
       arr_lft_dlm='(';
       arr_rgt_dlm=')';
     }else{
-      f77_idx=0;
+      ftn_idx_off=0;
       arr_lft_dlm='[';
       arr_rgt_dlm=']';
     } /* end else */
@@ -1381,7 +1385,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int nbr_lmt,char *dlm_sng,bo
 	if(FORTRAN_STYLE) dim_idx=var.nbr_dim-1-idx; else dim_idx=idx;
 	
 	/* Printed dimension subscript includes indexing convention (C or Fortran) */ 
-	dim_sbs_prn=dim_sbs_dsk[dim_idx]+f77_idx;
+	dim_sbs_prn=dim_sbs_dsk[dim_idx]+ftn_idx_off;
 
 	/* Format and print dimension part of output string for non-coordinate variables */ 
 	if(dim[dim_idx].cid != var.id){ /* If variable is not a coordinate... */
@@ -1405,7 +1409,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int nbr_lmt,char *dlm_sng,bo
       } /* end loop over dimensions */
       
       /* Finally, print value of current element of variable */ 	
-      idx_crr=lmn+hyp_srt+f77_idx; /* Current index into equivalent 1-D array */
+      idx_crr=lmn+hyp_srt+ftn_idx_off; /* Current index into equivalent 1-D array */
       (void)sprintf(var_sng,"%%s%c%%li%c=%s %%s\n",arr_lft_dlm,arr_rgt_dlm,type_fmt_sng(var.type));
       
       if(var.type == NC_CHAR && dim_sbs_ram[var.nbr_dim-1] == 0L){
@@ -1413,13 +1417,15 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int nbr_lmt,char *dlm_sng,bo
 	/* Search for NUL-termination within size of last dimension */ 
 	if(memchr((void *)(var.val.cp+lmn),'\0',dim_cnt[var.nbr_dim-1])){
 	  /* Memory region is NUL-terminated, i.e., a valid string */ 
-	  (void)sprintf(var_sng,"%%s%c%%li--%%li%c=%%s %%s",arr_lft_dlm,arr_rgt_dlm);
+	  /* Print strings inside double quotes */ 
+	  (void)sprintf(var_sng,"%%s%c%%li--%%li%c=\"%%s\" %%s",arr_lft_dlm,arr_rgt_dlm);
 	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+strlen(var.val.cp+lmn),var.val.cp+lmn,unit_sng);
 	}else{
 	  /* Memory region is not NUL-terminated, print block of chars instead */
+	  /* Print block of chars inside single quotes */ 
 	  /* Re-use dim_sng for temporary format string */ 
 	  (void)sprintf(dim_sng,"%%.%lis",dim_cnt[var.nbr_dim-1]);
-	  (void)sprintf(var_sng,"%%s%c%%li--%%li%c=%s %%s",arr_lft_dlm,arr_rgt_dlm,dim_sng);
+	  (void)sprintf(var_sng,"%%s%c%%li--%%li%c='%s' %%s",arr_lft_dlm,arr_rgt_dlm,dim_sng);
 	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+dim_cnt[var.nbr_dim-1]-1L,var.val.cp+lmn,unit_sng);
 	} /* endif */
 	if(dbg_lvl >= 6)(void)fprintf(stdout,"DEBUG: format string used for chars is dim_sng = %s, var_sng = %s\n",dim_sng,var_sng); 

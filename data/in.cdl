@@ -29,7 +29,7 @@ variables:
 	:convention = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.12 1999-12-27 03:39:50 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.13 2000-01-10 08:00:25 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -90,6 +90,15 @@ variables:
 
 	char char_var;
 	char_var:long_name = "char";
+
+	char char_var_space;
+	char_var_space:long_name = "Character variable with whitespace on ends";
+
+	char char_var_nul;
+	char_var_nul:long_name = "Character variable containing one NUL";
+
+	char char_var_multinul(lev);
+	char_var_multinul:long_name = "Character variable containing multiple NULs";
 
 	char fl_nm(char_dim);
 	fl_nm:long_name = "Variable contains a file name";
@@ -231,7 +240,9 @@ data:
 	band_var=1,2,3,4,5,6;
 	byte_var='z';
 	char_var="z";
-	char_var="z";
+	char_var_space=" ";
+	char_var_nul='\0';
+	char_var_multinul="\b\n\0";
 	double_var=10.;
 	fl_nm="/home/zender/nc/nco/data/in.cdl";
 	fl_dim="a","b","3";
