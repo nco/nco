@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.35 2002-01-22 08:54:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.36 2002-01-22 20:43:37 hmb Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -191,8 +191,13 @@ ncap_var_var_add(var_sct *var_1,var_sct *var_2)
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=var_dpl(var_2);
   (void)ncap_var_conform_dim(&var_1,&var_nsw);
-  (void)var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_nsw->val);
-  
+  /* There is a bug in var_add. The missings values are not carried over to var_nsw the result
+     when var_1->has_mss_val is true */
+  if(var_1->has_mss_val) {
+    (void)var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_nsw->val);
+  } else {
+    (void)var_add(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->tally,var_1->val,var_nsw->val);
+  }
   return var_nsw;
 } /* end ncap_var_var_add() */
 
@@ -210,8 +215,11 @@ ncap_var_var_sub(var_sct *var_2,var_sct *var_1)
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=var_dpl(var_2);
   (void)ncap_var_conform_dim(&var_1,&var_nsw);
-  (void)var_subtract(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
-  
+  if( var_1->has_mss_val) {
+    (void)var_subtract(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
+  } else {
+    (void)var_subtract(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
+  }/* end else */
   return var_nsw;
 } /* end ncap_var_var_sub() */
 
@@ -228,8 +236,11 @@ ncap_var_var_multiply(var_sct *var_1,var_sct *var_2)
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=var_dpl(var_2);
   (void)ncap_var_conform_dim(&var_1,&var_nsw);
-  (void)var_multiply(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
-  
+  if(var_1->has_mss_val) {
+     (void)var_multiply(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
+  }else{
+     (void)var_multiply(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
+  }
   return var_nsw;
 } /* end ncap_var_var_multiply() */
 
@@ -382,9 +393,12 @@ ncap_var_var_divide(var_sct *var_1,var_sct *var_2)
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=var_dpl(var_2);
   (void)ncap_var_conform_dim(&var_1,&var_nsw);
-  (void)var_divide(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
-  
-  return var_nsw;
+  if(var_1->has_mss_val) {
+    (void)var_divide(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
+  }else{
+    (void)var_divide(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
+  } /* end else */ 
+ return var_nsw;
 } /* end ncap_var_var_divide() */
 
 var_sct *
