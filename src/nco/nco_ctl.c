@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.41 2004-03-12 00:44:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.42 2004-05-13 18:18:59 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -36,7 +36,7 @@ nco_exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, memory, th
 } /* end nco_exit_gracefully() */
 
 bool /* [flg] Program does arithmetic */
-is_rth_opr /* [fnc] Query whether program does arithmetic */
+nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
 (const int prg_id) /* [enm] Program ID */
 {
   /* Purpose: Does operator do arithmetic?
@@ -60,7 +60,7 @@ is_rth_opr /* [fnc] Query whether program does arithmetic */
     return False;
     break;
   } /* end switch */
-} /* end is_rth_opr() */
+} /* end nco_is_rth_opr() */
 
 void
 nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
@@ -100,7 +100,7 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
   /* Configuration option tokens must be consistent among configure.in, bld/Makefile, and nco_ctl.c
      Arrange tokens alphabetically by first word in English text description */
-  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nDODS/OpenDAP clients\t%s\thttp://nco.sf.net/nco.html#DODS\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (not ready)\nOpenMP Multi-threading\t%s\thttp://nco.sf.net/nco.html#omp (alpha testing)\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
+  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nDODS/OpenDAP clients\t%s\thttp://nco.sf.net/nco.html#DODS\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nOpenMP Multi-threading\t%s\thttp://nco.sf.net/nco.html#omp (alpha testing)\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
 #if defined(ENABLE_DEBUG_CUSTOM) && (ENABLE_DEBUG_CUSTOM)
 		"Yes",
 #else /* !ENABLE_DEBUG_CUSTOM */
@@ -143,10 +143,19 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
 		""); /* End of print statement marker */
 
+  (void)fprintf(stderr,"\n%s",nco_nmn_get());
+
   lbr_vrs_sng=(char *)nco_free(lbr_vrs_sng);
   lbr_sng=(char *)nco_free(lbr_sng);
   cmp_dat_sng=(char *)nco_free(cmp_dat_sng);
 } /* end nco_lbr_vrs_prn() */
+
+const char * /* O [sng] Mnemonic that describes current NCO version */
+nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
+{ 
+  /* Purpose: Return mnemonic describing current NCO version */
+  return "NCO save you time? Want NCO to get institutional funding to implement the most requested features? Read NCO's first proposal for Institutional funding:\nhttp://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf\nEndorse the proposal by sending e-mail to surname@uci.edu (surname=zender) with Subject: \"NSF SEI(GEO) NCO/SDO Proposal Endorsement\". Put (at least) your Name, Title, and Institutional affiliation in the body. Add any additional comments. It is never too late to endorse this proposal, as it may be recycled at the next opportunity. The information in your endorsement will be used to create supplementary documents to NSF and NASA for future NCO proposal advocacy.\n";
+} /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
 prg_prs /* [fnc] Strip program name to stub and return program ID */

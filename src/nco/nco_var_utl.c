@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.35 2004-01-17 01:19:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.36 2004-05-13 18:18:59 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -635,7 +635,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   (void)pck_dsk_inq(nc_id,var);
   
   /* Packing/Unpacking */
-  if(is_rth_opr(prg_get())){
+  if(nco_is_rth_opr(prg_get())){
     /* fxm: Automatic unpacking is in beta testing for all arithmetic operators */
 #ifdef _OPENMP
 #pragma omp critical
@@ -803,7 +803,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        Why change the type of "fixed" variables?
        ncra does not average them, ncbo does not subtract them, etc.,
        so it should be safe to leave them packed 
-       Thus checking only is_rth_opr is too simplistic
+       Thus checking only nco_is_rth_opr is too simplistic
        The most important thing is to be consistent---
        1. If all variables handled by arithmetic operators are to be unpacked then ensure this is done on reading
        2. If "fixed variables" are to remain fixed, then nco_var_dfn() needs more information 
@@ -811,7 +811,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        4. Tentative solution 20030119: 
        If other operators ever require this capability, we can change the ncap-specific
        condition to a generic FIXED_KEEP_PACKED flag passed into nco_var_dfn() */
-    if(is_rth_opr(prg_get()) && prg_get() != ncap) typ_out=var[idx]->typ_upk; else typ_out=var[idx]->type;
+    if(nco_is_rth_opr(prg_get()) && prg_get() != ncap) typ_out=var[idx]->typ_upk; else typ_out=var[idx]->type;
 
     /* Is requested variable already in output file? */
     rcd=nco_inq_varid_flg(out_id,var[idx]->nm,&var[idx]->id);
@@ -865,7 +865,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        if variable is packed in input file but unpacked in output file 
        However, arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
        Currently ncap only calls nco_var_dfn() for fixed variables, so handle exception with ncap-specific condition */
-    PCK_ATT_CPY=(is_rth_opr(prg_get()) && prg_get() != ncap && var[idx]->xrf->pck_dsk) ? False : True;
+    PCK_ATT_CPY=(nco_is_rth_opr(prg_get()) && prg_get() != ncap && var[idx]->xrf->pck_dsk) ? False : True;
     (void)nco_att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id,PCK_ATT_CPY);
 
 #undef FALSE
@@ -1171,7 +1171,7 @@ nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
      variables with missing_value since so many things could go wrong */
   /* fxm: This should be un-necessary since multi-file packing ostensibly works */
 #if 0
-  if(is_rth_opr(prg_get()) && var->pck_dsk){
+  if(nco_is_rth_opr(prg_get()) && var->pck_dsk){
     if(var->has_mss_val) (void)fprintf(stderr,"%s: WARNING Variable \"%s\" is packed and has valid \"missing_value\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...  \n",prg_nm_get(),var_nm);
   } /* endif variable is packed */
 #endif /* endif False */

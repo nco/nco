@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.h,v 1.7 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.h,v 1.8 2004-05-13 18:18:59 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -36,9 +36,6 @@ void
 copyright_prn /* [fnc] Print copyright notice */
 (const char * const CVS_Id, /* I [sng] CVS identification string */
  const char * const CVS_Revision); /* I [sng] CVS revision string */
-
-const char * /* O [sng] Mnemonic that describes current NCO version */
-nmn_get(void); /* [fnc] Return mnemonic that describes current NCO version */
 
 #ifdef __cplusplus
 } /* end extern "C" */

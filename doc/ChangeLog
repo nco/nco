@@ -1,3 +1,7 @@
+2004-05-13  Charlie Zender  <zender@uci.edu>
+
+	* Move blurb from nmn_get to last info message
+
 2004-05-05  Charlie Zender  <zender@uci.edu>
 
 	* Implement AMD64 pgcc/pgCC support in build mechanism
