@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.91 2003-11-25 21:01:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.92 2003-12-01 15:10:13 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -78,8 +78,13 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
   var=nco_var_fll(fl_id,var_id,var_nm,*(prs_arg->dmn_out),*(prs_arg->nbr_dmn_out));
 /*  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
   (void)strcpy(var->nm,var_nm);*/
-  var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
-  (void)nco_zero_long(var->sz,var->tally);
+
+  /*  var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
+      (void)nco_zero_long(var->sz,var->tally); */
+  /* Dont need tally at the moment as we aren't performing any cross file 
+     operations with ncap */
+  var->tally=(long*)NULL;
+
   /* Retrieve variable values from disk into memory */
   (void)nco_var_get(fl_id,var);
   /* (void)nco_var_free(var_nm);*/
