@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.87 2004-06-25 17:59:44 rorik Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.88 2004-06-29 06:28:02 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -195,7 +195,7 @@ AC_CHECK_LIB([netcdf],[nc_open],[
 
 # Begin Library checks
 # Check for libraries, add to link path if found
-AC_CHECK_LIB([C],[cosf])
+#AC_CHECK_LIB([C],[cosf])
 AC_CHECK_LIB([m],[sin])
 AC_CHECK_LIB([sunmath],[sinf])
 NCO_CHECK_FUNCS([getopt getopt_long])

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.230 2004-06-26 21:42:58 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.231 2004-06-29 06:28:03 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -209,7 +209,7 @@ Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> 
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO 2.9.8</b>: (<i>In progress</i>)
-<li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS)
+<li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS), <a href="#bug_ncap_flt_fnc_aix">bypass broken AIX float functions in <tt>ncap</tt></a>
 <li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax, 64-bit ABI for x86_64, Debian builds libnco_c++
 <li><b>NCO 2.9.5</b>: <tt>ncflint</tt> handles <tt>missing_value</tt> data better, is commutative when weights are equal
 <li><b>NCO 2.9.4</b>: <tt>ncecat</tt> works on pure scalar files, change to <tt>cvs.sf.net</tt>, AIX GCC builds
@@ -642,6 +642,23 @@ Upgrade to 2.9.1 if you use <tt>ncwa</tt> on packed data.
 NCO versions 2.8.4&mdash;2.8.6 have a bug that causes the <tt>ncap</tt>
 intrinsic packing function <tt>pack()</tt> to fail.
 Version 2.8.7 fixes this problem.
+</li>
+</ul>
+
+<ul><b>Platform-specific Run-time Problems:</b>
+<a name="bug_ncap_flt_fnc_aix"></a>
+<li><i>Float-valued intrinsic arithmetic function in <tt>ncap</tt> on AIX:</i>
+NCO versions through 2.9.6 have a bug that cause all float-valued
+intrinsic math functions to fail under AIX.
+  <tt>ncap</tt>
+Float-valued math functions are the optional ISO&nbsp;C functions
+  <tt>absf()</tt>, <tt>cosf()</tt>, <tt>logf()</tt>&ldots;
+The user does not invoke these functions directly&mdash;NCO
+  automatically calls these functions when the generic function argument
+  is a native float.
+  Double precision arguments invoke the standard form of these functions
+(<tt>abs()</tt>, <tt>cos()</tt>, <tt>logf()</tt>&ldots;).  
+  Version 2.9.7 fixes this problem.
 </li>
 </ul>
 <p><hr></p>

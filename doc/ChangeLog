@@ -1,3 +1,11 @@
+2004-06-28  Charlie Zender  <zender@uci.edu>
+
+	* Remove configure.in AC_CHECK_LIB check for cosf() in libC.a. 
+	NCO used to get the float functions from this library but it turns
+	out that all of these system-supplied float functions are broken
+	on AIX. NCO now uses it's own version of these functions.
+	Fixes TODO ncap57.
+	
 2004-06-25  Charlie Zender  <zender@uci.edu>
 
 	* Added ln() as synonym for log() in ncap

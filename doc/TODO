@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.326 2004-06-29 05:02:57 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.327 2004-06-29 06:28:03 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -239,19 +239,18 @@ ncap -v -O -s "one=one*1" -s "two=one*2" -s "pck=pack(upk)" ~/nco/data/in.nc ~/f
 ncks -m -H -v one,two,pck ~/foo.nc
 ncap55. Add pre-defined named_constants, e.g., nco_pi, nco_e, to make math easier
 ncap56. Introduce way of making function synonyms, e.g., ln=log, without growing symbol table?
-ncap57. Raising transcendental functions of NC_FLOATs to powers fails on AIX:
+ncap57. Raising transcendental functions of NC_FLOATs to powers fails on AIX
+AIX thinks it has the trancendental float functions, so NCO uses system-supplied versions.
+Symptoms are consistent with breakage of system-supplied logf, sinf, etc.
 # Fails on AIX
 ncap -D 1 -O -v -s "foo=log(e_flt)^1" ~/nco/data/in.nc ~/foo.nc
-ncks -M -H ~/foo.nc
+ncap -D 1 -O -v -s "foo=sin(e_flt)^1" ~/nco/data/in.nc ~/foo.nc
+ncap -D 1 -O -v -s "foo=log(e_flt+0.01f)^1" ~/nco/data/in.nc ~/foo.nc
 # Works on AIX
 ncap -D 1 -O -v -s "foo=log(e_dbl)^1" ~/nco/data/in.nc ~/foo.nc
-ncks -M -H ~/foo.nc
-# Fails on AIX
-ncap -D 1 -O -v -s "foo=sin(e_flt)^1" ~/nco/data/in.nc ~/foo.nc
-ncks -M -H ~/foo.nc
-# Works on AIX
 ncap -D 1 -O -v -s "foo=sin(e_dbl)^1" ~/nco/data/in.nc ~/foo.nc
-ncks -M -H ~/foo.nc
+ncap58. Implement ncap test script in nco_tst.pl format so that errors are flagged at build-time.
+ncap59. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.

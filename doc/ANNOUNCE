@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.98 2004-06-26 21:42:58 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.99 2004-06-29 06:28:03 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.6 are ready. 
 
@@ -42,7 +42,7 @@ Feature changes:
 3. ln works in ncap as natural logarithm (synonym for log())
 
 Bug-fixes:
-1. None
+1. Use NCO-supplied float-valued functions (e.g., cosf()) on AIX
 
 Build changes:
 1. LFS enabled by default
