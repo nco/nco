@@ -1,17 +1,38 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.87 2004-06-14 07:22:50 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.88 2004-06-14 21:31:30 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release ...
+This release implements a new way to specify output files to NCO.
+Output files may now be specified with -o (or --fl_out or --output),
+or as last positional argument (the traditional behavior). 
+This facilitate processing of large numbers of files by multi-file
+operators (ncra, ncrcat, ncecat) by using the xargs command.
+Using xargs or perl to handle these situations is now documented in
+
+http://nco.sf.net/nco.html#lrg
+
+This new -o fl_out behavior supercedes works on all operators.
+ncwa was the only operator that used -o for anything previsously.
+ncwa used -o switch for passing relational operator types for masking.
+There single-letter option with the best mnemonic is -t for "truth condition".
+The preferred switches are now --truth_condition or --msk_cmp_typ for
+"mask comparison type". 
+The old long options synonyms --cmp, --compare, and --op_cmp were
+removed to reduce the burgeoning number of synonyms.
+The other ncwa -o long-option synonym, --op_rlt, works as usual.
+Please modify ncwa scripts accordingly.
+Unmodified ncwa scripts which expect the old behavior of -o will fail
+with an error stating that too many input filenames are present.
 
 Enjoy,
 Charlie
 
 Feature changes:
-1. None
+1. All operators accept output filename specified with -o (or --fl_out
+or --output) instead of as last positional argument.
 
 Bug-fixes:
 1. None
@@ -22,8 +43,8 @@ Build changes:
    version numbers now track libnco
 
 Other user-visible changes:
-1. Added example of specifying large numbers of input files to 
-   http://nco.sf.net/nco.html#lrg
+1. Old ncwa -o switch now implemented with -t switch
+2. Change warning size for large filenames from 80 to 255 characters
 
 User-invisible changes:
-1. None
+1. Added doc/nco_ltr_spp.txt which contains NCO/SDO endorsements

@@ -1,3 +1,14 @@
+2004-06-14  Charlie Zender  <zender@uci.edu>
+
+	* Move old ncwa -o switch to -t, add synonyms --truth_condition,
+	--msk_cmp_typ, delete old synonyms --op_cmp, --compare, --cmp.
+
+	* Change warning size for large filenames from 80 to 255 characters
+
+	* Modify nco_fl_lst_mk() so operators accept output filename
+	specified with -o (or --fl_out or --output), or as last positional
+	argument (traditional behavior).
+
 2004-06-13  Charlie Zender  <zender@uci.edu>
 
 	* Added demonstration script to handle large numbers of input

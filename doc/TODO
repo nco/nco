@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.311 2004-06-14 07:22:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.312 2004-06-14 21:31:30 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -190,14 +190,14 @@ nco321. Do not promote NC_FLOAT to NC_DOUBLE in ncra/ncea(?)
 nco322. Implement integer empowerment in var_scv_pwr() with, e.g., GSL
 nco323. Collect all past ANNOUNCE files and place in reverse chronological order in ANNOUNCE file
 nco324. Add release date to "Version Summary" section on homepage
-nco326. Add manual override of writing *tmp* file for intermediate results
-nco327. Consolidate/coordinate letters of support for prp_nco: Currently doc/nco_los.txt
+nco326. Add manual override of writing *tmp* file for intermediate results?
 nco328. Ability to reverse specified dimensions (use negative stride?)
 nco329. Ability to rearrange dimensions
 nco333. Clean up preprocessor symbols with cd ~/nco/src/nco;ifnames *.c
 nco335. ncflint: implement interpolation/mss_val algorithms two and three as options?
 nco336. Allow input file lists to be specified in a text file and to supercede command line arguments. This will be useful on platforms with limited buffers for command line arguments and globbing expansions (e.g., AIX)
-nco337. 
+nco337. Add command line switch -o for specifying fl_out (important for xargs)
+nco338. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.14 2004-05-06 04:45:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.15 2004-06-14 21:31:32 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -103,7 +103,7 @@ main(int argc,char **argv)
   char *fl_in=NULL; /* fl_in is nco_realloc'd when not NULL */
   char *fl_in_1;
   char *fl_in_2;
-  char *fl_out;
+  char *fl_out=NULL; /* Option o */
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
@@ -111,9 +111,9 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncbo.c,v 1.14 2004-05-06 04:45:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.14 $";
-  const char * const opt_sng="ACcD:d:Fhl:Op:rRv:xy:-:";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.15 2004-06-14 21:31:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.15 $";
+  const char * const opt_sng="ACcD:d:Fhl:Oo:p:rRv:xy:-:";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -234,6 +234,9 @@ main(int argc,char **argv)
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
+      break;
+    case 'o': /* Name of output file */
+      fl_out=(char *)strdup(optarg);
       break;
     case 'p': /* Common file path */
       fl_pth=optarg;

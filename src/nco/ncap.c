@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.124 2004-02-09 07:54:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.125 2004-06-14 21:31:32 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -108,15 +108,15 @@ main(int argc,char **argv)
 #define NCAP_SPT_NBR_MAX 100
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
-  char *fl_out;
+  char *fl_out=NULL; /* Option o */
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.124 2004-02-09 07:54:41 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.124 $";
-  const char * const opt_sng="ACcD:d:Ffhl:n:Op:Rrs:S:vx-:"; /* [sng] Single letter command line options */
+  const char * const CVS_Id="$Id: ncap.c,v 1.125 2004-06-14 21:31:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.125 $";
+  const char * const opt_sng="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
   dmn_sct **dmn_out=NULL_CEWI; /* [lst] Dimensions written to output file */
@@ -229,6 +229,8 @@ main(int argc,char **argv)
       {"nintap",required_argument,0,'n'},
       {"overwrite",no_argument,0,'O'},
       {"ovr",no_argument,0,'O'},
+      {"output",required_argument,0,'o'},
+      {"fl_out",required_argument,0,'o'},
       {"path",required_argument,0,'p'},
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
@@ -300,6 +302,9 @@ main(int argc,char **argv)
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
+      break;
+    case 'o': /* Name of output file */
+      fl_out=(char *)strdup(optarg);
       break;
     case 'p': /* Common file path */
       fl_pth=optarg;

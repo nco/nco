@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.72 2004-06-02 01:12:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.73 2004-06-14 21:31:32 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -93,16 +93,16 @@ main(int argc,char **argv)
   char *fl_in_2;
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *fl_out;
+  char *fl_out=NULL; /* Option o */
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.72 2004-06-02 01:12:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.72 $";
-  const char * const opt_sng="ACcD:d:Fhi:l:Op:rRv:xw:-:";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.73 2004-06-14 21:31:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.73 $";
+  const char * const opt_sng="ACcD:d:Fhi:l:Oo:p:rRv:xw:-:";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -177,6 +177,8 @@ main(int argc,char **argv)
       {"lcl",required_argument,0,'l'},
       {"overwrite",no_argument,0,'O'},
       {"ovr",no_argument,0,'O'},
+      {"output",required_argument,0,'o'},
+      {"fl_out",required_argument,0,'o'},
       {"path",required_argument,0,'p'},
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
@@ -242,6 +244,9 @@ main(int argc,char **argv)
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
+      break;
+    case 'o': /* Name of output file */
+      fl_out=(char *)strdup(optarg);
       break;
     case 'p': /* Common file path */
       fl_pth=optarg;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.66 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.67 2004-06-14 21:31:32 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -136,15 +136,15 @@ main(int argc,char **argv)
   char **fl_lst_in;
   char *fl_in=NULL;
   char *aed_arg[NC_MAX_ATTRS];
-  char *fl_out;
+  char *fl_out=NULL; /* Option o */
   char *fl_pth_lcl=NULL; /* Option l */
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.66 2004-01-12 18:11:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.66 $";
-  const char * const opt_sng="Aa:D:hl:Op:Rr-:";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.67 2004-06-14 21:31:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.67 $";
+  const char * const opt_sng="Aa:D:hl:Oo:p:Rr-:";
   
   extern char *optarg;
   extern int optind;
@@ -173,6 +173,8 @@ main(int argc,char **argv)
       {"lcl",required_argument,0,'l'},
       {"overwrite",no_argument,0,'O'},
       {"ovr",no_argument,0,'O'},
+      {"output",required_argument,0,'o'},
+      {"fl_out",required_argument,0,'o'},
       {"path",required_argument,0,'p'},
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
@@ -212,6 +214,9 @@ main(int argc,char **argv)
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
+      break;
+    case 'o': /* Name of output file */
+      fl_out=(char *)strdup(optarg);
       break;
     case 'p': /* Common file path */
       fl_pth=optarg;

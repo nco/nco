@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.63 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.64 2004-06-14 21:31:32 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -78,15 +78,15 @@ main(int argc,char **argv)
   char *dmn_rnm_arg[NC_MAX_DIMS];
   char *var_rnm_arg[NC_MAX_VARS];
   char *att_rnm_arg[NC_MAX_ATTRS];
-  char *fl_out;
+  char *fl_out=NULL; /* Option o */
   char *fl_pth_lcl=NULL; /* Option l */
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.63 2004-01-12 18:11:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.63 $";
-  const char * const opt_sng="a:D:d:hl:Op:rv:-:";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.64 2004-06-14 21:31:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.64 $";
+  const char * const opt_sng="a:D:d:hl:Oo:p:rv:-:";
 
   extern char *optarg;
   extern int optind;
@@ -120,6 +120,8 @@ main(int argc,char **argv)
       {"lcl",required_argument,0,'l'},
       {"overwrite",no_argument,0,'O'},
       {"ovr",no_argument,0,'O'},
+      {"output",required_argument,0,'o'},
+      {"fl_out",required_argument,0,'o'},
       {"path",required_argument,0,'p'},
       {"revision",no_argument,0,'r'},
       {"variable",required_argument,0,'v'},
@@ -163,6 +165,9 @@ main(int argc,char **argv)
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
+      break;
+    case 'o': /* Name of output file */
+      fl_out=(char *)strdup(optarg);
       break;
     case 'p': /* Common file path */
       fl_pth=optarg;

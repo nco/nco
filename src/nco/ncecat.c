@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.69 2004-05-20 14:16:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.70 2004-06-14 21:31:32 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -77,15 +77,15 @@ main(int argc,char **argv)
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *fl_out;
+  char *fl_out=NULL; /* Option o */
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.69 2004-05-20 14:16:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.69 $";
-  const char * const opt_sng="ACcD:d:Fhl:n:Op:rRv:x-:";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.70 2004-06-14 21:31:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.70 $";
+  const char * const opt_sng="ACcD:d:Fhl:n:Oo:p:rRv:x-:";
 
   dmn_sct *rec_dmn;
   dmn_sct **dim;
@@ -148,6 +148,8 @@ main(int argc,char **argv)
       {"nintap",required_argument,0,'n'},
       {"overwrite",no_argument,0,'O'},
       {"ovr",no_argument,0,'O'},
+      {"output",required_argument,0,'o'},
+      {"fl_out",required_argument,0,'o'},
       {"path",required_argument,0,'p'},
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
@@ -208,6 +210,9 @@ main(int argc,char **argv)
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
+      break;
+    case 'o': /* Name of output file */
+      fl_out=(char *)strdup(optarg);
       break;
     case 'p': /* Common file path */
       fl_pth=optarg;

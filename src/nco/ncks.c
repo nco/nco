@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.100 2004-05-06 04:45:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.101 2004-06-14 21:31:32 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -96,15 +96,15 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
   char *fl_bnr=NULL; /* [sng] Unformatted binary output file */
-  char *fl_out;
+  char *fl_out=NULL; /* Option o */
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.100 2004-05-06 04:45:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.100 $";
-  const char * const opt_sng="aABb:CcD:d:FHhl:MmOp:qrRs:uv:x-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.101 2004-06-14 21:31:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.101 $";
+  const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qrRs:uv:x-:";
 
   extern char *optarg;
   extern int optind;
@@ -170,6 +170,8 @@ main(int argc,char **argv)
       {"Mtd",no_argument,0,'M'},
       {"overwrite",no_argument,0,'O'},
       {"ovr",no_argument,0,'O'},
+      {"output",required_argument,0,'o'},
+      {"fl_out",required_argument,0,'o'},
       {"path",required_argument,0,'p'},
       {"quiet",no_argument,0,'q'},
       {"retain",no_argument,0,'R'},
@@ -245,6 +247,9 @@ main(int argc,char **argv)
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
+      break;
+    case 'o': /* Name of output file */
+      fl_out=(char *)strdup(optarg);
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_STYLE=!FORTRAN_STYLE;

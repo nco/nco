@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.28 2004-01-20 07:01:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.29 2004-06-14 21:31:32 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -84,58 +84,75 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
  const int argc, /* I [nbr] Argument count */
  int arg_crr, /* I [idx] Index of current argument */
  int * const nbr_fl, /* O [nbr] Number of files in input file list */
- char ** const fl_out) /* O [sng] Name of output file */
+ char ** const fl_out) /* I/O [sng] Name of output file */
 {
   /* Purpose: Parse positional arguments on command line
      Name of calling program plays a role in this */
 
   /* Command-line switches are expected to have been digested already (e.g., by getopt()),
-     and argv[arg_crr] points to the first argument on the command line following all the
-     switches. */
+     and argv[arg_crr] points to the first positional argument (i.e., the first argument
+     following all the switches and their arugments). 
+     fl_out is filled in if it was not specified as a command line switch */
+
+  bool FL_OUT_FROM_PSN_ARG=True; /* [flg] fl_out comes from positional argument */
 
   char **fl_lst_in;
 
   int idx;
-  int fl_nm_sz_warning=80;
+  int fl_nm_sz_wrn=255;
+  int psn_arg_fst=0; /* [nbr] Offset for expected number of positional arguments */
+  int psn_arg_nbr; /* [nbr] Number of remaining positional arguments */
 
-  /* Are there any remaining arguments that could be filenames? */
+  /* Is output file already known from command line switch (i.e., -o fl_out)? */
+  if(*fl_out != NULL){
+    /* fl_out is already known so interpret all remaining positional arguments as input files */
+    FL_OUT_FROM_PSN_ARG=False;
+    /* Offset expected number of positional arguments by one to account for fl_out being known */
+    psn_arg_fst=1;
+  } /* end if */
+
+  /* Do any positional arguments (i.e., filenames) remain? */
   if(arg_crr >= argc){
     (void)fprintf(stdout,"%s: ERROR must specify filename(s)\n",prg_nm_get());
     (void)nco_usg_prn();
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
-  /* See if there appear to be problems with any of the specified files */
+  /* Might there be problems with any specified files? */
   for(idx=arg_crr;idx<argc;idx++){
-    if((int)strlen(argv[idx]) >= fl_nm_sz_warning) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters)\n",prg_nm_get(),argv[idx],(long)strlen(argv[idx]));
+    if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters) and may not be portable to older operating systems\n",prg_nm_get(),argv[idx],(long)strlen(argv[idx]));
   } /* end loop over idx */
 
+  psn_arg_nbr=argc-arg_crr; /* [nbr] Number of remaining positional arguments */
   switch(prg_get()){
   case ncks:
   case ncatted:
   case ncrename:
-    if(argc-arg_crr > 2){
-      (void)fprintf(stdout,"%s: ERROR received %d filenames; need no more than two\n",prg_nm_get(),argc-arg_crr);
+    /* Operators with single fl_in and optional fl_out */
+    if(psn_arg_nbr > 2-psn_arg_fst){
+      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need no more than two\n",prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need no more than one (output file was specified with -o switch)\n",prg_nm_get(),psn_arg_nbr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end if */
     fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
     fl_lst_in[(*nbr_fl)++]=(char *)strdup(argv[arg_crr++]);
-    if(arg_crr == argc-1) *fl_out=(char *)strdup(argv[arg_crr]); else *fl_out=NULL;
+    if(arg_crr == argc-1) *fl_out=(char *)strdup(argv[arg_crr]);
     return fl_lst_in;
     /*    break;*//* NB: putting break after return in case statement causes warning on SGI cc */
   case ncbo:
   case ncflint:
-    if(argc-arg_crr != 3){
-      (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly three\n",prg_nm_get(),argc-arg_crr);
+    /* Operators with dual fl_in and required fl_out */
+    if(psn_arg_nbr != 3-psn_arg_fst){
+      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly three\n",prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need exactly two (output file was specified with -o switch)\n",prg_nm_get(),psn_arg_nbr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end if */
     break;
   case ncap:
   case ncwa:
-    if(argc-arg_crr != 2){
-      (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly two\n",prg_nm_get(),argc-arg_crr);
+    /* Operators with single fl_in and required fl_out */
+    if(psn_arg_nbr != 2-psn_arg_fst){
+      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly two\n",prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need exactly one (output file was specified with -o switch)\n",prg_nm_get(),psn_arg_nbr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end if */
@@ -144,8 +161,9 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   case ncea:
   case ncrcat:
   case ncecat:
-    if(argc-arg_crr < 2){
-      (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least two\n",prg_nm_get(),argc-arg_crr);
+    /* Operators with multiple fl_in and required fl_out */
+    if(psn_arg_nbr < 2-psn_arg_fst){
+      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least two\n",prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least one (output file was specified with -o switch)\n",prg_nm_get(),psn_arg_nbr);
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end if */
@@ -155,14 +173,14 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   } /* end switch */
 
   /* Fill in file list and output file */
-  fl_lst_in=(char **)nco_malloc((argc-arg_crr-1)*sizeof(char *));
-  while(arg_crr < argc-1) fl_lst_in[(*nbr_fl)++]=(char *)strdup(argv[arg_crr++]);
+  fl_lst_in=(char **)nco_malloc((psn_arg_nbr-1+psn_arg_fst)*sizeof(char *));
+  while(arg_crr < argc-1+psn_arg_fst) fl_lst_in[(*nbr_fl)++]=(char *)strdup(argv[arg_crr++]);
   if(*nbr_fl == 0){
     (void)fprintf(stdout,"%s: ERROR Must specify input filename.\n",prg_nm_get());
     (void)nco_usg_prn();
     nco_exit(EXIT_FAILURE);
   } /* end if */
-  *fl_out=(char *)strdup(argv[argc-1]);
+  if(FL_OUT_FROM_PSN_ARG) *fl_out=(char *)strdup(argv[argc-1]);
 
   return fl_lst_in;
 

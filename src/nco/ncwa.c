@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.114 2004-05-06 04:45:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.115 2004-06-14 21:31:32 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -96,7 +96,7 @@ main(int argc,char **argv)
   char **var_lst_in=NULL_CEWI;
   char *cmd_ln;
   char *fl_in=NULL;
-  char *fl_out;
+  char *fl_out=NULL; /* Option o */
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
@@ -106,9 +106,9 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.114 2004-05-06 04:45:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.114 $";
-  const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:Ww:xy:-:";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.115 2004-06-14 21:31:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.115 $";
+  const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRt:v:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -193,16 +193,17 @@ main(int argc,char **argv)
       {"nintap",required_argument,0,'n'},
       {"nmr",no_argument,0,'N'},
       {"numerator",no_argument,0,'N'},
-      {"op_rlt",required_argument,0,'o'},
-      {"cmp",required_argument,0,'o'},
-      {"compare",required_argument,0,'o'},
-      {"op_cmp",required_argument,0,'o'},
       {"overwrite",no_argument,0,'O'},
       {"ovr",no_argument,0,'O'},
+      {"output",required_argument,0,'o'},
+      {"fl_out",required_argument,0,'o'},
       {"path",required_argument,0,'p'},
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"truth_condition",required_argument,0,'t'},
+      {"msk_cmp_typ",required_argument,0,'t'},
+      {"op_rlt",required_argument,0,'t'},
       {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
@@ -291,8 +292,8 @@ main(int argc,char **argv)
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
       break;
-    case 'o': /* Relational operator type.  Default is 0, eq, equality */
-      op_typ_rlt=nco_op_prs_rlt(optarg);
+    case 'o': /* Name of output file */
+      fl_out=(char *)strdup(optarg);
       break;
     case 'p': /* Common file path */
       fl_pth=optarg;
@@ -304,6 +305,9 @@ main(int argc,char **argv)
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
        nco_exit(EXIT_SUCCESS);
+      break;
+    case 't': /* Relational operator type. Default is 0, eq, equality */
+      op_typ_rlt=nco_op_prs_rlt(optarg);
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.102 2004-05-06 04:45:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.103 2004-06-14 21:31:32 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -107,7 +107,7 @@ main(int argc,char **argv)
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *fl_out;
+  char *fl_out=NULL; /* Option o */
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
@@ -115,9 +115,9 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.102 2004-05-06 04:45:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.102 $";
-  const char * const opt_sng="ACcD:d:Fhl:n:Op:P:rRv:xy:-:";
+  const char * const CVS_Id="$Id: ncra.c,v 1.103 2004-06-14 21:31:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.103 $";
+  const char * const opt_sng="ACcD:d:Fhl:n:Oo:p:P:rRv:xy:-:";
 
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -186,6 +186,8 @@ main(int argc,char **argv)
       {"nintap",required_argument,0,'n'},
       {"overwrite",no_argument,0,'O'},
       {"ovr",no_argument,0,'O'},
+      {"output",required_argument,0,'o'},
+      {"fl_out",required_argument,0,'o'},
       {"path",required_argument,0,'p'},
       {"pack",required_argument,0,'P'},
       {"retain",no_argument,0,'R'},
@@ -255,6 +257,9 @@ main(int argc,char **argv)
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
+      break;
+    case 'o': /* Name of output file */
+      fl_out=(char *)strdup(optarg);
       break;
     case 'p': /* Common file path */
       fl_pth=optarg;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.16 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.17 2004-06-14 21:31:32 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -71,7 +71,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
  const int argc, /* I [nbr] Argument count */
  int arg_crr, /* I [idx] Index of current argument */
  int * const nbr_fl, /* O [nbr] Number of files in input file list */
- char ** const fl_out); /* O [sng] Name of output file */
+ char ** const fl_out); /* I/O [sng] Name of output file */
 
 char * /* O [sng] Name of file to retrieve */
 nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
