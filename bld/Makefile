@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.49 1999-12-15 00:33:34 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.50 1999-12-15 00:53:29 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -345,7 +345,7 @@ $(MY_OBJ_DIR)/%.o : %.f
 endif
 # endif RS6K
 
-if ($(findstring SGI,$(PVM_ARCH))
+if ($(findstring SGI,$(PVM_ARCH)))
 C++ := c++
 CC := cc
 # spoof SGI64

@@ -23,7 +23,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.41 1999-12-15 00:43:42 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.42 1999-12-15 00:50:53 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -59,9 +59,9 @@ my $False=0;
 my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
-my $CVS_Date='$Date: 1999-12-15 00:43:42 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.41 1999-12-15 00:43:42 zender Exp $';
-my $CVS_Revision='$Revision: 1.41 $';
+my $CVS_Date='$Date: 1999-12-15 00:50:53 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.42 1999-12-15 00:50:53 zender Exp $';
+my $CVS_Revision='$Revision: 1.42 $';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
 my $bld=$False; # Option bld; Whether to rebuild netCDF distribution
 my $data_nm=$ENV{'DATA'};
@@ -89,7 +89,7 @@ my $cray_prs=$False; # Option cray_prs; Install version in Cray personal
 # Derived fields
 if($PVM_ARCH =~ m/SUN/){ # See Camel p. 81 for =~ and m//
     $tar_cmd='gtar';
-    $mk_cmd='gmake';
+    $mk_cmd='make';
 }elsif($PVM_ARCH =~ m/CRAY/){
     $tar_cmd='tar';
     $mk_cmd='gnumake';
