@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.4 2004-07-29 00:40:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.5 2004-07-29 01:26:10 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -64,9 +64,6 @@
 int 
 main(int argc,char **argv)
 {
-  bool DO_DIMENSIONALITY_ONLY; /* I [flg] Determine and set new dimensionality then return */
-  bool DO_REORDER_ONLY; /* I [flg] Re-order data (dimensionality already set) */
-  bool DO_WHOLE_SHEBANG; /* I [flg] Determine and set new dimensionality then re-order data */
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
@@ -92,8 +89,8 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.4 2004-07-29 00:40:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.4 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.5 2004-07-29 01:26:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.5 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:Rrt:v:xz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -107,6 +104,8 @@ main(int argc,char **argv)
      Copy appropriate filehandle to variable scoped shared in parallel clause */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
+
+  int **dmn_idx_out_in; /* [idx] Dimension correspondence, output->input */
 
   int abb_arg_nbr=0;
   int dmn_rdr_nbr=0; /* [nbr] Number of dimension to re-order */
@@ -363,7 +362,10 @@ main(int argc,char **argv)
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
 
   if(dmn_rdr_nbr > 0){
-    /* NB: Same logic as in ncwa, perhaps combine into single function */
+    /* NB: Same logic as in ncwa, perhaps combine into single function, nco_dmn_avg_rdr_prp()? */
+    /* Make list of user-specified dimension re-orders */
+    /* fxm: dmn_rdr is already known, is nco_prs_rdr_lst() obsolete? */
+    if(False) dmn_rdr=nco_dmn_avg_rdr_prp(dmn_rdr,dmn_rdr_lst_in,dmn_rdr_nbr);
 
     if(dmn_rdr_nbr > nbr_dmn_xtr){
       (void)fprintf(fp_stdout,"%s: ERROR More re-ordering dimensions than extracted dimensions\n",prg_nm);
@@ -405,20 +407,12 @@ main(int argc,char **argv)
 
   } /* dmn_rdr_nbr <= 0 */
 
-  /* Make list of user-specified dimension re-orders */
-  /* fxm: dmn_rdr is already known, is nco_prs_rdr_lst() obsolete? */
-  if(False) dmn_rdr=nco_prs_rdr_lst(dmn_rdr,dmn_rdr_lst_in,dmn_rdr_nbr);
-
-  /* Determine and set new dimensionality for each processed variable */
-  DO_DIMENSIONALITY_ONLY=True; /* I [flg] Determine and set new dimensionality then return */
-  DO_REORDER_ONLY=False; /* I [flg] Re-order data (dimensionality already set) */
-  DO_WHOLE_SHEBANG=False; /* I [flg] Determine and set new dimensionality then re-order data */
-  for(idx=0;idx<nbr_var_prc;idx++) rcd=nco_var_dmn_rdr(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,DO_DIMENSIONALITY_ONLY,DO_REORDER_ONLY,DO_WHOLE_SHEBANG);
-
-  /* Next call re-orders and stores each processed variable (and is threaded) */
-  DO_DIMENSIONALITY_ONLY=False; /* I [flg] Determine and set new dimensionality then return */
-  DO_REORDER_ONLY=False; /* I [flg] Re-order data (dimensionality already set) */
-  DO_WHOLE_SHEBANG=True; /* I [flg] Determine and set new dimensionality then re-order data */
+  /* Determine and set new dimensionality in metadata of each re-ordered variable */
+  dmn_idx_out_in=(int **)nco_malloc(nbr_var_prc*sizeof(int *));
+  for(idx=0;idx<nbr_var_prc;idx++){
+    dmn_idx_out_in[idx]=(int *)nco_malloc(nbr_var_prc*sizeof(int));
+    rcd=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx]);
+  } /* end if */
 
   /* Define variables in output file, copy their attributes */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0);
@@ -453,7 +447,7 @@ main(int argc,char **argv)
      firstprivate(): 
      shared(): 
      private(): */
-#pragma omp parallel for default(none) private(idx) shared(DO_DIMENSIONALITY_ONLY,DO_REORDER_ONLY,DO_WHOLE_SHEBANG,dbg_lvl,dmn_rdr,dmn_rdr_nbr,fp_stderr,fp_stdout,in_id,nbr_var_prc,out_id,prg_nm,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,dmn_idx_out_in,dmn_rdr,dmn_rdr_nbr,fp_stderr,fp_stdout,in_id,nbr_var_prc,out_id,prg_nm,rcd,var_prc,var_prc_out)
 #endif /* not _OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
@@ -475,8 +469,8 @@ main(int argc,char **argv)
 
       if(dbg_lvl > 2) (void)fprintf(fp_stdout,"%s: DEBUG: nco329 About to nco_nco_var_dmn_rdr() %s\n",prg_nm,var_prc[idx]->nm);
 
-      /* Change dimension ordering */
-      rcd=nco_var_dmn_rdr(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,DO_DIMENSIONALITY_ONLY,DO_REORDER_ONLY,DO_WHOLE_SHEBANG);
+      /* Change dimension ordering of values */
+      rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx]);
 
       /* Free current input buffer */
       var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
@@ -494,6 +488,8 @@ main(int argc,char **argv)
       } /* end OpenMP critical */
       /* Free current output buffer */
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
+      /* Free current dimension correspondence */
+      dmn_idx_out_in[idx]=nco_free(dmn_idx_out_in[idx]);
       
     } /* end (OpenMP parallel for) loop over idx */
     
@@ -507,6 +503,9 @@ main(int argc,char **argv)
     
   } /* end loop over fl_idx */
   
+  /* Free dimension correspondence list */
+  dmn_idx_out_in=nco_free(dmn_idx_out_in);
+
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   

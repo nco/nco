@@ -1,5 +1,10 @@
 2004-07-28  Charlie Zender  <zender@uci.edu>
 
+	* Broke nco_var_dmn_rdr() into two sequential functions
+	nco_var_dmn_rdr_mtd() for metadata and nco_var_dmn_rdr_val() for
+	values. Calling routine (ncpdq) now holds required intermediate
+	information in dmn_idx_out_in.
+
 	* Implement -DNCO_ABORT_ON_ERROR in nco_err_exit() so developers
 	can perform easy tracebacks
 
