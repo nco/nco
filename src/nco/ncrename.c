@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.66 2004-06-18 23:56:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.67 2004-07-02 23:01:13 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -85,8 +85,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.66 2004-06-18 23:56:45 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.66 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.67 2004-07-02 23:01:13 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.67 $";
   const char * const opt_sng="a:D:d:hl:Oo:p:rv:-:";
 
   extern char *optarg;
@@ -101,6 +101,7 @@ main(int argc,char **argv)
   int fl_nbr=0;
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
+  int thr_nbr=0; /* [nbr] Thread number Option t */
   
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dmn_rnm_lst=NULL_CEWI;
@@ -262,7 +263,7 @@ main(int argc,char **argv)
 
   } /* end if OUTPUT_TO_NEW_NETCDF_FILE */
   
-  /* Open file. Writing must be enabled and file should be in define mode for renaming */
+  /* Open file enabled for writing. Place file in define mode for renaming. */
   rcd=nco_open(fl_out,NC_WRITE,&nc_id);
   (void)nco_redef(nc_id);
 
@@ -406,6 +407,15 @@ main(int argc,char **argv)
   /* Catenate timestamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
   
+  /* Initialize thread information */
+  thr_nbr=nco_openmp_ini(thr_nbr);
+  if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(nc_id,thr_nbr);
+  
+#ifdef _OPENMP
+  /* fxm: hack to get libxlsmp library linked in */
+  (void)omp_in_parallel();
+#endif /* not _OPENMP */
+
   /* Take file out of define mode */
   (void)nco_enddef(nc_id);
     
