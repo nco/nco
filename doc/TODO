@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.246 2003-11-14 17:42:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.247 2003-11-14 17:46:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -241,7 +241,11 @@ ncks -O -v mss_val_fst -p ~/nco/data in.nc ~/nco/data/out.nc
 ncrename -O -v mss_val_fst,mss_val ~/nco/data/out.nc
 ncbo -O -y '-' -v mss_val -p ~/nco/data in.nc out.nc ~/foo.nc
 ncks -m -C -H -v mss_val ~/foo.nc
-282. nco_tst.sh with 2.8.3: ncwa 1: normalize by denominator: 1.0 =?= nan
+282. nco_tst.sh has two errors with 2.8.3
+ncwa 1: normalize by denominator: 1.0 =?= nan
+ncwa 4: do not normalize by denominator: 256 =?= 0.000000
+ncbo 1: difference with missing value attribute: 1.0e36 =?= ncks: ERROR nco_var_lst_mk() reports user-specified variable "mss_val" is not in input file
+ncbo 2: difference without missing value attribute: 0 =?= ncks: ERROR nco_var_lst_mk() reports user-specified variable "no_mss_val" is not in input file
 ************************************************************************
 End NCO Wish list
 ************************************************************************
