@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1.1.1 1998-08-18 05:35:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.2 1998-08-19 05:03:38 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -301,10 +301,10 @@ itself.
 The complete NCO source distribution is currently distributed as a
 @dfn{compressed tarfile} from
 @ifhtml
-<a href="ftp://ftp.cgd.ucar.edu/pub/zender/nc/nco.tar.gz"> ftp://ftp.cgd.ucar.edu/pub/zender/nc/nco.tar.gz</a>.
+<a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz"> ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz</a>.
 @end ifhtml
 @ifclear html
-@code{ftp://ftp.cgd.ucar.edu/pub/zender/nc/nco.tar.gz}.
+@code{ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz}.
 @end ifclear
 The compressed tarfile must be uncompressed and untarred before building
 NCO.
