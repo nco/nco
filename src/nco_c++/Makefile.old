@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.20 2004-06-07 04:18:59 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.21 2004-06-25 22:36:40 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -70,6 +70,10 @@ ifdef GSL_LIB
 else
  GSL_LIB := $(shell gsl-config --libs)
 endif # endif GSL_LIB
+ifndef MK_DPN
+ MK_DPN = ${CPP} -M # NB: Recursive expansion required
+ MK_DPN_C++ = ${C++} -M # NB: Recursive expansion required
+endif # endif MK_DPN
 ifndef NETCDF_INC
  NETCDF_INC := /usr/local/include 
 endif

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.15 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.16 2004-06-25 22:36:40 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -43,7 +43,7 @@ nco_calloc /* [fnc] Wrapper for calloc() */
   
   ptr=calloc(lmn_nbr,lmn_sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: ERROR nco_calloc() unable to allocate %li elements of %li bytes = %li bytes\n",prg_nm_get(),(long)lmn_nbr,(long)lmn_sz,(long)(lmn_nbr*lmn_sz));
+    (void)fprintf(stdout,"%s: ERROR nco_calloc() unable to allocate %zu elements of %zu bytes = %zu bytes\n",prg_nm_get(),lmn_nbr,lmn_sz,lmn_nbr*lmn_sz);
     nco_exit(EXIT_FAILURE);
   } /* endif */
 #ifdef NCO_MMR_DBG
@@ -84,7 +84,7 @@ nco_malloc /* [fnc] Wrapper for malloc() */
   
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: ERROR nco_malloc() unable to allocate %li bytes\n",prg_nm_get(),(long)sz);
+    (void)fprintf(stdout,"%s: ERROR nco_malloc() unable to allocate %zu bytes\n",prg_nm_get(),sz);
     (void)nco_malloc_err_hnt_prn();
     /* fxm: Should be exit(8) on ENOMEM errors? */
     nco_exit(EXIT_FAILURE);
@@ -114,7 +114,7 @@ nco_malloc_flg /* [fnc] Wrapper for malloc(), forgives ENOMEM errors */
   
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: WARNING nco_malloc_flg() unable to allocate %li bytes\n",prg_nm_get(),(long)sz);
+    (void)fprintf(stdout,"%s: WARNING nco_malloc_flg() unable to allocate %zu bytes\n",prg_nm_get(),sz);
     (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",prg_nm_get(),strerror(errno));
     if(errno == ENOMEM) return NULL; /* Unlike nco_malloc(), allow simple OOM errors */
     else (void)fprintf(stdout,"%s: ERROR is not ENOMEM, exiting...\n",prg_nm_get());
@@ -148,7 +148,7 @@ nco_malloc_dbg /* [fnc] Wrapper for malloc(), receives and prints more diagnosti
   
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: ERROR malloc() returns error on %s request for %li bytes\n",prg_nm_get(),fnc_nm,(long)sz);
+    (void)fprintf(stdout,"%s: ERROR malloc() returns error on %s request for %zu bytes\n",prg_nm_get(),fnc_nm,sz);
     (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",prg_nm_get(),strerror(errno));
     (void)fprintf(stdout,"%s: User-supplied supplemental error message is \"%s\"\n",prg_nm_get(),msg);
     (void)nco_malloc_err_hnt_prn();
@@ -235,7 +235,7 @@ nco_realloc /* [fnc] Wrapper for realloc() */
     new_ptr=realloc(ptr,sz); /* [ptr] Pointer to new buffer */
   } /* endif */
   if(new_ptr == NULL && sz != 0){
-    (void)fprintf(stdout,"%s: ERROR nco_realloc() unable to realloc() %li bytes\n",prg_nm_get(),(long)sz); 
+    (void)fprintf(stdout,"%s: ERROR nco_realloc() unable to realloc() %zu bytes\n",prg_nm_get(),sz); 
     /* fxm: Should be exit(8) on ENOMEM errors? */
     nco_exit(EXIT_FAILURE);
   } /* endif */

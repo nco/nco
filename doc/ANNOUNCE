@@ -1,19 +1,21 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.96 2004-06-20 06:54:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.97 2004-06-25 22:36:40 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release makes large multi-file operations more user friendly.
-Using the commandline shell to pass input file names fails on
-AIX when the input filelist is 25k characters or more.
-Creating symbolic links with names that NCO can automatically 
-generate with its -N feature hackish, since then the history attribute 
-retains the names of the symbolic links, not the source files.
+Large file and multi-file operations are now more user friendly.
+First, large file support (LFS) is now enabled by default.
+Subject to physical memory limitations, this allows 32-bit OSs
+files > 2 GB. Compile libnetcdf.a with LFS too, for this to work.
+Disable this with ./configure --disable-largefile
 
-The solution we now recommend is to pipe long lists of input file
-names directly to NCO multi-file operators, e.g., 
+Second, multi-file operators now take input file lists from stdin.
+Using the commandline shell to pass input file names fails on
+many OSs (e.g., AIX) when the filelist is 25k characters or more.
+We now recommend piping long lists of input file names directly to NCO
+multi-file operators, e.g.,  
 
 /bin/ls | grep ${CASEID}_'......'.nc | ncra -O -o output.nc
 
@@ -42,7 +44,7 @@ Bug-fixes:
 1. None
 
 Build changes:
-1. None
+1. LFS enabled by default
 
 Other user-visible changes:
 1. Add nco_put_att<int,short,long> functions to libnco_c++

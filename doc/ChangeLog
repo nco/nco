@@ -1,8 +1,12 @@
-2004-06-23  Charlie Zender  <zender@uci.edu>
+2004-06-25  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_9_7
 	Changes since nco-2_9_6: Read MFO input files from stdin, add 
 	more attribute functionality to nco_c++
+
+	* Fix size_t format printing in memory allocation routines
+
+2004-06-23  Charlie Zender  <zender@uci.edu>
 
 	* Never solved problem with reading o/a/e response after using
 	stdin for filenames.

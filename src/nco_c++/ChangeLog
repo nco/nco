@@ -1,3 +1,20 @@
+2004-06-25  Charlie Zender  <zender@uci.edu>
+
+	* Compiling libnco_c++ standalone from rest of NCO:
+	bash # Create new shell to sandbox environment changes
+	alias make='gmake'
+	make -f Makefile.old dst_cln
+	export MY_BIN_DIR='.'
+	export MY_BLD_DIR='.'
+	export MY_LIB_DIR='.'
+	export MY_OBJ_DIR='.'
+	export MY_DAT_DIR='~/nco/data'
+	export MY_DOC_DIR='.'
+	export MY_DPN_DIR='.'
+	export MY_INC_DIR='.'
+	make -f Makefile.old 
+	exit # exit new shell	
+
 2004-06-24  Charlie Zender  <zender@uci.edu>
 
 	* The command to check out the nco_c++ source code alone is
