@@ -1,9 +1,9 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.292 2004-03-03 17:40:09 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.293 2004-03-04 07:37:20 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
 Numbers were assigned in chronological order in three categories:
-Building (bldXXX), ncap-related (ncapXXX), and NCO (ncoXXX):
+Building (bldXXX), ncap-related (ncapXXX), and generic NCO (ncoXXX):
 bldXXX: Items specifically related to building and installation.
 ncapXXX: These items do not affect rest of NCO
 ncoXXX: 15 high priority items are shown first, then another ~100 items
@@ -166,19 +166,6 @@ ncap -O  -D3 -s 'cp=pack(cp)' /data/zender/tmp/sum.nc /data/zender/tmp/packed_su
 ncbo -O -y add -D 3 ${HOME}/debug/hundred.nc ${HOME}/debug/hundred.nc ${HOME}/debug/sum.nc
 ncap -O -D 3 -s 'cp=pack(cp)' ${HOME}/debug/sum.nc ${HOME}/debug/pack_sum.nc
 nco287. Fix/debug OMP OpenMP implementation in ncra
-nco289. pck Unpacking problem with NOAA data? 20040104: Fixed with lib re-write in 2.8.5?
-These work as expected, leaving value packed:
-ncks -O -C -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo.nc
-This is broken, gives incorrect result (262.5 instead of 100920):
-ncap -O -D 1 -v -s "upk=unpack(pres)" -C ~/foo.nc ~/foo1.nc
-This works as expected, giving correct result (3):
-ncap -O -D 1 -v -s "upk=unpack(pck)" -C ~/nco/data/in.nc ~/foo1.nc
-ncks -m -H ~/foo1.nc
-Arithmetic operator gives garbage answers  (262.5 instead of 100920):
-ncwa -O -C -a lat,lon,time -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo1.nc
-ncea -O -C -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo1.nc
-ncea -O -C ~/foo.nc ~/foo1.nc
-ncks -m -C -v pres -H ~/foo1.nc
 nco292. nco_fl_utl.c: Use autoconf HAVE_NETWORK instead of WIN32
 nco293. nco_fl_utl.c: Use autoconf HAVE_MKDIR_M instead of SUN4
 nco294. Globals variable in NCO operators are prg, prg_nm, dbg_lvl 
@@ -237,7 +224,6 @@ ncap41. Make ncap function prototypes consistent with rest of NCO (ncap.h mainly
 ncap42. Add switch allowing derived variable to take on all attributes of specified variable
 ncap43. Alphabetize ncap function list prior to printing it with -f
 ncap46. Define YYMALLOC/FREE/REALLOC etc so lexer/parser use nco_malloc() etc.
-ncap47. Evaluate var^var in nco_var_pwr() rather than ncap_var_fnc()
 ncap48. Search ncap_yacc.y for non-symmetric arithmetic operations, implement symmetric operations
 ncap49. Cause "**" in arithmetic context to cause error, print HINT to Fortran syntax users
 ncap50. Implement ncap_var_var_mod()
@@ -248,7 +234,7 @@ bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifde
 bld23. Implement ncra i18n support I18N with autotools: Add .po files, update doc/i18n.txt
 bld28. Solaris cc: "ncap_yacc.y", line 115: identifier redeclared: YYSTYPE
 bld29. RedHat 9 does not build with --enable-*-customize because of flex  warnings.
-bld30. Search for libstdc++ with AIX/DODS/gcc breaks NCO build
+bld30. Search for libstdc++ with AIX/DODS/GCC breaks NCO build
 bld31. 
  
 ************************************************************************
