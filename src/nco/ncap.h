@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.33 2002-04-27 17:04:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.34 2002-05-02 06:08:19 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -76,7 +76,6 @@ typedef struct{ /* prs_sct */
 } prs_sct;
 
 /* These funtions are either in ncap.y or ncap_utl.c */
-extern bool ncap_var_conform_dim(var_sct **,var_sct **);
 extern bool ncap_var_stretch(var_sct **,var_sct **);
 extern int ncap_aed_lookup(char *,char *,aed_sct **,int *,bool);
 extern int ncap_scv_minus(scv_sct *);

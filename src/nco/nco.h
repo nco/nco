@@ -1,41 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.17 2002-04-27 06:23:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.18 2002-05-02 06:08:19 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
 /* Copyright (C) 1995--2002 Charlie Zender
-
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public License
-   as published by the Free Software Foundation; either version 2
-   of the License, or (at your option) any later version.
-   
-   As a special exception to the terms of the GPL, you are permitted 
-   to link the NCO source code with the NetCDF and HDF libraries 
-   and distribute the resulting executables under the terms of the GPL, 
-   but in addition obeying the extra stipulations of the netCDF and 
-   HDF library licenses.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-   The file LICENSE contains the GNU General Public License, version 2
-   It may be viewed interactively by typing, e.g., ncks -L
-
-   The author of this software, Charlie Zender, would like to receive
-   your suggestions, improvements, bug-reports, and patches, for NCO.
-   Please contact the project at http://sourceforge.net/projects/nco or by writing
-
-   Charlie Zender
-   Department of Earth System Science
-   University of California at Irvine
-   Irvine, CA 92697-3100
- */
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #ifndef NCO_H /* Contents have not yet been inserted in current source file */
 #define NCO_H
@@ -133,15 +102,6 @@ extern "C" {
     lmt_crd_val, /* 0, Coordinate value limit */
     lmt_dmn_idx /* 1, Dimension index limit */
   }; /* end lmt_typ enum */
-  
-  enum nco_pck_typ{ /* [enm] Packing type */
-    nco_pck_all_xst_att, /* 0, Pack all variables, keeping existing packing attributes if any */
-    nco_pck_all_new_att, /* 1, Pack all variables, always generating new packing attributes */
-    nco_pck_xst_xst_att, /* 2, Pack existing packed variables, keeping existing packing attributes if any */
-    nco_pck_xst_new_att, /* 3, Pack existing packed variables, always generating new packing attributes */
-    nco_pck_upk, /* 4, Unpack all packed variables */
-    nco_pck_nil /* 5, Do not think about packing */
-  }; /* end nco_pck_typ enum */
   
   enum nco_op_typ{ /* [enm] Operation type */
     nco_op_avg, /* Average */
@@ -378,8 +338,6 @@ extern "C" {
      Specifying extern is redundant (functions are extern by default) but Emacs highlights them in a nice shade of lavender :-)
      fxm: TODO 210 Break into sourcefile specific headers, e.g., csz.h, pck.h... */
   
-  extern void aed_prc(int,int,aed_sct);
-  extern bool arm_inq(int);
   extern bool ncar_csm_inq(int);
   extern char **fl_lst_mk(char **,int,int,int *,char **);
   extern char **lst_prs(char *,const char *,int *);
@@ -395,18 +353,13 @@ extern "C" {
   extern int sng_ascii_trn(char *);
   extern dmn_sct *dmn_dpl(dmn_sct *);
   extern dmn_sct *dmn_fll(int,int,char *);
-  extern double arm_time_mk(int,double);
   extern int mss_val_get(int,var_sct *);
-  extern int nd2endm(int,int);
   extern int op_prs_rlt(char *);
   extern int nco_op_typ_get(char *);
-  extern int nco_pck_typ_get(char *);
   extern int prg_get(void);
-  extern int scv_conform_type(nc_type,scv_sct *);
   extern lmt_sct *lmt_prs(int,char **);
   extern lmt_sct lmt_sct_mk(int,int,lmt_sct *,int,bool);
   extern nco_long FORTRAN_newdate(nco_long *,int *);
-  extern nco_long arm_base_time_get(int);
   extern nco_long newdate(nco_long,int);
   extern nm_id_sct *dmn_lst_ass_var(int,nm_id_sct *,int,int *);
   extern nm_id_sct *dmn_lst_mk(int,char **,int);
@@ -421,8 +374,6 @@ extern "C" {
   extern scv_sct ptr_unn_2_scv(nc_type,ptr_unn);
   extern var_sct *scl_dbl_mk_var(double);
   extern var_sct *var_avg(var_sct *,dmn_sct **,int,int);
-  extern var_sct *var_conform_dim(var_sct *,var_sct *,var_sct *,bool,bool *);
-  extern var_sct *var_conform_type(nc_type,var_sct *);
   extern var_sct *var_dpl(var_sct *);
   extern var_sct *var_fll(int,int,char *,dmn_sct **,int);
   extern var_sct *var_free(var_sct *);
@@ -439,8 +390,6 @@ extern "C" {
   extern void FORTRAN_normalize_real(long *,int *,float *,long *,float *);
   extern void FORTRAN_subtract_double_precision(long *,int *,double *,double *,double *);
   extern void FORTRAN_subtract_real(long *,int *,float *,float *,float *);
-  extern void arm_time_install(int,nco_long);
-  extern void att_cpy(int,int,int,int);
   extern void cast_nctype_void(nc_type,ptr_unn *);
   extern void cast_void_nctype(nc_type,ptr_unn *);
   extern void copyright_prn(char *,char *);
@@ -518,15 +467,6 @@ extern "C" {
   nco_cnv_var_typ_dsk  /* [fnc] Revert variable to previous type */
   (var_sct *var); /* I [sct] Variable to be reverted */
   
-  extern bool /* O [flg] Variable is packed */
-  pck_dsk_inq /* [fnc] Check whether variable is packed */
-  (int nc_id, /* I [idx] netCDF file ID */
-   var_sct *var); /* I/O [sct] Variable */
-  
-  extern var_sct * /* O [sct] Unpacked variable */
-  var_upk /* [fnc] Unpack variable in memory */
-  (var_sct *var); /* I/O [sct] Variable to be unpacked */
-  
   extern int /* O [enm] Return code */
   var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   (var_sct *var); /* [sct] Pointer to variable strucutre to initialize to defaults */
@@ -541,12 +481,6 @@ extern "C" {
   (ptr_unn val_ptr_unn, /* I [unn] Pointer union to scalar value to turn into netCDF variable */
    nc_type val_typ); /* I [enm] netCDF type of pointer/value */
   
-  extern var_sct * /* O [sct] Packed variable */
-  var_pck /* [fnc] Pack variable in memory */
-  (var_sct *var, /* I/O [sct] Variable to be packed */
-   nc_type typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
-   bool USE_EXISTING_PCK); /* I [flg] Use existing packing scale_factor and add_offset */
-  
   extern double /* O [frc] Double precision representation of var->val.?p[0] */
   ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar double */
   (ptr_unn val, /* I [sct] Pointer union to variable values */
@@ -559,11 +493,6 @@ extern "C" {
   nco_var_prc_crr_prn /* [fnc] Print name of current variable */
   (int idx, /* I [idx] Index of current variable */
    char *var_nm); /* I [sng] Variable name */
-  
-  extern var_sct * /* O [sct] Packed variable */
-  nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to disk */
-  (var_sct *var, /* I/O [sct] Variable to be packed */
-   int nco_pck_typ); /* [enm] Packing operation type */
   
   extern bool /* O [flg] Operator is arithmetic */
   is_arithmetic_operator /* [fnc] Operator is arithmetic */

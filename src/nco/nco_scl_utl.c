@@ -1,0 +1,120 @@
+var_sct *
+scl_dbl_mk_var(double val)
+/* double val: I double precision value to turn into netCDF variable
+   scl_dbl_mk_var: O netCDF variable structure representing val */
+{
+  /* Purpose: Turn a scalar double into a netCDF variable
+     Routine duplicates most functions of var_fll() 
+     Both functions should share as much initialization code as possible */
+
+  static char *var_nm="Internally generated variable";
+
+  var_sct *var;
+
+  var=(var_sct *)nco_malloc(sizeof(var_sct));
+
+  /* Set defaults */
+  (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
+
+  /* Overwrite defaults with values appropriate for artificial variable */
+  var->nm=(char *)strdup(var_nm);
+  var->nbr_dim=0;
+  var->type=NC_DOUBLE;
+  var->val.vp=(void *)nco_malloc(nco_typ_lng(var->type));
+  (void)memcpy((void *)var->val.vp,(void *)(&val),nco_typ_lng(var->type));
+
+  return var;
+} /* end scl_dbl_mk_var() */
+
+var_sct * /* [sct] Output netCDF variable structure representing val */
+scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
+(val_unn val, /* I [frc] Scalar value to turn into netCDF variable */
+ nc_type val_typ) /* I [enm] netCDF type of value */
+{
+  /* Purpose: Turn scalar value of any type into NCO variable
+     Routine is just a wrapper for scl_ptr_mk_var()
+     This routine creates the void * argument needed for scl_ptr_mk_var(),
+     calls, scl_ptr_mk_var(), then passes back the result */
+
+  var_sct *var;
+  ptr_unn val_ptr_unn; /* [ptr] void pointer to value */
+  
+  switch(val_typ){
+  case NC_FLOAT: val_ptr_unn.fp=&val.f; break; 
+  case NC_DOUBLE: val_ptr_unn.dp=&val.d; break; 
+  case NC_INT: val_ptr_unn.lp=&val.l; break;
+  case NC_SHORT: val_ptr_unn.sp=&val.s; break;
+  case NC_CHAR: val_ptr_unn.cp=&val.c; break;
+  case NC_BYTE: val_ptr_unn.bp=&val.b; break;
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+
+  /* Un-typecast pointer to values after access */
+  (void)cast_nctype_void(val_typ,&val_ptr_unn);
+
+  var=scl_ptr_mk_var(val_ptr_unn,val_typ);
+
+  return var;
+} /* end scl_mk_var() */
+
+var_sct * /* [sct] Output NCO variable structure representing value */
+scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO variable */
+(ptr_unn val_ptr_unn, /* I [unn] Pointer union to scalar value to turn into netCDF variable */
+ nc_type val_typ) /* I [enm] netCDF type of existing pointer/value */
+{
+  /* Purpose: Convert void pointer to scalar of any type into NCO variable
+     Routine duplicates many functions of var_fll() 
+     Both functions should share as much initialization code as possible */
+
+  static char *var_nm="Internally generated variable";
+
+  var_sct *var;
+  
+  var=(var_sct *)nco_malloc(sizeof(var_sct));
+  
+  /* Set defaults */
+  (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
+  
+  /* Overwrite defaults with values appropriate for artificial variable */
+  var->nm=(char *)strdup(var_nm);
+  var->nbr_dim=0;
+  var->type=val_typ;
+  /* Allocate new space here so that variable can eventually be deleted 
+     and associated memory free()'d */
+  /* free(val_ptr_unn.vp) is unpredictable since val_ptr_unn may point to constant data, e.g.,
+     a constant in scl_mk_var */
+  var->val.vp=(void *)nco_malloc(nco_typ_lng(var->type));
+
+  /* Copy value into variable structure */
+  (void)memcpy((void *)var->val.vp,val_ptr_unn.vp,nco_typ_lng(var->type)); 
+
+  return var;
+} /* end scl_ptr_mk_var() */
+
+double /* O [frc] Double precision representation of var->val.?p[0] */
+ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar double */
+(ptr_unn val, /* I [sct] Pointer union to variable values */
+ nc_type type) /* I [enm] Type of values pointed to by pointer union */
+{
+  /* Purpose: Return first element of NCO variable converted to a scalar double */
+
+  double scl_dbl; /* [sct] Double precision value of scale_factor */
+
+  ptr_unn ptr_unn_scl_dbl; /* [unn] Pointer union to double precision value of first element */
+
+  /* Variable must be in memory already */
+  if(val.vp == NULL){ 
+    (void)fprintf(stdout,"%s: ERROR ptr_unn_2_scl_dbl() called with empty val.vp\n",prg_nm_get());
+    exit(EXIT_FAILURE);
+  } /* endif */
+  
+  /* Valid memory address exists */
+  ptr_unn_scl_dbl.vp=(void *)nco_malloc(nco_typ_lng(NC_DOUBLE)); /* [unn] Pointer union to double precision value of first element */
+  (void)val_conform_type(type,val,NC_DOUBLE,ptr_unn_scl_dbl);
+  scl_dbl=ptr_unn_scl_dbl.dp[0];
+  ptr_unn_scl_dbl.vp=nco_free(ptr_unn_scl_dbl.vp);
+
+  return scl_dbl;
+
+} /* end ptr_unn_2_scl_dbl() */
+

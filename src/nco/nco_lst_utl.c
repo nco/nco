@@ -1,0 +1,247 @@
+char *
+sng_lst_prs(char **sng_lst,const long lmn_nbr, const char *dlm_sng)
+/* 
+   const char **sng_lst: I List of pointers to strings to join together
+   const char *dlm_sng: I delimiter string to use as glue
+   const long lmn_nbr: O number of strings in list
+   char *sng_lst_prs: O Concatenated string formed by joining all input strings
+ */
+{
+  /* Routine takes list of strings and joins them together into one string
+     Elements of input list should all be NUL-terminated strings
+     Elements with the value NUL will be interpreted as strings of zero length
+  */
+
+  char *sng; /* Output string */
+
+  int dlm_len;
+  long lmn;
+  long sng_sz=0L; /* NB: sng_sz get incremented */
+
+  if(lmn_nbr == 1L) return sng_lst[0];
+
+  /* Delimiter must be NUL-terminated (a string) so strlen() works */
+  if(dlm_sng == NULL){
+    (void)fprintf(stdout,"%s: ERROR sng_lst_prs() reports delimiter string is NULL\n",prg_nm_get());
+    exit(EXIT_FAILURE);
+  } /* end if */
+  dlm_len=strlen(dlm_sng); 
+
+  /* List elements must be NUL-terminated (strings) so strlen() works */
+  for(lmn=0L;lmn<lmn_nbr;lmn++) sng_sz+=(sng_lst[lmn] == NULL) ? 0L : strlen(sng_lst[lmn])+dlm_len;
+  /* Add one for NUL byte */
+  sng=(char *)nco_malloc(sizeof(char)*(sng_sz+1));
+  /* NUL-terminate string for safety */
+  sng[0]='\0';
+  for(lmn=0L;lmn<lmn_nbr;lmn++){
+    /* List elements must be NUL-terminated (strings) so strcat() works */
+    sng=(sng_lst[lmn] == NULL) ? sng : strcat(sng,sng_lst[lmn]);
+    if(lmn != lmn_nbr-1 && dlm_len != 0) sng=strcat(sng,dlm_sng);
+  } /* end loop over lmn */
+
+  return sng;
+} /* end sng_lst_prs() */
+
+char ** /* O [sng] Array of list elements */
+lst_prs /* [fnc] Create list of strings from given string and arbitrary delimiter */
+(char *sng_in, /* I/O [sng] Delimited argument list (delimiters are changed to NULL on output */
+ const char *dlm_sng, /* I [sng] delimiter string */
+ int *nbr_lst) /* O [nbr] number of elements in list */
+{
+  /* Purpose: Create list of strings from given string and arbitrary delimiter
+     Routine is often called with system memory, e.g., with strings from
+     command line arguments whose memory was allocated by shell or by getopt().
+     A conservative policy would be, therefore, to never modify input string
+     However, we are safe if any modifications do not extend input string
+     Thus this routine is allowed to replace delimiter strings by NULs */
+
+  /* Number of list members is always one more than number of delimiters, e.g.,
+     foo,,3, has 4 arguments: "foo", "", "3" and "".
+     A delimiter without an argument is valid syntax to indicate default argument
+     Therefore a storage convention is necessary to indicate default argument was selected
+     Either NULL or '\0' can be used without requiring additional flag
+     NULL is not printable, but is useful as a logical flag since its value is False
+     On the other hand, '\0', the empty string, can be printed but is not as useful as a flag
+     Currently, NCO implements the former convention, where default selections are set to NULL
+   */
+    
+  char **lst;
+  char *sng_in_ptr;
+
+  int dlm_len;
+  int idx;
+
+  /* Delimiter must be NUL-terminated (a string) so we may find its length */
+  dlm_len=strlen(dlm_sng); 
+
+  /* Do not increment actual sng_in pointer while searching for delimiters---increment a dummy pointer instead. */
+  sng_in_ptr=sng_in; 
+
+  /* First element does not require delimiter in front of it */
+  *nbr_lst=1;
+
+  /* Count list members */
+  while((sng_in_ptr=strstr(sng_in_ptr,dlm_sng))){
+    sng_in_ptr+=dlm_len;
+    (*nbr_lst)++;
+  } /* end while */
+
+  lst=(char **)nco_malloc(*nbr_lst*sizeof(char *));
+
+  sng_in_ptr=sng_in; 
+  lst[0]=sng_in;
+  idx=0;
+  while((sng_in_ptr=strstr(sng_in_ptr,dlm_sng))){
+    /* NUL-terminate previous arg */
+    *sng_in_ptr='\0';
+    sng_in_ptr+=dlm_len;
+    lst[++idx]=sng_in_ptr;
+  } /* end while */
+
+  /* Default list member is assumed when two delimiters are adjacent to eachother, 
+     i.e., when length of string between delimiters is 0. 
+     If list ends with delimiter, then last element of list is also assumed to be default list member. */
+  /* This loop sets default list members to NULL */
+  for(idx=0;idx<*nbr_lst;idx++)
+    if(strlen(lst[idx]) == 0) lst[idx]=NULL;
+
+  if(dbg_lvl_get() == 5){
+    (void)fprintf(stderr,"%d elements in list delimited by \"%s\"\n",*nbr_lst,dlm_sng);
+    for(idx=0;idx<*nbr_lst;idx++) 
+      (void)fprintf(stderr,"lst[%d] = %s\n",idx,(lst[idx] == NULL) ? "NULL" : lst[idx]);
+    (void)fprintf(stderr,"\n");
+    (void)fflush(stderr);
+  } /* end debug */
+
+  return lst;
+} /* end lst_prs() */
+
+void indexx(int n,int *arrin,int *indx)
+/*     int n,indx[];*/
+/*     float arrin[];*/
+/*     int arrin[];*/
+{
+  /* Purpose: Sort an array of integers
+     Based on indexx() from Numerical Recipes
+     Routine computes an index table which sorts input array into ascending order
+     I made arrin argument and local variable q integers for netCDF purposes
+     Routine assumes "one-based" arrays */
+  int l,j,ir,indxt,i;
+/*  float q;*/
+  int q;
+  
+  for (j=1;j<=n;j++) indx[j]=j;
+  l=(n >> 1) + 1;
+  ir=n;
+  for (;;) {
+    if (l > 1)
+      q=arrin[(indxt=indx[--l])];
+    else {
+      q=arrin[(indxt=indx[ir])];
+      indx[ir]=indx[1];
+      if (--ir == 1) {
+	indx[1]=indxt;
+	return;
+      }
+    }
+    i=l;
+    j=l << 1;
+    while (j <= ir) {
+      if (j < ir && arrin[indx[j]] < arrin[indx[j+1]]) j++;
+      if (q < arrin[indx[j]]) {
+	indx[i]=indx[j];
+	j += (i=j);
+      }
+      else j=ir+1;
+    }
+    indx[i]=indxt;
+  }
+} /* end indexx() */
+
+void index_alpha(int n,char **arrin,int *indx)
+{
+/* Purpose: Sort input array alphanumerically
+   This is indexx() from Numerical recipes hacked to alphabetize a list of strings */
+  int l,j,ir,indxt,i;
+/*  float q;*/
+  char *q;
+  
+  for (j=1;j<=n;j++) indx[j]=j;
+  l=(n >> 1) + 1;
+  ir=n;
+  for (;;) {
+    if (l > 1)
+      q=arrin[(indxt=indx[--l])];
+    else {
+      q=arrin[(indxt=indx[ir])];
+      indx[ir]=indx[1];
+      if (--ir == 1) {
+	indx[1]=indxt;
+	return;
+      }
+    }
+    i=l;
+    j=l << 1;
+    while (j <= ir) {
+      /*      if (j < ir && arrin[indx[j]] < arrin[indx[j+1]]) j++;*/
+      if (j < ir && strcmp(arrin[indx[j]],arrin[indx[j+1]]) < 0) j++;
+      /*      if (q < arrin[indx[j]]) {*/
+      if (strcmp(q,arrin[indx[j]]) < 0) {
+	indx[i]=indx[j];
+	j += (i=j);
+      }
+      else j=ir+1;
+    }
+    indx[i]=indxt;
+  }
+} /* end index_alpha() */
+
+nm_id_sct * /* O [sct] Sorted output list */
+lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
+(nm_id_sct *lst, /* I/O [sct] Current list (destroyed) */
+ int nbr_lst, /* I [nbr] number of members in list */
+ bool ALPHABETIZE_OUTPUT) /* I [flg] Alphabetize extraction list */
+{
+  /* Purpose: Sort extraction lists numerically or alphabetically */
+  int *srt_idx; /* List to store sorted key map */
+  int idx; /* Counting index */
+  nm_id_sct *lst_tmp; /* Temporary copy of original extraction list */
+  
+  srt_idx=(int *)nco_malloc(nbr_lst*sizeof(int));
+  lst_tmp=(nm_id_sct *)nco_malloc(nbr_lst*sizeof(nm_id_sct));
+  (void)memcpy((void *)lst_tmp,(void *)lst,nbr_lst*sizeof(nm_id_sct));
+  
+  /* indexx() and relative assume "one-based" arrays 
+     Use pointer arithmetic to spoof zero-based arrays, i.e.,
+     xtr_nm[0] in calling routine becomes xtr_nm[1] in sorting routine  */
+  if(ALPHABETIZE_OUTPUT){
+    /* Alphabetize list by variable name
+       This produces easy-to-read screen output with ncks */
+    char **xtr_nm;
+    xtr_nm=(char **)nco_malloc(nbr_lst*sizeof(char *));
+    for(idx=0;idx<nbr_lst;idx++) xtr_nm[idx]=lst[idx].nm;
+    (void)index_alpha(nbr_lst,xtr_nm-1,srt_idx-1);
+    xtr_nm=nco_free(xtr_nm);
+  }else{
+    /* Heapsort the list by variable ID 
+       This theoretically allows the fastest I/O when creating output file */
+    int *xtr_id;
+    xtr_id=(int *)nco_malloc(nbr_lst*sizeof(int));
+    for(idx=0;idx<nbr_lst;idx++) xtr_id[idx]=lst[idx].id;
+    (void)indexx(nbr_lst,xtr_id-1,srt_idx-1);
+    xtr_id=nco_free(xtr_id);
+  } /* end else */
+
+  /* indexx and relatives employ "one-based" arrays 
+     Thus min(srt_idx) == 1 and max(srt_idx) == nbr_lst */
+  for(idx=0;idx<nbr_lst;idx++){
+    lst[idx].id=lst_tmp[srt_idx[idx]-1].id;
+    lst[idx].nm=lst_tmp[srt_idx[idx]-1].nm;
+  } /* end loop over idx */
+  lst_tmp=nco_free(lst_tmp);
+  srt_idx=nco_free(srt_idx);
+  
+  return lst;
+  
+} /* end lst_heapsort() */
+

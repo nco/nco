@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.51 2002-04-27 17:04:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.52 2002-05-02 06:08:19 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -427,42 +427,6 @@ ncap_var_retype(var_sct *var_1, var_sct *var_2)
     return var_2->type;
   } /* endif */
 } /* end ncap_var_retype */
-
-bool /* [flg] Do var_1 and var_2 conform after processing? */
-ncap_var_conform_dim /* [fnc] Broadcast smaller variable into larger */
-(var_sct **var_1, /* I/O [ptr] First variable */
- var_sct **var_2) /* I/O [ptr] Second variable */
-{
-  /* Purpose: Return conforming variables. If this is not possible then die. 
-     Routine is a wrapper for var_conform_dim() which does the hard work */
-
-  bool DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
-  bool MUST_CONFORM=True; /* [flg] Must var_1 and var_2 conform? */
-  var_sct *var_1_org; /* [ptr] Original location of var_1 */
-  var_sct *var_2_org; /* [ptr] Original location of var_2 */
-
-  var_1_org=*var_1; /* [ptr] Original location of var_1 */
-  var_2_org=*var_2; /* [ptr] Original location of var_2 */
-
-  if(var_1_org->nbr_dim > var_2_org->nbr_dim) *var_2=var_conform_dim(var_1_org,var_2_org,NULL,MUST_CONFORM,&DO_CONFORM); else *var_1=var_conform_dim(var_2_org,var_1_org,NULL,MUST_CONFORM,&DO_CONFORM);
-  
-  /* fxm: Memory leak?
-     var_conform_dim() does not do its own memory handling
-     If original var_1 or var_2 was overwritten (replaced by conforming variable),
-     then original must be free()'d now before its location is lost.
-     Test for equality between pointers on entry and exit, and
-     var_free() calling variable if it changed 
-     20020114: Freeing variables here causes core dump, not sure why */
-  /*  if(*var_1 != var_1_org) var_1_org=var_free(var_1_org);*/
-  /*  if(*var_2 != var_2_org) var_2_org=var_free(var_2_org);*/
-
-  if(!DO_CONFORM){
-    (void)fprintf(stderr,"%s: Variables do not have have conforming dimensions. Cannot proceed with operation\n",prg_nm_get());
-    exit(EXIT_FAILURE);
-  } /* endif */
-
-  return DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
-} /* end ncap_var_conform_dim() */
 
 nc_type
 ncap_scv_scv_cnf_typ_hgh_prc(scv_sct *a,scv_sct *b)

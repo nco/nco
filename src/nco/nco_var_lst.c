@@ -1,0 +1,362 @@
+nm_id_sct *
+var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,int *nbr_xtr)
+/* 
+   int nc_id: I netCDF file ID
+   int nbr_var: I total number of variables in input file
+   char **var_lst_in: user specified list of variable names
+   bool PROCESS_ALL_COORDINATES: I whether to process all coordinates
+   int *nbr_xtr: I/O number of variables in current extraction list
+   nm_id_sct var_lst_mk(): O extraction list
+ */
+{
+  bool err_flg=False;
+  int rcd=NC_NOERR; /* [rcd] Return code */
+  int idx;
+
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
+
+  if(*nbr_xtr > 0){
+    /* If user named variables with -v option then check validity of user's list and find IDs */
+    xtr_lst=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
+     
+    for(idx=0;idx<*nbr_xtr;idx++){
+      xtr_lst[idx].nm=var_lst_in[idx];
+      rcd=nco_inq_varid_flg(nc_id,xtr_lst[idx].nm,&xtr_lst[idx].id);
+      if(rcd != NC_NOERR){
+	(void)fprintf(stdout,"%s: ERROR var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),xtr_lst[idx].nm);
+	err_flg=True;
+      } /* endif */
+    } /* end loop over idx */
+    
+    if(err_flg) exit(EXIT_FAILURE);
+  }else if(!PROCESS_ALL_COORDINATES){
+    /* If the user did not specify variables with the -v option,
+       and the user did not request automatic processing of all coords,
+       then extract all variables in file. In this case
+       we can assume variable IDs range from 0..nbr_var-1. */
+    char var_nm[NC_MAX_NAME];
+    
+    *nbr_xtr=nbr_var;
+    xtr_lst=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
+    for(idx=0;idx<nbr_var;idx++){
+      /* Get name of each variable. */
+      (void)nco_inq_varname(nc_id,idx,var_nm);
+      xtr_lst[idx].nm=(char *)strdup(var_nm);
+      xtr_lst[idx].id=idx;
+    } /* end loop over idx */
+  } /* end else */
+
+  return xtr_lst;
+
+} /* end var_lst_mk() */
+
+nm_id_sct *
+var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
+/* 
+   int nc_id: I netCDF file ID
+   int nbr_var: I total number of variables in input file
+   nm_id_sct *xtr_lst: I/O current extraction list (destroyed)
+   int *nbr_xtr: I/O number of variables in current extraction list
+   nm_id_sct var_lst_xcl(): O extraction list
+ */
+{
+  /* The user wants to extract all variables except the ones
+     currently in the list. Since it's hard to edit the existing
+     list, copy the existing extract list into the exclude list,
+     and construct a new list extract list from scratch. */
+
+  char var_nm[NC_MAX_NAME];
+
+  int idx;
+  int lst_idx;
+  int nbr_xcl;
+
+  nm_id_sct *xcl_lst;
+  
+  /* Turn the extract list into the exclude list and reallocate the extract list  */
+  nbr_xcl=*nbr_xtr;
+  *nbr_xtr=0;
+  xcl_lst=(nm_id_sct *)nco_malloc(nbr_xcl*sizeof(nm_id_sct));
+  (void)memcpy((void *)xcl_lst,(void *)xtr_lst,nbr_xcl*sizeof(nm_id_sct));
+  xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(nbr_var-nbr_xcl)*sizeof(nm_id_sct));
+  
+  for(idx=0;idx<nbr_var;idx++){
+    /* Get name and ID of variable */
+    (void)nco_inq_varname(nc_id,idx,var_nm);
+    for(lst_idx=0;lst_idx<nbr_xcl;lst_idx++){
+      if(idx == xcl_lst[lst_idx].id) break;
+    } /* end loop over lst_idx */
+    /* If variable was not found in the exclusion list then 
+       add it to the new list. */
+    if(lst_idx == nbr_xcl){
+      xtr_lst[*nbr_xtr].nm=(char *)strdup(var_nm);
+      xtr_lst[*nbr_xtr].id=idx;
+      ++*nbr_xtr;
+    } /* end if */
+  } /* end loop over idx */
+  
+  /* Free memory for names in exclude list before losing pointers to names */
+  /* NB: cannot free memory if list points to names in argv[] */
+  /* for(idx=0;idx<nbr_xcl;idx++) xcl_lst[idx].nm=nco_free(xcl_lst[idx].nm);*/
+  xcl_lst=nco_free(xcl_lst);
+  
+  return xtr_lst;
+} /* end var_lst_xcl() */
+
+nm_id_sct *
+var_lst_add_crd(int nc_id,int nbr_var,int nbr_dim,nm_id_sct *xtr_lst,int *nbr_xtr)
+/* 
+   int nc_id: I netCDF file ID
+   int nbr_var: I total number of variables in input file
+   int nbr_dim: I total number of dimensions in input file
+   nm_id_sct *xtr_lst: current extraction list (destroyed)
+   int *nbr_xtr: I/O number of variables in current extraction list
+   nm_id_sct var_lst_add_crd(): O extraction list
+ */
+{
+  /* Find all coordinates (dimensions which are also variables) and
+     add them to the list if they are not already there. */
+  
+  char crd_nm[NC_MAX_NAME];
+
+  int crd_id;
+  int idx;
+  int rcd=NC_NOERR; /* [rcd] Return code */
+
+  for(idx=0;idx<nbr_dim;idx++){
+    (void)nco_inq_dimname(nc_id,idx,crd_nm);
+    
+    /* Does variable of same name exist in input file? */
+    rcd=nco_inq_varid_flg(nc_id,crd_nm,&crd_id);
+    if(rcd == NC_NOERR){
+      /* Dimension is coordinate. Is it already on list? */
+      int lst_idx;
+      
+      for(lst_idx=0;lst_idx<*nbr_xtr;lst_idx++){
+	if(crd_id == xtr_lst[lst_idx].id) break;
+      } /* end loop over lst_idx */
+      if(lst_idx == *nbr_xtr){
+	/* Coordinate is not already on the list, put it there. */
+	if(*nbr_xtr == 0) xtr_lst=(nm_id_sct *)nco_malloc((*nbr_xtr+1)*sizeof(nm_id_sct)); else xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
+	/* According to the man page for realloc(), this should work even when xtr_lst == NULL */
+/*	xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));*/
+	xtr_lst[*nbr_xtr].nm=(char *)strdup(crd_nm);
+	xtr_lst[*nbr_xtr].id=crd_id;
+	(*nbr_xtr)++;
+      } /* end if */
+    } /* end if */
+  } /* end loop over idx */
+  
+  return xtr_lst;
+  
+} /* end var_lst_add_crd() */
+
+void
+var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dmn_sct **dim,int nbr_dmn_xtr,
+	   var_sct ***var_ptr,var_sct ***var_out_ptr)
+/*  
+   int nc_id: I netCDF file ID
+   nm_id_sct *xtr_lst: I current extraction list (destroyed)
+   int nbr_xtr: I total number of variables in input file
+   dmn_sct **dim: I list of pointers to dimension structures associated with input variable list
+   int nbr_dmn_xtr: I number of dimensions structures in list
+   var_sct ***var_ptr: O pointer to list of pointers to variable structures
+   var_sct ***var_out_ptr: O pointer to list of pointers to duplicates of variable structures
+*/
+{
+  /* Routine to make a var_sct list from a nm_id list. The var_sct lst is duplicated 
+     to be used for an output list. */
+
+  int idx;
+
+  var_sct **var;
+  var_sct **var_out;
+
+  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+  var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+
+  /* Fill in variable structure list for all extracted variables */
+  for(idx=0;idx<nbr_xtr;idx++){
+    var[idx]=var_fll(nc_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
+    var_out[idx]=var_dpl(var[idx]);
+    (void)var_xrf(var[idx],var_out[idx]);
+    (void)var_dmn_xrf(var_out[idx]);
+  } /* end loop over idx */
+  
+  *var_ptr=var;
+  *var_out_ptr=var_out;
+
+} /* end var_lst_convert() */
+
+void
+var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
+	       dmn_sct **dmn_xcl,int nbr_dmn_xcl,
+	       var_sct ***var_fix_ptr,var_sct ***var_fix_out_ptr,int *nbr_var_fix,
+	       var_sct ***var_prc_ptr,var_sct ***var_prc_out_ptr,int *nbr_var_prc)
+/*  
+   var_sct **var: I list of pointers to variable structures
+   var_sct **var_out: I list of pointers to duplicates of variable structures
+   int nbr_var: I number of variable structures in list
+   dmn_sct **dmn_xcl: I list of pointers to dimensions not allowed in fixed variables
+   int nbr_dmn_xcl: I number of dimension structures in list
+   bool NCAR_CSM_FORMAT: I whether file is an NCAR CSM history tape
+   var_sct ***var_fix_ptr: O pointer to list of pointers to fixed-variable structures
+   var_sct ***var_fix_out_ptr: O pointer to list of pointers to duplicates of fixed-variable structures
+   int *nbr_var_fix: O number of variable structures in list of fixed variables
+   var_sct ***var_prc_ptr: O pointer to list of pointers to processed-variable structures
+   var_sct ***var_prc_out_ptr: O pointer to list of pointers to duplicates of processed-variable structures
+   int *nbr_var_prc: O number of variable structures in list of processed variables
+*/
+{
+  /* Routine to divide the two input lists of variables into four separate output lists, 
+     based on the program type */
+
+  char *var_nm=NULL_CEWI;
+
+  int idx;
+  int prg; /* Program key */
+
+  enum op_typ{
+    fix, /* 0 */
+    prc /* 1 */
+  };
+
+  int idx_dmn;
+  int idx_xcl;
+  int var_op_typ[NC_MAX_VARS];
+
+  nc_type var_type=NC_NAT; /* NC_NAT present in netcdf.h version netCDF 3.5+ */
+
+  var_sct **var_fix;
+  var_sct **var_fix_out;
+  var_sct **var_prc;
+  var_sct **var_prc_out;
+
+  prg=prg_get(); /* Program key */
+
+  /* Allocate space for too many structures, then realloc() at the end, to avoid duplication. */
+  var_fix=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
+  var_fix_out=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
+  var_prc=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
+  var_prc_out=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
+
+  /* Find operation type for each variable: for now this is either fix or prc */
+  for(idx=0;idx<nbr_var;idx++){
+    
+    /* Initialize operation type */
+    var_op_typ[idx]=prc;
+    var_nm=var[idx]->nm;
+    var_type=var[idx]->type;
+
+    /* Override operation type based depending on both variable type and program */
+    switch(prg){
+    case ncap:
+      var_op_typ[idx]=fix;
+      break;
+    case ncra:
+      if(!var[idx]->is_rec_var) var_op_typ[idx]=fix;
+      break;
+    case ncea:
+      if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_typ[idx]=fix;
+      break;
+    case ncdiff:
+      if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_typ[idx]=fix;
+      break;
+    case ncflint:
+      if((var_type == NC_CHAR) || (var_type == NC_BYTE) || (var[idx]->is_crd_var && !var[idx]->is_rec_var)) var_op_typ[idx]=fix;
+      break;
+    case ncwa:
+      /* Process every variable containing an excluded (averaged) dimension */
+      for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
+	for(idx_xcl=0;idx_xcl<nbr_dmn_xcl;idx_xcl++){
+	  if(var[idx]->dim[idx_dmn]->id == dmn_xcl[idx_xcl]->id) break;
+	} /* end loop over idx_xcl */
+	if(idx_xcl != nbr_dmn_xcl){
+	  var_op_typ[idx]=prc;
+	  break;
+	} /* end if */
+      } /* end loop over idx_dmn */
+      /* Variables which do not contain an excluded (averaged) dimension must be fixed */
+      if(idx_dmn == var[idx]->nbr_dim) var_op_typ[idx]=fix;
+      break;
+    case ncrcat:
+      if(!var[idx]->is_rec_var) var_op_typ[idx]=fix;
+      break;
+    case ncecat:
+      if(var[idx]->is_crd_var) var_op_typ[idx]=fix;
+      break;
+    } /* end switch */
+    
+    if(NCAR_CSM_FORMAT){
+      if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ[idx]=fix;
+      if(prg == ncdiff && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec"))) var_op_typ[idx]=fix;
+    } /* end if NCAR_CSM_FORMAT */
+
+  } /* end loop over var */
+
+  /* Assign list pointers based on operation type for each variable */
+  *nbr_var_prc=*nbr_var_fix=0;
+  for(idx=0;idx<nbr_var;idx++){
+    if(var_op_typ[idx] == fix){
+      var_fix[*nbr_var_fix]=var[idx];
+      var_fix_out[*nbr_var_fix]=var_out[idx];
+      ++*nbr_var_fix;
+    }else{
+      var_prc[*nbr_var_prc]=var[idx];
+      var_prc_out[*nbr_var_prc]=var_out[idx];
+      ++*nbr_var_prc;
+/*      if(var[idx]->type != NC_FLOAT && var[idx]->type != NC_DOUBLE && prg != ncdiff && prg != ncrcat){
+	(void)fprintf(stderr,"%s: WARNING variable \"%s\" will be coerced from %s to NC_FLOAT\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
+	var_out[idx]->type=NC_FLOAT;
+      } *//* end if */
+      if(((var[idx]->type == NC_CHAR) || (var[idx]->type == NC_BYTE)) && ((prg != ncrcat) && (prg != ncecat))){
+	(void)fprintf(stderr,"%s: WARNING Variable %s is of type %s, for which processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
+      } /* end if */
+    } /* end else */
+  } /* end loop over var */
+  
+  /* Sanity check */
+  if(*nbr_var_prc+*nbr_var_fix != nbr_var){
+    (void)fprintf(stdout,"%s: ERROR nbr_var_prc+nbr_var_fix != nbr_var\n",prg_nm_get());
+    exit(EXIT_FAILURE);
+  } /* end if */
+
+  /* fxm: Remove ncap exception when finished with ncap list processing */
+  if(*nbr_var_prc==0 && prg != ncap){
+    (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing\n",prg_nm_get());
+    switch(prg_get()){
+    case ncap:
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain some derived fields\n",prg_nm_get());
+    case ncra:
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain record variables that are not NC_CHAR or NC_BYTE in order to perform a running average\n",prg_nm_get());
+      break;
+    case ncea:
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables that are not NC_CHAR or NC_BYTE in order to perform an ensemble average\n",prg_nm_get());
+      break;
+    case ncdiff:
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables that are not NC_CHAR or NC_BYTE in order to subtract\n",prg_nm_get());
+      break;
+    case ncflint:
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain variables that are not NC_CHAR or NC_BYTE in order to interpolate\n",prg_nm_get());
+      break;
+    case ncwa:
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain variables that contain an averaging dimension in order to perform an average\n",prg_nm_get());
+      break;
+    case ncrcat:
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain record variables in order to perform a record concatenation\n",prg_nm_get());
+      break;
+    case ncecat:
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables in order to perform an ensemble concatenation\n",prg_nm_get());
+      break;
+    } /* end switch */
+    exit(EXIT_FAILURE);
+  } /* end if */
+
+  /* Free unused space and save pointers in output variables */
+  if(*nbr_var_fix > 0) *var_fix_ptr=(var_sct **)nco_realloc(var_fix,*nbr_var_fix*sizeof(var_sct *)); else *var_fix_ptr=NULL;
+  if(*nbr_var_fix > 0) *var_fix_out_ptr=(var_sct **)nco_realloc(var_fix_out,*nbr_var_fix*sizeof(var_sct *)); else *var_fix_out_ptr=NULL;
+  if(*nbr_var_prc > 0) *var_prc_ptr=(var_sct **)nco_realloc(var_prc,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_ptr=NULL;
+  if(*nbr_var_prc > 0) *var_prc_out_ptr=(var_sct **)nco_realloc(var_prc_out,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_out_ptr=NULL;
+
+} /* end var_lst_divide */
+

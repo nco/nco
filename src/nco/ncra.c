@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.61 2002-01-28 10:06:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.62 2002-05-02 06:08:19 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -7,39 +7,8 @@
    to a single file. */
 
 /* Copyright (C) 1995--2002 Charlie Zender
-
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public License
-   as published by the Free Software Foundation; either version 2
-   of the License, or (at your option) any later version.
-   
-   As a special exception to the terms of the GPL, you are permitted 
-   to link the NCO source code with the NetCDF and HDF libraries 
-   and distribute the resulting executables under the terms of the GPL, 
-   but in addition obeying the extra stipulations of the netCDF and 
-   HDF library licenses.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-   The file LICENSE contains the GNU General Public License, version 2
-   It may be viewed interactively by typing, e.g., ncks -L
-
-   The author of this software, Charlie Zender, would like to receive
-   your suggestions, improvements, bug-reports, and patches for NCO.
-   Please contact the project at http://sourceforge.net/projects/nco or by writing
-
-   Charlie Zender
-   Department of Earth System Science
-   University of California at Irvine
-   Irvine, CA 92697-3100
- */
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
    ncra -n 3,4,1 -p /data/zender/tmp h0001.nc foo.nc
@@ -68,7 +37,6 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
-#include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
 #ifdef _OPENMP
 #include <omp.h> /* OpenMP pragmas */
 #endif /* not _OPENMP */
@@ -85,7 +53,7 @@
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
-#include "nco.h" /* NCO definitions */
+#include "libnco.h" /* netCDF operator library */
 
 int 
 main(int argc,char **argv)
@@ -114,8 +82,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.61 2002-01-28 10:06:54 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.61 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.62 2002-05-02 06:08:19 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.62 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   

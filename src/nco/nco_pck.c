@@ -1,53 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.22 2002-04-27 06:16:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.1 2002-05-02 06:10:30 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
 /* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public License
-   as published by the Free Software Foundation; either version 2
-   of the License, or (at your option) any later version.
-   
-   As a special exception to the terms of the GPL, you are permitted 
-   to link the NCO source code with the NetCDF and HDF libraries 
-   and distribute the resulting executables under the terms of the GPL, 
-   but in addition obeying the extra stipulations of the netCDF and 
-   HDF library licenses.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-
-   The file LICENSE contains the GNU General Public License, version 2
-   It may be viewed interactively by typing, e.g., ncks -L
-
-   The author of this software, Charlie Zender, would like to receive
-   your suggestions, improvements, bug-reports, and patches for NCO.
-   Please contact the project at http://sourceforge.net/projects/nco or by writing
-
-   Charlie Zender
-   Department of Earth System Science
-   University of California at Irvine
-   Irvine, CA 92697-3100
- */
-
-/* Standard header files */
-#include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */
-#include <string.h>             /* strcmp. . . */
-#include <unistd.h>             /* POSIX stuff */
-
-#include <netcdf.h>             /* netCDF definitions */
-#include "nco_netcdf.h"         /* netCDF3.0 wrapper functions */
-#include "nco.h"                 /* netCDF operator universal def'ns */
-#include "ncap.h" /* ncap-specific definitions */
-#include <assert.h>             /* assert() debugging macro */
+#include "nco_pck.h" /* Packing and unpacking variables */
 
 /* Notes on packing/unpacking:
    Routines in this file must be used in correct order:
@@ -60,6 +19,18 @@
    scale_factor: If present for a variable, the data are to be multiplied by this factor after the data are read by the application that accesses the data
    add_offset: If present for a variable, this number is to be added to the data after is is read by the application that acceses the data. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. 
    When scale_factor and add_offset are used for packing, the associated variable (containing the packed data) is typically of type byte or short, whereas the unpacked values are intended to be of type float or double. Attribute's scale_factor and add_offset should both be of type intended for the unpacked data, e.g., float or double. */     
+
+int
+nco_pck_typ_get(char *nco_pck_sng)
+{
+  /* Purpose: Process '-P' command line argument
+     Convert user-specified string to packing operation type 
+     Return nco_pck_nil by default */
+  /* fxm: add the rest of types */
+  if(!strcmp(nco_pck_sng,"all")) return nco_pck_all_xst_att;
+
+  return nco_pck_nil;
+} /* end nco_pck_typ_get() */
 
 bool /* O [flg] Variable is packed on disk */
 pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
@@ -447,3 +418,4 @@ nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to
   return var;
   
 } /* end nco_put_var_pck() */
+

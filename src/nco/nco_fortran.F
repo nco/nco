@@ -1,4 +1,4 @@
-c     $Header: /data/zender/nco_20150216/nco/src/nco/nc_fortran.F,v 1.8 2000-01-17 01:53:55 zender Exp $
+c     $Header: /data/zender/nco_20150216/nco/src/nco/nco_fortran.F,v 1.1 2002-05-02 06:10:30 zender Exp $
 
 c     Purpose: Fortran arithmetic utilities for NCO netCDF operators
 
