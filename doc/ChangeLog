@@ -1,5 +1,8 @@
 2002-06-09  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_4_6
+	* Changes since nco-2_4_5: Sorting routines
+
 	* Replace indexx* routines with system qsort()-based routines
 
 2002-06-08  Charlie Zender  <zender@uci.edu>
