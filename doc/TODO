@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.213 2003-04-23 00:58:09 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.214 2003-04-29 00:49:28 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -218,6 +218,7 @@ ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 254. Use ncap to create T42 fields in nco_tst.nc, removing dependence of make tst on FTP
 255. Desktop icon for NCO
 256. Turn udunits into .deb
+257. Put hybrid_sigma_pressure etc. definitions into in.cdl
 ************************************************************************
 End NCO Wish list
 ************************************************************************
