@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.43 2002-03-22 00:51:59 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.44 2002-03-22 02:15:37 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -84,7 +84,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 /* Request pure, re-entrant parser, so we can pass a structure to parser
    fxm: 20020122 Code breaks on Linux when pure_parser is not used---why?
    Possibly because hardcoded yy* function prototypes change? */
-%pure_parser
+/* %pure_parser */
 
 /* NB: "terminal symbol" is just a fancy name for token produced by lexer 
    Symbols defined on LHS of rules are called "non-terminal symbols" or "non-terminals" 
