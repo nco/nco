@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.26 2002-08-21 11:47:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.27 2002-11-19 01:34:43 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -733,7 +733,7 @@ nco_inq_attid_flg(int nc_id,int var_id,const char *att_nm,int *att_id)
   if(rcd == NC_ENOTATT) return rcd;
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"var_id: %d, att_nm: %s\n",var_id,att_nm);
-    nco_err_exit(rcd,"nco_inq_att_flg");
+    nco_err_exit(rcd,"nco_inq_attid_flg");
   } /* endif */
   return rcd;
 } /* end nco_inq_attid_flg */
