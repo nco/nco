@@ -19,7 +19,7 @@ AC_CANONICAL_TARGET
 # get version
 if test -r doc/VERSION; then
   nco_version=`cat doc/VERSION`
-  AC_DEFINE_UNQUOTED(VERSION,$nco_version,NCO Version)
+#  AC_DEFINE_UNQUOTED(VERSION,$nco_version,NCO Version)
 fi
 # get hostname and user
 if test "$USER"; then
