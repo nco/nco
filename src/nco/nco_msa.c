@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.7 2003-02-18 20:13:15 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.8 2003-02-20 16:47:38 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -584,6 +584,20 @@ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
   return;
 } /* end nco_cpy_var_val_mlt_lmt() */
 
+
+void 
+nco_msa_c_2_f(char *s)
+{
+  while (*s) {
+    if (*s == '(' ) *s = '[' ;
+    if( *s == ')' ) *s = ']' ;
+    s++;
+  } 
+
+
+}
+
+
 void
 nco_msa_prn_var_val   /* [fnc] Print variable data */
 (const int in_id, /* I [id] netCDF input file ID */
@@ -793,7 +807,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
         if(rcd != NC_NOERR){
           dim[idx].is_crd_dmn=False;
           dim[idx].cid=-1;
-            continue;
+          continue;
         }
 	  
         dim[idx].is_crd_dmn=True;
@@ -850,24 +864,23 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
              continue;
 	     }
                
-	    /* if dimension is also a co-ordinate */   
-             if(FORTRAN_STYLE) {
-		 dmn_sbs_prn = dmn_sbs_dsk[dmn_idx]+1;
-		 (void)sprintf(dmn_sng,"%%s[%%ld]=%s ",nco_typ_fmt_sng(dim[dmn_idx].type));
-              }else{
-		(void)sprintf(dmn_sng,"%%s(%%ld)=%s ",nco_typ_fmt_sng(dim[dmn_idx].type));
-                 dmn_sbs_prn = dmn_sbs_dsk[dmn_idx];
-              }
-	      
-	      /* Account for hyperslab offset in coordinate values*/
-	      crd_idx_crr=dmn_sbs_ram[dmn_idx];
-	      switch(dim[dmn_idx].type){
-	      case NC_FLOAT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.fp[crd_idx_crr]); break;
-	      case NC_DOUBLE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.dp[crd_idx_crr]); break;
-	      case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sp[crd_idx_crr]); break;
-	      case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.lp[crd_idx_crr]); break;
-	      case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]); break;
-	      case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
+	  (void)sprintf(dmn_sng,"%%s(%%ld)=%s ",nco_typ_fmt_sng(dim[dmn_idx].type));
+          dmn_sbs_prn = dmn_sbs_dsk[dmn_idx];
+
+	  if(FORTRAN_STYLE) { 
+            (void)nco_msa_c_2_f(dmn_sng);
+	     dmn_sbs_prn++;
+	  }
+         
+ 	      /* Account for hyperslab offset in coordinate values*/
+	  crd_idx_crr=dmn_sbs_ram[dmn_idx];
+	  switch(dim[dmn_idx].type){
+	  case NC_FLOAT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.fp[crd_idx_crr]); break;
+	  case NC_DOUBLE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.dp[crd_idx_crr]); break;
+	  case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sp[crd_idx_crr]); break;
+	  case NC_INT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.lp[crd_idx_crr]); break;
+	  case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]); break;
+	  case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,(unsigned char)dim[dmn_idx].val.bp[crd_idx_crr]); break;
 	      default: nco_dfl_case_nc_type_err(); break;
 	      } /* end switch */
 	} /* end loop over dimensions */
@@ -875,11 +888,9 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
       
 
       /* Now print actual variable name, index and value. */
-      if(FORTRAN_STYLE){
-    	(void)sprintf(var_sng,"%%s[%%ld]=%s %%s\n",nco_typ_fmt_sng(var.type));
-        var_dsk++;
-      }else
-        (void)sprintf(var_sng,"%%s(%%ld)=%s %%s\n",nco_typ_fmt_sng(var.type)); 
+      (void)sprintf(var_sng,"%%s(%%ld)=%s %%s\n",nco_typ_fmt_sng(var.type)); 
+
+      if(FORTRAN_STYLE){ (void)nco_msa_c_2_f(var_sng); var_dsk++;}
 
 
       switch(var.type){
@@ -926,5 +937,4 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     
 
 } /* nco_msa_prn_var_val */
-
   
