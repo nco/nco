@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.104 2004-07-02 06:49:49 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.105 2004-07-06 16:13:33 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.6 are ready. 
 
@@ -12,6 +12,7 @@ Second, Large File support (LFS) is now enabled by default.
 Subject to physical memory limitations, this allows 32-bit OSs
 files > 2 GB. Compile libnetcdf.a with LFS too, for this to work.
 Disable this with ./configure --disable-largefile
+See nco/data/big.cdl for sample LFS tests
 
 Third, multi-file operations are more user friendly.
 Multi-file operators (nc[re]a, nc[re]cat) now take input file lists from stdin.
