@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.13 1999-04-27 16:36:50 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.14 1999-04-27 17:04:55 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
@@ -262,18 +262,12 @@ as having been fixed in the latest revision.
 <P>NCO is built and maintained at NCAR, and so user's of NCAR machines should take advantage of pre-built, up-to-date NCO executables.
 The NCO executables are maintained in four different locations at NCAR:
 <DD>CGD network (Solaris 2.6): /contrib/bin</DD>
-<DD>CGD network (SunOS 4.1.4): /contrib/bin</DD>
-<DD>CGD/SCD Winterpark (IRIX 6.2): /contrib/bin</DD>
+<DD>CGD/SCD Dataproc (IRIX 6.5): /contrib/bin</DD>
 <DD>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</DD>
-<DD>SCD Ute (IRIX 6.5): /fs/cgd/home0/zender/bin/SGI64*</DD>
+<DD>SCD Ute (IRIX 6.5): /home/ute/zender/bin/SGIMP64</DD>
 <DD>ACD garcia.acd.ucar.edu (Digital OSF1): /usr/local/bin</DD>
 <DD>ACD gss1.acd.ucar.edu (AIX 4.3): /l9/zender/bin/AIX</DD>
 
-</P>*The executables in /fs/cgd/home0/zender/bin/SGI64 are built on
-winterpark but are accessible from Ute and should work correctly there.
-These executables are my development executables, but they are usually
-in sync with those in winterpark:/contrib/bin (which are not accessible
-from Ute).
 <HR></P>
 
 <DT><A NAME="Bugs"></A></DT>
