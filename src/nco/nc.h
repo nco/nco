@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.51 2000-10-23 22:57:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.52 2000-10-27 11:05:57 hmb Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -185,8 +185,8 @@ typedef union {
   double *dp;
   nclong *lp;
   short *sp;
-  signed char *cp;
-  unsigned char *bp;
+  unsigned char *cp;
+  signed char *bp;
   void *vp;
 } ptr_unn;
 
@@ -195,8 +195,8 @@ typedef union {
   double d;
   nclong l;
   short s;
-  signed char c;
-  unsigned char b;
+  unsigned char c;
+  signed char b;
 } val_unn;
 
 typedef struct{
@@ -460,6 +460,7 @@ extern void var_xrf(var_sct *,var_sct *);
 extern void var_zero(nc_type,long,ptr_unn);
 extern void vec_set(nc_type,long,ptr_unn,double);
 extern void zero_long(long,long *op1);
+
 
 extern var_sct * /* O [var] Variable after (possible) conversion */
 nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
