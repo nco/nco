@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.27 2005-01-07 23:54:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.28 2005-03-27 01:04:09 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -112,7 +112,7 @@ extern "C" {
   
   var_sct * /* O [sct] Pointer to free'd variable */
   nco_var_free /* [fnc] Free all memory associated with variable structure */
-  (var_sct *var); /* I [sct] Variable to free */
+  (var_sct *var); /* I/O [sct] Variable to free */
   
   void
   nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */

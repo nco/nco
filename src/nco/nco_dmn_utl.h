@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.14 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.15 2005-03-27 01:04:09 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -48,6 +48,10 @@ nco_dmn_fll /* [fnc] Create and return completed dmn_sct */
 (const int nc_id, /* I [id] netCDF input file ID*/
  const int dmn_id, /* I [id] Dimension ID */
  const char * const dmn_nm); /* I [sng] Dimension name */
+
+dmn_sct * /* O [sct] Pointer to free'd dimension */
+nco_dmn_free /* [fnc] Free all memory associated with dimension structure */
+(dmn_sct *dmn); /* I/O [sct] Dimension to free */
 
 void
 nco_dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension structures */

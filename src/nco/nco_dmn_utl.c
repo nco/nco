@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.17 2005-03-27 00:42:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.18 2005-03-27 01:04:09 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -53,10 +53,10 @@ nco_dmn_dpl /* [fnc] Duplicate input dimension structure */
   /* Shallow copy structure */
   (void)memcpy((void *)dmn_cpy,dmn_vp,sizeof(dmn_sct));
 
-  /* fxm: Should copy name as well */
+  /* Make sure dmn_free() frees names when dimension is destructed */
+  if(dmn->nm != NULL) dmn_cpy->nm=(char *)strdup(dmn->nm);
 
   return dmn_cpy;
-
 } /* end nco_dmn_dpl() */
 
 dmn_sct * /* O [sct] Output dimension structure */
@@ -105,6 +105,19 @@ nco_dmn_fll /* [fnc] Create and return completed dmn_sct */
   
   return dmn;
 } /* end nco_dmn_fll() */
+
+dmn_sct * /* O [sct] Pointer to free'd dimension */
+nco_dmn_free /* [fnc] Free all memory associated with dimension structure */
+(dmn_sct *dmn) /* I/O [sct] Dimension to free */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with a dynamically allocated dimension structure */
+  dmn->nm=(char *)nco_free(dmn->nm);
+  /* Free structure pointer last */
+  dmn=(dmn_sct *)nco_free(dmn);
+
+  return NULL;
+} /* end nco_dmn_free() */
 
 void
 nco_dmn_lmt_mrg /* [fnc] Merge limit structure information into dimension structures */

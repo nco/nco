@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.68 2005-01-07 23:54:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.69 2005-03-27 01:04:09 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -289,7 +289,7 @@ extern "C" {
     long end; /* [idx] Index to end of hyperslab */
     long cnt; /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
     long srd; /* [nbr] Stride of hyperslab */
-    ptr_unn val; /* [sct] Buffer to hold hyperslab */
+    ptr_unn val; /* [sct] Buffer to hold hyperslab fxm: is this ever used? */
     struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
   } dmn_sct; /* end dmn_sct_tag */
   

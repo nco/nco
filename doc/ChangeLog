@@ -1,5 +1,10 @@
 2005-03-26  charlie  <zender@uci.edu>
 
+	* Deep-copy nm in nco_var_dpl(); free nm in nco_var_free()
+	Ditto with dmn->nm, nco_dmn_dpl(), and nco_dmn_free()
+	
+	* Implement nco_dmn_free() to handle free'ing dimensions
+
 	* Guaranteed system memory (optarg) reaches no further than
 	command-line parsing in all operators. This has side effect
 	of temporarily increasing un-free'd memory in programs, because,
