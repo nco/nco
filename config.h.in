@@ -15,6 +15,9 @@
 /* Fastest possible execution (slowest compilation) */
 #undef ENABLE_OPTIMIZE_CUSTOM
 
+/* Compile operators with UDUnits support */
+#undef ENABLE_UDUNITS
+
 /* Compatibility pvmgetarch token for FreeBSD on Intel x86 */
 #undef FREEBSD
 
@@ -280,7 +283,7 @@
 /* Define to 1 if compiler finds external `truncf' function */
 #undef HAVE_TRUNCF
 
-/* Define to 1 if you have the <udunits.h> header file. */
+/* Define to 1 if <udunits.h> is present */
 #undef HAVE_UDUNITS_H
 
 /* Define to 1 if you have the <unistd.h> header file. */

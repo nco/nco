@@ -1067,6 +1067,7 @@ Optional Features:
                           Experimental, for future use) [default=no]
   --enable-nco_cplusplus  Build NCO C++ interface library [default=yes]
   --enable-regex          Allow extended regular expressions [default=yes]
+  --enable-udunits        Build-in UDUnits support if possible [default=yes]
   --enable-debug-custom   Activate all known, helpful compile-time and
                           run-time debugging checks such as pedantic warnings,
                           bounds checking (slowest execution). Automatically
@@ -4823,7 +4824,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4826 "configure"' > conftest.$ac_ext
+  echo '#line 4827 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5463,7 +5464,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:5466:" \
+echo "$as_me:5467:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6495,11 +6496,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6498: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6499: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6502: \$? = $ac_status" >&5
+   echo "$as_me:6503: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6728,11 +6729,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6731: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6732: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6735: \$? = $ac_status" >&5
+   echo "$as_me:6736: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6788,11 +6789,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6791: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6792: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:6795: \$? = $ac_status" >&5
+   echo "$as_me:6796: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -8963,7 +8964,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 8966 "configure"
+#line 8967 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -9061,7 +9062,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 9064 "configure"
+#line 9065 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -11238,11 +11239,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11241: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11242: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:11245: \$? = $ac_status" >&5
+   echo "$as_me:11246: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -11298,11 +11299,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:11301: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:11302: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:11305: \$? = $ac_status" >&5
+   echo "$as_me:11306: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12652,7 +12653,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12655 "configure"
+#line 12656 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12750,7 +12751,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12753 "configure"
+#line 12754 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13577,11 +13578,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13580: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13581: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13584: \$? = $ac_status" >&5
+   echo "$as_me:13585: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -13637,11 +13638,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13640: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13641: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13644: \$? = $ac_status" >&5
+   echo "$as_me:13645: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -15669,11 +15670,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15672: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15673: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15676: \$? = $ac_status" >&5
+   echo "$as_me:15677: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -15902,11 +15903,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15905: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15906: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15909: \$? = $ac_status" >&5
+   echo "$as_me:15910: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -15962,11 +15963,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15965: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15966: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15969: \$? = $ac_status" >&5
+   echo "$as_me:15970: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -18137,7 +18138,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18140 "configure"
+#line 18141 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -18235,7 +18236,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 18238 "configure"
+#line 18239 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -20200,9 +20201,6 @@ fi
 
 done
 
-# Headers needed for POSIX regex (and wildcarding)
-# AC_CHECK_HEADERS([regex.h sys/types.h])
-# NCO_CHECK_FUNCS([regexec])
 ac_ext=cc
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -23320,15 +23318,13 @@ if test "${enable_dods}" != 'no'; then
     if test "${DODS_ROOT}"; then
 	LDFLAGS="${LDFLAGS} -L${DODS_ROOT}/lib"
     fi
-  # These must all be present for DODS to work. If all present, enable_dods=yes
-  # nc-dods requires dap++ to link with success
-    nco_old_LIBS="${LIBS}"
 # Following tests are mutually exclusive
 # DODS version 3.2.x tests:
 #  AC_CHECK_LIB([z],[inflate],,enable_dods=no)
 #  AC_CHECK_LIB([www],[HTLibInit],,enable_dods=no)
 #  AC_CHECK_LIB([rx],[main],,enable_dods=no)
 # DODS version 3.4.x tests:
+# These must all be present for DODS to work
     { echo "$as_me:$LINENO: NB: Following six libraries required for DODS/OPeNDAP clients:" >&5
 echo "$as_me: NB: Following six libraries required for DODS/OPeNDAP clients:" >&6;}
 
@@ -23706,6 +23702,9 @@ else
   enable_dods=no
 fi
 
+# If all libraries were present, enable_dods=yes
+# If not, restore LIBS to previous value
+    nco_old_LIBS="${LIBS}"
 # Assume stdc++ is available, (fxm: how to look for it automatically?)
 # NB: -lstdc++ automatically linked by g++, add by hand for other compilers
     LIBS="-lstdc++ ${LIBS}"
@@ -24905,6 +24904,17 @@ fi
 
 fi
 
+# Check whether --enable-udunits or --disable-udunits was given.
+if test "${enable_udunits+set}" = set; then
+  enableval="$enable_udunits"
+  enable_udunits=${enableval}
+else
+  enable_udunits=yes
+fi;
+# Check for UDUnits libraries unless told not to
+if test "${enable_udunits}" != 'no'; then
+    { echo "$as_me:$LINENO: NB: Following two tests for library and header files must succeed for UDUnits support:" >&5
+echo "$as_me: NB: Following two tests for library and header files must succeed for UDUnits support:" >&6;}
 
 echo "$as_me:$LINENO: checking for utInit in -ludunits" >&5
 echo $ECHO_N "checking for utInit in -ludunits... $ECHO_C" >&6
@@ -24976,51 +24986,22 @@ _ACEOF
 
   LIBS="-ludunits $LIBS"
 
-fi
-
-# Use DEFINE_UNQUOTED with quoted string so quotes get substituted into source file correctly
-as_ac_File=`echo "ac_cv_file_$nco_udunits_dat" | $as_tr_sh`
-echo "$as_me:$LINENO: checking for $nco_udunits_dat" >&5
-echo $ECHO_N "checking for $nco_udunits_dat... $ECHO_C" >&6
-if eval "test \"\${$as_ac_File+set}\" = set"; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  test "$cross_compiling" = yes &&
-  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
-echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
-   { (exit 1); exit 1; }; }
-if test -r "$nco_udunits_dat"; then
-  eval "$as_ac_File=yes"
-else
-  eval "$as_ac_File=no"
-fi
-fi
-echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
-echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
-if test `eval echo '${'$as_ac_File'}'` = yes; then
-
-cat >>confdefs.h <<_ACEOF
-#define UDUNITS_DAT "$nco_udunits_dat"
-_ACEOF
-
+  enable_udunits=no
 fi
 
-
-for ac_header in udunits.h
-do
-as_ac_Header=`echo "ac_cv_header_$ac_header" | $as_tr_sh`
-if eval "test \"\${$as_ac_Header+set}\" = set"; then
-  echo "$as_me:$LINENO: checking for $ac_header" >&5
-echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
-if eval "test \"\${$as_ac_Header+set}\" = set"; then
+    if test "${ac_cv_header_udunits_h+set}" = set; then
+  echo "$as_me:$LINENO: checking for udunits.h" >&5
+echo $ECHO_N "checking for udunits.h... $ECHO_C" >&6
+if test "${ac_cv_header_udunits_h+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 fi
-echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
-echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+echo "$as_me:$LINENO: result: $ac_cv_header_udunits_h" >&5
+echo "${ECHO_T}$ac_cv_header_udunits_h" >&6
 else
   # Is the header compilable?
-echo "$as_me:$LINENO: checking $ac_header usability" >&5
-echo $ECHO_N "checking $ac_header usability... $ECHO_C" >&6
+echo "$as_me:$LINENO: checking udunits.h usability" >&5
+echo $ECHO_N "checking udunits.h usability... $ECHO_C" >&6
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
@@ -25028,7 +25009,7 @@ cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
 $ac_includes_default
-#include <$ac_header>
+#include <udunits.h>
 _ACEOF
 rm -f conftest.$ac_objext
 if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
@@ -25063,15 +25044,15 @@ echo "$as_me:$LINENO: result: $ac_header_compiler" >&5
 echo "${ECHO_T}$ac_header_compiler" >&6
 
 # Is the header present?
-echo "$as_me:$LINENO: checking $ac_header presence" >&5
-echo $ECHO_N "checking $ac_header presence... $ECHO_C" >&6
+echo "$as_me:$LINENO: checking udunits.h presence" >&5
+echo $ECHO_N "checking udunits.h presence... $ECHO_C" >&6
 cat >conftest.$ac_ext <<_ACEOF
 /* confdefs.h.  */
 _ACEOF
 cat confdefs.h >>conftest.$ac_ext
 cat >>conftest.$ac_ext <<_ACEOF
 /* end confdefs.h.  */
-#include <$ac_header>
+#include <udunits.h>
 _ACEOF
 if { (eval echo "$as_me:$LINENO: \"$ac_cpp conftest.$ac_ext\"") >&5
   (eval $ac_cpp conftest.$ac_ext) 2>conftest.er1
@@ -25105,25 +25086,25 @@ echo "${ECHO_T}$ac_header_preproc" >&6
 # So?  What about this header?
 case $ac_header_compiler:$ac_header_preproc:$ac_c_preproc_warn_flag in
   yes:no: )
-    { echo "$as_me:$LINENO: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&5
-echo "$as_me: WARNING: $ac_header: accepted by the compiler, rejected by the preprocessor!" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the compiler's result" >&5
-echo "$as_me: WARNING: $ac_header: proceeding with the compiler's result" >&2;}
+    { echo "$as_me:$LINENO: WARNING: udunits.h: accepted by the compiler, rejected by the preprocessor!" >&5
+echo "$as_me: WARNING: udunits.h: accepted by the compiler, rejected by the preprocessor!" >&2;}
+    { echo "$as_me:$LINENO: WARNING: udunits.h: proceeding with the compiler's result" >&5
+echo "$as_me: WARNING: udunits.h: proceeding with the compiler's result" >&2;}
     ac_header_preproc=yes
     ;;
   no:yes:* )
-    { echo "$as_me:$LINENO: WARNING: $ac_header: present but cannot be compiled" >&5
-echo "$as_me: WARNING: $ac_header: present but cannot be compiled" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header:     check for missing prerequisite headers?" >&5
-echo "$as_me: WARNING: $ac_header:     check for missing prerequisite headers?" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: see the Autoconf documentation" >&5
-echo "$as_me: WARNING: $ac_header: see the Autoconf documentation" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header:     section \"Present But Cannot Be Compiled\"" >&5
-echo "$as_me: WARNING: $ac_header:     section \"Present But Cannot Be Compiled\"" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: proceeding with the preprocessor's result" >&5
-echo "$as_me: WARNING: $ac_header: proceeding with the preprocessor's result" >&2;}
-    { echo "$as_me:$LINENO: WARNING: $ac_header: in the future, the compiler will take precedence" >&5
-echo "$as_me: WARNING: $ac_header: in the future, the compiler will take precedence" >&2;}
+    { echo "$as_me:$LINENO: WARNING: udunits.h: present but cannot be compiled" >&5
+echo "$as_me: WARNING: udunits.h: present but cannot be compiled" >&2;}
+    { echo "$as_me:$LINENO: WARNING: udunits.h:     check for missing prerequisite headers?" >&5
+echo "$as_me: WARNING: udunits.h:     check for missing prerequisite headers?" >&2;}
+    { echo "$as_me:$LINENO: WARNING: udunits.h: see the Autoconf documentation" >&5
+echo "$as_me: WARNING: udunits.h: see the Autoconf documentation" >&2;}
+    { echo "$as_me:$LINENO: WARNING: udunits.h:     section \"Present But Cannot Be Compiled\"" >&5
+echo "$as_me: WARNING: udunits.h:     section \"Present But Cannot Be Compiled\"" >&2;}
+    { echo "$as_me:$LINENO: WARNING: udunits.h: proceeding with the preprocessor's result" >&5
+echo "$as_me: WARNING: udunits.h: proceeding with the preprocessor's result" >&2;}
+    { echo "$as_me:$LINENO: WARNING: udunits.h: in the future, the compiler will take precedence" >&5
+echo "$as_me: WARNING: udunits.h: in the future, the compiler will take precedence" >&2;}
     (
       cat <<\_ASBOX
 ## ------------------------------------------ ##
@@ -25134,26 +25115,73 @@ _ASBOX
       sed "s/^/$as_me: WARNING:     /" >&2
     ;;
 esac
-echo "$as_me:$LINENO: checking for $ac_header" >&5
-echo $ECHO_N "checking for $ac_header... $ECHO_C" >&6
-if eval "test \"\${$as_ac_Header+set}\" = set"; then
+echo "$as_me:$LINENO: checking for udunits.h" >&5
+echo $ECHO_N "checking for udunits.h... $ECHO_C" >&6
+if test "${ac_cv_header_udunits_h+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
-  eval "$as_ac_Header=\$ac_header_preproc"
+  ac_cv_header_udunits_h=$ac_header_preproc
 fi
-echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_Header'}'`" >&5
-echo "${ECHO_T}`eval echo '${'$as_ac_Header'}'`" >&6
+echo "$as_me:$LINENO: result: $ac_cv_header_udunits_h" >&5
+echo "${ECHO_T}$ac_cv_header_udunits_h" >&6
 
 fi
-if test `eval echo '${'$as_ac_Header'}'` = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define `echo "HAVE_$ac_header" | $as_tr_cpp` 1
+if test $ac_cv_header_udunits_h = yes; then
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_UDUNITS_H 1
+_ACEOF
+
+else
+  enable_udunits=no
+fi
+
+
+    if test "${enable_udunits}" = 'no'; then
+	{ echo "$as_me:$LINENO: WARNING: UDUnits support disabled (missing library or header file)" >&5
+echo "$as_me: WARNING: UDUnits support disabled (missing library or header file)" >&2;}
+    elif test "${enable_udunits}" = 'yes'; then
+	LIBS="${LIBS} -ludunits"
+
+cat >>confdefs.h <<\_ACEOF
+#define ENABLE_UDUNITS 1
+_ACEOF
+
+	{ echo "$as_me:$LINENO: UDUnits support enabled" >&5
+echo "$as_me: UDUnits support enabled" >&6;}
+    fi
+# When empty, utInit() uses environment variable UDUNITS_PATH, if any (see nco_lmt.c)
+# Thus UDUNITS_DAT need not be known at compile time
+# Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file
+    as_ac_File=`echo "ac_cv_file_$nco_udunits_dat" | $as_tr_sh`
+echo "$as_me:$LINENO: checking for $nco_udunits_dat" >&5
+echo $ECHO_N "checking for $nco_udunits_dat... $ECHO_C" >&6
+if eval "test \"\${$as_ac_File+set}\" = set"; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  test "$cross_compiling" = yes &&
+  { { echo "$as_me:$LINENO: error: cannot check for file existence when cross compiling" >&5
+echo "$as_me: error: cannot check for file existence when cross compiling" >&2;}
+   { (exit 1); exit 1; }; }
+if test -r "$nco_udunits_dat"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi
+fi
+echo "$as_me:$LINENO: result: `eval echo '${'$as_ac_File'}'`" >&5
+echo "${ECHO_T}`eval echo '${'$as_ac_File'}'`" >&6
+if test `eval echo '${'$as_ac_File'}'` = yes; then
+
+cat >>confdefs.h <<_ACEOF
+#define UDUNITS_DAT "$nco_udunits_dat"
 _ACEOF
 
 fi
 
-done
-
+fi
+# This would activate conditional UDUnits tests, if there were any
+#AM_CONDITIONAL(TEST_UDUNITS,[test "${enable_udunits}" = 'yes'])
 # End UDUnits
 
 # Begin Default OS-specific Compiler Arguments

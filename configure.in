@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.76 2004-03-08 06:03:19 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.77 2004-03-12 00:34:43 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -95,9 +95,6 @@ AC_CHECK_FUNCS([floor gethostname memchr memmove memset mkstemp pow regcomp setl
 # Check for header files
 AC_HEADER_STDC
 AC_CHECK_HEADERS([getopt.h libintl.h limits.h locale.h netinet/in.h stdlib.h string.h unistd.h])
-# Headers needed for POSIX regex (and wildcarding)
-# AC_CHECK_HEADERS([regex.h sys/types.h])
-# NCO_CHECK_FUNCS([regexec])
 AC_LANG_PUSH(C++)
 AC_CHECK_HEADERS(cstdlib)
 AC_LANG_POP(C++)
@@ -220,21 +217,22 @@ if test "${enable_dods}" != 'no'; then
     if test "${DODS_ROOT}"; then
 	LDFLAGS="${LDFLAGS} -L${DODS_ROOT}/lib"
     fi 
-  # These must all be present for DODS to work. If all present, enable_dods=yes
-  # nc-dods requires dap++ to link with success
-    nco_old_LIBS="${LIBS}"
 # Following tests are mutually exclusive
 # DODS version 3.2.x tests:
 #  AC_CHECK_LIB([z],[inflate],,enable_dods=no)
 #  AC_CHECK_LIB([www],[HTLibInit],,enable_dods=no)
 #  AC_CHECK_LIB([rx],[main],,enable_dods=no)
 # DODS version 3.4.x tests:
+# These must all be present for DODS to work
     AC_MSG_NOTICE([NB: Following six libraries required for DODS/OPeNDAP clients:])
     AC_CHECK_LIB([z],[inflate],,enable_dods=no)
     AC_CHECK_LIB([dl],[dlopen],,enable_dods=no)
     AC_CHECK_LIB([pthread],[pthread_once],,enable_dods=no)
     AC_CHECK_LIB([curl],[curl_easy_init],,enable_dods=no)
     AC_CHECK_LIB([xml2],[xmlParseDocument],,enable_dods=no)
+# If all libraries were present, enable_dods=yes
+# If not, restore LIBS to previous value
+    nco_old_LIBS="${LIBS}"
 # Assume stdc++ is available, (fxm: how to look for it automatically?)
 # NB: -lstdc++ automatically linked by g++, add by hand for other compilers
     LIBS="-lstdc++ ${LIBS}"
@@ -354,10 +352,26 @@ else
 fi
 # MacOS X requires libudport for threaded functions
 AC_CHECK_FUNC(tdelete,,AC_CHECK_LIB([udport],[tdelete]))
-AC_CHECK_LIB([udunits],[utInit])
-# Use DEFINE_UNQUOTED with quoted string so quotes get substituted into source file correctly
-AC_CHECK_FILE([$nco_udunits_dat],[AC_DEFINE_UNQUOTED([UDUNITS_DAT],["$nco_udunits_dat"],[Location of UDUnits data file])])
-AC_CHECK_HEADERS([udunits.h])
+AC_ARG_ENABLE(udunits,AS_HELP_STRING([--enable-udunits],[Build-in UDUnits support if possible [[default=yes]]]),enable_udunits=${enableval},enable_udunits=yes)
+# Check for UDUnits libraries unless told not to
+if test "${enable_udunits}" != 'no'; then
+    AC_MSG_NOTICE([NB: Following two tests for library and header files must succeed for UDUnits support:])
+    AC_CHECK_LIB([udunits],[utInit],,enable_udunits=no)
+    AC_CHECK_HEADER([udunits.h],AC_DEFINE([HAVE_UDUNITS_H],1,[Define to 1 if <udunits.h> is present]),enable_udunits=no)
+    if test "${enable_udunits}" = 'no'; then
+	AC_MSG_WARN([UDUnits support disabled (missing library or header file)])
+    elif test "${enable_udunits}" = 'yes'; then
+	LIBS="${LIBS} -ludunits"
+	AC_DEFINE(ENABLE_UDUNITS,1,Compile operators with UDUnits support)
+	AC_MSG_NOTICE([UDUnits support enabled])
+    fi
+# When empty, utInit() uses environment variable UDUNITS_PATH, if any (see nco_lmt.c)
+# Thus UDUNITS_DAT need not be known at compile time
+# Use DEFINE_UNQUOTED for quoted string so quotes get correctly merged into source file 
+    AC_CHECK_FILE([$nco_udunits_dat],[AC_DEFINE_UNQUOTED([UDUNITS_DAT],["$nco_udunits_dat"],[Location of UDUnits data file])])
+fi
+# This would activate conditional UDUnits tests, if there were any
+#AM_CONDITIONAL(TEST_UDUNITS,[test "${enable_udunits}" = 'yes'])
 # End UDUnits
 
 # Begin Default OS-specific Compiler Arguments

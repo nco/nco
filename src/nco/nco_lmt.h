@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.15 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.16 2004-03-12 00:34:48 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -66,12 +66,12 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
  int lmt_nbr, /* I [nbr] Number of limit structures */
  const bool FORTRAN_STYLE); /* I [flg] Hyperslab indices obey Fortran convention */
 
-int /* O [nbr] returns zero when conversion succeeds */
-nco_lmt_udu_cnv /* [fnc] convert user-specified units into file units */ 
-(const int ncid, /* I [idx] netCDF file ID */
- const int dimid, /* I [idx] netCDF dimension ID */
- char* lmt_sng, /* I [ptr] pointer to limit string */
- double *lmt_val); /* O [val] converted coordinate value as double */
+int /* [rcd] Successful conversion returns 0 */
+nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
+(const int nc_id, /* I [idx] netCDF file ID */
+ const int dmn_id, /* I [idx] netCDF dimension ID */
+ char *lmt_sng, /* I [ptr] Limit string */
+ double *lmt_val); /* O [val] Limit coordinate value */ 
 
 int /* 0 [enum] returns the limit type */
 nco_lmt_typ /* [fnc] determine limit type */
