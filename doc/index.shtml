@@ -138,7 +138,9 @@ User's Guide</A>. </P>
 
 <P>99/04/04: By default, extracted variables appear in the same order
 in which they were written to the source netCDF file.
-Alphabetizing variables in now possible with <TT>`ncks'</TT>.
+However, this order is often essentially random, making it hard to
+locate a particular variable in a dump of many variables.
+To help address this, <TT>`ncks'</TT> will now alphabetize variables.
 Simply specify <TT>`-a'</TT> on the command line.
 
 <P>99/01/21: An optional token has been added to NCO which eliminates
