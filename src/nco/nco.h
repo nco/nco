@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.54 2003-08-02 23:26:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.55 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
@@ -64,6 +64,7 @@ extern "C" {
 #define long_CEWI 0L
 #define nco_long_CEWI 0L
 #define short_CEWI 0
+#define size_t_CEWI 0UL
   
   /* netcdf.h NC_GLOBAL is, strictly, the variable ID for global attributes
      NCO_REC_DMN_UNDEFINED is variable ID of record dimension iff record dimension is undefined
@@ -87,7 +88,7 @@ extern "C" {
 #else /* MAIN_PROGRAM_FILE is NOT defined, i.e., current file does not contain main() */
   
   /* External references to global variables are declared as extern here
-     Variables with local file scope in all files except the main.c file are allocated here */
+     Variables with local file scope in all files except main.c are allocated here */
   
 #endif /* MAIN_PROGRAM_FILE is NOT defined, i.e., the current file does not contain main() */
   

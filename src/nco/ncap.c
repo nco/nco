@@ -1,12 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.118 2003-11-16 22:06:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.119 2004-01-01 20:41:43 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
 /* Purpose: Compute user-defined derived fields using forward algebraic notation applied to netCDF files */
 
-/* Copyright (C) 1995--2003 Charlie Zender
+/* Copyright (C) 1995--2004 Charlie Zender
 
-   This software is distributed under the terms of the GNU General Public License Version 2
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
@@ -64,7 +64,7 @@
 #include "nco_netcdf.h"  /* NCO wrappers for libnetcdf.a */
 
 /* Personal headers */
-/* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
+/* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #include "ncap.h" /* ncap-specific definitions */
 #include "libnco.h" /* netCDF operator library */
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.118 2003-11-16 22:06:22 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.118 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.119 2004-01-01 20:41:43 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.119 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -177,9 +177,7 @@ main(int argc,char **argv)
   int nbr_lst_a=0; /* size of xtr_lst_a */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
-  int sng_lng;
   int var_id;
-  int spt_arg_lng=int_CEWI;
   int nbr_att=0; /* [nbr] Number of attributes in script */
   
   sym_sct **sym_tbl; /* [fnc] Symbol table for functions */
@@ -192,7 +190,10 @@ main(int argc,char **argv)
   nm_id_sct *xtr_lst=NULL;   /* The list of non-processed variables which get copied to OUTPUT */
   nm_id_sct *xtr_lst_a=NULL; /* initialized to ALL the vars in the OUTPUT file */
   
-  time_t clock;
+  size_t sng_lng;
+  size_t spt_arg_lng=size_t_CEWI;
+
+  time_t time_crr_time_t;
   
   var_sct **var;
   var_sct **var_fix;
@@ -248,8 +249,8 @@ main(int argc,char **argv)
   
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  clock=time((time_t *)NULL);
-  time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
+  time_crr_time_t=time((time_t *)NULL);
+  time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
@@ -307,7 +308,7 @@ main(int argc,char **argv)
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
-      (void)nco_lib_vrs_prn();
+      (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
       break;
     case 's': /* Copy command script for later processing */

@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.14 2003-11-16 22:01:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.15 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_mss_val.h" /* Missing value utilities */
@@ -176,7 +176,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
   long att_sz;
   int idx;
   
-  long att_lng;
+  size_t att_lng;
 
   nc_type att_typ;
 

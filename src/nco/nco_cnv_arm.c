@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.4 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.5 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: ARM conventions */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_cnv_arm.h" /* ARM conventions */
@@ -12,19 +12,22 @@ bool /* O [flg] File obeys ARM conventions */
 arm_inq /* O [fnc] Check if file obeys ARM conventions */
 (const int nc_id) /* I [id] netCDF file ID */
 {
-  /* Routine to check whether file adheres to ARM time format */
+  /* Purpose: Check whether file adheres to ARM time format */
   bool ARM_FORMAT;
+
+  char time_sng[]="time"; /* CEWI */
+  char base_time_sng[]="base_time"; /* CEWI */
+  char time_offset_sng[]="time_offset"; /* CEWI */
 
   int time_dmn_id;
   int base_time_id;
   int time_offset_id;
   int rcd=NC_NOERR; /* [rcd] Return code */
   
-  /* Look for the signature of an ARM file */
-  
-  rcd+=nco_inq_dimid_flg(nc_id,"time",&time_dmn_id);
-  rcd+=nco_inq_varid_flg(nc_id,"base_time",&base_time_id);
-  rcd+=nco_inq_varid_flg(nc_id,"time_offset",&time_offset_id);
+  /* Look for ARM file signature */
+  rcd+=nco_inq_dimid_flg(nc_id,time_sng,&time_dmn_id);
+  rcd+=nco_inq_varid_flg(nc_id,base_time_sng,&base_time_id);
+  rcd+=nco_inq_varid_flg(nc_id,time_offset_sng,&time_offset_id);
   
   /* All three IDs must be valid to handle ARM format */
   if(rcd != NC_NOERR){
@@ -67,10 +70,11 @@ nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 (const int nc_id, /* I [id] netCDF file ID */
  const nco_long base_time_srt) /* I [s] base_time of first input file */
 {
-  /* Routine to add time variable to concatenated ARM files */
+  /* Purpose: Add time variable to concatenated ARM files */
 
   char att_units[]="seconds since 1970/01/01 00:00:00.00";
   char att_long_name[]="UNIX time";
+  char time_sng[]="time"; /* CEWI */
 
   double *time_offset;
 
@@ -94,14 +98,14 @@ nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   } /* endif */
 
   /* See if time variable already exists */
-  rcd=nco_inq_varid_flg(nc_id,"time",&time_id);
+  rcd=nco_inq_varid_flg(nc_id,time_sng,&time_id);
   if(rcd == NC_NOERR){
     (void)fprintf(stderr,"%s: WARNING ARM file already has variable \"time\"\n",prg_nm_get());
     return;
   } /* endif */
 
   /* See if time dimension exists */
-  rcd=nco_inq_dimid_flg(nc_id,"time",&time_dmn_id);
+  rcd=nco_inq_dimid_flg(nc_id,time_sng,&time_dmn_id);
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"%s: WARNING ARM file does not have dimension \"time\"\n",prg_nm_get());
     return;
@@ -120,8 +124,8 @@ nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
   (void)nco_def_var(nc_id,"time",NC_DOUBLE,1,&time_dmn_id,&time_id);
 
   /* Add attributes for time variable */
-  (void)nco_put_att(nc_id,time_id,"units",NC_CHAR,strlen(att_units)+1,(void *)att_units);
-  (void)nco_put_att(nc_id,time_id,"long_name",NC_CHAR,strlen(att_long_name)+1,(void *)att_long_name);
+  (void)nco_put_att(nc_id,time_id,"units",NC_CHAR,(long)(strlen(att_units)+1UL),(void *)att_units);
+  (void)nco_put_att(nc_id,time_id,"long_name",NC_CHAR,(long)(strlen(att_long_name)+1UL),(void *)att_long_name);
 
   /* Catenate time-stamped reminder onto "history" global attribute */
   (void)nco_hst_att_cat(nc_id,"ncrcat added variable time=base_time+time_offset");
@@ -134,7 +138,6 @@ nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 
   /* Free time_offset buffer */
   time_offset=(double *)nco_free(time_offset);
-
 } /* end nco_arm_time_install */
 
 nco_long /* O [s] Value of base_time variable */

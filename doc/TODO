@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.263 2003-12-24 01:21:02 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.264 2004-01-01 20:41:43 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -10,12 +10,9 @@ NCO-wide items: 15 high priority items are shown first, then another ~100 items
 ******************************************************************************
 
 Autoconf-build items:
-06. Track VERSION in ./configure, use doc/VERSION for now
-11. Use autoconf standard for VERSION, HOSTNAME, USER
-14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, I18N, _LIBINTL_H, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
-19. Implement autotools processing of doc/nco.texi to generate standard documentation: nco.info, nco.dvi, nco.ps, nco.pdf
-20. DODS linkage appears broken on Linux
+14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
 22. Many compiler flags in configure.in should be compiler specific--not just OS specific, e.g., case $host in *-cray-unicos) case $CC in CC) CFLAGS= ....
+23. Implement ncra i18n support I18N with autotools: Add .po files, update doc/i18n.txt
 
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -171,10 +168,9 @@ Does multislabbing algorithm fix this?
 174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
 176. Replace Bison, Flex components of ncap with smaller C++ parser?
 177. Make RPM production allowable by non-root, since building RPMs as sudo root screws up permissions in obj/bin directories of user
-179. add netCDF to required packages list in RPM build
+179. Add netCDF to required packages list in RPM build?
 182. Add -L, --license switch to print license terms (as suggested by GNU coding style)
 187. Are OpenMP critical regions sufficient for netCDF or must all other threads stop completely?
-188. Make binary RPMS build with DODS option
 189. Verify ncrcat multithreading works, produced "not a netCDF file error" once
 190. Make typ_pck et al. use nc_type enum or something sane for default
 192. ncdiff will sometimes subtract files of incommensurate sizes without complaint
@@ -241,7 +237,13 @@ These work as expected, leaving value packed:
 ncks -O -C -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo.nc
 Arithmetic operator gives garbage answers:
 ncwa -O -C -a lat,lon,time -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo.nc
-290. CPP Macro to spit out "Yes"/"No" in nco_scm.c
+291. Get #define ENABLE_OPTIMIZE_CUSTOM etc. working in config.h nco_ctl.c
+292. nco_fl_utl.c: Use autoconf HAVE_NETWORK instead of WIN32
+293. nco_fl_utl.c: Use autoconf HAVE_MKDIR_M instead of SUN4
+294. Globals in NCO operators are prg, prg_nm, dbg_lvl. 
+If possible, modify so that shared-library (rather than main.c) holds
+and returns thread-specific values for each, set with, e.g., prg_set().
+295. Understand/maintain re-entrant behavior of shared library.
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.h,v 1.5 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.h,v 1.6 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
@@ -37,7 +37,7 @@ copyright_prn /* [fnc] Print copyright notice */
 (const char * const CVS_Id, /* I [sng] CVS identification string */
  const char * const CVS_Revision); /* I [sng] CVS revision string */
 
-char * /* O [sng] Mnemonic that describes current NCO version */
+const char * /* O [sng] Mnemonic that describes current NCO version */
 nmn_get(void); /* [fnc] Return mnemonic that describes current NCO version */
 
 #ifdef __cplusplus

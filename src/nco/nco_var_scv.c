@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.12 2003-04-04 19:46:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.13 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_var_scv.h" /* Arithmetic between variables and scalar values */
@@ -367,7 +367,7 @@ var_scv_mod(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
      __GNUG__ : Defined by g++, equivalent to (__GNUC__ && __cplusplus) */
 
 #ifndef __GNUG__
-  float fmodf(float,float); /* Cannot insert fmodf in ncap_sym_init() because it takes two arguments TODO #20 */
+  float fmodf(float,float); /* Cannot insert fmodf() in ncap_sym_init() because it takes two arguments TODO #20 */
   float fabsf(float); /* Sun math.h does not include fabsf() prototype */
 #endif /* __GNUG__ */
 

@@ -1,12 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.62 2003-08-16 21:29:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.63 2004-01-01 20:41:43 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
 /* Purpose: Add, create, delete, or overwrite attributes in a netCDF file */
 
-/* Copyright (C) 1995--2003 Charlie Zender
+/* Copyright (C) 1995--2004 Charlie Zender
 
-   This software is distributed under the terms of the GNU General Public License Version 2
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
@@ -115,15 +115,14 @@
 #include <netcdf.h> /* netCDF definitions */
 #include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
 
-/* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
+/* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #include "nco.h" /* NCO definitions */
 #include "libnco.h" /* netCDF operator library */
+
 int 
 main(int argc,char **argv)
 {
-  aed_sct *prs_aed_lst(int,char **);
-
   bool OUTPUT_TO_NEW_NETCDF_FILE=False;
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
@@ -141,8 +140,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.62 2003-08-16 21:29:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.62 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.63 2004-01-01 20:41:43 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.63 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -159,7 +158,7 @@ main(int argc,char **argv)
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
 
-  time_t clock;
+  time_t time_crr_time_t;
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
@@ -185,8 +184,8 @@ main(int argc,char **argv)
 
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  clock=time((time_t *)NULL);
-  time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
+  time_crr_time_t=time((time_t *)NULL);
+  time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
@@ -222,7 +221,7 @@ main(int argc,char **argv)
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
-      (void)nco_lib_vrs_prn();
+      (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
       break;
     case '?': /* Print proper usage */
@@ -262,14 +261,14 @@ main(int argc,char **argv)
   if(OUTPUT_TO_NEW_NETCDF_FILE){
 
     if(!FORCE_OVERWRITE){
-      int rcd;
+      int rcd_lcl;
 
       struct stat stat_sct;
       
-      rcd=stat(fl_out,&stat_sct);
+      rcd_lcl=stat(fl_out,&stat_sct);
 
       /* If file already exists, then query the user whether to overwrite */
-      if(rcd != -1){
+      if(rcd_lcl != -1){
         char usr_reply;
         
         usr_reply='z';
@@ -285,8 +284,8 @@ main(int argc,char **argv)
       } /* end if */
     } /* end if */
     
-    /* Copy input file to output file, then search through output, editing attributes along the way.
-       This avoids possible XDR translation performance penalty of copying each variable with netCDF. */
+    /* Copy input file to output file, then search through output, editing attributes along the way
+       This avoids possible XDR translation performance penalty of copying each variable with netCDF */
     (void)nco_fl_cp(fl_in,fl_out);
 
   } /* end if */
@@ -335,211 +334,3 @@ main(int argc,char **argv)
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
-
-aed_sct * /* O [sct] List of attribute edit structures */
-prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */
-(int nbr_aed, /* I [nbr] Number of attributes in list */
- char **aed_arg) /* I [sng] List of user-specified attribute edits */
-{
-  /* Purpose: Parse name, type, size, and value elements of comma-separated list of attribute edit information
-     Routine merely evaluates syntax of input expressions
-     Routine does not validate attributes or variables against those present in input netCDF file */
-
-  /* Options are:
-     -a att_nm,var_nm,mode,att_typ,att_val (modifies attribute att_nm for the single variable var_nm)
-
-     -a att_nm,,mode,att_typ,att_val (modifies attribute att_nm for every variable in file)
-     If option -a is given with var_nm = NULL, then var_nm is expanded into every variable name in file
-     Thus attribute editing operation is performed on every variable in file.
-
-     mode,att_nm,att_typ,att_val (modifies global attribute att_nm for file)
-     This option may be combined with modes -a, -c, -d, or -o to specify 
-     appending to, changing, deleting, or overwriting, any existing global attribute named att_nm
-
-     One mode must be set for each edited attribute: append (a), create (c), delete (d), modify (m), or overwrite (o).
-     -a: Attribute append mode
-     Append value att_val to current var_nm attribute att_nm value att_val, if any. 
-     If var_nm does not have an attribute att_nm, there is not effect.
-
-     -c: Attribute create mode
-     Create variable var_nm attribute att_nm with att_val if att_nm does not yet exist. 
-     If var_nm already has an attribute att_nm, there is not effect.
-
-     -d: Attribute delete mode
-     Delete current var_nm attribute att_nm.
-     If var_nm does not have an attribute att_nm, there is not effect.
-
-     -m: Attribute modify mode
-     Change value of current var_nm attribute att_nm to value att_val.
-     If var_nm does not have an attribute att_nm, there is not effect.
-
-     -o: Attribute overwrite mode
-     Write attribute att_nm with value att_val to variable var_nm, overwriting existing attribute att_nm, if any.
-     This is default mode.
-   */
-
-  void nco_usg_prn(void);
-
-  char **arg_lst;
-
-  char *dlm_sng=",";
-
-  aed_sct *aed_lst;
-
-  int idx;
-  int arg_nbr;
-
-  long idx_att_val_arg=4L; /* Number of required delimiters preceding attribute values in -a argument list */
-
-  aed_lst=(aed_sct *)nco_malloc(nbr_aed*sizeof(aed_sct));
-
-  for(idx=0;idx<nbr_aed;idx++){
-
-    /* Attribute edit specifications are processed as a normal text list. */
-    arg_lst=lst_prs(aed_arg[idx],dlm_sng,&arg_nbr);
-
-    /* Check syntax */
-    if(
-       arg_nbr < 5 || /* Need more info */
-       /* arg_lst[0] == NULL || */ /* att_nm not specified */
-       arg_lst[2] == NULL || /* mode not specified */
-       (*(arg_lst[2]) != 'd' && (arg_lst[3] == NULL || (arg_lst[idx_att_val_arg] == NULL && *(arg_lst[3]) != 'c'))) || /* att_typ and att_val must be specified when mode is not delete, except that att_val = "" is valid for character type */
-       False){
-      (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s\n",prg_nm_get(),aed_arg[idx]);
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
-
-    /* Initialize structure */
-    /* aed strings not explicitly set by user remain NULL,
-       i.e., specifying default setting appears as if nothing was set.
-       Hopefully, in routines that follow, the branch followed by an aed for which
-       all default settings were specified (e.g.,"-a foo,,,,") will yield same result
-       as branch for which all defaults were set. */
-    aed_lst[idx].att_nm=NULL;
-    aed_lst[idx].var_nm=NULL;
-    aed_lst[idx].val.vp=NULL;
-    aed_lst[idx].type=NC_CHAR;
-    aed_lst[idx].mode=aed_overwrite;
-    aed_lst[idx].sz=-1L;
-    aed_lst[idx].id=-1;
-
-    /* Fill in structure */
-    aed_lst[idx].att_nm=arg_lst[0];
-    aed_lst[idx].var_nm=arg_lst[1];
-
-    /* fxm: Change these switches to string comparisons someday */
-    /* Set mode of current aed structure */
-    /* Convert single letter code to mode enum */
-    /*    if(!strstr("append",arg_lst[2])){aed_lst[idx].mode=aed_append;
-    }else if(!strstr("create",arg_lst[2])){aed_lst[idx].mode=aed_create;
-    }else if(!strstr("delete",arg_lst[2])){aed_lst[idx].mode=aed_delete;
-    }else if(!strstr("modify",arg_lst[2])){aed_lst[idx].mode=aed_modify;
-    }else if(!strstr("overwrite",arg_lst[2])){aed_lst[idx].mode=aed_overwrite;} */
-    switch(*(arg_lst[2])){
-    case 'a': aed_lst[idx].mode=aed_append; break;
-    case 'c': aed_lst[idx].mode=aed_create; break;
-    case 'd': aed_lst[idx].mode=aed_delete; break;
-    case 'm': aed_lst[idx].mode=aed_modify; break;
-    case 'o': aed_lst[idx].mode=aed_overwrite; break;
-    default: 
-      (void)fprintf(stderr,"%s: ERROR `%s' is not a supported mode\n",prg_nm_get(),arg_lst[2]);
-      (void)fprintf(stderr,"%s: HINT: Valid modes are `a' = append, `c' = create,`d' = delete, `m' = modify, and `o' = overwrite",prg_nm_get());
-      nco_exit(EXIT_FAILURE);
-      break;
-    } /* end switch */
-
-    /* Attribute type and value do not matter if we are deleting it */
-    if(aed_lst[idx].mode != aed_delete){
-
-      /* Set type of current aed structure */
-      /* Convert single letter code to type enum */
-      switch(*(arg_lst[3])){
-      case 'f':	aed_lst[idx].type=NC_FLOAT; break;
-      case 'd':	aed_lst[idx].type=NC_DOUBLE; break;
-      case 'l':	
-      case 'i':	aed_lst[idx].type=NC_INT; break;
-      case 's':	aed_lst[idx].type=NC_SHORT; break;
-      case 'c':	aed_lst[idx].type=NC_CHAR; break;
-      case 'b':	aed_lst[idx].type=NC_BYTE; break;
-      default: 
-	(void)fprintf(stderr,"%s: ERROR `%s' is not a supported netCDF data type\n",prg_nm_get(),arg_lst[3]);
-	(void)fprintf(stderr,"%s: HINT: Valid data types are `c' = char, `f' = float, `d' = double,`s' = short, `l' = long, `b' = byte",prg_nm_get());
-	nco_exit(EXIT_FAILURE);
-	break;
-      } /* end switch */
-      
-      /* Reassemble string list values which inadvertently contain delimiters */
-      if(aed_lst[idx].type == NC_CHAR && arg_nbr > idx_att_val_arg+1){
-	/* Number of elements which must be concatenated into single string value */
-	long lmn_nbr;
-	lmn_nbr=arg_nbr-idx_att_val_arg; 
-	if(dbg_lvl >= 2) (void)fprintf(stdout,"%s: WARNING NC_CHAR (string) attribute is embedded with %li literal element delimiters (\"%s\"), reassembling...\n",prg_nm_get(),lmn_nbr-1L,dlm_sng);
-	/* Rewrite list, splicing in original delimiter string */
-	arg_lst[idx_att_val_arg]=sng_lst_prs(arg_lst+idx_att_val_arg,lmn_nbr,dlm_sng);
-	/* Keep bookkeeping straight, just in case */
-	arg_nbr=idx_att_val_arg+1L;
-	lmn_nbr=1L;
-      } /* endif arg_nbr > idx_att_val_arg+1 */
-      
-      /* Replace any C language '\X' escape codes with ASCII bytes */
-      if(aed_lst[idx].type == NC_CHAR) (void)sng_ascii_trn(arg_lst[idx_att_val_arg]);
-
-      /* Set size of current aed structure */
-      if(aed_lst[idx].type == NC_CHAR){
-	/* Include NUL-terminator in string length */
-	aed_lst[idx].sz=(arg_lst[idx_att_val_arg] == NULL) ? 0 : strlen(arg_lst[idx_att_val_arg])+1;
-      }else{
-	/* Number of elements of numeric types is determined by number of delimiters */
-	aed_lst[idx].sz=arg_nbr-idx_att_val_arg;
-      } /* end else */
-      
-      /* Set value of current aed structure */
-      if(aed_lst[idx].type == NC_CHAR){
-	aed_lst[idx].val.cp=(unsigned char *)arg_lst[idx_att_val_arg];
-      }else{
-	double *val_arg_dbl=NULL_CEWI;
-	
-	long lmn;
-	
-	val_arg_dbl=(double *)nco_malloc(aed_lst[idx].sz*sizeof(double));
-	aed_lst[idx].val.vp=(void *)nco_malloc(aed_lst[idx].sz*nco_typ_lng(aed_lst[idx].type));
-	
-	for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) val_arg_dbl[lmn]=strtod(arg_lst[idx_att_val_arg+lmn],(char **)NULL); 
-	
-	/* Copy and typecast entire array of values, using implicit coercion rules of C */
-	/* 20011001: Use explicit coercion rules to quiet C++ compiler warnings */
-	switch(aed_lst[idx].type){
-	case NC_FLOAT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.fp[lmn]=(float)val_arg_dbl[lmn];} break; 
-	case NC_DOUBLE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.dp[lmn]=(double)val_arg_dbl[lmn];} break; 
-	case NC_INT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.lp[lmn]=(long)val_arg_dbl[lmn];} break; 
-	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=(short)val_arg_dbl[lmn];} break; 
-	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=(unsigned char)val_arg_dbl[lmn];} break; 
-	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=(signed char)val_arg_dbl[lmn];} break; 
-	default: nco_dfl_case_nc_type_err(); break;
-	} /* end switch */
-	
-	/* Free array used to hold double values */
-	val_arg_dbl=(double *)nco_free(val_arg_dbl);
-      } /* end else */
-      /* Un-typecast pointer to values after access */
-      (void)cast_nctype_void(aed_lst[idx].type,&aed_lst[idx].val);
-      
-    } /* end if mode is not delete */
-  } /* end loop over aed */
-  
-  if(dbg_lvl == 5){
-    for(idx=0;idx<nbr_aed;idx++){
-      (void)fprintf(stderr,"aed_lst[%d].att_nm = %s\n",idx,aed_lst[idx].att_nm);
-      (void)fprintf(stderr,"aed_lst[%d].var_nm = %s\n",idx,aed_lst[idx].var_nm == NULL ? "NULL" : aed_lst[idx].var_nm);
-      (void)fprintf(stderr,"aed_lst[%d].id = %i\n",idx,aed_lst[idx].id);
-      (void)fprintf(stderr,"aed_lst[%d].sz = %li\n",idx,aed_lst[idx].sz);
-      (void)fprintf(stderr,"aed_lst[%d].type = %s\n",idx,nco_typ_sng(aed_lst[idx].type));
-      /*      (void)fprintf(stderr,"aed_lst[%d].val = %s\n",idx,aed_lst[idx].val);*/
-      (void)fprintf(stderr,"aed_lst[%d].mode = %i\n",idx,aed_lst[idx].mode);
-    } /* end loop over idx */
-  } /* end debug */
-  
-  return aed_lst;
-  
-} /* end prs_aed_lst() */
-

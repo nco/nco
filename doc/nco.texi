@@ -4,11 +4,11 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.195 2003-12-24 01:21:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.196 2004-01-01 20:41:43 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
-Copyright (C) 1995--2003 Charlie Zender
+Copyright (C) 1995--2004 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1
 or any later version published by the Free Software Foundation;
@@ -94,10 +94,10 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @c Define edition, date, ...
 @set nco-edition 2.8.4
 @set doc-edition 2.8.4
-@set copyright-years 1995--2003
-@set update-year 2003
-@set update-date 25 November 2003
-@set update-month November 2003
+@set copyright-years 1995--2004
+@set update-year 2004
+@set update-date 1 January 2004
+@set update-month January 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -1377,6 +1377,7 @@ We commend these greedy users for pushing @acronym{NCO} to its limits!
 
 @cindex multiple threads
 @cindex threads
+@cindex OpenMP
 @cindex shared memory machines
 This section describes the memory @acronym{NCO} requires during
 operation.
@@ -1567,6 +1568,25 @@ Long options: All@*
 @acronym{NCO} support for @dfn{internationalization} of textual input
 and output (e.g., Warning messages) is nascent.
 We hope to produce foreign language string catalogues in 2004.
+@c fxm: Work on this section
+
+@html
+<a name="omp"></a> <!-- http://nco.sf.net/nco.html#omp -->
+@end html
+@node OpenMP Multi-threading
+@section OpenMP Multi-threading
+@cindex OpenMP
+@cindex multiple threads
+@cindex threads
+@cindex shared memory machines
+@cartouche
+Availability: All operators@*
+Short options: All@*
+Long options: All@*
+@end cartouche
+@acronym{NCO} support for shared memory machines using the OpenMP
+standard is nascent.
+We hope to implement robust threading in 2004.
 @c fxm: Work on this section
 
 @html

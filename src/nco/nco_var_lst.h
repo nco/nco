@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.14 2003-11-14 12:40:37 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.15 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
@@ -47,7 +47,6 @@ nco_var_lst_mk /* [fnc] Create variable extraction list */
  const bool PROCESS_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */
 
-
 nm_id_sct * /* O [sct] Variable extraction list */
 nco_var_lst_mk_old /* [fnc] Create variable extraction list */
 (const int nc_id, /* I [enm] netCDF file ID */
@@ -56,14 +55,12 @@ nco_var_lst_mk_old /* [fnc] Create variable extraction list */
  const bool PROCESS_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */
 
-
-int /* O number of matches found */
-nco_var_meta_search  /* search for pattern matches in the var string list */
-(int nbr_var,        /* I number of vars in srch_sng and size of in_bool */
-nm_id_sct *in_lst,    /* I list of vars with id nums */
-char *rexp,          /* I regular expression pattern */
-bool *in_bool);       /* O matched vars holder */
-
+int /* O [nbr] Number of matches found */
+nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
+(int nbr_var, /* I [nbr] number of vars in srch_sng and size of in_bool */
+ nm_id_sct *in_lst, /* I [sct] List of all variables in input file (with IDs) */
+ char *rexp, /* I [sng] Regular expression pattern */
+ bool *in_bool); /* O [flg] Matched vars holder */
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
@@ -75,7 +72,6 @@ nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_add_crd /* [fnc] Add all coordinates to extraction list */
 (const int nc_id, /* I [id] netCDF file ID */
- const int nbr_var, /* I [nbr] Number of variables in input file */
  const int nbr_dim, /* I [nbr] Number of dimensions in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
  int * const nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */

@@ -1,11 +1,11 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.12 2003-11-16 22:01:58 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.13 2004-01-01 20:41:43 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
 
-  /* Copyright (C) 1995--2003 Charlie Zender
+  /* Copyright (C) 1995--2004 Charlie Zender
      
-   This software is distributed under the terms of the GNU General Public License Version 2
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
@@ -35,8 +35,8 @@
      Unidata ${DATA}/tmp/netcdf-3.5.1-beta10/src/ncgen/ncgen.l */
 
   /* Usage:
-     flex ncap.l
-     NB: flex with -Cf or -Cf not -I if this scanner will not be interactive */
+     flex --stdout ~/nco/src/nco/ncap_lex.l > ~/nco/src/nco/ncap_lex.c
+     NB: flex with -Cf or -CF not -I if this scanner will not be interactive */
 
   /* Standard header files */
 #include <assert.h> /* assert() debugging macro */
@@ -438,7 +438,7 @@ M_PI {return NAMED_CONSTANT;}
       if(ptr_aed->type == NC_CHAR){
 	(void)cast_void_nctype(ptr_aed->type,&ptr_aed->val);
 	lval_ptr->sng=(char *)nco_malloc((ptr_aed->sz+1)*nco_typ_lng(NC_CHAR));
-	strncpy(lval_ptr->sng,(char *)(ptr_aed->val.cp),ptr_aed->sz);
+	strncpy(lval_ptr->sng,(char *)(ptr_aed->val.cp),(size_t)(ptr_aed->sz));
 	lval_ptr->sng[ptr_aed->sz]='\0';
 	return SNG;
       }else{
@@ -461,7 +461,7 @@ M_PI {return NAMED_CONSTANT;}
 	if(type == NC_CHAR){
 	  (void)cast_void_nctype(type,&val);
 	  lval_ptr->sng=(char *)nco_malloc((att_sz+1)*sizeof(char));
-	  strncpy(lval_ptr->sng,(char *)val.cp,att_sz);
+	  strncpy(lval_ptr->sng,(char *)val.cp,(size_t)att_sz);
 	  lval_ptr->sng[att_sz]='\0'; 
 	  return SNG;
 	}else{
@@ -650,7 +650,7 @@ M_PI {return NAMED_CONSTANT;}
      Nevertheless, copy 1.0 into value for safety */
   { /* Change scope to define convenience variables which reduce dereferencing */
     long var_sz; /* [nbr] Number of elements in variable */
-    int var_typ_sz; /* [B] Size of single element of variable */
+    size_t var_typ_sz; /* [B] Size of single element of variable */
     char *var_val_cp; /* [ptr] Pointer to values */
     
     var_sz=var->sz; /* [nbr] Number of elements in variable */

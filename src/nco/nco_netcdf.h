@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.17 2003-11-20 21:36:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.18 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
@@ -31,15 +31,15 @@ enum nco_fl_typ{ /* [enm] File type */
 }; /* end nco_fl_typ enum */
 
 /* Utility Routines */
-char * /* O [sng] Native C type */
+const char * /* O [sng] Native C type */
 c_typ_nm /* [fnc] Return string describing native C type */
 (nc_type type); /* O [enm] netCDF type */
 
-char * /* O [sng] Native Fortran77 type */
+const char * /* O [sng] Native Fortran77 type */
 f77_typ_nm /* [fnc] Return string describing native Fortran77 type */
 (nc_type type); /* O [enm] netCDF type */
 
-char * /* O [sng] Native Fortran90 type */
+const char * /* O [sng] Native Fortran90 type */
 f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
 (nc_type type); /* O [enm] netCDF type */
 
@@ -56,7 +56,7 @@ size_t /* O [B] Native type size */
 nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */
 (nc_type nco_typ); /* I [enm] netCDF type */
 
-char * /* O [sng] String describing type */
+const char * /* O [sng] String describing type */
 nco_typ_sng /* [fnc] Convert netCDF type enum to string */
 (nc_type type); /* I [enm] netCDF type */
 
@@ -78,7 +78,7 @@ int nco_inq_unlimdim(int,int *);
 /* Dimension Routines */
 int nco_def_dim(int,const char *,long,int *);
 int nco_inq_dimid(int,char *,int *);
-int nco_inq_dimid_flg(int,char *,int *);
+int nco_inq_dimid_flg(const int,const char * const,int *);
 int nco_inq_dim(int,int,char *,long *);
 int nco_inq_dim_flg(int,int,char *,long *);
 int nco_inq_dimname(int,int,char *);

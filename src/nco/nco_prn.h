@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.7 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.8 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
@@ -40,7 +40,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
 (const int in_id, /* I [id] netCDF input file ID */
  const int var_id); /* I [id] netCDF input variable ID */
 
-char * /* O [sng] sprintf() format string for type typ */
+const char * /* O [sng] sprintf() format string for type typ */
 nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 (const nc_type typ); /* I [enm] netCDF type to provide format string for */
 

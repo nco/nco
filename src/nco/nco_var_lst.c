@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.24 2003-11-14 21:32:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.25 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_var_lst.h" /* Variable list utilities */
@@ -55,18 +55,17 @@ nco_var_lst_mk_old /* [fnc] Create variable extraction list */
   } /* end else */
 
   return xtr_lst;
-
 } /* end nco_var_lst_mk_old() */
 
 nm_id_sct * /* O [sct] Variable extraction list */
-nco_var_lst_mk /* [fnc] Create variable extraction list using regular expressions*/
+nco_var_lst_mk /* [fnc] Create variable extraction list using regular expressions */
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
- char ** var_lst_in, /* I [sng] User-specified list of variable names */
+ char **var_lst_in, /* I [sng] User-specified list of variable names */
  const bool PROCESS_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
 {
-  /* Purpose: Create variable extraction list with or without regular expressions*/
+  /* Purpose: Create variable extraction list with or without regular expressions */
 
   int idx;
   int jdx;
@@ -75,7 +74,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
 
   char *var_sng;
 
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   nm_id_sct *in_lst=NULL; 
   bool *in_bool=NULL;
 
@@ -90,54 +89,49 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
     in_lst[idx].id=idx;
   } /* end loop over idx */
   
-    /* return all variables if .. */
-  if( *nbr_xtr==0 && !PROCESS_ALL_COORDINATES ) {
+    /* Return all variables if .. */
+  if(*nbr_xtr==0 && !PROCESS_ALL_COORDINATES){
     *nbr_xtr=nbr_var;
     return in_lst;
-  }      
+  } /* end if */     
       
   /* intialize and alloc  bool array to all False */
-  in_bool=(bool *)nco_calloc(nbr_var,sizeof(bool));
+  in_bool=(bool *)nco_calloc((size_t)nbr_var,sizeof(bool));
   
   /* Loop through var_lst_in */
-  for(idx=0 ; idx<*nbr_xtr ; idx++) {
-  
+  for(idx=0;idx<*nbr_xtr;idx++){
      var_sng=var_lst_in[idx];
 
-     /* Convert any #'s back to ' */
-     while(*var_sng) {
+     /* Convert pounds (#s) back to commas */
+     while(*var_sng){
        if (*var_sng=='#') *var_sng=',';
        var_sng++;
-     }
+     } /* end while */
      var_sng=var_lst_in[idx];
 
-     /* If var_sng is a regular expressio */
-     if ( strpbrk(var_sng,".*^$\\[]()<>+?|{}")  ) {
-       
-       /* Regular expression library present */
+     /* If var_sng is regular expression... */
+     if(strpbrk(var_sng,".*^$\\[]()<>+?|{}")){
+       /* ...and regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
        nbr_match=nco_var_meta_search(nbr_var,in_lst,var_sng,in_bool);
-       if( nbr_match==0)  
-        	(void)fprintf(stdout,"%s: WARNING: regular expression \"%s\" doesn't match any variables\n",prg_nm_get(),var_sng); 
+       if(nbr_match==0) (void)fprintf(stdout,"%s: WARNING: Regular expression \"%s\" does not match any variables\nHINT: http://nco.sf.net/nco.html#rx",prg_nm_get(),var_sng); 
        continue;
 #else
-
-      (void)fprintf(stdout,"%s: ERROR: \"%s\" Regular expressions on variables are not available in this build.\n",prg_nm_get(),var_sng); 
+      (void)fprintf(stdout,"%s: ERROR: Sorry, wildcarding (extended regular expression matches to variables) is not available, so unable to compile regular expression \"%s\".\nHINT: Make sure libregex.a is on path and re-build NCO.\n",prg_nm_get(),var_sng);
        nco_exit(EXIT_FAILURE);
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
-     }  
+     } /* end if regular expression */
     
-    /* normal variable -- search through var array */
-     for(jdx=0; jdx<nbr_var; jdx++)
-       if( !strcmp(var_sng,in_lst[jdx].nm)) break;
-    
-       /* no match -- die gently */
-     if(jdx==nbr_var) {
-	(void)fprintf(stdout,"%s: ERROR nco_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
-        nco_exit(EXIT_FAILURE);
-      }else{
-      in_bool[jdx]=True;
-     }
+    /* Normal variable so search through var array */
+     for(jdx=0;jdx<nbr_var;jdx++)
+       if(!strcmp(var_sng,in_lst[jdx].nm)) break;
+       /* No matches found so die gently */
+     if(jdx==nbr_var){
+       (void)fprintf(stdout,"%s: ERROR nco_var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),var_sng); 
+       nco_exit(EXIT_FAILURE);
+     }else{
+       in_bool[jdx]=True;
+     } /* end else */
   }
   /* Create final list of vars using var list and bool array */
 
@@ -145,18 +139,17 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
   xtr_lst=(nm_id_sct *)nco_malloc(nbr_var*sizeof(nm_id_sct));
   nbr_tmp=0;
 
-  for(idx=0; idx<nbr_var;idx++) {
-
-    /* copy var to output array */
-    if(in_bool[idx]) {
+  for(idx=0;idx<nbr_var;idx++){
+    /* Copy var to output array */
+    if(in_bool[idx]){
       xtr_lst[nbr_tmp].nm=(char *)strdup(in_lst[idx].nm);
-      xtr_lst[nbr_tmp].id =in_lst[idx].id;
-      nbr_tmp++; 
-    } 
+      xtr_lst[nbr_tmp].id=in_lst[idx].id;
+      nbr_tmp++;
+    } /* end if */
     (void)nco_free(in_lst[idx].nm);
-         
-  }
-  /* realloc() to actual size */  
+  } /* end loop over var */
+
+  /* realloc() list to actual size */  
   xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,nbr_tmp*sizeof(nm_id_sct));
 
   (void)nco_free(in_lst);
@@ -164,20 +157,19 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
 
   *nbr_xtr=nbr_tmp;    
   return xtr_lst;
-
 } /* end nco_var_lst_mk_meta() */
 
-/* Compile only if library is present */
+/* Compile only if regular expression library is present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
 
-int /* O number of matches found */
-nco_var_meta_search  /* search for pattern matches in the var string list */
-(int nbr_var,        /* I number of vars in srch_sng and size of in_bool */
-nm_id_sct *in_lst,   /* I list of all variables in input file (with id's) */
-char *rexp,          /* I regular expression pattern */
-bool *in_bool)       /* O matched vars holder */
+int /* O [nbr] Number of matches found */
+nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
+(int nbr_var, /* I [nbr] number of vars in srch_sng and size of in_bool */
+ nm_id_sct *in_lst, /* I [sct] List of all variables in input file (with IDs) */
+ char *rexp, /* I [sng] Regular expression pattern */
+ bool *in_bool) /* O [flg] Matched vars holder */
 {
-  /* if regular expression doesn't compile then prog crashes out */
+  /* If regular expression does not compile then program dies */
   int idx;
   int err_no;
   int cflags;
@@ -188,59 +180,55 @@ bool *in_bool)       /* O matched vars holder */
   regmatch_t *result;
   regex_t *r;
 
-  r = (regex_t *) malloc(sizeof(regex_t));
+  r=(regex_t *)malloc(sizeof(regex_t));
 
-  /* Choose the RE_SYNTAX_POSIX_EXTENDED regular expression type */
+  /* Choose RE_SYNTAX_POSIX_EXTENDED regular expression type */
   cflags=(REG_EXTENDED | REG_NEWLINE);
   /* Set execution flags */
   eflags=0;
 
   /* Compile regular expression */
-
-  if((err_no=regcomp(r,rexp ,cflags))!=0) /* Compile the regex */
-    {
-      char *err_sng;  
-    /* POSIX regcomp return error codes. */
-
-      switch(err_no) {
-      case REG_BADPAT:      err_sng="Invalid pattern."; break;  
-      case REG_ECOLLATE:    err_sng="Not implemented."; break;
-      case REG_ECTYPE:	    err_sng="Invalid character class name." ;break;
-      case REG_EESCAPE:	    err_sng="Trailing backslash."; break;
-      case REG_ESUBREG:	    err_sng="Invalid back reference."; break ;
-      case REG_EBRACK:	    err_sng="Unmatched left bracket."; break ;
-      case REG_EPAREN:	    err_sng=" Parenthesis imbalance."; break ;
-      case REG_EBRACE:	    err_sng=" Unmatched {.  "; break ;
-      case REG_BADBR:	    err_sng=" Invalid contents of { }."; break ;
-      case REG_ERANGE:	    err_sng=" Invalid range end."; break ;
-      case REG_ESPACE:	    err_sng=" Ran out of memory."; break ;
-      case REG_BADRPT:	    err_sng=" No preceding re for repetition op"; break ;
-      default:              err_sng="Invalid pattern."; break;  
-      }
-
-      (void)fprintf(stdout,"%s: ERROR nco_var_meta_search() error in regular expression \"%s\" %s \n",prg_nm_get(),rexp, err_sng); 
+  if((err_no=regcomp(r,rexp,cflags)) != 0){ /* Compile regular expression */
+    char *err_sng;  
+    /* POSIX regcomp return error codes */
+    switch(err_no){
+    case REG_BADPAT: err_sng="Invalid pattern."; break;  
+    case REG_ECOLLATE: err_sng="Not implemented."; break;
+    case REG_ECTYPE: err_sng="Invalid character class name."; break;
+    case REG_EESCAPE: err_sng="Trailing backslash."; break;
+    case REG_ESUBREG: err_sng="Invalid back reference."; break;
+    case REG_EBRACK: err_sng="Unmatched left bracket."; break;
+    case REG_EPAREN: err_sng="Parenthesis imbalance."; break;
+    case REG_EBRACE: err_sng="Unmatched {."; break;
+    case REG_BADBR: err_sng="Invalid contents of { }."; break;
+    case REG_ERANGE: err_sng="Invalid range end."; break;
+    case REG_ESPACE: err_sng="Ran out of memory."; break;
+    case REG_BADRPT: err_sng="No preceding re for repetition op"; break;
+    default: err_sng="Invalid pattern."; break;  
+    } /* end switch */
+    (void)fprintf(stdout,"%s: ERROR nco_var_meta_search() error in regular expression \"%s\" %s \n",prg_nm_get(),rexp,err_sng); 
     nco_exit(EXIT_FAILURE);
-    }
+  } /* end if err */
 
-   no_sub = r->re_nsub+1; /* How many matches are there in a line? */
+  no_sub=r->re_nsub+1; /* How many matches are there in a line? */
 
-   /* search string */
-   result = (regmatch_t *) malloc(sizeof(regmatch_t) * no_sub);
+  /* Search string */
+  result=(regmatch_t *)malloc(sizeof(regmatch_t)*no_sub);
 
-   /* search each of the var strings for matches */
-   for(idx=0; idx<nbr_var ;idx++){  
-      if( !regexec(r, in_lst[idx].nm, no_sub, result, eflags))
-       { in_bool[idx]=True;
-         nbr_mtch++;
-       }
-   }
+  /* Search each var string for matches */
+  for(idx=0;idx<nbr_var;idx++){  
+    if(!regexec(r, in_lst[idx].nm,no_sub,result,eflags)){
+      in_bool[idx]=True;
+      nbr_mtch++;
+    } /* end if */
+  } /* end loop over variables */
 
-  regfree(r); /* Free the regular expression data structure */
+  regfree(r); /* Free regular expression data structure */
   (void *)nco_free(r);
   (void *)nco_free(result);
 
    return nbr_mtch;
-}
+} /* end nco_var_meta_search() */
 
 #endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
 
@@ -297,7 +285,6 @@ nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_add_crd /* [fnc] Add all coordinates to extraction list */
 (const int nc_id, /* I [id] netCDF file ID */
- const int nbr_var, /* I [nbr] Number of variables in input file */
  const int nbr_dim, /* I [nbr] Number of dimensions in input file */
  nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
  int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
@@ -325,9 +312,9 @@ nco_var_lst_add_crd /* [fnc] Add all coordinates to extraction list */
 	if(crd_id == xtr_lst[lst_idx].id) break;
       } /* end loop over lst_idx */
       if(lst_idx == *nbr_xtr){
-	/* Coordinate is not already on the list, put it there. */
+	/* Coordinate is not already on the list, put it there */
 	if(*nbr_xtr == 0) xtr_lst=(nm_id_sct *)nco_malloc((*nbr_xtr+1)*sizeof(nm_id_sct)); else xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));
-	/* According to the man page for realloc(), this should work even when xtr_lst == NULL */
+	/* According to man page for realloc(), this should work even when xtr_lst == NULL */
 /*	xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(*nbr_xtr+1)*sizeof(nm_id_sct));*/
 	xtr_lst[*nbr_xtr].nm=(char *)strdup(crd_nm);
 	xtr_lst[*nbr_xtr].id=crd_id;
@@ -337,7 +324,6 @@ nco_var_lst_add_crd /* [fnc] Add all coordinates to extraction list */
   } /* end loop over idx */
   
   return xtr_lst;
-  
 } /* end nco_var_lst_add_crd() */
 
 void

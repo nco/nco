@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.25 2003-08-02 23:26:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.26 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: File manipulation */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_fl_utl.h" /* File manipulation */
@@ -21,7 +21,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
   int nbr_fmt_char=4;
   
   /* Construct and execute copy command */
-  cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
+  cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1UL)*sizeof(char));
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Copying %s to %s...",fl_src,fl_dst);
   (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
   rcd=system(cp_cmd);
@@ -46,7 +46,7 @@ fl_mv /* [fnc] Move first file to second */
   int nbr_fmt_char=4;
   
   /* Construct and execute copy command */
-  mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
+  mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1UL)*sizeof(char));
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",prg_nm_get(),fl_src,fl_dst);
   (void)sprintf(mv_cmd,mv_cmd_fmt,fl_src,fl_dst);
   rcd=system(mv_cmd);
@@ -68,7 +68,7 @@ nco_fl_rm /* [fnc] Remove file */
   char *rm_cmd;
   
   /* Remember to add one for the space and one for the terminating NUL character */
-  rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1+strlen(fl_nm)+1)*sizeof(char));
+  rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1UL+strlen(fl_nm)+1UL)*sizeof(char));
   (void)sprintf(rm_cmd,"%s %s",rm_cmd_sys_dep,fl_nm);
 
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG Removing %s with %s\n",prg_nm_get(),fl_nm,rm_cmd);
@@ -196,7 +196,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* Rearrange fl_nm_lcl to get rid of ftp://hostname part */
     fl_pth_lcl_tmp=strchr(fl_nm_lcl+6,'/');
     fl_nm_lcl_tmp=fl_nm_lcl;
-    fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1);
+    fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
   }else if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
@@ -220,7 +220,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       /* Rearrange the fl_nm_lcl to get rid of the hostname: part */
       fl_pth_lcl_tmp=strchr(fl_nm_lcl+6,'/');
       fl_nm_lcl_tmp=fl_nm_lcl;
-      fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1);
+      fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1UL);
       (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
       fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
     } /* endif period is three or four characters from colon */
@@ -280,19 +280,21 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   if(rcd == -1){
 
     typedef struct{ /* [enm] Remote fetch command structure */
-      char *fmt; /* [] Format */
-      int nbr_fmt_char; /* [nbr] Number of formatting characters */
-      int transfer_mode; /* [enm] Transfer mode */
-      int file_order; /* [enm] File order */
+      const char *fmt; /* [] Format */
+      const int nbr_fmt_char; /* [nbr] Number of formatting characters */
+      const int transfer_mode; /* [enm] Transfer mode */
+      const int file_order; /* [enm] File order */
     } rmt_fch_cmd_sct;
 
     char *cmd_sys;
     char *fl_nm_rmt;
     char *fl_pth_lcl_tmp=NULL;
+    char *fmt_ftp=NULL; /* [sng] Declare outside FTP block scope for easier freeing */
     
-#if ( ! defined SUN4 )
+    /* fxm: do this with autoconf? */
+#ifndef SUN4
     char cmd_mkdir[]="mkdir -m 777 -p";
-#else
+#else /* SUN4 */
     char cmd_mkdir[]="mkdir -p";
 #endif /* SUN4 */
 
@@ -304,37 +306,39 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       lcl_rmt, /* Local file argument before remote file argument */
       rmt_lcl}; /* Remote file argument before local file argument */
 
-    int fl_pth_lcl_lng;
+    size_t fl_pth_lcl_lng;
     
     rmt_fch_cmd_sct *rmt_cmd=NULL;
+    /* fxm: Initialize structure contents as const */
     rmt_fch_cmd_sct msread={"msread -R %s %s",4,synchronous,lcl_rmt};
     rmt_fch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};
-    /*    rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/
+    /* rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/
     rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
+    /* Fill in ftp structure fmt element dynamically later */
     rmt_fch_cmd_sct ftp={"",4,synchronous,rmt_lcl};
 
-    /* Why did the stat() command fail? */
-/*    (void)perror(prg_nm_get());*/
+    /* Why did stat() command fail? */
+    /* (void)perror(prg_nm_get());*/
     
-    /* The remote filename is input filename by definition */
+    /* Remote filename is input filename by definition */
     fl_nm_rmt=fl_nm;
     
-    /* A URL specifier in filename unambiguously signals to use anonymous ftp */    
+    /* URL specifier in filename unambiguously signals to use anonymous ftp */    
     if(rmt_cmd == NULL){
       if(strstr(fl_nm_rmt,"ftp://") == fl_nm_rmt){
+	/* fxm: use autoconf HAVE_XXX rather than WIN32 to handle this */
 #ifdef WIN32
 /* #ifndef HAVE_NETWORK fxm */
 	/* I have no idea how networking calls work in NT, so just exit */
 	(void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported by this operating system\n",prg_nm_get(),fl_nm_rmt);
 	nco_exit(EXIT_FAILURE);
 #else /* !WIN32 */
-	char *fmt;
 	char *usr_nm;
 	char *host_nm_lcl;
 	char *host_nm_rmt;
 	char *usr_email;
-	char fmt_template[]="ftp -n << END\nopen %s\nuser anonymous %s\nbin\nget %s %s\nquit\nEND";
+	char fmt_ftp_tpl[]="ftp -n << END\nopen %s\nuser anonymous %s\nbin\nget %s %s\nquit\nEND";
 
 	struct passwd *usr_pwd;
 
@@ -360,33 +364,32 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	} /* end if */
 
 	/* Add one for the joining "@" and one for the NULL byte */
-	usr_email=(char *)nco_malloc((strlen(usr_nm)+1+strlen(host_nm_lcl)+1)*sizeof(char));
+	usr_email=(char *)nco_malloc((strlen(usr_nm)+1UL+strlen(host_nm_lcl)+1UL)*sizeof(char));
 	(void)sprintf(usr_email,"%s@%s",usr_nm,host_nm_lcl);
 	/* Free the hostname space */
 	host_nm_lcl=(char *)nco_free(host_nm_lcl);
 
-	/* The remote hostname begins directly after "ftp://" */
+	/* Remote hostname begins directly after "ftp://" */
 	host_nm_rmt=fl_nm_rmt+6;
-	/* filename begins right after the slash */
+	/* Filename begins after slash */
 	fl_nm_rmt=strstr(fl_nm_rmt+6,"/")+1;
-	/* NUL-terminate the hostname */
+	/* NUL-terminate hostname */
 	*(fl_nm_rmt-1)='\0';
 	
-	/* Subtract the four characters replaced by new strings, and add one for the NULL byte */
-	fmt=(char *)nco_malloc((strlen(fmt_template)+strlen(host_nm_rmt)+strlen(usr_email)-4+1)*sizeof(char));
-	(void)sprintf(fmt,fmt_template,host_nm_rmt,usr_email,"%s","%s");
-	rmt_cmd->fmt=fmt;
-	/* Free the space holding the user's E-mail address */
+	/* Subtract four characters replaced by new strings, add one for NUL byte */
+	fmt_ftp=(char *)nco_malloc((strlen(fmt_ftp_tpl)+strlen(host_nm_rmt)+strlen(usr_email)-4UL+1UL)*sizeof(char));
+	(void)sprintf(fmt_ftp,fmt_ftp_tpl,host_nm_rmt,usr_email,"%s","%s");
+	rmt_cmd->fmt=fmt_ftp;
+	/* Free space holding user's E-mail address */
 	usr_email=(char *)nco_free(usr_email);
 #endif /* !WIN32 */
       } /* end if */
     } /* end if */
 
-    /* Otherwise, a single colon preceded by a period in the filename unambiguously signals to use rcp or scp */
+    /* Otherwise, single colon preceded by period in filename unambiguously signals to use rcp or scp */
     /* Determining whether to try scp instead of rcp is difficult
        Ideally, NCO would test remote machine for rcp/scp priveleges with a system command like, e.g., "ssh echo ok"
-       To start with, we use scp which has its own fall through to rcp
-    */
+       To start with, we use scp which has its own fall through to rcp */
     if(rmt_cmd == NULL){
       if((cln_ptr=strchr(fl_nm_rmt,':')))
 	if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
@@ -429,12 +432,12 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
-    /* Find the path for storing the local file */
+    /* Find path for storing local file */
     fl_nm_stub=strrchr(fl_nm_lcl,'/')+1;
-    /* Construct the local storage filepath name */
-    fl_pth_lcl_lng=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1;
-    /* Allocate enough room for the terminating NUL */
-    fl_pth_lcl_tmp=(char *)nco_malloc((fl_pth_lcl_lng+1)*sizeof(char));
+    /* Construct local storage filepath name */
+    fl_pth_lcl_lng=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1UL;
+    /* Allocate enough room for terminating NUL */
+    fl_pth_lcl_tmp=(char *)nco_malloc((fl_pth_lcl_lng+1UL)*sizeof(char));
     (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_lng);
     fl_pth_lcl_tmp[fl_pth_lcl_lng]='\0';
     
@@ -478,8 +481,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* Free local command space */
     cmd_sys=(char *)nco_free(cmd_sys);
 
-    /* Free ftp script, which is the only dynamically allocated command */
-    if(rmt_cmd == &ftp) rmt_cmd->fmt=(char *)nco_free(rmt_cmd->fmt);
+    /* Free dynamically allocated ftp script memory */
+    if(rmt_cmd == &ftp) fmt_ftp=(char *)nco_free(fmt_ftp);
    
     if(rmt_cmd->transfer_mode == synchronous){
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"\n");
@@ -629,8 +632,8 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       
       /* Initialize static information useful for future invocations */
       fl_nm_1st_dgt=fl_lst_in[0]+strlen(fl_lst_in[0])-fl_nm_nbr_dgt-fl_nm_sfx_lng;
-      fl_nm_nbr_sng=(char *)nco_malloc((fl_nm_nbr_dgt+1)*sizeof(char));
-      fl_nm_nbr_sng=strncpy(fl_nm_nbr_sng,fl_nm_1st_dgt,fl_nm_nbr_dgt);
+      fl_nm_nbr_sng=(char *)nco_malloc((size_t)(fl_nm_nbr_dgt+1UL)*sizeof(char));
+      fl_nm_nbr_sng=strncpy(fl_nm_nbr_sng,fl_nm_1st_dgt,(size_t)fl_nm_nbr_dgt);
       fl_nm_nbr_sng[fl_nm_nbr_dgt]='\0';
       fl_nm_nbr_crr=(int)strtol(fl_nm_nbr_sng,(char **)NULL,10);
       (void)sprintf(fl_nm_nbr_sng_fmt,"%%0%dd",fl_nm_nbr_dgt);
@@ -649,7 +652,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
 	  fl_nm_nbr_crr=fl_nm_nbr_min; 
       (void)sprintf(fl_nm_nbr_sng,fl_nm_nbr_sng_fmt,fl_nm_nbr_crr);
       fl_nm=(char *)strdup(fl_lst_in[0]);
-      (void)strncpy(fl_nm+(fl_nm_1st_dgt-fl_lst_in[0]),fl_nm_nbr_sng,fl_nm_nbr_dgt);
+      (void)strncpy(fl_nm+(fl_nm_1st_dgt-fl_lst_in[0]),fl_nm_nbr_sng,(size_t)fl_nm_nbr_dgt);
     } /* end if not FIRST_INVOCATION */
   }else{ /* end if abbreviation list */
     fl_nm=(char *)strdup(fl_lst_in[fl_nbr]);
@@ -715,13 +718,13 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   */
   /* Maximum length of decimal representation of PID is number of bits in PID times log10(2) */
   pid_sng_lng_max=(long)ceil(8*sizeof(pid_t)*log10(2.0));
-  pid_sng=(char *)nco_malloc((pid_sng_lng_max+1)*sizeof(char));
+  pid_sng=(char *)nco_malloc((pid_sng_lng_max+1UL)*sizeof(char));
   pid=getpid();
   (void)sprintf(pid_sng,"%ld",(long)pid);
   /* Theoretical length of decimal representation of PID is 1+ceil(log10(PID)) where the 1 is required iff PID is an exact power of 10 */
   pid_sng_lng=1L+(long)ceil(log10((double)pid));
   /* NCO temporary file name is user-specified file name + "." + tmp_sng_1 + PID + "." + prg_nm + "." + tmp_sng_2 + NUL */
-  fl_out_tmp_lng=strlen(fl_out)+1L+strlen(tmp_sng_1)+strlen(pid_sng)+1L+strlen(prg_nm_get())+1L+strlen(tmp_sng_2)+1L;
+  fl_out_tmp_lng=strlen(fl_out)+1UL+strlen(tmp_sng_1)+strlen(pid_sng)+1UL+strlen(prg_nm_get())+1UL+strlen(tmp_sng_2)+1UL;
   fl_out_tmp=(char *)nco_malloc(fl_out_tmp_lng*sizeof(char));
   (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,prg_nm_get(),tmp_sng_2);
   if(dbg_lvl_get() > 5) (void)fprintf(stdout,"%s: nco_fl_out_open() reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);

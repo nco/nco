@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.12 2003-08-02 23:12:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.13 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_rth_utl.h" /* Arithmetic controls and utilities */
@@ -122,7 +122,7 @@ nco_op_prs_rlt /* [fnc] Convert Fortran abbreviation for relational operator int
     nco_exit(EXIT_FAILURE);
   } /* end else */
 
-  /* Some C compilers, e.g., SGI cc, need return statement at end of non-void functions */
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return False; /* Statement should not be reached */
 } /* end nco_op_prs_rlt() */
 

@@ -1,3 +1,38 @@
+2003-12-29  Charlie Zender  <zender@uci.edu>
+
+	* De-lint code with --enable-debug-custom
+	Fixed sloppy casts, signed/unsigned comparisons, missing const's
+	in nearly all source codde.
+
+	* make dst_cln cleans volatile autotools build files in root directory
+
+	* Add top-level file descriptions to MANIFEST
+
+	* Expand GNU triplet names to specific architectures tested (i.e.,
+	use more restrictive triplets)
+
+	* Add correct compiler and OS criteria for custom compiler switches
+
+	* Make --enable-debug-custom set --enable-debug-symbols
+
+	* Replaced deprecated AC_HELP_STRING with AS_HELP_STRING
+
+2003-12-28  Charlie Zender  <zender@uci.edu>
+
+	* Update copyright years to 2004, tweak GPL license message
+
+2003-12-27  Charlie Zender  <zender@uci.edu>
+
+	* Perform extensive self-diagnostic check of compile-time
+	pre-processor configuration settings in	nco_ctl.c:nco_lbr_vrs_prn().
+	Check results displayed with -r, e.g., ncks -r
+
+2003-12-26  Charlie Zender  <zender@uci.edu>
+
+	* Add new tokens to config.h: ENABLE_[OPTIMIZE,DEBUG,EXTREME]
+
+	* Clean up and comment configure.in
+
 2003-12-23  Charlie Zender  <zender@uci.edu>
 
 	* Modified Rorik's script and added to distribution as doc/dods.sh

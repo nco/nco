@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.92 2003-12-01 15:10:13 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.93 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "ncap.h" /* netCDF arithmetic processor */
@@ -13,7 +13,7 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
 {
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */
-  char fnc_nm[]="ncap_var_init()"; /* [sng] Function name */
+  /* char fnc_nm[]="ncap_var_init()"; *//* [sng] Function name */
 
   int idx;
   int jdx;
@@ -76,19 +76,18 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
   
   if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: parser VAR action called ncap_var_init() to retrieve %s from disk\n",prg_nm_get(),var_nm);
   var=nco_var_fll(fl_id,var_id,var_nm,*(prs_arg->dmn_out),*(prs_arg->nbr_dmn_out));
-/*  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
-  (void)strcpy(var->nm,var_nm);*/
+  /*  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
+  (void)strcpy(var->nm,var_nm); */
 
-  /*  var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
+  /* Tally is not required yet since ncap does not perform cross-file operations (yet) */
+  /* var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
       (void)nco_zero_long(var->sz,var->tally); */
-  /* Dont need tally at the moment as we aren't performing any cross file 
-     operations with ncap */
-  var->tally=(long*)NULL;
+  var->tally=(long *)NULL;
 
   /* Retrieve variable values from disk into memory */
   (void)nco_var_get(fl_id,var);
   /* (void)nco_var_free(var_nm);*/
-  /* free(var_nm->nm);*/
+  /* (void)nco_free(var_nm->nm);*/
   /* var=nco_var_upk(var); */
   return var;
 } /* end ncap_var_init() */
@@ -140,7 +139,7 @@ ncap_var_write
 
 sym_sct *
 ncap_sym_init
-(char *sym_nm,
+(const char * const sym_nm,
  double (*fnc_dbl)(double),
  float (*fnc_flt)(float))
 { 
@@ -403,7 +402,10 @@ ncap_var_scv_pwr(var_sct *var,scv_sct scv)
 } /* end ncap_var_scv_pwr */
 
 scv_sct  
-ncap_scv_clc(scv_sct scv_1, char op, scv_sct scv_2)
+ncap_scv_clc
+(scv_sct scv_1,
+ const char op,
+ scv_sct scv_2)
 {
   /* Purpose: Calculate (scv_1 op scv_2) NB: Scalar values must be of same type */
   
@@ -865,9 +867,9 @@ ncap_var_stretch /* [fnc] Stretch variables */
     /* fxm: these should go away soon */
     var_lsr_out=nco_var_dpl(var_lsr);
     var_gtr_out=nco_var_dpl(var_gtr);
-    for(idx_dmn=0;idx_dmn<var_gtr->nbr_dim;idx_dmn++){;}
-    
-    if(var_lsr_var_gtr_dmn_shr_nbr == 0); else;
+
+    /* for(idx_dmn=0;idx_dmn<var_gtr->nbr_dim;idx_dmn++){;}
+       if(var_lsr_var_gtr_dmn_shr_nbr == 0); else; */
     
     /* Free calling variables */
     var_lsr=nco_var_free(var_lsr);

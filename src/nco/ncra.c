@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.94 2003-08-26 15:17:29 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.95 2004-01-01 20:41:43 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -6,8 +6,8 @@
    specfied variables of multiple input netCDF files and output them 
    to a single file. */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
@@ -62,7 +62,7 @@
 #endif /* _LIBINTL_H */
 
 /* Personal headers */
-/* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
+/* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF operator library */
 
@@ -93,8 +93,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.94 2003-08-26 15:17:29 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.94 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.95 2004-01-01 20:41:43 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.95 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -136,7 +136,7 @@ main(int argc,char **argv)
   nm_id_sct *dmn_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
   
-  time_t clock;
+  time_t time_crr_time_t;
   
   var_sct **var;
   var_sct **var_fix;
@@ -190,8 +190,8 @@ main(int argc,char **argv)
 
   /* Start clock and save command line */
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  clock=time((time_t *)NULL);
-  time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
+  time_crr_time_t=time((time_t *)NULL);
+  time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
 
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
@@ -248,11 +248,11 @@ main(int argc,char **argv)
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
-      (void)nco_lib_vrs_prn();
+      (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Variables to extract/exclude */
-      /* change commas INSIDE {} to # . Convert back later */
+      /* Replace commas with hashes when within braces (convert back later) */
       (void)nco_lst_comma2hash(optarg);
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
@@ -303,7 +303,7 @@ main(int argc,char **argv)
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
 
   /* Add all coordinate variables to extraction list */
-  if(PROCESS_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
+  if(PROCESS_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_dmn_fl,xtr_lst,&nbr_xtr);
 
   /* Make sure coordinates associated extracted variables are also on extraction list */
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);

@@ -1,11 +1,11 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.227 2003-11-25 21:01:31 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.228 2004-01-01 20:41:43 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
 # scp ~/nco/bld/Makefile goldhill.cgd.ucar.edu:nco/bld
 
-# Copyright (C) 1994--2003 Charlie Zender
-# This software is distributed under the terms of the GNU General Public License
+# Copyright (C) 1994--2004 Charlie Zender
+# This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
 # See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
 
 # Usage: 
@@ -265,8 +265,8 @@ MDL_DAT_STB := $(addsuffix .nc,$(MDL_DAT_STB)) # `make data' creates these files
 MDL_DAT := $(addprefix ${MY_DAT_DIR}/,$(MDL_DAT_STB)) # `make distclean' removes these files
 
 # Variables having to do with NCO documentation
-MDL_DOC_SRC := $(addprefix ${MY_DOC_DIR}/,nco.texi MANIFEST README NEWS TODO VERSION debian.txt index.shtml ncap.txt nco_news.shtml nco_src_frg.txt) $(addprefix ${MY_DBN_DIR}/,changelog compat control convert copyright docs files info postinst postrm prerm rules nco.doc-base nco.postinst.debhelper nco.postrm.debhelper nco.prerm.debhelper nco.substvars) # `make tags' includes these files
-MDL_DOC_TRG := nco.dvi nco.ps nco.pdf nco.html nco.info # `make doc' creates these files
+MDL_DOC_SRC := $(addprefix ../,configure.in configure.eg) $(addprefix ${MY_DOC_DIR}/,nco.texi MANIFEST README NEWS TODO VERSION debian.txt dods.sh index.shtml ncap.txt nco_news.shtml nco_src_frg.txt) $(addprefix ${MY_DBN_DIR}/,changelog compat control convert copyright docs files info postinst postrm prerm rules nco.doc-base nco.postinst.debhelper nco.postrm.debhelper nco.prerm.debhelper nco.substvars) # `make tags' includes these files
+MDL_DOC_TRG := nco.dvi nco.html nco.info nco.pdf nco.ps nco.txt nco.xml # `make doc' creates these files
 MDL_DOC := $(addprefix ${MY_DOC_DIR}/,$(MDL_DOC_TRG)) # `make distclean' removes these files
 
 MDL_MAN = $(wildcard ${MDL_MAN_DIR}/*.1)
@@ -755,7 +755,7 @@ ifeq (${OPTS},D)
  FFLAGS = -g -f3
 endif
 ifeq (${OPTS},X)
- CFLAGS += -h0 -g -hstack=nan
+ CFLAGS += -g -h0 -hstack=nan
 # CFLAGS += -Cdebug -init stack=nan
  FFLAGS = -Cdebug -eR -f3 -Wf"-init stack=nan heap=nan"
 endif
@@ -1065,6 +1065,10 @@ bin_cln:
 	rm -f ${MDL_BIN}
 strip: 
 	- printf "Before stripping...\n";ls -l ${MDL_BIN};strip ${MDL_BIN};printf "After stripping...\n";ls -l ${MDL_BIN}
+# Targets in root
+rootclean: root_cln
+root_cln:
+	- cd ..; rm -f aclocal.m4 config.h.in config.h config.guess config.log config.status config.sub libtool Makefile Makefile.in stamp-h1; rm -r -f autom4te.cache conftest
 # Targets in bld
 buildclean: bld_cln
 bld_cln:
@@ -1257,7 +1261,7 @@ dbg:
 	@printf "VRS_SNG = ${VRS_SNG}\n"
 	@printf "YACC = ${YACC}\n"
 distclean: dst_cln
-dst_cln: cln bin_cln doc_cln dat_cln
+dst_cln: cln bin_cln dat_cln doc_cln root_cln
 	cd ${MY_BLD_DIR}; rm -f *~
 	cd ${MY_DAT_DIR}; rm -f in.nc *~
 tags: 

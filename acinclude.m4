@@ -1,5 +1,5 @@
 AC_DEFUN([AC_CXX_HAVE_VALARRAY],
-[AC_CACHE_CHECK(whether the compiler has valarray<T>,
+[AC_CACHE_CHECK(whether C++ compiler has working valarray<T>,
 ac_cv_cxx_have_valarray,
 [AC_REQUIRE([AC_CXX_NAMESPACES])
  AC_LANG_SAVE
@@ -12,12 +12,12 @@ using namespace std;
  AC_LANG_RESTORE
 ])
 if test "$ac_cv_cxx_have_valarray" = yes; then
-  AC_DEFINE(HAVE_VALARRAY,,[define if the compiler has valarray<T>])
+  AC_DEFINE(HAVE_VALARRAY,,[Define if C++ compiler has working valarray<T>])
 fi
 ])
 
 AC_DEFUN([AC_CXX_NAMESPACES],
-[AC_CACHE_CHECK(whether the compiler implements namespaces,
+[AC_CACHE_CHECK(whether C++ compiler implements namespaces,
 ac_cv_cxx_namespaces,
 [AC_LANG_SAVE
  AC_LANG_CPLUSPLUS
@@ -27,16 +27,16 @@ ac_cv_cxx_namespaces,
  AC_LANG_RESTORE
 ])
 if test "$ac_cv_cxx_namespaces" = yes; then
-  AC_DEFINE(HAVE_NAMESPACES,,[define if the compiler implements namespaces])
+  AC_DEFINE(HAVE_NAMESPACES,,[Define if C++ compiler implements namespaces])
 fi
 ])
 
 AC_DEFUN([NCO_CHECK_FUNCS],
-[AC_FOREACH([AC_Func], [$1],
-  [AH_TEMPLATE(AS_TR_CPP(HAVE_[]AC_Func),
-               [Define to 1 if you have the `]AC_Func[' function.])
-  AH_TEMPLATE(AS_TR_CPP(NEED_[]AC_Func),
-               [Define to 1 if you need the `]AC_Func[' function.])	       
+[AC_FOREACH([AC_Func],[$1],
+  [AH_TEMPLATE(AS_TR_CPP(HAVE_[]AC_Func),dnl
+		[Define to 1 if compiler finds external `]AC_Func[' function])
+	AH_TEMPLATE(AS_TR_CPP(NEED_[]AC_Func),dnl
+	[Define to 1 if compiler needs external `]AC_Func[' function])	       
 	       ])dnl
 for ac_func in $1
 do

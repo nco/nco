@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.32 2003-11-20 22:12:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.33 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_var_utl.h" /* Variable utilities */
@@ -55,15 +55,15 @@ nco_cpy_var_dfn /* [fnc] Copy variable metadata from input to output file */
   for(idx=0;idx<nbr_dim;idx++){
     char dmn_nm[NC_MAX_NAME];
     long dmn_sz;
-    int rcd; /* [rcd] Return code */
+    int rcd_lcl; /* [rcd] Return code */
     
     (void)nco_inq_dim(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
     
     /* Has dimension been defined in output file? */
-    rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
+    rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
     
     /* If dimension has not been defined, copy it */
-    if(rcd != NC_NOERR){
+    if(rcd_lcl != NC_NOERR){
       if(dmn_in_id[idx] != rec_dmn_id){
 	/* dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,dmn_sz); */
 	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
@@ -132,20 +132,20 @@ nco_cpy_var_dfn_lmt /* Copy variable metadata from input to output file */
   for(idx=0;idx<nbr_dim;idx++){
     char dmn_nm[NC_MAX_NAME];
     long dmn_sz;
-    int rcd; /* [rcd] Return code */
+    int rcd_lcl; /* [rcd] Return code */
     
     (void)nco_inq_dim(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
     
     /* Has dimension been defined in output file? */
-    rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
+    rcd_lcl=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
     
     /* If dimension has not been defined, copy it */
-    if(rcd != NC_NOERR){
+    if(rcd_lcl != NC_NOERR){
       if(dmn_in_id[idx] != rec_dmn_id){
 	int lmt_idx;
 
 	/* Decide whether this dimension has any user-specified limits */
-	for(lmt_idx=0 ; lmt_idx < lmt_lst_nbr ; lmt_idx++){
+	for(lmt_idx=0;lmt_idx<lmt_lst_nbr;lmt_idx++){
 	  if(lmt_lst[lmt_idx].lmt_dmn[0]->id == dmn_in_id[idx]){
 	    dmn_sz=lmt_lst[lmt_idx].dmn_cnt;
 	    break;
@@ -249,7 +249,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
     nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
   } /* end if variable is an array */
   /* Write unformatted binary data */
-  if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
+  if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
 
   /* Free the space that held dimension IDs */
   dmn_cnt=(long *)nco_free(dmn_cnt);
@@ -373,15 +373,12 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   if(nbr_dim==0){ /* Copy scalar */
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
-    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
+    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
   }else if(!WRP){ /* Copy contiguous array */
     if(!SRD) nco_get_vara(in_id,var_in_id,dmn_in_srt,dmn_cnt,void_ptr,var_type); else nco_get_varm(in_id,var_in_id,dmn_in_srt,dmn_cnt,dmn_srd,(long *)NULL,void_ptr,var_type);
     nco_put_vara(out_id,var_out_id,dmn_out_srt,dmn_cnt,void_ptr,var_type);
-    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
+    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
   }else if(WRP){ /* Copy wrapped array */
-    int dmn_idx;
-    int lmt_idx;
-    
     /* For wrapped data */
     long *dmn_in_srt_1=NULL;
     long *dmn_in_srt_2=NULL;
@@ -426,7 +423,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
 	      long left_over_idx_1st_hyp_slb; /* # elements from first hyperslab to count towards current stride */
 	      /* long first_good_idx_2nd_hyp_slb; *//* C index of first valid member of 2nd hyperslab, if any */
 
-	      /* NB: Perform these operations with integer arithmatic or else! */
+	      /* NB: Perform these operations with integer arithmetic or else! */
 	      dmn_cnt_1[dmn_idx]=1L+(dmn_sz[dmn_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd; 
 	      /* Wrapped dimensions with stride may not start at idx 0 on second read */
 	      greatest_srd_multiplier_1st_hyp_slb=(dmn_sz[dmn_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd;
@@ -501,17 +498,17 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
     if(!SRD){
       (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_type);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_type);
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
       (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,void_ptr,var_type);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_type);
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
     }else{ /* SRD */
       (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,dmn_srd,(long *)NULL,void_ptr,var_type);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_type);
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
       (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,dmn_srd,(long *)NULL,void_ptr,var_type);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_type);
-      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
     } /* end else SRD */
     
     dmn_in_srt_1=(long *)nco_free(dmn_in_srt_1);
@@ -551,7 +548,7 @@ nco_var_dpl /* [fnc] Duplicate input variable */
   var_cpy=(var_sct *)nco_malloc(sizeof(var_sct));
 
   /* Shallow copy structure */
-  (void)memcpy((void *)var_cpy,(void *)var,sizeof(var_sct));
+  (void)memcpy((void *)var_cpy,(const void *)var,sizeof(var_sct));
 
   /* fxm: Should copy name as well, but var_free does not free it, and 
      var_lists do not strdup() user input so must make all changes at once 

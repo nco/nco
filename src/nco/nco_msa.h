@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.7 2003-06-16 16:37:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.8 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
-/* Copyright (C) 1995--2003 Charlie Zender and Henry Butowsky
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender and Henry Butowsky
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
@@ -46,8 +46,11 @@ extern "C" {
   lmt_all_sct * const lmt_lst, /* I multi-hyperslab limits */
   int nbr_dmn_fl); /* I [nbr] Number of multi-hyperslab limits */
   
-  bool /* if false then we are at the end of the slab */
+  void 
+  nco_msa_c_2_f /* [fnc] Replace brackets with parentheses in a string */
+  (char *sng); /* [sng] String to change from C to Fortran notation */
 
+  bool /* if false then we are at the end of the slab */
   nco_msa_clc_idx
   (bool NORMALIZE,         /* Return indices of slab within the slab */
    lmt_all_sct *lmt_a,         /* I list of lmts for each dimension  */

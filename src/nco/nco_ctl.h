@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.8 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.9 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
@@ -47,12 +47,12 @@ is_rth_opr /* [fnc] Query whether program does arithmetic */
 (const int prg_id); /* [enm] Program ID */
 
 void
-nco_lib_vrs_prn(void); /* [fnc] Print netCDF library version */
+nco_lbr_vrs_prn(void); /* [fnc] Print netCDF library version */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
 prg_prs /* [fnc] Strip program name to stub and return program ID */
 (const char * const nm_in, /* I [sng] Name of program, i.e., argv[0] (may include path prefix) */
- int * const prg); /* O [enm] Enumerated number corresponding to nm_in */
+ int * const prg_lcl); /* O [enm] Enumerated number corresponding to nm_in */
 
 void 
 nco_usg_prn(void); /* [fnc] Print correct program usage */

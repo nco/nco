@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.21 2003-11-25 19:14:18 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.22 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #ifdef HAVE_CONFIG_H
@@ -693,7 +693,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* long left_over_idx_1st_hyp_slb;*/ /* # elements from first hyperslab to count towards current stride */
     long first_good_idx_2nd_hyp_slb; /* C index of first valid member of 2nd hyperslab, if any */
     
-    /* NB: Perform these operations with integer arithmatic or else! */
+    /* NB: Perform these operations with integer arithmetic or else! */
     /* Wrapped dimensions with stride may not start at idx 0 on second read */
     greatest_srd_multiplier_1st_hyp_slb=(dmn_sz-lmt.srt-1L)/lmt.srd;
     last_good_idx_1st_hyp_slb=lmt.srt+lmt.srd*greatest_srd_multiplier_1st_hyp_slb;
@@ -783,7 +783,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
   
   char **arg_lst;
   
-  char *dlm_sng=",";
+  const char dlm_sng[]=",";
   
   lmt_sct *lmt=NULL_CEWI;
   

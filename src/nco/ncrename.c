@@ -1,12 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.58 2003-08-16 21:29:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.59 2004-01-01 20:41:43 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
 /* Purpose: Rename dimensions, variables, and attributes of a netCDF file */
 
-/* Copyright (C) 1995--2003 Charlie Zender
+/* Copyright (C) 1995--2004 Charlie Zender
 
-   This software is distributed under the terms of the GNU General Public License Version 2
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
    and in the file nco/doc/LICENSE in the NCO source distribution.
    
@@ -58,7 +58,7 @@
 #include <netcdf.h> /* netCDF definitions */
 #include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
 
-/* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
+/* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
 #include "libnco.h" /* netCDF operator library */
 
@@ -84,8 +84,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.58 2003-08-16 21:29:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.58 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.59 2004-01-01 20:41:43 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.59 $";
   
   extern char *optarg;
   
@@ -105,7 +105,7 @@ main(int argc,char **argv)
   rnm_sct *dmn_rnm_lst=NULL_CEWI;
   rnm_sct *att_rnm_lst=NULL_CEWI;
 
-  time_t clock;
+  time_t time_crr_time_t;
 
   static struct option opt_lng[] =
     { /* Structure ordered by short option key if possible */
@@ -132,8 +132,8 @@ main(int argc,char **argv)
 
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
-  clock=time((time_t *)NULL);
-  time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
+  time_crr_time_t=time((time_t *)NULL);
+  time_bfr_srt=ctime(&time_crr_time_t); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
@@ -173,7 +173,7 @@ main(int argc,char **argv)
       break;
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
-      (void)nco_lib_vrs_prn();
+      (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Copy argument for later processing */

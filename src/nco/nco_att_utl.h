@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.11 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.12 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
@@ -57,6 +57,11 @@ void
 nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
  const char * const hst_sng); /* I [sng] String to add to history attribute */
+
+aed_sct * /* O [sct] List of attribute edit structures */
+prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */
+(const int nbr_aed, /* I [nbr] Number of attributes in list */
+ X_CST_PTR_CST_PTR_Y(char,aed_arg)); /* I [sng] List of user-specified attribute edits */
 
 int /* [flg] Variable and attribute names are conjoined */
 nco_prs_att /* [fnc] Parse conjoined variable and attribute names */

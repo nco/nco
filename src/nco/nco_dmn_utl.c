@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.8 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.9 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_dmn_utl.h" /* Dimension utilities */
@@ -44,13 +44,14 @@ nco_dmn_dpl /* [fnc] Duplicate input dimension structure */
 (const dmn_sct * const dmn) /* I [sct] Dimension structure to duplicate */
 {
   /* Purpose: nco_malloc() and return duplicate of input dmn_sct */
+  const void *dmn_vp=dmn;
 
   dmn_sct *dmn_cpy;
 
   dmn_cpy=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
 
   /* Shallow copy structure */
-  (void)memcpy((void *)dmn_cpy,(void *)dmn,sizeof(dmn_sct));
+  (void)memcpy((void *)dmn_cpy,dmn_vp,sizeof(dmn_sct));
 
   /* fxm: Should copy name as well */
 

@@ -1,30 +1,31 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.14 2003-08-26 14:49:53 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.15 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: List utilities */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_lst_utl.h" /* List utilities */
 
-/* NB: Free (speech) sorting by Joerg Shoen available from
+/* NB: Free (speech) sorting routines by Joerg Shoen available from
    http://www.pci.uni-heidelberg.de/tc/usr/joerg
    are faster than ANSI system qsort() in all cases 
    See code in ${DATA}/tmp/testsort */
 
-int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_int /* [fnc] Compare two integers */
 (const void *val_1, /* I [nbr] Number to compare */
  const void *val_2) /* I [nbr] Number to compare */
 {
   /* Purpose: Compare two integers
      Function is suitable for argument to ANSI C qsort() routine in stdlib.h
-     Code stolen from http://www.cplusplus.com/ref/cstdlib/qsort.html */
-  return (*(int *)val_1-*(int *)val_2);
+     Code stolen from http://www.cplusplus.com/ref/cstdlib/qsort.html
+     Values pointed to by arguments are const though prototyping them as const triggers CEWI */
+  return *(int *)val_1-*(int *)val_2;
 } /* end nco_cmp_int() */
 
-int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_chr /* [fnc] Compare two characters */
 (const void *val_1, /* I [chr] Character to compare */
  const void *val_2) /* I [chr] Character to compare */
@@ -32,26 +33,26 @@ nco_cmp_chr /* [fnc] Compare two characters */
   /* Purpose: Compare two characters
      Function is suitable for argument to ANSI C qsort() routine in stdlib.h
      Code stolen from http://www.cplusplus.com/ref/cstdlib/qsort.html */
-  return (*(char *)val_1-*(char *)val_2);
+  return *(char *)val_1-*(char *)val_2;
 } /* end nco_cmp_chr() */
 
-int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_sng /* [fnc] Compare two strings */
 (const void *val_1, /* I [sng] String to compare */
  const void *val_2) /* I [sng] String to compare */
 {
-  /* Purpose: Compare two string
+  /* Purpose: Compare two strings
      Function is suitable for argument to ANSI C qsort() routine in stdlib.h
      http://www.eskimo.com/~scs/C-faq/q13.8.html describes sorting strings: 
      Arguments to qsort()'s comparison function are pointers to objects being sorted,
-     i.e., pointers to pointers to char. 
+     i.e., pointers to pointers to chars 
      strcmp(), however, accepts simple pointers to char
      Therefore, strcmp() cannot be used directly as comparison function for qsort()
      This wrapper casts input values to simple char pointers, calls strcmp(), and feeds results back to qsort() */
   return strcmp(*(char * const *)val_1,*(char * const *)val_2);
 } /* end nco_cmp_sng() */
 
-int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_nm_id_nm /* [fnc] Compare two nm_id_sct's by name member */
 (const void *val_1, /* I [sct] nm_id_sct to compare */
  const void *val_2) /* I [sct] nm_id_sct to compare */
@@ -60,13 +61,13 @@ nco_cmp_nm_id_nm /* [fnc] Compare two nm_id_sct's by name member */
   return strcmp((*(nm_id_sct *)val_1).nm,(*(nm_id_sct *)val_2).nm);
 } /* end nco_cmp_nm_id_nm() */
 
-int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_nm_id_id /* [fnc] Compare two nm_id_sct's by ID member */
 (const void *val_1, /* I [sct] nm_id_sct to compare */
  const void *val_2) /* I [sct] nm_id_sct to compare */
 {
   /* Purpose: Compare two nm_id_sct's by ID structure member */
-  return ((*(nm_id_sct *)val_1).id-(*(nm_id_sct *)val_2).id);
+  return (*(nm_id_sct *)val_1).id-(*(nm_id_sct *)val_2).id;
 } /* end nco_cmp_nm_id_nm() */
 
 char * /* O [sng] Concatenated string formed by joining all input strings */
@@ -185,22 +186,26 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
 
 void 
 indexx /* [fnc] Sort array of integers */
-(const int n, /* I [nbr] Number of elements */
+(const int lmn_nbr, /* I [nbr] Number of elements */
  const int * const arr_in, /* I [idx] Array to sort */
  int * const idx) /* O [idx] Indices to sorted array */
 {
   /* Purpose: Stub for Numerical Recipes-compatible indexx() routine */
+  long foo=sizeof(lmn_nbr)+sizeof(arr_in)+sizeof(idx); /* CEWI */
+  foo++; /* CEWI */
   (void)fprintf(stdout,"%s: ERROR indexx() routine should not be called\n",prg_nm_get());
   nco_exit(EXIT_FAILURE);
 } /* end indexx() */
 
 void 
 indexx_alpha /* [fnc] Sort array of strings */
-(const int n, /* I [nbr] Number of elements */
+(const int lmn_nbr, /* I [nbr] Number of elements */
  char * const * const arr_in, /* I [sng] Strings to sort */
  int * const idx) /* O [idx] Indices to sorted array */
 {
   /* Purpose: Stub for Numerical Recipes-compatible indexx_alpha() routine */
+  long foo=sizeof(lmn_nbr)+sizeof(arr_in)+sizeof(idx); /* CEWI */
+  foo++; /* CEWI */
   (void)fprintf(stdout,"%s: ERROR indexx_alpha() routine should not be called\n",prg_nm_get());
   nco_exit(EXIT_FAILURE);
 } /* end indexx() */
@@ -278,39 +283,42 @@ nco_lst_srt /* [fnc] Sort input list numerically or alphabetically */
   if(ALPHABETIZE_OUTPUT){
     /* Alphabetize list by variable name
        This produces easy-to-read screen output with ncks */
-    qsort(lst,nbr_lst,sizeof(lst[0]),nco_cmp_nm_id_nm);
+    qsort(lst,(size_t)nbr_lst,sizeof(lst[0]),nco_cmp_nm_id_nm);
   }else{
     /* Heapsort list by variable ID 
        This theoretically allows fastest I/O when creating output file */
-    qsort(lst,nbr_lst,sizeof(lst[0]),nco_cmp_nm_id_id);
+    qsort(lst,(size_t)nbr_lst,sizeof(lst[0]),nco_cmp_nm_id_id);
   } /* end else */
   return lst;
 } /* end nco_lst_srt() */
 
 void 
-nco_lst_comma2hash   /* convert  {, } to {# } in regular expressions */
-( char *const sng
-)  
+nco_lst_comma2hash /* [fnc] Replace commas with hashes when within braces */
+(char * const rx_sng) /* [sng] Regular expression */
 {
+  /* Purpose: Convert commas within braces to hashes within braces in regular expressions
+     Required for handling corner cases in wildcarding regular expressions
+     NB: Usually this code operates on system memory (e.g., optarg) so be very careful 
+     not to overwrite ends of strings */
   char *cp;
-  char *cp_cnvt=NULL;
-  bool openbrace=False;
-
-  cp=sng;
-  
+  char *cp_cnv=NULL; /* [ptr] Location of comma following open brace */
+  bool openbrace=False; /* [flg] Open brace has been found */
+  cp=rx_sng;
+  /* Loop over each character in string until first NUL encountered */
   while(*cp){
-
-    if (*cp=='{') openbrace=True;
-    if( openbrace && *cp==',') cp_cnvt=cp;
-  
-    if (*cp=='}') { 
+    /* Find open brace */
+    if(*cp=='{') openbrace=True;
+    if(openbrace && *cp==',') cp_cnv=cp;
+    /* Find close brace */
+    if(*cp=='}'){ 
+      /* Change comma following open brace, if any, to hash */
+      if(cp_cnv) *cp_cnv='#';
+      /* Reset comma location following open brace */
       openbrace=False;
-      if(cp_cnvt) *cp_cnvt='#';
-      openbrace=False;
-      cp_cnvt=NULL;
-    } 
+      /* Reset indicator and location of comma following open brace */
+      cp_cnv=NULL;
+    } /* endif */
+    /* Increment position in regular expression */
     cp++;
-  }
-  
-
-}/* end nco_lst_comma2hash() */
+  } /* end while character is not NUL */
+} /* end nco_lst_comma2hash() */

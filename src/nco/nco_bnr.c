@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_bnr.c,v 1.8 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_bnr.c,v 1.9 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Binary write utilities */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_bnr.h" /* Binary write utilities */
@@ -45,7 +45,6 @@ nco_bnr_close /* [fnc] Close unformatted binary data file for writing */
 size_t /* O [nbr] Number of elements successfully written */
 nco_bnr_wrt /* [fnc] Write unformatted binary data */
 (FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
- const char * const fl_bnr, /* I [sng] Unformatted binary output file */
  const char * const var_nm, /* I [sng] Variable name */
  const long var_sz, /* I [nbr] Variable size */
  const nc_type var_typ, /* I [enm] Variable type */

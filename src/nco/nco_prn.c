@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.12 2003-05-21 22:45:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.13 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_prn.h" /* Printing variables, attributes, metadata */
@@ -108,7 +108,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
 
 } /* end nco_prn_att() */
 
-char * /* O [sng] sprintf() format string for type typ */
+const char * /* O [sng] sprintf() format string for type typ */
 nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 (const nc_type typ) /* I [enm] netCDF type to provide format string for */
 {
@@ -135,7 +135,7 @@ nco_typ_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
 
-  /* Some C compilers, e.g., SGI cc, need return statement to end non-void functions */
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
   return (char *)NULL;
 } /* end nco_typ_fmt_sng() */
 
@@ -244,12 +244,12 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 {
   /* Purpose: Print variable data 
      Routine truncates dimensions of printed output variable in accord with user-specified limits
-     fxm: routine does not correctly print hyperslabs which are wrapped, or which use a non-unity stride */
+     fxm: routine does not correctly print hyperslabs which are wrapped, or which use non-unity stride */
 
   bool SRD=False; /* Stride is non-unity */
   bool WRP=False; /* Coordinate is wrapped */
 
-  char *unit_sng="";
+  char *unit_sng=""; /* fxm: bad initialization */
   char var_sng[MAX_LEN_FMT_SNG];
   
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -269,9 +269,9 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   dmn_sct *dim=NULL_CEWI;
   var_sct var;
 
-  /* Copy name into var structure for aesthetics. Unfortunately,
-     Solaris machines can overwrite var.nm with next nco_malloc(), so
-     continue to use var_nm for output just to be safe. */
+  /* Copy name into variable structure for aesthetics
+     Unfortunately, Solaris may overwrite var.nm with next nco_malloc(), 
+     so continue to use var_nm for output just to be safe. */
   var.nm=(char *)strdup(var_nm);
 
   /* Is requested variable in input file? */
@@ -382,14 +382,14 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 
   if(PRINT_DIMENSIONAL_UNITS){
     char units_nm[]="units"; /* [sng] Name of units attribute */
-    int rcd; /* [rcd] Return code */
+    int rcd_lcl; /* [rcd] Return code */
     int att_id; /* [id] Attribute ID */
     long att_sz;
     nc_type att_typ;
 
     /* Does variable have character attribute named units_nm? */
-    rcd=nco_inq_attid_flg(in_id,var.id,units_nm,&att_id);
-    if(rcd == NC_NOERR){
+    rcd_lcl=nco_inq_attid_flg(in_id,var.id,units_nm,&att_id);
+    if(rcd_lcl == NC_NOERR){
       (void)nco_inq_att(in_id,var.id,units_nm,&att_typ,&att_sz);
       if(att_typ == NC_CHAR){
 	unit_sng=(char *)nco_malloc((att_sz+1)*nco_typ_lng(att_typ));
@@ -560,7 +560,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
 	/* Print all characters in last dimension each time penultimate dimension subscript changes to its start value
 	   Ironic that printing characters is much more tedious than numbers */
 	/* Search for NUL-termination within size of last dimension */
-	if(memchr((void *)(var.val.cp+lmn),'\0',dmn_cnt[var.nbr_dim-1])){
+	if(memchr((void *)(var.val.cp+lmn),'\0',(size_t)dmn_cnt[var.nbr_dim-1])){
 	  /* Memory region is NUL-terminated, i.e., a valid string */
 	  /* Print strings inside double quotes */
 	  (void)sprintf(var_sng,"%%s%c%%ld--%%ld%c=\"%%s\" %%s",arr_lft_dlm,arr_rgt_dlm);

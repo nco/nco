@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.15 2003-11-14 22:32:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.16 2004-01-01 20:41:43 zender Exp $ */
 
 /* Purpose: Average variables */
 
-/* Copyright (C) 1995--2003 Charlie Zender
-   This software is distributed under the terms of the GNU General Public License
+/* Copyright (C) 1995--2004 Charlie Zender
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_var_avg.h" /* Average variables */
@@ -157,7 +157,7 @@ nco_var_avg /* [fnc] reduce given variable over specified dimensions */
       val_sz_byte=nco_typ_lng(fix->type);
       val=(char *)fix->val.vp;
       for(idx=0;idx<fix_sz;idx++,val+=val_sz_byte)
-	if(!memcmp(val,mss_val,val_sz_byte)) fix_tally[idx]=0L;
+	if(!memcmp(val,mss_val,(size_t)val_sz_byte)) fix_tally[idx]=0L;
     } /* fix->has_mss_val */
   } /* end if avg_sz == 1L */
 
@@ -236,8 +236,7 @@ nco_var_avg /* [fnc] reduce given variable over specified dimensions */
       for(idx=0;idx<nbr_dmn_avg;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
       
       /* Copy current element in input array into its slot in sorted avg_val */
-      (void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*typ_sz,var_cp+var_lmn*typ_sz,typ_sz);
-      
+      (void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*typ_sz,var_cp+var_lmn*typ_sz,(size_t)typ_sz);
     } /* end loop over var_lmn */
     
     /* Input data are now sorted and stored (in avg_val) in blocks (of length avg_sz)
