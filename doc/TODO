@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.339 2004-07-15 00:43:53 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.340 2004-07-19 07:42:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -24,6 +24,7 @@ nco191. Create short man page for ncap which points user to info pages or online
 nco212. Ensure structures are always passed by reference (default is pass by value)
 nco312. Make TODO list more legible (change to, e.g., Emacs list/outline mode, LaTeX, Wiki?) 
 nco313. Redo TODO subject categorization by discriminating based on skills required to tackle. Initial cateogorization might be e.g., autotools, bison, C, C++, Debian, flex, HTML, Perl, RPM, www, TeXInfo
+nco355. Adopt restricted pointers for all numerical arrays?
 
 NCO-wide items of lesser priority:
 nco28. Use var.nc_id as file ID from now on and rewrite old routines to do so
@@ -220,7 +221,7 @@ ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA_MIE}/mie/mie_${wvl_nbr}.nc ${DATA_MIE}/m
 fails with 
 Segmentation fault (core dumped)
 ncwa -O -a wvl -w flx_slr_frc -v sca_cff_mss,ext_cff_mss,abs_cff_mss,ss_alb,ss_co_alb ${DATA_MIE}/mie/mie_${wvl_nbr}.nc ${DATA_MIE}/mie/mie_avg_${wvl_nbr}.nc
-nco355. 
+nco356. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
