@@ -1,4 +1,5 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.70 2002-08-21 11:47:41 zender Exp $ */
+
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.71 2002-08-27 21:01:01 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -13,11 +14,21 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
 {
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */
+
+  int i;
+  int j;
+  int nbr_dmn_var;
+  int *dim_id = NULL;
   int var_id;
   int rcd;
   int fl_id;
+  int index =0;
   var_sct *var;
-  
+  dmn_sct *dmn_in;  
+  dmn_sct **dim_new = NULL_CEWI;
+
+
+
   /* Check output file for var */  
   rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
   if(rcd == NC_NOERR){
@@ -25,16 +36,47 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
   }else{
     /* Check input file for ID */
     rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
-    if(rcd == NC_NOERR ){
-      fl_id=prs_arg->in_id;
-    }else{
+    if(rcd != NC_NOERR ){
+      /* return null if var not in input or output file */
       (void)fprintf(stderr,"WARNING unable to find %s in %s or %s\n",var_nm,prs_arg->fl_in,prs_arg->fl_out);     
       return (var_sct *)NULL;
-    }/* end else */
+    }
+   
+    /* find dimensions used in var and add any new ones not already in the */
+    /* output list prs_arg->dmn_out  and the output file */                                   
+
+      (void)nco_redef(prs_arg->out_id);
+      fl_id=prs_arg->in_id;
+
+      (void)nco_inq_varndims(fl_id,var_id,&nbr_dmn_var);
+      if( nbr_dmn_var >0 ) {
+        dim_id = (int *)nco_malloc(nbr_dmn_var*sizeof(int));
+           
+        (void)nco_inq_vardimid(fl_id,var_id,dim_id);
+        for(i=0 ; i < nbr_dmn_var ; i++) 
+	  for(j=0 ;j < prs_arg->nbr_dmn_xtr ; j++){
+            
+            /* de-referenece */
+	    dmn_in = prs_arg->dmn[j]; 
+	    if( dim_id[i] != dmn_in->id || dmn_in->xrf ) continue;
+      
+            /* define dimension  in (prs_arg->dmn_out) */ 
+           dim_new = nco_dmn_out_grow(prs_arg); 
+           *dim_new=nco_dmn_dpl(dmn_in);
+           (void)nco_dmn_xrf(*dim_new,dmn_in);
+           /* write dimension to output file */
+           (void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,dim_new,1);
+           //printf("Dimension %s defined\n",(*dim_new)->nm);
+	    break;
+	  } /* end for j */
+	(void)nco_free(dim_id);
+      } 
+      (void)nco_enddef(prs_arg->out_id);  
+  
   } /* end else */
   
   if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: parser VAR action called ncap_var_init() to retrieve %s from disk\n",prg_nm_get(),var_nm);
-  var=nco_var_fll(fl_id,var_id,var_nm,prs_arg->dmn,prs_arg->nbr_dmn_xtr);
+  var=nco_var_fll(fl_id,var_id,var_nm,*(prs_arg->dmn_out),*(prs_arg->nbr_dmn_out));
   var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
   (void)strcpy(var->nm,var_nm);
   var->tally=(long *)nco_malloc(var->sz*sizeof(long));
@@ -47,6 +89,22 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
   /* var=nco_var_upk(var); */
   return var;
 } /* end ncap_var_init() */
+
+
+
+dmn_sct **
+nco_dmn_out_grow(prs_sct * prs_arg)
+{
+  /* expand dimension list by 1 */
+  /* and return pointer to the newly created member */
+  int *size;
+  size = prs_arg->nbr_dmn_out;
+
+*(prs_arg->dmn_out)=(dmn_sct **)nco_realloc(*(prs_arg->dmn_out),(++*size)*sizeof(dmn_sct *));
+
+ return (*(prs_arg->dmn_out) + (*size -1));
+
+}
 
 int 
 ncap_var_write(var_sct *var,prs_sct *prs_arg)
@@ -626,6 +684,70 @@ nco_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
   *nbr_xtr=nbr_new_lst;
   return new_lst;
 } /* end nco_var_lst_crd_make() */
+
+
+nm_id_sct * /* O [sct] List of dimensions associated with input variable list */
+nco_dmn_lst /* [fnc] Create list of all dimensions in file  */
+(const int nc_id, /* I [id] netCDF input-file ID */
+ int * const nbr_dmn) /* O [nbr] Number of dimensions in  list */
+
+{
+  int idx;
+  int nbr_dmn_in; 
+  char dmn_nm[NC_MAX_NAME];
+  nm_id_sct  *dmn;
+ /* Get number of dimensions */
+  (void)nco_inq(nc_id,&nbr_dmn_in,(int *)NULL,(int *)NULL,(int *)NULL);
+
+  dmn=(nm_id_sct *)nco_malloc(nbr_dmn_in*sizeof(nm_id_sct));
+  
+ 
+  for(idx=0; idx< nbr_dmn_in;idx++)  {
+    (void)nco_inq_dimname(nc_id,idx,dmn_nm);
+    dmn[idx].id = idx;
+    dmn[idx].nm = (char *)strdup(dmn_nm);
+  }
+
+  *nbr_dmn=nbr_dmn_in;
+  return dmn;
+}
+
+
+nm_id_sct * nco_att_lst_mk(
+const int in_id,
+const int out_id,
+aed_sct **att_lst,
+int nbr_att,
+int *nbr_lst )
+{
+  int idx;
+  int jdx;
+  int rcd;
+  int var_id;
+  int size=0;
+  nm_id_sct *xtr_lst=NULL;   
+  for( idx =0 ; idx <nbr_att ; idx++) {
+    rcd=nco_inq_varid_flg(out_id,att_lst[idx]->var_nm,&var_id);
+    if(rcd== NC_NOERR) continue;    
+    rcd=nco_inq_varid_flg(in_id,att_lst[idx]->var_nm,&var_id);    
+    if(rcd == NC_NOERR) {
+      /* eliminate any duplicates from list */
+      for(jdx =0 ; jdx <size ; jdx++)
+	if(!strcmp(xtr_lst[jdx].nm,att_lst[idx]->var_nm)) break;
+        if(jdx!=size) continue;
+        xtr_lst = (nm_id_sct*) nco_realloc(xtr_lst,(size+1)*sizeof(nm_id_sct));
+        xtr_lst[size].id = var_id;
+        xtr_lst[size++].nm = strdup(att_lst[idx]->var_nm);
+      
+    }
+  }
+
+  *nbr_lst = size;
+
+  return xtr_lst;
+
+}
+
 
 bool /* O [flg] Variables now conform */
 ncap_var_stretch /* [fnc] Stretch variables */
