@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.4 1999-08-31 22:25:55 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.5 1999-10-04 05:16:27 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -15,11 +15,7 @@ Binary directory:
 nco/bin/README		Description of binary directory
 
 Build directory:
-nco/bld/Depends		Dependencies of each object file
-nco/bld/Filepath	Directory location and order of all source files
 nco/bld/Makefile	Makefile used by GNU make to create NCO executables
-nco/bld/Srcfiles	Source stubs of each source file
-nco/bld/makdep		Perl script needed by `make depends' command
 nco/bld/nco_tst.pl	Perl script to build NCO distributions (works at NCAR only)
 nco/bld/nco_tst.sh	Shell script to test NCO executables (works at NCAR only)
 nco/bld/pvmgetarch	Script used by Makefile to determine your native machine type

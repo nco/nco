@@ -1,3 +1,16 @@
+1999-10-03  Charlie Zender  <zender@dust.ps.uci.edu>
+
+	* Revamped build procedure to use GNU make dependencies rather
+	than makdep perl script. 
+
+	* All *.c files now build cleanly with gcc -Wall
+
+	* Fixed Makefile bug where Fortran routines were compiled when
+	they were not needed and visa versa
+
+	* Moved NETCDF_INC and NETCDF_LIB out of architecture specific
+	portions of Makefile
+
 1999-08-31  Charlie Zender  <zender@dust.acd.ucar.edu>
 
 	* Tagged this as nco1_1_38

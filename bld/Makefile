@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.30 1999-10-04 05:16:27 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.31 1999-10-04 05:18:55 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -88,7 +88,7 @@ MDL_BLD_SRC := $(addprefix $(MY_BLD_DIR)/,Makefile nco_dst.pl nco_tst.sh) # `mak
 # Variables having to do with ncap
 MDL_NCAP_SRC := $(addprefix $(MY_SRC_DIR)/,ncap.y ncap.l ncap.h) # `make tags' includes these files
 MDL_NCAP_TRG := ncap.tab.c ncap.tab.h ncap_lex.c # `make ncap' creates these files
-MDL_NCAP := $(addprefix $(MY_NCAP_DIR)/,$(MDL_NCAP_TRG)) # `make distclean' removes these files
+MDL_NCAP := $(addprefix $(MY_SRC_DIR)/,$(MDL_NCAP_TRG)) # `make distclean' removes these files
 
 # Redefine default C and C++ pattern rules
 $(MY_OBJ_DIR)/%.o : %.c
@@ -617,9 +617,9 @@ objclean: obj_cln
 obj_cln:
 	rm -f $(MDL_OBJ)
 # Targets in src
-src: $(MDL_NCAP_TRG)
+src: $(MDL_NCAP)
 src_cln:
-	rm -f $(MDL_NCAP_TRG)
+	rm -f $(MDL_NCAP)
 
 clean: cln
 cln: dat_cln dpn_cln obj_cln tst_cln
