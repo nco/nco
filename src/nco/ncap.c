@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.100 2002-12-16 01:59:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.101 2002-12-16 16:38:17 rorik Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -90,8 +90,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.100 2002-12-16 01:59:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.100 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.101 2002-12-16 16:38:17 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.101 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -203,7 +203,7 @@ main(int argc,char **argv)
       {"nintap",required_argument,0,'n'},
       {"overwrite",no_argument,0,'O'},
       {"path",required_argument,0,'p'},
-      {"keep",no_argument,0,'R'},
+      {"retain",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
       {"script",required_argument,0,'s'},
       {"file",required_argument,0,'S'},
