@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.62 2003-08-26 22:30:31 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.63 2003-11-15 00:22:48 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -96,7 +96,7 @@ if [ "${START}" = 1 ]; then
 # Create file containing non-trivial arrays (64x128) to test NCO
 ${MY_BIN_DIR}/ncks -O -v lat_64,lon_128,gw_64 in.nc foo.nc
 ${MY_BIN_DIR}/ncrename -O -d lat_64,lat -d lon_128,lon -v lat_64,lat -v gw_64,gw -v lon_128,lon foo.nc
-${MY_BIN_DIR}/ncap -O -D 1 -s "one[lat,lon]=lat*lon*0.0+1.0" -s "zero[lat,lon]=lat*lon*0.0" foo.nc foo.nc
+${MY_BIN_DIR}/ncap -O -D 1 -s "gw=gw" -s "one[lat,lon]=lat*lon*0.0+1.0" -s "zero[lat,lon]=lat*lon*0.0" foo.nc foo.nc
 
 fi # end start
 
@@ -373,13 +373,23 @@ echo "ncea 4: scale factor + add_offset packing/unpacking: 3 =?= ${avg}"
 fi # end ncea
 
 if [ "${NCBO}" = 1 ]; then
-${MY_BIN_DIR}/ncbo -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
+${MY_BIN_DIR}/ncbo -O --op_typ='-' -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v mss_val foo.nc`
 echo "ncbo 1: difference with missing value attribute: 1.0e36 =?= ${avg}" 
 
-${MY_BIN_DIR}/ncbo -O -d lon,0 -v no_mss_val in.nc in.nc foo.nc 2>> foo.tst
+${MY_BIN_DIR}/ncbo -O --op_typ='-' -d lon,0 -v no_mss_val in.nc in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v no_mss_val foo.nc`
 echo "ncbo 2: difference without missing value attribute: 0 =?= ${avg}" 
+
+${MY_BIN_DIR}/ncks -O -v mss_val_fst in.nc foo.nc 2>> foo.tst
+${MY_BIN_DIR}/ncrename -O -v mss_val_fst,mss_val foo.nc 2>> foo.tst
+${MY_BIN_DIR}/ncbo -O -y '-' -v mss_val foo.nc in.nc foo.nc 2>> foo.tst
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%f," -v mss_val foo.nc`
+echo "ncbo 3: missing_values differ between files: -999,-999,-999,-999 =?= ${avg}" 
+
+${MY_BIN_DIR}/ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v mss_val foo.nc`
+echo "ncdiff 1: ncdiff symbolically linked to ncbo: 1.0e36 =?= ${avg}" 
 fi # end ncbo
 
 if [ "${NCDIFF}" = 1 ]; then
