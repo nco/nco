@@ -172,7 +172,7 @@ DIST_COMMON = $(srcdir)/Makefile.in $(srcdir)/configure Makefile.am \
 	acinclude.m4 aclocal.m4 autobld/config.guess autobld/config.sub \
 	autobld/depcomp autobld/install-sh autobld/ltmain.sh \
 	autobld/missing autobld/mkinstalldirs autobld/texinfo.tex \
-	config.h.in configure configure.in
+	config.guess config.h.in config.sub configure configure.in
 DIST_SUBDIRS = $(SUBDIRS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
@@ -569,6 +569,10 @@ uninstall-info: uninstall-info-recursive
 	tags-recursive uninstall uninstall-am uninstall-info-am \
 	uninstall-info-recursive uninstall-recursive
 
+
+test:
+	$(MAKE) check
+	cd bld && env MY_BIN_DIR=../src/nco ./nco_tst.pl
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
