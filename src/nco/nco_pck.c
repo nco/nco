@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.39 2004-09-06 06:46:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.40 2004-09-06 19:09:52 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -406,6 +406,8 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s keeping existing packing attributes for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
       /* Warn if packing attribute values are in memory for pre-packed variables */
       if(var_out->scl_fct.vp != NULL || var_out->add_fst.vp != NULL) (void)fprintf(stderr,"%s: WARNING %s reports variable %s has packing attribute values in memory. This is not supposed to happen through known code paths, but is not necessarily dangerous.\n",prg_nm_get(),fnc_nm,var_in->nm);
+      /* Remove dangling pointer, see explanation below */
+      var_in->val.vp=NULL; 
     }else{
       goto var_upk_try_to_pck; /* end goto */
     } /* endif input variable was not packed */
@@ -441,14 +443,14 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
   if(nco_is_packable(var_out->type)){
     if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s packing variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk),nco_typ_sng(typ_out));
     var_out=nco_var_pck(var_out,typ_out,&PCK_VAR_WITH_NEW_PCK_ATT);
-    /* Packing function nco_var_pck() usually free()'s var_out->val.vp 
-       Hence var_in->val.vp is left with a dangling pointer
-       In ncpdq, var_in->val.vp and var_out->val.vp point to same buffer 
-       This reduces peak memory consumption by ~50%, but is dangerous */
-    var_in->val.vp=NULL; 
   }else{
-    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s skipping variable %s of type %s as un-packable\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk));
+    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s skipping variable %s of type %s as unpackable\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk));
   } /* endif nco_is_packable() */ 
+  /* Packing function nco_var_pck() usually free()'s var_out->val.vp 
+     Hence var_in->val.vp is left with a dangling pointer
+     In ncpdq, var_in->val.vp and var_out->val.vp point to same buffer 
+     This reduces peak memory consumption by ~50%, but is dangerous */
+  var_in->val.vp=NULL; 
   /* Ensure code goes to final block before falling through to next goto */
   goto put_new_pck_att_in_lst;
   

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.405 2004-09-06 18:00:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.406 2004-09-06 19:09:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -271,7 +271,7 @@ nco445. ncpdq: Fix xst_new
         ncpdq: ERROR exiting through nco_exit() which will now call abort()
         Aborted
 nco446. ncpdq: Fix all_xst
-        valgrind ncpdq -D 3 -O -C -P all_xst -v three_dmn_var_sht ~/nco/data/in.nc ~/foo.nc > ~/foo.valgrind 2>&1
+        valgrind ncpdq -D 5 -O -C -P all_xst -v pck ~/nco/data/in.nc ~/foo.nc > ~/foo.valgrind 2>&1
 nco447. 
 
 ncap-specific items:

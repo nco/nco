@@ -3,7 +3,9 @@
 	* cvs tag -c nco-2_9_9
 	Changes since nco-2_9_8: 1. ncbo threading 2. ncpdq -P packing
 
-	* Update ncpdq man page
+	* Remove dangling pointer from ncpdq all_xst clause
+
+	* Update ncpdq man page. Document -M most everywhere.
 
 2004-09-05  Charlie Zender  <zender@uci.edu>
 
