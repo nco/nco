@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.40 2004-06-22 03:45:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.41 2004-06-22 03:52:07 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -163,7 +163,6 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	char *fl_in=NULL; /* [sng] Input file name */
 	FILE *fp_in; /* [enm] Input file handle */
 	char *bfr_in; /* [sng] Temporary buffer for stdin filenames */
-	char chr_foo;
 	int cnv_nbr; /* [nbr] Number of scanf conversions performed this scan */
 	long fl_lst_in_lng; /* [nbr] Number of characters in input file name list */
 	char fmt_sng[10];
@@ -210,10 +209,15 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	/* comp.lang.c 20000212 and http://www.eskimo.com/~scs/C-faq/q12.18.html
 	   C FAQ Author Steve Summit explains why not to use fflush() 
 	   and how best to manually clean stdin of unwanted residue */
+#if 0
+	/* 20040621: Following flusher does no harm on Linux 
+	   However, AIX gets caught in an infinite loop here */
 	/* Discard characters remainining in stdin */
+	char chr_foo;
 	while((chr_foo=getchar()) != '\n' && chr_foo != EOF){
 	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read and discarded \'%c\'\n",prg_nm_get(),chr_foo);
 	} /* end while */
+#endif /* endif 0 */
 
 	/* Free temporary buffer */
 	bfr_in=(char *)nco_free(bfr_in);
