@@ -1,7 +1,7 @@
-%{
+ %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.13 2001-10-31 06:28:30 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.14 2001-11-16 12:28:59 hmb Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -55,34 +55,29 @@
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
 
 #include <netcdf.h>             /* netCDF definitions */
-#include "nco.h"                /* NCO definitions */
-#include "ncap.h"               /* symbol table definition */
+#include "nco.h"                 /* NCO definitions */
 #include "nco_netcdf.h"         /* netCDF3 wrapper calls */
+#include "ncap.h"               /* symbol table definition */
+
+
+/* define a an ATTRIBUTE to contain a -1 */ 
 
 /* Turn on parser debugging option (bison man p. 85) */
 #define YYDEBUG 1
-int yydebug=0;
+int yydebug=1;
+
 
 /* Turns on more verbose errors than just plain "parse error" when yyerror() is called by parser */
 #define YYERROR_VERBOSE 1
 
-/* Add descriptive info to parser debugging output (bison man p. 86) */
-#define YYPRINT(file,type,value) yyprint(file,type,value)
+
 
 /* Bison manual p. 60 describes how to call yyparse() with arguments */
 /* prs_sct must be consistent between ncap.y and ncap.c 
    fxm: Is there a way to define prs_sct in only one place? */
-typedef struct{
-    char *fl_in;
-    int in_id;  
-    char *fl_out;
-    int out_id;  
-    char *sng;
-    dmn_sct **dim;
-    int nbr_dmn_xtr;
-} prs_sct;
-#define YYPARSE_PARAM prs_arg
 
+#define YYPARSE_PARAM prs_arg
+#define YYLEX_PARAM prs_arg 
  int rcd; /* [enm] Return value for function calls */
 
 /* End C declarations section */
@@ -100,172 +95,415 @@ typedef struct{
 
 /* Define YYSTYPE union (type of lex variable yylval) */
 %union{
-  double val_double; /* Store input in double precision */
-  sym_sct *sym; /* Pointer to entry in symbol table */
-  var_sct var;
+  char *str;
+  char *output_var;
+  char *vara;
+  aed_sct att;
+  sym_sct *sym;
+  parse_sct attribute;
+  var_sct *var;
 }
 
 /* Tell parser which kind of values each token takes */
-%token <val_double> NUMBER
-%token <sym> NAME
+%token <str> STRING
+%token <attribute> ATTRIBUTE
+%token <vara> VAR
+%token <output_var> OUT_VAR
+%token <att> OUT_ATT
+%token <sym> FUNCTION
+%token POWER ABS ITOSTR
 
-/* Set precedence and associativity of arithmetic expressions, "literal tokens".
-   Precedence levels are declared lowest to highest. */
-%left '-' '+'
-%left '*' '/'
-%left '^'
+%type <attribute> a_exp
+%type <str> string_exp
+%type <var> var_exp
+%type <output_var> out_var_exp
+%type <att> out_att_exp
+
+%left  '+' '-'
+%left  '*' '/' '%'
+%left  '^'
 %nonassoc UMINUS
 
 /* "type" declaration sets type for non-terminal symbols which otherwise need no declaration */
 /*%type <val_double> xpr*/
-%type <sym> xpr
-/*%type <var> xpr*/
+
 
 /* End parser declaration section */
 %%
 /* Begin Rules section */
 /* Format is rule: action */
 
-/* yacc automatically dereferences correct member of each token's structure
-   Thus, if third symbol is a NUMBER, a reference to $3 acts like $3.val_double */
 
-/* $$ symbol refers to value for symbol to left of colon */
+program:           statement_list
+                   ;
 
-/* Statement list can be single line or collection of statements separated by newlines */
- stt_lst: stt '\n'
-| stt_lst stt '\n'
-;
+statement_list:     statement_list statement ';'
+                  | statement ';'
+                  ;
 
- stt: NAME '=' xpr { 
-   $1=$3; 
-   if(dbg_lvl_get() > 2) (void)fprintf(stderr,"stt: $1 = %s, $3 = %s\n",$1->nm,$3->nm); 
-   if(dbg_lvl_get() > 2) (void)fprintf(stderr,"stt: $1->var->val.fp[0]=%g\n",$1->var->val.fp[0]); 
- }
-;
 
- xpr: xpr '+' xpr { 
-   $$->var=ncap_var_add($1->var,$3->var);
-   $$->var->nm=$$->nm;
-   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"xpr: %s+%s\n",$1->nm,$3->nm); 
-   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"xpr: $$->var->nm= %s, $$->var->val.fp[0]=%g\n",$$->var->nm,$$->var->val.fp[0]); 
-   /* Now variable has been (re)defined. Save it to disk. */
-   /*rcd=ncap_write_var(((prs_sct *)prs_arg)->out_id,$$->var);*/
- } /* end '+' */
+statement:     out_att_exp '=' a_exp
+                { 
+		  int index; 
+                  aed_sct *ptr_aed;
+                  
+		  index=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
+                  ptr_aed=((prs_sct*)prs_arg)->att_lst[index];                               
+                  ptr_aed->val=ncap_attribute_2_ptr_unn($3);
+                  ptr_aed->type=$3.type;
+                  ptr_aed->sz = (long)nco_typ_lng($3.type);
+                  (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
+                  
+                 if(dbg_lvl_get() > 1) {
+                  (void)fprintf(stderr,"Saving in array attribute %s:%s=",$1.var_nm,$1.att_nm);
+                  switch($3.type){
+                    case NC_BYTE:  (void)fprintf(stderr,"%d\n",$3.val.b); break;
+                    case NC_SHORT: (void)fprintf(stderr,"%d\n",$3.val.s); break;
+                    case NC_INT:   (void)fprintf(stderr,"%d\n",$3.val.l); break;
+		    case NC_FLOAT: (void)fprintf(stderr,"%G\n",$3.val.f); break;		  
+    		    case NC_DOUBLE:  (void)fprintf(stderr,"%.5G\n",$3.val.d);break;
+		    default: break;
+                  }/* end switch */
+		 } /* end if */
+                  (void)free($1.var_nm);
+                  (void)free($1.att_nm);
+                }
+              | out_att_exp '=' string_exp 
+                {
+	 	  int index; 
+                  int slen;
+                  aed_sct *ptr_aed;
+                  
+                  slen =strlen($3);
+		  index=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
+                  ptr_aed=((prs_sct*)prs_arg)->att_lst[index];
+                  ptr_aed->type=NC_CHAR;
+                  ptr_aed->sz = (long)((slen+1)*nco_typ_lng(NC_CHAR));
+                  ptr_aed->val.cp = (char *)nco_malloc((slen+1)*nco_typ_lng(NC_CHAR));
+                  strcpy(ptr_aed->val.cp,$3);
+                  (void)cast_nctype_void(NC_CHAR,&ptr_aed->val);    
 
-/*| xpr '-' xpr { $$=$1-$3; }*/
-/*| xpr '*' xpr { $$=$1*$3; }*/
-/*| xpr '/' xpr { if($3 == 0.) yyerror("divide by zero"); else $$=$1/$3; }*/
-/*| xpr '^' xpr { $$=pow($1,$3); }*/
-/* The %prec UMINUS tells YACC to use the precedence of UMINUS for this rule */
-/*| '-' xpr %prec UMINUS { $$=-$2; }*/
-| '(' xpr ')' { $$=$2; }
-/* | NUMBER { *//* Make xpr a netCDF variable based on NUMBER see pigeon book p. 58 "...not strictly necessary..." */
-/*$$=scalar_mk_sym($1); }*/
-/*| NUMBER { $$=$1; }*//* pigeon book p. 58 "...not strictly necessary..." */
-| NAME { /* Lookup undefined NAME in input file */
-  if($1->var != NULL){
-    $$->var=$1->var;
-    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"NAME: variable %s is already in symbol table\n",$1->nm); 
-  }else{
-    var_sct *var;
-    int var_id;
+                 if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Saving in array,attribute %s:%s=%s\n",$1.var_nm,$1.att_nm,$3);
+                 (void)free($1.var_nm);
+                 (void)free($1.att_nm);
+                 (void)free($3);
+                }
+              | out_att_exp '=' var_exp
+                { 
+                  /* Its OK to store 0 dimensional variables in an attribute */ 
+                  int index;
+                  aed_sct *ptr_aed;
 
-    if(dbg_lvl_get() > 1) (void)fprintf(stderr,"NAME: getting %s from netCDF %s\n",$1->nm,((prs_sct *)prs_arg)->fl_in);
+                  if( $3->nbr_dim == 0  ){
+                    index=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
+                    ptr_aed=((prs_sct*)prs_arg)->att_lst[index];
+                    ptr_aed->sz = nco_typ_lng($3->type)*($3->sz);
+                    ptr_aed->val.vp = (void*)nco_malloc(ptr_aed->sz);
+		    (void)var_copy($3->type,$3->sz,ptr_aed->val,$3->val);
+		    ptr_aed->type = $3->type;
+                    cast_nctype_void($3->type,&ptr_aed->val); 
+		  }else{
+                   (void)fprintf(stderr,"Warning: Cannot store a multi-dimensional variable in attribute %s:%s\n",$1.var_nm,$1.att_nm );
+                  }
+		  (void)free($1.var_nm);
+                  (void)free($1.att_nm);
+                  (void)var_free($3); 
+		}   
+              |  out_var_exp '=' var_exp 
+                 {
+		  int rcd;
+                  int var_id;
+                  $3->nm = strdup($1);
+                  /* check to see if variable is already in output file */
+                  rcd = nco_inq_varid_flg(((prs_sct*)prs_arg)->out_id,$3->nm,&var_id);
+                  if( rcd == NC_NOERR ) {
+                   (void)fprintf(stderr,"Warning: Variable %s has aleady been saved in %s\n", $3->nm,((prs_sct*)prs_arg)->fl_out);
+                  }else{  
+                    (void)ncap_var_write($3,(prs_sct*)prs_arg);
+                    (void)fprintf(stderr,"Saving variable %s to  %s\n", $3->nm,((prs_sct*)prs_arg)->fl_out);
+		  } /* end else */
+		  (void)free($1);
+                  (void)var_free($3);
+                 }
+              | out_var_exp '=' a_exp
+                 {
+		  int rcd;
+                  int var_id;
+                  var_sct *var;
+                  rcd = nco_inq_varid_flg(((prs_sct*)prs_arg)->out_id,$1,&var_id);
+                  if( rcd == NC_NOERR ) {
+                       (void)fprintf(stderr,"Warning: Variable %s has aleady been saved in %s\n", $1,((prs_sct*)prs_arg)->fl_out);
+                  }else{  
+	    	   
+                   var = (var_sct*)calloc(1,sizeof(var_sct));
+		   var->nm = strdup($1);
+                   var->nbr_dim = 0;
+                   var->dmn_id = (int *)NULL;
+                   var->sz = 1;
+                   var->val = ncap_attribute_2_ptr_unn($3);
+                   var->type = $3.type;
+                   (void)ncap_var_write(var,(prs_sct*)prs_arg);
+                   (void)var_free(var);
+                   (void)fprintf(stderr,"Saving variable %s to  %s\n", $1,((prs_sct*)prs_arg)->fl_out);
+		   }
+		  (void)free($1);
 
-    /* Get variable ID */
-    rcd=nco_inq_varid_flg(((prs_sct *)prs_arg)->in_id,$1->nm,&var_id);
-    if(rcd != NC_NOERR){
-      (void)fprintf(stderr,"unable to find %s in %s\n",$1->nm,((prs_sct *)prs_arg)->fl_in);
-    }else{
-      var=var_fll(((prs_sct *)prs_arg)->in_id,var_id,$1->nm,((prs_sct *)prs_arg)->dim,((prs_sct *)prs_arg)->nbr_dmn_xtr);
-      /* Allocate and initialize accumulation space for variable */
-      var->tally=(long *)malloc(var->sz*nco_typ_lng(NC_INT));
-      (void)zero_long(var->sz,var->tally);
-      var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type));
-      /* Retrieve variable values from disk into memory */
-      (void)var_get(((prs_sct *)prs_arg)->in_id,var);
-      if(dbg_lvl_get() > 3) (void)fprintf(stderr,"var->nm=%s, var->id=%d, var->nc_id=%d\n",var->nm,var->id,var->nc_id);
-      $$->var=var;
-    } /* endif */
-  } /* endif */
-} 
-/*| NAME '(' xpr ')' {*/
-  /* Assume name followed by parenthesized expression is function */
-/*  if($1->fnc){*/
-/*    $$=($1->fnc)($3); */
-/*  }else{*/
-/*    (void)fprintf(stderr,"%s not a function\n",$1->nm);*/
-/*    $$=0.;*/
-/*  }*//* end else */
-/*}*/
-;
+		  }
+               | out_var_exp '=' string_exp
+                 {
 
+                  int rcd;
+                  int var_id;
+                  var_sct *var;
+                  rcd = nco_inq_varid_flg(((prs_sct*)prs_arg)->out_id,$1,&var_id);
+                  if( rcd == NC_NOERR ) {
+                       (void)fprintf(stderr,"Warning: Variable %s has aleady been saved in %s\n", $1,((prs_sct*)prs_arg)->fl_out);
+                  }else{  
+                   var = (var_sct*)calloc(1,sizeof(var_sct));
+		   var->nm = strdup($1);
+                   var->nbr_dim = 0;
+                   var->dmn_id = (int *)NULL;
+                   var->sz = strlen($3)+1;
+                   var->val.cp=strdup($3);
+                   var->type = NC_CHAR;
+                   (void)cast_nctype_void(NC_CHAR,&var->val);
+                   (void)ncap_var_write(var,(prs_sct*)prs_arg);
+                   (void)var_free(var);
+                   (void)fprintf(stderr,"Saving variable %s to  %s\n", $1,((prs_sct*)prs_arg)->fl_out);
+		   }
+		  (void)free($1);
+                  (void)free($3);
+                 }
+              ;                    
+
+
+a_exp:                 a_exp '+' a_exp   {
+                                  (void)ncap_retype(&$1,&$3);
+                                  $$=ncap_attribute_calc($1,'+',$3);                                
+                           }
+                     |  a_exp '-' a_exp        {
+                                 (void)ncap_retype(&$1,&$3); 
+                                 $$=ncap_attribute_calc($1,'-',$3);
+                           }
+                     | a_exp '*' a_exp        {
+                                  (void)ncap_retype(&$1,&$3);
+                                  $$=ncap_attribute_calc($1,'*',$3);
+                                  }
+                    | a_exp '/' a_exp        {
+		                 (void)ncap_retype(&$1,&$3); 
+                                 $$=ncap_attribute_calc($1,'/',$3);  
+                                 }
+                    | a_exp '%' a_exp {
+                                 (void)ncap_retype(&$1,&$3);
+                           
+                                 $$=ncap_attribute_calc($1,'%',$3);  
+		                 }
+                    | '-' a_exp  %prec UMINUS        {
+		                   (void)ncap_attribute_minus(&$2);
+                                   $$=$2;
+                         	}
+                    | a_exp '^' a_exp        {
+		                (void)ncap_attribute_conform_type(NC_DOUBLE,&$1);
+		                (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
+                                $$.val.d = pow($1.val.d,$3.val.d);
+                                $$.type = NC_DOUBLE; 
+                                }
+                    | POWER '(' a_exp ',' a_exp ')' {
+		                (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
+		                (void)ncap_attribute_conform_type(NC_DOUBLE,&$5);
+                                $$.val.d = pow($3.val.d,$5.val.d);
+                                $$.type = NC_DOUBLE; 
+		                }
+		    
+                    | ABS '(' a_exp ')' {
+		               $$ = ncap_attribute_abs($3);
+		               }
+                    | FUNCTION '(' a_exp ')' {
+		               (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
+                               $$.val.d = (*($1->fnc))($3.val.d);
+                               $$.type = NC_DOUBLE;
+                               (void)free($1->nm);
+                               (void)free($1);
+		               }
+                    | '(' a_exp ')'   {$$ = $2;}
+                    | ATTRIBUTE   {$$ = $1; }
+            ;
+
+
+
+out_var_exp:   OUT_VAR { $$ = $1 }
+               ;
+
+
+out_att_exp:   OUT_ATT { $$ = $1 }
+               ;
+
+      
+string_exp:    string_exp '+' string_exp {
+                 size_t len;
+
+                 len  = strlen($1) + strlen($3);
+                 $$ = (char*)nco_malloc((len + 1 )*sizeof(char));
+
+                 strcpy($$,$1);
+                 strcat($$,$3);
+                 (void)free($1);
+                 (void)free($3);
+               
+                } 
+              
+              | ITOSTR '(' a_exp ')' {
+
+		char buf[50];
+
+                switch ($3.type){
+
+                 case  NC_DOUBLE: sprintf(buf,"%.10G",$3.val.d); break;
+                 case  NC_FLOAT:  sprintf(buf,"%G",$3.val.f); break;
+                 case  NC_INT:    sprintf(buf,"%d",$3.val.l); break;
+                 case  NC_SHORT:  sprintf(buf,"%d",$3.val.s); break;
+                 case  NC_BYTE:   sprintf(buf,"%d",$3.val.b); break;
+                 default:  break;
+                } /* end switch */
+	       $$ = strdup(buf);      
+	      }
+
+              | ITOSTR '(' a_exp ',' string_exp ')' {
+	       
+               char buf[150];
+              	      
+              /* format string according to info in string exp */
+              /* Its up to the user to work out which format corresponds with which type */
+              switch ($3.type){
+                case  NC_DOUBLE: sprintf(buf,$5,$3.val.d); break;
+                case  NC_FLOAT:  sprintf(buf,$5,$3.val.f); break;
+                case  NC_INT:    sprintf(buf,$5,$3.val.l); break;
+                case  NC_SHORT:  sprintf(buf,$5,$3.val.s); break;
+                case  NC_BYTE:   sprintf(buf,$5,$3.val.b); break;
+                  default:  break;
+                } /* end switch */
+
+	       (void)free($5);
+	       $$ = strdup(buf);      
+	      }
+
+             |  STRING { $$=$1;}
+               ;
+
+var_exp:       var_exp '+' var_exp   { 
+               $$=ncap_var_var_add($1,$3); 
+               var_free($1); var_free($3);
+              }
+            | var_exp '+' a_exp {
+               $$=ncap_var_attribute_add($1,$3);
+               var_free($1);
+              }            
+            | a_exp '+' var_exp {
+               $$=ncap_var_attribute_add($3,$1);
+               var_free($3);
+              }            
+            | var_exp '-' var_exp  { 
+                $$=ncap_var_var_sub($1,$3);
+                var_free($1); 
+                var_free($3);
+             }
+            | a_exp '-' var_exp { 
+               var_sct *var1 ;
+               parse_sct minus;
+               minus.val.b = -1;
+               minus.type= NC_BYTE;
+               (void)ncap_attribute_conform_type($3->type,&minus);
+               var1 = ncap_var_attribute_sub($3,$1);
+               $$ = ncap_var_attribute_multiply(var1,minus);
+               var_free(var1);
+               var_free($3);
+              }
+            | var_exp '-' a_exp {
+               $$=ncap_var_attribute_sub($1,$3);
+               var_free($1);
+               }
+            | var_exp '*' var_exp  {
+                $$ = ncap_var_var_multiply($1,$3); 
+                var_free($1); var_free($3); 
+             }
+            | var_exp '*' a_exp {
+                $$ = ncap_var_attribute_multiply($1,$3);
+                var_free($1);
+              }
+            | var_exp '%' a_exp {
+              $$=ncap_var_attribute_modulus($1,$3);
+              var_free($1);
+	    }
+            | a_exp '*' var_exp {
+                $$ = ncap_var_attribute_multiply($3,$1);
+                var_free($3);
+              }
+            | var_exp '/' a_exp {
+                $$=ncap_var_attribute_divide($1,$3);
+              var_free($1);
+              }
+            | var_exp '^' a_exp {
+               $$=ncap_var_attribute_power($1,$3);
+	       var_free($1);
+              }
+            | POWER '(' var_exp ',' a_exp ')' {
+               $$=ncap_var_attribute_power($3,$5);
+	       var_free($3);
+              }
+            | '-' var_exp  %prec UMINUS { 
+               parse_sct minus;
+               minus.val.b = -1;
+               minus.type = NC_BYTE;
+               (void)ncap_attribute_conform_type($2->type,&minus);
+               $$ = ncap_var_attribute_multiply($2,minus);
+               var_free($2);      
+              }
+              | ABS '(' var_exp ')' {
+		$$=ncap_var_abs($3);
+                var_free($3);
+              } 
+              | FUNCTION '(' var_exp')' {
+	       $$ = ncap_var_function($3,$1->fnc);
+               var_free($3);
+              (void)free($1->nm);
+              (void)free($1);
+ 	      }  
+            | '(' var_exp ')'        {
+              $$ = var_dpl($2);
+               var_free($2);
+              }
+            | VAR  { 
+	      $$=ncap_var_init($1,((prs_sct*)prs_arg));
+              }
+	    
+            ;
 /* End Rules section */
 %%
 /* Begin User Subroutines section */
 
-sym_sct *
-scalar_mk_sym(double val)
+int
+ncap_aed_lookup(char *var_nm,char *att_nm,aed_sct **att_lst,int *nbr_att, bool update)
 {
-  /* Purpose: Turn scalar into netCDF variable */
-  sym_sct *sym;
-
-  sym=(sym_sct *)malloc(sizeof(sym_sct));
-
-  return sym;
-} /* end scalar_mk_sym */
-
-int 
-yyprint(FILE *file,int type,YYSTYPE value)
-{
-  /* Purpose: Add descriptive info to parser debugging output (bison man p. 86) */
-  if(type == NAME){
-    fprintf(file," %s",value.sym->nm);
-  }else if(type == NUMBER){
-    fprintf(file," %f",value.val_double);
-  } /* end else */
-  return 1; /* Return an int or compiler will complain */
-} /* end yyprint() */
-
-sym_sct *
-sym_look(char *sym_nm)
-/* 
-   char *sym_nm: input name of symbol to locate/define
-   sym_sct *sym_look(): output pointer to symbol
- */
-{
-  /* Purpose: Look up symbol table entry 
-     If symbol is present, routine returns pointer to entry 
-     If symbol is not present then add it to end of symbol table */
-
-  sym_sct *sym;
+  int i;
   
-  for(sym=sym_tbl;sym<&sym_tbl[SYM_NBR_MAX];sym++){
-    /* Is the requested symbol already in the symbol table? */
-    if(sym->nm && !strcmp(sym->nm,sym_nm)) return sym;
-    
-    /* Is current entry in symbol table empty? i.e., are we at end of valid entries?
-       If so, enter new symbol in current slot */
-    if(!sym->nm){
-      sym->nm=(char *)strdup(sym_nm);
-      return sym;
-    } /* end if */
-  } /* end for */
-  yyerror("Too many symbols");
-  exit(EXIT_FAILURE);
-} /* end sym_look() */
+  for(i=0; i < *nbr_att ; i++)
+    if (!strcmp(att_lst[i]->att_nm,att_nm) && !strcmp(att_lst[i]->var_nm,var_nm)) {   
+        return i;
+      } /* end if */
 
-void
-fnc_add  /* [fnd] Add function to symbol table */
-(char *nm, /* I [sng] Name of function to add to symbol table */
- double (*fnc)()) /* I [fnc] Entry point of function */
-{
-  /* Purpose: Add function to symbol table */
+  if (!update) return -1;
+  
+  att_lst[*nbr_att] = (aed_sct *)nco_malloc(sizeof(aed_sct));
+  
+  att_lst[*nbr_att]->var_nm = strdup(var_nm);
+  att_lst[*nbr_att]->att_nm = strdup(att_nm);
+  
+  return (*nbr_att)++;
+}
 
-  sym_sct *sym;
 
-  sym=sym_look(nm);
-  sym->fnc=fnc;
-} /* end fnc_add() */
 
-/* End User Subroutines section */
+
+
+
+
