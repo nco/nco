@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.139 2002-12-30 02:56:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.140 2002-12-30 08:01:00 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -426,7 +426,7 @@ Given this, the only difficulty in implementing @acronym{NCO} on a
 particular platform is standardization of various C and Fortran
 interface and system calls.
 The @acronym{NCO} code is tested for @acronym{ANSI} compliance by
-compiling with C compilers including those from 
+compiling with @w{C compilers} including those from 
 @cindex @command{CC}
 @cindex @command{c++}
 @cindex @command{cc}
@@ -482,7 +482,7 @@ These are nice features of the 1999 @acronym{ISO} C-standard called C99.
 @acronym{NCO} is C99-compliant where possible and C89-compliant where
 necessary. 
 Certain branches in the code are required to satisfy the native
-@acronym{SGI} and SunOS C compilers, which are strictly @acronym{ANSI} 
+@acronym{SGI} and SunOS @w{C compilers}, which are strictly @acronym{ANSI} 
 C89 compliant, and cannot benefit from the C99 features.
 However, the C99 features are supported and by the @acronym{GNU},
 @acronym{UNICOS}, Solaris, and @acronym{AIX} compilers.
@@ -493,16 +493,16 @@ Until August, 1999, these operations were performed in Fortran by
 default.  
 This was a design decision based on the speed of Fortran-based object
 code vs. C-based object code in late 1994.
-Since 1994 native C compilers have improved their vectorization
+Since 1994 native @w{C compilers} have improved their vectorization
 capabilities and it has become advantageous to replace all Fortran 
-subroutines with C subroutines.
+subroutines with @w{C subroutines}.
 Furthermore, this greatly simplifies the task of compiling on nominally 
 unsupported platforms. 
-As of August 1999, @acronym{NCO} is built entirely in C by default.
+As of August 1999, @acronym{NCO} is built entirely @w{in C} by default.
 This allows @acronym{NCO} to compile on any machine with an
-@acronym{ANSI} C compiler. 
+@acronym{ANSI} @w{C compiler}. 
 Furthermore, @acronym{NCO} automatically takes advantage of extensions
-to @acronym{ANSI} C when compiled with the @acronym{GNU} compiler
+to @w{@acronym{ANSI} C} when compiled with the @acronym{GNU} compiler
 collection, @acronym{GCC}. 
 
 As of July 2000 and @acronym{NCO} version 1.2, @acronym{NCO} no longer
@@ -527,16 +527,16 @@ This can be accomplished by defining the preprocessor token
 @code{USE_FORTRAN_ARITHMETIC} and rebuilding @acronym{NCO}.
 @cindex performance
 As its name suggests, the @code{USE_FORTRAN_ARITHMETIC} token instructs
-@acronym{NCO} to attempts to interface the C routines with Fortran
+@acronym{NCO} to attempts to interface the @w{C routines} with Fortran
 arithmetic. 
-Although using Fortran calls instead of C reduces the portability and
+Although using Fortran calls instead @w{of C} reduces the portability and
 and increases the maintenance of the @acronym{NCO} operators, it may also increase 
 the performance of the numeric operators.
-Presumably this will depend on your machine type, the quality of the C
+Presumably this will depend on your machine type, the quality of @w{the C}
 and Fortran compilers, and the size of the data files
 @footnote{If you decide to test the efficiency of the averagers compiled
-with @code{USE_FORTRAN_ARITHMETIC} versus the default C averagers I would be most
-interested to hear the results.
+with @code{USE_FORTRAN_ARITHMETIC} versus the default @w{C averagers} I
+would be most interested to hear the results.
 Please E-mail me the results including the size of the datasets, the
 platform, and the change in the wallclock time for execution.}.
 @end ignore
@@ -1799,9 +1799,9 @@ Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
 Short options: @samp{-F}@*
 Long options: @samp{--fortran}@*
 @end cartouche
-By default, @acronym{NCO} uses C-style (0-based) indices for all I/O.
-The @samp{-F} switch tells @acronym{NCO} to switch to reading and writing with
-Fortran index conventions.
+By default, @acronym{NCO} uses C-style (0-based) indices for all I/O. 
+The @samp{-F} switch tells @acronym{NCO} to switch to reading and
+writing with Fortran index conventions.
 In Fortran, indices begin counting @w{from 1} (rather @w{than 0}), and
 dimensions are ordered from fastest varying to slowest varying.
 Consider a file @file{85.nc} containing 12 months of data in the record
@@ -1813,9 +1813,9 @@ ncra -d time,5,7 85.nc 85_JJA.nc
 ncra -F -d time,6,8 85.nc 85_JJA.nc
 @end example
 
-Printing variable @var{three_dmn_var} in file @file{in.nc} first with C 
-indexing conventions, then with Fortran indexing conventions results in
-the following output formats: 
+Printing variable @var{three_dmn_var} in file @file{in.nc} first with
+@w{C indexing} conventions, then with Fortran indexing conventions
+results in the following output formats: 
 @example
 % ncks -H -v three_dmn_var in.nc
 % lat[0]=-90 lev[0]=1000 lon[0]=-180 three_dmn_var[0]=0 
@@ -1861,8 +1861,8 @@ either increasing or decreasing).
 In this case, command-line values need not exactly match coordinate
 values for the specified dimension. 
 Ranges are determined by seeking the first coordinate value to occur in
-the closed range [@var{min},@var{max}] and including all subsequent values until one
-falls outside the range. 
+the closed range [@var{min},@var{max}] and including all subsequent
+values until one falls outside the range. 
 The coordinate value for a cross-section is the coordinate-variable
 value closest to the specified value and must lie within the range or
 coordinate-variable values. 
@@ -1870,9 +1870,9 @@ coordinate-variable values.
 Coordinate values should be specified using real notation with a decimal
 point required in the value, whereas dimension indices are specified
 using integer notation without a decimal point. 
-Note that this convention is only to differentiate coordinate values
-from dimension indices, and is independent of the actual type of netCDF
-coordinate variables, if any. 
+This convention serves only to differentiate coordinate values from
+dimension indices.
+It is independent of the type of any netCDF coordinate variables.
 For a given dimension, the specified limits must both be coordinate
 values (with decimal points) or dimension indices (no decimal points).
 
@@ -1888,16 +1888,16 @@ results are unpredictable.
 The relative magnitude of @var{min} and @var{max} indicate to the
 operator whether to expect a @dfn{wrapped coordinate}
 (@pxref{Wrapped coordinates}), such as longitude.
-If @math{@var{min} > @var{max}}, the @acronym{NCO} expects the coordinate to be
-wrapped, and a warning message will be printed.
+If @math{@var{min} > @var{max}}, the @acronym{NCO} expects the
+coordinate to be wrapped, and a warning message will be printed.
 When this occurs, @acronym{NCO} selects all values outside the domain
 [@math{@var{max} < @var{min}}], i.e., all the values exclusive of the
 values which would have been selected if @var{min} and @var{max} were
 swapped. 
 If this seems confusing, test your command on just the coordinate
-variables with @command{ncks}, and then examine the output to ensure @acronym{NCO}
-selected the hyperslab you expected (coordinate wrapping is only
-supported by @command{ncks}). 
+variables with @command{ncks}, and then examine the output to ensure
+@acronym{NCO} selected the hyperslab you expected (coordinate wrapping
+is currently only supported by @command{ncks}). 
 
 Because of the way wrapped coordinates are interpreted, it is very
 important to make sure you always specify hyperslabs in the
@@ -1906,7 +1906,7 @@ monotonically increasing sense, i.e., @math{@var{min} < @var{max}}
 decreasing). 
 The only exception to this is when you are indeed specifying a wrapped
 coordinate.  
-The distinction is crucial to understand because the points selected by,
+The distinction is crucial to understand because the points selected by, 
 e.g., @code{-d longitude,50.,340.}, are exactly the complement of the
 points selected by @code{-d longitude,340.,50.}.
 
@@ -2196,7 +2196,7 @@ If not, then @acronym{NCO} will internally convert @var{att_type} to
 @var{att_type} is @code{NC_CHAR}
 @footnote{For example, the @acronym{DOE} @acronym{ARM} program often uses @var{att_type} = 
 @code{NC_CHAR} and @var{missing_value} = @samp{-99999.}.
-}, by typecasting the results of the C function
+}, by typecasting the results of the @w{C function}
 @code{strtod(@var{missing_value})}. 
 @cindex @command{ncatted}
 You may use the @acronym{NCO} operator @command{ncatted} to change the
@@ -2591,7 +2591,7 @@ precision than the observations were made.
 Thus @acronym{NCO} tries to avoid performing type conversions when performing
 arithmetic. 
 
-Type conversion during arithmetic in the languages C and Fortran is 
+Type conversion during arithmetic in the @w{languages C} and Fortran is  
 performed only when necessary.
 All operands in an operation are converted to the most precise type
 before the operation takes place.
@@ -2680,7 +2680,7 @@ The actual type conversions are handled by intrinsic C-language type
 conversion, so the @code{floor()} function is not explicitly called, but
 the results are the same as if it were.}.
 Thus no "rounding up" is performed. 
-The type conversion rules of C can be stated as follows:
+The type conversion rules @w{of C} can be stated as follows:
 If @var{n} is an integer then any floating point value @var{x}
 satisfying 
 @set flg
@@ -3061,8 +3061,8 @@ algebraic expression.
 The @file{fl.nco}, if present, is simply a list of such statements,
 whitespace, and comments.
 @cindex C language
-The syntax of statements is most like the computer language C.
-The following characteristics of C are preserved:
+The syntax of statements is most like the computer @w{language C}.
+The following characteristics @w{of C} are preserved:
 @table @asis
 @item Array syntax
 @cindex array syntax
@@ -3646,7 +3646,7 @@ Backslashes which precede any other character (e.g., @code{3}, @code{m},
 @cindex NUL
 @cindex C language
 @cindex @code{0} (NUL)
-Note that the NUL character @code{\0} which terminates C language
+Note that the NUL character @code{\0} which terminates @w{C language}
 strings is assumed and need not be explicitly specified.
 If @code{\0} is input, it will not be translated (because it would
 terminate the string in an additional location).
@@ -3662,7 +3662,7 @@ Append the string "Data version 2.0.\n" to the global attribute
 @example
 ncatted -O -a history,global,a,c,"Data version 2.0\n" in.nc 
 @end example
-Note the use of embedded C language @code{printf()}-style escape
+Note the use of embedded @w{C language} @code{printf()}-style escape 
 sequences. 
 
 Change the value of the @code{long_name} attribute for variable @code{T}
@@ -4467,7 +4467,7 @@ many variables with different dimensions.  Also @samp{--quiet}.
 @cindex C language
 @item -s @var{format}
 String format for text output. 
-Accepts C language escape sequences and @code{printf()} formats. 
+Accepts @w{C language} escape sequences and @code{printf()} formats. 
 Equivalently @samp{--string}, @samp{--format}, or @samp{--fmt}. 
 
 @cindex @code{-u}
@@ -5344,8 +5344,8 @@ Excellent bug reports
 @syncodeindex fn cp
 @printindex cp
 
-@c Print the tables of contents
+@c Print table of contents
 @contents
 
-@c That's all
+@c TTFN (Ta ta for now)
 @bye

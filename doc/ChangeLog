@@ -1,5 +1,7 @@
 2002-12-29  Charlie Zender  <zender@uci.edu>
 
+	* Add rudimentary tests of multislabbing to nco_tst.sh
+
 	* Switch from ~ to @w{} for unbreakable spaces
 
 2002-12-28  Charlie Zender  <zender@uci.edu>
