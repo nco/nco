@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.374 2004-08-08 06:01:29 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.375 2004-08-09 16:49:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -241,7 +241,10 @@ nco385. ncpdq: dynamically allocate arrays in nco_var_dmn_rdr_mtd(), nco_var_dmn
 nco386. Remove purely diagnostic arrays from nco_var_dmn_rdr_mtd(), nco_var_dmn_rdr_val()?
 nco389. ncpdq: Single dimension in re-order list with no negative sign is always identity transformation, warn? exit?
 nco390. ncpdq: make -a optional? (all switches are optional in all other operators)
-nco391. 
+nco391. OpenMP: thread main loop of ncbo
+nco392. OpenMP: thread main loop of ncatted
+nco393. OpenMP: thread main loop of ncflint
+nco393. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.260 2004-08-08 06:01:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.261 2004-08-09 16:49:38 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -140,7 +140,7 @@ x
 \gdef\rdrnbr{R} % [nbr] Re-order number
 \gdef\shridx{s} % [idx] Share index
 \gdef\shrnbr{S} % [nbr] Share number
-\gdef\dfr{d} % [frc] Math differential fxm: upright
+\gdef\dfr{{\rm d}} % [frc] Math differential fxm: upright
 \gdef\idx{i} % [idx] Index
 \gdef\iii{i} % [idx] i
 \gdef\jjj{j} % [idx] j
@@ -149,8 +149,8 @@ x
 \gdef\outnbr{J} % [nbr] Number of elements in output hyperslab
 \gdef\lmnnbr{N} % [nbr] Number of elements in input hyperslab
 \gdef\tllnbr{M} % [nbr] Tally (number of valid elements in input hyperslab)
-\gdef\me{e} % [frc] Math e fxm: upright
-\gdef\mi{i} % [frc] Math i fxm: upright
+\gdef\me{{\rm e}} % [frc] Math e fxm: upright
+\gdef\mi{{\rm i}} % [frc] Math i fxm: upright
 \gdef\mpi{\pi} % [frc] Math pi
 \gdef\mpp{\cal{M}} % [map] Map
 \gdef\mskflg{m} % [flg] Mask flag
@@ -3436,7 +3436,7 @@ Minimium value
 @item rms
 Root-mean-square (normalized by @var{N})
 @item rmssdn
-Root-mean square normalized by @var{N-1}
+Root-mean square (normalized by @var{N-1})
 @item sqrt
 Square root of the mean
 @item ttl
@@ -5809,9 +5809,12 @@ DESCRIPTION
 @command{ncecat} concatenates an arbitrary number of input files into a 
 single output file.
 @cindex record dimension
-Input files are glued together by creating a record dimension in the
-output file. 
-All @var{input-files} must contain all extracted variables.
+A new record dimension acts as the glue to bind the input files data
+together.
+Each variable in each input file becomes one record in the same variable
+in the output file. 
+All @var{input-files} must contain all extracted variables (or else
+there would be "gaps" in the output file).
 Each extracted variable must be constant in size and rank across all
 @var{input-files}. 
 The @var{input-files} are stored consecutively as a single record in 
@@ -5868,8 +5871,9 @@ The output file, @file{85.nc}, is five times the size as a single
 It contains @w{60 months} of data (which might or might not be stored in
 the record dimension, depending on the input files).
 
+@cindex record dimension
 Consider a file with an existing record dimension named @code{time}. 
-and suppose the user wishes to conver @code{time} from a record
+and suppose the user wishes to convert @code{time} from a record
 dimension to a non-record dimension.
 This may be useful, for example, when the user has another use for the
 record variable.
@@ -5881,6 +5885,8 @@ ncwa -a record in.nc out.nc # Remove new degenerate record dimension
 @end example
 @noindent
 The second step removes the degenerate record dimension.
+See @ref{ncpdq netCDF Permute Dimensions Quickly} for other methods
+changing variable dimensionality, including the record dimension.
 
 @page
 @html
@@ -6630,13 +6636,14 @@ $$
 $$
 There need be no relation between $\dmnnbr$ and $\rdrnbr$.
 Let the $\shrnbr$-element vector $\shrvct$ be the intersection
-(i.e., the ordered set of unique shared dimensions) of $\dmnvct$ and
-$\rdrvct$, i.e., $\shrvct = \rdrvct \cap \dmnvct$.
+(i.e., the ordered set of unique shared dimensions) of $\dmnvct$ and 
+$\rdrvct$
 Then
 $$
-\shrvct = [ \shr_{1}, \shr_{2}, \shr_{3}, \ldots, 
+\eqalign{{\shrvct} &= \rdrvct \cap \dmnvct \cr
+&= [ \shr_{1}, \shr_{2}, \shr_{3}, \ldots, 
 \shr_{\shridx-1}, \shr_{\shridx}, \shr_{\shridx+1}, 
-\ldots, \shr_{\shrnbr-2}, \shr_{\shrnbr-1}, \shr_{\shrnbr} ] 
+\ldots, \shr_{\shrnbr-2}, \shr_{\shrnbr-1}, \shr_{\shrnbr} ]} 
 $$
 $\shrvct$ is empty if $\rdrvct \notin \dmnvct$.
 
@@ -6645,7 +6652,8 @@ with dimensionality $\dmnvct(\xxx)$ to the output state with
 dimensionality $dmnvctprm(\xxxprm)$.  
 In practice, mapping occurs in three logically distinct steps.
 First, we tranlate the user input to a one-to-one mapping $\mpp$ 
-between input and output dimensions, $\dmnvct \mapsto \dmnvctprm$.
+between input and output dimensions, 
+$\dmnvct \mapsto \dmnvctprm$.
 This tentative map is final unless external constraints (typically
 netCDF restrictions) impose themselves.   
 Second, we check and, if necessary, the tentative mapping so that the
