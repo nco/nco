@@ -1,3 +1,12 @@
+2002-09-02  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco_c++-0_1_5
+	Changes since nco_c++-0_1_4: Comeau support, type-consistent
+	initialization 
+	
+	* libnco_cxx and tst build and execute correctly with Comeau
+	compiler 
+
 2002-09-01  Charlie Zender  <zender@uci.edu>
 
 	* Fix errors flagged by Comeau como compiler:
