@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.71 2004-06-18 01:21:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.72 2004-06-18 16:33:42 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -62,6 +62,7 @@ main(int argc,char **argv)
 {
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
+  bool FL_LST_IN_APPEND=True; /* Option H */
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_STYLE=False; /* Option F */
@@ -83,9 +84,9 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.71 2004-06-18 01:21:04 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.71 $";
-  const char * const opt_sng="ACcD:d:Fhl:n:Oo:p:rRv:x-:";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.72 2004-06-18 16:33:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.72 $";
+  const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:rRv:x-:";
 
   dmn_sct *rec_dmn;
   dmn_sct **dim;
@@ -139,6 +140,8 @@ main(int argc,char **argv)
       {"dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
       {"dmn",required_argument,0,'d'},
+      {"fl_lst_in",no_argument,0,'H'},
+      {"file_list",no_argument,0,'H'},
       {"fortran",no_argument,0,'F'},
       {"ftn",no_argument,0,'F'},
       {"history",no_argument,0,'h'},
@@ -193,6 +196,9 @@ main(int argc,char **argv)
       break;
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_STYLE=!FORTRAN_STYLE;
+      break;
+    case 'H': /* Toggle writing input file list attribute */
+      FL_LST_IN_APPEND=!FL_LST_IN_APPEND;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
@@ -328,6 +334,9 @@ main(int argc,char **argv)
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+
+  /* Add input file list global attribute */
+  if(FL_LST_IN_APPEND && HISTORY_APPEND) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
 
   /* ncecat-specific operations */
   if(True){

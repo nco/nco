@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.234 2004-06-18 01:21:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.235 2004-06-18 16:33:41 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1403,7 +1403,7 @@ that represents the symbolic links.
 This makes it difficult to determine the data provenance at a later date.
 
 @example
-# Alternative Method using stdin
+# Alternative Method piping filenames to stdin
 /bin/ls | grep $@{CASEID@}_'......'.nc | ncecat -o foo.nc
 cd ~/nco/data
 /bin/ls | grep '8.'.nc | ncecat -o foo.nc
@@ -1411,7 +1411,8 @@ cd ~/nco/data
 A side-effect of using this method is that the @code{history} attribute 
 (@pxref{History attribute}) does not record the name of any input
 files since the names were not passed on the command line.
-This makes it difficult to determine the data provenance at a later date.
+This makes determining the data provenance at a later date difficult.
+fxm: add discussion of new file list attribute.
 
 @node Large files and Memory, Memory usage, Large numbers of input files, Strategies
 @section Working with large files

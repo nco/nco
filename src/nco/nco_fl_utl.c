@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.30 2004-06-18 01:21:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.31 2004-06-18 16:33:42 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -34,7 +34,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
 } /* end nco_fl_cp() */
 
 void
-fl_mv /* [fnc] Move first file to second */
+nco_fl_mv /* [fnc] Move first file to second */
 (const char * const fl_src, /* I [sng] Name of source file to move */
  const char * const fl_dst) /* I [sng] Name of destination file */
 {
@@ -51,12 +51,12 @@ fl_mv /* [fnc] Move first file to second */
   (void)sprintf(mv_cmd,mv_cmd_fmt,fl_src,fl_dst);
   rcd=system(mv_cmd);
   if(rcd == -1){
-    (void)fprintf(stdout,"%s: ERROR fl_mv() unable to execute mv command \"%s\"\n",prg_nm_get(),mv_cmd);
+    (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",prg_nm_get(),mv_cmd);
     nco_exit(EXIT_FAILURE); 
   } /* end if */
   mv_cmd=(char *)nco_free(mv_cmd);
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
-} /* end fl_mv() */
+} /* end nco_fl_mv() */
 
 void 
 nco_fl_rm /* [fnc] Remove file */
@@ -172,7 +172,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	long chr_nbr; /* [nbr] Number of characters */
 	size_t fl_nm_lng; /* [nbr] Filename length */
 	
-	(void)fprintf(stderr,"%s: INFO nco_fl_lst_mk() reports input files not specified as positional arguments...attempting to read from stdin fxm TODO#339\n",prg_nm_get());
+	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG nco_fl_lst_mk() reports input files not specified as positional arguments...attempting to read from stdin fxm TODO#339\n",prg_nm_get());
 	
 	/* Initialize information to read stdin */
 	chr_nbr=0L; /* [nbr] Number of characters */
@@ -199,7 +199,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	  fl_nm_lng=strlen(bfr_in);
 	  chr_nbr+=fl_nm_lng;
 	  (*fl_nbr)++;
-	  (void)fprintf(stderr,"%s: INFO input file #%d is \"%s\", filename length=%li\n",prg_nm_get(),*fl_nbr,bfr_in,(long)fl_nm_lng);
+	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG input file #%d is \"%s\", filename length=%li\n",prg_nm_get(),*fl_nbr,bfr_in,(long)fl_nm_lng);
 	  /* Increment file number */
 	  fl_lst_in=(char **)nco_realloc(fl_lst_in,(*fl_nbr*sizeof(char *)));
 	  fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);
@@ -212,11 +212,11 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	  /* Free temporary buffer */
 	bfr_in=(char *)nco_free(bfr_in);
 	
-	(void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",prg_nm_get(),*fl_nbr,(long)chr_nbr);
+	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",prg_nm_get(),*fl_nbr,(long)chr_nbr);
 	if(*fl_nbr > 0) FL_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING Tried but failed to get input filenames from stdin\n",prg_nm_get());
 	
       } /* endif multi-file operator without positional arguments for fl_in */
-      
+
       if(!FL_IN_FROM_STDIN){ 
 	if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least two\n",prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need at least one (output file was specified with -o switch)\n",prg_nm_get(),psn_arg_nbr);
 	(void)nco_usg_prn();
@@ -939,7 +939,7 @@ nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output
     nco_exit(EXIT_FAILURE); 
   } /* end if */
   
-  (void)fl_mv(fl_out_tmp,fl_out);
+  (void)nco_fl_mv(fl_out_tmp,fl_out);
 
 } /* end nco_fl_out_cls() */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.30 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.31 2004-06-18 16:33:42 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -315,22 +315,66 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 } /* end nco_att_cpy() */
 
 void 
-nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
+nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
- const char * const hst_sng) /* I [sng] String to add to history attribute */
+ CST_X_PTR_CST_PTR_CST_Y(char,fl_lst_in), /* I [sng] Input file list */
+ const int fl_nbr) /* I [nbr] Number of files in input file list */
+{
+  /* Purpose: Write input file list to global metadata fxm TODO nco339 */
+  aed_sct fl_in_lst_aed;
+  char att_nm[]="input_file_list"; /* [sng] Name of input file list attribute */
+  char *fl_in_lst_sng;
+  int fl_idx;
+  size_t fl_in_lst_sng_lng; /* [nbr] Filename list string length */
+  ptr_unn att_val;
+  
+  /* Unfold file list into single string */
+  fl_in_lst_sng_lng=0L; /* [nbr] Filename list string length */
+  for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
+    fl_in_lst_sng_lng+=strlen(fl_lst_in[fl_idx]);
+  } /* end loop over fl */
+  fl_in_lst_sng=(char *)nco_malloc((fl_in_lst_sng_lng+1L)*sizeof(char));
+  fl_in_lst_sng[0]='\0';
+  for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
+    fl_in_lst_sng=strcat(fl_in_lst_sng,fl_lst_in[fl_idx]);
+  } /* end loop over fl */
+  
+  /* Insert file list into value */
+  att_val.cp=(unsigned char *)fl_in_lst_sng;
+  /* Initialize attribute edit structure */
+  fl_in_lst_aed.att_nm=att_nm;
+  fl_in_lst_aed.var_nm=NULL;
+  fl_in_lst_aed.id=NC_GLOBAL;
+  fl_in_lst_aed.sz=(long)strlen(fl_in_lst_sng)+1L;
+  fl_in_lst_aed.type=NC_CHAR;
+  /* Insert value into attribute structure */
+  fl_in_lst_aed.val=att_val;
+  fl_in_lst_aed.mode=aed_overwrite;
+  
+  /* Write input file list attribute to disk */
+  (void)nco_aed_prc(out_id,NC_GLOBAL,fl_in_lst_aed);
+  
+  /* Free string holding file list attribute */
+  fl_in_lst_sng=(char *)nco_free(fl_in_lst_sng);
+} /* end nco_fl_lst_att_cat() */
+ 
+ void 
+ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
+ (const int out_id, /* I [id] netCDF output-file ID */
+  const char * const hst_sng) /* I [sng] String to add to history attribute */
 {
   /* Purpose: Add command line and date stamp to existing history attribute, if any,
-   and write them to specified output file */
-
+     and write them to specified output file */
+  
   /* Length of string + NUL required to hold output of ctime() */
 #define TIME_STAMP_SNG_LNG 25 
-
+  
   char att_nm[NC_MAX_NAME];
   char *ctime_sng;
   char *history_crr=NULL;
   char *history_new;
   char time_stamp_sng[TIME_STAMP_SNG_LNG];
-
+  
   const char sng_history[]="history"; /* [sng] Possible name of history attribute */
   
   int idx;

@@ -1,7 +1,10 @@
 2004-06-17  Charlie Zender  <zender@uci.edu>
 
+	* Added nco_fl_lst_att_cat() to add input file list global attribute
+
 	* nco_fl_ls_mk() reads input file list from stdin when appropriate
-	for multi-file operators
+	for multi-file operators. 
+	For some reason it no longer pauses for manual stdin, however.
 
 2004-06-16  Charlie Zender  <zender@uci.edu>
 

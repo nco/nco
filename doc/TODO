@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.317 2004-06-18 01:21:02 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.318 2004-06-18 16:33:41 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -198,7 +198,9 @@ nco336. Allow input file lists to be specified in a text file and to supercede c
 nco337. When input file is a symbolic link, print name of linked-to-file as debugging information
 nco338. Read input filenames from stdin on MFOs when not positional arguments exist
 nco339. Record stdin input filenames in Global attribute somewhere, somehow
-nco340. 
+nco340. o/a/e stdin is overwritten when stdin input method used
+cd ~/nco/data;echo "in.nc" | ncecat -o foo.nc
+nco341. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

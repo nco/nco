@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.15 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.16 2004-06-18 16:33:42 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -51,6 +51,12 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
  const int var_in_id, /* I [id] netCDF input-variable ID */
  const int var_out_id, /* I [id] netCDF output-variable ID */
  const bool PCK_ATT_CPY); /* I [flg] Copy attributes "scale_factor", "add_offset" */
+
+void 
+nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
+(const int out_id, /* I [id] netCDF output-file ID */
+ CST_X_PTR_CST_PTR_CST_Y(char,fl_lst_in), /* I [sng] Input file list */
+ const int fl_nbr); /* I [nbr] Number of files in input file list */
 
 void 
 nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */

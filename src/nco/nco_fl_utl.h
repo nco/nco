@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.18 2004-06-18 01:21:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.19 2004-06-18 16:33:42 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -51,7 +51,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
  const char * const fl_dst); /* I [sng] Name of destination file */
 
 void
-fl_mv /* [fnc] Move first file to second */
+nco_fl_mv /* [fnc] Move first file to second */
 (const char * const fl_src, /* I [sng] Name of source file to move */
  const char * const fl_dst); /* I [sng] Name of destination file */
 
