@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.264 2004-08-11 01:30:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.265 2004-08-14 20:59:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6726,6 +6726,8 @@ dimensions $\dmnsubnnnprm \notin \shrvct$.
 For the $\shrnbr$ dimensions $\dmnsubnnnprm \in \shrvct$, 
 $\dmnsubnnnprm = \shrsubsss$.  
 @end tex
+
+@c fxm: discuss netCDF-imposed constraints here
 
 @noindent
 EXAMPLES

@@ -1,3 +1,7 @@
+2004-08-14  Charlie Zender  <zender@uci.edu>
+
+	* Pass nco_pck_typ from all operators to nco_var_lst_dvd()
+
 2004-08-11  Charlie Zender  <zender@uci.edu>
 
 	* Create nco_pck_mtd() to off-load metadata manipulation

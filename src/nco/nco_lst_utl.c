@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.20 2004-08-05 04:27:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.21 2004-08-14 21:00:00 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -144,6 +144,12 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
     (*nbr_lst)++;
   } /* end while */
 
+  /* valgrind fxm: 20040814 valgrind reports: 
+     ==32444== 4 bytes in 1 blocks are definitely lost in loss record 1 of 6
+     ==32444==    at 0x1B906EDD: malloc (vg_replace_malloc.c:131)
+     ==32444==    by 0x8055DE9: nco_malloc (nco_mmr.c:85)
+     ==32444==    by 0x8055A2C: lst_prs (nco_lst_utl.c:147)
+     ==32444==    by 0x8049D3B: main (ncpdq.c:272) */
   lst=(char **)nco_malloc(*nbr_lst*sizeof(char *));
 
   sng_in_ptr=sng_in; 

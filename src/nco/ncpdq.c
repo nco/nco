@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.29 2004-08-12 05:07:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.30 2004-08-14 21:00:00 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -91,14 +91,15 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
+  char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type Option P */
   char *rec_dmn_nm_in=NULL; /* [sng] Record dimension name, original */
   char *rec_dmn_nm_out=NULL; /* [sng] Record dimension name, re-ordered */
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.29 2004-08-12 05:07:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.29 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.30 2004-08-14 21:00:00 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.30 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:P:p:Rrt:v:x-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -145,7 +146,7 @@ main(int argc,char **argv)
   
   nm_id_sct *dmn_lst;
   nm_id_sct *dmn_rdr_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may be alloc()'d from NULL with -c option */
   
   time_t time_crr_time_t;
   
@@ -215,7 +216,7 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'a': /* Re-order dimensions */
-      dmn_rdr_lst_in=lst_prs(optarg,",",&dmn_rdr_nbr);
+      dmn_rdr_lst_in=lst_prs((char *)strdup(optarg),",",&dmn_rdr_nbr);
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
       PROCESS_ASSOCIATED_COORDINATES=False;
@@ -237,7 +238,7 @@ main(int argc,char **argv)
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
-      fl_pth_lcl=optarg;
+      fl_pth_lcl=(char *)strdup(optarg);
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -251,7 +252,7 @@ main(int argc,char **argv)
       if(dbg_lvl > 0) (void)fprintf(stderr,"%s: DEBUG Packing type %s enum %d requested\n",prg_nm_get(),nco_pck_typ_sng,nco_pck_typ);
       break;
     case 'p': /* Common file path */
-      fl_pth=optarg;
+      fl_pth=(char *)strdup(optarg);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
@@ -266,8 +267,9 @@ main(int argc,char **argv)
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
-      (void)nco_lst_comma2hash(optarg);
-      var_lst_in=lst_prs(optarg,",",&nbr_xtr);
+      optarg_lcl=(char *)strdup(optarg);
+      (void)nco_lst_comma2hash(optarg_lcl);
+      var_lst_in=lst_prs(optarg_lcl,",",&nbr_xtr);
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
@@ -408,7 +410,7 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_typ,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* We now have final list of variables to extract. Phew. */
   if(dbg_lvl > 2){
@@ -679,13 +681,46 @@ main(int argc,char **argv)
     
   } /* end loop over fl_idx */
   
-  /* Free dimension correspondence list */
-  dmn_idx_out_in=nco_free(dmn_idx_out_in);
-  dmn_rvr_in=nco_free(dmn_rvr_in);
-
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
+  /* Free string list members */
+  for(idx=0;idx<dmn_rdr_nbr;idx++){
+    /* fxm: Generates a free() 
+       fxm: shifting negative signs by one may do same */
+    /*    dmn_rdr_lst_in[idx]=(char *)nco_free(dmn_rdr_lst_in[idx]);*/
+    ;
+  } /* end loop over idx */
+  /* Free lists of strings */
+  if(dmn_rdr_lst_in != NULL) dmn_rdr_lst_in=(char **)nco_free(dmn_rdr_lst_in);
+  if(fl_lst_abb != NULL) fl_lst_abb=(char **)nco_free(fl_lst_abb);
+  if(fl_lst_in != NULL) fl_lst_in=(char **)nco_free(fl_lst_in);
+  if(var_lst_in != NULL) var_lst_in=(char **)nco_free(var_lst_in);
+  /* Free individual strings */
+  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+  if(nco_pck_typ_sng != NULL) nco_pck_typ_sng=(char *)nco_free(nco_pck_typ_sng);
+  /* Free limits */
+  for(idx=0;idx<lmt_nbr;idx++){
+    lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
+  } /* end loop over idx */
+  if(lmt_nbr > 0) lmt=(lmt_sct *)nco_free(lmt);
+  /* Free dimension correspondence list */
+  dmn_idx_out_in=nco_free(dmn_idx_out_in);
+  dmn_rvr_in=nco_free(dmn_rvr_in);
+  for(idx=0;idx<nbr_dmn_xtr;idx++){
+    dim[idx]=(dmn_sct *)nco_free(dim[idx]);
+    dmn_out[idx]=(dmn_sct *)nco_free(dmn_out[idx]);
+  } /* end loop over idx */
+  dim=(dmn_sct **)nco_free(dim);
+  dmn_out=(dmn_sct **)nco_free(dmn_out);
+  /* Variable have there own free() routine */
+  for(idx=0;idx<nbr_xtr;idx++){
+    var[idx]=nco_var_free(var[idx]);
+    var_out[idx]=nco_var_free(var_out[idx]);
+  } /* end loop over idx */
+  var=(var_sct **)nco_free(var);
+  var_out=(var_sct **)nco_free(var);
+
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
@@ -695,7 +730,7 @@ void
 nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
 (const var_sct * const var_in, /* I [ptr] Variable in original disk state */
  var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be altered */
- int nco_pck_typ) /* I [enm] Packing type */
+ const int nco_pck_typ) /* I [enm] Packing type */
 {
   /* Purpose: Alter metadata according to packing specification */
   const char fnc_nm[]="nco_pck_mtd()"; /* [sng] Function name */

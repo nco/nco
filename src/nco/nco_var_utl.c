@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.52 2004-08-12 05:00:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.53 2004-08-14 21:00:00 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -539,7 +539,7 @@ nco_var_dpl /* [fnc] Duplicate input variable */
   /* Shallow copy structure */
   (void)memcpy((void *)var_cpy,(const void *)var,sizeof(var_sct));
 
-  /* fxm: Should copy name as well, but var_free does not free it, and 
+  /* fxm: Should copy name as well, but var_free() does not free it, and 
      var_lists do not strdup() user input so must make all changes at once 
      in order to avoid adding memory leak */
 
@@ -680,9 +680,9 @@ nco_var_free /* [fnc] Free all memory associated with variable structure */
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with a dynamically allocated variable structure */
   
-  /* fxm: var->nm is not freed because names may be owned by optarg list (system)
+  /* fxm: var->nm is not free()'d because names may be owned by optarg list (system)
      This assumption needs to be changed before freeing name pointer */
-  
+  /*  var->nm=nco_free(var->nm);*/
   var->val.vp=nco_free(var->val.vp);
   var->mss_val.vp=nco_free(var->mss_val.vp);
   var->tally=(long *)nco_free(var->tally);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.34 2004-08-08 06:01:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.35 2004-08-14 21:00:00 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -366,6 +366,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */
  const bool NCAR_CCSM_FORMAT, /* I [flg] File adheres to NCAR CCSM conventions */
+ const int nco_pck_typ, /* I [enm] Packing type */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl, /* I [nbr] Number of altered dimensions */
  var_sct *** const var_fix_ptr, /* O [sct] Fixed-variables (input file) */
@@ -383,8 +384,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   int prg; /* Program key */
 
   enum op_typ{
-    fix, /* 0 */
-    prc /* 1 */
+    fix, /* 0 [enm] Fix variable (operator alters neither data nor metadata) */
+    prc /* 1 [enm] Process variable (operator may alter data or metadata) */
   };
 
   int idx_dmn;
@@ -409,7 +410,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   /* Find operation type for each variable: for now this is either fix or prc */
   for(idx=0;idx<nbr_var;idx++){
     
-    /* Initialize operation type */
+    /* Initialize operation type to processed. Change to fixed where warranted later. */
     var_op_typ[idx]=prc;
     var_nm=var[idx]->nm;
     var_type=var[idx]->type;
@@ -446,17 +447,22 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     case ncpdq:
     case ncwa:
       /* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
-      for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
-	for(idx_xcl=0;idx_xcl<nbr_dmn_xcl;idx_xcl++){
-	  if(var[idx]->dim[idx_dmn]->id == dmn_xcl[idx_xcl]->id) break;
-	} /* end loop over idx_xcl */
-	if(idx_xcl != nbr_dmn_xcl){
-	  var_op_typ[idx]=prc;
-	  break;
-	} /* end if */
-      } /* end loop over idx_dmn */
-      /* Fix variables with no altered (averaged, re-ordered, reversed) dimensions */
-      if(idx_dmn == var[idx]->nbr_dim) var_op_typ[idx]=fix;
+      if(prg == ncpdq && nco_pck_typ != nco_pck_nil){
+	/* Packing operates on every extracted variable */
+	var_op_typ[idx]=prc;
+      }else{
+	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
+	  for(idx_xcl=0;idx_xcl<nbr_dmn_xcl;idx_xcl++){
+	    if(var[idx]->dim[idx_dmn]->id == dmn_xcl[idx_xcl]->id) break;
+	  } /* end loop over idx_xcl */
+	  if(idx_xcl != nbr_dmn_xcl){
+	    var_op_typ[idx]=prc;
+	    break;
+	  } /* end if */
+	} /* end loop over idx_dmn */
+	/* Fix variables with no altered (averaged, re-ordered, reversed) dimensions */
+	if(idx_dmn == var[idx]->nbr_dim) var_op_typ[idx]=fix;
+      } /* endif averaging or re-ordering */
       break;
     default: nco_dfl_case_prg_id_err(); break;
     } /* end switch */
@@ -492,7 +498,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   } /* end if */
 
   /* fxm: Remove ncap exception when finished with ncap list processing */
-  if(*nbr_var_prc == 0 && prg != ncap){
+  /* fxm: ncpdq processes all variables when pakcing requested */
+  if(*nbr_var_prc == 0 && prg != ncap && prg != ncpdq){
     (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing\n",prg_nm_get());
     switch(prg_get()){
     case ncap:

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.28 2004-06-18 23:12:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.29 2004-08-14 21:00:00 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -785,7 +785,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
   
   for(idx=0;idx<lmt_nbr;idx++){
     
-    /* Hyperslab specifications are processed as normal text list */
+    /* Process hyperslab specifications as normal text list */
     arg_lst=lst_prs(lmt_arg[idx],dlm_sng,&arg_nbr);
     
     /* Check syntax */

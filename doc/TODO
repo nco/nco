@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.376 2004-08-11 01:30:42 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.377 2004-08-14 20:59:58 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -228,7 +228,7 @@ nco357. Add OpenMP robustness test to nco_bnch.sh
 nco358. Document ncwa -z switch: Get rid of separate -M -m -T?
 nco359. Allow spaces between variables names in -v var_lst arguments (assuming list whitespace is quoted, of course)
 nco362. reduce memory during run by free()'ing var_fix[idx],var_fix_out[idx],var_prc[idx],var_prc_out[idx] after writes
-nco363. Finish documenting ncpdq in nco.texi
+nco363. ncpdq: document netCDF limitations in nco.texi
 nco367. fix ncwa list collapse errors once bug found in pcpdq. Unfortunately ncwa uses dim_avg_lst after it is collapsed
 nco375. Do something more consistent with: nco_exit(EXIT_FAILURE)
 nco379. ncpdq: Add packing/unpacking capabilities
@@ -238,7 +238,12 @@ nco389. ncpdq: Single dimension in re-order list with no negative sign is always
 nco390. ncpdq: make -a optional? (all switches are optional in all other operators)
 nco392. OpenMP: thread main loop of ncatted
 nco393. OpenMP: thread main loop of ncflint
-nco393. 
+nco394. strdup() all system-owned memory so var_free() can free strings
+nco395. ncpdq: document rdr shr lists
+nco396. free() memory at end of each operator
+nco397. make ncpack symbolic link to ncpdq? Re-order/pack are completely independent yet need same structure of program
+nco398. ncpdq should not call re-order routines if packing requested and visa versa
+nco399. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
