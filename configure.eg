@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.77 2004-02-03 06:03:39 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.78 2004-02-26 15:39:34 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -251,29 +251,6 @@ autoconf # Create ./configure from ./configure.in
 ./configure --disable-shared --enable-debug-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 # Production
 ./configure --enable-maintainer-mode --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log config.log.${GNU_TRP}.foo
-/bin/cp -f libtool libtool.${GNU_TRP}.foo
-make clean;make > make.${GNU_TRP}.foo 2>&1
-make check >> make.${GNU_TRP}.foo 2>&1
-make install >> make.${GNU_TRP}.foo 2>&1
-scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-gcc/g++ DODS:
-export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-LDFLAGS=-L/usr/local/DODS/lib NETCDF_INC=/usr/local/DODS/include NETCDF_LIB=/usr/local/DODS/lib ./configure --enable-dods --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log config.log.${GNU_TRP}.foo
-make clean;make > make.${GNU_TRP}.foo 2>&1
-make check >> make.${GNU_TRP}.foo 2>&1
-make install >> make.${GNU_TRP}.foo 2>&1
-scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-gcc/g++ cygwin:
-export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
-# Comment out maintainer mode until it works reliably
-# ./configure --enable-maintainer-mode --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.287 2004-02-26 02:50:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.288 2004-02-26 15:39:35 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -200,9 +200,8 @@ nco308. Add shared library flag to nco_ctl.c flags
 nco309. Free memory allocated in nco_fl_utl.c: fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
 nco310. Add ENABLE_DEBUG_CUSTOM, ENABLE_OPTIMIZE_CUSTOM, ... to bld/Makefile
 nco311. Automatically convert int,short to float in nco_var_pwr()
-nco314. nco -O -C -a lat,lon,time http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface/pres.sfc.1969.nc foo.nc 
-causes SIGSEGV in nco_var_avg_reduce_ttl ad nco_var_avg.c:413
-http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface/pres.sfc.1969.nc foo.nc
+nco314. ncwa -O -C -a lat,lon,time http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface/pres.sfc.1969.nc foo.nc 
+causes SIGSEGV in nco_var_avg_reduce_ttl at nco_var_avg.c:413
 nco315. GNUC non-ANSI rank reduction methods in nco_var_avg.c fail on large files. Problem with stack memory allocation?
 nco316. Change offending nco_malloc() to nco_malloc_flg() calls for #315
 nco317. Understand stack memory problem. ulimits? compiler switches?
