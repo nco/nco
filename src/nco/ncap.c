@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.67 2002-05-06 03:39:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.68 2002-05-15 05:06:58 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -82,7 +82,7 @@ char *fl_spt_glb; /* [fl] Script file */
 int 
 main(int argc,char **argv)
 {
-  extern int yyparse (void *); /* Prototype here as in bison.simple to avoid compiler warning */
+  extern int yyparse(void *); /* Prototype here as in bison.simple to avoid compiler warning */
 /* Following declaration gets rid of implicit declaration compiler warning
    It is a condensation of the lexer declaration from lex.yy.c:
    YY_BUFFER_STATE yy_scan_string YY_PROTO(( yyconst char *yy_str )); */
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.67 2002-05-06 03:39:55 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.67 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.68 2002-05-15 05:06:58 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.68 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;

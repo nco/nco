@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.55 2002-05-14 01:00:21 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.56 2002-05-15 05:06:59 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -151,8 +151,8 @@ out_att_xpr '=' scv_xpr {
     default: break;
     } /* end switch */
   } /* end if */
-  $1.var_nm=nco_free($1.var_nm);
-  $1.att_nm=nco_free($1.att_nm);
+  $1.var_nm=(char *)nco_free($1.var_nm);
+  $1.att_nm=(char *)nco_free($1.att_nm);
 } /* end out_att_xpr '=' scv_xpr */
 | out_att_xpr '=' sng_xpr 
 {
@@ -171,9 +171,9 @@ out_att_xpr '=' scv_xpr {
   
   if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
   (void)yyerror(err_sng);
-  $1.var_nm=nco_free($1.var_nm);
-  $1.att_nm=nco_free($1.att_nm);
-  $3=nco_free($3);
+  $1.var_nm=(char *)nco_free($1.var_nm);
+  $1.att_nm=(char *)nco_free($1.att_nm);
+  $3=(char *)nco_free($3);
 } /* end out_att_xpr '=' sng_xpr */
 | out_att_xpr '=' var_xpr
 { 
@@ -195,8 +195,8 @@ out_att_xpr '=' scv_xpr {
     (void)sprintf(err_sng,"Warning: Cannot store in attribute %s@%s a variable with dimension %d",$1.var_nm,$1.att_nm,$3->nbr_dim);
     (void)yyerror(err_sng);
   } /* endif */
-  $1.var_nm=nco_free($1.var_nm);
-  $1.att_nm=nco_free($1.att_nm);
+  $1.var_nm=(char *)nco_free($1.var_nm);
+  $1.att_nm=(char *)nco_free($1.att_nm);
   (void)var_free($3); 
 } /* end out_att_xpr '=' var_xpr */
 | out_var_xpr '=' var_xpr 
@@ -214,7 +214,7 @@ out_att_xpr '=' scv_xpr {
     if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving variable %s to %s",$3->nm,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   } /* end else */
-  $1=nco_free($1);
+  $1=(char *)nco_free($1);
   (void)var_free($3);
 } /* end out_var_xpr '=' var_xpr */
 | out_var_xpr '=' scv_xpr
@@ -254,7 +254,7 @@ out_att_xpr '=' scv_xpr {
     if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   } /* endif */
-  $1=nco_free($1);
+  $1=(char *)nco_free($1);
 } /* end out_var_xpr '=' scv_xpr */
 | out_var_xpr '=' sng_xpr
 {
@@ -279,8 +279,8 @@ out_att_xpr '=' scv_xpr {
     if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   } /* endelse */
-  $1=nco_free($1);
-  $3=nco_free($3);
+  $1=(char *)nco_free($1);
+  $3=(char *)nco_free($3);
 } /* end out_var_xpr '=' sng_xpr */
 ; /* end statement */
 
@@ -370,8 +370,8 @@ sng_xpr '+' sng_xpr {
   $$=(char*)nco_malloc((sng_lng+1)*sizeof(char));
   strcpy($$,$1);
   strcat($$,$3);
-  $1=nco_free($1);
-  $3=nco_free($3);
+  $1=(char *)nco_free($1);
+  $3=(char *)nco_free($3);
 } 
 | ATOSTR '(' scv_xpr ')' {
   char bfr[50];
@@ -397,7 +397,7 @@ sng_xpr '+' sng_xpr {
   case NC_BYTE: sprintf(bfr,$5,$3.val.b); break;
   default:  break;
   } /* end switch */
-  $5=nco_free($5);
+  $5=(char *)nco_free($5);
   $$=strdup(bfr);      
 }
 | SNG {$$=$1;}
