@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.254 2004-08-07 03:23:30 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.255 2004-08-07 06:15:12 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -152,9 +152,11 @@ x
 \gdef\me{e} % [frc] Math e fxm: upright
 \gdef\mi{i} % [frc] Math i fxm: upright
 \gdef\mpi{\pi} % [frc] Math pi
+\gdef\mpp{\cal{M}} % [map] Map
 \gdef\mskflg{m} % [flg] Mask flag
 \gdef\mssflg{\mu} % [flg] Missing value flag
 \gdef\tm{t} % [s] Time
+\gdef\prmsbs{\prime} % [sbs] Prime subscript
 \gdef\wgt{w} % [frc] Weight
 \gdef\wndmrd{v} % [m s-1] Meridional wind speed
 \gdef\wndznl{u} % [m s-1] Zonal wind speed
@@ -163,8 +165,18 @@ x
 
 % 2. Derived commands
 \gdef\dmnvct{{\bf \dmn}} % [vct] Dimension vector
+\gdef\dmnprm{\dmn^{\prmsbs}} % [vct] Dimension prime
+\gdef\dmnsubnnn{\dmn_{\dmnidx}} % [dmn] Dimension sub nnn
+\gdef\shrsubnnn{\shr_{\dmnidx}} % [dmn] Share dimension sub nnn
+\gdef\shrsubsss{\shr_{\shridx}} % [dmn] Share dimension sub sss
+\gdef\dmnsubnnnprm{\dmn_{\dmnidx}^{\prmsbs}} % [vct] Dimension prime sub nnn 
+\gdef\dmnvctprm{{\bf \dmn}^{\prmsbs}}} % [vct] Dimension vector prime
 \gdef\rdrvct{{\bf \rdr}} % [vct] Reorder vector
 \gdef\shrvct{{\bf \shr}} % [vct] Share vector
+\gdef\xxxprm{\xxx^{\prmsbs}} % [ltr] x prime
+
+% 3. Doubly derived commands
+
 @end tex
 
 @direntry
@@ -6531,6 +6543,7 @@ may be relaxed in the future with netCDF4.}.
 
 @tex
 Let $\dmnvct(\xxx)$ represent the dimensionality of the variable $\xxx$. 
+Dimensionality describes the order and sizes of dimensions.
 If $\xxx$ has rank $\dmnnbr$, then we may write $\dmnvct(\xxx)$ as the
 $\dmnnbr$-element vector 
 $$
@@ -6539,6 +6552,7 @@ $$
 \ldots, \dmn_{\dmnnbr-2}, \dmn_{\dmnnbr-1}, \dmn_{\dmnnbr} ] 
 $$
 where $\dmn_{\dmnidx}$ is the size of the $\dmnidx$'th dimension.
+
 The dimension re-order list specified with @samp{-a} is the
 $\rdrnbr$-element vector 
 $$
@@ -6548,8 +6562,8 @@ $$
 $$
 There need be no relation between $\dmnnbr$ and $\rdrnbr$.
 Let the $\shrnbr$-element vector $\shrvct$ be the intersection
-(i.e., the ordered set of shared dimensions) of $\dmnvct$ and $\rdrvct$, 
-i.e., $\shrvct = \rdrvct \cap \dmnvec$.
+(i.e., the ordered set of unique shared dimensions) of $\dmnvct$ and
+$\rdrvct$, i.e., $\shrvct = \rdrvct \cap \dmnvct$.
 Then
 $$
 \shrvct = [ \shr_{1}, \shr_{2}, \shr_{3}, \ldots, 
@@ -6557,7 +6571,44 @@ $$
 \ldots, \shr_{\shrnbr-2}, \shr_{\shrnbr-1}, \shr_{\shrnbr} ] 
 $$
 $\shrvct$ is empty if $\rdrvct \notin \dmnvct$.
-This may be the case for none, some, or all the extracted variables.
+
+Re-ordering (or re-shaping) a variable means mapping the input state
+with dimensionality $\dmnvct(\xxx)$ to the output state with
+dimensionality $dmnvctprm(\xxxprm)$.  
+In practice, mapping occurs in three logically distinct steps.
+First, we tranlate the user input to a one-to-one mapping $\mpp$ 
+between input and output dimensions, $\dmnvct \mapsto \dmnvctprm$.
+This tentative map is final unless external constraints (typically
+netCDF restrictions) impose themselves.   
+Second, we check and, if necessary, the tentative mapping so that the
+re-shaped variables will co-exist in the same file without violating
+netCDF-imposed storage restrictions. 
+This refined map specifies the final (output) dimensionality.
+Third, we translate the output dimensionality into one-dimensional  
+memory offsets for each datum according to the @w{C language} convention
+for multi-dimensional array storage.
+Dimension reversal changes the ordering of data, but not the
+dimensionality, and so is part of the third step. 
+
+Dimensions $\rdr$ disjoint from $\dmnvct$ play no role in re-ordering.
+The first step taken to re-order a variable is to determine $\shrvct$. 
+$\rdrvct$ is constant for all variables, whereas $\dmnvct$, and hence
+$\shrvct$, is variable-specific.
+$\shrvct$ is empty if $\rdrvct \notin \dmnvct$.
+This may be the case for some extracted variables.
+The user may explicitly specify the one-to-one mapping of input
+to output dimension order by supplying (with @samp{-a}) a re-order list
+$\rdrvct$ such that $\shrnbr = \dmnnbr$. 
+In this case $\dmnsubnnnprm = \shrsubnnn$.  
+The degenerate case occurs when $\dmnvct = \shrvct$.
+This produces the identity mapping $\dmnsubnnnprm = \dmnsubnnn$.  
+
+The mapping of input to output dimension order is more complex
+when $\shrnbr \ne \dmnnbr$. 
+In this case $\dmnsubnnnprm = \dmnsubnnn$ for the $\dmnnbr-\shrnbr$
+dimensions $\dmnsubnnnprm \notin \shrvct$.
+For the $\shrnbr$ dimensions $\dmnsubnnnprm \in \shrvct$, 
+$\dmnsubnnnprm = \shrsubsss$.  
 @end tex
 
 @noindent
