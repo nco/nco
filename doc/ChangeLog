@@ -1,3 +1,14 @@
+2001-12-11  Henry Butowsky  <henryb@ntlworld.com>
+	* Changed ncap.l so attributes now use the @ symbol rather than :
+	          i.e var_nm@att_nm rather than var_nm:att_nm
+	* Changed ncap.y So that 1-D variables can be saved in an attribute
+	
+	* Attempted to fix the rank problem. Added ncap_var_conform_dim() to
+	  ncap_utl.c, Its not working correctly at the mo.
+	
+        * Added  att_lst_max to ncap.c
+	
+	* Updated ncap.in
 2001-12-02  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_1_0
