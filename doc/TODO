@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.123 2002-02-05 07:34:36 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.124 2002-02-12 05:25:50 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -214,6 +214,7 @@ or variable list is made more specific, or MALLOC_CHECK_=1 is used
 ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 220. Modify network code in csz.c so gcc -ansi works (fix resolv.h structures) 
 221. Add option to strip executables
+222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
 ************************************************************************
 End NCO Wish list
 ************************************************************************
