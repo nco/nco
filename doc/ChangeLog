@@ -1,3 +1,19 @@
+ChangeLog
+2005-02-13  Harry Mangalam  <hjm@tacgi.com>
+	* used cz's  ncks --compiler flag to grab compiler info
+	* hires timer & udp reporting work on aix with perl >= 5.6.1
+
+2005-02-13  Harry Mangalam  <hjm@tacgi.com>
+	* added hires timing to test script bld/nco_tst.pl
+	* using udpserver2 collector modified from tacg project
+	* added udp reporting   "
+	* more debugging for    "
+	* cleaned up and strictified code
+	
+2005-02-10  Harry Mangalam  <hjm@tacgi.com>
+	* added the getopt & usage section to test script bld/nco_tst.pl
+	* added the logging and more debug
+
 2005-02-13  Charlie Zender  <zender@uci.edu>
 
 	* Added --cmp, --compiler switch to ncks to report compiler name

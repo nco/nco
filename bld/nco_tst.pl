@@ -6,18 +6,29 @@
 
 # NB: When adding tests, _be sure to use -O to overwrite files_
 # Otherwise, script hangs waiting for interactive response to overwrite queries
-
-# Changelog:
-# *   20050210 - hjm@tacgi.com
-#     -added the getopt & usage section
-#     -added the logging and more debug
+require 5.6.1 or die "this script requires Perl version >= 5.6.1";
 use Cwd 'abs_path';
-use IO::Socket;
-#use IO::Select;
-#use Socket;
+#use IO::Socket;
 use Getopt::Long; #qw(:config no_ignore_case bundling);
-use Time::HiRes qw(usleep ualarm gettimeofday tv_interval);
 use strict;
+
+#test nonfatally for useful modules
+my $hiresfound;
+BEGIN {eval "use Time::HiRes qw(usleep ualarm gettimeofday tv_interval)"; $hiresfound = $@ ? 0 : 1}
+#$hiresfound = 0;  # uncomment to simulate not found
+if ($hiresfound == 0) {
+    print "\nOoops! Time::HiRes (needed for accurate timing) not found\nContinuing without timing.";
+} else {
+    print "Time::HiRes ... found!\n";
+}
+my $iosockfound;
+BEGIN {eval "use IO::Socket"; $iosockfound = $@ ? 0 : 1}
+#$iosockfound = 0;  # uncomment to simulate not found
+if ($iosockfound == 0) {
+    print "\nOoops! IO::Socket module not found - continuing with no udp logging.\n";
+} else {
+    print "IO::Socket ... found!\n\n";
+}
 
 my %subbenchmarks;
 my %totbenchmarks;
@@ -25,21 +36,14 @@ my %totbenchmarks;
 #declare vars for strict
 use vars qw($dbg_lvl $wantlog $usage $operator @test $description $expected
 @all_operators @operators $MY_BIN_DIR %sym_link %testnum %success %failure
-%testnum $result $server_name $server_ip $server_port $udp_report
+%testnum $result $server_name $server_ip $server_port $sock $udp_report
 );
 
 $server_name = "ibonk";
 #$server_ip = "128.200.14.132";
 $server_ip = "68.5.247.102";
 $server_port = 29659;
-
-my $sock = IO::Socket::INET->new (
-     Proto    => 'udp',
-	  PeerAddr => $server_ip,
-	  PeerPort => $server_port
-	  ) or die "\ncan't get the socket!\n\n";
-
-
+$udp_report = 0;
 
 $dbg_lvl = 0; # [enm] Print tests during execution for debugging
 $wantlog = 0;
@@ -54,6 +58,14 @@ $usage   = 0;
 );
 
 if ($usage) { usage()};
+
+if ($iosockfound) {
+	   $sock = IO::Socket::INET->new (
+		Proto    => 'udp',
+		PeerAddr => $server_ip,
+		PeerPort => $server_port
+		) or die "\nCan't get the socket!\n\n";
+} else {$udp_report = 0;}
 
 if ($wantlog) { 
 	open(LOG, ">nctest.log") or die "\nCan't open the log file 'nctest.log' - check permissions on it \nor the directory you're in.\n\n";
@@ -685,7 +697,7 @@ sub usage {
 	print << 'USAGE';
 	
 Usage:
-nco_test.pl (options) [list of operators to test] (from the following list)
+nco_test.pl (options) [list of operators to test from the following list]
 
 ncap ncatted ncbo ncflint ncea ncecat
 ncks ncpdq ncra ncrcat ncrename ncwa          (default tests all)
@@ -696,14 +708,19 @@ where (options) are:
                      more useful info.
   --log ...........requests that the debug info is logged to 'nctest.log'
                      as well as spat to STDOUT.
-
+  --udpreport......requests that the test results are communicated back to
+                     NCO Central to add your test, timing, and build results.
+							NB: This option uses udp port 29659 and may set off
+							firewall alarms if used unless that port is open.
+                     
 nco_test.pl is a semi-automated script for testing the accuracy and
 robustness of the nco (netCDF Operators), typically after they are
 built, using the 'make test' command.  In this mode, a user should
 never have to see this message, so this is all I'll say about it.
 
-In nco debug/testing  mode, it tries to validate the nco's from both
-an accuracy and a robustness POV.
+In nco debug/testing  mode, it tries to validate the nco's for both
+accuracy and robustness.  It also can collect benchmark statistics via
+sending test resuilts to a 
 
 NB: When adding tests, be sure to use -O to overwrite files.
 Otherwise, script hangs waiting for interactive response to
@@ -815,11 +832,16 @@ sub go {
     # Perform an individual test
 	 &verbosity("Commandline for operator [$operator]:\n$_\n\n");
 	 # timing code using Time::HiRes
-	 my $t0 = [gettimeofday];
+	 my $t0;
+	 if ($hiresfound) {$t0 = [gettimeofday];}
+	 else {$t0 = time;}
+	
     $result=`$_` ;
 	 
-#	 my $elapsed = tv_interval($t0, [gettimeofday]);
-	 my $elapsed = tv_interval($t0, [gettimeofday]);
+    my $elapsed;
+	 if ($hiresfound) {$elapsed = tv_interval($t0, [gettimeofday]);}
+	 else {$elapsed = time - $t0;}
+
 #	 print "inter benchmark for $operator = $subbenchmarks{$operator} \n";
 	 $subbenchmarks{$operator} += $elapsed;
 	 $t = $testnum{$operator} - 1;
@@ -889,8 +911,14 @@ sub failed {
 
 ####################
 sub summarize_results 
-{ my $reportstr = "";
-  my $idstring = `uname -a` . "using: " . `gcc --version |grep -i gcc`;
+{ my $CC = `../src/nco/ncks --compiler`;
+  my $CCinfo = "";
+  if ($CC =~ /gcc/) {$CCinfo = `gcc --version |grep -i gcc`;}
+  elsif ($CC =~ /xlc/) {$CCinfo = "xlc version ??";}
+  elsif ($CC =~ /icc/) {$CCinfo = "Intel C Compiler version ??";}
+  
+  my $reportstr = "";
+  my $idstring = `uname -a` . "using: " . $CCinfo;
   $reportstr .= "\n\nNCO Test Result Summary for:\n$idstring\n";
   $reportstr .=  "      Test                            Total Time (s) \n";
   
