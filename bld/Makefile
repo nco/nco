@@ -1,12 +1,18 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.2 1998-08-18 16:56:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.3 1998-08-19 00:52:13 zender Exp $
 
-MY_BIN_DIR := ../bin
 MY_BLD_DIR := ../bld
 MY_DAT_DIR := ../data
 MY_DOC_DIR := ../doc
 MY_INC_DIR := 
-MY_LIB_DIR := ../lib
-MY_OBJ_DIR := ../obj
+ifndef MY_BIN_DIR
+ MY_BIN_DIR := ../bin
+endif
+ifndef MY_LIB_DIR
+ MY_LIB_DIR := ../lib
+endif
+ifndef MY_OBJ_DIR
+ MY_OBJ_DIR := ../obj
+endif
 ifndef OPTS
  OPTS := O
 endif
@@ -30,7 +36,18 @@ FIND_FNC = $(wildcard $(dir)/*.c $(dir)/*.F) # Find all C and Fortran source fil
 SRC_LST = $(strip $(foreach dir, $(dirs),$(FIND_FNC))) # Assemble source files from all directories
 SRC_STB_LST := $(strip $(sort $(notdir $(SRC_LST)))) # Source file names with directories removed
 SRC_STB_FL := $(strip $(subst $(space),$(newline),$(SRC_STB_LST))) # Source files names sorted alphabetically, one per line, suitable for input to makdep
-CRM_OBJ := $(addprefix $(MY_OBJ_DIR)/,$(addsuffix .o, $(basename $(SRC_STB_LST)))) # Dependency list for executable
+NCO_OBJ := $(addprefix $(MY_OBJ_DIR)/,$(addsuffix .o, $(basename $(SRC_STB_LST)))) # Dependency list for executable
+
+# Variables having to do with NCO executables
+NCO_BIN_TRG := ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted # NCO binary targets
+NCO_BIN_SYM_LNK := ncea ncrcat # Symbolic links
+NCO_BIN_STB := $(NCO_BIN_TRG) $(NCO_BIN_SYM_LNK) # All NCO files in MY_BIN_DIR
+NCO_BIN := $(addprefix $(MY_BIN_DIR)/,$(NCO_BIN_STB)) # distclean removes these files
+
+# Variables having to do with NCO data
+NCO_DAT_STB := 85 86 87 88 89 h0001 h0002 h0003 # Symbolic links to in.nc
+NCO_DAT_STB := $(addsuffix .nc,$(NCO_DAT_STB)) # `make data' creates these files
+NCO_DAT := $(addprefix $(MY_DAT_DIR)/,$(NCO_DAT_STB)) # `make distclean' removes these files
 
 # The first LDFLAGS is for typical C programs with netCDF, math, and networking
 # The second LDFLAGS enables C/Fortran linking
@@ -300,7 +317,8 @@ ifeq ($(C_ONLY),Y)
  CPPFLAGS += -DC_ONLY
 endif
 
-all: bin_dir obj_dir lib_dir libnco ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted
+all: bin_dir obj_dir lib_dir libnco $(NCO_BIN_TRG)
+
 # .PHONY tells make to remake the following non-file targets 
 .PHONY: all clean distclean debug 
 
@@ -328,11 +346,8 @@ endif
 ncra:	$(MY_OBJ_DIR)/ncra.o $(libnco).a
 	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS)
 	chmod 755 $(MY_BIN_DIR)/ncra
-	cd $(MY_BIN_DIR)
-	rm -f $(MY_BIN_DIR)/ncea
-	ln -s $(MY_BIN_DIR)/ncra $(MY_BIN_DIR)/ncea
-	rm -f $(MY_BIN_DIR)/ncrcat
-	ln -s $(MY_BIN_DIR)/ncra $(MY_BIN_DIR)/ncrcat
+	cd $(MY_BIN_DIR); rm -f ncea; ln -s ncra ncea
+	cd $(MY_BIN_DIR); rm -f ncrcat; ln -s ncra ncrcat
 
 ncatted:	$(MY_OBJ_DIR)/ncatted.o $(libnco).a
 	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
@@ -371,16 +386,11 @@ Depends: Filepath Srcfiles
 	cd $(MY_BLD_DIR); makdep -t $(MY_OBJ_DIR) Filepath Srcfiles > Depends
 
 data:	$(MY_DAT_DIR)/in.nc 
+	for fl in $(NCO_DAT_STB); do cd $(MY_DAT_DIR); ln -s in.nc $$fl; done
+
 $(MY_DAT_DIR)/in.nc : $(MY_DAT_DIR)/in.cdl
 	cd $(MY_DAT_DIR); ncgen -b -o in.nc in.cdl
-	cd $(MY_DAT_DIR); ln -s in.nc 85.nc
-	cd $(MY_DAT_DIR); ln -s in.nc 86.nc
-	cd $(MY_DAT_DIR); ln -s in.nc 87.nc
-	cd $(MY_DAT_DIR); ln -s in.nc 88.nc
-	cd $(MY_DAT_DIR); ln -s in.nc 89.nc
-	cd $(MY_DAT_DIR); ln -s in.nc h0001.nc
-	cd $(MY_DAT_DIR); ln -s in.nc h0002.nc
-	cd $(MY_DAT_DIR); ln -s in.nc h0003.nc
+
 
 doc:	$(MY_DOC_DIR)/nco.dvi $(MY_DOC_DIR)/nco.ps $(MY_DOC_DIR)/nco.html $(MY_DOC_DIR)/nco.info   
 # Each make directive line spawns a separate shell so must use `cd dir;cmd' format
@@ -394,14 +404,15 @@ $(MY_DOC_DIR)/nco.html : $(MY_DOC_DIR)/nco.texi
 	cd $(MY_DOC_DIR); texi2html -monolithic -verbose nco.texi
 
 clean:
-	rm -f $(MY_OBJ_DIR)/*.o 
+	rm -f $(NCO_OBJ)
 	cd $(MY_DOC_DIR); rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
 
 distclean: clean
-	rm -f $(MY_BIN_DIR)/nc*
+	rm -f $(NCO_BIN)
+	rm -f $(NCO_DAT)
 	rm -f $(MY_LIB_DIR)/libnco*
 	cd $(MY_DOC_DIR); rm -f nco.info* nco.dvi nco.html* nco.ps *~
-	cd $(MY_DAT_DIR); rm -f in.nc h000?.nc 8?.nc *~
+	cd $(MY_DAT_DIR); rm -f in.nc *~
 	cd $(MY_BLD_DIR); rm -f *~
 
 debug:
@@ -409,7 +420,7 @@ debug:
 	printf "SRC_LST = $(SRC_LST)\n"
 	printf "SRC_STB_LST = $(SRC_STB_LST)\n"
 	printf "SRC_STB_FL = $(SRC_STB_FL)\n"
-	printf "CRM_OBJ = $(CRM_OBJ)\n"
+	printf "NCO_OBJ = $(NCO_OBJ)\n"
 
 # Reset internal YACC and LEX patterns
 %.c : %.y
