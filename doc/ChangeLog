@@ -1,5 +1,7 @@
 1999-05-11  Charlie Zender  <zender@z.ppp.ucar.edu>
 
+	* Tagged this as nco1_1_31
+
 	* Fixed ncks problem caused by not initializing all boolean flags
 	of lmt structures in lmt_prs(). Changed lim to lmt.
 

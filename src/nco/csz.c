@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.16 1999-05-11 08:01:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.17 1999-05-12 03:06:47 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -92,12 +92,12 @@ cmd_ln_sng(int argc,char **argv)
   return cmd_ln;
 } /* end cmd_ln_sng() */ 
 
-lim_sct *
-lim_prs(int nbr_lim,char **lim_arg)
+lmt_sct *
+lmt_prs(int nbr_lmt,char **lmt_arg)
 /* 
-   int nbr_lim: I number of dimensions with limits
-   char **lim_arg: I list of user-specified dimension limits
-   lim_sct *lim_prs(): O structure holding user-specified strings for min and max limits
+   int nbr_lmt: I number of dimensions with limits
+   char **lmt_arg: I list of user-specified dimension limits
+   lmt_sct *lmt_prs(): O structure holding user-specified strings for min and max limits
  */ 
 {
   /* Routine to set name, min_sng, max_sng elements of 
@@ -114,17 +114,17 @@ lim_prs(int nbr_lim,char **lim_arg)
 
   char *dlm=",";
 
-  lim_sct *lim;
+  lmt_sct *lmt;
 
   int idx;
   int arg_nbr;
 
-  lim=(lim_sct *)malloc(nbr_lim*sizeof(lim_sct));
+  lmt=(lmt_sct *)malloc(nbr_lmt*sizeof(lmt_sct));
 
-  for(idx=0;idx<nbr_lim;idx++){
+  for(idx=0;idx<nbr_lmt;idx++){
 
     /* Hyperslab specifications are processed as a normal text list */ 
-    arg_lst=lst_prs(lim_arg[idx],dlm,&arg_nbr);
+    arg_lst=lst_prs(lmt_arg[idx],dlm,&arg_nbr);
 
     /* Check syntax */ 
     if(
@@ -134,34 +134,36 @@ lim_prs(int nbr_lim,char **lim_arg)
        (arg_nbr == 3 && arg_lst[1] == NULL && arg_lst[2] == NULL) || /* No min or max when stride not specified */ 
        (arg_nbr == 4 && arg_lst[3] == NULL) || /* Stride should be specified */ 
        False){
-      (void)fprintf(stdout,"%s: ERROR in hyperslab specification %s\n",prg_nm_get(),lim_arg[idx]);
+      (void)fprintf(stdout,"%s: ERROR in hyperslab specification %s\n",prg_nm_get(),lmt_arg[idx]);
       exit(EXIT_FAILURE);
     } /* end if */ 
 
     /* Initialize structure */ 
-    /* lim strings which are not explicitly set by the user remain NULL, i.e., 
+    /* lmt strings which are not explicitly set by the user remain NULL, i.e., 
        specifying the default setting will appear as if nothing at all was set.
        Hopefully, in the routines that follow, the branch followed by a dimension for which
        all the default settings were specified (e.g.,"-d foo,,,,") will yield the same answer
        as the branch for which no hyperslab along that dimension was set.
      */ 
-    lim[idx].nm=NULL;
-    lim[idx].is_usr_spc_lmt=True; /* True if user-specified limit, else False (automatically generated limit) */
-    lim[idx].min_sng=NULL;
-    lim[idx].max_sng=NULL;
-    lim[idx].srd_sng=NULL;
+    lmt[idx].nm=NULL;
+    lmt[idx].is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
+    lmt[idx].min_sng=NULL;
+    lmt[idx].max_sng=NULL;
+    lmt[idx].srd_sng=NULL;
 
     /* Fill in structure */ 
-    lim[idx].nm=arg_lst[0];
-    lim[idx].min_sng=lim[idx].max_sng=arg_lst[1];
-    if(arg_nbr > 2) lim[idx].max_sng=arg_lst[2];
-    if(arg_nbr > 3) lim[idx].srd_sng=arg_lst[3];
+    lmt[idx].nm=arg_lst[0];
+    lmt[idx].min_sng=lmt[idx].max_sng=arg_lst[1];
+    if(arg_nbr > 2) lmt[idx].max_sng=arg_lst[2];
+    if(arg_nbr > 3) lmt[idx].srd_sng=arg_lst[3];
 
-  } /* End loop over lim */
+    if(lmt[idx].max_sng == NULL) lmt[idx].is_usr_spc_max=False; else lmt[idx].is_usr_spc_max=True;
+    if(lmt[idx].min_sng == NULL) lmt[idx].is_usr_spc_min=False; else lmt[idx].is_usr_spc_min=True;
+  } /* End loop over lmt */
 
-  return lim;
+  return lmt;
 
-} /* end lim_prs() */ 
+} /* end lmt_prs() */ 
 
 char **
 lst_prs(char *sng_in,const char *dlm,int *nbr_lst)

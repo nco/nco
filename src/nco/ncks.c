@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.6 1999-05-10 06:36:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.7 1999-05-12 03:06:48 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -39,12 +39,12 @@ int
 main(int argc,char **argv)
 {
   int cpy_var_def(int,int,int,char *);
-  int cpy_var_def_lim(int,int,int,char *,lim_sct *,int);
+  int cpy_var_def_lmt(int,int,int,char *,lmt_sct *,int);
   void cpy_var_val(int,int,char *);
-  void cpy_var_val_lim(int,int,char *,lim_sct *,int);
+  void cpy_var_val_lmt(int,int,char *,lmt_sct *,int);
   void prn_att(int,int);
   void prn_var_def(int,char *);
-  void prn_var_val_lim(int,char *,lim_sct *,int,char *,bool,bool);
+  void prn_var_val_lmt(int,char *,lmt_sct *,int,char *,bool,bool);
    
   bool ALPHABETIZE_OUTPUT=True; /* Option a */ 
   bool EXCLUDE_INPUT_LIST=False; /* Option c */ 
@@ -67,15 +67,15 @@ main(int argc,char **argv)
   char *dlm_sng=NULL;
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */ 
-  char *lim_arg[MAX_NC_DIMS];
+  char *lmt_arg[MAX_NC_DIMS];
   char *opt_sng;
   char *fl_out;
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncks.c,v 1.6 1999-05-10 06:36:24 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.6 $";
+  char rcs_Id[]="$Id: ncks.c,v 1.7 1999-05-12 03:06:48 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.7 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -85,7 +85,7 @@ main(int argc,char **argv)
   int in_id;  
   int nbr_abb_arg=0;
   int nbr_dim_fl;
-  int nbr_lim=0; /* Option d. NB: nbr_lim gets incremented */
+  int nbr_lmt=0; /* Option d. NB: nbr_lmt gets incremented */
   int nbr_glb_att;
   int nbr_var_fl;
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */ 
@@ -93,7 +93,7 @@ main(int argc,char **argv)
   int opt;
   int rec_dim_id;
   
-  lim_sct *lim;
+  lmt_sct *lmt;
 
   nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */ 
 
@@ -136,8 +136,8 @@ main(int argc,char **argv)
       dbg_lvl=atoi(optarg);
       break;
     case 'd': /* Copy the argument for later processing */ 
-      lim_arg[nbr_lim]=(char *)strdup(optarg);
-      nbr_lim++;
+      lmt_arg[nbr_lmt]=(char *)strdup(optarg);
+      nbr_lmt++;
       break;
     case 'H': /* Print data to screen */
       OUTPUT_DATA=True;
@@ -194,7 +194,7 @@ main(int argc,char **argv)
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   
   /* Make a uniform list of the user-specified dimension limits */ 
-  lim=lim_prs(nbr_lim,lim_arg);
+  lmt=lmt_prs(nbr_lmt,lmt_arg);
   
   /* Make netCDF errors fatal and print the diagnostic */   
   ncopts=NC_VERBOSE | NC_FATAL; 
@@ -227,7 +227,7 @@ main(int argc,char **argv)
   /* We now have the final list of variables to extract. Phew. */
   
   /* Find the coordinate/dimension values associated with the limits */ 
-  for(idx=0;idx<nbr_lim;idx++) (void)lim_evl(in_id,lim+idx,0L,FORTRAN_STYLE);
+  for(idx=0;idx<nbr_lmt;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
   
   if(fl_out != NULL){
     int out_id;  
@@ -245,7 +245,7 @@ main(int argc,char **argv)
       int var_out_id;
       
       /* Define the variable in the output file */ 
-      if(nbr_lim > 0) var_out_id=cpy_var_def_lim(in_id,out_id,rec_dim_id,xtr_lst[idx].nm,lim,nbr_lim); else var_out_id=cpy_var_def(in_id,out_id,rec_dim_id,xtr_lst[idx].nm);
+      if(nbr_lmt > 0) var_out_id=cpy_var_def_lmt(in_id,out_id,rec_dim_id,xtr_lst[idx].nm,lmt,nbr_lmt); else var_out_id=cpy_var_def(in_id,out_id,rec_dim_id,xtr_lst[idx].nm);
       /* Copy the variable's attributes */ 
       (void)att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id);
     } /* end loop over idx */
@@ -262,7 +262,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_xtr;idx++){
       if(dbg_lvl > 2) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
-      if(nbr_lim > 0) (void)cpy_var_val_lim(in_id,out_id,xtr_lst[idx].nm,lim,nbr_lim); else (void)cpy_var_val(in_id,out_id,xtr_lst[idx].nm);
+      if(nbr_lmt > 0) (void)cpy_var_val_lmt(in_id,out_id,xtr_lst[idx].nm,lmt,nbr_lmt); else (void)cpy_var_val(in_id,out_id,xtr_lst[idx].nm);
     } /* end loop over idx */
     
     /* Close the output file and move it from the temporary to the permanent location */ 
@@ -296,7 +296,7 @@ main(int argc,char **argv)
   } /* end if OUTPUT_VARIABLE_METADATA */
   
   if(OUTPUT_DATA){
-    for(idx=0;idx<nbr_xtr;idx++) (void)prn_var_val_lim(in_id,xtr_lst[idx].nm,lim,nbr_lim,dlm_sng,FORTRAN_STYLE,PRINT_DIMENSIONAL_UNITS);
+    for(idx=0;idx<nbr_xtr;idx++) (void)prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,nbr_lmt,dlm_sng,FORTRAN_STYLE,PRINT_DIMENSIONAL_UNITS);
   } /* end if OUTPUT_DATA */
   
   /* Close the input netCDF file */ 
@@ -532,15 +532,15 @@ cpy_var_def(int in_id,int out_id,int rec_dim_id,char *var_nm)
 } /* end cpy_var_def() */ 
 
 int 
-cpy_var_def_lim(int in_id,int out_id,int rec_dim_id,char *var_nm,lim_sct *lim,int nbr_lim)
+cpy_var_def_lmt(int in_id,int out_id,int rec_dim_id,char *var_nm,lmt_sct *lmt,int nbr_lmt)
 /* 
    int in_id: input netCDF input-file ID
    int out_id: input netCDF output-file ID
    int rec_dim_id: input input-file record dimension ID
    char *var_nm: input variable name
-   lim_sct *lim: input structure from lim_evl() holding dimension limit info.
-   int nbr_lim: input number of dimensions with user-specified limits
-   int cpy_var_def_lim(): output output-file variable ID
+   lmt_sct *lmt: input structure from lmt_evl() holding dimension limit info.
+   int nbr_lmt: input number of dimensions with user-specified limits
+   int cpy_var_def_lmt(): output output-file variable ID
  */ 
 {
   /* Routine to copy the variable metadata from an input netCDF file
@@ -597,15 +597,15 @@ cpy_var_def_lim(int in_id,int out_id,int rec_dim_id,char *var_nm,lim_sct *lim,in
     /* If dimension hasn't been defined, copy it */
     if(dim_out_id[idx] == -1){
       if(dim_in_id[idx] != rec_dim_id){
-	int lim_idx;
+	int lmt_idx;
 
 	/* Decide whether this dimension has any user-specified limits */ 
-	for(lim_idx=0;lim_idx<nbr_lim;lim_idx++){
-	  if(lim[lim_idx].id == dim_in_id[idx]){
-	    dim_sz=lim[lim_idx].cnt;
+	for(lmt_idx=0;lmt_idx<nbr_lmt;lmt_idx++){
+	  if(lmt[lmt_idx].id == dim_in_id[idx]){
+	    dim_sz=lmt[lmt_idx].cnt;
 	    break;
 	  } /* end if */
-	} /* end loop over lim_idx */
+	} /* end loop over lmt_idx */
 	
 	dim_out_id[idx]=ncdimdef(out_id,dim_nm,dim_sz);
       }else{
@@ -622,7 +622,7 @@ cpy_var_def_lim(int in_id,int out_id,int rec_dim_id,char *var_nm,lim_sct *lim,in
   (void)free(dim_out_id);
   
   return var_out_id;
-} /* end cpy_var_def_lim() */ 
+} /* end cpy_var_def_lmt() */ 
 
 void 
 cpy_var_val(int in_id,int out_id,char *var_nm)
@@ -721,13 +721,13 @@ cpy_var_val(int in_id,int out_id,char *var_nm)
 } /* end cpy_var_val() */ 
 
 void 
-cpy_var_val_lim(int in_id,int out_id,char *var_nm,lim_sct *lim,int nbr_lim)
+cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int nbr_lmt)
 /* 
    int in_id: input netCDF input-file ID
    int out_id: input netCDF output-file ID
    char *var_nm: input variable name
-   lim_sct *lim: input structure from lim_evl() holding dimension limit info.
-   int nbr_lim: input number of dimensions with user-specified limits
+   lmt_sct *lmt: input structure from lmt_evl() holding dimension limit info.
+   int nbr_lmt: input number of dimensions with user-specified limits
  */ 
 {
   /* Routine to copy variable data from input netCDF file to output netCDF file. 
@@ -739,7 +739,7 @@ cpy_var_val_lim(int in_id,int out_id,char *var_nm,lim_sct *lim,int nbr_lim)
   int *dim_id;
 
   int dim_idx;
-  int lim_idx;
+  int lmt_idx;
   int nbr_dim;
   int nbr_dim_in;
   int nbr_dim_out;
@@ -809,16 +809,16 @@ cpy_var_val_lim(int in_id,int out_id,char *var_nm,lim_sct *lim,int nbr_lim)
     dim_map[dim_idx]=1L;
 
     /* Decide whether this dimension has any user-specified limits */ 
-    for(lim_idx=0;lim_idx<nbr_lim;lim_idx++){
-      if(lim[lim_idx].id == dim_id[dim_idx]){
-	dim_cnt[dim_idx]=lim[lim_idx].cnt;
-	dim_in_srt[dim_idx]=lim[lim_idx].srt;
-	dim_srd[dim_idx]=lim[lim_idx].srd;
-	if(lim[lim_idx].srt > lim[lim_idx].end) WRP=True;
-	if(lim[lim_idx].srd != 1L) SRD=True;
+    for(lmt_idx=0;lmt_idx<nbr_lmt;lmt_idx++){
+      if(lmt[lmt_idx].id == dim_id[dim_idx]){
+	dim_cnt[dim_idx]=lmt[lmt_idx].cnt;
+	dim_in_srt[dim_idx]=lmt[lmt_idx].srt;
+	dim_srd[dim_idx]=lmt[lmt_idx].srd;
+	if(lmt[lmt_idx].srt > lmt[lmt_idx].end) WRP=True;
+	if(lmt[lmt_idx].srd != 1L) SRD=True;
 	break;
       } /* end if */
-    } /* end loop over lim_idx */
+    } /* end loop over lmt_idx */
 
     var_sz*=dim_cnt[dim_idx];
   } /* end loop over dim */
@@ -839,7 +839,7 @@ cpy_var_val_lim(int in_id,int out_id,char *var_nm,lim_sct *lim,int nbr_lim)
     ncvarput(out_id,var_out_id,dim_out_srt,dim_cnt,void_ptr);
   }else if(WRP){ /* copy wrapped array */ 
     int dim_idx;
-    int lim_idx;
+    int lmt_idx;
     
     /* For wrapped data */ 
     long *dim_in_srt_1=NULL;
@@ -871,38 +871,38 @@ cpy_var_val_lim(int in_id,int out_id,char *var_nm,lim_sct *lim,int nbr_lim)
       dim_map[dim_idx]=1L;
       
       /* Is there a limit specified for this dimension? */ 
-      for(lim_idx=0;lim_idx<nbr_lim;lim_idx++){
-	if(lim[lim_idx].id == dim_id[dim_idx]){ /* Yes, there is a limit on this dimension */ 
-	  dim_cnt[dim_idx]=dim_cnt_1[dim_idx]=dim_cnt_2[dim_idx]=lim[lim_idx].cnt;
-	  dim_in_srt[dim_idx]=dim_in_srt_1[dim_idx]=dim_in_srt_2[dim_idx]=lim[lim_idx].srt;
-	  dim_srd[dim_idx]=lim[lim_idx].srd;
-	  if(lim[lim_idx].srd != 1L) SRD=True;
-	  if(lim[lim_idx].srt > lim[lim_idx].end){ /* WRP true for this dimension */ 
+      for(lmt_idx=0;lmt_idx<nbr_lmt;lmt_idx++){
+	if(lmt[lmt_idx].id == dim_id[dim_idx]){ /* Yes, there is a limit on this dimension */ 
+	  dim_cnt[dim_idx]=dim_cnt_1[dim_idx]=dim_cnt_2[dim_idx]=lmt[lmt_idx].cnt;
+	  dim_in_srt[dim_idx]=dim_in_srt_1[dim_idx]=dim_in_srt_2[dim_idx]=lmt[lmt_idx].srt;
+	  dim_srd[dim_idx]=lmt[lmt_idx].srd;
+	  if(lmt[lmt_idx].srd != 1L) SRD=True;
+	  if(lmt[lmt_idx].srt > lmt[lmt_idx].end){ /* WRP true for this dimension */ 
 	    WRP=True;
-	    if(lim[lim_idx].srd != 1L){ /* SRD true for this dimension */ 
+	    if(lmt[lmt_idx].srd != 1L){ /* SRD true for this dimension */ 
 	      long greatest_srd_multiplier_1st_hyp_slb; /* greatest integer m such that srt+m*srd < dim_sz */
 	      long last_good_idx_1st_hyp_slb; /* C index of last valid member of 1st hyperslab (= srt+m*srd) */ 
 	      long left_over_idx_1st_hyp_slb; /* # elements from first hyperslab to count towards current stride */ 
 	      long first_good_idx_2nd_hyp_slb; /* C index of first valid member of 2nd hyperslab, if any */ 
 
 	      /* NB: Perform these operations with integer arithmatic or else! */ 
-	      dim_cnt_1[dim_idx]=1L+(dim_sz[dim_idx]-lim[lim_idx].srt-1L)/lim[lim_idx].srd; 
+	      dim_cnt_1[dim_idx]=1L+(dim_sz[dim_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd; 
 	      /* Wrapped dimensions with a stride may not start at idx 0 on second read */ 
-	      greatest_srd_multiplier_1st_hyp_slb=(dim_sz[dim_idx]-lim[lim_idx].srt-1L)/lim[lim_idx].srd;
-	      last_good_idx_1st_hyp_slb=lim[lim_idx].srt+lim[lim_idx].srd*greatest_srd_multiplier_1st_hyp_slb;
+	      greatest_srd_multiplier_1st_hyp_slb=(dim_sz[dim_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd;
+	      last_good_idx_1st_hyp_slb=lmt[lmt_idx].srt+lmt[lmt_idx].srd*greatest_srd_multiplier_1st_hyp_slb;
 	      left_over_idx_1st_hyp_slb=dim_sz[dim_idx]-last_good_idx_1st_hyp_slb-1L;
-	      first_good_idx_2nd_hyp_slb=(last_good_idx_1st_hyp_slb+lim[lim_idx].srd)%dim_sz[dim_idx];
-	      dim_in_srt_2[dim_idx]=lim[lim_idx].srd-left_over_idx_1st_hyp_slb-1L;
+	      first_good_idx_2nd_hyp_slb=(last_good_idx_1st_hyp_slb+lmt[lmt_idx].srd)%dim_sz[dim_idx];
+	      dim_in_srt_2[dim_idx]=lmt[lmt_idx].srd-left_over_idx_1st_hyp_slb-1L;
 	    }else{ /* !SRD */ 
 	      dim_in_srt_2[dim_idx]=0L;
-	      dim_cnt_1[dim_idx]=dim_sz[dim_idx]-lim[lim_idx].srt;
+	      dim_cnt_1[dim_idx]=dim_sz[dim_idx]-lmt[lmt_idx].srt;
 	    } /* end else */ 
 	    dim_cnt_2[dim_idx]=dim_cnt[dim_idx]-dim_cnt_1[dim_idx];
 	    dim_out_srt_2[dim_idx]=dim_cnt_1[dim_idx];
 	  } /* end if WRP */ 
 	  break; /* Move on to next dimension in variable */ 
 	} /* end if */
-      } /* end loop over lim */
+      } /* end loop over lmt */
     } /* end loop over dim */
     
     if(dbg_lvl == 5){
@@ -943,7 +943,7 @@ cpy_var_val_lim(int in_id,int out_id,char *var_nm,lim_sct *lim,int nbr_lim)
 	  case NC_CHAR:
 	  case NC_BYTE:
 	  default:
-	    (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in cpy_var_val_lim()\n",prg_nm_get(),var_type);
+	    (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in cpy_var_val_lmt()\n",prg_nm_get(),var_type);
 	    exit(EXIT_FAILURE);
 	    break;
 	  } /* end switch */ 
@@ -989,7 +989,7 @@ cpy_var_val_lim(int in_id,int out_id,char *var_nm,lim_sct *lim,int nbr_lim)
   /* Free space that held variable */ 
   (void)free(void_ptr);
 
-} /* end cpy_var_val_lim() */ 
+} /* end cpy_var_val_lmt() */ 
 
 void
 prn_var_def(int in_id,char *var_nm)
@@ -1091,12 +1091,12 @@ prn_var_def(int in_id,char *var_nm)
 } /* end prn_var_def() */ 
 
 void 
-prn_var_val_lim(int in_id,char *var_nm,lim_sct *lim,int nbr_lim,char *dlm_sng,bool FORTRAN_STYLE,bool PRINT_DIMENSIONAL_UNITS)
+prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int nbr_lmt,char *dlm_sng,bool FORTRAN_STYLE,bool PRINT_DIMENSIONAL_UNITS)
 /* 
    int in_id: input netCDF input-file ID
    char *var_nm: input variable name
-   lim_sct *lim: input structure from lim_evl() holding dimension limit info.
-   int nbr_lim: input number of dimensions with user-specified limits
+   lmt_sct *lmt: input structure from lmt_evl() holding dimension limit info.
+   int nbr_lmt: input number of dimensions with user-specified limits
    char *dlm_sng: input user-specified delimiter string, if any
    bool FORTRAN_STYLE: input switch to determine syntactical interpretation of dimensional indices
    bool PRINT_DIMENSIONAL_UNITS: input switch for printing units attribute, if any.
@@ -1162,7 +1162,7 @@ prn_var_val_lim(int in_id,char *var_nm,lim_sct *lim,int nbr_lim,char *dlm_sng,bo
   
   /* Get dimension sizes and names */
   for(idx=0;idx<var.nbr_dim;idx++){
-    int lim_idx;
+    int lmt_idx;
 
     dim[idx].nm=(char *)malloc(MAX_NC_NAME*sizeof(char));
     dim[idx].id=dim_id[idx];
@@ -1175,15 +1175,15 @@ prn_var_val_lim(int in_id,char *var_nm,lim_sct *lim,int nbr_lim,char *dlm_sng,bo
     dim_map[idx]=1L;
 
     /* Decide whether this dimension has any user-specified limits */ 
-    for(lim_idx=0;lim_idx<nbr_lim;lim_idx++){
-      if(lim[lim_idx].id == dim[idx].id){
-	dim_srt[idx]=lim[lim_idx].srt;
-	dim_cnt[idx]=lim[lim_idx].cnt;
-	dim_srd[idx]=lim[lim_idx].srd;
-	if(lim[lim_idx].srd != 1L) SRD=True;
+    for(lmt_idx=0;lmt_idx<nbr_lmt;lmt_idx++){
+      if(lmt[lmt_idx].id == dim[idx].id){
+	dim_srt[idx]=lmt[lmt_idx].srt;
+	dim_cnt[idx]=lmt[lmt_idx].cnt;
+	dim_srd[idx]=lmt[lmt_idx].srd;
+	if(lmt[lmt_idx].srd != 1L) SRD=True;
 	break;
       } /* end if */
-    } /* end loop over lim_idx */
+    } /* end loop over lmt_idx */
 
     /* Is dimension a coordinate, i.e., stored as a variable? */ 
     dim[idx].val.vp=NULL;
@@ -1235,17 +1235,17 @@ prn_var_val_lim(int in_id,char *var_nm,lim_sct *lim,int nbr_lim,char *dlm_sng,bo
   if(PRINT_DIMENSIONAL_UNITS){
     int att_sz;
     int status;
-    nc_type att_type;
+    nc_type att_typ;
 
     /* Find if this variable has an attribute named "units" */ 
     ncopts=0;
-    status=ncattinq(in_id,var.id,"units",&att_type,&att_sz);
+    status=ncattinq(in_id,var.id,"units",&att_typ,&att_sz);
     ncopts=NC_VERBOSE | NC_FATAL; 
     if(status != -1){
-      if(att_type == NC_CHAR){
-	unit_sng=(char *)malloc((att_sz+1)*nctypelen(att_type));
+      if(att_typ == NC_CHAR){
+	unit_sng=(char *)malloc((att_sz+1)*nctypelen(att_typ));
 	(void)ncattget(in_id,var.id,"units",unit_sng);
-	unit_sng[(att_sz+1)*nctypelen(att_type)-1]='\0';
+	unit_sng[(att_sz+1)*nctypelen(att_typ)-1]='\0';
       } /* end if */
     } /* end if */
   } /* end if */
@@ -1338,7 +1338,7 @@ prn_var_val_lim(int in_id,char *var_nm,lim_sct *lim,int nbr_lim,char *dlm_sng,bo
 	dim_mod[idx]*=dim_cnt[mod_idx];
 
     /* Compute offset of hyperslab buffer from origin */ 
-    if(nbr_lim > 0){
+    if(nbr_lmt > 0){
       for(idx=0;idx<var.nbr_dim;idx++) hyp_mod[idx]=1L;
       for(idx=0;idx<var.nbr_dim-1;idx++)
 	for(mod_idx=idx+1;mod_idx<var.nbr_dim;mod_idx++) 
@@ -1431,4 +1431,4 @@ prn_var_val_lim(int in_id,char *var_nm,lim_sct *lim,int nbr_lim,char *dlm_sng,bo
   (void)free(var.nm);
   if(strlen(unit_sng) > 0) (void)free(unit_sng);
  
-} /* end prn_var_val_lim() */ 
+} /* end prn_var_val_lmt() */ 

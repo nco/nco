@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.10 1999-05-11 08:01:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.11 1999-05-12 03:06:47 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -70,7 +70,13 @@ enum{
   nc_op_le,
   nc_op_ge
 }; /* end enum */
-#else /* !SGI */
+
+enum lmt_typ{
+  lmt_crd_val, /* 0 */ 
+  lmt_dim_idx /* 1 */ 
+}; /* end enum */
+
+#else /* SGI */
 #define ncap 0
 #define ncatted 1
 #define ncdiff 2
@@ -96,7 +102,9 @@ enum{
 #define aed_modify 3
 #define aed_overwrite 4
 
-#endif /* !SGI */
+#define lmt_crd_val 0
+#define lmt_dim_idx 1
+#endif /* SGI */
 
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
@@ -105,6 +113,7 @@ enum{
 
 typedef struct {
   char *nm;
+  int lmt_typ; /* crd_val or dim_idx */
   /* The following four flags are used only by the multi-file operators */
   bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
   bool is_usr_spc_min; /* True if user-specified, else False */
@@ -123,7 +132,7 @@ typedef struct {
   long end; /* index to end of hyperslab */ 
   long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */ 
   long srd; /* stride of hyperslab */ 
-} lim_sct;
+} lmt_sct;
 
 typedef struct{
   char *nm;
@@ -302,8 +311,8 @@ extern double arm_time_mk(int,double);
 extern int mss_val_get(int,var_sct *);
 extern int op_prs(char *);
 extern int prg_get(void);
-extern lim_sct *lim_prs(int,char **);
-extern lim_sct lim_dim_mk(int,int,lim_sct *,int,bool);
+extern lmt_sct *lmt_prs(int,char **);
+extern lmt_sct lmt_dim_mk(int,int,lmt_sct *,int,bool);
 extern nclong arm_base_time_get(int);
 extern nclong FORTRAN_newdate(nclong *,int *);
 extern nm_id_sct *dim_lst_ass_var(int,nm_id_sct *,int,int *);
@@ -342,7 +351,7 @@ extern void cast_nctype_void(nc_type,ptr_unn *);
 extern void cast_void_nctype(nc_type,ptr_unn *);
 extern void copyright_prn(char *,char *);
 extern void dim_def(char *,int,dim_sct **,int);
-extern void dim_lim_merge(dim_sct **,int,lim_sct *,int);
+extern void dim_lmt_merge(dim_sct **,int,lmt_sct *,int);
 extern void dim_xrf(dim_sct *,dim_sct *);
 extern void fl_cmp_err_chk(void);
 extern void fl_cp(char *,char *);
@@ -352,7 +361,7 @@ extern void fl_rm(char *);
 extern void hst_att_cat(int,char *);
 extern void indexx(int,int *,int *);
 extern void index_alpha(int,char **,int *);
-extern void lim_evl(int,lim_sct *,long,bool);
+extern void lmt_evl(int,lmt_sct *,long,bool);
 extern void nc_lib_vrs_prn(void);
 extern void ncar_csm_date(int,var_sct **,int);
 extern void rec_crd_chk(var_sct *,char *,char *,long,long);

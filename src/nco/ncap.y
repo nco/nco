@@ -1,13 +1,13 @@
 %{
 /* Begin C declarations section */ 
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.2 1998-08-19 04:27:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.3 1999-05-12 03:06:47 zender Exp $ */
 
 /* Purpose: Grammar parser for ncap */ 
 
 /* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
-   Climate and Global Dynamics Division
+   Clmt.te and Global Dynamics Division
 
    The file LICENSE contains the full copyright notice, or 
    you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */

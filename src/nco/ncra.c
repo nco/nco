@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.8 1999-05-11 08:01:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.9 1999-05-12 03:06:48 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -60,15 +60,15 @@ main(int argc,char **argv)
   char **fl_lst_in;
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */ 
-  char *lim_arg[MAX_NC_DIMS];
+  char *lmt_arg[MAX_NC_DIMS];
   char *opt_sng;
   char *fl_out;
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncra.c,v 1.8 1999-05-11 08:01:07 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.8 $";
+  char rcs_Id[]="$Id: ncra.c,v 1.9 1999-05-12 03:06:48 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.9 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -83,7 +83,7 @@ main(int argc,char **argv)
   int out_id;  
   int nbr_abb_arg=0;
   int nbr_dim_fl;
-  int nbr_lim=0; /* Option d. NB: nbr_lim gets incremented */
+  int nbr_lmt=0; /* Option d. NB: nbr_lmt gets incremented */
   int nbr_var_fl;
   int nbr_var_fix; /* nbr_var_fix gets incremented */ 
   int nbr_var_prc; /* nbr_var_prc gets incremented */ 
@@ -93,8 +93,8 @@ main(int argc,char **argv)
   int opt;
   int rec_dim_id=-1;
   
-  lim_sct *lim;
-  lim_sct lim_rec;
+  lmt_sct *lmt;
+  lmt_sct lmt_rec;
   
   long idx_rec;
   long idx_rec_out=0L; /* idx_rec_out gets incremented */ 
@@ -139,8 +139,8 @@ main(int argc,char **argv)
       dbg_lvl=atoi(optarg);
       break;
     case 'd': /* Copy the argument for later processing */ 
-      lim_arg[nbr_lim]=(char *)strdup(optarg);
-      nbr_lim++;
+      lmt_arg[nbr_lmt]=(char *)strdup(optarg);
+      nbr_lmt++;
       break;
     case 'F': /* Toggle the style of printing out arrays. Default is C-style. */
       FORTRAN_STYLE=!FORTRAN_STYLE;
@@ -190,7 +190,7 @@ main(int argc,char **argv)
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
 
   /* Make a uniform list of the user-specified dimension limits */ 
-  if(nbr_lim > 0) lim=lim_prs(nbr_lim,lim_arg);
+  if(nbr_lmt > 0) lmt=lmt_prs(nbr_lmt,lmt_arg);
   
   /* Make netCDF errors fatal and print the diagnostic */   
   ncopts=NC_VERBOSE | NC_FATAL; 
@@ -226,7 +226,7 @@ main(int argc,char **argv)
   /* We now have the final list of variables to extract. Phew. */
   
   /* Find the coordinate/dimension values associated with the limits */ 
-  for(idx=0;idx<nbr_lim;idx++) (void)lim_evl(in_id,lim+idx,0L,FORTRAN_STYLE);
+  for(idx=0;idx<nbr_lmt;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
   
   /* Find all the dimensions associated with all variables to be extracted */ 
   dim_lst=dim_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dim_xtr);
@@ -236,7 +236,7 @@ main(int argc,char **argv)
   for(idx=0;idx<nbr_dim_xtr;idx++) dim[idx]=dim_fll(in_id,dim_lst[idx].id,dim_lst[idx].nm);
   
   /* Merge the hyperslab limit information into the dimension structures */ 
-  if(nbr_lim > 0) (void)dim_lim_merge(dim,nbr_dim_xtr,lim,nbr_lim);
+  if(nbr_lmt > 0) (void)dim_lmt_merge(dim,nbr_dim_xtr,lmt,nbr_lmt);
 
   /* Duplicate the input dimension structures for output dimension structures */ 
   dim_out=(dim_sct **)malloc(nbr_dim_xtr*sizeof(dim_sct *));
@@ -251,7 +251,7 @@ main(int argc,char **argv)
       (void)fprintf(stdout,"%s: ERROR input file %s lacks a record dimension\n",prg_nm_get(),fl_in);
       exit(EXIT_FAILURE);
     } /* endif */ 
-    lim_rec=lim_dim_mk(in_id,rec_dim_id,lim,nbr_lim,FORTRAN_STYLE);
+    lmt_rec=lmt_dim_mk(in_id,rec_dim_id,lmt,nbr_lmt,FORTRAN_STYLE);
   } /* endif */ 
 
   /* Is this an NCAR CSM-format history tape? */
@@ -334,7 +334,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++) (void)var_refresh(in_id,var_prc[idx]);
 
     /* Each file can have a different number of records to process */ 
-    if(prg == ncra || prg == ncrcat) (void)lim_evl(in_id,&lim_rec,idx_rec_out,FORTRAN_STYLE);
+    if(prg == ncra || prg == ncrcat) (void)lmt_evl(in_id,&lmt_rec,idx_rec_out,FORTRAN_STYLE);
     
     /* Is this an ARM-format data file? */
     if(ARM_FORMAT) base_time_crr=arm_base_time_get(in_id);
@@ -344,7 +344,7 @@ main(int argc,char **argv)
 
     if(prg == ncra || prg == ncrcat){
       /* Loop over each record in the current file */ 
-      for(idx_rec=lim_rec.srt;idx_rec<=lim_rec.end;idx_rec+=lim_rec.srd){
+      for(idx_rec=lmt_rec.srt;idx_rec<=lmt_rec.end;idx_rec+=lmt_rec.srd){
 	/* Process all variables in the current record */ 
 	if(dbg_lvl > 1) (void)fprintf(stderr,"Record %ld of %s is input record %ld\n",idx_rec,fl_in,idx_rec_out);
 	for(idx=0;idx<nbr_var_prc;idx++){
@@ -375,6 +375,12 @@ main(int argc,char **argv)
 	idx_rec_out++;
 	if(dbg_lvl > 2) (void)fprintf(stderr,"\n");
       } /* end loop over idx_rec */
+      /* Warn if fewer than number of requested records were read */
+      if(lmt_rec.lmt_typ == lmt_dim_idx && lmt_rec.is_usr_spc_min && lmt_rec.is_usr_spc_max){
+	long rec_nbr_rqs; /* Number of records user requested */
+	rec_nbr_rqs=1L+(lmt_rec.max_idx-lmt_rec.min_idx)/lmt_rec.srd;
+	if(rec_nbr_rqs != idx_rec_out) (void)fprintf(stdout,"%s: WARNING User requested %li records but only %li were found\n",prg_nm_get(),rec_nbr_rqs,idx_rec_out);
+      } /* end if */
     }else{ /* ncea */ 
       /* Process all variables in current file */ 
       for(idx=0;idx<nbr_var_prc;idx++){

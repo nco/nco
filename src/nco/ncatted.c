@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.4 1999-05-10 06:36:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.5 1999-05-12 03:06:47 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -96,8 +96,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncatted.c,v 1.4 1999-05-10 06:36:24 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.4 $";
+  char rcs_Id[]="$Id: ncatted.c,v 1.5 1999-05-12 03:06:47 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.5 $";
   
   aed_sct *aed_lst;
 
@@ -284,13 +284,13 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
      does not attempt to validate attributes or variables against those present in the input netCDF file. */ 
 
   /* Options are:
-     -a att_nm,var_nm,mode,att_type,att_val (modifies attribute att_nm for the single variable var_nm)
+     -a att_nm,var_nm,mode,att_typ,att_val (modifies attribute att_nm for the single variable var_nm)
 
-     -a att_nm,,mode,att_type,att_val (modifies attribute att_nm for every variable in the file)
+     -a att_nm,,mode,att_typ,att_val (modifies attribute att_nm for every variable in the file)
      If option -a is given with var_nm = NULL, then var_nm is expanded into every variable name in the file.
      Thus the attribute editing operation will be performed on every variable in the file.
 
-     mode,att_nm,att_type,att_val (modifies global attribute att_nm for the file)
+     mode,att_nm,att_typ,att_val (modifies global attribute att_nm for the file)
      This option may be combined with modes -a, -c, -d, or -o to specify 
      appending to, changing, deleting, or overwriting, any existing global attribute named att_nm
 
@@ -341,7 +341,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
        arg_nbr < 5 || /* Need more info */ 
        arg_lst[0] == NULL || /*  att_nm not specified */ 
        arg_lst[2] == NULL || /*  mode not specified */ 
-       (*(arg_lst[2]) != 'd' && (arg_lst[3] == NULL || arg_lst[idx_att_val_arg] == NULL)) || /* att_type and att_val must be specified when mode is not delete */ 
+       (*(arg_lst[2]) != 'd' && (arg_lst[3] == NULL || arg_lst[idx_att_val_arg] == NULL)) || /* att_typ and att_val must be specified when mode is not delete */ 
        False){
       (void)fprintf(stdout,"%s: ERROR in attribute edit specification %s\n",prg_nm_get(),aed_arg[idx]);
       exit(EXIT_FAILURE);
@@ -483,7 +483,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
   int nbr_att;
   int rcd;
 
-  nc_type att_type;
+  nc_type att_typ;
 
   void *att_val_new=NULL;
 
@@ -497,15 +497,15 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
   } /* end else */ 
 
   ncopts=0;
-  rcd=ncattinq(nc_id,var_id,aed.att_nm,&att_type,&att_sz);
+  rcd=ncattinq(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
   ncopts=NC_VERBOSE | NC_FATAL; 
 
   switch(aed.mode){
   case aed_append:	
     if(rcd != -1){
       /* Append to existing attribute value */ 
-      if(aed.type != att_type){
-	(void)fprintf(stdout,"%s: ERROR %s attribute %s is of type %s not %s, unable to append\n",prg_nm_get(),var_nm,aed.att_nm,nc_type_nm(att_type),nc_type_nm(aed.type));
+      if(aed.type != att_typ){
+	(void)fprintf(stdout,"%s: ERROR %s attribute %s is of type %s not %s, unable to append\n",prg_nm_get(),var_nm,aed.att_nm,nc_type_nm(att_typ),nc_type_nm(aed.type));
 	exit(EXIT_FAILURE);
       } /* end if */ 
       att_val_new=(void *)malloc((att_sz+aed.sz)*nctypelen(aed.type));

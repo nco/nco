@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.5 1999-05-10 06:36:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.6 1999-05-12 03:06:48 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -44,15 +44,15 @@ main(int argc,char **argv)
   char **fl_lst_in;
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */ 
-  char *lim_arg[MAX_NC_DIMS];
+  char *lmt_arg[MAX_NC_DIMS];
   char *opt_sng;
   char *fl_out;
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncecat.c,v 1.5 1999-05-10 06:36:24 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.5 $";
+  char rcs_Id[]="$Id: ncecat.c,v 1.6 1999-05-12 03:06:48 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.6 $";
   
   dim_sct *rdim;
   dim_sct **dim;
@@ -68,7 +68,7 @@ main(int argc,char **argv)
   int out_id;  
   int nbr_abb_arg=0;
   int nbr_dim_fl;
-  int nbr_lim=0; /* Option d. NB: nbr_lim gets incremented */
+  int nbr_lmt=0; /* Option d. NB: nbr_lmt gets incremented */
   int nbr_var_fl;
   int nbr_var_fix; /* nbr_var_fix gets incremented */ 
   int nbr_var_prc; /* nbr_var_prc gets incremented */ 
@@ -78,7 +78,7 @@ main(int argc,char **argv)
   int opt;
   int rec_dim_id=-1;
   
-  lim_sct *lim;
+  lmt_sct *lmt;
   
   long idx_rec_out=0L; /* idx_rec_out gets incremented */ 
   
@@ -119,8 +119,8 @@ main(int argc,char **argv)
       dbg_lvl=atoi(optarg);
       break;
     case 'd': /* Copy the argument for later processing */ 
-      lim_arg[nbr_lim]=(char *)strdup(optarg);
-      nbr_lim++;
+      lmt_arg[nbr_lmt]=(char *)strdup(optarg);
+      nbr_lmt++;
       break;
     case 'F': /* Toggle the style of printing out arrays. Default is C-style. */
       FORTRAN_STYLE=!FORTRAN_STYLE;
@@ -170,7 +170,7 @@ main(int argc,char **argv)
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
 
   /* Make a uniform list of the user-specified dimension limits */ 
-  lim=lim_prs(nbr_lim,lim_arg);
+  lmt=lmt_prs(nbr_lmt,lmt_arg);
   
   /* Make netCDF errors fatal and print the diagnostic */   
   ncopts=NC_VERBOSE | NC_FATAL; 
@@ -206,7 +206,7 @@ main(int argc,char **argv)
   /* We now have the final list of variables to extract. Phew. */
   
   /* Find the coordinate/dimension values associated with the limits */ 
-  for(idx=0;idx<nbr_lim;idx++) (void)lim_evl(in_id,lim+idx,0L,FORTRAN_STYLE);
+  for(idx=0;idx<nbr_lmt;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
   
   /* Find all the dimensions associated with all variables to be extracted */ 
   dim_lst=dim_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dim_xtr);
@@ -216,7 +216,7 @@ main(int argc,char **argv)
   for(idx=0;idx<nbr_dim_xtr;idx++) dim[idx]=dim_fll(in_id,dim_lst[idx].id,dim_lst[idx].nm);
   
   /* Merge the hyperslab limit information into the dimension structures */ 
-  if(nbr_lim > 0) (void)dim_lim_merge(dim,nbr_dim_xtr,lim,nbr_lim);
+  if(nbr_lmt > 0) (void)dim_lmt_merge(dim,nbr_dim_xtr,lmt,nbr_lmt);
 
   /* Duplicate the input dimension structures for output dimension structures */ 
   dim_out=(dim_sct **)malloc(nbr_dim_xtr*sizeof(dim_sct *));
