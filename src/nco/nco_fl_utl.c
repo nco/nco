@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.15 2002-09-03 06:15:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.16 2002-09-04 15:04:01 rorik Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -750,7 +750,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
     fl_out_tmp_sys=strcat(fl_out_tmp_sys,fl_out);
     fl_out_tmp_sys=strcat(fl_out_tmp_sys,"XXXXXX");
     /* 20020812: Cray does not support mkstemp */
-#ifndef CRAY
+#ifdef HAVE_MKSTEMP
     fl_out_hnd=mkstemp(fl_out_tmp_sys);
 #else
     fl_out_hnd=creat(mktemp(fl_out_tmp_sys),0600);
