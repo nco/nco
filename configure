@@ -1834,7 +1834,7 @@ ac_config_headers="$ac_config_headers config.h"
 ac_config_commands="$ac_config_commands default-1"
 
 
-## Checks for programs.  CC has a prefered list
+## Checks for programs.  CC has a preferred list
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -11337,6 +11337,9 @@ if test "$enable_debug" = "yes"; then
     alpha*-*-*)
       CFLAGS="$CFLAGS -g -check_bounds -check -check_omp"
       ;;
+    *-cray-unicos)
+      CFLAGS="$CFLAGS -g"
+      ;;
     i345686-*-linux-*)
       CFLAGS="$DFLAGS -g Wall"
       ;;
@@ -11347,7 +11350,7 @@ if test "$enable_debug" = "yes"; then
       CFLAGS="$CFLAGS -g"
       ;;
     mips*-sgi-irix*)
-      CFLAGS="$CFLAgS -g"
+      CFLAGS="$CFLAGS -g"
       ;;
     sparc-*-*)
       CFLAGS="$CFLAGS -g"
@@ -11376,6 +11379,9 @@ if test "$enable_extreme" = "yes"; then
     alpha*-*-*)
       CFLAGS="$CFLAGS -N 132"
       ;;
+    *-cray-unicos)
+      CFLAGS="$CFLAGS -g -N 132"
+      ;;
     i345686-*-linux-*)
       CFLAGS="$CFLAGS -g -Wall"
       ;;
@@ -11386,7 +11392,7 @@ if test "$enable_extreme" = "yes"; then
       CFLAGS="$CFLAGS -g"
       ;;
     mips*-sgi-irix*)
-      CFLAGS="$CFLAgS -g"
+      CFLAGS="$CFLAGS -g"
       ;;
     sparc-*-*)
       CFLAGS="$CFLAGS -g"
@@ -11552,7 +11558,7 @@ if test "$enable_optimize" = "yes"; then
       CFLAGS="$CFLAGS -O"
       ;;
     mips*-sgi-irix*)
-      CFLAGS="$CFLAgS -mp -mpio -O2"
+      CFLAGS="$CFLAGS -O2"
       ;;
     sparc-*-*)
       CFLAGS="$CFLAGS -O2"
@@ -11584,10 +11590,20 @@ _ACEOF
 
     ;;
   *-nec-*)
+
+cat >>confdefs.h <<\_ACEOF
+#define NECSX 1
+_ACEOF
+
     ;;
   rs6000-*-lynxos*)
     ;;
   mips*-sgi-irix*)
+
+cat >>confdefs.h <<\_ACEOF
+#define SGIMP64 1
+_ACEOF
+
     ;;
   cygwin*)
 
@@ -11681,7 +11697,11 @@ ac_config_files="$ac_config_files Makefile src/Makefile src/nco/Makefile man/Mak
 if  test "$ac_cv_cxx_have_valarray" = "yes"; then
   ac_config_files="$ac_config_files src/nco_c++/Makefile"
 
+  NCO_CXX="nco_c++"
+else
+  NCO_CXX=
 fi
+
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -12308,6 +12328,7 @@ s,@NETCDF_INC@,$NETCDF_INC,;t t
 s,@HDF5_ROOT@,$HDF5_ROOT,;t t
 s,@DODS_ROOT@,$DODS_ROOT,;t t
 s,@path_to_ncgen@,$path_to_ncgen,;t t
+s,@NCO_CXX@,$NCO_CXX,;t t
 CEOF
 
 _ACEOF

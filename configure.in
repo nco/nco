@@ -416,7 +416,11 @@ fi
 AC_CONFIG_FILES([Makefile src/Makefile src/nco/Makefile  man/Makefile])
 if  test "$ac_cv_cxx_have_valarray" = "yes"; then
   AC_CONFIG_FILES(src/nco_c++/Makefile)
+  NCO_CXX="nco_c++"
+else
+  NCO_CXX=
 fi
+AC_SUBST(NCO_CXX)
 AC_OUTPUT
 #############################################
 # echo build parameters for debugging

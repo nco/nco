@@ -72,6 +72,7 @@ LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
 MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
+NCO_CXX = @NCO_CXX@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
 PACKAGE = @PACKAGE@
@@ -81,7 +82,7 @@ VERSION = @VERSION@
 YACC = @YACC@
 path_to_ncgen = @path_to_ncgen@
 
-SUBDIRS = nco nco_c++
+SUBDIRS = nco @NCO_CXX@
 mkinstalldirs = $(SHELL) $(top_srcdir)/autobld/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 

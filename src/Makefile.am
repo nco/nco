@@ -1,2 +1,2 @@
 
-SUBDIRS = nco nco_c++
+SUBDIRS = nco @NCO_CXX@
