@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.426 2004-09-13 18:13:36 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.427 2004-09-17 06:32:51 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -273,7 +273,8 @@ nco464. ncpdq: convert missing_value to packed type
         ncpdq -O -D 4 -C -P all_new -v mss_val ~/nco/data/in.nc ~/foo.nc
         ncpdq -O -C -U -v mss_val ~/foo.nc ~/foo_upk.nc
         ncks -C -m -H ~/foo_upk.nc
-nco465. 
+nco465. Create UCI IP-compliant license/copyright notice for version 3.0+
+nco466. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
