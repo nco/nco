@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.13 2003-08-05 00:34:34 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.14 2003-09-03 18:12:15 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -45,6 +45,10 @@ MY_INC_DIR := ${HOME}/include
 
 # Primary tokens which determine build options
 # Specify non-default when invoking make, e.g. make DODS=Y
+ifndef ${ABI}
+# 32 vs. 64 bit ABI: 32=32 bit mode (default), 64=64 bit mode if available
+ ABI := 64
+endif # endif ABI
 ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
  DBG := N
@@ -219,20 +223,32 @@ ifeq (${null},$(findstring SGI,${PVM_ARCH}))
 endif # SGI
 
 # Works on AIX and AIX46K
-ifneq (,$(findstring AIX,${PVM_ARCH}))
-C++ := xlC_r
-CC := xlc_r
+ifneq (${null},$(findstring AIX,${PVM_ARCH}))
+ifeq (${OMP},Y)
+ FC := xlf95_r
+# -qsmp=noauto : Turn on SMP/OMP code generation but do no automatic parallelization
+# -qsmp=omp : Use industry standard OMP without IBM extensions
+ OMP_FLG := -qsmp=noauto 
+else
+ CPP_DFN += -U_OPENMP
+ FC := xlf95
+endif # endif OMP
+# 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
+ CC := xlc_r
+ C++ := xlC_r
 # Additional switch to fix compiler warnings on csz.c
 # -qmaxmem=num Limit the amount of memory used by space intensive optimizations to <num> kilobytes
-CFLAGS := -qmaxmem=8192
+# -spill=size Size in B of register allocation spill area, mie needs > 1040 B
+CFLAGS := -qmaxmem=8192 -spill=2048
 CPP := xlc -c
 # Add /usr/local/include for libintl.h explicitly until netCDF is moved there
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I/usr/local/include
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} ${GSL_INC} -I/usr/local/include
 FC := xlf90
-FFLAGS := -NS2000 -qfixed=132
-LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
-LDFLAGS += -lxlf90 # Required for linking Fortran objects
+FFLAGS := ${OMP_FLG} -NS2000 -qfixed=132
+# -bh:5 suppresses annoying linker WARNING: Duplicate symbol: messages
+LD := ld -bh:5
+LDFLAGS += ${OMP_FLG} -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
+#LDFLAGS += -lxlf90 # Required for linking Fortran objects
 LEX := lex
 LINT := lint
 YACC := yacc
@@ -243,6 +259,8 @@ endif
 ifeq (${OPTS},D)
  CFLAGS += -g
  FFLAGS += -g
+# xlC_r -g generates an __mcount symbol which -pg resolves
+ LDFLAGS += -pg
 endif
 ifeq (${OPTS},X)
 # -qflttrap generates instructions for floating point exceptions
@@ -253,7 +271,16 @@ ifeq (${OPTS},X)
 # -qhalt=e stop compiler if error severity equals or exceeds i, w, e, s, u
  CFLAGS += -g -qflttrap -qidirfirst -qlonglong -qwarn64 -qcheck=all -qhalt=s
  FFLAGS += -g
+ LDFLAGS += -pg
 endif
+# -q64: Select 64-bit compiler mode (required for accessing large files)
+# -qwarn64: Warn on possible long-to-integer or pointer-to-integer truncation
+ifeq (${ABI},64)
+ AR := ar -X 64
+ CFLAGS += -q64
+ FFLAGS += -q64
+ LDFLAGS += -q64 
+endif # endif ABI
 C++FLAGS := ${CFLAGS}
 # Additional flags for AIX:
 # -M Generate information to be included in a "make" description file; output goes to .u file
@@ -262,10 +289,10 @@ C++FLAGS := ${CFLAGS}
 # Using -P causes additional warning messages about lm 
 # Not using -P causes *.o files to be created twice
 ${MY_DPN_DIR}/%.d : %.c
-	${CPP} -M ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' $*.u > $@ ; \
+	${MK_DPN} ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' $*.u > $@ ; \
 	rm -f $*.i $*.o $*.u;
 ${MY_DPN_DIR}/%.d : %.cc
-	${CPP} -M ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' $*.u > $@ ; \
+	${MK_DPN} ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' $*.u > $@ ; \
 	rm -f $*.i $*.o $*.u;
 endif
 # endif AIX
@@ -694,6 +721,8 @@ endif
 # endif SGI6, SGI64, SGIMP64
 
 ifeq (${UNAMES},SunOS) 
+#C++ := CC
+#CC := cc
 C++ := g++
 CC := gcc
 CFLAGS := -Wall
@@ -704,10 +733,24 @@ FC := f90 -DHIDE_SHR_MSG
 FFLAGS := -xs -stackvar -e 
 LD := ld
 LDFLAGS := -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf -lsunmath -lsocket -lnsl
-LDFLAGS += -lF77 -lM77 -lresolv
+#LDFLAGS += -lF77 -lM77 -lresolv
 LEX := lex
 LINT := lint
 YACC := yacc
+ifeq (${ABI},64)
+# Sun compiler
+ifeq (${CC},cc)
+ CFLAGS := -xarch=v9
+ FFLAGS := -xarch=v9
+ LDFLAGS += -xarch=v9
+endif # endif Sun compiler
+# GNU Compiler Collection
+ifeq (${CC},gcc)
+ CFLAGS += -mabi=64
+ FFLAGS += -mabi=64
+ LDFLAGS += -mabi=64
+endif # endif GNU Compiler Collection
+endif # endif ABI
 ifeq (${OPTS},O)
  CFLAGS += -O2
  FFLAGS += -fast

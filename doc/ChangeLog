@@ -1,3 +1,7 @@
+2003-09-03  Charlie Zender  <zender@uci.edu>
+
+	* Makefile (ABI): Change default ABI to 64
+
 2003-09-02  Charlie Zender  <zender@uci.edu>
 
 	* Change default HTML production from texi2html to makeinfo

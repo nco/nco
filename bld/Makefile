@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.217 2003-08-21 23:07:44 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.218 2003-09-03 18:12:13 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -24,10 +24,10 @@
 # cd ~/nco/bld;make cln bin_cln all HDF5=Y;cd -
 # UDUnits support:
 # cd ~/nco/bld;make UDUNITS=Y;cd -
-# 64-bit ABI on NCAR AIX systems:
-# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 make --jobs=1 lib_cln cln all ABI=64 UDUNITS=N;cd -
-# 64-bit ABI on NCAR IRIX systems:
-# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 UDUNITS_INC=/contrib/include UDUNITS_LIB=/contrib/lib make --jobs=1 lib_cln cln all ABI=64;cd -
+# 32-bit ABI on NCAR AIX systems:
+# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib32/r4i4 make --jobs=1 lib_cln cln all ABI=32 UDUNITS=N;cd -
+# 32-bit ABI on NCAR IRIX systems:
+# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib32/r4i4 UDUNITS_INC=/contrib/include UDUNITS_LIB=/contrib/lib make --jobs=1 lib_cln cln all ABI=32;cd -
 
 # Top-level tokens defining directory structure
 # These tokens may be over-ridden by environment variables or when invoking make, e.g., make DODS=Y
@@ -56,8 +56,8 @@ MY_INC_DIR := ${MY_SRC_DIR}
 # Primary tokens which determine build options
 # Specify non-default when invoking make, e.g. make DODS=Y
 ifndef ${ABI}
-# 32 vs. 64 bit ABI: 32=32 bit mode (default), 64=64 bit mode if available
- ABI := 32
+# 32 vs. 64 bit ABI: 32=32 bit mode, 64=64 bit mode (default) if available
+ ABI := 64
 endif # endif ABI
 ifndef ${DBG}
 # Debugging token N=No (default) Y=Yes
