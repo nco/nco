@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.222 2003-11-10 19:01:17 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.223 2003-11-16 21:40:03 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -537,8 +537,8 @@ endif
 endif
 # endif HPPA
 
-# Works on LINUX, LINUXALPHA, LINUXARM and FREEBSD
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXARMFREEBSD))
+# Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSD))
 C++ := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CC}
@@ -690,7 +690,7 @@ ifeq (${OMP},Y)
  LDFLAGS := ${OMP_FLG} ${LDFLAGS}
 endif # endif OMP
 endif
-# endif LINUX, LINUXALPHA, LINUXARM, FREEBSD
+# endif LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, FREEBSD
 
 ifeq (${PVM_ARCH},MACOSX)
 C++ := c++
@@ -1155,7 +1155,7 @@ ifeq (${PVM_ARCH},MACOSX)
 endif # endif LINUX
 # ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/ncap_utl.o)
 # If not using glibc, build Sittler's getopt() and getopt_long() functions
-ifeq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32))
+ifeq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDWIN32))
 ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_getopt.o)
 endif # endif not glibc
 ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
@@ -1293,7 +1293,7 @@ endif
 # For some reason, ncap_lex.c is not remade when I expect it to be, so I explicitly remove the object file every time
 ncap:	${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o  ncap_yacc.h ${MY_OBJ_DIR}/ncap.o ${MY_OBJ_DIR}/ncap_utl.o ${libnco}.a
 #        ${YACC} --name-prefix=nco_
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32))
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSDWIN32))
 	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@_yacc.o ${MY_OBJ_DIR}/$@_lex.o ${LDFLAGS}
 else	
 	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@_yacc.o ${MY_OBJ_DIR}/$@_lex.o -ll -ly ${LDFLAGS}
