@@ -25424,7 +25424,9 @@ _ACEOF
 	    ;;
 	powerpc-ibm-aix* )
 	    case ${CC} in
-		xlc* ) CFLAGS="${CFLAGS} -O5" ; ;;
+# -qstrict: Ensure that -O3 optimizations do not alter program semantics
+# -Q : Inline all appropriate subprograms
+		xlc* ) CFLAGS="${CFLAGS} -O5 -qstrict -Q" ; ;;
 	    esac
 	    ;;
 	rs6000-ibm-aix* )

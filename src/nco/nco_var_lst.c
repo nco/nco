@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.26 2004-01-01 22:42:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.27 2004-01-02 22:11:36 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -189,7 +189,7 @@ nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
 
   /* Compile regular expression */
   if((err_no=regcomp(r,rexp,cflags)) != 0){ /* Compile regular expression */
-    char *err_sng;  
+    char const * err_sng;  
     /* POSIX regcomp return error codes */
     switch(err_no){
     case REG_BADPAT: err_sng="Invalid pattern."; break;  

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.16 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.17 2004-01-02 22:11:36 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -700,6 +700,14 @@ nco_var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
 
   /* Square root is currently defined as op2:=sqrt(op1) */
 
+  /* http://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
+     __GNUC__ : Defined by gcc 
+     __GNUG__ : Defined by g++, equivalent to (__GNUC__ && __cplusplus) */
+
+#ifndef __GNUG__
+  float sqrtf(float); /* Sun math.h does not include sqrtf() prototype */
+#endif /* __GNUG__ */
+  
   long idx;
 
   /* Typecast pointer to values before access */
@@ -711,14 +719,14 @@ nco_var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
   case NC_FLOAT:
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++){
-	op2.fp[idx]=sqrt(op1.fp[idx]);
+	op2.fp[idx]=sqrtf(op1.fp[idx]);
 	tally[idx]++;
       } /* end for */
     }else{
       const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt){
-	  op2.fp[idx]=sqrt(op1.fp[idx]);
+	  op2.fp[idx]=sqrtf(op1.fp[idx]);
 	  tally[idx]++;
 	} /* end if */
       } /* end for */
@@ -743,14 +751,14 @@ nco_var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
   case NC_INT:
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++){
-	op2.lp[idx]=(long)sqrt(op1.lp[idx]);
+	op2.lp[idx]=(long)sqrt((double)(op1.lp[idx]));
 	tally[idx]++;
       } /* end for */
     }else{
       const long mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if(op1.lp[idx] != mss_val_lng){
-	  op2.lp[idx]=(long)sqrt(op1.lp[idx]);
+	  op2.lp[idx]=(long)sqrt((double)(op1.lp[idx]));
 	  tally[idx]++;
 	} /* end if */
       } /* end for */
@@ -759,14 +767,14 @@ nco_var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
   case NC_SHORT:
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++){
-	op2.sp[idx]=(short)sqrt(op1.sp[idx]);
+	op2.sp[idx]=(short)sqrt((double)(op1.sp[idx]));
 	tally[idx]++;
       } /* end for */
     }else{
       const short mss_val_sht=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
 	if(op1.sp[idx] != mss_val_sht){
-	  op2.sp[idx]=(short)sqrt(op1.sp[idx]);
+	  op2.sp[idx]=(short)sqrt((double)(op1.sp[idx]));
 	  tally[idx]++;
 	} /* end if */
       } /* end for */

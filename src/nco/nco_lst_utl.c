@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.16 2004-01-01 22:42:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.17 2004-01-02 22:11:36 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -23,7 +23,9 @@ nco_cmp_int /* [fnc] Compare two integers */
      Code based on responses to my comp.lang.c thread 20040101 */
   const int * const val_1_ip=val_1;
   const int * const val_2_ip=val_2;
-  return (*val_1_ip > *val_2_ip) - (*val_1_ip < *val_2_ip);
+  return *val_1_ip < *val_2_ip ? -1 : (*val_1_ip > *val_2_ip);
+  /* Alternative one-liner:
+     return (*val_1_ip > *val_2_ip) - (*val_1_ip < *val_2_ip); */
 } /* end nco_cmp_int() */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
@@ -36,7 +38,9 @@ nco_cmp_chr /* [fnc] Compare two characters */
      Code based on responses to my comp.lang.c thread 20040101 */
   const char * const val_1_cp=val_1;
   const char * const val_2_cp=val_2;
-  return (*val_1_cp > *val_2_cp) - (*val_1_cp < *val_2_cp);
+  return *val_1_cp < *val_2_cp ? -1 : (*val_1_cp > *val_2_cp);
+  /* Alternative one-liner:
+     return (*val_1_cp > *val_2_cp) - (*val_1_cp < *val_2_cp); */
 } /* end nco_cmp_chr() */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */

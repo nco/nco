@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.58 2004-01-02 20:22:05 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.59 2004-01-02 22:11:36 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -475,7 +475,9 @@ if test "${enable_optimize_custom}" = 'yes'; then
 	    ;;
 	powerpc-ibm-aix* ) 
 	    case ${CC} in 
-		xlc* ) CFLAGS="${CFLAGS} -O5" ; ;;
+# -qstrict: Ensure that -O3 optimizations do not alter program semantics
+# -Q : Inline all appropriate subprograms
+		xlc* ) CFLAGS="${CFLAGS} -O5 -qstrict -Q" ; ;;
 	    esac
 	    ;;
 	rs6000-ibm-aix* ) 

@@ -1,3 +1,12 @@
+2004-01-02  Charlie Zender  <zender@uci.edu>
+
+	* Use sqrtf() where appropriate
+
+	* Preserve const'ness of string literal assignments and returns
+
+	* Use trigraph return in qsort() comparison functions nco_cmp_*()
+	to completely avoid arithmetic and overflows
+
 2004-01-01  Charlie Zender  <zender@uci.edu>
 
 	* Improve qsort() comparison functions nco_cmp_*() based on
@@ -10,7 +19,7 @@
 
 	* De-lint code with --enable-debug-custom
 	Fixed sloppy casts, signed/unsigned comparisons, missing const's
-	in nearly all source codde.
+	in nearly all source code.
 
 	* make dst_cln cleans volatile autotools build files in root directory
 
