@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.13 2004-08-11 04:55:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.14 2004-08-12 05:00:38 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -49,7 +49,7 @@ nco_pck_typ_get /* [fnc] Convert user-specified packing type to key */
 (const char *nco_pck_sng); /* [sng] User-specified packing type */
 
 bool /* O [flg] Variable is packed on disk */
-pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
+nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 (const int nc_id, /* I [idx] netCDF file ID */
  var_sct *var); /* I/O [sct] Variable */
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.51 2004-08-11 04:55:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.52 2004-08-12 05:00:38 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -617,7 +617,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
     } /* end else */
   } /* end OpenMP critical */
 
-  /* Packing properties of variable initially obtained from pck_dsk_inq() call in nco_var_fll()
+  /* Packing properties initially obtained by nco_pck_dsk_inq() in nco_var_fll()
      Multi-file operators (MFOs) call nco_var_get() multiple times for each variable
      In between subsequent calls to nco_var_get(), variable may be unpacked 
      When this occurs, packing flags in variable structure will not match disk
@@ -632,8 +632,8 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   var->type=var->typ_dsk; /* Type of variable in RAM */
 
   /* Packing in RAM is now same as packing on disk pck_dbg 
-     fxm: Following call to pck_dsk_inq() is never necessary for non-packed variables */
-  (void)pck_dsk_inq(nc_id,var);
+     fxm: Following call to nco_pck_dsk_inq() is never necessary for non-packed variables */
+  (void)nco_pck_dsk_inq(nc_id,var);
   
   /* Packing/Unpacking */
   if(nco_is_rth_opr(prg_get())){
@@ -1179,8 +1179,8 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   } /* end loop over dim */
 
   /* Portions of variable structure depend on packing properties, e.g., typ_upk
-     pck_dsk_inq() fills in these portions harmlessly */
-  (void)pck_dsk_inq(nc_id,var);
+     nco_pck_dsk_inq() fills in these portions harmlessly */
+  (void)nco_pck_dsk_inq(nc_id,var);
 
   return var;
 } /* end nco_var_fll() */

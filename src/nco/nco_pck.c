@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.22 2004-08-11 04:55:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.23 2004-08-12 05:00:38 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -10,7 +10,7 @@
 
 /* Notes on packing/unpacking:
    Routines in this file must be used in correct order:
-   pck_dsk_inq(): called first, e.g., in nco_var_fll(), before var_prc copied to var_prc_out
+   nco_pck_dsk_inq(): called first, e.g., in nco_var_fll(), before var_prc copied to var_prc_out
    nco_var_upk(): called in data retrieval routine, e.g., in nco_var_get()
    nco_var_pck(): called just before writing output file, e.g., in main()
    Bookkeeping hassle is keeping flags in var_prc synchronized with flags in var_prc_out
@@ -42,14 +42,14 @@ nco_pck_typ_get /* [fnc] Convert user-specified packing type to key */
 } /* end nco_pck_typ_get() */
 
 bool /* O [flg] Variable is packed on disk */
-pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
+nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 (const int nc_id, /* I [idx] netCDF file ID */
  var_sct * const var) /* I/O [sct] Variable */
 {
   /* Purpose: Check whether variable is packed on disk and set variable members 
      pck_dsk, has_scl_fct, has_add_fst, and typ_upk accordingly
-     pck_dsk_inq() should be called early in application, e.g., in nco_var_fll() 
-     Call pck_dsk_inq() before copying input list to output list 
+     nco_pck_dsk_inq() should be called early in application, e.g., in nco_var_fll() 
+     Call nco_pck_dsk_inq() before copying input list to output list 
      Multi-file operators which handle packing must call this routine prior
      to each read of a variable, in case that variable has been unpacked. */
   /* ncea -O -D 3 -v pck ~/nco/data/in.nc ~/nco/data/foo.nc */
@@ -79,11 +79,11 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
   rcd=nco_inq_att_flg(nc_id,var->id,scl_fct_sng,&scl_fct_typ,&scl_fct_lng);
   if(rcd != NC_ENOTATT){
     if(scl_fct_typ != NC_FLOAT && scl_fct_typ != NC_DOUBLE){
-      (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports scale_factor for %s is not NC_FLOAT or NC_DOUBLE. Will not attempt to unpack using scale_factor.\n",prg_nm_get(),var->nm); 
+      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports scale_factor for %s is not NC_FLOAT or NC_DOUBLE. Will not attempt to unpack using scale_factor.\n",prg_nm_get(),var->nm); 
       return False;
     } /* endif */
     if(scl_fct_lng != 1){
-      (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports %s has scale_factor of length %li. Will not attempt to unpack using scale_factor\n",prg_nm_get(),var->nm,scl_fct_lng); 
+      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports %s has scale_factor of length %li. Will not attempt to unpack using scale_factor\n",prg_nm_get(),var->nm,scl_fct_lng); 
       return False;
     } /* endif */
     var->has_scl_fct=True; /* [flg] Valid scale_factor attribute exists */
@@ -94,11 +94,11 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
   rcd=nco_inq_att_flg(nc_id,var->id,add_fst_sng,&add_fst_typ,&add_fst_lng);
   if(rcd != NC_ENOTATT){
     if(add_fst_typ != NC_FLOAT && add_fst_typ != NC_DOUBLE){
-      (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports add_offset for %s is not NC_FLOAT or NC_DOUBLE. Will not attempt to unpack.\n",prg_nm_get(),var->nm); 
+      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports add_offset for %s is not NC_FLOAT or NC_DOUBLE. Will not attempt to unpack.\n",prg_nm_get(),var->nm); 
       return False;
     } /* endif */
     if(add_fst_lng != 1){
-      (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports %s has add_offset of length %li. Will not attempt to unpack.\n",prg_nm_get(),var->nm,add_fst_lng); 
+      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports %s has add_offset of length %li. Will not attempt to unpack.\n",prg_nm_get(),var->nm,add_fst_lng); 
       return False;
     } /* endif */
     var->has_add_fst=True; /* [flg] Valid add_offset attribute exists */
@@ -107,7 +107,7 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 
   if(var->has_scl_fct && var->has_add_fst){
     if(scl_fct_typ != add_fst_typ){
-      (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports type of scale_factor does not equal type of add_offset. Will not attempt to unpack.\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports type of scale_factor does not equal type of add_offset. Will not attempt to unpack.\n",prg_nm_get());
       return False;
     } /* endif */
   } /* endif */
@@ -131,7 +131,7 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 
   return var->pck_dsk; /* [flg] Variable is packed on disk (valid scale_factor, add_offset, or both attributes exist) */
   
-} /* end pck_dsk_inq() */
+} /* end nco_pck_dsk_inq() */
 
 var_sct * /* O [sct] Unpacked variable */
 nco_var_upk /* [fnc] Unpack variable in memory */
@@ -218,7 +218,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
   if(var->type == NC_SHORT || var->type == NC_CHAR || var->type == NC_BYTE) (void)fprintf(stdout,"%s: ERROR nco_var_pck() called with invalid source type var->type = %s, \n",prg_nm_get(),nco_typ_sng(var->type));
 
   if(USE_EXISTING_PCK){
-    /* Assume var->scl_fct.vp and var->add_fst.vp are already in memory from pck_dsk_inq() */
+    /* Assume var->scl_fct.vp and var->add_fst.vp are already in memory from nco_pck_dsk_inq() */
   }else{
     /* Compute packing parameters to apply to var
 
