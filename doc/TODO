@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.50 2000-05-09 05:20:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.51 2000-05-09 06:55:56 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -49,7 +49,7 @@ ncdiff -O -v float_var in.nc in.nc foo.nc; ncks -H foo.nc
 111. Investigate whether using ncwa to average files where variables of type 
 NC_CHAR have a record dimension causes core dumps or other problems.
 i.e., LSM variable timecom caused subtle ncra problems for a while.
-112. Use strtol and strtod instead of atol and atof
+112. Use (int)strtol() instead of atoi
 113. Rethink normalization switch options in ncwa
 114. Fix var_conform_dim() so that the returned weight always has the same size tally array as the template variable
 115. When the sum of the denominator in ncwa (i.e., the sum of the weight) is zero, SIGFPE will result 
@@ -126,15 +126,11 @@ CDL files are copied below for convenience
 20000323 Problem may be in var_conform_dim()
 156. Builds with Electric Fence crash all over the place. 
 Appears to be related to NCO assumption that NULL=malloc(0)
-157. Irrelevent files at end can cause ncra to barf
-ncks -O -d time,,2.0 -v time in.nc foo1.nc
-ncks -O -d time,3.0, -v time in.nc foo2.nc
-ncra -O -D 3 -v time -d time,1.0,2.0 foo1.nc foo2.nc foo3.nc
-fails because 2nd file contains no timeslices. I thought I already
-fixed this, but now I realize I never fixed this (because there is no
-simple complete fix) for the case of coordinate (not index-based)
-hyperslabs. I've now fixed this so superfluous files at the end
-are OK.
+158. Add policy for hyperslabbing single level values to User's Guide. 
+Multi-file operators with record coordinate
+treat single point hyperslabs differently than single file operators 
+or than any operators with single point cuts on non-record coordinates.
+See explanatory notes in lmt_evl().
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.32 2000-04-05 21:41:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.33 2000-05-09 06:55:57 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.32 2000-04-05 21:41:58 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.32 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.33 2000-05-09 06:55:57 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.33 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -220,7 +220,7 @@ main(int argc,char **argv)
       break;
     case 'M':
       /* Good data defined by relation to mask value. Default is 1. */
-      msk_val=atof(optarg);
+      msk_val=strtod(optarg,(char **)NULL);
       break;
     case 'N':
       NRM_BY_DNM=False;

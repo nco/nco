@@ -1,3 +1,21 @@
+2000-05-09  Charlie Zender  <zender@uci.edu>
+
+	* Altered behavior of single point hyperslabs so that single point
+	hyperslabs in the record coordinate (i.e., -d time,1.0,1.0) may be
+	treated differently than single point hyperslabs in other
+	coordinates. Multifile operators will skip files if single point
+	hyperslabs in record coordinate lays outside record coordinate
+	range of file. For non-record coordinates (and for all operators
+	besides ncra and ncrcat on record coordinates), single point
+	hyperslabs will choose the closest value rather than skip the file
+	(I believe). This should be verified.
+
+	* Switched NCO from atof(), atol() to strtod(), strtol()
+
+	* Added ability to skip superfluous trailing files to lmt_evl() 
+	when limits are coordinate values. Needs testing but appears to
+	work. Had to use a goto statement, icky. Fixes TODO #157?
+
 2000-05-04  Charlie Zender  <zender@uci.edu>
 
 	* More fixes to fix problems with Electric Fence 

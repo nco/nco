@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.56 2000-05-09 05:20:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.57 2000-05-09 06:55:56 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -295,7 +295,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       (void)fprintf(stdout,"%s: ERROR Requested stride for \"%s\", %s, must be integer\n",prg_nm_get(),lmt.nm,lmt.srd_sng);
       exit(EXIT_FAILURE);
     } /* end if */
-    lmt.srd=atol(lmt.srd_sng);
+    lmt.srd=strtol(lmt.srd_sng,(char **)NULL,10);
     if(lmt.srd < 1){
       (void)fprintf(stdout,"%s: ERROR Stride for \"%s\" is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.srd);
       exit(EXIT_FAILURE);
@@ -412,17 +412,31 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     dmn_max=dmn_val_dp[max_idx];
     
     /* Convert user-specified limits into double precision numeric values, or supply defaults */ 
-    if(lmt.min_sng == NULL) lmt.min_val=dmn_val_dp[min_idx]; else lmt.min_val=atof(lmt.min_sng);
-    if(lmt.max_sng == NULL) lmt.max_val=dmn_val_dp[max_idx]; else lmt.max_val=atof(lmt.max_sng);
+    if(lmt.min_sng == NULL) lmt.min_val=dmn_val_dp[min_idx]; else lmt.min_val=strtod(lmt.min_sng,(char **)NULL);
+    if(lmt.max_sng == NULL) lmt.max_val=dmn_val_dp[max_idx]; else lmt.max_val=strtod(lmt.max_sng,(char **)NULL);
 
     /* Warn when min_val > max_val (i.e., wrapped coordinate)*/ 
     if(lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: WARNING Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
     
     /* Fail when... */ 
     if(
-       /* User did not specify single level, coordinate is not wrapped, and either extrema falls outside valid crd range */
+       /* Following condition added 20000508, changes behavior of single point 
+	  hyperslabs depending on whether hyperslab occurs in record dimension
+	  for a multi-file operator.
+	  Altered behavior of single point hyperslabs so that single point
+	  hyperslabs in the record coordinate (i.e., -d time,1.0,1.0) may be
+	  treated differently than single point hyperslabs in other
+	  coordinates. Multifile operators will skip files if single point
+	  hyperslabs in record coordinate lays outside record coordinate
+	  range of file. For non-record coordinates (and for all operators
+	  besides ncra and ncrcat on record coordinates), single point
+	  hyperslabs will choose the closest value rather than skip the file
+	  (I believe). This should be verified. */
+       /* User specified single point, coordinate is not wrapped, and both extrema fall outside valid crd range */
+       (lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat) && (lmt.min_val == lmt.max_val) && ((lmt.min_val > dmn_max) || (lmt.max_val < dmn_min))) ||
+       /* User did not specify single point, coordinate is not wrapped, and either extrema falls outside valid crd range */
        ((lmt.min_val < lmt.max_val) && ((lmt.min_val > dmn_max) || (lmt.max_val < dmn_min))) ||
-       /* User did not specify single level, coordinate is wrapped, and both extrema fall outside valid crd range */
+       /* User did not specify single point, coordinate is wrapped, and both extrema fall outside valid crd range */
        ((lmt.min_val > lmt.max_val) && ((lmt.min_val > dmn_max) && (lmt.max_val < dmn_min))) ||
        False){
       /* Allow for possibility that current file is superfluous */
@@ -549,14 +563,14 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       if(FORTRAN_STYLE) lmt.min_idx=1L; else lmt.min_idx=0L;
     }else{
       /* Use user-specified limit when available */
-      lmt.min_idx=atol(lmt.min_sng);
+      lmt.min_idx=strtol(lmt.min_sng,(char **)NULL,10);
     } /* end if */
     if(lmt.max_sng == NULL || !lmt.is_usr_spc_lmt){
       /* No user-specified value available--generate maximal dimension index */
       if(FORTRAN_STYLE) lmt.max_idx=dmn_sz; else lmt.max_idx=dmn_sz-1L;
     }else{
       /* Use user-specified limit when available */
-      lmt.max_idx=atol(lmt.max_sng);
+      lmt.max_idx=strtol(lmt.max_sng,(char **)NULL,10);
     } /* end if */
 
     /* Adjust indices if FORTRAN style input was specified */ 
@@ -799,8 +813,10 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   if(dbg_lvl_get() == 5){
     (void)fprintf(stderr,"Dimension hyperslabber lmt_evl() diagnostics:\n");
     (void)fprintf(stderr,"Dimension name = %s\n",lmt.nm);
+    (void)fprintf(stderr,"Limit type is %s\n",(min_lmt_typ == lmt_crd_val) ? "coordinate value" : "zero-based dimension index");
     (void)fprintf(stderr,"Limit %s user-specified\n",(lmt.is_usr_spc_lmt) ? "is" : "is not");
     (void)fprintf(stderr,"Limit %s record dimension\n",(lmt.is_rec_dmn) ? "is" : "is not");
+    (void)fprintf(stderr,"File %s superficial to specified hyperslab, data %s be read\n",(flg_no_data) ? "is" : "is not",(flg_no_data) ? "will not" : "will");
     if(lmt.is_rec_dmn) (void)fprintf(stderr,"Records read from previous files = %li\n",cnt_crr);
     if(cnt_rmn_ttl != -1L) (void)fprintf(stderr,"Total records to be read from this and all following files = %li\n",cnt_rmn_ttl);
     if(cnt_rmn_crr != -1L) (void)fprintf(stderr,"Records to be read from this file = %li\n",cnt_rmn_crr);
@@ -819,9 +835,9 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     (void)fprintf(stderr,"srd = %li\n\n",lmt.srd);
   } /* end dbg */
   
-  if(lmt.srt > lmt.end){
-    if(prg_get() != ncks) (void)fprintf(stderr,"WARNING: Possible instance of Schweitzer data hole requiring better diagnostics TODO #148\n");
-    if(prg_get() != ncks) (void)fprintf(stderr,"HINT: If operation fails, try hyperslabbing wrapped dimension using ncks instead of %s\n",prg_nm_get());
+  if(lmt.srt > lmt.end && !flg_no_data){
+    if(prg_id != ncks) (void)fprintf(stderr,"WARNING: Possible instance of Schweitzer data hole requiring better diagnostics TODO #148\n");
+    if(prg_id != ncks) (void)fprintf(stderr,"HINT: If operation fails, try hyperslabbing wrapped dimension using ncks instead of %s\n",prg_nm_get());
   } /* end dbg */
 
 } /* end lmt_evl() */ 

@@ -1,5 +1,5 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.4 2000-01-17 01:53:56 zender Exp $ */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.5 2000-05-09 06:55:56 zender Exp $ */
 
   /* Purpose: Token generator for ncap parser */ 
 
@@ -59,7 +59,7 @@
 ([0-9]+|([0-9]*\.[0-9]+)([eE][dD][-+]?[0-9]+)?) { /* Process floats */ 
   /* Recall that yylval is of type YYSTYPE, itself defined by the union of token types in the *.y file,
      and included as an extern by the *.tab.h file */
-  lvalp->val_double=atof(yytext);
+  lvalp->val_double=strtod(yytext,(char **)NULL);
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"lexing: yytext = %s, yylval.val_double = %g\n",yytext,lvalp->val_double);
   return NUMBER;
 }

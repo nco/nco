@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.20 2000-04-05 21:41:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.21 2000-05-09 06:55:57 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.20 2000-04-05 21:41:57 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.20 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.21 2000-05-09 06:55:57 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.21 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -274,6 +274,7 @@ main(int argc,char **argv)
   if(prg == ncra || prg == ncrcat){
     if(rec_dmn_id == -1){
       (void)fprintf(stdout,"%s: ERROR input file %s lacks a record dimension\n",prg_nm_get(),fl_in);
+      if(nbr_fl == 1)(void)fprintf(stdout,"%s: HINT Use ncks instead of %s\n",prg_nm_get(),prg_nm_get());
       exit(EXIT_FAILURE);
     } /* endif */ 
     lmt_rec=lmt_dmn_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_STYLE);
@@ -405,6 +406,11 @@ main(int argc,char **argv)
 	long rec_nbr_rqs; /* Number of records user requested */
 	rec_nbr_rqs=1L+(lmt_rec.max_idx-lmt_rec.min_idx)/lmt_rec.srd;
 	if(idx_fl == nbr_fl-1 && rec_nbr_rqs != idx_rec_out) (void)fprintf(stdout,"%s: WARNING User requested %li records but only %li were found\n",prg_nm_get(),rec_nbr_rqs,idx_rec_out);
+      } /* end if */
+      /* Warn if no records were read and final file has been processed */ 
+      if(idx_rec_out <= 0 && idx_fl == nbr_fl-1){
+	(void)fprintf(stdout,"%s: ERROR No records lay within specified hyperslab\n",prg_nm_get());
+	exit(EXIT_FAILURE);
       } /* end if */
     }else{ /* ncea */ 
       /* Process all variables in current file */ 
