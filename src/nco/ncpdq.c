@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.30 2004-08-14 21:00:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.31 2004-08-14 22:11:11 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -98,8 +98,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.30 2004-08-14 21:00:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.30 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.31 2004-08-14 22:11:11 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.31 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:P:p:Rrt:v:x-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -114,7 +114,7 @@ main(int argc,char **argv)
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
   FILE * const fp_stdout=stdout; /* [fl] stdout filehandle CEWI */
 
-  int **dmn_idx_out_in; /* [idx] Dimension correspondence, output->input */
+  int **dmn_idx_out_in=NULL; /* [idx] Dimension correspondence, output->input CEWI */
 
   int abb_arg_nbr=0;
   int dmn_rdr_nbr=0; /* [nbr] Number of dimension to re-order */
@@ -343,6 +343,12 @@ main(int argc,char **argv)
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
   } /* end loop over idx */
 
+  /* From this point forward we assume ncpdq operator will pack or re-order, not both */
+  if(dmn_rdr_nbr > 0 && nco_pck_typ != nco_pck_nil){
+    (void)fprintf(fp_stdout,"%s: ERROR %s does not support simultaneous dimension re-ordering  (-a switch) and packing (-P switch).\nHINT: Invoke %s twice, once to re-order (with -a), and once to pack (with -P).\n",prg_nm,prg_nm,prg_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* end if */
+
   if(dmn_rdr_nbr > 0){
     /* NB: Same logic as in ncwa, perhaps combine into single function, nco_dmn_avg_rdr_prp()? */
     /* Make list of user-specified dimension re-orders */
@@ -433,8 +439,8 @@ main(int argc,char **argv)
   thr_nbr=nco_openmp_ini(thr_nbr);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
 
-  /* In files with record dimension... */
-  if(rec_dmn_id_in != NCO_REC_DMN_UNDEFINED){
+  /* If re-ordering, then in files with record dimension... */
+  if(dmn_rdr_nbr > 0 && rec_dmn_id_in != NCO_REC_DMN_UNDEFINED){
     /* ...which, if any, output dimension structure currently holds record dimension? */
     for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_out;dmn_out_idx++)
       if(dmn_out[dmn_out_idx]->is_rec_dmn) break;
@@ -447,38 +453,40 @@ main(int argc,char **argv)
     } /* end else */
   } /* end if file contains record dimension */
   
-  /* Determine and set new dimensionality in metadata of each re-ordered variable */
-  dmn_idx_out_in=(int **)nco_malloc(nbr_var_prc*sizeof(int *));
-  dmn_rvr_in=(bool **)nco_malloc(nbr_var_prc*sizeof(bool *));
-  for(idx=0;idx<nbr_var_prc;idx++){
-    dmn_idx_out_in[idx]=(int *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(int));
-    dmn_rvr_in[idx]=(bool *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(bool));
-    /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
-    rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx],dmn_rvr_rdr,dmn_rvr_in[idx]);
-    /* If record dimension required by current variable re-order...
-       ...and variable is multi-dimensional (one dimensional arrays
-       cannot request record dimension changes)... */
-    if(rec_dmn_nm_out_crr && var_prc_out[idx]->nbr_dim > 1){
-      /* ...differs from input and current output record dimension(s)... */
-      if(strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_in) && strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_out)){
-	/* ...and current output record dimension already differs from input record dimension... */
-	if(REDEFINED_RECORD_DIMENSION){
-	  /* ...then requested re-order requires multiple record dimensions... */
-	  (void)fprintf(fp_stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",prg_nm,var_prc[idx]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
-	  break;
-	}else{ /* !REDEFINED_RECORD_DIMENSION */
-	  /* ...otherwise, update output record dimension name... */
-	  rec_dmn_nm_out=rec_dmn_nm_out_crr;
-	  /* ...and set new and un-set old record dimensions... */
-	  var_prc_out[idx]->dim[0]->is_rec_dmn=True;
-	  dmn_out[dmn_out_idx_rec_in]->is_rec_dmn=False;
-	  /* ...and set flag that record dimension has been re-defined... */
-	  REDEFINED_RECORD_DIMENSION=True;
-	} /* !REDEFINED_RECORD_DIMENSION */
-      } /* endif new and old record dimensions differ */
-    } /* endif current variable is record variable */
-  } /* end loop over var_prc */
-    
+  /* If re-ordering, determine and set new dimensionality in metadata of each re-ordered variable */
+  if(dmn_rdr_nbr > 0){
+    dmn_idx_out_in=(int **)nco_malloc(nbr_var_prc*sizeof(int *));
+    dmn_rvr_in=(bool **)nco_malloc(nbr_var_prc*sizeof(bool *));
+    for(idx=0;idx<nbr_var_prc;idx++){
+      dmn_idx_out_in[idx]=(int *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(int));
+      dmn_rvr_in[idx]=(bool *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(bool));
+      /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
+      rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx],dmn_rvr_rdr,dmn_rvr_in[idx]);
+      /* If record dimension required by current variable re-order...
+	 ...and variable is multi-dimensional (one dimensional arrays
+	 cannot request record dimension changes)... */
+      if(rec_dmn_nm_out_crr && var_prc_out[idx]->nbr_dim > 1){
+	/* ...differs from input and current output record dimension(s)... */
+	if(strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_in) && strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_out)){
+	  /* ...and current output record dimension already differs from input record dimension... */
+	  if(REDEFINED_RECORD_DIMENSION){
+	    /* ...then requested re-order requires multiple record dimensions... */
+	    (void)fprintf(fp_stdout,"%s: WARNING Re-order requests multiple record dimensions\n. Only first request will be honored (netCDF allows only one record dimension). Record dimensions involved [original,first change request (honored),latest change request (made by variable %s)]=[%s,%s,%s]\n",prg_nm,var_prc[idx]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
+	    break;
+	  }else{ /* !REDEFINED_RECORD_DIMENSION */
+	    /* ...otherwise, update output record dimension name... */
+	    rec_dmn_nm_out=rec_dmn_nm_out_crr;
+	    /* ...and set new and un-set old record dimensions... */
+	    var_prc_out[idx]->dim[0]->is_rec_dmn=True;
+	    dmn_out[dmn_out_idx_rec_in]->is_rec_dmn=False;
+	    /* ...and set flag that record dimension has been re-defined... */
+	    REDEFINED_RECORD_DIMENSION=True;
+	  } /* !REDEFINED_RECORD_DIMENSION */
+	} /* endif new and old record dimensions differ */
+      } /* endif current variable is record variable */
+    } /* end loop over var_prc */
+  } /* endif dmn_rdr_nbr > 0 */
+  
   /* NB: Much of following logic is required by netCDF constraint that only
      one record variable is allowed per file. netCDF4 will relax this constraint.
      Hence making following logic prettier or funcionalizing is not high priority.
@@ -493,7 +501,7 @@ main(int argc,char **argv)
        ancillary information and to check for duplicate dimensions.
        Ancillary information (dmn_idx_out_in) is available only for var_prc!
        Hence must update is_rec_var flag for var_fix and var_prc separately */
-
+    
     /* Update is_rec_var flag for var_fix */
     for(idx=0;idx<nbr_var_fix;idx++){
       /* Search all dimensions in variable for new record dimension */
@@ -646,8 +654,11 @@ main(int argc,char **argv)
 	var_prc_out[idx]->val=var_prc[idx]->val;
       } /* endif */
 
-      /* Change dimension ordering of values */
-      rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx],dmn_rvr_in[idx]);
+      /* Change dimensionionality of values */
+      if(dmn_rdr_nbr > 0) rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx],dmn_rvr_in[idx]);
+
+      /* Pack variable according to packing specification */
+      if(nco_pck_typ != nco_pck_nil) nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_typ);
 
       /* Free current input buffer */
       var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
@@ -666,8 +677,10 @@ main(int argc,char **argv)
       /* Free current output buffer */
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
       /* Free current dimension correspondence */
-      dmn_idx_out_in[idx]=nco_free(dmn_idx_out_in[idx]);
-      dmn_rvr_in[idx]=nco_free(dmn_rvr_in[idx]);
+      if(dmn_rdr_nbr > 0){
+	dmn_idx_out_in[idx]=nco_free(dmn_idx_out_in[idx]);
+	dmn_rvr_in[idx]=nco_free(dmn_rvr_in[idx]);
+      } /* endif dmn_rdr_nbr > 0 */
       
     } /* end (OpenMP parallel for) loop over idx */
     
@@ -684,29 +697,40 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
-  /* Free string list members */
-  for(idx=0;idx<dmn_rdr_nbr;idx++){
-    /* fxm: Generates a free() 
+  /* ncpdq-unique memory */
+  if(dmn_rdr_nbr > 0){
+    /* Free dimension correspondence list */
+    for(idx=0;idx<nbr_var_prc;idx++){
+      dmn_idx_out_in[idx]=(int *)nco_free(dmn_idx_out_in[idx]);
+      dmn_rvr_in[idx]=(bool *)nco_free(dmn_rvr_in[idx]);
+    } /* end loop over idx */
+    if(dmn_idx_out_in != NULL) dmn_idx_out_in=(int **)nco_free(dmn_idx_out_in);
+    if(dmn_rvr_in != NULL) dmn_rvr_in=(bool **)nco_free(dmn_rvr_in);
+    /* Free string list members */
+    for(idx=0;idx<dmn_rdr_nbr;idx++){
+    /* fxm: Generates a invalid free()---not sure why
        fxm: shifting negative signs by one may do same */
     /*    dmn_rdr_lst_in[idx]=(char *)nco_free(dmn_rdr_lst_in[idx]);*/
-    ;
-  } /* end loop over idx */
+      ;
+    } /* end loop over idx */
+    if(dmn_rdr_lst_in != NULL) dmn_rdr_lst_in=(char **)nco_free(dmn_rdr_lst_in);
+  } /* endif dmn_rdr_nbr > 0 */
+  if(nco_pck_typ != nco_pck_nil){
+    if(nco_pck_typ_sng != NULL) nco_pck_typ_sng=(char *)nco_free(nco_pck_typ_sng);
+  } /* endif nco_pck_nil */
+
+  /* NCO-generic clean-up */
   /* Free lists of strings */
-  if(dmn_rdr_lst_in != NULL) dmn_rdr_lst_in=(char **)nco_free(dmn_rdr_lst_in);
   if(fl_lst_abb != NULL) fl_lst_abb=(char **)nco_free(fl_lst_abb);
   if(fl_lst_in != NULL) fl_lst_in=(char **)nco_free(fl_lst_in);
   if(var_lst_in != NULL) var_lst_in=(char **)nco_free(var_lst_in);
   /* Free individual strings */
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
-  if(nco_pck_typ_sng != NULL) nco_pck_typ_sng=(char *)nco_free(nco_pck_typ_sng);
   /* Free limits */
   for(idx=0;idx<lmt_nbr;idx++){
     lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
   } /* end loop over idx */
   if(lmt_nbr > 0) lmt=(lmt_sct *)nco_free(lmt);
-  /* Free dimension correspondence list */
-  dmn_idx_out_in=nco_free(dmn_idx_out_in);
-  dmn_rvr_in=nco_free(dmn_rvr_in);
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dim[idx]=(dmn_sct *)nco_free(dim[idx]);
     dmn_out[idx]=(dmn_sct *)nco_free(dmn_out[idx]);
