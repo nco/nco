@@ -1,0 +1,15 @@
+$Header: /data/zender/nco_20150216/nco/src/nco_c++/INSTALL,v 1.1 2002-01-11 23:20:29 zender Exp $
+
+Purpose: Installation instructions for libnco_c++
+
+The libnco_c++ distribution is currently maintained as a
+gzipped tar file and is available from anonymous FTP from
+
+ftp://dust.ps.uci.edu/pub/zender/nco_c++/nco_c++.tar.gz
+
+To build libnco_c++ with the supplied Makefile, type 'make' using
+GNU make. By default, this will build the library libnco_c++.a,
+the test program tst, and the test input data file in.nc.
+The supplied Makefile requires that GNU make, Perl, and ncgen
+be in your executable path. 
+

@@ -1,0 +1,20 @@
+$Header: /data/zender/nco_20150216/nco/src/nco_c++/TODO,v 1.1 2002-01-11 23:20:29 zender Exp $
+
+Purpose: Task list for libnco_c++.a
+
+Required:
+1. Decide if initial design is good
+2. Implement any overall design changes
+3. Implement [get/put]_vara_
+4. Implement [get/put]_vars_
+5. Implement [get/put]_varm_
+6. Implement remaining file functions: nc_sync(),nc_abort()
+7. Implement remaining variable functions: some [put/get]_var1(),nc_rename_var()
+8. Implement remaining attribute functions: nc_copy_att(),nc_rename_att(),nc_del_att()
+9. Implement native short, char, byte versions of all routines
+10. Code cleanup
+11. Place code in public CVS archive, presumably as new module for NCO project on Sourceforge
+
+Ideas for extra features:
+1. Support valarrays everywhere
+2. Support long double type (by converting to/from NC_DOUBLE)

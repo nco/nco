@@ -1,0 +1,181 @@
+2001-11-04  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco_c++-0_1_2 nco_c++ c++ mie
+
+	* Compilation and linking is now successful on AIX.
+	Test program completes successful so this the first "port" of 
+	the library to non-Linux system has been accomplished.
+
+	* nco_var.hh: Using "typename" instead of "class" solved some, but
+	not all AIX compiler warnings. Prefixing typename to std::valarray
+	in parameter lists solved the remaining "typename" warnings.
+	I am not sure if this is ISO standard requirement or what as
+	most books are sketchy on when to use "typename".
+
+2001-11-02  Charlie Zender  <zender@uci.edu>
+
+	* nco_var.hh: AIX xlC compiler requires use of "typename"
+	instead of "class" for template dependent names that are
+	types, such as valarrays in nco_put_var(). GCC will work
+	with either "typename" or "class". So we use typename.
+	Not sure what ISO standard says.
+
+2001-10-29  Charlie Zender  <zender@uci.edu>
+
+	* nco_var.hh: Removed redundant template prototypes
+
+2001-10-18  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco_c++-0_1_1 nco_c++ c++ mie
+	Changes since nco_c++-0_1: Self-contained code.
+	Distribution is now in alpha state and ready for outside
+	participation.
+	
+	* tst.cc: Pared out all non-netCDF junk and dependencies
+	so test file should now build on most systems
+
+	* Makefile (MY_DAT_DIR): Hacked to build in.cdl and tst
+
+2001-10-17  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco_c++-0_1 nco_c++ c++ mie
+	Changes since mie-2_5_7: Migrated from c++ directory,
+	new module stuff
+
+	* Makefile: Stripped down c++ Makefile to build libnco_c++ only
+
+	* Created README, TODO, moved all libnco_c++ sources into
+	own directory and created CVS module nco_c++ which will continue
+	to be co-tagged with modules c++ and mie
+
+2001-10-15  Charlie Zender  <zender@uci.edu>
+
+	* nco.cc: Call nco_inq_dimid() not nco_inq_dimlen()
+
+2001-10-14  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c mie-2_5_8 c++ mie
+	Changes since mie-2_5_7: new netCDF I/O library replacement
+	appears to be working, and complete for all current programs.
+	get_vara, put_vara, get_varm, put_varm are not yet implemented.
+
+	* Moved libcsm_c++ to before libnco_c++ in linking (placing leaves
+	at end)
+
+	* nco_var_dfn now calls nco_redef() safely
+
+	* nco_hgh.cc: created nco_hgh.cc for high level utilities
+	Put nco_var_dfn there so that programs like slr_spc can use
+	the var_mtd_sct infrastructure without linking to libcsm_c++
+
+	* nco_var.hh (attributes): Templatized another slew of put_var
+	functions.
+
+	* nco_dmn.cc: Fixed about 6 overloads that return rcd instead of
+	values like dmn_nbr, var_val, att_nbr.
+
+	* Makefile (CPP_TKN): Added -DNO_NETCDF_2
+
+	* Implement abort() on netCDF errors with -DABORT_ON_ERROR
+
+	* Output var,dmn,att name for failed, fatal inquires
+
+2001-10-13  Charlie Zender  <zender@uci.edu>
+
+	* nco_var.cc: Fixed bug where starting corner was 1,1,...1 not 0,0,..0
+
+	* Makefile (CPPFLAGS): Added VRS_SNG and VERSION features
+
+	* cvs tag -c mie-2_5_7 c++ mie
+	Changes since mie-2_5_6: More attribute overloads
+	Fixed namespace usage in libnco_c++ so compilation is cleaner, but
+	still unsuccessful, on AIX and ALPHA.
+
+	* nco_att.cc: Having difficult problems with nco_put_att()
+	overloads for single element attributes. Not sure why.
+
+	* Makefile (CFLAGS): Added -Wno-unused to disable warnings for
+	unused variables
+
+2001-10-12  Charlie Zender  <zender@uci.edu>
+
+	* Added optional att_typ to put_att functions
+
+	* Added most overloaded inq_att() and inq_var() functions
+
+	* Moved all template functions into .hh files
+
+2001-10-11  Charlie Zender  <zender@uci.edu>
+
+	* Marathon session of adding almost every conceivable overload
+	needed for working libnco. Translated all old C++ interface to
+	new interface in all C++ code. Removed libnetcdf_c++ linking and
+	dependencies. Just need to write a few get_att() functions and
+	ready to compile.
+
+2001-10-10  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c mie-2_5_6 c++ mie
+	Changes since mie-2_5_5: More diagnostic utility functions
+
+	* nco_utl.cc: Added NCO utilties nco_typ_lng(), nco_typ_sng(),
+	nco_c_typ_sng(), nco_ftn_typ_sng()
+
+	* cvs tag -c mie-2_5_5 c++ mie
+	Changes since mie-2_5_4: New C++ netCDF interface for input file
+
+	* Re-coded input of in.nc to use new interface, appears to work
+
+	* Finally, tied it all together by implementing one line routines
+	to return entire variables based on single line string name input.
+	This keeps the code required by my C++ interface to about the same
+	size as that required by the old, standard, Unidata C++ interface.
+	
+	* Wrote a number of super-convenience routines to return values
+	based on string inputs. This allows things like dimension lengths
+	to be returned as const based on dimension name in just one line.
+
+	* Wrote a number of convenience routines to return values rather
+	than error codes. This enables simple, one-line, definitions of
+	things like dimension IDs, file IDs, dimension lengths, as const
+	variables.
+
+2001-10-09  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c mie-2_5_4 c++ mie
+	mie-2_5_4 is a synchronization checkin of the last working version
+	before adopting new overloaded C++ interface to netCDF 3.X API
+	
+	* nco_var.hh (file): Added 4 get_var() overloads, and
+	nco_get_var_sz() to compute sizes of variables.
+	Rudimentary ability now exists to define, inquire, read and write
+	datasets.
+
+	* cvs tag -c mie-2_5_3 c++ mie
+	Changes since mie-2_5_2: No user-visible changes
+
+2001-10-08  Charlie Zender  <zender@uci.edu>
+
+	* Created libnco_c++.hh to contain the nco_???.hh files
+
+	* Broke nco_att.cc into nco_utl.cc, nco_fl.cc, nco_dmn.cc,
+	nco_var.cc, and nco_att.cc
+
+	* nco_att.cc: Added 2 overloaded def_var() functions
+
+	* cvs tag -c mie-2_5_2 c++ mie
+	Changes since mie-2_5_1: No user-visible changes
+
+	* Makefile: Modify for libnco_c++.a
+
+	* nco_att.cc: nco_att has 3 nearly working overloaded put_att functions
+
+	* nco_att.hh (file): Added nco_att.hh and nco_att.cc to handle 
+	 C++ wrappers for netCDF3.X C-interface. 
+
+2001-09-06  Charlie Zender  <zender@uci.edu>
+
+	* ccc.cc (main): Using prc_cmp==double appears to work except for
+	netCDF I/O issues, may need to write own overloaded class, or use
+	alternate C++ implementation based on netCDF 3 with automatic type
+	conversion for both input and output (as does Fortran90 interface!)

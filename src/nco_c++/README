@@ -1,0 +1,141 @@
+$Header: /data/zender/nco_20150216/nco/src/nco_c++/README,v 1.1 2002-01-11 23:20:29 zender Exp $
+
+Purpose: Documentation of libnco_c++
+
+I've taken a stab at a C++ interface to the netCDF 3.x library.
+The library is called libnco_c++.a. It is currently completely
+independent of NCO but that may change.
+libnco_c++ seems to be working and I wanted to make you aware 
+of its existence in case you are interested in commenting on it,
+contributing to it, or bundling it in future versions of netCDF. 
+I'm very interested in comments, critcisms, and suggestions for the
+basic design and API. You can download the latest version from
+
+ftp://dust.ps.uci.edu/pub/zender/nco_c++
+
+Short description:
+This is NOT an object-based approach, like libnetcdf_c++.a.
+This is a pure overload-based approach with similar functionality to
+the Fortran90 library. In fact, let me come right out and
+say that the basic design is copied from the Fortran90 interface, 
+with some C++-specific extensions. That is, explicit reference to
+intrinsic types is not necessary and is determined by the
+library. External types take advantage of the netCDF 3.X built-in
+conversion rules.
+
+Status of the library: 
+More than half of libnetcdf.a functionality is implemented.
+I have not overload the [get/put]_vara_ or [get/put]_varm_
+or [get/put]_vars_ functions yet. This is only because the
+my C++ applications do not yet require them. Also, there are
+no hooks yet for native short, char, and byte types. 
+Almost all the other calls are implemented (for float, double, long 
+and int). The subset that is implemented is completely
+self-contained and in use on production code. This code now only
+uses nco_ calls so all references to nc_ calls have been eliminated.
+The only requirement to build the nco_c++ library is a C++ compiler
+and libnetcdf.a version 3.X.
+I am currently interested in receiving feedback and testing
+on the library design. 
+There is a short TODO list appended below.
+
+Design: 
+I faced many design choices, and my decision was to emphasize,
+in no particular order,
+(0) Easy Migration from C interface
+(1) Error Handling
+(2) Flexibility
+(3) Maintainability.
+(4) Taking advantage of C++ constructs
+(5) Testing
+
+(0) Easy Migration from C interface
+All calls have identical names to netCDF 3.X calls with but
+with prefix nco_ instead of nc_. Type names are deleted
+so nc_put_var_float() becomes nco_put_var(). Order of arguments
+is maintained where possible, with optional arguments (e.g.,
+start and count vectors) moved to end of function parameter list, and
+some new optional arguments (allowed non-fatal return codes).
+
+(1) Error Handling
+Let
+rcd = Return code from netCDF 3.X layer
+rcd_opt = Optional, user-specified non-fatal return code
+By default, all rcd != NC_NOERR errors are fatal for all
+functions. Inquire functions, and some others, however, allow
+specification of allowed, non-fatal, return codes.
+rcd=nco_enddef(nc_out,NC_ENOTINDEFINE)
+
+(2) Flexibility
+Functions that return information may be called with returned
+values in parameter list, or values returned as function return
+values. This allows returned information to be used to initialize
+variables that are const, i.e.,
+
+rcd=nco_inq_foo(nc_id,foo); -> or
+foo=nco_inq_foo(nc_id); -> which allows this construct
+const int foo(nco_inq_foo(nc_id));
+
+(3) Maintainability
+There is only one nco_foo() function which calls the corresponding
+nc_foo() function. All other overloads of nco_foo() do preprocessing
+of the argument list and then call the primary nco_foo() function.
+The primary nco_foo() function is the one whose arguments look most
+like the corresponding nc_foo() function. In practice this means
+that nco_put_var(nc_id,var_nm,var_val) calls
+nco_put_var(nc_id,var_id,var_val) which calls
+nc_put_var_[float,long,etc]() as appropriate.
+Thus there are as few interfaces to the underlying libnetcdf.a as
+possible. 
+
+(4) Taking advantage of C++ constructs
+(4)(i) Everything is passed by reference so that the calling routines
+never need to pass pointers, and the function overhead is as limited
+as possible. All input variable are declared const.
+C++ strings are allowed anywhere an variable/dimension/attribute ID
+would normally be required. 
+Thus variables can always be passed by name rather than ID.
+This means the calling program never has to keep track of IDs
+(except the file ID, which, in my opinion, should have a its
+own ID->name call implemented in the netCDF library).
+
+(4)(ii) There is no standard way in C++, unlike Fortran, for an array
+to know its rank and dimensionality. However, the C++ STL
+provides valarrays and vectors which do know this information.
+A valarray interface to a couple of the functions 
+demonstrate how this could be supported more generally.
+
+(4)(iii) Functions are templated where possible. 
+
+(5) Testing
+There is a short, standalone sample program, tst.cc, which tests some
+of the libnco_c++. In particular, it demonstrates reading and writing.
+tst.cc should eventually contain tests for the entire API.
+
+Description of files:
+Only files matching *nco_* are part of the libnco_c++ library, other
+files can be safely ignored (but may contain sample code which utilizes
+libnco_c++). The full API of the libnco_c++.a library are completely
+self-contained in the libnco_c++.hh header:
+
+#include <nco_att.hh> // C++ interface to netCDF attribute routines
+#include <nco_dmn.hh> // C++ interface to netCDF dimension routines
+#include <nco_fl.hh> // C++ interface to netCDF file-level routines
+#include <nco_hgh.hh> // High-level NCO utilities
+#include <nco_utl.hh> // C++ interface utilities for netCDF routines
+#include <nco_var.hh> // C++ interface to netCDF variable routines
+
+Each .hh file contains the prototypes defined in a corresponding
+.cc file. The contents of all the individual files should be 
+apparent from their names with the exception of nco_hgh.
+nco_hgh contains a program-specific high-level interface which should
+not be part of a generic netCDF C++ interface library. 
+It can be safely ignored. The file tst.cc uses the libnco_c++.a API 
+(search for nco_ in ccc.cc). Unfortunately tst.cc is not a standalone
+program yet, and must be pared-down to a clean, standalone test code. 
+Nevertheless, tst.cc how libnco_c++ is intended to be used in a real
+environment. 
+
+To build libnco_c++ with the supplied Makefile, type 'make' using
+GNU make. The supplied Makefile requires that both GNU make and Perl
+be in your executable path.
