@@ -1,3 +1,14 @@
+1998-10-29  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Fixed bug in ncra which only occured when NC_CHAR and NC_BYTE
+	types also had a record dimension. var_lst_divide() decided these
+	should be fixed variables, thus the output file size included the
+	record dimension. The timecom variable in LSM history files was
+	triggering this bug. Solution was to make ncra, like ncrcat,
+	simply process ALL record variable even NC_CHAR and NC_BYTE,
+	though the averaging operation on these types is still
+	ill-defined. 
+
 Wed Aug 26 16:30:27 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
 
 	* Fixed bld/nco_tst.sh to work again at NCAR. `make test' now

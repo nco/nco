@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.2 1998-08-19 04:27:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.3 1998-10-30 07:16:39 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
-/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
+/* (c) Copyright 1995--1998 University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
    Climate and Global Dynamics Division
 
@@ -69,8 +69,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncra.c,v 1.2 1998-08-19 04:27:27 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.2 $";
+  char rcs_Id[]="$Id: ncra.c,v 1.3 1998-10-30 07:16:39 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.3 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -378,26 +378,26 @@ main(int argc,char **argv)
 	if(dbg_lvl > 2) (void)fprintf(stderr,"\n");
       } /* end loop over idx_rec */
     }else{ /* ncea */ 
-      /* Process all variables in the current file */ 
+      /* Process all variables in current file */ 
       for(idx=0;idx<nbr_var_prc;idx++){
 	if(dbg_lvl > 2) (void)fprintf(stderr,"%s, ",var[idx]->nm);
 	if(dbg_lvl > 0) (void)fflush(stderr);
-	/* Retrieve the variable from disk into memory */ 
+	/* Retrieve variable from disk into memory */ 
 	(void)var_get(in_id,var_prc[idx]);
-	/* Tally the variable by summing current value with the running total */ 
+	/* Tally variable by summing current value with running total */ 
 	var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
 	(void)var_add(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc[idx]->val,var_prc_out[idx]->val);
-	/* Free the current input buffer */
+	/* Free current input buffer */
 	(void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
       } /* end loop over idx */
     } /* end else */
 
     if(dbg_lvl > 1) (void)fprintf(stderr,"\n");
       
-    /* Close the input netCDF file */ 
+    /* Close input netCDF file */ 
     ncclose(in_id);
     
-    /* Dispose of the local copy of the file */ 
+    /* Dispose local copy of file */ 
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
 
   } /* end loop over idx_fl */
@@ -417,7 +417,7 @@ main(int argc,char **argv)
   /* Add time variable to output file */ 
   if(ARM_FORMAT && prg == ncrcat) (void)arm_time_install(out_id,base_time_srt);
   
-  /* Copy the averages to the output file and free the averaging buffers */ 
+  /* Copy averages to output file and free averaging buffers */ 
   if(prg == ncra || prg == ncea){
     for(idx=0;idx<nbr_var_prc;idx++){
       if(var_prc_out[idx]->nbr_dim == 0){

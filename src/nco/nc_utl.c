@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.3 1998-08-19 04:27:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.4 1998-10-30 07:16:39 zender Exp $ */
 
 /* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -653,6 +653,30 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
   } /* end dbg */
   
 } /* end lim_evl() */ 
+
+void
+rec_var_dbg(int nc_id,char *dbg_sng)
+/* 
+   int nc_id: input netCDF file ID
+   char *dbg_sng: input debugging message to print
+*/ 
+{
+  /* Purpose: Aid in debugging problems with record dimension */ 
+  int nbr_dim_fl;
+  int nbr_var_fl;
+  int rec_dim_id=-1;
+  long dim_sz;
+
+  (void)fprintf(stderr,"%s: DBG %s\n",prg_nm_get(),dbg_sng);
+  (void)ncinquire(nc_id,&nbr_dim_fl,&nbr_var_fl,(int *)NULL,&rec_dim_id);
+  if(rec_dim_id == -1){
+    (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, no record dimension\n",prg_nm_get(),nbr_dim_fl,nbr_var_fl);
+  }else{
+    (void)ncdiminq(nc_id,rec_dim_id,(char *)NULL,&dim_sz);
+    (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, record dimension size is %d\n",prg_nm_get(),nbr_dim_fl,nbr_var_fl,dim_sz);
+  } /* end else */
+  (void)fflush(stderr);
+} /* end rec_var_dbg() */ 
 
 void 
 att_cpy(int in_id,int out_id,int var_in_id,int var_out_id)
@@ -3852,21 +3876,21 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
   var_prc=(var_sct **)malloc(MAX_NC_VARS*sizeof(var_sct *));
   var_prc_out=(var_sct **)malloc(MAX_NC_VARS*sizeof(var_sct *));
 
-  /* Find the operation type for each variable: for now this is either fix or prc */ 
+  /* Find operation type for each variable: for now this is either fix or prc */ 
   for(idx=0;idx<nbr_var;idx++){
     
-    /* Initialize the operation type */
+    /* Initialize operation type */
     var_op_type[idx]=prc;
     var_nm=var[idx]->nm;
     var_type=var[idx]->type;
 
-    /* Override the operation type based depending on both the variable type and program */ 
+    /* Override operation type based depending on both the variable type and program */ 
     switch(prg){
     case ncap:
       var_op_type[idx]=fix;
       break;
     case ncra:
-      if((!var[idx]->is_rec_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_type[idx]=fix;
+      if(!var[idx]->is_rec_var) var_op_type[idx]=fix;
       break;
     case ncea:
       if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_type[idx]=fix;
@@ -3922,17 +3946,18 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
 	var_out[idx]->type=NC_FLOAT;
       } */ /* end if */ 
       if(var[idx]->type == NC_CHAR || var[idx]->type == NC_BYTE && prg != ncrcat && prg != ncecat){
-	(void)fprintf(stderr,"%s: WARNING %s is type %s, processing results will be unpredictable\n",prg_nm_get(),var[idx]->nm,nc_type_nm(var[idx]->type));
+	(void)fprintf(stderr,"%s: WARNING Variable %s is of type %s, for which processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nc_type_nm(var[idx]->type));
       } /* end if */ 
     } /* end else */ 
   } /* end loop over var */ 
   
+  /* Sanity check */ 
   if(*nbr_var_prc+*nbr_var_fix != nbr_var){
     (void)fprintf(stdout,"%s: ERROR nbr_var_prc+nbr_var_fix != nbr_var\n",prg_nm_get());
     exit(EXIT_FAILURE);
   } /* end if */
 
-  /* XXX: remove the ncap exception when we finish the ncap list processing */ 
+  /* DBG XXX: remove the ncap exception when we finish the ncap list processing */ 
   if(*nbr_var_prc==0 && prg != ncap){
     (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing.\n",prg_nm_get());
     switch(prg_get()){
