@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.36 1999-10-04 17:32:34 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.37 1999-10-04 17:56:36 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -167,7 +167,9 @@ CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f90
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
-LDFLAGS += -L/lib -lf
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS += -L/lib -lf
+endif
 LEX := lex
 LINT := lint
 YACC := yacc
@@ -204,7 +206,9 @@ CPPFLAGS := -D$(PVM_ARCH) -Di386 -I$(NETCDF_INC)
 FC := g77
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
-LDFLAGS += 
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS +=
+endif
 LEX := flex
 LINT := lint
 YACC := bison
@@ -261,7 +265,9 @@ CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := xlf
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
-LDFLAGS += -lxlf90 -lxlf
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS += -lxlf90 -lxlf
+endif
 LEX := lex
 LINT := lint
 YACC := yacc
@@ -298,7 +304,9 @@ FC := xlf
 FFLAGS := -qfixed=132
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 #LDFLAGS += -lxlf90 -lxlf
+endif
 LEX := lex
 LINT := lint
 YACC := yacc
@@ -326,7 +334,9 @@ CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f77
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
-LDFLAGS += -lF77 -lI77 -lU77 -lftn
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS += -lF77 -lI77 -lU77 -lftn
+endif
 LEX := lex
 LINT := lint
 YACC := yacc
@@ -347,6 +357,9 @@ CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f77
 LD := ld
 LDFLAGS := -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS +=
+endif
 LEX := flex
 LINT := lint
 YACC := bison
@@ -366,7 +379,9 @@ ifeq ($(OPTS),X)
  CFLAGS := -64 -mips4 -g -trapuv
  FFLAGS := -64 -mips4 -g -extend_source -check_bounds -trapuv
 # 1998/08/20: Using range checking results in unresolved symbol errors unless linking to this library
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -L/usr/lib64 -lftn
+endif
 endif
 endif
 
@@ -378,6 +393,9 @@ CPPFLAGS := -DSGI64 -I$(NETCDF_INC)
 FC := f77
 LD := ld
 LDFLAGS := -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS +=
+endif
 LEX := flex
 LINT := lint
 YACC := bison
@@ -397,7 +415,9 @@ ifeq ($(OPTS),X)
  CFLAGS := -64 -mips4 -g -trapuv
  FFLAGS := -64 -mips4 -g -extend_source -check_bounds -trapuv
 # 1998/08/20: Using range checking results in unresolved symbol errors unless linking to this library
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -L/usr/lib64 -lftn
+endif
 endif
 endif
 
@@ -408,7 +428,9 @@ CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f77
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
-LDFLAGS += -cg92 -L/opt/SUNWspro/SC3.0/lib/cg92 -lF77 -lM77 -lresolv
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS += -cg92 -L/opt/SUNWspro/SC3.0/lib/cg92 -lF77 -lM77 -lresolv
+endif
 LEX := lex
 LINT := lint
 YACC := yacc
@@ -429,7 +451,9 @@ CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f77
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lsunmath -lsocket -lnsl -lm
-LDFLAGS += -lF77 -lM77 -lresolv
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS += -lF77 -lM77 -lresolv
+endif
 LEX := lex
 LINT := lint
 YACC := yacc
@@ -459,7 +483,9 @@ CPPFLAGS := -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f77
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lsunmath -lthread -lsocket -lnsl -lm
-LDFLAGS += -lF77 -lM77 -lresolv
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS += -lF77 -lM77 -lresolv
+endif
 LEX := flex
 LINT := lint
 YACC := bison
@@ -489,7 +515,9 @@ CPPFLAGS := -D$(PVM_ARCH) -Di386 -I$(NETCDF_INC)
 FC := g77
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
-LDFLAGS += 
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS +=
+endif
 LEX := flex
 LINT := lint
 YACC := bison
