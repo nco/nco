@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.242 2004-07-01 01:14:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.243 2004-07-01 17:34:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1520,7 +1520,6 @@ peak memory possible so that their scripts do not have to tediously cut
 files into smaller pieces that fit into memory.
 We commend these greedy users for pushing @acronym{NCO} to its limits!
 
-@cindex multiple threads
 @cindex threads
 @cindex OpenMP
 @cindex shared memory machines
@@ -1528,8 +1527,8 @@ This section describes the memory @acronym{NCO} requires during
 operation.
 The required memory is based on the underlying algorithms.
 The description below is the memory usage per thread.
-Users with shared memory machines may use the multi-threaded
-@acronym{NCO}.
+Users with shared memory machines may use the threaded @acronym{NCO}
+operators (@pxref{OpenMP threading}).
 The peak and sustained memory usage will scale accordingly,
 i.e., by the number of threads.
 Memory consumption patterns of all operators are similar, with
@@ -1677,7 +1676,7 @@ feature is automatic and cannot be controlled by the user.
 
 @menu
 * Internationalization::        
-* OpenMP Multi-threading::      
+* OpenMP threading::      
 * Command line options::        
 * Specifying input files::      
 * Specifying output files::     
@@ -1705,7 +1704,7 @@ feature is automatic and cannot be controlled by the user.
 @html
 <a name="i18n"></a> <!-- http://nco.sf.net/nco.html#i18n -->
 @end html
-@node Internationalization, OpenMP Multi-threading, Common features, Common features
+@node Internationalization, OpenMP threading, Common features, Common features
 @section Internationalization
 @cindex Internationalization
 @cindex I18N
@@ -1722,27 +1721,51 @@ We hope to produce foreign language string catalogues in 2004.
 
 @html
 <a name="omp"></a> <!-- http://nco.sf.net/nco.html#omp -->
+<a name="openmp"></a> <!-- http://nco.sf.net/nco.html#openmp -->
 @end html
-@node OpenMP Multi-threading, Command line options, Internationalization, Common features
-@section OpenMP Multi-threading
+@node OpenMP threading, Command line options, Internationalization, Common features
+@section OpenMP threading
 @cindex OpenMP
-@cindex multiple threads
 @cindex threads
 @cindex shared memory machines
+@cindex @code{nco_openmp_thread_number} attribute
 @cartouche
-Availability: All operators@*
+Availability: @command{ncea}, @command{ncra}, @command{ncrcat}, @command{ncwa}@*
 Short options: All@*
 Long options: All@*
 @end cartouche
 @acronym{NCO} support for shared memory machines using the OpenMP
 standard is nascent.
 We hope to implement robust threading in 2004.
+
+Operators with thread support by default, attaches one global
+attributet to any file they create or modify.
+The @code{nco_openmp_thread_number} global attribute contains the
+number of threads the operator used to process the input files.
+This information helps to verify that the answers with threaded and
+non-threaded operators are equal to within machine precision.
+@cindex benchmarks
+This information is also useful for benchmarking.
 @c fxm: Work on this section
+
+@html
+<a name="lfs"></a> <!-- http://nco.sf.net/nco.html#lfs -->
+@end html
+@node Large File Support
+@section Large File Support
+@cindex LFS
+@cindex Large File Support
+@cartouche
+Availability: All operators@*
+Short options: All@*
+Long options: All@*
+@end cartouche
+@acronym{NCO} support for large files is not well documented yet.
 
 @html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
 @end html
-@node Command line options, Specifying input files, OpenMP Multi-threading, Common features
+@node Command line options, Specifying input files, OpenMP threading, Common features
 @section Command line options
 @cindex command line options
 @cartouche
@@ -1750,9 +1773,9 @@ Availability: All operators@*
 Short options: All@*
 Long options: All@*
 @end cartouche
-@cindex POSIX
-@cindex UNIX
-@cindex GNU
+@cindex @acronym{POSIX}
+@cindex @acronym{UNIX}
+@cindex @acronym{GNU}
 @cindex switches
 @acronym{NCO} achieves flexibility by using @dfn{command line options}.
 These options are implemented in all traditional @acronym{UNIX} commands 
@@ -2504,7 +2527,7 @@ matches at least once).
 To match zero or one occurence of the preceding regular expression,   
 use @samp{?}.
 Thus @samp{Q?} selects all variables, @samp{Q+.?} selects all
-Documentation for the UNIX @command{egrep} command details the extended
+Documentation for the @acronym{UNIX} @command{egrep} command details the extended
 regular expressions that @acronym{NCO} supports.
 
 @cindex globbing

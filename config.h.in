@@ -12,6 +12,9 @@
 /* Compile operators with DODS/OpenDAP support */
 #undef ENABLE_DODS
 
+/* Enable Large File Support (LFS) */
+#undef ENABLE_LARGEFILE
+
 /* Fastest possible execution (slowest compilation) */
 #undef ENABLE_OPTIMIZE_CUSTOM
 

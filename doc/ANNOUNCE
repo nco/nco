@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.101 2004-07-01 01:14:09 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.102 2004-07-01 17:34:32 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.6 are ready. 
 
@@ -8,17 +8,17 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 First, AIX NCO installations should upgrade to this version to get the
 AIX-specific ncap bug-fix. 
 
-Large file and multi-file operations are now more user friendly.
-First, large file support (LFS) is now enabled by default.
+Second, Large File support (LFS) is now enabled by default.
 Subject to physical memory limitations, this allows 32-bit OSs
 files > 2 GB. Compile libnetcdf.a with LFS too, for this to work.
 Disable this with ./configure --disable-largefile
 
-Second, multi-file operators now take input file lists from stdin.
-Using the commandline shell to pass input file names fails on
-many OSs (e.g., AIX) when the filelist is 25k characters or more.
-We now recommend piping long lists of input file names directly to NCO
-multi-file operators, e.g.,  
+Third, multi-file operations are more user friendly.
+Multi-file operators (nc[re]a, nc[re]cat) now take input file lists from stdin.
+The old method, passing input file names through the shell, fails on
+many OSs (e.g., AIX) when the filelist is 25k characters or more.  
+Use this new capability to pipe long lists of input file names
+directly to NCO multi-file operators, e.g.,  
 
 /bin/ls | grep ${CASEID}_'......'.nc | ncra -O -o output.nc
 
@@ -41,8 +41,8 @@ Charlie
 Feature changes:
 1. Multi-file operators accept input filenames from stdin
 2. Multi-file operators add nco_input_file_list, nco_input_file_number 
-   global attributes by default if input file names are from stdin.
-3. ln works in ncap as natural logarithm (synonym for log())
+   global attributes by default for input file names from stdin.
+3. Add nco_openmp_thread_number global attribute when threaded
 
 Bug-fixes:
 1. Use NCO-supplied float-valued functions (e.g., cosf()) on AIX
@@ -55,6 +55,7 @@ Other user-visible changes:
 2. Reworked stdin to avoid mixing string and character input.
    Interactive responses to "overwrite (o/a/e)?" questions must now be
    terminated with carriage return (and are case-insensitive)
+3. ln works in ncap as natural logarithm (synonym for log())
 
 User-invisible changes:
 1. Added additional file diagnostics to debugging output

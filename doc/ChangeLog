@@ -1,3 +1,10 @@
+2004-07-01  Charlie Zender  <zender@uci.edu>
+
+	* Added LFS stub to nco.texi, pass LFS info from configure.in
+
+	* Added large file support LFS to custom Makefiles. Rorik added it
+	to autoconf. 
+
 2004-06-30  Charlie Zender  <zender@uci.edu>
 
 	* Add nco_openmp_thread_number global attribute to threaded

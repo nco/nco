@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.329 2004-07-01 01:14:09 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.330 2004-07-01 17:34:32 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -198,11 +198,13 @@ nco336. Allow input file lists to be specified in a text file and to supercede c
 nco337. When input file is a symbolic link, print name of linked-to-file as debugging information
 nco340. o/a/e stdin is overwritten when stdin input method used
 cd ~/nco/data;echo "in.nc" | ncecat -D 3 -o foo.nc
-nco341. Add _FILE_OFFSET_BITS == 64 to all compiles? Otherwise stat() call in nco_fl_mk_lcl() may fail on large files on 32 bit systems
 nco342. Get canonicalize_file_name() working in nco_fl_info_get()
 nco344. Create sophisticated etags regular expressions for change version number in all documentation tags_doc.sh
 nco345. OpenMP implementation in ncwa core dumps: wgt_avg problem?
-nco346. 
+nco346. Add LFS documentation to nco.texi
+nco347. Add OpenMP documentation to nco.texi
+nco348. Create OpenMP robustness test
+nco349. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

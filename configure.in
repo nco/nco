@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.89 2004-06-29 19:29:14 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.90 2004-07-01 17:34:32 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -110,7 +110,7 @@ AC_TYPE_UID_T
 AC_CHECK_TYPES([ptrdiff_t])
 AC_CHECK_SIZEOF(int*)
 AC_CXX_HAVE_VALARRAY
-# arrange for large-file support
+# Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
 
 # Begin Mandatory Link Test with libnetcdf.a
@@ -331,6 +331,13 @@ if test "${enable_i18n}" != 'no'; then
     fi
 fi
 # End i18n
+
+# Begin largefile
+# If --enable-largefile define ENABLE_LARGEFILE
+if test "${enable_largefile}" = 'yes'; then
+    AC_DEFINE(ENABLE_LARGEFILE,1,Enable Large File Support (LFS))
+fi
+# End largefile
 
 # Begin nco_c++
 # If --enable-nco_cplusplus, compile NCO C++ interface library
