@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.158 2002-08-20 05:28:01 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.159 2002-08-23 07:43:20 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -413,7 +413,7 @@ ifeq (${OPTS},X)
  CFLAGS += -g -N 132
  FFLAGS = -g -N 132 -e i
 endif
-# 97/10/21 Added -P to suppress #line # directives on Fortran files
+# 19971021 Added -P to suppress #line # directives on Fortran files
 ${MY_OBJ_DIR}/%.o : %.F
 	${CPP} -P ${CPPFLAGS} $< > $(patsubst %.F,%.f,$(notdir $<))
 	${FC} -c ${FFLAGS} $(patsubst %.F,%.f,$(notdir $<)) 
@@ -589,8 +589,8 @@ ifeq (${OPTS},D)
  FFLAGS = -g -f3
 endif
 ifeq (${OPTS},X)
- CFLAGS += -h0 -g  -hstack=nan
-# CFLAGS += -Cdebug  -init stack=nan
+ CFLAGS += -h0 -g -hstack=nan
+# CFLAGS += -Cdebug -init stack=nan
  FFLAGS = -Cdebug -eR -f3 -Wf"-init stack=nan heap=nan"
 endif
 MK_DPN = /usr/local/bin/mkdep.perl /usr/lib/cpp # NECSX try this

@@ -1,18 +1,18 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.13 2002-08-23 00:09:26 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.14 2002-08-23 07:43:19 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
 Develop recommend ./configure invocations for each architecture
 
 Summary table: Y: feature works, N feature broken, blank: not yet tested
-Architecture	build?	ABI64	DODS	I18N	OpenMP	nco_c++	check
-AIX		N(2)
+Architecture	ABI32	ABI64	DODS	I18N	OpenMP	nco_c++	check
+AIX			N(2)
 CRAY
 LINUX		Y	N/A				Y	Y
 LINUXALPHA	Y					N(1)	Y
 NECSX
 OSF1		
-SGIMP64		N
+SGIMP64			N
 SUNMP		Y					Y	N(03)
 WIN32		
 -----------------------------------------------------------------------

@@ -47,7 +47,7 @@ AM_INIT_AUTOMAKE(nco,"$nco_version")
 # put all the preprocessor symbols in config.h
 AM_CONFIG_HEADER(config.h)
 
-## Checks for programs.  CC has a prefered list
+## Checks for programs.  CC has a preferred list
 AC_PROG_CC(xlc_r xlc acc cc c89 icc gcc)
 AC_PROG_CXX
 AC_PROG_CPP
@@ -259,6 +259,9 @@ if test "$enable_debug" = "yes"; then
     alpha*-*-*) 
       CFLAGS="$CFLAGS -g -check_bounds -check -check_omp"
       ;;
+    *-cray-unicos) 
+      CFLAGS="$CFLAGS -g"
+      ;;
     i[3456]86-*-linux-*)
       CFLAGS="$DFLAGS -g Wall"
       ;;
@@ -269,7 +272,7 @@ if test "$enable_debug" = "yes"; then
       CFLAGS="$CFLAGS -g"
       ;; 
     mips*-sgi-irix*)
-      CFLAGS="$CFLAgS -g"
+      CFLAGS="$CFLAGS -g"
       ;;
     sparc-*-*)
       CFLAGS="$CFLAGS -g"
@@ -292,6 +295,9 @@ if test "$enable_extreme" = "yes"; then
     alpha*-*-*)
       CFLAGS="$CFLAGS -N 132" 
       ;;
+    *-cray-unicos) 
+      CFLAGS="$CFLAGS -g -N 132"
+      ;;
     i[3456]86-*-linux-*)
       CFLAGS="$CFLAGS -g -Wall"
       ;;
@@ -302,7 +308,7 @@ if test "$enable_extreme" = "yes"; then
       CFLAGS="$CFLAGS -g"
       ;; 
     mips*-sgi-irix*)
-      CFLAGS="$CFLAgS -g"
+      CFLAGS="$CFLAGS -g"
       ;;
     sparc-*-*)
       CFLAGS="$CFLAGS -g"
@@ -340,7 +346,7 @@ if test "$enable_optimize" = "yes"; then
       CFLAGS="$CFLAGS -O"
       ;; 
     mips*-sgi-irix*)
-      CFLAGS="$CFLAgS -mp -mpio -O2"
+      CFLAGS="$CFLAGS -O2"
       ;;
     sparc-*-*)
       CFLAGS="$CFLAGS -O2"
@@ -356,7 +362,7 @@ fi
 # make defines that are currently used in nco programs based on $host_os
 case $host in
   *-*-aix*)
-    AC_DEFINE(AIX,1,OS type)
+    AC_DEFINE(AIX,1,AIX OS)
     ;;
   alpha*-*-*)
     ;;   
@@ -364,19 +370,21 @@ case $host in
     AC_DEFINE(LINUX,1,Linux OS)
     ;;
   *-nec-*)
+    AC_DEFINE(NECSX,1,NEC SuperX OS)
     ;;   
   rs6000-*-lynxos*)
     ;;
   mips*-sgi-irix*)
+    AC_DEFINE(SGIMP64,1,IRIX OS)
     ;;
   cygwin*)
-    AC_DEFINE(WIN32,1, Windows OS)
+    AC_DEFINE(WIN32,1,Windows OS)
     ;;
   sparc-*-*)
     AC_DEFINE(SUN4SOL2,1,Solaris 2.* OS)
     ;;  
   cygwin*)
-    AC_DEFINE(WIN32,1, Windows OS)
+    AC_DEFINE(WIN32,1,Windows OS)
     ;;
 esac
 
