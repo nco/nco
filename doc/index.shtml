@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.133 2003-03-24 20:30:56 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.134 2003-03-25 16:29:01 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -48,10 +48,10 @@ Try to disable Spammers' machines:
 </td>
 
 <td align="right" valign="top">
-[<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
-[<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a>] 
-[<a href="http://www.unidata.ucar.edu/packages/udunits">UDUNITS</a>] 
 [<a href="http://www.cgd.ucar.edu/csm/support">CCSM Support Network</a>]
+[<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a>] 
+[<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
+[<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
 </td></tr></table>
 
 <p><hr width="100%"></p>
@@ -443,10 +443,10 @@ versions of <tt>bison</tt> work correctly.
 </td>
 
 <td align="right" valign="top">
-[<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
-[<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a>] 
-[<a href="http://www.unidata.ucar.edu/packages/udunits">UDUNITS</a>] 
 [<a href="http://www.cgd.ucar.edu/csm/support">CCSM Support Network</a>]
+[<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a>] 
+[<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
+[<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
 </td></tr></table>
 
 </body>
