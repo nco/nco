@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.19 2004-01-13 19:41:44 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.20 2004-01-15 17:45:45 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -89,7 +89,7 @@
      See also 20040112 thread in comp.compilers */
   /* Implicit declaration warnings: fileno warning may be avoided with -D_POSIX_SOURCE ? */
   int fileno(FILE *); /* fixes: warning: implicit declaration of function `fileno' */
-  int yy_flex_realloc(void *,size_t); /* fixes: warning: implicit declaration of function `yy_flex_realloc'. Is this obsolete? */
+  int yy_flex_realloc(void *,size_t); /* fixes: warning: implicit declaration of function `yy_flex_realloc'. Is this obsolete? Other version of flex seem to want void * yyflex_realloc() */
   /* Missing prototypes warnings: Triggered by -Wmissing-prototypes */
   FILE *yyget_in(void); /* fixes: warning: no previous prototype for `yyget_in' */
   FILE *yyget_out(void); /* fixes: warning: no previous prototype for `yyget_out' */
