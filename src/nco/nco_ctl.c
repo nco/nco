@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.65 2004-08-07 23:38:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.66 2004-08-08 06:01:30 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -215,7 +215,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "NCO save you time? Want to help NCO get funded to implement new and frequenctly requested features? Peruse NCO's first proposal for Institutional funding:\nhttp://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf\nEndorse the proposal by sending e-mail to surname@uci.edu (surname=zender) with Subject: \"NSF SEI(GEO) NCO/SDO Proposal Endorsement\". Put (at least) your Name, Title, and Institutional affiliation in the body. Add any additional comments. It is never too late to endorse this proposal, as it may be recycled at the next opportunity. The information in your endorsement will be used to create supplementary documents to NSF and NASA for future NCO proposal advocacy.\n\nReceiving government funding for NCO development would have dis-advantages, too. It would prevent my making NCO a platform for personal political statements such as: Having NCO for fast and accurate data reduction may help your research, yet society does not reap the full benefits of most research like yours unless government pays heed. The Bush Administration ignores and distorts research results (including climate research) which conflict with its Christian fundamentalist ideology or with the interests of it corporate backers in the extractive and energy industries (http://www.economist.com/science/displayStory.cfm?story_id=2571867 http://www.ucsusa.org/global_environment/rsi/page.cfm?pageID=1449). If you are an American citizen, please help elect science-responsive candidates in November, and vote for John Kerry for President.\n";
+  return "NCO save you time? Want to help NCO get funded to implement new and frequenctly requested features? Peruse NCO's first proposal for Institutional funding:\nhttp://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf\nEndorse the proposal by sending e-mail to surname@uci.edu (surname=zender) with Subject: \"NSF SEI(GEO) NCO/SDO Proposal Endorsement\". Put (at least) your Name, Title, and Institutional affiliation in the body. Add any additional comments. It is never too late to endorse this proposal, as it may be recycled at the next opportunity. The information in your endorsement will be used to create supplementary documents to NSF and NASA for future NCO proposal advocacy.\n\nReceiving government funding for NCO development would have dis-advantages, too. It would prevent my making NCO a platform for personal political statements such as: Having NCO for fast and accurate data reduction may help your research, yet society does not reap the full benefits of most research like yours unless the federal government pays heed. The Bush Administration ignores and distorts research results (including climate research) which conflict with its Christian fundamentalist ideology or with the financial interests of it corporate backers in the extractive and energy industries (http://www.economist.com/science/displayStory.cfm?story_id=2571867 http://www.ucsusa.org/global_environment/rsi/page.cfm?pageID=1449). If you are an American citizen, please help elect science-responsive candidates in November, and vote for John Kerry for President.\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
@@ -295,7 +295,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-A] [-a] [-B] [-b fl_bnr] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-M] [-O] [-o out.nc] [-p path] [-q] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [[out.nc]]\n");
     break;
   case ncpdq:
-    opt_sng=(char *)strdup("[-A] [-a ...] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-t] [-v ...] [-x] in.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-O] [-o out.nc] [-p path] [-R] [-r] [-t] [-v ...] [-x] in.nc [out.nc]\n");
     break;
   case ncra:
   case ncea:

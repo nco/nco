@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.259 2004-08-08 05:55:32 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.260 2004-08-08 06:01:29 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6546,7 +6546,7 @@ For more details @xref{Wrapped coordinates}.
 @noindent
 SYNTAX
 @example
-ncpdq [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
+ncpdq [-A] -a [-]@var{dim}[,@dots{}] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-t thr_nbr] 
 [-v @var{var}[,@dots{}]] [-x]

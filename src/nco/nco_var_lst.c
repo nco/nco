@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.33 2004-08-07 00:12:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.34 2004-08-08 06:01:31 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -496,36 +496,36 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing\n",prg_nm_get());
     switch(prg_get()){
     case ncap:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain some derived fields\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain at least one derived field\n",prg_nm_get());
     case ncatted:
       /* Do nothing */
       break;
     case ncbo:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables that are not NC_CHAR or NC_BYTE in order to perform a binary operation (e.g., subtraction)\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR or NC_BYTE in order to perform a binary operation (e.g., subtraction)\n",prg_nm_get());
       break;
     case ncea:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables that are not NC_CHAR or NC_BYTE in order to perform an ensemble average\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable that is not NC_CHAR or NC_BYTE\n",prg_nm_get());
       break;
     case ncecat:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables in order to perform an ensemble concatenation\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a non-coordinate variable\n",prg_nm_get());
       break;
     case ncflint:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain variables that are not NC_CHAR or NC_BYTE in order to interpolate\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that is not NC_CHAR or NC_BYTE\n",prg_nm_get());
       break;
     case ncks:
       /* Do nothing */
       break;
     case ncpdq:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain variables that have multiple dimensions in order to perform a dimension re-order\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that shares at least one dimension with the re-order list\n",prg_nm_get());
       break;
     case ncra:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain record variables that are not NC_CHAR or NC_BYTE in order to perform a running average\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable that is not NC_CHAR or NC_BYTE\n",prg_nm_get());
       break;
     case ncrcat:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain record variables in order to perform a record concatenation\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a record variable which to concatenate\n",prg_nm_get());
       break;
     case ncwa:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain variables that contain an averaging dimension in order to perform an average\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain a variable that contains an averaging dimension\n",prg_nm_get());
       break;
     default: nco_dfl_case_prg_id_err(); break;
     } /* end switch */
