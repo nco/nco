@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.6 2002-09-03 06:15:20 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.7 2002-09-24 12:15:33 hmb Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -343,6 +343,14 @@ pack/[ ]*\( {return PACK;}
 pow/[ ]*\( {return POWER;}
 upk/[ ]*\( {return UNPACK;}
 unpack/[ ]*\( {return UNPACK;}
+byte/[ ]*\( { lval_ptr->cnv_type = NC_BYTE;return CNV_TYPE;} 
+char/[ ]*\( { lval_ptr->cnv_type = NC_CHAR;return CNV_TYPE;} 
+short/[ ]*\( { lval_ptr->cnv_type = NC_SHORT;return CNV_TYPE;} 
+int/[ ]*\( { lval_ptr->cnv_type = NC_INT;return CNV_TYPE;} 
+float/[ ]*\( { lval_ptr->cnv_type = NC_FLOAT;return CNV_TYPE;} 
+double/[ ]*\( { lval_ptr->cnv_type = NC_DOUBLE;return CNV_TYPE;} 
+
+
 
 M_PI {return NAMED_CONSTANT;}
 
@@ -565,7 +573,7 @@ M_PI {return NAMED_CONSTANT;}
    }
 
   if (jdx != prs_arg->nbr_dmn_in ) continue;
-    /* exit function if dimension not found */
+    /* exit action if dimension not found */
    (void)sprintf(err_sng,"Warning: Unrecognized dimension \"%s\" in LHS subscripts",sbs_lst[idx]);
    (void)yyerror(err_sng);
    (void)nco_enddef(prs_arg->out_id);
