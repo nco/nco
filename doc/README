@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.9 2002-11-04 18:59:36 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.10 2002-12-02 16:23:01 zender Exp $ -*-text-*-
 
 # Purpose: NCO README file
 
@@ -35,7 +35,7 @@ configure.eg file in the top-level NCO directory. The output of these
 commands from our test machines is available for your inspection via
 anonymous FTP from
 
-ftp://dust.ps.uci.edu/pub/zender/nco/rgr
+ftp://dust.ess.uci.edu/pub/zender/nco/rgr
 
 Please send us any modifications to the configure.in script that you 
 feel would be beneficial to other NCO users. 

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.131 2002-10-28 07:49:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.132 2002-12-02 16:23:03 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -41,7 +41,7 @@ ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAll
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
 cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml www.ess.uci.edu:/home/zender/public_html/nco;cd -
 /usr/bin/scp nco.sf.net:/home/groups/n/nc/nco/nco/doc/nco.dvi ~/nco/doc
-/usr/bin/scp /home/groups/n/nc/nco/nco/doc/nco.dvi dust.ps.uci.edu:nco/doc
+/usr/bin/scp /home/groups/n/nc/nco/nco/doc/nco.dvi dust.ess.uci.edu:nco/doc
 
 Resources:
 Octave TeXInfo manual is a good example of clean TeXInfo structure
@@ -305,7 +305,7 @@ The complete @acronym{NCO} source distribution is currently distributed
 as a @dfn{compressed tarfile} from
 @uref{http://sourceforge.net/projects/nco}
 and 
-@uref{ftp://dust.ps.uci.edu/pub/zender/nco/nco.tar.gz}.
+@uref{ftp://dust.ess.uci.edu/pub/zender/nco/nco.tar.gz}.
 The compressed tarfile must be uncompressed and untarred before building
 @acronym{NCO}.
 Uncompress the file with @samp{gunzip nco.tar.gz}. 
@@ -1385,8 +1385,8 @@ through the (asynchronous) Masnet Interface Gateway System
 The following examples show how one might analyze files stored on  
 remote systems.
 @example
-ncks -H -l ./ ftp://dust.ps.uci.edu/pub/zender/nco/in.nc
-ncks -H -l ./ dust.ps.uci.edu:/home/zender/nco/in.nc
+ncks -H -l ./ ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
+ncks -H -l ./ dust.ess.uci.edu:/home/zender/nco/in.nc
 ncks -H -l ./ /ZENDER/nco/in.nc 
 ncks -H -l ./ mss:/ZENDER/nco/in.nc
 ncks -H -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/-
@@ -1396,7 +1396,7 @@ ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc
 The first example will work verbatim on your system if your system is
 connected to the Internet and is not behind a firewall.
 The second example will work on your system if you have @command{rcp}
-or @command{scp} access to the machine @code{dust.ps.uci.edu}.
+or @command{scp} access to the machine @code{dust.ess.uci.edu}.
 The third example will work from @acronym{NCAR} computers with local access to 
 the @command{msrcp}, @command{msread}, or @command{nrnet} commands.
 The fourth command will work if your local version of @acronym{NCO} was built with
@@ -1408,8 +1408,8 @@ option as follows:
 @cindex @code{-l @var{output-path}}
 @cindex @var{output-path}
 @example
-ncks -H -p ftp://dust.ps.uci.edu/pub/zender/nc -l ./ in.nc
-ncks -H -p dust.ps.uci.edu:/home/zender/nc -l ./ in.nc
+ncks -H -p ftp://dust.ess.uci.edu/pub/zender/nc -l ./ in.nc
+ncks -H -p dust.ess.uci.edu:/home/zender/nc -l ./ in.nc
 ncks -H -p /ZENDER/nco -l ./ in.nc 
 ncks -H -p mss:/ZENDER/nco -l ./ in.nc
 @end example

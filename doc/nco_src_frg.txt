@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.43 2002-09-16 23:50:31 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.44 2002-12-02 16:23:10 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -39,7 +39,7 @@ scp upload.sourceforge.net:/incoming/sf.tar.gz .
 
 # Copy docs from compile farm to NCO websites
 cd ~/nco/doc;scp -C nco.dvi nco.html nco.info* nco.pdf nco.ps* zender@nco.sourceforge.net:/home/groups/n/nc/nco/htdocs
-cd ~/nco/doc;scp -C nco.dvi nco.html nco.info* nco.pdf nco.ps* zender@dust.ps.uci.edu:/var/www/html/nco
+cd ~/nco/doc;scp -C nco.dvi nco.html nco.info* nco.pdf nco.ps* zender@dust.ess.uci.edu:/var/www/html/nco
 
 # Copy netCDF library to NCO group account
 scp -C /data/zender/tmp/netcdf-3.5.0.tar.Z zender@nco.sourceforge.net:/home/groups/n/nc/nco
