@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.94 2002-12-15 06:49:40 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.95 2002-12-23 22:46:15 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -66,9 +66,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2002-12-15 06:49:40 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.94 2002-12-15 06:49:40 zender Exp $';
-my $CVS_Revision='$Revision: 1.94 $';
+my $CVS_Date='$Date: 2002-12-23 22:46:15 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.95 2002-12-23 22:46:15 zender Exp $';
+my $CVS_Revision='$Revision: 1.95 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -104,6 +104,7 @@ my $acd_cnt=$False; # Option acd_cnt; Install version in acd contrib
 my $acd_prs=$False; # Option acd_prs; Install version in acd personal
 my $bbl_cnt=$False; # Option bbl_cnt; Install version in babyblue contrib
 my $blk_cnt=$False; # Option blk_cnt; Install version in blackforest contrib
+my $bls_cnt=$False; # Option bls_cnt; Install version in bluesky contrib
 my $dat_cnt=$False; # Option dat_cnt; Install version in dataproc contrib
 my $ute_prs=$False; # Option ute_prs; Install version in ute personal
 my $cgd_cnt=$False; # Option cgd_cnt; Install version in CGD contrib

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.123 2002-12-15 06:49:43 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.124 2002-12-23 22:46:17 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -335,6 +335,7 @@ fixes we currently have in mind for NCO.</li>
 <li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5):
 <tt>/contrib/bin</tt>, <tt>/home/dataproc/zender/bin/SGIMP64</tt></li>
 <li>SCD <tt>blackforest.ucar.edu</tt> (AIX 4.0): <tt>/home/blackforest/zender/bin/AIX</tt></li>
+<li>SCD <tt>bluesky.ucar.edu</tt> (AIX 5.0): <tt>/home/bluesky/zender/bin/AIX</tt></li>
 <li>SCD <tt>longs.ucar.edu</tt> (Linux 2.2.17): <tt>/fs/cgd/home0/zender/bin/LINUX</tt></li>
 <li>SCD <tt>ouray.ucar.edu</tt> (UNICOS 10.0.0): <tt>/home/ouray0/zender/bin/CRAY</tt></li>
 <li>SCD <tt>prospect.ucar.edu</tt> (OSF1 5.0): <tt>/home/prospect/zender/bin/ALPHA</tt></li>
