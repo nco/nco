@@ -1,20 +1,22 @@
-# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.13 2003-11-02 01:14:13 rorik Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.14 2003-11-05 05:00:32 zender Exp $ -*-text-*-
 
 # Purpose: NCO README file
 
 What is NCO?
-The netCDF Operators, or NCO, are a suite of programs known as
-operators. The operators facilitate manipulation and analysis of
-self-describing data stored in the netCDF or HDF formats, which are
-freely available (http://www.unidata.ucar.edu/packages/netcdf and
-http://hdf.ncsa.uiuc.edu, respectively). Each NCO operator (e.g., 
-ncks) takes netCDF or HDF input file(s), performs an operation (e.g.,
-averaging, hyperslabbing, or renaming), and outputs a processed netCDF
-file. Although most users of netCDF and HDF data are involved in
-scientific research, these data formats, and thus NCO, are generic and
-are equally useful in fields like finance. The NCO User's Guide
-illustrates NCO use with examples from the field of climate modeling
-and analysis. The NCO homepage is http://www.cgd.ucar.edu/cms/nco.
+The netCDF Operators, NCO, are a suite of programs known as operators. 
+The operators facilitate manipulation and analysis of self-describing
+data stored in the freely available netCDF and HDF formats 
+(http://www.unidata.ucar.edu/packages/netcdf and
+http://hdf.ncsa.uiuc.edu, respectively). 
+Each NCO operator (e.g., ncks) takes netCDF or HDF input file(s),
+performs an operation (e.g., averaging, hyperslabbing, or renaming),
+and outputs a processed netCDF file. 
+Although most users of netCDF and HDF data are involved in scientific
+research, these data formats, and thus NCO, are generic and are
+equally useful in fields from agriculture to zoology.
+The NCO User's Guide illustrates NCO use with examples from the field
+of climate modeling and analysis. 
+The NCO homepage is http://www.cgd.ucar.edu/cms/nco.
 
 Installation:
 NCO runs on all major UNIX systems and MS Windows.
@@ -38,10 +40,6 @@ http://dust.ess.uci.edu/nco/rgr
 Please send us any modifications to the configure.in script that 
 might benefit other NCO users. 
 
-DODS:
-I have sucessully linked with netCDF/DODS on Linux with gcc 2.95. Versions greater than 3.0 have failed thus far.  I'm not going to bother working out the bugs until someone tells me they actually use it and want it.
---rorik Sat Nov  1 16:11:44 AKST 2003
-
 Older Manual Makefile Build Procedure:
 If configure does not work for you, try the older build mechanism:
 
@@ -58,7 +56,7 @@ to your machine type as defined by $PVM_ARCH and the pvmgetarch command.
 Within this block you may need to edit the CC, CPPFLAGS, and LDFLAGS
 arguments so they reflect the names of the compilers and linkers.  
 
-Read ../bld/Makefile for useful switches you can set.  
+Read ./bld/Makefile for useful user-specified switches.
 Compile with `make OPTS=D' to build debugging versions.  
 Environment variables MY_OBJ_DIR, MY_INC_DIR, MY_LIB_DIR and
 MY_BIN_DIR control locations of object files, include files,
@@ -69,8 +67,8 @@ Please read the NCO manual before you submit a bug report!
 It is supplied in many formats: Postscript (nco.ps), Texinfo
 (nco.texi), Info (nco.info), HTML (nco.html), and DVI (nco.dvi).
 If you got NCO from a CVS snapshot, you must generate these formats
-yourself with 'make nco.html', 'make nco.pdf', 'make nco.ps', etc. from within
-the doc/ directory.
+yourself with 'make nco.html', 'make nco.pdf', 'make nco.ps',
+etc. from within the doc/ directory.
 Sending me questions whose answers aren't in the manual is the best
 way to motivate me to write more documentation.  
 Let me also accentuate the contrapositive of that suggestion.

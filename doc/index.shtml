@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.159 2003-09-29 03:35:01 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.160 2003-11-05 05:00:33 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -468,8 +468,9 @@ All platforms work continue to work fine with the
 However, this method does not support shared libraries and other nice
 features that come automagically with Autotools.
 So please send in the patches required to get the <tt>./configure</tt> 
-mechanism working properly for NCO, <tt>nco_c++</tt>, and DODS on your
-platform. 
+mechanism working properly for NCO, <tt>nco_c++</tt>, and
+<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> on your
+platform.  
 The gory details of the failed (and successful) builds are in the
 <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>.
 </li>
@@ -482,6 +483,17 @@ AT&T <tt>lex</tt> will not work because it does not understand
 and does not parse <tt>ncap_yacc.y</tt> correctly; previous and later
 versions of <tt>bison</tt> work correctly.
 </li>
+
+<li><b>Build problems with DODS:</b>
+NCO links with the
+<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> netCDF
+library when compiled with GCC&nbsp;2.95 (on Linux).
+NCO does not link to DODS when compiled with versions greater than
+GCC&nbsp;3.0.
+If you let us know that this feature is important to you, then we (or, 
+knock on wood, those clever, good-looking DODS folks) may fix it.
+</li>
+
 </ul>
 <p><hr></p>
 
