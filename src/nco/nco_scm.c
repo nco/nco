@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.9 2003-06-16 16:37:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.10 2003-08-30 00:02:25 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -198,6 +198,6 @@ char * /* O [sng] Mnemonic that describes current NCO version */
 nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic that describes current NCO version */
-  return "The ocean at Laguna Beach is socked-in with gloomy marine stratocumulus mists. The shallow breakers recede like headstones in a watery cemetery. No wonder Boris Karloff loves LA!";
+  return "No one can make you feel inferior without your consent.---Eleanor Roosevelt";
 } /* end nmn_get() */
 

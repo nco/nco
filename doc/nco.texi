@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.176 2003-08-29 19:39:46 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.177 2003-08-30 00:02:25 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -802,7 +802,7 @@ This is scheduled to occur sometime in 2005, with the release of netCDF
 @cindex core dump
 @cindex help
 @cindex features, requesting
-We generally receive three categories of mail from user's: requests for
+We generally receive three categories of mail from users: requests for
 help, bug reports, and requests for new features.
 Notes saying the equivalent of "Hey, @acronym{NCO} continues to work
 great and it saves me more time everyday than it took to write this
@@ -2647,14 +2647,14 @@ Averaging is the default, and will be described first so the
 terminology for the other operations is familiar.
 
 @html
-<p><b>Note for HTML user's</b>: 
+<p><b>Note for HTML users</b>: 
 <br>The definition of mathematical operations involving rank reduction
 (e.g., averaging) relies heavily on mathematical expressions which
 cannot easily be represented in HTML.  
 <b>See the <a href="./nco.pdf">printed manual</a> for complete documentation.</b>
 @end html
 @ifinfo
-Note for Info user's: 
+Note for Info users: 
 The definition of mathematical operations involving rank reduction
 (e.g., averaging) relies heavily on mathematical expressions which
 cannot be easily represented in Info.
