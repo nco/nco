@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_bnr.c,v 1.2 2002-05-08 08:05:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_bnr.c,v 1.3 2002-05-08 08:44:36 zender Exp $ */
 
 /* Purpose: Binary write utilities */
 
@@ -13,11 +13,14 @@ nco_bnr_open /* [fnc] Open unformatted binary data file for writing */
 (const char * const fl_bnr) /* [sng] Unformatted binary output file */
 {
   /* Purpose: Open unformatted binary data file for writing */
+  FILE *fp_bnr; /* [fl] Unformatted binary output file handle */
   /* Open output file */
   if((fp_bnr=fopen(fl_bnr,"w")) == NULL){
     (void)fprintf(stderr,"%s: ERROR unable to open binary output file %s\n",prg_nm_get(),fl_bnr);
     nco_exit(EXIT_FAILURE);
   } /* end if */
+  if(dbg_lvl_get() > 1) (void)fprintf(stdout,"%s: Opened binary file %s\n",prg_nm_get(),fl_bnr);
+  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"Variable(s) in Name (# elements, bytes per element) format:\n");
   return fp_bnr; /* O [fl] Unformatted binary output file handle */
 } /* end nco_bnr_open() */
 
@@ -34,7 +37,9 @@ nco_bnr_close /* [fnc] Close unformatted binary data file for writing */
     (void)fprintf(stderr,"%s: ERROR unable to close binary output file %s\n",prg_nm_get(),fl_bnr);
     nco_exit(EXIT_FAILURE);
   } /* end if */
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: Closed binary file %s\n",prg_nm_get(),fl_bnr);
+  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n");
+  if(dbg_lvl_get() > 1) (void)fprintf(stdout,"%s: Closed binary file %s\n",prg_nm_get(),fl_bnr);
+  return rcd; /* O [rcd] Return code */
 } /* end nco_bnr_close() */
 
 size_t /* O [nbr] Number of elements successfully written */
@@ -47,12 +52,16 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
  const void * const void_ptr) /* I [ptr] Data to write */
 {
   /* Purpose: Write unformatted binary data */
-  size_t wrt_nbr; /* [nbr] Number of elements successfully written */
+  /* Testing:
+     ncks -O -D 3 -B ~/nco/data/in.nc ~/nco/data/foo.nc */
+
+  long wrt_nbr; /* [nbr] Number of elements successfully written */
   /* Write unformatted data to binary output file */
   wrt_nbr=fwrite(void_ptr,(size_t)nco_typ_lng(var_typ),(size_t)var_sz,fp_bnr);
   if(wrt_nbr != var_sz){
     (void)fprintf(stderr,"%s: ERROR only succeeded in writing %ld of %ld elements of variable %s\n",prg_nm_get(),wrt_nbr,var_sz,var_nm);
     nco_exit(EXIT_FAILURE);
   } /* end if */
+  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s (%ld,%d), ",var_nm,var_sz,nco_typ_lng(var_typ));
   return wrt_nbr; /* O [nbr] Number of elements successfully written */
 } /* end nco_bnr_wrt() */

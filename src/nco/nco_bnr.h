@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_bnr.h,v 1.2 2002-05-08 08:05:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_bnr.h,v 1.3 2002-05-08 08:44:36 zender Exp $ */
 
 /* Purpose: Binary write utilities */
 
@@ -21,6 +21,7 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_ctl.h" /* Program flow control functions */
 
 #ifdef __cplusplus
 extern "C" {

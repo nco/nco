@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.7 2002-05-08 08:00:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.8 2002-05-08 08:44:36 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -27,6 +27,7 @@
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
 #include "nco_att_utl.h" /* Attribute utilities */
+#include "nco_bnr.h" /* Binary write utilities */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_pck.h" /* Packing and unpacking variables */
@@ -56,13 +57,15 @@ extern "C" {
   (int in_id, /* I [id] netCDF input file ID */
    int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
-   char *var_nm) /* I [sng] Variable name */
+   const bool NCO_BNR_WRT, /* I [flg] Write binary file */
+   char *var_nm); /* I [sng] Variable name */
 
   void
   cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
   (const int in_id, /* I [id] netCDF input file ID */
    const int out_id, /* I [id] netCDF output file ID */
    FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
+   const bool NCO_BNR_WRT, /* I [flg] Write binary file */
    char *var_nm, /* I [sng] Variable name */
    const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
    const int lmt_nbr); /* I [nbr] Number of hyperslab limits */

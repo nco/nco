@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.56 2002-05-08 08:00:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.57 2002-05-08 08:44:36 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -105,13 +105,15 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.56 2002-05-08 08:00:15 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.56 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.57 2002-05-08 08:44:36 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.57 $";
   
   extern char *optarg;
   
   extern int optind;
   
+  FILE *fp_bnr; /* [fl] Unformatted binary output file handle */
+
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
   int in_id;  
@@ -289,7 +291,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_xtr;idx++){
       if(dbg_lvl > 2) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
-      if(lmt_nbr > 0) (void)cpy_var_val_lmt(in_id,out_id,xtr_lst[idx].nm,lmt,lmt_nbr,fp_bnr); else (void)cpy_var_val(in_id,out_id,xtr_lst[idx].nm,fp_bnr);
+      if(lmt_nbr > 0) (void)cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
     } /* end loop over idx */
     
     /* [fnc] Close unformatted binary data file */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.7 2002-05-08 08:00:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.8 2002-05-08 08:44:36 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -173,6 +173,7 @@ cpy_var_val /* [fnc] Copy variable data from input to output file */
 (int in_id, /* I [id] netCDF input file ID */
  int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
+ const bool NCO_BNR_WRT, /* I [flg] Write binary file */
  char *var_nm) /* I [sng] Variable name */
 {
   /* Purpose: Copy variable data from input netCDF file to output netCDF file
@@ -249,6 +250,8 @@ cpy_var_val /* [fnc] Copy variable data from input to output file */
     nco_get_vara(in_id,var_in_id,dmn_srt,dmn_cnt,void_ptr,var_type);
     nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
   } /* end if variable is an array */
+  /* Write unformatted binary data */
+  if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
 
   /* Free the space that held dimension IDs */
   dmn_cnt=nco_free(dmn_cnt);
@@ -266,6 +269,7 @@ cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
 (const int in_id, /* I [id] netCDF input file ID */
  const int out_id, /* I [id] netCDF output file ID */
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
+ const bool NCO_BNR_WRT, /* I [flg] Write binary file */
  char *var_nm, /* I [sng] Variable name */
  const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
  const int lmt_nbr) /* I [nbr] Number of hyperslab limits */
@@ -373,9 +377,11 @@ cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
   if(nbr_dim==0){ /* Copy scalar */
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
+    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
   }else if(!WRP){ /* Copy contiguous array */
     if(!SRD) nco_get_vara(in_id,var_in_id,dmn_in_srt,dmn_cnt,void_ptr,var_type); else nco_get_varm(in_id,var_in_id,dmn_in_srt,dmn_cnt,dmn_srd,(long *)NULL,void_ptr,var_type);
     nco_put_vara(out_id,var_out_id,dmn_out_srt,dmn_cnt,void_ptr,var_type);
+    if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
   }else if(WRP){ /* Copy wrapped array */
     int dmn_idx;
     int lmt_idx;
@@ -495,16 +501,21 @@ cpy_var_val_lmt /* [fnc] Copy variable data from input to output file */
       } /* endif CRD && MNT */
     } /* endif False */
     
+    /* fxm: Binary writes will not work for wrapped and stride variables until var_sz is changed to reflect actual size */
     if(!SRD){
       (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,void_ptr,var_type);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_type);
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
       (void)nco_get_vara(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,void_ptr,var_type);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_type);
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
     }else{ /* SRD */
       (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_1,dmn_cnt_1,dmn_srd,(long *)NULL,void_ptr,var_type);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_1,dmn_cnt_1,void_ptr,var_type);
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
       (void)nco_get_varm(in_id,var_in_id,dmn_in_srt_2,dmn_cnt_2,dmn_srd,(long *)NULL,void_ptr,var_type);
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_type);
+      if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,"",var_nm,var_sz,var_type,void_ptr);
     } /* end else SRD */
     
     dmn_in_srt_1=nco_free(dmn_in_srt_1);
