@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.158 2003-09-16 22:12:20 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.159 2003-09-29 03:35:01 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -343,13 +343,7 @@ systems <a href="http://www.rpm.org">RPMs</a>:
 
 <dt><a name="RTFM"></a></dt>
 <h2>Documentation and User's Guide</h2> 
-<p>View the NCO User's Guide in any of the following formats.
-<tt>nco.texi</tt> is the most up-to-date.
-<tt>nco.html</tt>, <tt>nco.info</tt>, <tt>nco.txt</tt>, and
-<tt>nco.xml</tt> are reasonably up-to-date. 
-Files <tt>nco.dvi</tt>, <tt>nco.ps</tt>, and <tt>nco.pdf</tt> are
-out-of-date due to configuration problems with my <tt>texinfo</tt>
-utilities (but you can generate them yourself from <tt>nco.texi</tt>!)
+<p>View the NCO User's Guide in any of these formats:
 <ul>
 <li><a href="./nco.dvi">DVI</a> Device Independent (<tt>xdvi</tt>)</li>
 <li><a href="./nco.html">HTML</a> Hypertext (any browser)</li>
@@ -360,6 +354,13 @@ utilities (but you can generate them yourself from <tt>nco.texi</tt>!)
 <li><a href="./nco.txt">Text</a> Plain text (<tt>more</tt>)</h2> </li>
 <li><a href="./nco.xml">XML</a> Extensible Markup Language (<tt>mozilla</tt>)</h2> </li>
 </ul>
+<tt>nco.texi</tt> is the most up-to-date.
+Files <tt>nco.dvi</tt>, <tt>nco.ps</tt>, and <tt>nco.pdf</tt> are
+the most complete and contain all the mathematical formulae (typeset
+with TeX) missing from the screen-oriented formats.
+The screen-oriented formats&mdash;<tt>nco.html</tt>,
+<tt>nco.info</tt>, <tt>nco.txt</tt>, and <tt>nco.xml</tt>&mdash;contain 
+all the documentation except the highly mathematical sections.
 
 <h3>Other documentation:</h3>
 This 
