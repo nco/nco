@@ -154,6 +154,9 @@
 /* have HDF5 support */
 #undef HDF5
 
+/* Hostname */
+#undef HOST
+
 /* Linux OS */
 #undef LINUX
 
@@ -193,6 +196,9 @@
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
+
+/* User */
+#undef USER
 
 /* use fortran arithmatic */
 #undef USE_FORTRAN_ARITHMATIC

@@ -21,6 +21,24 @@ if test -r doc/VERSION; then
   nco_version=`cat doc/VERSION`
   AC_DEFINE_UNQUOTED(VERSION,$nco_version,NCO Version)
 fi
+# get hostname and user
+if test "$USER"; then
+  nco_user=$USER;
+elif test "$LOGNAME"; then
+  nco_user="$LOGNAME"; 
+else 
+  nco_user="nobody";
+fi
+AC_DEFINE_UNQUOTED(USER,$nco_user,User)
+if test "$HOSTNAME"; then
+  nco_hostname="$HOSTNAME"
+elif test "$HOST"; then
+  nco_hostname="$HOST"
+else
+  nco_hostname="nowhere";
+fi
+AC_DEFINE_UNQUOTED(HOST,$nco_hostname,Hostname)
+
 # use automake to create Makefiles
 #AM_INIT_AUTOMAKE
 AM_INIT_AUTOMAKE(nco,"$nco_version")
