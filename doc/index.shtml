@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.106 2002-08-12 07:21:33 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.107 2002-08-13 06:35:13 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -166,7 +166,7 @@ capable of performing arbitrary arithmetic operations</li>
 tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>, 
 fails on my development system (due to antiquated RedHat
 <tt>texinfo</tt> software, of all things!)
-The brave may retrieve these versions using CVS (tags are, e.g., <tt>nco-2_1_2</tt>).
+Retrieve these versions <a name="#Download">using CVS</a>.
 <li><b>NCO 2.5.3</b>, Not packaged: Fix native builds under MS Windows with Cygwin
 <tt>ncap</tt>, hint to <tt>ncwa</tt>
 <li><b>NCO 2.5.2</b>, Not packaged: Add math functions to
@@ -216,20 +216,39 @@ specifications of input files</li>
 <a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay
 synchronized with NCO features.
-Being on the bleeding edge requires some familiarity with GNU build
-tools and with <a href="http://www.cvshome.org">CVS</a>. 
+Retrieving NCO requires some familiarity with GNU development tools,
+especially <a href="http://www.cvshome.org">CVS</a> and 
+<a href="http://www.gnu.org/software/make/make.html">Make</a>.
+You must first log into the NCO CVS server:
+<p><tt>cvs -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco login</tt></p>
+Simply hit return when asked for the CVS password.
+This logging in procedure is only required the first time you access
+the CVS server.
+Then you may retrieve any NCO distribution you wish.
+Usually you will wish to retrieve a recent tagged (i.e., released)
+version.
+This command retrieves and places NCO version <tt>2.5.3</tt> into a
+local directory named <tt>nco-2.5.3</tt>: 
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2_5_3 -d nco-2.5.3 nco</tt></p>
+This command retrieves the current ("bleeding edge") development
+version of NCO into a local directory named <tt>nco</tt>:
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco</tt></p>
+Track changes to the development version using
+<p><tt>cd nco;cvs update -kk</tt></p>
 
+<p>Tarballs and pre-built binaries: NCO development is too shorthanded
+to upload tarballs or provide prebuilt binary executable versions on
+all platforms. 
+However, we sometimes build and distribute binaries for our development
+platform (currently RedHat Linux), and we are happy to link to any
+user-contributed builds for other platforms.
+These tarballs and binaries tend to lag the current distribution by
+many months, if not years: 
 <ul>
-<li>Source and documentation of latest released version in tarball format: <a href="http://prdownloads.sourceforge.net/nco/nco-2.2.0.tar.gz">nco-2.2.0.tar.gz</a> (901 Kb compressed tar-file)</li>
+<li>Source and documentation in tarball format: <a href="http://prdownloads.sourceforge.net/nco/nco-2.2.0.tar.gz">nco-2.2.0.tar.gz</a> (901 Kb compressed tar-file)</li>
 <li>Source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="http://prdownloads.sourceforge.net/nco/nco-2.0.0-1.src.rpm">nco-2.0.0-1.src.rpm</a> (1029 Kb SRPM)</li>
 </ul>
 
-<p>Pre-built binaries: NCO development is too shorthanded to provide
-prebuilt binary executable versions on all platforms.
-However, we usually build and distribute binaries for our development
-platform (currently RedHat Linux), and we are happy to link to any
-user-contributed builds for other platforms.
-These binaries tend to lag the most current tarball by a few months: 
 <ul>
 <li>GNU/Linux Redhat 7.0-compatible Intel systems, prebuilt binary executable <a href="http://www.rpm.org">RPM</a>: <a href="http://prdownloads.sourceforge.net/nco/nco-2.0.0-1.i386.rpm">nco-2.0.0-1.i386.rpm</a> (588 Kb RPM)</li>
 <li>GNU/Linux Debian-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-1.2.2</a></li>
