@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.72 2002-12-16 19:36:12 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.73 2002-12-19 15:48:13 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.72 2002-12-16 19:36:12 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.72 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.73 2002-12-19 15:48:13 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.73 $";
   
   extern char *optarg;
   
@@ -123,6 +123,7 @@ main(int argc,char **argv)
 
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
+  int jdx;
   int in_id;  
   int nbr_abb_arg=0;
   int nbr_dmn_fl;
@@ -135,6 +136,15 @@ main(int argc,char **argv)
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
     
   lmt_sct *lmt;
+
+  lmt_all *lmt_lst;        /* Container for lmt */
+  lmt_all *lmt_j;         /* temporary pointer */
+
+  char dmn_nm[NC_MAX_NAME];
+  long dmn_sz;
+
+  
+
 
   nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
 
@@ -316,9 +326,60 @@ main(int argc,char **argv)
     
   /* We now have final list of variables to extract. Phew. */
   
+  /* Place all dims in lmt_lst */
+  lmt_lst = (lmt_all * )nco_malloc(nbr_dmn_fl*sizeof(lmt_all));
+
+   for(idx =0 ; idx <nbr_dmn_fl ; idx++){
+    (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
+    lmt_j = &lmt_lst[idx];
+    lmt_j->lmt_dmn  = (lmt_sct **) nco_malloc(sizeof(lmt_sct *));
+    lmt_j->lmt_dmn[0] = (lmt_sct *) nco_malloc(sizeof(lmt_sct));
+    lmt_j->dmn_nm=strdup(dmn_nm);
+    lmt_j->lmt_dmn_nbr=1;
+    /* iniialize lmt struct */
+    lmt_j->lmt_dmn[0]->nm=lmt_j->dmn_nm;
+    lmt_j->lmt_dmn[0]->id = idx;
+    lmt_j->lmt_dmn[0]->is_rec_dmn = (idx == rec_dmn_id ? True : False);
+    lmt_j->lmt_dmn[0]->srt = 0L;
+    lmt_j->lmt_dmn[0]->end = dmn_sz -1L;
+    lmt_j->lmt_dmn[0]->cnt = dmn_sz;
+    lmt_j->lmt_dmn[0]->srd = 1L;
+    /* flag which shows that struct has been inialized here. A HACK */
+    lmt_j->lmt_dmn[0]->lmt_typ = -1;
+  }     
+
+  /* Now add user specified limits lmt_lst */
+  for(idx=0;idx<lmt_nbr;idx++) {
   /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
+     (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
+     for(jdx=0; jdx < nbr_dmn_fl ; jdx++) {
+       if(!strcmp(lmt[idx].nm,lmt_lst[jdx].dmn_nm)){   
+         lmt_j = &lmt_lst[jdx];
+         if(lmt_j->lmt_dmn[0]->lmt_typ == -1) { 
+	   lmt_j->lmt_dmn[0]=lmt+idx; 
+           }else{ 
+           
+	   lmt_j->lmt_dmn  = (lmt_sct **) nco_realloc(lmt_j->lmt_dmn,((lmt_j->lmt_dmn_nbr) +1)*sizeof(lmt_sct *));
+           lmt_j->lmt_dmn[(lmt_j->lmt_dmn_nbr)++]=lmt+idx;
+	 }
+         break;
+       } /* end if */
+     }
+     /* dimension in limit not found */
+     if( jdx == nbr_dmn_fl ) {
+       (void)fprintf(stderr,"Unable to find limit dimension %s in list\n ",lmt[idx].nm);
+       nco_exit(EXIT_FAILURE);
+     }
+  } /* end loop over idx */       
+
+
+  /* Find and store the final size of each dimension */
+  for(idx = 0 ; idx < nbr_dmn_fl ; idx++){
+    (void)nco_msa_calc_cnt(&lmt_lst[idx]);
+    /* if( lmt_lst[idx].lmt_dmn_nbr >1 ) (void)nco_msa_print_indices(&lmt_lst[idx]); */
+  }
   
+	 
   if(fl_out != NULL){
     int out_id;  
 
@@ -333,13 +394,12 @@ main(int argc,char **argv)
 
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
-      
-      /* Define variable in output file */
-      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt,lmt_nbr); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);
+       /* Define variable in output file */
+      if(lmt_nbr > 0) var_out_id=nco_cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl); else var_out_id=nco_cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);
       /* Copy variable's attributes */
       (void)nco_att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id,True);
     } /* end loop over idx */
-
+    
     /* Turn off default filling behavior to enhance efficiency */
     nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
   
@@ -353,7 +413,10 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_xtr;idx++){
       if(dbg_lvl > 2 && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
-      if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
+
+      /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
+
+      if(lmt_nbr > 0) (void)nco_cpy_var_val_multi_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
     } /* end loop over idx */
     
     /* [fnc] Close unformatted binary data file */
