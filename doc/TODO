@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.236 2003-09-18 16:48:53 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.237 2003-10-12 05:14:36 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -210,7 +210,7 @@ Command executes but in.hdf is full of screwy values
 237. Break down nco.texi into bite-size chunks, e.g., one file per section
 238. Replace y=(typ *)nco_malloc(nbr*sizeof(typ)) with y=(typ *)nco_malloc(nbr*sizeof(*y))?
 239. Create one global compatibility file (nco_xpf.[ch]?) activated by HAVE_ or NEED_ actions so do not have multiple platform dependent #includes as is case now with HAVE_STRCASECMP, HAVE_STRDUP requiring nco_sng_utl.h
-241. Add run-time switch which requests that output be missing_value where ANY of the input fields are missing_value. 
+241. Add run-time switch which requests that output be missing_value where ANY input field is missing_value. NCO discussion forum 20021212.
 244. Get builds working on testdrive.hp.com
 245. Eliminate all instances of passing naked constants
 246. Deprecate USE_FORTRAN_ARITHMETIC from Makefile
@@ -232,7 +232,9 @@ Permission denied
 266. ncbo: Finish ncbo.1 manpage
 268. ncbo: use ncap var_cnf_dmn() technique so fl_1 fl_2 broadcast interchangeably
 270. Automate uploading of tagged .deb builds to ftp://ftp.debian.org
-272. 
+272. Does ncks -A fl_1.nc fl_2.nc work when files have no dimensions in common?
+273. make 'make distclean' remove ncap_lex.c ncap_yacc.c ncap_yacc.h
+274. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************

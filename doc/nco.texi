@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.182 2003-09-16 22:12:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.183 2003-10-12 05:14:36 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -220,8 +220,8 @@ Rew and Steve Emmerson.
 
 @titlepage
 @html
-<meta name="Author" CONTENT="Charlie Zender">
-<meta name="Keywords" CONTENT="NCO documentation, NCO User's Guide,
+<meta name="Author" content="Charlie Zender">
+<meta name="Keywords" content="NCO documentation, NCO User's Guide,
 netCDF, operator, GCM, CCM, scientific data, ncbo, ncea, ncecat,
 ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @end html
@@ -316,6 +316,9 @@ Charlie Zender
 * General Index::               
 @end menu
 
+@html
+<a name="fwd"></a> <!-- http://nco.sf.net/nco.html#fwd -->
+@end html
 @node Foreword, Summary, Top, Top
 @unnumbered Foreword
 @cindex foreword
@@ -365,6 +368,9 @@ Charlie Zender@*
 January 2003@*
 Irvine, California@*
 
+@html
+<a name="smr"></a> <!-- http://nco.sf.net/nco.html#smr -->
+@end html
 @node Summary, Introduction, Foreword, Top
 @unnumbered Summary
 @cindex operators
@@ -383,6 +389,9 @@ operators for processing climate model output.
 This reflects their origin, but the operators are as general as netCDF
 itself.
 
+@html
+<a name="ntr"></a> <!-- http://nco.sf.net/nco.html#ntr -->
+@end html
 @node Introduction, Strategies, Summary, Top
 @chapter Introduction
 @cindex introduction
@@ -637,6 +646,9 @@ platform, and the change in the wallclock time for execution.}.
 * Windows Operating System::    
 @end menu
 
+@html
+<a name="wnd"></a> <!-- http://nco.sf.net/nco.html#wnd -->
+@end html
 @node Windows Operating System,  , Compatability, Compatability
 @subsection Compiling @acronym{NCO} for Microsoft Windows @acronym{OS}
 @cindex Windows
@@ -703,6 +715,9 @@ support these protocols (let me know if this is the case).
 The @acronym{NCO} operators should behave identically on Windows and
 @acronym{UNIX} platforms in all other respects.
 
+@html
+<a name="lbr"></a> <!-- http://nco.sf.net/nco.html#lbr -->
+@end html
 @node Libraries, netCDF 2.x vs. 3.x, Compatability, Introduction
 @section Libraries
 @cindex libraries
@@ -817,6 +832,9 @@ This is scheduled to occur sometime in 2005, with the release of netCDF
 @w{version 4}, being written as a collaboration between Unidata and
 @acronym{NCSA}.
 
+@html
+<a name="hlp"></a> <!-- http://nco.sf.net/nco.html#hlp -->
+@end html
 @node Help and Bug reports,  , netCDF 2.x vs. 3.x, Introduction
 @section Help and Bug reports
 @cindex reporting bugs
@@ -884,6 +902,9 @@ accessible location, of the file(s).
 Post the bug report to the 
 @uref{http://sourceforge.net/bugs/?group_id=3331, NCO Project buglist}.
 
+@html
+<a name="str"></a> <!-- http://nco.sf.net/nco.html#str -->
+@end html
 @node Strategies, Common features, Introduction, Top
 @chapter Operator Strategies
 
@@ -900,6 +921,9 @@ Post the bug report to the
 * Operator limitations::        
 @end menu
 
+@html
+<a name="phl"></a> <!-- http://nco.sf.net/nco.html#phl -->
+@end html
 @node Philosophy, Climate model paradigm, Strategies, Strategies
 @section @acronym{NCO} operator philosophy
 @cindex philosophy
@@ -936,6 +960,9 @@ amount of system memory required to perform a given job.
 The arithmetic operators are extremely efficient; their exact memory
 usage is detailed in @ref{Memory usage}.
 
+@html
+<a name="clm"></a> <!-- http://nco.sf.net/nco.html#clm -->
+@end html
 @node Climate model paradigm, Output files, Philosophy, Strategies
 @section Climate model paradigm
 @cindex climate model
@@ -952,6 +979,9 @@ Examples in this manual use a @acronym{GCM} paradigm because latitude,
 longitude, time, temperature and other fields related to our natural
 environment are as easy to visualize for the layman as the expert.
 
+@html
+<a name="out"></a> <!-- http://nco.sf.net/nco.html#out -->
+@end html
 @node Output files, Appending, Climate model paradigm, Strategies
 @section Temporary output files 
 @cindex data safety
@@ -1001,7 +1031,7 @@ then the operator will prompt the user whether to overwrite (erase) the
 existing @var{output-file}, attempt to append to it, or abort the
 operation. 
 However, in processing large amounts of data, too many interactive
-questions can be a curse to productivity.
+questions slows productivity.
 Therefore @acronym{NCO} also implements two ways to override its own
 safety features, the @samp{-O} and @samp{-A} switches.
 Specifying @samp{-O} tells the operator to overwrite any existing
@@ -1011,6 +1041,9 @@ existing @var{output-file} without prompting the user interactively.
 These switches are useful in batch environments because they suppress
 interactive keyboard input.
 
+@html
+<a name="apn"></a> <!-- http://nco.sf.net/nco.html#apn -->
+@end html
 @node Appending, Addition Subtraction Division Multiplication and Interpolation, Output files, Strategies
 @section Appending variables to a file
 @w{A frequently} useful operation is adding variables from one file to
@@ -1048,6 +1081,27 @@ Selecting @dfn{append/replace} causes the operator to attempt to place
 the results of the operation in the existing @var{output-file}, 
 @xref{ncks netCDF Kitchen Sink}.
 
+@html
+<a name="unn"></a> <!-- http://nco.sf.net/nco.html#unn -->
+@end html
+@cindex union of two files
+@cindex disjoint files
+The simplest way to create the union of two files is
+@example
+ncks -A fl_1.nc fl_2.nc
+@end example
+This puts the contents of @file{fl_1.nc} into @file{fl_2.nc}. 
+The @samp{-A} is optional. 
+On output, @file{fl_2.nc} is the union of the input files,
+regardless of whether they share dimensions and variables, 
+or are completely disjoint.
+The append fails if the input files have differently named record
+dimensions (since netCDF supports only one), or have dimensions of the
+same name but different sizes.
+
+@html
+<a name="bnr"></a> <!-- http://nco.sf.net/nco.html#bnr -->
+@end html
 @node Addition Subtraction Division Multiplication and Interpolation, Averaging vs. Concatenating, Appending, Strategies
 @section Addition Subtraction Division Multiplication and Interpolation
 
@@ -1101,6 +1155,9 @@ First, let's describe the concatenators, then the averagers.
 * Interpolating::               
 @end menu
 
+@html
+<a name="cnc"></a> <!-- http://nco.sf.net/nco.html#cnc -->
+@end html
 @node Concatenation, Averaging, Averaging vs. Concatenating, Averaging vs. Concatenating
 @subsection Concatenators @command{ncrcat} and @command{ncecat}
 @cindex @command{ncecat}
@@ -1155,6 +1212,9 @@ variables.
 To conserve system memory, use @command{ncrcat} rather than
 @command{ncecat} when concatenating record variables.
 
+@html
+<a name="avg"></a> <!-- http://nco.sf.net/nco.html#avg -->
+@end html
 @node Averaging, Interpolating, Concatenation, Averaging vs. Concatenating
 @subsection Averagers @command{ncea}, @command{ncra}, and @command{ncwa} 
 @cindex @command{ncea}
@@ -1185,6 +1245,9 @@ the input hyperslabs except for the record dimension, which will have a
 size @w{of 1} (@pxref{ncra netCDF Record Averager}, for a complete
 description of @command{ncra}). 
 
+@html
+<a name="ntp"></a> <!-- http://nco.sf.net/nco.html#ntp -->
+@end html
 @node Interpolating,  , Averaging, Averaging vs. Concatenating
 @subsection Interpolator @command{ncflint}
 @cindex @command{ncflint}
@@ -1197,6 +1260,9 @@ Note that this capability also allows @command{ncflint} to linearly
 rescale any data in a netCDF file, e.g., to convert between differing
 units. 
 
+@html
+<a name="lrg"></a> <!-- http://nco.sf.net/nco.html#lrg -->
+@end html
 @node Large numbers of input files, Large files and Memory, Averaging vs. Concatenating, Strategies
 @section Working with large numbers of input files
 @cindex files, numerous input
@@ -1292,6 +1358,9 @@ e.g., @code{ncea -D 2 85.nc 86.nc 8586.nc}.
 multi-file @acronym{NCO} operators consume is given in 
 @ref{Memory usage}. 
 
+@html
+<a name="mmr"></a> <!-- http://nco.sf.net/nco.html#mmr -->
+@end html
 @node Memory usage, Operator limitations, Large files and Memory, Strategies
 @section Approximate @acronym{NCO} memory requirements
 @cindex memory requirements
@@ -1375,6 +1444,9 @@ bypass the netCDF interface (e.g., Yorick).
 The cause for this is not understood at present.
 @end enumerate
 
+@html
+<a name="ftr"></a> <!-- http://nco.sf.net/nco.html#ftr -->
+@end html
 @node Common features, Operator Reference Manual, Strategies, Top
 @chapter Features common to most operators
 
@@ -1410,6 +1482,9 @@ feature is automatic and cannot be controlled by the user.
 * Operator version::            
 @end menu
 
+@html
+<a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
+@end html
 @node Command line options, Specifying input files, Common features, Common features
 @section Command line options
 @cindex command line options
@@ -1518,6 +1593,9 @@ each option.
 Users are expected to pick the unambiguous truncation of each option
 name that most suits their taste.
 
+@html
+<a name="input"></a> <!-- http://nco.sf.net/nco.html#input -->
+@end html
 @node Specifying input files, Remote storage, Command line options, Common features
 @section Specifying input files
 @cindex globbing
@@ -1655,6 +1733,9 @@ Thus the second and third examples have the same effect, that is, they
 automatically generate, in order, the filenames @file{85_12.nc},
 @file{85_01.nc}, and @file{85_02.nc} as input to @acronym{NCO}.
 
+@html
+<a name="rmt"></a> <!-- http://nco.sf.net/nco.html#rmt -->
+@end html
 @node Remote storage, File retention, Specifying input files, Common features
 @section Accessing files stored remotely
 @cindex @code{rcp}
@@ -1773,6 +1854,9 @@ recommended as it is syntactically more clear.
 * DODS::                        
 @end menu
 
+@html
+<a name="DODS"></a> <!-- http://nco.sf.net/nco.html#DODS -->
+@end html
 @node DODS,  , Remote storage, Remote storage
 @subsection @acronym{DODS}
 @cindex @acronym{DODS}
@@ -1833,6 +1917,9 @@ When @command{ncks} attempts to read the local copy of @file{storm.jpg}
 as a netCDF file, it fails and exits, leaving  @file{storm.jpg} in
 the current directory.
 
+@html
+<a name="rtn"></a> <!-- http://nco.sf.net/nco.html#rtn -->
+@end html
 @node File retention, Variable subsetting, Remote storage, Common features
 @section Retention of remotely retrieved files
 @cindex file deletion
@@ -1858,6 +1945,9 @@ In cases where it is useful to keep the remotely-retrieved files on the
 local file system after processing, the automatic removal feature may be 
 disabled by specifying @samp{-R} on the command line.
 
+@html
+<a name="var"></a> <!-- http://nco.sf.net/nco.html#var -->
+@end html
 @node Variable subsetting, Coordinate variables, File retention, Common features
 @section Including/Excluding specific variables
 @cindex @code{-v @var{var}}
@@ -2014,6 +2104,9 @@ including the null string and @samp{?} matches any single character.
 Documentation for @command{bash} and @command{csh} describe the rules of
 filename expansion (globbing).
 
+@html
+<a name="crd"></a> <!-- http://nco.sf.net/nco.html#crd -->
+@end html
 @node Coordinate variables, Fortran indexing, Variable subsetting, Common features
 @section Including/Excluding coordinate variables
 @cindex @code{-C}
@@ -2046,6 +2139,9 @@ automatically specifying that @emph{all} coordinate variables in the
 Thus @samp{-c} allows the user to select all the coordinate variables
 without having to know their names.
 
+@html
+<a name="ftn"></a> <!-- http://nco.sf.net/nco.html#ftn -->
+@end html
 @node Fortran indexing, Hyperslabs, Coordinate variables, Common features
 @section C & Fortran index conventions
 @cindex index conventions
@@ -2086,6 +2182,9 @@ lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0
 ...
 @end example
 
+@html
+<a name="dmn"></a> <!-- http://nco.sf.net/nco.html#dmn -->
+@end html
 @node Hyperslabs, Multislabs, Fortran indexing, Common features
 @section Hyperslabs 
 @cindex hyperslab
@@ -2176,6 +2275,9 @@ ranges of all dimensions.
 This option may be specified more than once in a single command 
 (each hyperslabed dimension requires its own @code{-d} option).
 
+@html
+<a name="msa"></a> <!-- http://nco.sf.net/nco.html#msa -->
+@end html
 @node Multislabs, UDUnits Support, Hyperslabs, Common features
 @section Multislabs 
 @cindex multislab
@@ -2258,6 +2360,9 @@ commands to gather the desired range of data.
 We envision adding multislab support to all arithmetic operators in the
 future. 
 
+@html
+<a name="UDUnits"></a> <!-- http://nco.sf.net/nco.html#UDUnits -->
+@end html
 @node UDUnits Support, Wrapped coordinates, Multislabs, Common features
 @section UDUnits Support 
 @cindex UDUnits
@@ -2414,6 +2519,9 @@ units, MKS (e.g., meters, Pascals, seconds).
 The feature is not intended to encourage writers to store data in 
 esoteric units (e.g., furlongs, pounds per square inch, fortnights). 
 
+@html
+<a name="wrp"></a> <!-- http://nco.sf.net/nco.html#wrp -->
+@end html
 @node Wrapped coordinates, Stride, UDUnits Support, Common features
 @section Wrapped coordinates
 @cindex wrapped coordinates
@@ -2481,6 +2589,9 @@ Should you need to hyperslab @code{lon} again, be sure to give
 dimensional indices as the hyperslab arguments, rather than coordinate
 values (@pxref{Hyperslabs}).
 
+@html
+<a name="srd"></a> <!-- http://nco.sf.net/nco.html#srd -->
+@end html
 @node Stride, Missing values, Wrapped coordinates, Common features
 @section Stride 
 @cindex stride
@@ -2562,6 +2673,9 @@ ncra -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8589_03.nc
 ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @end example
 
+@html
+<a name="mss_val"></a> <!-- http://nco.sf.net/nco.html#mss_val -->
+@end html
 @node Missing values, Operation Types, Stride, Common features
 @section Missing values
 @cindex missing values
@@ -2674,6 +2788,9 @@ right thing''.
 
 @end enumerate
 
+@html
+<a name="op_typ"></a> <!-- http://nco.sf.net/nco.html#op_typ -->
+@end html
 @node Operation Types, Type conversion, Missing values, Common features
 @section Operation Types
 @cindex operation types
@@ -3148,6 +3265,9 @@ $n \le x < n+1$
 @end ifset
 will have the value @var{n} when converted to an integer.
 
+@html
+<a name="ovr"></a> <!-- http://nco.sf.net/nco.html#ovr -->
+@end html
 @node Suppressing interactive prompts, History attribute, Type conversion, Common features
 @section Suppressing interactive prompts
 @cindex overwriting files
@@ -3297,6 +3417,9 @@ file 99% of the time.
 If you decide you would like any of the above @acronym{CSM} fields
 processed, you must use @command{ncrename} to rename them first.
 
+@html
+<a name="ARM"></a> <!-- http://nco.sf.net/nco.html#ARM -->
+@end html
 @node ARM Conventions, Operator version, NCAR CSM Conventions, Common features
 @section @acronym{ARM} Conventions
 @cindex @acronym{ARM} conventions
@@ -3342,6 +3465,9 @@ variable, it will also contain the @code{time} coordinate.
 @w{A short} message is added to the @code{history} global attribute
 whenever these @acronym{ARM}-specific procedures are executed.
 
+@html
+<a name="vrs"></a> <!-- http://nco.sf.net/nco.html#vrs -->
+@end html
 @node Operator version,  , ARM Conventions, Common features
 @section Operator version
 @cindex version
@@ -3369,6 +3495,9 @@ ncks version 1.30 (2000/07/31) "Bolivia"}.
 This tells you @command{ncks} contains all patches up to version
 @code{1.30}, which dates from @w{July 31}, 2000.
 
+@html
+<a name="rfr"></a> <!-- http://nco.sf.net/nco.html#rfr -->
+@end html
 @node Operator Reference Manual, Contributing, Common features, Top
 @chapter Reference manual for all operators
 
@@ -3457,6 +3586,9 @@ that @command{ncap} should output @emph{only} user-defined variables.
 * Intrinsic mathematical functions::  
 @end menu
 
+@html
+<a name="lhc"></a> <!-- http://nco.sf.net/nco.html#lhc -->
+@end html
 @node Left hand casting, Syntax of ncap statements, ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
 @subsection Left hand casting
 @cindex hybrid coordinate system 
@@ -3517,6 +3649,9 @@ ncap -O -s "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm" in.nc out.nc
 Manipulating the four fields which define the pressure in a hybrid
 coordinate system is easy with left hand casting.
 
+@html
+<a name="syn"></a> <!-- http://nco.sf.net/nco.html#syn -->
+@end html
 @node Syntax of ncap statements, Intrinsic functions, Left hand casting, ncap netCDF Arithmetic Processor
 @subsection Syntax of @command{ncap} statements
 @cindex statement
@@ -3566,6 +3701,9 @@ The at-sign @code{@@} is used to delineate an attribute name from a
 variable name.
 @end table 
 
+@html
+<a name="fnc"></a> <!-- http://nco.sf.net/nco.html#fnc -->
+@end html
 @node Intrinsic functions, Intrinsic mathematical functions, Syntax of ncap statements, ncap netCDF Arithmetic Processor
 @subsection Intrinsic functions
 @command{ncap} contains a small but growing library of intrinsic
@@ -3685,6 +3823,9 @@ Converts @var{x} to external type @code{NC_INT}, a C-type @code{int}.
 Converts @var{x} to external type @code{NC_SHORT}, a C-type @code{short}.
 @end table
 
+@html
+<a name="mth"></a> <!-- http://nco.sf.net/nco.html#mth -->
+@end html
 @node Intrinsic mathematical functions,  , Intrinsic functions, ncap netCDF Arithmetic Processor
 @subsection Intrinsic mathematical functions
 @command{ncap} supports the standard mathematical functions supplied with
@@ -5944,6 +6085,9 @@ is given above (@pxref{Operation Types}).
 * Normalization::               
 @end menu
 
+@html
+<a name="msk"></a> <!-- http://nco.sf.net/nco.html#msk -->
+@end html
 @node Masking condition, Normalization, ncwa netCDF Weighted Averager, ncwa netCDF Weighted Averager
 @subsection Masking condition
 @cindex masking condition
@@ -6044,6 +6188,9 @@ averaging expression, but it will change the denominator (unless its
 weight $\wgt_{\idx}=0.0$ as well).
 @end tex
 
+@html
+<a name="nrm"></a> <!-- http://nco.sf.net/nco.html#nrm -->
+@end html
 @node Normalization,  , Masking condition, ncwa netCDF Weighted Averager
 @subsection Normalization
 @cindex normalization
@@ -6195,6 +6342,9 @@ Thus the @samp{-N} switch, or, equivalently, the @samp{-y ttl} switch,
 are all that are needed to correctly integrate the cell areas into
 a total regional area.
 
+@html
+<a name="ctr"></a> <!-- http://nco.sf.net/nco.html#ctr -->
+@end html
 @node Contributing, General Index, Operator Reference Manual, Top
 @chapter Contributing
 @cindex contributing
@@ -6265,6 +6415,7 @@ Excellent bug reports.
 
 @html
 <a name="index"></a> <!-- http://nco.sf.net/nco.html#index -->
+<a name="idx"></a> <!-- http://nco.sf.net/nco.html#idx -->
 @end html
 @node General Index,  , Contributing, Top
 @unnumbered General Index
