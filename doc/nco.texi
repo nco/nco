@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.141 2003-01-03 00:52:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.142 2003-01-08 21:21:55 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -3533,8 +3533,8 @@ This is the default mode.
 @end table
 
 The value of @var{att_type} is a single character abbreviation (@code{f},
-@code{d}, @code{l}, @code{i}, @code{s}, @code{c}, or @code{b}) standing for one of
-the six primitive netCDF data types:@* 
+@code{d}, @code{l}, @code{i}, @code{s}, @code{c}, or @code{b}) standing
+for one of the seven primitive netCDF data types:@* 
 @table @code
 @item f
 @dfn{Float}.
