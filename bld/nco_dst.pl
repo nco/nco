@@ -29,7 +29,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.64 2000-08-03 22:20:19 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.65 2000-08-03 22:34:26 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -65,10 +65,10 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-08-03 22:20:19 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.64 2000-08-03 22:20:19 zender Exp $';
-my $CVS_Revision='$Revision: 1.64 $';
-my $CVSROOT=':pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
+my $CVS_Date='$Date: 2000-08-03 22:34:26 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.65 2000-08-03 22:34:26 zender Exp $';
+my $CVS_Revision='$Revision: 1.65 $';
+my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
@@ -196,8 +196,7 @@ if($dbg_lvl >= 2){print ("$prg_nm: \$dat_cnt = $dat_cnt\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$ute_prs = $ute_prs\n");} # endif dbg
 
 if($vrs_tag eq $main_trunk_tag || $vrs_tag eq ''){$dly_snp=$True;}else{$dly_snp=$False;}
-# NCO is distributed using the `cvs export' command, so the 
-# version tag to be distributed must be supplied to this script. 
+# NCO is distributed using the `cvs export' command, so version tag to be distributed must be supplied to this script
 if($dly_snp){
 # The version tag is blank or of the form `nco'
     $nco_vrs=YYYYMMDD();
@@ -230,11 +229,13 @@ if($dbg_lvl >= 1){
 # Build distribution from scratch
 if($bld){
     cmd_prc("$rm_cmd -r $dst_pth_bld"); # Remove contents of current directory, if any
+    cmd_prc("$mkdir_cmd $dst_pth_bld"); # Create directory
+    chdir $dst_pth_bld.'/..' or die "$prg_nm: ERROR unable to chdir to $dst_pth_bld: $!\n"; # $! is system error string
     if($CVSROOT =~ m/pserver/){cmd_prc("$cvs_cmd -d $CVSROOT login");} # Login first
     if($dly_snp){
-	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -D \"1 second ago\" -d $dst_pth_bld nco"); # Export
+	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -D \"1 second ago\" -d $dst_vrs nco"); # Export
     }else{
-	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -r $vrs_tag -d $dst_pth_bld nco"); # Export
+	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -r $vrs_tag -d $dst_vrs nco"); # Export
     } # endelse
     cmd_prc("printf $dst_vrs > $dst_pth_bld/doc/VERSION"); # Stamp version in VERSION file in exported files
     cmd_prc("printf $dst_vrs > $HOME/nco/doc/VERSION"); # Stamp version in VERSION file in development directory
