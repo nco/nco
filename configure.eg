@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.52 2003-05-30 20:01:44 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.53 2003-07-06 15:19:10 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -452,6 +452,10 @@ g++ -DHAVE_CONFIG_H -I. -I. -I../..   -I/home/zender/include  -g -O2 -c tst.cc
 nco_var.hh: In function `int nco_put_var<prc_cmp>(const int &, const basic_string<char,string_char_traits<char>,__default_alloc_template<false,0> > &, const valarray<float> &)':
 tst.cc:155:   instantiated from here
 nco_var.hh:270: non-lvalue in unary `&'
+In file included from /usr/include/arpa/nameser.h:454,
+                 from ../src/nco/nco_fl_utl.h:31,
+                 from ../src/nco/nco_fl_utl.c:9:
+/usr/include/arpa/nameser_compat.h:93: parse error before string constant
 
 New build example:
 make  tst
