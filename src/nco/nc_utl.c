@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.46 2000-01-28 00:09:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.47 2000-01-28 00:29:04 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -1589,11 +1589,13 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
   char *fl_out_tmp;
   char tmp_sng_1[]="pid"; /* Extra string appended to temporary filenames */
   char tmp_sng_2[]="tmp"; /* Extra string appended to temporary filenames */
+  char *pid_sng; /* String containing decimal representation of PID */
 
   int rcd;
 
   long fl_out_tmp_lng; /* [nbr] Length of temporary file name */
-  long pid_sng_lng; /* [nbr] Length of decimal representation of PID */
+  long pid_sng_lng; /* [nbr] Theoretical length of decimal representation of this PID */
+  long pid_sng_lng_max; /* [nbr] Maximum length of decimal representation of any PID */
 
   pid_t pid; /* Process ID */
 
@@ -1613,16 +1615,21 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
      20000126: Use sizeof(pid_t) rather than hardcoded size to fix longstanding bug on SGIs
   */
   /* Maximum length of decimal representation of PID is number of bits in PID times log10(2) */
-  /* pid_sng_lng_max=(long)ceil(8*sizeof(pid_t)*log10(2.0)); */
-  /* Actual length of decimal representation of PID is 1+ceil(log10(PID)) where 1 is added in case PID is an exact power of 10 */
+  pid_sng_lng_max=(long)ceil(8*sizeof(pid_t)*log10(2.0));
+  pid_sng=(char *)malloc((pid_sng_lng_max+1)*sizeof(char));
   pid=getpid();
+  (void)sprintf(pid_sng,"%ld",(long)pid);
+  /* Theoretical length of decimal representation of PID is 1+ceil(log10(PID)) where 1 is added in case PID is an exact power of 10 */
   pid_sng_lng=1L+ceil(log10((double)pid));
   /* NCO temporary file name is user-specified file name + "." + tmp_sng_1 + PID + "." + prg_nm + "." + tmp_sng_2 + NUL */
-  fl_out_tmp_lng=strlen(fl_out)+1+strlen(tmp_sng_1)+pid_sng_lng+1+strlen(prg_nm_get())+1+strlen(tmp_sng_2)+1;
+  fl_out_tmp_lng=strlen(fl_out)+1+strlen(tmp_sng_1)+strlen(pid_sng)+1+strlen(prg_nm_get())+1+strlen(tmp_sng_2)+1;
   fl_out_tmp=(char *)malloc(fl_out_tmp_lng*sizeof(char));
   (void)sprintf(fl_out_tmp,"%s.%s%ld.%s.%s",fl_out,tmp_sng_1,(long)pid,prg_nm_get(),tmp_sng_2);
-  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: fl_out_open() reports sizeof(pid_t) = %d bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %d, fl_out_tmp = %s\n",prg_nm_get(),sizeof(pid_t),fl_out_tmp_lng,strlen(fl_out_tmp),fl_out_tmp);
+  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: fl_out_open() reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %d bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %d, fl_out_tmp = %s\n",prg_nm_get(),sizeof(pid_t),(long)pid,pid_sng_lng,strlen(pid_sng),fl_out_tmp_lng,strlen(fl_out_tmp),fl_out_tmp);
   rcd=stat(fl_out_tmp,&stat_sct);
+
+  /* Free temporary memory */ 
+  (void)free(pid_sng);
 
   if(dbg_lvl_get() == 8){
   /* Use builtin system routines to generate temporary filename
