@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.105 2004-07-06 16:13:33 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.106 2004-07-06 17:01:45 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.6 are ready. 
 
@@ -54,6 +54,7 @@ Bug-fixes:
 Build changes:
 1. LFS enabled by default
 2. Fix nco_tst.pl test script hangs waiting for interactive responses
+3. Change prototype source of fabsf(), sqrtf() to help HP-UX builds
 
 Other user-visible changes:
 1. Add nco_put_att<int,short,long> functions to libnco_c++

@@ -1,3 +1,8 @@
+2004-07-06  Charlie Zender  <zender@uci.edu>
+
+	* Provide definitions of fabsf(), sqrtf() in nco_var_rth.c from
+	nco_flt_rth.h rather than from special #ifdefs 
+
 2004-07-04  Charlie Zender  <zender@uci.edu>
 
 	* Changed some %zu's back to %lu's with (unsigned long) casting
