@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.106 2002-01-16 23:18:16 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.107 2002-01-16 23:25:26 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -61,7 +61,7 @@ ifndef NETCDF_LIB
  NETCDF_LIB := /usr/local/lib # Directory containing libnetcdf.a
 endif
 ifndef ${OMP} # OpenMP
- OMP := Y
+ OMP := N
 endif # endif OMP
 ifndef OPTS
  OPTS := O
@@ -530,6 +530,9 @@ endif
 
 # SGI6, SGI64, SGIMP64
 ifneq (,$(findstring SGI,${PVM_ARCH}))
+ifeq (${OMP},Y)
+ OMP_FLG := -mp -mpio
+endif # endif OMP
 C++ := CC -LANG:std
 CC := cc
 # 20000302: -w suppresses warnings which will swamp linker
@@ -555,7 +558,7 @@ else
 # SGI64, SGIMP64
 GCC_ABI_FLG := -mabi=64
 GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips4 -L/usr/local/lib/mabi=64
-SGI_ABI_FLG := -64 -mips4 -mp -mpio
+SGI_ABI_FLG := -64 -mips4 ${OMP_FLG}
 # endif SGI64, SGIMP64
 endif
 ifeq (${CC},gcc)

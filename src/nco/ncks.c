@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.46 2001-12-29 05:52:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.47 2002-01-16 23:27:17 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.46 2001-12-29 05:52:50 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.46 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.47 2002-01-16 23:27:17 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.47 $";
   
   extern char *optarg;
   
@@ -131,7 +131,7 @@ main(int argc,char **argv)
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nbr_fl=0;
   int opt;
-  int rcd=NC_NOERR; /* [rcd] Return code */
+  int rcd; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
     
   lmt_sct *lmt;
@@ -776,7 +776,7 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
   int nbr_dim;
   int nbr_dmn_in;
   int nbr_dmn_out;
-  int rcd=NC_NOERR; /* [rcd] Return code */
+  int rcd; /* [rcd] Return code */
   int var_in_id;
   int var_out_id;
 
