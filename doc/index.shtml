@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.251 2004-08-24 05:02:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.252 2004-08-29 00:36:11 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -114,11 +114,12 @@ itself: there are no restrictions on the contents of the
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> or 
 <a href="http://hdf.ncsa.uiuc.edu">HDF4</a> file(s) used as input. 
 The internal routines of NCO are completely dynamic which means that
-NCO imposes no limit on the number of dimensions, sizes of variables,
-files etc. 
+NCO imposes no limit on the number or sizes of dimensions, variables,
+and files.
 NCO is designed to be used both interactively and with large batch jobs.
-There are plenty of command line (i.e., runtime) options, but the defaults
-settings are often sufficient for everyday needs.
+The default operator behavior is often sufficient for everyday needs, 
+and there are numerous command line (i.e., run-time) options, for
+special cases.
 NCO works well on all modern operating systems, including:
 Apple OS&nbsp;X, *BSD, Cray UNICOS, DEC Tru64, IBM AIX, HPUX,
 Linux, Microsoft Windows, NEC Super&nbsp;UX, SGI IRIX, and Sun
@@ -149,20 +150,16 @@ e.g., total, minimum, maximum, RMS:
 <h2>How to Contribute</h2>
 <p>In March, 2000, NCO became an Open Source project hosted by
 <a href="http://sf.net">SourceForge.net</a>.
-This greatly facilitated collaboration and code contribution by a wide
-variety of people.  
+This facilitates collaboration, code contributions, and support.
 There is a <a href="./TODO">TODO list</a> about 200 items long! 
 No matter what your programming background there is a task you can help with. 
 From re-organizing the TODO list itself, to improving this cheesy
 webpage, to documentation, to designing and implementing new features
 and interfaces, we need your help!   
-The <a href="http://sf.net/projects/nco">NCO project
-homepage</a> contains mailing lists, discussion forums, and
+The <a href="http://sf.net/projects/nco">NCO project homepage</a> contains mailing lists, discussion forums, and
 instructions to make contributing to NCO easy.
 
-<p>NCO development is completely voluntary and has never benefitted
-from institutional support.
-As of June, 2003, you may use PayPal to donate money to support NCO development.
+<p>As of June, 2003, you may use PayPal to donate money to support NCO development.
 Your donation will be distributed to NCO developers as an incentive
 for them to tackle <a href="./TODO"><tt>TODO</tt></a> items on a
 pay-per-feature basis.
@@ -178,8 +175,10 @@ pay-per-feature basis.
 </form>
 These homepage donation counters track the influence of your monetary
 donations on NCO development: 
-<dt>Donations received between 20030624 and 20040807: US$10.00.
-<dt>NCO features "incentivized" by these donations: None.
+<dt>Donations received between 20030624 and 20040807: US$10.00.</dt>
+<dt>NCO features "incentivized" by these donations: None.</dt>
+NCO development was completely voluntary and never benefitted from
+institutional support until Sep.&nbsp;1, 2004. 
 <hr></p>
 
 <dt><a name="News"></a></dt>
@@ -188,21 +187,30 @@ donations on NCO development:
 
   <li>August&nbsp;21, 2004:
   <a name="prp_sei"><b>NCO/SDO Proposal</b></a>:
-  The <a href="http://www.nsf.gov">National Science Foundation (NSF)</a> has funded the
+  The <a href="http://www.nsf.gov">National Science Foundation (NSF)</a> awarded funding to our
   <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO/SDO Proposal</a>!
-  Thanks to the wise, generous, and, need I add, good-looking, proposal
-  reviewers and staff of the Divisions of
+  Thanks to the wise, generous, and, need I add, good-looking, proposal reviewers and staff of the Divisions of
   <a href="http://www.cise.nsf.gov/div/index.cfm?div=iis">Information and Intelligent Systems (IIS)</a>
   and
   <a href="http://www.cise.nsf.gov/div/index.cfm?div=sci">Shared Cyberinfrastructure (SC)</a>
   in the 
   <a href="http://www.nsf.gov/home/cise">Directorate for Computer and Information Science and Engineering (CISE)</a>.
-  We will soon devise a new mechanism to update users on our plans and progress towards the proposal's objectives.
-  This URL 
+
+  With three-years of funding likely, we are now recruiting talent to work on SDO.
+  We seek a
+  <a href="http://dust.ess.uci.edu/hire/prg_anl_03_adv.pdf">full-time programmer</a> 
+  to help design, implement, and release major code changes, and a 
+  <a href="http://dust.ess.uci.edu/hire/sdn_grd_02_adv.pdf">graduate student researcher</a> 
+  to design and implement &ldquo;grid-enabled&rdquo; features, and to
+  help demonstrate their efficacy analyzing climate prediction datasets.
+  Contact us if you are seriously interested in tackling these
+  problems on a full-time, part-time, or pay-per-feature basis.  
+  We will soon implement a better mechanism to update users on our plans and progress towards the proposal's objectives.
+  The URL 
   <a href="http://nco.sf.net#prp_sei"><tt>http://nco.sf.net#prp_sei</tt></a> 
   will always point to the most up-to-date information on the NCO/SDO
   proposal. 
-</li>
+  </li>
 
 <li>August&nbsp;7, 2004: New operator <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released&mdash;performs arbitrary dimension re-ordering and reversal
 </li>
