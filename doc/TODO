@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.117 2002-01-28 02:19:07 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.118 2002-01-28 10:08:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -26,6 +26,8 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
   The indicated argument is incompatible with the corresponding formal parameter.
         __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
 9. Add outer loop over files so script may apply to each file
+10. Add lmt information to LHS casting
+11. Add LHS casting dimensions to output file after dmn_dfn()
 
 Top priority items You can help with:
 41. Use getopt_long() from FSF or Sittler (BSD version)
