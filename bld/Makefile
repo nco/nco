@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.91 2001-05-08 01:36:03 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.92 2001-05-09 05:57:05 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -771,7 +771,7 @@ rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., su
 	rpm -ba nco.spec; \
 	scp /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm zender@ftp.cgd.ucar.edu:/ftp/pub/zender/nco
 	scp /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm zender@nco.sourceforge.net:/home/groups/ftp/pub/nco
-	ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.0.0-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.0.0-*.i386.rpm
+	ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.0.0-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.0.0-*.i386.rpm /usr/src/redhat/SOURCES/nco-2.0.0.tar.gz
 rpm_cln:
 	rpm --erase $(MDL_RPM_NST_NM)
 # Targets in dat
