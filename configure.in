@@ -275,10 +275,22 @@ if test "$enable_dods" != "no"; then
   # these must all be present for DODS to work.  If all present, enable_dods=yes
   # nc-dods requires dap++ to link with success
   nco_old_LIBS="$LIBS"
-  AC_CHECK_LIB([stdc++], [cerr],,enable_dods=no)
+
+dnl the following tests are mutually exclusive.
+dnl uncomment the following for version 3.2
+#  AC_CHECK_LIB([z], [inflate],,enable_dods=no)
+#  AC_CHECK_LIB([www], [HTLibInit],,enable_dods=no)
+#  AC_CHECK_LIB([rx],[main],,enable_dods=no)
+dnl uncomment the following for version 3.4
   AC_CHECK_LIB([z], [inflate],,enable_dods=no)
-  AC_CHECK_LIB([www], [HTLibInit],,enable_dods=no)
-  AC_CHECK_LIB([rx], [main],,enable_dods=no)
+  AC_CHECK_LIB([dl], [dlopen],,enable_dods=no)
+  AC_CHECK_LIB([pthread], [pthread_once],,enable_dods=no)
+  AC_CHECK_LIB([curl], [curl_easy_init],, enable_dods=no)
+  AC_CHECK_LIB([xml2], [xmlParseDocument],, enable_dods=no)
+
+  # just assume this is available, I don't know how to look for it
+  LIBS="-lstdc++ $LIBS"
+
 dnl add these libs now to resolve interdependency when -lnc-dods is checked
   LIBS="-ldap++ -lnc-dods -ldap++ $LIBS"
   AC_CHECK_LIB([nc-dods],[nc_open],,enable_dods=no)
@@ -289,7 +301,8 @@ dnl add these libs now to resolve interdependency when -lnc-dods is checked
   elif test "$enable_dods" = "yes"; then
     AC_DEFINE(ENABLE_DODS, 1, have DODS support)
     AC_MSG_NOTICE([DODS support enabled])
-    LIBS="-lnc-dods -ldap++ -lnc-dods -ldap++ -lrx -lwww -lz -lstdc++ $nco_old_LIBS"
+dnl libtool will clean up duplicate library links such as ldap++ and lnc-dods
+dnl above unless we tell it not to.
     LIBTOOL="$LIBTOOL --preserve-dup-deps"
   fi
 fi
