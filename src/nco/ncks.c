@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.90 2003-08-16 00:55:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.91 2003-08-16 19:54:56 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -55,13 +55,13 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
-#ifdef NEED_GETOPT_LONG
+#ifndef HAVE_GETOPT_LONG
 #include "nco_getopt.h"
 #else /* !NEED_GETOPT_LONG */ 
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>
 #endif /* !HAVE_GETOPT_H */ 
-#endif /* !NEED_GETOPT_LONG */
+#endif /* HAVE_GETOPT_LONG */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -106,8 +106,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.90 2003-08-16 00:55:28 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.90 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.91 2003-08-16 19:54:56 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.91 $";
   
   extern char *optarg;
   

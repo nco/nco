@@ -40,7 +40,6 @@ ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
 AMDEP_TRUE = @AMDEP_TRUE@
 AMTAR = @AMTAR@
-AR = @AR@
 AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
@@ -66,8 +65,6 @@ ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
 EXEEXT = @EXEEXT@
-F77 = @F77@
-FFLAGS = @FFLAGS@
 HDF5_ROOT = @HDF5_ROOT@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -108,10 +105,8 @@ TEST_DODS_FALSE = @TEST_DODS_FALSE@
 TEST_DODS_TRUE = @TEST_DODS_TRUE@
 VERSION = @VERSION@
 YACC = @YACC@
-ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
-ac_ct_F77 = @ac_ct_F77@
 ac_ct_RANLIB = @ac_ct_RANLIB@
 ac_ct_STRIP = @ac_ct_STRIP@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
@@ -153,14 +148,14 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-@BUILD_NCAP_TRUE@NCAP = ncap
 @BUILD_NCAP_FALSE@NCAP = 
+@BUILD_NCAP_TRUE@NCAP = ncap
 @TEST_DODS_FALSE@DODS_TESTS = 
 
 @TEST_DODS_TRUE@DODS_TESTS = test2.sh
-@NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT = 
 
 @NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT = nco_getopt.c
+@NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT = 
 
 bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncra ncrename ncwa
 
@@ -765,9 +760,9 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-rm -f ncap_yacc.c
 	-rm -f ncap_lex.c
 	-rm -f ncap_yacc.h
-	-rm -f ncap_yacc.c
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
