@@ -4,9 +4,11 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.103 2002-07-02 01:47:26 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.104 2002-07-03 20:37:24 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
+
+NB: texi2dvi nco.texi does not work on RHL 7.2
 
 After editing any hyperlink locations, use 
 C-c C-u C-a	texinfo-all-menus-update
@@ -63,12 +65,12 @@ END-INFO-DIR-ENTRY
 @clear smallbook
 
 @c Define edition, date, ...
-@set nco-edition 2.5.0
-@set doc-edition 2.5.0
+@set nco-edition 2.5.1
+@set doc-edition 2.5.1
 @set copyright-years 1995--2002
 @set update-year 2002
-@set update-date 15 June 2002
-@set update-month June 2002
+@set update-date 15 July 2002
+@set update-month July 2002
 
 @c Experiment with smaller amounts of whitespace between chapters and sections
 @tex
@@ -4001,9 +4003,17 @@ file.
 Thus @code{-a} retains the original ordering of the variables.
 
 @cindex binary format
-@cindex @code{-b}
-@item -b 
+@cindex @code{-B}
+@item -B @file{binary-file}
+Activate native machine binary output writing to the default binary
+file, @file{ncks.bnr}. 
+The @code{-B} switch is redundant when the @code{-b} @file{binary-file} 
+option is specified, and native binary output will be directed to
+@file{binary-file}. 
 
+@cindex @code{-b}
+@item -b @file{binary-file}
+Activate native machine binary output writing to file @file{binary-file}.
 
 @cindex stride
 @item -d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]

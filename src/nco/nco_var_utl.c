@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.14 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.15 2002-07-03 20:37:24 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -1084,7 +1084,8 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
       if(!strcmp(dmn_nm,dim[dmn_idx]->nm)) break;
     } /* end for */
     if(dmn_idx == nbr_dim){
-      (void)fprintf(stdout,"%s: ERROR dimension %s is not in input dimension list\n",prg_nm_get(),dmn_nm);
+      (void)fprintf(stdout,"%s: ERROR dimension %s is not in list of dimensions available to nco_var_fll()\n",prg_nm_get(),dmn_nm);
+      (void)fprintf(stdout,"%s: HINT This could be the problem identified in TODO #111. Workaround is to make sure each dimension in the weighting and masking variable(s) appears in a variable to be processed.\n",prg_nm_get(),dmn_nm);
       nco_exit(EXIT_FAILURE);
     } /* end if */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.6 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.7 2002-07-03 20:37:24 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -751,7 +751,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   
   if(lmt.srt > lmt.end && !flg_no_data){
     if(prg_id != ncks) (void)fprintf(stderr,"WARNING: Possible instance of Schweitzer data hole requiring better diagnostics TODO #148\n");
-    if(prg_id != ncks) (void)fprintf(stderr,"HINT: If operation fails, try hyperslabbing wrapped dimension using ncks instead of %s\n",prg_nm_get());
+    if(prg_id != ncks) (void)fprintf(stderr,"HINT: If operation fails, try hyperslabbing wrapped dimension using ncks first, and then apply %s to the resulting file\n",prg_nm_get());
   } /* end dbg */
 
 } /* end nco_lmt_evl() */

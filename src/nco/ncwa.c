@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.84 2002-06-17 00:06:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.85 2002-07-03 20:37:24 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.84 2002-06-17 00:06:02 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.84 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.85 2002-07-03 20:37:24 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.85 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -492,7 +492,8 @@ main(int argc,char **argv)
       int wgt_id;
       
       rcd=nco_inq_varid(in_id,wgt_nm,&wgt_id);
-      wgt=nco_var_fll(in_id,wgt_id,wgt_nm,dim,nbr_dmn_fl);
+      /* fxm: TODO #111 core dump if wgt has dimension not in extraction list */
+      wgt=nco_var_fll(in_id,wgt_id,wgt_nm,dim,nbr_dmn_xtr);
       
       /* Retrieve weighting variable */
       (void)nco_var_get(in_id,wgt); /* Routine contains OpenMP critical regions */
@@ -508,7 +509,8 @@ main(int argc,char **argv)
       int msk_id;
       
       rcd=nco_inq_varid(in_id,msk_nm,&msk_id);
-      msk=nco_var_fll(in_id,msk_id,msk_nm,dim,nbr_dmn_fl);
+      /* fxm: TODO #111 core dump if msk has dimension not in extraction list */
+      msk=nco_var_fll(in_id,msk_id,msk_nm,dim,nbr_dmn_xtr);
       
       /* Retrieve mask variable */
       (void)nco_var_get(in_id,msk); /* Routine contains OpenMP critical regions */

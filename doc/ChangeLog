@@ -1,3 +1,11 @@
+2002-07-03  Charlie Zender  <zender@uci.edu>
+
+	* Document ncks -b, -B switches in manual
+
+	* Fix size of extracted dimension list for wgt and var calls to
+	nco_var_fll(). Print error and hint when encountering TODO #111
+	problems rather than dumping core.
+
 2002-07-01  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_5_1

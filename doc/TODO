@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.151 2002-06-17 00:06:02 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.152 2002-07-03 20:37:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -100,6 +100,10 @@ ncdump foo.nc
 111. Investigate whether using ncwa to average files where variables of type 
 NC_CHAR have a record dimension causes core dumps or other problems.
 i.e., LSM variable timecom caused subtle ncra problems for a while.
+Problem caused when weight or mask has dimension not in dimension extraction list
+ncwa -O -C -D 5 -v fl_nm -w gw ~/nco/data/in.nc ~/foo.nc
+fails because fl_nm has dimension char_dmn_lng but gw has dimension lat
+call to nco_var_fll() for gw requires that lat be in dmn_lst
 113. Rethink normalization switch options in ncwa
 114. Fix nco_var_cnf_dmn() so that returned weight always has same size tally array as template variable
 115. When sum of denominator in ncwa (i.e., sum of weight) is zero, SIGFPE results 
@@ -215,10 +219,7 @@ ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 224. Copy var_nm from command line so program, not system, owns memory. Then modify nco_var_free() to release var_nm structure member, and nco_var_dpl() to copy it. Same for dimension names and nco_dmn_dpl()
 225. Pass aed by reference in nco_aed_prc()
 226. See if xrf in nco_var_cnf_dmn() is really necessary, if not, remove it and make wgt arg const var_sct * const
-227. Document binary write ability and -B switch for ncks
 228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
-229. Fix AIX -qwarn64 messages from converting long to size_t, etc.
-230. Cast size_t to unsigned long in printf statements and use %lu to avoid warnings (GNU has non-portable %z)
 ************************************************************************
 End NCO Wish list
 ************************************************************************
