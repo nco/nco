@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.28 2001-09-19 06:45:09 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.29 2001-09-26 16:19:17 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -83,7 +83,7 @@ http://lists.sourceforge.net/mailman/admin/nco-announce
 
 Contributors with active projects:
 Name, E-mail, Sourceforge name, Project
-Henry Butowsky <thin@thin.screaming.net> butowksy ncap
+Henry Butowsky <thin@thin.screaming.net> ncap
 James Watson <jwatson@csee.uq.edu.au> autoconf
 gautam <gautamdhar@hotmail.com> getopt?
 Jason Dale Robey <jrobey@users.sourceforge.net> getopt? (Bad email,
