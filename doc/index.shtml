@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.203 2004-03-05 20:38:54 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.204 2004-03-11 06:07:46 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -442,6 +442,7 @@ Users at NCAR should try the <i>supported</i> executables in
 <tt>/usr/local/bin</tt> first. 
 <ul>
 <li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.4.20): <tt>/home/zender/bin/LINUX</tt></li>
+<li>ESS <tt>esmf.ess.uci.edu</tt> (AIX 5.1.1.0): <tt>/home/zender/bin/LINUX</tt></li>
 <li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
 <li>CGD network (Solaris 2.7): <tt>/home/zender/bin/SUNMP</tt></li>
 <li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5): <tt>/home/dataproc/zender/bin/SGIMP64</tt></li>
