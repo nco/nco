@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.15 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.16 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_mss_val.h" /* Missing value utilities */
@@ -187,12 +187,12 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
   var->mss_val.vp=nco_free(var->mss_val.vp);
 
   /* Refresh number of attributes for variable */
-  (void)nco_inq_varnatts(var->nc_id,var->id,&var->nbr_att);
+  (void)nco_inq_varnatts(nc_id,var->id,&var->nbr_att);
 
   for(idx=0;idx<var->nbr_att;idx++){
-    (void)nco_inq_attname(var->nc_id,var->id,idx,att_nm);
+    (void)nco_inq_attname(nc_id,var->id,idx,att_nm);
     if((int)strcasecmp(att_nm,"missing_value") != 0) continue;
-    (void)nco_inq_att(var->nc_id,var->id,att_nm,&att_typ,&att_sz);
+    (void)nco_inq_att(nc_id,var->id,att_nm,&att_typ,&att_sz);
     if(att_sz != 1 && att_typ != NC_CHAR){
       (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s has %li elements and so will not be used\n",prg_nm_get(),att_nm,var->nm,att_sz);
       continue;
@@ -203,7 +203,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
     /* Oddly, ARM uses NC_CHAR for type of missing_value, so we must make allowances for this */
     att_lng=att_sz*nco_typ_lng(att_typ);
     mss_tmp.vp=(void *)nco_malloc(att_lng);
-    (void)nco_get_att(var->nc_id,var->id,att_nm,mss_tmp.vp,att_typ);
+    (void)nco_get_att(nc_id,var->id,att_nm,mss_tmp.vp,att_typ);
     if(att_typ == NC_CHAR){
       /* NUL-terminate missing value string */
       if(mss_tmp.cp[att_lng-1] != '\0'){

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.267 2004-01-02 23:26:48 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.268 2004-01-05 17:29:05 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -11,7 +11,6 @@ NCO-wide items: 15 high priority items are shown first, then another ~100 items
 
 Autoconf-build items:
 14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
-22. Many compiler flags in configure.in should be compiler specific--not just OS specific, e.g., case $host in *-cray-unicos) case $CC in CC) CFLAGS= ....
 23. Implement ncra i18n support I18N with autotools: Add .po files, update doc/i18n.txt
 24. --enable-[debug/optimize]-custom dies on ncdiff re-link in 'make install'
 
@@ -68,6 +67,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 ../src/nco/ncks.c:396: warning: implicit declaration of function `nco_msa_clc_cnt'
 ../src/nco/ncks.c:436: warning: implicit declaration of function `nco_cpy_var_val_mlt_lmt'
 ../src/nco/ncks.c:476: warning: implicit declaration of function `nco_msa_prn_var_val'
+45. 
 
 Highest priority NCO-wide items that You can help with:
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
@@ -184,12 +184,6 @@ This may make sense, e.g., for 1-D record variables of different lengths, but no
 Former case should print warning, latter case should exit with error
 193. Convert dimension sizes from type "long int" to type "size_t"?
 195. Itanium builds!
-196. ncwa errors in nco_tst.pl tests 15--29 when built with HDF4 libraries
-No ncwa problems when built with NETCDF2_ONLY with Unidata libraries
-197. Construct HDF format in.hdf from in.cdl for testing HDF-enabled NCO:
-ncks -O in.nc in.hdf 
-Command executes but in.hdf is full of screwy values
-198. HDF-enabled ncgen does not parse in.cdl
 199. Internationalize (i18n) NCO with gettext()
 203. Perform benchmarking tests to quantify arithmetic performance improvements, I/O bottlenecks, etc.
 206. Add sample NCO script, such as dst.sh, to doc directory
@@ -235,7 +229,7 @@ ncap -O  -D3 -s 'cp=pack(cp)' /data/zender/tmp/sum.nc /data/zender/tmp/packed_su
 ncbo -O -y add -D 3 ${HOME}/debug/hundred.nc ${HOME}/debug/hundred.nc ${HOME}/debug/sum.nc
 ncap -O -D 3 -s 'cp=pack(cp)' ${HOME}/debug/sum.nc ${HOME}/debug/pack_sum.nc
 287. Fix debug OMP OpenMP implementation in ncra
-289. Unpacking problem with NOAA data:
+289. Unpacking problem with NOAA data? 20040104: Fixed with lib re-write?
 These work as expected, leaving value packed:
 ncks -O -C -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo.nc
 This is broken, gives incorrect result (262.5 instead of 100920):
@@ -244,17 +238,19 @@ This works as expected, giving correct result (3):
 ncap -O -D 1 -v -s "upk=unpack(pck)" -C ~/nco/data/in.nc ~/foo1.nc
 ncks -m -H ~/foo1.nc
 Arithmetic operator gives garbage answers  (262.5 instead of 100920):
-ncwa -O -C -a lat,lon,time -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo.nc
-ncks -m -H ~/foo.nc
+ncwa -O -C -a lat,lon,time -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo1.nc
+ncea -O -C -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo1.nc
+ncea -O -C ~/foo.nc ~/foo1.nc
+ncks -m -C -v pres -H ~/foo1.nc
 292. nco_fl_utl.c: Use autoconf HAVE_NETWORK instead of WIN32
 293. nco_fl_utl.c: Use autoconf HAVE_MKDIR_M instead of SUN4
-294. Globals in NCO operators are prg, prg_nm, dbg_lvl. 
+294. Globals variable in NCO operators are prg, prg_nm, dbg_lvl 
 If possible, modify so that shared-library (rather than main.c) holds
 and returns thread-specific values for each, set with, e.g., prg_set().
+Make prg, prg_nm, and dbg_lvl local to main(), not global to main.c
 295. Understand/maintain re-entrant behavior of shared library.
-296. Completely de-lint NCO with --enable-debug-custom
 297. Fix fabsf() powf() etc warnings with --enable-debug-custom
-298. 
+298. ncap has three globals: ncl_dpt_crr, ln_nbr_crr, fl_spt_glb
 ************************************************************************
 End NCO Wish list
 ************************************************************************

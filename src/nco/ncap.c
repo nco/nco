@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.120 2004-01-01 22:42:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.121 2004-01-05 17:29:05 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -70,9 +70,9 @@
 #include "libnco.h" /* netCDF operator library */
 
 /* Global variables */
-size_t ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap.l) */
-size_t *ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
-char **fl_spt_glb; /* [fl] Script file */
+size_t ncap_ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap.l) */
+size_t *ncap_ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
+char **ncap_fl_spt_glb; /* [fl] Script file */
 
 int 
 main(int argc,char **argv)
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.120 2004-01-01 22:42:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.120 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.121 2004-01-05 17:29:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.121 $";
   const char * const opt_sng="ACcD:d:Ffhl:n:Op:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -476,13 +476,13 @@ main(int argc,char **argv)
   prs_arg.nbr_dmn_out=&nbr_dmn_out; /* number of dims in above list */
   prs_arg.sym_tbl=sym_tbl; /* [fnc] Symbol table for functions */
   prs_arg.sym_tbl_nbr=sym_tbl_nbr; /* [nbr] Number of functions in table */
-  prs_arg.ntl_scn=False; /* No longer do an initial scan */
+  prs_arg.ntl_scn=False; /* [flg] Initial scan of script */
   prs_arg.var_LHS=NULL; /* [var] LHS cast variable */
   prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
   
   /* Initialize line counter */
-  ln_nbr_crr=(size_t *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1UL); 
-  ln_nbr_crr[ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap.l */
+  ncap_ln_nbr_crr=(size_t *)nco_realloc(ncap_ln_nbr_crr,ncap_ncl_dpt_crr+1UL); 
+  ncap_ln_nbr_crr[ncap_ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap.l */
   if(fl_spt_usr == NULL){
     /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0){
@@ -491,28 +491,26 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
     } /* end if */
     
-    /* Print all command line scripts */
+    /* Print all command-line scripts */
     if(dbg_lvl_get() > 0){
       for(idx=0;idx<nbr_spt;idx++) (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
     } /* endif debug */
     
-    /* Run parser on command line scripts */
+    /* Parse command line scripts */
     fl_spt_usr=(char *)strdup("Command-line script");
     yy_scan_string(spt_arg_cat);
     
   }else{ /* ...endif command-line scripts, begin script file... */
-    
     /* Open script file for reading */
     if((yyin=fopen(fl_spt_usr,"r")) == NULL){
       (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt_usr);
       nco_exit(EXIT_FAILURE);
     } /* end if */
-    
-  } /* end else */
+  } /* end else script file */
   
   /* Copy script file name to global variable */
-  fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1UL); 
-  fl_spt_glb[ncl_dpt_crr]=fl_spt_usr;
+  ncap_fl_spt_glb=(char **)nco_realloc(ncap_fl_spt_glb,ncap_ncl_dpt_crr+1UL); 
+  ncap_fl_spt_glb[ncap_ncl_dpt_crr]=fl_spt_usr;
   
   /* Invoke parser */
   rcd=yyparse((void *)&prs_arg);
@@ -532,12 +530,12 @@ main(int argc,char **argv)
   } /* endif */
   
   if(!PROCESS_ALL_VARS){
-    /* Make list of vars of new attributes whose parent var is ONLY in input file */
+    /* Make list of variables of new attributes whose parent variable is ONLY in input file */
     xtr_lst=nco_att_lst_mk(in_id,out_id,att_lst,nbr_att,&nbr_xtr);
   } /* endif */
-    /* Find dims associated with xtr_lst */
+    /* Find dimensions associated with xtr_lst */
     /* Write to O only new dims
-       Add apropriate co-ordinate vars to extraction list 
+       Add apropriate coordinate variables to extraction list 
        options -c      -process all cordinates 
        i.e add  co-ords to var list 
        Also add their dims
@@ -547,53 +545,53 @@ main(int argc,char **argv)
        
        options -C         no co-ordinates   Do nothing */
   
-    /* Subtract list a again */
-    /* Finally extract vars on list */
+    /* Subtract list A again */
+    /* Finally extract variables on list */
   
-  /* Subtract list a */
-  if(nbr_lst_a > 0) xtr_lst=nco_var_lst_sub(xtr_lst, &nbr_xtr,xtr_lst_a,nbr_lst_a);
+  /* Subtract list A */
+  if(nbr_lst_a > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
   
   (void)nco_redef(out_id);
   
-  /* Make list of dims of vars in xtr_lst */
+  /* Make list of dimensions of variables in xtr_lst */
   if(nbr_xtr > 0) dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_ass);
   
-  /* Find and add any new dims to output */
+  /* Find and add any new dimensions to output */
   for(idx=0;idx<nbr_dmn_ass;idx++)
     for(jdx=0;jdx<nbr_dmn_in;jdx++){
-      /* if dimension in list and it hasn't been defined yet */
+      /* If dimension is in list and is not yet defined */
       if(!strcmp(dmn_lst[idx].nm, dmn_in[jdx]->nm) && !dmn_in[jdx]->xrf){     
-	/* add dim to output list dmn_prc */
+	/* Add dimension to output list dmn_prc */
 	dmn_new=nco_dmn_out_grow((void *)&prs_arg);
 	*dmn_new=nco_dmn_dpl(dmn_in[jdx]);
 	(void)nco_dmn_xrf(*dmn_new,dmn_in[jdx]);
-	/* write dim to output */
+	/* Write dimension to output */
 	(void)nco_dmn_dfn(fl_out,out_id,dmn_new,1);
 	break;
       } /* endif */
     } /* end loop over jdx */
   
-  /* All dims for all vars are now in output */
-  /* Need to add co-ordinate vars to extraction list */
-  /* if PROCESS_ALL_COORDINATES then the associated DIM needs to written to output */
+  /* All dimensions for all variables are now in output
+     Add coordinate variables to extraction list
+     If PROCESS_ALL_COORDINATES then write associated dimension to output */
   if(PROCESS_ASSOCIATED_COORDINATES){
     for(idx=0; idx <nbr_dmn_in; idx++){
       if(!dmn_in[idx]->is_crd_dmn) continue;
       
       if(PROCESS_ALL_COORDINATES && !dmn_in[idx]->xrf){
-	/* Add dim to output list dmn_out */
+	/* Add dimensions to output list dmn_out */
 	dmn_new=nco_dmn_out_grow((void *)&prs_arg);
 	*dmn_new=nco_dmn_dpl(dmn_in[idx]);
 	(void)nco_dmn_xrf(*dmn_new,dmn_in[idx]);
-	/* write dim to output */
+	/* Write dimension to output */
 	(void)nco_dmn_dfn(fl_out,out_id,dmn_new,1);
       } /* end if */
-      /* Add co-ordinate var to extraction list, dim has already been output */
+      /* Add coordinate variable to extraction list, dimension has already been output */
       if(dmn_in[idx]->xrf){
 	for(jdx=0;jdx<nbr_xtr;jdx++)
 	  if(!strcmp(xtr_lst[jdx].nm,dmn_in[idx]->nm)) break;
 	if(jdx != nbr_xtr) continue;
-	/* If co-ord is not on list then add it to extraction list */
+	/* If coordinate is not on list then add it to extraction list */
 	xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(nbr_xtr+1)*sizeof(nm_id_sct));     
 	xtr_lst[nbr_xtr].nm=(char *)strdup(dmn_in[idx]->nm);
 	xtr_lst[nbr_xtr++].id=dmn_in[idx]->cid;
@@ -601,7 +599,7 @@ main(int argc,char **argv)
     } /* end loop over idx */	      
   } /* end if */ 
   
-    /* Subtract list a again (it may contain re-defined co-ordinates) */
+  /* Subtract list A again (it may contain re-defined coordinates) */
   if(nbr_xtr >0) xtr_lst=nco_var_lst_sub(xtr_lst, &nbr_xtr,xtr_lst_a,nbr_lst_a);
   
   /* Sort extraction list for faster I/O */
@@ -620,7 +618,7 @@ main(int argc,char **argv)
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
   
-  /* NB: ncap is not suited for nco_var_lst_dvd() */
+  /* NB: ncap is not well-suited for nco_var_lst_dvd() */
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   

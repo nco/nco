@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.18 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.19 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_pck.h" /* Packing and unpacking variables */
@@ -46,8 +46,8 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
      to each read of a variable, in case that variable has been unpacked. */
   /* ncea -O -D 3 -v pck ~/nco/data/in.nc ~/nco/data/foo.nc */
 
-  char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
-  char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+  const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+  const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   
   int rcd; /* [rcd] Return success code */
 
@@ -133,8 +133,8 @@ nco_var_upk /* [fnc] Unpack variable in memory */
   /* Purpose: Unpack variable
      Routine is inverse of nco_var_pck(): nco_var_upk[nco_var_pck(var)]=var */
 
-  char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
-  char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+  const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+  const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
 
   /* Return if variable in memory is not currently packed */
   if(!var->pck_ram) return var;

@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.93 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.94 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "ncap.h" /* netCDF arithmetic processor */
@@ -13,7 +13,7 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
 {
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */
-  /* char fnc_nm[]="ncap_var_init()"; *//* [sng] Function name */
+  /* const char fnc_nm[]="ncap_var_init()"; *//* [sng] Function name */
 
   int idx;
   int jdx;
@@ -878,7 +878,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
   
   if(var_lsr_out == NULL){
     /* Expand lesser variable (var_lsr) to match size of greater variable */
-    char fnc_nm[]="ncap_var_stretch()"; /* [sng] Function name */
+    const char fnc_nm[]="ncap_var_stretch()"; /* [sng] Function name */
     char *var_lsr_cp;
     char *var_lsr_out_cp;
     

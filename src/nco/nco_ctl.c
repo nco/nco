@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.33 2004-01-02 20:22:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.34 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_ctl.h" /* Program flow control functions */
@@ -38,7 +38,10 @@ bool /* [flg] Program does arithmetic */
 is_rth_opr /* [fnc] Query whether program does arithmetic */
 (const int prg_id) /* [enm] Program ID */
 {
-  /* Purpose: Does operator do arithmetic? */
+  /* Purpose: Does operator do arithmetic?
+     Consequences are operator specific
+     Currently, arithmetic operators automatically unpack variables by default 
+     Non-arithmetic operators do not unpack variables */
   switch(prg_id){
   case ncap: 
   case ncbo:

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.9 2004-01-01 20:41:43 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.10 2004-01-05 17:29:05 zender Exp $ 
 
 // Implementation (declaration) of C++ interface utilities for netCDF routines
 
@@ -88,6 +88,7 @@ nco_inq_varsz // [fnc] Compute size of variable
   // Purpose: Compute size (number of elements) in specified variable
   size_t var_sz; // O [nbr] Variable size
   int rcd=nco_inq_varsz(nc_id,var_id,var_sz);
+  rcd+=0; /* CEWI */
   return var_sz;
 } // end nco_inq_varsz()
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.96 2004-01-01 22:42:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.97 2004-01-05 17:29:05 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -7,8 +7,29 @@
    to a single file. */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
-   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
+   The full license text is at http://www.gnu.ai.mit.edu/copyleft/gpl.html 
+   and in the file nco/doc/LICENSE in the NCO source distribution.
+   
+   As a special exception to the terms of the GPL, you are permitted 
+   to link the NCO source code with the DODS, HDF, netCDF, and UDUnits
+   libraries and to distribute the resulting executables under the terms 
+   of the GPL, but in addition obeying the extra stipulations of the 
+   DODS, HDF, netCDF, and UDUnits licenses.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  
+   See the GNU General Public License for more details.
+   
+   The original author of this software, Charlie Zender, wants to improve it
+   with the help of your suggestions, improvements, bug-reports, and patches.
+   Please contact the NCO project at http://nco.sf.net or by writing
+   Charlie Zender
+   Department of Earth System Science
+   University of California at Irvine
+   Irvine, CA 92697-3100 */
 
 /* Usage:
    ncra -n 3,4,1 -p /data/zender/tmp h0001.nc foo.nc
@@ -20,8 +41,7 @@
    ncea -n 3,4,1 -p /data/zender/tmp h0001.nc foo.nc
    ncea -n 3,4,1 -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
    ncea -n 3,4,1 -p /ZENDER/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
-   ncea -n 3,4,1 -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc foo.nc
- */
+   ncea -n 3,4,1 -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc foo.nc */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -95,8 +115,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.96 2004-01-01 22:42:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.96 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.97 2004-01-05 17:29:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.97 $";
   const char * const opt_sng="ACcD:d:Fhl:n:Op:P:rRv:xy:-:";
 
   dmn_sct **dim;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.60 2004-01-01 22:42:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.61 2004-01-05 17:29:05 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -84,8 +84,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.60 2004-01-01 22:42:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.60 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.61 2004-01-05 17:29:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.61 $";
   const char * const opt_sng="a:D:d:hl:Op:rv:-:";
 
   extern char *optarg;
@@ -218,14 +218,14 @@ main(int argc,char **argv)
   if(OUTPUT_TO_NEW_NETCDF_FILE){
 
     if(!FORCE_OVERWRITE){
-      int rcd;
+      int rcd_lcl;
 
       struct stat stat_sct;
       
-      rcd=stat(fl_out,&stat_sct);
+      rcd_lcl=stat(fl_out,&stat_sct);
 
       /* If file already exists, then query user whether to overwrite */
-      if(rcd != -1){
+      if(rcd_lcl != -1){
         char usr_reply='z';
 	short nbr_itr=0;
 
@@ -246,15 +246,15 @@ main(int argc,char **argv)
         if(usr_reply == 'n'){
           nco_exit(EXIT_SUCCESS);
         } /* end if */
-      } /* end if */
-    } /* end if */
+      } /* end if rcd_lcl != -1 */
+    } /* end if FORCE_OVERWRITE */
     
     /* Copy input file to output file and then search through output, 
        changing names on the fly. This avoids possible XDR translation
        performance penalty of copying each variable with netCDF. */
     (void)nco_fl_cp(fl_in,fl_out);
 
-  } /* end if */
+  } /* end if OUTPUT_TO_NEW_NETCDF_FILE */
   
   /* Open file. Writing must be enabled and file should be in define mode for renaming */
   rcd=nco_open(fl_out,NC_WRITE,&nc_id);

@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.7 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.8 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_cln_utl.h" /* Calendar utilities */
@@ -17,8 +17,8 @@ nco_nd2endm /* [fnc] Compute number of days to end of month */
      This number added to the input argument day gives last day of month mth
      Original fortran: Brian Eaton cal_util.F:nd2endm()
      C version: Charlie Zender */
+  const int mdays[]={31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
   int nbr_day_2_mth_end;
-  int mdays[]={31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
   if(mth < 1 || mth > 12 || day < 0){
     (void)fprintf(stdout,"%s: ERROR nco_nd2endm() reports mth = %d, day = %d\n",prg_nm_get(),mth,day);
@@ -40,6 +40,10 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
      C version: Charlie Zender */
 
   /* Local */
+  const long mth_day_nbr[]= /* Number of days in each month */
+  { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
+    31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
+
   long day_nbr_2_eom; /* Days to end of month */
   long day_crr; /* Day of date */
   long day_ncr; /* Running count of days to increment date by */
@@ -48,9 +52,6 @@ nco_newdate /* [fnc] Compute date a specified number of days from input date */
   long mth_srt; /* Save the initial value of month */
   long mth_tmp; /* Current month as we increment date */
   long yr_crr; /* Year of date */
-  long mth_day_nbr[]= /* Number of days in each month */
-  { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
-    31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
   nco_long date_srt; /* Initial value of date (may change sign) */
   nco_long newdate_YYMMDD; /* New date in YYMMDD format */

@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.4 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.5 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_omp.h" /* OpenMP utilities */
@@ -69,6 +69,7 @@ nco_var_prc_crr_prn /* [fnc] Print name of current variable */
 #ifdef _OPENMP
   (void)fprintf(stderr,"%s: INFO Thread #%d processing var_prc[%d] = \"%s\"\n",prg_nm_get(),omp_get_thread_num(),idx,var_nm);
 #else /* not _OPENMP */
+  rcd+=idx*0; /* CEWI */
   (void)fprintf(stderr,"%s, ",var_nm);
 #endif /* not _OPENMP */
 

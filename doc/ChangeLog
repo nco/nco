@@ -1,3 +1,21 @@
+2004-01-04  Charlie Zender  <zender@uci.edu>
+
+	* Qualify GPL license as Version 2 everywhere
+
+	* Prototype main.c functions prior, rather than post, definition in nco.h
+
+	* prefix ncap global and file scope variables with ncap_ to reduce
+	namespace pollution
+
+	* De-linted nco_c++ library by adding rcd+=0 CEWI statements
+
+2004-01-03  Charlie Zender  <zender@uci.edu>
+
+	* Fix bug where nco_put_varm() called nc_get_varm_float() instead
+	of nc_put_varm_float() 
+
+	* Replace nco_netcdf.h prototypes with type-safe const'ified prototypes
+
 2004-01-02  Charlie Zender  <zender@uci.edu>
 
 	* Use sqrtf() where appropriate

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.10 2004-01-01 20:41:43 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.11 2004-01-05 17:29:05 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -67,10 +67,10 @@ int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 int rcd; /* [enm] Return value for function calls */
 
 /* Global variables */
-extern size_t ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
-extern size_t *ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
-extern char **fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
-extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) */
+extern size_t ncap_ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
+extern size_t *ncap_ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
+extern char **ncap_fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
+extern char ncap_err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) */
 
 /* End C declarations section */
 %}
@@ -189,8 +189,8 @@ PRINT '(' var_xpr ')' ';' {
   ptr_aed->type=$3.type;
   ptr_aed->sz=1L;
   (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
-  if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->fl_out);
-  (void)yyerror(err_sng);
+  if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->fl_out);
+  (void)yyerror(ncap_err_sng);
 
   if(dbg_lvl_get() > 1){
     (void)fprintf(stderr,"Saving in array attribute %s@%s=",$1.var_nm,$1.att_nm);
@@ -219,8 +219,8 @@ PRINT '(' var_xpr ')' ';' {
   strcpy((char *)(ptr_aed->val.cp),$3);
   (void)cast_nctype_void((nc_type)NC_CHAR,&ptr_aed->val);    
   
-  if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
-  (void)yyerror(err_sng);
+  if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
+  (void)yyerror(ncap_err_sng);
   $1.var_nm=(char *)nco_free($1.var_nm);
   $1.att_nm=(char *)nco_free($1.att_nm);
   $3=(char *)nco_free($3);
@@ -237,11 +237,11 @@ PRINT '(' var_xpr ')' ';' {
     ptr_aed->val.vp=(void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
     (void)var_copy(ptr_aed->type,ptr_aed->sz,$3->val,ptr_aed->val);
     /* cast_nctype_void($3->type,&ptr_aed->val); */
-    if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
-    (void)yyerror(err_sng); 
+    if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
+    (void)yyerror(ncap_err_sng); 
   }else{
-    (void)sprintf(err_sng,"Warning: Cannot store in attribute %s@%s a variable with dimension %d",$1.var_nm,$1.att_nm,$3->nbr_dim);
-    (void)yyerror(err_sng);
+    (void)sprintf(ncap_err_sng,"Warning: Cannot store in attribute %s@%s a variable with dimension %d",$1.var_nm,$1.att_nm,$3->nbr_dim);
+    (void)yyerror(ncap_err_sng);
   } /* endif */
   $1.var_nm=(char *)nco_free($1.var_nm);
   $1.att_nm=(char *)nco_free($1.att_nm);
@@ -255,12 +255,12 @@ PRINT '(' var_xpr ')' ';' {
   /* Is variable already in output file? */
   rcd_lcl=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$3->nm,&var_id);
   if(rcd_lcl == NC_NOERR){
-    (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s",$3->nm,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(err_sng);                                   
+    (void)sprintf(ncap_err_sng,"Warning: Variable %s has aleady been saved in %s",$3->nm,((prs_sct *)prs_arg)->fl_out);
+    (void)yyerror(ncap_err_sng);                                   
   }else{  
     (void)ncap_var_write($3,(prs_sct *)prs_arg);
-    if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving variable %s to %s",$3->nm,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(err_sng);
+    if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$3->nm,((prs_sct *)prs_arg)->fl_out);
+    (void)yyerror(ncap_err_sng);
   } /* end else */
   $1=(char *)nco_free($1);
   (void)nco_var_free($3);
@@ -273,8 +273,8 @@ PRINT '(' var_xpr ')' ';' {
   rcd_lcl=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$1,&var_id);
   if(dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: DEBUG out_var_xpr = scv_xpr rule for %s\n",prg_nm_get(),$1);
   if(rcd_lcl == NC_NOERR){
-    (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s",$1,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(err_sng);
+    (void)sprintf(ncap_err_sng,"Warning: Variable %s has aleady been saved in %s",$1,((prs_sct *)prs_arg)->fl_out);
+    (void)yyerror(ncap_err_sng);
   }else{  
     /* Turn attribute into temporary variable for writing */
     var=(var_sct *)nco_malloc(sizeof(var_sct));
@@ -299,8 +299,8 @@ PRINT '(' var_xpr ')' ';' {
     
     (void)ncap_var_write(var,(prs_sct *)prs_arg);
     (void)nco_var_free(var);
-    if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(err_sng);
+    if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
+    (void)yyerror(ncap_err_sng);
   } /* endif */
   $1=(char *)nco_free($1);
 } /* end out_var_xpr '=' scv_xpr */
@@ -311,8 +311,8 @@ PRINT '(' var_xpr ')' ';' {
   var_sct *var;
   rcd_lcl=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$1,&var_id);
   if(rcd_lcl == NC_NOERR){
-    (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s",$1,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(err_sng);  
+    (void)sprintf(ncap_err_sng,"Warning: Variable %s has aleady been saved in %s",$1,((prs_sct *)prs_arg)->fl_out);
+    (void)yyerror(ncap_err_sng);  
   }else{  
     var=(var_sct *)nco_calloc((size_t)1,sizeof(var_sct));
     var->nm=strdup($1);
@@ -324,8 +324,8 @@ PRINT '(' var_xpr ')' ';' {
     (void)cast_nctype_void((nc_type)NC_CHAR,&var->val);
     (void)ncap_var_write(var,(prs_sct *)prs_arg);
     (void)nco_var_free(var);
-    if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
-    (void)yyerror(err_sng);
+    if(dbg_lvl_get() > 0) (void)sprintf(ncap_err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
+    (void)yyerror(ncap_err_sng);
   } /* endelse */
   $1=(char *)nco_free($1);
   $3=(char *)nco_free($3);
@@ -632,7 +632,7 @@ yyerror /* [fnc] Print error/warning/info messages generated by parser */
   
   /* if(eprovoke_skip){eprovoke_skip=False ; return 0;} */
   if(dbg_lvl_get() > 0){
-    (void)fprintf(stderr,"%s: %s line %zu",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ln_nbr_crr[ncl_dpt_crr]);
+    (void)fprintf(stderr,"%s: %s line %zu",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],ncap_ln_nbr_crr[ncap_ncl_dpt_crr]);
     if(dbg_lvl_get() > 1) (void)fprintf(stderr," %s",err_sng_lcl);
     (void)fprintf(stderr,"\n");
     (void)fflush(stderr);

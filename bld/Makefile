@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.229 2004-01-02 20:22:05 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.230 2004-01-05 17:29:04 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -585,11 +585,13 @@ ifneq (${null},$(findstring gcc,${CC}))
 # Compilation flags for numerical routines recommended by GSL 0.9 manual, p. 370
 # CFLAGS += -ansi -Werror -W -Wmissing-prototypes -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -Dinline= -g -O4
 # Compilation flags recommended by GSL that I do not like
+# -ansi: Equivalent to -std=c89, conflicts with -std=c99
 # -Waggregate-return: Warn if functions return aggregates like structures or unions
 # -pedantic: Disallow non ISO constructs, including type long long
 # -Wstrict-prototypes: C only?
 # -Wtraditional: C only?
 # -Wnested-externs: C only?
+# --no-alias? -fstrict-aliasing
 ifeq (${OPTS},O)
  CFLAGS += -O
 endif

@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.5 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.6 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: ARM conventions */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_cnv_arm.h" /* ARM conventions */
@@ -15,9 +15,9 @@ arm_inq /* O [fnc] Check if file obeys ARM conventions */
   /* Purpose: Check whether file adheres to ARM time format */
   bool ARM_FORMAT;
 
-  char time_sng[]="time"; /* CEWI */
-  char base_time_sng[]="base_time"; /* CEWI */
-  char time_offset_sng[]="time_offset"; /* CEWI */
+  const char time_sng[]="time"; /* CEWI */
+  const char base_time_sng[]="base_time"; /* CEWI */
+  const char time_offset_sng[]="time_offset"; /* CEWI */
 
   int time_dmn_id;
   int base_time_id;
@@ -72,9 +72,11 @@ nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 {
   /* Purpose: Add time variable to concatenated ARM files */
 
-  char att_units[]="seconds since 1970/01/01 00:00:00.00";
-  char att_long_name[]="UNIX time";
-  char time_sng[]="time"; /* CEWI */
+  const char att_long_name[]="UNIX time";
+  const char att_units[]="seconds since 1970/01/01 00:00:00.00";
+  const char long_name_sng[]="long_name"; /* CEWI */
+  const char time_sng[]="time"; /* CEWI */
+  const char units_sng[]="units"; /* CEWI */
 
   double *time_offset;
 
@@ -121,11 +123,11 @@ nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 
   /* File must be in define mode */
   (void)nco_redef(nc_id);
-  (void)nco_def_var(nc_id,"time",NC_DOUBLE,1,&time_dmn_id,&time_id);
+  (void)nco_def_var(nc_id,time_sng,NC_DOUBLE,1,&time_dmn_id,&time_id);
 
   /* Add attributes for time variable */
-  (void)nco_put_att(nc_id,time_id,"units",NC_CHAR,(long)(strlen(att_units)+1UL),(void *)att_units);
-  (void)nco_put_att(nc_id,time_id,"long_name",NC_CHAR,(long)(strlen(att_long_name)+1UL),(void *)att_long_name);
+  (void)nco_put_att(nc_id,time_id,units_sng,NC_CHAR,(long)(strlen(att_units)+1UL),(const void *)att_units);
+  (void)nco_put_att(nc_id,time_id,long_name_sng,NC_CHAR,(long)(strlen(att_long_name)+1UL),(const void *)att_long_name);
 
   /* Catenate time-stamped reminder onto "history" global attribute */
   (void)nco_hst_att_cat(nc_id,"ncrcat added variable time=base_time+time_offset");

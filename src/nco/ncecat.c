@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.63 2004-01-01 22:42:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.64 2004-01-05 17:29:05 zender Exp $ */
 
-/* ncecat -- netCDF running averager */
+/* ncecat -- netCDF ensemble concatenator */
 
-/* Purpose: Join variables across files by attaching them to a new record variable */
+/* Purpose: Join variables across files into a new record variable */
 
 /* Copyright (C) 1995--2004 Charlie Zender
 
@@ -83,11 +83,11 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.63 2004-01-01 22:42:53 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.63 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.64 2004-01-05 17:29:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.64 $";
   const char * const opt_sng="ACcD:d:Fhl:n:Op:rRv:x-:";
 
-  dmn_sct *rdim;
+  dmn_sct *rec_dmn;
   dmn_sct **dim;
   dmn_sct **dmn_out;
   
@@ -327,22 +327,22 @@ main(int argc,char **argv)
 
   /* ncecat-specific operations */
   if(True){
-    /* Define the new record dimension */
-    rdim=nco_dmn_dpl(dim[0]);
+    /* Define new record dimension */
+    rec_dmn=nco_dmn_dpl(dim[0]);
 
-    rdim->nm="record";
-    rdim->id=-1;
-    rdim->nc_id=-1;
-    rdim->xrf=NULL;
-    rdim->val.vp=NULL;
-    rdim->is_crd_dmn=False;
-    rdim->is_crd_dmn=True;
-    rdim->sz=0L;
-    rdim->cnt=0L;
-    rdim->srt=0L;
-    rdim->end=rdim->sz-1L;
+    rec_dmn->nm=(char *)strdup("record");
+    rec_dmn->id=-1;
+    rec_dmn->nc_id=-1;
+    rec_dmn->xrf=NULL;
+    rec_dmn->val.vp=NULL;
+    rec_dmn->is_crd_dmn=False;
+    rec_dmn->is_crd_dmn=True;
+    rec_dmn->sz=0L;
+    rec_dmn->cnt=0L;
+    rec_dmn->srt=0L;
+    rec_dmn->end=rec_dmn->sz-1L;
     
-    /* Change any existing record dimension to be a regular dimension */
+    /* Change existing record dimension, if any, to regular dimension */
     for(idx=0;idx<nbr_dmn_xtr;idx++){
       /* Is any input dimension a record dimension? */
       if(dmn_out[idx]->is_rec_dmn){
@@ -351,10 +351,10 @@ main(int argc,char **argv)
       } /* end if */
     } /* end loop over idx */
 
-    /* Add the record dimension to the end of dimension list */
+    /* Add record dimension to end of dimension list */
     nbr_dmn_xtr++;
     dmn_out=(dmn_sct **)nco_realloc(dmn_out,nbr_dmn_xtr*sizeof(dmn_sct **));
-    dmn_out[nbr_dmn_xtr-1]=rdim;
+    dmn_out[nbr_dmn_xtr-1]=rec_dmn;
 
   } /* end if */
 
@@ -362,7 +362,7 @@ main(int argc,char **argv)
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
   if(True){
-    /* Prepend the record dimension to the beginning of all the vectors for the processed variables */
+    /* Prepend record dimension to beginning of all vectors for processed variables */
     for(idx=0;idx<nbr_var_prc;idx++){
       var_prc_out[idx]->nbr_dim++;
       var_prc_out[idx]->is_rec_var=True;
@@ -375,16 +375,16 @@ main(int argc,char **argv)
       var_prc_out[idx]->srt=(long *)nco_realloc(var_prc_out[idx]->srt,var_prc_out[idx]->nbr_dim*sizeof(long));
       var_prc_out[idx]->end=(long *)nco_realloc(var_prc_out[idx]->end,var_prc_out[idx]->nbr_dim*sizeof(long));
       
-      /* Move the current array by one to make room for the new record dimension info */
+      /* Move current array by one to make room for new record dimension info */
       (void)memmove((void *)(var_prc_out[idx]->dim+1),(void *)(var_prc_out[idx]->dim),(var_prc_out[idx]->nbr_dim-1)*sizeof(dmn_sct *));
       (void)memmove((void *)(var_prc_out[idx]->dmn_id+1),(void *)(var_prc_out[idx]->dmn_id),(var_prc_out[idx]->nbr_dim-1)*sizeof(int));
       (void)memmove((void *)(var_prc_out[idx]->cnt+1),(void *)(var_prc_out[idx]->cnt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
       (void)memmove((void *)(var_prc_out[idx]->srt+1),(void *)(var_prc_out[idx]->srt),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
       (void)memmove((void *)(var_prc_out[idx]->end+1),(void *)(var_prc_out[idx]->end),(var_prc_out[idx]->nbr_dim-1)*sizeof(long));
       
-      /* Insert the value for the new record dimension */
-      var_prc_out[idx]->dim[0]=rdim;
-      var_prc_out[idx]->dmn_id[0]=rdim->id;
+      /* Insert value for new record dimension */
+      var_prc_out[idx]->dim[0]=rec_dmn;
+      var_prc_out[idx]->dmn_id[0]=rec_dmn->id;
       var_prc_out[idx]->cnt[0]=1L;
       var_prc_out[idx]->srt[0]=-1L;
       var_prc_out[idx]->end[0]=-1L;

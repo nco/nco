@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.13 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.14 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_prn.h" /* Printing variables, attributes, metadata */
@@ -249,8 +249,9 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   bool SRD=False; /* Stride is non-unity */
   bool WRP=False; /* Coordinate is wrapped */
 
-  char *unit_sng=""; /* fxm: bad initialization */
+  char nul_chr='\0';
   char var_sng[MAX_LEN_FMT_SNG];
+  char *unit_sng=NULL;
   
   int rcd=NC_NOERR; /* [rcd] Return code */
   int *dmn_id=NULL_CEWI;
@@ -268,6 +269,9 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   
   dmn_sct *dim=NULL_CEWI;
   var_sct var;
+
+  /* Initialize units string, overwrite later if necessary */
+  unit_sng=&nul_chr;
 
   /* Copy name into variable structure for aesthetics
      Unfortunately, Solaris may overwrite var.nm with next nco_malloc(), 
@@ -381,7 +385,7 @@ nco_prn_var_val_lmt /* [fnc] Print variable data */
   (void)cast_void_nctype(var.type,&var.val);
 
   if(PRINT_DIMENSIONAL_UNITS){
-    char units_nm[]="units"; /* [sng] Name of units attribute */
+    const char units_nm[]="units"; /* [sng] Name of units attribute */
     int rcd_lcl; /* [rcd] Return code */
     int att_id; /* [id] Attribute ID */
     long att_sz;

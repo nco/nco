@@ -1,15 +1,15 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.48 2004-01-02 23:26:48 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.49 2004-01-05 17:29:04 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.5 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release focuses on improving NCO buildability/configuration.
-Most notably we now updated and simplified support the latest DODS.
+This release improves NCO build-ability/configuration.
+Most notably we updated and simplified support for DODS.
 See http://nco.sf.net/nco.html#DODS for more info.
-We want more users to take advantage of the network-transparent data
-access capabilities of DODS by building NCO as DODS clients.
+We hope more users will take advantage of the network-transparent data 
+access capabilities of DODS by building NCO as DODS clients, e.g.,
 
 ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l ./ -p \
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
@@ -26,7 +26,6 @@ Charlie
 Bug-fixes:
 1. make install works on Solaris. Used to die with symlinks. (Rorik)
 2. Changing attribute values with ncap works as advertised (Henry)
-3. fxm: Unpacking works correctly with arithmetic operators
 
 Feature changes:
 1. -r switch prints compile-time configuration for all operators
@@ -36,8 +35,9 @@ Feature changes:
 Other user-visible changes:
 1. Build procedure assumes DODS v. 3.4+ is installed (Rorik)
    Building with DODS v. 3.3- is no longer supported
-   Added doc/dods.sh as guide DODS installation prior to building NCO 
+   doc/dods.sh guides DODS installation prior to building NCO 
 2. Added and renamed options to ./configure script
 
 User-invisible changes:
-1. Builds almost cleanly with --enable-debug-custom
+1. Improved type-checking/safety/casting in all routines allows most
+   code to build warning-free with --enable-debug-custom

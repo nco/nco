@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.cc,v 1.5 2004-01-01 20:41:43 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.cc,v 1.6 2004-01-05 17:29:05 zender Exp $ 
 
 // Implementation (declaration) of C++ interface to netCDF attribute routines
 
@@ -178,6 +178,7 @@ nco_inq_attid // [fnc] Inquire attribute ID
   // Purpose: Wrapper for nco_inq_attid()
   int att_id; // O [id] Attribute ID
   int rcd=nco_inq_attid(nc_id,var_id,att_nm,att_id);
+  rcd+=0; // CEWI
   return att_id;
 } // end nco_inq_attid() 
 
@@ -190,6 +191,7 @@ nco_inq_attid // [fnc] Inquire attribute ID
   // Purpose: Wrapper for nco_inq_attid()
   int att_id; // O [id] Attribute ID
   int rcd=nco_inq_attid(nc_id,nco_inq_varid(nc_id,var_nm),att_nm,att_id);
+  rcd+=0; // CEWI
   return att_id;
 } // end nco_inq_attid() 
 
@@ -222,6 +224,7 @@ nco_inq_attname // [fnc] Inquire attribute name
   // Purpose: Wrapper for nco_inq_attname()
   std::string att_nm; // O [id] Variable name
   int rcd=nco_inq_attname(nc_id,var_id,att_id,att_nm);
+  rcd+=0; // CEWI
   return att_nm;
 } // end nco_inq_attname() 
 
@@ -234,6 +237,7 @@ nco_inq_attname // [fnc] Inquire attribute name
   // Purpose: Wrapper for nco_inq_attname()
   std::string att_nm; // O [id] Variable name
   int rcd=nco_inq_attname(nc_id,nco_inq_varid(nc_id,var_nm),att_id,att_nm);
+  rcd+=0; // CEWI
   return att_nm;
 } // end nco_inq_attname() 
 
@@ -264,6 +268,7 @@ nco_inq_atttype // [fnc] Inquire variable type
   // Purpose: Wrapper for nco_inq_atttype()
   nc_type att_typ; // O [enm] Variable type
   int rcd=nco_inq_atttype(nc_id,nco_inq_varid(nc_id,var_nm),att_nm,att_typ);
+  rcd+=0; // CEWI
   return att_typ;
 } // end nco_inq_atttype() 
 
@@ -295,6 +300,7 @@ nco_inq_attlen // [fnc] Inquire attribute length
   // Purpose: Wrapper for nco_inq_attlen()
   size_t att_sz; // O [nbr] Attribute size
   int rcd=nco_inq_attlen(nc_id,var_id,att_nm,att_sz);
+  rcd+=0; // CEWI
   return att_sz;
 } // end nco_inq_attlen() 
 
@@ -307,6 +313,7 @@ nco_inq_attlen // [fnc] Inquire attribute length
   // Purpose: Wrapper for nco_inq_attlen()
   size_t att_sz; // O [nbr] Attribute size
   int rcd=nco_inq_attlen(nc_id,var_id,nco_inq_attname(nc_id,var_id,att_id),att_sz);
+  rcd+=0; // CEWI
   return att_sz;
 } // end nco_inq_attlen() 
 
@@ -319,6 +326,7 @@ nco_inq_attlen // [fnc] Inquire attribute length
   // Purpose: Wrapper for nco_inq_attlen(nc_inq_dimid())
   size_t att_sz; // O [nbr] Attribute size
   int rcd=nco_inq_attlen(nc_id,nco_inq_varid(nc_id,var_nm),att_nm,att_sz);
+  rcd+=0; // CEWI
   return att_sz;
 } // end nco_inq_attlen() 
 

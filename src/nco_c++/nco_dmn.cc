@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_dmn.cc,v 1.4 2004-01-01 20:41:43 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_dmn.cc,v 1.5 2004-01-05 17:29:05 zender Exp $ 
 
 // Implementation (declaration) of C++ interface to netCDF dimension routines
 
@@ -51,6 +51,7 @@ nco_def_dim // [fnc] Create dimension in netCDF file
   /* Purpose: Wrapper for nc_def_dim() */
   int dmn_id; // O [id] Dimension ID
   int rcd=nco_def_dim(nc_id,dmn_nm,dmn_sz,dmn_id);
+  rcd+=0; // CEWI
   return dmn_id;
 } /* end nco_def_dim */
 
@@ -98,6 +99,7 @@ nco_inq_dimid // [fnc] Inquire dimension ID
      User may omit rcd_opt, or supply value of non-fatal netCDF return code */
   int dmn_id; // O [id] Dimension ID
   int rcd=nco_inq_dimid(nc_id,dmn_nm,dmn_id);
+  rcd+=0; // CEWI
   return dmn_id;
 } // end nco_inq_dimid() 
 
@@ -126,6 +128,7 @@ nco_inq_dimlen // [fnc] Inquire dimension length
   // Purpose: Wrapper for nco_inq_dimlen()
   size_t dmn_sz; // O [nbr] Dimension size
   int rcd=nco_inq_dimlen(nc_id,dmn_id,dmn_sz);
+  rcd+=0; // CEWI
   return dmn_sz;
 } // end nco_inq_dimlen() 
 
@@ -137,6 +140,7 @@ nco_inq_dimlen // [fnc] Inquire dimension length
   // Purpose: Wrapper for nco_inq_dimlen(nc_inq_dimid())
   size_t dmn_sz; // O [nbr] Dimension size
   int rcd=nco_inq_dimlen(nc_id,nco_inq_dimid(nc_id,dmn_nm),dmn_sz);
+  rcd+=0; // CEWI
   return dmn_sz;
 } // end nco_inq_dimlen() 
 

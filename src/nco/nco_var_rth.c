@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.17 2004-01-02 22:11:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.18 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_var_rth.h" /* Variable arithmetic */

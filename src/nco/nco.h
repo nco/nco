@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.55 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.56 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
@@ -72,6 +72,11 @@ extern "C" {
      NB: nc_inq() family is defined to return -1 for missing record dimensions */
 #define NCO_REC_DMN_UNDEFINED -1
   
+  /* Prototype global functions before defining them in next block */
+  char *prg_nm_get(void);
+  int prg_get(void);
+  unsigned short dbg_lvl_get(void);
+
 #ifdef MAIN_PROGRAM_FILE /* Current file contains main() */
   
   /* Global variables and variables with scope limited to main.c allocated here */
@@ -312,11 +317,6 @@ extern "C" {
     nc_type typ_upk; /* [enm] Type of variable when unpacked (expanded) (in memory) */
   } var_sct; /* end var_sct_tag */
   
-  /* Function prototypes */
-  char *prg_nm_get(void);
-  int prg_get(void);
-  unsigned short dbg_lvl_get(void);
-
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* !__cplusplus */

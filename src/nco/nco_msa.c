@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.17 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.18 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
 /* Copyright (C) 1995--2004 Charlie Zender and Henry Butowsky
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_msa.h" /* Multi-slabbing algorithm */
@@ -594,6 +594,10 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
      if PRN_DMN_IDX_CRD_VAL then read in co-ord dims
      if PRN.. = True print var taking account of FORTRAN (Use dims to calculate var indices */
   
+  char nul_chr='\0';
+  char var_sng[MAX_LEN_FMT_SNG];
+  char *unit_sng;
+  
   /* Get variable with limits from input file */
   int rcd;
   int idx;
@@ -603,15 +607,15 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   /* For regular data */
   long lmn;
   
-  char *unit_sng=""; /* fxm: bad initialization */
-  char var_sng[MAX_LEN_FMT_SNG];
-  
   dmn_sct *dim=NULL_CEWI;
      
   lmt_all_sct **lmt_mult=NULL_CEWI;
   lmt_sct **lmt=NULL_CEWI;
   
   var_sct var;
+
+  /* Initialize units string, overwrite later if necessary */
+  unit_sng=&nul_chr;
 
   /* Get var_id for requested variable */
   var.nm=(char *)strdup(var_nm);
@@ -676,7 +680,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   } /* end if dlm_sng */
 
   if(PRINT_DIMENSIONAL_UNITS){
-    char units_nm[]="units"; /* [sng] Name of units attribute */
+    const char units_nm[]="units"; /* [sng] Name of units attribute */
     int rcd_lcl; /* [rcd] Return code */
     int att_id; /* [id] Attribute ID */
     long att_sz;

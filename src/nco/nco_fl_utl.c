@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.26 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.27 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: File manipulation */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_fl_utl.h" /* File manipulation */
@@ -15,10 +15,10 @@ nco_fl_cp /* [fnc] Copy first file to second */
 {
   /* Purpose: Copy first file to second */
   char *cp_cmd;
-  char cp_cmd_fmt[]="cp %s %s";
+  const char cp_cmd_fmt[]="cp %s %s";
 
   int rcd;
-  int nbr_fmt_char=4;
+  const int nbr_fmt_char=4;
   
   /* Construct and execute copy command */
   cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1UL)*sizeof(char));
@@ -40,10 +40,10 @@ fl_mv /* [fnc] Move first file to second */
 {
   /* Purpose: Move first file to second */
   char *mv_cmd;
-  char mv_cmd_fmt[]="mv -f %s %s";
+  const char mv_cmd_fmt[]="mv -f %s %s";
 
   int rcd;
-  int nbr_fmt_char=4;
+  const int nbr_fmt_char=4;
   
   /* Construct and execute copy command */
   mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1UL)*sizeof(char));
@@ -64,8 +64,8 @@ nco_fl_rm /* [fnc] Remove file */
 {
   /* Purpose: Remove specified file from local system */
   int rcd;
-  char rm_cmd_sys_dep[]="rm -f";
   char *rm_cmd;
+  const char rm_cmd_sys_dep[]="rm -f";
   
   /* Remember to add one for the space and one for the terminating NUL character */
   rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1UL+strlen(fl_nm)+1UL)*sizeof(char));
@@ -293,9 +293,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     
     /* fxm: do this with autoconf? */
 #ifndef SUN4
-    char cmd_mkdir[]="mkdir -m 777 -p";
+    const char cmd_mkdir[]="mkdir -m 777 -p";
 #else /* SUN4 */
-    char cmd_mkdir[]="mkdir -p";
+    const char cmd_mkdir[]="mkdir -p";
 #endif /* SUN4 */
 
     enum{ /* [enm] Transfer mode */
@@ -338,7 +338,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	char *host_nm_lcl;
 	char *host_nm_rmt;
 	char *usr_email;
-	char fmt_ftp_tpl[]="ftp -n << END\nopen %s\nuser anonymous %s\nbin\nget %s %s\nquit\nEND";
+
+	const char fmt_ftp_tpl[]="ftp -n << END\nopen %s\nuser anonymous %s\nbin\nget %s %s\nquit\nEND";
 
 	struct passwd *usr_pwd;
 
@@ -690,9 +691,10 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
      is actually opened, so that errors can not infect intended output file */
 
   char *fl_out_tmp;
-  char tmp_sng_1[]="pid"; /* Extra string appended to temporary filenames */
-  char tmp_sng_2[]="tmp"; /* Extra string appended to temporary filenames */
   char *pid_sng; /* String containing decimal representation of PID */
+
+  const char tmp_sng_1[]="pid"; /* Extra string appended to temporary filenames */
+  const char tmp_sng_2[]="tmp"; /* Extra string appended to temporary filenames */
 
   int rcd; /* [rcd] Return code */
 

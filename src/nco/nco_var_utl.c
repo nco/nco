@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.33 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.34 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_var_utl.h" /* Variable utilities */
@@ -180,7 +180,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
      This routine does not take into account any user-specified limits, it just copies what it finds.
      Routine copies_variable by variable, old-style, used only by ncks */
 
-  char fnc_nm[]="nco_cpy_var_val()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_cpy_var_val()"; /* [sng] Function name */
 
   int *dmn_id;
   int idx;
@@ -279,7 +279,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
   bool SRD=False;
   bool WRP=False;
 
-  char fnc_nm[]="nco_cpy_var_val_lmt()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_cpy_var_val_lmt()"; /* [sng] Function name */
 
   int *dmn_id;
 
@@ -542,7 +542,7 @@ nco_var_dpl /* [fnc] Duplicate input variable */
   /* Purpose: nco_malloc() and return duplicate of input var_sct
      Duplicate is deep copy of original so original may always be free()'d */
 
-  char fnc_nm[]="nco_var_dpl()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_var_dpl()"; /* [sng] Function name */
   var_sct *var_cpy;
 
   var_cpy=(var_sct *)nco_malloc(sizeof(var_sct));
@@ -612,7 +612,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   /* Threads: Routine contains thread-unsafe calls protected by critical regions */
   /* Purpose: Allocate and retrieve given variable hyperslab from disk into memory
      If variable is packed on disk then inquire about scale_factor and add_offset */
-  char fnc_nm[]="nco_var_get()"; /* [sng] Function name */
+  const char fnc_nm[]="nco_var_get()"; /* [sng] Function name */
 
   var->val.vp=(void *)nco_malloc_dbg(var->sz*nco_typ_lng(var->typ_dsk),"Unable to malloc() value buffer when retrieving variable from disk",fnc_nm);
 

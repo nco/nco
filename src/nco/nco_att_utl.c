@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.26 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.27 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_att_utl.h" /* Attribute utilities */
@@ -330,7 +330,8 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   char *history_crr=NULL;
   char *history_new;
   char time_stamp_sng[TIME_STAMP_SNG_LNG];
-  char sng_history[]="history"; /* [sng] Possible name of history attribute */
+
+  const char sng_history[]="history"; /* [sng] Possible name of history attribute */
   
   int idx;
   int glb_att_nbr;
@@ -398,7 +399,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 aed_sct * /* O [sct] List of attribute edit structures */
 prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */
 (const int nbr_aed, /* I [nbr] Number of attributes in list */
- X_CST_PTR_CST_PTR_Y(char,aed_arg)) /* I [sng] List of user-specified attribute edits */
+ X_CST_PTR_CST_PTR_Y(char,aed_arg)) /* I/O [sng] List of user-specified attribute edits (delimiters are changed to NULL on output */
 {
   /* Purpose: Parse name, type, size, and value elements of comma-separated list of attribute edit information
      Routine merely evaluates syntax of input expressions
@@ -443,18 +444,18 @@ prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */
 
   const char * const dlm_sng=",";
 
+  const long idx_att_val_arg=4L; /* Number of required delimiters preceding attribute values in -a argument list */
+
   aed_sct *aed_lst;
 
   int idx;
   int arg_nbr;
 
-  long idx_att_val_arg=4L; /* Number of required delimiters preceding attribute values in -a argument list */
-
   aed_lst=(aed_sct *)nco_malloc(nbr_aed*sizeof(aed_sct));
 
   for(idx=0;idx<nbr_aed;idx++){
 
-    /* Attribute edit specifications are processed as a normal text list */
+    /* Attribute edit specifications are processed as normal text list */
     arg_lst=lst_prs(aed_arg[idx],dlm_sng,&arg_nbr);
 
     /* Check syntax */
@@ -527,12 +528,12 @@ prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */
 	break;
       } /* end switch */
       
-      /* Reassemble string list values which inadvertently contain delimiters */
+      /* Re-assemble string list values which inadvertently contain delimiters */
       if(aed_lst[idx].type == NC_CHAR && arg_nbr > idx_att_val_arg+1){
 	/* Number of elements which must be concatenated into single string value */
 	long lmn_nbr;
 	lmn_nbr=arg_nbr-idx_att_val_arg; 
-	if(dbg_lvl_get() >= 2) (void)fprintf(stdout,"%s: WARNING NC_CHAR (string) attribute is embedded with %li literal element delimiters (\"%s\"), reassembling...\n",prg_nm_get(),lmn_nbr-1L,dlm_sng);
+	if(dbg_lvl_get() >= 2) (void)fprintf(stdout,"%s: WARNING NC_CHAR (string) attribute is embedded with %li literal element delimiters (\"%s\"), re-assembling...\n",prg_nm_get(),lmn_nbr-1L,dlm_sng);
 	/* Rewrite list, splicing in original delimiter string */
 	arg_lst[idx_att_val_arg]=sng_lst_prs(arg_lst+idx_att_val_arg,lmn_nbr,dlm_sng);
 	/* Keep bookkeeping straight, just in case */

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.8 2004-01-01 20:41:43 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.9 2004-01-05 17:29:05 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -108,6 +108,7 @@ nco_inq_varid // [fnc] Inquire variable ID
   // Purpose: Wrapper for nco_inq_varid()
   int var_id; // O [id] Variable ID
   int rcd=nco_inq_varid(nc_id,var_nm,var_id);
+  rcd+=0; // CEWI
   return var_id;
 } // end nco_inq_varid() 
 
@@ -138,6 +139,7 @@ nco_inq_varname // [fnc] Inquire variable name
   // Purpose: Wrapper for nco_inq_varname()
   std::string var_nm; // O [id] Variable name
   int rcd=nco_inq_varname(nc_id,var_id,var_nm);
+  rcd+=0; // CEWI
   return var_nm;
 } // end nco_inq_varname() 
 
@@ -166,6 +168,7 @@ nco_inq_vartype // [fnc] Inquire variable type
   // Purpose: Wrapper for nco_inq_vartype()
   nc_type var_typ; // O [enm] Variable type
   int rcd=nco_inq_vartype(nc_id,var_id,var_typ);
+  rcd+=0; // CEWI
   return var_typ;
 } // end nco_inq_vartype() 
 
@@ -177,6 +180,7 @@ nco_inq_vartype // [fnc] Inquire variable type
   // Purpose: Wrapper for nco_inq_vartype()
   nc_type var_typ; // O [enm] Variable type
   int rcd=nco_inq_vartype(nc_id,nco_inq_varid(nc_id,var_nm),var_typ);
+  rcd+=0; // CEWI
   return var_typ;
 } // end nco_inq_vartype() 
 
@@ -205,6 +209,7 @@ nco_inq_varndims // [fnc] Inquire variable rank
   // Purpose: Wrapper for nco_inq_varndims()
   int dmn_nbr; // O [nbr] Number of dimensions
   int rcd=nco_inq_varndims(nc_id,var_id,dmn_nbr);
+  rcd+=0; // CEWI
   return dmn_nbr;
 } // end nco_inq_varndims() 
 
@@ -216,6 +221,7 @@ nco_inq_varndims // [fnc] Inquire variable rank
   // Purpose: Wrapper for nco_inq_varndims()
   int dmn_nbr; // O [nbr] Number of dimensions
   int rcd=nco_inq_varndims(nc_id,nco_inq_varid(nc_id,var_nm),dmn_nbr);
+  rcd+=0; // CEWI
   return dmn_nbr;
 } // end nco_inq_varndims() 
 
@@ -244,6 +250,7 @@ nco_inq_varnatts // [fnc] Inquire variable attributes
   // Purpose: Wrapper for nco_inq_varnatts()
   int att_nbr; // O [nbr] Number of attributes
   int rcd=nco_inq_varnatts(nc_id,var_id,att_nbr);
+  rcd+=0; // CEWI
   return att_nbr;
 } // end nco_inq_varnatts() 
 
@@ -255,6 +262,7 @@ nco_inq_varnatts // [fnc] Inquire variable attributes
   // Purpose: Wrapper for nco_inq_varnatts()
   int att_nbr; // O [nbr] Number of attributes
   int rcd=nco_inq_varnatts(nc_id,nco_inq_varid(nc_id,var_nm),att_nbr);
+  rcd+=0; // CEWI
   return att_nbr;
 } // end nco_inq_varnatts() 
 
@@ -548,6 +556,7 @@ nco_get_var // [fnc] Ingest variable from netCDF file
   // Purpose: Wrapper for nco_get_var()
   float *var_val; // [frc] Variable value
   int rcd=nco_get_var(nc_id,var_id,var_val);
+  rcd+=0; // CEWI
   return var_val;
 } // end nco_get_var<float>()
 
@@ -560,6 +569,7 @@ nco_get_var // [fnc] Ingest variable from netCDF file
   // Purpose: Wrapper for nco_get_var()
   float *var_val; // [frc] Variable value
   int rcd=nco_get_var(nc_id,nco_inq_varid(nc_id,var_nm),var_val);
+  rcd+=0; // CEWI
   return var_val;
 } // end nco_get_var<float>()
 

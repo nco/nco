@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_fl.cc,v 1.4 2004-01-01 20:41:43 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_fl.cc,v 1.5 2004-01-05 17:29:05 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF file-level routines
 
@@ -50,6 +50,7 @@ nco_create // [fnc] Create netCDF file
      Usage: nc_id=nco_create(fl_nm,NC_NOWRITE); */
   int nc_id; // O [id] netCDF file ID
   int rcd=nco_create(fl_nm,cmode,nc_id);
+  rcd+=0; // CEWI
   return nc_id;
 } // end nco_create()
 
@@ -78,6 +79,7 @@ nco_open // [fnc] Open netCDF file
      Usage: nc_id=nco_open(fl_nm,NC_NOWRITE); */
   int nc_id; // O [id] netCDF file ID
   int rcd=nco_open(fl_nm,cmode,nc_id);
+  rcd+=0; // CEWI
   return nc_id;
 } // end nco_open()
 
@@ -121,6 +123,7 @@ nco_inq_ndims // [fnc] Inquire file dimensions
   // Purpose: Wrapper for nco_inq_ndims()
   int dmn_nbr; // O [nbr] Number of dimensions
   int rcd=nc_inq_ndims(nc_id,&dmn_nbr);
+  rcd+=0; // CEWI
   return dmn_nbr;
 } // end nco_inq_ndims() 
 
@@ -147,6 +150,7 @@ nco_inq_nvars // [fnc] Inquire file variables
   // Purpose: Wrapper for nco_inq_nvars()
   int var_nbr; // O [nbr] Number of variables
   int rcd=nc_inq_nvars(nc_id,&var_nbr);
+  rcd+=0; // CEWI
   return var_nbr;
 } // end nco_inq_nvars() 
 

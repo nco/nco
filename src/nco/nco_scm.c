@@ -1,9 +1,9 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.15 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.16 2004-01-05 17:29:05 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
 /* Copyright (C) 1995--2004 Charlie Zender
-   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
+   This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_scm.h" /* Software configuration management */
@@ -25,8 +25,9 @@ cvs_vrs_prs(void) /* [fnc] Return CVS version string */
   char *nco_sng_ptr=NULL;
   char *usc_1_ptr=NULL;
   char *usc_2_ptr=NULL;
-  char cvs_Name[]="$Name: not supported by cvs2svn $";
-  char nco_sng[]="nco"; 
+
+  const char cvs_Name[]="$Name: not supported by cvs2svn $";
+  const char nco_sng[]="nco"; 
 
   int cvs_nm_sng_len;
   int cvs_vrs_sng_len;

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.13 2004-01-01 20:41:43 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.14 2004-01-05 17:29:05 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -65,13 +65,13 @@
 #define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
 
   /* Global variables */
-  extern size_t ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
-  extern size_t *ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
-  extern char **fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
+  extern size_t ncap_ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
+  extern size_t *ncap_ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
+  extern char **ncap_fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
 
   /* File scope variables */
   /* fxm: turn arbitrary size into pre-processor token */
-  char err_sng[200]; /* [sng] Buffer for error string */
+  char ncap_err_sng[200]; /* [sng] Buffer for error string */
 
   /* Is lexer on left or right hand side of equals sign?
      LHS should contain only a variable or attribute
@@ -119,24 +119,24 @@ XPN [eE][+-]?[0-9]+
 <INCLUDE>[ \t]* /* Eat whitespace */
 <INCLUDE>[^ \t\n]+ {
   /* Get include file name */
-  if(ncl_dpt_crr >= NCO_MAX_NCL_DPT){
-    (void)fprintf(stderr,"%s: ERROR File %s nesting depth of %zu is too deep",prg_nm_get(),yytext,ncl_dpt_crr);
+  if(ncap_ncl_dpt_crr >= NCO_MAX_NCL_DPT){
+    (void)fprintf(stderr,"%s: ERROR File %s nesting depth of %zu is too deep",prg_nm_get(),yytext,ncap_ncl_dpt_crr);
     nco_exit(EXIT_FAILURE);
   } /* endif */
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO Will descend from file %s at nesting depth %zu to #include'd file %s at depth %zu\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,yytext,ncl_dpt_crr+(size_t)1UL);
+  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO Will descend from file %s at nesting depth %zu to #include'd file %s at depth %zu\n",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],ncap_ncl_dpt_crr,yytext,ncap_ncl_dpt_crr+(size_t)1UL);
   /* Put current input buffer on stack */
-  ncl_stk[ncl_dpt_crr]=YY_CURRENT_BUFFER; 
+  ncl_stk[ncap_ncl_dpt_crr]=YY_CURRENT_BUFFER; 
   /* Increment nesting level */
-  ncl_dpt_crr++;
+  ncap_ncl_dpt_crr++;
   /* Allocate another entry in line counter array */
-  ln_nbr_crr=(size_t *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1UL); 
+  ncap_ln_nbr_crr=(size_t *)nco_realloc(ncap_ln_nbr_crr,ncap_ncl_dpt_crr+1UL); 
   /* Initialize line number counter for new file */
-  ln_nbr_crr[ncl_dpt_crr]=1UL;
+  ncap_ln_nbr_crr[ncap_ncl_dpt_crr]=1UL;
   /* Store file name for diagnostics */
-  fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1UL); 
-  fl_spt_glb[ncl_dpt_crr]=(char *)strdup(yytext);
-  if((yyin=fopen(fl_spt_glb[ncl_dpt_crr],"r")) == NULL){
-    (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr]);
+  ncap_fl_spt_glb=(char **)nco_realloc(ncap_fl_spt_glb,ncap_ncl_dpt_crr+1UL); 
+  ncap_fl_spt_glb[ncap_ncl_dpt_crr]=(char *)strdup(yytext);
+  if((yyin=fopen(ncap_fl_spt_glb[ncap_ncl_dpt_crr],"r")) == NULL){
+    (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr]);
     nco_exit(EXIT_FAILURE);
   } /* endif error */
 
@@ -151,17 +151,17 @@ XPN [eE][+-]?[0-9]+
   /* NB: AT&T lex does not appear to have <EOF> rules */
   bool NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL=True;
   /* Emerge from #include file if nested, else exit lexer */
-  if(ncl_dpt_crr > 0UL){
+  if(ncap_ncl_dpt_crr > 0UL){
     /* If we are exiting a #include'd script, delete its buffers */
     NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL=False; /* [flg] */
-    if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from file %s at nesting depth %zu to file %s at depth %zu\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,fl_spt_glb[ncl_dpt_crr-1],ncl_dpt_crr-(size_t)1UL);
-    fl_spt_glb[ncl_dpt_crr]=(char *)nco_free(fl_spt_glb[ncl_dpt_crr]);
+    if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from file %s at nesting depth %zu to file %s at depth %zu\n",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],ncap_ncl_dpt_crr,ncap_fl_spt_glb[ncap_ncl_dpt_crr-1],ncap_ncl_dpt_crr-(size_t)1UL);
+    ncap_fl_spt_glb[ncap_ncl_dpt_crr]=(char *)nco_free(ncap_fl_spt_glb[ncap_ncl_dpt_crr]);
     /* Decrement depth of nesting */
-    ncl_dpt_crr--; 
+    ncap_ncl_dpt_crr--; 
     /* De-allocate entry from line counter array */
-    ln_nbr_crr=(size_t *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1UL); 
+    ncap_ln_nbr_crr=(size_t *)nco_realloc(ncap_ln_nbr_crr,ncap_ncl_dpt_crr+1UL); 
     /* De-allocate entry from script name array */
-    fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1UL); 
+    ncap_fl_spt_glb=(char **)nco_realloc(ncap_fl_spt_glb,ncap_ncl_dpt_crr+1UL); 
   } /* endif #include'd script */
   if(NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL){
     /* Emerged from zeroth level, exit lexer */
@@ -170,7 +170,7 @@ XPN [eE][+-]?[0-9]+
     /* Reclaim storage used by buffer just exited */
     yy_delete_buffer(YY_CURRENT_BUFFER);
     /* Switch back to parent buffer */
-    yy_switch_to_buffer(ncl_stk[ncl_dpt_crr]);
+    yy_switch_to_buffer(ncl_stk[ncap_ncl_dpt_crr]);
   } /* endelse */
 } /* end <EOF> */
 
@@ -183,7 +183,7 @@ XPN [eE][+-]?[0-9]+
 }
 <CCOMMENT>\n {
   /* Throw away comment text but increment line counter */
-  ln_nbr_crr[ncl_dpt_crr]++; 
+  ncap_ln_nbr_crr[ncap_ncl_dpt_crr]++; 
 }
 <CCOMMENT>. {
   /* Throw away everything except end comment text */
@@ -224,7 +224,7 @@ XPN [eE][+-]?[0-9]+
 \n { 
   /* NB: Remaining rules are default state, also known as INITIAL state, or 0 state */
   /* Ignore new lines */
-  ln_nbr_crr[ncl_dpt_crr]++;
+  ncap_ln_nbr_crr[ncap_ncl_dpt_crr]++;
 }
 
 [ \t]+ { 
@@ -269,8 +269,8 @@ XPN [eE][+-]?[0-9]+
   float flt_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a float %s\n",yytext); 
   if(sscanf((char *)yytext,"%e",&flt_tkn) != 1){
-    sprintf(err_sng,"#Bad float: %s",yytext);
-    yyerror(err_sng);
+    sprintf(ncap_err_sng,"#Bad float: %s",yytext);
+    yyerror(ncap_err_sng);
     return EPROVOKE;
   } /* endif */
   lval_ptr->scv.val.f=flt_tkn;
@@ -299,8 +299,8 @@ XPN [eE][+-]?[0-9]+
   short sht_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a short %s\n",yytext); 	
   if(sscanf((char *)yytext,"%hd",&sht_tkn) != 1){
-    sprintf(err_sng,"Bad short constant: %s",(char *)yytext);
-    yyerror(err_sng);
+    sprintf(ncap_err_sng,"Bad short constant: %s",(char *)yytext);
+    yyerror(ncap_err_sng);
   } /* endif err */
   lval_ptr->scv.val.s=sht_tkn;
   lval_ptr->scv.type=NC_SHORT;
@@ -312,8 +312,8 @@ XPN [eE][+-]?[0-9]+
   int byt_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a byte %s\n",yytext); 
   if(sscanf((char *)yytext,"%d",&byt_tkn) != 1){
-    sprintf(err_sng,"#Bad byte: %s",yytext);
-    yyerror(err_sng);
+    sprintf(ncap_err_sng,"#Bad byte: %s",yytext);
+    yyerror(ncap_err_sng);
     return EPROVOKE;
   } /* endif err */
   if(byt_tkn < -128 || byt_tkn > 127){
@@ -384,8 +384,8 @@ M_PI {return NAMED_CONSTANT;}
         lval_ptr->sym=prs_arg->sym_tbl[idx];
         return FUNCTION;
      } /* endif */
-   (void)sprintf(err_sng,"Warning: Unable to locate function %s. Perhaps %s is a variable?",yytext,yytext);
-   (void)yyerror(err_sng);       
+   (void)sprintf(ncap_err_sng,"Warning: Unable to locate function %s. Perhaps %s is a variable?",yytext,yytext);
+   (void)yyerror(ncap_err_sng);       
    return EPROVOKE;             
 } /* end functions */
 
@@ -449,8 +449,8 @@ M_PI {return NAMED_CONSTANT;}
     if(rcd == NC_NOERR){  
       rcd=nco_inq_att_flg(prs_arg->in_id,var_id,att_nm,&type,&att_sz);
       if (rcd == NC_ENOTATT){
-	(void)sprintf(err_sng,"Warning: Unable to locate RHS attribute %s of variable %s with var ID = %d in file %s. Returning 0-byte.",att_nm,var_nm,var_id,prs_arg->fl_in);
-	(void)yyerror(err_sng);
+	(void)sprintf(ncap_err_sng,"Warning: Unable to locate RHS attribute %s of variable %s with var ID = %d in file %s. Returning 0-byte.",att_nm,var_nm,var_id,prs_arg->fl_in);
+	(void)yyerror(ncap_err_sng);
 	lval_ptr->scv.val.b=0;
 	lval_ptr->scv.type=NC_BYTE;
 	return SCV;
@@ -471,8 +471,8 @@ M_PI {return NAMED_CONSTANT;}
       } /* end if */
     }else{ /* ...else rcd reported an error */
       /* Attribute is not in table or on disk so return 0-byte  */
-      (void)sprintf(err_sng,"Warning: Unable to locate RHS attribute %s of variable %s with var ID = %d in file %s. Returning 0-byte.",att_nm,var_nm,var_id,prs_arg->fl_in);
-      (void)yyerror(err_sng);
+      (void)sprintf(ncap_err_sng,"Warning: Unable to locate RHS attribute %s of variable %s with var ID = %d in file %s. Returning 0-byte.",att_nm,var_nm,var_id,prs_arg->fl_in);
+      (void)yyerror(ncap_err_sng);
       lval_ptr->scv.val.b=0;
       lval_ptr->scv.type=NC_BYTE;
       return SCV;
@@ -488,8 +488,8 @@ M_PI {return NAMED_CONSTANT;}
       lval_ptr->aed.var_nm=(char *)strdup(var_nm);
       return OUT_ATT;
     }else{
-      (void)sprintf(err_sng,"#Warning: unable to locate variable %s. So cannot create attribute %s",var_nm,yytext);
-      (void)yyerror(err_sng);
+      (void)sprintf(ncap_err_sng,"#Warning: unable to locate variable %s. So cannot create attribute %s",var_nm,yytext);
+      (void)yyerror(ncap_err_sng);
       return EPROVOKE; 
     } /* end else */
   } /* end if */
@@ -532,8 +532,8 @@ M_PI {return NAMED_CONSTANT;}
      Subscript syntax is taken from Fortran9X specification:
      x[dmn1,dmn2,...,dmnN]
      x[a:b,c:,:d,e] */
-  const char *sbs_dlm=","; /* [sng] Subscript delimiter */
-  static char *tpl_nm="Internally generated template";
+  const char * const sbs_dlm=","; /* [sng] Subscript delimiter */
+  static const char * const tpl_nm="Internally generated template";
   
   char **sbs_lst; /* [sng] Array of dimension subscripts */
   char *sbs_sng; /* [sng] Subscript */
@@ -591,8 +591,8 @@ M_PI {return NAMED_CONSTANT;}
 
   if (jdx != prs_arg->nbr_dmn_in ) continue;
     /* exit action if dimension not found */
-   (void)sprintf(err_sng,"Warning: Unrecognized dimension \"%s\" in LHS subscripts",sbs_lst[idx]);
-   (void)yyerror(err_sng);
+   (void)sprintf(ncap_err_sng,"Warning: Unrecognized dimension \"%s\" in LHS subscripts",sbs_lst[idx]);
+   (void)yyerror(ncap_err_sng);
    (void)nco_enddef(prs_arg->out_id);
    goto end_LHS_sbs;                     
   }
@@ -602,8 +602,8 @@ M_PI {return NAMED_CONSTANT;}
   /* check that un-limited dimension is the first dimension */
   for( idx = 1 ; idx < dmn_nbr ; idx ++)
     if( dmn[idx]->is_rec_dmn ) {
-      (void)sprintf(err_sng,"Warning:\"%s\" is the record dimension. It can only be the first dimension in a list",dmn[idx]->nm);
-   (void)yyerror(err_sng);
+      (void)sprintf(ncap_err_sng,"Warning:\"%s\" is the record dimension. It can only be the first dimension in a list",dmn[idx]->nm);
+   (void)yyerror(ncap_err_sng);
    goto end_LHS_sbs;                     
   }
 
@@ -685,8 +685,8 @@ M_PI {return NAMED_CONSTANT;}
 
 <RHS_SUBSCRIPT>\[[^\]\n]*[\]\n] {
   /* RHS_SUBSCRIPT */
-  (void)sprintf(err_sng,"Warning RHS subscripts are not yet implemented");
-  (void)yyerror(err_sng);
+  (void)sprintf(ncap_err_sng,"Warning RHS subscripts are not yet implemented");
+  (void)yyerror(ncap_err_sng);
   /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
   BEGIN INITIAL;
 } /* end RHS_SUBSCRIPT */
@@ -753,10 +753,10 @@ yywrap(void)
      been redirected to new source, e.g., yyin points to new file. 
      Returning true (non-zero) means scanning is complete, so scanner terminates and returns 0 to calling function
      Default is to return true (one) when called---this terminates scanner */
-  if(dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: DEBUG yywrap() called with ncl_dpt_crr = %zu\n",prg_nm_get(),ncl_dpt_crr);
+  if(dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: DEBUG yywrap() called with ncap_ncl_dpt_crr = %zu\n",prg_nm_get(),ncap_ncl_dpt_crr);
   /* comp.compilers thread 20020523 yywrap() should always return 1, even when
      scanning a #include'd file
-     return (ncl_dpt_crr <= 1) ? 1 : 0; */
+     return (ncap_ncl_dpt_crr <= 1) ? 1 : 0; */
   return 1;
 } /* end yywrap() */
 
@@ -781,7 +781,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
      lst_c: Parent variables of LHS attributes in input file
      lst_d: Dimensions required by LHS subscripts (casting) */
   
-  /* 20020510: ncap_ntl_scn() was in ncap_utl.c but g++ (not gcc) would barf
+  /* 20020510: ncap_ntl_scn() was in ncap_utl.c but chokes g++ (not gcc)
      g++ complains that since YYSTYPE is defined in ncap_yacc.h,
      it is an error to call external function (yylex()) that uses this type
      Although the error is somewhat bogus, there is some merit to it
@@ -791,11 +791,9 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
 #undef NCAP_NTL_SCN_NOT_IN_NCAP_L
 #ifdef NCAP_NTL_SCN_NOT_IN_NCAP_L
   /* Get YYSTYPE prior to calling scanner */
-#include "ncap_yacc.h" /* ncap.tab.h is produced from ncap.y by parser generator */
-
+#include "ncap_yacc.h" /* ncap_yacc.h (ncap.tab.h) is produced from ncap_yacc.y by parser generator */
   extern FILE *yyin; /* [fl] File handle for script file */
   extern int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg); /* [fnc] Scanner entrypoint */
-  
 /* Following declaration gets rid of implicit declaration compiler warning
    It is a condensation of the lexer declaration from lex.yy.c:
    YY_BUFFER_STATE yy_scan_string YY_PROTO(( yyconst char *yy_str )); */
@@ -806,11 +804,11 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
   
   char *var_nm;  
 
-  int lst_a_nbr=0; /* [nbr] Number of elements in list a */
-  int lst_b_nbr=0;
-  int lst_c_nbr=0;
-  int lst_d_nbr=0;
-  int lst_t_nbr=0;
+  int lst_a_nbr=0; /* [nbr] Number of elements in list A */
+  int lst_b_nbr=0; /* [nbr] Number of elements in list B */
+  int lst_c_nbr=0; /* [nbr] Number of elements in list C */
+  int lst_d_nbr=0; /* [nbr] Number of elements in list D */
+  int lst_t_nbr=0; /* [nbr] Number of elements in list T */
   int tkn_crr=-1; /* [tkn] Current token, must initialize to non-zero value */
   int var_id;
   int var_idx;
@@ -827,8 +825,8 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
     yy_scan_string(spt_arg_cat);
   }else{
     /* Open script file for reading */
-    if((yyin=fopen(fl_spt_glb[ncl_dpt_crr],"r")) == NULL){
-      (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr]);
+    if((yyin=fopen(ncap_fl_spt_glb[ncap_ncl_dpt_crr],"r")) == NULL){
+      (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr]);
       nco_exit(EXIT_FAILURE);
     } /* endif error */
   } /* endif input from script */
@@ -851,7 +849,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
 	for(var_idx=0;var_idx<lst_a_nbr;var_idx++){
 	  /* ...if the new variable is found then... */
 	  if(!strcmp(lst_a[var_idx].nm,var_nm)){
-	    /* ...set the flag and... */
+	    /* ...set flag and... */
 	    match=True; /* [flg] Variable is defined in list already */
 	    /* ...stop looking through list... */
 	    break;

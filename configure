@@ -25207,9 +25207,7 @@ done
 
 # Begin Default OS-specific Compiler Arguments
 # Perform standard additions to compilers and preprocessor flags before testing anything
-if test "x${GCC}" = 'xyes' ; then
-    CFLAGS="${CFLAGS} -std=c99 -pedantic -D_BSD_SOURCE"
-fi
+# NB: These flags take effect regardless of enable-[debug/optimize]-custom setting
 case ${host} in
     powerpc-ibm-aix* )
 	case ${CC} in
@@ -25241,15 +25239,24 @@ cat >>confdefs.h <<\_ACEOF
 #define ENABLE_DEBUG_CUSTOM 1
 _ACEOF
 
-    CFLAGS="${CFLAGS} -g"
-# All known architectures use -g to turn on debugging symbols
-    CFLAGS="${CFLAGS} -g"
 # GCC has same base pedantic arguments on all architectures
-# Compilation flags for numerical routines recommended by GSL 0.9 manual, p. 370
     if test "x${GCC}" = 'xyes' ; then
-# fxm: Use -Werror once nco_lst_utl.c comparison functions fixed
-#	CFLAGS="${CFLAGS} -std=c99 -pedantic -D_BSD_SOURCE -Wall -Wunused -Werror -W -Wmissing-prototypes -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings"
-	CFLAGS="${CFLAGS} -std=c99 -pedantic -D_BSD_SOURCE -Wall -Wunused -W -Wmissing-prototypes -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings"
+# Compilation flags for numerical routines recommended by GSL 0.9 manual, p. 370
+# CFLAGS += -ansi -Werror -W -Wmissing-prototypes -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -Dinline= -g -O4
+# fxm: Use -Werror once all warnings de-linted
+	CC="${CC} -std=c99 -pedantic -D_BSD_SOURCE"
+	CFLAGS="${CFLAGS} -Wall -Wunused -W -Wmissing-prototypes -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings"
+# Compilation flags recommended by GSL that I do not like
+# -ansi: Equivalent to -std=c89, conflicts with -std=c99
+# -Waggregate-return: Warn if functions return aggregates like structures or unions
+# -pedantic: Disallow non ISO constructs, including type long long
+# -Wstrict-prototypes: C only?
+# -Wtraditional: C only?
+# -Wnested-externs: C only?
+# --no-alias? -fstrict-aliasing
+	if test "x${GXX}" = 'xyes' ; then
+	    CXXFLAGS="-Werror ${CFLAGS}"
+	fi
     fi
 # Other switches are compiler-specific
     case ${host} in
@@ -25475,7 +25482,11 @@ _ACEOF
 # GCC has same base optimization arguments on all architectures
 # Compilation flags for numerical routines recommended by GSL 0.9 manual, p. 370
     if test "x${GCC}" = 'xyes' ; then
-	CFLAGS="${CFLAGS} -std=c99 -pedantic -D_BSD_SOURCE -fshort-enums -fno-common -Dinline= -O4"
+	CC="${CC} -std=c99 -pedantic -D_BSD_SOURCE"
+	CFLAGS="${CFLAGS} -fshort-enums -fno-common -Dinline= -O4"
+	if test "x${GXX}" = 'xyes' ; then
+	    CXXFLAGS="${CFLAGS}"
+	fi
     fi
     case ${host} in
 	alpha*-dec-osf* )
