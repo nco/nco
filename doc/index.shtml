@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.175 2003-11-21 20:37:42 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.176 2003-11-23 16:43:46 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -197,7 +197,7 @@ Tarballs and RPMs are only rarely uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.8.4</b>: (<i>in progress</i>) Support AMD Opteron x86-64 architecture
+<li><b>NCO 2.8.4</b>: (<i>in progress</i>) More significant reduction in <tt>ncap</tt> peak memory usage, support for AMD Opteron x86-64 architecture
 <li><b>NCO 2.8.3</b>: Fix big <tt>ncap</tt> memory leak, fix regressions, remove scary packing warnings</li>
 <li><b>NCO 2.8.2</b>: <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly, improve error diagnostics</li>
 <li><b>NCO 2.8.1</b>: <a href="./nco.html#wildcarding">&ldquo;Variable wildcarding&rdquo;</a>&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators</li>
