@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.416 2004-09-07 05:46:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.417 2004-09-07 05:47:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -266,9 +266,9 @@ nco443. Verify packing NC_SHORT->NC_CHAR
 nco450. Run ncra on two multiple record files with packed variables and look for pck_dbg memory problems with valgrind
 nco453. Re-think handling of dangling pointers in nco_pck_val()?
 nco454. ncpdq: Combine nco_pck_map,nco_pck_typ into new nco_pck_sct to avoid proliferation of argument passing
-nco456. Is packing to NC_BYTE better than packing to NC_CHAR? Yes! Apparently so
-nco457. missing_value is not converted to NC_BYTE when variable three_dmn_var_dbl is
-nco458. Add new packing maps to pack to NC_BYTE
+nco456. ncpdq: Is packing to NC_BYTE better than packing to NC_CHAR? Yes! Apparently so
+nco457. ncpdq: missing_value is not converted to NC_BYTE when variable three_dmn_var_dbl is
+nco458. ncpdq: Add new packing maps to pack to NC_BYTE
 nco459. 
 
 ncap-specific items:
