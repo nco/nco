@@ -1,6 +1,6 @@
 #!/contrib/bin/perl
 				
-my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.10 1999-04-20 22:02:55 zender Exp $';
+my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.11 1999-04-20 22:14:39 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
@@ -51,9 +51,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $RCS_Date='$Date: 1999-04-20 22:02:55 $';
-my $RCS_Id='$Id: nco_dst.pl,v 1.10 1999-04-20 22:02:55 zender Exp $';
-my $RCS_Revision='$Revision: 1.10 $';
+my $RCS_Date='$Date: 1999-04-20 22:14:39 $';
+my $RCS_Id='$Id: nco_dst.pl,v 1.11 1999-04-20 22:14:39 zender Exp $';
+my $RCS_Revision='$Revision: 1.11 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -219,6 +219,16 @@ if($acd_prs){
 #    &cmd_prc("rsh $rmt_mch \"sudo cp /a1/zender/bin/ALPHA/nc* /usr/local/bin\"");
     print STDOUT "$prg_nm: Done updating private NCO binaries on $rmt_mch\n\n";
 } # endif acd_prs
+
+if($acd_cnt){
+    $rmt_mch='gss1.acd.ucar.edu';
+    print STDOUT "\n$prg_nm: Updating private NCO on $rmt_mch...\n";
+    &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco;cvs update\"");
+    &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco/bld;make\"");
+# Unfortunately, sudo does not work at all with rsh
+#    &cmd_prc("rsh $rmt_mch \"sudo cp /l9/zender/bin/AIX/nc* /usr/local/bin\"");
+    print STDOUT "$prg_nm: Done updating private NCO binaries on $rmt_mch\n\n";
+} # endif acd_cnt
 
 if($cgd_cnt){
     $rmt_mch='sanitas.cgd.ucar.edu';

@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.10 1999-04-20 20:55:01 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.11 1999-04-20 22:14:40 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
@@ -267,6 +267,7 @@ The NCO executables are maintained in four different locations at NCAR:
 <DD>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</DD>
 <DD>SCD Ute (IRIX 6.5): /fs/cgd/home0/zender/bin/SGI64*</DD>
 <DD>ACD garcia.acd.ucar.edu (Digital OSF1): /usr/local/bin</DD>
+<DD>ACD gss1.acd.ucar.edu (AIX 4.3): /usr/local/bin</DD>
 
 </P>*The executables in /fs/cgd/home0/zender/bin/SGI64 are built on
 winterpark but are accessible from Ute and should work correctly there.
