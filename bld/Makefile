@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.43 1999-10-22 16:32:33 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.44 1999-11-02 22:25:50 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -297,9 +297,12 @@ ifeq ($(PVM_ARCH),AIX)
 C++ := xlC
 #CC := gcc
 CC := cc
-CPP := cc
+# -qmaxmem=num Limit the amount of memory used by space intensive optimizations to <num> kilobytes
+CFLAGS := -qmaxmem=8192
+CPP := cc -c
 # NB: Hack to make AIX look like LINUX (g77 + gcc + g++)
-CPPFLAGS := -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
+#CPPFLAGS := -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
+CPPFLAGS := -D$(PVM_ARCH) $(CPP_PTH) -I$(NETCDF_INC)
 FC := xlf
 #FC := g77
 #FFLAGS := -ffixed-line-length-132
@@ -313,19 +316,26 @@ LEX := lex
 LINT := lint
 YACC := yacc
 ifeq ($(OPTS),O)
- CFLAGS := -O
+ CFLAGS += -O
  CPP := $(CPP) $(CPPFLAGS)
  PREPROCESS.F := $(CPP) $(CPPFLAGS)
 # FFLAGS += -O
  FFLAGS += -O -NS2000 -qfixed=132
 endif
 ifeq ($(OPTS),D)
- CFLAGS := -g
+ CFLAGS += -g
  CPP := $(CPP) $(CPPFLAGS)
  PREPROCESS.F := $(CPP) $(CPPFLAGS)
 # FFLAGS += -g
  FFLAGS := -g -NS2000 -qfixed=132
 endif
+# Additional flags for AIX:
+# -M Generate information to be included in a "make" description file; output goes to .u file
+# -c Do not send object files to the linkage editor
+# -P Preprocess but do not compile; output goes to .i file
+$(MY_DPN_DIR)/%.d : %.c
+	$(CPP) -P -M $(CPPFLAGS) $< ;perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' $*.u > $@ ; \
+	rm -f $*.u  $*.i;
 endif
 # endif AIX
 
@@ -747,8 +757,3 @@ endif
 ifeq ($(INCLUDE_DPN),TRUE)
 -include $(MDL_DPN)
 endif
-
-
-
-
-
