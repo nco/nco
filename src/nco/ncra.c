@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.82 2002-12-16 19:36:13 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.83 2002-12-19 06:05:16 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -45,10 +45,13 @@
 #include <omp.h> /* OpenMP pragmas */
 #endif /* not _OPENMP */
 
-/* Internationalization i18n */
+/* Internationalization i18n, Linux Journal 200211 p. 57--59 */
 #ifdef I18N
 #include <libintl.h> /* Internationalization i18n */
 #include <locale.h> /* Locale setlocale() */
+#define _(sng) gettext (sng)
+#define gettext_noop(sng) (sng)
+#define N_(sng) gettext_noop(sng)
 #endif /* I18N */
 #ifndef _LIBINTL_H
 # define gettext(foo) foo
@@ -86,8 +89,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.82 2002-12-16 19:36:13 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.82 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.83 2002-12-19 06:05:16 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.83 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
