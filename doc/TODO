@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.440 2004-11-19 01:53:20 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.441 2004-11-23 06:52:07 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -275,7 +275,8 @@ nco468. Make -H toggle variable printing so ncks -M only prints metadata
 nco469. Use default _FillValue e.g., NC_FILL_FLOAT, or values from <limits.h>, <float.h>?
 nco474. Incorporate alternative "chunking" for ncrcat when data are one-dimensional, to avoid high disk/network access incurred by retrieving one float at a time
 nco477. Make default to copy but not to print associated coordinate variables
-nco478. netCDF/L  from Loci: http://loci.cs.utk.edu/modules.php?name=News&file=article&sid=40
+nco479. netCDF/L  from Loci: http://loci.cs.utk.edu/modules.php?name=News&file=article&sid=40
+nco480. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
