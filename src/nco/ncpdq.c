@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.33 2004-08-16 04:13:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.34 2004-08-16 04:32:50 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -101,11 +101,11 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  char * const add_fst_sng="add_offset"; /* [sng] Unidata standard string for add offset */
-  char * const scl_fct_sng="scale_factor"; /* [sng] Unidata standard string for scale factor */
+  char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+  char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.33 2004-08-16 04:13:33 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.33 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.34 2004-08-16 04:32:50 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.34 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:P:p:Rrt:v:x-:";
 
   
