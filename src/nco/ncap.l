@@ -1,5 +1,5 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.16 2001-12-29 05:52:50 zender Exp $ -*-C-*- */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.17 2001-12-29 06:22:01 zender Exp $ -*-C-*- */
 
   /* Purpose: Token generator for ncap parser */
 
@@ -63,14 +63,12 @@
 #define INT_MIN (-2147483647-1)  /* Min alue for a 4 byte integer -2^32 */
 #define INT_MAX 2147483647       /* Max value for 4 byte integer  2^32 -1 */
 
-/* When we have an error in yylex we want to skip the current line          */
-/* Rather than stope execution. We can do this by provoking an error        */
-/* in the parser by returning an unrecognized token                         */
-/* This causes the parser to read up the next ';'                           */
-/* To avoid having two error messages we prefix the error message to        */
-/* yyerror with a '#' symbol this causes yyerror to print the current error */
-/* and then skip the next one.  Its really a hack but I see no other way    */ 
-
+/* We want an error in yylex to skip current line rather than stope execution
+   We can do this by provoking an error in parser by returning an unrecognized token
+   This causes the parser to read up to next ';'
+   To avoid having two error messages we prefix error message to yyerror with a '#' symbol 
+   This causes yyerror to print current error and skip next error
+   fxm: This is a hack but I see no other way */ 
 
 extern long int line_number;
 
@@ -79,7 +77,7 @@ extern long int line_number;
 
 char errstr[200]; 
 
-/* Simple hack to tell wheather we are on the left or right hand side of */
+/* Simple hack to tell whether we are on the left or right hand side of */
 /* of an equals sign. On LHS should only be a variable or attribute     */
 /* So return the var/attrib name to the parser                           */
 /* If on RHS then return the attribute value or a variable struture */
@@ -264,7 +262,7 @@ atostr    { return ATOSTR; }
        
        /* We are on RHS so return value of attribute (if available) to parser */
        /* For initial scan, just return attributes on RHS */
-       if(prs_arg->inital_scan){
+       if(prs_arg->initial_scan){
           if( !RHS ){
             lvalp->att.att_nm = strdup(att_nm);
             lvalp->att.var_nm = strdup(var_nm);

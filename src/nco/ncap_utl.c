@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.23 2001-12-29 05:52:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.24 2001-12-29 06:22:01 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -58,19 +58,19 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   
   int var_id;
   int rcd;
-  int f_id;
+  int fl_id;
   var_sct *vara;
   
   /* check output file for var */  
   rcd = nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
   
   if( rcd == NC_NOERR ) {
-    f_id = prs_arg->out_id;
+    fl_id = prs_arg->out_id;
   }else{
     /* check input file for id */
     rcd = nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
     if ( rcd == NC_NOERR ) {
-      f_id = prs_arg->in_id;
+      fl_id = prs_arg->in_id;
     }else{
       (void)fprintf(stderr,"can't find %s in %s or %s\n",var_nm,prs_arg->fl_in,prs_arg->fl_out);     
       return (var_sct*)NULL;
@@ -78,13 +78,13 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   } /* end else */
   
   if(dbg_lvl_get() > 1) (void)fprintf(stderr,"VAR: retriving %s from disk\n",var_nm);  
-  vara=var_fll(f_id,var_id,var_nm,prs_arg->dim,prs_arg->nbr_dmn_xtr);
+  vara=var_fll(fl_id,var_id,var_nm,prs_arg->dmn,prs_arg->nbr_dmn_xtr);
   vara->nm = nco_malloc((strlen(var_nm)+1)*sizeof(char)); strcpy(vara->nm,var_nm);
   vara->tally=(long *)malloc(vara->sz*nco_typ_lng(NC_INT));
   (void)zero_long(vara->sz,vara->tally);
   vara->val.vp=(void *)malloc(vara->sz*nco_typ_lng(vara->type));
   /* Retrieve variable values from disk into memory */
-  (void)var_get(f_id,vara);
+  (void)var_get(fl_id,vara);
   /* (void)var_free(var_nm);*/
   /* free(var_nm->nm);*/
   /* vara=var_upk(vara); */
@@ -120,7 +120,7 @@ ncap_var_write(var_sct *var, prs_sct *prs_arg)
 sym_sct *
 ncap_sym_init(char *name,double (*function)())
 { 
-  /* purpose: Allocate space for sym_sct then initalize */
+  /* purpose: Allocate space for sym_sct then initialize */
   sym_sct *symbol;
   symbol = malloc(sizeof(sym_sct));
   symbol->nm = strdup(name);
@@ -1139,9 +1139,9 @@ ncap_initial_scan(prs_sct *prs_arg,char *spt_arg_cat, nm_id_sct** xtr_lst_a,int 
   bool match;
   char *var_nm;  
   
-  nm_id_sct *lst_a;
-  nm_id_sct *lst_b;
-  nm_id_sct *lst_c;
+  nm_id_sct *lst_a=NULL_CEWI;
+  nm_id_sct *lst_b=NULL_CEWI;
+  nm_id_sct *lst_c=NULL_CEWI;
   
   YYSTYPE lvalp;
   extern FILE *yyin;

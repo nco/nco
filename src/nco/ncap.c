@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.37 2001-12-29 05:52:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.38 2001-12-29 06:22:01 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -85,8 +85,8 @@ lex.yy.c:1060: warning: `yyunput' defined but not used
 #endif /* not AIX */
 #endif /* not LINUX */
 
-long int line_number;    /* line number incremented in ncap.l */
-char *fl_spt_global;         /* instructions file */
+long int line_number; /* Line number incremented in ncap.l */
+char *fl_spt_global; /* instructions file */
 
 int 
 main(int argc,char **argv)
@@ -121,10 +121,10 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.37 2001-12-29 05:52:50 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.37 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.38 2001-12-29 06:22:01 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.38 $";
   
-  dmn_sct **dmn;
+  dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
   
   extern char *optarg;
@@ -140,7 +140,7 @@ main(int argc,char **argv)
   int nbr_var_fl;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_prc; /* nbr_var_prc gets incremented */
-  int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
+  int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
   int nbr_xtr_2=0;
   int nbr_dmn_xtr;
   int nbr_fl=0;
@@ -152,8 +152,8 @@ main(int argc,char **argv)
   int rcd=NC_NOERR; /* [rcd] Return code */
   int slen;
   int var_id;
-  int spt_arg_len;
-  int nbr_att=0;    /* Contains the size of att_lst */ 
+  int spt_arg_len=int_CEWI;
+  int nbr_att=0; /* [nbr] Size of att_lst */ 
 
   const int att_lst_max=500;
 
@@ -177,9 +177,8 @@ main(int argc,char **argv)
   
   aed_sct *att_lst[att_lst_max]; /* Structure filled out by yyparse , contains attributes to write to disk */
   prs_sct prs_arg;
-
  
-    /* Start the clock and save the command line */ 
+  /* Start clock and save command line */ 
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
@@ -249,7 +248,7 @@ main(int argc,char **argv)
     case 'v': /* Variables to extract/exclude */
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
-    case 'x': /* Exclude rather than extractvariables specified with -v */
+    case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
     default: /* Print proper usage */
@@ -259,18 +258,17 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
   
-  /* append the string  ";\n" to the command-sript args and then concatenate them */
-
-  for(idx = 0 ; idx < nbr_spt ; idx++){
-    slen = strlen (spt_arg[idx]);
+  /* Append ";\n" to command-script arguments, then concatenate them */
+  for(idx=0;idx<nbr_spt;idx++){
+    slen=strlen(spt_arg[idx]);
     if(idx == 0){
-      spt_arg_cat = nco_malloc(slen+3);
+      spt_arg_cat=nco_malloc(slen+3);
       strcpy(spt_arg_cat,spt_arg[idx]);
       strcat(spt_arg_cat,";\n");
-      spt_arg_len = slen + 3;
+      spt_arg_len=slen+3;
       } else { 
       spt_arg_len+=slen+2;
-      spt_arg_cat = nco_realloc(spt_arg_cat,spt_arg_len);
+      spt_arg_cat=nco_realloc(spt_arg_cat,spt_arg_len);
       strcat(spt_arg_cat,spt_arg[idx]);
       strcat(spt_arg_cat,";\n");
       } /* end else */
@@ -302,9 +300,9 @@ main(int argc,char **argv)
   prs_arg.fl_spt = fl_spt;
   prs_arg.att_lst = att_lst;
   prs_arg.nbr_att =&nbr_att;
-  prs_arg.dim=dmn;
+  prs_arg.dmn=dmn;
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
-  prs_arg.inital_scan = True;
+  prs_arg.initial_scan = True;
   
   (void)ncap_initial_scan(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c, &nbr_lst_c);
 
@@ -419,9 +417,9 @@ main(int argc,char **argv)
   prs_arg.fl_spt = fl_spt;
   prs_arg.att_lst = att_lst;
   prs_arg.nbr_att =&nbr_att;
-  prs_arg.dim=dmn_out;
+  prs_arg.dmn=dmn_out;
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
-  prs_arg.inital_scan = False;
+  prs_arg.initial_scan = False;
 
   if(fl_spt == NULL){
     if(nbr_spt == 0){
@@ -444,7 +442,7 @@ main(int argc,char **argv)
     } /* end if */
     /* Invoke parser on script file */
     fl_spt_global = fl_spt;
-    line_number = 1;
+    line_number=1;
     rcd=yyparse((void *)&prs_arg);
   } /* end else */
   /* Define dimensions in output file */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.13 2001-12-29 05:52:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.14 2001-12-29 06:22:01 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -61,11 +61,11 @@ typedef struct{
     char *fl_out;
     int out_id;  
     char *fl_spt; /* Instruction file to be parsed */
-    aed_sct  **att_lst;
+    aed_sct **att_lst;
     int *nbr_att;
-    dmn_sct **dim;
+    dmn_sct **dmn;
     int nbr_dmn_xtr;
-    bool inital_scan;
+    bool initial_scan;
 } prs_sct;
 
 
