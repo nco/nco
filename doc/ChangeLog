@@ -1,5 +1,7 @@
 2003-11-20  Charlie Zender  <zender@uci.edu>
 
+	* Implement nco_malloc_err_hnt_prn()
+
 	* Implemented nco_malloc_dbg() in ncap_utl
 
 	* Created nco_malloc_dbg() for alternative to nco_malloc_flg().

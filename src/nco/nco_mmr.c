@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.10 2003-11-20 21:36:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.11 2003-11-20 22:37:56 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -105,6 +105,7 @@ nco_malloc /* [fnc] Wrapper for malloc() */
   ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
     (void)fprintf(stdout,"%s: ERROR nco_malloc() unable to allocate %li bytes\n",prg_nm_get(),(long)sz);
+    (void)nco_malloc_err_hnt_prn();
     /* fxm: Should be exit(8) on ENOMEM errors? */
     nco_exit(EXIT_FAILURE);
   } /* endif */
@@ -137,6 +138,7 @@ nco_malloc_flg /* [fnc] Wrapper for malloc(), forgives ENOMEM errors */
     (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",prg_nm_get(),strerror(errno));
     if(errno == ENOMEM) return NULL; /* Unlike nco_malloc(), allow simple OOM errors */
     else (void)fprintf(stdout,"%s: ERROR is not ENOMEM, exiting...\n",prg_nm_get());
+    (void)nco_malloc_err_hnt_prn();
     nco_exit(EXIT_FAILURE);
   } /* endif */
 #ifdef NCO_MMR_DBG
@@ -169,6 +171,7 @@ nco_malloc_dbg /* [fnc] Wrapper for malloc(), receives and prints more diagnosti
     (void)fprintf(stdout,"%s: ERROR malloc() returns error on %s request for %li bytes\n",prg_nm_get(),fnc_nm,(long)sz);
     (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",prg_nm_get(),strerror(errno));
     (void)fprintf(stdout,"%s: User-supplied supplemental error message is \"%s\"\n",prg_nm_get(),msg);
+    (void)nco_malloc_err_hnt_prn();
     nco_exit(EXIT_FAILURE);
   } /* endif */
 #ifdef NCO_MMR_DBG
@@ -176,6 +179,14 @@ nco_malloc_dbg /* [fnc] Wrapper for malloc(), receives and prints more diagnosti
 #endif /* !NCO_MMR_DBG */
   return ptr; /* [ptr] Pointer to new buffer */
 } /* nco_malloc_dbg() */
+
+void
+nco_malloc_err_hnt_prn /* [fnc] Explain meaning and workarounds for malloc() failures */
+(void)
+{
+  /* Purpose: Explain meaning and workarounds for malloc() failures */
+  (void)fprintf(stdout,"%s: INFO NCO has reported a malloc() failure. malloc() failures usually indicate that your machine does not have enough free memory (RAM+swap) to perform the requested operation. As such, malloc() failures result from the physical limitations imposed by your hardware. Read http://nco.sf.net/nco.html#mmr for a description of NCO memory usage. There are two workarounds in this scenario. One is to process your data in smaller chunks. The other is to use a machine with more free memory.\n\nLarge tasks also present the possibility that you have uncovered a memory leak in NCO. This is likeliest to occur with ncap. ncap scripts are complete dynamic and may be of arbitrary lenght. If your scripts contain many thousands of operations, the you may uncover a slow memory leak even though each single operation consumes little additional memory. Memory leaks are usually identifiable by their memory usage signature. A leak would cause peak memory usage to increase monotonically with time regardless of script complexity. Slow leaks are very difficult to find. If you have good reasons to believe that your malloc() failure is ultimately due to an NCO memory leak (rather than inadequate RAM on your system), then we would be very interested in receiving a detailed bug report.",prg_nm_get());
+} /* nco_malloc_err_hnt_prn() */
 
 void * /* O [ptr] Pointer to re-allocated memory */
 nco_realloc /* [fnc] Wrapper for realloc() */
