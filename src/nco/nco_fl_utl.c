@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.42 2004-06-27 18:05:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.43 2004-07-01 20:03:40 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -98,9 +98,11 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 
   int idx;
   int fl_nm_sz_wrn=255;
+  int prg_id; /* Program ID */
   int psn_arg_fst=0; /* [nbr] Offset for expected number of positional arguments */
   int psn_arg_nbr; /* [nbr] Number of remaining positional arguments */
 
+  prg_id=prg_get(); /* [enm] Program ID */
   psn_arg_nbr=argc-arg_crr; /* [nbr] Number of remaining positional arguments */
 
   /* Is output file already known from command line switch (i.e., -o fl_out)? */
@@ -116,7 +118,14 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters) and may not be portable to older operating systems\n",prg_nm_get(),argv[idx],(long)strlen(argv[idx]));
   } /* end loop over idx */
 
-  switch(prg_get()){
+  /* All operators except multi-file operators must have at least one positional argument */
+  if(!nco_is_mlt_fl_opr(prg_id) && psn_arg_nbr == 0){
+    (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least one\n",prg_nm_get(),psn_arg_nbr);
+    (void)nco_usg_prn();
+    nco_exit(EXIT_FAILURE);
+  } /* end if */
+
+  switch(prg_id){
   case ncks:
   case ncatted:
   case ncrename:
@@ -158,7 +167,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     if(psn_arg_nbr < 2-psn_arg_fst){
       
       /* If multi-file operator has no positional arguments for input files... */
-      if(nco_is_mlt_fl_opr(prg_get()) && ((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1))){
+      if(nco_is_mlt_fl_opr(prg_id) && ((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1))){
 	/* ...then try to obtain input files from stdin... */
 	char *fl_in=NULL; /* [sng] Input file name */
 	FILE *fp_in; /* [enm] Input file handle */
