@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.116 2002-01-30 07:16:57 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.117 2002-01-30 07:26:49 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -141,7 +141,7 @@ MY_OBJ_DIR_RX := $(subst ${slash},${slash_rx},${MY_OBJ_DIR})
 MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
 
 # Directories to search for source files
-MDL_PTH := ${MY_SRC_DIR}
+MDL_PTH := . ${MY_SRC_DIR}
 # Find all C++, C, and Fortran files in a given directory
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c ${dir}/*.F) # Compile Fortran only if necessary
