@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.31 2005-03-23 01:44:21 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.32 2005-03-24 00:36:54 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -605,21 +605,21 @@ M_PI {return NAMED_CONSTANT;}
 
   dmn=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
   (void)nco_redef(prs_arg->out_id);
-  for( idx=0 ; idx < dmn_nbr ; idx++) {
+  for(idx=0;idx<dmn_nbr;idx++){
     /* first seach for dimension in psr_arg->dmn_out */
-    for( jdx =0 ; jdx < *(prs_arg->nbr_dmn_out) ; jdx++){
-      dmn_item = (*(prs_arg->dmn_out))[jdx];
-      if(!strcmp(sbs_lst[idx],dmn_item->nm)) { 
+    for(jdx=0;jdx<*(prs_arg->nbr_dmn_out);jdx++){
+      dmn_item=(*(prs_arg->dmn_out))[jdx];
+      if(!strcmp(sbs_lst[idx],dmn_item->nm)){
       dmn[idx]=dmn_item;
       break;
-      }
-    }
-   if( jdx !=  *(prs_arg->nbr_dmn_out) ) continue;   
+      } /* endif */
+    } /* end loop over jdx */
+   if(jdx != *(prs_arg->nbr_dmn_out)) continue;   
     /* then try seach for dimension in prs_arg->dmn_in */
-   for (jdx =0 ;jdx < prs_arg->nbr_dmn_in ; jdx++){
+   for (jdx=0;jdx<prs_arg->nbr_dmn_in;jdx++){
      dmn_item = prs_arg->dmn_in[jdx];
-        /* if found add dimension to  dmn_out and dmn */
-     if(!strcmp(sbs_lst[idx],dmn_item->nm)) {
+     /* If found add dimension to dmn_out and dmn */
+     if(!strcmp(sbs_lst[idx],dmn_item->nm)){
        /* BEWARE -- nco_dmn_out_grow() increments *(prs_arg->nbr_dmn_out) */
        dmn_new = nco_dmn_out_grow(prs_arg); 
        *dmn_new=nco_dmn_dpl(dmn_item);
@@ -628,26 +628,25 @@ M_PI {return NAMED_CONSTANT;}
        (void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,dmn_new,1);
        dmn[idx]=*dmn_new;
        break;
-     }
-   }
+     } /* endif */
+   } /* end loop over jdx */
 
-  if (jdx != prs_arg->nbr_dmn_in ) continue;
-    /* exit action if dimension not found */
+   if(jdx != prs_arg->nbr_dmn_in) continue;
+   /* Exit action if dimension not found */
    (void)sprintf(ncap_err_sng,"Warning: Unrecognized dimension \"%s\" in LHS subscripts",sbs_lst[idx]);
    (void)yyerror(ncap_err_sng);
    (void)nco_enddef(prs_arg->out_id);
    goto end_LHS_sbs;                     
-  }
+  } /* endif */
   (void)nco_enddef(prs_arg->out_id);
- 
 
-  /* check that un-limited dimension is the first dimension */
-  for( idx = 1 ; idx < dmn_nbr ; idx ++)
-    if( dmn[idx]->is_rec_dmn ) {
+  /* Check that un-limited dimension is first dimension */
+  for(idx=1;idx<dmn_nbr;idx++)
+    if(dmn[idx]->is_rec_dmn){
       (void)sprintf(ncap_err_sng,"Warning:\"%s\" is the record dimension. It can only be the first dimension in a list",dmn[idx]->nm);
-   (void)yyerror(ncap_err_sng);
-   goto end_LHS_sbs;                     
-  }
+      (void)yyerror(ncap_err_sng);
+      goto end_LHS_sbs;                     
+    } /* endif */
 
   /* Create template variable to cast all RHS expressions */
   var=(var_sct *)nco_malloc(sizeof(var_sct));

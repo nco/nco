@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.110 2005-03-23 23:10:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.111 2005-03-24 00:37:02 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -947,7 +947,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
     var_lsr_out->id=var_lsr->id;
     var_lsr_out->type=var_lsr->type;
     /* Added 20050323: 
-       Not sure why, but var->val.vp may already have values here when LHS-casting
+       Not quite sure why, but var->val.vp may already have values here when LHS-casting
        Perform safety free to guard against memory leaks */
     var_lsr_out->val.vp=nco_free(var_lsr_out->val.vp);
     var_lsr_out->val.vp=(void *)nco_malloc_dbg(var_lsr_out->sz*nco_typ_lng(var_lsr_out->type),"Unable to malloc() value buffer in variable stretching",fnc_nm);

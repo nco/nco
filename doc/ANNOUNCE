@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.135 2005-03-23 01:44:19 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.136 2005-03-24 00:36:34 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.9 are ready. 
 
@@ -35,7 +35,7 @@ Feature changes:
 3. libnco_c++ incorporates nco_put_vara() overloads
 
 Bug-fixes:
-1. None
+1. Fixed gaping memory in ncap_var_stretch() during LHS-casting
 
 Build changes:
 1. Build improvements in configure.in improve NEC SX compatibility
