@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.10 2004-01-05 17:29:05 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.11 2004-01-06 01:08:38 zender Exp $ 
 
 // Implementation (declaration) of C++ interface utilities for netCDF routines
 
@@ -34,18 +34,18 @@ nco_err_exit // [fnc] Lookup, print netCDF error message, exit
  const std::string &msg_opt) // I [sng] Optional supplemental error message
 {
   /* Purpose: Print netCDF error message, routine name, and exit 
-     Routine is called by all wrappers when a fatal error is encountered
+     Routine is called by all wrappers when fatal error is encountered
      msg variable allows wrapper to pass more descriptive information than 
-     is contained in the netCDF-defined error message.
-     Use msg to print, e.g., the name of the variable which caused the error */
-  std::string sbr_nm("nco_err_exit()");
+     netCDF-defined error message contains.
+     Use msg to print, e.g., name of variable which caused error */
+  const std::string sbr_nm("nco_err_exit()");
   if(rcd != NC_NOERR){
     std::cout << sbr_nm << ": ERROR netCDF library returned error code " << rcd << std::endl;
     std::cout << sbr_nm << ": ERROR " << msg << std::endl << nc_strerror(rcd) << std::endl;
     if(msg_opt != "") std::cout << sbr_nm << ": " << msg_opt << std::endl;
 #ifdef ABORT_ON_ERROR
     std::abort(); // [fnc] Produce core dump
-#else
+#else // !ABORT_ON_ERROR
 #ifndef SGIMP64 // fxm: SGI IRIX CC does not support std::exit nor have cstdlib
     std::exit(EXIT_FAILURE); // [fnc] Exit nicely
 #else // SGIMP64
