@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.2 1998-08-18 16:56:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.3 1998-08-18 17:28:51 zender Exp $ */
 
 /* (c) Copyright 1995 University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -742,6 +742,8 @@ char *
 cvs_vrs_prs()
 {
   /* Purpose: Return CVS version string */ 
+  bool dly_snp;
+
   char *cvs_mjr_vrs_sng=NULL;
   char *cvs_mnr_vrs_sng=NULL;
   char *cvs_nm_ptr=NULL;
@@ -763,12 +765,36 @@ cvs_vrs_prs()
   long cvs_mnr_vrs=-1L;
   long cvs_pch_vrs=-1L;
 
-  /* cvs_nm_sng is, e.g., "nco1_1" */ 
+  /* Is cvs_Name keyword expanded? */ 
   dlr_ptr=strstr(cvs_Name," $");
   if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
   cvs_nm_ptr=strstr(cvs_Name,"$Name: ");
   if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports cvs_nm_ptr == NULL\n",prg_nm_get());
   cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-7);
+  if(cvs_nm_sng_len > 0) dly_snp=False; else dly_snp=True;
+
+  /* If not, then this must be a daily snapshot */ 
+  if(dly_snp){
+    int mth;
+    int day;
+    int yr;
+    struct tm *gmt_tm;
+    time_t clock;
+
+    clock=time((time_t *)NULL);
+    gmt_tm=gmtime(&clock);
+
+    mth=gmt_tm->tm_mon+1;
+    day=gmt_tm->tm_mday;
+    yr=gmt_tm->tm_year+1900;
+
+    cvs_vrs_sng_len=4+2+2;
+    cvs_vrs_sng=(char *)malloc(cvs_vrs_sng_len+1);
+    (void)sprintf(cvs_vrs_sng,"%04i%02i%02i",yr,mth,day);
+    return cvs_vrs_sng;
+  } /* endif dly_snp */ 
+
+  /* cvs_nm_sng is, e.g., "nco1_1" */ 
   cvs_nm_sng=(char *)malloc(cvs_nm_sng_len+1);
   strncpy(cvs_nm_sng,cvs_Name+7,cvs_nm_sng_len);
   cvs_nm_sng[cvs_nm_sng_len]='\0';
