@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.27 2000-07-01 01:13:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.28 2000-07-01 20:58:36 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.27 2000-07-01 01:13:38 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.27 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.28 2000-07-01 20:58:36 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.28 $";
   char *nco_op_typ_sng=NULL_CEWI; /*  for average,  for minimium,  for maximium,  for total */
   
   dmn_sct **dim;
@@ -450,42 +450,30 @@ main(int argc,char **argv)
 
   } /* end loop over idx_fl */
   
-  /* Normalize the averages by the tallys */ 
+  /* Normalize, multiply, etc where necessary */
   if(prg == ncra || prg == ncea){
     for(idx=0;idx<nbr_var_prc;idx++){
-    
-    /* perform nomalization etc where necessary */
-    switch(nco_op_typ) {
-    
-	  case nco_op_avg:
-	   (void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
-	  break;
-	  
-	  case nco_op_min:
-	  break;
-	  
-	  case nco_op_max:
-	  break;
-	  
+      switch(nco_op_typ) {
+	/* Normalize the sums by the tallys */ 
+      case nco_op_avg:
+	(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	break;
+      case nco_op_min:
+	break;
+      case nco_op_max:
+	break;
       case nco_op_avgsqr:
-      
-      (void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
-	  /* now square the averages */
-	  (void)var_multiply(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
-		
-	  break;		
-	  
-	  case nco_op_avgsumsqr:
-	  
-	  /* normalize the sum of squares */
-      (void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
-      break;
-      
+	(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	/* Square the averages */
+	(void)var_multiply(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
+	break;		
+      case nco_op_avgsumsqr:
+	/* Normalize the sum of squares by the tally */
+	(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	break;
       default:
-      break;
-      
+	break;
       } /* end switch */
-      
       /* Free the tallying buffer */ 
       (void)free(var_prc[idx]->tally); var_prc[idx]->tally=NULL;
     } /* end loop over idx */
