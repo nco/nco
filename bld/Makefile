@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.118 2002-01-30 08:24:10 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.119 2002-02-03 07:29:11 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -365,8 +365,8 @@ ${MY_OBJ_DIR}/%.o : %.f
 endif
 # endif CRAY
 
-# Works on LINUX and LINUXALPHA and FREEBSD
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXFREEBSD))
+# Works on LINUX, LINUXALPHA, and FREEBSD
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
 ifndef ${CXX}
  C++ := g++
 endif 
