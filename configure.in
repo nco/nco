@@ -67,7 +67,6 @@ AM_CONDITIONAL(BUILD_NCAP,[test "$YACC" != "yacc" || test -e "src/nco/ncap_yacc.
 AM_MAINTAINER_MODE
 
 # Checks for library functions; DEFINE's put in config.h
-AC_FUNC_MALLOC
 AC_FUNC_MEMCMP
 AC_FUNC_STAT
 AC_FUNC_STRTOD
