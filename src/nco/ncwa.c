@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.8 1998-12-03 05:40:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.9 1998-12-03 15:37:30 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -68,8 +68,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncwa.c,v 1.8 1998-12-03 05:40:28 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.8 $";
+  char rcs_Id[]="$Id: ncwa.c,v 1.9 1998-12-03 15:37:30 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.9 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -537,8 +537,16 @@ main(int argc,char **argv)
 	} /* endif weight must be masked */ 
 	/* Average weight over specified dimensions (tally array is set here) */ 
 	wgt_out=var_avg(wgt_out,dim_avg,nbr_dim_avg);
-	/*	(void)var_normalize(wgt_out->type,wgt_out->sz,wgt_out->has_mss_val,wgt_out->mss_val,wgt_out->tally,wgt_out->val);*/
-	(void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_out->val,var_prc_out[idx]->val);
+	if(MULTIPLY_BY_TALLY){
+	  /* Multiply numerator (weighted sum of variable) by tally 
+	     We deviously accomplish this by dividing the denominator by tally */ 
+	  (void)var_normalize(wgt_out->type,wgt_out->sz,wgt_out->has_mss_val,wgt_out->mss_val,wgt_out->tally,wgt_out->val);
+	} /* endif */ 
+	if(NORMALIZE_BY_TALLY && NORMALIZE_BY_WEIGHT){
+	  /* Divide by denominator */ 
+	  /* This constructs the default weighted average */ 
+	  (void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_out->val,var_prc_out[idx]->val);
+	} /* endif */ 
       }else{
 	(void)fprintf(stdout,"%s: ERROR Unforeseen logical branch in main()\n",prg_nm);
 	exit(EXIT_FAILURE);

@@ -1,5 +1,10 @@
 1998-12-02  Charlie Zender  <zender@z.ppp.ucar.edu>
 
+	* Changed ncwa to default to weighting coordinates just like
+	variables, i.e., toggle default value of -I switch
+
+	* Added more exhaustive ncwa tests to nco_tst.sh
+
 	* Rewrote ncwa section of User's Guide
 
 1998-12-01  Charlie Zender  <zender@z.ppp.ucar.edu>

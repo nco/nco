@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.7 1998-12-03 05:40:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.8 1998-12-03 15:37:29 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -49,11 +49,11 @@ END-INFO-DIR-ENTRY
 @clear smallbook
 
 @set nco-edition 1.1
-@set doc-edition 1.15
+@set doc-edition 1.16
 @set copyright-years 1995, 1996, 1997, 1998
 @set update-year 1998
-@set update-date 25 November 1998
-@set update-month November 1998
+@set update-date 1 December 1998
+@set update-month December 1998
 
 @c Experiment with smaller amounts of whitespace between chapters and sections.
 @tex
@@ -122,7 +122,7 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @subtitle @value{update-month}
 
 @author by Charles S. Zender
-@author NCAR ASP & CGD
+@author NCAR ACD & CGD
 @ifhtml
 <P>WWW readers: Having trouble finding the section you want?</P> 
 <P>Search for keywords in the (hyper) index at the end of this page</P> 
@@ -250,7 +250,7 @@ Reference manual for all operators
 <BODY TEXT="#000000" BGCOLOR="#FFF8DC" LINK="#0000EF" VLINK="#008080" ALINK="#FF0000">
 @end ifhtml
 NCO is the result of software needs that arose while I worked on
-projects funded by the NASA EOS and NCAR ASP programs.  
+projects funded by NCAR, NASA, and ARM.
 Thinking they might prove useful as tools or templates to others,  
 it is my pleasure to provide them freely to the scientific community.  
 Many users (most of whom I have never met) have encouraged the
@@ -260,7 +260,7 @@ William Weibel for stimulating suggestions and correspondence.
 Your encouragment motivated me to complete the @cite{NCO User's Guide}.
 So if you like NCO, send me a note!
 I should mention that NCO is not connected to or officially endorsed by
-Unidata, ASP, CGD, or Nike.
+Unidata, ACD, ASP, CGD, or Nike.
 @sp 1
 @noindent
 Charlie Zender
