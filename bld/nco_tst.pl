@@ -1,5 +1,7 @@
 #!/usr/bin/perl
 
+use File::Basename;
+
 &initialize();
 &perform_tests();
 &summarize_results();
@@ -7,20 +9,18 @@
 sub perform_tests
 {
 
-# T42-size test field named one, which is identically 1.0 in foo_T42.nc';
-$operator="start";
-####################
 
+####################
+#### ncks tests ####
+####################
+$operator="ncks";
+####################
 $test[0]='ncks -O -v lat_T42,lon_T42,gw_T42 in.nc foo_T42.nc';
 $test[1]='ncrename -O -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon foo_T42.nc';
 $test[2]='ncap -O -D 1 -s "one[lat,lon]=lat*lon*0.0+1.0" -s "zero[lat,lon]=lat*lon*0.0" foo_T42.nc foo_T42.nc';
 $expected="";
 $description="T42-size test field named one, which is identically 1.0 in foo_T42.nc";
 &go();
-####################
-#### ncks tests ####
-####################
-$operator="ncks";
 ####################
 $test[0]='ncks -C -H -s "%c" -v fl_nm in.nc';
 $description=" extract filename string";
@@ -661,7 +661,17 @@ if (scalar @ARGV > 0)
   die "$MY_BIN_DIR/$operators[0] doesn't exist\n" unless (-e "$MY_BIN_DIR/$operators[0]");
   
   # go to the data directory where all the test are actually run
-  chdir "../data";
+  my $data_dir = "../data";
+  
+  chdir $data_dir or die "$!\n";
+  
+  # make sure in.nc exists, make it if possible, or die
+  unless (-e "in.nc") {
+    system("ncgen -o in.nc in.cdl") if (`which ncgen` and -e "in.cdl");
+    }
+  
+  die "The netCDF file \"in.nc\" is necessary for testing NCO, however, it could not be found in \"$data_dir\".  Also, it could not be generated because \"ncgen\" could not be found in your path and/or the file \"$data_dir/in.cdl\" does not exist.\n"
+  unless (-e "in.nc");
   
   # initialize some hashes for each operator that will be tested
   foreach(@operators) 
