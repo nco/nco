@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.22 2000-05-09 23:52:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.23 2000-05-10 00:32:50 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.22 2000-05-09 23:52:27 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.22 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.23 2000-05-10 00:32:50 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.23 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -370,7 +370,7 @@ main(int argc,char **argv)
 
     if(prg == ncra || prg == ncrcat){
       /* Loop over each record in the current file */ 
-      if(lmt_rec.srt > lmt_rec.end) (void)fprintf(stdout,"%s: WARNING %s is superfluous (contributes no data)\n",prg_nm_get(),fl_in);
+      if(lmt_rec.srt > lmt_rec.end) (void)fprintf(stdout,"%s: WARNING %s is superfluous\n",prg_nm_get(),fl_in);
       for(idx_rec=lmt_rec.srt;idx_rec<=lmt_rec.end;idx_rec+=lmt_rec.srd){
 	/* Process all variables in the current record */ 
 	if(dbg_lvl > 1) (void)fprintf(stderr,"Record %ld of %s is input record %ld\n",idx_rec,fl_in,idx_rec_out);

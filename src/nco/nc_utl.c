@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.60 2000-05-09 23:52:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.61 2000-05-10 00:32:49 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -231,6 +231,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
      for formulation of dimension start and count vectors, or fail trying. */ 
 
   bool flg_no_data=False; /* True if file contains no data for hyperslab */
+  bool lmt_is_rec_dmn_in_mlt_fl_opr=False; /* True if record dimension in multi-file operator */ 
 
   dmn_sct dim;
 
@@ -277,6 +278,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
      Best to program defensively and define this flag in all cases. */
   (void)ncinquire(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
   if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
+  if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) lmt_is_rec_dmn_in_mlt_fl_opr=True; else lmt_is_rec_dmn_in_mlt_fl_opr=False;
 
   /* Get dimension size */ 
   (void)ncdiminq(nc_id,lmt.id,(char *)NULL,&dim.sz);
@@ -433,14 +435,14 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	  hyperslabs will choose the closest value rather than skip the file
 	  (I believe). This should be verified. */
        /* User specified single point, coordinate is not wrapped, and both extrema fall outside valid crd range */
-       (lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat) && (lmt.min_val == lmt.max_val) && ((lmt.min_val > dmn_max) || (lmt.max_val < dmn_min))) ||
+       (lmt_is_rec_dmn_in_mlt_fl_opr && (lmt.min_val == lmt.max_val) && ((lmt.min_val > dmn_max) || (lmt.max_val < dmn_min))) ||
        /* User did not specify single point, coordinate is not wrapped, and either extrema falls outside valid crd range */
        ((lmt.min_val < lmt.max_val) && ((lmt.min_val > dmn_max) || (lmt.max_val < dmn_min))) ||
        /* User did not specify single point, coordinate is wrapped, and both extrema fall outside valid crd range */
        ((lmt.min_val > lmt.max_val) && ((lmt.min_val > dmn_max) && (lmt.max_val < dmn_min))) ||
        False){
       /* Allow for possibility that current file is superfluous */
-      if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)){
+      if(lmt_is_rec_dmn_in_mlt_fl_opr){
 	flg_no_data=True;
 	goto no_data;
       }else{
@@ -512,8 +514,8 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	} /* end if */
       } /* end else monotonic_direction == decreasing */
 
-      /* Case where both min_idx and max_idx = -1 was flagged as an error above
-	 Case of a wrapped coordinate: Either, but not both, of min_idx or max_idx will be flagged with -1
+      /* Case where both min_idx and max_idx = -1 was flagged as error above
+	 Case of wrapped coordinate: Either, but not both, of min_idx or max_idx will be flagged with -1
 	 See explanation above */ 
       if(lmt.min_idx == -1L && (lmt.min_val > lmt.max_val)) lmt.min_idx=0L;
       if(lmt.max_idx == -1L && (lmt.min_val > lmt.max_val)) lmt.max_idx=dmn_sz-1L;
@@ -579,20 +581,21 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     } /* end if */
     
     /* Exit if requested indices are not in valid range */ 
-    if(lmt.min_idx < 0 || lmt.min_idx >= dmn_sz || lmt.max_idx < 0){
-      /* Allow for possibility that current file is superfluous */
-      if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)){
-	/* Do nothing here. flg_no_data will be set later */ 
-	(void)fprintf(stdout,"%s: ERROR Skipping initial files when lmt_typ = dim_idx is not yet fully working. The last remaining problem is keeping track of how many records were skipped in the first n superfluous files\n",prg_nm_get());
-	(void)fprintf(stdout,"\n");
-	exit(EXIT_FAILURE);
-      }else{
-	(void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dmn_sz-1L);
-	(void)fprintf(stdout,"\n");
-	exit(EXIT_FAILURE);
-      } /* end else */
+    if(lmt.min_idx < 0 || lmt.max_idx < 0 || 
+       (lmt.min_idx >= dmn_sz && lmt_is_rec_dmn_in_mlt_fl_opr)){
+      (void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dmn_sz-1L);
+      (void)fprintf(stdout,"\n");
+      exit(EXIT_FAILURE);
     } /* end if */
     
+    /* Allow for possibility that current file is superfluous to multi-file hyperslab */
+    if(lmt_is_rec_dmn_in_mlt_fl_opr){
+      /* Do nothing here. flg_no_data will be set later */ 
+      (void)fprintf(stdout,"%s: ERROR Skipping initial files when lmt_typ = dim_idx is not yet fully working. The last remaining problem is keeping track of how many records were skipped in the first n superfluous files\n",prg_nm_get());
+      (void)fprintf(stdout,"\n");
+      exit(EXIT_FAILURE);
+    } /* end if */
+
     /* Logic depends on whether this is record dimension in multi-file operator */
     if(!lmt.is_rec_dmn || !lmt.is_usr_spc_lmt || ((prg_id != ncra) && (prg_id != ncrcat))){
       /* For non-record dimensions and for record dimensions where limit 
