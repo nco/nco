@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.129 2002-02-12 07:49:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.130 2002-03-28 02:38:21 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -2604,7 +2604,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
   
   /* Simple error-checking and diagnostics */
   if(dbg_lvl_get() > 2){
-    (void)fprintf(stderr,"%s: DEBUG Converting variable %s from type %s to type %s\n",prg_nm_get(),var_in->nm,nco_typ_sng(var_in_type),nco_typ_sng(var_out_type));
+    (void)fprintf(stderr,"%s: DEBUG Promoting variable %s from type %s to type %s\n",prg_nm_get(),var_in->nm,nco_typ_sng(var_in_type),nco_typ_sng(var_out_type));
   } /* end if */
   
   /* Move the current var values to swap location */
@@ -3127,7 +3127,7 @@ arm_inq(int nc_id)
   if(rcd != NC_NOERR){
     ARM_FORMAT=False;
   }else{
-    (void)fprintf(stderr,"%s: CONVENTION File convention is DOE ARM\n",prg_nm_get()); 
+    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: CONVENTION File convention is DOE ARM\n",prg_nm_get()); 
     ARM_FORMAT=True;
   } /* end else */
 
@@ -5243,7 +5243,7 @@ ncar_csm_inq(int nc_id)
     /* NUL-terminate convention attribute before using strcmp() */
     att_val[att_sz]='\0';
     if(strstr(att_val,"NCAR-CSM") != NULL) NCAR_CSM=True;
-    if(NCAR_CSM) (void)fprintf(stderr,"%s: CONVENTION File convention is %s\n",prg_nm_get(),att_val);
+    if(NCAR_CSM && dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: CONVENTION File convention is %s\n",prg_nm_get(),att_val);
     att_val=nco_free(att_val);
   } /* endif */
 
