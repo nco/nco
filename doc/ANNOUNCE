@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.134 2005-02-25 05:21:11 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.135 2005-03-23 01:44:19 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.9 are ready. 
 
@@ -6,31 +6,33 @@ http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 There are fxm significant feature improvements in version 3.0.0.
-These changes are mainly oriented toward stabilization.
+These changes are mainly oriented toward benchmarking, optimization,
+and stabilization. 
 
-1. libnco_c++ incorporates nco_put_vara() overloads, works with g++ 3.4.
+1. New -Z (or --64-bit-offset) switch on all operators writes output
+   files in new 64-bit offset mode available only with netCDF 3.6.
+   See http://nco.sf.net/nco.html#lfs for details.
 
-2. fxm ncpdq packing and unpacking handles missing_value attributes better
-   See http://nco.sf.net/nco.html#ncpdq for details.
-
-3. ncks prints data to screen by default if only one filename specified
+2. ncks prints data to screen by default if only one filename specified
    Formerly, four ncks switches (-H -m -M -u) were required to print all
    file data and metadata to screen. 
    Now ncks automatically prints data to screen when no output file
    is specified. Change scripts that rely on the old behavior.
+   There is also a new printing switch: -P abbreviates -C -H -M -m -u
    See http://nco.sf.net/nco.html#ncks for details.
 
-4. New -Z (or --64-bit-offset) switch on all operators writes output
-   files in new 64-bit offset mode available only with netCDF 3.6.
-   See http://nco.sf.net/nco.html#lfs for details.
+3. fxm ncpdq packing and unpacking handles missing_value attributes better
+   See http://nco.sf.net/nco.html#ncpdq for details.
+
+4. libnco_c++ incorporates nco_put_vara() overloads, works with g++ 3.4.
 
 Enjoy,
 Charlie
 
 Feature changes:
-1. libnco_c++ incorporates nco_put_vara() overloads
-2. Support 64-bit-offset mode of netCDF 3.6
-3. ncks printing defaults change slightly: -P switch = -C -H -M -m -u
+1. Support 64-bit-offset mode of netCDF 3.6
+2. ncks printing defaults change slightly: -P switch = -C -H -M -m -u
+3. libnco_c++ incorporates nco_put_vara() overloads
 
 Bug-fixes:
 1. None
@@ -38,6 +40,7 @@ Bug-fixes:
 Build changes:
 1. Build improvements in configure.in improve NEC SX compatibility
 2. Updated config.sub and config.guess to most recent FSF sources
+3. NCO 3.0 _requires_ netCDF 3.6 by default
 
 Other user-visible changes:
 1. ncks prints data to screen by default if only one filename specified
@@ -47,3 +50,6 @@ Other user-visible changes:
 
 User-invisible changes:
 1. libnco_c++ builds with g++-3.4
+2. Arithemetic operator speed enhancements from removing "reverse
+   mapping" overhead from scalar variable broadcasting and stretching 
+3. Speed enhancements from zeroing buffers with memset()

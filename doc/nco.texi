@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.290 2005-02-25 05:21:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.291 2005-03-23 01:44:19 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2509,7 +2509,7 @@ pres.sfc.1969.nc foo.nc
 All with one command!
 The data in this particular input file also happen to be packed
 (@pxref{Intrinsic functions}), although this is completely transparent
-to the user since @acronym{NCO} automatically unpacks them before
+to the user since @acronym{NCO} automatically unpacks data before
 attempting arithmetic. 
 
 @acronym{NCO} obtains remote files from the @acronym{OPeNDAP} server
