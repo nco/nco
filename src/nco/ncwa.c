@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.4 1998-10-31 21:06:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.5 1998-10-31 21:54:32 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -70,8 +70,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncwa.c,v 1.4 1998-10-31 21:06:35 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.4 $";
+  char rcs_Id[]="$Id: ncwa.c,v 1.5 1998-10-31 21:54:32 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.5 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -400,11 +400,9 @@ main(int argc,char **argv)
 
   /* Define dimensions in output file */ 
   (void)dim_def(fl_out,out_id,dim_out,nbr_dim_out);
-  if(dbg_lvl == 73) rec_var_dbg(out_id,"After dim_def()");
 
   /* Define variables in output file, and copy their attributes */ 
   (void)var_def(in_id,fl_out,out_id,var_out,nbr_xtr,dim_out,nbr_dim_out);
-  if(dbg_lvl == 73) rec_var_dbg(out_id,"After var_def()");
 
   /* New missing values must be added to the output file in define mode */
   if(msk_nm != NULL){
@@ -425,14 +423,12 @@ main(int argc,char **argv)
   
   /* Take the output file out of define mode */ 
   (void)ncendef(out_id);
-  if(dbg_lvl == 73) rec_var_dbg(out_id,"After ncendef()");
   
   /* Zero the start vectors for all the output variables */ 
   (void)var_srt_zero(var_out,nbr_xtr);
 
   /* Copy the variable data for the non-processed variables */ 
   (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
-  if(dbg_lvl == 73) rec_var_dbg(out_id,"After var_val_cpy()");
 
   /* Close the first input netCDF file */ 
   ncclose(in_id);
@@ -559,7 +555,6 @@ main(int argc,char **argv)
     
     /* Close the input netCDF file */ 
     ncclose(in_id);
-    if(dbg_lvl == 73) rec_var_dbg(out_id,"After ncclose()");
     
     /* Dispose of the local copy of the file */ 
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);

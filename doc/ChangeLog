@@ -1,3 +1,7 @@
+Sat Oct 31 14:56:33 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
+
+	* Tagged and released this as version nco1_1_10
+
 1998-10-29  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Fixed bug in ncra which only occured when NC_CHAR and NC_BYTE
