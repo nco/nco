@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.9 2004-07-01 01:11:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.10 2004-07-01 18:23:36 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -9,11 +9,11 @@
 #include "nco_omp.h" /* OpenMP utilities */
 
 int /* O [nbr] Thread number */
-nco_openmp_ini(void) /* [fnc] Set up OpenMP multi-threading environment */
+nco_openmp_ini /* [fnc] Set up OpenMP multi-threading environment */
+(int thr_nbr) /* I [nbr] Thread number */
 {
   /* Purpose: Set up OpenMP multi-threading environment */
   FILE * const fp_stderr=stderr; /* [fl] stderr filehandle CEWI */
-  int thr_nbr=0; /* O [nbr] Thread number */
 
   /* Using naked stdin/stdout/stderr in parallel region generates warning
      Copy appropriate filehandle to variable scoped shared in parallel clause */

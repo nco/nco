@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.122 2004-07-01 18:00:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.123 2004-07-01 18:23:36 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.122 2004-07-01 18:00:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.122 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.123 2004-07-01 18:23:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.123 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -148,7 +148,7 @@ main(int argc,char **argv)
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=-1;
-  int thr_nbr=0; /* [nbr] Thread number */
+  int thr_nbr=0; /* [nbr] Thread number Option t */
   
   lmt_sct *lmt;
   
@@ -319,6 +319,9 @@ main(int argc,char **argv)
       break;
     case 'T': /* Relational operator type. Default is 0, eq, equality */
       op_typ_rlt=nco_op_prs_rlt(optarg);
+      break;
+    case 't': /* Thread number */
+      thr_nbr=(int)strtol(optarg,(char **)NULL,10);
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -521,7 +524,7 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
 
   /* Initialize thread information */
-  thr_nbr=nco_openmp_ini();
+  thr_nbr=nco_openmp_ini(thr_nbr);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
   
   /* Define dimensions in output file */

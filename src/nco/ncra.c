@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.112 2004-07-01 18:00:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.113 2004-07-01 18:23:36 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.112 2004-07-01 18:00:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.112 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.113 2004-07-01 18:23:36 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.113 $";
   const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xy:-:";
 
   dmn_sct **dim;
@@ -289,7 +289,7 @@ main(int argc,char **argv)
       (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
       break;
-    case 'o': /* Thread number */
+    case 't': /* Thread number */
       thr_nbr=(int)strtol(optarg,(char **)NULL,10);
       break;
     case 'v': /* Variables to extract/exclude */
@@ -420,7 +420,7 @@ main(int argc,char **argv)
   if(FL_LST_IN_APPEND && HISTORY_APPEND && FL_LST_IN_FROM_STDIN) (void)nco_fl_lst_att_cat(out_id,fl_lst_in,fl_nbr);
 
   /* Initialize thread information */
-  thr_nbr=nco_openmp_ini();
+  thr_nbr=nco_openmp_ini(thr_nbr);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
   
   /* Define dimensions in output file */
