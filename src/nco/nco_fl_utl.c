@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.43 2004-07-01 20:03:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.44 2004-07-09 16:36:11 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -186,7 +186,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	  fp_in=stdin; /* [enm] Input file handle */
 	}else{
 	  if((fp_in=fopen(fl_in,"r")) == NULL){
-	    (void)fprintf(stderr,"%s: ERROR in opening file containing input filename list %s\n",prg_nm_get(),fl_in);
+	    (void)fprintf(stderr,"%s: ERROR opening file containing input filename list %s\n",prg_nm_get(),fl_in);
 	    nco_exit(EXIT_FAILURE);
 	  } /* endif err */
 	} /* endelse */
@@ -874,7 +874,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   pid_sng=(char *)nco_free(pid_sng);
 
   if(dbg_lvl_get() == 8){
-  /* Use builtin system routines to generate temporary filename
+  /* Use built-in system routines to generate temporary filename
      This allows file to be built in fast directory like /tmp rather than local
      directory which could be a slow, NFS-mounted directories like /fs/cgd
 
@@ -1012,7 +1012,7 @@ void
 nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output file */
 (const char * const fl_out, /* I [sng] Name of permanent output file */
  const char * const fl_out_tmp, /* I [sng] Name of temporary output file to close and move to permanent output file */
- const int nc_id) /* I [id] file ID of fl_out_tmp */
+ const int nc_id) /* I [id] File ID of fl_out_tmp */
 {
   /* Purpose: Close temporary output file, move it to permanent output file */
   int rcd; /* [rcd] Return code */

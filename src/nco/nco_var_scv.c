@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.17 2004-03-25 12:05:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.18 2004-07-09 16:36:11 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -450,7 +450,12 @@ var_scv_mod /* [fnc] Modulo variable by scalar */
 
 #ifndef __GNUG__
   float fmodf(float,float); /* Cannot insert fmodf() in ncap_sym_init() because it takes two arguments TODO #20 */
-  float fabsf(float); /* Sun math.h does not include fabsf() prototype */
+  /* Sun cc math.h does not include fabsf() prototype 
+     AIX xlc work fine with this prototype
+     HP-UX cc fails when fabsf() is prototyped */
+#ifndef HPUX
+  float fabsf(float);
+#endif /* HPUX */
 #endif /* __GNUG__ */
 
   long idx;
@@ -540,7 +545,12 @@ scv_var_mod /* [fnc] Modulo scalar by variable */
 
 #ifndef __GNUG__
   float fmodf(float,float); /* Cannot insert fmodf() in ncap_sym_init() because it takes two arguments TODO #20 */
-  float fabsf(float); /* Sun math.h does not include fabsf() prototype */
+  /* Sun cc math.h does not include fabsf() prototype 
+     AIX xlc work fine with this prototype
+     HP-UX cc fails when fabsf() is prototyped */
+#ifndef HPUX
+  float fabsf(float);
+#endif /* HPUX */
 #endif /* __GNUG__ */
 
   long idx;

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.108 2004-07-06 22:44:50 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.109 2004-07-09 16:36:11 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.7 are ready. 
 
@@ -16,6 +16,7 @@ Feature changes:
 
 Bug-fixes:
 1. AIX use NCO-supplied float-valued functions (e.g., cosf()) on AIX
+2. 
 
 Build changes:
 1. None

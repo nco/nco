@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.91 2004-07-06 20:59:21 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.92 2004-07-09 16:36:07 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -614,7 +614,7 @@ case ${host} in
 	;;
     alpha*-*-linux* ) AC_DEFINE(LINUXALPHA,1,Compatibility pvmgetarch token for Linux on DEC Alpha)
 	;;   
-    hppa*-hp-hpux* ) AC_DEFINE(HPPA,1,Compatibility pvmgetarch token for HPUX on PA RISC)
+    hppa*-hp-hpux* ) AC_DEFINE(HPUX,1,Compatibility pvmgetarch token for HPUX on PA RISC)
 	;;
     i*86-pc-freebsd* ) AC_DEFINE(FREEBSD,1,Compatibility pvmgetarch token for FreeBSD on Intel x86)
 	;;   

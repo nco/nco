@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.21 2004-06-20 06:54:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.22 2004-07-09 16:36:11 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -55,7 +55,7 @@ nco_fl_cp /* [fnc] Copy first file to second */
 
 char * /* O [sng] Canonical file name*/
 nco_fl_info_get /* [fnc] Determine canonical filename and properties */
-(const char const *fl_nm_lcl); /* I [sng] Name of file */
+(const char * const fl_nm_lcl); /* I [sng] Name of file */
 
 char ** /* O [sng] List of user-specified filenames */
 nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments */
@@ -98,7 +98,7 @@ void
 nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output file */
 (const char * const fl_out, /* I [sng] Name of permanent output file */
  const char * const fl_out_tmp, /* I [sng] Name of temporary output file to close and move to permanent output file */
- const int nc_id); /* I [id] file ID of fl_out_tmp */
+ const int nc_id); /* I [id] File ID of fl_out_tmp */
 
 void 
 nco_fl_rm /* [fnc] Remove file */
