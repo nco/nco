@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.57 2000-08-25 16:45:14 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.58 2000-08-28 20:16:31 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -100,6 +100,30 @@ Each of the following operators is thoroughly described in the
 
 <dt><a name="News"></a></dt>
 <h2>NCO News</h2>
+
+<p>2000/08/28: 
+NCO version 1.2.1 is released.
+Differences with version 1.2 include one new feature and one bugfix.
+
+<p>1. Operators now perform automatic type conversion of integers to
+doubles before arithmetic. 
+This feature allows <tt>ncwa</tt>, <tt>ncra</tt>, and <tt>ncea</tt>
+to handle averaging of longs, shorts, bytes, and chars in a more
+satisfactory manner.
+One immediate benefit is that <tt>ncwa</tt> no longer 
+complains when user's try to apply weights (e.g., gaussian weights)
+all less than one to the averaging of an integer (e.g., <tt>nlons</tt>).
+Formerly <tt>ncwa</tt> would issue a warning, a workaround, and then
+dump core (because weights converted to integers were all zeros). 
+Now that arithmetic is performed in double precision (rather than  
+in the precision of the variable), <tt>ncwa</tt> handles this
+situation correctly.
+
+<p>2. A bug introduced in NCO 1.2 which broke the <tt>-x</tt> switch has been fixed
+
+<p>3. Thanks to Henry Butowsky for implementing the type conversion feature
+<br>Thanks to Ethan Davis for improving the build procedure
+
 <p>2000/07/30: 
 nco-1.2 is released. 
 Summary of new features and user-visible changes:

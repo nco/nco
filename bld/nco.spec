@@ -1,8 +1,8 @@
-# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.8 2000-08-25 16:45:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.9 2000-08-28 20:18:41 zender Exp $
 # Purpose: RPM spec file for NCO
 # Usage: 
 # Before nco.spec is invoked (with 'rpm -ba nco.spec'), the source tarball 
-# nco-1.2 must be in the directory /usr/src/redhat/SOURCES
+# nco-1.2.1 must be in the directory /usr/src/redhat/SOURCES
 # After RPMs are built, upload them to RedHat's contrib area
 # ncftpput incoming.redhat.com /libc6 /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm 
 # ncftpput dust.ps.uci.edu /pub/zender/nco /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm 
@@ -13,7 +13,7 @@ Version: 1.2
 Release: 1
 Copyright: GPL
 Group: Applications/Scientific
-Source: ftp://nco.sourceforge.net/pub/nco/nco-1.2.tar.gz
+Source: ftp://nco.sourceforge.net/pub/nco/nco-1.2.1.tar.gz
 URL: http://nco.sourceforge.net
 # Distribution: None in particular
 Vendor: Charlie Zender
@@ -36,12 +36,12 @@ illustrates NCO use with examples from the field of climate modeling
 and analysis. The NCO homepage is http://nco.sourceforge.net
 
 %prep
-rm -rf $RPM_BUILD_DIR/nco-1.2
-tar xvzf $RPM_SOURCE_DIR/nco-1.2.tar.gz
+rm -rf $RPM_BUILD_DIR/nco-1.2.1
+tar xvzf $RPM_SOURCE_DIR/nco-1.2.1.tar.gz
 
 %build
-cd nco-1.2/bld
-/usr/bin/env MY_BIN_DIR=/usr/bin MY_DOC_DIR=/usr/doc/nco-1.2 make
+cd nco-1.2.1/bld
+/usr/bin/env MY_BIN_DIR=/usr/bin MY_DOC_DIR=/usr/doc/nco-1.2.1 make
 
 # make data
 # Use make tst only when connected to the Internet
@@ -67,4 +67,4 @@ cd nco-1.2/bld
 /usr/bin/ncwa
 
 %clean
-/bin/rm -r nco-1.2
+/bin/rm -r nco-1.2.1
