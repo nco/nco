@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.47 2000-07-28 23:54:24 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.48 2000-07-29 05:43:13 zender Exp $
 
 Purpose: NCO homepage
 
@@ -188,18 +188,38 @@ Only the required data (e.g., the variable or hyperslab specified) are
 transferred.
 See the <A HREF="./nco.html">User's Guide</A> for complete details.
 
-Third, Fortran compatibility has been dropped. 
+Third, Fortran compatibility has been dropped.
 If a volunteer wants to continue to maintain the option to perform
 arithmetic in Fortran for reasons of speed, contact me.
 
-Fourth, NCO is now an Open Source project licensed under the GPL.
+Fourth, NCO is now an Open Source project licensed under the GPL
 These new capabilities are the result of contributions from Henry
 Butowki, Bill Kocik, and Roland Schweitzer.
 For more information on how to contribute to NCO,
 visit the <a href="http://sourceforge.net/projects/nco">NCO
 administration homepage</a>.
 
-Mailing list....no more announcements on CCM list?
+Fifth, There will be no more announcements on the CCM mailing list
+NCO releases will be announced on the netCDF list and on the new
+NCO mailing list. To join this list send a message with "help" in it to 
+nco-announce-request@lists.sourceforge.net
+The archive of this list is viewable at
+http://lists.sourceforge.net/mailman/listinfo/nco-announce
+
+Sixth, questions, suggestions, and requests for help should be posted to 
+the appropriate discussion forum on SourceForge instead of directly to me. 
+Open Discussion: 
+http://sourceforge.net/forum/forum.php?forum_id=9829 
+General discussion, inevitably some overlap with Developer's forum 
+Discussion of ambitious plans, future directions 
+Help: 
+http://sourceforge.net/forum/forum.php?forum_id=9830 
+Installation problems, user's questions (e.g., how do I average x and y....?) 
+Developers: 
+http://sourceforge.net/forum/forum.php?forum_id=9831 
+Patches, technical questions related to modifying NCO, 
+discussion of specific items on TODO list and how best
+to address them 
 
 <P>2000/05/15: 
 nco-1.1.48 fixes a bug introduced in nco-1.1.15 (November 1998) with

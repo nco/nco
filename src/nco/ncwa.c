@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.40 2000-07-28 23:54:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.41 2000-07-29 05:43:13 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.40 2000-07-28 23:54:24 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.40 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.41 2000-07-29 05:43:13 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.41 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -579,15 +579,19 @@ main(int argc,char **argv)
 	 for weights that do already conform to var_prc. TODO #114. */ 
 	wgt_out=var_conform_dim(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
 	wgt_out=var_conform_type(var_prc[idx]->type,wgt_out);
-	/* fxm: should perform weighting after avg,avgsqr,rms etc. */
+	/* fxm: can weighting be performed after avg,avgsqr,rms etc.? 
+	 Unless weighting is done last then weights will screw up on non-linear
+	 transformations like rms, sqrt, which should be applied to the variables
+	 before weighting and reduction. Until this is fixed sdn on spatial regions
+	 is basically worthless because, e.g., gaussian weights cannot be applied */
 	/* Weight variable by taking product of weight and variable */ 
 	(void)var_multiply(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,wgt_out->val,var_prc[idx]->val);
       } /* end if */
       /* Copy (masked) (weighted) values from var_prc to var_prc_out */ 
       (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type));
-      /* Average variable over specified dimensions (tally array is set here) */
+      /* Reduce variable over specified dimensions (tally array is set here) */
       var_prc_out[idx]=var_avg(var_prc_out[idx],dmn_avg,nbr_dmn_avg,nco_op_typ);
-      /* var_prc_out[idx]->val holds numerator of averaging expression documented in NCO User's Guide 
+      /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide 
 	 Denominator is also tricky due to sundry normalization options 
 	 These logical switches are VERY tricky---be careful modifying them */
       if(NRM_BY_DNM && wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){

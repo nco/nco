@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.79 2000-07-28 23:54:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.80 2000-07-29 05:43:13 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -2795,17 +2795,19 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
    nco_op_typ : average,min,max,ttl operation to perform, default is average
 */
 {
-  /* Routine to average given variable over given dimensions. The input variable 
-     structure is destroyed and the routine returns the resized, partially averaged variable. 
-     To complete the averaging operation, the output variable must be normalized by its tally array.
-     In other words, var_normalize() should be called subsequently if normalization is desired.
-     Normalization is not done internally to var_avg() in order to allow the user more flexibility.
+  /* Routine to reduce given variable over specified dimensions. 
+     "Reduce" means to reduce the rank of the variable by performing an arithmetic operation
+     The default operation is to average, but nco_op_typ can also be min, max, etc.
+     The input variable structure is destroyed and the routine returns the resized, partially reduced variable
+     For some operations, such as min, max, ttl, the variable returned by var_avg() is complete and need not be further processed
+     But to complete the averaging operation, the output variable must be normalized by its tally array
+     In other words, var_normalize() should be called subsequently if normalization is desired
+     Normalization is not done internally to var_avg() in order to allow the user more flexibility
   */  
 
-  /* Create output variable as a duplicate of the input variable, except for the dimensions
-     which are to be averaged over */ 
+  /* Create output variable as a duplicate of the input variable, except for dimensions which are to be averaged over */ 
 
-  /* NB: var_avg() overwrites the contents, if any, of the tally array with the number of valid averaging operations */ 
+  /* var_avg() overwrites contents, if any, of tally array with number of valid reduction operations */
 
   /* There are three variables to keep track of in this routine, their abbreviations are:
      var: Input variable (already hyperslabbed)
@@ -2865,7 +2867,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     } /* end if */ 
   } /* end loop over idx */
 
-  /* Free the extra list space */ 
+  /* Free extra list space */ 
   if(nbr_dmn_fix > 0) dmn_fix=(dmn_sct **)nco_realloc(dmn_fix,nbr_dmn_fix*sizeof(dmn_sct *)); else dmn_fix=(dmn_sct **)NULL;
   if(nbr_dmn_avg > 0) dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,nbr_dmn_avg*sizeof(dmn_sct *)); else dmn_avg=(dmn_sct **)NULL;
 
@@ -2874,7 +2876,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     return (var_sct *)NULL;
   } /* end if */ 
 
-  /* Get rid of the averaged dimensions */ 
+  /* Get rid of averaged dimensions */ 
   fix->nbr_dim=nbr_dmn_fix;
 
   avg_sz=1L;
@@ -2906,9 +2908,9 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
   if(nbr_dmn_fix > 0) fix->cnt=(long *)nco_realloc(fix->cnt,nbr_dmn_fix*sizeof(long)); else fix->cnt=NULL;
   if(nbr_dmn_fix > 0) fix->end=(long *)nco_realloc(fix->end,nbr_dmn_fix*sizeof(long)); else fix->end=NULL;
   
-  /* If the product of the sizes of all the averaging dimensions is 1, the input and output value arrays 
-     should be identical. Since var->val was already copied to fix->val by var_dup() at the beginning
-     of this routine, there is only one task remaining, to set fix->tally appropriately. */
+  /* If product of sizes of all averaging dimensions is 1, input and output value arrays should be identical 
+     Since var->val was already copied to fix->val by var_dup() at the beginning
+     of this routine, only one task remains, to set fix->tally appropriately. */
   if(avg_sz == 1L){
     long fix_sz;
     long *fix_tally;
@@ -2916,7 +2918,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     fix_sz=fix->sz;
     fix_tally=fix->tally;
 
-    /* First set the tally field to 1 */ 
+    /* First set tally field to 1 */ 
     for(idx=0;idx<fix_sz;idx++) fix_tally[idx]=1L;
     /* Next overwrite any missing value locations with zero */ 
     if(fix->has_mss_val){
@@ -2935,8 +2937,8 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     } /* fix->has_mss_val */
   } /* end if avg_sz == 1L */ 
 
-  /* Starting at the first element of the input hyperslab, add up the next stride elements
-     and place the result in the first element of the output hyperslab. */ 
+  /* Starting at first element of input hyperslab, add up next stride elements
+     and place result in first element of output hyperslab. */ 
   if(avg_sz != 1L){
     char *avg_cp;
     char *fix_cp;
@@ -2976,56 +2978,56 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     /* Resize (or just plain allocate) the tally array */ 
     fix->tally=(long *)nco_realloc(fix->tally,fix->sz*sizeof(long));
 
-    /* Re-initialize the value and tally arrays */ 
+    /* Re-initialize value and tally arrays */ 
     (void)zero_long(fix->sz,fix->tally);
     (void)var_zero(fix->type,fix->sz,fix->val);
   
-    /* Figure out the map for each dimension of the variable */ 
+    /* Compute map for each dimension of variable */
     for(idx=0;idx<nbr_dmn_var;idx++) dmn_var_map[idx]=1L;
     for(idx=0;idx<nbr_dmn_var-1;idx++)
       for(idx_dim=idx+1;idx_dim<nbr_dmn_var;idx_dim++)
 	dmn_var_map[idx]*=var->cnt[idx_dim];
     
-    /* Figure out the map for each dimension of the output variable */ 
+    /* Compute map for each dimension of output variable */ 
     for(idx=0;idx<nbr_dmn_fix;idx++) dmn_fix_map[idx]=1L;
     for(idx=0;idx<nbr_dmn_fix-1;idx++)
       for(idx_dim=idx+1;idx_dim<nbr_dmn_fix;idx_dim++)
 	dmn_fix_map[idx]*=fix->cnt[idx_dim];
     
-    /* Figure out the map for each dimension of the averaging buffer */ 
+    /* Compute map for each dimension of averaging buffer */ 
     for(idx=0;idx<nbr_dmn_avg;idx++) dmn_avg_map[idx]=1L;
     for(idx=0;idx<nbr_dmn_avg-1;idx++)
       for(idx_dim=idx+1;idx_dim<nbr_dmn_avg;idx_dim++)
 	dmn_avg_map[idx]*=dmn_avg[idx_dim]->cnt;
     
-    /* var_lmn is the offset into the 1-D array */
+    /* var_lmn is the offset into 1-D array */
     for(var_lmn=0;var_lmn<var_sz;var_lmn++){
 
-      /* dmn_ss are the corresponding indices (subscripts) into the N-D array */
+      /* dmn_ss are corresponding indices (subscripts) into N-D array */
       dmn_ss[nbr_dmn_var_m1]=var_lmn%var_cnt[nbr_dmn_var_m1];
       for(idx=0;idx<nbr_dmn_var_m1;idx++){
 	dmn_ss[idx]=(long)(var_lmn/dmn_var_map[idx]);
 	dmn_ss[idx]%=var_cnt[idx];
       } /* end loop over dimensions */
 
-      /* Map variable's N-D array indices into a 1-D index into the averaged data */ 
+      /* Map variable's N-D array indices into a 1-D index into averaged data */
       fix_lmn=0L;
       for(idx=0;idx<nbr_dmn_fix;idx++) fix_lmn+=dmn_ss[idx_fix_var[idx]]*dmn_fix_map[idx];
       
-      /* Map N-D array indices into a 1-D offset from the offset of its group */ 
+      /* Map N-D array indices into a 1-D offset from offset of its group */
       avg_lmn=0L;
       for(idx=0;idx<nbr_dmn_avg;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
       
-      /* Copy current element in the input array into its slot in the sorted avg_val */ 
+      /* Copy current element in input array into its slot in sorted avg_val */
       (void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*type_sz,var_cp+var_lmn*type_sz,type_sz);
       
     } /* end loop over var_lmn */
     
     /* Input data are now sorted and stored (in avg_val) in blocks (of length avg_sz)
-       in the same order as the blocks' average values will appear in the output buffer. 
+       in same order as blocks' average values will appear in output buffer. 
        An averaging routine can take advantage of this by casting avg_val to a two dimensional
-       variable and averaging over the inner dimension. 
-       This is where the tally array is actually set. */ 
+       variable and averaging over inner dimension. 
+       This is where tally array is actually set */ 
     switch(nco_op_typ){
     case nco_op_min:
       (void)var_avg_reduce_min(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
@@ -3033,38 +3035,33 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     case nco_op_max:
       (void)var_avg_reduce_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
       break;
-    
     case nco_op_avgsumsqr:
     case nco_op_rms:
     case nco_op_rmssdn:
-    
-	  /* Square all the values first */
-	  (void)var_multiply(fix->type,var_sz,fix->has_mss_val,fix->mss_val,avg_val,avg_val);
-	  /* Now sum the squares */
-	  (void)var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  			  
-	  break;
-    
+      /* Square values first */
+      (void)var_multiply(fix->type,var_sz,fix->has_mss_val,fix->mss_val,avg_val,avg_val);
+      /* Now sum the squares */
+      (void)var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  			  
+      break;
     case nco_op_avg: 
     case nco_op_ttl:
     case nco_op_avgsqr:
     default:
       (void)var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  		
       break;
-
     } /* end case */
 
-    /* Free dynamic memory that held the rearranged input variable values */ 
+    /* Free dynamic memory that held rearranged input variable values */ 
     (void)free(avg_val.vp);
   } /* end if avg_sz != 1 */
   
-  /* Free the input variable */ 
+  /* Free input variable */ 
   var=var_free(var);
   (void)free(dmn_avg);
   (void)free(dmn_fix);
 
-  /* Return the averaged variable */ 
+  /* Return averaged variable */ 
   return fix;
-
 } /* end var_avg() */ 
 
 var_sct *
@@ -5805,6 +5802,7 @@ usg_prn(void)
   
   /* Public service announcement */ 
   (void)fprintf(stdout,"NCO homepage at http://nco.sourceforge.net has complete online User's Guide\n");
+  (void)fprintf(stdout,"Questions, suggestions, patches  \n");
 
   /* We now have the command-specific command line option string */ 
   (void)fprintf(stdout,"%s %s\n",prg_nm_get(),opt_sng);
