@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.103 2004-11-05 23:56:24 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.104 2004-12-01 00:25:42 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -11,6 +11,13 @@
 # autoconf
 # cd ~/nco;aclocal;autoheader;automake --foreign;autoconf
 # cd ~/nco;make distclean;aclocal;autoheader;automake --foreign;autoconf;configure;make install
+
+# GNU autotools rely on ~/nco/autobld/config.[guess,sub]
+# Auto-configuration fails if these routines cannot detect your machine type
+# This happens periodically as newer machines are introduced
+# Notify the NCO project if configuration fails in either file
+# and we will update the config files from the upstream source,
+# ftp://ftp.gnu.org/pub/gnu/config/config.[guess,sub]
 
 # Process file with autoconf to produce configure script
 # (package name,version,bug-report-address,tarball name)

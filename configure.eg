@@ -1,8 +1,15 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.91 2004-11-05 23:56:23 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.92 2004-12-01 00:25:42 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
 Develop recommended ./configure invocations for each architecture
+
+GNU autotools rely on ~/nco/autobld/config.[guess,sub]
+Auto-configuration fails if these routines cannot detect your machine type
+This happens periodically as newer machines are introduced
+Notify the NCO project if configuration fails in either file
+and we will update the config files from the upstream source,
+ftp://ftp.gnu.org/pub/gnu/config/config.[guess,sub]
 
 NCO successfully builds (e.g., with bld/Makefile) and runs on virtually all OSs.
 This table tracks how well NCO _autobuilds_ (./configure's) on various OSs.
