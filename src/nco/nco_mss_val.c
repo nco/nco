@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.12 2003-11-10 06:54:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.13 2003-11-10 07:15:50 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -81,8 +81,10 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
   /* If both files have missing_value's and they differ,
      must translate mss_val_2 in var2 to mss_val_1 before binary operation.
      Otherwise mss_val_2 would be treated as regular value in var_2
-     fxm: unfixed bug is when var1 has mss_val1 and var2 does not have a missing_value
-     Then var2 values that happen to equal mss_val1 are treated as missing_values */
+     Unfixable bug is when var1 has mss_val1 and var2 does not have a missing_value
+     Then var2 values that happen to equal mss_val1 are treated as missing_values
+     A generic, satisfactory solution to this problem does not exist 
+     Picking missing_values that are nearly out-of-range is best workaround */
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(var_typ,&var1->mss_val);

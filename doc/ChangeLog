@@ -1,5 +1,8 @@
 2003-11-09  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_8_2
+	Changes since nco-2_8_1: missing_values handled better
+
 	* Applied nco_mss_val_cnf() to ncbo to fix TODO #274
 
 	* Wrote nco_mss_val_cnf() to change missing_value of var2, if any,

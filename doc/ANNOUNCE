@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.30 2003-11-10 06:45:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.31 2003-11-10 07:20:24 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.2 are ready. 
 
@@ -7,12 +7,12 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 There are two notable feature improvement since version 2.8.1:
 
-1. Improve error messages and hints for out of range problems
-2. When input variables for ncbo binary operations have distinct
+1. When input variables for ncbo binary operations have distinct
 missing_value's, NCO now does the best job possible to ensure that 
 all missing_value's in both operands retain the missing_value
 characteristic. Formerly, it was possible for missing values in 
 one variable to be treated as valid data.
+2. Improve error messages and hints for out of range problems
 
 There are a few minor packaging fixes:
 1. Do not distribute ncap_lex.c, ncap_yacc.[ch] in tarball
