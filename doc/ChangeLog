@@ -2,6 +2,20 @@
 
 	* Got OpenMP compiling but not completely working on ncwa under IRIX
 
+2000-09-17  Charlie Zender  <zender@uci.edu>
+
+	* Added full OpenMP directives to ncwa. If this works then ncra is next.
+
+2000-09-13  Charlie Zender  <zender@uci.edu>
+
+	* Contrary to the documentation, ncflint has always processed
+	coordinate variables. Perhaps fixing coordinate variables is a 
+	better idea? Patched var_lst_divide() to fix all non-record
+	coordinate variable to ncflint. Not sure if I will release this
+	though. Perhaps it should be a switch?
+
+	* Improved ncflint documentation, including its ability to add files
+
 2000-08-31  Charlie Zender  <zender@uci.edu>
 
 	* Changed handling of netCDF convetions to search for

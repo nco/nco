@@ -32,12 +32,12 @@
 
 netcdf in {
 dimensions:
-	band=2,lat=2,lev=3,rlev=3,lon=4,char_dmn_lng=80,char_dmn_sml=4,fl_dim=3,time=unlimited;
+	band=2,lat=2,lev=3,rlev=3,lon=4,char_dmn_lng=80,char_dmn_sml=4,fl_dim=3,lsmlev=6,time=unlimited;
 variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.25 2000-09-05 20:39:53 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.26 2000-09-19 15:52:48 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -48,6 +48,10 @@ variables:
 	rlev:purpose = "Monotonically decreasing coordinate pressure";
 	float lon(lon);
 	double time(time);
+	float lsmlev(lsmlev);
+	lsmlev:purpose = "Homebrew level coordinate for LSM";
+	lsmlev:long_name = "Soil depth";
+	lsmlev:units = "meter";
 
 	char fl_dim(fl_dim);
 	fl_dim:long_name = "Character coordinate";
@@ -330,6 +334,7 @@ data:
 	lat=-90,90;
 	lat_var=1.,2.;
 	lat_wgt=1.,2.;
+	lsmlev=0.05,0.1,0.2,0.5,1.0,3.0;
 	lev=100,500,1000;
 	lev_var=100.,500.,1000.;
 	lev_wgt=10,2,1;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.53 2000-09-18 23:38:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.54 2000-09-19 15:52:55 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.53 2000-09-18 23:38:21 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.53 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.54 2000-09-19 15:52:55 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.54 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -548,15 +548,18 @@ main(int argc,char **argv)
       (void)var_get(in_id,msk);
     } /* end if */
 
+  if(dbg_lvl > 0){
 #ifdef OMP /* OpenMP */
 #pragma omp parallel
     { /* begin OpenMP parallel */
 #pragma omp master 
-      if(dbg_lvl > 0) (void)fprintf(stderr,"%s: INFO OpenMP multi-threading using %d threads\n",prg_nm_get(),omp_get_num_threads());
+      (void)fprintf(stderr,"%s: INFO OpenMP multi-threading using %d threads\n",prg_nm_get(),omp_get_num_threads());
     } /* end OpenMP parallel */
 #else 
-    if(dbg_lvl > 0) (void)fprintf(stderr,"%s: INFO Not attempting OpenMP multi-threading\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: INFO Not attempting OpenMP multi-threading\n",prg_nm_get());
 #endif /* not OpenMP */
+  } /* endif debug */
+
 #ifdef OMP /* OpenMP */
 /* Adding a default(none) clause causes a weird error: "Error: Variable __iob used without scope declaration in a parallel region with DEFAULT(NONE) scope". This appears to be a compiler bug. */
 #pragma omp parallel for private(idx,msk_out,msk,DO_CONFORM_MSK,wgt_out,wgt,DO_CONFORM_WGT) shared(nbr_var_prc,dbg_lvl,var_prc,var_prc_out,in_id,nco_op_typ,msk_nm,WGT_MSK_CRD_VAR,MUST_CONFORM,msk_val,op_typ_rlt,wgt_nm,dmn_avg,nbr_dmn_avg,NRM_BY_DNM,wgt_avg,out_id)

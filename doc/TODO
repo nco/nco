@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.71 2000-09-05 20:39:53 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.72 2000-09-19 15:52:55 zender Exp $ 
 
 *************
 NCO Wish list
@@ -133,6 +133,9 @@ sudo root screws up permissions in obj/bin directories of user
 179. add netCDF to required packages list in RPM build
 180. Allow ncrename to rename attribute of single variable only
 181. Split up nc_utl.c into smaller files
+182. Add -L switch to print license terms
+183. Figure out why makeinfo nco.texi fails
+184. ncwa in.nc foo.nc prints usage and exits (because arg_cnt == 0?)
 ************************************************************************
 End NCO Wish list
 ************************************************************************

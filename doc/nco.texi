@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.65 2000-09-05 20:39:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.66 2000-09-19 15:52:55 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -198,6 +198,7 @@ Operator Strategies
 * Climate model paradigm::      
 * Output files::                
 * Appending::                   
+* Addition Subtraction Multiplication and Interpolation::  
 * Averaging vs. Concatenating::  
 * Large numbers of input files::  
 * Large files and Memory::      
@@ -727,6 +728,7 @@ NCO Project buglist at @code{http://sourceforge.net/bugs/?group_id=3331}.
 * Climate model paradigm::      
 * Output files::                
 * Appending::                   
+* Addition Subtraction Multiplication and Interpolation::  
 * Averaging vs. Concatenating::  
 * Large numbers of input files::  
 * Large files and Memory::      
@@ -836,7 +838,7 @@ existing @var{output-file} without prompting the user interactively.
 These switches are useful in batch environments because they suppress
 interactive keyboard input.
 
-@node Appending, Averaging vs. Concatenating, Output files, Strategies
+@node Appending, Addition Subtraction Multiplication and Interpolation, Output files, Strategies
 @section Appending variables to a file
 A frequently useful operation is adding variables from one file to
 another. 
@@ -872,7 +874,20 @@ Selecting @dfn{append/replace} causes the operator to attempt to place
 the results of the operation in the existing @var{output-file}, 
 @xref{ncks netCDF Kitchen Sink}.
 
-@node Averaging vs. Concatenating, Large numbers of input files, Appending, Strategies
+@node Addition Subtraction Multiplication and Interpolation, Averaging vs. Concatenating, Appending, Strategies
+@section Addition Subtraction Multiplication and Interpolation
+
+Users comfortable with NCO semantics may find it easier to perform
+some simple mathematical operations in NCO rather than higher level
+languages. 
+@code{ncdiff} (@pxref{ncdiff netCDF Differencer}) can be used for
+subtraction and broadcasting. 
+@code{ncflint} (@pxref{ncflint netCDF File Interpolator}) can be used 
+for addition, subtraction, multiplication and interpolation.
+Sequences of these commands can accomplish simple but powerful
+operations at the command line.
+
+@node Averaging vs. Concatenating, Large numbers of input files, Addition Subtraction Multiplication and Interpolation, Strategies
 @section Averagers vs. Concatenators
 
 The most frequently used operators of NCO are probably the averagers and
@@ -1000,6 +1015,7 @@ interpolation is given fully on the @code{ncflint} reference page
 (@pxref{ncflint netCDF File Interpolator}). 
 Note that this capability also allows @code{ncflint} to linearly rescale
 any data in a netCDF file, e.g., to convert between differing units.
+
 
 @node Large numbers of input files, Large files and Memory, Averaging vs. Concatenating, Strategies
 @section Working with large numbers of input files
@@ -2369,7 +2385,7 @@ conversion, so the @code{floor()} function is not explicitly called, but
 the results are the same as if it were.}.
 Thus no "rounding up" is performed. 
 The type conversion rules of C can be stated as follows:
-@c fxm: misplaced {} near here
+@c fxm: makeinfo reports misplaced {} near here
 If @var{n} is an integer then any floating point value @code{x}
 satisfying @math{@var{n} <= @var{x} < @var{n+1}} will have the value
 @var{n} when converted to an integer.
@@ -2991,6 +3007,9 @@ This behavior is hardcoded.
 @code{ncdiff} applies special rules to some NCAR CSM fields (e.g.,
 @code{ORO}).
 See @ref{NCAR CSM Conventions} for a complete description.
+Finally, we note that @code{ncflint} (@pxref{ncflint netCDF File
+Interpolator}) can be also perform file subtraction (as well as
+addition, multiplication and interpolation). 
 
 @noindent
 EXAMPLES
@@ -3250,6 +3269,9 @@ record dimension, depending on the input files).
 @node ncflint netCDF File Interpolator, ncks netCDF Kitchen Sink, ncecat netCDF Ensemble Concatenator, Operators
 @section @code{ncflint} netCDF File Interpolator
 @cindex interpolation
+@cindex adding data
+@cindex multiplying data
+@cindex addition
 @findex ncflint
 
 @noindent
@@ -3268,7 +3290,7 @@ DESCRIPTION
 @code{ncflint} creates an output file that is a linear combination of 
 the input files.
 This linear combination can be a weighted average, a normalized weighted
-average average, or an interpolation of the input files.
+average, or an interpolation of the input files.
 Coordinate variables are not acted upon in any case, they are simply
 copied from @var{file_1}.
 
@@ -3390,6 +3412,22 @@ ncflint -w 3,-2 85.nc 85.nc tst.nc
 @noindent
 This is an example of a null operation, so @file{tst.nc} should be
 identical (within machine precision) to @file{85.nc}.
+
+Add @file{85.nc} to @file{86.nc} to obtain @file{85p86.nc},
+then subtract @file{86.nc} from @file{85.nc} to obtain @file{85m86.nc} 
+@example
+ncflint -w 1,1 85.nc 86.nc 85p86.nc
+ncflint -w 1,-1 85.nc 86.nc 85m86.nc
+ncdiff 85.nc 86.nc 85m86.nc
+@end example
+@noindent
+Thus @code{ncflint} can be used to mimic @code{ncdiff} operations.
+@cindex broadcasting variables
+However this is not a good idea in practice because @code{ncflint}
+does not broadcast (@pxref{ncdiff netCDF Differencer}) conforming
+variables during arithmetic. 
+Thus the final two commands would produce identical results except that  
+@code{ncflint} would fail if any variables needed to be broadcast.
 
 @cindex @code{units}
 Rescale the dimensional units of the surface pressure @code{prs_sfc}

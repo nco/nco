@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.29 2000-08-31 17:58:11 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.30 2000-09-19 15:52:47 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -214,7 +214,7 @@ echo "ncdiff 2: difference without missing value attribute: 0 =?= $avg"
 
 ncflint -O -w 3,-2 -v one in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v one foo.nc`
-echo "ncflint 1: identity weighting: 1.0 =?= $avg" 
+echo "ncflint 1: identity weighting (3-2=1): 1.0 =?= $avg" 
 
 ncrename -O -v zero,foo in.nc foo1.nc 2>> foo.tst
 ncrename -O -v one,foo in.nc foo2.nc 2>> foo.tst
