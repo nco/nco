@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.2 2002-05-06 06:51:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.3 2002-05-14 01:00:22 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -14,6 +14,7 @@
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
+#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 
 /* 3rd party vendors */
 

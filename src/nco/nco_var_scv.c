@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.6 2002-05-06 00:44:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.7 2002-05-14 00:57:45 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -360,10 +360,12 @@ var_scv_modulus(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_u
   /* Purpose: Take modulus of  all values in op1 by value in attrib
      Store result in op1  */    
   
-  /* Modulus  is currently defined as op1:=op1%scv */  
+  /* Modulus is currently defined as op1:=op1%scv */  
   
-  extern float fmodf(float,float); /* Cannot insert fmodf in ncap_sym_init() because it takes two arguments TODO #20 */
-  extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
+#ifndef __GNUG__
+  float fmodf(float,float); /* Cannot insert fmodf in ncap_sym_init() because it takes two arguments TODO #20 */
+  float fabsf(float); /* Sun math.h does not include fabsf() prototype */
+#endif /* __GNUG__ */
 
   long idx;
   
@@ -446,11 +448,11 @@ var_abs(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
   /* Purpose: Find the absolute value of all numbers in op1
      Store result in first operand */    
   
-  /*   op1:=abs(op1) */  
+  /* Absolute value is currently defined as op1:=abs(op1) */  
   
-  /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */
-  extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
+#ifndef __GNUG__
+  float fabsf(float); /* Sun math.h does not include fabsf() prototype */
+#endif /* __GNUG__ */
   
   long idx;
   

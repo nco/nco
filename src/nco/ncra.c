@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.67 2002-05-12 01:01:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.68 2002-05-14 00:57:45 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -79,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.67 2002-05-12 01:01:36 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.67 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.68 2002-05-14 00:57:45 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.68 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -507,7 +507,7 @@ main(int argc,char **argv)
       default:
 	break;
       } /* end switch */
-      var_prc[idx]->tally=nco_free(var_prc[idx]->tally);
+      var_prc[idx]->tally=(long *)nco_free(var_prc[idx]->tally);
     } /* end (OpenMP parallel for) loop over variables */
   } /* end if */
   

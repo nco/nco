@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.141 2002-05-12 00:24:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.142 2002-05-14 00:57:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -216,6 +216,7 @@ ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 225. Pass aed by reference in aed_prc()
 226. See if xrf in var_conform_dim() is really necessary, if not, remove it and make wgt arg const var_sct * const
 227. Document binary write ability and -B switch for ncks
+228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
 ************************************************************************
 End NCO Wish list
 ************************************************************************
