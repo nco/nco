@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.461 2005-03-28 00:04:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.462 2005-03-28 00:26:18 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -371,7 +371,8 @@ bld40. Automate splicing trailer ~/nco/doc/man_end.txt to man pages
 bld41.Add configure check for libssl functionality, if not found (Fedora) to explicitly adding libssl
 bld42. Adopt orphaned Debian NCO http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=273322
 bld43. Implement Martin Schmidt's suggestion for AIX autoconf builds posted to developer's forum 20050201: {$CC} is not tested for xlc* but for (arbitrary_path/xlc*)
-bld44. 
+bld44. Add support for autopackage format: http://www.wildgardenseed.com/apkg/
+bld45. 
 
 ************************************************************************
 End NCO Wish list
