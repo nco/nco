@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.27 2002-05-05 19:35:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.28 2002-05-05 19:52:36 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -264,110 +264,24 @@ extern "C" {
     nc_type typ_upk; /* Type of variable when unpacked (expanded) (in memory) */
   } var_sct; /* end var_sct_tag */
   
-  /* Fortran functions are deprecated as of NCO 1.2, will be removed unless volunteer takes over their maintenance */
-#ifdef USE_FORTRAN_ARITHMETIC
-#ifdef CRAY
-#define FORTRAN_add_real ADD_REAL
-#define FORTRAN_add_double_precision ADD_DOUBLE_PRECISION
-#define FORTRAN_avg_reduce_real AVG_REDUCE_REAL
-#define FORTRAN_avg_reduce_double_precision AVG_REDUCE_DOUBLE_PRECISION
-#define FORTRAN_normalize_real NORMALIZE_REAL
-#define FORTRAN_normalize_double_precision NORMALIZE_DOUBLE_PRECISION
-#define FORTRAN_newdate NEWDATE
-#define FORTRAN_subtract_real SUBTRACT_REAL
-#define FORTRAN_subtract_double_precision SUBTRACT_DOUBLE_PRECISION
-#define FORTRAN_multiply_real MULTIPLY_REAL
-#define FORTRAN_multiply_double_precision MULTIPLY_DOUBLE_PRECISION
-#define FORTRAN_divide_real DIVIDE_REAL
-#define FORTRAN_divide_double_precision DIVIDE_DOUBLE_PRECISION
-#endif /* CRAY */
-#if ( defined RS6K ) || ( defined AIX )
-#define FORTRAN_add_real add_real
-#define FORTRAN_add_double_precision add_double_precision
-#define FORTRAN_avg_reduce_real avg_reduce_real
-#define FORTRAN_avg_reduce_double_precision avg_reduce_double_precision
-#define FORTRAN_normalize_real normalize_real
-#define FORTRAN_normalize_double_precision normalize_double_precision
-#define FORTRAN_newdate newdate
-#define FORTRAN_subtract_real subtract_real
-#define FORTRAN_subtract_double_precision subtract_double_precision
-#define FORTRAN_multiply_real multiply_real
-#define FORTRAN_multiply_double_precision multiply_double_precision
-#define FORTRAN_divide_real divide_real
-#define FORTRAN_divide_double_precision divide_double_precision
-#endif /* RS6K || AIX */
-  /* pgf90 subroutines have one underscore by default
-     pgf90 underscore behavior is altered by -Mnosecond_underscore
-     g77 subroutines have two underscores by default
-     g77 functions (e.g., newdate()) have one underscore by default 
-     g77 underscore behavior is altered by -fno-second-underscore */
-#ifdef LINUX 
-#define FORTRAN_add_real add_real_
-#define FORTRAN_add_double_precision add_double_precision_
-#define FORTRAN_avg_reduce_real avg_reduce_real_
-#define FORTRAN_avg_reduce_double_precision avg_reduce_double_precision_
-#define FORTRAN_normalize_real normalize_real_
-#define FORTRAN_normalize_double_precision normalize_double_precision_
-#define FORTRAN_newdate newdate_
-#define FORTRAN_subtract_real subtract_real_
-#define FORTRAN_subtract_double_precision subtract_double_precision_
-#define FORTRAN_multiply_real multiply_real_
-#define FORTRAN_multiply_double_precision multiply_double_precision_
-#define FORTRAN_divide_real divide_real_
-#define FORTRAN_divide_double_precision divide_double_precision_
-#endif /* LINUX */
-#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SUN4SOL2 ) || ( defined SUNMP ) || ( defined SGI5 ) || ( defined SGI64 ) || ( defined SGIMP64 )
-#define FORTRAN_add_real add_real_
-#define FORTRAN_add_double_precision add_double_precision_
-#define FORTRAN_avg_reduce_real avg_reduce_real_
-#define FORTRAN_avg_reduce_double_precision avg_reduce_double_precision_
-#define FORTRAN_normalize_real normalize_real_
-#define FORTRAN_normalize_double_precision normalize_double_precision_
-#define FORTRAN_newdate newdate_
-#define FORTRAN_subtract_real subtract_real_
-#define FORTRAN_subtract_double_precision subtract_double_precision_
-#define FORTRAN_multiply_real multiply_real_
-#define FORTRAN_multiply_double_precision multiply_double_precision_
-#define FORTRAN_divide_real divide_real_
-#define FORTRAN_divide_double_precision divide_double_precision_
-#endif /* SUN-style */
-#endif /* USE_FORTRAN_ARITHMETIC */
-  
   /* Function prototypes 
      Prototypes without descriptive variable names were written before ANSI C compilers were widely available and should be migrated to include arguments names and comments
      Specifying extern is redundant (functions are extern by default) but Emacs highlights them in a nice shade of lavender :-)
      fxm: TODO 210 Break into sourcefile specific headers, e.g., csz.h, pck.h... */
   
-  extern char *cmd_ln_sng(int,char **);
   extern char *prg_nm_get(void);
-  extern int sng_ascii_trn(char *);
   extern int prg_get(void);
-  extern nco_long FORTRAN_newdate(nco_long *,int *);
   extern nm_id_sct *var_lst_add_crd(int,int,int,nm_id_sct *,int *);
   extern nm_id_sct *var_lst_ass_crd_add(int,nm_id_sct *,int *);
   extern nm_id_sct *var_lst_crd_xcl(int,int,nm_id_sct *,int *);
   extern nm_id_sct *var_lst_mk(int,int,char **,bool,int *);
   extern nm_id_sct *var_lst_xcl(int,int,nm_id_sct *,int *);
   extern unsigned short dbg_lvl_get(void);
-  extern scv_sct ptr_unn_2_scv(nc_type,ptr_unn);
   extern var_sct *var_avg(var_sct *,dmn_sct **,int,int);
   extern var_sct *var_dpl(var_sct *);
   extern var_sct *var_fll(int,int,char *,dmn_sct **,int);
-  extern void FORTRAN_add_double_precision(long *,int *,double *,long *,double *,double *);
-  extern void FORTRAN_add_real(long *,int *,float *,long *,float *,float *);
-  extern void FORTRAN_avg_reduce_double_precision(long *,long *,int *,double *,long *,double *,double *);
-  extern void FORTRAN_avg_reduce_real(long *,long *,int *,float *,long *,float *,float *);
-  extern void FORTRAN_divide_double_precision(long *,int *,double *,double *,double *);
-  extern void FORTRAN_divide_real(long *,int *,float *,float *,float *);
-  extern void FORTRAN_multiply_double_precision(long *,int *,double *,double *,double *);
-  extern void FORTRAN_multiply_real(long *,int *,float *,float *,float *);
-  extern void FORTRAN_normalize_double_precision(long *,int *,double *,long *,double *);
-  extern void FORTRAN_normalize_real(long *,int *,float *,long *,float *);
-  extern void FORTRAN_subtract_double_precision(long *,int *,double *,double *,double *);
-  extern void FORTRAN_subtract_real(long *,int *,float *,float *,float *);
   extern void cast_nctype_void(nc_type,ptr_unn *);
   extern void cast_void_nctype(nc_type,ptr_unn *);
-  extern void hst_att_cat(int,char *);
   extern void val_conform_type(nc_type,ptr_unn,nc_type,ptr_unn);
   extern void var_add(nc_type,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
   extern void var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2);
@@ -401,11 +315,6 @@ extern "C" {
   extern void var_xrf(var_sct *,var_sct *);
   extern void var_zero(nc_type,long,ptr_unn);
   
-  extern var_sct * /* O [var] Variable after (possible) conversion */
-  nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
-  (var_sct *var, /* I/O [var] Variable to be considered for conversion */
-   int nco_op_typ); /* I [enm] Operation type */
-  
   extern int ncvarid_or_die /* O [enm] Variable ID */
   (int nc_id, /* I [enm] File ID */
    char *var_nm); /* I [sng] Variable name */
@@ -413,10 +322,6 @@ extern "C" {
   extern int ncdimid_or_die /* O [enm] Dimension ID */
   (int nc_id, /* I [enm] File ID */
    char *dmn_nm); /* I [sng] Dimension name */
-  
-  extern var_sct * /* O [sct] Variable reverted to previous type */
-  nco_cnv_var_typ_dsk  /* [fnc] Revert variable to previous type */
-  (var_sct *var); /* I [sct] Variable to be reverted */
   
   extern int /* O [enm] Return code */
   var_dfl_set /* [fnc] Set defaults for each member of variable structure */

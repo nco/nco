@@ -1,7 +1,17 @@
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.3 2002-05-05 19:52:36 zender Exp $ */
+
+/* Purpose: String utilities */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_sng_utl.h" /* String utilities */
+
 char * /* O [sng] Parsed command line */
 cmd_ln_sng /* [fnc] Re-construct command line from arguments */
-(int argc, /* I [nbr] Argument count */
- char **argv) /* I [sng] Command line argument values */
+(const int argc, /* I [nbr] Argument count */
+ const char ** const argv) /* I [sng] Command line argument values */
 {
   /* Purpose: Re-construct command line from argument list and number */
   char *cmd_ln; /* [sng] Parsed command line */
@@ -27,12 +37,11 @@ cmd_ln_sng /* [fnc] Re-construct command line from arguments */
   return cmd_ln; /* [sng] Parsed command line */
 } /* end cmd_ln_sng() */
 
-int
-sng_ascii_trn(char *sng)
-/* char *sng: I/O [sng] String to process
-   int sng_ascii_trn: O [nbr] Number of escape sequences translated */
+int /* O [nbr] Number of escape sequences translated */
+sng_ascii_trn /* [fnc] Replace C language '\X' escape codes in string with ASCII bytes */
+(char *sng) /* I/O [sng] String to process */
 {
-  /* Purpose: Replace any C language '\X' escape codes in string with ASCII bytes 
+  /* Purpose: Replace C language '\X' escape codes in string with ASCII bytes 
      Return number of escape sequences found and actually translated
      This should be same as number of bytes by which string length has shrunk
      For example, consecutive characters "\n" are translated into ASCII '\n' = 10 which diminishes string length by 1
