@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.41 2002-08-13 08:00:35 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.42 2002-08-14 15:18:39 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -308,7 +308,7 @@ echo "ncea 3: ensemble min of float across two files: 2 =?= $avg"
 
 ${MY_BIN_DIR}/ncea -O -C -v pck in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v pck foo.nc`
-echo "ncea 4: scale factor + add_offset packing/unpacking: 3 =?= $avg" 
+echo "ncea 4: scale factor + add_offset packing/unpacking (expect breakage here use ncap instead): 3 =?= $avg" 
 fi # end ncea
 
 if [ "$NCDIFF" = 1 ]; then
