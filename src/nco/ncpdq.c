@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.9 2004-07-29 20:38:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.10 2004-07-29 21:56:25 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -95,8 +95,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.9 2004-07-29 20:38:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.9 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.10 2004-07-29 21:56:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.10 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:Rrt:v:xz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -394,6 +394,7 @@ main(int argc,char **argv)
 	(void)memmove(dmn_rdr_lst+idx_rdr*sizeof(nm_id_sct),dmn_rdr_lst+(idx_rdr+1)*sizeof(nm_id_sct),(dmn_rdr_nbr-idx_rdr+1)*sizeof(nm_id_sct));
 	--dmn_rdr_nbr;
 	dmn_rdr_lst=(nm_id_sct *)nco_realloc(dmn_rdr_lst,dmn_rdr_nbr*sizeof(nm_id_sct));
+	dmn_rdr=(dmn_sct **)nco_realloc(dmn_rdr,dmn_rdr_nbr*sizeof(dmn_sct *));
       } /* end else */
     } /* end loop over idx_rdr */
 

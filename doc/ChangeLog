@@ -1,5 +1,7 @@
 2004-07-29  Charlie Zender  <zender@uci.edu>
 
+	* Eliminate ostensibly wrong memmove() in ncwa/ncpdq avg/rdr list processing
+
 	* Rewrote appropriate ncpdq routines to handles record dimension
 	re-definitions correctly 
 

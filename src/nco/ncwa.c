@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.136 2004-07-29 20:38:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.137 2004-07-29 21:56:25 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char *msk_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val, op_typ_rlt */
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.136 2004-07-29 20:38:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.136 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.137 2004-07-29 21:56:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.137 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -480,6 +480,7 @@ main(int argc,char **argv)
 	(void)memmove(dmn_avg_lst+idx_avg*sizeof(nm_id_sct),dmn_avg_lst+(idx_avg+1)*sizeof(nm_id_sct),(nbr_dmn_avg-idx_avg+1)*sizeof(nm_id_sct));
 	--nbr_dmn_avg;
 	dmn_avg_lst=(nm_id_sct *)nco_realloc(dmn_avg_lst,nbr_dmn_avg*sizeof(nm_id_sct));
+	dmn_avg=(dmn_sct **)nco_realloc(dmn_avg,nbr_dmn_avg*sizeof(dmn_sct *));
       } /* end else */
     } /* end loop over idx_avg */
 
