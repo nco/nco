@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.4 2002-05-07 08:34:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.5 2002-05-07 08:52:07 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -55,16 +55,6 @@ void
 fl_rm /* [fnc] Remove file */
 (char *fl_nm); /* I [sng] File to be removed */
 
-char * /* O [sng] Name of file to retrieve */
-fl_nm_prs /* [fnc] Construct file name from input arguments */
-(char *fl_nm, /* I/O [sng] Current filename, if any */
- const int fl_nbr, /* I [nbr] Ordinal index of file in input file list */
- int * const nbr_fl, /* I/O [nbr] number of files to be processed */
- char * const * const fl_lst_in, /* I [sng] User-specified filenames */
- const int nbr_abb_arg, /* I [nbr] Number of abbreviation arguments */
- const char ** const fl_lst_abb, /* I [sng] NINTAP-style arguments, if any */
- const char * const fl_pth); /* I [sng] Path prefix for files in fl_lst_in */
-
 char * /* O [sng] Filename of locally available file */
 fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 (char *fl_nm, /* I/O [sng] Current filename, if any (destroyed) */
@@ -78,6 +68,16 @@ fl_lst_mk /* [fnc] Create file list from command line positional arguments */
  int arg_crr, /* I [idx] Index of current argument */
  int * const nbr_fl, /* O [nbr] Number of files in input file list */
  char ** const fl_out); /* O [sng] Name of output file */
+
+char * /* O [sng] Name of file to retrieve */
+fl_nm_prs /* [fnc] Construct file name from input arguments */
+(char *fl_nm, /* I/O [sng] Current filename, if any */
+ const int fl_nbr, /* I [nbr] Ordinal index of file in input file list */
+ int * const nbr_fl, /* I/O [nbr] number of files to be processed */
+ char * const * const fl_lst_in, /* I [sng] User-specified filenames */
+ const int nbr_abb_arg, /* I [nbr] Number of abbreviation arguments */
+ const char * const * const fl_lst_abb, /* I [sng] NINTAP-style arguments, if any */
+ const char * const fl_pth); /* I [sng] Path prefix for files in fl_lst_in */
 
 char * /* O [sng] Name of temporary file actually opened */
 fl_out_open /* [fnc] Open output file subject to availability and user input */

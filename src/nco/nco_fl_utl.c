@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.6 2002-05-07 08:34:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.7 2002-05-07 08:52:07 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -78,124 +78,95 @@ fl_rm /* [fnc] Remove file */
   rm_cmd=nco_free(rm_cmd);
 } /* end fl_rm() */
 
-char * /* O [sng] Name of file to retrieve */
-fl_nm_prs /* [fnc] Construct file name from input arguments */
-(char *fl_nm, /* I/O [sng] Current filename, if any */
- const int fl_nbr, /* I [nbr] Ordinal index of file in input file list */
- int * const nbr_fl, /* I/O [nbr] number of files to be processed */
- char * const * const fl_lst_in, /* I [sng] User-specified filenames */
- const int nbr_abb_arg, /* I [nbr] Number of abbreviation arguments */
- const char ** const fl_lst_abb, /* I [sng] NINTAP-style arguments, if any */
- const char * const fl_pth) /* I [sng] Path prefix for files in fl_lst_in */
+char ** /* O [sng] List of user-specified filenames */
+fl_lst_mk /* [fnc] Create file list from command line positional arguments */
+(const char * const * const argv, /* I [sng] Argument list */
+ const int argc, /* I [nbr] Argument count */
+ int arg_crr, /* I [idx] Index of current argument */
+ int * const nbr_fl, /* O [nbr] Number of files in input file list */
+ char ** const fl_out) /* O [sng] Name of output file */
 {
-  /* Purpose: Construct file name from various input arguments and switches.
-     Routine implements NINTAP-style specification by using static
-     memory to avoid repetition in construction of filename */
+  /* Purpose: Parse positional arguments on command line
+     Name of calling program plays a role in this */
 
-  static short FIRST_INVOCATION=1;
+  /* Command-line switches are expected to have been digested already (e.g., by getopt()),
+     and argv[arg_crr] points to the first argument on the command line following all the
+     switches. */
 
-  static char *fl_nm_1st_dgt;
-  static char *fl_nm_nbr_sng;
-  static char fl_nm_nbr_sng_fmt[10];
+  char **fl_lst_in;
 
-  static int fl_nm_nbr_crr;
-  static int fl_nm_nbr_dgt;
-  static int fl_nm_nbr_ncr;
-  static int fl_nm_nbr_max;
-  static int fl_nm_nbr_min;
+  int idx;
+  int fl_nm_sz_warning=80;
 
-  /* Free any old filename space */
-  fl_nm=nco_free(fl_nm);
-
-  /* Construct filename from NINTAP-style arguments and input name */
-  if(fl_lst_abb != NULL){
-    if(FIRST_INVOCATION){
-      int fl_nm_sfx_lng=0;
-      
-      /* Parse abbreviation list analogously to CCM Processor ICP "NINTAP" */
-      if(nbr_fl != NULL) *nbr_fl=(int)strtol(fl_lst_abb[0],(char **)NULL,10);
-      
-      if(nbr_abb_arg > 1){
-	fl_nm_nbr_dgt=(int)strtol(fl_lst_abb[1],(char **)NULL,10);
-      }else{
-	fl_nm_nbr_dgt=3;
-      }/* end if */
-      
-      if(nbr_abb_arg > 2){
-	fl_nm_nbr_ncr=(int)strtol(fl_lst_abb[2],(char **)NULL,10);
-      }else{
-	fl_nm_nbr_ncr=1;
-      } /* end if */
-      
-      if(nbr_abb_arg > 3){
-	fl_nm_nbr_max=(int)strtol(fl_lst_abb[3],(char **)NULL,10);
-      }else{
-	fl_nm_nbr_max=0;
-      } /* end if */
-      
-      if(nbr_abb_arg > 4){
-	fl_nm_nbr_min=(int)strtol(fl_lst_abb[4],(char **)NULL,10);
-      }else{
-	fl_nm_nbr_min=1;
-      } /* end if */
-      
-      /* Is there a .nc, .cdf, .hdf, or .hd5 suffix? */
-      if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-3,".nc",3) == 0) 
-	fl_nm_sfx_lng=3;
-      else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".cdf",4) == 0)
-	fl_nm_sfx_lng=4;
-      else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".hdf",4) == 0)
-	fl_nm_sfx_lng=4;
-      else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".hd5",4) == 0)
-	fl_nm_sfx_lng=4;
-      
-      /* Initialize static information useful for future invocations */
-      fl_nm_1st_dgt=fl_lst_in[0]+strlen(fl_lst_in[0])-fl_nm_nbr_dgt-fl_nm_sfx_lng;
-      fl_nm_nbr_sng=(char *)nco_malloc((fl_nm_nbr_dgt+1)*sizeof(char));
-      fl_nm_nbr_sng=strncpy(fl_nm_nbr_sng,fl_nm_1st_dgt,fl_nm_nbr_dgt);
-      fl_nm_nbr_sng[fl_nm_nbr_dgt]='\0';
-      fl_nm_nbr_crr=(int)strtol(fl_nm_nbr_sng,(char **)NULL,10);
-      (void)sprintf(fl_nm_nbr_sng_fmt,"%%0%dd",fl_nm_nbr_dgt);
-
-      /* First filename is always specified on command line anyway... */
-      fl_nm=(char *)strdup(fl_lst_in[0]);
-
-      /* Set flag that this routine has already been invoked at least once */
-      FIRST_INVOCATION=False;
-
-    }else{ /* end if FIRST_INVOCATION */
-      /* Create current filename from previous filename */
-      fl_nm_nbr_crr+=fl_nm_nbr_ncr;
-      if(fl_nm_nbr_max) 
-	if(fl_nm_nbr_crr > fl_nm_nbr_max) 
-	  fl_nm_nbr_crr=fl_nm_nbr_min; 
-      (void)sprintf(fl_nm_nbr_sng,fl_nm_nbr_sng_fmt,fl_nm_nbr_crr);
-      fl_nm=(char *)strdup(fl_lst_in[0]);
-      (void)strncpy(fl_nm+(fl_nm_1st_dgt-fl_lst_in[0]),fl_nm_nbr_sng,fl_nm_nbr_dgt);
-    } /* end if not FIRST_INVOCATION */
-  }else{ /* end if abbreviation list */
-    fl_nm=(char *)strdup(fl_lst_in[fl_nbr]);
-  } /* end if no abbreviation list */
-  
-  /* Prepend path prefix */
-  if(fl_pth != NULL){
-    char *fl_nm_stub;
-
-    fl_nm_stub=fl_nm;
-
-    /* Allocate enough room for joining slash '/' and terminating NUL */
-    fl_nm=(char *)nco_malloc((strlen(fl_nm_stub)+strlen(fl_pth)+2)*sizeof(char));
-    (void)strcpy(fl_nm,fl_pth);
-    (void)strcat(fl_nm,"/");
-    (void)strcat(fl_nm,fl_nm_stub);
-
-    /* Free filestub space */
-    fl_nm_stub=nco_free(fl_nm_stub);
+  /* Are there any remaining arguments that could be filenames? */
+  if(arg_crr >= argc){
+    (void)fprintf(stdout,"%s: ERROR must specify filename(s)\n",prg_nm_get());
+    (void)nco_usg_prn();
+    nco_exit(EXIT_FAILURE);
   } /* end if */
 
-  /* Return new filename */
-  return(fl_nm);
-} /* end fl_nm_prs() */
+  /* See if there appear to be problems with any of the specified files */
+  for(idx=arg_crr;idx<argc;idx++){
+    if((int)strlen(argv[idx]) >= fl_nm_sz_warning) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters)\n",prg_nm_get(),argv[idx],(long)strlen(argv[idx]));
+  } /* end loop over idx */
+
+  switch(prg_get()){
+  case ncks:
+  case ncatted:
+  case ncrename:
+    if(argc-arg_crr > 2){
+      (void)fprintf(stdout,"%s: ERROR received %d filenames; need no more than 2\n",prg_nm_get(),argc-arg_crr);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+    fl_lst_in=(char **)nco_malloc(sizeof(char *));
+    fl_lst_in[(*nbr_fl)++]=(char *)strdup(argv[arg_crr++]);
+    if(arg_crr == argc-1) *fl_out=(char *)strdup(argv[arg_crr]); else *fl_out=NULL;
+    return fl_lst_in;
+    /*    break;*//* NB: putting break after return in case statement causes warning on SGI cc */
+  case ncdiff:
+  case ncflint:
+    if(argc-arg_crr != 3){
+      (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly 3\n",prg_nm_get(),argc-arg_crr);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+    break;
+  case ncap:
+  case ncwa:
+    if(argc-arg_crr != 2){
+      (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly 2\n",prg_nm_get(),argc-arg_crr);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+    break;
+  case ncra:
+  case ncea:
+  case ncrcat:
+  case ncecat:
+    if(argc-arg_crr < 2){
+      (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least 2\n",prg_nm_get(),argc-arg_crr);
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+    } /* end if */
+    break;
+  default:
+    break;
+  } /* end switch */
+
+  /* Fill in file list and output file */
+  fl_lst_in=(char **)nco_malloc((argc-arg_crr-1)*sizeof(char *));
+  while(arg_crr < argc-1) fl_lst_in[(*nbr_fl)++]=(char *)strdup(argv[arg_crr++]);
+  if(*nbr_fl == 0){
+    (void)fprintf(stdout,"%s: ERROR Must specify input filename.\n",prg_nm_get());
+    (void)nco_usg_prn();
+    nco_exit(EXIT_FAILURE);
+  } /* end if */
+  *fl_out=(char *)strdup(argv[argc-1]);
+
+  return fl_lst_in;
+
+} /* end fl_lst_mk() */
 
 char * /* O [sng] Filename of locally available file */
 fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
@@ -580,95 +551,124 @@ fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
 } /* end fl_mk_lcl() */
 
-char ** /* O [sng] List of user-specified filenames */
-fl_lst_mk /* [fnc] Create file list from command line positional arguments */
-(const char * const * const argv, /* I [sng] Argument list */
- const int argc, /* I [nbr] Argument count */
- int arg_crr, /* I [idx] Index of current argument */
- int * const nbr_fl, /* O [nbr] Number of files in input file list */
- char ** const fl_out) /* O [sng] Name of output file */
+char * /* O [sng] Name of file to retrieve */
+fl_nm_prs /* [fnc] Construct file name from input arguments */
+(char *fl_nm, /* I/O [sng] Current filename, if any */
+ const int fl_nbr, /* I [nbr] Ordinal index of file in input file list */
+ int * const nbr_fl, /* I/O [nbr] number of files to be processed */
+ char * const * const fl_lst_in, /* I [sng] User-specified filenames */
+ const int nbr_abb_arg, /* I [nbr] Number of abbreviation arguments */
+ const char * const * const fl_lst_abb, /* I [sng] NINTAP-style arguments, if any */
+ const char * const fl_pth) /* I [sng] Path prefix for files in fl_lst_in */
 {
-  /* Purpose: Parse positional arguments on command line
-     Name of calling program plays a role in this */
+  /* Purpose: Construct file name from various input arguments and switches.
+     Routine implements NINTAP-style specification by using static
+     memory to avoid repetition in construction of filename */
 
-  /* Command-line switches are expected to have been digested already (e.g., by getopt()),
-     and argv[arg_crr] points to the first argument on the command line following all the
-     switches. */
+  static short FIRST_INVOCATION=1;
 
-  char **fl_lst_in;
+  static char *fl_nm_1st_dgt;
+  static char *fl_nm_nbr_sng;
+  static char fl_nm_nbr_sng_fmt[10];
 
-  int idx;
-  int fl_nm_sz_warning=80;
+  static int fl_nm_nbr_crr;
+  static int fl_nm_nbr_dgt;
+  static int fl_nm_nbr_ncr;
+  static int fl_nm_nbr_max;
+  static int fl_nm_nbr_min;
 
-  /* Are there any remaining arguments that could be filenames? */
-  if(arg_crr >= argc){
-    (void)fprintf(stdout,"%s: ERROR must specify filename(s)\n",prg_nm_get());
-    (void)nco_usg_prn();
-    nco_exit(EXIT_FAILURE);
+  /* Free any old filename space */
+  fl_nm=nco_free(fl_nm);
+
+  /* Construct filename from NINTAP-style arguments and input name */
+  if(fl_lst_abb != NULL){
+    if(FIRST_INVOCATION){
+      int fl_nm_sfx_lng=0;
+      
+      /* Parse abbreviation list analogously to CCM Processor ICP "NINTAP" */
+      if(nbr_fl != NULL) *nbr_fl=(int)strtol(fl_lst_abb[0],(char **)NULL,10);
+      
+      if(nbr_abb_arg > 1){
+	fl_nm_nbr_dgt=(int)strtol(fl_lst_abb[1],(char **)NULL,10);
+      }else{
+	fl_nm_nbr_dgt=3;
+      }/* end if */
+      
+      if(nbr_abb_arg > 2){
+	fl_nm_nbr_ncr=(int)strtol(fl_lst_abb[2],(char **)NULL,10);
+      }else{
+	fl_nm_nbr_ncr=1;
+      } /* end if */
+      
+      if(nbr_abb_arg > 3){
+	fl_nm_nbr_max=(int)strtol(fl_lst_abb[3],(char **)NULL,10);
+      }else{
+	fl_nm_nbr_max=0;
+      } /* end if */
+      
+      if(nbr_abb_arg > 4){
+	fl_nm_nbr_min=(int)strtol(fl_lst_abb[4],(char **)NULL,10);
+      }else{
+	fl_nm_nbr_min=1;
+      } /* end if */
+      
+      /* Is there a .nc, .cdf, .hdf, or .hd5 suffix? */
+      if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-3,".nc",3) == 0) 
+	fl_nm_sfx_lng=3;
+      else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".cdf",4) == 0)
+	fl_nm_sfx_lng=4;
+      else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".hdf",4) == 0)
+	fl_nm_sfx_lng=4;
+      else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".hd5",4) == 0)
+	fl_nm_sfx_lng=4;
+      
+      /* Initialize static information useful for future invocations */
+      fl_nm_1st_dgt=fl_lst_in[0]+strlen(fl_lst_in[0])-fl_nm_nbr_dgt-fl_nm_sfx_lng;
+      fl_nm_nbr_sng=(char *)nco_malloc((fl_nm_nbr_dgt+1)*sizeof(char));
+      fl_nm_nbr_sng=strncpy(fl_nm_nbr_sng,fl_nm_1st_dgt,fl_nm_nbr_dgt);
+      fl_nm_nbr_sng[fl_nm_nbr_dgt]='\0';
+      fl_nm_nbr_crr=(int)strtol(fl_nm_nbr_sng,(char **)NULL,10);
+      (void)sprintf(fl_nm_nbr_sng_fmt,"%%0%dd",fl_nm_nbr_dgt);
+
+      /* First filename is always specified on command line anyway... */
+      fl_nm=(char *)strdup(fl_lst_in[0]);
+
+      /* Set flag that this routine has already been invoked at least once */
+      FIRST_INVOCATION=False;
+
+    }else{ /* end if FIRST_INVOCATION */
+      /* Create current filename from previous filename */
+      fl_nm_nbr_crr+=fl_nm_nbr_ncr;
+      if(fl_nm_nbr_max) 
+	if(fl_nm_nbr_crr > fl_nm_nbr_max) 
+	  fl_nm_nbr_crr=fl_nm_nbr_min; 
+      (void)sprintf(fl_nm_nbr_sng,fl_nm_nbr_sng_fmt,fl_nm_nbr_crr);
+      fl_nm=(char *)strdup(fl_lst_in[0]);
+      (void)strncpy(fl_nm+(fl_nm_1st_dgt-fl_lst_in[0]),fl_nm_nbr_sng,fl_nm_nbr_dgt);
+    } /* end if not FIRST_INVOCATION */
+  }else{ /* end if abbreviation list */
+    fl_nm=(char *)strdup(fl_lst_in[fl_nbr]);
+  } /* end if no abbreviation list */
+  
+  /* Prepend path prefix */
+  if(fl_pth != NULL){
+    char *fl_nm_stub;
+
+    fl_nm_stub=fl_nm;
+
+    /* Allocate enough room for joining slash '/' and terminating NUL */
+    fl_nm=(char *)nco_malloc((strlen(fl_nm_stub)+strlen(fl_pth)+2)*sizeof(char));
+    (void)strcpy(fl_nm,fl_pth);
+    (void)strcat(fl_nm,"/");
+    (void)strcat(fl_nm,fl_nm_stub);
+
+    /* Free filestub space */
+    fl_nm_stub=nco_free(fl_nm_stub);
   } /* end if */
 
-  /* See if there appear to be problems with any of the specified files */
-  for(idx=arg_crr;idx<argc;idx++){
-    if((int)strlen(argv[idx]) >= fl_nm_sz_warning) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters)\n",prg_nm_get(),argv[idx],(long)strlen(argv[idx]));
-  } /* end loop over idx */
-
-  switch(prg_get()){
-  case ncks:
-  case ncatted:
-  case ncrename:
-    if(argc-arg_crr > 2){
-      (void)fprintf(stdout,"%s: ERROR received %d filenames; need no more than 2\n",prg_nm_get(),argc-arg_crr);
-      (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
-    fl_lst_in=(char **)nco_malloc(sizeof(char *));
-    fl_lst_in[(*nbr_fl)++]=(char *)strdup(argv[arg_crr++]);
-    if(arg_crr == argc-1) *fl_out=(char *)strdup(argv[arg_crr]); else *fl_out=NULL;
-    return fl_lst_in;
-    /*    break;*//* NB: putting break after return in case statement causes warning on SGI cc */
-  case ncdiff:
-  case ncflint:
-    if(argc-arg_crr != 3){
-      (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly 3\n",prg_nm_get(),argc-arg_crr);
-      (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
-    break;
-  case ncap:
-  case ncwa:
-    if(argc-arg_crr != 2){
-      (void)fprintf(stdout,"%s: ERROR received %d filenames; need exactly 2\n",prg_nm_get(),argc-arg_crr);
-      (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
-    break;
-  case ncra:
-  case ncea:
-  case ncrcat:
-  case ncecat:
-    if(argc-arg_crr < 2){
-      (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least 2\n",prg_nm_get(),argc-arg_crr);
-      (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
-    break;
-  default:
-    break;
-  } /* end switch */
-
-  /* Fill in file list and output file */
-  fl_lst_in=(char **)nco_malloc((argc-arg_crr-1)*sizeof(char *));
-  while(arg_crr < argc-1) fl_lst_in[(*nbr_fl)++]=(char *)strdup(argv[arg_crr++]);
-  if(*nbr_fl == 0){
-    (void)fprintf(stdout,"%s: ERROR Must specify input filename.\n",prg_nm_get());
-    (void)nco_usg_prn();
-    nco_exit(EXIT_FAILURE);
-  } /* end if */
-  *fl_out=(char *)strdup(argv[argc-1]);
-
-  return fl_lst_in;
-
-} /* end fl_lst_mk() */
+  /* Return new filename */
+  return(fl_nm);
+} /* end fl_nm_prs() */
 
 char * /* O [sng] Name of temporary file actually opened */
 fl_out_open /* [fnc] Open output file subject to availability and user input */

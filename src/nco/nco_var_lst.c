@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.5 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.6 2002-05-07 08:56:16 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -194,7 +194,7 @@ var_lst_divide /* [fnc] Divide input lists into output lists */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */
  const bool NCAR_CSM_FORMAT, /* I [flg] File adheres to NCAR CSM conventions */
- const dmn_sct ** const dmn_xcl, /* I [sct] Dimensions not allowed in fixed variables */
+ const dmn_sct * const * const dmn_xcl, /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl, /* I [nbr] Number of excluded dimensions */
  var_sct *** const var_fix_ptr, /* O [sct] Fixed-variables (input file) */
  var_sct *** const var_fix_out_ptr, /* O [sct] Fixed-variables (output file) */
