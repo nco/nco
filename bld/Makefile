@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.225 2003-11-16 22:06:22 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.226 2003-11-20 01:52:16 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -274,7 +274,7 @@ MDL_MAN := $(notdir $(MDL_MAN))
 MDL_MAN := $(addprefix ${MY_MAN_DIR}/,${MDL_MAN}) # distclean removes these files
 
 # Variables having to do with NCO build
-MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,Makefile nco_dst.pl nco_tst.sh) # `make tags' includes these files
+MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,Makefile nco_dst.pl nco_tst.pl) # `make tags' includes these files
 
 # Variables having to do with ncap
 MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap_yacc.y ncap_lex.l ncap.h) # `make tags' includes these files
@@ -1105,11 +1105,11 @@ dat_cln:
 test:	tst
 tst:	dat
 	cd ${MY_BLD_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} MY_DAT_DIR=${MY_DAT_DIR} ./nco_tst.sh
+	env MY_BIN_DIR=${MY_BIN_DIR} MY_DAT_DIR=${MY_DAT_DIR} ./nco_tst.pl
 tst_ftp:	dat
 	- if test -f ${MY_DAT_DIR}/nco_tst.nc; then printf "" ; else ${MY_BIN_DIR}/ncks -R -p ftp://dust.ess.uci.edu/pub/zender/nco -l ${MY_DAT_DIR} nco_tst.nc; if [ $? != 0 ]; then printf "WARNING: Unable to retrieve ftp://dust.ess.uci.edu/pub/zender/nco/nco_tst.nc required for self-test, possible problem with getting through your firewall? Manually download and install in directory ../data to continue self test...\n"; fi; fi
 	cd ${MY_BLD_DIR}; \
-	env MY_BIN_DIR=${MY_BIN_DIR} MY_DAT_DIR=${MY_DAT_DIR} ./nco_tst.sh
+	env MY_BIN_DIR=${MY_BIN_DIR} MY_DAT_DIR=${MY_DAT_DIR} ./nco_tst.pl
 testclean: tst_cln
 tst_cln:
 	cd ${MY_DAT_DIR}; rm -f foo* nco_tst.nc

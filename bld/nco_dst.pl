@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 				
 # Purpose: Perform NCO distributions
-# Script relies heavily on SSH connectivity between $HOST, $CVSROOT, and $www_mch
+# Script relies heavily on SSH connectivity between ${HOST}, ${CVSROOT}, and $www_mch
 
 # Usage:
 # Export tagged, public versions
@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.117 2003-11-14 17:06:00 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.118 2003-11-20 01:52:16 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -67,9 +67,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2003-11-14 17:06:00 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.117 2003-11-14 17:06:00 zender Exp $';
-my $CVS_Revision='$Revision: 1.117 $';
+my $CVS_Date='$Date: 2003-11-20 01:52:16 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.118 2003-11-20 01:52:16 zender Exp $';
+my $CVS_Revision='$Revision: 1.118 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};

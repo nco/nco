@@ -118,9 +118,9 @@ $expected= 1;
 $operator="ncwa";
 ####################
 $test[0]='ncwa -O -a lat,lon -w gw -d lat,0.0,90.0 foo_T42.nc foo.nc';
-$test[1]='ncks -C -H -s "%f" -v one foo.nc';
+$test[1]='ncks -C -H -s "%g" -v one foo.nc';
 $description=" normalize by denominator upper hemisphere";
-$expected= "ncks: ERROR nco_var_lst_mk() reports user-specified variable" ; 
+$expected= 1;
 &go();
 ####################
 
@@ -336,7 +336,7 @@ $expected= 17000 ;
 $test[0]='ncwa -O -y ttl -v val_max_max_sht in.nc foo.nc 2> foo.tst';
 $test[1]='ncks -C -H -s "%d" -v val_max_max_sht foo.nc';
 $description=" ttl would overflow without dbl_prc patch, wraps anyway so exact value not important";
-$expected= -31536 ; 
+$expected= -32768 ; 
 &go();
 ####################
 $test[0]='ncwa -O -y min -a lat -v lat -w gw in.nc foo.nc ';
