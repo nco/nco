@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.32 2004-08-05 08:18:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.33 2004-08-07 00:12:46 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -444,9 +444,6 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       if(!var[idx]->is_rec_var) var_op_typ[idx]=fix;
       break;
     case ncpdq:
-      /* fxm: TODO nco377 test for un-altered dimensions and make them var->fix like ncwa */
-      /* Do nothing */
-      break;
     case ncwa:
       /* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
       for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
@@ -458,7 +455,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	  break;
 	} /* end if */
       } /* end loop over idx_dmn */
-      /* Variables with no altered (averaged, re-ordered, reversed) dimensions are fixed */
+      /* Fix variables with no altered (averaged, re-ordered, reversed) dimensions */
       if(idx_dmn == var[idx]->nbr_dim) var_op_typ[idx]=fix;
       break;
     default: nco_dfl_case_prg_id_err(); break;

@@ -1,5 +1,10 @@
 2004-08-06  Charlie Zender  <zender@uci.edu>
 
+	* split ncpdq var list into var_fix and var_prc like in ncwa
+
+	* Fixed last known ncpdq problem caused by indexing var_prc_out
+	list with var_out index 
+
 	* Added duplicate dimension flag has_dpl_dmn to var_sct
 
 	* Handling situations where re-order list caused non-record

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.369 2004-08-06 23:55:55 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.370 2004-08-07 00:12:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -234,7 +234,6 @@ nco366. ncpdq: Use ncwa technique to put non-dmn_rdr variables in var_fix rather
 nco367. fix ncwa list collapse errors once bug found in pcpdq. Unfortunately ncwa uses dim_avg_lst after it is collapsed
 nco369. make sure strcmp is used for comparison, rather than strstr
 nco372. Update man pages for -o, -t, stdin features
-nco374. ncwa: re-write ncwa so, like ncpdq, ncwa re-arranges output metadata prior to calling nco_var_dfn()
 nco375. Do something consistent with: nco_exit(EXIT_FAILURE)
 nco378. Make \dfr, \me, \mi upright characters in nco.texi
 nco379. ncpdq: Add packing/unpacking capabilities
