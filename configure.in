@@ -255,7 +255,8 @@ dnl add these libs now to resolve interdependency when -lnc-dods is checked
   elif test "$enable_dods" = "yes"; then
     AC_DEFINE(ENABLE_DODS, 1, have DODS support)
     AC_MSG_NOTICE([DODS support enabled])
-    LIBS="-lnc-dods -ldap++ -lnc-dods -ldap++ -lrx -lwww -lz -lstdc++ $LIBS"
+    LIBS="-lnc-dods -ldap++ -lnc-dods -ldap++ -lrx -lwww -lz -lstdc++ $nco_old_LIBS"
+    LIBTOOL="$LIBTOOL --preserve-dup-deps"
   fi
 fi
 AM_CONDITIONAL(TEST_DODS,[test "$enable_dods" = "yes"])

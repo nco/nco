@@ -11727,7 +11727,8 @@ _ACEOF
 
     { echo "$as_me:$LINENO: DODS support enabled" >&5
 echo "$as_me: DODS support enabled" >&6;}
-    LIBS="-lnc-dods -ldap++ -lnc-dods -ldap++ -lrx -lwww -lz -lstdc++ $LIBS"
+    LIBS="-lnc-dods -ldap++ -lnc-dods -ldap++ -lrx -lwww -lz -lstdc++ $nco_old_LIBS"
+    LIBTOOL="$LIBTOOL --preserve-dup-deps"
   fi
 fi
 
