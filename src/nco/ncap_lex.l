@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.1 2002-08-15 20:51:22 rorik Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.2 2002-08-27 21:03:16 hmb Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -516,68 +516,71 @@ M_PI {return NAMED_CONSTANT;}
   int idx; /* [idx] Counter */
   int jdx; /* [idx] Counter */
   int rcd; /* [enm] Return code */
-  int out_nbr=0;
   
   double val=1.0; /* [frc] Value of template */
   
   var_sct *var; /* [sct] Variable */
   
-  nm_id_sct *dmn_lst; /* [sng] Dimension name-ID list */
-  nm_id_sct *out_lst; /* [sng] Dimension name-ID list */
   dmn_sct **dmn; /* [dmn] Dimension structure list */
-  
+  dmn_sct *dmn_item;
+  dmn_sct **dmn_new;
+
   /* Valid subscripts must contain alphanumeric string */
   if(dbg_lvl_get() > 2) (void)fprintf(stderr,"Interpreting %s as LHS_SUBSCRIPT\n",yytext);
   if(yyleng < 3) goto end_LHS_sbs;
-  
+
+  if(prs_arg->ntl_scn) goto end_LHS_sbs;  
   /* Copy token into user memory and turn into list of dimension names */
   sbs_sng=(char *)nco_malloc(yyleng*sizeof(char));
   strcpy(sbs_sng,&yytext[1]);
   sbs_sng[yyleng-2]='\0';  
   sbs_lst=lst_prs(sbs_sng,sbs_dlm,&dmn_nbr);
 
-  /* Use dimension names to populate list of dimension structures */
-  dmn_lst=(nm_id_sct *)nco_malloc(dmn_nbr*sizeof(nm_id_sct));
-  out_lst=(nm_id_sct *)nco_malloc(dmn_nbr*sizeof(nm_id_sct));
-  for(idx=0;idx<dmn_nbr;idx++){
-    rcd=nco_inq_dimid_flg(prs_arg->in_id,sbs_lst[idx],&dmn_id);
-    if(rcd != NC_NOERR){
-      (void)sprintf(err_sng,"Warning: Lexer does not recognize user-specified LHS dimension %s\n",sbs_lst[idx]);
-      (void)yyerror(err_sng);
-      goto end_LHS_sbs;                 
-    } /* endif err */
-    dmn_lst[idx].nm=sbs_lst[idx];
-    dmn_lst[idx].id=dmn_id;
-
-    /* Make another list without any double entries */
-    for(jdx=0;jdx<out_nbr;jdx++) /* fxm: What does this do? Is it necessary? */
-      if(!strcmp(dmn_lst[idx].nm,out_lst[jdx].nm)) break;
-    if(jdx == 0 || jdx == out_nbr) out_lst[out_nbr++]=dmn_lst[idx];
-  } /* end loop over dimensions */
-  
-  /* Build subscript list only once, during initial scan */
-  if(prs_arg->ntl_scn){
-    lval_ptr->sbs_lst=(nm_lst_sct *)nco_malloc(sizeof(nm_lst_sct));
-    lval_ptr->sbs_lst->lst=out_lst;
-    lval_ptr->sbs_lst->nbr=out_nbr;
-    /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
-    BEGIN INITIAL;
-    return LHS_SBS;
-  } /* endif */
-  
-  /* Create private, temporary list of LHS dimensions for current variable
-     Each item of list points to public, permanent dimension in global list */
   dmn=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
-  for(idx=0;idx<dmn_nbr;idx++){
-    for(jdx=0;jdx<prs_arg->nbr_dmn_xtr;jdx++) 
-      if(!strcmp(dmn_lst[idx].nm,prs_arg->dmn[jdx]->nm)) break;
-    if(jdx == prs_arg->nbr_dmn_xtr){
-      (void)sprintf(err_sng,"Warning: Unrecognized dimension %s in LHS subscripts",dmn_lst[idx].nm);
-      (void)yyerror(err_sng);
-      goto end_LHS_sbs;                 
-    } /* end if */
-    dmn[idx]=prs_arg->dmn[jdx];
-  } /* end for */
+  (void)nco_redef(prs_arg->out_id);
+  for( idx=0 ; idx < dmn_nbr ; idx++) {
+    /* first seach for dimension in psr_arg->dmn_out */
+    for( jdx =0 ; jdx < *(prs_arg->nbr_dmn_out) ; jdx++){
+      dmn_item = (*(prs_arg->dmn_out))[jdx];
+      if(!strcmp(sbs_lst[idx],dmn_item->nm)) { 
+      dmn[idx]=dmn_item;
+      break;
+      }
+    }
+   if( jdx !=  *(prs_arg->nbr_dmn_out) ) continue;   
+    /* then try seach for dimension in prs_arg->dmn */
+   for (jdx =0 ;jdx < prs_arg->nbr_dmn_xtr ; jdx++){
+     dmn_item = prs_arg->dmn[jdx];
+        /* if found add dimension to  dmn_out and dmn */
+     if(!strcmp(sbs_lst[idx],dmn_item->nm)) {
+       /* BEWARE -- nco_dmn_out_grow() increments *(prs_arg->nbr_dmn_out) */
+       dmn_new = nco_dmn_out_grow(prs_arg); 
+       *dmn_new=nco_dmn_dpl(dmn_item);
+       (void)nco_dmn_xrf(*dmn_new,dmn_item);
+       /* write found  dimension to output  */
+       (void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,dmn_new,1);
+       dmn[idx]=*dmn_new;
+       break;
+     }
+   }
+
+   if (jdx != prs_arg->nbr_dmn_xtr ) continue;
+    /* exit function if dimension not found */
+   (void)sprintf(err_sng,"Warning: Unrecognized dimension \"%s\" in LHS subscripts",sbs_lst[idx]);
+   (void)yyerror(err_sng);
+   (void)nco_enddef(prs_arg->out_id);
+   goto end_LHS_sbs;                     
+  }
+  (void)nco_enddef(prs_arg->out_id);
+ 
+
+  /* check that un-limited dimension is the first dimension */
+  for( idx = 1 ; idx < dmn_nbr ; idx ++)
+    if( dmn[idx]->is_rec_dmn ) {
+      (void)sprintf(err_sng,"Warning:\"%s\" is the record dimension. It can only be the first dimension in a list",dmn[idx]->nm);
+   (void)yyerror(err_sng);
+   goto end_LHS_sbs;                     
+  }
 
   /* Create template variable to cast all RHS expressions */
   var=(var_sct *)nco_malloc(sizeof(var_sct));
@@ -648,12 +651,12 @@ M_PI {return NAMED_CONSTANT;}
   
   /* Free dimension list memory */
   (void)nco_free(sbs_sng);    
-  (void)nco_free(dmn_lst);
-  
  end_LHS_sbs: /* Errors encountered during LHS processing jump to here */
   /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
   BEGIN INITIAL;
 } /* end LHS subscripted variables */
+
+
 
 <RHS_SUBSCRIPT>\[[^\]\n]*[\]\n] {
   /* RHS_SUBSCRIPT */
