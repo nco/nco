@@ -1,20 +1,20 @@
 #!/contrib/bin/perl
 				
-my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.22 1999-07-03 19:30:23 zender Exp $';
+my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.23 1999-07-03 21:58:21 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
 # Usage:
 # Export tagged, public versions
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_33
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_33
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_33
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_33
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_33
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_33
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_33
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_33
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_33
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_34
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_34
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_34
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_34
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_34
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_34
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_34
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_34
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_34
 
 # Export daily snapshot
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 
@@ -52,9 +52,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $RCS_Date='$Date: 1999-07-03 19:30:23 $';
-my $RCS_Id='$Id: nco_dst.pl,v 1.22 1999-07-03 19:30:23 zender Exp $';
-my $RCS_Revision='$Revision: 1.22 $';
+my $RCS_Date='$Date: 1999-07-03 21:58:21 $';
+my $RCS_Id='$Id: nco_dst.pl,v 1.23 1999-07-03 21:58:21 zender Exp $';
+my $RCS_Revision='$Revision: 1.23 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -222,12 +222,12 @@ if($bld){
 } # endif bld
 
 if($acd_prs){
-     $rmt_mch='gss1.acd.ucar.edu';
+     $rmt_mch='dust.acd.ucar.edu';
      print STDOUT "\n$prg_nm: Updating private NCO on $rmt_mch...\n";
      &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco;cvs update\"");
      &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco/bld;make\"");
 # Unfortunately, sudo does not work at all with rsh
-#    &cmd_prc("rsh $rmt_mch \"sudo cp /l9/zender/bin/AIX/nc* /usr/local/bin\"");
+#    &cmd_prc("rsh $rmt_mch \"sudo cp /gs/zender/bin/LINUX/nc* /usr/local/bin\"");
      print STDOUT "$prg_nm: Done updating private NCO binaries on $rmt_mch\n\n";
 } # endif acd_prs
 

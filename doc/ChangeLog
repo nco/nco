@@ -1,3 +1,10 @@
+1999-07-03  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Tagged this as nco1_1_34
+
+	* Altered ncatted behavior to replace missing data values with new
+	missing_value when missing_value attribute changes
+
 1999-05-12  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Tagged this as nco1_1_33

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.29 1999-06-01 04:38:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.30 1999-07-03 21:58:22 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -2068,7 +2068,7 @@ var_get(int nc_id,var_sct *var)
 
 var_sct *
 var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,bool *DO_CONFORM)
-     /* DBG XXX:  TODO #114. Fix var_conform_dim() so that the returned weight always has the same size tally array as the template variable */ 
+     /* fxm: TODO #114. Fix var_conform_dim() so that the returned weight always has the same size tally array as the template variable */ 
 
 /*  
    var_sct *var: I pointer to variable structure to serve as template

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.7 1999-07-01 23:13:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.8 1999-07-03 21:58:22 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -26,6 +26,9 @@
    Modify existing float:
    ncatted -D 5 -O -a float_att,att_var,m,f,74 in.nc foo.nc
 
+   Modify existing missing value attribute:
+   ncatted -D 5 -O -a missing_value,mss_val,m,f,74 in.nc foo.nc
+   
    Multiple attribute edits:
    ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three." -a short_att,att_var,c,s,37,38,39 -a float_att,att_var,d,,, -a long_att,att_var,o,l,37 -a new_att,att_var,o,d,73,74,75 in.nc foo.nc
 
@@ -33,7 +36,7 @@
    ncatted -D 5 -O -a float_att,global,c,f,74 in.nc foo.nc
 
    Verify results:
-   ncks -C -h -v att_var foo.nc
+   ncks -C -H -v att_var foo.nc
 
    Test algorithm for all variables:
    Append to existing string for all variables:
@@ -54,6 +57,7 @@
 
    Verify results:
    ncks -C -h foo.nc | m
+
    */ 
 
 /* Standard header files */
@@ -96,8 +100,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.7 1999-07-01 23:13:18 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.7 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.8 1999-07-03 21:58:22 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.8 $";
   
   aed_sct *aed_lst;
 
@@ -219,14 +223,14 @@ main(int argc,char **argv)
       } /* end if */
     } /* end if */
     
-    /* Copy the input file to the output file and then search through the output, editing attributes as you go. 
-       This avoids the possible XDR translation performance penalty of copying each variable with netCDF. */
+    /* Copy input file to output file, then search through output, editing attributes along the way.
+       This avoids possible XDR translation performance penalty of copying each variable with netCDF. */
     (void)fl_cp(fl_in,fl_out);
 
   } /* end if */ 
 
-  /* Make netCDF errors fatal and print the diagnostic */   
-  ncopts=NC_VERBOSE | NC_FATAL; 
+  /* Make netCDF errors fatal and print the diagnostic */  
+  ncopts=NC_VERBOSE | NC_FATAL;
 
   /* Open the file. Writing must be enabled and the file should be in define mode for renaming */ 
   nc_id=ncopen(fl_out,NC_WRITE);
@@ -468,7 +472,7 @@ void
 aed_prc(int nc_id,int var_id,aed_sct aed)
 /* 
    int nc_id: input netCDF file ID
-   int var_id: input id of variable on which to perform attribute editing 
+   int var_id: input ID of variable on which to perform attribute editing 
    aed_sct aed: input structure containing information necessary to edit
  */ 
 {
@@ -478,7 +482,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
 
   char var_nm[MAX_NC_NAME];
 
-  /* Debug XXX: netCDF 2 specifies att_sz should be type int, netCDF 3 uses size_t */ 
+  /* fxm: netCDF 2 specifies att_sz should be type int, netCDF 3 uses size_t */ 
   int att_sz;
   int nbr_att;
   int rcd;
@@ -500,6 +504,133 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
   rcd=ncattinq(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
   ncopts=NC_VERBOSE | NC_FATAL; 
 
+  /* Before changing metadata, change missing values to new missing value if warranted 
+     This capability is an add on feature and is not implemented very cleanly or efficiently
+     If, for example, every variable has a "missing_value" attribute and it is changed
+     globally, then this routine will go into and out of define mode for each variable,
+     rather than collecting all the information in one pass and then replacing all the 
+     data in a second pass.
+     This is because ncatted was originally designed to change only metadata and so was
+     architected differently from the other NCO operators.
+   */
+  if(
+     strcmp(aed.att_nm,"missing_value") == 0 /* Current attribute is "missing_value" */
+     && var_id != NC_GLOBAL /* Current attribute is not global */
+     && (aed.mode == aed_modify || aed.mode == aed_overwrite)  /* Modifying or overwriting existing value */
+     && rcd != -1 /* Only when existing missing_value attribute is modified */
+     && att_sz == 1L /* Old missing_value attribute must be of size 1 */
+     && aed.sz == 1L /* New missing_value attribute must be of size 1 */
+     ){
+
+    int *dim_id;
+    long *dim_sz;
+    long *dim_srt;
+    long idx;
+    long var_sz;
+    ptr_unn mss_val_crr;
+    ptr_unn mss_val_new;
+    ptr_unn var_val;
+    var_sct *var;
+
+    (void)fprintf(stdout,"%s: WARNING Replacing missing value data in variable %s\n",prg_nm,var_nm);
+
+    /* Take file out of define mode */ 
+    (void)ncendef(nc_id);
+  
+    /* Initialize (partially) the variable structure */
+    var=(var_sct *)malloc(sizeof(var_sct));
+    var->nc_id=nc_id;
+    var->id=var_id;
+    var->sz=1L;
+
+    /* Get type of variable and number of dimensions */
+    (void)ncvarinq(var->nc_id,var->id,(char *)NULL,&var->type,&var->nbr_dim,(int *)NULL,(int *)NULL);
+    dim_id=(int *)malloc(var->nbr_dim*sizeof(int));
+    dim_sz=(long *)malloc(var->nbr_dim*sizeof(long));
+    dim_srt=(long *)malloc(var->nbr_dim*sizeof(long));
+    (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dim_id,(int *)NULL);
+
+    /* Get dimension sizes and construct variable size */
+    for(idx=0;idx<var->nbr_dim;idx++){
+      (void)ncdiminq(var->nc_id,dim_id[idx],(char *)NULL,dim_sz+idx);
+      var->sz*=dim_sz[idx];
+      dim_srt[idx]=0L;
+    } /* end loop over dim */
+    var->dim_id=dim_id;
+    var->cnt=dim_sz;
+    var->srt=dim_srt;
+      
+    /* Place var_get() code inline since var struct is not truly complete */
+    if((var->val.vp=(void *)malloc(var->sz*nctypelen(var->type))) == NULL){
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in aed_prc()\n",prg_nm_get(),var->sz,nctypelen(var->type));
+      exit(EXIT_FAILURE); 
+    } /* end if */ 
+    if(var->sz > 1){
+      (void)ncvarget(var->nc_id,var->id,var->srt,var->cnt,var->val.vp);
+    }else{
+      (void)ncvarget1(var->nc_id,var->id,var->srt,var->val.vp);
+    } /* end else */
+    
+    /* Get current missing value attribute */
+    var->mss_val.vp=NULL;
+    var->has_mss_val=mss_val_get(var->nc_id,var);
+
+    /* Sanity check */
+    if(var->has_mss_val == False){
+      (void)fprintf(stdout,"%s: ERROR \"missing_value\" attribute does not exist in aed_prc()\n",prg_nm_get());
+      exit(EXIT_FAILURE);
+    } /* end if */
+
+    /* Shortcuts to avoid indirection */ 
+    var_val=var->val;
+    var_sz=var->sz;
+
+    /* Get new and old missing values in same type as variable */ 
+    mss_val_crr.vp=(void *)malloc(att_sz*nctypelen(var->type));
+    mss_val_new.vp=(void *)malloc(aed.sz*nctypelen(var->type));
+    (void)val_conform_type(att_typ,var->mss_val,var->type,mss_val_crr);
+    (void)val_conform_type(aed.type,aed.val,var->type,mss_val_new);
+
+    /* Typecast the pointer to the values before access */ 
+    (void)cast_void_nctype(var->type,&var_val);
+    (void)cast_void_nctype(var->type,&mss_val_crr);
+    (void)cast_void_nctype(var->type,&mss_val_new);
+  
+    switch(var->type){
+    case NC_FLOAT: for(idx=0L;idx<var_sz;idx++) {if(var_val.fp[idx] == *mss_val_crr.fp) var_val.fp[idx]=*mss_val_new.fp;} break;
+    case NC_DOUBLE: for(idx=0L;idx<var_sz;idx++) {if(var_val.dp[idx] == *mss_val_crr.dp) var_val.dp[idx]=*mss_val_new.dp;} break;
+    case NC_LONG: for(idx=0L;idx<var_sz;idx++) {if(var_val.lp[idx] == *mss_val_crr.lp) var_val.lp[idx]=*mss_val_new.lp;} break;
+    case NC_SHORT: for(idx=0L;idx<var_sz;idx++) {if(var_val.sp[idx] == *mss_val_crr.sp) var_val.sp[idx]=*mss_val_new.sp;} break;
+    case NC_CHAR: for(idx=0L;idx<var_sz;idx++) {if(var_val.cp[idx] == *mss_val_crr.cp) var_val.cp[idx]=*mss_val_new.cp;} break;
+    case NC_BYTE: for(idx=0L;idx<var_sz;idx++) {if(var_val.bp[idx] == *mss_val_crr.bp) var_val.bp[idx]=*mss_val_new.bp;} break;
+    } /* end switch */ 
+
+    /* Un-typecast the pointer to values after access */
+    (void)cast_nctype_void(var->type,&var_val);
+    (void)cast_nctype_void(var->type,&mss_val_crr);
+    (void)cast_nctype_void(var->type,&mss_val_new);
+
+    /* Write to disk */ 
+    if(var->nbr_dim == 0){
+      (void)ncvarput1(nc_id,var->id,var->srt,var->val.vp);
+    }else{ /* end if variable is a scalar */ 
+      (void)ncvarput(nc_id,var->id,var->srt,var->cnt,var->val.vp);
+    } /* end else */ 
+
+    /* Free memory */
+    if(mss_val_crr.vp != NULL){(void)free(mss_val_crr.vp); mss_val_crr.vp=NULL;}
+    if(mss_val_new.vp != NULL){(void)free(mss_val_new.vp); mss_val_new.vp=NULL;}
+    if(var->mss_val.vp != NULL){(void)free(var->mss_val.vp); var->mss_val.vp=NULL;}
+    if(var->val.vp != NULL){(void)free(var->val.vp); var->val.vp=NULL;}
+    if(var->dim_id != NULL){(void)free(var->dim_id); var->dim_id=NULL;}
+    if(var->srt != NULL){(void)free(var->srt); var->srt=NULL;}
+    if(var->cnt != NULL){(void)free(var->cnt); var->cnt=NULL;}
+
+    /* Put file back in define mode */
+    (void)ncredef(nc_id);
+  } /* end if replacing missing value data */
+
+  /* Change metadata (as written, this must be done after missing_value data is replaced) */
   switch(aed.mode){
   case aed_append:	
     if(rcd != -1){
@@ -528,7 +659,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     if(rcd != -1) (void)ncattdel(nc_id,var_id,aed.att_nm);
     break;
   case aed_modify:	
-    if(rcd != -1) (void)ncattput(nc_id,var_id,aed.att_nm,aed.type,aed.sz,(void *)aed.val.vp);
+    if(rcd != -1) (void)ncattput(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
     break;
   case aed_overwrite:	
     (void)ncattput(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
@@ -538,5 +669,3 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
   } /* end switch */ 
   
 } /* end aed_prc() */ 
-
-

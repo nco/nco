@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.17 1999-06-29 19:00:35 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.18 1999-07-03 21:58:22 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
@@ -146,6 +146,19 @@ User's Guide</A>. </P>
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
 
+<P>99/07/03: 
+<TT>ncatted</TT> now replaces missing values of variables whose
+<IT>missing_value</IT> attribute is changed.
+When the internal floating point representation of a missing value, 
+e.g., 1.0e36, differs between machines then netCDF files produced
+on those machines will have incompatible missing values.
+<TT>ncatted</TT> now changes the <IT>missing_value</IT> attribute
+and the missing data self-consistently.
+This allows the user to change the missing values in files from
+different machines to a single value so that the files may then be 
+concatenated together with, e.g., by <TT>ncrcat</TT>, without losing
+any information.  
+
 <P>99/05/09: 
 <TT>ncks</TT> now alphabetizes output by default.
 To turn off alphabetization and return to the previous behavior
@@ -290,8 +303,8 @@ as having been fixed in the latest revision.
 The NCO executables are maintained in many different locations at NCAR:
 <DD>CGD network (Solaris 2.6): /contrib/bin</DD>
 <DD>CGD/SCD Dataproc (IRIX 6.5): /contrib/bin</DD>
-<DD>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</DD>
 <DD>SCD Ute (IRIX 6.5): /home/ute/zender/bin/SGIMP64</DD>
+<DD>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</DD>
 <DD>ACD garcia.acd.ucar.edu (Digital OSF1): /usr/local/bin</DD>
 <DD>ACD dust.acd.ucar.edu (Linux 2.2.5): /gs/zender/bin/LINUX</DD>
 

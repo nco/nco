@@ -1,10 +1,10 @@
 \input texinfo @c -*-texinfo-*- 
-@c 98/08/17: texi2html and makeinfo do not require texinfo.tex anymore.
-@c Unfortunately, texi2dvi does seem to need it.
+@c 98/08/17: texi2html and makeinfo do not require texinfo.tex anymore
+@c Unfortunately, texi2dvi does seem to need it
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.24 1999-07-01 22:24:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.25 1999-07-03 21:58:22 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -48,12 +48,12 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.1.33
-@set doc-edition 1.1.33
+@set nco-edition 1.1.34
+@set doc-edition 1.1.34
 @set copyright-years 1995, 1996, 1997, 1998, 1999
 @set update-year 1999
-@set update-date 4 April 1999
-@set update-month April 1999
+@set update-date 3 July 1999
+@set update-month July 1999
 
 @c Experiment with smaller amounts of whitespace between chapters and sections.
 @tex
@@ -173,8 +173,7 @@ by the Free Software Foundation.
 * Operators::                   Description of all NCO operators
 * General Index::               Index of concepts
 
-@detailmenu
- --- The Detailed Node Listing ---
+@detailmenu --- The Detailed Node Listing ---
 
 Introduction
 
@@ -1601,6 +1600,11 @@ If not, then NCO will internally convert @var{att_type} to
 @code{NC_CHAR} and @var{missing_value} = @samp{-99999.}.
 }, by typecasting the results of the C function
 @code{strtod(@var{missing_value})}. 
+@cindex @code{ncatted}
+You may use the NCO operator @code{ncatted} to change the
+@code{missing_value} attribute and all data whose data is
+@var{missing_value} to a new value
+(@pxref{ncatted netCDF Attribute Editor}).
 
 @item 
 Identifying missing data during arithmetic operations.
@@ -1627,7 +1631,7 @@ may be harder to know in advance whether all observational data will be
 valid or not.
 
 @item 
-Treatment of any data identified as missing.
+Treatment of any data identified as missing in arithmetic operators.
 
 @cindex @code{ncea}
 @cindex @code{ncra}
@@ -1638,6 +1642,11 @@ NCO averagers (@code{ncra}, @code{ncea}, @code{ncwa}) do not count any
 element with the value @var{missing_value} towards the average.
 @code{ncdiff} and @code{ncflint} define a @var{missing_value} result
 when either of the input values is a @var{missing_value}.
+Sometimes the @var{missing_value} may change from file to file in a
+multi-file operator, e.g., @code{ncra}.
+NCO is written to account for this (it always compares a variable to the
+@var{missing_value} assigned to that variable in the current file).
+Suffice it to say that, in all known cases, NCO does ``the right thing''.
 
 @end enumerate
 
@@ -1900,6 +1909,20 @@ Because repeated use of @code{ncatted} can considerably increase the size
 of the @code{history} global attribute (@pxref{History attribute}), the
 @samp{-h} switch is provided to override automatically appending the
 command to the @code{history} global attribute in the @var{output-file}.
+
+@cindex missing values
+@cindex data, missing 
+@cindex @code{missing_value} attribute
+When @code{ncatted} is used to change the @code{missing_value} attribute,
+it changes the associated missing data self-consistently.
+If the internal floating point representation of a missing value, 
+e.g., 1.0e36, differs between two machines then netCDF files produced 
+on those machines will have incompatible missing values.
+This allows @code{ncatted} to change the missing values in files from 
+different machines to a single value so that the files may then be 
+concatenated together, e.g., by @code{ncrcat}, without losing any
+information.   
+@xref{Missing values} for more information.
 
 The key to mastering @code{ncatted} is understanding the meaning of the
 structure describing the attribute modification, @var{att_dsc}.
