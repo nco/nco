@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.8 2000-05-19 17:10:29 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.9 2000-05-20 03:57:51 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -17,7 +17,10 @@ CVS:		    Anonymous check out:
 		    cvs -dzender@cvs.nco.sourceforge.net:/cvsroot/nco login 
 		    cvs -z3 -dzender@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco 
 		    export CVS_RSH=ssh 
-		    export CVSROOT=cvs.nco.sourceforge.net:/cvsroot/nco
+		    export CVSROOT=zender@cvs.nco.sourceforge.net:/cvsroot/nco
+		    Daily tarballs of entire CVS tree for mirroring:
+		    http://cvs.sourceforge.net/cvstarballs/nco-cvsroot.tar.gz
+fxm: CVS still prompts for password even though I updated authorized hosts file
 
 The purpose of this project is to create and improve tools for data
 analysis by using Open Source development strategy. The starting

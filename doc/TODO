@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.54 2000-05-19 17:10:29 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.55 2000-05-20 03:57:51 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -122,6 +122,8 @@ for example, every other file was not needed. This capability is already
 implemented for lmt_typ = crd_val. This is an issue only when stride
 is non-unity.
 160. Add documentation of ncra, ncrcat superfluous file capabilities to nco.texi
+161. Make development installation not depend on old ~/nc/nco paths
+162. Add GiNaC (Computer Algebra System) support to ncap www.ginac.de
 ************************************************************************
 End NCO Wish list
 ************************************************************************
