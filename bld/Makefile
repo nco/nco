@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.203 2003-01-21 02:14:41 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.204 2003-03-03 02:29:51 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -473,8 +473,8 @@ endif
 endif
 # endif HPPA
 
-# Works on LINUX, LINUXALPHA, and FREEBSD
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
+# Works on LINUX, LINUXALPHA, LINUXARM and FREEBSD
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXARMFREEBSD))
 #C++ := como
 C++ := g++
 #C++ := icc
@@ -631,7 +631,7 @@ ifeq (${OMP},Y)
  LDFLAGS := ${OMP_FLG} ${LDFLAGS}
 endif # endif OMP
 endif
-# endif LINUX or LINUXALPHA or FREEBSD
+# endif LINUX, LINUXALPHA, LINUXARM, FREEBSD
 
 ifeq (${PVM_ARCH},MACOSX)
 C++ := c++

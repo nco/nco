@@ -1,0 +1,93 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# debian/rules file - for nco
+# Copyright 1999-2002 by Brian Mays
+# Patterned after the hello package by Ian Jackson.
+
+package = nco
+
+# Stupid hack dictated by policy wonks
+OPTS=O
+ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
+OPTS=X
+endif
+
+build:
+	$(checkdir)
+	install -d obj
+	cd bld && \
+	  $(MAKE) OPTS='$(OPTS)'\
+	  NETCDF_INC=/usr/include \
+	  NETCDF_LIB=/usr/lib \
+	  all doc
+	touch build
+
+clean:
+	$(checkdir)
+	cd bld && $(MAKE) distclean
+	-rmdir bin lib
+	$(RM) build
+	$(RM) -r obj *~ debian/tmp debian/*~ debian/files* debian/substvars
+
+binary-indep:	checkroot build
+	$(checkdir)
+
+binary-arch:	checkroot build
+	$(chechdir)
+	$(RM) -r debian/tmp
+	install -d debian/tmp debian/tmp/DEBIAN
+# Install Debian package control information files
+	install debian/postinst debian/prerm debian/tmp/DEBIAN/.
+# Install directories
+	install -d debian/tmp/usr/share/doc/$(package)
+	install -d debian/tmp/usr/bin/
+	install -d debian/tmp/usr/share/info
+	install -d debian/tmp/usr/share/man/man1
+# Install files
+	install `find bin/* -type f` debian/tmp/usr/bin/.
+	cp -d `find bin/* -type l` debian/tmp/usr/bin/.
+# Strip binaries (including hack by policy wonks)
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	strip -R.note -R.comment debian/tmp/usr/bin/*
+endif
+# Install documentation
+	install -m644 doc/*.info* debian/tmp/usr/share/info/.
+	install -m644 doc/man/*.1 debian/tmp/usr/share/man/man1/.
+	install -m644 doc/NEWS \
+	  debian/tmp/usr/share/doc/$(package)/.
+	install -m644 doc/ChangeLog \
+	  debian/tmp/usr/share/doc/$(package)/changelog
+# Install changelog & copyright
+	install -m 644 debian/changelog	\
+	  debian/tmp/usr/share/doc/$(package)/changelog.Debian
+	gzip -9v debian/tmp/usr/share/doc/$(package)/*
+	install -d debian/tmp/usr/share/doc/$(package)/html
+	install -m644 doc/*html debian/tmp/usr/share/doc/$(package)/html/.
+	gzip -9v debian/tmp/usr/share/info/*
+	gzip -9v debian/tmp/usr/share/man/*/*
+	install -m 644 debian/copyright debian/tmp/usr/share/doc/$(package)/.
+# Determine shared library dependencies
+	dpkg-shlibdeps bin/ncatted bin/ncdiff bin/ncecat bin/ncflint \
+	  bin/ncks bin/ncra bin/ncrename bin/ncwa
+# Genereate deb file
+	dpkg-gencontrol -isp
+	chown -R root.root debian/tmp
+	chmod -R g-ws debian/tmp
+	dpkg --build debian/tmp ..
+
+define checkdir
+	test -f src/nco/nc.h -a -f debian/rules
+endef
+
+# Below here is fairly generic really
+
+binary:		binary-indep binary-arch
+
+source diff:
+	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
+
+checkroot:
+	$(checkdir)
+	test root = "`whoami`"
+
+.PHONY: binary binary-arch binary-indep clean checkroot

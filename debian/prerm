@@ -1,0 +1,7 @@
+#!/bin/sh -e
+
+if [ "$1" = remove ]; then
+    install-info --quiet --remove /usr/share/info/nco.info
+    pkg=nco
+    if [ -L /usr/doc/$pkg ]; then rm -f /usr/doc/$pkg; fi
+fi

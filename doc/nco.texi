@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.145 2003-02-21 06:38:53 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.146 2003-03-03 02:29:52 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -5372,15 +5372,19 @@ Migration to netCDF3 API.
 Multislabbing algorithm.
 Various hacks.
 @item Rorik Peterson
-Autotool build support, long options
+Autotool build support, long options.
+@item Brian Mays
+Packaging for Debian GNU/Linux, nroff man pages.
+@item fxm
+Packaging for Gentoo GNU/Linux.
 @item Bill Kocik
-Memory management
+Memory management.
 @item Len Makin
-NECSX architecture support
+NECSX architecture support.
 @item Juliana Rew
-Compatibility with large PIDs
+Compatibility with large PIDs.
 @item Keith Lindsay, Martin Dix
-Excellent bug reports
+Excellent bug reports.
 @end table
 
 @c @ignore

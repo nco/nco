@@ -1,0 +1,152 @@
+nco (2.2.0-3) unstable; urgency=low
+
+  * Eliminated building of dvi, postscript, and pdf documentation due to
+    bugs in texinfo.  (Closes: Bug#164977)
+
+ -- Brian Mays <brian@debian.org>  Wed, 16 Oct 2002 09:30:31 -0400
+
+nco (2.2.0-2) unstable; urgency=medium
+
+  * Modified postinst to ignore an existing /usr/doc/$package directory.
+
+ -- Brian Mays <brian@debian.org>  Wed, 20 Mar 2002 11:18:29 -0500
+
+nco (2.2.0-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Brian Mays <brian@debian.org>  Thu,  7 Feb 2002 05:42:36 -0500
+
+nco (2.0.0-4) unstable; urgency=low
+
+  * Fixed symlink /usr/doc -> ../share/doc.
+  * Fixed reference to GPL.
+  * Improved stripping of binaries.
+
+ -- Brian Mays <brian@debian.org>  Fri,  1 Feb 2002 15:58:40 -0500
+
+nco (2.0.0-3) unstable; urgency=low
+
+  * Enabled building on all architectures.  (Closes: Bug#121461,
+    Bug#124105)
+  * Fixed symlink /usr/doc -> ../share/doc.
+
+ -- Brian Mays <brian@debian.org>  Sun, 27 Jan 2002 15:08:56 -0500
+
+nco (2.0.0-2) unstable; urgency=low
+
+  * Added build dependency on tetex-extra.  (Closes: Bug#106770)
+
+ -- Brian Mays <brian@debian.org>  Fri, 27 Jul 2001 09:09:49 -0400
+
+nco (2.0.0-1) unstable; urgency=low
+
+  * New upstream version.
+  * Removed "-g" gcc option as per policy.
+
+ -- Brian Mays <brian@debian.org>  Mon,  9 Jul 2001 11:26:24 -0400
+
+nco (1.2.2-2) unstable; urgency=low
+
+  * Added nettcdf-bin to Build-Depends.  (Closes: Bug#87094)
+
+ -- Brian Mays <brian@debian.org>  Thu, 22 Feb 2001 15:58:00 -0500
+
+nco (1.2.2-1) unstable; urgency=low
+
+  * New upstream version.
+  * Updated man pages.
+
+ -- Brian Mays <brian@debian.org>  Fri, 16 Feb 2001 16:21:26 -0500
+
+nco (1.2.1-3) unstable; urgency=low
+
+  * Fixed "Build-Depends".  (Closes: Bug#85668)
+
+ -- Brian Mays <brian@debian.org>  Mon, 12 Feb 2001 09:45:12 -0500
+
+nco (1.2.1-2) unstable; urgency=low
+
+  * Added patch from Christopher C. Chimelis <chris@debian.org> to
+    allow NCO to build on the alpha architecture.  (Closes: Bug#71225)
+
+ -- Brian Mays <brian@debian.org>  Sun, 10 Sep 2000 21:24:58 -0400
+
+nco (1.2.1-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Brian Mays <brian@debian.org>  Fri,  1 Sep 2000 10:46:01 -0400
+
+nco (1.2-1) unstable; urgency=low
+
+  * New upstream version.
+  * Added more source dependencies.
+
+ -- Brian Mays <brian@debian.org>  Fri,  4 Aug 2000 17:13:16 -0400
+
+nco (1.1.48-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Brian Mays <brian@debian.org>  Fri, 19 May 2000 10:23:19 -0400
+
+nco (1.1.47-1) unstable; urgency=low
+
+  * New upstream version.
+  * Changed the control file to accurately reflect the supported
+    architectures for this package (alpha, arm, i386, and sparc).
+    (Closes: Bug#63943)
+
+ -- Brian Mays <brian@debian.org>  Mon, 15 May 2000 12:42:19 -0400
+
+nco (1.1.46-1) unstable; urgency=low
+
+  * New upstream version.
+
+ -- Brian Mays <brian@debian.org>  Sun, 12 Mar 2000 11:37:11 -0500
+
+nco (1.1.45-2) unstable; urgency=low
+
+  * Added patch from Jim Studt <jim@federated.com> to port nco to ARM.
+    (Closes: Bug#59095)
+
+
+ -- Brian Mays <brian@debian.org>  Thu,  2 Mar 2000 14:55:03 -0500
+
+nco (1.1.45-1) unstable; urgency=low
+
+  * New upstream version.
+  * New license.  (It is now GPL!!)
+
+ -- Brian Mays <brian@debian.org>  Fri, 28 Jan 2000 11:32:14 -0500
+
+nco (1.1.43-2) non-free; urgency=low
+
+  * Added build-time dependencies.  (Closes: Bug#55158)
+
+ -- Brian Mays <brian@debian.org>  Mon, 17 Jan 2000 14:14:47 -0500
+
+nco (1.1.43-1) non-free; urgency=low
+
+  * New upstream version.
+
+ -- Brian Mays <brian@debian.org>  Fri, 31 Dec 1999 10:49:09 -0500
+
+nco (1.1.42-1) non-free; urgency=low
+
+  * New upstream version.
+
+ -- Brian Mays <brian@debian.org>  Sun, 12 Dec 1999 16:15:13 -0500
+
+nco (1.1.41-1) non-free; urgency=low
+
+  * New upstream version.
+
+ -- Brian Mays <brian@debian.org>  Tue,  2 Nov 1999 10:43:35 -0500
+
+nco (1.1.39-1) non-free; urgency=low
+
+  * Initial release.
+
+ -- Brian Mays <brian@debian.org>  Fri,  8 Oct 1999 13:25:40 -0400

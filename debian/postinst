@@ -1,0 +1,11 @@
+#!/bin/sh -e
+
+if [ "$1" = configure ]; then
+    install-info --quiet \
+      --section "netCDF" "netCDF" \
+      --description="NetCDF Operator suite." \
+      /usr/share/info/nco.info
+    pkg=nco
+    if test -d /usr/doc -a ! -e /usr/doc/$pkg -a -d /usr/share/doc/$pkg; then
+	ln -sf ../share/doc/$pkg /usr/doc/$pkg; fi
+fi

@@ -1,3 +1,19 @@
+2003-03-02  Charlie Zender  <zender@uci.edu>
+
+	* Began Debian-ization of upstream source by populating debian
+	directory with nco-2.2.0 Debian package files by Brian Mays
+	NB: Files in debian/ are for 2.2.0 (i.e., way out of date)
+	We are trying to Debian-ize upstream source for NCO ~2.8.0
+	Expect some hiccups when that finally happens
+	
+	* Insert LINUXARM in Linux portion of bld/Makefile
+
+	* Synchronize Debian nco/doc/man with CVS nco/man
+
+	* Add Debian files by Brian Mays to CVS repository:
+ 	debian: changelog control convert copyright postinst prerm rules
+	bld: linux1 linux2 (appear obsolete and may soon be removed)
+	
 2003-02-25  Charlie Zender  <zender@uci.edu>
 
 	* Builds cleanly on LINUX, IRIX, AIX
@@ -390,8 +406,7 @@
 	* Added man pages for NCO operators to man directory.
 	Source of man pages is Debian distribution by Brian Mays,
 	which automatically generates man pages from texinfo source.
-	Thus man pages are moderately out of date, currently for version
-	2.2.0. 
+	Thus man pages are moderately out of date, currently for version 2.2.0. 
 
 2002-06-15  Charlie Zender  <zender@uci.edu>
 
