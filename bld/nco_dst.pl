@@ -28,7 +28,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.56 2000-03-09 00:46:51 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.57 2000-03-09 01:17:40 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -64,9 +64,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-03-09 00:46:51 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.56 2000-03-09 00:46:51 zender Exp $';
-my $CVS_Revision='$Revision: 1.56 $';
+my $CVS_Date='$Date: 2000-03-09 01:17:40 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.57 2000-03-09 01:17:40 zender Exp $';
+my $CVS_Revision='$Revision: 1.57 $';
 my $CVSROOT='$CVSROOT'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -267,7 +267,7 @@ if($bld){
 # Update SourceForge mirror
     if($True){
 	cmd_prc("$rcp_cmd $dst_fl $ftp_mch_mrr:$ftp_drc_mrr"); # Copy local tarfile to FTP server
-	cmd_prc("$rsh_cmd $ftp_mch $rm_cmd $ftp_drc/nco.tar.gz");
+	cmd_prc("$rsh_cmd $ftp_mch_mrr $rm_cmd $ftp_drc_mrr/nco.tar.gz");
 	cmd_prc("$rsh_cmd $ftp_mch_mrr \"cd $ftp_drc_mrr; ln -s $dst_fl nco.tar.gz\"");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/index.shtml $www_mch_mrr:$www_drc_mrr/index.shtml");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco_news.shtml $www_mch_mrr:$www_drc_mrr/nco_news.shtml");
