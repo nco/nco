@@ -2,8 +2,6 @@
 # (package name, version, bug-report-address, tarball name)
 AC_INIT([NCO],[2.0.0],[help@nco.sourceforge.net],[nco.tar])
 
-#require a recent version of autoconf
-AC_PREREQ(2.53)
 # print GNU copyright in configure script
 AC_COPYRIGHT
 
