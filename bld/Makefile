@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.96 2001-08-10 16:12:04 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.97 2001-09-11 06:06:18 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -930,18 +930,6 @@ else
 endif
 	chmod 755 ${MY_BIN_DIR}/$@
 	/bin/rm -f $(MDL_NCAP) ${MY_OBJ_DIR}/$@_lex.o
-
-GENNET_SRC := gennet.f
-GENNET_OBJ := ${MY_OBJ_DIR}/gennet.o
-gennet:	$(GENNET_OBJ)
-	$(F77) ${CPPFLAGS} -o ${MY_BIN_DIR}/gennet $(GENNET_OBJ) ${LDFLAGS} 
-	chmod 755 ${MY_BIN_DIR}/gennet
-
-READNET_SRC := readnet.f
-READNET_OBJ := ${MY_OBJ_DIR}/readnet.o
-readnet:	$(READNET_OBJ)
-	$(F77) ${CPPFLAGS} -o ${MY_BIN_DIR}/readnet $(READNET_OBJ) ${LDFLAGS} 
-	chmod 755 ${MY_BIN_DIR}/readnet
 
 # Create dependency files only if they will not be immediately deleted
 INCLUDE_DPN := TRUE

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.25 2001-09-11 05:37:11 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.26 2001-09-11 06:06:35 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -91,16 +91,19 @@ never contacted)
 S. Srinivasan <s.srinivasan@ematic.com>
 Gian Luca Bignardi <pac77@libero.it> GTK+ GUI wrapper?
 Jeff Turner <jturner@alum.rpi.edu> getopt, _FillValue?
+Igor Crane <igor_crane@hotmail.com> 
 
 How to help develop NCO:
 
 The best way to start contributing is to checkout the software from 
-sourceforge using CVS repository. If you have never used CVS before,
-you may just want to download the tar.gz or the RPM file, whichever
-method you prefer. Eventually, however, you must learn to use CVS so
-that you can make serious code changes and keep up with the
+the CVS repository on Sourceforge. The CVS repository contains the
+latest, up-to-the-minute software. If you have never used CVS before,
+you may just want to download the numbered tar.gz or RPM release,
+whichever method you prefer. These will not contain any code changes
+since they were released. Eventually, therefore, you must learn to
+use CVS so that you can make serious code changes and keep up with the
 development branch. NCO-specific instructions on how to check out the
-code are posted to the Developer's forum on Sourceforge 
+code with CVS are posted to the Developer's forum on Sourceforge 
 http://sourceforge.net/forum/forum.php?forum_id=9831 
 in the message dated June 21, 2000.
 
@@ -121,7 +124,7 @@ Once you have done all this, you are ready to choose an item on the
 TODO list to tackle. For C hackers, I suggest you dive right in to the
 source code. Yes, the source code in nc_utl.c and csz.c should be
 better organized and split into smaller files. If hacking 5000 line 
-files which contains 50 C functions each is to intimidating, then
+files which contains 50 C functions each is too intimidating, then
 consider re-organizing the files themselves. This is TODO item #181.
 In an open source project, YOU decide what needs to be done.
 
