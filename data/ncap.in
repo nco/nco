@@ -1,0 +1,9 @@
+new=one+two
+one_dim_var=one_dim_var+one+two
+two=one+two
+$ // ncap.in ignores everything after a '$'
+two_dim_var=two_dim_var+one_dim_var
+three_dim_var=three_dim_var+two_dim_var
+
+
+
