@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.51 2003-05-30 19:28:05 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.52 2003-05-30 20:01:44 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -58,28 +58,31 @@ powerpc-ibm-aix5.1.0.0
 
 For ABI=64:
 export GNU_TRP=`~/nco/autobld/config.guess`
+export OBJECT_MODE='64' # AIX-specific hack
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' OBJECT_MODE='64' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 # Blue Horizon
 export GNU_TRP=`~/nco/autobld/config.guess`
+export OBJECT_MODE='64' # AIX-specific hack
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-LDFLAGS='-brtl' NETCDF_INC='/usr/local/apps/netcdf-3.5.0/include' NETCDF_LIB='/usr/local/apps/netcdf-3.5.0/lib' OBJECT_MODE='64' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo zender@dust.ess.uci.edu:/var/ftp/pub/z
 ender/nco/rgr
 
 For ABI=32:
+export GNU_TRP=`~/nco/autobld/config.guess`
+export OBJECT_MODE='32' # AIX-specific hack
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
-scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/ftp/pub/zender/n
-co/rgr
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 ************************************************************************
 End AIX

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.159 2003-04-30 01:15:22 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.160 2003-05-30 20:01:50 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -5667,7 +5667,8 @@ Concept, design and implementation of @acronym{NCO} from 1995--2000.
 Since then, mainly packing, @acronym{NCO} library redesign, @code{ncap}
 features, project coordination, code maintenance and porting.
 @item Henry Butowsky
-Min, max, total, and non-linear operations in @code{ncra} and @code{ncwa}. 
+Non-linear operations and @code{min()}, @code{max()}, @code{total()}
+support in @code{ncra} and @code{ncwa}. 
 Type conversion for arithmetic.
 Migration to netCDF3 API.
 @command{ncap} parser, lexer, and I/O.
@@ -5683,6 +5684,8 @@ Packaging for Gentoo GNU/Linux.
 Memory management.
 @item Len Makin
 NECSX architecture support.
+@item Jim Edwards
+AIX architecture support.
 @item Juliana Rew
 Compatibility with large PIDs.
 @item Keith Lindsay, Martin Dix

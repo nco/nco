@@ -1,35 +1,12 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.17 2003-03-31 07:17:35 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.18 2003-05-30 20:04:29 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.7.3 are ready. 
+The netCDF operators NCO version 2.7.4 are ready. 
 
 http://nco.sourceforge.net
 ftp://dust.ess.uci.edu/pub/zender/nco/nco.tar.gz
 
-The only change since version 2.7.2 is the addition of a
-shiny new feature, UDUnits compatibility.
-As documented in the User's Guide, NCO operators which
-accept the -d hyperslabbing arguments now understand
-how to translate values in user-specified units to values
-in the disk-based units of coordinate variables.
-Translation---stuff like this does the right thing:
-
-% ncks -O -C -H -u -v wvl -d wvl,"0.4 micron","0.7 micron" in.nc
-wvl[0]=5e-07 meter
-
-ncra -O -d time,"1939-09-09 12:00:0.0","1945-05-08 00:00:0.0" \
-in1.nc in2.nc in3.nc out.nc
-
-Rorik Peterson developed and contributed this code to NCO. 
-Thanks Rorik!
+The only change since version 2.7.3 is the addition of 
+autotools support for AIX, courtesy of Jim Edwards of NCAR.
 
 Enjoy,
 Charlie
-
-P.S. This feature changes building NCO slightly: 
-If you use the bld/Makefile method, you must build with
-make UDUNITS=N if you do not have UDUnits installed.
-If you build with ./configure, the build will automagically
-build with the UDUnits capability if it finds your
-complete UDUnits installation.
-
-
