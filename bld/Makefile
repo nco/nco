@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.92 2001-05-09 05:57:05 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.93 2001-06-08 05:32:27 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -37,13 +37,13 @@ endif
 MY_DAT_DIR := ../data
 MY_DOC_DIR := ../doc
 MY_INC_DIR := 
-MY_DPN_DIR := $(MY_OBJ_DIR)
+MY_DPN_DIR := ${MY_OBJ_DIR}
 MY_SRC_DIR := ../src/nco
 ifndef NCO_VRS
 # Used for RPM building
  NCO_VRS := $(shell cat $(MY_DOC_DIR)/VERSION)
 endif
-ifeq ($(PVM_ARCH),LINUX)
+ifeq (${PVM_ARCH},LINUX)
 # rpm command, and thus RPM variables, may only be assumed to be available in Linux
  MDL_RPM_NST_NM := $(shell rpm -qa | grep nco-) # Name of installed package
 # MDL_RPM_PRV_NM := $(shell rpm -qp foo) # Name of package provided by specified RPM
@@ -81,9 +81,9 @@ ifndef I18N
  I18N := N
 endif
 ifeq ($(I18N),Y)
- MY_SHR_DIR := $(HOME)/share
- MY_ES_DIR := $(MY_SHR_DIR)/locale/es/LC_MESSAGES
- MY_FR_DIR := $(MY_SHR_DIR)/locale/fr/LC_MESSAGES
+ MY_SHR_DIR := ${HOME}/share
+ MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
+ MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
 endif
 
 ifdef DODS
@@ -104,10 +104,10 @@ endif
  NETCDF_LIB=$(DODS_ROOT)/lib
 else
 # Build NCO straight, without DODS
- NC_LDFLAGS := -L$(NETCDF_LIB)
+ NC_LDFLAGS := -L${NETCDF_LIB}
  NC_LIBS := -lnetcdf
 endif # end DODS
-NCO_LDFLAGS := -L$(MY_LIB_DIR)
+NCO_LDFLAGS := -L${MY_LIB_DIR}
 NCO_LIBS := -lnco
 
 TMP_LDFLAGS := $(NCO_LDFLAGS) $(NC_LDFLAGS)
@@ -123,8 +123,8 @@ newline := \n
 slash_rx := cszzsc
 # Unique character(s) to replace by $(slash_rx) before passing to perl regex
 slash := /
-MY_OBJ_DIR_RX := $(subst $(slash),$(slash_rx),$(MY_OBJ_DIR))
-MY_DPN_DIR_RX := $(subst $(slash),$(slash_rx),$(MY_DPN_DIR))
+MY_OBJ_DIR_RX := $(subst $(slash),$(slash_rx),${MY_OBJ_DIR})
+MY_DPN_DIR_RX := $(subst $(slash),$(slash_rx),${MY_DPN_DIR})
 
 # Directories to search for source files
 MDL_PTH := $(MY_SRC_DIR)
@@ -139,9 +139,9 @@ SRC_LST = $(foreach dir, $(MDL_PTH),$(FIND_FNC))
 # Source file names with directories removed
 MDL_SRC := $(notdir $(SRC_LST))
 # Dependency list for executable
-MDL_OBJ := $(addprefix $(MY_OBJ_DIR)/,$(addsuffix .o, $(basename $(MDL_SRC)))) 
+MDL_OBJ := $(addprefix ${MY_OBJ_DIR}/,$(addsuffix .o, $(basename $(MDL_SRC)))) 
 # Dependency (make) file for each object file
-MDL_DPN := $(addprefix $(MY_DPN_DIR)/,$(addsuffix .d, $(basename $(MDL_SRC)))) 
+MDL_DPN := $(addprefix ${MY_DPN_DIR}/,$(addsuffix .d, $(basename $(MDL_SRC)))) 
 # VPATH helps make find dependencies (which are not pathname qualified) in *.d file
 VPATH := $(subst $(space),:,$(MDL_PTH))
 # Prepend -I to use for compiler argument
@@ -151,7 +151,7 @@ CPP_PTH := $(foreach dir,$(MDL_PTH),-I$(dir))
 MDL_BIN_TRG := ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted # NCO binary targets
 MDL_BIN_SYM_LNK := ncea ncrcat # Symbolic links
 MDL_BIN_STB := $(MDL_BIN_TRG) $(MDL_BIN_SYM_LNK) # All NCO files in MY_BIN_DIR
-MDL_BIN := $(addprefix $(MY_BIN_DIR)/,$(MDL_BIN_STB)) # distclean removes these files
+MDL_BIN := $(addprefix ${MY_BIN_DIR}/,$(MDL_BIN_STB)) # distclean removes these files
 
 # Variables having to do with NCO data
 MDL_DAT_STB := 85 86 87 88 89 h0001 h0002 h0003 # Symbolic links to in.nc
@@ -172,16 +172,16 @@ MDL_NCAP_TRG := ncap.tab.c ncap.tab.h ncap_lex.c # `make ncap' creates these fil
 MDL_NCAP := $(addprefix $(MY_SRC_DIR)/,$(MDL_NCAP_TRG)) # `make distclean' removes these files
 
 # Redefine default C and C++ pattern rules
-$(MY_OBJ_DIR)/%.o : %.c
-	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $(MY_OBJ_DIR)/$(notdir $@)
-$(MY_OBJ_DIR)/%.o : %.cc
-	$(C++) $(CPPFLAGS) $(C++FLAGS) -c $< -o $(MY_OBJ_DIR)/$(notdir $@)
+${MY_OBJ_DIR}/%.o : %.c
+	${CC} ${CPPFLAGS} ${CFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
+${MY_OBJ_DIR}/%.o : %.cc
+	$(C++) ${CPPFLAGS} ${C++FLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 
 # Default Fortran pattern rules: CRAY and RS6K must override these rules
-$(MY_OBJ_DIR)/%.o : %.F
-	$(FC) $(CPPFLAGS) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
-$(MY_OBJ_DIR)/%.o : %.f
-	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
+${MY_OBJ_DIR}/%.o : %.F
+	${FC} ${CPPFLAGS} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
+${MY_OBJ_DIR}/%.o : %.f
+	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 
 # Rules for installing i18n files
 %.po : %.cc
@@ -196,31 +196,31 @@ $(MY_ES_DIR)/%.mo : %.po
 # $@ is the filename of the target, e.g., f.d
 # Linux gcc may return an extra `.F' on Fortran names, e.g., `hello.F.o: hello.F'
 # (.F)? gets rid of this extra `.F'
-$(MY_DPN_DIR)/%.d : %.F
+${MY_DPN_DIR}/%.d : %.F
 # Following command makes, e.g., f.d begin "f.o f.d : f.F ..."
-# Since f.o is not preceded by $(MY_OBJ_DIR), objects are not recompiled when sources are touched.
-#	$(CPP) -M $(CPPFLAGS) $< | perl -p -e 's/$*\.F\.o/$*.o $@/g;' > $@
+# Since f.o is not preceded by ${MY_OBJ_DIR}, objects are not recompiled when sources are touched.
+#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.F\.o/$*.o $@/g;' > $@
 # Following command makes, e.g., f.d begin "/home/zender/obj/LINUX/f.o f.d : f.F ..."
 # This works fairly well, but is a hack
 # First pattern substitutes MY_OBJ_DIR_RX, which has placeholders for slashes
 # Second pattern substitutes slashes for the placeholders
-	$(CPP) -M $(CPPFLAGS) $< | perl -p -e 's/$*(\.F)?\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' > $@
-# Following command makes, e.g., f.d begin "$(MY_OBJ_DIR)/f.o f.d : f.F ..."
+	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*(\.F)?\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' > $@
+# Following command makes, e.g., f.d begin "${MY_OBJ_DIR}/f.o f.d : f.F ..."
 # This would be the ideal command but I can't get the dollar sign to show up
-#	$(CPP) -M $(CPPFLAGS) $< | perl -p -e 's/$*\.F\.o/\$(dollar)MY_OBJ_DIR\/$*.o $@/g;' > $@
+#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.F\.o/\$(dollar)MY_OBJ_DIR\/$*.o $@/g;' > $@
 
-$(MY_DPN_DIR)/%.d : %.c
-#	$(CPP) -M $(CPPFLAGS) $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
-	$(CPP) -M $(CPPFLAGS) $< | perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' > $@
+${MY_DPN_DIR}/%.d : %.c
+#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
+	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' > $@
 
-$(MY_DPN_DIR)/%.d : %.cc
-#	$(CPP) -M $(CPPFLAGS) $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
-	$(CPP) -M $(CPPFLAGS) $< | perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' > $@
+${MY_DPN_DIR}/%.d : %.cc
+#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
+	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' > $@
 
 # The first LDFLAGS is for typical C programs with netCDF, math, and networking
 # The second LDFLAGS enables C/Fortran linking
 
-ifeq ($(PVM_ARCH),AIX)
+ifeq (${PVM_ARCH},AIX)
 C++ := xlC
 CC := cc
 # Additional switch to fix compiler warnings on csz.c
@@ -228,8 +228,8 @@ CC := cc
 CFLAGS := -qmaxmem=8192
 CPP := cc -c
 # NB: Hack to make AIX look like LINUX (g77 + gcc + g++)
-#CPPFLAGS := -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
-CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 $(CPP_PTH) -I$(NETCDF_INC)
+#CPPFLAGS := -DLINUX ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 ${CPP_PTH} -I${NETCDF_INC}
 FC := xlf
 FFLAGS := -qfixed=132
 LD := ld
@@ -240,16 +240,16 @@ endif
 LEX := lex
 LINT := lint
 YACC := yacc
-ifeq ($(OPTS),O)
+ifeq (${OPTS},O)
  CFLAGS += -O
-# CPP := $(CPP) $(CPPFLAGS)
-# PREPROCESS.F := $(CPP) $(CPPFLAGS)
+# CPP := ${CPP} ${CPPFLAGS}
+# PREPROCESS.F := ${CPP} ${CPPFLAGS}
  FFLAGS += -O -NS2000 -qfixed=132
 endif
-ifeq ($(OPTS),D)
+ifeq (${OPTS},D)
  CFLAGS += -g
-# CPP := $(CPP) $(CPPFLAGS)
-# PREPROCESS.F := $(CPP) $(CPPFLAGS)
+# CPP := ${CPP} ${CPPFLAGS}
+# PREPROCESS.F := ${CPP} ${CPPFLAGS}
  FFLAGS := -g -NS2000 -qfixed=132
 endif
 # Additional flags for AIX:
@@ -258,17 +258,17 @@ endif
 # -P Preprocess but do not compile; output goes to .i file
 # Using -P causes additional warning messages about lm 
 # Not using -P causes *.o files to be created twice
-$(MY_DPN_DIR)/%.d : %.c
-	$(CPP) -M $(CPPFLAGS) $< ;perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' $*.u > $@ ; \
+${MY_DPN_DIR}/%.d : %.c
+	${CPP} -M ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' $*.u > $@ ; \
 	rm -f $*.i $*.o $*.u;
 endif
 # endif AIX
 
-ifeq ($(PVM_ARCH),ALPHA)
+ifeq (${PVM_ARCH},ALPHA)
 C++ := cxx
 CC := cc
 CPP := cpp
-CPPFLAGS := $(CPP_PTH) -I$(NETCDF_INC)
+CPPFLAGS := ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 FFLAGS := -r8 -i4 -c -omp -automatic
 FIXEDFLAGS := -extend_source -omp -automatic
@@ -281,26 +281,26 @@ endif
 LEX := flex
 LINT := lint
 YACC := bison
-ifeq ($(OPTS),O)
+ifeq (${OPTS},O)
  CFLAGS := -O2
  FFLAGS += -O3 -strict
 endif
-ifeq ($(OPTS),D)
+ifeq (${OPTS},D)
  CFLAGS := -g
  FFLAGS += -g
 endif
-$(MY_OBJ_DIR)/%.o : %.F90
-	$(FC) -c $(FREEFLAGS) $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
-$(MY_OBJ_DIR)/%.o : %.F
-	$(FC) -c $(FIXEDFLAGS) $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
+${MY_OBJ_DIR}/%.o : %.F90
+	${FC} -c $(FREEFLAGS) ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
+${MY_OBJ_DIR}/%.o : %.F
+	${FC} -c $(FIXEDFLAGS) ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 endif
 # endif ALPHA
 
-ifeq ($(PVM_ARCH),CRAY)
+ifeq (${PVM_ARCH},CRAY)
 C++ := g++
 CC := cc
 CPP := cpp
-CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -I$(NETCDF_INC)
+CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -I${NETCDF_INC}
 FC := f90
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -310,38 +310,38 @@ endif
 LEX := lex
 LINT := lint
 YACC := yacc
-ifeq ($(OPTS),O)
+ifeq (${OPTS},O)
  CFLAGS += -O
  FFLAGS = -N 132
 endif
-ifeq ($(OPTS),D)
+ifeq (${OPTS},D)
  CFLAGS += -g
  FFLAGS = -g -N 132
 endif
-ifeq ($(OPTS),X)
+ifeq (${OPTS},X)
  CFLAGS += -g -N 132
  FFLAGS = -g -N 132 -e i
 endif
 # 97/10/21 Added -P to suppress #line # directives on Fortran files
-$(MY_OBJ_DIR)/%.o : %.F
-	$(CPP) -P $(CPPFLAGS) $< > $(patsubst %.F,%.f,$(notdir $<))
-	$(FC) -c $(FFLAGS) $(patsubst %.F,%.f,$(notdir $<)) 
-	-mv -f $(notdir $@) $(MY_OBJ_DIR)
+${MY_OBJ_DIR}/%.o : %.F
+	${CPP} -P ${CPPFLAGS} $< > $(patsubst %.F,%.f,$(notdir $<))
+	${FC} -c ${FFLAGS} $(patsubst %.F,%.f,$(notdir $<)) 
+	-mv -f $(notdir $@) ${MY_OBJ_DIR}
 	rm -f $(patsubst %.F,%.f,$(notdir $<)) 
-$(MY_OBJ_DIR)/%.o : %.f
-	$(FC) -c $(FFLAGS) $<
-	mv -f $(notdir $@) $(MY_OBJ_DIR)
+${MY_OBJ_DIR}/%.o : %.f
+	${FC} -c ${FFLAGS} $<
+	mv -f $(notdir $@) ${MY_OBJ_DIR}
 endif
 # endif CRAY
 
 # Works on LINUX and LINUXALPHA
-ifneq (,$(findstring LINUX,$(PVM_ARCH)))
+ifneq (,$(findstring LINUX,${PVM_ARCH}))
 C++ := g++
 # 19980517: As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
 #CC := gcc -ansi
 CC := gcc
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -Di386 -I$(NETCDF_INC)
+CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -Di386 -I${NETCDF_INC}
 FC := g77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -351,57 +351,57 @@ endif
 LEX := flex
 LINT := lint
 YACC := bison
-ifeq ($(CC),gcc)
-ifeq ($(OPTS),O)
+ifeq (${CC},gcc)
+ifeq (${OPTS},O)
  CFLAGS += -O -Wall
 endif
-ifeq ($(OPTS),D)
+ifeq (${OPTS},D)
  CFLAGS += -g -Wall
 endif
-ifeq ($(OPTS),R)
+ifeq (${OPTS},R)
  CFLAGS += -Wall
 endif
-ifeq ($(OPTS),X)
+ifeq (${OPTS},X)
  CFLAGS += -g -O -Wall
 endif
- C++FLAGS := $(CFLAGS)
+ C++FLAGS := ${CFLAGS}
 endif
-ifeq ($(FC),pgf90)
-ifeq ($(OPTS),O)
+ifeq (${FC},pgf90)
+ifeq (${OPTS},O)
  FFLAGS := -fast -Mextend -Mnosecond_underscore -mp -byteswapio -Mrecursive -Mdalign
 endif
-ifeq ($(OPTS),D)
+ifeq (${OPTS},D)
  FFLAGS := -g -Mextend -Mnosecond_underscore -mp -byteswapio -Mrecursive -Mdalign
 endif
-ifeq ($(OPTS),R)
+ifeq (${OPTS},R)
  FFLAGS := -Mextend -Mnosecond_underscore -mp -byteswapio -Mrecursive -Mdalign
 endif
-ifeq ($(OPTS),X)
+ifeq (${OPTS},X)
  FFLAGS := -g -Mbounds -Mextend -Mnosecond_underscore -mp -byteswapio -Mrecursive -Mdalign
 endif
 endif
-ifeq ($(FC),g77)
-ifeq ($(OPTS),O)
+ifeq (${FC},g77)
+ifeq (${OPTS},O)
  FFLAGS := -O -ffixed-line-length-132 -fno-second-underscore
 endif
-ifeq ($(OPTS),D)
+ifeq (${OPTS},D)
  FFLAGS := -g -ffixed-line-length-132 -fno-second-underscore -fdebug-kludge
 endif
-ifeq ($(OPTS),R)
+ifeq (${OPTS},R)
  FFLAGS := -ffixed-line-length-132 -fno-second-underscore -fdebug-kludge
 endif
-ifeq ($(OPTS),X)
+ifeq (${OPTS},X)
  FFLAGS := -g -O -ffixed-line-length-132 -fno-second-underscore -fdebug-kludge -fbounds-check
 endif
 endif
 endif
 # endif LINUX
 
-ifeq ($(PVM_ARCH),RS6K)
+ifeq (${PVM_ARCH},RS6K)
 C++ := g++
 CC := gcc -ansi
 CPP := /lib/cpp -P
-CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -I$(NETCDF_INC)
+CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -I${NETCDF_INC}
 FC := xlf
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -411,101 +411,101 @@ endif
 LEX := lex
 LINT := lint
 YACC := yacc
-ifeq ($(OPTS),O)
+ifeq (${OPTS},O)
  CFLAGS += -O2
- CPP := $(CPP) $(CPPFLAGS)
- PREPROCESS.F := $(CPP) $(CPPFLAGS)
+ CPP := ${CPP} ${CPPFLAGS}
+ PREPROCESS.F := ${CPP} ${CPPFLAGS}
  FFLAGS := -O -NS2000 -qfixed=132
 endif
-ifeq ($(OPTS),D)
+ifeq (${OPTS},D)
  CFLAGS += -g
- CPP := $(CPP) $(CPPFLAGS)
- PREPROCESS.F := $(CPP) $(CPPFLAGS)
+ CPP := ${CPP} ${CPPFLAGS}
+ PREPROCESS.F := ${CPP} ${CPPFLAGS}
  FFLAGS := -g -NS2000 -qfixed=132
 endif
-$(MY_OBJ_DIR)/%.o : %.F
-	$(CPP) $(CPPFLAGS) $< $(MY_OBJ_DIR)/$(basename $<).f 
-	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $(MY_OBJ_DIR)/$(basename $<).f
-$(MY_OBJ_DIR)/%.o : %.f
-	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
+${MY_OBJ_DIR}/%.o : %.F
+	${CPP} ${CPPFLAGS} $< ${MY_OBJ_DIR}/$(basename $<).f 
+	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) ${MY_OBJ_DIR}/$(basename $<).f
+${MY_OBJ_DIR}/%.o : %.f
+	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 endif
 # endif RS6K
 
 # SGI6, SGI64, SGIMP64
-ifneq (,$(findstring SGI,$(PVM_ARCH)))
+ifneq (,$(findstring SGI,${PVM_ARCH}))
 C++ := CC -LANG:std
 CC := cc
 # 20000302: -w suppresses warnings which will swamp linker
 #C++ := g++ -w
 #CC := gcc
-CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -I$(NETCDF_INC)
+CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -I${NETCDF_INC}
 ifdef $(MIPSPRO_SGI)
 # SGIs like dataproc keep omp.h in special location determined by module MIPSpro
- CPPFLAGS := -I$(MIPSPRO_SGI)/usr/include $(CPPFLAGS)
+ CPPFLAGS := -I$(MIPSPRO_SGI)/usr/include ${CPPFLAGS}
 endif
 FC := f90 -cpp
 LD := ld
 LEX := flex
 LINT := lint
 YACC := bison
-ifeq ($(PVM_ARCH),SGI6)
+ifeq (${PVM_ARCH},SGI6)
 # SGI6
 GCC_ABI_FLG := -mabi=32
-GCC_LDFLAGS_SZ_SPC := $(GCC_ABI_FLG) -mips3 
+GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips3 
 SGI_ABI_FLG := -n32 -mips3
 # endif SGI6
 else
 # SGI64, SGIMP64
 GCC_ABI_FLG := -mabi=64
-GCC_LDFLAGS_SZ_SPC := $(GCC_ABI_FLG) -mips4 -L/usr/local/lib/mabi=64
+GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips4 -L/usr/local/lib/mabi=64
 SGI_ABI_FLG := -64 -mips4 -mp -mpio
 # endif SGI64, SGIMP64
 endif
-ifeq ($(CC),gcc)
+ifeq (${CC},gcc)
  LDFLAGS += $(GCC_LDFLAGS_SZ_SPC) $(TMP_LDFLAGS) $(TMP_LIBS) -lm
-ifeq ($(OPTS),O)
- CFLAGS += $(GCC_ABI_FLG) -O2 -Wall
+ifeq (${OPTS},O)
+ CFLAGS += ${GCC_ABI_FLG} -O2 -Wall
 endif
-ifeq ($(OPTS),R)
- CFLAGS += $(GCC_ABI_FLG) -Wall
+ifeq (${OPTS},R)
+ CFLAGS += ${GCC_ABI_FLG} -Wall
 endif
-ifeq ($(OPTS),D)
- CFLAGS += $(GCC_ABI_FLG) -g -Wall
+ifeq (${OPTS},D)
+ CFLAGS += ${GCC_ABI_FLG} -g -Wall
 endif
-ifeq ($(OPTS),X)
- CFLAGS += $(GCC_ABI_FLG) -g -O -Wall
+ifeq (${OPTS},X)
+ CFLAGS += ${GCC_ABI_FLG} -g -O -Wall
 endif
- C++FLAGS := $(CFLAGS)
+ C++FLAGS := ${CFLAGS}
 endif
 # endif CC=gcc
-ifeq ($(CC),cc)
- LDFLAGS += $(SGI_ABI_FLG) $(TMP_LDFLAGS) $(TMP_LIBS) -lm
-ifeq ($(OPTS),O)
- CFLAGS += $(SGI_ABI_FLG) -O2
+ifeq (${CC},cc)
+ LDFLAGS += ${SGI_ABI_FLG} $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+ifeq (${OPTS},O)
+ CFLAGS += ${SGI_ABI_FLG} -O2
 endif
-ifeq ($(OPTS),R)
- CFLAGS += $(SGI_ABI_FLG)
+ifeq (${OPTS},R)
+ CFLAGS += ${SGI_ABI_FLG}
 endif
-ifeq ($(OPTS),D)
- CFLAGS += $(SGI_ABI_FLG) -g
+ifeq (${OPTS},D)
+ CFLAGS += ${SGI_ABI_FLG} -g
 endif
-ifeq ($(OPTS),X)
- CFLAGS += $(SGI_ABI_FLG) -g -trapuv
+ifeq (${OPTS},X)
+ CFLAGS += ${SGI_ABI_FLG} -g -trapuv
 endif
 endif
 # endif CC=cc
 # Fortran flags
-ifeq ($(OPTS),O)
- FFLAGS := $(SGI_ABI_FLG) -O2 -extend_source
+ifeq (${OPTS},O)
+ FFLAGS := ${SGI_ABI_FLG} -O2 -extend_source
 endif
-ifeq ($(OPTS),R)
- FFLAGS := $(SGI_ABI_FLG) -extend_source
+ifeq (${OPTS},R)
+ FFLAGS := ${SGI_ABI_FLG} -extend_source
 endif
-ifeq ($(OPTS),D)
- FFLAGS := $(SGI_ABI_FLG) -g -extend_source
+ifeq (${OPTS},D)
+ FFLAGS := ${SGI_ABI_FLG} -g -extend_source
 endif
-ifeq ($(OPTS),X)
- FFLAGS := $(SGI_ABI_FLG) -g -extend_source -check_bounds -trapuv
+ifeq (${OPTS},X)
+ FFLAGS := ${SGI_ABI_FLG} -g -extend_source -check_bounds -trapuv
 endif
 # 1998/08/20: Using range checking results in unresolved symbol errors unless linking to this library
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
@@ -515,10 +515,10 @@ endif
 endif
 # endif SGI6, SGI64, SGIMP64
 
-ifeq ($(PVM_ARCH),SUN4)
+ifeq (${PVM_ARCH},SUN4)
 C++ := g++
 CC := acc
-CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -I$(NETCDF_INC)
+CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -I${NETCDF_INC}
 FC := f77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -529,21 +529,21 @@ LDFLAGS += -lresolv
 LEX := lex
 LINT := lint
 YACC := yacc
-ifeq ($(OPTS),O)
+ifeq (${OPTS},O)
  CFLAGS += -O2
  FFLAGS := -fast -e -Nl99
 endif
-ifeq ($(OPTS),D)
+ifeq (${OPTS},D)
  CFLAGS += -g
  FFLAGS := -g -e -Nl99
 endif
 endif
 # endif SUN4
 
-ifeq ($(PVM_ARCH),SUN4SOL2)
+ifeq (${PVM_ARCH},SUN4SOL2)
 C++ := g++
 CC := gcc -ansi
-CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -I$(NETCDF_INC)
+CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -I${NETCDF_INC}
 FC := f77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsocket -lnsl -lm
@@ -554,30 +554,30 @@ LDFLAGS += -lresolv
 LEX := lex
 LINT := lint
 YACC := yacc
-ifeq ($(OPTS),O)
+ifeq (${OPTS},O)
  CFLAGS += -O2
  FFLAGS := -O -e
 endif
-ifeq ($(OPTS),D)
+ifeq (${OPTS},D)
  CFLAGS += -g
  FFLAGS := -g -e
 endif
-ifeq ($(OPTS),X)
+ifeq (${OPTS},X)
  CFLAGS += -g 
  FFLAGS := -g -e
 # NB: 1998/06/01 -C (range-checking) is not supported by Sun f90
-ifeq ($(FC),f77)
- FFLAGS += $(FFLAGS) -C
+ifeq (${FC},f77)
+ FFLAGS += ${FFLAGS} -C
 endif
 endif
 endif
 # endif SUN4SOL2
 
-ifeq ($(PVM_ARCH),SUNMP)
+ifeq (${PVM_ARCH},SUNMP)
 C++ := g++
 #CC := gcc -ansi -pedantic
 CC := gcc 
-CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -I$(NETCDF_INC)
+CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -I${NETCDF_INC}
 FC := f77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsunmath -lthread -lsocket -lnsl -lm
@@ -588,30 +588,30 @@ LDFLAGS += -lresolv
 LEX := flex
 LINT := lint
 YACC := bison
-ifeq ($(OPTS),O)
+ifeq (${OPTS},O)
  CFLAGS += -O2
  FFLAGS := -fast -e
 endif
-ifeq ($(OPTS),D)
+ifeq (${OPTS},D)
  CFLAGS += -g
  FFLAGS := -g -e
 endif
-ifeq ($(OPTS),X)
+ifeq (${OPTS},X)
  CFLAGS += -g 
  FFLAGS := -g -e
 # NB: 1998/06/01 -C (range-checking) is not supported by Sun f90
-ifeq ($(FC),f77)
- FFLAGS += $(FFLAGS) -C
+ifeq (${FC},f77)
+ FFLAGS += ${FFLAGS} -C
 endif
 endif
 endif
 # endif SUNMP
 
-ifeq ($(PVM_ARCH),WIN32)
+ifeq (${PVM_ARCH},WIN32)
 C++ := g++
 CC := gcc -ansi
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := -D$(PVM_ARCH) -DNO_NETCDF_2 -Di386 -I$(NETCDF_INC)
+CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -Di386 -I${NETCDF_INC}
 FC := g77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -621,16 +621,16 @@ endif
 LEX := flex
 LINT := lint
 YACC := bison
-ifeq ($(OPTS),O)
+ifeq (${OPTS},O)
  CFLAGS += -O
 endif
-ifeq ($(OPTS),D)
+ifeq (${OPTS},D)
  CFLAGS += -g
 endif
-$(MY_OBJ_DIR)/%.o : %.F
-	$(FC) -c $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
-$(MY_OBJ_DIR)/%.o : %.f
-	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
+${MY_OBJ_DIR}/%.o : %.F
+	${FC} -c ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
+${MY_OBJ_DIR}/%.o : %.f
+	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 endif
 # endif WIN32
 
@@ -642,9 +642,9 @@ endif
 # Currently this is invoked by using 'make DODS=Y' on the command
 # NB: Yes, nc-dods, dap++ must be linked twice!
 ifeq ($(DODS),Y)
-ifneq ($(CC),g++)
+ifneq (${CC},g++)
 # -lstdc++ automatically linked by g++, must add by hand for others
- LDFLAGS := $(LDFLAGS) -lstdc++
+ LDFLAGS := ${LDFLAGS} -lstdc++
 endif
 endif
 # endif DODS
@@ -652,7 +652,7 @@ endif
 # Internationalize NCO with i18n features
 ifeq ($(I18N),Y)
  CPPFLAGS += -DI18N
-ifneq ($(null),$(findstring SGI,$(PVM_ARCH)))
+ifneq ($(null),$(findstring SGI,${PVM_ARCH}))
  LDFLAGS += -lintl
 endif
 endif
@@ -661,13 +661,13 @@ endif
 ifeq ($(HDF5),Y)
  CPPFLAGS += -DHDF5
 # No need to link to libnetcdf.a since libmfhdf.a has all netCDF3 calls
- LDFLAGS := $(filter-out -lnetcdf,$(LDFLAGS))
+ LDFLAGS := $(filter-out -lnetcdf,${LDFLAGS})
 endif
 # endif HDF5
 
 # Link to Electric Fence library, see man efence
-ifeq ($(PVM_ARCH),LINUX)
-ifneq (,$(findstring $(OPTS),DX))
+ifeq (${PVM_ARCH},LINUX)
+ifneq (,$(findstring ${OPTS},DX))
  LDFLAGS += -lefence
 endif
 endif
@@ -675,15 +675,15 @@ endif
 
 # Disable OpenMP on platforms that automatically support it
 ifeq ($(OMP),N)
-ifneq (,$(findstring SGI,$(PVM_ARCH)))
- CFLAGS := $(filter-out -mp -mpio,$(CFLAGS))
- LDFLAGS := $(filter-out -mp -mpio,$(LDFLAGS))
+ifneq (,$(findstring SGI,${PVM_ARCH}))
+ CFLAGS := $(filter-out -mp -mpio,${CFLAGS})
+ LDFLAGS := $(filter-out -mp -mpio,${LDFLAGS})
 endif # endif SGI
  CPPFLAGS += -U_OPENMP
 endif # endif OMP
 
 # Define any remaining variables
-libnco := $(MY_LIB_DIR)/libnco
+libnco := ${MY_LIB_DIR}/libnco
 
 # Default targets
 all: dir lib $(MDL_BIN_TRG) data
@@ -699,49 +699,49 @@ all: dir lib $(MDL_BIN_TRG) data
 dir: bin_dir obj_dir lib_dir
 bin_dir:
 # Compaq ALPHA complains about -install
-#	-install -d $(MY_BIN_DIR)
-	-mkdir -p $(MY_BIN_DIR)
+#	-install -d ${MY_BIN_DIR}
+	-mkdir -p ${MY_BIN_DIR}
 lib_dir:
-#	-install -d $(MY_BIN_DIR)
-	-mkdir -p $(MY_LIB_DIR)
+#	-install -d ${MY_BIN_DIR}
+	-mkdir -p ${MY_LIB_DIR}
 obj_dir:
-#	-install -d $(MY_BIN_DIR)
-	-mkdir -p $(MY_OBJ_DIR)
+#	-install -d ${MY_BIN_DIR}
+	-mkdir -p ${MY_OBJ_DIR}
 # Targets in bin
 .PHONY:  ncra ncatted ncks ncwa ncecat ncdiff ncflint ncrename
-ncra:   $(MY_BIN_DIR)/ncra
-$(MY_BIN_DIR)/ncra:	$(MY_OBJ_DIR)/ncra.o $(libnco).a
-	$(CC) -o $@ $< $(LDFLAGS)
+ncra:   ${MY_BIN_DIR}/ncra
+${MY_BIN_DIR}/ncra:	${MY_OBJ_DIR}/ncra.o $(libnco).a
+	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
-	cd $(MY_BIN_DIR); rm -f ncea; ln -f -s ncra ncea
-	cd $(MY_BIN_DIR); rm -f ncrcat; ln -f -s ncra ncrcat
-ncatted:   $(MY_BIN_DIR)/ncatted
-$(MY_BIN_DIR)/ncatted:	$(MY_OBJ_DIR)/ncatted.o $(libnco).a
-	$(CC) -o $@ $< $(LDFLAGS)
+	cd ${MY_BIN_DIR}; rm -f ncea; ln -f -s ncra ncea
+	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -f -s ncra ncrcat
+ncatted:   ${MY_BIN_DIR}/ncatted
+${MY_BIN_DIR}/ncatted:	${MY_OBJ_DIR}/ncatted.o $(libnco).a
+	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
-ncks:   $(MY_BIN_DIR)/ncks
-$(MY_BIN_DIR)/ncks:	$(MY_OBJ_DIR)/ncks.o $(libnco).a
-	$(CC) -o $@ $< $(LDFLAGS)
+ncks:   ${MY_BIN_DIR}/ncks
+${MY_BIN_DIR}/ncks:	${MY_OBJ_DIR}/ncks.o $(libnco).a
+	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
-ncwa:   $(MY_BIN_DIR)/ncwa
-$(MY_BIN_DIR)/ncwa:	$(MY_OBJ_DIR)/ncwa.o $(libnco).a
-	$(CC) -o $@ $< $(LDFLAGS)
+ncwa:   ${MY_BIN_DIR}/ncwa
+${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o $(libnco).a
+	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
-ncecat:   $(MY_BIN_DIR)/ncecat
-$(MY_BIN_DIR)/ncecat:	$(MY_OBJ_DIR)/ncecat.o $(libnco).a
-	$(CC) -o $@ $< $(LDFLAGS)
+ncecat:   ${MY_BIN_DIR}/ncecat
+${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o $(libnco).a
+	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
-ncdiff:   $(MY_BIN_DIR)/ncdiff
-$(MY_BIN_DIR)/ncdiff:	$(MY_OBJ_DIR)/ncdiff.o $(libnco).a
-	$(CC) -o $@ $< $(LDFLAGS)
+ncdiff:   ${MY_BIN_DIR}/ncdiff
+${MY_BIN_DIR}/ncdiff:	${MY_OBJ_DIR}/ncdiff.o $(libnco).a
+	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
-ncflint:   $(MY_BIN_DIR)/ncflint
-$(MY_BIN_DIR)/ncflint:	$(MY_OBJ_DIR)/ncflint.o $(libnco).a
-	$(CC) -o $@ $< $(LDFLAGS)
+ncflint:   ${MY_BIN_DIR}/ncflint
+${MY_BIN_DIR}/ncflint:	${MY_OBJ_DIR}/ncflint.o $(libnco).a
+	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
-ncrename:   $(MY_BIN_DIR)/ncrename
-$(MY_BIN_DIR)/ncrename:	$(MY_OBJ_DIR)/ncrename.o $(libnco).a
-	$(CC) -o $@ $< $(LDFLAGS)
+ncrename:   ${MY_BIN_DIR}/ncrename
+${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o $(libnco).a
+	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 bin: $(MDL_BIN_TRG)
 binclean: bin_cln
@@ -754,15 +754,15 @@ bld_cln:
 rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.0.0 rpm
 	cd $(DATA)/tmp; \
 	/bin/rm -fr $(DATA)/tmp/nco*; \
-	cp -r $(HOME)/nco nco-$(NCO_VRS); \
+	cp -r ${HOME}/nco nco-$(NCO_VRS); \
 	tar cvzf nco-$(NCO_VRS).tar.gz ./nco-$(NCO_VRS); \
 	mv $(DATA)/tmp/nco-$(NCO_VRS).tar.gz /usr/src/redhat/SOURCES; \
 	/bin/rm -f /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
-	ln -s $(HOME)/nco/bld/nco.spec /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
+	ln -s ${HOME}/nco/bld/nco.spec /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SPECS; \
 	rpm -ba nco-$(NCO_VRS).spec;
 rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.0.0 rpmnet
-	- if test -f /usr/src/redhat/SOURCES/nco-$(NCO_VRS).tar.gz; then printf "Using existing nco-$(NCO_VRS).tar.gz\n" ; else $(MY_BIN_DIR)/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-$(NCO_VRS).tar.gz; fi
+	- if test -f /usr/src/redhat/SOURCES/nco-$(NCO_VRS).tar.gz; then printf "Using existing nco-$(NCO_VRS).tar.gz\n" ; else ${MY_BIN_DIR}/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-$(NCO_VRS).tar.gz; fi
 	/bin/rm -f /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SOURCES; \
 	tar xvzf nco-$(NCO_VRS).tar.gz ./nco-$(NCO_VRS)/bld/nco.spec; \
@@ -786,7 +786,7 @@ dat_cln:
 	cd $(MY_DAT_DIR); rm -f foo*
 test:	tst
 tst:	$(MY_DAT_DIR)/in.nc
-	- if test -f $(MY_DAT_DIR)/nco_tst.nc; then printf "" ; else $(MY_BIN_DIR)/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l $(MY_DAT_DIR) nco_tst.nc; fi
+	- if test -f $(MY_DAT_DIR)/nco_tst.nc; then printf "" ; else ${MY_BIN_DIR}/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l $(MY_DAT_DIR) nco_tst.nc; fi
 	cd $(MY_BLD_DIR); nco_tst.sh
 testclean: tst_cln
 tst_cln:
@@ -822,15 +822,15 @@ inc_cln:
 library: lib
 lib: inc $(libnco).a
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
-$(libnco).a: $(libnco).a($(MY_OBJ_DIR)/nc_utl.o) \
-	$(libnco).a($(MY_OBJ_DIR)/nc_fortran.o) \
-	$(libnco).a($(MY_OBJ_DIR)/cal_util.o) \
-	$(libnco).a($(MY_OBJ_DIR)/csz.o)
+$(libnco).a: $(libnco).a(${MY_OBJ_DIR}/nc_utl.o) \
+	$(libnco).a(${MY_OBJ_DIR}/nc_fortran.o) \
+	$(libnco).a(${MY_OBJ_DIR}/cal_util.o) \
+	$(libnco).a(${MY_OBJ_DIR}/csz.o)
 else
-$(libnco).a: $(libnco).a($(MY_OBJ_DIR)/nc_utl.o) \
-	$(libnco).a($(MY_OBJ_DIR)/nco_netcdf.o) \
-	$(libnco).a($(MY_OBJ_DIR)/csz.o) \
-	$(libnco).a($(MY_OBJ_DIR)/pck.o)
+$(libnco).a: $(libnco).a(${MY_OBJ_DIR}/nc_utl.o) \
+	$(libnco).a(${MY_OBJ_DIR}/nco_netcdf.o) \
+	$(libnco).a(${MY_OBJ_DIR}/csz.o) \
+	$(libnco).a(${MY_OBJ_DIR}/pck.o)
 endif
 libclean: lib_cln
 lib_cln:
@@ -853,18 +853,18 @@ cln: lib_cln dpn_cln obj_cln tst_cln
 debug: dbg
 dbg:
 	@printf "C++ = $(C++)\n"
-	@printf "C++FLAGS = $(C++FLAGS)\n"
-	@printf "CC = $(CC)\n"
-	@printf "CFLAGS = $(CFLAGS)\n"
-	@printf "CPP = $(CPP)\n"
-	@printf "CPPFLAGS = $(CPPFLAGS)\n"
-	@printf "CPP_PTH = $(CPP_PTH)\n"
+	@printf "C++FLAGS = ${C++FLAGS}\n"
+	@printf "CC = ${CC}\n"
+	@printf "CFLAGS = ${CFLAGS}\n"
+	@printf "CPP = ${CPP}\n"
+	@printf "CPPFLAGS = ${CPPFLAGS}\n"
+	@printf "CPP_PTH = ${CPP_PTH}\n"
 	@printf "DODS = $(DODS)\n"
 	@printf "DODS_ROOT = $(DODS_ROOT)\n"
-	@printf "FC = $(FC)\n"
-	@printf "FFLAGS = $(FFLAGS)\n"
+	@printf "FC = ${FC}\n"
+	@printf "FFLAGS = ${FFLAGS}\n"
 	@printf "HDF5 = $(HDF5)\n"
-	@printf "LDFLAGS = $(LDFLAGS)\n"
+	@printf "LDFLAGS = ${LDFLAGS}\n"
 	@printf "LEX = $(LEX)\n"
 	@printf "MDL_DPN = $(MDL_DPN)\n"
 	@printf "MDL_OBJ = $(MDL_OBJ)\n"
@@ -872,10 +872,10 @@ dbg:
 	@printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
 	@printf "MDL_SRC = $(MDL_SRC)\n"
 	@printf "NCO_VRS = $(NCO_VRS)\n"
-	@printf "NETCDF_INC = $(NETCDF_INC)\n"
-	@printf "NETCDF_LIB = $(NETCDF_LIB)\n"
+	@printf "NETCDF_INC = ${NETCDF_INC}\n"
+	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
 	@printf "OMP = $(OMP)\n"
-	@printf "PVM_ARCH = $(PVM_ARCH)\n"
+	@printf "PVM_ARCH = ${PVM_ARCH}\n"
 	@printf "SRC_LST = $(SRC_LST)\n"
 	@printf "USE_FORTRAN_ARITHMETIC = $(USE_FORTRAN_ARITHMETIC)\n"
 	@printf "VPATH = $(VPATH)\n"
@@ -911,27 +911,27 @@ endif
 	mv lex.yy.c $(basename $<)_lex.c
 
 # For some reason, ncap_lex.c is not remade when I expect it to be, so I explicitly remove the object file every time
-ncap:	$(MY_OBJ_DIR)/ncap.tab.o ncap.tab.h $(MY_OBJ_DIR)/ncap_lex.o $(MY_OBJ_DIR)/ncap.o $(MY_OBJ_DIR)/ncap_utl.o $(libnco).a
+ncap:	${MY_OBJ_DIR}/ncap.tab.o ncap.tab.h ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap.o ${MY_OBJ_DIR}/ncap_utl.o $(libnco).a
 #        $(YACC) --name-prefix=nc_
-ifeq ($(PVM_ARCH),LINUX)
-	$(CC) $(CFLAGS) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(MY_OBJ_DIR)/ncap_utl.o $(MY_OBJ_DIR)/$@.tab.o $(MY_OBJ_DIR)/$@_lex.o $(LDFLAGS)
+ifeq (${PVM_ARCH},LINUX)
+	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@.tab.o ${MY_OBJ_DIR}/$@_lex.o ${LDFLAGS}
 else	
-	$(CC) $(CFLAGS) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(MY_OBJ_DIR)/ncap_utl.o $(MY_OBJ_DIR)/getopt.o $(MY_OBJ_DIR)/getopt1.o $(MY_OBJ_DIR)/$@.tab.o $(MY_OBJ_DIR)/$@_lex.o -ll -ly $(LDFLAGS)
+	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/getopt.o ${MY_OBJ_DIR}/getopt1.o ${MY_OBJ_DIR}/$@.tab.o ${MY_OBJ_DIR}/$@_lex.o -ll -ly ${LDFLAGS}
 endif
-	chmod 755 $(MY_BIN_DIR)/$@
-	/bin/rm -f $(MDL_NCAP) $(MY_OBJ_DIR)/$@_lex.o
+	chmod 755 ${MY_BIN_DIR}/$@
+	/bin/rm -f $(MDL_NCAP) ${MY_OBJ_DIR}/$@_lex.o
 
 GENNET_SRC := gennet.f
-GENNET_OBJ := $(MY_OBJ_DIR)/gennet.o
+GENNET_OBJ := ${MY_OBJ_DIR}/gennet.o
 gennet:	$(GENNET_OBJ)
-	$(F77) $(CPPFLAGS) -o $(MY_BIN_DIR)/gennet $(GENNET_OBJ) $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/gennet
+	$(F77) ${CPPFLAGS} -o ${MY_BIN_DIR}/gennet $(GENNET_OBJ) ${LDFLAGS} 
+	chmod 755 ${MY_BIN_DIR}/gennet
 
 READNET_SRC := readnet.f
-READNET_OBJ := $(MY_OBJ_DIR)/readnet.o
+READNET_OBJ := ${MY_OBJ_DIR}/readnet.o
 readnet:	$(READNET_OBJ)
-	$(F77) $(CPPFLAGS) -o $(MY_BIN_DIR)/readnet $(READNET_OBJ) $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/readnet
+	$(F77) ${CPPFLAGS} -o ${MY_BIN_DIR}/readnet $(READNET_OBJ) ${LDFLAGS} 
+	chmod 755 ${MY_BIN_DIR}/readnet
 
 # Create dependency files only if they will not be immediately deleted
 INCLUDE_DPN := TRUE
