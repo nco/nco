@@ -1,12 +1,12 @@
 \input texinfo @c -*-texinfo-*- 
 @c 19980817: TeX-based systems (texi2dvi, texi2dvi --pdf) require texinfo.tex
-@c Hypertext systems (texi2html, makeinfo) do not require texinfo.tex
+@c Hyper-text systems (texi2html, makeinfo) do not require texinfo.tex
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.196 2004-01-01 20:41:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.197 2004-01-06 18:54:19 zender Exp $
 
-Purpose: TeXinfo documentation for NCO suite
+Purpose: TeXInfo documentation for NCO suite
 
 Copyright (C) 1995--2004 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
@@ -31,7 +31,7 @@ Multiple files:
 M-x texinfo-multiple-files-update
 
 Usage: 
-cd ~/nco/doc;texi2dvi nco.texi; makeinfo --html --ifinfo --no-split --output=nco.html nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
+cd ~/nco/doc;texi2dvi nco.texi; makeinfo --html --ifinfo --no-split --output=nco.html nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml --no-split --output=nco.xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
 texi2html -monolithic -verbose nco.texi
 texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
 texi2dvi --output=nco.dvi nco.texi 
@@ -92,11 +92,11 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 2.8.4
-@set doc-edition 2.8.4
+@set nco-edition 2.8.5
+@set doc-edition 2.8.5
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 1 January 2004
+@set update-date 6 January 2004
 @set update-month January 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -1530,6 +1530,7 @@ feature is automatic and cannot be controlled by the user.
 
 @menu
 * Internationalization::        
+* OpenMP Multi-threading::      
 * Command line options::        
 * Specifying input files::      
 * Remote storage::              
@@ -1555,7 +1556,7 @@ feature is automatic and cannot be controlled by the user.
 @html
 <a name="i18n"></a> <!-- http://nco.sf.net/nco.html#i18n -->
 @end html
-@node Internationalization, Command line options, Common features, Common features
+@node Internationalization, OpenMP Multi-threading, Common features, Common features
 @section Internationalization
 @cindex Internationalization
 @cindex I18N
@@ -1573,7 +1574,7 @@ We hope to produce foreign language string catalogues in 2004.
 @html
 <a name="omp"></a> <!-- http://nco.sf.net/nco.html#omp -->
 @end html
-@node OpenMP Multi-threading
+@node OpenMP Multi-threading, Command line options, Internationalization, Common features
 @section OpenMP Multi-threading
 @cindex OpenMP
 @cindex multiple threads
@@ -1592,7 +1593,7 @@ We hope to implement robust threading in 2004.
 @html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
 @end html
-@node Command line options, Specifying input files, Internationalization, Common features
+@node Command line options, Specifying input files, OpenMP Multi-threading, Common features
 @section Command line options
 @cindex command line options
 @cartouche
@@ -2659,10 +2660,11 @@ is a negative sign).
 @acronym{NCO} assumes that a non-leading dash in a limit string
 indicates that a UDUnits date conversion is requested.
 
-@cindex God's units, i.e., MKS
-netCDF variables should always be stored with MKS units, so that
-application programs may assume MKS dimensions apply to all input
-variables. 
+@cindex MKS units
+@cindex God
+netCDF variables should always be stored with MKS (i.e., God's) units,
+so that application programs may assume MKS dimensions apply to all
+input variables. 
 The UDUnits feature is intended to alleviate some of the @acronym{NCO}
 user's pain when handling MKS units.
 It connects users who think in human-friendly units (e.g.,
@@ -3024,20 +3026,28 @@ masks and normalization.
 Averaging is the default, and will be described first so the
 terminology for the other operations is familiar.
 
+@ifhtml
+@cartouche
 @html
 <p><b>Note for HTML users</b>: 
 <br>The definition of mathematical operations involving rank reduction
 (e.g., averaging) relies heavily on mathematical expressions which
 cannot easily be represented in HTML.  
-<b>See the <a href="./nco.pdf">printed manual</a> for complete documentation.</b>
+<b>See the <a href="./nco.pdf">printed manual</a> for much more detailed
+and complete documentation of this subject.</b>
 @end html
+@end cartouche
+@end ifhtml
+@ifnothtml
 @ifinfo
 @emph{Note for Info users}: 
 The definition of mathematical operations involving rank reduction
 (e.g., averaging) relies heavily on mathematical expressions which
 cannot be easily represented in Info.
-@emph{See the @uref{./nco.pdf,printed manual} for complete documentation.}
+@emph{See the @uref{./nco.pdf,printed manual} for much more detailed and
+complete documentation of this subject.}
 @end ifinfo
+@end ifnothtml
 
 @tex
 The masked, weighted average of a variable $\xxx$ can be generally
@@ -3309,9 +3319,28 @@ Availability: @command{ncap}, @command{ncbo}, @command{ncea},
 Short options: None@*
 @end cartouche
 @cindex promotion
-Type conversion (often called @dfn{promotion}) refers to the casting of
-one fundamental data type to another, e.g., converting @code{NC_SHORT}
-(two bytes) to @code{NC_DOUBLE} (eight bytes). 
+@cindex demotion
+@cindex automatic type conversion
+@cindex manual type conversion
+Type conversion (often called @dfn{promotion} or @dfn{demotion}) refers
+to the casting of one fundamental data type to another, e.g., converting
+@code{NC_SHORT} (two bytes) to @code{NC_DOUBLE} (eight bytes). 
+Type conversion is automatic when the language carries out this
+promotion according to an internal set of rules without explicit user
+intervention. 
+In contrast, manual type conversion refers to explicit user commands to
+change the type of a variable or attribute.
+Most type conversion happens automatically, yet there are situations in
+which manual type conversion is advantageous.
+
+@menu
+* Automatic type conversion::   
+* Manual type conversion::      
+@end menu
+
+@node Automatic type conversion, Manual type conversion, Type conversion, Type conversion
+@subsection Automatic type conversion
+
 As a general rule, automatic type conversions should be avoided for at
 least two reasons. 
 First, type conversions are expensive since they require creating
@@ -3321,13 +3350,13 @@ Second, the dataset's creator probably had a good reason
 for storing data as, say, @code{NC_FLOAT} rather than @code{NC_DOUBLE}. 
 In a scientific framework there is no reason to store data with more
 precision than the observations were made.  
-Thus @acronym{NCO} tries to avoid performing type conversions when
-performing arithmetic. 
+Thus @acronym{NCO} tries to avoid performing automatic type conversions
+when performing arithmetic. 
 
 @cindex C language
 @cindex Fortran
-Type conversion during arithmetic in the @w{languages C} and Fortran is  
-performed only when necessary.
+Automatic type conversion during arithmetic in the @w{languages C} and
+Fortran is performed only when necessary.
 All operands in an operation are converted to the most precise type
 before the operation takes place.
 However, following this parsimonious conversion rule dogmatically
@@ -3389,9 +3418,8 @@ and finally writes the result to disk.
 The result written to disk may not be what you expect, because of
 incommensurate ranges represented by different types, and because of
 (lack of) rounding.
-First, continuing the example given above, the average (e.g., 
-@samp{-y avg}) of @code{17000s} and @code{17000s} is written to disk as
-@code{17000s}. 
+First, continuing the above example, the average (e.g., @samp{-y avg})
+of @code{17000s} and @code{17000s} is written to disk as @code{17000s}. 
 The type conversion feature of @acronym{NCO} makes this possible since
 the arithmetic and intermediate values are stored as @code{NC_DOUBLE}s,
 i.e., @code{34000.0d} and only the final result must be represented
@@ -3403,6 +3431,7 @@ Similarly, the total (e.g., @samp{-y ttl}) of @code{17000s} and
 the final result (the true total) of @math{34000} is outside the range
 of type @code{NC_SHORT}.  
 
+@cindex @code{floor}
 Type conversions use the @code{floor} function to convert floating point
 number to integers.
 Type conversions do not attempt to round floating point numbers to the
@@ -3415,8 +3444,8 @@ This result is converted to @code{NC_SHORT} and stored on disk as
 @footnote{
 @cindex C language
 The actual type conversions are handled by intrinsic C-language type
-conversion, so the @code{floor()} function is not explicitly called, but
-the results are the same as if it were.}.
+conversion, so the @code{floor()} function is not explicitly called, 
+though the results would be the same if it were.}.
 Thus no "rounding up" is performed. 
 The type conversion rules @w{of C} can be stated as follows:
 If @var{n} is an integer then any floating point value @var{x}
@@ -3436,6 +3465,19 @@ $n \le x < n+1$
 @clear flg
 @end ifset
 will have the value @var{n} when converted to an integer.
+
+@node Manual type conversion,  , Automatic type conversion, Type conversion
+@subsection Manual type conversion
+@cindex @command{ncap}
+@command{ncap} provides intrinsic functions for performing manual type
+conversions.
+This, for example, converts variable @code{tpt} to external type
+@code{NC_SHORT} (a C-type @code{short}), and variable @code{prs} to
+external type @code{NC_DOUBLE} (a C-type @code{double}). 
+@example
+ncap -O -s "tpt=short(tpt);prs=double(prs);" in.nc out.nc
+@end example
+@xref{ncap netCDF Arithmetic Processor}, for more details.
 
 @html
 <a name="ovr"></a> <!-- http://nco.sf.net/nco.html#ovr -->
@@ -3967,8 +4009,11 @@ of the type intended for the unpacked data, e.g., @code{float} or
 @code{double}. 
 @end table
 @unnumberedsubsec Type Conversion Functions
+These intrinsic functions allow @command{ncap} to convert variables on
+disk among the available types supported by netCDF.
 @cindex type conversion
 @cindex promotion
+@cindex demotion
 @cindex @code{byte(x)}
 @cindex @code{char(x)}
 @cindex @code{double(x)}
@@ -3995,6 +4040,7 @@ Converts @var{x} to external type @code{NC_INT}, a C-type @code{int}.
 @dfn{Convert to @code{NC_SHORT}}
 Converts @var{x} to external type @code{NC_SHORT}, a C-type @code{short}.
 @end table
+@xref{Type conversion}, for more details on automatic and manual type conversion.
 
 @html
 <a name="mth"></a> <!-- http://nco.sf.net/nco.html#mth -->
@@ -6565,9 +6611,9 @@ contains more information on how to contribute.
 @cindex Charlie Zender
 @item Charlie Zender
 Concept, design and implementation of @acronym{NCO} from 1995--2000.
-Since then, mainly packing, @acronym{NCO} library redesign, @command{ncap} 
-features, project coordination, code maintenance and porting,
-documentation, and @command{ncbo}. 
+Since then mainly autotools, bug-squashing, documentation, packing,
+@acronym{NCO} library redesign, @command{ncap} features, @command{ncbo},  
+project coordination, and releases.
 @cindex Henry Butowsky
 @item Henry Butowsky
 Non-linear operations and @code{min()}, @code{max()}, @code{total()}
@@ -6586,7 +6632,7 @@ UDUnits support.
 Debianization.
 @cindex Brian Mays
 @item Brian Mays
-Packaging for Debian GNU/Linux, nroff man pages.
+Packaging for Debian GNU/Linux, @command{nroff} man pages.
 @cindex George Shapovalov
 @item George Shapovalov
 Packaging for Gentoo GNU/Linux.
@@ -6595,7 +6641,7 @@ Packaging for Gentoo GNU/Linux.
 Memory management.
 @cindex Len Makin
 @item Len Makin
-NECSX architecture support.
+NEC SX architecture support.
 @cindex Jim Edwards
 @item Jim Edwards
 AIX architecture support.
@@ -6604,7 +6650,8 @@ AIX architecture support.
 Compatibility with large PIDs.
 @cindex Keith Lindsay
 @cindex Martin Dix
-@item Keith Lindsay, Martin Dix
+@cindex Mike Page
+@item Martin Dix, Keith Lindsay, Mike Page
 Excellent bug reports.
 @end table
 
