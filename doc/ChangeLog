@@ -1,3 +1,6 @@
+2005-03-04  Harry Mangalam  <hjm@tacgi.com>
+   * RE-Fixed configure, configure.in to find test for and add ssl to LIBS
+
 2005-03-02  Harry Mangalam  <hjm@tacgi.com>
    * RE-Fixed configure, configure.in to find nc-dods lib
      AND also to treat UDUnits correctly if it's built and used from 
