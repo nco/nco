@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.60 2000-08-31 17:58:20 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.61 2000-09-22 23:43:31 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -33,7 +33,7 @@ scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.s
 
 <td align="right" valign="top">
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
-[<a href="http://www.unidata.ucar.edu/packages/netcdf">DODS</a>] 
+[<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a>] 
 [<a href="http://www.cgd.ucar.edu/csm/support">CCSM Support Network</a>]
 </td></tr></table>
 
@@ -43,8 +43,9 @@ scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.s
 
 <p><ul>
 <li><a href="#Definition">What is NCO?</a></li>
-<li><a href="#News">NCO News</a></li>
 <li><a href="#Contribute">How to Contribute to NCO</a></li>
+<li><a href="#Version">Version summary</a></li>
+<li><a href="#News">NCO News</a></li>
 <li><a href="#Download">Download NCO software</a></li>
 <li><a href="#RTFM">NCO User's Guide</a></li>
 <li><a href="#README/ChangeLog/TODO">README/ChangeLog/TODO</a></li>
@@ -97,6 +98,36 @@ Each of the following operators is thoroughly described in the
 <li><b>ncwa</b></td> netCDF Weighted Averager</li>
 </ul>
 <p><hr width="100%"></p>
+
+<dt><a name="Contribute"></a></dt>
+<h2>How to Contribute to NCO</h2>
+<p>In March, 2000 NCO became an Open Source project hosted by
+SourceForge.net in order to facilitate collaboration and code
+contribution by a wide variety of people. 
+There is a <a href="./TODO">TODO list</a> about 100 items long! 
+No matter what your programming background there is a task you can
+help with. 
+From improving this cheesy webpage, to adding documentation, 
+to helping design the new features and interfaces for future NCO
+capability, we need your help! 
+The <a href="http://sourceforge.net/projects/nco">NCO project
+homepage</a> contains mailing lists, discussion forums, and
+instructions for helping the NCO project.
+<hr></p>
+
+<dt><a name="Version"></a></dt>
+<h2>Version Summary</h2>
+<ul>
+<li>1.1.47: Improvements to <tt>ncra</tt> and <tt>ncrcat</tt> which
+allow lazier specifications of input files</li>
+<li>1.1.48: Bugfix to <tt>ncdiff</tt></li>
+<li>1.2: Added non-linear operations <tt>ncra/ncea</tt> and <tt>ncwa</tt>:
+min,max,total,rms,rmssdn,sqrt. Added DODS compliance.</li>
+<li>1.2.1: Added type-conversion of integers to floating point before
+arithmetic, fixed broken <tt>-v</tt> option</li>
+<li>1.2.2: Allow weights with <tt>ncwa</tt> and min/max/ttl operations</li>
+</ul>
+<hr></p>
 
 <dt><a name="News"></a></dt>
 <h2>NCO News</h2>
@@ -200,22 +231,6 @@ email when there are any postings.
 
 <p>
 <a href="./nco_news.shtml"> Older NCO news</a>  
-<hr></p>
-
-<dt><a name="Contribute"></a></dt>
-<h2>How to Contribute to NCO</h2>
-<p>In March, 2000 NCO became an Open Source project hosted by
-SourceForge.net in order to facilitate collaboration and code
-contribution by a wide variety of people. 
-There is a <a href="./TODO">TODO list</a> about 100 items long! 
-No matter what your programming background there is a task you can
-help with. 
-From improving this cheesy webpage, to adding documentation, 
-to helping design the new features and interfaces for future NCO
-capability, we need your help! 
-The <a href="http://sourceforge.net/projects/nco">NCO project
-homepage</a> contains mailing lists, discussion forums, and
-instructions for helping the NCO project.
 <hr></p>
 
 <dt><a name="Download"></a></dt>
