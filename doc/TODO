@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.282 2004-01-20 23:03:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.283 2004-01-21 02:10:17 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -247,7 +247,8 @@ ncra -O -v uprmvprm foo.nc out.nc # Time-mean covariance
 This breaks mie!
 308. Add shared library flag to nco_ctl.c flags
 309. Free memory allocated in nco_fl_utl.c: fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
-310. 
+310. Add ENABLE_DEBUG_CUSTOM, ENABLE_OPTIMIZE_CUSTOM, ... to bld/Makefile
+311. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,3 +1,7 @@
+2004-01-20  Charlie Zender  <zender@uci.edu>
+
+	* Implement DODS 3.4 switches as default in bld/Makefile
+
 2004-01-19  Charlie Zender  <zender@uci.edu>
 
 	* Use valgrind 2.1 to identify and fix small leaks: 

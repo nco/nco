@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.235 2004-01-19 17:29:32 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.236 2004-01-21 02:10:17 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -149,8 +149,11 @@ ifndef DODS_ROOT
 # Directory containing libdap++.a, libnc-dods.a
  DODS_ROOT := /usr/local/DODS
 endif
- NC_LDFLAGS := -L${DODS_ROOT}/lib -L${DODS_ROOT}/packages-3.1.1/lib
- NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
+ NC_LDFLAGS := -L${DODS_ROOT}/lib
+# DODS 3.3-
+# NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
+# DODS 3.4+-
+ NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lxml2 -lcurl -lpthread -ldl -lz
 # Get netCDF from DODS version
  NETCDF_INC=${DODS_ROOT}/include
  NETCDF_LIB=${DODS_ROOT}/lib
@@ -349,6 +352,9 @@ endif # !LINUX
 ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
  CPP_TKN_OS += -DNEED_GETOPT_LONG
 endif # !(AIX || SGI)
+ifeq (${DODS},Y)
+ CPP_TKN_OS += -DENABLE_DODS
+endif # !DODS
 ifeq (${UDUNITS},Y)
  CPP_TKN_OS += -DHAVE_LIBUDUNITS -DHAVE_UDUNITS_H
 endif # !UDUNITS
