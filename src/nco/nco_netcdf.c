@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.41 2004-07-29 20:37:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.42 2004-08-04 21:50:59 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -40,11 +40,16 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
 (const int rcd, /* I [enm] netCDF error code */ 
  const char * const msg) /* I [sng] Supplemental error message */
 {
-  /* Purpose: Print netCDF error message, routine name, then exit
-     Routine is called by all wrappers when a fatal error is encountered
+  /* Purpose: Print netCDF error message, routine name, then exit(EXIT_FAILURE) or abort()
+     Routine is called by all wrappers when fatal error is encountered
+     Goal is to have all NCO error exits to go through nco_err_exit() 
+     This provides uniform handling of exit() status and abort() option
+     Successful NCO exits should call nco_exit() not nco_err_exit()
+
      msg variable allows wrapper to pass more descriptive information than 
      is contained in the netCDF-defined error message.
-     Use msg to print, e.g., the name of variable which caused the error */
+     Use msg to print, e.g., the name of variable or routine which caused error */
+
   const char fnc_nm[]="nco_err_exit()";
 #ifdef NCO_ABORT_ON_ERROR
   const char exit_nm[]="abort()";
@@ -58,21 +63,22 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
 
   (void)fprintf(stdout,"ERROR: program exiting through %s which will now call %s\n",fnc_nm,exit_nm);
 
-  if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"%s: ERROR %s\n%s\n",fnc_nm,msg,nc_strerror(rcd));
+  /* On occasion, routine is called with non-netCDF errors, e.g., by nco_dfl_case_nc_type_err()
+     non-netCDF errors call nco_err_exit() with rcd == 0 
+     Only attempt to print netCDF error messages when rcd != 0 */
+  if(rcd != NC_NOERR) (void)fprintf(stderr,"%s: ERROR %s\n%s\n",fnc_nm,msg,nc_strerror(rcd));
 #ifdef NCO_ABORT_ON_ERROR
-    /* abort() produces core dump and traceback information
-       Most debuggers (e.g., gdb) use this information to print the calling tree that produced the abort()
-       This makes debugging much easier!
-       Hence we recommend developers compile NCO with -DNCO_ABORT_ON_ERROR */
-    abort();
+  /* abort() produces core dump and traceback information
+     Most debuggers (e.g., gdb) use this information to print the calling tree that produced the abort()
+     This makes debugging much easier!
+     Hence we recommend developers compile NCO with -DNCO_ABORT_ON_ERROR */
+  abort();
 #else /* !NCO_ABORT_ON_ERROR */
-    /* exit() produces no core dump or useful debugger information
-       It is slightly more friendly to the end-user since it does not leave core files laying around
-       Hence we recommend installing NCO without -DNCO_ABORT_ON_ERROR for end users */
-    exit(EXIT_FAILURE);
+  /* exit() produces no core dump or useful debugger information
+     It is slightly more friendly to the end-user since it does not leave core files laying around
+     Hence we recommend installing NCO without -DNCO_ABORT_ON_ERROR for end users */
+  exit(EXIT_FAILURE);
 #endif /* !NCO_ABORT_ON_ERROR */
-  } /* endif error */
 } /* end nco_err_exit() */
 
 size_t /* O [B] Native type size */
@@ -222,8 +228,7 @@ nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal switch(
      of code since this function is used in many many switch() statements. */
   const char fnc_nm[]="nco_dfl_case_nc_type_err()";
   (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal.\nNot handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype definition is braindead in netCDF2.x). Exiting...\n",fnc_nm);
-  abort();
-  exit(EXIT_FAILURE);
+  nco_err_exit(0,fnc_nm);
 } /* end nco_dfl_case_nc_type_err() */
 
 void 
@@ -236,8 +241,7 @@ nco_dfl_case_prg_id_err(void) /* [fnc] Print error and exit for illegal switch(p
      of code since this function is used in many many switch() statements. */
   const char fnc_nm[]="nco_dfl_case_prg_id_err()";
   (void)fprintf(stdout,"%s: ERROR switch(prg_id) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(prg_id) statements are fully enumerated. Exiting...\n",fnc_nm);
-  abort();
-  exit(EXIT_FAILURE);
+  nco_err_exit(0,fnc_nm);
 } /* end nco_dfl_case_prg_id_err() */
 
 /* Begin file-level routines */
@@ -245,19 +249,20 @@ int
 nco_create(const char * const fl_nm,const int cmode,int * const nc_id)
 {
   /* Purpose: Wrapper for nc_create() */
+  const char fnc_nm[]="nco_create()";
   int rcd=NC_NOERR;
   int fl_in_typ=nco_fl_typ_nc; /* [enm] File format */
   if(fl_in_typ == nco_fl_typ_nc){
     rcd=nc_create(fl_nm,cmode,nc_id);
-    if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_create");
+    if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
 #ifdef HDF5
   }else if(fl_in_typ == nco_fl_typ_hdf5){
     hid_t hdf_out; /* [hnd] HDF file handle */
     hdf_out=H5Fcreate(fl_nm,H5F_ACC_TRUNC,H5P_DEFAULT,H5P_DEFAULT);
 #endif /* HDF5 */
   }else{
-    (void)fprintf(stderr,"nco_create() reports unknown fl_typ = %d\n",fl_in_typ);
-    exit(EXIT_FAILURE);
+    (void)fprintf(stderr,"ERROR: %s reports unknown fl_typ = %d\n",fnc_nm,fl_in_typ);
+    nco_err_exit(rcd,fnc_nm);
   } /* endelse */
   return rcd;
 } /* end nco_create */
@@ -266,19 +271,20 @@ int
 nco_open(const char * const fl_nm,const int mode,int * const nc_id)
 {
   /* Purpose: Wrapper for nc_open() */
+  const char fnc_nm[]="nco_open()";
   int rcd=NC_NOERR;
   int fl_in_typ=nco_fl_typ_nc; /* [enm] File format */
   if(fl_in_typ == nco_fl_typ_nc){
     rcd=nc_open(fl_nm,mode,nc_id);
-    if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_open");
+    if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
 #ifdef HDF5
   }else if(fl_in_typ == nco_fl_typ_hdf5){
     hid_t hdf_out; /* [hnd] HDF file handle */
     hdf_out=H5Fopen(fl_nm,H5F_ACC_RDWR,H5P_DEFAULT);
 #endif /* HDF5 */
   }else{
-    (void)fprintf(stderr,"nco_open() reports unknown fl_typ = %d\n",fl_in_typ);
-    exit(EXIT_FAILURE);
+    (void)fprintf(stderr,"ERROR: %s reports unknown fl_typ = %d\n",fnc_nm,fl_in_typ);
+    nco_err_exit(rcd,fnc_nm);
   } /* endelse */
   return rcd;
 } /* end nco_open */
@@ -337,19 +343,20 @@ int
 nco_close(const int nc_id)
 {
   /* Purpose: Wrapper for nc_close() */
+  const char fnc_nm[]="nco_close()";
   int rcd;
   int fl_in_typ=nco_fl_typ_nc; /* [enm] File format */
   if(fl_in_typ == nco_fl_typ_nc){
     rcd=nc_close(nc_id);
-    if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_close");
+    if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
 #ifdef HDF5
   }else if(fl_in_typ == nco_fl_typ_hdf5){
     herr_t rcd_hdf; /* [enm] Return success code */
     hdf_out=H5Fclose(nc_id);
 #endif /* HDF5 */
   }else{
-    (void)fprintf(stderr,"Unknown fl_typ = %d in nco_close()\n",fl_in_typ);
-    exit(EXIT_FAILURE);
+    (void)fprintf(stderr,"ERROR: %s reports unknown fl_typ = %d\n",fnc_nm,fl_in_typ);
+    nco_err_exit(rcd,fnc_nm);
   } /* endelse */
   return rcd;
 } /* end nco_close */
@@ -420,13 +427,14 @@ int
 nco_inq_dimid(const int nc_id,const char * const dmn_nm,int * const dmn_id)
 {
   /* Purpose: Wrapper for nc_inq_dimid() */
+  const char fnc_nm[]="nco_inq_dimid()";
   int rcd;
   rcd=nc_inq_dimid(nc_id,dmn_nm,dmn_id);
   if(rcd == NC_EBADDIM){
-    (void)fprintf(stdout,"ERROR nco_inq_dimid() reports requested dimension \"%s\" is not in input file\n",dmn_nm);
-    exit(EXIT_FAILURE);
+    (void)fprintf(stdout,"ERROR: %s reports requested dimension \"%s\" is not in input file\n",fnc_nm,dmn_nm);
+    nco_err_exit(rcd,fnc_nm);
   } /* endif */
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimid");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_inq_dimid */
 
@@ -518,10 +526,11 @@ int
 nco_inq_varid(const int nc_id,const char * const var_nm,int * const var_id)
 {
   /* Purpose: Wrapper for nc_inq_varid() */
+  const char fnc_nm[]="nco_inq_varid()";
   int rcd;
   rcd=nc_inq_varid(nc_id,var_nm,var_id);
-  if(rcd == NC_ENOTVAR) (void)fprintf(stdout,"ERROR nco_inq_varid() reports requested variable \"%s\" is not in input file\n",var_nm);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varid");
+  if(rcd == NC_ENOTVAR) (void)fprintf(stdout,"ERROR: %s reports requested variable \"%s\" is not in input file\n",fnc_nm,var_nm);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,fnc_nm);
   return rcd;
 } /* end nco_inq_varid */
 
@@ -724,11 +733,12 @@ int
 nco_inq_att(const int nc_id,const int var_id,const char * const att_nm,nc_type * const att_typ,long * const att_sz)
 {
   /* Purpose: Wrapper for nc_inq_att() */
+  const char fnc_nm[]="nco_inq_att()";
   int rcd;
   rcd=nc_inq_att(nc_id,var_id,att_nm,att_typ,(size_t *)att_sz);
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"var_id: %d, att_nm: %s\n",var_id,att_nm);
-    nco_err_exit(rcd,"nco_inq_att");
+    (void)fprintf(stderr,"ERROR: %s unable to inquire attribute var_id: %d, att_nm: %s\n",fnc_nm,var_id,att_nm);
+    nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
 } /* end nco_inq_att */
@@ -737,12 +747,13 @@ int
 nco_inq_att_flg(const int nc_id,const int var_id,const char * const att_nm,nc_type * const att_typ,long * const att_sz) 
 {
   /* Purpose: Wrapper for nc_inq_att() */
+  const char fnc_nm[]="nco_inq_att_flg()";
   int rcd;
   rcd=nc_inq_att(nc_id,var_id,att_nm,att_typ,(size_t *)att_sz);
   if(rcd == NC_ENOTATT) return rcd;
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"var_id: %d, att_nm: %s\n",var_id,att_nm);
-    nco_err_exit(rcd,"nco_inq_att_flg");
+    (void)fprintf(stderr,"ERROR: %s unable to inquire attribute var_id: %d, att_nm: %s\n",fnc_nm,var_id,att_nm);
+    nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
 } /* end nco_inq_att_flg */
@@ -761,12 +772,13 @@ int
 nco_inq_attid_flg(const int nc_id,const int var_id,const char * const att_nm,int * const att_id) 
 {
   /* Purpose: Wrapper for nc_inq_attid() */
+  const char fnc_nm[]="nco_inq_attid_flg()";
   int rcd;
   rcd=nc_inq_attid(nc_id,var_id,att_nm,att_id);
   if(rcd == NC_ENOTATT) return rcd;
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"var_id: %d, att_nm: %s\n",var_id,att_nm);
-    nco_err_exit(rcd,"nco_inq_attid_flg");
+    (void)fprintf(stderr,"ERROR: %s unable to inquire attribute var_id: %d, att_nm: %s\n",fnc_nm,var_id,att_nm);
+    nco_err_exit(rcd,fnc_nm);
   } /* endif */
   return rcd;
 } /* end nco_inq_attid_flg */

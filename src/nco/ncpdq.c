@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.13 2004-08-03 17:06:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.14 2004-08-04 21:50:59 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -98,8 +98,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.13 2004-08-03 17:06:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.13 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.14 2004-08-04 21:50:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.14 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:p:Rrt:v:x-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -379,20 +379,20 @@ main(int argc,char **argv)
     /* fxm: dmn_rdr is already known, is nco_prs_rdr_lst() obsolete? */
     if(False) dmn_rdr=nco_dmn_avg_rdr_prp(dmn_rdr,dmn_rdr_lst_in,dmn_rdr_nbr);
 
-    /* Create structured list of re-ordering dimension names and IDs */
-    dmn_rdr_lst=nco_dmn_lst_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr);
-
     /* Create reversed dimension list */
     dmn_rvr_rdr=(bool *)nco_malloc(dmn_rdr_nbr*sizeof(bool));
     for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
-      if(dmn_rdr_lst[idx_rdr].nm[0] == '-'){
+      if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
 	dmn_rvr_rdr[idx_rdr]=True;
 	/* Move name pointer one past negative sign (lose one byte) */
-	dmn_rdr_lst[idx_rdr].nm++;
+	dmn_rdr_lst_in[idx_rdr]++;
       }else{
 	dmn_rvr_rdr[idx_rdr]=False;
       } /* end else */
     } /* end loop over idx_rdr */
+
+    /* Create structured list of re-ordering dimension names and IDs */
+    dmn_rdr_lst=nco_dmn_lst_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr);
 
     /* Form list of re-ordering dimensions from extracted input dimensions */
     dmn_rdr=(dmn_sct **)nco_malloc(dmn_rdr_nbr*sizeof(dmn_sct *));

@@ -1,5 +1,7 @@
 2004-08-04  Charlie Zender  <zender@uci.edu>
 
+	* Fix ncpdq dimension reversal list processing
+
 	* Make all error exits go through nco_err_exit() so that error
 	exits uniformly call exit(EXIT_FAILURE) or abort()
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.47 2004-08-04 19:43:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.48 2004-08-04 21:50:59 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -852,7 +852,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       } /* end else */
       (void)nco_def_var(out_id,var[idx]->nm,typ_out,dmn_nbr,dmn_id_vec,&var[idx]->id);
       
-      if(dbg_lvl_get() == 3 && prg_id != ncwa){
+      if(dbg_lvl_get() > 3 && prg_id != ncwa){
 	/* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
 	   contains _wrong name_ when variables will be averaged. */
 	(void)fprintf(stdout,"%s: DEBUG %s defined variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
