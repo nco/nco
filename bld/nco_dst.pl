@@ -1,24 +1,24 @@
 #!/contrib/bin/perl
 				
-my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.21 1999-05-13 03:24:43 zender Exp $';
+my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.22 1999-07-03 19:30:23 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
 # Usage:
 # Export tagged, public versions
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_33
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_33
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_33
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_33
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_33
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_33
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_33
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_33
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_33
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_33
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_33
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_33
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_33
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_33
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_33
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_33
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_33
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_33
 
 # Export daily snapshot
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=1 --cln --nst
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=1 --cln --nst
 
 use strict; # Protect all namespaces
 use File::Basename; # Parses filenames
@@ -52,9 +52,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $RCS_Date='$Date: 1999-05-13 03:24:43 $';
-my $RCS_Id='$Id: nco_dst.pl,v 1.21 1999-05-13 03:24:43 zender Exp $';
-my $RCS_Revision='$Revision: 1.21 $';
+my $RCS_Date='$Date: 1999-07-03 19:30:23 $';
+my $RCS_Id='$Id: nco_dst.pl,v 1.22 1999-07-03 19:30:23 zender Exp $';
+my $RCS_Revision='$Revision: 1.22 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -64,7 +64,7 @@ my $nco_sng='nco';
 my $bld=$False; # Option bld; Whether to rebuild netCDF distribution
 my $nst_all=$False; # Option nst_all; Whether to install version on all machines
 my $acd_cnt=$False; # Option acd_cnt; Whether to install version in acd contrib
-my $acd_prs=$False; # Option acd_prs; Whether to install version in acd personal
+my $acd_prs=$True; # Option acd_prs; Whether to install version in acd personal
 my $dat_cnt=$False; # Option dat_cnt; Whether to install version in dataproc contrib
 my $wnt_cnt=$False; # Option wnt_cnt; Whether to install version in winterpark contrib
 my $ute_prs=$False; # Option ute_prs; Whether to install version in ute personal
@@ -222,6 +222,16 @@ if($bld){
 } # endif bld
 
 if($acd_prs){
+     $rmt_mch='gss1.acd.ucar.edu';
+     print STDOUT "\n$prg_nm: Updating private NCO on $rmt_mch...\n";
+     &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco;cvs update\"");
+     &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco/bld;make\"");
+# Unfortunately, sudo does not work at all with rsh
+#    &cmd_prc("rsh $rmt_mch \"sudo cp /l9/zender/bin/AIX/nc* /usr/local/bin\"");
+     print STDOUT "$prg_nm: Done updating private NCO binaries on $rmt_mch\n\n";
+} # endif acd_prs
+
+if($acd_cnt){
     $rmt_mch='garcia.acd.ucar.edu';
     print STDOUT "\n$prg_nm: Updating private NCO on $rmt_mch...\n";
     &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco;/local/bin/cvs update\"");
@@ -229,16 +239,6 @@ if($acd_prs){
 # Unfortunately, sudo does not work at all with rsh
 #    &cmd_prc("rsh $rmt_mch \"sudo cp /a1/zender/bin/ALPHA/nc* /usr/local/bin\"");
     print STDOUT "$prg_nm: Done updating private NCO binaries on $rmt_mch\n\n";
-} # endif acd_prs
-
-if($acd_cnt){
-#     $rmt_mch='gss1.acd.ucar.edu';
-#     print STDOUT "\n$prg_nm: Updating private NCO on $rmt_mch...\n";
-#     &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco;cvs update\"");
-#     &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco/bld;make\"");
-# # Unfortunately, sudo does not work at all with rsh
-# #    &cmd_prc("rsh $rmt_mch \"sudo cp /l9/zender/bin/AIX/nc* /usr/local/bin\"");
-#     print STDOUT "$prg_nm: Done updating private NCO binaries on $rmt_mch\n\n";
 } # endif acd_cnt
 
 if($cgd_cnt){
