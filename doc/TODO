@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.215 2003-05-06 17:50:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.216 2003-05-21 22:45:15 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -204,7 +204,7 @@ Command executes but in.hdf is full of screwy values
 232. Warn when arithmetic operators encounter packed variables?
 233. Makefile.old rule for make tst appears broken for long FTP rule
 237. Break down nco.texi into bite-size chunks, e.g., one file per section
-238. Replace y=(typ *)malloc(nbr*sizeof(typ)) with y=(typ *)malloc(nbr*sizeof(*y))?
+238. Replace y=(typ *)nco_malloc(nbr*sizeof(typ)) with y=(typ *)nco_malloc(nbr*sizeof(*y))?
 239. Create one global compatibility file (nco_xpf.[ch]?) activated by HAVE_ or NEED_ actions so do not have multiple platform dependent #includes as is case now with HAVE_STRCASECMP, HAVE_STRDUP requiring nco_sng_utl.h
 241. Add run-time switch which requests that output be missing_value where ANY of the input fields are missing_value. 
 244. Get builds working on testdrive.hp.com
@@ -220,6 +220,7 @@ ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 256. Turn udunits into .deb
 257. Put hybrid_sigma_pressure etc. definitions into in.cdl
 258. Develop syntax/procedure for specifying lists of hyperslabs for single pass, low memory consumption MSA jobs like Martin Schultz's in Discussion forum on 20030506
+259. Variadic function extension to nco_malloc() to support printing debuggin messages
 ************************************************************************
 End NCO Wish list
 ************************************************************************

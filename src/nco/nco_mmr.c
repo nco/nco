@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.6 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.7 2003-05-21 22:45:18 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -47,7 +47,7 @@ nco_malloc /* [fnc] Wrapper for malloc() */
 (const size_t sz) /* I [nbr] Number of bytes to allocate */
 {
   /* Purpose: Custom wrapper for malloc()
-     Routine prints error when malloc() returns a NULL pointer 
+     Routine prints error and calls exit() when malloc() returns a NULL pointer 
      Routine does not call malloc() when sz == 0 */
   
   void *ptr; /* [ptr] Pointer to new buffer */
@@ -66,6 +66,38 @@ nco_malloc /* [fnc] Wrapper for malloc() */
   } /* endif */
   return ptr; /* [ptr] Pointer to new buffer */
 } /* nco_malloc() */
+
+void * /* O [ptr] Pointer to allocated memory */
+nco_malloc_flg /* [fnc] Wrapper for malloc(), but more forgiving */
+(const size_t sz) /* I [nbr] Number of bytes to allocate */
+{
+  /* Purpose: Custom wrapper for malloc() that allows ENOMEM errors
+     Routine should be used when calling program wants to provide additional failure
+     diagnostics unavailable to malloc(), e.g., variable and function name.
+     nco_malloc() should be used in most cases, with nco_malloc_flg() for special uses
+     Routine prints error and exits when malloc() returns a NULL pointer, except that
+     Control is handed back to calling routine for further processing when error is ENOMEM
+     Routine does not call malloc() when sz == 0 */
+  extern int errno; /* [enm] Error code in errno.h */
+
+  void *ptr; /* [ptr] Pointer to new buffer */
+  
+  /* malloc(0) is ANSI-legal, albeit unnecessary
+     NCO sometimes employs this degenerate case behavior of malloc() to simplify code
+     Some debugging tools like Electric Fence consider any NULL returned by malloc() to be an error
+     So circumvent malloc() calls when sz == 0 */
+  if(sz == 0) return NULL;
+  
+  ptr=malloc(sz); /* [ptr] Pointer to new buffer */
+  if(ptr == NULL){
+    (void)fprintf(stdout,"%s: WARNING nco_malloc_flg() unable to allocate %li bytes\n",prg_nm_get(),(long)sz);
+    (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",prg_nm_get(),strerror(errno));
+    if(errno == ENOMEM) return; /* Unlike nco_malloc(), allow simple OOM errors */
+    else (void)fprintf(stdout,"%s: ERROR is not ENOMEM, exiting...\n",prg_nm_get());
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+  return ptr; /* [ptr] Pointer to new buffer */
+} /* nco_malloc_flg() */
 
 void * /* O [ptr] Pointer to re-allocated memory */
 nco_realloc /* [fnc] Wrapper for realloc() */

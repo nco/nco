@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.102 2003-05-07 01:09:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.103 2003-05-21 22:45:18 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.102 2003-05-07 01:09:55 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.102 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.103 2003-05-21 22:45:18 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.103 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -632,12 +632,12 @@ main(int argc,char **argv)
       
       /* Allocate and, if necesssary, initialize accumulation space for all processed variables */
       var_prc_out[idx]->sz=var_prc[idx]->sz;
-      if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)malloc(var_prc_out[idx]->sz*sizeof(long))) == NULL){
+      if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){
 	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
 	nco_exit(EXIT_FAILURE); 
       } /* end if */
       (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
-      if((var_prc_out[idx]->val.vp=(void *)malloc(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
+      if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
 	(void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
 	nco_exit(EXIT_FAILURE); 
       } /* end if */

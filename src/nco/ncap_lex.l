@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.9 2003-02-25 21:58:04 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.10 2003-05-21 22:45:18 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -617,8 +617,8 @@ M_PI {return NAMED_CONSTANT;}
   } /* end loop over dim */
   
   /* Allocate space for variable values 
-     fxm: more efficient and safer to use calloc() and not fill with values? */
-  if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type))) == NULL){
+     fxm: more efficient and safer to use nco_calloc() and not fill with values? */
+  if((var->val.vp=(void *)nco_malloc_flg(var->sz*nco_typ_lng(var->type))) == NULL){
     (void)fprintf(stderr,"%s: ERROR Unable to malloc() %ld*%zu bytes for var_LHS() in lexer\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
     nco_exit(EXIT_FAILURE); 
   } /* end if */

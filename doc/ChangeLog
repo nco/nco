@@ -1,3 +1,9 @@
+2003-05-21  Charlie Zender  <zender@uci.edu>
+
+	* Replaced malloc() with nco_malloc_flg() in about 10 locations
+	where malloc() ENOMEM errors are handled directly by the calling
+	code for additional diagnostics.
+
 2003-05-06  Charlie Zender  <zender@uci.edu>
 
 	* Move RPM-wishlist off high-priority list, add restrictive MSA

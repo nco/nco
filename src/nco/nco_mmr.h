@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.5 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.6 2003-05-21 22:45:18 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -13,8 +13,10 @@
 #define NCO_MMR_H
 
 /* Standard header files */
+#include <errno.h> /* system/library error diagnostics, errno */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
+#include <string.h> /* strcmp. . . */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -39,6 +41,10 @@ nco_free /* [fnc] Wrapper for free() */
 
 void * /* O [ptr] Pointer to allocated memory */
 nco_malloc /* [fnc] Wrapper for malloc() */
+(const size_t size); /* I [nbr] Number of bytes to allocate */
+
+void * /* O [ptr] Pointer to allocated memory */
+nco_malloc_flg /* [fnc] Wrapper for malloc(), but more forgiving */
 (const size_t size); /* I [nbr] Number of bytes to allocate */
 
 void * /* O [ptr] Pointer to re-allocated memory */

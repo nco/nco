@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.20 2003-02-25 21:58:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.21 2003-05-21 22:45:18 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -98,7 +98,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     var->srt=dmn_srt;
       
     /* Place nco_var_get() code inline since var struct is not truly complete */
-    if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type))) == NULL){
+    if((var->val.vp=(void *)nco_malloc_flg(var->sz*nco_typ_lng(var->type))) == NULL){
       (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes in nco_aed_prc()\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
       nco_exit(EXIT_FAILURE); 
     } /* end if */

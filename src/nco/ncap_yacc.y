@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.6 2002-12-30 02:56:14 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.7 2003-05-21 22:45:18 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -651,7 +651,7 @@ nco_var_free_wrp /* [fnc] Safely free variable */
 nodeType * /* O [unn] Syntax tree node */
 opr_ctl /* [fnc] Operation controller function Nie02 opr() */
 (int opr_tkn, /* I [enm] Operator token */
- int arg_nbr, /* I [nbr] Number of arguments */
+ int arg_nbr, /* I [nbr] Number of optional arguments to malloc() wrapper */
  ...) /* I [llp] Ellipsis defined in stdarg.h */
 {
   /* Purpose: Create and return syntax tree node */

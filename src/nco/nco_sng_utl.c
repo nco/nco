@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.10 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_sng_utl.c,v 1.11 2003-05-21 22:45:18 zender Exp $ */
 
 /* Purpose: String utilities */
 
@@ -34,8 +34,9 @@ strdup /* [fnc] Duplicate string */
   /* Purpose: Provide strdup() for broken systems 
      Input string must be NUL-terminated */
   int sng_lng=strlen(sng_in)+1;
-  /* Use normal malloc() not nco_malloc() since strdup() is system function */
-  char *sng_out=(char *)malloc(sng_lng*sizeof(char));
+  /* Use nco_malloc() even though strdup() is system function 
+     This ensures all NCO code goes through nco_malloc()  */
+  char *sng_out=(char *)nco_malloc(sng_lng*sizeof(char));
   if(sng_out) strcpy(sng_out,sng_in);
   return sng_out;
 } /* end strdup() */
