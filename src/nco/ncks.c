@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.113 2005-01-07 23:54:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.114 2005-01-10 04:22:20 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -81,6 +81,7 @@ main(int argc,char **argv)
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool NCO_BNR_WRT=False; /* [flg] Write binary file */
+  bool PRN_QUIET=False; /* [flg] Turn off all printing to screen */
   bool PRN_VAR_DATA=False; /* [flg] Print variable data */
   bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
   bool PRN_GLB_METADATA=False; /* [flg] Print global metadata */
@@ -88,7 +89,7 @@ main(int argc,char **argv)
   bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
   bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
   bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
-  bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option q */
+  bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
@@ -107,9 +108,9 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.113 2005-01-07 23:54:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.113 $";
-  const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qrRs:uv:xZ-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.114 2005-01-10 04:22:20 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.114 $";
+  const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qQrRs:uv:xZ-:";
 
   extern char *optarg;
   extern int optind;
@@ -263,7 +264,10 @@ main(int argc,char **argv)
     case 'p': /* Common file path */
       fl_pth=optarg;
       break;
-    case 'q': /* Turn off printing of dimension indices and coordinate values */
+    case 'q': /* [flg] Turn off all printing to screen */
+      PRN_QUIET=True; /* [flg] Turn off all printing to screen */
+      break;
+    case 'Q': /* Turn off printing of dimension indices and coordinate values */
       PRN_DMN_IDX_CRD_VAL=!PRN_DMN_IDX_CRD_VAL;
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
@@ -412,6 +416,9 @@ main(int argc,char **argv)
     if(PRN_VAR_METADATA_TGL) PRN_VAR_METADATA=True; else PRN_VAR_METADATA=False;
     if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=!PRN_VAR_METADATA;
   } /* endelse */
+
+  /* PRN_QUIET is catch-all which turns off all printing to screen */
+  if(PRN_QUIET) PRN_VAR_DATA=PRN_VAR_METADATA=PRN_GLB_METADATA=False;
 
   if(NCO_BNR_WRT && fl_out == NULL){
     /* Native binary files depend on writing netCDF file to enter generic I/O logic */

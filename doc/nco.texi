@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.284 2004-12-01 02:19:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.285 2005-01-10 04:22:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -99,10 +99,10 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @c Define edition, date, ...
 @set nco-edition 2.9.9
 @set doc-edition 2.9.9
-@set copyright-years 1995--2004
-@set update-year 2004
-@set update-date 16 October 2004
-@set update-month October 2004
+@set copyright-years 1995--2005
+@set update-year 2005
+@set update-date 9 January 2005
+@set update-month January 2005
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -6249,7 +6249,7 @@ SYNTAX
 ncks [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]]
 [-F] [-H] [-h] [-l @var{path}] [-M] [-m] [-O] [-o @var{output-file}] 
-[-p @var{path}] [-q] [-R] [-r] [-s @var{format}] [-u] 
+[-p @var{path}] [-Q] [-q] [-R] [-r] [-s @var{format}] [-u] 
 [-v @var{var}[,@dots{}]] [-x] [-Z] @var{input-file} [[@var{output-file}]]
 @end example
 
@@ -6501,11 +6501,17 @@ specified.
 @cindex @code{--quiet}
 @cindex quiet
 @item -q 
+Turn off all printing to screen.
+This overrides the setting of all print-related switches, equivalent to
+@kbd{-H -M -m} when in single-file printing mode. 
+
+@cindex @code{-Q}
+@item -Q 
 Toggle printing of dimension indices and coordinate values when printing
 arrays. 
-The name of each variable will appear flush left in the output.
-This is useful when trying to locate specific variables when displaying
-many variables with different dimensions.
+Each variable's name appears flush left in the output.
+This helps locate specific variables in lists with many variables and 
+different dimensions. 
 Also @samp{--quiet}.
 
 @cindex @code{-s}
