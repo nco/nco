@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.36 1999-10-04 17:28:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.37 1999-10-15 17:54:39 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -964,7 +964,12 @@ mss_val_get(int nc_id,var_sct *var)
    int mss_val_get(): O flag whether variable has missing value on output or not
  */ 
 {
-  /* Routine to update the number of attributes and the missing_value attribute for the variable */
+  /* Routine to update the number of attributes and the missing_value attribute for the variable.
+     No matter what the type of missing_value is as stored on disk, this routine
+     ensures that the copy in mss_val in the var_sct is stored in the type as
+     the host variable.
+     This machine does not all the output missing_value to have more than one element
+  */
 
   /* NB: has_mss_val is defined typed as int not bool because it is often sent to Fortran routines */ 
 
@@ -1015,7 +1020,7 @@ mss_val_get(int nc_id,var_sct *var)
       } /* end if */ 
     } /* end if */ 
     
-    /* Convert NC_CHAR to the type of missing_value */ 
+    /* Ensure mss_val in memory is stored as same type as variable */ 
     var->mss_val.vp=(void *)malloc(nctypelen(var->type));
     (void)val_conform_type(att_typ,mss_tmp,var->type,var->mss_val);
 
@@ -2544,6 +2549,8 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
      type_in to type_out. The last-referenced state of both value pointers is
      assumed to be .vp, and the val_out union is returned in that state. */
 
+  /* It is assumed that val_out points to enough space (one element of type type_out) to hold the output */
+
   /* Typecast the pointer to the values before access */ 
   (void)cast_void_nctype(type_in,&val_in);
   (void)cast_void_nctype(type_out,&val_out);
@@ -3599,15 +3606,41 @@ mss_val_mk(nc_type type)
 } /* end mss_val_mk() */ 
   
 void
+mss_val_cp(var_sct *var1,var_sct *var2)
+/* 
+  var_sct *var1: I variable structure with template missing value to copy
+  var_sct *var2: I/O variable structure with missing value to fill in/overwrite
+  mss_val_cp(): 
+ */ 
+{
+  /* Routine to copy the missing value from var1 to var2
+     On exit, var2 contains has_mss_val, and mss_val identical to var1
+     The type of mss_val in var2 will agree with the type of var2
+     This maintains the assumed consistency between type of variable and
+     type of mss_val in all var_sct's
+   */
+
+  if(!var1->has_mss_val){
+    var2->has_mss_val=False;
+    if(var2->mss_val.vp != NULL) free(var2->mss_val.vp);
+  }else{ /* endif no mss_val in var1 */
+    var2->mss_val.vp=(void *)realloc(var2->mss_val.vp,nctypelen(var2->type));
+    (void)val_conform_type(var1->type,var1->mss_val,var2->type,var2->mss_val);
+    var2->has_mss_val=True;
+  } /* endif var1 has mss_val */
+
+} /* end mss_val_cp() */ 
+  
+void
 var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_type,ptr_unn op2,ptr_unn op3)
 /* 
-  nc_type type: I netCDF type of the operand
-  long sz: I size (in elements) of the operand
-  int has_mss_val: I flag for missing values
+  nc_type type: I netCDF type of operand op3
+  long sz: I size (in elements) of operand op3
+  int has_mss_val: I flag for missing values (basically assumed to be true)
   ptr_unn mss_val: I value of missing value
-  double op1: I value of the mask field corresponding to input to be processed
+  double op1: I Target value against which mask field will be compared (i.e., argument of -M)
   int op_type: I type of relationship to test for between op2 and op1
-  ptr_unn op2: I values of the mask field
+  ptr_unn op2: I Value of the mask field
   ptr_unn op3: I/O values of second operand on input, the masked values on output
  */ 
 {
@@ -3621,9 +3654,14 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
   /* Typecast the pointer to the values before access */ 
   (void)cast_void_nctype(type,&op2);
   (void)cast_void_nctype(type,&op3);
-  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  if(has_mss_val){
+    (void)cast_void_nctype(type,&mss_val);
+  }else{
+    (void)fprintf(stdout,"%s: ERROR has_mss_val is inconsistent with purpose of var_ask(), i.e., has_mss_val is not True\n",prg_nm_get());
+    exit(EXIT_FAILURE);
+  } /* end else */
 
-  /* NB: the explicit coercion when comparing op2 to op1 is necessary */ 
+  /* NB: Explicit coercion when comparing op2 to op1 is necessary */ 
   switch(type){
   case NC_FLOAT:
     switch(op_type){
@@ -3687,7 +3725,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     break;
   } /* end switch */ 
 
-  /* NB: it is not neccessary to un-typecast the pointers to the values after access 
+  /* It is not neccessary to un-typecast the pointers to the values after access 
      because we have only operated on local copies of them. */ 
 
 } /* end var_mask() */ 
