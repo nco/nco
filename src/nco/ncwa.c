@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.24 1999-10-18 05:07:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.25 1999-10-18 06:02:00 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -73,8 +73,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.24 1999-10-18 05:07:49 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.24 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.25 1999-10-18 06:02:00 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.25 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -398,7 +398,7 @@ main(int argc,char **argv)
   
   /* Open output file */ 
   fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
-  if(dbg_lvl > 4) (void)fprintf(stderr,"Output file ID = %d\n",out_id);
+  if(dbg_lvl > 4) (void)fprintf(stderr,"Input, output file IDs = %d, %d\n",in_id,out_id);
 
   /* Copy all global attributes */ 
   (void)att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
