@@ -1,5 +1,12 @@
 2005-01-09  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco_c++-0_1_8 mie c++ nco/src/nco_c++
+	Changes since nco_c++-0_1_7: default to gcc/g++ 3.4, netCDF 3.6
+
+	* Sundry tweaks to fix NCO, mie, c++ code to all work with gcc/g++
+	3.4 and netCDF 3.6 and netCDF 2.9.9+ and AMD64. Everything appears
+	to work again with these new defaults on i686, Opteron, and AIX.
+
 	* Added redundant prototypes of nco_inq_varid() to two overloaded
 	nco_get_att() functions in nco_att.hh in order to satisfy new,
 	more finicky g++-3.4 complaints about declarations of
@@ -13,7 +20,7 @@
 2004-09-20  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco_c++-0_1_7 mie c++ nco/src/nco_c++
-	Changes since nco_c++-0_1_7: nco_put_vara_crd() interface, compiler tweaks
+	Changes since nco_c++-0_1_6: nco_put_vara_crd() interface, compiler tweaks
 
 2004-09-17  Charlie Zender  <zender@uci.edu>
 
