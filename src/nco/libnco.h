@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.21 2002-05-08 08:00:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.22 2002-09-09 07:08:34 zender Exp $ */
 
 /* Purpose: Prototypes, typedefs, and global variables for libcsm_c++ */
 
@@ -39,6 +39,7 @@
 #include "nco_prn.h" /* Printing variables, attributes, metadata */
 #include "nco_rec_var.h" /* Record variable utilities */
 #include "nco_rth_utl.h" /* Arithmetic controls and utilities */
+#include "nco_rth_flt.h" /* Float-precision arithmetic */
 #include "nco_scl_utl.h" /* Scalar utilities */
 #include "nco_scm.h" /* Software configuration management */
 #include "nco_sng_utl.h" /* String utilities */
