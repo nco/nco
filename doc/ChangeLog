@@ -1,7 +1,11 @@
-2004-09-04  Charlie Zender  <zender@uci.edu>
+2004-09-05  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_9_9
 	Changes since nco-2_9_8: 1. ncbo threading 2. ncpdq -P packing
+
+	* 
+
+2004-09-04  Charlie Zender  <zender@uci.edu>
 
 	* Do not attempt unpacking unless variable already packed
 

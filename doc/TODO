@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.394 2004-09-05 06:37:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.395 2004-09-05 20:02:19 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -265,7 +265,11 @@ nco429. Implement ncunpack with nco_pck_typ_get()
 nco430. Implement ncpdq -U
 nco431. Implement ncpdq -P optional options
 nco433. ncpdq: Use gotos to reduce co-repeats in switch statements
-nco434. 
+nco434. ncpdq: add packing tests to nco_tst.pl
+nco435. ncpdq: bug in packing variables with only add_offset
+ncpdq -O -P all_new -v upk ~/nco/data/in.nc ~/nco/data/foo.nc
+ncpdq -O -P upk -v upk ~/nco/data/foo.nc ~/nco/data/foo2.nc
+nco436. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
