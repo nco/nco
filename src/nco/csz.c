@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.6 1998-08-19 05:04:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.7 1998-08-19 16:21:12 zender Exp $ */
 
 /* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -756,9 +756,11 @@ cvs_vrs_prs()
   char *cvs_pch_vrs_sng=NULL;
   char *cvs_vrs_sng=NULL;
   char *dlr_ptr=NULL;
+  char *nco_sng_ptr=NULL;
   char *usc_1_ptr=NULL;
   char *usc_2_ptr=NULL;
   char cvs_Name[]="$Name: not supported by cvs2svn $"; 
+  /*  char cvs_Name[]="$Name: not supported by cvs2svn $"; */ /* For testing porpoises */ 
   char nco_sng[]="nco"; 
 
   int cvs_nm_sng_len;
@@ -774,9 +776,9 @@ cvs_vrs_prs()
 
   /* Is cvs_Name keyword expanded? */ 
   dlr_ptr=strstr(cvs_Name," $");
-  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports dlr_ptr == NULL\n",prg_nm_get());
+  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports dlr_ptr == NULL\n",prg_nm_get());
   cvs_nm_ptr=strstr(cvs_Name,"$Name: ");
-  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports cvs_nm_ptr == NULL\n",prg_nm_get());
+  if(cvs_nm_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports cvs_nm_ptr == NULL\n",prg_nm_get());
   cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-7); /* 7 is strlen("$Name: ") */ 
   if(cvs_nm_sng_len > 0) dly_snp=False; else dly_snp=True;
 
@@ -810,9 +812,11 @@ cvs_vrs_prs()
 
   /* cvs_vrs_sng is, e.g., "1.1" */ 
   nco_sng_len=strlen(nco_sng);
+  nco_sng_ptr=strstr(cvs_nm_sng,nco_sng);
+  if(nco_sng_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports nco_sng_ptr == NULL\n",prg_nm_get());
   usc_1_ptr=strstr(cvs_nm_sng,"_");
-  if(usc_1_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports usc_1_ptr == NULL\n",prg_nm_get());
-  cvs_mjr_vrs_len=usc_1_ptr-cvs_nm_sng-nco_sng_len;
+  if(usc_1_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports usc_1_ptr == NULL\n",prg_nm_get());
+  cvs_mjr_vrs_len=(int)(usc_1_ptr-cvs_nm_sng)-nco_sng_len; /* NB: cast pointer to int before subtracting */ 
   usc_2_ptr=strstr(usc_1_ptr+1,"_");
   cvs_mjr_vrs_sng=(char *)malloc(cvs_mjr_vrs_len+1);
   cvs_mjr_vrs_sng=strncpy(cvs_mjr_vrs_sng,cvs_nm_sng+nco_sng_len,cvs_mjr_vrs_len);
