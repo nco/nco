@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.260 2003-12-10 18:47:58 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.261 2003-12-23 21:04:06 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -236,7 +236,17 @@ ncap -O  -D3 -s 'cp=pack(cp)' /data/zender/tmp/sum.nc /data/zender/tmp/packed_su
 ncbo -O -y add -D 3 ${HOME}/debug/hundred.nc ${HOME}/debug/hundred.nc ${HOME}/debug/sum.nc
 ncap -O -D 3 -s 'cp=pack(cp)' ${HOME}/debug/sum.nc ${HOME}/debug/pack_sum.nc
 287. Fix debug OMP OpenMP implementation in ncra
-289. 
+289. DODS or unpacking problem:
+These work as expected, leaving value packed:
+ncks -O -C -d time,0 -d lon,0. -d lat,0. -l ./ -p \
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
+pres.sfc.1969.nc foo.nc
+ncks -O -C -d time,0 -d lon,0. -d lat,0. 1969.nc foo.nc
+Arithmetic operator gives garbage answers:
+ncwa -O -C -a lat,lon,time -d time,0 -d lon,0. -d lat,0. -l ./ -p \
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
+pres.sfc.1969.nc foo.nc
+
 ************************************************************************
 End NCO Wish list
 ************************************************************************
