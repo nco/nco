@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.14 2001-05-08 01:36:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.15 2001-09-24 11:28:38 hmb Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -47,6 +47,7 @@
 
 #include <netcdf.h>             /* netCDF definitions */
 #include "nc.h"                 /* netCDF operator universal def'ns */
+#include "nco_netcdf.h"			/* netcdf3.x wrappers */
 
 var_sct *
 ncap_var_add(var_sct *var_1,var_sct *var_2)
@@ -80,22 +81,23 @@ ncap_write_var(int nc_id,var_sct *var)
 {
   /* Routine called by parser */
   int var_id;
+  int rcd;
   
   /* The file must be in define mode */
-  ncopts=0; 
-  (void)ncredef(nc_id);
-  ncopts=NC_VERBOSE | NC_FATAL; 
+  
+  rcd = nco_redef(nc_id);
+  
 
   /* Define the variable */
   (void)fprintf(stderr,"ncap_write_var(): nm = %s\n",var->nm);
-  var_id=ncvardef(nc_id,var->nm,var->type,var->nbr_dim,var->dmn_id);
+  rcd=nco_def_var(nc_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_id);
   /* Take output file out of define mode */
-  (void)ncendef(nc_id);
+  rcd=nco_enddef(nc_id);
   /* Write out data */
   if(var->nbr_dim==0){
-    ncvarput1(nc_id,var_id,0L,var->val.vp);
+    rcd=nco_put_var1(nc_id,var_id,0L,var->val.vp,var->type);
   }else{ /* end if variable is a scalar */
-    ncvarput(nc_id,var_id,var->srt,var->cnt,var->val.vp);
+    nco_put_vara(nc_id,var_id,var->srt,var->cnt,var->val.vp,var->type);
   } /* end if variable is an array */
 
    return var_id;
