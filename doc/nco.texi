@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.134 2002-12-14 00:46:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.135 2002-12-15 06:49:43 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -112,7 +112,7 @@ analyze netCDF files.
 Copyright @copyright{} @value{copyright-years} Charlie Zender
 
 This is the first edition of the @cite{NCO User's Guide},@*
-and is consistent with version 2 of @file{texinfo.tex}.
+and is consistent with version~2 of @file{texinfo.tex}.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the @acronym{GNU} Free Documentation License, Version 1.1
@@ -170,7 +170,7 @@ Copyright @copyright{} @value{copyright-years} Charlie Zender.
 
 @sp 2
 This is the first edition of the @cite{NCO User's Guide},@*
-and is consistent with version 2 of @file{texinfo.tex}.
+and is consistent with version~2 of @file{texinfo.tex}.
 @sp 2
 
 Published by Charlie Zender@*
@@ -986,7 +986,7 @@ dimension names as well as sizes) as the input hyperslabs
 @command{ncea}).  
 The file output from @command{ncra} will have the same dimensions as
 the input hyperslabs except for the record dimension, which will have a 
-size of 1 (@pxref{ncra netCDF Record Averager}, for a complete
+size of~1 (@pxref{ncra netCDF Record Averager}, for a complete
 description of @command{ncra}). 
 
 @node Interpolating,  , Averaging, Averaging vs. Concatenating
@@ -1076,14 +1076,14 @@ When processing large files the operators may appear to hang, or do
 nothing, for large periods of time.
 In order to see what the operator is actually doing, it is useful to
 activate a more verbose output mode.
-This is accomplished by supplying a number greater than 0 to the
+This is accomplished by supplying a number greater than~0 to the
 @samp{-D @var{debug_level}} switch.
 @cindex @var{debug_level}
 @cindex debugging
 When the @var{debug_level} is nonzero, the operators report their
 current status to the terminal through the @var{stderr} facility.
 Using @samp{-D} does not slow the operators down. 
-Choose a @var{debug_level} between 1 and 3 for most situations, e.g.,
+Choose a @var{debug_level} between~1 and~3 for most situations, e.g.,
 @code{ncea -D 2 85.nc 86.nc 8586.nc}.
 A full description of how to estimate the actual amount of memory the
 multi-file @acronym{NCO} operators consume is given in @ref{Memory usage}. 
@@ -1211,7 +1211,9 @@ feature is automatic and cannot be controlled by the user.
 @cindex Processor, @acronym{CCM}
 @cindex @acronym{CCM} Processor
 @cindex @code{-n @var{loop}}
+@cindex @code{--nintap @var{loop}}
 @cindex @code{-p @var{input-path}}
+@cindex @code{--path @var{input-path}}
 @cindex @var{input-path}
 @cartouche
 @noindent
@@ -1346,19 +1348,22 @@ automatically generate, in order, the filenames @file{85_12.nc},
 @cindex remote files
 @cindex synchronous file access
 @cindex asynchronous file access
+@cindex @code{--path @var{input-path}}
+@cindex @code{--local @var{output-path}}
+@cindex @code{-l @var{output-path}}
 @cartouche
 @noindent
 Availability: All operators@*
 Key switches: @samp{-p}, @samp{-l}@*
 Long options: @samp{--path}, @samp{--local}@*
 @end cartouche
-All @acronym{NCO} operators can retrieve files from remote sites as well as the
-local file system.
-A remote site can be an anonymous @acronym{FTP} server, a machine on which the
-user has @command{rcp} or @command{scp} privileges, or @acronym{NCAR}'s Mass
-Storage System (@acronym{MSS}).  
-To access a file via an anonymous @acronym{FTP} server, supply the remote file's
-@acronym{URL}.
+All @acronym{NCO} operators can retrieve files from remote sites as well 
+as from the local file system.
+A remote site can be an anonymous @acronym{FTP} server, a machine on
+which the user has @command{rcp} or @command{scp} privileges, or
+@acronym{NCAR}'s Mass Storage System (@acronym{MSS}).  
+To access a file via an anonymous @acronym{FTP} server, supply the
+remote file's @acronym{URL}.
 To access a file using @command{rcp} or @command{scp}, specify the
 Internet address of the remote file.
 Of course in this case you must have @command{rcp} or @command{scp}
@@ -1410,8 +1415,8 @@ option as follows:
 @cindex @code{-l @var{output-path}}
 @cindex @var{output-path}
 @example
-ncks -H -p ftp://dust.ess.uci.edu/pub/zender/nc -l ./ in.nc
-ncks -H -p dust.ess.uci.edu:/home/zender/nc -l ./ in.nc
+ncks -H -p ftp://dust.ess.uci.edu/pub/zender/nco -l ./ in.nc
+ncks -H -p dust.ess.uci.edu:/home/zender/nco -l ./ in.nc
 ncks -H -p /ZENDER/nco -l ./ in.nc 
 ncks -H -p mss:/ZENDER/nco -l ./ in.nc
 @end example
@@ -1420,8 +1425,9 @@ Using @samp{-p} is recommended because it clearly separates the
 @var{input-path} from the filename itself, sometimes called the
 @dfn{stub}. 
 @cindex stub
-When @var{input-path} is not explicitly specified using @samp{-p}, @acronym{NCO}
-internally generates an @var{input-path} from the first input filename. 
+When @var{input-path} is not explicitly specified using @samp{-p},
+@acronym{NCO} internally generates an @var{input-path} from the first
+input filename.  
 The automatically generated @var{input-path} is constructed by stripping
 the input filename of everything following the final @samp{/} character
 (i.e., removing the stub).
@@ -1438,7 +1444,7 @@ also stripped from @var{output-path}.
 Specifying @var{output-path} as @samp{-l ./} tells @acronym{NCO} to store the
 remotely retrieved file and the output file in the current directory.
 Note that @samp{-l .} is equivalent to @samp{-l ./} though the latter is
-syntactically more clear.
+recommended as it is syntactically more clear.
 
 @menu
 * DODS::                        
@@ -1504,11 +1510,12 @@ the current directory.
 @cindex file removal
 @cindex file retention
 @cindex @code{-R}
+@cindex @code{--retain}
 @cartouche
 @noindent
 Availability: All operators@*
 Key switches: @samp{-R}@*
-Long options: @samp{--keep}@*
+Long options: @samp{--retain}@*
 @end cartouche
 In order to conserve local file system space, files retrieved from
 remote locations are automatically deleted from the local file system
@@ -1525,7 +1532,9 @@ disabled by specifying @samp{-R} on the command line.
 @node Variable subsetting, Coordinate variables, File retention, Common features
 @section Including/Excluding specific variables
 @cindex @code{-v @var{var}}
+@cindex @code{--variable @var{var}}
 @cindex @code{-x}
+@cindex @code{--exclude}
 @cartouche
 @noindent
 Availability: (@command{ncap}), @command{ncdiff}, @command{ncea},
@@ -1560,6 +1569,8 @@ that @emph{only} user-defined variables should be output.
 @section Including/Excluding coordinate variables
 @cindex @code{-C}
 @cindex @code{-c}
+@cindex @code{--nocoords}
+@cindex @code{--coords}
 @cartouche
 @noindent
 Availability: @command{ncap}, @command{ncdiff}, @command{ncea},
@@ -1591,6 +1602,7 @@ without having to know their names.
 @cindex Fortran index convention
 @cindex C index convention
 @cindex @code{-F}
+@cindex @code{--fortran}
 @cartouche
 @noindent
 Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
@@ -1602,7 +1614,7 @@ Long options: @samp{--fortran}@*
 By default, @acronym{NCO} uses C-style (0-based) indices for all I/O.
 The @samp{-F} switch tells @acronym{NCO} to switch to reading and writing with
 Fortran index conventions.
-In Fortran, indices begin counting from 1 (rather than 0), and
+In Fortran, indices begin counting from~1 (rather than 0), and
 dimensions are ordered from fastest varying to slowest varying.
 Consider a file @file{85.nc} containing 12 months of data in the record
 dimension @code{time}.
@@ -1630,6 +1642,7 @@ the following output formats:
 @cindex dimension limits
 @cindex coordinate limits
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
+@cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}]]}
 @cartouche
 @noindent
 Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
@@ -1742,7 +1755,7 @@ For example, the Saharan desert stretches from roughly 340 to 50 degrees
 East.
 Extracting the hyperslab of data representing the Sahara from a global
 dataset presents special problems when the global dataset is stored
-consecutively in longitude from 0 to 360 degrees.
+consecutively in longitude from~0 to 360 degrees.
 This is because the data for the Sahara will not be contiguous in the
 @var{input-file} but is expected by the user to be contiguous in the
 @var{output-file}. 
@@ -1792,8 +1805,8 @@ hyperslab, while @command{ncra} and @command{ncrcat} suport the @var{stride}
 argument only for the record dimension.
 The @var{stride} is the spacing between consecutive points in a
 hyperslab. 
-A @var{stride} of 1 means pick all the elements of the hyperslab, but a
-@var{stride} of 2 means skip every other element, etc.
+A @var{stride} of~1 means pick all the elements of the hyperslab, but a
+@var{stride} of~2 means skip every other element, etc.
 Using the @var{stride} option with @command{ncra} and @command{ncrcat} makes
 it possible, for instance, to average or concatenate regular intervals
 across multi-file input data sets.
@@ -1808,8 +1821,8 @@ Thus using @samp{-d time,,,2} is valid but @samp{-d time,,,2.0} and
 @samp{-d time,,,} are not.
 When @var{stride} is specified but @var{min} is not, there is an
 ambiguity as to whether the extracted hyperslab should begin with (using
-C-style, 0-based indexes) element 0 or element @samp{stride-1}.
-@acronym{NCO} must resolve this ambiguity and it chooses element 0 as the first  
+C-style, 0-based indexes) element~0 or element @samp{stride-1}.
+@acronym{NCO} must resolve this ambiguity and it chooses element~0 as the first  
 element of the hyperslab when @var{min} is not specified.
 Thus @samp{-d time,,,@var{stride}} is syntactically equivalent to
 @samp{-d time,0,,@var{stride}}.
@@ -1977,7 +1990,8 @@ Suffice it to say that, in all known cases, @acronym{NCO} does ``the right thing
 @cindex root-mean-square
 @cindex standard deviation
 @cindex variance
-@cindex @code{-y}
+@cindex @code{-y @var{op_typ}}
+@cindex @code{--math @var{op_typ}}
 @cartouche
 @noindent
 Availability: @command{ncra},@command{ncea},@command{ncwa}@*
@@ -2000,9 +2014,9 @@ Maximium value
 @item min
 Minimium value
 @item rms
-Root-mean-square (normalized by N)
+Root-mean-square (normalized by @var{N})
 @item rmssdn
-Root-mean square normalized by N-1
+Root-mean square normalized by @var{N-1}
 @item sqrt
 Square root of the mean
 @item ttl
@@ -2036,48 +2050,48 @@ See the printed manual for complete documentation.
 The masked, weighted average of a variable $x$ can be generally
 represented as
 $$
-\bar x_j = {\sum_{i = 1}^{i = N} \mu_i m_i w_i x_i \over \sum_{i =
-1}^{i = N} \mu_i m_i w_i} 
+\bar x_{j} = {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x_{i} \over \sum_{i =
+1}^{i = N} \mu_{i} m_{i} w_{i}} 
 $$
-where $\bar x_j$ is the $j$'th element of the output hyperslab, $x_i$ is
-the $i$'th element of the input hyperslab, $\mu_i$ is 1 unless $x_i$
-equals the missing value, $m_i$ is 1 unless $x_i$ is masked, and $w_i$
+where $\bar x_{j}$ is the $j$'th element of the output hyperslab, $x_{i}$ is
+the $i$'th element of the input hyperslab, $\mu_{i}$ is~1 unless $x_{i}$
+equals the missing value, $m_{i}$ is~1 unless $x_{i}$ is masked, and $w_{i}$
 is the weight.  
 This formiddable looking formula represents a simple weighted average
 whose bells and whistles are all explained below. 
-It is not early to note, however, that when $\mu_i = m_i = w_i = 1$, the
+It is not early to note, however, that when $\mu_{i} = m_{i} = w_{i} = 1$, the
 generic averaging expression above reduces to a simple arithmetic
 average. 
-Furthermore, $m_i = w_i = 1$ for all operators besides @command{ncwa}, but
+Furthermore, $m_{i} = w_{i} = 1$ for all operators besides @command{ncwa}, but
 these variables are included in the discussion below for completeness
 and for possible future use in other operators.
 
 The size $J$ of the output hyperslab for a given variable is the product
 of all the dimensions of the input variable which are not averaged over.
-The size $N$ of the input hyperslab contributing to each $\bar x_j$ is
+The size $N$ of the input hyperslab contributing to each $\bar x_{j}$ is
 simply the product of the sizes of all dimensions which are averaged
 over (i.e., dimensions specified with @samp{-a}). 
 Thus $N$ is the number of input elements which @emph{potentially}
 contribute to each output element.
-An input element $x_i$ contributes to the output element $x_j$ except
+An input element $x_{i}$ contributes to the output element $x_{j}$ except
 in two conditions:  
 @cindex missing values
 @enumerate
-@item $x_i$ equals the @var{missing value} (@pxref{Missing values}) for the
+@item $x_{i}$ equals the @var{missing value} (@pxref{Missing values}) for the
 variable. 
-@item $x_i$ is located at a point where the masking condition
+@item $x_{i}$ is located at a point where the masking condition
 (@pxref{Masking condition}) is false.
 @end enumerate
-Points $x_i$ in either of these two categories do not contribute to
-$x_j$, they are ignored.
+Points $x_{i}$ in either of these two categories do not contribute to
+$x_{j}$, they are ignored.
 We now define these criteria more rigorously.
 
-Each $x_i$ has an associated Boolean weight $\mu_i$ whose value is 0 or
-1 (false or true).
-The value of $\mu_i$ is 1 (true) unless $x_i$ equals the @var{missing
+Each $x_{i}$ has an associated Boolean weight $\mu_{i}$ whose value is~0
+or~1 (false or true). 
+The value of $\mu_{i}$ is~1 (true) unless $x_{i}$ equals the @var{missing
 value} (@pxref{Missing values}) for the variable.
-Thus, for a variable with no @code{missing_value} attribute, $\mu_i$ is
-always 1.
+Thus, for a variable with no @code{missing_value} attribute, $\mu_{i}$ is
+always~1.
 All @acronym{NCO} arithmetic operators (@command{ncdiff}, @command{ncra},
 @command{ncea}, @command{ncflint}, @command{ncwa}) treat missing values
 analogously. 
@@ -2089,7 +2103,7 @@ The other rank-reducing operations are simple variations of the generic
 weighted mean described above.
 The total value of $x$ (@code{-y ttl}) is 
 $$
-\bar x_j = \sum_{i = 1}^{i = N} \mu_i m_i w_i x_i 
+\bar x_{j} = \sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x_{i} 
 $$
 Note that the total is the same as the numerator of the mean
 of $x$, and may also be obtained in @command{ncwa} by using the @samp{-N}
@@ -2097,39 +2111,39 @@ switch (@pxref{ncwa netCDF Weighted Averager}).
 
 The minimum value of $x$ (@code{-y min}) is 
 $$
-\bar x_j = \min [ \mu_1 m_1 w_1 x_1, \mu_2 m_2 w_2 x_2, \ldots, \mu_N
+\bar x_{j} = \min [ \mu_1 m_1 w_1 x_1, \mu_2 m_2 w_2 x_2, \ldots, \mu_N
 m_N w_N x_N ] 
 $$
 Analogously, the maximum value of $x$ (@code{-y max}) is 
 $$
-\bar x_j = \max [ \mu_1 m_1 w_1 x_1, \mu_2 m_2 w_2 x_2, \ldots, \mu_N
+\bar x_{j} = \max [ \mu_1 m_1 w_1 x_1, \mu_2 m_2 w_2 x_2, \ldots, \mu_N
 m_N w_N x_N ] 
 $$
 Thus the minima and maxima are determined after any weights are applied.
 
 The square of the mean value of $x$ (@code{-y sqravg}) is 
 $$
-\bar x_j = \left( {\sum_{i = 1}^{i = N} \mu_i m_i w_i x_i \over \sum_{i =
-1}^{i = N} \mu_i m_i w_i} \right)^2
+\bar x_{j} = \left( {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x_{i} \over \sum_{i =
+1}^{i = N} \mu_{i} m_{i} w_{i}} \right)^2
 $$
 The mean of the sum of squares of $x$ (@code{-y avgsqr}) is 
 $$
-\bar x_j = {\sum_{i = 1}^{i = N} \mu_i m_i w_i x^2_i \over \sum_{i =
-1}^{i = N} \mu_i m_i w_i}
+\bar x_{j} = {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x^2_{i} \over \sum_{i =
+1}^{i = N} \mu_{i} m_{i} w_{i}}
 $$
-If $x$ represents a deviation from the mean of another variable, $x_i =
-y_i - \bar{y}$ (possibly created by @command{ncdiff} in a previous step),
+If $x$ represents a deviation from the mean of another variable, $x_{i} =
+y_{i} - \bar{y}$ (possibly created by @command{ncdiff} in a previous step),
 then applying @code{avgsqr} to $x$ computes the approximate variance of
 $y$. 
-Computing the true variance of $y$ requires subtracting 1 from the
+Computing the true variance of $y$ requires subtracting~1 from the
 denominator, discussed below.
 For a large sample size however, the two results will be nearly
 indistinguishable. 
 
 The root mean square of $x$ (@code{-y rms}) is 
 $$
-\bar x_j = \sqrt{ {\sum_{i = 1}^{i = N} \mu_i m_i w_i x^2_i \over \sum_{i =
-1}^{i = N} \mu_i m_i w_i} }
+\bar x_{j} = \sqrt{ {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x^2_{i} \over \sum_{i =
+1}^{i = N} \mu_{i} m_{i} w_{i}} }
 $$
 Thus @code{rms} simply computes the squareroot of the quantity computed
 by @code{avgsqr}.
@@ -2140,11 +2154,11 @@ When weights are not specified, this function is the same as the root
 mean square of $x$ except one is subtracted from the sum in the
 denominator 
 $$
-\bar x_j = \sqrt{ {\sum_{i = 1}^{i = N} \mu_i m_i x^2_i \over -1 + 
-\sum_{i = 1}^{i = N} \mu_i m_i} }
+\bar x_{j} = \sqrt{ {\sum_{i = 1}^{i = N} \mu_{i} m_{i} x^2_{i} \over -1 + 
+\sum_{i = 1}^{i = N} \mu_{i} m_{i}} }
 $$
 If $x$ represents the deviation from the mean of another variable, 
-$x_i = y_i - \bar{y}$, then applying @code{rmssdn} to $x$ computes the
+$x_{i} = y_{i} - \bar{y}$, then applying @code{rmssdn} to $x$ computes the
 standard deviation of $y$.
 In this case the $-1$ in the denominator compensates for the degree of
 freedom already used in computing $\bar{y}$ in the numerator.
@@ -2152,7 +2166,7 @@ Consult a statistics book for more details.
 
 When weights are specified it is unclear how to compensate for this
 extra degree of freedom.
-Weighting the numerator and denominator of the above by $w_i$ and
+Weighting the numerator and denominator of the above by $w_{i}$ and
 subtracting one from the denominator is only appropriate when all the  
 weights are 1.0.
 When the weights are arbitrary (e.g., Gaussian weights), subtracting one 
@@ -2165,8 +2179,8 @@ always implement the @code{rmssdn} procedure when asked.
 
 The square root of the mean of $x$ (@code{-y sqrt}) is 
 $$
-\bar x_j = \sqrt{ {\sum_{i = 1}^{i = N} \mu_i m_i w_i x_i \over \sum_{i =
-1}^{i = N} \mu_i m_i w_i} }
+\bar x_{j} = \sqrt{ {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x_{i} \over \sum_{i =
+1}^{i = N} \mu_{i} m_{i} w_{i}} }
 $$
 @end tex
 The definitions of some of these operations are not universally useful.
@@ -2325,8 +2339,8 @@ $32767 = 2^{15}-1$
 @end ifset
 }.
 There are valid reasons for expecting this operation to succeed and 
-the @acronym{NCO} philosophy is to make operators do what you want, not what is
-most pure.
+the @acronym{NCO} philosophy is to make operators do what you want, not
+what is most pure.
 Thus, unlike C and Fortran, but like many other higher level interpreted
 languages, @acronym{NCO} arithmetic operators will perform automatic type
 conversion when all the following conditions are met
@@ -2414,6 +2428,8 @@ will have the value @var{n} when converted to an integer.
 @cindex force append
 @cindex @code{-O}
 @cindex @code{-A}
+@cindex @code{--overwrite}
+@cindex @code{--append}
 @cartouche
 @noindent
 Availability: All operators@*
@@ -2442,6 +2458,7 @@ interactive keyboard input.
 @cindex global attributes
 @cindex attributes, global
 @cindex @code{-h}
+@cindex @code{--history}
 @cartouche
 @noindent
 Availability: All operators@*
@@ -2598,6 +2615,8 @@ these @acronym{ARM}-specific procedures are executed.
 @cindex version
 @cindex @acronym{RCS}
 @cindex @code{-r}
+@cindex @code{--revision}
+@cindex @code{--version}
 @cartouche
 @noindent
 Availability: All operators@*
@@ -2846,7 +2865,7 @@ where @var{ndrv} is the number of discrete representable values for
 given type of packed variable.
 The theoretical maximum value for @var{ndrv} is two raised to the
 number of bits used to store the packed variable.
-Thus if the variable is packed into type @code{NC_SHORT}, a 2 byte
+Thus if the variable is packed into type @code{NC_SHORT}, a~2 byte
 datatype, then there are at most @math{2^16 = 65536} distinct values
 representible.
 In practice, the number of discretely representible values is taken
@@ -3465,10 +3484,10 @@ For concreteness say the record dimension in @code{file_1} is
 If @var{file_2} were created by averaging @var{file_1} over the
 @code{time} dimension with the @command{ncra} operator rather than with the
 @command{ncwa} operator, then @var{file_2} will have a @code{time}
-dimension of size 1 rather than having no @code{time} dimension at all 
+dimension of size~1 rather than having no @code{time} dimension at all 
 @cindex degenerate dimensions
 @footnote{This is because @command{ncra} collapses the record dimension
-to a size of 1 (making it a @dfn{degenerate} dimension), but does not
+to a size of~1 (making it a @dfn{degenerate} dimension), but does not
 remove it, while @command{ncwa} removes all dimensions it averages over. 
 In other words, @command{ncra} changes the size but not the rank of
 variables, while @command{ncwa} changes both the size and the rank of
@@ -3516,7 +3535,7 @@ ncwa -O -a time 85.nc 85.nc
 @end example
 @noindent
 The second command, @command{ncwa}, gets rid of the @code{time} dimension
-of size 1 that @command{ncra} left in @file{85.nc}. 
+of size~1 that @command{ncra} left in @file{85.nc}. 
 Now none of the variables in @file{85.nc} has a @code{time} dimension.
 A quicker way to accomplish this is to use @command{ncwa} from the
 beginning:  
@@ -3803,7 +3822,7 @@ Here at least @var{wgt1}, and, optionally, @var{wgt2}, are specified on
 the command line with the @samp{-w} switch.
 If only @var{wgt1} is specified then @var{wgt2} is automatically
 computed as @math{@var{wgt2} = 1 - @var{wgt1}}.
-Note that weights larger than 1 are allowed. 
+Note that weights larger than~1 are allowed. 
 Thus it is possible to specify @math{@var{wgt1} = 2} and
 @math{@var{wgt2} = -3}.
 One can use this functionality to multiply all the values in a given
@@ -3888,7 +3907,7 @@ ncflint -w 0.667 85_01.nc 85_04.nc 85_02.nc
 ncflint -w 0.667,0.333 85_01.nc 85_04.nc 85_02.nc
 @end example
 
-Multiply @file{85.nc} by 3 and by @minus{}2 and add them together to
+Multiply @file{85.nc} by~3 and by~@minus{}2 and add them together to
 make @file{tst.nc}: 
 @example
 ncflint -w 3,-2 85.nc 85.nc tst.nc
@@ -4379,7 +4398,7 @@ ncra -F -d time,3,,12 -v temperature 85.nc 86.nc 87.nc 858687_03.nc
 @xref{Stride}, for a description of the @var{stride} argument.
 
 Assume the @var{time} coordinate is incrementally numbered such that
-January, 1985 = 1 and December, 1989 = 60.
+January, 1985 =~1 and December, 1989 = 60.
 Assuming @samp{??} only expands to the five desired files, the following
 averages June, 1985--June, 1989: 
 @example
@@ -4470,7 +4489,7 @@ ncrcat -F -d time,3,,12 -v temperature 85.nc 86.nc 87.nc 858687_03.nc
 @xref{Stride}, for a description of the @var{stride} argument.
 
 Assume the @var{time} coordinate is incrementally numbered such that
-January, 1985 = 1 and December, 1989 = 60.
+January, 1985 =~1 and December, 1989 = 60.
 Assuming @code{??} only expands to the five desired files, the following
 concatenates June, 1985--June, 1989: 
 @example
@@ -4738,15 +4757,15 @@ is given above (@pxref{Operation Types}).
 @subsection Masking condition
 @cindex masking condition
 @tex
-Each $x_i$ also has an associated masking weight $m_i$ whose value is 0
-or 1 (false or true).
-The value of $m_i$ is always 1 unless a @var{mask} is specified (with
+Each $x_{i}$ also has an associated masking weight $m_{i}$ whose value is 0
+or~1 (false or true).
+The value of $m_{i}$ is always~1 unless a @var{mask} is specified (with
 @samp{-m}).
 As noted above, @var{mask} is broadcast, if possible, to conform 
 to the variable being averaged.  
-In this case, the value of $m_i$ depends on the @dfn{masking
+In this case, the value of $m_{i}$ depends on the @dfn{masking
 condition}. 
-As expected, $m_i = 1$ when the masking condition is @dfn{true} and $m_i
+As expected, $m_{i} = 1$ when the masking condition is @dfn{true} and $m_{i}
 = 0$ otherwise.   
 @end tex
 
@@ -4780,36 +4799,36 @@ The @var{val} argument to @samp{-M} is the right hand side of the
 @dfn{masking condition}.
 Thus for the @var{i}'th element of the hyperslab to be averaged,
 the masking condition is 
-@math{@var{mask_i}} @var{condition} @var{val}.
+@math{@var{mask_{i}}} @var{condition} @var{val}.
 
 @tex
-Each $x_i$ is also associated with an additional weight $w_i$ whose
+Each $x_{i}$ is also associated with an additional weight $w_{i}$ whose
 value may be user-specified.
-The value of $w_i$ is identically 1 unless the user specifies a
+The value of $w_{i}$ is identically~1 unless the user specifies a
 @var{weight} (with @samp{-w}).
-In this case, the value of $w_i$ is determined by the @var{weight}
+In this case, the value of $w_{i}$ is determined by the @var{weight}
 variable in the @var{input-files}. 
 As noted above, @var{weight} is broadcast, if possible, to conform 
 to the variable being averaged.  
 
-$M$ is the number of input elements $x_i$ which @emph{actually}
-contribute to the output element $x_j$.
+$M$ is the number of input elements $x_{i}$ which @emph{actually}
+contribute to the output element $x_{j}$.
 $M$ is also known as the @dfn{tally} and is defined as 
 $$
-M = \sum_{i = 1}^{i = N} \mu_i m_i 
+M = \sum_{i = 1}^{i = N} \mu_{i} m_{i} 
 $$
 $M$ is identical to the denominator of the generic averaging expression
-except for the omission of the weight $w_i$.
+except for the omission of the weight $w_{i}$.
 Thus $M = N$ whenever no input points are missing values or are masked. 
 Whether an element contributes to the output, and thus increments
 $M$ by one, has more to do with the above two criteria (missing value
 and masking) than with the numeric value of the element per se.
-For example, $x_i = 0.0$ does contribute to $x_j$ (assuming the
+For example, $x_{i} = 0.0$ does contribute to $x_{j}$ (assuming the
 @code{missing_value} attribute is not 0.0 and location $i$ is not
 masked). 
-The value $x_i = 0.0$ will not change the numerator of the generic
+The value $x_{i} = 0.0$ will not change the numerator of the generic
 averaging expression, but it will change the denominator (unless its
-weight $w_i =0.0$ as well).
+weight $w_{i} =0.0$ as well).
 @end tex
 
 @node Normalization,  , Masking condition, ncwa netCDF Weighted Averager

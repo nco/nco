@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.55 2002-12-13 23:31:48 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.56 2002-12-15 06:49:43 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -75,8 +75,8 @@
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifdef HAVE_GETOPT_H
-#include <getopt.h>  /* getopt_long */
-#endif  /* HAVE_GETOPT_H
+#include <getopt.h>  /* getopt_long() */
+#endif /* HAVE_GETOPT_H
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.55 2002-12-13 23:31:48 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.55 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.56 2002-12-15 06:49:43 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.56 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -166,28 +166,28 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
   
 #ifdef HAVE_GETOPT_LONG
-  static struct option long_options[] =
+  static struct option opt_lng[]=
     {
-      {"append",  no_argument,  0,  'A'},
-      {"coords", no_argument, 0, 'c'},
-      {"nocoords", no_argument, 0, 'C'},
-      {"debug", required_argument, 0, 'D'},
-      {"dimension", required_argument, 0, 'd'},
-      {"fortran", no_argument, 0, 'f'},
-      {"history", no_argument, 0, 'h'},
-      {"local", no_argument, 0, 'l'},
-      {"overwrite", no_argument, 0, 'O'},
-      {"path", required_argument, 0, 'p'},
-      {"keep", no_argument, 0, 'R'},
-      {"revision", no_argument, 0, 'r'},
-      {"variable", required_argument, 0, 'v'},
-      {"version", no_argument, 0, 'r'},
-      {"exclude", no_argument, 0, 'x'},
-      {"help", no_argument, 0, '?'},
-      {0, 0, 0, 0}
-    };
-  int option_index = 0;  /* getopt_long stores the option index here. */
-#endif  /* HAVE_GETOPT_LONG */
+      {"append",no_argument,0,'A'},
+      {"coords",no_argument,0,'c'},
+      {"nocoords",no_argument,0,'C'},
+      {"debug",required_argument,0,'D'},
+      {"dimension",required_argument,0,'d'},
+      {"fortran",no_argument,0,'f'},
+      {"history",no_argument,0,'h'},
+      {"local",no_argument,0,'l'},
+      {"overwrite",no_argument,0,'O'},
+      {"path",required_argument,0,'p'},
+      {"keep",no_argument,0,'R'},
+      {"revision",no_argument,0,'r'},
+      {"variable",required_argument,0,'v'},
+      {"version",no_argument,0,'r'},
+      {"exclude",no_argument,0,'x'},
+      {"help",no_argument,0,'?'},
+      {0,0,0,0}
+    }; /* end opt_lng */
+  int opt_idx=0; /* Index of current long option into opt_lng array */
+#endif /* HAVE_GETOPT_LONG */
 
   /* Start the clock and save the command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
@@ -200,8 +200,7 @@ main(int argc,char **argv)
   /* Parse command line arguments */
   opt_sng="ACcD:d:Fhl:Op:rRv:x-:";
 #ifdef HAVE_GETOPT_LONG
-  while((opt = getopt_long(argc,argv,opt_sng,long_options,&option_index))
-            != EOF) {
+  while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
 #else  /* DO NOT HAVE GETOPT_LONG */
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
 #endif /* HAVE_GETOPT_LONG */
@@ -255,9 +254,8 @@ main(int argc,char **argv)
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
-    case '-': /* notify that long options are not allowed */
-      (void)printf("long options are not available in this build.\n");
-      (void)printf("use single-letter options instead.\n");
+    case '-': /* Long options are not allowed */
+      (void)fprintf(stderr,"Long options are not available in this build. Use single letter options instead.\n");
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.15 2002-12-13 23:31:49 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.16 2002-12-15 06:49:43 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -227,7 +227,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-O")) (void)fprintf(stdout,"-O\t\tOverwrite existing output file, if any\n[--overwrite]\n");
   if(strstr(opt_sng,"-p")) (void)fprintf(stdout,"-p path\t\tPath prefix for all input filenames\n[--path]\n");
   if(strstr(opt_sng,"-q")) (void)fprintf(stdout,"-q\t\tToggle printing of dimension indices and coordinate values\n[--quiet]\n");
-  if(strstr(opt_sng,"-R")) (void)fprintf(stdout,"-R\t\tRetain remotely-retrieved files after use\n[--keep]\n");
+  if(strstr(opt_sng,"-R")) (void)fprintf(stdout,"-R\t\tRetain remotely-retrieved files after use\n[--retain]\n");
   if(strstr(opt_sng,"-r")) (void)fprintf(stdout,"-r\t\tProgram version and copyright notice\n[--revision,--version]\n");
   if(strstr(opt_sng,"-s")){
     if(prg != ncap) (void)fprintf(stdout,"-s format\tString format for text output\n[--string]\n");

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.98 2002-12-13 23:31:48 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.99 2002-12-15 06:49:43 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -90,8 +90,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.98 2002-12-13 23:31:48 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.98 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.99 2002-12-15 06:49:43 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.99 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -186,32 +186,32 @@ main(int argc,char **argv)
   prs_sct prs_arg; /* [sct] Global information required in parser routines */
   
 #ifdef HAVE_GETOPT_LONG
-  static struct option long_options[] =
+  static struct option opt_lng[]=
     {
-      {"append",  no_argument,  0,  'A'},
-      {"coords", no_argument, 0, 'c'},
-      {"nocoords", no_argument, 0, 'C'},
-      {"debug", required_argument, 0, 'D'},
-      {"dimension", required_argument, 0, 'd'},
-      {"fortran", no_argument, 0, 'F'},
-      {"history", no_argument, 0, 'h'},
-      {"local", no_argument, 0, 'l'},
-      {"nintap", required_argument, 0, 'n'},
-      {"overwrite", no_argument, 0, 'O'},
-      {"path", required_argument, 0, 'p'},
-      {"keep", no_argument, 0, 'R'},
-      {"revision", no_argument, 0, 'r'},
-      {"script", required_argument, 0, 's'},
-      {"file", required_argument, 0, 'S'},
-      {"units", no_argument, 0, 'u'},
-      {"variable", no_argument, 0, 'v'},
-      {"version", no_argument, 0, 'r'},
-      {"exclude", no_argument, 0, 'x'},
-      {"help", no_argument, 0, '?'},
-      {0, 0, 0, 0}
-    };
-  int option_index = 0;  /* getopt_long stores the option index here. */
-#endif  /* HAVE_GETOPT_LONG */
+      {"append",no_argument,0,'A'},
+      {"coords",no_argument,0,'c'},
+      {"nocoords",no_argument,0,'C'},
+      {"debug",required_argument,0,'D'},
+      {"dimension",required_argument,0,'d'},
+      {"fortran",no_argument,0,'F'},
+      {"history",no_argument,0,'h'},
+      {"local",no_argument,0,'l'},
+      {"nintap",required_argument,0,'n'},
+      {"overwrite",no_argument,0,'O'},
+      {"path",required_argument,0,'p'},
+      {"keep",no_argument,0,'R'},
+      {"revision",no_argument,0,'r'},
+      {"script",required_argument,0,'s'},
+      {"file",required_argument,0,'S'},
+      {"units",no_argument,0,'u'},
+      {"variable",no_argument,0,'v'},
+      {"version",no_argument,0,'r'},
+      {"exclude",no_argument,0,'x'},
+      {"help",no_argument,0,'?'},
+      {0,0,0,0}
+    }; /* end opt_lng */
+  int opt_idx=0; /* Index of current long option into opt_lng array */
+#endif /* HAVE_GETOPT_LONG */
 
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
@@ -224,8 +224,7 @@ main(int argc,char **argv)
   /* Parse command line arguments */
   opt_sng="ACcD:d:Fhl:n:Op:Rrs:S:vx-:";
 #ifdef HAVE_GETOPT_LONG
-  while((opt = getopt_long(argc,argv,opt_sng,long_options,&option_index))
-            != EOF) {
+  while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
 #else  /* DO NOT HAVE GETOPT_LONG */
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
 #endif /* HAVE_GETOPT_LONG */
@@ -277,7 +276,7 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
-      PRINT_FUNCTION_TABLE = True;
+      PRINT_FUNCTION_TABLE=True;
       break;
     case 's': /* Copy command script for later processing */
       spt_arg[nbr_spt++]=(char *)strdup(optarg);
@@ -300,7 +299,7 @@ main(int argc,char **argv)
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
-    case '-': /* notify that long options are not allowed */
+    case '-': /* Long options are not allowed */
       (void)printf("long options are not available in this build.\n");
       (void)printf("use single-letter options instead.\n");
       nco_exit(EXIT_FAILURE);
@@ -447,11 +446,11 @@ main(int argc,char **argv)
   prs_arg.nbr_att=&nbr_att; /* [nbr] Number of attributes in script */
   prs_arg.dmn_in=dmn_in; /* [dmn_in] List of all dimensions in input */
   prs_arg.nbr_dmn_in=nbr_dmn_in; /* [nbr] Number of  dimensions in input */
-  prs_arg.dmn_out =&dmn_out;     /* pointer to list of dims in output */
-  prs_arg.nbr_dmn_out = &nbr_dmn_out; /* number of dims in above list */
+  prs_arg.dmn_out=&dmn_out;     /* pointer to list of dims in output */
+  prs_arg.nbr_dmn_out=&nbr_dmn_out; /* number of dims in above list */
   prs_arg.sym_tbl=sym_tbl; /* [fnc] Symbol table for functions */
   prs_arg.sym_tbl_nbr=sym_tbl_nbr; /* [nbr] Number of functions in table */
-  prs_arg.ntl_scn = False; /* No longer do an initial scan */
+  prs_arg.ntl_scn=False; /* No longer do an initial scan */
   prs_arg.var_LHS=NULL; /* [var] LHS cast variable */
   prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
   
@@ -488,34 +487,29 @@ main(int argc,char **argv)
   /* Copy script file name to global variable */
   fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1UL); 
   fl_spt_glb[ncl_dpt_crr]=fl_spt_usr;
-  
 
   /* Invoke parser */
   rcd=yyparse((void *)&prs_arg);
 
-
-  /* Get number of variables, in  output  file */
+  /* Get number of variables in output file */
   rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
 
-  /* make a list of all NEW VARS  in output_file */  
+  /* Make list of all NEW VARS in output_file */  
   xtr_lst_a=nco_var_lst_mk(out_id,nbr_var_fl,var_lst_in,False,&nbr_lst_a);
 
-
   if(PROCESS_ALL_VARS){
-    /* Get number of variables in  of input file */
-    rcd=nco_inq(in_id,(int *)NULL ,&nbr_var_fl,(int *)NULL,(int *)NULL);
+    /* Get number of variables in input file */
+    rcd=nco_inq(in_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
 
-  /* Form initial list of ALL VARIABLES IN INPUT FILE*/
+    /* Form initial list of ALL VARIABLES IN INPUT FILE */
     xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,False,&nbr_xtr);
-  }
+  } /* endif */
    
   if(!PROCESS_ALL_VARS){
-
-    /* make a list of vars of new attributes whose parent var is ONLY in
-       the input file */
-    xtr_lst = nco_att_lst_mk(in_id,out_id,att_lst,nbr_att,&nbr_xtr);
-  }
-    /* Find dims associated with xtr_ lst */
+    /* Make list of vars of new attributes whose parent var is ONLY in input file */
+    xtr_lst=nco_att_lst_mk(in_id,out_id,att_lst,nbr_att,&nbr_xtr);
+  } /* endif */
+    /* Find dims associated with xtr_lst */
     /* Write to O only new dims
        Add apropriate co-ordinate vars to extraction list 
       options -c      -process all cordinates 
@@ -527,29 +521,25 @@ main(int argc,char **argv)
  
      options -C         no co-ordinates   Do nothing */
 
-    /* now subtract list a again */
-    /* now finally extract vars on list */
+    /* Subtract list a again */
+    /* Finally extract vars on list */
 
-
-   /* now subtract list a */
-   
-   if(nbr_lst_a >0)
-      xtr_lst = nco_var_lst_sub(xtr_lst, &nbr_xtr,xtr_lst_a,nbr_lst_a);
+   /* Subtract list a */
+   if(nbr_lst_a >0) xtr_lst=nco_var_lst_sub(xtr_lst, &nbr_xtr,xtr_lst_a,nbr_lst_a);
 
    (void)nco_redef(out_id);
 
-   /* make a list of dims of the vars in xtr_lst */
-    if(nbr_xtr > 0) 
-      dmn_lst = nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_ass);
+   /* Make list of dims of vars in xtr_lst */
+   if(nbr_xtr > 0) dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_ass);
   
     /* Find and add any new dims to output */
-    for(idx =0 ; idx < nbr_dmn_ass; idx++ )
-      for(jdx =0 ; jdx < nbr_dmn_in ; jdx++){
+    for(idx=0;idx < nbr_dmn_ass;idx++)
+      for(jdx=0;jdx < nbr_dmn_in;jdx++){
         /* if dimension in list and it hasn't been defined yet */
 	if(!strcmp(dmn_lst[idx].nm, dmn_in[jdx]->nm) && !dmn_in[jdx]->xrf){     
           /* add dim to output list dmn_prc */
-          dmn_new = nco_dmn_out_grow((void *)&prs_arg);
-          *dmn_new = nco_dmn_dpl(dmn_in[jdx]);
+          dmn_new=nco_dmn_out_grow((void *)&prs_arg);
+          *dmn_new=nco_dmn_dpl(dmn_in[jdx]);
           (void)nco_dmn_xrf(*dmn_new,dmn_in[jdx]);
 	  /* write dim to output */
 	  (void)nco_dmn_dfn(fl_out,out_id,dmn_new,1);
@@ -563,32 +553,32 @@ main(int argc,char **argv)
     if(PROCESS_ASSOCIATED_COORDINATES){
       for(idx=0; idx <nbr_dmn_in ; idx++){
         if(!dmn_in[idx]->is_crd_dmn) continue;
-      
+	
         if(PROCESS_ALL_COORDINATES && !dmn_in[idx]->xrf) {
-
+	  
           /* add dim to output list dmn_out */
-          dmn_new = nco_dmn_out_grow((void *)&prs_arg);
-          *dmn_new = nco_dmn_dpl(dmn_in[idx]);
+          dmn_new=nco_dmn_out_grow((void *)&prs_arg);
+          *dmn_new=nco_dmn_dpl(dmn_in[idx]);
           (void)nco_dmn_xrf(*dmn_new,dmn_in[idx]);
 	  /* write dim to output */
 	  (void)nco_dmn_dfn(fl_out,out_id,dmn_new,1);
         }
-      /* now add co-odinate var to the extraction list, the dim has already been output */
-       if(dmn_in[idx]->xrf) {
-	 for(jdx =0 ; jdx < nbr_xtr ; jdx++)
-	  if(!strcmp(xtr_lst[jdx].nm , dmn_in[idx]->nm)) break;
-         if( jdx != nbr_xtr) continue;
-         /* if co-ords not on list then add it to extraction list */
-         xtr_lst =(nm_id_sct *)nco_realloc(xtr_lst, (nbr_xtr+1)*sizeof(nm_id_sct));     
-         xtr_lst[nbr_xtr].nm =(char *)strdup(dmn_in[idx]->nm);
-         xtr_lst[nbr_xtr++].id = dmn_in[idx]->cid;
-       }  
-      }/* for idx */	      
+	/* Add co-odinate var to extraction list, dim has already been output */
+	if(dmn_in[idx]->xrf) {
+	  for(jdx=0;jdx < nbr_xtr;jdx++)
+	    if(!strcmp(xtr_lst[jdx].nm,dmn_in[idx]->nm)) break;
+	  if(jdx != nbr_xtr) continue;
+	  /* If co-ord is not on list then add it to extraction list */
+	  xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(nbr_xtr+1)*sizeof(nm_id_sct));     
+	  xtr_lst[nbr_xtr].nm=(char *)strdup(dmn_in[idx]->nm);
+	  xtr_lst[nbr_xtr++].id=dmn_in[idx]->cid;
+	}  
+      } /* for idx */	      
     } /* if */ 
-  
-  /* now subtract list a again (it may contain re-defined co-ordinates !!!) */
-  if(nbr_xtr >0) xtr_lst = nco_var_lst_sub(xtr_lst, &nbr_xtr,xtr_lst_a,nbr_lst_a);
-
+    
+    /* now subtract list a again (it may contain re-defined co-ordinates !!!) */
+    if(nbr_xtr >0) xtr_lst=nco_var_lst_sub(xtr_lst, &nbr_xtr,xtr_lst_a,nbr_lst_a);
+    
     /* sort extraction list for faster I/O */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt(xtr_lst,nbr_xtr,False);
 

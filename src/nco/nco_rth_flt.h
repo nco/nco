@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.7 2002-09-14 17:40:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.8 2002-12-15 06:49:43 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -63,38 +63,6 @@ extern "C" {
   float rintf(float);
   float roundf(float);
   float truncf(float);
-
-  /* fxm: Eventually make this MACOSX kludge go away */
-#ifndef MACOSX_FLT_FNC
-#define MACOSX_FLT_FNC
-
-#ifdef MACOSX
-#define NEED_ACOSF 1
-#define NEED_ACOSHF 1
-#define NEED_ASINF 1
-#define NEED_ASINHF 1
-#define NEED_ATANF 1
-#define NEED_ATANHF 1
-#define NEED_CEILF 1
-#define NEED_COSF 1
-#define NEED_COSHF 1
-#define NEED_ERFCF 1
-#define NEED_ERFF 1
-#define NEED_EXPF 1
-#define NEED_FLOORF 1
-#define NEED_FMODF 1
-#define NEED_GAMMAF 1
-#define NEED_LOG10F 1
-#define NEED_LOGF 1
-#define NEED_POWF 1
-#define NEED_SINF 1
-#define NEED_SINHF 1
-#define NEED_SQRTF 1
-#define NEED_TANF 1
-#define NEED_TANHF 1
-#endif /* !MACOSX */
-
-#endif /* MACOSX_FLT_FNC */
 
 #ifdef __cplusplus
 } /* end extern "C" */
