@@ -1,5 +1,5 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.13 2001-12-03 06:14:37 zender Exp $ -*-C-*- */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.14 2001-12-28 19:25:06 zender Exp $ -*-C-*- */
 
   /* Purpose: Token generator for ncap parser */
 
@@ -104,7 +104,6 @@ static bool RHS;
         
     }
 
-
 \"[^"\n]*["\n] {
            /* ------------------------ */
            /* Process quoted strings   */
@@ -131,8 +130,6 @@ static bool RHS;
 
     }
 
-              
-
 [0-9]*\.[0-9]*([eE][+-]?[0-9]+)?[LlDd]?|[0-9]*([eE][+-]?[0-9]+)[LlDd]? {
            if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a double %s\n",yytext); 
            
@@ -142,7 +139,6 @@ static bool RHS;
            return (ATTRIBUTE);
            
          }
-
 
 [0-9]*\.[0-9]*([eE][+-]?[0-9]+)?[Ff]|[0-9]*([eE][+-]?[0-9]+)[Ff] {
           float fi;
@@ -156,7 +152,6 @@ static bool RHS;
           lvalp->attribute.type = NC_FLOAT;
 	  return (ATTRIBUTE);    
           }
-
 
 [0-9]+[lL]? {
     	 double fi;
@@ -175,7 +170,6 @@ static bool RHS;
            }/* end else */
         }
 
-
 [0-9]+[sS] {
 	    short is;
            if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a short %s\n",yytext); 	
@@ -188,10 +182,7 @@ static bool RHS;
             lvalp->attribute.type = NC_SHORT;
 	    return (ATTRIBUTE);    
 	   }
-
-
-
-
+ 
 [0-9]+[Bb]  {
                 int i;
                 if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a byte %s\n",yytext); 
@@ -212,9 +203,6 @@ static bool RHS;
 		
                 }/* end else */
            }
-
-
-
 
          /* Now define the double mathematical functions */
 
@@ -270,15 +258,12 @@ atostr    { return ATOSTR; }
         strncpy(var_nm,yytext,slen);
         var_nm[slen] = '\0';
         att_nm = strdup(++p);
-    
 
 /*        rcd = nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id); */
         if(!strcmp(var_nm,"global")) var_id=NC_GLOBAL; else rcd = nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
        
-            /* We are on the RHS of the = sign so we need to return to the parser the value */
-            /* of the attribue (if its available)                                           */
-       
-       /* on an inital scan just return attributes on the right hand side    */
+       /* We are on RHS so return value of attribute (if available) to parser */
+       /* For initial scan, just return attributes on RHS */
        if(prs_arg->inital_scan){
           if( !RHS ){
             lvalp->att.att_nm = strdup(att_nm);
@@ -289,22 +274,21 @@ atostr    { return ATOSTR; }
          }
        }    
 
-       if (RHS) {
-            
-            /* first check to see if attribute is already been saved in symbol table */
-            /* if it is then obtain and return the value, else check the input file */
-            /* if attribute is present obtain and return value from disk else       */
-            /* return an NC_BYTE of value 0.                                        */
-            /* if attribute is NC_CHAR then a STRING type is returned               */
-            /* for the rest NC_FLOAT, NC_DOUBLE, NC_BYTE , NC_SHORT an ATTRIBUTE    */
-            /* is returned to the parser.                                           */
+       if (RHS){
+            /* First check if attribute has already been saved in symbol table */
+            /* If so then obtain and return value, else check input file */
+            /* If attribute is present obtain and return value from disk else */
+            /* return NC_BYTE of value 0. */
+            /* If attribute is NC_CHAR then STRING type is returned */
+            /* for others NC_FLOAT, NC_DOUBLE, NC_BYTE , NC_SHORT an ATTRIBUTE */
+            /* is returned to parser. */
 
             index = ncap_aed_lookup(var_nm,att_nm,prs_arg->att_lst,prs_arg->nbr_att,False);
             
-            if( index >= 0) {
+            if( index >= 0){
               ptr_aed = prs_arg->att_lst[index]; 
               if (ptr_aed->type == NC_CHAR){
-              (void)cast_void_nctype(type,&ptr_aed->val);
+              (void)cast_void_nctype(ptr_aed->type,&ptr_aed->val);
               lvalp->str = (char *)nco_malloc((ptr_aed->sz+1)*nco_typ_lng(NC_CHAR));
               strncpy(lvalp->str,ptr_aed->val.cp,ptr_aed->sz);
               lvalp->str[ptr_aed->sz]='\0';
@@ -355,8 +339,8 @@ atostr    { return ATOSTR; }
              } /* end if */
        }/* end if RHS */
         
-        /* we are on the LHS of the = sign so we simply save the attribute information for   */
-        /* later processing by the parser -- Atrribute is valid if its associated variable is*/
+        /* We are on LHS of = so simply save attribute information for */
+        /* later processing by parser -- Atrribute is valid if its associated variable is */
         /* in input or output file */
 
         if(!RHS) {
@@ -373,9 +357,7 @@ atostr    { return ATOSTR; }
            } /* end else */
         } /* end if */
 
-
 } /* end attributes. Phew ! */
-
 
 [A-Za-z_][A-Za-z0-9_]*  {
        
@@ -394,8 +376,6 @@ atostr    { return ATOSTR; }
 
 } /* end variables */
 
-
-
 =       {
         RHS = True; return yytext[0];
          }
@@ -404,14 +384,10 @@ atostr    { return ATOSTR; }
         RHS = False; return yytext[0]; 
         }
 
-
-
 .   {
         /* ---------------- */
         /* all the rest ... */
         /* ---------------- */
-
-        
         
         return  yytext[0];
 }
@@ -435,9 +411,3 @@ yywrap()
 } /* end yywrap() */
 
 /* End user subroutines section */
-
-
-
-
-
-

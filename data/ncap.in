@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.3 2001-12-11 16:19:15 hmb Exp $
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.4 2001-12-28 19:25:05 zender Exp $
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 // Format of a valid ncap script:
 // C++ comment syntax
@@ -23,27 +23,27 @@ a1@julian_day = global@julian_day;
 one@one=10+30;
 one@two=sin(3.141/2);
 one@three=cos(3.1415926)+one@one+one@two;
-// Its OK to redefine attributes 
+// It's OK to redefine attributes 
 one@one=23/4;
 one@two=one@one+one@two;
 one@eight=25.0%4.99;
 one@nine=1.e10;
 one@ten=val_half_half@missing_value%1000;
-// The standard netCDF postfix operators are used to define the attributes/ numbers
+// Standard netCDF postfix operators are used to define the attributes/numbers
 // floats and doubles must include a decimal point or an exponent to be recognizied
 one@byte=10b;
 one@short=10s;
 one@float=100.e2f;
 one@double=2e3;
-//Type conversion follows C rules. The expression is converted to the highest type.
-//The below expression is of type float
+// Type conversion follows C rules: expression is converted to highest type
+// Below expression is of type float
 one@add = one@byte+one@short/one@float;
 // can create a O dimensional variable 
 nine=10000e2f;
 one=10;
 two=4;
 val_half_half@missing_value = 21;
-// can use the modulus operator with attributes and variables 
+// Can use modulus operator with attributes and variables 
 twenty = four_dmn_rec_var % 8; 
 twentyone=sin(twenty)^2 + cos(twenty)^2;
 twentytwo=10*9;
@@ -51,20 +51,16 @@ twentythree=1.e9%2;
 twentyfour = two_dmn_var@units;
 twentyfive=three_dmn_var_dbl/4;
 twentysix=pck;
-// The below multiplication is of the individual elements in the variables AND NOT
-// a matrix multiplication. The resulting matrix is of type double.
+// Below multiplication is of individual elements in variables AND NOT
+// a matrix multiplication. Resulting matrix is of type double.
 twentyseven= three_dmn_var_int * three_dmn_var_dbl;
-// atostr converts an attribute to a string theres an optional field for the formatting
+// atostr converts attribute to string, with an optional field for format
 twenty@one = atostr(1.e10);
 twenty@two = atostr(1/7.0);
 twenty@three = atostr(1/7.0,"\t%15f\n");
 // Can add two strings together
 twenty@four = "Hello"+"\t World\n";
-//Can put a 0 or 1 dimensional variable into an attribute
+// Can put a 0 or 1 dimensional variable into an attribute
 twenty@five= fl_nm;
 twenty@six = mss_val;
 twenty@seven=one;
-
-
-
-

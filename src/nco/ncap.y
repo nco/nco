@@ -1,7 +1,7 @@
  %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.16 2001-12-11 16:17:25 hmb Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.17 2001-12-28 19:25:06 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -58,18 +58,14 @@
 #include "nco_netcdf.h"         /* netCDF3 wrapper calls */
 #include "ncap.h"               /* symbol table definition */
 
-
 /* define a an ATTRIBUTE to contain a -1 */ 
 
 /* Turn on parser debugging option (bison man p. 85) */
 #define YYDEBUG 1
 int yydebug=0;
 
-
 /* Turns on more verbose errors than just plain "parse error" when yyerror() is called by parser */
 #define YYERROR_VERBOSE 1
-
-
 
 /* Bison manual p. 60 describes how to call yyparse() with arguments */
 /* prs_sct must be consistent between ncap.y and ncap.c 
@@ -130,12 +126,10 @@ char errstr[200];                  /* Error string for short error messages */
 /* "type" declaration sets type for non-terminal symbols which otherwise need no declaration */
 /*%type <val_double> xpr*/
 
-
 /* End parser declaration section */
 %%
 /* Begin Rules section */
 /* Format is rule: action */
-
 
 program:           statement_list
                    ;
@@ -145,8 +139,6 @@ statement_list:     statement_list statement ';'
                   | statement ';'
                   | error ';'  /* catches most errors then reads up to the next ; */ 
                   ;
-
-
 
 statement:     out_att_exp '=' att_exp
                 { 
@@ -296,7 +288,6 @@ statement:     out_att_exp '=' att_exp
                   (void)free($3);
                  }
               ;                    
-
 
 att_exp:                 att_exp '+' att_exp   {
                                   (void)ncap_retype(&$1,&$3);
@@ -523,16 +514,12 @@ ncap_aed_lookup(char *var_nm,char *att_nm,aed_sct **att_lst,int *nbr_att, bool u
   return (*nbr_att)++;
 }
 
-
-
 int
- yyerror(char *sng)
+yyerror(char *sng)
 {
-  
   /* Use eprokoke_skip  to skip an error message after we have sent an error */
   /* message from yylex --  stop the provoked error message from yyparse     */
   /* being printed */                           
-
 
   static bool eprovoke_skip;
   
@@ -540,7 +527,8 @@ int
   (void)fprintf(stderr,
            "%s: %s line %ld  %s\n",prg_nm_get(), fl_spt_global,line_number,sng);
   
-  if( sng[0]== '#' ) eprovoke_skip = True;
+  if( sng[0]== '#' ) eprovoke_skip=True;
+  eprovoke_skip=eprovoke_skip; /* Do nothing except avoid compiler warnings */
   return 0;
 } /* end yyerror() */
 
