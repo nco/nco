@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.15 2003-03-25 17:55:45 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.16 2003-03-25 22:37:44 rorik Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -311,9 +311,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   /* convert UDUnits strings if necessary */
   if (lmt.lmt_typ == lmt_udu_str ) {
     if (nco_lmt_udu_cnv(nc_id, dim.cid, lmt.min_sng, &lmt.min_val) != 0)
-      exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     if (nco_lmt_udu_cnv(nc_id, dim.cid, lmt.max_sng, &lmt.max_val) != 0)
-     exit(EXIT_FAILURE);
+      nco_exit(EXIT_FAILURE);
     }
   else {
     /* Convert user-specified limits into double precision numeric values, or supply defaults */
@@ -961,6 +961,7 @@ nco_lmt_udu_cnv /* [fnc] convert from unidata units to coordinate value */
     /* quick return if specified and supplied units are the same */
     if (strcmp(usr_unt_str,fl_unt_str) == 0) {
       *lmt_val=strtod(lmt_sng,(char **)NULL); /* convert to double */
+      (void)utTerm();
       return 0; /* success */
       }
   
@@ -999,8 +1000,8 @@ int
   /* first test for a UDUnits string */
   /* a non-leading dash is used to specify dates */
   if ( (strchr(sng,'-') && ((char*)strchr(sng,'-') != (char*)sng) ) ||
-  /* non-terminal space delimits user-specified units */
-       (strchr(sng,' ') && (strrchr(sng,' ') != NULL ) )
+  /* space delimits user-specified units */
+       (strchr(sng,' ') )
   ) {
     return lmt_udu_str;
   }
