@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.79 2002-01-22 08:54:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.80 2002-01-23 09:24:13 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -260,10 +260,10 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
  int *nbr_lst) /* O [nbr] number of elements in list */
 {
   /* Purpose: Create list of strings from given string and arbitrary delimiter
-     This routine is often called with system memory, e.g., with strings from
-     command line arguments whose memory was allocated by the shell or getopt().
-     A conservative policy would be, therefore, to never modify the input string
-     However, we are safe if any modifications do not extend the input string
+     Routine is often called with system memory, e.g., with strings from
+     command line arguments whose memory was allocated by shell or by getopt().
+     A conservative policy would be, therefore, to never modify input string
+     However, we are safe if any modifications do not extend input string
      Thus this routine is allowed to replace delimiter strings by NULs */
 
   /* Number of list members is always one more than number of delimiters, e.g.,
@@ -288,7 +288,7 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
   /* Do not increment actual sng_in pointer while searching for delimiters---increment a dummy pointer instead. */
   sng_in_ptr=sng_in; 
 
-  /* First element does not require a delimiter in front of it */
+  /* First element does not require delimiter in front of it */
   *nbr_lst=1;
 
   /* Count list members */
@@ -1296,6 +1296,16 @@ void *nco_malloc(size_t size)
   return ptr; /* [ptr] Pointer to new buffer */
 } /* nco_malloc() */
 
+void *nco_free(void *vp)
+{
+  /* Purpose: Custom wrapper for free()
+     Free memory and set pointer to NULL
+     Routine does not call free() when vp == NULL
+     Usage: vp=nco_free(vp) */
+  if(vp != NULL) free(vp);
+  return NULL; /* [ptr] Pointer to new buffer */
+} /* nco_free() */
+
 void *nco_calloc(size_t lmn_nbr,size_t lmn_sz)
 {
   /* Purpose: Custom wrapper for calloc(), modified from nco_malloc()
@@ -1332,7 +1342,12 @@ void *nco_realloc(void *ptr,size_t size)
     return ptr;
   } /* endif */
   
-  new_ptr=realloc(ptr,size); /* [ptr] Pointer to new buffer */
+  /* Passing NULL to realloc() is ANSI-legal, but may cause portability problems */
+  if(ptr == NULL && size != 0){
+    new_ptr=nco_malloc(size); /* [ptr] Pointer to new buffer */
+  }else{
+    new_ptr=realloc(ptr,size); /* [ptr] Pointer to new buffer */
+  } /* endif */
   if(new_ptr == NULL && size != 0){
     (void)fprintf(stdout,"%s: ERROR nco_realloc() unable to realloc() %li bytes\n",prg_nm_get(),(long)size); 
     /* fxm: Should be exit(8) on ENOMEM errors? */

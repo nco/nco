@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.7 2002-01-22 08:54:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.8 2002-01-23 09:24:14 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -445,6 +445,7 @@ extern void mss_val_cp(var_sct *,var_sct *);
 extern void nco_lib_vrs_prn(void);
 extern void ncar_csm_date(int,var_sct **,int);
 extern void *nco_calloc(size_t lmn_nbr,size_t lmn_sz);
+extern void *nco_free(void *vp);
 extern void *nco_malloc(size_t size);
 extern void *nco_realloc(void *ptr, size_t size);
 extern void rec_crd_chk(var_sct *,char *,char *,long,long);

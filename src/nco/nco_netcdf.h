@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.7 2002-01-22 08:54:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.8 2002-01-23 09:24:14 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -118,6 +118,7 @@ extern int nco_put_varm(int,int,const long *,const long *,const long *,const lon
 extern int nco_inq_att(int,int,const char *,nc_type *,long *);
 extern int nco_inq_att_flg(int,int,const char *,nc_type *,long *);
 extern int nco_inq_attid(int,int,const char *,int *);
+extern int nco_inq_attid_flg(int,int,const char *,int *);
 extern int nco_inq_atttype(int,int,const char *,nc_type *); 
 extern int nco_inq_attlen(int,int,const char *,long *); 
 extern int nco_inq_attname(int,int,int,char *); 

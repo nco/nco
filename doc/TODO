@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.112 2002-01-23 09:01:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.113 2002-01-23 09:24:13 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -223,6 +223,7 @@ or variable list is made more specific, or MALLOC_CHECK_=1 is used
 215. var_conform_dim() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
 216. Use %z for printing size_t rather than casting to long
 217. Replace all uses of free() with nco_free()
+218. Fix all leaks etc. enumerated in insure.txt
 ************************************************************************
 End NCO Wish list
 ************************************************************************

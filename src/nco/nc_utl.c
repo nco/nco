@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.122 2002-01-16 15:33:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.123 2002-01-23 09:24:13 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -66,9 +66,7 @@ cast_void_nctype(nc_type type,ptr_unn *ptr)
    ptr_unn *ptr: I/O pointer to pointer union whose vp element will be cast to type type
 */
 {
-  /* Routine to cast the generic pointer in the ptr_unn structure from type void
-     type to the output netCDF type. */
-
+  /* Cast generic pointer in ptr_unn structure from type void to output netCDF type */
   switch(type){
   case NC_FLOAT:
     ptr->fp=(float *)ptr->vp;
@@ -99,8 +97,7 @@ cast_nctype_void(nc_type type,ptr_unn *ptr)
    ptr_unn *ptr: I/O pointer to pointer union which to cast from type type to type void
 */
 {
-  /* Routine to cast the generic pointer in the ptr_unn structure from type type to type void */
-
+  /* Cast generic pointer in ptr_unn structure from type type to type void */
   switch(type){
   case NC_FLOAT:
     ptr->vp=(void *)ptr->fp;
@@ -122,7 +119,6 @@ cast_nctype_void(nc_type type,ptr_unn *ptr)
     break;
   default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
-
 } /* end cast_nctype_void() */
 
 void 
@@ -1950,15 +1946,16 @@ hst_att_cat(int out_id,char *hst_sng)
    char *hst_sng: I string to add to history attribute
 */
 {
-
 /* Purpose: Add command line and date stamp to existing history attribute, if any,
    and write them to specified output file */
+
+  const int time_stamp_sng_lng=25;
 
   char att_nm[NC_MAX_NAME];
   char *ctime_sng;
   char *history_crr=NULL;
   char *history_new;
-  char time_stamp_sng[25];
+  char time_stamp_sng[time_stamp_sng_lng];
   
   int idx;
   int nbr_glb_att;
@@ -1972,9 +1969,10 @@ hst_att_cat(int out_id,char *hst_sng)
   /* Create timestamp string */
   clock=time((time_t *)NULL);
   ctime_sng=ctime(&clock);
+  /* NUL-terminate time_stamp_sng */
+  time_stamp_sng[time_stamp_sng_lng-1]='\0';
   /* Get rid of carriage return in ctime_sng */
-  (void)strncpy(time_stamp_sng,ctime_sng,24);
-  time_stamp_sng[24]='\0';
+  (void)strncpy(time_stamp_sng,ctime_sng,time_stamp_sng_lng-1);
 
   /* Get number of global attributes in file */
   (void)nco_inq(out_id,(int *)NULL,(int *)NULL,&nbr_glb_att,(int *)NULL);
@@ -1984,7 +1982,7 @@ hst_att_cat(int out_id,char *hst_sng)
     if(strcasecmp(att_nm,"history") == 0) break;
   } /* end loop over att */
 
-  /* Fill in the history string */
+  /* Fill in history string */
   if(idx == nbr_glb_att){
     /* history global attribute does not yet exist */
 
@@ -1994,28 +1992,23 @@ hst_att_cat(int out_id,char *hst_sng)
   }else{ 
     /* history global attribute currently exists */
   
-    /* NB: the ncattinq() call, unlike strlen(), counts the terminating NUL for stored NC_CHAR arrays */
+    /* NB: ncattinq(), unlike strlen(), counts terminating NUL for stored NC_CHAR arrays */
     (void)nco_inq_att(out_id,NC_GLOBAL,"history",&att_typ,&att_sz);
     if(att_typ != NC_CHAR){
       (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s. Therefore current command line will not be appended to %s in output file.\n",prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),att_nm);
       return;
     } /* end if */
 
-    if(att_sz > 0){
-      history_crr=(char *)nco_malloc(att_sz*sizeof(char));
-      (void)nco_get_att(out_id,NC_GLOBAL,"history",(void *)history_crr,NC_CHAR);
-    }else{
-      /* History attribute exists but has size of zero */
-      history_crr=(char *)nco_malloc(sizeof(char));
-      /* Turn it into a null string so strlen(history_crr) = 0 */
-      history_crr[0]='\0';
-    } /* end else */
+    /* Allocate and NUL-terminate space for current history attribute
+       If history attribute is of size zero then ensure strlen(history_crr) = 0 */
+    history_crr=(char *)nco_malloc((att_sz+1)*sizeof(char));
+    history_crr[att_sz]='\0';
+    if(att_sz > 0) (void)nco_get_att(out_id,NC_GLOBAL,"history",(void *)history_crr,NC_CHAR);
 
     /* Add 4 for formatting characters */
     history_new=(char *)nco_malloc((strlen(history_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4)*sizeof(char));
     (void)sprintf(history_new,"%s: %s\n%s",time_stamp_sng,hst_sng,history_crr);
-
-  } /* end else */
+  } /* endif history global attribute currently exists */
 
   (void)nco_put_att(out_id,NC_GLOBAL,"history",NC_CHAR,strlen(history_new)+1,(void *)history_new);
 

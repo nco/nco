@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.48 2002-01-22 08:54:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.49 2002-01-23 09:24:14 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.48 2002-01-22 08:54:46 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.48 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.49 2002-01-23 09:24:14 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.49 $";
   
   extern char *optarg;
   
@@ -362,6 +362,7 @@ type_fmt_sng(nc_type type)
     /* return "%c"; */ /* Default */
     /* Formats useful in printing byte data as decimal notation */
     /*    return "%u";*/
+    /* NB: Uncertain wheter %hhi is ANSI standard or GNU extension */
     return "%hhi"; /* Takes unsigned char as arg and prints 0..255 */
   default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
@@ -370,9 +371,8 @@ type_fmt_sng(nc_type type)
   return (char *)NULL;
 } /* end type_fmt_sng() */
 
-/* The other printout method must use a recursive call to step
-   through dimensions, because number of dimensions,
-   and thus of loops, is not known in advance. */
+/* Other printout method must use recursive call to step through dimensions, 
+   because number of dimensions, and thus loops, is not known in advance. */
 void recursive_prn
 (int *min_dmn_idx, /* input var: array of minimum dimension values */
  int *max_dmn_idx, /* input var: array of maximum dimension values */
@@ -382,11 +382,11 @@ void recursive_prn
 {
   int tmp_idx;
 
-  /* Check for the recursion exiting condition first */
+  /* Check for recursion exiting condition first */
   if(idx > nbr_dim-1){
     ;
   }else{
-    /* Recursively move to the next dimension */
+    /* Recursively move to next dimension */
     for(tmp_idx=min_dmn_idx[idx];
 	tmp_idx<=max_dmn_idx[idx];
 	tmp_idx++){
@@ -1135,10 +1135,11 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
      fxm: routine does not correctly print hyperslabs which are wrapped, or which use a non-unity stride
   */
 
+  extern char *type_fmt_sng(nc_type);
+
   bool SRD=False; /* Stride is non-unity */
   bool WRP=False; /* Coordinate is wrapped */
 
-  char *type_fmt_sng(nc_type);
   char *unit_sng="";
   /* fxm: strings statically allocated with MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
   /* Length should be computed at run time but is a pain */
@@ -1281,7 +1282,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
     nc_type att_typ;
 
     /* Does variable have character attribute named units_nm? */
-    rcd=nco_inq_attid(in_id,var.id,units_nm,&att_id);
+    rcd=nco_inq_attid_flg(in_id,var.id,units_nm,&att_id);
     if(rcd == NC_NOERR){
       (void)nco_inq_att(in_id,var.id,units_nm,&att_typ,&att_sz);
       if(att_typ == NC_CHAR){
@@ -1463,7 +1464,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
 	  /* Memory region is not NUL-terminated, print block of chars instead */
 	  /* Print block of chars inside single quotes */
 	  /* Re-use dmn_sng for temporary format string */
-	  (void)sprintf(dmn_sng,"%%.%lis",dmn_cnt[var.nbr_dim-1]);
+	  (void)sprintf(dmn_sng,"%%.%lic",dmn_cnt[var.nbr_dim-1]);
 	  (void)sprintf(var_sng,"%%s%c%%li--%%li%c='%s' %%s",arr_lft_dlm,arr_rgt_dlm,dmn_sng);
 	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+dmn_cnt[var.nbr_dim-1]-1L,var.val.cp+lmn,unit_sng);
 	} /* endif */
@@ -1510,7 +1511,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   } /* end if nbr_dim > 0*/
 
   /* Free space allocated for variable */
-  (void)free(var.val.vp);
+  if(var.val.vp != NULL) (void)free(var.val.vp); var.val.vp=NULL;
   (void)free(var.nm);
   if(strlen(unit_sng) > 0) (void)free(unit_sng);
  
