@@ -37,7 +37,7 @@ AC_PROG_LIBTOOL
 
 # disable maintainer-only options in generated Makefiles unless the flag
 # --enable-maintainer-mode is given at configure time
-#AM_MAINTAINER_MODE
+AM_MAINTAINER_MODE
 
 # Checks for library functions; DEFINE's put in config.h
 AC_FUNC_MALLOC

@@ -70,6 +70,7 @@ EXEEXT = @EXEEXT@
 LEX = @LEX@
 LIBTOOL = @LIBTOOL@
 LN_S = @LN_S@
+MAINT = @MAINT@
 MAKEINFO = @MAKEINFO@
 OBJDUMP = @OBJDUMP@
 OBJEXT = @OBJEXT@
@@ -189,7 +190,7 @@ OBJECTS = $(libnco_la_OBJECTS) $(ncap_OBJECTS) $(ncatted_OBJECTS) $(ncdiff_OBJEC
 all: all-redirect
 .SUFFIXES:
 .SUFFIXES: .S .c .l .lo .o .obj .s .y
-$(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4) 
 	cd $(top_srcdir) && $(AUTOMAKE) --foreign --include-deps src/nco/Makefile
 
 Makefile: $(srcdir)/Makefile.in  $(top_builddir)/config.status
