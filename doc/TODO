@@ -60,8 +60,6 @@ valid workaround.
 111. Investigate whether using ncwa to average files where variables of type 
 NC_CHAR have a record dimension is causing core dumps or other problems.
 i.e., LSM variable timecom caused subtle ncra problems for a while.
-112. Change ncwa to allow averaging dimensions not to be in processed variables.
-i.e., ncwa -O -I -a lat,lon -v PS -w gw -d lat,0.,90. sld012d_8589.nc foo.nc
 ************************************************************************
 End NCO Wish list
 ************************************************************************
