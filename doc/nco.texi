@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.258 2004-08-08 00:30:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.259 2004-08-08 05:55:32 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6699,10 +6699,10 @@ Reversing the @code{lat} dimension means re-ordering the data so that
 latitude values decrease monotonically from north to south.
 Accomplish this with
 @example
+% ncpdq -a -lat in.nc out.nc
 % ncks -C -H -v lat in.nc
 lat[0]=-90
 lat[1]=90
-% ncpdq -a -lat in.nc out.nc # Dangerous, whitespace before "-lat"
 % ncks -C -H -v lat out.nc
 lat[0]=90
 lat[1]=-90
