@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.h,v 1.18 2004-07-29 01:26:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.h,v 1.19 2004-07-29 01:47:28 zender Exp $ */
 
 /* Purpose: Conform dimensions */
 
@@ -52,18 +52,16 @@ nco_dmn_avg_rdr_prp /* [fnc] Process dimension string list into dimension struct
 
 int /* O [enm] Return success code */
 nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
-(const var_sct * const var_in, /* I [ptr] Variable whose dimensions and data to re-order */
- var_sct * const var_out, /* I/O [ptr] Variable with re-ordered dimensions and data */
+(const var_sct * const var_in, /* I [ptr] Variable with metadata and data in original order */
+ var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be re-ordered */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_rdr), /* I [sct] List of dimension structures in new order */
  const int dmn_rdr_nbr, /* I [nbr] Number of dimension structures in structure list */
  int * const dmn_idx_out_in); /* O [idx] Dimension correspondence, output->input */
 
 int /* O [enm] Return success code */
 nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
-(const var_sct * const var_in, /* I [ptr] Variable whose dimensions and data to re-order */
- var_sct * const var_out, /* I/O [ptr] Variable with re-ordered dimensions and data */
- CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_rdr), /* I [sct] List of dimension structures in new order */
- const int dmn_rdr_nbr, /* I [nbr] Number of dimension structures in structure list */
+(const var_sct * const var_in, /* I [ptr] Variable with metadata and data in original order */
+ var_sct * const var_out, /* I/O [ptr] Variable whose data will be re-ordered */
  const int * const dmn_idx_out_in); /* I [idx] Dimension correspondence, output->input */
 
 #ifdef __cplusplus

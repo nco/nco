@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.5 2004-07-29 01:26:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.6 2004-07-29 01:47:28 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -89,8 +89,8 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.5 2004-07-29 01:26:10 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.5 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.6 2004-07-29 01:47:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.6 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:Rrt:v:xz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -447,7 +447,7 @@ main(int argc,char **argv)
      firstprivate(): 
      shared(): 
      private(): */
-#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,dmn_idx_out_in,dmn_rdr,dmn_rdr_nbr,fp_stderr,fp_stdout,in_id,nbr_var_prc,out_id,prg_nm,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,dmn_idx_out_in,fp_stderr,fp_stdout,in_id,nbr_var_prc,out_id,prg_nm,rcd,var_prc,var_prc_out)
 #endif /* not _OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
@@ -467,10 +467,8 @@ main(int argc,char **argv)
 	var_prc_out[idx]->val=var_prc[idx]->val;
       } /* endif */
 
-      if(dbg_lvl > 2) (void)fprintf(fp_stdout,"%s: DEBUG: nco329 About to nco_nco_var_dmn_rdr() %s\n",prg_nm,var_prc[idx]->nm);
-
       /* Change dimension ordering of values */
-      rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx]);
+      rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx]);
 
       /* Free current input buffer */
       var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);

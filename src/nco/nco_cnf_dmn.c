@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.19 2004-07-29 01:26:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.20 2004-07-29 01:47:28 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -357,8 +357,8 @@ nco_dmn_avg_rdr_prp /* [fnc] Process dimension string list into dimension struct
 
 int /* O [enm] Return success code */
 nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
-(const var_sct * const var_in, /* I [ptr] Variable whose dimensions and data to re-order */
- var_sct * const var_out, /* I/O [ptr] Variable with re-ordered dimensions and data */
+(const var_sct * const var_in, /* I [ptr] Variable with metadata and data in original order */
+ var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be re-ordered */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_rdr), /* I [sct] List of dimension structures in new order */
  const int dmn_rdr_nbr, /* I [nbr] Number of dimension structures in structure list */
  int * const dmn_idx_out_in) /* O [idx] Dimension correspondence, output->input */
@@ -539,7 +539,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   
   if(dbg_lvl_get() == 3){
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
-      (void)fprintf(stdout,"%s: DEBUG %s maps dimension %s (ordinal, ID) from (%d,%d) to (%d,%d)\n",prg_nm_get(),fnc_nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
+      (void)fprintf(stdout,"%s: DEBUG %s re-ordering metadata for variable %s maps dimension %s from (ordinal, ID)=(%d,%d) to (%d,%d)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
     } /* end loop over dmn_in */
   } /* endif dbg */
   
@@ -548,10 +548,8 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
 
 int /* O [enm] Return success code */
 nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
-(const var_sct * const var_in, /* I [ptr] Variable whose dimensions and data to re-order */
- var_sct * const var_out, /* I/O [ptr] Variable with re-ordered dimensions and data */
- CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_rdr), /* I [sct] List of dimension structures in new order */
- const int dmn_rdr_nbr, /* I [nbr] Number of dimension structures in structure list */
+(const var_sct * const var_in, /* I [ptr] Variable with metadata and data in original order */
+ var_sct * const var_out, /* I/O [ptr] Variable whose data will be re-ordered */
  const int * const dmn_idx_out_in) /* I [idx] Dimension correspondence, output->input */
 {
   /* Purpose: Re-order dimensions in a given variable
@@ -600,7 +598,7 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   dmn_id_out=var_out->dmn_id;
   dmn_in_nbr_m1=dmn_in_nbr-1;
   dmn_out=var_out->dim;
-  dmn_out=var_in->dim;
+  dmn_in=var_in->dim;
   typ_sz=nco_typ_lng(var_out->type);
   val_in_cp=(char *)var_in->val.vp;
   val_out_cp=(char *)var_out->val.vp;
