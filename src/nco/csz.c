@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.27 1999-10-15 18:10:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.28 1999-10-15 21:07:33 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -45,14 +45,14 @@
 void 
 Exit_gracefully(void)
 {
-  char *time_buf_finish;
+  char *time_bfr_end;
   time_t clock;
   
   /* end the clock */  
   
   clock=time((time_t *)NULL);
-  time_buf_finish=ctime(&clock);
-/*  (void)fprintf(stderr,"\tfinish = %s\n",time_buf_finish);*/
+  time_bfr_end=ctime(&clock);
+/*  (void)fprintf(stderr,"\tend = %s\n",time_bfr_end);*/
 
   (void)fclose(stderr);
   (void)fclose(stdin);

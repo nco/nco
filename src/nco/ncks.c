@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.12 1999-10-04 05:13:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.13 1999-10-15 21:07:34 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -72,10 +72,10 @@ main(int argc,char **argv)
   char *fl_out;
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */ 
-  char *time_buf_srt;
+  char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.12 1999-10-04 05:13:36 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.12 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.13 1999-10-15 21:07:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.13 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -102,7 +102,7 @@ main(int argc,char **argv)
   /* Start the clock and save the command line */  
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
-  time_buf_srt=ctime(&clock);
+  time_bfr_srt=ctime(&clock);
   
   /* Get the program name and set the enum for the program (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);

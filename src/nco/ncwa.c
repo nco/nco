@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.22 1999-10-15 18:01:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.23 1999-10-15 21:07:35 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -69,12 +69,12 @@ main(int argc,char **argv)
   char *fl_out;
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */ 
-  char *time_buf_srt;
+  char *time_bfr_srt;
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.22 1999-10-15 18:01:35 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.22 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.23 1999-10-15 21:07:35 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.23 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -129,7 +129,7 @@ main(int argc,char **argv)
   /* Start the clock and save the command line */  
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
-  time_buf_srt=ctime(&clock);
+  time_bfr_srt=ctime(&clock);
   
   /* Get the program name and set the enum for the program (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);

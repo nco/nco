@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.40 1999-10-15 18:22:11 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.41 1999-10-15 21:07:32 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -295,7 +295,7 @@ ifeq ($(PVM_ARCH),AIX)
 C++ := xlC
 #CC := gcc
 CC := cc
-CPP := gcc
+CPP := cc
 # NB: Hack to make AIX look like LINUX (g77 + gcc + g++)
 CPPFLAGS := -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
 FC := xlf

@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.24 1999-10-15 18:01:34 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.25 1999-10-15 21:07:33 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
@@ -279,12 +279,13 @@ as having been fixed in the latest revision.
 <H2>Using NCO at NCAR</H2>
 <P>NCO is built and maintained at NCAR, and so user's of NCAR machines should take advantage of pre-built, up-to-date NCO executables.
 The NCO executables are maintained in many different locations at NCAR:
+<DD>ACD dust.acd.ucar.edu (Linux 2.2.5): /gs/zender/bin/LINUX</DD>
+<DD>ACD garcia.acd.ucar.edu (Digital OSF1): /usr/local/bin</DD>
 <DD>CGD network (Solaris 2.6): /contrib/bin</DD>
 <DD>CGD/SCD Dataproc (IRIX 6.5): /contrib/bin</DD>
-<DD>SCD Ute (IRIX 6.5): /home/ute/zender/bin/SGIMP64</DD>
+<DD>SCD Blackforest (AIX): /home/blackforest/zender/bin/AIX</DD>
 <DD>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</DD>
-<DD>ACD garcia.acd.ucar.edu (Digital OSF1): /usr/local/bin</DD>
-<DD>ACD dust.acd.ucar.edu (Linux 2.2.5): /gs/zender/bin/LINUX</DD>
+<DD>SCD Ute (IRIX 6.5): /home/ute/zender/bin/SGIMP64</DD>
 
 <HR></P>
 
@@ -293,27 +294,14 @@ The NCO executables are maintained in many different locations at NCAR:
 <H1>Are you encountering NCO problems on an SGI machine?</H1>
 <P>The netCDF 3.3.x distribution suffers from unpredictable and weird behavior on SGI machines (apparently related to NFS-mounted partitions).
 As a result, NCO operators, especially <TT>ncwa</TT>, may core dump unless you upgrade to the new netCDF3.4.x distribution.
-NCAR's Winterpark has been upgraded to netCDF3.4.
+NCAR machines have all been upgraded to netCDF3.4+.
 All users of NCO on SGI64 machines at other institutions are urged to upgrade to netCDF3.4.x which is available from URL <A HREF="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z</A>.</P>
 
 <H1>NCO on the Cray T90</H1>
 <P>NCO should be compiled with the <TT>-DC_ONLY</TT> flag on the Cray
-T90; otherwise incorrect answers may result.
-It appears that NCO assumes the wrong equivalence for the default
-sizes of either floating point or integer types on the T90, and that
-passing data between the Fortran and C halves of NCO is therefore
-causing problems.
-Without access to a T90, I cannot verify exactly what is happening,
-but avoiding the C-Fortran interface problems by compiling with
-<TT>-DC_ONLY</TT> appears to fix the problem. 
-Compiling with <TT>-DC_ONLY</TT> replaces all Fortran code with C
-code. 
-The only downside to using <TT>-DC_ONLY</TT> is that averaging
-performance may decrease somewhat since the C averaging code may need
-to perform more pointer arithmetic than the Fortran code (depending on
-the compiler).
-Due to problems such as this, future versions of NCO will probably
-eliminate the Fortran default in favor of 100% C code.
+T90 to avoid C-Fortran interface problems; otherwise incorrect answers
+may result. 
+As of NCO 1.1.38, this is the default.
 </P>
 <HR></P>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.10 1999-10-04 05:13:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.11 1999-10-15 21:07:33 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -98,10 +98,10 @@ main(int argc,char **argv)
   char *fl_out;
   char *fl_pth_lcl=NULL; /* Option l */ 
   char *fl_pth=NULL; /* Option p */ 
-  char *time_buf_srt;
+  char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.10 1999-10-04 05:13:35 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.10 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.11 1999-10-15 21:07:33 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.11 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -123,7 +123,7 @@ main(int argc,char **argv)
   /* Start the clock and save the command line */  
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
-  time_buf_srt=ctime(&clock);
+  time_bfr_srt=ctime(&clock);
   
   /* Get the program name and set the enum for the program (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
