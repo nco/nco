@@ -1,5 +1,8 @@
 2000-06-02  Charlie Zender  <zender@uci.edu>
 
+	* Tagged nco1_1_49 as clean new version to start work from
+	sourceforge without any overlaps with 1_1_48
+
 	* Had to re-tag nco1_1_48 because sourceforge CVS repository was
 	slightly out of sync with CGD repository
 
