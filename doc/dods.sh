@@ -1,6 +1,11 @@
-# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.7 2005-01-07 23:12:20 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.8 2005-02-17 02:38:12 zender Exp $
 
 # Purpose: Install DODS prior to building NCO as DODS-enabled clients
+
+# Testing: 
+# NCO/SDO DODS server/repository is at 
+# soot.ess.uci.edu:/var/www/html/dodsdata
+# http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/
 
 # Usage: 
 # Set installation directory below ($DODS_ROOT)
@@ -34,7 +39,7 @@ DODS_ROOT=`pwd`
 # On Opteron, may want to set 64-bit?
 # 20041222: DODS configure scripts do not recognize GNU_TRP=x86_64-unknown-linux-gnu
 # CFLAGS='-m64' CXXFLAGS='-m64' ./configure --prefix=${DODS_ROOT}
-./configure --prefix=${DODS_ROOT}
+CC='gcc-3.4' CXX='g++-3.4' ./configure --prefix=${DODS_ROOT}
 # Build necessary libraries
 make
 # 'make' usually fails because we did not extract (and build) all DODS sources
