@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.33 1999-12-15 02:51:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.34 1999-12-27 03:39:52 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -1061,7 +1061,7 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
 
   (void)fprintf(stderr,"NCO netCDF Operators version %s by Charlie Zender\n",cvs_vrs_sng);
   (void)fprintf(stderr,"%s version %s (%s) \"%s\"\nCopyright 1995--1999 University Corporation for Atmospheric Research\n",prg_nm_get(),vrs_sng,date_sng,nmn_get());
-  (void)fprintf(stderr,"Portions copyright 1999 Regents of the University of California\n");
+  (void)fprintf(stderr,"Portions copyright 1999--2000 Regents of the University of California\n");
   (void)free(vrs_sng);
   (void)free(cvs_vrs_sng);
 } /* end copyright_prn() */

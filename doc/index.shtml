@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.31 1999-12-15 02:51:38 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.32 1999-12-27 03:39:51 zender Exp $
 
 Purpose: NCO homepage
 
@@ -152,6 +152,11 @@ User's Guide</A>. </P>
 
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
+
+<P>1999/12/26: 
+Added support for printing all character arrays as strings in <TT>ncks</TT>.
+Added documentation and examples of stride capability to <TT>ncks</TT>,
+<TT>ncra</TT>, and <TT>ncrcat</TT> portions of User's Guide.
 
 <P>1999/12/14: 
 Added feature to <TT>ncatted</TT> so that C-language escape sequences
@@ -326,6 +331,23 @@ All users of NCO on SGI64 machines at other institutions are urged to upgrade to
 
 <P>NCO may not build correctly on SGI machines unless the latest
 version of GNU make (version 3.78.1) is installed.</P>
+
+<P>Users of NCO on IRIX 6.5 machines at NCAR (dataproc and ute) may
+experience unpredictable behavior. 
+One symptom is that the files produced are not valid netCDF files and
+so cannot be read.
+There are no known cases of data corruption.
+As far as I can determine, the problems are not due to NCO. 
+They are most likely caused by some combination of IRIX, the SGI
+compilers, netCDF, and NFS.
+As in the past there are workarounds:
+Storing data in <TT>/home/dataproc/username</TT> or <TT>/fs/cgd/data0/username</TT>
+rather than <TT>/usr/tmp/username</TT> appears to solve this problem.
+Another solution is to store data in <TT>/fs/cgd/data0/username</TT> and
+execute NCO commands from a non-IRIX operating system that is
+cross-mounted to <TT>/fs/cgd/data</TT> (e.g., from Solaris, Linux,
+Cray machines).
+</P>
 
 <H1>NCO on the Cray T90</H1>
 <P>NCO should be compiled with the <TT>-DC_ONLY</TT> flag on the Cray

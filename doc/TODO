@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.38 1999-12-14 22:39:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.39 1999-12-27 03:39:51 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -58,10 +58,6 @@ i.e., LSM variable timecom caused subtle ncra problems for a while.
 116. Weighting an integer by a float causes weight to be converted to integer first, so that weighting, e.g., nlons by gw, will cause zero in denominator since all gw's convert to integer value of 0. This causes core dumps with, e.g., 
 ncwa -O -a lat -w gw foo.nc foo2.nc
 Thus the best fix for #116 is to implement #81 ASAP
-117. Update User's Guide to reflect new cross-file hyperslabbing capabilities 
-(including stride) of ncra and ncrcat:
-ncrcat -d time,1,100 in1.nc in2.nc ... out.nc
-ncrcat -d time,1,100,12 in1.nc in2.nc ... out.nc
 120. Allow superfluous, but conforming, files at beginning of ncra, ncrcat,
 just like they are already allowed at end. 
 This means relaxing restriction that first requested record must be in first file.
@@ -96,6 +92,21 @@ ncra -O -C -d time,0,1 -v rec_var_flt_mss_val_dbl in.nc foo.nc ; ncks -H foo.nc
 Not too worried about this since it is Cray specific, 
 Maybe 1.0e36d does not convert to 1.0e36f on Crays?
 135. Implement OpenMP support around variable loops in ncwa
+138. If fastest varying dimension of NC_CHAR variable is of size one,
+then should not expect it to be NUL-terminated.
+139. ncks does not correctly print coordinate indices in hyperslabs with wrapping
+ncks -H -C -v one_dim_rec_var -d time,9,6 ~/nc/nco/data/in.nc
+Must compute dim_ss using WRP information for each dimension
+140. ncks prints dimensional indices relative to disk values, but
+variable index relative to hyperslab origin for all data types except
+NC_CHAR. For NC_CHAR the variable index is also relative to the disk
+value, not the hyperslab origin. 
+141. NC_CHAR printing should include final dimension coordinates and
+character ranges relative to disk. Change variable index-ranges to be
+relative to hyperslab to be consistent with all other data types.
+142. Implement some way of discriminating between NUL-terminated
+strings and non-NUL-terminated characters arrays in ncks printouts.
+143. Add switch to turn off non-monotonic warning messages in ncra, ncrcat
 ************************************************************************
 End NCO Wish list
 ************************************************************************

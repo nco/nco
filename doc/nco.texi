@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.38 1999-12-15 03:53:14 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.39 1999-12-27 03:39:51 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -49,12 +49,12 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.1.43
-@set doc-edition 1.1.43
-@set NCAR-copyright-years 1995, 1996, 1997, 1998, 1999
-@set UC-copyright-years 1999
+@set nco-edition 1.1.44
+@set doc-edition 1.1.44
+@set NCAR-copyright-years 1995, 1996, 1997, 1998, 1999, 2000
+@set UC-copyright-years 1999, 2000
 @set update-year 1999
-@set update-date 6 December 1999
+@set update-date 26 December 1999
 @set update-month December 1999
 
 @c Experiment with smaller amounts of whitespace between chapters and sections.
@@ -1343,7 +1343,7 @@ disabled by specifying @samp{-R} on the command line.
 @cartouche
 @noindent
 Availability: @code{ncdiff}, @code{ncea}, @code{ncecat}, @code{ncflint},
-@code{ncks},  @code{ncra}, @code{ncrcat}, @code{ncwa}@*
+@code{ncks}, @code{ncra}, @code{ncrcat}, @code{ncwa}@*
 Key switches: @samp{-v}, @samp{-x}@*
 @end cartouche
 Variable subsetting is implemented with the @samp{-v @var{var}[,@dots{}]} and
@@ -1503,7 +1503,7 @@ decreasing).
 The only exception to this is when you are indeed specifying a wrapped
 coordinate.  
 The distinction is crucial to understand because the points selected by,
-e.g., @code{-d longitude,50.,340.} are exactly the complement of the
+e.g., @code{-d longitude,50.,340.}, are exactly the complement of the
 points selected by @code{-d longitude,340.,50.}.
 
 Not specifying this option is equivalent to specifying full ranges of
@@ -1580,21 +1580,19 @@ values (@pxref{Hyperslabs}).
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
 @cartouche
 @noindent
-Availability: @code{ncks}@*
+Availability: @code{ncks}, @code{ncra}, @code{ncrcat}@*
 Key switches: @samp{-d}@*
 @end cartouche
 @code{ncks} offers support for specifying a @dfn{stride} for any
-hyperslab 
-@footnote{Actually, the @var{stride} argument is valid for all operators
-which accept the @samp{-d} hyperslab option.
-However, using @var{stride} with operators besides @code{ncks} is not 
-supported, and may never be.
-This limitation is largely due to the complicated bookkeeping required
-to keep track of strides across multi-file input data sets.}.  
+hyperslab, while @code{ncra} and @code{ncrcat} suport the @var{stride}
+argument only for the record dimension.
 The @var{stride} is the spacing between consecutive points in a
 hyperslab. 
 A @var{stride} of 1 means pick all the elements of the hyperslab, but a
 @var{stride} of 2 means skip every other element, etc.
+Using the @var{stride} option with @code{ncra} and @code{ncrcat} makes
+it possible, for instance, to average or concatenate regular intervals
+across multi-file input data sets.
 
 The @var{stride} is specified as the optional fourth argument to the
 @samp{-d} hyperslab specification:  
@@ -1607,8 +1605,8 @@ Thus using @samp{-d time,,,2} is valid but @samp{-d time,,,2.0} and
 When @var{stride} is specified but @var{min} is not, there is an
 ambiguity as to whether the extracted hyperslab should begin with (using
 C-style, 0-based indexes) element 0 or element @samp{stride-1}.
-NCO resolves this by alway choosing element 0 to be the first element of
-the hyperslab.
+NCO must resolve this ambiguity and it chooses element 0 as the first  
+element of the hyperslab when @var{min} is not specified.
 Thus @samp{-d time,,,@var{stride}} is syntactically equivalent to
 @samp{-d time,0,,@var{stride}}.
 This means, for example, that specifying the operation @samp{-d
@@ -1638,6 +1636,16 @@ extraction in one operation:
 ncks -d time,2,,12 8501_8912.nc 8589_03.nc
 @end example
 For more information on @code{ncks} @xref{ncks netCDF Kitchen Sink}.
+
+The @var{stride} option is supported by @code{ncra} and @code{ncrcat}
+for the record dimension only.
+This makes it possible, for instance, to average or concatenate regular
+intervals across multi-file input data sets.
+
+@example
+ncks -d time,2,,12 8501_8912.nc 8589_03.nc
+@end example
+ncrcat -d time,1,100,12 in1.nc in2.nc ... out.nc
 
 @node Missing values, Suppressing interactive prompts, Stride, Common features
 @section Missing values
@@ -1842,7 +1850,7 @@ The CSM netCDF convention is described at
 <a href="http://www.cgd.ucar.edu/csm/experiments/output.format.html"> http://www.cgd.ucar.edu/csm/experiments/output.format.html</a>.
 @end ifhtml
 @ifclear html
-@c DBG XXX: printed manual is not hyphenating this long web-page name.
+@c fxm: printed manual is not hyphenating this long web-page name.
 @code{http://@-www.cgd.ucar.edu/@-csm/@-experiments/@-output.@-format.@-html}.
 @end ifclear
 Most of the CSM netCDF convention is transparent to NCO
@@ -2235,7 +2243,8 @@ Append the string "Data version 2.0.\n" to the global attribute
 @example
 ncatted -O -a history,global,a,c,"Data version 2.0\n" in.nc 
 @end example
-Note the use of embedded C language @code{printf()}-style escape sequences.
+Note the use of embedded C language @code{printf()}-style escape
+sequences. 
 
 Change the value of the @code{long_name} attribute for variable @code{T}
 from whatever it currently is to "temperature":
@@ -2439,9 +2448,15 @@ ncra foo.$idx t_anm_8589_$idx.nc
 end
 @end example
 @noindent
+Note that @code{ncra} understands the @code{stride} argument so the two
+commands inside the loop may be combined into the single command 
+@example
+ncra -F -d time,$idx,,12 t_anm_8501_8912.nc foo.$idx
+@end example
+@noindent
 Finally, use @code{ncrcat} to concatenate the 12 average monthly anomaly
-files into one file which then contains the entire seasonal cycle of the
-monthly anomalies:
+files into one twelve-record file which contains the entire seasonal
+cycle of the monthly anomalies:
 @example
 ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @end example
@@ -2972,6 +2987,22 @@ files like reports or papers.
 @xref{ncatted netCDF Attribute Editor}, for more details on string
 formatting and special characters. 
 
+One dimensional arrays of characters stored as netCDF variables are 
+automatically printed as strings, whether or not they are
+NUL-terminated, e.g.,
+@example
+ncks -v fl_nm in.nc
+@end example
+@noindent
+The @code{%c} formatting code is useful for printing 
+multidimensional arrays of characters representing fixed length strings
+@example
+ncks -H -s "%c" -v fl_nm_arr in.nc
+@end example
+@noindent
+Using the @code{%s} format code on strings which are not NUL-terminated 
+(and thus not technically strings) is likely to result in a core dump.
+
 Create netCDF @file{out.nc} containing all variables, and any associated
 coordinates, except variable @code{time}, from netCDF @file{in.nc}:
 @example
@@ -3033,7 +3064,7 @@ For more details @xref{Wrapped coordinates}.
 SYNTAX
 @example
 ncra [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
+[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]]
 [-x] @var{input-files} @var{output-file}   
 @end example
@@ -3046,19 +3077,25 @@ input files.
 @cindex degenerate dimensions
 The record dimension is retained as a degenerate (size 1) dimension in
 the output variables.
+@xref{Averaging vs. Concatenating}, for a description of the
+distinctions between the various averagers and concatenators. 
+
 Input files may vary in size, but each must have a record dimension.
-The record coordinate, if any, should be monotonic (or else non-fatal
+The record coordinate, if any, should be monotonic for (or else non-fatal
 warnings may be generated).
+@cindex hyperslab
+Hyperslabs of the record dimension which include more than one file are
+handled correctly.
+@cindex stride
+@code{ncra} supports the @var{stride} argument to the @samp{-d}
+hyperslab option for the record dimension only, @var{stride} is not
+supported for non-record dimensions.
+
 @code{ncra} weights each record (e.g., time slice) in the
 @var{input-files} equally.
 @code{ncra} does not attempt to see if, say, the @code{time} coordinate
 is irregularly spaced and thus would require a weighted average in order
 to be a true time average.
-
-Hyperslabs of the record dimension which include more than one file are
-handled correctly.
-@xref{Averaging vs. Concatenating}, for a description of the
-distinctions between the various averagers and concatenators. 
 
 @noindent
 EXAMPLES
@@ -3091,6 +3128,13 @@ ncra -F -d time,12,14 85.nc 86.nc 87.nc 8512_8602.nc
 @noindent
 The file @file{87.nc} is superfluous, but does not cause an error.
 The @samp{-F} turns on the Fortran (1-based) indexing convention.
+@cindex stride
+The following uses the @var{stride} option to average all the March
+temperature data from multiple input files into a single output file
+@example
+ncra -F -d time,3,,12 -v temperature 85.nc 86.nc 87.nc 858687_03.nc
+@end example
+@xref{Stride}, for a description of the @var{stride} argument.
 
 Assume the @var{time} coordinate is incrementally numbered such that
 January, 1985 = 1 and December, 1989 = 60.
@@ -3111,7 +3155,7 @@ ncra -d time,6.,54. ??.nc 8506_8906.nc
 SYNTAX
 @example
 ncrcat [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
+[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]]
 [-x] @var{input-files} @var{output-file}   
 @end example
@@ -3129,8 +3173,14 @@ distinctions between the various averagers and concatenators.
 Input files may vary in size, but each must have a record dimension.
 The record coordinate, if any, should be monotonic (or else non-fatal
 warnings may be generated).
-Hyperslabs of the record dimension which include more than one file are 
+@cindex hyperslab
+Hyperslabs of the record dimension which include more than one file are
 handled correctly.
+@cindex stride
+@code{ncra} supports the @var{stride} argument to the @samp{-d}
+hyperslab option for the record dimension only, @var{stride} is not
+supported for non-record dimensions.
+
 @cindex ARM conventions
 @code{ncrcat} applies special rules to ARM convention time fields (e.g.,
 @code{time_offset}).
@@ -3168,6 +3218,14 @@ ncrcat -F -d time,12,14 85.nc 86.nc 87.nc 8512_8602.nc
 @noindent
 The file @file{87.nc} is superfluous, but does not cause an error.
 The @samp{-F} turns on the Fortran (1-based) indexing convention.
+@cindex stride
+
+The following uses the @var{stride} option to concatenate all the March
+temperature data from multiple input files into a single output file
+@example
+ncrcat -F -d time,3,,12 -v temperature 85.nc 86.nc 87.nc 858687_03.nc
+@end example
+@xref{Stride}, for a description of the @var{stride} argument.
 
 Assume the @var{time} coordinate is incrementally numbered such that
 January, 1985 = 1 and December, 1989 = 60.

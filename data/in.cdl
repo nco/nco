@@ -24,12 +24,12 @@
 
 netcdf in {
 dimensions:
-	band=2,lat=2,lev=3,rlev=3,lon=4,time=unlimited;
+	band=2,lat=2,lev=3,rlev=3,lon=4,char_dim=80,fl_dim=3,time=unlimited;
 variables:
 	:convention = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.11 1999-12-08 23:40:54 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.12 1999-12-27 03:39:50 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -40,6 +40,10 @@ variables:
 	rlev:purpose = "Monotonically decreasing coordinate pressure";
 	float lon(lon);
 	double time(time);
+
+	char fl_dim(fl_dim);
+	fl_dim:long_name = "Character coordinate";
+	fl_dim:units = "[chr]";
 
 	long nbdate;
 	nbdate:long_name = "base date as 6 or 8 digit integer (YYMMDD or YYYYMMDD)";
@@ -86,6 +90,21 @@ variables:
 
 	char char_var;
 	char_var:long_name = "char";
+
+	char fl_nm(char_dim);
+	fl_nm:long_name = "Variable contains a file name";
+
+	char fl_nm_arr(fl_dim,char_dim);
+	fl_nm_arr:long_name = "Variable that contains a short array of file names";
+	fl_nm_arr:units = "[sng]";
+
+	char non_nul_trm_char_one_dim(lon);
+	non_nul_trm_char_one_dim:long_name = "Variable contains a one-dimensional array of characters that is not NUL-terminated";
+	non_nul_trm_char_one_dim:units = "[chr]";
+
+	char non_nul_trm_char_two_dim(fl_dim,lon);
+	non_nul_trm_char_two_dim:long_name = "Variable contains a two-dimensional array of characters that are not NUL-terminated";
+	non_nul_trm_char_two_dim:units = "[chr]";
 
 	byte byte_var;
 	byte_var:long_name = "byte";
@@ -176,6 +195,10 @@ variables:
 	one_dim_rec_var:long_name = "one dimensional record variable";
 	one_dim_rec_var:units = "second";
 
+	float tpt(time);
+	tpt:long_name = "one dimensional record variable";
+	tpt:units = "second";
+
 	float rec_var_flt_mss_val_flt(time);
 	rec_var_flt_mss_val_flt:long_name = "record variable, float, with float missing values";
 	rec_var_flt_mss_val_flt:missing_value = 1.0e36f;
@@ -210,6 +233,8 @@ data:
 	char_var="z";
 	char_var="z";
 	double_var=10.;
+	fl_nm="/home/zender/nc/nco/data/in.cdl";
+	fl_dim="a","b","3";
 	float_var=10.;
 	g=9.8;
 	gw=10.,10.;
@@ -228,14 +253,17 @@ data:
 	mss_val_all=1.0e36,1.0e36,1.0e36,1.0e36;
 	negative_one=-1.;
 	no_mss_val=73,1.0e36,73,1.0e36;
+	non_nul_trm_char_one_dim='a','b';
+	non_nul_trm_char_two_dim="abcd","efgh","ijkm";
 	one=1.;
 	one_dim_rec_var=1,2,3,4,5,6,7,8,9,10;
-	rec_var_flt_mss_val_flt=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
-	rec_var_flt_mss_val_dbl=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
+	tpt=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8,273.9,273.10;
 	one_dim_rec_var_sng="Hello Wor";
 	one_dim_var=1.,10.;
 	rec_var_dbl=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_flt=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
+	rec_var_flt_mss_val_dbl=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
+	rec_var_flt_mss_val_flt=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
 	rlev=1000,500,100;
 	rz=0,5000,17000;
 	scalar_var=10.;
@@ -253,6 +281,9 @@ data:
  	date=640312,640313,640314,640315,640316,640317,640318,640319,640320,640321;
  	long_var=10;
  	nbdate=640312;
+	fl_nm_arr="/data/zender/dstccm04/dstccm04_8589_01.nc",
+		"/data/zender/dstccm04/dstccm04_8589_02.nc",
+		"/data/zender/dstccm04/dstccm04_8589_03.nc";
 	two_dim_rec_var_sng="abc",
 				"bcd",
 				"cde",

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.41 1999-12-14 22:39:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.42 1999-12-27 03:39:52 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -1970,7 +1970,7 @@ dim_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
   
   /* We now have the final list of dimensions to extract. Phew. */
   
-  /* Free the unneeded space in the output dimension list */ 
+  /* Free unused space in output dimension list */ 
   dim=(nm_id_sct *)realloc((void *)dim,*nbr_dim*sizeof(nm_id_sct));
   
   return dim;
@@ -1984,7 +1984,7 @@ var_srt_zero(var_sct **var,int nbr_var)
    int nbr_var: I number of structures in variable structure list
  */ 
 {
-  /* Routine to point the srt element of the variable structure to an array of zeroes */ 
+  /* Routine to point srt element of variable structure to array of zeroes */ 
 
   int idx;
   int idx_dim;
@@ -2002,7 +2002,7 @@ var_dup(var_sct *var)
    var_sct *var_dup(): O copy of input variable structure
  */ 
 {
-  /* Routine to malloc() and return a duplicate of the input var_sct */ 
+  /* Purpose: malloc() and return duplicate of input var_sct */ 
 
   var_sct *var_dup;
 
@@ -2010,7 +2010,7 @@ var_dup(var_sct *var)
 
   (void)memcpy((void *)var_dup,(void *)var,sizeof(var_sct));
 
-  /* Copy all dyamically allocated arrays that are currently defined in the original */ 
+  /* Copy all dyamically allocated arrays currently defined in original */ 
   if(var->val.vp != NULL){
     if((var_dup->val.vp=(void *)malloc(var_dup->sz*nctypelen(var_dup->type))) == NULL){
       (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in var_dup()\n",prg_nm_get(),var_dup->sz,nctypelen(var_dup->type),var_dup->nm);
@@ -2061,7 +2061,7 @@ dim_dup(dim_sct *dim)
    dim_sct *dim_dup(): O copy of input dimension structure
  */ 
 {
-  /* Routine to malloc() and return a duplicate of the input dim_sct */ 
+  /* Purpose: malloc() and return a duplicate of input dim_sct */ 
 
   dim_sct *dim_dup;
 
@@ -2098,7 +2098,7 @@ var_get(int nc_id,var_sct *var)
 
 var_sct *
 var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,bool *DO_CONFORM)
-     /* fxm: TODO #114. Fix var_conform_dim() so that the returned weight always has the same size tally array as the template variable */ 
+     /* fxm: TODO #114. Fix var_conform_dim() so returned weight always has same size tally array as template variable */
 
 /*  
    var_sct *var: I pointer to variable structure to serve as template
@@ -2109,9 +2109,8 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
    var_sct *var_conform_dim(): O pointer to conforming variable structure
 */
 {
-  /* Routine to return a copy of the second variable which has been stretched and
-     to match the dimensions of the first variable. 
-     Dimensions in var which are not in wgt will be present in the wgt_out, with the values
+  /* Purpose: Strech second variable to match dimensions of first variable
+     Dimensions in var which are not in wgt will be present in wgt_out, with values
      replicated from existing dimensions in wgt.
      By default, wgt's dimensions must be a subset of var's dimensions (MUST_CONFORM=true)
      If it is permissible for wgt not to conform to var then set MUST_CONFORM=false before calling this routine
@@ -2374,20 +2373,20 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	
       } /* end loop over var_lmn */
       
-    } /* end if the variable (and weight) are arrays, not scalars */
+    } /* end if variable (and weight) are arrays, not scalars */
     
     *DO_CONFORM=True;
-  } /* end if we had to stretch the weight to fit the variable */
+  } /* end if we had to stretch weight to fit variable */
   
   if(*DO_CONFORM == -1){
     (void)fprintf(stdout,"%s: ERROR *DO_CONFORM == -1 on exit from var_conform_dim()\n",prg_nm_get());
     exit(EXIT_FAILURE);
   } /* endif */ 
   
-  /* The current weight (wgt_out) now conforms to the current variable */ 
+  /* Current weight (wgt_out) now conforms to current variable */ 
   return wgt_out;
   
-} /* end var_conform_dim */ 
+} /* end var_conform_dim() */ 
 
 void
 var_dim_xrf(var_sct *var)
@@ -2395,15 +2394,15 @@ var_dim_xrf(var_sct *var)
    var_sct *var: I pointer to variable structure
 */
 {
-  /* Switch the pointers to the dimension structures so that var->dim points to var->dim->xrf.
-     Useful to make the dim element of a variable structure from var_dup() refer to the counterparts
-     of the dimensions directly associated with the variable it was duplicated from. */
+  /* Purpose: Switch pointers to dimension structures so var->dim points to var->dim->xrf.
+     Routine makes dim element of variable structure from var_dup() refer to counterparts
+     of dimensions directly associated with variable it was duplicated from */
   
   int idx;
   
   for(idx=0;idx<var->nbr_dim;idx++) var->dim[idx]=var->dim[idx]->xrf;
   
-} /* end var_xrf */ 
+} /* end var_xrf() */ 
 
 void
 dim_xrf(dim_sct *dim,dim_sct *dim_dup)
@@ -2412,12 +2411,12 @@ dim_xrf(dim_sct *dim,dim_sct *dim_dup)
    dim_sct *dim: I/O pointer to dimension structure
 */
 {
-  /* Make the xrf elements of the dimension structures point to eachother.  */ 
+  /* Make xrf elements of dimension structures point to eachother */ 
 
   dim->xrf=dim_dup;
   dim_dup->xrf=dim;
 
-} /* end dim_xrf */ 
+} /* end dim_xrf() */ 
 
 void
 var_xrf(var_sct *var,var_sct *var_dup)
@@ -2426,12 +2425,12 @@ var_xrf(var_sct *var,var_sct *var_dup)
    var_sct *var: I/O pointer to variable structure
 */
 {
-  /* Make the xrf elements of the variable structures point to eachother. */ 
+  /* Make xrf elements of variable structures point to eachother */ 
 
   var->xrf=var_dup;
   var_dup->xrf=var;
 
-} /* end var_xrf */ 
+} /* end var_xrf() */ 
 
 var_sct *
 var_conform_type(nc_type var_out_type,var_sct *var_in)
@@ -2441,7 +2440,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
    var_sct *var_conform_type(): O point to variable structure of type var_out_type
 */
 {
-  /* Purpose: Return a copy of the input variable typecast to a desired type */ 
+  /* Purpose: Return copy of input variable typecast to a desired type */ 
 
   long idx;
   long sz;
@@ -2484,7 +2483,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     var_in_mss_val=var_out->mss_val;
     var_out->mss_val.vp=(void *)malloc(nctypelen(var_out->type));
     (void)val_conform_type(var_in_type,var_in_mss_val,var_out_type,var_out->mss_val);
-    /* Free the original */ 
+    /* Free original */ 
     (void)free(var_in_mss_val.vp);
   } /* end if */
 
@@ -2492,7 +2491,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
   (void)cast_void_nctype(var_in->type,&val_in);
   (void)cast_void_nctype(var_out->type,&var_out->val);
   
-  /* Copy and typecast the entire array of values, using implicit coercion rules of C */ 
+  /* Copy and typecast entire array of values, using implicit coercion rules of C */
   switch(var_out_type){
   case NC_FLOAT:
     switch(var_in_type){
@@ -2550,7 +2549,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     } break;
   } /* end switch */ 
   
-  /* Un-typecast the pointer to values after access */
+  /* Un-typecast pointer to values after access */
   (void)cast_nctype_void(var_in->type,&val_in);
   (void)cast_nctype_void(var_out->type,&var_out->val);
   
@@ -2559,15 +2558,15 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
   
   return var_out;
   
-} /* end var_conform_type */ 
+} /* end var_conform_type() */ 
 
 void
 val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out)
 /*  
-   nc_type type_in: I type of the input value
-   ptr_unn val_in: I pointer to the input value
-   nc_type type_out: I type of the output value
-   ptr_unn val_out: I pointer to the output value
+   nc_type type_in: I type of input value
+   ptr_unn val_in: I pointer to input value
+   nc_type type_out: I type of output value
+   ptr_unn val_out: I pointer to output value
 */
 {
   /* Routine to fill val_out with a copy of val_in that has been typecast from 
@@ -4631,9 +4630,10 @@ usg_prn(void)
   if(strstr(opt_sng,"-D")) (void)fprintf(stdout,"-D dbg_lvl\tDebugging level\n");
   if(strstr(opt_sng,"-d")){
     if(prg == ncrename) (void)fprintf(stdout,"-d old_dim,new_dim Dimension's old and new names\n");
-    if(prg != ncrename && prg != ncks) (void)fprintf(stdout,"-d dim,[min][,[max]] Dimension's limits in hyperslab\n");
-    if(prg == ncks) (void)fprintf(stdout,"-d dim,[min][,[max]][,[stride]] Dimension's limits and stride in hyperslab\n");
-  } /* end if */
+    else if(prg == ncks) (void)fprintf(stdout,"-d dim,[min][,[max]][,[stride]] Dimension's limits and stride in hyperslab\n");
+    else if(prg == ncra || prg == ncrcat) (void)fprintf(stdout,"-d dim,[min][,[max]][,[stride]] Dimension's limits (any dimension) and stride (record dimension only) in hyperslab\n");
+    else (void)fprintf(stdout,"-d dim,[min][,[max]] Dimension's limits in hyperslab\n");
+  } /* end if -d */ 
   if(strstr(opt_sng,"-F")) (void)fprintf(stdout,"-F\t\tFortran indexing conventions (1-based) for I/O\n");
   if(strstr(opt_sng,"-H")) (void)fprintf(stdout,"-H\t\tPrint data\n");
   if(strstr(opt_sng,"-h")){

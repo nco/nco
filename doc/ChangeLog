@@ -1,3 +1,12 @@
+1999-12-26  Charlie Zender  <zender@dust.ps.uci.edu>
+
+	* Tagged this as nco1_1_44
+
+	* Documented record coordinate-stride capability for ncra, ncrcat
+	in nco.texi examples and command-line usage routines
+
+	* Added support for printing all character arrays as strings in ncks
+
 1999-12-14  Charlie Zender  <zender@dust.ps.uci.edu>
 
 	* Tagged this as nco1_1_43
