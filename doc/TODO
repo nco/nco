@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.58 2000-06-20 18:08:27 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.59 2000-06-25 18:39:47 zender Exp $ -*-text-*-
 
 *************
 NCO Wish list
@@ -21,7 +21,6 @@ NCO Wish list
 73. ia.sh contains example of numerically unstable ncwa operations that show need for IEEE trapping/warning
 75. Add warning to ncwa triggered by averaging over lat without weighting by gw with NCAR_CSM_FORMAT
 79. Allow ncrename .$var_nm syntax to work on all operators (so variables not present cause warning, not error)
-80. ncrcat should print warning not exit with error when a file does not contain record variable within specified hyperslab (maybe the valid hyperslab begins within the next file)
 81. Convert all data to double precision before arithmetic, then convert back after arithmetic. This is the only way to sensibly handle byte data, and #116 below
 82. Make libnco namespace-safe by prefixing all possibly dynamically loaded subroutines with, e.g., nco_
 83. Always build operators to link dynamically to libnco.so
@@ -123,7 +122,7 @@ implemented for lmt_typ = crd_val. This is an issue only when stride
 is non-unity.
 160. Add documentation of ncra, ncrcat superfluous file capabilities to nco.texi
 161. Make development installation not depend on old ~/nc/nco paths
-162. Add GiNaC (Computer Algebra System) support to ncap www.ginac.de
+162. Add GiNaC (Computer Algebra System) support to ncap www.ginac.de (maybe?)
 163. Figure out way to make doc/TAG and doc/VERSION change
 automagically. Currently must be updated manually unless distribute
 with nco_dst.pl
