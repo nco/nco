@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.12 2003-11-24 17:30:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.13 2003-12-21 19:32:28 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -202,6 +202,6 @@ char * /* O [sng] Mnemonic that describes current NCO version */
 nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "RIP Ed McMullin (1941--2003): musician, teacher, father, husband, pundit. http://dust.ess.uci.edu/ed";
+  return "RIP Ed McMullin (1941--2003): Musician, Singer, Songwriter, Teacher, Father, Husband. Keep on Gig\'n. http://dust.ess.uci.edu/ed";
 } /* end nmn_get() */
 
