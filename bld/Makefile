@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.94 2001-07-20 20:30:04 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.95 2001-07-30 18:40:45 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -227,8 +227,6 @@ CC := cc
 # -qmaxmem=num Limit the amount of memory used by space intensive optimizations to <num> kilobytes
 CFLAGS := -qmaxmem=8192
 CPP := cc -c
-# NB: Hack to make AIX look like LINUX (g77 + gcc + g++)
-#CPPFLAGS := -DLINUX ${CPP_PTH} -I${NETCDF_INC}
 CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 ${CPP_PTH} -I${NETCDF_INC}
 FC := xlf
 FFLAGS := -qfixed=132
@@ -343,7 +341,7 @@ CC := gcc
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
 CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -Di386 -I${NETCDF_INC}
 FC := g77
-LD := ld
+ LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
@@ -352,46 +350,57 @@ LEX := flex
 LINT := lint
 YACC := bison
 ifeq (${CC},gcc)
+ CFLAGS := -Wall
+# Compilation flags for numerical routines recommended by GSL 0.9 manual, p. 370
+# CFLAGS += -ansi -Werror -W -Wmissing-prototypes -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -Dinline= -g -O4
+# Compilation flags recommended by GSL that I do not like
+# -Waggregate-return: Warn if functions return aggregates like structures or unions
+# -pedantic: Disallow non ISO constructs, including type long long
+# -Wstrict-prototypes: C only?
+# -Wtraditional: C only?
+# -Wnested-externs: C only?
 ifeq (${OPTS},O)
- CFLAGS += -O -Wall
+ CFLAGS += -O
 endif
 ifeq (${OPTS},D)
- CFLAGS += -g -Wall
+ CFLAGS += -g
 endif
 ifeq (${OPTS},R)
- CFLAGS += -Wall
+ CFLAGS += 
 endif
 ifeq (${OPTS},X)
- CFLAGS += -g -O -Wall
+ CFLAGS += -g -O
 endif
  C++FLAGS := ${CFLAGS}
 endif
 ifeq (${FC},pgf90)
+ FFLAGS := -Mextend -Mnosecond_underscore -mp -byteswapio -Mrecursive -Mdalign -Ktrap=fp
 ifeq (${OPTS},O)
- FFLAGS := -fast -Mextend -Mnosecond_underscore -mp -byteswapio -Mrecursive -Mdalign
+ FFLAGS += -fast
 endif
 ifeq (${OPTS},D)
- FFLAGS := -g -Mextend -Mnosecond_underscore -mp -byteswapio -Mrecursive -Mdalign
+ FFLAGS += -g
 endif
 ifeq (${OPTS},R)
- FFLAGS := -Mextend -Mnosecond_underscore -mp -byteswapio -Mrecursive -Mdalign
+ FFLAGS += 
 endif
 ifeq (${OPTS},X)
- FFLAGS := -g -Mbounds -Mextend -Mnosecond_underscore -mp -byteswapio -Mrecursive -Mdalign
+ FFLAGS += -g -Mbounds
 endif
 endif
 ifeq (${FC},g77)
+ FFLAGS := -ffixed-line-length-132 -fno-second-underscore
 ifeq (${OPTS},O)
- FFLAGS := -O -ffixed-line-length-132 -fno-second-underscore
+ FFLAGS += -O
 endif
 ifeq (${OPTS},D)
- FFLAGS := -g -ffixed-line-length-132 -fno-second-underscore -fdebug-kludge
+ FFLAGS += -g -fdebug-kludge
 endif
 ifeq (${OPTS},R)
- FFLAGS := -ffixed-line-length-132 -fno-second-underscore -fdebug-kludge
+ FFLAGS += -fdebug-kludge
 endif
 ifeq (${OPTS},X)
- FFLAGS := -g -O -ffixed-line-length-132 -fno-second-underscore -fdebug-kludge -fbounds-check
+ FFLAGS := -g -O -fdebug-kludge -fbounds-check
 endif
 endif
 endif

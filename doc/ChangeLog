@@ -1,3 +1,8 @@
+2001-07-25  Charlie Zender  <zender@uci.edu>
+
+	* TODO: Rearranged TODO list and put ~15 high-priority
+	items up on the top
+
 2001-05-28  Charlie Zender  <zender@uci.edu>
 
 	* Added HDF5 interface to nco_create(), using HDF5 preprocessor

@@ -1,17 +1,39 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.91 2001-05-08 01:36:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.92 2001-07-30 18:40:45 zender Exp $ 
 
-*************
-NCO Wish list
-*************
+******************************************************************************
+NCO Wish list:
+Numbers were assigned in chronological order
+About 15 high priority items are shown first, then another ~100 items
+******************************************************************************
+
+Top priority items You can help with:
+41. Use GNU getopt_long()
+59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
+83. Always build operators to link dynamically to libnco.so (autoconf/autotool?)
+95. Handle CCM "time since..." conversions in ncrcat (use Unidata udunits)?
+97. Add x_op=average... attributes to averagers for ncar_csm
+124. Use `install' program and mkdir -p
+128. Ensure target 'dir' is made before *.d dependency files 
+150. Fully automate RPM production, e.g., 'make rpm' should build rpms and upload to redhat.com
+152. Change make or nco_dst.pl to add docs to /usr/doc in RPM
+164. Spiff up NCO homepage web page (Logo?)
+165. Create Makefile dependency to do 'make dir' if lib, obj, bin directories do not exist
+168. Implement autoconf/automake build environment?
+177. Make RPM production allowable by non-root, since building RPMs as 
+sudo root screws up permissions in obj/bin directories of user
+178. Make _FillValue behave same as missing_value
+179. add netCDF to required packages list in RPM build
+191. Create short man pages for each operator which point user to info pages or online manual
+
+Remaining items of lesser priority:
+
 28. Use var.nc_id as file ID from now on and rewrite old routines to do so
 32. Implement packing with scale_factor and add_offset
-41. Use GNU getopt_long()
 50. Allow user-specified scalar weights to ncwa
 51. Make getopt() a shared subroutine
 53. Add -t wall clock timer option? (then again, users can always use, e.g., timex())
 55. var_conform_dim() should be able to expand a (x,64,128) array into an (nx,64,128) array (maybe)
 58. Add -o fl_out switch to supercede positional argument (GNU style)
-59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
 60. Make something that can mask a field without having to average over a dimension
 66. Make history attribute get appended, rather than overwritten, when in append mode
 69. ncks option for file/field summary: var name list,var min,max,avg,mss_val,# mss_val,
@@ -19,13 +41,10 @@ NCO Wish list
 75. Add warning to ncwa triggered by averaging over lat without weighting by gw with NCAR_CSM_FORMAT
 79. Allow ncrename .$var_nm syntax to work on all operators (so variables not present cause warning, not error)
 82. Make libnco namespace-safe by prefixing all library subroutines in nc_utl.c, pck.c with nco_, and those in csz.c with csz_
-83. Always build operators to link dynamically to libnco.so (autoconf/autotool?)
 86. Extend stride/wraparound capability to all operators possible
 88. ncks is slow on large files on Crays: ncks -H -v time,date,datesec /tmp/eaton/pcw101/h0009.nc will this be fixed when move beyond netcdf2.4.2 cray libs?
 92. ncrcat -O -v base_time,time_offset arm.cdf arm.cdf foo.nc;ncks -H -C -h foo.nc | m gives bad time_offset on LINUX not SUNMP (problem with LINUX adding record coordinate to open file?)
 94. ~/bin/sh/texi2html -monolithic nco.texi has started dumping core. adding -verbose switch fixes problem, though I've no idea why.
-95. Can Unidata udunits package accomplish CCM "time since..." conversions for ncrcat?
-97. Add x_op=average... attributes to averagers for ncar_csm
 99. Allow ncatted to dump file in ncatted format
 103. Implement trapezoidal rule option in ncra, ncea
 104. Investigate/Document reliability of -A operator when appending from large rank variables to small rank files. Add error message when variables are same size but one has a degenerate dimension.
@@ -51,9 +70,7 @@ Fortran tests only op1. Since running averages are initialized to 0.0 before
 entry, problems arise in C version when missing_value = 0.0. Only fix seems
 to be checking whether tally == 0 before checking whether op2 == mss_val
 123. Add HTTP protocol to fl_get() (in addition to DODS)
-124. Use `install' program and mkdir -p
 127. Make mss: signal retrieval from NCAR mass store
-128. Ensure target 'dir' is made before *.d dependency files 
 134. Problem on CRAY with ncra test #2, averaging float whose
 missing value is double:
 ncra -O -C -v rec_var_flt_mss_val_dbl in.nc foo.nc;ncks -H foo.nc
@@ -90,10 +107,8 @@ cd ~/nco/data
 ncks -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 ncrcat -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 149. Add ncks hyperslab tests to nco_tst to catch inconsistencies like #148
-150. Fully automate RPM production, e.g., 'make rpm' should build rpms and upload to redhat.com
 151. Figure out how to dynamically modify web pages so files with
 changing version numbers can be directly linked
-152. Change make or nco_dst.pl to add docs to /usr/doc in RPM
 154. Add mirror capability to web pages
 158. Add policy for hyperslabbing single level values to User's Guide. 
 Multi-file operators with record coordinate
@@ -107,32 +122,23 @@ for example, every other file was not needed. This capability is already
 implemented for lmt_typ = crd_val. This is an issue only when stride
 is non-unity.
 160. Add documentation of ncra, ncrcat superfluous file capabilities to nco.texi
-161. Make development installation not depend on old ~/nc/nco paths
 162. Add GiNaC (Computer Algebra System) support to ncap www.ginac.de (maybe?)
 163. Figure out way to make doc/TAG and doc/VERSION change
 automagically. Currently must be updated manually unless distribute
 with nco_dst.pl
-164. Spiff up NCO homepage web page (Logo?)
-165. Create Makefile dependency to do 'make dir' if lib, obj, bin directories do not exist
 166. Document 'make test' so people know it exists and use it
 167. Improve/redesign test suite so it is more comprehensive and easier to add to
-168. Implement autoconf/automake build environment?
 169. Merge TODO into sourceforge Task manager and bug manager as appropriate
 170. rgn.sh appears to cause core dump over some ocean basins?
 173. Add switch to ncra which allows user to remove degenerate time dimension from result
 174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
 176. Replace Bison, Flex components of ncap with smaller C++ parser
-177. Make RPM production allowable by non-root, since building RPMs as 
-sudo root screws up permissions in obj/bin directories of user
-178. Make _FillValue behave same as missing_value
-179. add netCDF to required packages list in RPM build
 181. Split nc_utl.c into smaller files (wait until 1.3 becomes stable branch)
 182. Add -L switch to print license terms
 187. Are OpenMP critical regions sufficient for netCDF or must all other threads stop completely?
 188. Make binary RPMS build with DODS option
 189. Verify ncrcat multithreading works, produced "not a netCDF file error" once
 190. Make typ_pck et al. use nc_type enum or something sane for default
-191. Create short man pages for each operator which point user to info pages or online manual
 192. ncdiff will sometimes subtract files of incommensurate sizes without complaint
 ncks -O -v one_dmn_rec_var -d time,0,1 in.nc foo1.nc
 ncks -O -v one_dmn_rec_var -d time,0,2 in.nc foo2.nc
@@ -170,41 +176,6 @@ Machine-specific problems
 ************************************************************************
 SUN4SOL2/SUNMP:
 Solaris requires explicit casting output of strdup() to char * even though string.h is #include'd
-
-SUN4/SUN4SOL2/SUNMP:
-Including (void)ncsetfill(out_id,NC_NOFILL); causes crashes on Solaris 2.4 and SunOS
-(but not AIX, IRIX, or UNICOS) when the next ncendef() statement is called
-	
-SUN4:
-acc will not do pointer arithmetic with void *, must use char * instead, see var_avg(), e.g.
-
-realloc(NULL,sz) does not act like malloc(sz), contrary to ANSI specs.
-cannot link the fortran externals under SunOS with gcc,
-i have to use acc to get rid of a __lib_version external reference. With gcc
-i have to link with -lansi to get rid of an ___ansi_fflush unresolved external reference.
- unfortunately, acc doesn't dynamically allocate arrays like if(...){float foo[nbr_x][nbr_y]; ...;}
-
-foreach lib (`ls lib*.a`)
-echo "searching $lib"; nm $lib | grep lib_version
-echo "searching $lib"; nm $lib | grep cg92_used
-end
-
-assert causes inscrutable crashes (because it's a macro?) during compilation under sunos.
-#ifndef SUN4
-(void)assert(argc > 0);
-(void)assert(argv != 0);
-#end if
-  
-current makefile doesn't build library correctly, gives non-fatal errors like
-ld: /u2/zender/lib/SUN4/libnc.a: warning: archive has no table of contents; add one using ranlib(1)
-
-SGI5:
-gcc or as assembler crashes on an enum allocated in a header file, unless it is somehow defined as an extern
-workaround is to use #defines instead.
-unable to compile in debug mode with same symptoms, e.g., this doesn't work:
-gcc -ansi -g -DSGI5 -I/opt/netcdf-2.3.2/include -c ncwa.c -o /u2/zender/obj/SGI5/ncwa.o 
-but this does:
-gcc -ansi -DSGI5 -I/opt/netcdf-2.3.2/include -c ncwa.c -o /u2/zender/obj/SGI5/ncwa.o
 
 SGI64:
 Problems arise in treatment on long int's on this machine. Make sure to

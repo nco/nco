@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.69 2001-05-28 23:48:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.70 2001-07-30 18:40:45 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -1313,7 +1313,7 @@ void *nco_malloc(size_t size)
   
   ptr=malloc(size); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: ERROR nco_malloc() unable to allocate %d bytes\n",prg_nm_get(),(int)size);
+    (void)fprintf(stdout,"%s: ERROR nco_malloc() unable to allocate %li bytes\n",prg_nm_get(),(long)size);
     /* fxm: Should be exit(8) on ENOMEM errors? */
     exit(EXIT_FAILURE);
   } /* endif */
@@ -1339,7 +1339,7 @@ void *nco_realloc(void *ptr,size_t size)
   
   new_ptr=realloc(ptr,size); /* [ptr] Pointer to new buffer */
   if(new_ptr == NULL && size != 0){
-    (void)fprintf(stdout,"%s: ERROR nco_realloc() unable to realloc() %d bytes\n",prg_nm_get(),(int)size); 
+    (void)fprintf(stdout,"%s: ERROR nco_realloc() unable to realloc() %li bytes\n",prg_nm_get(),(long)size); 
     /* fxm: Should be exit(8) on ENOMEM errors? */
     exit(EXIT_FAILURE);
   } /* endif */
