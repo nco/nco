@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.47 2002-08-28 13:20:43 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.48 2002-08-29 14:40:39 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -78,7 +78,7 @@ typedef struct{ /* prs_sct */
   int in_id; /* [id] Input data file ID */
   char *fl_out; /* [sng] Output data file */
   int out_id; /* [id] Output data file ID */
-  aed_sct **att_lst; /* [sct] Attributes in script */
+  aed_sct ***att_lst; /* [sct] list of Attributes defined in script */
   int *nbr_att; /* [nbr] Number of attributes in script */
   dmn_sct **dmn_in; /* [dmn] List of all  dimensions in input file */
   int nbr_dmn_in; /* [nbr] Number of  dimensions in above list */
@@ -104,12 +104,11 @@ void
 freeNode /* [fnc] Free syntax tree node Nie02 freeNode() */
 (nodeType *nod); /* I/O [sct] Syntax tree node to free */
 
-int /* O [idx] Location of attribute in list */
+aed_sct *  /* O [idx] Pointer to attribute in list */
 ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribute */
 (const char * const var_nm, /* I [sng] Variable name */
  const char * const att_nm, /* I [sng] Attribute name */
- aed_sct ** const att_lst, /* I/O [sct] Attributes in list */
- int * const nbr_att, /* I/O [nbr] Number of attributes in list */
+ prs_sct * const prs_arg,  /* I/O [sct] contains attribute list  */
  const bool update); /* I [flg] Delete existing value or add new attribute to list */
 
 void 
