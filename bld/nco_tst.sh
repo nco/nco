@@ -1,19 +1,20 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.7 1999-08-31 22:25:55 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.8 1999-10-04 05:48:07 zender Exp $
 
 # Purpose: NCO test battery
-# This script currently only works at NCAR
+# This script currently only works at NCAR because it depends on SEP1.T42.0596.nc
 
 # Create T42-size test field named one, which is identically 1.0 in foo.nc
 cd ../data 2> foo.tst
 printf "NCO Test Suite:\n"
-ncdiff -O -v PS /fs/cgd/csm/input/atm/SEP1.T42.0596.nc /fs/cgd/csm/input/atm/SEP1.T42.0596.nc foo.nc 2>> foo.tst
+# ncks -O -v PS,gw /fs/cgd/csm/input/atm/SEP1.T42.0596.nc ~/nc/nco/data/nco_tst.nc
+ncdiff -O -v PS nco_tst.nc nco_tst.nc foo.nc 2>> foo.tst
 ncrename -O -v PS,negative_one foo.nc 2>> foo.tst
 ncdiff -O -C -v negative_one foo.nc in.nc foo2.nc 2>> foo.tst
 ncrename -O -v negative_one,one foo2.nc 2>> foo.tst
 ncks -A -C -v one foo2.nc foo.nc 2>> foo.tst
-ncks -A -C -v gw /fs/cgd/csm/input/atm/SEP1.T42.0596.nc foo.nc 2>> foo.tst
+ncks -A -C -v gw nco_tst.nc foo.nc 2>> foo.tst
 ncrename -O -v negative_one,zero foo.nc 2>> foo.tst
 /bin/rm -f foo2.nc 2>> foo.tst
 

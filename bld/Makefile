@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.32 1999-10-04 05:22:29 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.33 1999-10-04 05:48:06 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -508,7 +508,7 @@ endif
 libnco := $(MY_LIB_DIR)/libnco
 
 # Default targets
-all: dir lib $(MDL_BIN_TRG)
+all: dir lib $(MDL_BIN_TRG) data
 # .PHONY tells make to remake the following non-file targets 
 .PHONY: all cln dst_cln dbg 
 # Delete default suffixes---this should increase speed
@@ -561,16 +561,18 @@ bin_cln:
 bld_cln:
 	cd $(MY_BLD_DIR); rm -f TAGS
 # Targets in dat
-data:	$(MY_DAT_DIR)/in.nc 
+data:	dat
+dat:	$(MY_DAT_DIR)/in.nc 
 	for fl in $(MDL_DAT_STB); do cd $(MY_DAT_DIR); ln -s in.nc $$fl; done
 $(MY_DAT_DIR)/in.nc: $(MY_DAT_DIR)/in.cdl
 	cd $(MY_DAT_DIR); ncgen -b -o in.nc in.cdl
 test:	tst
 tst:	$(MY_DAT_DIR)/in.nc
+	- if test -f $(MY_DAT_DIR)/nco_tst.nc; then printf "" ; else $(MY_BIN_DIR)/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l $(MY_DAT_DIR) nco_tst.nc; fi
 	cd $(MY_BLD_DIR); nco_tst.sh
 testclean: tst_cln
 tst_cln:
-	cd $(MY_DAT_DIR); rm -f foo*
+	cd $(MY_DAT_DIR); rm -f foo* nco_tst.nc
 dataclean: dat_cln
 dat_cln:
 	rm -f $(MDL_DAT)
@@ -637,7 +639,7 @@ dbg:
 	printf "YACC = $(YACC)\n"
 	printf "LEX = $(LEX)\n"
 distclean: dst_cln
-dst_cln: cln doc_cln dat_cln bin_cln lib_cln
+dst_cln: cln bin_cln doc_cln lib_cln
 	cd $(MY_BLD_DIR); rm -f *~
 	cd $(MY_DAT_DIR); rm -f in.nc *~
 tags: 
