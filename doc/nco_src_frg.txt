@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.12 2000-07-01 20:44:46 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.13 2000-07-06 16:32:33 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -47,4 +47,8 @@ To make a new release of NCO on SourceForge:
 ncftpput -V download.sourceforge.net /incoming nco-1.1.48.tar.gz
 
 Mailing lists:
-nco-announce@lists.sourceforge.net
+List: nco-announce@lists.sourceforge.net
+Administrations: http://lists.sourceforge.net/mailman/admin/nco-announce
+Administrative password: 37c16d97c238be00
+Subscriber info: Send message with "help" in it to nco-announce-request@lists.sourceforge.net
+
