@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.45 2002-09-09 04:14:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.46 2002-12-19 16:07:45 hmb Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -179,6 +179,14 @@ extern "C" {
     long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */
     long srd; /* Stride of hyperslab */
   } lmt_sct;
+
+/* Container for limit structures */
+typedef struct {
+ char *dmn_nm; /* dimension name */
+ long dmn_cnt;    /* total number of hyperslabs to extract */
+ int lmt_dmn_nbr;    /* number of lmt args */
+ lmt_sct **lmt_dmn; /* list of limit structures associated with each dimension */  
+} lmt_all;
 
   /* Name ID structure */
   typedef struct{ /* nm_id_sct */
