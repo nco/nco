@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.110 2002-01-22 08:54:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.111 2002-01-23 04:08:34 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -36,6 +36,7 @@ cc-1515 cc: WARNING File = ../src/nco/ncap.y, Line = 279
                                 ^
 4. Fix memory leak in ncap_var_conform_dim() or delete routine completely after replacing it with ncap_var_stretch()	
 5. Implement convolution of non-conforming expressions in ncap_var_stretch()
+6. Handle C comments /*...*/, especially across multiple lines, in ncap scripts
 7. Combine binary operations into binary_op_var_var and binary_op_var_att types to reduce number of functions
 8. Fix last Linux compilation warning:
 ncap.tab.c:
@@ -43,6 +44,7 @@ ncap.tab.c:
 This must be something like
 extern int yylex(YYSTYPE *,prs_arg); /* Prototype for lexer */
 but where?
+9. SGI does not define optional math.h function gammaf()
 
 Top priority items You can help with:
 41. Use GNU getopt_long()

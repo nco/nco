@@ -1,8 +1,7 @@
- %{
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.29 2002-01-23 04:08:34 zender Exp $ -*-C-*- */
+
 /* Begin C declarations section */
-
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.28 2002-01-22 08:54:46 zender Exp $ -*-C-*- */
-
+ 
 /* Purpose: Grammar parser for ncap */
 
 /* Copyright (C) 1995--2002 Charlie Zender
@@ -38,7 +37,7 @@
    Department of Earth System Science
    University of California at Irvine
    Irvine, CA 92697-3100
- */
+*/
 
   /* Example yacc text:
      /data/zender/ora/lexyacc/ch3-05.y

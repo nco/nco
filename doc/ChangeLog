@@ -17,6 +17,10 @@
 
 2002-01-16  Charlie Zender  <zender@uci.edu>
 
+	* Enable assertion macros in ncap
+
+	* Changed Makefile default to OMP=N until further testing
+
 	* Began implementation of lexer for subscripted variables
 	with x[dmn1,dmn2,...dmnN] syntax. Currently creates list of 
 	dimension structures but does nothing with it.

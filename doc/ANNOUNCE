@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.9 2002-01-14 19:52:27 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.10 2002-01-23 04:08:34 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.2.0 are ready. 
 Changes since version 2.0.0 include bugfixes and a 
@@ -30,20 +30,20 @@ arithmetic functions, string handling, test script (Butowsky)
 2. Fix ncks units printing bug introduced in 2.0 (Zender)
 3. Improved version information with, e.g., ncks -r (Zender)
 4. Use new NC_NAT token requires netCDF 3.5 (Zender)
-5. ncap: cleanup, global attribute handling, stretching mixed rank
-variables (Zender) 
+5. ncap: global attribute handling, stretching mixed rank
+variables, exclusive state lexing, LHS casting (Zender)
 
 A few notes on the future of ncap: 
-The objective of ncap is to fit the everyday needs
-of scientific data analysis. The capabilities of ncap today 
-are midway between those of a regular NCO operator, and 
-those of a full-featured high-level language such as IDL, 
-Matlab, or NCL. Now that ncap has a rudimentary language 
-parser, there is no real limit to what syntactic features
-could be added. Of course the only features that will be
-added are those the developers care about, so your
-feedback is encouraged: What is the highest priority 
-feature for you?
+ncap's objective is to solve everyday needs of recurring tasks
+in scientific data analysis without requiring tedious programming.  
+The capabilities of ncap today are between those of a regular NCO
+operator and those of a full-featured high-level language (e.g., IDL,
+Matlab, NCL). 
+Now that ncap has a rudimentary language parser, there is no real
+limit to what syntactic features could be added. Of course the only
+features that will be added are those the developers care about, so
+your feedback is encouraged: 
+What is the highest priority feature for you?
 
 ncap is best suited now to compute simple derived variables, e.g.,
 x=sqrt(u^2+v^2). Hyperslabs (subscripting) are not yet supported, 
