@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.102 2000-10-23 22:57:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.103 2000-10-27 11:03:24 hmb Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -57,23 +57,6 @@
 
 /* Personal headers */
 #include "nc.h"                 /* netCDF operator universal def'ns */
-
-void 
-nc_err_exit(int rcd,char *msg)
-/*  
-    int rcd: I netCDF error code
-    char *msg: I supplemental error message
-*/
-{
-  /* Purpose: Print netCDF error message, routine name, and exit */
-  if(rcd != NC_NOERR){
-#ifdef NETCDF2_ONLY
-    (void)fprintf(stderr,"%s: ERROR %s\n",prg_nm_get(),msg);
-#else /* not NETCDF2_ONLY */
-    (void)fprintf(stderr,"%s: ERROR %s\n%s\n",prg_nm_get(),msg,nc_strerror(rcd));
-#endif /* not NETCDF2_ONLY */
-  } /* endif error */
-} /* end nc_err_exit() */
 
 char *
 nco_typ_sng(nc_type type)
@@ -189,10 +172,10 @@ cast_void_nctype(nc_type type,ptr_unn *ptr)
     ptr->sp=(short *)ptr->vp;
     break;
   case NC_CHAR:
-    ptr->cp=(signed char *)ptr->vp;
+    ptr->cp=(unsigned char *)ptr->vp;
     break;
   case NC_BYTE:
-    ptr->bp=(unsigned char *)ptr->vp;
+    ptr->bp=(signed char *)ptr->vp;
     break;
   } /* end switch */
 } /* end cast_void_nctype() */
@@ -2757,7 +2740,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.fp[idx];} break; 
     case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.dp[idx];} break; 
     case NC_LONG: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.lp[idx];} break;
-    case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.sp[idx];} break;
+	case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.cp[idx];} break;
     case NC_BYTE: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.bp[idx];} break;
     } break;
@@ -2782,7 +2765,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
   case NC_SHORT:
     switch(var_in_type){
     case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=(short)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=(short)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=(short)(val_in.dp[idx]);} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_LONG: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.lp[idx];} break;
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.sp[idx]=val_in.cp[idx];} break;
@@ -2790,8 +2773,8 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     } break;
   case NC_CHAR:
     switch(var_in_type){
-    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(signed char)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(signed char)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(unsigned char)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=(unsigned char)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_LONG: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.lp[idx];} break;
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.cp[idx]=val_in.cp[idx];} break;
@@ -2799,8 +2782,8 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     } break;
   case NC_BYTE:
     switch(var_in_type){
-    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=(unsigned char)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=(unsigned char)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=(signed char)val_in.fp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=(signed char)val_in.dp[idx];} break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_LONG: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.lp[idx];} break;
     case NC_SHORT: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.sp[idx];} break;
     case NC_CHAR: for(idx=0L;idx<sz;idx++) {val_out.bp[idx]=val_in.cp[idx];} break;
@@ -2878,8 +2861,8 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
     } break;
   case NC_CHAR:
     switch(type_in){
-    case NC_FLOAT: *val_out.cp=(signed char)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: *val_out.cp=(signed char)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_FLOAT: *val_out.cp=(unsigned char)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.cp=(unsigned char)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_LONG: *val_out.cp=*val_in.lp; break;
     case NC_SHORT: *val_out.cp=*val_in.sp; break;
     case NC_CHAR: *val_out.cp=*val_in.cp; break;
@@ -2887,8 +2870,8 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
     } break;
   case NC_BYTE:
     switch(type_in){
-    case NC_FLOAT: *val_out.bp=(unsigned char)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
-    case NC_DOUBLE: *val_out.bp=(unsigned char)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_FLOAT: *val_out.bp=(signed char)*val_in.fp; break; /* Coerce to avoid C++ compiler assignment warning */
+    case NC_DOUBLE: *val_out.bp=(signed char)*val_in.dp; break; /* Coerce to avoid C++ compiler assignment warning */
     case NC_LONG: *val_out.bp=*val_in.lp; break;
     case NC_SHORT: *val_out.bp=*val_in.sp; break;
     case NC_CHAR: *val_out.bp=*val_in.cp; break;
@@ -3879,8 +3862,8 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 #ifndef USE_FORTRAN_ARITHMETIC
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
-  signed char mss_val_chr;
-  unsigned char mss_val_byt;
+  unsigned char mss_val_chr;
+  signed char mss_val_byt;
 #endif /* USE_FORTRAN_ARITHMETIC */
   nclong mss_val_lng=long_CEWI;
   short mss_val_shrt=short_CEWI;
@@ -4154,8 +4137,8 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   float mss_val_flt=float_CEWI;
   nclong mss_val_lng=long_CEWI;
   short mss_val_shrt=short_CEWI;
-  signed char mss_val_chr;
-  unsigned char mss_val_byt;
+  unsigned char mss_val_chr;
+  signed char mss_val_byt;
   
   bool flg_mss=False;
   
@@ -4438,8 +4421,8 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   float mss_val_flt=float_CEWI;
   nclong mss_val_lng=long_CEWI;
   short mss_val_shrt=short_CEWI;
-  signed char mss_val_chr;
-  unsigned char mss_val_byt;
+  unsigned char mss_val_chr;
+  signed char mss_val_byt;
   
   bool flg_mss=False;
   
@@ -5008,22 +4991,22 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     break;
   case NC_CHAR:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <= (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >  (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <  (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (unsigned char)op1) op3.cp[idx]=*mss_val.cp; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (unsigned char)op1) op3.cp[idx]=*mss_val.cp; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (unsigned char)op1) op3.cp[idx]=*mss_val.cp; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <= (unsigned char)op1) op3.cp[idx]=*mss_val.cp; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >  (unsigned char)op1) op3.cp[idx]=*mss_val.cp; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <  (unsigned char)op1) op3.cp[idx]=*mss_val.cp; break;
     } /* end switch */
     break;
   case NC_BYTE:
     switch(op_typ_rlt){
-    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.bp[idx] != (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
-    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.bp[idx] == (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
-    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >= (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
-    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <= (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
-    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >  (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
-    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.bp[idx] != (signed char)op1) op3.bp[idx]=*mss_val.bp; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.bp[idx] == (signed char)op1) op3.bp[idx]=*mss_val.bp; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >= (signed char)op1) op3.bp[idx]=*mss_val.bp; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <= (signed char)op1) op3.bp[idx]=*mss_val.bp; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >  (signed char)op1) op3.bp[idx]=*mss_val.bp; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (signed char)op1) op3.bp[idx]=*mss_val.bp; break;
     } /* end switch */
     break;
   } /* end switch */
