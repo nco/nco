@@ -90,17 +90,32 @@
 /* Define to 1 if you have the `nco' library (-lnco). */
 #undef HAVE_LIBNCO
 
+/* Define to 1 if you have the `nc-dods' library (-lnc-dods). */
+#undef HAVE_LIBNC_DODS
+
 /* Define to 1 if you have the `resolv' library (-lresolv). */
 #undef HAVE_LIBRESOLV
 
+/* Define to 1 if you have the `rx' library (-lrx). */
+#undef HAVE_LIBRX
+
 /* Define to 1 if you have the `socket' library (-lsocket). */
 #undef HAVE_LIBSOCKET
+
+/* Define to 1 if you have the `stdc++' library (-lstdc++). */
+#undef HAVE_LIBSTDC__
 
 /* Define to 1 if you have the `sunmath' library (-lsunmath). */
 #undef HAVE_LIBSUNMATH
 
 /* Define to 1 if you have the `thread' library (-lthread). */
 #undef HAVE_LIBTHREAD
+
+/* Define to 1 if you have the `www' library (-lwww). */
+#undef HAVE_LIBWWW
+
+/* Define to 1 if you have the `z' library (-lz). */
+#undef HAVE_LIBZ
 
 /* Define to 1 if you have the <limits.h> header file. */
 #undef HAVE_LIMITS_H

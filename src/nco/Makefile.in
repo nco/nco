@@ -96,6 +96,9 @@ path_to_ncgen = @path_to_ncgen@
 @BUILD_NCAP_TRUE@NCAP = ncap
 @BUILD_NCAP_FALSE@NCAP = 
 
+@TEST_DODS_TRUE@DODS_TESTS = test2.sh
+@TEST_DODS_FALSE@DODS_TESTS = 
+
 bin_PROGRAMS = ${NCAP} ncatted ncdiff ncecat ncflint ncks ncra ncrename ncwa
 
 AM_YFLAGS = -d
@@ -145,7 +148,7 @@ nco_prn.c nco_rec_var.c nco_rth_utl.c nco_scl_utl.c nco_scm.c nco_sng_utl.c \
 nco_var_avg.c nco_var_lst.c nco_var_rth.c nco_var_scv.c nco_var_utl.c $(HEADER_SRC)
 
 
-TESTS = test1.sh
+TESTS = test1.sh ${DODS_TESTS}
 subdir = src/nco
 mkinstalldirs = $(SHELL) $(top_srcdir)/autobld/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h

@@ -11584,7 +11584,9 @@ if test "$enable_dods" != "no"; then
   fi
   # these must all be present for DODS to work.  If all present, enable_dods=yes
   # nc-dods requires dap++ to link with success
-  echo "$as_me:$LINENO: checking for cerr in -lstdc++" >&5
+  nco_old_LIBS="$LIBS"
+
+echo "$as_me:$LINENO: checking for cerr in -lstdc++" >&5
 echo $ECHO_N "checking for cerr in -lstdc++... $ECHO_C" >&6
 if test "${ac_cv_lib_stdcpp_cerr+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -11640,12 +11642,18 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_stdcpp_cerr" >&5
 echo "${ECHO_T}$ac_cv_lib_stdcpp_cerr" >&6
 if test $ac_cv_lib_stdcpp_cerr = yes; then
-  nco_have_stdcxx=yes
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBSTDC__ 1
+_ACEOF
+
+  LIBS="-lstdc++ $LIBS"
+
 else
   enable_dods=no
 fi
 
-  echo "$as_me:$LINENO: checking for inflate in -lz" >&5
+
+echo "$as_me:$LINENO: checking for inflate in -lz" >&5
 echo $ECHO_N "checking for inflate in -lz... $ECHO_C" >&6
 if test "${ac_cv_lib_z_inflate+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -11701,12 +11709,18 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_z_inflate" >&5
 echo "${ECHO_T}$ac_cv_lib_z_inflate" >&6
 if test $ac_cv_lib_z_inflate = yes; then
-  nco_have_zlib=yes
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBZ 1
+_ACEOF
+
+  LIBS="-lz $LIBS"
+
 else
   enable_dods=no
 fi
 
-  echo "$as_me:$LINENO: checking for HTLibInit in -lwww" >&5
+
+echo "$as_me:$LINENO: checking for HTLibInit in -lwww" >&5
 echo $ECHO_N "checking for HTLibInit in -lwww... $ECHO_C" >&6
 if test "${ac_cv_lib_www_HTLibInit+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -11762,12 +11776,18 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_www_HTLibInit" >&5
 echo "${ECHO_T}$ac_cv_lib_www_HTLibInit" >&6
 if test $ac_cv_lib_www_HTLibInit = yes; then
-  nco_have_www=yes
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBWWW 1
+_ACEOF
+
+  LIBS="-lwww $LIBS"
+
 else
   enable_dods=no
 fi
 
-  echo "$as_me:$LINENO: checking for main in -lrx" >&5
+
+echo "$as_me:$LINENO: checking for main in -lrx" >&5
 echo $ECHO_N "checking for main in -lrx... $ECHO_C" >&6
 if test "${ac_cv_lib_rx_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -11817,19 +11837,25 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_rx_main" >&5
 echo "${ECHO_T}$ac_cv_lib_rx_main" >&6
 if test $ac_cv_lib_rx_main = yes; then
-  nco_have_rx=yes
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBRX 1
+_ACEOF
+
+  LIBS="-lrx $LIBS"
+
 else
   enable_dods=no
 fi
 
-  #AC_CHECK_LIB([dap++],[main],nco_have_dapxx=yes,enable_dods=no)
-  echo "$as_me:$LINENO: checking for nc_open in -lnc-dods" >&5
+  LIBS="-ldap++ -lnc-dods -ldap++ $LIBS"
+
+echo "$as_me:$LINENO: checking for nc_open in -lnc-dods" >&5
 echo $ECHO_N "checking for nc_open in -lnc-dods... $ECHO_C" >&6
 if test "${ac_cv_lib_nc_dods_nc_open+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
 else
   ac_check_lib_save_LIBS=$LIBS
-LIBS="-lnc-dods -ldap++ $LIBS"
+LIBS="-lnc-dods  $LIBS"
 cat >conftest.$ac_ext <<_ACEOF
 #line $LINENO "configure"
 #include "confdefs.h"
@@ -11879,16 +11905,21 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_nc_dods_nc_open" >&5
 echo "${ECHO_T}$ac_cv_lib_nc_dods_nc_open" >&6
 if test $ac_cv_lib_nc_dods_nc_open = yes; then
-  nco_have_ncdods=yes
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBNC_DODS 1
+_ACEOF
+
+  LIBS="-lnc-dods $LIBS"
+
 else
   enable_dods=no
 fi
 
-  # this is called again to resolve nc-dods <-> dap++ interdependancy
 
   if test "$enable_dods" = "no"; then
     { echo "$as_me:$LINENO: WARNING: DODS support disabled (missing libraries)" >&5
 echo "$as_me: WARNING: DODS support disabled (missing libraries)" >&2;}
+    LIBS="$nco_old_LIBS"
   elif test "$enable_dods" = "yes"; then
 
 cat >>confdefs.h <<\_ACEOF
@@ -11900,6 +11931,17 @@ echo "$as_me: DODS support enabled" >&6;}
     LIBS="-lnc-dods -ldap++ -lnc-dods -ldap++ -lrx -lwww -lz -lstdc++ $LIBS"
   fi
 fi
+
+
+if test "$enable_dods" = "yes"; then
+  TEST_DODS_TRUE=
+  TEST_DODS_FALSE='#'
+else
+  TEST_DODS_TRUE='#'
+  TEST_DODS_FALSE=
+fi
+
+
 #############################################
 # if --enable-fortran define USE_FORTRAN_ARITHMATIC
 # is this really even used anymore?
@@ -12422,6 +12464,13 @@ if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"MAINTAINER_MODE\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
 echo "$as_me: error: conditional \"MAINTAINER_MODE\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
+if test -z "${TEST_DODS_TRUE}" && test -z "${TEST_DODS_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"TEST_DODS\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"TEST_DODS\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -12989,6 +13038,8 @@ s,@NETCDF_LIB@,$NETCDF_LIB,;t t
 s,@NETCDF_INC@,$NETCDF_INC,;t t
 s,@HDF5_ROOT@,$HDF5_ROOT,;t t
 s,@DODS_ROOT@,$DODS_ROOT,;t t
+s,@TEST_DODS_TRUE@,$TEST_DODS_TRUE,;t t
+s,@TEST_DODS_FALSE@,$TEST_DODS_FALSE,;t t
 s,@path_to_ncgen@,$path_to_ncgen,;t t
 s,@NCO_CXX@,$NCO_CXX,;t t
 CEOF
