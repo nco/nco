@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.4 2000-03-08 06:09:37 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.5 2000-03-09 00:04:34 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -12,7 +12,7 @@ Project FTP:        ftp://nco.sourceforge.net/pub
 		    nco.sourceforge.net:/home/groups/ftp/pub/nco
 
 The purpose of this project is to create and improve tools for data
-analysis by using an Open Source development strategy. The starting
+analysis by using Open Source development strategy. The starting
 point for this project is the NCO software suite. NCO is a relatively
 mature package which requires new ideas, features, and contributors 
 in order to remain a useful and vital application.
@@ -31,3 +31,5 @@ illustrates NCO use with examples from the field of climate modeling
 and analysis. The NCO homepage is currently 
 http://www.cgd.ucar.edu/cms/nco.
 
+To build NCO on SourceForge, 
+make NETCDF_LIB=/home/groups/nco/lib/LINUX NETCDF_INC=/home/groups/nco/include

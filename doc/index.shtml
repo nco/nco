@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.38 2000-03-07 22:32:01 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.39 2000-03-09 00:04:34 zender Exp $
 
 Purpose: NCO homepage
 
@@ -8,6 +8,8 @@ file:/home/zender/nc/nco/doc/index.shtml
 /bin/cp -f ~/nc/nco/doc/index.shtml /web/web-data/cms/nco/index.shtml
 rcp -p ~/nc/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml
 scp -p ~/nc/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml
+
+scp -p ~/nc/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.shtml
 -->
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
@@ -62,7 +64,7 @@ operation (e.g., averaging, hyperslabbing, or metadata manipulation)
 and produce a netCDF file as output. 
 The operators are primarily designed to aid manipulation and analysis of
 gridded scientific data, and the 
-<A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO User's
+<A HREF="./nco.html">NCO User's
 Guide</A> 
 illustrates their use with examples from the field of climate modeling
 and analysis.</P> 
@@ -77,14 +79,14 @@ There are plenty of command line (i.e., runtime) options, but the defaults
 settings are often sufficient for everyday needs.</P>
 
 <p>NCO also works on <a href="http://hdf.ncsa.uiuc.edu">HDF</a> files.
-See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO User's
+See the <A HREF="./nco.html">NCO User's
 Guide</A> for details.</p> 
 
 <P>NCO has probably already been built and tested on your operating system
 (AIX, IRIX, Linux, SunOS, Solaris, Tru64, UNICOS, and Windows NT).
 The current set of operators is given below. For a thorough
 description of each operator, please read the 
-<A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO User's Guide</A>. </P>
+<A HREF="./nco.html">NCO User's Guide</A>. </P>
 
 <TABLE BORDER=1 CELLSPACING=10 CELLPADDING=0 >
 <CAPTION></CAPTION>
@@ -182,7 +184,7 @@ Added feature to <TT>ncatted</TT> so that C-language escape sequences
 may be used in editing character attributes. 
 Text formatting of attributes now supports <TT>\n</TT>, <TT>\t</TT>,
 and most other <TT>printf</TT>-style sequences.
-See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's
+See the <A HREF="./nco.html">User's
 Guide</A> for details. 
 
 <P>1999/12/06: 
@@ -220,10 +222,10 @@ Now when <TT>ncwa</TT> is invoked without any user-specified
 dimensions, it averages over all dimensions.
 Thus the behavior of <TT>-a</TT> is now analogous to that of
 <TT>-d</TT> and of <TT>-v</TT>.
-See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> for details.
+See the <A HREF="./nco.html">User's Guide</A> for details.
 
 <P>
-<A HREF="http://www.cgd.ucar.edu/cms/nco/nco_news.shtml"> Older NCO news</A>  
+<A HREF="./nco_news.shtml"> Older NCO news</A>  
 <HR></P>
 
 <DT><A NAME="Download"></A></DT>
@@ -242,13 +244,13 @@ respectively.
 <HR></P>
 
 <DT><A NAME="RTFM"></A></DT>
-<H2>Browse the online <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO
+<H2>Browse the online <A HREF="./nco.html">NCO
 User's Guide</A></H2>
 
 <H2>Download the <A
 HREF="http://www.cgd.ucar.edu/cms/zender/ps.gz.html">
 gzipped Postscript</A>  
-<A HREF="http://www.cgd.ucar.edu/cms/nco/nco.ps.gz">
+<A HREF="./nco.ps.gz">
 NCO User's Guide</A></H2> 
 
 <P>The <I>User's Guide</I> contains all the documentation for NCO. It explains
@@ -259,17 +261,17 @@ Guide</I> are in the source distribution in the files
 <HR></P>
 
 <DT><A NAME="README"></A></DT>
-<H2>See the <TT><FONT SIZE=+4><A HREF="http://www.cgd.ucar.edu/cms/nco/README">README</A></FONT></TT>
+<H2>See the <TT><FONT SIZE=+4><A HREF="./README">README</A></FONT></TT>
 file.</H2>
 
 <P><TT>`README'</TT> describes the platforms and software requirements
 for a successful NCO installation. More information on installation is
-contained in the online <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO
+contained in the online <A HREF="./nco.html">NCO
 User's Guide</A>. 
 <HR></P>
 
 <DT><A NAME="ChangeLog"></A></DT>
-<H2>See the <FONT SIZE=+4><TT><A HREF="http://www.cgd.ucar.edu/cms/nco/ChangeLog">ChangeLog</A></TT>
+<H2>See the <FONT SIZE=+4><TT><A HREF="./ChangeLog">ChangeLog</A></TT>
 </FONT>file.</H2>
 
 <P><TT>`ChangeLog'</TT> contains the most up-to-date information on the
@@ -281,7 +283,7 @@ as having been fixed in the latest revision.
 <DT><A NAME="Version"></A></DT>
 <H2>Current release of NCO is <!--#include virtual="VERSION"--> </H2>
 
-<P>You easily can tell whether you have the most recent version, and whether you should upgrade by reading the <TT><A HREF="http://www.cgd.ucar.edu/cms/nco/ChangeLog">ChangeLog</A></TT>.
+<P>You easily can tell whether you have the most recent version, and whether you should upgrade by reading the <TT><A HREF="./ChangeLog">ChangeLog</A></TT>.
 
 <HR></P>
 

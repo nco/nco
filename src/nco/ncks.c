@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.22 2000-03-07 22:32:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.23 2000-03-09 00:04:35 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.22 2000-03-07 22:32:02 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.22 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.23 2000-03-09 00:04:35 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.23 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -669,8 +669,6 @@ cpy_var_val(int in_id,int out_id,char *var_nm)
   int var_in_id;
   int var_out_id;
 
-  extern int ncopts;
-  
   long *dim_cnt;
   long *dim_sz;
   long *dim_srt;
@@ -771,8 +769,6 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int nbr_lmt)
   int var_in_id;
   int var_out_id;
 
-  extern int ncopts;
-  
   /* For regular data */ 
   long *dim_cnt;
   long *dim_in_srt;
