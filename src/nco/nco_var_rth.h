@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.4 2002-05-21 03:53:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.5 2002-06-07 15:10:25 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -29,19 +29,19 @@
 extern "C" {
 #endif /* __cplusplus */
 
-  void var_abs(nc_type,const long,int,ptr_unn,ptr_unn);
-  void var_add(nc_type,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
-  void var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2);
-  void var_divide(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
-  void var_mask(nc_type,long,int,ptr_unn,double,int,ptr_unn,ptr_unn);
-  void var_max_bnr(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
-  void var_min_bnr(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
-  void var_multiply(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
-  void var_normalize(nc_type,long,int,ptr_unn,long *,ptr_unn);
-  void var_normalize_sdn(nc_type,long,int,ptr_unn,long *,ptr_unn);
-  void var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2);
-  void var_subtract(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
-  void var_zero(nc_type,long,ptr_unn);
+  void var_abs(const nc_type,const long,const int,ptr_unn,ptr_unn);
+  void var_add(const nc_type,const long,const int,ptr_unn,long *,ptr_unn,ptr_unn);
+  void var_add_no_tally(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2);
+  void var_divide(const nc_type,const long,const int,ptr_unn,ptr_unn,ptr_unn);
+  void var_mask(const nc_type,const long,const int,ptr_unn,const double,const int,ptr_unn,ptr_unn);
+  void var_max_bnr(const nc_type,const long,const int,ptr_unn,ptr_unn,ptr_unn);
+  void var_min_bnr(const nc_type,const long,const int,ptr_unn,ptr_unn,ptr_unn);
+  void var_multiply(const nc_type,const long,const int,ptr_unn,ptr_unn,ptr_unn);
+  void var_normalize(const nc_type,const long,const int,ptr_unn,long *,ptr_unn);
+  void var_normalize_sdn(const nc_type,const long,const int,ptr_unn,long *,ptr_unn);
+  void var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2);
+  void var_subtract(const nc_type,const long,const int,ptr_unn,ptr_unn,ptr_unn);
+  void var_zero(const nc_type,const long,ptr_unn);
   
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.7 2002-06-07 07:11:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.8 2002-06-07 15:10:25 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -9,11 +9,11 @@
 #include "nco_var_rth.h" /* Variable arithmetic */
 
 void
-var_abs(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
+var_abs(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1)
      /* 
-	nc_type type: I netCDF type of operands
+	const nc_type type: I netCDF type of operands
 	const long sz: I size (in elements) of operands
-	int has_mss_val: I flag for missing values
+	const int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
      */
@@ -39,7 +39,7 @@ var_abs(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]=fabsf(op1.fp[idx]);
     }else{
-      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=fabsf(op1.fp[idx]); 
       } /* end for */
@@ -49,7 +49,7 @@ var_abs(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]=fabs(op1.dp[idx]);
     }else{
-      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=fabs(op1.dp[idx]);
       } /* end for */
@@ -59,7 +59,7 @@ var_abs(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]=labs(op1.lp[idx]); /* int abs(int), long labs(long) */
     }else{
-      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]=labs(op1.lp[idx]); /* int abs(int), long labs(long) */
       } /* end for */
@@ -69,7 +69,7 @@ var_abs(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) if(op1.sp[idx] < 0 ) op1.sp[idx]=-op1.sp[idx] ;
     }else{
-      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
 	if(op1.sp[idx] != mss_val_sht && op1.sp[idx] < 0 ) op1.sp[idx]=-op1.sp[idx];
       } /* end for */
@@ -90,11 +90,11 @@ var_abs(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
 } /* end var_abs() */
 
 void
-var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
+var_add(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: I netCDF type of operands
-  long sz: I size (in elements) of operands
-  int has_mss_val: I flag for missing values
+  const nc_type type: I netCDF type of operands
+  const long sz: I size (in elements) of operands
+  const int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   long *tally: I/O counter space
   ptr_unn op1: I values of first operand
@@ -123,7 +123,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 	tally[idx]++;
       } /* end for */
     }else{
-      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)){
 	  op2.fp[idx]+=op1.fp[idx];
@@ -139,7 +139,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 	tally[idx]++;
       } /* end for */
     }else{
-      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)){
 	  op2.dp[idx]+=op1.dp[idx];
@@ -155,7 +155,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 	tally[idx]++;
       } /* end for */
     }else{
-      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)){
 	  op2.lp[idx]+=op1.lp[idx];
@@ -171,7 +171,7 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 	tally[idx]++;
       } /* end for */
     }else{
-      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)){
 	  op2.sp[idx]+=op1.sp[idx];
@@ -195,10 +195,10 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 } /* end var_add() */
 
 void
-var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
-/* nc_type type: I [type] netCDF type of operands
-  long sz: I [nbr] Size (in elements) of operands
-  int has_mss_val: I [flg] Flag for missing values
+var_add_no_tally(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+/* const nc_type type: I [type] netCDF type of operands
+  const long sz: I [nbr] Size (in elements) of operands
+  const int has_mss_val: I [flg] Flag for missing values
   ptr_unn mss_val: I [flg] Value of missing value
   ptr_unn op1: I [val] Values of first operand
   ptr_unn op2: I/O [val] Values of second operand on input, values of sum on output */
@@ -222,7 +222,7 @@ var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.fp[idx]+=op1.fp[idx];
     }else{
-      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]+=op1.fp[idx]; else op2.fp[idx]=mss_val_flt;
       } /* end for */
@@ -232,7 +232,7 @@ var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.dp[idx]+=op1.dp[idx];
     }else{
-      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)) op2.dp[idx]+=op1.dp[idx]; else op2.dp[idx]=mss_val_dbl;
       } /* end for */
@@ -242,7 +242,7 @@ var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.lp[idx]+=op1.lp[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)) op2.lp[idx]+=op1.lp[idx]; else op2.lp[idx]=mss_val_lng;
       } /* end for */
@@ -252,7 +252,7 @@ var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.sp[idx]+=op1.sp[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)) op2.sp[idx]+=op1.sp[idx]; else op2.sp[idx]=mss_val_sht;
       } /* end for */
@@ -273,11 +273,11 @@ var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
 } /* end var_add_no_tally() */
 
 void
-var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+var_subtract(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: I [type] netCDF type of operands
-  long sz: I [nbr] Size (in elements) of operands
-  int has_mss_val: I [flg] Flag for missing values
+  const nc_type type: I [type] netCDF type of operands
+  const long sz: I [nbr] Size (in elements) of operands
+  const int has_mss_val: I [flg] Flag for missing values
   ptr_unn mss_val: I [flg] Value of missing value
   ptr_unn op1: I [val] Values of first operand
   ptr_unn op2: I/O [val] Values of second operand on input, values of difference on output
@@ -302,7 +302,7 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.fp[idx]-=op1.fp[idx];
     }else{
-      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]-=op1.fp[idx]; else op2.fp[idx]=mss_val_flt;
       } /* end for */
@@ -312,7 +312,7 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.dp[idx]-=op1.dp[idx];
     }else{
-      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)) op2.dp[idx]-=op1.dp[idx]; else op2.dp[idx]=mss_val_dbl;
       } /* end for */
@@ -322,7 +322,7 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.lp[idx]-=op1.lp[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)) op2.lp[idx]-=op1.lp[idx]; else op2.lp[idx]=mss_val_lng;
       } /* end for */
@@ -332,7 +332,7 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.sp[idx]-=op1.sp[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)) op2.sp[idx]-=op1.sp[idx]; else op2.sp[idx]=mss_val_sht;
       } /* end for */
@@ -353,11 +353,11 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
 } /* end var_subtract() */
 
 void
-var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+var_multiply(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
      /* 
-	nc_type type: I netCDF type of operands
-	long sz: I size (in elements) of operands
-	int has_mss_val: I flag for missing values
+	const nc_type type: I netCDF type of operands
+	const long sz: I size (in elements) of operands
+	const int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
 	ptr_unn op2: I/O values of second operand on input, values of product on output
@@ -383,7 +383,7 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.fp[idx]*=op1.fp[idx];
     }else{
-      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]*=op1.fp[idx]; else op2.fp[idx]=mss_val_flt;
       } /* end for */
@@ -393,7 +393,7 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.dp[idx]*=op1.dp[idx];
     }else{
-      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)) op2.dp[idx]*=op1.dp[idx]; else op2.dp[idx]=mss_val_dbl;
       } /* end for */
@@ -403,7 +403,7 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.lp[idx]*=op1.lp[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)) op2.lp[idx]*=op1.lp[idx]; else op2.lp[idx]=mss_val_lng;
       } /* end for */
@@ -413,7 +413,7 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.sp[idx]*=op1.sp[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)) op2.sp[idx]*=op1.sp[idx]; else op2.sp[idx]=mss_val_sht;
       } /* end for */
@@ -434,11 +434,11 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
 } /* end var_multiply() */
 
 void
-var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+var_divide(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: I netCDF type of operands
-  long sz: I size (in elements) of operands
-  int has_mss_val: I flag for missing values
+  const nc_type type: I netCDF type of operands
+  const long sz: I size (in elements) of operands
+  const int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   ptr_unn op1: I values of first operand
   ptr_unn op2: I/O values of second operand on input, values of quotient on output
@@ -464,7 +464,7 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.fp[idx]/=op1.fp[idx];
     }else{
-      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++){
 	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]/=op1.fp[idx]; else op2.fp[idx]=mss_val_flt;
       } /* end for */
@@ -474,7 +474,7 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.dp[idx]/=op1.dp[idx];
     }else{
-      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++){
 	if((op2.dp[idx] != mss_val_dbl) && (op1.dp[idx] != mss_val_dbl)) op2.dp[idx]/=op1.dp[idx]; else op2.dp[idx]=mss_val_dbl;
       } /* end for */
@@ -484,7 +484,7 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.lp[idx]/=op1.lp[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if((op2.lp[idx] != mss_val_lng) && (op1.lp[idx] != mss_val_lng)) op2.lp[idx]/=op1.lp[idx]; else op2.lp[idx]=mss_val_lng;
       } /* end for */
@@ -494,7 +494,7 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op2.sp[idx]/=op1.sp[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
 	if((op2.sp[idx] != mss_val_sht) && (op1.sp[idx] != mss_val_sht)) op2.sp[idx]/=op1.sp[idx]; else op2.sp[idx]=mss_val_sht;
       } /* end for */
@@ -515,11 +515,11 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
 } /* end var_divide() */
 
 void
-var_min_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+var_min_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: I netCDF type of operands
-  long sz: I size (in elements) of operands
-  int has_mss_val: I flag for missing values
+  const nc_type type: I netCDF type of operands
+  const long sz: I size (in elements) of operands
+  const int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   ptr_unn op1: I values of first operand
   ptr_unn op2: I/O values of second operand on input, values of maximium on output
@@ -544,7 +544,7 @@ var_min_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
       for(idx=0;idx<sz;idx++) 
 	if(op2.fp[idx] > op1.fp[idx]) op2.fp[idx]=op1.fp[idx];
     }else{
-      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++){
 	if(op2.fp[idx] == mss_val_flt) 
 	  op2.fp[idx]=op1.fp[idx];
@@ -558,7 +558,7 @@ var_min_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
       for(idx=0;idx<sz;idx++) 
 	if(op2.dp[idx] > op1.dp[idx]) op2.dp[idx]=op1.dp[idx];
     }else{
-      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++){
 	if(op2.dp[idx] == mss_val_dbl) 
 	  op2.dp[idx]=op1.dp[idx];
@@ -573,7 +573,7 @@ var_min_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
 	if(op2.lp[idx] > op1.lp[idx]) 
 	  op2.lp[idx]=op1.lp[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if(op2.lp[idx] == mss_val_lng) 
 	  op2.lp[idx]=op1.lp[idx];
@@ -587,7 +587,7 @@ var_min_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
       for(idx=0;idx<sz;idx++) 
 	if(op2.sp[idx] > op1.sp[idx])  op2.sp[idx]=op1.sp[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
 	if(op2.sp[idx] == mss_val_sht) 
 	  op2.sp[idx]=op1.sp[idx];
@@ -607,11 +607,11 @@ var_min_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
 } /* end var_min_bnr() */
 
 void
-var_max_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+var_max_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
-   nc_type type: I netCDF type of operands
-   long sz: I size (in elements) of operands
-   int has_mss_val: I flag for missing values
+   const nc_type type: I netCDF type of operands
+   const long sz: I size (in elements) of operands
+   const int has_mss_val: I flag for missing values
    ptr_unn mss_val: I value of missing value
    ptr_unn op1: I values of first operand
    ptr_unn op2: I/O values of second operand on input, values of maximium on output
@@ -637,7 +637,7 @@ var_max_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
       for(idx=0;idx<sz;idx++) 
 	if(op2.fp[idx] < op1.fp[idx]) op2.fp[idx]=op1.fp[idx];
     }else{
-      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++){
 	if(op2.fp[idx] == mss_val_flt) 
 	  op2.fp[idx]=op1.fp[idx];
@@ -651,7 +651,7 @@ var_max_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
       for(idx=0;idx<sz;idx++) 
 	if(op2.dp[idx] < op1.dp[idx]) op2.dp[idx]=op1.dp[idx];
     }else{
-      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++){
 	if(op2.dp[idx] == mss_val_dbl) 
 	  op2.dp[idx]=op1.dp[idx];
@@ -666,7 +666,7 @@ var_max_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
 	if(op2.lp[idx] < op1.lp[idx]) 
 	  op2.lp[idx]=op1.lp[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if(op2.lp[idx] == mss_val_lng) 
 	  op2.lp[idx]=op1.lp[idx];
@@ -681,7 +681,7 @@ var_max_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
 	if(op2.sp[idx] < op1.sp[idx])
 	  op2.sp[idx]=op1.sp[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
 	if(op2.sp[idx] == mss_val_sht) 
 	  op2.sp[idx]=op1.sp[idx];
@@ -701,11 +701,11 @@ var_max_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
 } /* end var_max_bnr() */
 
 void
-var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
+var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: I netCDF type of operands
-  long sz: I size (in elements) of operands
-  int has_mss_val: I flag for missing values
+  const nc_type type: I netCDF type of operands
+  const long sz: I size (in elements) of operands
+  const int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   long *tally: I/O counter space
   ptr_unn op1: I values of first operand
@@ -733,7 +733,7 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
 	tally[idx]++;
       } /* end for */
     }else{
-      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt){
 	  op2.fp[idx]=sqrt(op1.fp[idx]);
@@ -749,7 +749,7 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
 	tally[idx]++;
       } /* end for */
     }else{
-      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_dbl){
 	  op2.dp[idx]=sqrt(op1.dp[idx]);
@@ -765,7 +765,7 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
 	tally[idx]++;
       } /* end for */
     }else{
-      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++){
 	if(op1.lp[idx] != mss_val_lng){
 	  op2.lp[idx]=(long)sqrt(op1.lp[idx]);
@@ -781,7 +781,7 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
 	tally[idx]++;
       } /* end for */
     }else{
-      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp;
       for(idx=0;idx<sz;idx++){
 	if(op1.sp[idx] != mss_val_sht){
 	  op2.sp[idx]=(short)sqrt(op1.sp[idx]);
@@ -805,11 +805,11 @@ var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_un
 } /* end var_sqrt() */
 
 void
-var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
+var_normalize(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
 /* 
-  nc_type type: I netCDF type of operand
-  long sz: I size (in elements) of operand
-  int has_mss_val: I flag for missing values
+  const nc_type type: I netCDF type of operand
+  const long sz: I size (in elements) of operand
+  const int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   long *tally: I counter space
   ptr_unn op1: I/O values of first operand on input, normalized result on output
@@ -832,7 +832,7 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]/=tally[idx];
     }else{
-      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.fp[idx]/=tally[idx]; else op1.fp[idx]=mss_val_flt;
     } /* end else */
     break;
@@ -840,7 +840,7 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]/=tally[idx];
     }else{
-      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.dp[idx]/=tally[idx]; else op1.dp[idx]=mss_val_dbl;
     } /* end else */
     break;
@@ -848,7 +848,7 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]/=tally[idx];
     }else{
-      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.lp[idx]/=tally[idx]; else op1.lp[idx]=mss_val_lng;
     } /* end else */
     break;
@@ -856,7 +856,7 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]/=tally[idx];
     }else{
-      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp;
       for(idx=0;idx<sz;idx++) if(tally[idx] != 0L) op1.sp[idx]/=tally[idx]; else op1.sp[idx]=mss_val_sht;
     } /* end else */
     break;
@@ -875,11 +875,11 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
 } /* end var_normalize() */
 
 void
-var_normalize_sdn(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
+var_normalize_sdn(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
 /* 
-  nc_type type: I netCDF type of operand
-  long sz: I size (in elements) of operand
-  int has_mss_val: I flag for missing values
+  const nc_type type: I netCDF type of operand
+  const long sz: I size (in elements) of operand
+  const int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   long *tally: I counter space
   ptr_unn op1: I/O values of first operand on input, normalized result on output
@@ -903,7 +903,7 @@ var_normalize_sdn(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tal
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]/=(tally[idx]-1);
     }else{
-      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp;
       for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.fp[idx]/=(tally[idx]-1); else op1.fp[idx]=mss_val_flt;
     } /* end else */
     break;
@@ -911,7 +911,7 @@ var_normalize_sdn(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tal
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]/=(tally[idx]-1);
     }else{
-      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp;
       for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.dp[idx]/=(tally[idx]-1); else op1.dp[idx]=mss_val_dbl;
     } /* end else */
     break;
@@ -919,7 +919,7 @@ var_normalize_sdn(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tal
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]/=(tally[idx]-1);
     }else{
-      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp;
       for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.lp[idx]/=(tally[idx]-1); else op1.lp[idx]=mss_val_lng;
     } /* end else */
     break;
@@ -927,7 +927,7 @@ var_normalize_sdn(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tal
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]/=(tally[idx]-1);
     }else{
-      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp;
       for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.sp[idx]/=(tally[idx]-1); else op1.sp[idx]=mss_val_sht;
     } /* end else */
     break;
@@ -946,14 +946,14 @@ var_normalize_sdn(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tal
 } /* end of var_normalize_sdn */
 
 void
-var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_typ_rlt,ptr_unn op2,ptr_unn op3)
+var_mask(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,const double op1,const int op_typ_rlt,ptr_unn op2,ptr_unn op3)
 /* 
-  nc_type type: I netCDF type of operand op3
-  long sz: I size (in elements) of operand op3
-  int has_mss_val: I flag for missing values (basically assumed to be true)
+  const nc_type type: I netCDF type of operand op3
+  const long sz: I size (in elements) of operand op3
+  const int has_mss_val: I flag for missing values (basically assumed to be true)
   ptr_unn mss_val: I value of missing value
-  double op1: I Target value against which mask field will be compared (i.e., argument of -M)
-  int op_typ_rlt: I type of relationship to test for between op2 and op1
+  const double op1: I Target value against which mask field will be compared (i.e., argument of -M)
+  const int op_typ_rlt: I type of relationship to test for between op2 and op1
   ptr_unn op2: I Value of mask field
   ptr_unn op3: I/O values of second operand on input, masked values on output
  */
@@ -1065,10 +1065,10 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
 } /* end var_mask() */
 
 void
-var_zero(nc_type type,long sz,ptr_unn op1)
+var_zero(const nc_type type,const long sz,ptr_unn op1)
 /* 
-  nc_type type: I netCDF type of operand
-  long sz: I size (in elements) of operand
+  const nc_type type: I netCDF type of operand
+  const long sz: I size (in elements) of operand
   ptr_unn op1: I values of first operand
  */
 {

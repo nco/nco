@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.148 2002-06-07 06:27:05 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.149 2002-06-07 15:10:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -212,7 +212,7 @@ ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 221. Add Makefile option to strip executables (STR=Y)
 222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
 223. texi2dvi nco.texi works on old RHL not on RHL 7.2
-224. Copy var_nm from command line so program, not system, owns memory. Then modify var_free() to release var_nm structure member
+224. Copy var_nm from command line so program, not system, owns memory. Then modify var_free() to release var_nm structure member, and var_dpl() to copy it. Same for dimension names and dmn_dpl()
 225. Pass aed by reference in aed_prc()
 226. See if xrf in var_conform_dim() is really necessary, if not, remove it and make wgt arg const var_sct * const
 227. Document binary write ability and -B switch for ncks
