@@ -1,5 +1,7 @@
 2001-12-28  Charlie Zender  <zender@uci.edu>
 
+	* More CEWI initializations
+
 	* Changed copyright to 2002
 
 	* Remove C++ comment characters that crept into various routines
