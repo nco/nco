@@ -1,7 +1,8 @@
 2001-10-01  Charlie Zender  <zender@uci.edu>
 
+	* Build is clean and successful with g++/Linux, xlC/AIX
+
 	* Return (int)0 instead of (int)NULL from nco_typ_lng()
-	to avoid g++ warnings
 
 	* Initialize nc_type variables with new netCDF 3.5 token NC_NAT
 	This requires building NCO > 2.0.1 with netCDF >= 3.5

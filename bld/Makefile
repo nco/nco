@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.99 2001-10-02 06:08:18 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.100 2001-10-02 17:06:20 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -223,7 +223,7 @@ ${MY_DPN_DIR}/%.d : %.cc
 # Works on AIX and AIX46K
 ifneq (,$(findstring AIX,${PVM_ARCH}))
 C++ := xlC
-CC := xlC
+CC := cc
 # Additional switch to fix compiler warnings on csz.c
 # -qmaxmem=num Limit the amount of memory used by space intensive optimizations to <num> kilobytes
 CFLAGS := -qmaxmem=8192
