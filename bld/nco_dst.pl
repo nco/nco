@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.108 2003-08-03 00:42:16 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.109 2003-08-12 20:28:47 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -66,9 +66,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2003-08-03 00:42:16 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.108 2003-08-03 00:42:16 zender Exp $';
-my $CVS_Revision='$Revision: 1.108 $';
+my $CVS_Date='$Date: 2003-08-12 20:28:47 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.109 2003-08-12 20:28:47 zender Exp $';
+my $CVS_Revision='$Revision: 1.109 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -241,14 +241,14 @@ if($bld){
 # Set up FTP server
     chdir $dst_pth_pfx or die "$prg_nm: ERROR unable to chdir to $dst_pth_pfx: $!\n"; # $! is system error string
     cmd_prc("$tar_cmd -cvzf $dst_fl ./$dst_vrs"); # Create gzipped tarfile
-    cmd_prc("$rsh_cmd $www_mch $rm_cmd $www_drc/$dst_fl"); # Remove any distribution with same name
-    if($dly_snp){cmd_prc("$rsh_cmd $www_mch $rm_cmd -r $www_drc/nco-????????.tar.gz");} # Remove previous daily snapshots from WWW server
-    cmd_prc("$rcp_cmd $dst_fl $www_mch:$www_drc"); # Copy local tarfile to WWW server
+    cmd_prc("$rsh_cmd $www_mch $rm_cmd $www_drc/src/$dst_fl"); # Remove any distribution with same name
+    if($dly_snp){cmd_prc("$rsh_cmd $www_mch $rm_cmd -r $www_drc/src/nco-????????.tar.gz");} # Remove previous daily snapshots from WWW server
+    cmd_prc("$rcp_cmd $dst_fl $www_mch:$www_drc/src"); # Copy local tarfile to WWW server
  
 # Full release procedure (public releases only) includes update Web pages
     if(!$dly_snp){
 	cmd_prc("$rsh_cmd $www_mch $rm_cmd $www_drc/nco.tar.gz");
-	cmd_prc("$rsh_cmd $www_mch \"cd $www_drc; ln -s $dst_fl nco.tar.gz\"");
+	cmd_prc("$rsh_cmd $www_mch \"cd $www_drc; ln -s ./src/$dst_fl nco.tar.gz\"");
  	cmd_prc("$rcp_cmd $dst_pth_bld/doc/index.shtml $www_mch:$www_drc");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco_news.shtml $www_mch:$www_drc");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco.html $dst_pth_bld/doc/nco.info* $dst_pth_bld/doc/nco.dvi $dst_pth_bld/doc/nco.pdf $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.texi $www_mch:$www_drc");
