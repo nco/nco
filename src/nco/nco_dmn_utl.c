@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.18 2005-03-27 01:04:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.19 2005-03-28 00:04:34 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -224,14 +224,14 @@ nco_dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
  CST_X_PTR_CST_PTR_CST_Y(char,dmn_lst_in), /* I [sng] User-specified list of dimension names */
  const int nbr_dmn) /* I [nbr] Total number of dimensions in list */
 {
-  /* Purpose: Create list of dimension name-id structures from list of dimension name strings */
+  /* Purpose: Create list of dimension name-ID structures from list of dimension name strings */
   int idx;
 
   nm_id_sct *dmn_lst;
   
   dmn_lst=(nm_id_sct *)nco_malloc(nbr_dmn*sizeof(nm_id_sct));
   for(idx=0;idx<nbr_dmn;idx++){
-    /* See if requested dimension is in input file */
+    /* Copy name and then get requested dimension ID from input file */
     dmn_lst[idx].nm=(char *)strdup(dmn_lst_in[idx]);
     (void)nco_inq_dimid(nc_id,dmn_lst[idx].nm,&dmn_lst[idx].id);
   } /* end loop over idx */

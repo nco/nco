@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.24 2005-03-27 20:35:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.25 2005-03-28 00:04:34 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -102,7 +102,7 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
 } /* end lst_heapsort() */
 
 char ** /* O [sng] Array of list elements */
-lst_prs /* [fnc] Create list of strings from given string and arbitrary delimiter */
+lst_prs_old /* [fnc] Create list of strings from given string and arbitrary delimiter */
 (char * const sng_in, /* I/O [sng] Delimited argument list (delimiters are changed to NULL on output */
  const char * const dlm_sng, /* I [sng] delimiter string */
  int * const nbr_lst) /* O [nbr] number of elements in list */
@@ -114,7 +114,7 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
      However, we are safe if any modifications do not extend input string
      Thus this routine is allowed to replace delimiter strings by NULs
 
-     NB: File takes single string as input and returns "list of strings" 
+     NB: Function takes single string as input and returns "list of strings" 
      However, this list of strings was not obtained by malloc'ing each string 
      It was obtained by inserting delimiters in a single string 
      Hence do not try to separately free() each member of list of strings */
@@ -128,7 +128,7 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
      On the other hand, '\0', the empty string, can be printed but is not as useful as a flag
      Currently, NCO implements former convention, where default selections are set to NULL */
     
-  char **lst;
+  char **lst; /* O [sng] Array of list elements */
   char *sng_in_ptr;
 
   int dlm_lng;
@@ -153,7 +153,7 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
      ==32444== 4 bytes in 1 blocks are definitely lost in loss record 1 of 6
      ==32444==    at 0x1B906EDD: malloc (vg_replace_malloc.c:131)
      ==32444==    by 0x8055DE9: nco_malloc (nco_mmr.c:85)
-     ==32444==    by 0x8055A2C: lst_prs (nco_lst_utl.c:147)
+     ==32444==    by 0x8055A2C: lst_prs_old (nco_lst_utl.c:147)
      ==32444==    by 0x8049D3B: main (ncpdq.c:272) */
   lst=(char **)nco_malloc(*nbr_lst*sizeof(char *));
 
@@ -183,7 +183,93 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
   } /* end debug */
 
   return lst;
-} /* end lst_prs() */
+} /* end lst_prs_old() */
+
+char ** /* O [sng] List of strings */
+lst_1D_to_2D /* [fnc] Create list of strings from given string and arbitrary delimiter */
+(const char * const sng_in, /* I [sng] Delimited argument list */
+ const char * const dlm_sng, /* I [sng] delimiter string */
+ int * const nbr_lst) /* O [nbr] number of elements in list */
+{
+  /* Purpose: Create list of strings from given string and arbitrary delimiter
+     Algorithm recursively copies all text up to delimiter into a new string and
+     appends the new string to the output list
+     Output list has no delimiter strings
+     lst_1D_to_2D() is similar to it predecessor, lst_prs_old(), except it creates
+     a truly two-dimensional output string list and does modify the input.
+     Output list may be free'd by nco_sng_lst_free() */
+
+  /* Number of list members is always one more than number of delimiters, e.g.,
+     foo,,3, has 4 arguments: "foo", "", "3" and "".
+     A delimiter without an argument is valid syntax to indicate default argument
+     Therefore a storage convention is necessary to indicate default argument was selected
+     Either NULL or '\0' can be used without requiring additional flag
+     NULL is not printable, but is useful as a logical flag since its value is False
+     On the other hand, '\0', the empty string, can be printed but is not as useful as a flag
+     Currently, NCO implements former convention, where default selections are set to NULL */
+    
+  char **sng_lst_out; /* O [sng] Array of list elements */
+  char *sng_in_cpy;
+  char *dlm_ptr_crr;
+  char *sng_out_srt;
+
+  int dlm_lng;
+  int idx;
+
+  /* Delimiter must be NUL-terminated (a string) so we may find its length */
+  dlm_lng=strlen(dlm_sng);
+
+  /* Create duplicate to search, modify, copy, and free */
+  sng_in_cpy=(char *)strdup(sng_in); 
+
+  /* Increment temporary dummy pointer in strstr() search loops */
+  dlm_ptr_crr=sng_in_cpy;
+
+  /* First element does not require preceding delimiter */
+  *nbr_lst=1;
+
+  /* Count list members */
+  while((dlm_ptr_crr=strstr(dlm_ptr_crr,dlm_sng))){
+    dlm_ptr_crr+=dlm_lng;
+    (*nbr_lst)++;
+  } /* end while */
+
+  /* Calling routine has responsibility to free this memory */
+  sng_lst_out=(char **)nco_malloc(*nbr_lst*sizeof(char *));
+
+  dlm_ptr_crr=sng_in_cpy; 
+  sng_out_srt=sng_in_cpy;
+  idx=0;
+  while((dlm_ptr_crr=strstr(sng_out_srt,dlm_sng))){
+    /* NUL-terminate previous arg */
+    *dlm_ptr_crr='\0';
+    /* Calling routine has responsibility to free this memory */
+    sng_lst_out[idx++]=(char *)strdup(sng_out_srt);
+    sng_out_srt=dlm_ptr_crr+dlm_lng;
+  } /* end while */
+  /* Handle case of string with no delimiters */
+  if(idx == 0) sng_lst_out[idx++]=(char *)strdup(sng_in_cpy);
+
+  /* Assume default list member when two delimiters are adjacent to eachother, 
+     i.e., when length of string between delimiters is 0. 
+     If list ends with delimiter, last element of list is also assumed to be default list member */
+  /* This loop sets default list members to NULL */
+  for(idx=0;idx<*nbr_lst;idx++)
+    if(strlen(sng_lst_out[idx]) == 0) sng_lst_out[idx]=NULL;
+
+  if(dbg_lvl_get() == 5){
+    (void)fprintf(stderr,"lst_1D_to_2D() reports %d elements in list delimited by \"%s\"\n",*nbr_lst,dlm_sng);
+    for(idx=0;idx<*nbr_lst;idx++) 
+      (void)fprintf(stderr,"sng_lst_out[%d] = %s\n",idx,(sng_lst_out[idx] == NULL) ? "NULL" : sng_lst_out[idx]);
+    (void)fprintf(stderr,"\n");
+    (void)fflush(stderr);
+  } /* end debug */
+
+  /* Free duplicate of sng_in */
+  sng_in_cpy=(char *)nco_free(sng_in_cpy); 
+
+  return sng_lst_out;
+} /* end lst_1D_to_2D() */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_chr /* [fnc] Compare two characters */
@@ -408,4 +494,23 @@ sng_lst_cat /* [fnc] Join list of strings together into one string */
 
   return sng;
 } /* end sng_lst_cat() */
+
+char ** /* O [sng] Pointer to free'd string list */
+nco_sng_lst_free /* [fnc] Free memory associated with string list */
+(char **sng_lst, /* I/O [sng] String list to free */
+ const int sng_nbr) /* I [nbr] Number of strings in list */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with dynamically allocated string list */
+  int idx;
+
+  for(idx=0;idx<sng_nbr;idx++){
+    sng_lst[idx]=(char *)nco_free(sng_lst[idx]);
+  } /* end loop over idx */
+
+  /* Free structure pointer last */
+  sng_lst=(char **)nco_free(sng_lst);
+
+  return sng_lst;
+} /* end nco_sng_lst_free() */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.31 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.32 2005-03-28 00:04:34 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -786,7 +786,7 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
   for(idx=0;idx<lmt_nbr;idx++){
     
     /* Process hyperslab specifications as normal text list */
-    arg_lst=lst_prs(lmt_arg[idx],dlm_sng,&arg_nbr);
+    arg_lst=lst_prs_old(lmt_arg[idx],dlm_sng,&arg_nbr);
     
     /* Check syntax */
     if(
@@ -882,11 +882,11 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   if(utIsTime(&udu_sct_out) && utHasOrigin(&udu_sct_out)){
     /* Parse limits into years, months, day, etc. */
     char **arg_lst; /* Array of date/time strings after parsing */
-    int arg_nbr;  /* [nbr] Number of arguments parsed */
+    int arg_nbr; /* [nbr] Number of arguments parsed */
     int year,month,day,hour,min;
     double sec;
     double *crr_val=lmt_val; /* Pointer to set min/max value */
-    char *crr_sng; /* Save copy because lst_prs() alters stuff */
+    char *crr_sng; /* Save copy because lst_prs_old() alters stuff */
     
     /* Allocate space for limit string */
     crr_sng=(char *)nco_malloc(((strlen(lmt_sng))+1)*sizeof(char));
@@ -895,26 +895,23 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
     /* Clear date and time */
     year=0L; month=0L; day=0L; hour=0L; min=0L; sec=(double)0;
     /* Break up date string copy delimited by dashes */
-    arg_lst=lst_prs(crr_sng,"-",&arg_nbr);
+    arg_lst=lst_prs_old(crr_sng,"-",&arg_nbr);
     /* Fill in year, month, day */
-    if((arg_nbr > 0) && (arg_lst[0] != NULL))
-      year =strtol(arg_lst[0],(char **)NULL,10);
-    if((arg_nbr > 1)  && (arg_lst[1] != NULL))
-      month=strtol(arg_lst[1],(char **)NULL,10);
-    if((arg_nbr > 2)  && (arg_lst[2] != NULL))
-      day  =strtol(arg_lst[2],(char **)NULL,10);
+    if((arg_nbr > 0) && (arg_lst[0] != NULL)) year=strtol(arg_lst[0],(char **)NULL,10);
+    if((arg_nbr > 1) && (arg_lst[1] != NULL)) month=strtol(arg_lst[1],(char **)NULL,10);
+    if((arg_nbr > 2) && (arg_lst[2] != NULL)) day=strtol(arg_lst[2],(char **)NULL,10);
     /* Advance pointer past date/time delimiting space */
     if(arg_lst[2] != NULL) arg_lst[2]=strrchr(arg_lst[2],' ');
     /* Step past last space */
     if(arg_lst[2] != NULL) arg_lst[arg_nbr-1]++;
     /* Break up remaining time string delimited by colons */
     if(arg_lst[2] != NULL){
-      arg_lst=lst_prs(arg_lst[2],":",&arg_nbr);
+      arg_lst=lst_prs_old(arg_lst[2],":",&arg_nbr);
       /* Fill in hour, minute, second */
-      if((arg_nbr > 0) && strlen(arg_lst[0])>2){ /* HHMM spec */
+      if((arg_nbr > 0) && strlen(arg_lst[0]) > 2){ /* HHMM spec */
 	hour=strtol(arg_lst[0],(char **)NULL,10);
 	hour=(long)(hour/100);
-	min =strtol(arg_lst[0],(char **)NULL,10);
+	min=strtol(arg_lst[0],(char **)NULL,10);
 	min=(long)(min%100);
       }else{ /* HH:MM:S.S spec */
 	if((arg_nbr > 0) && (arg_lst[0] != NULL)) hour=strtol(arg_lst[0],(char **)NULL,10);

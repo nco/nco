@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.18 2005-03-27 20:35:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.19 2005-03-28 00:04:34 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -42,8 +42,14 @@ indexx_alpha /* [fnc] Sort array of strings */
  char * const * const arr_in, /* I [sng] Strings to sort */
  int * const idx); /* O [idx] Indices to sorted array */
 
+char ** /* O [sng] List of strings */
+lst_1D_to_2D /* [fnc] Create list of strings from given string and arbitrary delimiter */
+(const char * const sng_in, /* I [sng] Delimited argument list */
+ const char * const dlm_sng, /* I [sng] delimiter string */
+ int * const nbr_lst); /* O [nbr] number of elements in list */
+
 char ** /* O [sng] Array of list elements */
-lst_prs /* [fnc] Create list of strings from given string and arbitrary delimiter */
+lst_prs_old /* [fnc] Create list of strings from given string and arbitrary delimiter */
 (char * const sng_in, /* I/O [sng] Delimited argument list (delimiters are changed to NULL on output */
  const char * const dlm_sng, /* I [sng] delimiter string */
  int * const nbr_lst); /* O [nbr] number of elements in list */
@@ -99,6 +105,11 @@ nm_id_sct * /* O [sct] Pointer to free'd structure list */
 nco_nm_id_lst_free /* [fnc] Free memory associated with name-ID structure list */
 (nm_id_sct *nm_id_lst, /* I/O [sct] Name-ID struture list to free */
  const int nm_id_nbr); /* I [nbr] Number of name-ID strutures in list */
+
+char ** /* O [sng] Pointer to free'd string list */
+nco_sng_lst_free /* [fnc] Free memory associated with string list */
+(char **sng_lst, /* I/O [sng] String list to free */
+ const int sng_nbr); /* I [nbr] Number of strings in list */
 
 char * /* O [sng] Concatenated string formed by joining all input strings */
 sng_lst_cat /* [fnc] Join list of strings together into one string */

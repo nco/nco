@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.460 2005-03-27 20:35:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.461 2005-03-28 00:04:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -38,7 +38,9 @@ wvl_1e5 = 1
 wvl_1e6 = 1
 wvl_1e7 = 1
 wvl_1e8 = 0.167772 (NB: this is approximately 1/6)
-nco405. Modify multi-slabbing so that it places the output slabs in the order in which they were specified rather than the order they appear in the input file
+nco405. Modify multi-slabbing so that it places the output slabs in the order in which they were specified rather than the order they appear in the input file (Martin Schultz)
+nco491. Change lst_prs() to return true two-dimensional lists rather
+        than filling 1-d list with NULs. It's confusing.
 
 NCO-wide items of lesser priority:
 nco28. Use var.nc_id as file ID from now on and rewrite old routines to do so
@@ -287,11 +289,8 @@ nco488. ncatted: Deleting global attributes doesn't work unless 'global' specifi
         ncatted -O -a Conventions,,d,, ~/nco/data/in.nc ~/foo.nc (fails)
         ncks ~/foo.nc | m
         ncatted -a Conventions,global,d,, in.nc foo.nc (works)
-nco490. regression in ncwa:
+nco490. regression in ncwa when freeing var->nm in nco_var_free():
         ncwa -D 2 -O -a lat -w gw ~/nco/data/in.nc ~/foo.nc
-        part of regression symptom is that freeing var->nm in nco_var_free() fails
-nco491. Change lst_prs() to return true two-dimensional lists rather
-        than filling 1-d list with NULs. It's confusing.
 nco493. 
 
 ncap-specific items:

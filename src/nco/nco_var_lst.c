@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.43 2005-03-02 01:38:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.44 2005-03-28 00:04:34 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -388,7 +388,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
   enum op_typ{
     fix, /* 0 [enm] Fix variable (operator alters neither data nor metadata) */
     prc /* 1 [enm] Process variable (operator may alter data or metadata) */
-  };
+  }; /* end op_typ */
 
   int idx_dmn;
   int idx_xcl;
@@ -403,7 +403,8 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 
   prg=prg_get(); /* Program key */
 
-  /* Allocate space for too many structures, then realloc() at the end, to avoid duplication. */
+  /* Allocate space for too many structures first then realloc() appropriately
+     It is calling function's responsibility to free() this memory */
   var_fix=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
   var_fix_out=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));
   var_prc=(var_sct **)nco_malloc(NC_MAX_VARS*sizeof(var_sct *));

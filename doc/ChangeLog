@@ -1,5 +1,12 @@
 2005-03-27  Charlie Zender  <zender@uci.edu>
 
+	* Create lst_1D_to_2D() to replace lst_prs(), which is responsible
+	for much craziness and was renamed lst_prs_old().
+	Unfortuneately, immediately switching showed many regressions
+	lst_1D_to_2D() needs more extensive testing
+
+	* Implement nco_sng_lst_free() to free string lists
+
 	* More fixes to ncpdq memory management...only one leak remains!
 
 2005-03-26  charlie  <zender@uci.edu>
