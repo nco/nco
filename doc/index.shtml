@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.83 2002-02-17 08:36:05 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.84 2002-02-22 20:20:37 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -241,18 +241,17 @@ fixes we currently have in mind for NCO.</li>
 <p>Users at UC Irvine and NCAR <it>may</it> find pre-built,
 <it>almost</it> up-to-date NCO executables in the following locations:
 <ul>
-<li>ACD <tt>acd.ucar.edu</tt> (Linux 2.2.14): <tt>/ur/zender/bin/LINUX</tt></li>
-<li>ACD <tt>garcia.acd.ucar.edu</tt> (Compaq tru64): <tt>/usr/local/bin</tt></li>
-<li>CGD network (Solaris 2.6): <tt>/contrib/bin</tt>, <tt>/home/zender/bin/SUN4SOL2</tt></li>
+<li>ESS <tt>dust.ps.uci.edu</tt> (Linux 2.4.7): <tt>/home/zender/bin/LINUX</tt></li>
+<li>ESS <tt>ess1.ps.uci.edu</tt> (Linux 2.2.15): <tt>/home/zender/bin/LINUXALPHA</tt></li>
+<li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
+<li>CGD network (Solaris 2.6): <tt>/contrib/bin</tt>, <tt>/home/zender/bin/SUNMP</tt></li>
 <li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5):
 <tt>/contrib/bin</tt>, <tt>/home/dataproc/zender/bin/SGIMP64</tt></li>
 <li>SCD <tt>blackforest.ucar.edu</tt> (AIX 4.0): <tt>/home/blackforest/zender/bin/AIX</tt></li>
+<li>SCD <tt>longs.ucar.edu</tt> (Linux 2.2.17): <tt>/fs/cgd/home0/zender/bin/LINUX</tt></li>
 <li>SCD <tt>ouray.ucar.edu</tt> (UNICOS 10.0.0): <tt>/home/ouray0/zender/bin/CRAY</tt></li>
 <li>SCD <tt>prospect.ucar.edu</tt> (OSF1 5.0): <tt>/home/prospect/zender/bin/ALPHA</tt></li>
-<li>SCD <tt>ute.ucar.edu</tt> and <tt>utefe.ucar.edu</tt> (IRIX 6.5): <tt>/home/ute/zender/bin/SGIMP64</tt></li>
-<li>ESS <tt>dust.ps.uci.edu</tt> (Linux 2.2.16): <tt>/home/zender/bin/LINUX</tt></li>
-<li>ESS <tt>ess1.ps.uci.edu</tt> (Linux 2.2.15): <tt>/home/zender/bin/LINUXALPHA</tt></li>
-<li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
+<li>SCD <tt>utefe.ucar.edu</tt> (IRIX 6.5): <tt>/home/ute/zender/bin/SGIMP64</tt></li>
 </ul>
 <hr></p>
 
