@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/data/nco_bnch.sh,v 1.4 2004-07-20 02:16:46 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/data/nco_bnch.sh,v 1.5 2004-09-14 01:23:15 zender Exp $
 
 # Purpose: Benchmark NCO performance
 
@@ -21,6 +21,10 @@ ncap -D 3 -O \
 -s "wvl_1e7[wvl_1e7]=1.0f" \
 -s "wvl_1e8[wvl_1e8]=1.0f" \
 ~/nco/data/big.nc ${DATA}/tmp/big.nc
+
+# Verify big file dimensionality
+ls -l ${DATA}/tmp/big.nc
+ncks -M -m ${DATA}/tmp/big.nc
 
 # Benchmarks for ncwa 
 # ncwa_b1:
