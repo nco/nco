@@ -2,6 +2,7 @@
 
 	* cvs tag -c nco-2_6_3
 	Changes since nco-2_6_2: 
+	Numerous build improvments and removal of PVM_ARCH ifdefs
 	MACOSX builds with bld/Makefile
 
 	* MACOSX builds appear to work
@@ -11,6 +12,10 @@
 	* Get rid of inline qualifier on nco_rth_flt function definitions
 
 	* Move function definitions from nco_rth_flt.h to nco_rth_flt.c
+
+	* Verified that bison 1.29 on MACOSX screws up ncap_yacc.y
+	translation. Installed bison 1.35 on compile farm MACOSX system,
+	and builds work fine.
 
 	* Remove ncap_utl.o from libnco.a
 

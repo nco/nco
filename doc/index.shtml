@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.117 2002-09-14 17:53:35 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.118 2002-09-14 18:09:59 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -393,6 +393,14 @@ but same commands work fine in <tt>/home/dataproc</tt>.
 Can anyone repeat this behavior?
 </li>
 </ul>
+
+<li><b>Various <tt>ncap</tt> build problems:</b>
+<tt>ncap</tt> requires <tt>flex</tt> to build correctly.
+AT&T <tt>lex</tt> will not work because it does not understand
+<tt>EOF</tt> rules that <tt>ncap_lex.l</tt> uses.
+<tt>bison</tt> version 1.29 (the default version on Mac OS X) is buggy
+and does not parse <tt>ncap_yacc.y</tt> correctly; previous and later
+versions of <tt>bison</tt> work correctly.
 
 <li><b>NCO on the Cray T90</b>
 NCO should be compiled with the <tt>-DC_ONLY</tt> flag on the Cray

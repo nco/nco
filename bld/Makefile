@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.180 2002-09-14 17:53:35 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.181 2002-09-14 18:09:58 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -600,7 +600,7 @@ endif
 
 ifeq (${PVM_ARCH},MACOSX)
 C++ := c++
-CC := cc -std=c99 -ansi -pedantic -D_BSD_SOURCE
+CC := cc
 CFLAGS := -Wall
 CPP := ${CC}
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
@@ -792,97 +792,40 @@ endif
 endif
 # endif SGI6, SGI64, SGIMP64
 
-ifeq (${PVM_ARCH},SUN4)
+ifeq (${UNAMES},SunOS) 
 C++ := g++
-CC := acc
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
-FC := f77
+CC := gcc
+CFLAGS := -Wall
+CPP := cpp
+CPPFLAGS := ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC} 
+FC := f90 -DHIDE_SHR_MSG
+#FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
+FFLAGS := -xs -stackvar -e 
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS += -cg92 -L/opt/SUNWspro/SC3.0/lib/cg92 -lF77 -lM77
-endif
-LDFLAGS += -lresolv
+LDFLAGS := -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf -lsunmath -lsocket -lnsl
+LDFLAGS += -lF77 -lM77 -lresolv
 LEX := lex
 LINT := lint
 YACC := yacc
 ifeq (${OPTS},O)
  CFLAGS += -O2
- FFLAGS := -fast -e -Nl99
+ FFLAGS += -fast
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
- FFLAGS := -g -e -Nl99
-endif
-endif
-# endif SUN4
-
-ifeq (${PVM_ARCH},SUN4SOL2)
-C++ := g++
-CC := gcc -ansi
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
-FC := f77
-LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsocket -lnsl -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS += -lF77 -lM77
-endif
-LDFLAGS += -lresolv
-LEX := flex
-LINT := lint
-YACC := bison
-ifeq (${OPTS},O)
- CFLAGS += -O2
- FFLAGS := -O -e
-endif
-ifeq (${OPTS},D)
- CFLAGS += -g
- FFLAGS := -g -e
+ FFLAGS += -g
 endif
 ifeq (${OPTS},X)
  CFLAGS += -g 
- FFLAGS := -g -e
-# NB: 1998/06/01 -C (range-checking) is not supported by Sun f90
+ FFLAGS += -g
+# NB: 19980601 -C (range-checking) is not supported by Sun f90
 ifeq (${FC},f77)
- FFLAGS += ${FFLAGS} -C
+ FFLAGS += -C
 endif
 endif
+ C++FLAGS := ${CFLAGS}
 endif
-# endif SUN4SOL2
-
-ifeq (${PVM_ARCH},SUNMP)
-C++ := g++
-#CC := gcc -ansi -pedantic
-CC := gcc 
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
-FC := f77
-LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsunmath -lthread -lsocket -lnsl -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS += -lF77 -lM77
-endif
-LDFLAGS += -lresolv
-LEX := flex
-LINT := lint
-YACC := bison
-ifeq (${OPTS},O)
- CFLAGS += -O2
- FFLAGS := -fast -e
-endif
-ifeq (${OPTS},D)
- CFLAGS += -g
- FFLAGS := -g -e
-endif
-ifeq (${OPTS},X)
- CFLAGS += -g 
- FFLAGS := -g -e
-# NB: 1998/06/01 -C (range-checking) is not supported by Sun f90
-ifeq (${FC},f77)
- FFLAGS += ${FFLAGS} -C
-endif
-endif
-endif
-# endif SUNMP
+# endif SunOS=SUN4SOL2,SUNMP
 
 ifeq (${PVM_ARCH},WIN32)
 C++ := g++

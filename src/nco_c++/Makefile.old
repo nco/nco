@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.5 2002-09-02 22:02:02 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.6 2002-09-14 18:09:59 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -493,6 +493,113 @@ ifeq (${OMP},Y)
 endif # endif OMP
 endif
 # endif LINUX
+
+ifeq (${PVM_ARCH},MACOSX)
+C++ := c++
+CC := cc
+CFLAGS := -Wall
+CPP := ${CC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+FC := f90
+LD := ld
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LEX := flex
+LINT := lint
+YACC := bison
+ifeq (${OPTS},O)
+ CFLAGS += -O
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ CFLAGS += 
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g -O
+ LDFLAGS += /usr/local/lib/ccmalloc-gcc.o -L/usr/local/lib -lccmalloc -ldl
+endif
+C++FLAGS := ${CFLAGS}
+ifeq (${OMP},Y)
+ CFLAGS += ${OMP_FLG}
+ FFLAGS += ${OMP_FLG}
+ LDFLAGS := ${OMP_FLG} ${LDFLAGS}
+endif # endif OMP
+endif
+# endif MACOSX
+
+ifeq (${PVM_ARCH},NECSX)
+ifeq (${OMP},Y)
+ OMP_FLG := -Popenmp
+endif # endif OMP
+C++ := c++
+#CC := c++ -Xa
+CC := cc
+CPP := c++ -E
+#CPP := /usr/lib/cpp
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+FC := f90
+LD := ld
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+# LDFLAGS += -L/lib -lf
+endif
+LEX := lex
+LINT := lint
+YACC := yacc
+ifeq (${OPTS},O)
+ CFLAGS += -h2 -hmath vector -hxint
+# CFLAGS += -Cvopt -math vector -xint
+ FFLAGS = -Cvopt -f3
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+ FFLAGS = -g -f3
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -h0 -g -hstack=nan
+# CFLAGS += -Cdebug -init stack=nan
+ FFLAGS = -Cdebug -eR -f3 -Wf"-init stack=nan heap=nan"
+endif
+MK_DPN = /usr/local/bin/mkdep.perl /usr/lib/cpp # NECSX try this
+${MY_DPN_DIR}/%.d : %.c
+	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+endif
+# endif NECSX
+
+ifeq (${PVM_ARCH},RS6K)
+C++ := g++
+CC := gcc -ansi
+CPP := /lib/cpp -P
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+FC := xlf
+LD := ld
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS += -lxlf90 -lxlf
+endif
+LEX := lex
+LINT := lint
+YACC := yacc
+ifeq (${OPTS},O)
+ CFLAGS += -O2
+ CPP := ${CPP} ${CPPFLAGS}
+ PREPROCESS.F := ${CPP} ${CPPFLAGS}
+ FFLAGS := -O -NS2000 -qfixed=132
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+ CPP := ${CPP} ${CPPFLAGS}
+ PREPROCESS.F := ${CPP} ${CPPFLAGS}
+ FFLAGS := -g -NS2000 -qfixed=132
+endif
+${MY_OBJ_DIR}/%.o : %.F
+	${CPP} ${CPPFLAGS} $< ${MY_OBJ_DIR}/$(basename $<).f 
+	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) ${MY_OBJ_DIR}/$(basename $<).f
+${MY_OBJ_DIR}/%.o : %.f
+	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
+endif
+# endif RS6K
 
 # SGI6, SGI64, SGIMP64
 ifneq (,$(findstring SGI,${PVM_ARCH}))

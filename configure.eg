@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.37 2002-09-09 03:39:59 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.38 2002-09-14 18:09:58 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -284,7 +284,7 @@ End LINUXSPARC64
 
 ************************************************************************
 Start MACOSX
-Status: Fails to build ncap because cannot find float math functions
+Status: Fails to build ncap because configure is out of date
 ncap TODO#18
 ************************************************************************
 bash-2.05a$ ./pvmgetarch;uname -a
@@ -301,35 +301,7 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.
 
 Old build example:
 
-Should not pass -lstdc++ to linker on C programs, 
-Do need float math library (where is it?)
 New build example:
-/bin/sh ../../libtool --mode=link cc  -g -O2  -L/home/users/z/ze/zender/lib -o ncap  ncap_utl.o ncap.o ncap_yacc.o ncap_lex.o libnco.la -lstdc++ -lm -lnetcdf 
-cc -g -O2 -o .libs/ncap ncap_utl.o ncap.o ncap_yacc.o ncap_lex.o  -L/home/users/z/ze/zender/lib -L./.libs -lnco -lstdc++ -lm -lnetcdf
-/usr/bin/ld: Undefined symbols:
-_fmodf
-_powf
-_acosf
-_acoshf
-_asinf
-_asinhf
-_atanf
-_atanhf
-_ceilf
-_cosf
-_coshf
-_erfcf
-_erff
-_expf
-_floorf
-_gammaf
-_log10f
-_logf
-_sinf
-_sinhf
-_sqrtf
-_tanf
-_tanhf
 ************************************************************************
 End MACOSX
 ************************************************************************
