@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.60 2000-06-26 10:34:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.61 2000-07-01 20:44:46 zender Exp $ -*-text-*-
 
 *************
 NCO Wish list
@@ -132,6 +132,8 @@ with nco_dst.pl
 168. Implement autoconf/automake build environment?
 169. Merge TODO into Task manager and bug manager as appropriate
 170. rgn.sh appears to cause core dump over some ocean basins
+171. Add DODS options to all NCAR architectures
+172. Create NCO announce list
 ************************************************************************
 End NCO Wish list
 ************************************************************************

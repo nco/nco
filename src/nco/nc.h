@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.31 2000-07-01 01:13:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.32 2000-07-01 20:44:46 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -88,7 +88,7 @@ enum prg{
   ncrcat,
   ncrename,
   ncwa
-}; /* end enum */
+}; /* end prg enum */
 
 enum{
   aed_append,
@@ -110,7 +110,7 @@ enum{
 enum lmt_typ{
   lmt_crd_val, /* 0 */ 
   lmt_dmn_idx /* 1 */ 
-}; /* end enum */
+}; /* end lmt_typ enum */
 
 enum nco_op_typ{
   nco_op_avg,
@@ -119,9 +119,13 @@ enum nco_op_typ{
   nco_op_ttl,
   nco_op_avgsqr,
   nco_op_avgsumsqr
-};
+}; /* end nco_op_typ enum */
   
 #else /* SGI */
+/* SGI compilers do not grok enums same as other compilers 
+   This section does the enums by hand
+   This section should be removed once SGI compilers begin to work */
+
 #define ncap 0
 #define ncatted 1
 #define ncdiff 2
@@ -149,6 +153,14 @@ enum nco_op_typ{
 
 #define lmt_crd_val 0
 #define lmt_dmn_idx 1
+
+#define nco_op_avg 0
+#define nco_op_min 1
+#define nco_op_max 2
+#define nco_op_ttl 3
+#define nco_op_avgsqr 4
+#define nco_op_avgsumsqr 5
+
 #endif /* SGI */
 
 #ifndef EXIT_SUCCESS

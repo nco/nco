@@ -1,3 +1,15 @@
+2000-07-02  Charlie Zender  <zender@uci.edu>
+
+	* Added nco_op_typ to SGI enum section of nc.h
+
+	* Update nco/doc/nco_src_frg.txt to include release instructions
+
+	* Released nco-1.1.48.tar.gz on sourceforge
+
+	* Switched all memory management to nco_malloc(), nco_realloc()
+
+	* Implemented min/max/ttl patch (min and ttl not working yet)
+
 2000-06-20  Charlie Zender  <zender@uci.edu>
 
 	* Implemented Schweitzer's 'make DODS=Y' patch in Makefile
