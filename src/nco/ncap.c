@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.85 2002-08-21 11:47:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.86 2002-08-22 21:48:40 rorik Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -15,6 +15,9 @@
    scp ~/nco/src/nco/ncap.c dataproc.ucar.edu:nco/src/nco/ncap.c */
 
 /* Standard C headers */
+#ifdef HAVE_CONFIG_H
+#include <config.h>  /* autoconf-generated header file */
+#endif
 #include <assert.h>  /* assert() debugging macro */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
@@ -85,8 +88,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.85 2002-08-21 11:47:41 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.85 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.86 2002-08-22 21:48:40 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.86 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
