@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.278 2004-09-18 05:22:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.279 2004-09-25 00:43:49 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -7377,8 +7377,7 @@ As mentioned above, all occurrences of the attribute of a given name
 will be renamed unless the @samp{.} form is used, with one exception.
 To change the attribute name for a particular variable, specify 
 the @var{old_name} in the format @var{old_var_name@@old_att_name}.
-The @samp{@@} symbol serves to delimit the variable name from the
-attribute name.
+The @samp{@@} symbol delimits the variable and attribute names.
 If the attribute is uniquely named (no other variables contain the
 attribute) then the @var{old_var_name@@old_att_name} syntax is
 redundant. 
@@ -7409,6 +7408,12 @@ In this case @code{p} must exist in the input file (or
 @command{ncrename} will abort), but the presence of @code{t} is optional:
 @example
 ncrename -v p,pressure -v .t,temperature in.nc
+@end example
+
+Rename the attribute @code{long_name} to @code{largo_nombre} in the
+variable @code{u}, and no other variables in netCDF @file{in.nc}. 
+@example
+ncrename -a u:long_name,largo_nombre in.nc
 @end example
  
 @cindex coordinate variables

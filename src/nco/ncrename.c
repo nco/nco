@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.68 2004-08-05 08:18:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.69 2004-09-25 00:44:02 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -85,8 +85,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.68 2004-08-05 08:18:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.68 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.69 2004-09-25 00:44:02 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.69 $";
   const char * const opt_sng="a:D:d:hl:Oo:p:rv:-:";
 
   extern char *optarg;
@@ -339,7 +339,6 @@ main(int argc,char **argv)
 		(void)fprintf(stderr,"%s: WARNING Attribute \"%s\" not present in variable \"%s\"\n",prg_nm,att_rnm_lst[idx].old_nm+1,(var_nm[0] == '.' ? var_nm+1 : var_nm));
 	      } /* endelse */
 	    }else{ 
-	      (void)fprintf(stderr,"DEBUGGING TODO 240. fxm 1: %d, %s\n",var_id,att_rnm_lst[idx].old_nm);
 	      rcd=nco_inq_attid(nc_id,var_id,att_rnm_lst[idx].old_nm,&att_rnm_lst[idx].id);
 	      if(rcd == NC_NOERR){
 		(void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
@@ -372,7 +371,6 @@ main(int argc,char **argv)
 	    
 	  }else{
 	    /* Rename attribute or die trying */
-/*	    (void)fprintf(stderr,"DEBUGGING TODO 240. fxm 2: %d, %s\n",var_id,att_rnm_lst[idx].old_nm); */
 	    rcd=nco_inq_attid_flg(nc_id,var_id,att_rnm_lst[idx].old_nm,&att_rnm_lst[idx].id);
 	    if(rcd == NC_NOERR){
 	      (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
