@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.5 1998-10-30 07:57:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.6 1998-10-31 21:06:35 zender Exp $ */
 
 /* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -662,7 +662,7 @@ rec_var_dbg(int nc_id,char *dbg_sng)
 */ 
 {
   /* Purpose: Aid in debugging problems with record dimension */ 
-  /* Usage: if(dbg_lvl == 73) rec_var_dbg(out_id,"After ncvarput()") */ 
+  /* Usage: if(dbg_lvl == 73) rec_var_dbg(out_id,"After ncvarput()"); */ 
   int nbr_dim_fl;
   int nbr_var_fl;
   int rec_dim_id=-1;
@@ -674,7 +674,7 @@ rec_var_dbg(int nc_id,char *dbg_sng)
     (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, no record dimension\n",prg_nm_get(),nbr_dim_fl,nbr_var_fl);
   }else{
     (void)ncdiminq(nc_id,rec_dim_id,(char *)NULL,&dim_sz);
-    (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, record dimension size is %d\n",prg_nm_get(),nbr_dim_fl,nbr_var_fl,dim_sz);
+    (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, record dimension size is %li\n",prg_nm_get(),nbr_dim_fl,nbr_var_fl,dim_sz);
   } /* end else */
   (void)fflush(stderr);
 } /* end rec_var_dbg() */ 
