@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_bnr.c,v 1.1 2002-05-08 08:00:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_bnr.c,v 1.2 2002-05-08 08:05:37 zender Exp $ */
 
 /* Purpose: Binary write utilities */
 
@@ -8,7 +8,7 @@
 
 #include "nco_bnr.h" /* Binary write utilities */
 
-FILE *fp_bnr /* O [fl] Unformatted binary output file handle */
+FILE * /* O [fl] Unformatted binary output file handle */
 nco_bnr_open /* [fnc] Open unformatted binary data file for writing */
 (const char * const fl_bnr) /* [sng] Unformatted binary output file */
 {

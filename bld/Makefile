@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.129 2002-05-07 08:00:05 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.130 2002-05-08 08:05:36 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -934,6 +934,7 @@ library: lib
 lib : inc ${libnco}.a
 ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/ncap_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_bnr.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_cln_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_cnf_dmn.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_cnf_typ.o) \
