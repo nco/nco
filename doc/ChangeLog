@@ -4,9 +4,12 @@
 	Changes since nco-2_8_3: Fix index-based hyperslab bug, reduce
 	ncap memory usage to 2*sizeof(var) for binary operations
 
-	* Rorik fixed index-based hyperslabbing bug introduced near 2.7.4
-	
-	* Patch ncap test 
+	* Sourceforge made debian/rules executable fixes TODO #280
+
+	* Rorik fixed index-based hyperslabbing bug introduced in 2.7.3
+	Fixes TODO #286, #289
+
+	* Specify success correctly for ncap T42 test 
 
 2003-11-24  Charlie Zender  <zender@uci.edu>
 

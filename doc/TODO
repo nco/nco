@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.257 2003-11-25 06:58:12 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.258 2003-11-25 21:13:41 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -230,32 +230,17 @@ ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 275. Use nco_mss_val_cnf() in ncflint
 276. Use nco_mss_val_cnf() in ncap
 277. Use nco_mss_val_cnf() in ncwa
-280. Understand memory usage in ncap: is binary op 2*sizeof(x) or 3*sizeof(x)?
-284. chmod a+x x debian/rules in CVS repository
 285. Kevin: ncap segfaults on packing segfault.tar.gz 
 I cannot replicate this bug
 ncbo -O -y add -D 3 -d date,0,100 /data/zender/tmp/convecPrecip00z.nc /data/zender/tmp/convecPrecip00z.nc /data/zender/tmp/sum.nc
 ncap -O  -D3 -s 'cp=pack(cp)' /data/zender/tmp/sum.nc /data/zender/tmp/packed_sum.nc
 ncbo -O -y add -D 3 ${HOME}/debug/hundred.nc ${HOME}/debug/hundred.nc ${HOME}/debug/sum.nc
 ncap -O -D 3 -s 'cp=pack(cp)' ${HOME}/debug/sum.nc ${HOME}/debug/pack_sum.nc
-286. mpage@ucar.edu: ncrcat 2.8.1 has time offset regression against 2.7.3
-ncks -O -C -d time,0,1 -v time ~/nco/data/in.nc ~/foo.nc
-ncks -O -C -d time,0,1 -v time ~/ha.T.961970.nc ~/foo.nc
-ncatted -h -O -a ,global,d,, -a ,time,d,, foo.nc
-Incorrect answers:
-ncks -H -d time,2, ~/foo.nc
-ncks -H -F -d time,2, ~/foo.nc
-ncks -H -F -d time,2,,1 ~/foo.nc
-time(1)=345630
-time(2)=345660
-Correct answers:
-ncks -H -F -d time,2,2,1 ~/foo.nc
-ncks -H -F -d time,2 ~/foo.nc
-time(2)=345660
 287. Fix debug OMP OpenMP implementation in ncra
 288. Multislabbing bug?
 zender@ashes:~$ ncks -O -d time,,1 foo.nc foo.nc
 Segmentation fault
+289. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************
