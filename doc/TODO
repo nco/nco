@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.29 1999-09-11 04:27:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.30 1999-10-15 18:01:33 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -71,6 +71,10 @@ exactly the same way. C versions test both operands agains mss_val,
 Fortran tests only op1. Since running averages are initialized to 0.0 before
 entry, problems arise in C version when missing_value = 0.0. Only fix seems
 to be checking whether tally == 0 before checking whether op2 == mss_val
+122. Keith Lindsay reports ncwa does not appear to mask weights by
+the missing_value. This is crucial. Must be fixed. Must verify it
+works regardless of whether wgt itself has mss_val.
+123. Add scp protocol to fl_get()
 ************************************************************************
 End NCO Wish list
 ************************************************************************

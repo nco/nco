@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.1 1999-08-31 22:25:55 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.2 1999-10-15 18:01:34 zender Exp $ >
 
 <! Purpose: NCO news archive >
 
@@ -79,7 +79,7 @@ on those machines will have incompatible missing values.
 and the missing data self-consistently.
 This allows the user to change the missing values in files from
 different machines to a single value so that the files may then be 
-concatenated together with, e.g., by <TT>ncrcat</TT>, without losing
+concatenated together, e.g., by <TT>ncrcat</TT>, without losing
 any information.  
 
 <P>1999/05/09: 

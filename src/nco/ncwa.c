@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.21 1999-10-04 05:13:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.22 1999-10-15 18:01:35 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -73,14 +73,14 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.21 1999-10-04 05:13:36 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.21 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.22 1999-10-15 18:01:35 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.22 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
   dim_sct **dim_avg=NULL_CEWI;
   
-  double msk_val=1.; /* Option M */ 
+  double msk_val=1.0; /* Option M */ 
 
   extern char *optarg;
   extern int ncopts;
@@ -453,16 +453,16 @@ main(int argc,char **argv)
     /* Perform error checking if there are any variables to be processed in this file */ 
     if(False) (void)fl_cmp_err_chk();
 
-    /* Find the weighting variable in the input file */
+    /* Find weighting variable in input file */
     if(wgt_nm != NULL){
       int wgt_id;
       
       wgt_id=ncvarid(in_id,wgt_nm);
       wgt=var_fll(in_id,wgt_id,wgt_nm,dim,nbr_dim_fl);
       
-      /* Retrieve the weighting variable */ 
+      /* Retrieve weighting variable */ 
       (void)var_get(in_id,wgt);
-      /* fxm: Perhaps should allocate default tally array for wgt here.
+      /* fxm: Perhaps should allocate default tally array for wgt here
        That way, when wgt conforms to the first var_prc_out and it therefore
        does not get a tally array copied by var_dup() in var_conform_dim(), 
        it will at least have space for a tally array. TODO #114. */ 
@@ -533,41 +533,74 @@ main(int argc,char **argv)
 	 Denominator is also tricky due to sundry normalization options 
 	 These logical switches are VERY tricky---be careful modifying them */
       if(NRM_BY_DNM && wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
+	/* Duplicate wgt_out as wgt_avg so that wgt_out is not contaminated by any
+	   averaging operation and may be reused on next variable.
+	   Be sure to free wgt_avg after each use */
+	wgt_avg=var_dup(wgt_out);
+
+	if(var_prc[idx]->has_mss_val){
+	  double mss_val_dbl=double_CEWI;
+	  /* The denominator must be set to the missing value at all locations 
+	     where the variable is the missing value.
+	     If this is accomplished by setting the weight to the missing value 
+	     wherever the variable is the missing value, then the weight must not
+	     be reused by the next variable (which might conform but have 
+	     missing values in different locations). 
+	     This is one of the reasons to copy wgt_out into the disposable wgt_avg 
+	     for each new variable. */
+	  /* First make sure wgt_avg has the same missing value as the variable */
+	  (void)mss_val_cp(var_prc[idx],wgt_avg);
+	  /* Copy the missing value into a double precision variable */
+	  switch(wgt_avg->type){
+	  case NC_FLOAT: mss_val_dbl=wgt_avg->mss_val.fp[0]; break; 
+	  case NC_DOUBLE: mss_val_dbl=wgt_avg->mss_val.dp[0]; break; 
+	  case NC_LONG: mss_val_dbl=wgt_avg->mss_val.lp[0]; break;
+	  case NC_SHORT: mss_val_dbl=wgt_avg->mss_val.sp[0]; break;
+	  case NC_CHAR: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
+	  case NC_BYTE: mss_val_dbl=wgt_avg->mss_val.bp[0]; break;
+	  } /* end switch */
+	  /* Second mask wgt_avg where the variable is the missing value */
+	  (void)var_mask(wgt_avg->type,wgt_avg->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,mss_val_dbl,nc_op_ne,var_prc[idx]->val,wgt_avg->val);
+	} /* endif weight must be checked for missing values */ 
+
 	if(msk_nm != NULL && DO_CONFORM_MSK){
 	  /* Must mask weight in same fashion as variable was masked */ 
 	  /* If msk and var did not conform then do not mask wgt */ 
-	  /* Ensure wgt_out has a missing value */ 
-	  if(!wgt_out->has_mss_val){
-	    wgt_out->has_mss_val=True;
-	    wgt_out->mss_val=mss_val_mk(wgt_out->type);
+	  /* Ensure wgt_avg has a missing value */ 
+	  if(!wgt_avg->has_mss_val){
+	    wgt_avg->has_mss_val=True;
+	    wgt_avg->mss_val=mss_val_mk(wgt_avg->type);
 	  } /* end if */
 	  /* Mask by changing weight to missing value where condition is false */ 
-	  (void)var_mask(wgt_out->type,wgt_out->sz,wgt_out->has_mss_val,wgt_out->mss_val,msk_val,op_type,msk_out->val,wgt_out->val);
-	} /* endif weight must be masked */ 
+	  (void)var_mask(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,msk_val,op_type,msk_out->val,wgt_avg->val);
+	} /* endif weight must be masked */
+
 	/* fxm: temporary kludge to make sure weight has tally space.
-	   wgt_out may occasionally lack a valid tally array in ncwa because
+	   wgt_avg may occasionally lack a valid tally array in ncwa because
 	   it is created, sometimes, before the tally array for var_prc_out[idx] is 
 	   created, and thus the var_dup() call in var_conform_dim() does not copy
-	   a tally array into wgt_out. See related note about this above. TODO #114.*/ 
-	if((wgt_out->tally=(long *)realloc(wgt_out->tally,wgt_out->sz*sizeof(long))) == NULL){
-	  (void)fprintf(stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",prg_nm_get(),wgt_out->sz,(long)sizeof(long),wgt_out->nm);
+	   a tally array into wgt_avg. See related note about this above. TODO #114.*/ 
+	if((wgt_avg->tally=(long *)realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long))) == NULL){
+	  (void)fprintf(stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",prg_nm_get(),wgt_avg->sz,(long)sizeof(long),wgt_avg->nm);
 	  exit(EXIT_FAILURE); 
 	} /* end if */ 
 	/* Average weight over specified dimensions (tally array is set here) */ 
-	wgt_out=var_avg(wgt_out,dim_avg,nbr_dim_avg);
+	wgt_avg=var_avg(wgt_avg,dim_avg,nbr_dim_avg);
 	if(MULTIPLY_BY_TALLY){
 	  /* Currently this is not implemented */ 
 	  /* Multiply numerator (weighted sum of variable) by tally 
 	     We deviously accomplish this by dividing the denominator by tally */ 
-	  (void)var_normalize(wgt_out->type,wgt_out->sz,wgt_out->has_mss_val,wgt_out->mss_val,wgt_out->tally,wgt_out->val);
+	  (void)var_normalize(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,wgt_avg->tally,wgt_avg->val);
 	} /* endif */ 
-	/* Divide by denominator */ 
+	/* Divide numerator by denominator */ 
 	/* Diagnose problem #116 before it core dumps */ 
 	if(var_prc_out[idx]->sz == 1 && var_prc_out[idx]->type == NC_LONG && var_prc_out[idx]->val.lp[0] == 0){
 	  (void)fprintf(stdout,"%s: ERROR Denominator weight = 0. Problem described in TODO #116\n%s: HINT A possible workaround is to remove variable \"%s\" from file\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
 	} /* end if */ 
 	/* This constructs the default weighted average */ 
-	(void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_out->val,var_prc_out[idx]->val);
+	(void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
+	/* Free wgt_avg, but keep wgt_out, after each use */
+	if(wgt_avg != NULL) wgt_avg=var_free(wgt_avg);
       }else if(NRM_BY_DNM){
 	/* Normalize by tally only and forget about weights */ 
 	(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);

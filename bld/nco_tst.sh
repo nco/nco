@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.9 1999-10-04 06:04:07 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.10 1999-10-15 18:01:33 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -64,7 +64,15 @@ echo "ncwa 11: weight conforms to var first time: -90.0 =?= $avg"
 
 ncwa -O -v mss_val_all -a lon -w lon in.nc foo.nc 2>>foo.tst 
 avg=`ncks -C -H -s "%e" -v mss_val_all foo.nc`
-echo "ncwa 12: average of missing values with weights: 1.0e36 =?= $avg" 
+echo "ncwa 12: average all missing values with weights: 1.0e36 =?= $avg" 
+
+ncwa -O -v val_one_mss -a lat -w wgt_one in.nc foo.nc 2>>foo.tst 
+avg=`ncks -C -H -s "%e" -v val_one_mss foo.nc`
+echo "ncwa 13: average some missing values with unity weights: 1.0 =?= $avg" 
+
+ncwa -O -v msk_prt_mss_prt -m msk_prt_mss_prt -M 1.0 -o lt -a lon in.nc foo.nc 2>>foo.tst 
+avg=`ncks -C -H -s "%e" -v msk_prt_mss_prt foo.nc`
+echo "ncwa 14: average masked variable with some missing values: 0.5 =?= $avg" 
 
 ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v mss_val foo.nc`

@@ -1,3 +1,15 @@
+1999-10-15  Charlie Zender  <zender@dust.ps.uci.edu>
+
+	* Tagged this as nco1_1_40
+
+	* Added two more ncwa test cases to nco_tst.sh
+
+	* Fixed another bug in ncwa reported by Keith Lindsay.
+	The denominator in normalized averages did not always account for
+	missing values in the variable being averaged. This bug may have
+	been introduced sometime during ncwa rewrites around 19981201. 
+	I'm sure it has not always been there.
+
 1999-10-03  Charlie Zender  <zender@dust.ps.uci.edu>
 
 	* Tagged this as nco1_1_39

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.32 1999-10-04 06:16:21 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.33 1999-10-15 18:01:34 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -13,8 +13,9 @@ C-c C-u C-a	texinfo-all-menus-update
 C-c C-u C-e	texinfo-every-node-update
 
 Usage: 
-texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o /data/zender/ps/nco.ps nco.dvi; rcp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco
-texi2html -monolithic -verbose nco.texi; /bin/cp -f nco.html /web/web-data/cms/nco
+texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o $DATA/ps/nco.ps nco.dvi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco
+texi2html -monolithic -verbose nco.texi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco
+cd $DATA/ps;gzip --force nco.ps;scp -p nco.ps.gz www.cgd.ucar.edu:/web/web-data/cms/nco
 texi2dvi nco.texi 
 makeinfo nco.texi 
 texi2html -monolithic -verbose nco.texi 
@@ -124,6 +125,8 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 
 @author by Charles S. Zender
 @author NCAR ACD & CGD
+@author Department of Earth System Science
+@author University of California at Irvine
 @ifhtml
 <P>WWW readers: Having trouble finding the section you want?</P> 
 <P>Search for keywords in the (hyper) index at the end of this page</P> 
@@ -482,11 +485,13 @@ compilation shell.
 
 @cindex @code{UNIX}
 The least portable section of the code is the use of standard UNIX and
-Internet protocols (e.g., @code{ftp}, @code{rcp}, @code{getuid},
-@code{gethostname}, and header files @file{<arpa/nameser.h>} and
+Internet protocols (e.g., @code{ftp}, @code{rcp}, @code{scp},
+@code{getuid}, @code{gethostname}, and header files
+@file{<arpa/nameser.h>} and 
 @file{<resolv.h>}). 
 @cindex @code{ftp}
 @cindex @code{rcp}
+@cindex @code{scp}
 @cindex remote files
 Fortunately, these UNIXy calls are only invoked by the single NCO
 subroutine which is responsible for retrieving files stored on remote
@@ -1151,6 +1156,7 @@ automatically generate, in order, the filenames @file{85_12.nc},
 @node Remote storage, File retention, Specifying input files, Common features
 @section Accessing files stored remotely
 @cindex @code{rcp}
+@cindex @code{scp}
 @cindex @file{.rhosts}
 @cindex NCAR MSS
 @cindex MSS
@@ -1168,13 +1174,17 @@ Key switches: @samp{-p}, @samp{-l}, @samp{-R}@*
 All NCO operators can retrieve files from remote sites as well as the
 local file system.
 A remote site can be an anonymous FTP server, a machine on which the
-user has @code{rcp(1)} privileges, or NCAR's Mass Storage System (MSS). 
+user has @code{rcp(1)} or @code{scp(1)} privileges, or NCAR's Mass
+Storage System (MSS).  
 To access a file via an anonymous FTP server, supply the remote file's
 URL.
-To access a file using @code{rcp(1)}, specify the Internet address of
-the remote file.
-You must have @code{rcp(1)} privileges on the remote machine (e.g.,
-@file{.rhosts} should be set accordingly).
+To access a file using @code{rcp(1)} or @code{scp(1)}, specify the
+Internet address of the remote file.
+Of course in this case you must have @code{rcp(1)} or @code{scp(1)}
+privileges which allow transparent (no password entry required) access
+to the remote machine. 
+This means that @file{~/.rhosts} or @file{~/ssh/authorized_keys} must
+be set accordingly on both local and remote machines.   
 
 @cindex @code{msrcp}
 @cindex @code{msread}
@@ -1196,14 +1206,14 @@ The following examples show how one might analyzed files stored on
 remote systems.
 @example
 ncks -H -l ./ ftp://ftp.cgd.ucar.edu/pub/zender/nc/in.nc
-ncks -H -l ./ dust.acd.ucar.edu:/home/zender/nc/in.nc
+ncks -H -l ./ dust.ps.uci.edu:/home/zender/nc/in.nc
 ncks -H -l ./ /ZENDER/nc/in.nc 
 @end example
 @noindent
 The first example should work verbatim on your system if your system is
 connected to the Internet and is not behind a firewall.
 The second example should fail on your system unless you have @code{rcp}
-priveleges on the machine @code{dust.acd.ucar.edu}.
+or @code{scp} priveleges on the machine @code{dust.ps.uci.edu}.
 The third example should work from NCAR computers with local access to 
 the @code{msrcp}, @code{msread}, or @code{nrnet} commands.
 The above commands can be rewritten using the @samp{-p @var{input-path}}
@@ -1214,7 +1224,7 @@ option as follows:
 @cindex @var{output-path}
 @example
 ncks -H -p ftp://ftp.cgd.ucar.edu/pub/zender/nc -l ./ in.nc
-ncks -H -p dust.acd.ucar.edu:/home/zender/nc -l ./ in.nc
+ncks -H -p dust.ps.uci.edu:/home/zender/nc -l ./ in.nc
 ncks -H -p /ZENDER/nc -l ./ in.nc 
 @end example
 @noindent
@@ -3167,6 +3177,23 @@ DESCRIPTION
 dimensions, with options to specify weights, masks, and normalization.   
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 
+The default behavior of @code{ncwa} is to arithmetically average every
+numerical variable over all dimensions and produce a scalar result.
+To average variables over only a subset of their dimensions, specify
+these dimensions in a comma-separated list following @samp{-a}, e.g.,
+@samp{-a time,lat,lon}. 
+@cindex arithmetic operators
+@cindex hyperslab
+@cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
+As with all arithmetic operators, the operation may be restricted to
+an arbitrary hypserslab by employing the @samp{-d} option
+(@pxref{Hyperslabs}). 
+@code{ncwa} also handles values matching the variable's
+@code{missing_value} attribute correctly. 
+Moreover, @code{ncwa} understands how to manipulate user-specified
+weights, masks, and normalization options.
+With these options, @code{ncwa} can compute sophisticated averages (and
+integrals) from the command line. 
 
 @var{mask} and @var{weight}, if specified, are broadcast to conform to
 the variables being averaged. 
@@ -3180,11 +3207,11 @@ Note that that it is impossible for @code{ncwa} to make make a
 @var{weight} or @var{mask} of rank @var{W} conform to a @var{var} of
 rank @var{V} if @var{W > V}.
 This situation often arises when coordinate variables (which, by
-definition, are one dimensional) are are weighted and averaged.
+definition, are one dimensional) are weighted and averaged.
 @code{ncwa} assumes you know this is impossible and so @code{ncwa} does
 not attempt to broadcast @var{weight} or @var{mask} to conform to
-@var{var} in this case, nor will does @code{ncwa} print a warning
-message telling you this, because it is so common. 
+@var{var} in this case, nor does @code{ncwa} print a warning message
+telling you this, because it is so common.  
 Specifying @var{dbg > 2} does cause @code{ncwa} to emit warnings in
 these situations, however.
 
@@ -3221,7 +3248,7 @@ rather than the area weighted centroid of the hyperslab
 centroid of the hyperslab. For the example given, this is about 30
 degrees.}. 
 Note that the default behavior of (@samp{-I}) changed on
-98/12/01---before this date the default was not to weight or mask
+1998/12/01---before this date the default was not to weight or mask
 coordinate variables.
 
 @ifhtml
@@ -3391,14 +3418,6 @@ the numerator of the generic averaging expression.
 With these normalization options, @code{ncwa} can compute sophisticated
 averages (and integrals) from the command line.
 @end ignore
-
-In summary, @code{ncwa} performs simple arithmetic averages by default.
-@code{ncwa} also handles values matching the variable's
-@code{missing_value} attribute correctly.
-Moreover, @code{ncwa} understands how to manipulate user-specified
-weights, masks, and normalization options.
-With these options, @code{ncwa} can compute sophisticated averages (and
-integrals) from the command line. 
 
 @noindent
 EXAMPLES
