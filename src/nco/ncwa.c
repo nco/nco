@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.95 2002-12-16 19:36:14 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.96 2002-12-19 20:48:25 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -67,7 +67,7 @@
 /* #include <malloc.h> */ /* malloc() stuff */
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>  /* getopt_long() */
-#endif /* HAVE_GETOPT_H
+#endif /* !HAVE_GETOPT_H */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.95 2002-12-16 19:36:14 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.95 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.96 2002-12-19 20:48:25 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.96 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -206,7 +206,7 @@ main(int argc,char **argv)
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
-#endif /* HAVE_GETOPT_LONG */
+#endif /* !HAVE_GETOPT_LONG */
 
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
@@ -226,7 +226,7 @@ main(int argc,char **argv)
   while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
 #else  /* DO NOT HAVE GETOPT_LONG */
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
-#endif /* HAVE_GETOPT_LONG */
+#endif /* !HAVE_GETOPT_LONG */
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

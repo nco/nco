@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.25 2002-09-09 07:21:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.26 2002-12-19 20:48:24 zender Exp $ */
 
 /* Purpose: Prototypes, typedefs, and global variables for libcsm_c++ */
 
@@ -33,6 +33,7 @@
 #include "nco_lmt.h" /* Hyperslab limits */
 #include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
+#include "nco_msa.h" /* Multi-slabbing algorithm */
 #include "nco_mss_val.h" /* Missing value utilities */
 #include "nco_omp.h" /* OpenMP utilities */
 #include "nco_pck.h" /* Packing and unpacking variables */
@@ -43,10 +44,10 @@
 #include "nco_scl_utl.h" /* Scalar utilities */
 #include "nco_scm.h" /* Software configuration management */
 #include "nco_sng_utl.h" /* String utilities */
-#include "nco_var_utl.h" /* Variable utilities */
 #include "nco_var_avg.h" /* Average variables */
 #include "nco_var_lst.h" /* Variable list utilities */
 #include "nco_var_rth.h" /* Variable arithmetic */
 #include "nco_var_scv.h" /* Arithmetic between variables and scalar values */
+#include "nco_var_utl.h" /* Variable utilities */
 
 #endif /* LIBNCO_H */

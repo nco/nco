@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.196 2002-12-14 00:46:01 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.197 2002-12-19 20:48:21 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1077,6 +1077,7 @@ ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_lmt.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_lst_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_mmr.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_msa.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_mss_val.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_netcdf.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_omp.o) \
@@ -1095,7 +1096,7 @@ ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
 	${libnco}.a(${MY_OBJ_DIR}/nco_var_utl.o)
 libclean: lib_cln
 lib_cln:
-	rm -f ${libnco}.a
+	rm -f ${libnco}.a ${libnco}.*
 # Targets in man
 man: ${MDL_MAN}
 	cd ../man;sudo cp -f *.1 ${MY_MAN_DIR}/man1

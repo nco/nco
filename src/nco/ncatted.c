@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.53 2002-12-16 19:36:09 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.54 2002-12-19 20:48:24 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -115,7 +115,8 @@
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>  /* getopt_long() */
-#endif /* HAVE_GETOPT_H
+#endif /* !HAVE_GETOPT_H */
+
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
 #include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
@@ -146,8 +147,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.53 2002-12-16 19:36:09 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.53 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.54 2002-12-19 20:48:24 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.54 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -184,7 +185,7 @@ main(int argc,char **argv)
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
-#endif /* HAVE_GETOPT_LONG */
+#endif /* !HAVE_GETOPT_LONG */
 
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
@@ -200,7 +201,7 @@ main(int argc,char **argv)
   while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
 #else  /* DO NOT HAVE GETOPT_LONG */
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
-#endif /* HAVE_GETOPT_LONG */
+#endif /* !HAVE_GETOPT_LONG */
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

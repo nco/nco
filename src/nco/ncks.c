@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.73 2002-12-19 15:48:13 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.74 2002-12-19 20:48:24 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -67,7 +67,7 @@
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>  /* getopt_long() */
-#endif /* HAVE_GETOPT_H
+#endif /* !HAVE_GETOPT_H */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.73 2002-12-19 15:48:13 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.73 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.74 2002-12-19 20:48:24 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.74 $";
   
   extern char *optarg;
   
@@ -142,9 +142,6 @@ main(int argc,char **argv)
 
   char dmn_nm[NC_MAX_NAME];
   long dmn_sz;
-
-  
-
 
   nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
 
@@ -185,7 +182,7 @@ main(int argc,char **argv)
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
-#endif /* HAVE_GETOPT_LONG */
+#endif /* !HAVE_GETOPT_LONG */
 
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
@@ -202,7 +199,7 @@ main(int argc,char **argv)
   while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
 #else  /* DO NOT HAVE GETOPT_LONG */
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
-#endif /* HAVE_GETOPT_LONG */
+#endif /* !HAVE_GETOPT_LONG */
     switch(opt){
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */
       ALPHABETIZE_OUTPUT=!ALPHABETIZE_OUTPUT;
