@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.202 2003-01-20 23:39:59 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.203 2003-01-31 06:07:00 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -61,7 +61,6 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 36. cygwin builds of ncap.l and netcdf fail because of dependence on syslimits.h. non-kludge fix may require updated gcc and mingw packages
 37. Implement float function definitions in nco_rth_flt as inline to improve speed for MACOSX builds (inline is OK in C99 but will it break C89?)
 38. Finish dimension-reducing operations (min/max/avg)
-39. Document procedure for computing covariance of two variables using http://jisao.washington.edu/data/nco/ as template
 41. Make ncap function prototypes consistent with rest of NCO
 
 Highest priority NCO-wide items that You can help with:

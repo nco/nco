@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.143 2003-01-29 07:34:08 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.144 2003-01-31 06:07:00 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -65,6 +65,16 @@ http://www.gnu.ai.mit.edu/copyleft/fdl.html
 
 @end ignore
 
+@tex
+% Define TeX macros to roughly correspond to LaTeX style files
+\def\dfr{d} % [frc] Math differential
+\def\me{e} % [frc] Math e
+\def\mi{i} % [frc] Math i
+\def\mpi{\pi} % [frc] Math pi
+\def\tm{t} % [s] Time
+\def\xxx{x} % [ltr] x
+@end tex
+
 @c Start of header
 @setfilename nco.info
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -95,10 +105,10 @@ http://www.gnu.ai.mit.edu/copyleft/fdl.html
 @set update-date 27 January 2003
 @set update-month January 2003
 
-@c Experiment with smaller amounts of whitespace between chapters and sections
 @tex
 % fxm: Try to get thumbnails working with texinfo --pdf -generated PDF files
 % \input thumbpdf.sty
+% Experiment with smaller amounts of whitespace between chapters and sections
 \global\chapheadingskip = 15pt plus 4pt minus 2pt 
 \global\secheadingskip = 12pt plus 3pt minus 2pt
 \global\subsecheadingskip = 9pt plus 2pt minus 2pt
@@ -111,6 +121,7 @@ http://www.gnu.ai.mit.edu/copyleft/fdl.html
 @end tex
 @end ifclear
 
+@c Uncomment next line to remove ugly TeX warning blocks from overfull hboxes
 @finalout
 
 @ifinfo
@@ -2995,18 +3006,20 @@ that @command{ncap} should output @emph{only} user-defined variables.
 @end menu
 
 @node Left hand casting, Syntax of ncap statements, ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
-@subsection Left hand casting @code{ncap}
+@subsection Left hand casting
 @cindex hybrid coordinate system 
 @cindex left hand casting
 @cindex @acronym{LHS}
 The following examples demonstrate the utility of the @dfn{left hand
 casting} ability of @command{ncap}.
-Consider first a simple, albeit artificial, example.
+Consider first this simple, artificial, example.
 If @var{lat} and @var{lon} are one dimensional coordinates of
 dimensions @var{lat} and @var{lon}, respectively, then addition
 of these two one-dimensional arrays is intrinsically ill-defined because
 whether @var{lat_lon} should be dimensioned @var{lat} by @var{lon}
-or @var{lon} by @var{lat} is ambiguous.
+or @var{lon} by @var{lat} is ambiguous (assuming that addition is to
+remain a @dfn{commutative} procedure, i.e., one that does not depend on 
+the order of its arguments).
 Differing dimensions are said to be @dfn{orthogonal} to one another,
 and sets of dimensions which are mutually exclusive are orthogonal
 as a set and any arithmetic operation between variables in orthogonal
@@ -3020,6 +3033,7 @@ dimensional ordering of the @acronym{RHS} of the expression by
 specifying the desired ordering on the @acronym{LHS}.
 @example
 ncap -O -s "lat_lon[lat,lon]=lat+lon" in.nc out.nc
+ncap -O -s "lon_lat[lon,lat]=lat+lon" in.nc out.nc
 @end example
 The explicit list of dimensions on the @acronym{LHS}, @code{[lat,lon]}
 resolves the otherwise ambiguous ordering of dimensions in
@@ -3383,21 +3397,39 @@ Let the variables @var{u} and @var{v} be the horizontal wind components.
 The @dfn{covariance} of @var{u} and @var{v} is defined as the time mean
 product of the deviations of @var{u} and @var{v} from their respective
 time means.
-Symbolically, the covariance @var{[u'v'] = [uv]-[u][v]} where @var{[]}
-denotes time averaging and @var{'} denotes the deviation from the mean.
+Symbolically, the covariance 
+@set flg
+@tex
+$[u^{\prime} v^{\prime}] = [uv]-[u][v]$ where $[\xxx]$ denotes the 
+time-average of $\xxx$,
+$[x] \equiv {1 \over \tau} \int_{\tm=0}^{\tm=\tau}
+\xxx(\tm) \,\dfr\tm$ and $\xxx^{\prime}$ @clear flg 
+@end tex
+@ifinfo
+@math{[@var{u'v'}] = [@var{uv}]-[@var{u}][@var{v}]} where @math{[@var{x}]}
+denotes the time-average of @math{@var{x}} and @math{@var{x'}}
+@clear flg
+@end ifinfo
+@ifset flg
+@c texi2html does not like @math{}
+[@var{u'v'}] = [@var{uv}]-[@var{u}][@var{v}] where [x] denotes the
+time-average of @var{x} and @var{x'}
+@clear flg
+@end ifset
+denotes the deviation from the time-mean. 
 The covariance tells us how much of the correlation of two signals
 arises from the signal fluctuations versus the mean signals.
 @cindex eddy covariance
 Sometimes this is called the @dfn{eddy covariance}.
 We will store the covariance in the variable @code{uprmvprm}.
 @example
-ncra -O in.nc foo.nc # Compute time mean of u,v
+ncra -O -v u,v in.nc foo.nc # Compute time mean of u,v
 ncrename -O -v u,uavg -v v,vavg foo.nc # Rename to avoid conflict
 ncks -A -v u,v in.nc foo.nc # Place originals with time means
 ncap -O -s "uprmvprm=u*v-uavg*vavg" foo.nc foo.nc # Covariance
 ncra -O -v uprmvprm foo.nc out.nc # Time-mean covariance
 @end example
-Of course the step involving @code{ncap} could be replaced by
+The step involving @code{ncap} could be replaced by
 @example
 ncap -O -s "uprmvprm=(u-uavg)*(v-vavg)" foo.nc foo.nc # Covariance
 @end example
@@ -5329,6 +5361,8 @@ contains more information on how to contribute.
 @table @asis
 @item Charlie Zender
 Concept, design and implementation of @acronym{NCO} from 1995--2000.
+Since then, mainly packing, @acronym{NCO} library redesign, @code{ncap}
+features, project coordination, code maintenance and porting.
 @item Henry Butowsky
 Min, max, total, and non-linear operations in @code{ncra} and @code{ncwa}. 
 Type conversion for arithmetic.
