@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.95 2000-09-20 17:21:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.96 2000-09-20 17:55:30 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -798,14 +798,14 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
      True){
     long greatest_srd_multiplier_1st_hyp_slb; /* greatest integer m such that srt+m*srd < dmn_sz */
     long last_good_idx_1st_hyp_slb; /* C index of last valid member of 1st hyperslab (= srt+m*srd) */
-    long left_over_idx_1st_hyp_slb; /* # elements from first hyperslab to count towards current stride */
+    /* long left_over_idx_1st_hyp_slb;*/ /* # elements from first hyperslab to count towards current stride */
     long first_good_idx_2nd_hyp_slb; /* C index of first valid member of 2nd hyperslab, if any */
 
     /* NB: Perform these operations with integer arithmatic or else! */
     /* Wrapped dimensions with a stride may not start at idx 0 on second read */
     greatest_srd_multiplier_1st_hyp_slb=(dmn_sz-lmt.srt-1L)/lmt.srd;
     last_good_idx_1st_hyp_slb=lmt.srt+lmt.srd*greatest_srd_multiplier_1st_hyp_slb;
-    left_over_idx_1st_hyp_slb=dmn_sz-last_good_idx_1st_hyp_slb-1L;
+    /*    left_over_idx_1st_hyp_slb=dmn_sz-last_good_idx_1st_hyp_slb-1L;*/
     first_good_idx_2nd_hyp_slb=(last_good_idx_1st_hyp_slb+lmt.srd)%dmn_sz;
 
     /* Conditions causing dmn_cnt_2 == 0 */
@@ -2507,7 +2507,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
     char *wgt_out_cp;
 
     int idx_wgt_var[MAX_NC_DIMS];
-    int idx_var_wgt[MAX_NC_DIMS];
+    /*    int idx_var_wgt[MAX_NC_DIMS];*/
     int wgt_nbr_dim;
     int wgt_type_sz;
     int var_nbr_dmn_m1;
@@ -2567,7 +2567,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	  /* Compare names, not dimension IDs */
 	  if(strstr(var->dim[idx_dim]->nm,wgt->dim[idx]->nm)){
 	    idx_wgt_var[idx]=idx_dim;
-	    idx_var_wgt[idx_dim]=idx;
+	    /*	    idx_var_wgt[idx_dim]=idx;*/
 	    break;
 	  } /* end if */
 	  /* Sanity check */
@@ -2915,9 +2915,9 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
   dmn_sct **dmn_fix;
 
   int idx_avg_var[MAX_NC_DIMS];
-  int idx_var_avg[MAX_NC_DIMS];
+  /*  int idx_var_avg[MAX_NC_DIMS];*/
   int idx_fix_var[MAX_NC_DIMS];
-  int idx_var_fix[MAX_NC_DIMS];
+  /*  int idx_var_fix[MAX_NC_DIMS];*/
   int idx;
   int idx_dim;
   int nbr_dmn_avg;
@@ -2950,7 +2950,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
       if(var->dmn_id[idx] == dim[idx_dim]->id){
 	dmn_avg[nbr_dmn_avg]=dim[idx_dim];
 	idx_avg_var[nbr_dmn_avg]=idx;
-	idx_var_avg[idx]=nbr_dmn_avg;
+	/*	idx_var_avg[idx]=nbr_dmn_avg;*/ /* Variable is unused but instructive anyway */
 	nbr_dmn_avg++;
 	break;
       } /* end if */
@@ -2958,7 +2958,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     if(idx_dim == nbr_dim){
       dmn_fix[nbr_dmn_fix]=var->dim[idx];
       idx_fix_var[nbr_dmn_fix]=idx;
-      idx_var_fix[idx]=nbr_dmn_fix;
+      /*      idx_var_fix[idx]=nbr_dmn_fix;*/ /* Variable is unused but instructive anyway */
       nbr_dmn_fix++;
     } /* end if */
   } /* end loop over idx */
@@ -3037,7 +3037,6 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
      and place result in first element of output hyperslab. */
   if(avg_sz != 1L){
     char *avg_cp;
-    char *fix_cp;
     char *var_cp;
     
     int type_sz;
@@ -3052,12 +3051,9 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     long dmn_avg_map[MAX_NC_DIMS];
     long dmn_fix_map[MAX_NC_DIMS];
 
-    nc_type avg_type;
-
     ptr_unn avg_val;
 
     /* Define convenience variables to avoid repetitive indirect addressing */
-    avg_type=fix->type;
     fix_sz=fix->sz;
     nbr_dmn_var_m1=nbr_dmn_var-1;
     type_sz=nctypelen(fix->type);
@@ -3070,7 +3066,6 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     avg_cp=(char *)avg_val.vp;
     /* Create a new value buffer for output (averaged) size */
     fix->val.vp=(void *)nco_malloc(fix->sz*nctypelen(fix->type));
-    fix_cp=(char *)fix->val.vp;
     /* Resize (or just plain allocate) the tally array */
     fix->tally=(long *)nco_realloc(fix->tally,fix->sz*sizeof(long));
 
@@ -4086,10 +4081,12 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 #endif /* __GNUC__ */
     break;
   case NC_CHAR:
-    /* Do nothing */
+    /* Do nothing except avoid compiler warnings */
+    mss_val_chr=mss_val_chr;
     break;
   case NC_BYTE:
-    /* Do nothing */
+    /* Do nothing except avoid compiler warnings */
+    mss_val_byt=mss_val_byt;
     break;
   } /* end switch */
   
@@ -4367,10 +4364,12 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 #endif /* __GNUC__ */
     break;
   case NC_CHAR:
-    /* Do nothing */
+    /* Do nothing except avoid compiler warnings */
+    mss_val_chr=mss_val_chr;
     break;
   case NC_BYTE:
-    /* Do nothing */
+    /* Do nothing except avoid compiler warnings */
+    mss_val_byt=mss_val_byt;
     break;
   } /* end  switch */
   
@@ -4649,10 +4648,12 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 #endif /* __GNUC__ */
     break;
   case NC_CHAR:
-    /* Do nothing */
+    /* Do nothing except avoid compiler warnings */
+    mss_val_chr=mss_val_chr;
     break;
   case NC_BYTE:
-    /* Do nothing */
+    /* Do nothing except avoid compiler warnings */
+    mss_val_byt=mss_val_byt;
     break;
   } /* end  switch */
   

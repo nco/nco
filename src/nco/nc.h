@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.48 2000-09-20 16:13:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.49 2000-09-20 17:55:30 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -81,7 +81,6 @@ unsigned short dbg_lvl_get(void){return dbg_lvl;}
 #endif /* MAIN_PROGRAM_FILE is NOT defined, i.e., the current file does not contain main() */
 
 /* Enumerate key values for all netCDF operators */
-#if ( ! defined SGI5 ) && ( ! defined SGI64 ) && ( ! defined SGIMP64 )
 enum prg{
   ncap,
   ncatted,
@@ -138,51 +137,8 @@ enum nco_op_typ{
   nco_op_rms,
   nco_op_rmssdn
 }; /* end nco_op_typ enum */
+/* end enumeration section */
   
-#else /* SGI */
-/* SGI compilers do not grok enums same as other compilers 
-   Do enums by hand instead
-   Remove this section once SGI compilers begin to work sanely */
-
-#define ncap 0
-#define ncatted 1
-#define ncdiff 2
-#define ncea 3
-#define ncecat 4
-#define ncflint 5
-#define ncks 6
-#define ncra 7
-#define ncrcat 8
-#define ncrename 9
-#define ncwa 10
-
-#define nco_op_eq 0
-#define nco_op_ne 1
-#define nco_op_lt 2
-#define nco_op_gt 3
-#define nco_op_le 4
-#define nco_op_ge 5
-
-#define aed_append 0
-#define aed_create 1
-#define aed_delete 2
-#define aed_modify 3
-#define aed_overwrite 4
-
-#define lmt_crd_val 0
-#define lmt_dmn_idx 1
-
-#define nco_op_avg 0
-#define nco_op_min 1
-#define nco_op_max 2
-#define nco_op_ttl 3
-#define nco_op_sqravg 4
-#define nco_op_avgsqr 5
-#define nco_op_sqrt 6
-#define nco_op_rms 7
-#define nco_op_rmssdn 8
-#endif /* SGI */
-
 #ifndef EXIT_SUCCESS
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
