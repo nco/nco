@@ -45,7 +45,7 @@ $expected="meter second-1";
 $operator="ncbo";
 ####################
 $test[0]='ncbo -O --op_typ="-" -d lon,1 -v mss_val in.nc in.nc foo.nc';
-$test[1]='ncks -C -H -s "%e" -v mss_val foo.nc';
+$test[1]='ncks -C -H -s "%g" -v mss_val foo.nc';
 $description=" difference with missing value attribute";
 $expected= 1.0e36 ; 
 &go();
@@ -65,13 +65,13 @@ $expected= "-999,-999,-999,-999" ;
 &go();
 
 $test[0]='ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc';
-$test[1]='ncks -C -H -s "%e" -v mss_val foo.nc';
+$test[1]='ncks -C -H -s "%g" -v mss_val foo.nc';
 $description=" ncdiff symbolically linked to ncbo";
 $expected= 1.0e36 ; 
 &go();
 
 $test[0]='ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc';
-$test[1]='ncks -C -H -s "%e" -v mss_val foo.nc';
+$test[1]='ncks -C -H -s "%g" -v mss_val foo.nc';
 $description=" difference with missing value attribute";
 $expected= 1.0e36 ; 
 &go();
@@ -94,7 +94,7 @@ $expected= 5 ;
 &go();
 
 $test[0]='ncra -Y ncea -O -v rec_var_flt_mss_val_flt -d time,0 in.nc in.nc foo.nc';
-$test[1]='ncks -C -H -s "%e" -v rec_var_flt_mss_val_flt foo.nc';
+$test[1]='ncks -C -H -s "%g" -v rec_var_flt_mss_val_flt foo.nc';
 $description=" ensemble mean with missing values across two files";
 $expected= 1.0e36 ; 
 &go();
@@ -398,7 +398,7 @@ $expected= 73 ;
 &go();
 
 $test[0]='ncwa -O -a lon -v no_mss_val in.nc foo.nc';
-$test[1]='ncks -C -H -s "%e" -v no_mss_val foo.nc';
+$test[1]='ncks -C -H -s "%g" -v no_mss_val foo.nc';
 $description=" average without missing value attribute";
 $expected= 5.0e35 ; 
 &go();
@@ -434,7 +434,7 @@ $expected= -90.0 ;
 &go();
 
 $test[0]='ncwa -O -v mss_val_all -a lon -w lon in.nc foo.nc'; 
-$test[1]='ncks -C -H -s "%e" -v mss_val_all foo.nc';
+$test[1]='ncks -C -H -s "%g" -v mss_val_all foo.nc';
 $description=" average all missing values with weights";
 $expected= 1.0e36 ; 
 &go();
@@ -555,7 +555,7 @@ $expected= 17000 ;
 
 $test[0]='ncwa -O -y ttl -v val_max_max_sht in.nc foo.nc 2> foo.tst';
 $test[1]='ncks -C -H -s "%d" -v val_max_max_sht foo.nc';
-$description=" ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure on AIX expected/OK because of different wrap behavior)";
+$description=" ttl would overflow without dbl_prc patch, wraps anyway so exact value not important (failure on AIX, SUNMP expected/OK because of different wrap behavior)";
 $expected= -32768 ; 
 &go();
 $test[0]='ncwa -O -y min -a lat -v lat -w gw in.nc foo.nc';
