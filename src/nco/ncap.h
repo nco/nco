@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.11 2001-11-29 16:07:42 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.12 2001-12-11 16:15:14 hmb Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -88,6 +88,7 @@ extern var_sct *ncap_var_function(var_sct *,double (*fnc)( ));
 extern var_sct *ncap_var_abs(var_sct *);
 extern int ncap_retype(parse_sct *, parse_sct *);
 extern int ncap_var_retype(var_sct* , var_sct* );
+extern bool ncap_var_conform_dim(var_sct* ,var_sct *);
 extern int ncap_attribute_conform_type(nc_type, parse_sct *);
 extern int ncap_attribute_minus(parse_sct *);
 extern parse_sct ncap_attribute_abs(parse_sct);
@@ -103,9 +104,9 @@ extern void var_attribute_modulus(nc_type ,long ,int ,ptr_unn ,ptr_unn ,parse_sc
 extern void var_abs(nc_type ,long ,int ,ptr_unn ,ptr_unn);
 extern int ncap_aed_lookup(char *,char *,aed_sct **,int *,bool);
 
-nm_id_sct *var_lst_add(int ,nm_id_sct *,int *,nm_id_sct *,int );
-nm_id_sct *var_lst_sub(int ,nm_id_sct *,int *,nm_id_sct *,int );
-nm_id_sct * var_lst_copy(nm_id_sct *,int );
+extern nm_id_sct *var_lst_add(int ,nm_id_sct *,int *,nm_id_sct *,int );
+extern nm_id_sct *var_lst_sub(int ,nm_id_sct *,int *,nm_id_sct *,int );
+extern nm_id_sct * var_lst_copy(nm_id_sct *,int );
 extern int yyerror(char *sng);
 extern void nco_lib_vrs_prn();
 
