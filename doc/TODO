@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.193 2002-12-13 19:53:02 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.194 2002-12-29 01:37:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -64,7 +64,6 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 38. Add missing functions to nco_rth_flt.[ch] so all math functions are defined on all systems (once HAVE_XXX's are done), even if only by coercion
 
 Highest priority NCO-wide items that You can help with:
-41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
 95. Handle CCM "time since..." conversions in ncrcat (use Unidata udunits)?
 97. Add x_op=average... attributes to averagers for ncar_csm
@@ -228,6 +227,8 @@ Command executes but in.hdf is full of screwy values
 nco_err_exit(): ERROR nco_inq_attid
 Attribute not found
 241. Add run-time switch which requests that output be missing_value where ANY of the input fields are missing_value. 
+242. Use getopt_long() from Sittler (BSD-licensed version with no problems) when system lacks it
+243. Finish integrating long options into usg_prn(), nco.texi
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,3 +1,10 @@
+2002-12-28  Charlie Zender  <zender@uci.edu>
+
+	* Henry changed arithmetic in nco_msa to char * arithmetic to
+	remove warnings
+
+	* Clean up ncap_utl.c some.
+
 2002-12-27  Charlie Zender  <zender@uci.edu>
 
 	* Clean up nco_msa.[ch]. Still need to fix void * arithmetic.
