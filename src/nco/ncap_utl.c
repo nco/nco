@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.109 2005-03-23 07:09:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.110 2005-03-23 23:10:09 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -785,7 +785,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
      Terminology--- 
      Broadcast: Inflate smaller conforming variable to larger variable
      Conform: Dimensions of one variable are subset of other variable
-     Convolve: Construct array which is product of ranks of two variables
+     Convolve: Construct array whose rank is sum of non-duplicated dimensions
      Stretch: Union of broadcast and convolve
      
      Logic is pared down version of nco_var_cnf_dmn()
@@ -946,6 +946,10 @@ ncap_var_stretch /* [fnc] Stretch variables */
     var_lsr_out->nm=var_lsr->nm;
     var_lsr_out->id=var_lsr->id;
     var_lsr_out->type=var_lsr->type;
+    /* Added 20050323: 
+       Not sure why, but var->val.vp may already have values here when LHS-casting
+       Perform safety free to guard against memory leaks */
+    var_lsr_out->val.vp=nco_free(var_lsr_out->val.vp);
     var_lsr_out->val.vp=(void *)nco_malloc_dbg(var_lsr_out->sz*nco_typ_lng(var_lsr_out->type),"Unable to malloc() value buffer in variable stretching",fnc_nm);
     var_lsr_cp=(char *)var_lsr->val.vp;
     var_lsr_out_cp=(char *)var_lsr_out->val.vp;
