@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.44 2004-07-29 20:37:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.45 2004-08-04 19:04:03 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -825,8 +825,10 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       
       /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of output dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, nco_var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, nco_var_dfn() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
       if(dmn_ncl != NULL || prg_get() == ncwa){
+	/* ...operator is ncwa and/or changes variable rank... */
 	int idx_ncl;
-	/* May need to reduce rank of output variable */
+	/* Initialize number of dimensions for current variable */
+	dmn_nbr=0;
 	for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++){
 	  /* Is dimension allowed in output file? */
 	  for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
@@ -834,7 +836,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	  } /* end loop over idx_ncl */
 	  if(idx_ncl != nbr_dmn_ncl) dmn_id_vec[dmn_nbr++]=var[idx]->dim[dmn_idx]->id;
 	} /* end loop over dmn_idx */
-      }else{ /* ...operator is not ncwa which needs special handling... */
+      }else{ /* ...operator does not change variable rank so handle normally... */
 	/* More straightforward definition used by operators besides ncwa */
 	for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++){
 	  dmn_id_vec[dmn_idx]=var[idx]->dim[dmn_idx]->id;
