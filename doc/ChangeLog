@@ -1,4 +1,22 @@
+2002-01-13  Charlie Zender  <zender@uci.edu>
+
+	* Realized var_conform_dim() has bug of omission: does not abort
+	when variables do not conform because dimension list of one is
+	subset of other but ORDER of dimensions differs, e.g.,
+	a(lat,lev,lon) !~ b(lon,lev). 
+	NCO probably returns incorrect answers silently in this case!  
+
 2002-01-12  Charlie Zender  <zender@uci.edu>
+
+	* Added variable/variable division (which had been overlooked)
+
+	* Created ncap_var_stretch() which generalizes var_conform_dim()
+	by including convolution of variables. ncap_var_stretch() appears
+	to work as drop in replacement for var_conform_dim(). 
+	Convolution is just a stub which does not do anything yet.
+	Realized that expansion might work by creating arbitrary variable
+	of convolution size and then separately calling var_conform_dim()
+	with that as var and both vars as wgt.
 
 	* First build of ncap on LINUXALPHA architecture
 

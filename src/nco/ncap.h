@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.16 2002-01-11 23:23:27 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.17 2002-01-13 09:23:40 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -76,6 +76,7 @@ typedef struct{
 
 /* These funtions are kept either in ncap.y or ncap_utl.c */
 extern bool ncap_var_conform_dim(var_sct **,var_sct **);
+extern bool ncap_var_stretch(var_sct **,var_sct **);
 extern int ncap_aed_lookup(char *,char *,aed_sct **,int *,bool);
 extern int ncap_attribute_conform_type(nc_type,parse_sct *);
 extern int ncap_attribute_minus(parse_sct *);
@@ -105,6 +106,7 @@ extern var_sct *ncap_var_function(var_sct *,sym_sct *);
 extern var_sct *ncap_var_init(char*,prs_sct*);
 extern var_sct *ncap_var_var_add(var_sct *var_1,var_sct *var_2);
 extern var_sct *ncap_var_var_multiply(var_sct *var_1,var_sct *var_2);
+extern var_sct *ncap_var_var_divide(var_sct *var_1,var_sct *var_2);
 extern var_sct *ncap_var_var_sub(var_sct *var_1,var_sct *var_2);
 extern void fnc_add(char *nm, double (*fnc)());
 extern void ncap_initial_scan(prs_sct*,char *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.119 2001-12-29 05:52:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.120 2002-01-13 09:23:40 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -915,6 +915,7 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
       exit(EXIT_FAILURE);
     } /* end if */
 
+    /* fxm: hmb, what is this for? */
 /* re-define dim_id so that if dim is the dimension list from the output file */
 /* then we get the correct dim_id. Should not affect normal running of the    */
 /* routine as most the time, dim is the dimension from the input file         */
@@ -1467,7 +1468,7 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 
   int crd_id;
   int dmn_id[NC_MAX_DIMS];
-  int idx_dim;
+  int idx_dmn;
   int idx_var_dim;
   int idx_var;
   int nbr_dim;
@@ -1478,9 +1479,9 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
   (void)nco_inq(nc_id,&nbr_dim,(int *)NULL,(int *)NULL,(int *)NULL);
 
   /* ...for each dimension in input file... */
-  for(idx_dim=0;idx_dim<nbr_dim;idx_dim++){
+  for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
     /* ...see if it is a coordinate dimension... */
-    (void)nco_inq_dimname(nc_id,idx_dim,dmn_nm);
+    (void)nco_inq_dimname(nc_id,idx_dmn,dmn_nm);
      
     rcd=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
     if(rcd == NC_NOERR){
@@ -1494,7 +1495,7 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 	  /* Get number of dimensions and dimension IDs for variable. */
 	  (void)nco_inq_var(nc_id,xtr_lst[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dmn_id,(int *)NULL);
 	  for(idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
-	    if(idx_dim == dmn_id[idx_var_dim]) break;
+	    if(idx_dmn == dmn_id[idx_var_dim]) break;
 	  } /* end loop over idx_var_dim */
 	  if(idx_var_dim != nbr_var_dim){
 	    /* Add the coordinate to the list */
@@ -1507,7 +1508,7 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 	} /* end loop over idx_var */
       } /* end if coordinate was not already on the list */
     } /* end if dimension is a coordinate */
-  } /* end loop over idx_dim */
+  } /* end loop over idx_dmn */
   
   return xtr_lst;
   
@@ -1847,7 +1848,7 @@ var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
      So the local variable var usually refers to var_prc_out in the calling function 
      That is why many of the names look reversed in this function, and why xrf is frequently used */
 
-  int idx_dim;
+  int idx_dmn;
   int dmn_id_vec[NC_MAX_DIMS];
   int idx;
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -1866,19 +1867,19 @@ var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
 	int idx_ncl;
 
 	/* Rank of output variable may have to be reduced */
-	for(idx_dim=0;idx_dim<var[idx]->nbr_dim;idx_dim++){
+	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
 	  /* Is dimension allowed in output file? */
 	  for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
-	    if(var[idx]->xrf->dim[idx_dim]->id == dmn_ncl[idx_ncl]->xrf->id) break;
+	    if(var[idx]->xrf->dim[idx_dmn]->id == dmn_ncl[idx_ncl]->xrf->id) break;
 	  } /* end loop over idx_ncl */
-	  if(idx_ncl != nbr_dmn_ncl) dmn_id_vec[nbr_var_dim++]=var[idx]->dim[idx_dim]->id;
-	} /* end loop over idx_dim */
+	  if(idx_ncl != nbr_dmn_ncl) dmn_id_vec[nbr_var_dim++]=var[idx]->dim[idx_dmn]->id;
+	} /* end loop over idx_dmn */
 	(void)nco_def_var(out_id,var[idx]->nm,var[idx]->type,nbr_var_dim,dmn_id_vec,&var[idx]->id);
 
       }else{ /* Straightforward definition */
-	for(idx_dim=0;idx_dim<var[idx]->nbr_dim;idx_dim++){
-	  dmn_id_vec[idx_dim]=var[idx]->dim[idx_dim]->id;
-	} /* end loop over idx_dim */
+	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
+	  dmn_id_vec[idx_dmn]=var[idx]->dim[idx_dmn]->id;
+	} /* end loop over idx_dmn */
 	(void)nco_def_var(out_id,var[idx]->nm,var[idx]->type,var[idx]->nbr_dim,dmn_id_vec,&var[idx]->id);
       } /* end else */
       
@@ -2109,11 +2110,11 @@ var_srt_zero(var_sct **var,int nbr_var)
   /* Purpose: Point srt element of variable structure to array of zeroes */
 
   int idx;
-  int idx_dim;
+  int idx_dmn;
 
   for(idx=0;idx<nbr_var;idx++)
-    for(idx_dim=0;idx_dim<var[idx]->nbr_dim;idx_dim++)
-      var[idx]->srt[idx_dim]=0L;
+    for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++)
+      var[idx]->srt[idx_dmn]=0L;
 
 } /* end var_srt_zero() */
 
@@ -2271,17 +2272,15 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
      In this case when wgt and var do not conform then then var_conform_dim sets *DO_CONFORM=False and returns a copy of var with all values set to 1.0
      The calling procedure can then decide what to do with the output
      MUST_CONFORM is True for ncdiff: Variables of like name to be differenced must be same rank
-     MUST_CONFORM is False false for ncap, ncflint, ncwa: Variables to be averaged may 
-     
-     */
+     MUST_CONFORM is False false for ncap, ncflint, ncwa: Variables to be averaged may may be */
 
   /* There are many inelegant ways to accomplish this (without using C++): */  
 
-  /* Perhaps the most efficient method to accomplish this for the general case is to expand the
-     weight array until it's the same size as the variable array, and then multiply the two
-     together element-by-element in a highly vectorized loop, preferably in fortran. 
-     To enhance speed, the (enlarged) weight-values array can be made static, and only destroyed 
-     (and then recreated) when dimensions of one of the incoming variables change. */
+  /* Perhaps most efficient method to accomplish this in general case is to expand 
+     weight array until it is same size as variable array, and then multiply these
+     together element-by-element in highly vectorized loop, preferably in Fortran. 
+     To enhance speed, (enlarged) weight-values array could be static, only remade
+     when dimensions of incoming variables change. */
 
   /* Another method for the general case, though an expensive one, is to use C to 
      figure out the multidimensional indices into the one dimensional hyperslab, 
@@ -2295,34 +2294,32 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
      governement work, is to create fortran subroutines which expect variables of a given
      number of dimensions as input. Creating these functions for up to five dimensions would
      satisfy all foreseeable situations. The branch as to which function to call would be
-     done based on number of dimensions, here in the C code. C++ function overloading
-     could accomplish some of this interface more elegantly than fortran, probably at a
-     sacrifice in performance. */
+     done based on number of dimensions, here in the C code. C++ or Fortran9x overloading
+     could accomplish some of this interface more elegantly. */
 
-  /* An (untested) simplification to some of these methods would be to copy the 1-D array
-     value pointer of variable and cast it to an N-D array pointer. Then C should be
-     able to handle the indexing for me. This method could speed development of a working,
-     but non-general, code, and later be replaced by a general method. Still, implementation
-     of this method would require ugly branches or hard-to-understand recursive function
-     calls. */
+  /* An (untested) simplification to some of these methods is to copy the 1-D array
+     value pointer of variable and cast it to an N-D array pointer
+     Then C could handle indexing 
+     This method easily produce working, but non-general code
+     Implementation would require ugly branches or hard-to-understand recursive function calls */
   
-  /* Routine assumes, WLOG, that the weight will never have more dimensions than the variable
-     (otherwise which hyperslab of the weight to use would be ill-defined). However, the
-     weight may (and often will) have fewer dimensions than the variable. */
+  /* Routine assumes weight will never have more dimensions than variable
+     (otherwise which hyperslab of weight to use would be ill-defined). 
+     However, weight may (and often will) have fewer dimensions than variable */
 
   bool CONFORMABLE=False; /* Whether wgt can be made to conform to var */
   bool USE_DUMMY_WGT=False; /* Whether to fool NCO into thinking wgt conforms to var */
 
-  int idx;
-  int idx_dim;
+  int idx; /* Counting index */
+  int idx_dmn; /* Dimension index */
   int wgt_var_dmn_shr_nbr=0; /* Number of dimensions shared by wgt and var */
 
   var_sct *wgt_out=NULL;
 
-  /* Initialize flag to false to be overwritten by true */
+  /* Initialize flag to false. Overwrite by true after successful conformance */
   *DO_CONFORM=False;
   
-  /* Does the current weight (wgt_crr) conform to variable's dimensions? */
+  /* Does current weight (wgt_crr) conform to variable's dimensions? */
   if(wgt_crr != NULL){
     /* Test rank first because wgt_crr because of 19960218 bug (invalid dmn_id in old wgt_crr leads to match) */
     if(var->nbr_dim == wgt_crr->nbr_dim){
@@ -2346,9 +2343,9 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
     if(var->nbr_dim > 0){
       /* Test that all dimensions in wgt appear in var */
       for(idx=0;idx<wgt->nbr_dim;idx++){
-        for(idx_dim=0;idx_dim<var->nbr_dim;idx_dim++){
+        for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
 	  /* Compare names, not dimension IDs */
-	  if(strstr(wgt->dim[idx]->nm,var->dim[idx_dim]->nm)){
+	  if(strstr(wgt->dim[idx]->nm,var->dim[idx_dmn]->nm)){
 	    wgt_var_dmn_shr_nbr++; /* wgt and var share this dimension */
 	    break;
 	  } /* endif */
@@ -2412,7 +2409,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	} /* end else */
       } /* endif CONFORMABLE */
     }else{
-      /* var is scalar, if wgt is too then set flag to copy wgt to wgt_out else proceed to generic conform routine */
+      /* var is scalar, if wgt is also then set flag to copy wgt to wgt_out else proceed to generic conform routine */
       if(wgt->nbr_dim == 0) *DO_CONFORM=True; else *DO_CONFORM=False;
     } /* end else */
     if(CONFORMABLE && *DO_CONFORM){
@@ -2483,15 +2480,15 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
       */
 
       for(idx=0;idx<wgt->nbr_dim;idx++){
-	for(idx_dim=0;idx_dim<var->nbr_dim;idx_dim++){
+	for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
 	  /* Compare names, not dimension IDs */
-	  if(strstr(var->dim[idx_dim]->nm,wgt->dim[idx]->nm)){
-	    idx_wgt_var[idx]=idx_dim;
-	    /*	    idx_var_wgt[idx_dim]=idx;*/
+	  if(strstr(var->dim[idx_dmn]->nm,wgt->dim[idx]->nm)){
+	    idx_wgt_var[idx]=idx_dmn;
+	    /*	    idx_var_wgt[idx_dmn]=idx;*/
 	    break;
 	  } /* end if */
 	  /* Sanity check */
-	  if(idx_dim == var->nbr_dim-1){
+	  if(idx_dmn == var->nbr_dim-1){
 	    (void)fprintf(stdout,"%s: ERROR wgt %s has dimension %s but var %s does not deep in var_conform_dim()\n",prg_nm_get(),wgt->nm,wgt->dim[idx]->nm,var->nm);
 	    exit(EXIT_FAILURE);
 	  } /* end if err */
@@ -2501,14 +2498,14 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
       /* Figure out map for each dimension of variable */
       for(idx=0;idx<var->nbr_dim;idx++)	dmn_var_map[idx]=1L;
       for(idx=0;idx<var->nbr_dim-1;idx++)
-	for(idx_dim=idx+1;idx_dim<var->nbr_dim;idx_dim++)
-	  dmn_var_map[idx]*=var->cnt[idx_dim];
+	for(idx_dmn=idx+1;idx_dmn<var->nbr_dim;idx_dmn++)
+	  dmn_var_map[idx]*=var->cnt[idx_dmn];
       
       /* Figure out map for each dimension of weight */
       for(idx=0;idx<wgt->nbr_dim;idx++)	dmn_wgt_map[idx]=1L;
       for(idx=0;idx<wgt->nbr_dim-1;idx++)
-	for(idx_dim=idx+1;idx_dim<wgt->nbr_dim;idx_dim++)
-	  dmn_wgt_map[idx]*=wgt->cnt[idx_dim];
+	for(idx_dmn=idx+1;idx_dmn<wgt->nbr_dim;idx_dmn++)
+	  dmn_wgt_map[idx]*=wgt->cnt[idx_dmn];
       
       /* Define convenience variables to avoid repetitive indirect addressing */
       wgt_nbr_dim=wgt->nbr_dim;
@@ -2856,7 +2853,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
   int idx_fix_var[NC_MAX_DIMS];
   /*  int idx_var_fix[NC_MAX_DIMS];*/
   int idx;
-  int idx_dim;
+  int idx_dmn;
   int nbr_dmn_avg;
   int nbr_dmn_fix;
   int nbr_dmn_var;
@@ -2883,16 +2880,16 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
   dmn_avg=(dmn_sct **)nco_malloc(nbr_dim*sizeof(dmn_sct *));
   dmn_fix=(dmn_sct **)nco_malloc(nbr_dmn_var*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_var;idx++){
-    for(idx_dim=0;idx_dim<nbr_dim;idx_dim++){
-      if(var->dmn_id[idx] == dim[idx_dim]->id){
-	dmn_avg[nbr_dmn_avg]=dim[idx_dim];
+    for(idx_dmn=0;idx_dmn<nbr_dim;idx_dmn++){
+      if(var->dmn_id[idx] == dim[idx_dmn]->id){
+	dmn_avg[nbr_dmn_avg]=dim[idx_dmn];
 	idx_avg_var[nbr_dmn_avg]=idx;
 	/*	idx_var_avg[idx]=nbr_dmn_avg;*/ /* Variable is unused but instructive anyway */
 	nbr_dmn_avg++;
 	break;
       } /* end if */
-    } /* end loop over idx_dim */
-    if(idx_dim == nbr_dim){
+    } /* end loop over idx_dmn */
+    if(idx_dmn == nbr_dim){
       dmn_fix[nbr_dmn_fix]=var->dim[idx];
       idx_fix_var[nbr_dmn_fix]=idx;
       /*      idx_var_fix[idx]=nbr_dmn_fix;*/ /* Variable is unused but instructive anyway */
@@ -3013,20 +3010,20 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     /* Compute map for each dimension of variable */
     for(idx=0;idx<nbr_dmn_var;idx++) dmn_var_map[idx]=1L;
     for(idx=0;idx<nbr_dmn_var-1;idx++)
-      for(idx_dim=idx+1;idx_dim<nbr_dmn_var;idx_dim++)
-	dmn_var_map[idx]*=var->cnt[idx_dim];
+      for(idx_dmn=idx+1;idx_dmn<nbr_dmn_var;idx_dmn++)
+	dmn_var_map[idx]*=var->cnt[idx_dmn];
     
     /* Compute map for each dimension of output variable */
     for(idx=0;idx<nbr_dmn_fix;idx++) dmn_fix_map[idx]=1L;
     for(idx=0;idx<nbr_dmn_fix-1;idx++)
-      for(idx_dim=idx+1;idx_dim<nbr_dmn_fix;idx_dim++)
-	dmn_fix_map[idx]*=fix->cnt[idx_dim];
+      for(idx_dmn=idx+1;idx_dmn<nbr_dmn_fix;idx_dmn++)
+	dmn_fix_map[idx]*=fix->cnt[idx_dmn];
     
     /* Compute map for each dimension of averaging buffer */
     for(idx=0;idx<nbr_dmn_avg;idx++) dmn_avg_map[idx]=1L;
     for(idx=0;idx<nbr_dmn_avg-1;idx++)
-      for(idx_dim=idx+1;idx_dim<nbr_dmn_avg;idx_dim++)
-	dmn_avg_map[idx]*=dmn_avg[idx_dim]->cnt;
+      for(idx_dmn=idx+1;idx_dmn<nbr_dmn_avg;idx_dmn++)
+	dmn_avg_map[idx]*=dmn_avg[idx_dmn]->cnt;
     
     /* var_lmn is the offset into 1-D array */
     for(var_lmn=0;var_lmn<var_sz;var_lmn++){
@@ -3452,7 +3449,7 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
   int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   ptr_unn op1: I values of first operand
-  ptr_unn op2: I/O values of second operand on input, values of ratio on output
+  ptr_unn op2: I/O values of second operand on input, values of quotient on output
  */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
@@ -5432,7 +5429,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
     prc /* 1 */
   };
 
-  int idx_dim;
+  int idx_dmn;
   int idx_xcl;
   int var_op_typ[NC_MAX_VARS];
 
@@ -5478,17 +5475,17 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
       break;
     case ncwa:
       /* Process every variable containing an excluded (averaged) dimension */
-      for(idx_dim=0;idx_dim<var[idx]->nbr_dim;idx_dim++){
+      for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
 	for(idx_xcl=0;idx_xcl<nbr_dmn_xcl;idx_xcl++){
-	  if(var[idx]->dim[idx_dim]->id == dmn_xcl[idx_xcl]->id) break;
+	  if(var[idx]->dim[idx_dmn]->id == dmn_xcl[idx_xcl]->id) break;
 	} /* end loop over idx_xcl */
 	if(idx_xcl != nbr_dmn_xcl){
 	  var_op_typ[idx]=prc;
 	  break;
 	} /* end if */
-      } /* end loop over idx_dim */
+      } /* end loop over idx_dmn */
       /* Variables which do not contain an excluded (averaged) dimension must be fixed */
-      if(idx_dim == var[idx]->nbr_dim) var_op_typ[idx]=fix;
+      if(idx_dmn == var[idx]->nbr_dim) var_op_typ[idx]=fix;
       break;
     case ncrcat:
       if(!var[idx]->is_rec_var) var_op_typ[idx]=fix;
@@ -6310,7 +6307,6 @@ nco_lib_vrs_prn()
   (void)fprintf(stdout,"NCO homepage URL is http://nco.sourceforge.net\n");
 } /* end nco_lib_vrs_prn() */
 
-
 void
 aed_prc(int nc_id,int var_id,aed_sct aed)
      /* 
@@ -6319,7 +6315,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
 	aed_sct aed: input structure containing information necessary to edit
      */
 {
-  /* Routine to perform a single attribute edit on a single variable */
+  /* Process a single attribute edit on a single variable */
   
   /* If var_id == NC_GLOBAL ( = -1) then a global attribute will be edited */
   

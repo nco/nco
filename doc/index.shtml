@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.78 2002-01-13 02:01:29 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.79 2002-01-13 09:23:40 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -152,8 +152,9 @@ instructions for helping the NCO project.
 <h2>Version Summary</h2>
 <ul>
 <li>No releases since 2.0.0 have been packaged (e.g., with
-tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>, is
-broken (<tt>texinfo</tt> tools are out of date on RedHat Linux).
+tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>, 
+fails on my development system (due to antiquated RedHat
+<tt>texinfo</tt> software, of all things!)
 The brave may retrieve these versions using CVS (tags are, e.g., <tt>nco-2_1_2</tt>).
 <li><b>NCO 2.1.2</b>, Not packaged: C++ API to netcdf, libnco_c++ open for business
 <li><b>NCO 2.1.0</b>, Not packaged: <tt>ncap</tt> full lexer/parser operational

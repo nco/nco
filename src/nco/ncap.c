@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.44 2002-01-11 23:18:34 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.45 2002-01-13 09:23:40 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -77,7 +77,7 @@
 #include "nco.h" /* NCO definitions */
 #include "ncap.h" /* ncap-specific definitions */
 
-#if ( defined LINUX )
+#if ( defined LINUX || defined LINUXALPHA )
 #include <getopt.h> /* GNU getopt() is standard on Linux */
 #else /* not LINUX || SUN */
 #if ( !defined AIX ) && ( !defined CRAY ) && ( !defined NEC ) && ( !defined SUNMP ) && ( !defined SUN4SOL2 ) /* getopt() is in <unistd.h> or <stdlib.h> */
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.44 2002-01-11 23:18:34 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.44 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.45 2002-01-13 09:23:40 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.45 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;

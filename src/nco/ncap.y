@@ -1,7 +1,7 @@
  %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.24 2002-01-11 23:26:20 hmb Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.25 2002-01-13 09:23:40 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -452,6 +452,10 @@ var_exp: var_exp '+' var_exp {
   $$=ncap_var_attribute_multiply($3,$1);
   var_free($3);
 }
+| var_exp '/' var_exp {
+  $$=ncap_var_var_divide($1,$3); 
+  var_free($1); var_free($3); 
+}
 | var_exp '/' att_exp {
   $$=ncap_var_attribute_divide($1,$3);
   var_free($1);
@@ -511,7 +515,7 @@ ncap_aed_lookup(char *var_nm,char *att_nm,aed_sct **att_lst,int *nbr_att, bool u
   att_lst[*nbr_att]->att_nm=strdup(att_nm);
   
   return (*nbr_att)++;
-} /* end ncap_aer_lookup */
+} /* end ncap_aed_lookup */
 
 int
 yyerror(char *sng)

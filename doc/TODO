@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.105 2001-12-28 20:10:45 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.106 2002-01-13 09:23:39 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -35,6 +35,9 @@ cc-1515 cc: WARNING File = ../src/nco/ncap.y, Line = 279
           "unsigned char *".
                      var->val.cp=strdup(yyvsp[0].str);
                                 ^
+4. fix memory leak in ncap_var_conform_dim() or delete routine completely 
+after replacing it with ncap_var_stretch()	
+
 Top priority items You can help with:
 41. Use GNU getopt_long()
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
@@ -88,7 +91,7 @@ ncdump foo.nc
 NC_CHAR have a record dimension causes core dumps or other problems.
 i.e., LSM variable timecom caused subtle ncra problems for a while.
 113. Rethink normalization switch options in ncwa
-114. Fix var_conform_dim() so that the returned weight always has the same size tally array as the template variable
+114. Fix var_conform_dim() so that returned weight always has same size tally array as the template variable
 115. When sum of denominator in ncwa (i.e., sum of weight) is zero, SIGFPE results 
 Users should not be doing weighted averages if denominator sums to zero, but...
 Desired fix here is a graceful exit instead of a core dump
@@ -209,21 +212,7 @@ or variable list is made more specific, or MALLOC_CHECK_=1 is used
 212. Ensure structures are always passed by reference (default is pass by value)
 213. Pass const values as const (may improve speed)
 214. Disable threads > 1 on SGI temporarily because thread #0 is doing all the work, why?
+215. var_conform_dim() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
 ************************************************************************
 End NCO Wish list
 ************************************************************************
-
-Fuller descriptions of some TODO items:
-208. We are writing a tool called ncap which can manipulate variables
-in files with generic algebraic expressions (it has a lexer/parser).
-It is my feeling that ncap should take advantage of C++ features.
-The netCDF library is written in C, and only has a very poor C++ 
-interface available. What we really need for ncap is a high quality
-C++ interface that overloads the netCDF I/O functions so that we
-can rid the NCO operators of type-specific calls. Take a look at 
-the netCDF C++ interface (which is based on version 2 of the netCDF
-C library, which is not type-safe and has lots of void *),
-and see if you think you could write a better interface based on version
-3 of the netCDF C library (which is very type-safe and has no void *).
-This would be a large task (couple of months?). But something very
-worthwhile and well-suited to C++ expert. This is now TODO #208
