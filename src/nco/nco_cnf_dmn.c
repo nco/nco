@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.12 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.13 2004-07-19 22:16:20 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -17,7 +17,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
  bool *DO_CONFORM) /* O [flg] Do wgt and var conform? */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* fxm: TODO 226. Is xrf in nco_var_cnf_dmn() really necessary? Iif not, remove it and make wgt arg const var_sct * const */
+  /* fxm: TODO 226. Is xrf in nco_var_cnf_dmn() really necessary? If not, remove it and make wgt arg const var_sct * const */
 
   /* Purpose: Stretch second variable to match dimensions of first variable
      Dimensions in var which are not in wgt will be present in wgt_out, with values
@@ -175,15 +175,15 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 
   if(wgt_out == NULL){
     /* Expand original weight (wgt) to match size of current variable */
-    char *wgt_cp;
-    char *wgt_out_cp;
+    char * restrict wgt_cp;
+    char * restrict wgt_out_cp;
 
     int idx_wgt_var[NC_MAX_DIMS];
     /*    int idx_var_wgt[NC_MAX_DIMS];*/
     int wgt_nbr_dim;
     int var_nbr_dmn_m1;
 
-    long *var_cnt;
+    long * restrict var_cnt;
     long dmn_ss[NC_MAX_DIMS];
     long dmn_var_map[NC_MAX_DIMS];
     long dmn_wgt_map[NC_MAX_DIMS];

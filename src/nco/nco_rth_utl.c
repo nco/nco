@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.16 2004-04-14 00:11:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.17 2004-07-19 22:16:20 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -168,17 +168,16 @@ vec_set /* [fnc] Fill every value of first operand with value of second operand 
 void
 nco_zero_long /* [fnc] Zero all values of long array */
 (const long sz, /* I [nbr] Size (in elements) of operand */
- long * const op1) /* I/O [nbr] Array to be zeroed */
+ long * restrict const op1) /* I/O [nbr] Array to be zeroed */
 {
   /* Purpose: Zero all values of long array */
 
   long idx;
-  if(op1 != NULL){
-    for(idx=0;idx<sz;idx++) op1[idx]=0L;
-  }else{
+  if(op1 == NULL){
     (void)fprintf(stdout,"%s: ERROR nco_zero_long() asked to zero NULL pointer\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */
+  for(idx=0;idx<sz;idx++) op1[idx]=0L;
 
 } /* end nco_zero_long() */
 

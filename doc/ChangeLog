@@ -1,5 +1,7 @@
 2004-07-19  Charlie Zender  <zender@uci.edu>
 
+	* Implement restrict in nco_var_cnf_dmn()
+
 	* Change default xlc from -qlanglvl=extended to -qlanglvl=extc99
 	to support C99 features like restrict. This does not seem to
 	bother xlC, which appears to ignore the -qlanglvl=extc99 switch.
