@@ -4,11 +4,19 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.123 2002-09-14 22:41:09 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.124 2002-09-15 01:18:28 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
 NB: texi2dvi nco.texi does not work on RHL 7.2
+
+Legend:
+@env{}: Environment variable, e.g., @env{HOME}
+@var{}: Metasyntactic variable, e.g., @var{}
+@code{}: Program text, e.g., @code{}
+@command{}: Commands, e.g., @command{ncra}
+@option{}: Command-line option, e.g., @option{}
+@samp{}: Extended commands, character sequences, e.g., @samp{ncra in.nc out.nc}
 
 After editing any hyperlink locations, use 
 C-c C-u C-a	texinfo-all-menus-update
@@ -443,7 +451,7 @@ distribution of @acronym{NCO}.
 Using the freely available Cygwin (formerly gnu-win32) development
 environment  
 @footnote{The Cygwin package is available from@*
-@code{http://sourceware.cygnus.com/cygwin}@*
+@code{http://sourceware.redhat.com/cygwin}@*
 Currently, Cygwin 20.x comes with the @acronym{GNU} C/C++/Fortran
 compilers (@command{gcc}, @command{g++}, @command{g77}).
 These @acronym{GNU} compilers may be used to build the netCDF distribution
@@ -452,6 +460,7 @@ itself.}, the compilation process is very similar to installing @acronym{NCO} on
 @cindex preprocessor tokens
 @cindex @code{USE_FORTRAN_ARITHMETIC}
 @cindex @code{Cygwin}
+@cindex @code{gnu-win32}
 @cindex @code{WIN32}
 @cindex @file{GNUmakefile}
 The preprocessor token @code{PVM_ARCH} should be set to @code{WIN32}.  
