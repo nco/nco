@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.8 1999-05-12 03:06:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.9 1999-05-13 03:06:03 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -71,8 +71,8 @@ main(int argc,char **argv)
   char *time_buf_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */ 
-  char rcs_Id[]="$Id: ncflint.c,v 1.8 1999-05-12 03:06:48 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.8 $";
+  char RCS_Id[]="$Id: ncflint.c,v 1.9 1999-05-13 03:06:03 zender Exp $"; 
+  char RCS_Revision[]="$Revision: 1.9 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -191,7 +191,7 @@ main(int argc,char **argv)
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
     case 'r': /* Print the RCS program info and copyright notice */
-      (void)copyright_prn(rcs_Id,rcs_Revision);
+      (void)copyright_prn(RCS_Id,RCS_Revision);
       (void)nc_lib_vrs_prn();
       exit(EXIT_SUCCESS);
       break;

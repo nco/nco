@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.27 1999-05-12 03:06:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.28 1999-05-13 03:06:03 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -244,7 +244,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     } /* end if */
     lmt.srd=atol(lmt.srd_sng);
     if(lmt.srd < 1){
-      (void)fprintf(stdout,"%s: ERROR Stride for \"%s\" is %li\n",prg_nm_get(),lmt.nm,lmt.srd);
+      (void)fprintf(stdout,"%s: ERROR Stride for \"%s\" is %li but must be > 0\n",prg_nm_get(),lmt.nm,lmt.srd);
       exit(EXIT_FAILURE);
     } /* end if */
   } /* end if */
@@ -518,7 +518,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     (void)ncinquire(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dim_id);
     if(lmt.id == rec_dim_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
 
-    if(!lmt.is_rec_dmn || !lmt.is_usr_spc_lmt){
+    if(!lmt.is_rec_dmn || !lmt.is_usr_spc_lmt || ((prg_get() != ncra) && (prg_get() != ncrcat))){
       /* For non-record dimensions and for record dimensions where the limit 
 	 was automatically generated (to include the whole file), the starting
 	 and ending indices are simply the minimum and maximum indices already 

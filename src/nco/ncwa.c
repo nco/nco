@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.17 1999-05-12 03:06:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.18 1999-05-13 03:06:04 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -73,8 +73,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncwa.c,v 1.17 1999-05-12 03:06:48 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.17 $";
+  char RCS_Id[]="$Id: ncwa.c,v 1.18 1999-05-13 03:06:04 zender Exp $"; 
+  char RCS_Revision[]="$Revision: 1.18 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -125,16 +125,6 @@ main(int argc,char **argv)
   var_sct *wgt=NULL;
   var_sct *wgt_avg=NULL;
   var_sct *wgt_out=NULL;
-
-  
-  /* NB: assert causes inscrutable crashes (because it's a macro?)
-     during compilation under sunos. */ 
-  /*
-     #ifndef SUN4
-     (void)assert(argc > 0);
-     (void)assert(argv != 0);
-     #end if
-     */
   
   /* Start the clock and save the command line */  
   cmd_ln=cmd_ln_sng(argc,argv);
@@ -219,7 +209,7 @@ main(int argc,char **argv)
       break;
     case 'r':
       /* Print the RCS program info and copyright notice */
-      (void)copyright_prn(rcs_Id,rcs_Revision);
+      (void)copyright_prn(RCS_Id,RCS_Revision);
       (void)nc_lib_vrs_prn();
        exit(EXIT_SUCCESS);
       break;

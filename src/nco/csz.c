@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.18 1999-05-13 03:06:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.19 1999-05-13 03:08:04 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -65,7 +65,7 @@ char *
 nmn_get()
 { 
   /* Purpose: Return a mnemonic that describes the current NCO version */
-  return "record stride beta 3";
+  return "dakine";
 } /* end nmn_get() */
 
 char *

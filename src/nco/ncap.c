@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.7 1999-05-12 03:06:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.8 1999-05-13 03:06:03 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -79,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncap.c,v 1.7 1999-05-12 03:06:47 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.7 $";
+  char RCS_Id[]="$Id: ncap.c,v 1.8 1999-05-13 03:06:03 zender Exp $"; 
+  char RCS_Revision[]="$Revision: 1.8 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -228,7 +228,7 @@ main(int argc,char **argv)
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
     case 'r': /* Print the RCS program info and copyright notice */
-      (void)copyright_prn(rcs_Id,rcs_Revision);
+      (void)copyright_prn(RCS_Id,RCS_Revision);
       (void)nc_lib_vrs_prn();
       exit(EXIT_SUCCESS);
       break;
