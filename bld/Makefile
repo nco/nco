@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.5 1998-08-19 17:10:33 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.6 1998-08-19 17:23:16 zender Exp $
 
 MY_BLD_DIR := ../bld
 MY_DAT_DIR := ../data
@@ -425,9 +425,11 @@ $(MY_DOC_DIR)/nco.info : $(MY_DOC_DIR)/nco.texi
 $(MY_DOC_DIR)/nco.html : $(MY_DOC_DIR)/nco.texi
 	cd $(MY_DOC_DIR); texi2html -monolithic -verbose nco.texi
 
-clean:
-	rm -f $(NCO_OBJ)
+clean: objclean
 	cd $(MY_DOC_DIR); rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
+
+objclean:
+	rm -f $(NCO_OBJ)
 
 docclean:
 	cd $(MY_DOC_DIR); rm -f nco.info* nco.dvi nco.html* nco.ps *~
