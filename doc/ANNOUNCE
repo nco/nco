@@ -1,12 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.81 2004-05-21 18:11:42 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.82 2004-05-24 18:33:06 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.4 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release fixes a bug where ncecat would segfaul when trying to
-concatenate files with only scalar variables.
+This release...fxm
 
 Enjoy,
 Charlie
@@ -15,15 +14,15 @@ Feature changes:
 1. None
 
 Bug-fixes:
-1. ncecat concatenates files without dimensions (all scalar variables)
+1. None
 
 Build changes:
-1. Added ncecat, ncbo, ncea, ncflint tests to nco_tst.pl
-2. Support AIX GCC builds in bld/Makefile
+1. Default configure.in AIX GCC ABI is 64-bit with -maix64
+2. Support newer AC_INIT syntax
+3. -r prints shared/static configuration
 
 Other user-visible changes:
-1. -r reports correct version again, and with cleaner formatting
+1. None
 
 User-invisible changes:
-1. Change cvs.nco.sourceforge.net to cvs.sf.net in accord
-   with new SourceForge BIND 9-induced policy
+1. None

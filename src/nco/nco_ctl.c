@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.43 2004-05-14 01:21:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.44 2004-05-24 18:33:19 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -100,7 +100,7 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
   /* Configuration option tokens must be consistent among configure.in, bld/Makefile, and nco_ctl.c
      Arrange tokens alphabetically by first word in English text description */
-  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nDODS/OpenDAP clients\t%s\thttp://nco.sf.net/nco.html#DODS\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nOpenMP Multi-threading\t%s\thttp://nco.sf.net/nco.html#omp (alpha testing)\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
+  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nDODS/OpenDAP clients\t%s\thttp://nco.sf.net/nco.html#DODS\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nOpenMP Multi-threading\t%s\thttp://nco.sf.net/nco.html#omp (alpha testing)\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nShared libraries\t%s\tSmall, dynamically linked executables\nStatic libraries\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
 #if defined(ENABLE_DEBUG_CUSTOM) && (ENABLE_DEBUG_CUSTOM)
 		"Yes",
 #else /* !ENABLE_DEBUG_CUSTOM */
@@ -131,6 +131,16 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #else /* !ENABLE_OPTIMIZE_CUSTOM */
 		"No",
 #endif /* !ENABLE_OPTIMIZE_CUSTOM */
+#if defined(ENABLE_SHARED) && (ENABLE_SHARED)
+		"Yes",
+#else /* !ENABLE_SHARED */
+		"No",
+#endif /* !ENABLE_SHARED */
+#if defined(ENABLE_STATIC) && (ENABLE_STATIC)
+		"Yes",
+#else /* !ENABLE_STATIC */
+		"No",
+#endif /* !ENABLE_STATIC */
 #if defined(ENABLE_UDUNITS) && (ENABLE_UDUNITS)
 		"Yes",
 #else /* !ENABLE_UDUNITS */

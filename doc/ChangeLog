@@ -1,3 +1,12 @@
+2004-05-22  Charlie Zender  <zender@uci.edu>
+
+	* Print shared/static configuration with -r
+
+	* Support newer AC_INIT syntax
+
+	* Default configure.in AIX GCC ABI is 64-bit with -maix64
+	Fixes TODO bld31.
+
 2004-05-21  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_9_4
@@ -6,11 +15,12 @@
 	* Allow AIX builds with GCC in bld/Makefile
 
 	* Rearranged nco_tst.pl, added ncecat test, activated ncbo,
-	ncea, ncflint tests
+	ncea, ncflint tests. Fixes TODO nco332.
 
 2004-05-20  Charlie Zender  <zender@uci.edu>
 
 	* Patched ncecat to address scalar file concatenation problem
+	Fixes TODO nco331.
 
 	* Set rec_dmn->is_rec_dmn=True; in ncecat.c
 	This appears to have been a bug that never triggered any failures

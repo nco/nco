@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.21 2004-05-21 18:11:42 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.22 2004-05-24 18:33:19 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -78,6 +78,7 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
 # For unknown reason rules file may lose its executable bit
    chmod a+x ~/nco/debian/rules
    cd ~/nco;dpkg-buildpackage -rfakeroot > foo 2>&1
+# Save all files in emacs before tagging
 # Tag CVS code after changing files in ~/nco/debian
    cd ~/nco;cvc;cvs tag -c nco-2_9_4
    ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-2_9_4

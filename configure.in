@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.80 2004-03-25 12:05:15 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.81 2004-05-24 18:32:56 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -14,8 +14,7 @@
 
 # Process file with autoconf to produce configure script
 # (package name,version,bug-report-address,tarball name)
-#AC_INIT([NCO],[2.9.2],[help@nco.sf.net],[nco.tar])
-AC_INIT(src/nco/ncks.c)
+AC_INIT([NCO netCDF Operators],[2.9.4],[help@nco.sf.net],[nco])
 
 # Print GNU copyright in configure script
 AC_COPYRIGHT
@@ -162,7 +161,7 @@ AC_CHECK_LIB([netcdf],[nc_open],[
 	    powerpc-ibm-aix* ) 
 		case ${CC} in 
 # Pass -X 64 to symbol extractor or libtool fails
-		    gcc ) CFLAGS="${CFLAGS} -mabi=64" ; ;;
+		    gcc ) CFLAGS="${CFLAGS} -maix64" ; ;;
 		    xlc* ) CFLAGS="${CFLAGS} -q64" ; LDFLAGS="${LDFLAGS} -q64" ; AR="ar -X 64" ; NM="nm -B -X 64" ; ;;
 		esac
 		;;
@@ -343,6 +342,20 @@ if test "x${nco_have_regex}" = xyes; then
 fi
 # End rx
 
+# Begin Shared
+# If --enable-shared define ENABLE_SHARED
+if test "${enable_shared}" = 'yes'; then
+    AC_DEFINE(ENABLE_SHARED,1,Enable shared libraries)
+fi
+# End Shared
+
+# Begin Static
+# If --enable-static define ENABLE_STATIC
+if test "${enable_static}" = 'yes'; then
+    AC_DEFINE(ENABLE_STATIC,1,Enable static libraries)
+fi
+# End Static
+
 # Begin UDUnits
 # Check for Unidata's UDUnits library and data files
 if test "x${NETCDF_INC}" = "x"; then
@@ -381,6 +394,7 @@ fi
 case ${host} in
     powerpc-ibm-aix* ) 
 	case ${CC} in 
+	    gcc ) CFLAGS="${CFLAGS} -maix64" ; ;;
 # -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
 # -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
 	    xlc* ) CFLAGS="${CFLAGS} -qlanglvl=extended -qmaxmem=8192 -qspill=2048" ; ;;

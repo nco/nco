@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.302 2004-05-21 18:02:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.303 2004-05-24 18:33:18 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -194,13 +194,8 @@ nco326. Add manual override of writing *tmp* file for intermediate results
 nco327. Consolidate/coordinate letters of support for prp_nco
 nco328. Ability to reverse specified dimensions (use negative stride?)
 nco329. Ability to rearrange dimensions
-nco330. ncbo -c seems to extract _only_ coordinates
-nco301. ncecat does not catenate files withonly scalar variables reported by Tim Hume
-ncks -O -v one ~/nco/data/in.nc ~/foo_one.nc
-ncks -O -v two ~/nco/data/in.nc ~/foo_two.nc
-ncecat -O ~/foo_one.nc ~/foo_two.nc ~/foo_onetwo.nc
-pointer error feferencing undefined dim_lst?
-nco302. Add ncecat tests to test suite
+nco333. Clean up preprocessor symbols with cd ~/nco/src/nco;ifnames *.c
+nco334. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -234,16 +229,18 @@ ncap46. Define YYMALLOC/FREE/REALLOC etc so lexer/parser use nco_malloc() etc.
 ncap48. Search ncap_yacc.y for non-symmetric arithmetic operations, implement symmetric operations
 ncap49. Cause "**" in arithmetic context to cause error, print HINT to Fortran syntax users
 ncap52. Combine pow() with ^ parsing in parser ncap_yacc.y 
-ncap53. Bug in ncap pack() on Alpha/Tru64: ncap -O -D 10 -s 'hsig=pack(hsig)' foo.nc foo2.nc  details on sourceforge
+ncap53. Bug in ncap pack() on Alpha/Tru64: ncap -O -D 10 -s 'hsig=pack(hsig)' foo.nc foo2.nc details on sourceforge
 ncap54. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
 bld23. Implement ncra i18n support I18N with autotools: Add .po files, update doc/i18n.txt
-bld29. RedHat 9 does not build with --enable-*-customize because of flex warnings.
+bld29. RedHat 9 does not build with --enable-*-customize because of flex warnings
 bld30. Search for libstdc++ with AIX/DODS/GCC breaks NCO build
-bld31. Implement AIX GCC switches from bld/Makefile to configure.in
-bld32. 
+bld32. Why have --enable-shared and --enable-static both default true? override one?
+bld33. Use PACKAGE_BUGREPORT, PACKAGE_NAME, PACKAGE_STRING, PACKAGE_TARNAME, PACKAGE_VERSION?
+bld34. 
+
 ************************************************************************
 End NCO Wish list
 ************************************************************************

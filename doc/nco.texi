@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.223 2004-05-21 18:11:42 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.224 2004-05-24 18:33:19 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -869,7 +869,9 @@ first @uref{https://sf.net/account/register.php, register}
 your name and email address with SourceForge.net or else all of your
 postings will be attributed to "nobody".
 Once registered you may choose to "monitor" any forum and to receive
-(or not) email when there are any postings.
+(or not) email when there are any postings including responses to your
+questions.
+We usually reply to the forum message, not to the original poster.
 
 If you want us to include a new feature in @acronym{NCO}, check first to 
 see if that feature is already on the @uref{file:./TODO, TODO} list.

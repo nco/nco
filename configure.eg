@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.83 2004-05-06 05:37:22 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.84 2004-05-24 18:32:56 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -70,6 +70,8 @@ Start AIX
 status: Appears to work
 Updated 5/27/2003   Jim Edwards   
 Compiler warnings about incorrect file suffix and duplicate symbols may be safely ignored.
+On AIX, shared libraries and static libraries use the same namespace
+Hence, probably safer to either disable-shared or disable-static
 ************************************************************************
 zender@bs1201en:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 AIX
