@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.1 2003-08-02 23:12:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.2 2003-08-03 00:42:21 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *opt_sng;
   char *time_bfr_srt;
-  char CVS_Id[]="$Id: ncbo.c,v 1.1 2003-08-02 23:12:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.1 $";
+  char CVS_Id[]="$Id: ncbo.c,v 1.2 2003-08-03 00:42:21 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.2 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -136,7 +136,7 @@ main(int argc,char **argv)
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nbr_dmn_xtr;
   int nbr_fl=0;
-  int nco_op_typ=nco_op_sbt; /* [enm] Operation type */
+  int nco_op_typ=nco_op_nil; /* [enm] Operation type */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
     
@@ -476,7 +476,7 @@ main(int argc,char **argv)
     has_mss_val=has_mss_val || var_prc_out[idx]->has_mss_val; 
     
     /* Default operation type depends on invocation name */
-    if(nco_op_typ_get == NULL) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
+    if(nco_op_typ_sng == NULL) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
 
     /* Perform specified binary operation */
     switch(nco_op_typ){

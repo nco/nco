@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.168 2003-08-02 23:26:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.169 2003-08-03 00:42:21 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -73,7 +73,18 @@ Octave TeXInfo manual is a good example of clean TeXInfo structure
 @end ignore
 
 @c Start of header
+
+@c No variables may be defined before TeXInfo @setfilename header
 @setfilename nco.info
+
+@c Define edition, date, ...
+@set nco-edition 2.8.0
+@set doc-edition 2.8.0
+@set copyright-years 1995--2003
+@set update-year 2003
+@set update-date 3 August 2003
+@set update-month August 2003
+
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
 @c @smallbook
@@ -136,14 +147,6 @@ x
 @c set smallbook
 @clear smallbook
 
-@c Define edition, date, ...
-@set nco-edition 2.7.4
-@set doc-edition 2.7.4
-@set copyright-years 1995--2003
-@set update-year 2003
-@set update-date 4 July 2003
-@set update-month July 2003
-
 @tex
 % fxm: Try to get thumbnails working with texinfo --pdf -generated PDF files
 % \input thumbpdf.sty
@@ -205,7 +208,7 @@ Rew and Steve Emmerson.
 @ifhtml
 <meta name="Author" CONTENT="Charlie Zender">
 <meta name="Keywords" CONTENT="NCO documentation, NCO User's Guide,
-netCDF, operator, GCM, CCM, scientific data, ncbo, ncdiff, ncea, ncecat,
+netCDF, operator, GCM, CCM, scientific data, ncbo, ncea, ncecat,
 ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @end ifhtml
 @c fxm: Direct HTML commands have no effect
@@ -845,7 +848,7 @@ Post the bug report to the
 * Climate model paradigm::      
 * Output files::                
 * Appending::                   
-* Addition Subtraction Multiplication and Interpolation::  
+* Addition Subtraction Division Multiplication and Interpolation::  
 * Averaging vs. Concatenating::  
 * Large numbers of input files::  
 * Large files and Memory::      
@@ -964,7 +967,7 @@ existing @var{output-file} without prompting the user interactively.
 These switches are useful in batch environments because they suppress
 interactive keyboard input.
 
-@node Appending, Addition Subtraction Multiplication and Interpolation, Output files, Strategies
+@node Appending, Addition Subtraction Division Multiplication and Interpolation, Output files, Strategies
 @section Appending variables to a file
 A frequently useful operation is adding variables from one file to
 another. 
@@ -1007,14 +1010,14 @@ the results of the operation in the existing @var{output-file},
 Users comfortable with @acronym{NCO} semantics may find it easier to
 perform some simple mathematical operations in @acronym{NCO} rather than
 higher level languages. 
-@command{ncbo} (@pxref{ncbo netCDF Differencer}) does
+@command{ncbo} (@pxref{ncbo netCDF Binary Operator}) does file
 addition, subtraction, multiplication, division, and broadcasting. 
 @command{ncflint} (@pxref{ncflint netCDF File Interpolator}) does
-addition, subtraction, multiplication and interpolation. 
+file addition, subtraction, multiplication and interpolation. 
 Sequences of these commands can accomplish simple but powerful
 operations from the command line.
 
-@node Averaging vs. Concatenating, Large numbers of input files, Addition Subtraction Multiplication and Interpolation, Strategies
+@node Averaging vs. Concatenating, Large numbers of input files, Addition Subtraction Division Multiplication and Interpolation, Strategies
 @section Averagers vs. Concatenators
 
 The most frequently used operators of @acronym{NCO} are probably the
@@ -2530,7 +2533,7 @@ Suffice it to say that, in all known cases, @acronym{NCO} does ``the right thing
 @cindex @code{--op_typ @var{op_typ}}
 @cartouche
 @noindent
-Availability: @command{ncra},@command{ncea},@command{ncwa}@*
+Availability: @command{ncra}, @command{ncea}, @command{ncwa}@*
 Short options: @samp{-y}@*
 Long options: @samp{--operation}, @samp{--op_typ}@*
 @end cartouche
@@ -2565,7 +2568,7 @@ The mathematical definition of each operation is given below.
 @xref{ncwa netCDF Weighted Averager}, for additional information on
 masks and normalization.
 Averaging is the default, and will be described first so the
-terminology for the other operations will be familiar.
+terminology for the other operations is familiar.
 
 @ifhtml
 <p><b>Note for HTML user's</b>: 
@@ -2793,7 +2796,7 @@ pressure at all points in a single file @file{in.nc} involves three
 steps. 
 @example
 ncwa -O -v prs_sfc -a time in.nc out.nc
-ncbo -O -v prs_sfc in.nc out.nc out.nc
+ncbo -O --op_typ=sub -v prs_sfc in.nc out.nc out.nc 
 ncra -O -y rmssdn out.nc out.nc
 @end example
 First the output file @file{out.nc} is contructed containing the
@@ -2812,7 +2815,7 @@ The procedure to compute the spatial standard deviation of a field
 in a single file @file{in.nc} involves three steps.
 @example
 ncwa -O -v prs_sfc,gw -a lat,lon -w gw in.nc out.nc
-ncbo -O -v prs_sfc,gw in.nc out.nc out.nc
+ncbo -O --op_typ=sub -v prs_sfc,gw in.nc out.nc out.nc
 ncwa -O -y rmssdn -v prs_sfc -a lat,lon -w gw out.nc out.nc
 @end example
 First the appropriately weighted (with @samp{-w gw}) spatial mean values
@@ -2833,12 +2836,12 @@ collected into one file.
 @example
 ncrcat -O -v tpt in.nc in.nc foo1.nc
 ncwa -O -a time foo1.nc foo2.nc
-ncbo -O -v tpt foo1.nc foo2.nc foo2.nc
+ncbo -O --op_typ=sub -v tpt foo1.nc foo2.nc foo2.nc
 ncra -O -y rmssdn foo2.nc out.nc
 @end example
 The first step assembles all the data into a single file.
 This may require a lot of temporary disk space, but is more or less
-required by the @command{ncbo} operation in the fourth step.
+required by the @command{ncbo} operation in the third step.
 
 @node Type conversion, Suppressing interactive prompts, Operation Types, Common features
 @section Type conversion
@@ -2902,8 +2905,10 @@ Previous versions never performed unnecessary type conversion for
 arithmetic.}: 
 @enumerate
 @item The operator is @command{ncea}, @command{ncra}, or @command{ncwa}. 
-@command{ncdiff} is not included because subtraction does not benefit from 
-type conversion.
+@command{ncbo} is not yet included in this list because subtraction did
+not benefit from type conversion.
+This will change in the future
+@c fxm TODO #265
 @item The arithmetic operation could benefit from type conversion.
 Operations that could benefit (e.g., from larger representable sums) 
 include averaging, summation, or any "hard" arithmetic. 
@@ -3059,7 +3064,7 @@ attribute (@pxref{ncatted netCDF Attribute Editor}).
 @cindex @code{time}
 @cartouche
 @noindent
-Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
+Availability: @command{ncbo}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncra}, @command{ncwa}@*
 Short options: None@*
 @end cartouche
@@ -3114,12 +3119,13 @@ specially, because of their meaning in @acronym{CSM} files.
 @code{nbdate}, @code{nbsec}, @code{mdt}, @code{mhisf}.
 These variables contain scalar metadata such as the resolution of the
 host @acronym{CSM} model and it makes no sense to change their values.
-Furthermore, the @command{ncdiff} operator will not attempt to difference
-the following variables: @code{gw}, @code{ORO}, @code{date},
-@code{datesec}, @code{hyam}, @code{hybm}, @code{hyai}, @code{hybi}.
+Furthermore, the @command{ncbo} operator does not operate on (i.e., add,
+subtract, etc.) the following variables: 
+@code{gw}, @code{ORO}, @code{date}, @code{datesec}, @code{hyam},
+@code{hybm}, @code{hyai}, @code{hybi}. 
 These variables represent the Gaussian weights, the orography field,
 time fields, and hybrid pressure coefficients.
-These are fields which you want to remain unaltered in the differenced
+These are fields which you want to remain unaltered in the output
 file 99% of the time.
 If you decide you would like any of the above @acronym{CSM} fields
 processed, you must use @command{ncrename} to rename them first.
@@ -3212,7 +3218,7 @@ described in any detail in the sections below.
 @menu
 * ncap netCDF Arithmetic Processor::  
 * ncatted netCDF Attribute Editor::  
-* ncdiff netCDF Differencer::   
+* ncbo netCDF Binary Operator::  
 * ncea netCDF Ensemble Averager::  
 * ncecat netCDF Ensemble Concatenator::  
 * ncflint netCDF File Interpolator::  
@@ -3852,7 +3858,7 @@ ncap -O -s "uprmvprm=(u-uavg)*(v-vavg)" foo.nc foo.nc # Covariance
 and still yield the same answer.
 
 @page
-@node ncatted netCDF Attribute Editor, ncdiff netCDF Differencer, ncap netCDF Arithmetic Processor, Operator Reference Manual
+@node ncatted netCDF Attribute Editor, ncbo netCDF Binary Operator, ncap netCDF Arithmetic Processor, Operator Reference Manual
 @section @command{ncatted} netCDF Attribute Editor
 @cindex attributes
 @cindex attribute names
@@ -4186,26 +4192,29 @@ These outer single quotes are necessary for interactive use, but may be
 omitted in batch scripts.
 
 @page
-@node ncdiff netCDF Differencer, ncea netCDF Ensemble Averager, ncatted netCDF Attribute Editor, Operator Reference Manual
-@section @command{ncdiff} netCDF Differencer
+@node ncbo netCDF Binary Operator, ncea netCDF Ensemble Averager, ncatted netCDF Attribute Editor, Operator Reference Manual
+@section @command{ncbo} netCDF Binary Operator
 @cindex subtraction
 @cindex differencing data
 @cindex anomalies
-@findex ncdiff
+@findex ncbo
 
 @noindent
 SYNTAX
 @example 
-ncdiff [-A] [-C] [-c] [-D @var{dbg}] 
+ncbo [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-O] [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]] 
-[-x] @var{file_1} @var{file_2} @var{file_3}
+[-x] [-y @var{op_typ}] @var{file_1} @var{file_2} @var{file_3}
 @end example
 
 @noindent
 DESCRIPTION
 
-@command{ncdiff} subtracts variables in @var{file_2} from the corresponding
+@command{ncbo} performs binary operations on variables in @var{file_1}
+and the corresponding variables (those with the same name) in
+@var{file_2} and stores the results in @var{file_3}. 
+@command{ncbo} subtracts variables in @var{file_2} from the corresponding
 variables (those with the same name) in @var{file_1} and stores the
 results in @var{file_3}. 
 @cindex broadcasting variables
@@ -4220,18 +4229,51 @@ This functionality allows the user to compute anomalies from the mean.
 Note that variables in @var{file_1} are @emph{not} broadcast to conform
 to the dimensions in @var{file_2}. 
 @cindex rank
-Thus, @command{ncdiff}, the number of dimensions, or @dfn{rank}, of any
+Thus, @command{ncbo}, the number of dimensions, or @dfn{rank}, of any
 processed variable in @var{file_1} must be greater than or equal to the
 rank of the same variable in @var{file_2}. 
 Furthermore, the size of all dimensions common to both @var{file_1} and
 @var{file_2} must be equal. 
+
+@cindex @code{add}
+@cindex @code{subtract}
+@cindex @code{multiply}
+@cindex @code{divide}
+@cindex addition
+@cindex subtraction
+@cindex multiplication
+@cindex division
+@cindex @code{-y @var{op_typ}}
+@cindex @code{--operation @var{op_typ}}
+@cindex @code{--op_typ @var{op_typ}}
+Set @var{op_typ} to the abbreviated key for the corresponding operation.
+The mathematical definition of each binary operation is given below. 
+@table @code
+@item add
+Addition
+@var{file_3} = @var{file_1} + @var{file_2} 
+@item subtraction
+Subtraction
+@var{file_3} = @var{file_1} - @var{file_2} 
+@item multiplication
+Multiplication
+@var{file_3} = @var{file_1} * @var{file_2} 
+@item division
+Division
+@var{file_3} = @var{file_1} / @var{file_2} 
+@end table
+@noindent
+Normally, an operation type must be specified with @samp{-y} or
+@command{ncbo} will fail.
+Exceptions to this rule may be created to suit that tastes of 
+your particular site.
 
 When computing anomalies from the mean it is often the case that
 @var{file_2} was created by applying an averaging operator to a file
 with initially the same dimensions as @var{file_1} (often @var{file_1}
 itself).  
 In these cases, creating @var{file_2} with @command{ncra} rather than
-@command{ncwa} will cause the @command{ncdiff} operation to fail.
+@command{ncwa} will cause the @command{ncbo} operation to fail.
 For concreteness say the record dimension in @code{file_1} is
 @code{time}.  
 If @var{file_2} were created by averaging @var{file_1} over the
@@ -4245,21 +4287,21 @@ remove it, while @command{ncwa} removes all dimensions it averages over.
 In other words, @command{ncra} changes the size but not the rank of
 variables, while @command{ncwa} changes both the size and the rank of
 variables.}.   
-In this case the input files to @command{ncdiff}, @var{file_1} and
+In this case the input files to @command{ncbo}, @var{file_1} and
 @var{file_2}, will have unequally sized @code{time} dimensions which
-causes @command{ncdiff} to fail.
+causes @command{ncbo} to fail.
 To prevent this from occuring, use @command{ncwa} to remove the @code{time}
 dimension from @var{file_2}.
 An example is given below.
 
-@command{ncdiff} will never difference coordinate variables or variables of
+@command{ncbo} will never difference coordinate variables or variables of
 type @code{NC_CHAR} or @code{NC_BYTE}. 
 This ensures that coordinates like (e.g., latitude and longitude) are
 physically meaningful in the output file, @var{file_3}. 
 This behavior is hardcoded.
 @cindex @acronym{NCAR CSM} conventions
 @cindex @acronym{CSM} conventions
-@command{ncdiff} applies special rules to some @acronym{NCAR CSM} fields (e.g.,
+@command{ncbo} applies special rules to some @acronym{NCAR CSM} fields (e.g.,
 @code{ORO}).
 See @ref{NCAR CSM Conventions} for a complete description.
 Finally, we note that @command{ncflint} (@pxref{ncflint netCDF File
@@ -4273,11 +4315,11 @@ Say files @file{85_0112.nc} and @file{86_0112.nc} each contain 12 months
 of data.
 Compute the change in the monthly averages from 1985 to 1986:
 @example
-ncdiff 86_0112.nc 85_0112.nc 86m85_0112.nc
+ncbo 86_0112.nc 85_0112.nc 86m85_0112.nc
 @end example
 
 The following examples demonstrate the broadcasting feature of
-@command{ncdiff}.  
+@command{ncbo}.  
 Say we wish to compute the monthly anomalies of @code{T} from the yearly
 average of @code{T} for the year 1985.
 First we create the 1985 average from the monthly data, which is stored
@@ -4296,9 +4338,9 @@ beginning:
 ncwa -a time 85_0112.nc 85.nc
 @end example
 @noindent
-We are now ready to use @command{ncdiff} to compute the anomalies for 1985:
+We are now ready to use @command{ncbo} to compute the anomalies for 1985:
 @example
-ncdiff -v T 85_0112.nc 85.nc t_anm_85_0112.nc
+ncbo -v T 85_0112.nc 85.nc t_anm_85_0112.nc
 @end example
 @noindent
 Each of the 12 records in @file{t_anm_85_0112.nc} now contains the
@@ -4311,11 +4353,11 @@ A @dfn{zonal mean} is a quantity that has been averaged over the
 longitudinal (or @var{x}) direction.
 First we use @command{ncwa} to average over longitudinal direction
 @code{lon}, creating @file{xavg_85.nc}, the zonal mean of @file{85.nc}. 
-Then we use @command{ncdiff} to subtract the zonal annual means from the
+Then we use @command{ncbo} to subtract the zonal annual means from the
 monthly gridpoint data:
 @example
 ncwa -a lon 85.nc xavg_85.nc
-ncdiff 85_0112.nc xavg_85.nc tx_anm_85_0112.nc
+ncbo 85_0112.nc xavg_85.nc tx_anm_85_0112.nc
 @end example
 @noindent
 Assuming @file{85_0112.nc} has dimensions @code{time} and @code{lon}, 
@@ -4333,10 +4375,10 @@ First use @command{ncwa} to create the file containing the five-year mean:
 ncwa -a time 8501_8912.nc 8589.nc
 @end example
 @noindent
-Next use @command{ncdiff} to create a file containing the difference of
+Next use @command{ncbo} to create a file containing the difference of
 each month's data from the five-year mean:
 @example
-ncdiff 8501_8912.nc 8589.nc t_anm_8501_8912.nc
+ncbo 8501_8912.nc 8589.nc t_anm_8501_8912.nc
 @end example
 @noindent
 Now use @command{ncks} to group the five January anomalies together in one 
@@ -4372,7 +4414,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @noindent
 
 @page
-@node ncea netCDF Ensemble Averager, ncecat netCDF Ensemble Concatenator, ncdiff netCDF Differencer, Operator Reference Manual
+@node ncea netCDF Ensemble Averager, ncecat netCDF Ensemble Concatenator, ncbo netCDF Binary Operator, Operator Reference Manual
 @section @command{ncea} netCDF Ensemble Averager
 @cindex averaging data
 @cindex ensemble average
@@ -4686,13 +4728,13 @@ then subtract @file{86.nc} from @file{85.nc} to obtain @file{85m86.nc}
 @example
 ncflint -w 1,1 85.nc 86.nc 85p86.nc
 ncflint -w 1,-1 85.nc 86.nc 85m86.nc
-ncdiff 85.nc 86.nc 85m86.nc
+ncbo 85.nc 86.nc 85m86.nc
 @end example
 @noindent
-Thus @command{ncflint} can be used to mimic @command{ncdiff} operations.
+Thus @command{ncflint} can be used to mimic @command{ncbo} operations.
 @cindex broadcasting variables
 However this is not a good idea in practice because @command{ncflint}
-does not broadcast (@pxref{ncdiff netCDF Differencer}) conforming
+does not broadcast (@pxref{ncbo netCDF Binary Operator}) conforming
 variables during arithmetic. 
 Thus the final two commands would produce identical results except that  
 @command{ncflint} would fail if any variables needed to be broadcast.

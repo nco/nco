@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.228 2003-08-02 23:26:57 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.229 2003-08-03 00:42:21 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -231,6 +231,8 @@ ncap: WARNING not searching for /in.nc on remote filesystem, using local file n.
 nco_err_exit(): ERROR nco_create
 Permission denied
 265. Promote before operations using nco_typ_cnv_rth() in ncbo
+266. Finish ncbo.1 manpage
+267. Document ncbo in nco.texi
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,20 +1,19 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.21 2003-07-04 20:07:09 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.22 2003-08-03 00:42:21 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.7.4 are ready. 
+The netCDF operators NCO version 2.8.0 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco/nco.tar.gz (new location)
 
-There are two notable changes since version 2.7.3:
+There is one notable change since version 2.7.4:
 
-1. Improvements to AIX support, especially autotools support.
-Contributed by Jim Edwards of NCAR. Thanks, Jim!
-2. Fix limit parsing so hyperslabs specified in floating point format
-do not confuse UDUnits interface layer. This resulted in core dumps
-(but not wrong answers) in 2.7.3. Fixed by Rorik Peterson.
+1. The new netCDF Binary Operator (ncbo) does file addition,
+subtraction, multiplication, and division. ncbo obsoletes ncdiff.
+ncdiff is now symobolically linked to the ncbo executable.
+User's who wish to continue using ncdiff should notice no difference.
+ncdiff is identical to ncbo --op_typ=sub.
 
-Plans are for the next release (2.8.0) to contain full integration
-with Debian Linux, and to settle rumors that ncap may eat ncwa.
+2. Rumors that ncap would eat ncwa proved premature.
 
 Enjoy,
 Charlie
