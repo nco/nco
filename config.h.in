@@ -102,9 +102,6 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
-/* Define to 1 if you have the `C' library (-lC). */
-#undef HAVE_LIBC
-
 /* Define to 1 if you have the `ccmalloc' library (-lccmalloc). */
 #undef HAVE_LIBCCMALLOC
 
