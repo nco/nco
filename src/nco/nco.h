@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.4 2001-10-28 23:05:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.5 2001-11-29 16:03:15 hmb Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -365,6 +365,7 @@ typedef struct var_sct_tag{ /* var_sct */
    Specifying extern is redundant (functions are extern by default) but Emacs highlights them in a nice shade of lavender :-)
    fxm: TODO 210 Break into sourcefile specific headers, e.g., csz.h, pck.h... */
 
+extern void aed_prc(int,int,aed_sct);
 extern bool arm_inq(int);
 extern bool ncar_csm_inq(int);
 extern char **fl_lst_mk(char **,int,int,int *,char **);
