@@ -22,7 +22,7 @@ NCO Wish list (or, improvements I could make while on airplanes if only I had a 
 75. Add warning to ncwa triggered by averaging over lat without weighting by gw with NCAR_CSM_FORMAT
 79. Allow ncrename .$var_nm syntax to work on all operators (so variables not present cause warning, not error)
 80. ncrcat should print warning not exit with error when a file does not contain record variable within specified hyperslab (maybe the valid hyperslab begins within the next file)
-81. Make all averagers convert to double precision before arithmetic, then convert back after arithmetic. this is the only way to sensibly handle byte data.
+81. Convert all data to double precision before arithmetic, then convert back after arithmetic. This is the only way to sensibly handle byte data, and #116 below
 82. Make libnco namespace-safe by prefixing all possibly dynamically loaded subroutines with, e.g., nco_
 83. Always build operators to link dynamically to libnco.so
 84. Check malloc() and realloc() for failure instead of mysteriously dumping core later
@@ -43,7 +43,7 @@ ncks -C -A -v three_dim_rec_var in.nc foo.nc
 ncdump foo.nc
 105. Add an easy-to-read tabular display option for file contents for ncks
 106. Add switch to keep degenerate dimensions with ncwa
-107. Migrate to netCDF3.x
+107. Migrate to netCDF 3.x
 108. Find concise way to reproduce flaky IRIX problems: 
 ncdiff -O -v float_var in.nc in.nc foo.nc; ncks -H foo.nc
 109. Change copyright printing so order is NCO vrs, netCDF vrs, URL, Copyright
@@ -59,6 +59,9 @@ i.e., LSM variable timecom caused subtle ncra problems for a while.
 112. Use strtol and strtod instead of atol and atof
 113. Rethink normalization switch options in ncwa
 114. Fix var_conform_dim() so that the returned weight always has the same size tally array as the template variable
+115. When the sum of the denominator in ncwa (i.e., the sum of the weight) is zero, SIGFPE will result 
+116. Weighting an integer by a float causes weight to be converted to integer first, so that weighting, e.g., nlons by gw, will cause zero in denominator since all gw's convert to integer value of 0. This causes core dumps with, e.g., 
+ncwa -O -a lat -w gw foo.nc foo2.nc
 ************************************************************************
 End NCO Wish list
 ************************************************************************

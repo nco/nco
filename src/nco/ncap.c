@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.3 1998-11-26 04:51:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.4 1999-02-24 04:58:13 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -79,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncap.c,v 1.3 1998-11-26 04:51:39 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.3 $";
+  char rcs_Id[]="$Id: ncap.c,v 1.4 1999-02-24 04:58:13 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.4 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -252,7 +252,7 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
   
-  /* Process the positional arguments */ 
+  /* Process positional arguments */ 
   if(optind < argc){
     int_foo=optind;
     (void)fprintf(stderr,"non-option ARGV-elements: ");
