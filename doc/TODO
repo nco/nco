@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.349 2004-07-29 00:40:57 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.350 2004-07-29 01:52:32 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -233,7 +233,9 @@ nco360. AX_CFLAGS_GCC_OPTION(-std=c99) adds -std=c99 to xlc_r not just gcc
 nco361. Create new operator or rewrite ncks to use new style
 nco362. reduce memory during run by free()'ing var_fix[idx],var_fix_out[idx],var_prc[idx],var_prc_out[idx] after writes
 nco363. Document ncpdq in nco.texi
-nco364.
+nco364. Handle record dimension correctly in ncpdq
+nco365. Add ncpdq tests to nco_tst.pl
+nco366. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.6 2004-07-29 01:47:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.7 2004-07-29 01:52:32 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -32,7 +32,7 @@
 /* Usage:
    ncpdq -O ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -z lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-   ncpdq -O -z lon,lev,lat -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+   ncpdq -O -D 3 -z lon,lev,lat -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
 */
 
 #ifdef HAVE_CONFIG_H
@@ -89,8 +89,8 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.6 2004-07-29 01:47:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.6 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.7 2004-07-29 01:52:32 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.7 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:Rrt:v:xz:-:";
   
   dmn_sct **dim=NULL_CEWI;

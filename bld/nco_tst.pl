@@ -583,7 +583,7 @@ $expected= 0;
 ####################
 sub initialize
 {
-  @all_operators = qw(ncap ncbo ncflint ncea ncecat ncks ncra ncrcat ncrename ncwa);
+  @all_operators = qw(ncap ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa);
 if (scalar @ARGV > 0) 
 {
   @operators=@ARGV;
@@ -609,7 +609,7 @@ if (scalar @ARGV > 0)
 	# in src/nco/.libs, so point to them instead
 	my $dotlib = "";
 	$dotlib = ".libs/lt-" if `head -1 $MY_BIN_DIR/ncatted` =~ m/sh/;
-  $sym_link{ncdiff}=$dotlib . "ncbo";
+        $sym_link{ncdiff}=$dotlib . "ncbo";
 	$sym_link{ncea}=$dotlib . "ncra";
 	$sym_link{ncrcat}=$dotlib . "ncra";
 	foreach(keys %sym_link) {
