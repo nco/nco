@@ -1,7 +1,7 @@
 2002-08-14  Charlie Zender  <zender@uci.edu>
 
-	* Fix bug in nco_hst_att_cat() which left att_nm undefined when
-	global history attribute did not already exist
+	* Fix bug in nco_hst_att_cat() introduced in 2.4.2 which left
+	att_nm undefined when global history attribute did not exist
 
 2002-08-13  Charlie Zender  <zender@uci.edu>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.11 2002-07-04 03:40:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.12 2002-08-14 15:18:39 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -271,7 +271,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   /* Purpose: Add command line and date stamp to existing history attribute, if any,
    and write them to specified output file */
 
-  /* Length of string + NUL required to old output of ctime() */
+  /* Length of string + NUL required to hold output of ctime() */
 #define TIME_STAMP_SNG_LNG 25 
 
   char att_nm[NC_MAX_NAME];
@@ -313,6 +313,9 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
     /* Add 3 for formatting characters */
     history_new=(char *)nco_malloc((strlen(hst_sng)+strlen(time_stamp_sng)+3)*sizeof(char));
     (void)sprintf(history_new,"%s: %s",time_stamp_sng,hst_sng);
+    /* Set attribute name to default */
+    (void)strcpy(att_nm,sng_history);
+
   }else{ 
     /* Global attribute "[hH]istory" currently exists */
   
