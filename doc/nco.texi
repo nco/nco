@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.217 2004-03-25 12:05:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.218 2004-04-05 15:25:05 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1215,8 +1215,9 @@ Members of an ensemble may have no reason to contain a record dimension.
 by default) with which to glue together the individual files into the
 single ensemble file.
 If @command{ncecat} is used on files which contain an existing record
-dimension, that record dimension will be converted into a fixed length
-dimension of the same name and a new record dimension will be created. 
+dimension, that record dimension is converted to a fixed-length
+dimension of the same name and a new record dimension (named
+@code{record}) is created.  
 Consider five realizations, @file{85a.nc}, @file{85b.nc}, 
 @w{@dots{} @file{85e.nc}} of 1985 predictions from the same climate
 model. 
@@ -3340,6 +3341,7 @@ ncwa -y rms -v prs_sfc -a time in.nc foo.nc
 @noindent
 The previous two commands give the same answer but @command{ncra} is
 preferred because it has a smaller memory footprint.
+@cindex degenerate dimension
 Also, @command{ncra} leaves the (degenerate) @code{time} dimension in the
 output file (which is usually useful) whereas @command{ncwa} removes the
 @code{time} dimension. 
@@ -4492,6 +4494,7 @@ The variable @code{ORO_flg} in @file{out.nc}
 @cindex masked average
 @findex ncecat
 @findex ncwa
+@cindex degenerate dimension
 @example
 # Add degenerate "record" dimension to ORO for averaging
 ncecat -O -v ORO in.nc foo.nc
@@ -4563,6 +4566,7 @@ ncap -O -s "uprmvprm=(u-uavg)*(v-vavg)" foo.nc foo.nc # Covariance
 @findex ncks
 @findex ncwa
 @findex ncra
+@cindex degenerate dimension
 Whether a degenerate record dimension is a desirable or undesirable
 feature depends on the application.
 Often a degenerate @var{time} dimension is useful, e.g., for
@@ -5118,7 +5122,7 @@ If @var{file_2} were created by averaging @var{file_1} over the
 the @command{ncwa} operator, then @var{file_2} will have a @code{time}
 dimension of @w{size 1} rather than having no @code{time} dimension at
 all 
-@cindex degenerate dimensions
+@cindex degenerate dimension
 @footnote{This is because @command{ncra} collapses the record dimension
 to a size @w{of 1} (making it a @dfn{degenerate} dimension), but does
 not remove it, while @command{ncwa} removes all dimensions it averages
@@ -5422,6 +5426,20 @@ The output file, @file{85.nc}, is five times the size as a single
 It contains @w{60 months} of data (which might or might not be stored in
 the record dimension, depending on the input files).
 
+Consider a file with an existing record dimension named @code{time}. 
+and suppose the user wishes to conver @code{time} from a record
+dimension to a non-record dimension.
+This may be useful, for example, when the user has another use for the
+record variable.
+The procedure is to use @command{ncecat} followed by @command{ncwa}
+@cindex degenerate dimension
+@example
+ncecat in.nc out.nc # Convert time to non-record dimension
+ncwa -a record in.nc out.nc # Remove new degenerate record dimension
+@end example
+@noindent
+The second step removes the degenerate record dimension.
+
 @page
 @html
 <a name="ncflint"></a> <!-- http://nco.sf.net/nco.html#ncflint -->
@@ -5527,7 +5545,7 @@ and @var{val3} with the @samp{-i} option.
 weights on all variables to generate the output file.
 Although @var{var} may have any number of dimensions in the input
 files, it must represent a single, scalar value.  
-@cindex degenerate dimensions
+@cindex degenerate dimension
 Thus any dimensions associated with @var{var} must be @dfn{degenerate},
 i.e., of size one.
 
@@ -6045,7 +6063,7 @@ DESCRIPTION
 
 @command{ncra} averages record variables across an arbitrary number of
 input files.
-@cindex degenerate dimensions
+@cindex degenerate dimension
 The record dimension is retained as a degenerate @w{(size 1)} dimension in
 the output variables.
 @xref{Averaging vs. Concatenating}, for a description of the
