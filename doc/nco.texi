@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.174 2003-08-27 22:58:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.175 2003-08-29 16:28:47 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -484,6 +484,8 @@ If you port the code to a new operating system, please send me a note
 and any patches you required.
 
 @cindex @acronym{UNIX}
+@cindex Unidata
+@cindex UDUnits
 The major prerequisite for installing @acronym{NCO} on a particular
 platform is the successful, prior installation of the netCDF library
 (and, as of 2003, the UDUnits library).
@@ -573,8 +575,8 @@ Furthermore, @acronym{NCO} automatically takes advantage of extensions
 to @w{@acronym{ANSI} C} when compiled with the @acronym{GNU} compiler
 collection, @acronym{GCC}. 
 
-As of July 2000 and @acronym{NCO} version 1.2, @acronym{NCO} no longer
-supports performing arithmetic operations in Fortran.
+As of July 2000 and @acronym{NCO} @w{version 1.2}, @acronym{NCO} no
+longer supports performing arithmetic operations in Fortran.
 We decided to sacrifice executable speed for code maintainability
 Since no objective statistics were ever performed to quantify 
 the difference in speed between the Fortran and @w{C code},
@@ -600,8 +602,8 @@ As its name suggests, the @code{USE_FORTRAN_ARITHMETIC} token instructs
 @acronym{NCO} to attempts to interface the @w{C routines} with Fortran
 arithmetic. 
 Although using Fortran calls instead @w{of C} reduces the portability and
-and increases the maintenance of the @acronym{NCO} operators, it may also increase 
-the performance of the numeric operators.
+and increases the maintenance of the @acronym{NCO} operators, it may
+also increase the performance of the numeric operators.
 Presumably this will depend on your machine type, the quality of @w{the C}
 and Fortran compilers, and the size of the data files
 @footnote{If you decide to test the efficiency of the averagers compiled
@@ -629,11 +631,11 @@ Using the freely available Cygwin (formerly gnu-win32) development
 environment  
 @footnote{The Cygwin package is available from@*
 @code{http://sourceware.redhat.com/cygwin}@*
-Currently, Cygwin 20.x comes with the @acronym{GNU} C/C++/Fortran
+Currently, @w{Cygwin 20.x} comes with the @acronym{GNU} C/C++/Fortran
 compilers (@command{gcc}, @command{g++}, @command{g77}).
 These @acronym{GNU} compilers may be used to build the netCDF distribution
-itself.}, the compilation process is very similar to installing @acronym{NCO} on a
-@acronym{UNIX} system.  
+itself.}, the compilation process is very similar to installing
+@acronym{NCO} on a @acronym{UNIX} system.  
 @cindex preprocessor tokens
 @cindex @code{USE_FORTRAN_ARITHMETIC}
 @cindex @code{Cygwin}
@@ -653,9 +655,13 @@ in the makefile which comes with @acronym{NCO}, @file{Makefile}, or in the
 compilation shell. 
 
 @cindex @acronym{UNIX}
-The least portable section of the code is the use of standard @acronym{UNIX} and
-Internet protocols (e.g., @code{ftp}, @code{rcp}, @code{scp},
-@code{getuid}, @code{gethostname}, and header files
+@cindex @code{getuid}
+@cindex @code{gethostname}
+@findex @file{<arpa/nameser.h>}
+@findex @file{<resolv.h>}
+The least portable section of the code is the use of standard
+@acronym{UNIX} and Internet protocols (e.g., @code{ftp}, @code{rcp},
+@code{scp}, @code{getuid}, @code{gethostname}, and header files
 @file{<arpa/nameser.h>} and 
 @file{<resolv.h>}). 
 @cindex @code{ftp}
@@ -663,13 +669,13 @@ Internet protocols (e.g., @code{ftp}, @code{rcp}, @code{scp},
 @cindex @code{scp}
 @cindex @acronym{SSH}
 @cindex remote files
-Fortunately, these @acronym{UNIX}y calls are only invoked by the single @acronym{NCO}
-subroutine which is responsible for retrieving files stored on remote
-systems (@pxref{Remote storage}).
+Fortunately, these @acronym{UNIX}-y calls are only invoked by the single 
+@acronym{NCO} subroutine which is responsible for retrieving files
+stored on remote systems (@pxref{Remote storage}).
 In order to support @acronym{NCO} on the Microsoft Windows platforms,
 this single feature was disabled (on Windows @acronym{OS} only).
-This was required by Cygwin 18.x---newer versions of Cygwin may support
-these protocols (let me know if this is the case).
+This was required by @w{Cygwin 18.x}---newer versions of Cygwin may
+support these protocols (let me know if this is the case).
 The @acronym{NCO} operators should behave identically on Windows and
 @acronym{UNIX} platforms in all other respects.
 
@@ -689,11 +695,11 @@ This reduces the size of the executable and can result in significant
 performance enhancements on multiuser systems.
 Unfortunately, if your library search path (usually the
 @env{LD_LIBRARY_PATH} environment variable) is not set correctly, or if
-the system libraries have been moved, renamed, or deleted since @acronym{NCO} was
-installed, it is possible an @acronym{NCO} operator will fail with a message that
-it cannot find a dynamically loaded (aka @dfn{shared object} or
-@samp{.so}) library. 
-This usually produces a distinctive error message, such as
+the system libraries have been moved, renamed, or deleted since
+@acronym{NCO} was installed, it is possible @acronym{NCO} operators
+will fail with a message that they cannot find a dynamically loaded (aka
+@dfn{shared object} or @samp{.so}) library. 
+This will produce a distinctive error message, such as
 @samp{ld.so.1:@- /usr/local/bin/ncea:@- fatal:@- libsunmath.@-so.1:@- can't
 open@- file:@- errno@-=2}.   
 If you received an error message like this, ask your system 
@@ -702,77 +708,89 @@ administrator to diagnose whether the library is truly missing
 will tell you where the executable is looking for each dynamically
 loaded library. Use, e.g., @code{ldd `which ncea`}.}, or whether you
 simply need to alter your library search path.
-As a final remedy, you can reinstall @acronym{NCO} with all operators statically
-linked.  
+As a final remedy, you may re-compile and install @acronym{NCO} with all
+operators statically linked.  
 
 @node netCDF 2.x vs. 3.x, Help and Bug reports, Libraries, Introduction
 @section netCDF 2.x vs.@: 3.x
 @cindex netCDF 2.x
 @cindex netCDF 3.x
-netCDF version 2.x was released in 1993.
-@acronym{NCO} (specifically @code{ncks}) began with netCDF 2.x in 1994.
-netCDF 3.0 was released in 1996, and we were eager to reap the
+netCDF @w{version 2.x} was released in 1993.
+@acronym{NCO} (specifically @code{ncks}) began soon after this in 1994.  
+@w{netCDF 3.0} was released in 1996, and we were eager to reap the
 performance advantages of the newer netCDF implementation.
-One netCDF 3.x interface call (@code{nc_inq_libvers}) was added to
+One @w{netCDF 3.x} interface call (@code{nc_inq_libvers}) was added to 
 @acronym{NCO} in January, 1998, to aid in maintainance and debugging. 
-In March, 2001, the final conversion of @acronym{NCO} to netCDF 3.x
-was completed (coincidentally on the same day netCDF 3.5 was released).
-@acronym{NCO} versions 2.0 and higher are built with the
-@code{-DNO_NETCDF_2} flag to ensure no netCDF 2.x interface calls 
+In March, 2001, the final conversion of @acronym{NCO} to @w{netCDF 3.x} 
+was completed (coincidentally on the same day @w{netCDF 3.5} was
+released). 
+@acronym{NCO} @w{versions 2.0} and higher are built with the
+@code{-DNO_NETCDF_2} flag to ensure no @w{netCDF 2.x} interface calls  
 are used.
 @cindex @code{NO_NETCDF_2}
 
 @cindex @acronym{HDF}
 @cindex Hierarchical Data Format
-However, the ability to compile @acronym{NCO} with only netCDF 2.x calls 
-is worth maintaining because @acronym{HDF} version 4
+@cindex Mike Folk
+However, the ability to compile @acronym{NCO} with only @w{netCDF 2.x}
+calls is worth maintaining because @acronym{HDF} @w{version 4}
 @footnote{The Hierarchical Data Format, or @acronym{HDF}, is another
 self-describing data format similar to, but more elaborate than, netCDF.}
 (available from @uref{http://hdf.ncsa.uiuc.edu, HDF})
-supports only the netCDF 2.x library calls
+supports only the @w{netCDF 2.x} library calls
 (see @uref{http://hdf.ncsa.uiuc.edu/UG41r3_html/SDS_SD.fm12.html#47784}).
 Note that there are multiple versions of @acronym{HDF}.
-Currently @acronym{HDF} version 4.x supports netCDF 2.x and thus
-@acronym{NCO} version 1.2.x. 
-If @acronym{NCO} version 1.2.x (or earlier) is built with only netCDF
-2.x calls then all @acronym{NCO} operators should work with
+Currently @acronym{HDF} @w{version 4.x} supports @w{netCDF 2.x} and thus 
+@acronym{NCO} @w{version 1.2.x}. 
+If @acronym{NCO} @w{version 1.2.x} (or earlier) is built with only
+@w{netCDF 2.x} calls then all @acronym{NCO} operators should work with 
 @acronym{HDF4} files as well as netCDF files
 @footnote{One must link the @acronym{NCO} code to the @acronym{HDF4}
 @acronym{MFHDF} library instead of the usual netCDF library. 
-However, the @acronym{MFHDF} library only supports netCDF 2.x calls.
+Does @samp{MF} stands for Mike Folk?
+Perhaps. 
+In any case, the @acronym{MFHDF} library only supports @w{netCDF 2.x}
+calls. 
 Thus I will try to keep this capability in @acronym{NCO} as long as it
 is not too much trouble.}.
 @cindex @code{NETCDF2_ONLY}
 The preprocessor token @code{NETCDF2_ONLY} exists
-in @acronym{NCO} version 1.2.x to eliminate all netCDF 3.x calls. 
+in @acronym{NCO} @w{version 1.2.x} to eliminate all @w{netCDF 3.x}
+calls.  
 Only versions of @acronym{NCO} numbered 1.2.x and earlier have this
 capability. 
-The @acronym{NCO} 1.2.x branch will be maintained with bugfixes only
+The @w{@acronym{NCO} 1.2.x} branch will be maintained with bugfixes only 
 (no new features) until @acronym{HDF} begins to fully support the
-netCDF 3.x interface (which is employed by @acronym{NCO} 2.x).
+@w{netCDF 3.x} interface (which is employed by @w{@acronym{NCO} 2.x}).
 If, at compilation time, @code{NETCDF2_ONLY} is defined, then
-@acronym{NCO} version 1.2.x will not use any netCDF 3.x calls and, if
-linked properly, the resulting @acronym{NCO} operators will work with
-@acronym{HDF4} files.  
+@acronym{NCO} @w{version 1.2.x} will not use any @w{netCDF 3.x} calls
+and, if linked properly, the resulting @acronym{NCO} operators will work
+with @acronym{HDF4} files.  
 @cindex @file{Makefile}
-The @file{Makefile} supplied with @acronym{NCO} 1.2.x has been written
+The @file{Makefile} supplied with @w{@acronym{NCO} 1.2.x} is written
 to simplify building in this @acronym{HDF} capability.
-When @acronym{NCO} is built with @code{make HDF4=Y}, the @file{Makefile}
-will set all required preprocessor flags and library links to build 
-with the @acronym{HDF4} libraries (which are assumed to reside under 
+When @acronym{NCO} is built with @code{make HDF4=Y}, the @file{Makefile} 
+sets all required preprocessor flags and library links to build 
+with the @acronym{HDF4} libraries (which are assumed to reside under  
 @code{/usr/local/hdf4}, edit the @file{Makefile} to suit your
 installation).  
 
-@acronym{HDF} version 5.x became available in 1999, but did not support
-netCDF (or, for that matter, Fortran) as of December 1999.
-By early 2001, @acronym{HDF} version 5.x did support Fortran90.
-However, support for netCDF 3.x in @acronym{HDF} 5.x is incomplete.
+@cindex Unidata
+@cindex @acronym{NCSA}
+@acronym{HDF} @w{version 5.x} became available in 1999, but did not
+support netCDF (or, for that matter, Fortran) as of December 1999.
+By early 2001, @acronym{HDF} @w{version 5.x} did support Fortran90.
+However, support for @w{netCDF 3.x} in @w{@acronym{HDF} 5.x} is
+incomplete. 
 Much of the HDF5-netCDF3 interface is complete, however, and it may be
 separately downloaded from the
 @uref{http://hdf.ncsa.uiuc.edu/HDF5/papers/netcdfh5.html, HDF5-netCDF}
 website. 
-Now that @acronym{NCO} uses only netCDF 3.x system calls we are
-eager for HDF5 to complete their netCDF 3.x support.
+Now that @acronym{NCO} uses only @w{netCDF 3.x} system calls we are
+eager for HDF5 to add complete @w{netCDF 3.x} support.
+This is scheduled to occur sometime in 2005, with the release of netCDF 
+@w{version 4}, being written as a collaboration between Unidata and
+@acronym{NCSA}.
 
 @node Help and Bug reports,  , netCDF 2.x vs. 3.x, Introduction
 @section Help and Bug reports
@@ -4367,10 +4385,11 @@ Users are encouraged to use the forms which are most intuitive to them.
 @cindex @command{alias}
 @cindex @command{ln -s}
 @cindex symbolic links
-Normally, an operation type must be specified with @samp{-y} (equivalent
-to @samp{--op_typ}) or @command{ncbo} will fail.
-Exceptions to this rule may be created to suit your particular tastes,
-or the site's policy.
+Normally, @command{ncbo} will fail unless an operation type is specified
+with @samp{-y} (equivalent to @samp{--op_typ}).
+You may create exceptions to this rule to suit your particular tastes,
+in conformance with your site's policy on @dfn{symbolic links} to
+executables (files of a different name point to the actual executable).
 For many years, @command{ncdiff} was the main binary file operator.
 As a result, many users prefer to continue invoking @command{ncdiff}
 rather than memorizing a new command (@samp{ncbo -y @var{sbt}}) which
@@ -4378,13 +4397,15 @@ behaves identically to the original @command{ncdiff} command.
 However, from a software maintenance standpoint, maintaining a distinct 
 executable for each binary operation (e.g., @code{ncadd}) is untenable,
 and a single executable, @command{ncbo}, is desirable.
-The decision was made to automatically symbolically link
-@command{ncdiff} to @command{ncbo} to maintain backward compatibility.  
+To maintain backward compatibility, therefore, @acronym{NCO}
+automatically creates a symbolic link from @command{ncbo} to
+@command{ncdiff}.  
 Thus @command{ncdiff} is called an @dfn{alternate invocation} of
 @command{ncbo}. 
-@command{ncbo} supports additional alternate invocations should users
-and system adminitrators decide to use them. 
-The procedure to do so is simple.
+@command{ncbo} supports many additional alternate invocations which must
+be manually activated.
+Should users or system adminitrators decide to activate them, the
+procedure is simple. 
 For example, to use @samp{ncadd} instead of @samp{ncbo --op_typ=add}, 
 simply create a symbolic link from @command{ncbo} to @command{ncadd}
 @footnote{The command to do this is @samp{ln -s -f ncbo ncadd}}.
@@ -4393,6 +4414,14 @@ above.
 Alternatively, users may always define @samp{ncadd} as an @dfn{alias} to 
 @samp{ncbo --op_typ=add}
 @footnote{The command to do this is @samp{alias ncadd='ncbo --op_typ=add'}}.
+
+It is important to maintain portability in @acronym{NCO} scripts.
+Therefore we recommend that site-specfic invocations (e.g.,
+@samp{ncadd}) be used only in interactive sessions from the
+command-line.
+For scripts, we recommend using the full invocation (e.g., 
+@samp{ncbo --op_typ=add}).
+This ensures portability of scripts between users and sites.
 
 @command{ncbo} operates (e.g., adds) variables in @var{file_2} with the
 corresponding variables (those with the same name) in @var{file_1} and
