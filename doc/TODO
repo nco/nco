@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.224 2003-07-04 20:21:27 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.225 2003-07-12 05:22:36 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -147,7 +147,7 @@ Must define a consistent convention here
 cd ~/nco/data
 ncks -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 ncrcat -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
-149. Add ncks hyperslab tests to nco_tst to catch inconsistencies like #148
+149. Add ncks hyperslab tests to nco_tst.sh to catch inconsistencies like #148
 150. Fully automate RPM production, e.g., 'make rpm' should build rpms and upload to redhat.com
 151. Figure out how to dynamically modify web pages so files with
 changing version numbers can be directly linked
@@ -219,7 +219,6 @@ Command executes but in.hdf is full of screwy values
 ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 251. Does ncks -B correctly write packed variables in binary format?
 253. Sift through numerous files in ~/nco/nco-2.7.3/debian, edit important ones
-254. Use ncap to create T42 fields in nco_tst.nc, remove make tst dependence on FTP
 255. Desktop icon for NCO
 256. Turn udunits into .deb
 257. Put hybrid_sigma_pressure etc. definitions into in.cdl
