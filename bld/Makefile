@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.39 1999-10-12 07:37:51 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.40 1999-10-15 18:22:11 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -600,7 +600,7 @@ bld_cln:
 # Targets in dat
 data:	dat
 dat:	$(MY_DAT_DIR)/in.nc 
-	for fl in $(MDL_DAT_STB); do cd $(MY_DAT_DIR); ln -s in.nc $$fl; done
+	-for fl in $(MDL_DAT_STB); do cd $(MY_DAT_DIR); ln -s in.nc $$fl; done
 $(MY_DAT_DIR)/in.nc: $(MY_DAT_DIR)/in.cdl
 	cd $(MY_DAT_DIR); ncgen -b -o in.nc in.cdl
 test:	tst
