@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.259 2003-11-26 23:16:02 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.260 2003-12-10 18:47:58 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -105,7 +105,7 @@ In general, adding large rank variable to small rank file does work, e.g.,
 ncks -C -O -v one_dmn_rec_var in.nc foo.nc
 ncks -C -A -v three_dmn_rec_var in.nc foo.nc
 ncdump foo.nc
-105. Add easy-to-read tabular display option for file contents for ncks
+105. Add easy-to-read tabular display option for file contents for ncks, i.e, allow ncks -s to print multiple variables in column format
 106. Add switch to keep degenerate dimensions with ncwa, remove them from ncra
 109. Change copyright printing so order is NCO vrs, netCDF vrs, URL, Copyright
 111. Investigate whether using ncwa to average files where variables of type 
@@ -161,19 +161,18 @@ See explanatory notes in nco_lmt_evl().
 ncrcat when lmt_typ = dim_idx.
 This would allow these multifile operators to handle hyperslabs where,
 for example, every other file was not needed. This capability is already
-implemented for lmt_typ = crd_val. This is an issue only when stride
-is non-unity.
-160. Add documentation of ncra, ncrcat superfluous file capabilities to nco.texi
+implemented for lmt_typ = crd_val. 
+This is an issue only when stride is non-unity.
+Does multislabbing algorithm fix this?
 162. Add GiNaC (Computer Algebra System) support to ncap www.ginac.de (maybe?)
 166. Document 'make test' so people know it exists and use it
 167. Improve/redesign test suite so it is more comprehensive and easier to add to
-169. Merge TODO into sourceforge Task manager and bug manager as appropriate
 173. Add switch to ncra which allows user to remove degenerate time dimension from result
 174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
 176. Replace Bison, Flex components of ncap with smaller C++ parser?
 177. Make RPM production allowable by non-root, since building RPMs as sudo root screws up permissions in obj/bin directories of user
 179. add netCDF to required packages list in RPM build
-182. Add -L switch to print license terms
+182. Add -L, --license switch to print license terms (as suggested by GNU coding style)
 187. Are OpenMP critical regions sufficient for netCDF or must all other threads stop completely?
 188. Make binary RPMS build with DODS option
 189. Verify ncrcat multithreading works, produced "not a netCDF file error" once
@@ -216,7 +215,7 @@ Command executes but in.hdf is full of screwy values
 250. ncks -s should refuse to print strings formatted with %s unless they contain NUL-terminator. This will avoid segfaults like
 ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 251. Does ncks -B correctly write packed variables in binary format?
-255. Desktop icon for NCO
+255. Desktop icon for NCO gui interface
 256. Turn udunits into .deb
 257. Put hybrid_sigma_pressure etc. definitions into in.cdl
 258. Develop syntax/procedure for specifying lists of hyperslabs for single pass, low memory consumption MSA jobs like Martin Schultz's in Discussion forum on 20030506

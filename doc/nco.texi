@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.191 2003-11-25 21:13:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.192 2003-12-10 18:47:58 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -5913,6 +5913,9 @@ ncrcat -F -d time,12,14 85.nc 86.nc 87.nc 8512_8602.nc
 @end example
 @noindent
 The file @file{87.nc} is superfluous, but does not cause an error.
+When @command{ncra} and @command{ncrcat} encounter a file which does 
+contain any records that meet the specified hyperslab criteria, they
+disregard the file and proceed to the next file without failing.
 The @samp{-F} turns on the Fortran (1-based) indexing convention.
 @cindex stride
 
