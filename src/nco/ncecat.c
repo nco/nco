@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.66 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.67 2004-02-09 07:54:42 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -66,7 +66,7 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool NCAR_CSM_FORMAT;
+  bool NCAR_CCSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.66 2004-01-12 18:11:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.66 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.67 2004-02-09 07:54:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.67 $";
   const char * const opt_sng="ACcD:d:Fhl:n:Op:rRv:x-:";
 
   dmn_sct *rec_dmn;
@@ -300,8 +300,8 @@ main(int argc,char **argv)
     (void)nco_dmn_xrf(dim[idx],dmn_out[idx]); 
   } /* end loop over idx */
 
-  /* Is this an NCAR CSM-format history tape? */
-  NCAR_CSM_FORMAT=nco_ncar_csm_inq(in_id);
+  /* Is this an NCAR CCSM-format history tape? */
+  NCAR_CCSM_FORMAT=nco_ncar_csm_inq(in_id);
 
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
@@ -314,7 +314,7 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);

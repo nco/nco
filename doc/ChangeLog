@@ -1,3 +1,19 @@
+2004-02-08  Charlie Zender  <zender@uci.edu>
+
+	* Make TODO list easier to understand to facilitate contributions
+
+	* Systematically "symmetrize" all ncap arithmetic operations so
+	var OP var, var OP scv, and scv OP var are handled for all operations. 
+
+	* ncap handles var % scv, scv % var
+
+	* ncap handles scv / var
+
+	* Add nco_var_var_pwr() and nco_var_pwr() functions to allow
+	empowerment of two variables = var_1^var_2 and scv^var
+
+	* Change CSM to CCSM most everywhere
+
 2004-01-30  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_8_8

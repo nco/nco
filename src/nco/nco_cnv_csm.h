@@ -1,16 +1,16 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.11 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.12 2004-02-09 07:54:42 zender Exp $ */
 
-/* Purpose: CSM conventions */
+/* Purpose: CCSM conventions */
 
 /* Copyright (C) 1995--2004 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
-   #include "nco_cnv_csm.h" *//* CSM conventions */
+   #include "nco_cnv_csm.h" *//* CCSM conventions */
 
-#ifndef NCO_CNV_CSM_H
-#define NCO_CNV_CSM_H
+#ifndef NCO_CNV_CCSM_H
+#define NCO_CNV_CCSM_H
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
@@ -29,12 +29,12 @@
 extern "C" {
 #endif /* __cplusplus */
 
-bool /* O [flg] File obeys CSM conventions */
-nco_ncar_csm_inq /* O [fnc] Check if file obeys CSM conventions */
+bool /* O [flg] File obeys CCSM conventions */
+nco_ncar_csm_inq /* O [fnc] Check if file obeys CCSM conventions */
 (const int nc_id); /* I [id] netCDF file ID */
 
 void
-nco_ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
+nco_ncar_csm_date /* [fnc] Fix date variable in averaged CCSM files */
 (const int nc_id, /* I [id] netCDF file ID */
  X_CST_PTR_CST_PTR_Y(var_sct,var), /* I/O [sct] Variables in output file */
  const int nbr_var); /* I [nbr] Number of variables in list */
@@ -43,4 +43,4 @@ nco_ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
 } /* end extern "C" */
 #endif /* __cplusplus */
 
-#endif /* NCO_CNV_CSM_H */
+#endif /* NCO_CNV_CCSM_H */

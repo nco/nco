@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.13 2004-01-12 18:11:07 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.14 2004-02-09 07:54:42 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -479,20 +479,22 @@ var_xpr COMPARISON var_xpr {
 
 var_xpr: /* var_xpr results from RHS action which involves a var_xpr, i.e.,
 	    OP var, var OP var, var OP att, att OP var */
-var_xpr '+' var_xpr { 
+var_xpr '+' var_xpr { /* Begin Addition */
   $$=ncap_var_var_add($1,$3); 
   nco_var_free($1);
-
 }
 | var_xpr '+' scv_xpr {
   $$=ncap_var_scv_add($1,$3);
 }            
 | scv_xpr '+' var_xpr {
   $$=ncap_var_scv_add($3,$1);
-}            
-| var_xpr '-' var_xpr { 
+}  /* End Addition */
+| var_xpr '-' var_xpr { /* Begin Subtraction */
   $$=ncap_var_var_sub($1,$3);
   nco_var_free($3);
+}
+| var_xpr '-' scv_xpr {
+  $$=ncap_var_scv_sub($1,$3);
 }
 | scv_xpr '-' var_xpr { 
   scv_sct minus;
@@ -501,45 +503,66 @@ var_xpr '+' var_xpr {
   (void)scv_conform_type($3->type,&minus);
   (void)ncap_var_scv_sub($3,$1);
   $$=ncap_var_scv_mlt($3,minus);
-}
-| var_xpr '-' scv_xpr {
-  $$=ncap_var_scv_sub($1,$3);
-}
-| var_xpr '*' var_xpr {
+} /* End Subtraction */
+| var_xpr '*' var_xpr { /* Begin Multiplication */
   $$=ncap_var_var_mlt($1,$3); 
   nco_var_free($1); 
 }
 | var_xpr '*' scv_xpr {
   $$=ncap_var_scv_mlt($1,$3);
 }
-| var_xpr '%' scv_xpr {
-  $$=ncap_var_scv_mod($1,$3);
-}
 | scv_xpr '*' var_xpr {
   $$=ncap_var_scv_mlt($3,$1);
-}
-| var_xpr '/' var_xpr {
+} /* End Multiplication */
+| var_xpr '/' var_xpr { /* Begin Division */
   $$=ncap_var_var_dvd($3,$1); /* NB: Ordering is important */
   nco_var_free($3); 
 }
 | var_xpr '/' scv_xpr {
   $$=ncap_var_scv_dvd($1,$3);
 }
+| scv_xpr '/' var_xpr {
+  $$=ncap_var_scv_dvd($3,$1);
+} /* End Division */
+| var_xpr '%' var_xpr { /* Begin Modulo */
+  $$=ncap_var_var_mod($1,$3);
+  nco_var_free($1); 
+}
+| var_xpr '%' scv_xpr {
+  $$=ncap_var_scv_mod($1,$3);
+}
+| scv_xpr '%' var_xpr {
+  $$=ncap_var_scv_mod($3,$1);
+} /* End Modulo */
+| var_xpr '^' var_xpr { /* Begin Empowerment */
+  $$=ncap_var_var_pwr($1,$3);
+  nco_var_free($1); 
+}
 | var_xpr '^' scv_xpr {
   $$=ncap_var_scv_pwr($1,$3);
+}
+| scv_xpr '^' var_xpr {
+  $$=ncap_var_scv_pwr($3,$1);
+}
+| POWER '(' var_xpr ',' var_xpr ')' {
+  $$=ncap_var_var_pwr($3,$5);
+  nco_var_free($3); 
 }
 | POWER '(' var_xpr ',' scv_xpr ')' {
   $$=ncap_var_scv_pwr($3,$5);
 }
-| '-' var_xpr %prec UMINUS { 
+| POWER '(' scv_xpr ',' var_xpr ')' {
+  $$=ncap_var_scv_pwr($5,$3);
+} /* End Empowerment */
+| '-' var_xpr %prec UMINUS { /* Begin Unary Subtraction */
   scv_sct minus;
   minus.val.b=-1;
   minus.type=NC_BYTE;
   $$=ncap_var_scv_mlt($2,minus);
-}
-| '+' var_xpr %prec UMINUS {
+} /* End Unary Subtraction */
+| '+' var_xpr %prec UMINUS { /* Begin Unary Addition */
   $$=$2;
-}
+} /* End Unary Addition */
 | ABS '(' var_xpr ')' {
   $$=ncap_var_abs($3);
 } /* end ABS */

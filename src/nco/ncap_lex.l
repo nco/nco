@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.22 2004-01-19 17:29:33 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.23 2004-02-09 07:54:42 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -688,7 +688,7 @@ M_PI {return NAMED_CONSTANT;}
      Placing a uniform value in variable should be unnecessary since variable
      is intended for use solely as dimensional template for nco_var_cnf_dmn() 
      Nevertheless, copy 1.0 into value for safety */
-  { /* Change scope to define convenience variables which reduce dereferencing */
+  { /* Change scope to define convenience variables which reduce de-referencing */
     long var_sz; /* [nbr] Number of elements in variable */
     size_t var_typ_sz; /* [B] Size of single element of variable */
     char *var_val_cp; /* [ptr] Pointer to values */

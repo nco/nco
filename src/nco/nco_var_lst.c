@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.28 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.29 2004-02-09 07:54:42 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -365,7 +365,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 (var_sct * const * const var, /* I [sct] Variable list (input file) */
  var_sct * const * const var_out, /* I [sct] Variable list (output file) */
  const int nbr_var, /* I [nbr] Number of variables */
- const bool NCAR_CSM_FORMAT, /* I [flg] File adheres to NCAR CSM conventions */
+ const bool NCAR_CCSM_FORMAT, /* I [flg] File adheres to NCAR CCSM conventions */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
  const int nbr_dmn_xcl, /* I [nbr] Number of excluded dimensions */
  var_sct *** const var_fix_ptr, /* O [sct] Fixed-variables (input file) */
@@ -453,10 +453,10 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       break;
     } /* end switch */
     
-    if(NCAR_CSM_FORMAT){
+    if(NCAR_CCSM_FORMAT){
       if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ[idx]=fix;
       if(prg == ncbo && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec"))) var_op_typ[idx]=fix;
-    } /* end if NCAR_CSM_FORMAT */
+    } /* end if NCAR_CCSM_FORMAT */
 
   } /* end loop over var */
 

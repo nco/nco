@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.60 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.61 2004-02-09 07:54:42 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
@@ -146,20 +146,30 @@ ncap_var_var_add /* [fnc] Add two variables (var_1+var_2) */
 (var_sct *var_1, /* I [sct] Input variable structure containing first operand */
  var_sct *var_2); /* I [sct] Input variable structure containing second operand */
 
-var_sct * /* O [frc] Remainder of input variables (var_2-var_1) */
-ncap_var_var_sub /* [fnc] Subtract two variables (var_2-var_1) */ 
-(var_sct *var_2, /* I [sct] Variable structure containing second operand */ /* fxm TODO: 19 non-standard argument order */
- var_sct *var_1); /* I [sct] Variable structure containing first operand */
+var_sct * /* O [sct] Quotient of input variables (var_2/var_1) */
+ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */ 
+(var_sct *var_1, /* I [sct] Variable structure containing denominator */
+ var_sct *var_2); /* I [sct] Variable structure containing numerator */
 
 var_sct * /* O [sct] Product of input variables (var_1*var_2) */
 ncap_var_var_mlt /* [fnc] Multiply two variables (var_1*var_2) */ 
 (var_sct *var_1, /* I [sct] Variable structure containing first operand */
  var_sct *var_2); /* I [sct] Variable structure containing second operand */
 
-var_sct * /* O [sct] Quotient of input variables (var_2/var_1) */
-ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */ 
-(var_sct *var_1, /* I [sct] Variable structure containing first operand */
- var_sct *var_2); /* I [sct] Variable structure containing second operand */
+var_sct * /* O [sct] Remainder of modulo operation of input variables (var_1%var_2) */
+ncap_var_var_mod /* [fnc] Remainder operation of two variables */ 
+(var_sct *var_1, /* I [sct] Variable structure containing field */
+ var_sct *var_2); /* I [sct] Variable structure containing divisor */
+
+var_sct * /* O [sct] Empowerment of input variables (var_1^var_2) */
+ncap_var_var_pwr /* [fnc] Empowerment of two variables */ 
+(var_sct *var_1, /* I [sct] Variable structure containing base */
+ var_sct *var_2); /* I [sct] Variable structure containing exponent */
+
+var_sct * /* O [frc] Remainder of input variables (var_2-var_1) */
+ncap_var_var_sub /* [fnc] Subtract two variables (var_2-var_1) */ 
+(var_sct *var_2, /* I [sct] Variable structure containing second operand */ /* fxm TODO: 19 non-standard argument order */
+ var_sct *var_1); /* I [sct] Variable structure containing first operand */
 
   /* fxm: Following functions need editing, const'ifying, etc. */
 bool ncap_var_stretch(var_sct **,var_sct **);

@@ -1,30 +1,29 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.58 2004-01-30 23:40:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.59 2004-02-09 07:54:39 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Rorik fixed an autotools build problem caused by my over-zealous use
-of GCC compile options. This bug has occurred since 2.8.6 whenever
---enable-[optimize/debug]-custom was invoked with GCC.
+This release mainly implements some overlooked ncap operations. 
+ncap modulo operator (A%B) and generic exponentiation (A^B) work in
+all combinations.
 
-Solaris cc/CC autotools builds have been broken since ~2.8.6, too.
+fxm: Solaris cc/CC autotools builds have been broken since ~2.8.6, too.
 If anyone would care to send a patch that would be great!
 
 Enjoy,
 Charlie
 
-Bug-fixes:
-1. Remove -fshort-enums: Make enums as short as possible, ususally
-non-int. Do not ever invoke this! This breaks ABI and causes subtle
-problems
-
 Feature changes:
-1. None
+1. Complete ncap modulo operator (A%B) and generic exponentiation
+(A^B) with all combinations of attribute and variable
+
+Bug-fixes:
+1. ncap attribute divided by variable (A/B) works correctly
 
 Other user-visible changes:
-1. Documented how to do co-variances
+1. None
 
 User-invisible changes:
-1. Fixed a small memory leak, more to follow with valgrind
+1. None

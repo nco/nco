@@ -1,20 +1,20 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.12 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.13 2004-02-09 07:54:42 zender Exp $ */
 
-/* Purpose: CSM conventions */
+/* Purpose: CCSM conventions */
 
 /* Copyright (C) 1995--2004 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
-#include "nco_cnv_csm.h" /* CSM conventions */
+#include "nco_cnv_csm.h" /* CCSM conventions */
 
-bool /* O [flg] File obeys CSM conventions */
-nco_ncar_csm_inq /* O [fnc] Check if file obeys CSM conventions */
+bool /* O [flg] File obeys CCSM conventions */
+nco_ncar_csm_inq /* O [fnc] Check if file obeys CCSM conventions */
 (const int nc_id) /* I [id] netCDF file ID */
 {
-  /* Purpose: Check if file adheres to NCAR CSM history tape format */
+  /* Purpose: Check if file adheres to NCAR CCSM history tape format */
 
-  bool NCAR_CSM=False;
+  bool NCAR_CCSM=False;
 
   char *att_val;
 
@@ -26,7 +26,7 @@ nco_ncar_csm_inq /* O [fnc] Check if file obeys CSM conventions */
 
   nc_type att_typ;
 
-  /* Look for signature of an NCAR CSM format file */
+  /* Look for signature of an NCAR CCSM format file */
   rcd=nco_inq_att_flg(nc_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
 
   if(rcd == NC_NOERR && att_typ == NC_CHAR){
@@ -35,22 +35,22 @@ nco_ncar_csm_inq /* O [fnc] Check if file obeys CSM conventions */
     (void)nco_get_att(nc_id,NC_GLOBAL,cnv_sng,att_val,att_typ);
     /* NUL-terminate convention attribute before using strcmp() */
     att_val[att_sz]='\0';
-    if(strstr(att_val,"NCAR-CSM") != NULL) NCAR_CSM=True;
-    if(NCAR_CSM && dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: CONVENTION File convention is %s\n",prg_nm_get(),att_val);
+    if(strstr(att_val,"NCAR-CCSM") != NULL) NCAR_CCSM=True;
+    if(NCAR_CCSM && dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: CONVENTION File convention is %s\n",prg_nm_get(),att_val);
     att_val=(char *)nco_free(att_val);
   } /* endif */
 
-  return NCAR_CSM;
+  return NCAR_CCSM;
   
 } /* end nco_ncar_csm_inq */
 
 void
-nco_ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
+nco_ncar_csm_date /* [fnc] Fix date variable in averaged CCSM files */
 (const int nc_id, /* I [id] netCDF file ID */
  X_CST_PTR_CST_PTR_Y(var_sct,var), /* I/O [sct] Variables in output file */
  const int nbr_var) /* I [nbr] Number of variables in list */
 {
-  /* Purpose: Fix date variable in averaged CSM files */
+  /* Purpose: Fix date variable in averaged CCSM files */
   char wrn_sng[1000];
 
   int date_idx;
@@ -65,7 +65,7 @@ nco_ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
   nco_long nbdate;
   nco_long date;
   
-  (void)sprintf(wrn_sng,"Most, but not all, CSM files which are in CCM format contain the fields \"nbdate\", \"time\", and \"date\". When the \"date\" field is present but either \"nbdate\" or \"time\" is missing, then %s is unable to construct a meaningful average \"date\" to store in the output file. Therefore the \"date\" variable in your output file may be meaningless.\n",prg_nm_get());
+  (void)sprintf(wrn_sng,"Most, but not all, CCSM files which are in CCM format contain the fields \"nbdate\", \"time\", and \"date\". When the \"date\" field is present but either \"nbdate\" or \"time\" is missing, then %s is unable to construct a meaningful average \"date\" to store in the output file. Therefore the \"date\" variable in your output file may be meaningless.\n",prg_nm_get());
 
   /* Find date variable (NC_INT: current date as 6 digit integer (YYMMDD)) */
   for(idx=0;idx<nbr_var;idx++){
@@ -77,7 +77,7 @@ nco_ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
   /* Find scalar nbdate variable (NC_INT: base date date as 6 digit integer (YYMMDD)) */
   rcd=nco_inq_varid_flg(nc_id,"nbdate",&nbdate_id);
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"%s: WARNING NCAR CSM convention file output variable list contains \"date\" but not \"nbdate\"\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING NCAR CCSM convention file output variable list contains \"date\" but not \"nbdate\"\n",prg_nm_get());
     (void)fprintf(stderr,"%s: %s",prg_nm_get(),wrn_sng);
     return;
   } /* endif */
@@ -88,7 +88,7 @@ nco_ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
     if(!strcmp(var[idx]->nm,"time")) break;
   } /* end loop over idx */
   if(idx == nbr_var){
-    (void)fprintf(stderr,"%s: WARNING NCAR CSM convention file output variable list contains \"date\" but not \"time\"\n",prg_nm_get());
+    (void)fprintf(stderr,"%s: WARNING NCAR CCSM convention file output variable list contains \"date\" but not \"time\"\n",prg_nm_get());
     (void)fprintf(stderr,"%s: %s",prg_nm_get(),wrn_sng);
     return;
   }else{

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.111 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.112 2004-02-09 07:54:42 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -79,7 +79,7 @@ main(int argc,char **argv)
   bool MUST_CONFORM=False; /* [flg] Must nco_var_cnf_dmn() find truly conforming variables? */
   bool DO_CONFORM_MSK; /* Did nco_var_cnf_dmn() find truly conforming mask? */
   bool DO_CONFORM_WGT=False; /* Did nco_var_cnf_dmn() find truly conforming weight? */
-  bool NCAR_CSM_FORMAT;
+  bool NCAR_CCSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
@@ -106,8 +106,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.111 2004-01-12 18:11:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.111 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.112 2004-02-09 07:54:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.112 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -472,8 +472,8 @@ main(int argc,char **argv)
 
   } /* end if */
 
-  /* Is this an NCAR CSM-format history tape? */
-  NCAR_CSM_FORMAT=nco_ncar_csm_inq(in_id);
+  /* Is this an NCAR CCSM-format history tape? */
+  NCAR_CCSM_FORMAT=nco_ncar_csm_inq(in_id);
 
   /* Fill in variable structure list for all extracted variables */
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
@@ -486,7 +486,7 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,dmn_avg,nbr_dmn_avg,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,dmn_avg,nbr_dmn_avg,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* We now have final list of variables to extract. Phew. */
   if(dbg_lvl > 0){
@@ -656,7 +656,7 @@ main(int argc,char **argv)
 	  } /* end if */
 	  
 	  /* Mask by changing variable to missing value where condition is false */
-	  (void)nco_var_mask(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,msk_val,op_typ_rlt,msk_out->val,var_prc[idx]->val);
+	  (void)nco_var_msk(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,msk_val,op_typ_rlt,msk_out->val,var_prc[idx]->val);
 	} /* end if */
       } /* end if */
       /* Perform non-linear transformations before weighting */
@@ -712,19 +712,19 @@ main(int argc,char **argv)
 	  default: nco_dfl_case_nc_type_err(); break;
 	  } /* end switch */
 	  /* Second mask wgt_avg where variable is missing value */
-	  (void)nco_var_mask(wgt_avg->type,wgt_avg->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,mss_val_dbl,nco_op_ne,var_prc[idx]->val,wgt_avg->val);
+	  (void)nco_var_msk(wgt_avg->type,wgt_avg->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,mss_val_dbl,nco_op_ne,var_prc[idx]->val,wgt_avg->val);
 	} /* endif weight must be checked for missing values */
 	
 	if(msk_nm != NULL && DO_CONFORM_MSK){
-	  /* Must mask weight in same fashion as variable was masked */
-	  /* If msk and var did not conform then do not mask wgt */
-	  /* Ensure wgt_avg has a missing value */
+	  /* Must mask weight in same fashion as variable was masked
+	     If msk and var did not conform then do not mask wgt
+	     Ensure wgt_avg has a missing value */
 	  if(!wgt_avg->has_mss_val){
 	    wgt_avg->has_mss_val=True;
 	    wgt_avg->mss_val=nco_mss_val_mk(wgt_avg->type);
 	  } /* end if */
 	  /* Mask by changing weight to missing value where condition is false */
-	  (void)nco_var_mask(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,msk_val,op_typ_rlt,msk_out->val,wgt_avg->val);
+	  (void)nco_var_msk(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,msk_val,op_typ_rlt,msk_out->val,wgt_avg->val);
 	} /* endif weight must be masked */
 	
 	/* fxm: temporary kludge to make sure weight has tally space
@@ -739,7 +739,7 @@ main(int argc,char **argv)
 	/* Average weight over specified dimensions (tally array is set here) */
 	wgt_avg=nco_var_avg(wgt_avg,dmn_avg,nbr_dmn_avg,nco_op_avg);
 	if(MULTIPLY_BY_TALLY){
-	  /* Currently this is not implemented */
+	  /* NB: Currently this is not implemented */
 	  /* Multiply numerator (weighted sum of variable) by tally 
 	     We deviously accomplish this by dividing denominator by tally */
 	  (void)nco_var_nrm(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,wgt_avg->tally,wgt_avg->val);

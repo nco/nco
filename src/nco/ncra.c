@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.99 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.100 2004-02-09 07:54:42 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -96,7 +96,7 @@ main(int argc,char **argv)
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool ARM_FORMAT=int_CEWI;
-  bool NCAR_CSM_FORMAT=int_CEWI;
+  bool NCAR_CCSM_FORMAT=int_CEWI;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.99 2004-01-12 18:11:07 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.99 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.100 2004-02-09 07:54:42 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.100 $";
   const char * const opt_sng="ACcD:d:Fhl:n:Op:P:rRv:xy:-:";
 
   dmn_sct **dim;
@@ -366,8 +366,8 @@ main(int argc,char **argv)
     lmt_rec=nco_lmt_sct_mk(in_id,rec_dmn_id,lmt,lmt_nbr,FORTRAN_STYLE);
   } /* endif */
 
-  /* Is this an NCAR CSM-format history tape? */
-  NCAR_CSM_FORMAT=nco_ncar_csm_inq(in_id);
+  /* Is this an NCAR CCSM-format history tape? */
+  NCAR_CCSM_FORMAT=nco_ncar_csm_inq(in_id);
 
   /* Is this an ARM-format data file? */
   ARM_FORMAT=arm_inq(in_id);
@@ -384,7 +384,7 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
@@ -594,7 +594,7 @@ main(int argc,char **argv)
   } /* end if */
   
   /* Manually fix YYMMDD date which was mangled by averaging */
-  if(NCAR_CSM_FORMAT && prg == ncra) (void)nco_ncar_csm_date(out_id,var_out,nbr_xtr);
+  if(NCAR_CCSM_FORMAT && prg == ncra) (void)nco_ncar_csm_date(out_id,var_out,nbr_xtr);
   
   /* Add time variable to output file */
   if(ARM_FORMAT && prg == ncrcat) (void)nco_arm_time_install(out_id,base_time_srt);

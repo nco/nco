@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.206 2004-01-30 23:34:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.207 2004-02-09 07:54:39 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -562,41 +562,44 @@ and
 Sun (@samp{CC -LANG:std}).
 @cindex @file{Makefile}
 See @file{nco/bld/Makefile} and @file{nco/src/nco_c++/Makefile.old} for
-more details. 
+more details and exact settings. 
 
 @cindex @acronym{ANSI}
-@cindex C99
 @cindex C89
+@cindex @code{printf} 
 Until recently (and not even yet), @acronym{ANSI}-compliant has meant
 compliance with the 1989 @acronym{ISO} C-standard, usually called C89 (with
 minor revisions made in 1994 and 1995).
-C89 does not allow variable-size arrays nor use of the @samp{%z} format 
-for @code{printf}.
-These are nice features of the 1999 @acronym{ISO} C-standard called C99. 
+C89 does not allow variable-size arrays nor the @samp{%z} format for
+@code{printf}. 
+@cindex C99
+These are valuable features of the 1999 @acronym{ISO} C-standard called C99. 
 @acronym{NCO} is C99-compliant where possible and C89-compliant where
 necessary. 
 Certain branches in the code are required to satisfy the native
 @acronym{SGI} and SunOS @w{C compilers}, which are strictly @acronym{ANSI} 
 C89 compliant, and cannot benefit from C99 features.
-However, C99 features are fully supported by the @acronym{GNU},
-@acronym{UNICOS}, Solaris, and @acronym{AIX} compilers. 
+However, C99 features are fully supported by modern @acronym{AIX},
+@acronym{GNU}, Intel, @acronym{NEC}, Solaris, and @acronym{UNICOS}
+compilers. 
 
 The most time-intensive portion of @acronym{NCO} execution is spent in
 arithmetic operations, e.g., multiplication, averaging, subtraction.
-Until August, 1999, these operations were performed in Fortran by
-default.  
-This was a design decision made in late 1994 based on the speed of
-Fortran-based object code vs.@: C-based object code.
-Since 1994 native @w{C compilers} have improved their vectorization
-capabilities and it has become advantageous to replace all Fortran 
-subroutines with @w{C subroutines}.
-Furthermore, this greatly simplifies the task of compiling on nominally 
-unsupported platforms. 
+These operations were performed in Fortran by default until August,
+1999.  
+This was a design decision based on the relative speed of Fortran-based
+object code vs.@: C-based object code in late 1994.
+@w{C compilers} have dramatically improved their vectorization
+capabilities since 1994.
+We have accordingly replaced all Fortran subroutines with @w{C functions}.
+This greatly simplifies the task of building @acronym{NCO} on nominally
+unsupported platforms.  
 @cindex C language
 As of August 1999, @acronym{NCO} is built entirely @w{in C} by default.
 This allows @acronym{NCO} to compile on any machine with an
 @acronym{ANSI} @w{C compiler}. 
-Furthermore, @acronym{NCO} automatically takes advantage of extensions
+@cindex automagic
+Furthermore, @acronym{NCO} automagically takes advantage of extensions
 to @w{@acronym{ANSI} C} when compiled with the @acronym{GNU} compiler
 collection, @acronym{GCC}. 
 
@@ -1272,10 +1275,11 @@ hundreds or thousands of input files.
 One brave user, for example, recently created a five year time-series of
 satellite observations by using @command{ncecat} to join thousands of
 daily data files together.
+@cindex automagic
 Unfotunately, data archives (e.g., @acronym{NASA EOSDIS}) are unlikely
-to distribute netCDF files conveniently named in a format the @samp{-n
-@var{loop}} switch (which automatically generates arbitrary numbers of
-input filenames) understands. 
+to distribute netCDF files conveniently named in a format understood by
+the @samp{-n @var{loop}} switch that automagically generates arbitrary
+numbers of input filenames.
 If there is not a simple, arithmetic pattern to the input filenames
 (e.g., @file{h00001.nc}, @file{h00002.nc}, @w{@dots{} @file{h90210.nc}})  
 then the @samp{-n @var{loop}} switch is useless.
@@ -1313,12 +1317,11 @@ Files this large not only push the current edge of storage technology,
 they present special problems for programs which attempt to access the  
 entire file at once, such as @command{ncea}, and @command{ncecat}.
 @cindex swap space
-If you need to work with a @w{300 MB} file on a machine with only 
-@w{32 MB} of memory then you will need large amounts of swap space
-(virtual memory on disk) and @acronym{NCO} will work slowly, or else 
-@acronym{NCO} will fail. 
+If you work with a @w{300 MB} files on a machine with only @w{32 MB} of
+memory then you will need large amounts of swap space (virtual memory on
+disk) and @acronym{NCO} will work slowly, or else @acronym{NCO} will fail. 
 There is no easy solution for this and the best strategy is to work on a 
-machine with massive amounts of memory and swap space.
+machine with sufficient amounts of memory and swap space.
 @cindex server
 @cindex @acronym{UNICOS}
 @cindex Cray
@@ -1327,11 +1330,15 @@ try running @acronym{NCO} from a more powerful machine, such as a
 network server.  
 Certain machine architectures, e.g., Cray @acronym{UNICOS}, have special 
 commands which allow one to increase the amount of interactive memory.
+@cindex @acronym{GNU}/Linux
+@cindex @code{ulimit}
+If you get a memory-related core dump on @acronym{GNU}/Linux system
+(e.g., @samp{Error exit (core dumped)}), try to increase your process
+available memory with the @code{ulimit} command. 
 @cindex @code{ilimit}
 @cindex @code{core dump}
-If you get a core dump on a Cray system (e.g., @samp{Error exit (core
-dumped)}), try increasing the available memory by using the
-@code{ilimit} command. 
+On Cray systems, try to increase the available memory with the
+@code{ilimit} command.    
 
 @cindex speed
 The speed of the @acronym{NCO} operators also depends on file size.
@@ -3620,9 +3627,7 @@ specified in the @code{units} attribute of @code{time} from the first
 file. 
 The analogous problem has been fixed in @acronym{ARM} files 
 (@pxref{ARM Conventions}) and could be fixed for @acronym{CSM} files if
-there is sufficient lobbying, and if Unidata fixes the
-@uref{http://www.unidata.ucar.edu/packages/udunits,UDUnits} package to
-build out of the box on Linux.
+there is sufficient lobbying.
 }.
 However, to facilitate maximum user friendliness, @acronym{NCO} does
 treat certain variables in some @acronym{CSM} files specially. 
@@ -4076,21 +4081,18 @@ most operating systems.
 @cindex multiplication
 @cindex division
 @cindex exponentiation
+@cindex power
 @cindex modulus
 @cindex @code{+} (addition)
 @cindex @code{-} (subtraction)
 @cindex @code{*} (multiplication)
 @cindex @code{/} (division)
-@cindex @code{^} (exponentiation)
+@cindex @code{^} (power)
 @cindex @code{%} (modulus)
 Standard calculator notation is used for addition @kbd{+}, subtraction
 @kbd{-}, multiplication @kbd{*}, division @kbd{/}, exponentiation
 @kbd{^}, and modulus @kbd{%}.
 The available elementary mathematical functions are: 
-@cindex @var{nearbyint}
-@cindex @var{rint}
-@cindex @var{round}
-@cindex @var{trunc}
 @cindex @var{abs}
 @cindex @var{acosh}
 @cindex @var{acos}
@@ -4101,18 +4103,23 @@ The available elementary mathematical functions are:
 @cindex @var{ceil}
 @cindex @var{cosh}
 @cindex @var{cos}
-@cindex @var{erf}
 @cindex @var{erfc}
+@cindex @var{erf}
 @cindex @var{exp}
 @cindex @var{floor}
 @cindex @var{gamma}
 @cindex @var{log10}
 @cindex @var{log}
+@cindex @var{nearbyint}
+@cindex @var{pow}
+@cindex @var{rint}
+@cindex @var{round}
 @cindex @var{sinh}
 @cindex @var{sin}
 @cindex @var{sqrt}
 @cindex @var{tanh}
 @cindex @var{tan}
+@cindex @var{trunc}
 @cindex mathematical functions
 @cindex nearest integer function (inexact)
 @cindex nearest integer function (exact)
@@ -4137,6 +4144,7 @@ The available elementary mathematical functions are:
 @cindex hyperbolic tangent
 @cindex logarithm, base 10
 @cindex logarithm, natural
+@cindex power function
 @cindex sine function
 @cindex square root function
 @table @code
@@ -4264,6 +4272,11 @@ Nearest integer to @var{x} is returned in floating point format.
 @cindex inexact conversion
 No exceptions are raised for @dfn{inexact conversions}.
 Example: @math{nearbyint(0.1) = 0.0}
+@item pow(x,y)
+@dfn{Power}
+Value of @var{x} is raised to the power of @var{y}.
+Exceptions are raised for @dfn{domain errors}.
+Example: @math{pow(2,3) = 8}
 @item rint(x)
 @dfn{Round exactly}
 Nearest integer to @var{x} is returned in floating point format.

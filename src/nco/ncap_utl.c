@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.94 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.95 2004-02-09 07:54:42 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -183,11 +183,11 @@ ncap_var_var_add /* [fnc] Add two variables */
  var_sct *var_2) /* I [sct] Input variable structure containing second operand */
 {
   /* Purpose: Add two variables */
-  /* Result is stored in var_2 */
+  /* Store result in var_2 */
   
   (void)ncap_var_retype(var_1,var_2);
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
-  /* fxm: bug in nco_var_add. missing_value is not carried over to var_2 in result when var_1->has_mss_val is true */
+  /* fxm: bug in nco_var_add()? missing_value is not carried over to var_2 in result when var_1->has_mss_val is true */
   if(var_1->has_mss_val){
     (void)nco_var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
   }else{
@@ -195,6 +195,70 @@ ncap_var_var_add /* [fnc] Add two variables */
   } /* end if */
   return var_2;
 } /* end ncap_var_var_add() */
+
+var_sct * /* O [sct] Quotient of input variables (var_2/var_1) */
+ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */ 
+(var_sct *var_1, /* I [sct] Variable structure containing denominator */
+ var_sct *var_2) /* I [sct] Variable structure containing numerator */
+{
+  /* Purpose: Divide two variables (var_2/var_1) */
+  (void)ncap_var_retype(var_1,var_2);
+  (void)ncap_var_cnf_dmn(&var_1,&var_2);
+  if(var_1->has_mss_val){
+    (void)nco_var_dvd(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
+  }else{
+    (void)nco_var_dvd(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
+  } /* end else */
+  return var_2;
+} /* end ncap_var_var_dvd() */
+
+var_sct * /* O [sct] Product of input variables (var_1*var_2) */
+ncap_var_var_mlt /* [fnc] Multiply two variables */ 
+(var_sct *var_1, /* I [sct] Variable structure containing first operand */
+ var_sct *var_2) /* I [sct] Variable structure containing second operand */
+{
+  /* Purpose: Multiply two variables variables (var_1*var_2) */
+  (void)ncap_var_retype(var_1,var_2);
+  (void)ncap_var_cnf_dmn(&var_1,&var_2);
+  if(var_1->has_mss_val){
+    (void)nco_var_mlt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
+  }else{
+    (void)nco_var_mlt(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
+  } /* end else */
+   return var_2;
+} /* end ncap_var_var_mlt() */
+
+var_sct * /* O [sct] Remainder of modulo operation of input variables (var_1%var_2) */
+ncap_var_var_mod /* [fnc] Remainder (modulo) operation of two variables */
+(var_sct *var_1, /* I [sct] Variable structure containing field */
+ var_sct *var_2) /* I [sct] Variable structure containing divisor */
+{
+  /* Purpose: Remainder (modulo) operation of two variables (var_1%var_2) */
+  (void)ncap_var_retype(var_1,var_2);
+  (void)ncap_var_cnf_dmn(&var_1,&var_2);
+  if(var_1->has_mss_val){
+    (void)nco_var_mod(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
+  }else{
+    (void)nco_var_mod(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
+  } /* end else */
+   return var_2;
+} /* end ncap_var_var_mod() */
+
+var_sct * /* O [sct] Empowerment of input variables (var_1^var_2) */
+ncap_var_var_pwr /* [fnc] Empowerment of two variables */ 
+(var_sct *var_1, /* I [sct] Variable structure containing base */
+ var_sct *var_2) /* I [sct] Variable structure containing exponent */
+{
+  /* Purpose: Empower two variables (var_1^var_2) */
+  (void)ncap_var_retype(var_1,var_2);
+  (void)ncap_var_cnf_dmn(&var_1,&var_2);
+  if(var_1->has_mss_val){
+    (void)nco_var_pwr(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
+  }else{
+    (void)nco_var_pwr(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
+  } /* end else */
+   return var_2;
+} /* end ncap_var_var_pwr() */
 
 var_sct * /* O [frc] Remainder of input variables (var_2-var_1) */
 ncap_var_var_sub /* [fnc] Subtract two variables (var_2-var_1) */ 
@@ -212,38 +276,6 @@ ncap_var_var_sub /* [fnc] Subtract two variables (var_2-var_1) */
   }/* end else */
   return var_2;
 } /* end ncap_var_var_sub() */
-
-var_sct * /* O [sct] Product of input variables (var_1*var_2) */
-ncap_var_var_mlt /* [fnc] Multiply two variables */ 
-(var_sct *var_1, /* I [sct] Variable structure containing first operand */
- var_sct *var_2) /* I [sct] Variable structure containing second operand */
-{
-  /* Purpose: Multiply two variables variables (var_1*var_2) */
-  (void)ncap_var_retype(var_1,var_2);
-  (void)ncap_var_cnf_dmn(&var_1,&var_2);
-  if(var_1->has_mss_val){
-    (void)nco_var_mlt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
-  }else{
-    (void)nco_var_mlt(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
-  }
-   return var_2;
-} /* end ncap_var_var_mlt() */
-
-var_sct * /* O [sct] Quotient of input variables (var_2/var_1) */
-ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */ 
-(var_sct *var_1, /* I [sct] Variable structure containing first operand */
- var_sct *var_2) /* I [sct] Variable structure containing second operand */
-{
-  /* Purpose: Divide two variables (var_2/var_1) */
-  (void)ncap_var_retype(var_1,var_2);
-  (void)ncap_var_cnf_dmn(&var_1,&var_2);
-  if(var_1->has_mss_val){
-    (void)nco_var_dvd(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_2->val);
-  }else{
-    (void)nco_var_dvd(var_1->type,var_1->sz,var_2->has_mss_val,var_2->mss_val,var_1->val,var_2->val);
-  } /* end else */ 
-  return var_2;
-} /* end ncap_var_var_dvd() */
 
 var_sct *
 ncap_var_fnc(var_sct *var_in,sym_sct *app)
@@ -267,7 +299,7 @@ ncap_var_fnc(var_sct *var_in,sym_sct *app)
     if(!var_in->has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]=(*(app->fnc_dbl))(op1.dp[idx]);
     }else{
-      double mss_val_dbl=*(var_in->mss_val.dp); /* Temporary variable reduces dereferencing */
+      double mss_val_dbl=*(var_in->mss_val.dp); /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
         if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=(*(app->fnc_dbl))(op1.dp[idx]);
       } /* end for */
@@ -278,7 +310,7 @@ ncap_var_fnc(var_sct *var_in,sym_sct *app)
     if(!var_in->has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]=(*(app->fnc_flt))(op1.fp[idx]);
     }else{
-      float mss_val_flt=*(var_in->mss_val.fp); /* Temporary variable reduces dereferencing */
+      float mss_val_flt=*(var_in->mss_val.fp); /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
         if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=(*(app->fnc_flt))(op1.fp[idx]);
       } /* end for */
@@ -355,7 +387,7 @@ var_sct *
 ncap_var_scv_pwr(var_sct *var,scv_sct scv)
 {
   /* Purpose: Raise var to power in scv
-     All values converted to type double before operation */
+     Convert all values to type double before operation */
   long idx;
   long sz;
   ptr_unn op1;
@@ -370,30 +402,28 @@ ncap_var_scv_pwr(var_sct *var,scv_sct scv)
   if(var->has_mss_val) (void)cast_void_nctype(var->type,&(var->mss_val));
   
   switch(var->type){ 
-  case NC_DOUBLE: {
-    double scv_dpl=scv.val.d;
-    if(!var->has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.dp[idx]=pow(op1.dp[idx],scv_dpl);
-    }else{
-      double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces dereferencing */
-      for(idx=0;idx<sz;idx++){
-        if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=pow(op1.dp[idx],scv_dpl);
-      } /* end for */
-    } /* end else */
-    break;
-  } /* end NC_DOUBLE */
-  case NC_FLOAT: {
-    float scv_flt=scv.val.f;
+  case NC_FLOAT: { /* Extra brace limits scope of temporary type-specific scalar variable */
+    const float scv_flt=scv.val.f;
     if(!var->has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]=powf(op1.fp[idx],scv_flt);
     }else{
-      float mss_val_flt=*(var->mss_val.fp); /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*(var->mss_val.fp); /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
         if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=powf(op1.fp[idx],scv_flt);
       } /* end for */
     } /* end else */
-    break;
-  } /* end NC_FLOAT */
+    break; } /* end NC_FLOAT */
+  case NC_DOUBLE: { /* Extra brace limits scope of temporary type-specific scalar variable */
+    const double scv_dbl=scv.val.d;
+    if(!var->has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]=pow(op1.dp[idx],scv_dbl);
+    }else{
+      const double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+        if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=pow(op1.dp[idx],scv_dbl);
+      } /* end for */
+    } /* end else */
+    break; } /* end NC_DOUBLE */
   default: nco_dfl_case_nc_type_err(); break;
   }/* end switch */
   
