@@ -1,0 +1,294 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+   <TITLE>NCO Homepage</TITLE>
+   <META NAME="GENERATOR" CONTENT="Mozilla/3.04Gold (X11; I; Linux 2.0.0 i686) [Netscape]">
+   <META NAME="Author" CONTENT="Charles S. Zender">
+   <META NAME="Keywords" CONTENT="NCO Homepage, netCDF, netCDF operator, GCM, scientific data">
+</HEAD>
+<BODY TEXT="#000000" BGCOLOR="#FFF8DC" LINK="#0000FF" VLINK="#008080" ALINK="#FF0000">
+
+<TABLE WIDTH="100%" >
+<TR>
+<TD align="left" valign="top">/ <A HREF="http://www.ucar.edu/metapage.html">NCAR</A>
+/ <A HREF="http://www.cgd.ucar.edu/">CGD</A> / <A HREF="http://www.cgd.ucar.edu/cms">CMS</A>
+/ <A HREF="http://www.cgd.ucar.edu/cms/ccm3">CCM3</A> / </TD>
+
+<TD align="right" valign="top">[ <A HREF="http://www.cgd.ucar.edu/cms/ccm3">CCM3
+</A>] [ <A HREF="http://www.cgd.ucar.edu/cms/ccm3/processor.html">Processor
+</A>] [ <A HREF="http://www.cgd.ucar.edu/cms/ccm3/lsm">LSM
+</A>] [ <A HREF="http://www.cgd.ucar.edu/csm">CSM </A>] </TD>
+</TR>
+</TABLE>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<H1 ALIGN=CENTER>Welcome to the NCO Homepage</H1>
+
+<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#Definition">What is NCO?</A> </DD>
+<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#News">NCO News</A> </DD>
+<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#Download">Download NCO software</A> </DD>
+<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#RTFM">NCO User's Guide</A> </DD>
+<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#README">README</A> </DD>
+<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#ChangeLog">ChangeLog</A> </DD>
+<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#Version">Version Info</A> </DD>
+<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#NCAR">Using NCO at NCAR</A> </DD>
+<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#Bugs">Known Problems</A> </DD>
+
+<HR>
+
+<DT><A NAME="Definition"></A></DT>
+<H2>What is NCO?</H2>
+
+<P>The netCDF Operators, or NCO, is a suite of programs known as <B>operators</B>.
+Each operator is a standalone, command line program which is executed at
+the UNIX (or NT) shell-level like, e.g., <TT>ls</TT> or <TT>mkdir</TT>.
+The operators take netCDF file(s) as input, perform an operation (e.g.,
+averaging, hyperslabbing, or renaming), and produce a netCDF file as output.
+The operators are primarily designed to aid manipulation and analysis of
+scientific data, and the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO
+User's Guide</A> illustrates their use with examples from the field of
+climate modeling and analysis. </P>
+
+<P>The operators are as general as netCDF itself: there are no restrictions
+on the contents of the netCDF file(s) used as input.
+The internal routines of NCO are completely dynamic which means that NCO imposes no 
+limit on the number of dimensions, sizes of variables, files etc.
+NCO is designed to be used both interactively and with large batch jobs.
+There are plenty of command line (i.e., runtime) options, but the defaults
+settings are often sufficient for everyday needs.</P>
+
+<P>NCO has probably already been built and tested on your operating system
+(SunOS, Solaris, Linux, IRIX, UNICOS, and Windows NT).
+The current set of
+operators is given below. For a thorough description of each operator,
+please read the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO
+User's Guide</A>. </P>
+
+<TABLE BORDER=1 CELLSPACING=10 CELLPADDING=0 >
+<CAPTION></CAPTION>
+
+<TR>
+<TD><TT>ncatted</TT></TD>
+
+<TD>netCDF Attribute Editor</TD>
+</TR>
+
+<TR>
+<TD><TT>ncdiff</TT></TD>
+
+<TD VALIGN=BASELINE>netCDF Differencer</TD>
+</TR>
+
+<TR>
+<TD><TT>ncea</TT></TD>
+
+<TD>netCDF Ensemble Averager</TD>
+</TR>
+
+<TR>
+<TD><TT>ncecat</TT></TD>
+
+<TD>netCDF Ensemble Concatenator</TD>
+</TR>
+
+<TR>
+<TD><TT>ncflint</TT></TD>
+
+<TD>netCDF File Interpolator</TD>
+</TR>
+
+<TR>
+<TD><TT>ncks</TT></TD>
+
+<TD>netCDF Kitchen Sink</TD>
+</TR>
+
+<TR>
+<TD><TT>ncra</TT></TD>
+
+<TD>netCDF Record Averager</TD>
+</TR>
+
+<TR>
+<TD><TT>ncrcat</TT></TD>
+
+<TD>netCDF Record Concatenator</TD>
+</TR>
+
+<TR>
+<TD><TT>ncrename</TT></TD>
+
+<TD>netCDF Renamer</TD>
+</TR>
+
+<TR>
+<TD><TT>ncwa</TT></TD>
+
+<TD>netCDF Weighted Averager</TD>
+</TR>
+</TABLE>
+
+<P>
+<HR WIDTH="100%"></P>
+
+<DT><A NAME="News"></A></DT>
+<H2>NCO News</H2>
+
+<P>99/01/21: An optional token has been added to NCO which eliminates
+all netCDF 3.x calls and thus restores compatibility of NCO with HDF
+files. 
+
+<P>98/12/02: <TT>ncwa</TT> has been updated again since a user
+discovered a bug which occurred when a weight (<TT>`-w'</TT>) and a
+mask (<TT>`-m'</TT>) were both given to <TT>ncwa</TT>. Unfortunately, 
+<TT>ncwa</TT> sometimes produced incorrect answers in this scenario so
+if you ever used weights and masks at the same time you are strongly
+urged to upgrade your NCO and rerun the commands. This bug only
+affected variables averaged with both the weight and mask options
+enabled at the same time, no other variables would have been affected. 
+
+<P>
+The <TT>`-n'</TT> and <TT>`-W'</TT> normalization options to
+<TT>ncwa</TT> have been removed, possibly permanently, but at least
+until their implementation is simplified and redesigned. The
+<TT>`-N'</TT> option to <TT>ncwa</TT> remains the same. All the new
+behavior is fully documented in the rewritten and expanded
+<TT>ncwa</TT> section in the 
+<A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO User's
+Guide</A>.
+
+<P>98/11/24: Choose whether to weight your coordinates in <TT>ncwa</TT>
+A <TT>`-I'</TT> switch has been added to <TT>ncwa</TT>.
+Henforth, by default, <TT>ncwa</TT> applies weights or masks to
+coordinate variables just like any other variable.
+Previously, <TT>ncwa</TT> did not weight coordinate variables at all,
+and always produced simple arithmetic averages of coordinate
+variables.  
+Use <TT>`ncwa -I'</TT> to recover the old behavior (i.e., arithmetic
+rather than masked, weighted averages of coordinate variables).
+A problem where <TT>ncwa</TT> would refuse to average variables which
+did not contain any of the averaged dimensions has also been fixed.
+
+<P>98/07/07: Reduce bloating!     
+The <TT>`-h'</TT> switch has been enabled on all operators.
+Using this switch suppresses the automatic history feature in NCO.
+Now you can decide whether each change to a file warrants an
+additional line in the history attribute. 
+The functionality of the old <TT>`ncks -h'</TT> switch is now
+invoked with <TT>`ncks -m'</TT> (the mnemonic is `metadata'). 
+<HR></P>
+
+<DT><A NAME="Download"></A></DT>
+<H2>Download the complete <A HREF="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz">NCO
+software</A> source distribution.</H2>
+
+<P>The distribution includes the complete NCO documentation (<I>User's
+Guide</I>) in Postscript, HTML, DVI, TeXinfo, and Info formats. These formats
+are included in the source distribution in the files <TT>`nco.ps'</TT>,
+<TT>`nco.html'</TT>, <TT>`nco.dvi'</TT>, <TT>`nco.texi'</TT>, and <TT>`nco.info*'</TT>,
+respectively. (430 Kb compressed tar-file) 
+<HR></P>
+
+<DT><A NAME="RTFM"></A></DT>
+<H2>Browse the online <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO
+User's Guide</A></H2>
+
+<P>The <I>User's Guide</I> contains all the documentation for NCO. It explains
+the most efficient strategies for using the operators and includes numerous
+specific examples. The online <I>User's Guide</I> is also in the source
+distribution in the file <TT>`nco.html'</TT>. 
+<HR></P>
+
+<DT><A NAME="README"></A></DT>
+<H2>See the <TT><FONT SIZE=+4><A HREF="http://www.cgd.ucar.edu/cms/nco/README">README</A></FONT></TT>
+file.</H2>
+
+<P><TT>`README'</TT> describes the platforms and software requirements
+for a successful NCO installation. More information on installation is
+contained in the online <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO
+User's Guide</A>. 
+<HR></P>
+
+<DT><A NAME="ChangeLog"></A></DT>
+<H2>See the <FONT SIZE=+4><TT><A HREF="http://www.cgd.ucar.edu/cms/nco/ChangeLog">ChangeLog</A></TT>
+</FONT>file.</H2>
+
+<P><TT>`ChangeLog'</TT> contains the most up-to-date information on the
+latest NCO improvements. There is no need to install minor, unannounced
+upgrades to NCO unless a problem you are having with NCO is listed in <TT>`ChangeLog'</TT>
+as having been fixed in the latest revision. 
+<HR></P>
+
+<DT><A NAME="Version"></A></DT>
+<H2>Current release of NCO is <!--#include virtual="VERSION"--> </H2>
+
+<P>You easily can tell whether you have the most recent version, and whether you should upgrade by reading the <TT><A HREF="http://www.cgd.ucar.edu/cms/nco/ChangeLog">ChangeLog</A></TT>.
+
+<HR></P>
+
+<DT><A NAME="NCAR"></A></DT>
+<H2>Using NCO at NCAR</H2>
+<P>NCO is built and maintained at NCAR, and so user's of NCAR machines should take advantage of pre-built, up-to-date NCO executables.
+The NCO executables are maintained in four different locations at NCAR:
+<DD>CGD network (Solaris 2.6): /contrib/bin</DD>
+<DD>CGD network (SunOS 4.1.4): /contrib/bin</DD>
+<DD>CGD/SCD Winterpark (IRIX 6.2): /contrib/bin</DD>
+<DD>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</DD>
+<HR></P>
+
+<DT><A NAME="Bugs"></A></DT>
+<H2>Known Problems with NCO and/or netCDF:</H2>
+<H1>Are you encountering NCO problems on an SGI machine?</H1>
+<P>The netCDF 3.3.x distribution suffers from unpredictable and weird behavior on SGI machines (apparently related to NFS-mounted partitions).
+As a result, NCO operators, especially <TT>ncwa</TT>, may core dump unless you upgrade to the new netCDF3.4.x distribution.
+NCAR's Winterpark has been upgraded to netCDF3.4.
+All users of NCO on SGI64 machines at other institutions are urged to upgrade to netCDF3.4.x which is available from URL <A HREF="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z</A>.</P>
+
+<P>Intermittent problems with NCO on IRIX have reappeared on NCAR's Winterpark since about May 8, 1998.  
+Because these problems do not occur on any architecture besides IRIX, I feel it is likely that this is a symptom of a bug with IRIX, not with netCDF or NCO.
+These problems are known to occur with NCO (based on netCDF 2.x) as well as other, independent, netCDF 3.x applications (at least since July 28, 1998).
+These problems generally occur with the averagers (e.g.,<TT>ncwa</TT>,
+<TT>ncra</TT>) and will occasionally produce incorrect answers without
+any warning.
+Such data corruption might be very hard to notice, so please be very
+cautious using netCDF on IRIX until these problems are resolved.
+</P>
+
+<P>Try the following workarounds:
+If your file on the IRIX machine is accesible from another machine,
+e.g., a Sun or Cray, then use NCO from the Sun or Cray, rather than
+the IRIX machine, to process the file. 
+Some problems are compilation dependent, and disappear or lessen when
+NCO is compiled with the `-g' option (rather than `-O2').
+Compiling NCO with `C_ONLY=Y' replaces Fortran routines with C
+routines.
+We have not yet tested whether this alleviates IRIX problems.
+If you try either of these workarounds, let me know whether they
+worked (or not) for you.
+This will help us identify the problem.
+<HR></P>
+
+<TABLE WIDTH="100%" >
+<TR>
+<TD align="left" valign="bottom">/ <A HREF="http://www.ucar.edu/metapage.html">NCAR</A>
+/ <A HREF="http://www.cgd.ucar.edu/">CGD</A> / <A HREF="http://www.cgd.ucar.edu/cms">CMS</A>
+/ <A HREF="http://www.cgd.ucar.edu/cms/ccm3">CCM3</A> / </TD>
+
+<TD align="right" valign="top">[ <A HREF="http://www.cgd.ucar.edu/cms/ccm3">CCM3
+</A>] [ <A HREF="http://www.cgd.ucar.edu/cms/ccm3/processor.html">Processor
+</A>] [ <A HREF="http://www.cgd.ucar.edu/cms/ccm3/lsm">LSM
+</A>] [ <A HREF="http://www.cgd.ucar.edu/csm">CSM </A>] </TD>
+</TR>
+</TABLE>
+
+<P>
+<HR></P>
+Address questions and comments about NCO to Charlie Zender, 
+<ADDRESS>
+<A HREF="mailto:zender@ncar.ucar.edu">zender@ncar.ucar.edu</A>
+</ADDRESS>
+
+</BODY>
+</HTML>

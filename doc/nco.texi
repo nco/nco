@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.14 1999-01-21 22:31:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.15 1999-01-23 17:08:34 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -489,6 +489,7 @@ Thus I will try to keep this capability in NCO as long as it is not too
 much trouble.
 If you know which NCO operations should/should not work with HDF files,
 please let me know.}.
+@cindex @code{NETCDF2_ONLY}
 Therefore, the preprocessor token @code{NETCDF2_ONLY} has been
 implemented in NCO to eliminate all netCDF 3.x calls. 
 If, at compilation time, @code{NETCDF2_ONLY} is defined, then NCO will
