@@ -320,7 +320,7 @@
 #undef HOSTNAME
 
 /* Compatibility pvmgetarch token for HPUX on PA RISC */
-#undef HPPA
+#undef HPUX
 
 /* i18n support requested */
 #undef I18N

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.255 2004-07-09 16:36:11 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.256 2004-07-09 16:59:15 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -451,6 +451,8 @@ ifeq (${ABI},64)
  CFLAGS += -q64
  FFLAGS += -q64
  LDFLAGS += -q64 
+else
+ CPPFLAGS += -D_LARGE_FILE
 endif # endif ABI
 # Additional flags for AIX:
 # -M Generate information to be included in a "make" description file; output goes to .u file
