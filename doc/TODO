@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.209 2003-03-19 07:27:55 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.210 2003-03-20 02:03:02 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -133,20 +133,6 @@ ncra -O -C -v rec_var_flt_mss_val_dbl in.nc foo.nc;ncks -H foo.nc
 ncra -O -C -d time,0,1 -v rec_var_flt_mss_val_dbl in.nc foo.nc ; ncks -H foo.nc
 Not too worried about this since it is Cray specific, 
 Maybe 1.0e36d does not convert to 1.0e36f on Crays?
-138. If fastest varying dimension of NC_CHAR variable is of size one, then should not expect it to be NUL-terminated.
-139. ncks does not correctly print coordinate indices in hyperslabs with wrapping
-ncks -H -C -v one_dmn_rec_var -d time,9,6 ~/nco/data/in.nc
-Must compute dmn_ss using WRP information for each dimension
-140. ncks prints dimensional indices relative to disk values, but
-variable index relative to hyperslab origin for all data types except
-NC_CHAR. For NC_CHAR the variable index is also relative to the disk
-value, not the hyperslab origin. 
-141. NC_CHAR printing should include final dimension coordinates and
-character ranges relative to disk. Change variable index-ranges to be
-relative to hyperslab to be consistent with all other data types.
-142. Implement some way of discriminating between NUL-terminated
-strings and non-NUL-terminated characters arrays in ncks printouts.
-Perhaps double quotes around former and single quotes around latter
 143. Add -W or -q switch to turn off squelch most warning messages in ncra, ncrcat (especially warnings about non-monotonicity)
 144. Add option(s) to select all N-D variables where N=0,1,2...
 145. Talk to Brian and implement latest netCDF and CF conventions, e.g., time_op
@@ -177,13 +163,12 @@ implemented for lmt_typ = crd_val. This is an issue only when stride
 is non-unity.
 160. Add documentation of ncra, ncrcat superfluous file capabilities to nco.texi
 162. Add GiNaC (Computer Algebra System) support to ncap www.ginac.de (maybe?)
-163. Figure out way to make doc/TAG and doc/VERSION change automagically. Currently must be updated manually unless distribute with nco_dst.pl
 166. Document 'make test' so people know it exists and use it
 167. Improve/redesign test suite so it is more comprehensive and easier to add to
 169. Merge TODO into sourceforge Task manager and bug manager as appropriate
 173. Add switch to ncra which allows user to remove degenerate time dimension from result
 174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
-176. Replace Bison, Flex components of ncap with smaller C++ parser
+176. Replace Bison, Flex components of ncap with smaller C++ parser?
 182. Add -L switch to print license terms
 187. Are OpenMP critical regions sufficient for netCDF or must all other threads stop completely?
 188. Make binary RPMS build with DODS option
@@ -205,9 +190,9 @@ Command executes but in.hdf is full of screwy values
 198. HDF-enabled ncgen does not parse in.cdl
 199. Internationalize (i18n) NCO with gettext()
 202. Make nco_tst.sh somehow summarize its own errors, e.g., "Total errors reported = 12" so that regression testing is easier. Perhaps nco_tst.sh should be rewritten in Perl or Python to accomplish this.
-203. Perform I/O timing tests with NCO 1.3.x vs NCO 1.2.x to see if netCDF3 interface really speeds up I/O
+203. Perform benchmarking tests to quantify arithmetic performance improvements, I/O bottlenecks, etc.
 206. Add sample NCO script, such as dst.sh, to doc directory
-209. Add rules to make MANIFEST and automagically update Sourceforge download area
+209. Add rules to automagically make MANIFEST and update Sourceforge download area
 214. Disable threads > 1 on SGI temporarily because thread #0 is doing all the work, why?
 215. nco_var_cnf_dmn() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
 222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
@@ -226,10 +211,9 @@ Command executes but in.hdf is full of screwy values
 245. Eliminate all instances of passing naked constants
 246. Deprecate USE_FORTRAN_ARITHMETIC from Makefile
 247. Automate .deb builds
-250. make ncks refuse to print strings formatted with %s unless they contain NUL-terminator. This will avoid segfaults like
+250. ncks -s should refuse to print strings formatted with %s unless they contain NUL-terminator. This will avoid segfaults like
 ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 251. Does ncks -B correctly write packed variables in binary format?
-252. Replace sections in nco.texi with new MSA output style
 253. Sift through numerous files in ~/nco/nco-2.7.3/debian, edit important ones
 254. Macros inside macros do not appear to work in info, e.g., @var{@wndznl{}}
 ************************************************************************

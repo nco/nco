@@ -1,3 +1,8 @@
+2003-03-19  Charlie Zender  <zender@uci.edu>
+
+	* Remove TODOs 138, 139, 140, 141, 142, all solved or made
+	obsolete by Henry's MSA printing algorithm.
+
 2003-03-18  Charlie Zender  <zender@uci.edu>
 
 	* General honing of nco.texi
