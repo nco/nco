@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.45 2000-03-07 22:32:01 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.46 2000-03-13 06:16:19 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -112,6 +112,9 @@ ncrcat -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 150. Fully automate RPM production
 151. Figure out how to dynamically modify web pages so files with
 changing version numbers can be directly linked
+152. Change make or nco_dst.pl to add docs to /usr/doc in RPM
+153. Change CVS repository to sourceforge, enable anonymous access
+154. Add mirror capability to web pages
 ************************************************************************
 End NCO Wish list
 ************************************************************************
