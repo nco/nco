@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.47 2002-01-16 15:33:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.48 2002-01-17 08:45:35 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -85,8 +85,8 @@
 #endif /* not AIX */
 #endif /* not LINUX */
 
-long int ln_nbr_crr; /* Line number incremented in ncap.l */
-char *fl_spt_global; /* instructions file */
+long int ln_nbr_crr; /* [cnt] Line number incremented in ncap.l */
+char *fl_spt_global; /* [fl] Script file */
 
 int 
 main(int argc,char **argv)
@@ -121,7 +121,6 @@ main(int argc,char **argv)
   extern float sqrtf(float);
   extern float tanf(float);
   */
-
   
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
@@ -149,8 +148,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.47 2002-01-16 15:33:20 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.47 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.48 2002-01-17 08:45:35 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.48 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;

@@ -1,7 +1,7 @@
  %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.26 2002-01-14 18:07:56 hmb Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.27 2002-01-17 08:45:35 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -58,9 +58,7 @@
 #include "nco_netcdf.h" /* netCDF3 wrapper calls */
 #include "ncap.h" /* symbol table definition */
 
-/* define an ATTRIBUTE to contain a -1 */ 
-
-/* Turn on parser debugging option (bison man p. 85) */
+/* Turn on parser debugging option (Bison manual p. 85) */
 #define YYDEBUG 1
 int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 
@@ -137,7 +135,7 @@ program: statement_list
 statement_list: statement_list statement ';'
 | statement_list error ';'
 | statement ';'
-| error ';'  /* catches most errors then reads up to the next ; */
+| error ';'  /* Catches most errors then reads up to next ; */
 ;
 
 statement: out_att_exp '=' att_exp { 
@@ -156,11 +154,11 @@ statement: out_att_exp '=' att_exp {
     (void)fprintf(stderr,"Saving in array attribute %s@%s=",$1.var_nm,$1.att_nm);
     
     switch($3.type){
-    case NC_BYTE:  (void)fprintf(stderr,"%d\n",$3.val.b); break;
+    case NC_BYTE: (void)fprintf(stderr,"%d\n",$3.val.b); break;
     case NC_SHORT: (void)fprintf(stderr,"%d\n",$3.val.s); break;
-    case NC_INT:   (void)fprintf(stderr,"%ld\n",$3.val.l); break;
+    case NC_INT: (void)fprintf(stderr,"%ld\n",$3.val.l); break;
     case NC_FLOAT: (void)fprintf(stderr,"%G\n",$3.val.f); break;		  
-    case NC_DOUBLE:  (void)fprintf(stderr,"%.5G\n",$3.val.d);break;
+    case NC_DOUBLE: (void)fprintf(stderr,"%.5G\n",$3.val.d);break;
     default: break;
     }/* end switch */
   } /* end if */
@@ -195,7 +193,7 @@ statement: out_att_exp '=' att_exp {
   aed_sct *ptr_aed;
   
   if($3->nbr_dim < 2 ){
-    aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
+    aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
     ptr_aed=((prs_sct*)prs_arg)->att_lst[aed_idx];
     ptr_aed->sz=$3->sz;
     ptr_aed->type= $3->type;
@@ -217,14 +215,15 @@ statement: out_att_exp '=' att_exp {
   int rcd;
   int var_id;
   $3->nm=strdup($1);
-  /* check to see if variable is already in output file */
-  rcd=nco_inq_varid_flg(((prs_sct*)prs_arg)->out_id,$3->nm,&var_id);
+  /* fxm: If LHS was cast by user then must cast RHS to same dimensionality */
+  /* Is variable already in output file? */
+  rcd=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$3->nm,&var_id);
   if(rcd == NC_NOERR){
-    (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s", $3->nm,((prs_sct*)prs_arg)->fl_out);
+    (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s",$3->nm,((prs_sct*)prs_arg)->fl_out);
     (void)yyerror(err_sng);                                   
   }else{  
-    (void)ncap_var_write($3,(prs_sct*)prs_arg);
-    (void)sprintf(err_sng,"Saving variable %s to %s", $3->nm,((prs_sct*)prs_arg)->fl_out);
+    (void)ncap_var_write($3,(prs_sct *)prs_arg);
+    (void)sprintf(err_sng,"Saving variable %s to %s",$3->nm,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   } /* end else */
   (void)free($1);
@@ -324,7 +323,6 @@ att_exp: att_exp '+' att_exp {
   $$.val.d=pow($1.val.d,$3.val.d);
   $$.type=NC_DOUBLE; 
   }
-
 }
 | POWER '(' att_exp ',' att_exp ')' {
   if($3.type <= NC_FLOAT && $5.type <= NC_FLOAT) {
@@ -338,7 +336,6 @@ att_exp: att_exp '+' att_exp {
   $$.val.d=pow($3.val.d,$5.val.d);
   $$.type=NC_DOUBLE; 
   }
-
 }
 
 | ABS '(' att_exp ')' {
@@ -490,8 +487,8 @@ var_exp: var_exp '+' var_exp {
   $$=$2;
 }
 | VAR { 
-  $$=ncap_var_init($1,((prs_sct*)prs_arg));
-  if ( $$==(var_sct*)NULL ) YYERROR;
+  $$=ncap_var_init($1,((prs_sct *)prs_arg));
+  if ( $$==(var_sct *)NULL ) YYERROR;
 }
 ;
 /* End Rules section */
@@ -521,9 +518,8 @@ ncap_aed_lookup(char *var_nm,char *att_nm,aed_sct **att_lst,int *nbr_att, bool u
 int
 yyerror(char *sng)
 {
-  /* Use eprokoke_skip  to skip error message after sending error */
-  /* message from yylex --  stop provoked error message from yyparse */
-  /* being printed */                           
+  /* Use eprokoke_skip to skip error message after sending error message from yylex
+     Stop provoked error message from yyparse being printed */
 
   static bool eprovoke_skip;
   

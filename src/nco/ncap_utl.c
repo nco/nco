@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.33 2002-01-16 15:33:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.34 2002-01-17 08:45:35 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -55,7 +55,6 @@ var_sct *
 ncap_var_init(char *var_nm,prs_sct *prs_arg)
 {
   /* Purpose: Initialize var structure, retrieve var values from disk */
-  
   int var_id;
   int rcd;
   int fl_id;
@@ -64,20 +63,20 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   /* Check output file for var */  
   rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
   
-  if( rcd == NC_NOERR ){
+  if(rcd == NC_NOERR ){
     fl_id=prs_arg->out_id;
   }else{
     /* Check input file for id */
     rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
-    if( rcd == NC_NOERR ){
+    if(rcd == NC_NOERR ){
       fl_id=prs_arg->in_id;
     }else{
-      (void)fprintf(stderr,"WARNING can't find %s in %s or %s\n",var_nm,prs_arg->fl_in,prs_arg->fl_out);     
+      (void)fprintf(stderr,"WARNING unable to find %s in %s or %s\n",var_nm,prs_arg->fl_in,prs_arg->fl_out);     
       return (var_sct*)NULL;
     }/* end else */
   } /* end else */
   
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"VAR: retriving %s from disk\n",var_nm);  
+  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"VAR: retrieving %s from disk\n",var_nm);  
   vara=var_fll(fl_id,var_id,var_nm,prs_arg->dmn,prs_arg->nbr_dmn_xtr);
   vara->nm=nco_malloc((strlen(var_nm)+1)*sizeof(char)); strcpy(vara->nm,var_nm);
   vara->tally=(long *)malloc(vara->sz*nco_typ_lng(NC_INT));
@@ -93,22 +92,21 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
 } /* end ncap_var_init */
 
 int 
-ncap_var_write(var_sct *var, prs_sct *prs_arg)
+ncap_var_write(var_sct *var,prs_sct *prs_arg)
 {
-  /* purpose: Define var in the output file and write the variables */
+  /* Purpose: Define variable in output file and write variable */
   int var_out_id;
   
   (void)nco_redef(prs_arg->out_id);
   
-  /* define variable */   
+  /* Define variable */   
   (void)nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
   /* Put missing value */  
-  if(var->has_mss_val)
-    (void)nco_put_att(prs_arg->out_id,var_out_id,"missing_value",var->type,1,var->mss_val.vp);
+  if(var->has_mss_val) (void)nco_put_att(prs_arg->out_id,var_out_id,"missing_value",var->type,1,var->mss_val.vp);
   (void)nco_enddef(prs_arg->out_id);
   
   /* Write variable */ 
-  if(var->nbr_dim == 0 ){
+  if(var->nbr_dim == 0){
     (void)nco_put_var1(prs_arg->out_id,var_out_id,0L,var->val.vp,var->type);
   }else{
     (void)nco_put_vara(prs_arg->out_id,var_out_id,var->srt,var->cnt,var->val.vp,var->type);
@@ -250,17 +248,16 @@ ncap_var_attribute_multiply(var_sct *var,parse_sct attribute)
 var_sct *
 ncap_var_attribute_power(var_sct *var_in,parse_sct attribute)
 {
-  /* purpose: raise to the power in attribute, each value in var */
-  /* All values converted to type double before operation        */
+  /* Purpose: Raise var to the power in attribute
+     All values converted to type double before operation */
   long idx;
   long sz;
   ptr_unn op1;
   var_sct *var;
-  /* convert attribute and var to type NC_FLOAT or leave if its a DOUBLE */
 
+  /* Promote attribute and var to NC_FLOAT */
   if(var_in->type < NC_FLOAT) var_in=var_conform_type(NC_FLOAT,var_in);
   var=var_dpl(var_in);
- 
   (void)ncap_attribute_conform_type(var->type,&attribute);
   
   op1=var->val;
@@ -268,13 +265,11 @@ ncap_var_attribute_power(var_sct *var_in,parse_sct attribute)
   (void)cast_void_nctype(var->type,&op1);
   if(var->has_mss_val) (void)cast_void_nctype(var->type,&(var->mss_val));
   
-  
   switch(var->type){ 
   case NC_DOUBLE: {
     double att_dpl=attribute.val.d;
     if(!var->has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]=pow(op1.dp[idx],att_dpl);
-    
     }else{
       double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
@@ -287,7 +282,6 @@ ncap_var_attribute_power(var_sct *var_in,parse_sct attribute)
     float att_flt=attribute.val.f;
     if(!var->has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]=powf(op1.fp[idx],att_flt);
-    
     }else{
       float mss_val_flt=*(var->mss_val.fp); /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
@@ -301,9 +295,7 @@ ncap_var_attribute_power(var_sct *var_in,parse_sct attribute)
 
   if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
   return var;
-  
 } /* end ncap_var_attribute_power */
-
 
 var_sct *
 ncap_var_function(var_sct *var_in, sym_sct *app)
@@ -314,23 +306,20 @@ ncap_var_function(var_sct *var_in, sym_sct *app)
   long sz;
   ptr_unn op1;
   var_sct *var;
-  /* convert  var to type NC_FLOAT or leave if its a DOUBLE */
 
+  /* Promote variable to NC_FLOAT */
   if(var_in->type < NC_FLOAT) var_in=var_conform_type(NC_FLOAT,var_in);
   var=var_dpl(var_in);
  
   op1=var->val;
   sz=var->sz;
-
   (void)cast_void_nctype(var->type,&op1);
   if(var->has_mss_val) (void)cast_void_nctype(var->type,&(var->mss_val));
-  
   
   switch(var->type){ 
   case NC_DOUBLE: {
     if(!var->has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]=(*(app->fnc))(op1.dp[idx]);
-    
     }else{
       double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
@@ -342,7 +331,6 @@ ncap_var_function(var_sct *var_in, sym_sct *app)
   case NC_FLOAT: {
     if(!var->has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]=(*(app->fncf))(op1.fp[idx]);
-    
     }else{
       float mss_val_flt=*(var->mss_val.fp); /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
@@ -356,9 +344,7 @@ ncap_var_function(var_sct *var_in, sym_sct *app)
 
   if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
   return var;
-  
 } /* end ncap_var_function */
-
 
 var_sct *
 ncap_var_attribute_add(var_sct *var,parse_sct attribute)
@@ -370,7 +356,6 @@ ncap_var_attribute_add(var_sct *var,parse_sct attribute)
   (void)var_attribute_add(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&attribute);
   
   return var_nsw;
-  
 } /* end ncap_var_attribute_add */
 
 var_sct *
@@ -390,8 +375,7 @@ var_sct *
 ncap_var_var_divide(var_sct *var_1,var_sct *var_2)
 /* var_sct *var_1: input variable structure containing first operand
    var_sct *var_2: input variable structure containing second operand
-   var_sct *ncap_var_divide(): output quotient of individual elements
-*/
+   var_sct *ncap_var_divide(): output quotient of individual elements */
 {
   /* Routine called by parser */
   var_sct *var_nsw;
@@ -406,7 +390,7 @@ ncap_var_var_divide(var_sct *var_1,var_sct *var_2)
 var_sct *
 ncap_var_attribute_divide(var_sct *var,parse_sct attribute)
 {
-  /* purpose: Divide each element of var by value in attribute */
+  /* Purpose: Divide each element of var by value in attribute */
   var_sct *var_nsw;
   var_nsw=var_dpl(var);
   (void)ncap_attribute_conform_type(var->type,&attribute);
@@ -418,7 +402,7 @@ ncap_var_attribute_divide(var_sct *var,parse_sct attribute)
 var_sct *
 ncap_var_attribute_modulus(var_sct *var,parse_sct attribute)
 {
-  /* purpose: var % attribute , Take the modulus of each element of var with the value in attribute */
+  /* Purpose: var % attribute, take modulus of each element of var with value in attribute */
   
   var_sct *var_nsw;
   var_nsw=var_dpl(var);
@@ -431,7 +415,7 @@ ncap_var_attribute_modulus(var_sct *var,parse_sct attribute)
 var_sct *
 ncap_var_abs(var_sct *var)
 {
-  /* purpose: Find the absolute value of each element of var */
+  /* Purpose: Find absolute value of each element of var */
   var_sct *var_nsw;
   var_nsw=var_dpl(var);
   (void)var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val);
@@ -446,8 +430,7 @@ var_attribute_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
 	int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
-        attribute: 
-     */
+        attribute: */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: multiply all values in op1 by value in attrib
@@ -1228,45 +1211,41 @@ ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 
   /* Get number of dimensions */
   (void)nco_inq(nc_id,&nbr_dim,(int *)NULL,(int *)NULL,(int *)NULL);
-
   /* ...for each dimension in input file... */
   for(idx_dim=0;idx_dim<nbr_dim;idx_dim++){
     /* ...see if it is a coordinate dimension... */
     (void)nco_inq_dimname(nc_id,idx_dim,dmn_nm);
-     
     rcd=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
     if(rcd == NC_NOERR){
       /* Is this coordinate already on extraction list? */
       for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
 	if(crd_id == xtr_lst[idx_var].id) {
-	  if(nbr_new_lst == 0) new_lst=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));      	
-            else new_lst=(nm_id_sct *)nco_realloc((void *)new_lst,(nbr_new_lst+1)*sizeof(nm_id_sct));
-      	    new_lst[nbr_new_lst].nm=(char *)strdup(dmn_nm);
-	    new_lst[nbr_new_lst++].id=crd_id;
-            break;
-        }
-        
+	  if(nbr_new_lst == 0) new_lst=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
+	  else new_lst=(nm_id_sct *)nco_realloc((void *)new_lst,(nbr_new_lst+1)*sizeof(nm_id_sct));
+	  new_lst[nbr_new_lst].nm=(char *)strdup(dmn_nm);
+	  new_lst[nbr_new_lst++].id=crd_id;
+	  break;
+        } /* end if */
       } /*end for */
     } /* end if */
   } /* end for */
 
   *nbr_xtr = nbr_new_lst;
-  
   return new_lst;
-  
 } /* end ncap_var_lst_crd_make() */
 
 void 
 ncap_initial_scan(prs_sct *prs_arg,char *spt_arg_cat, nm_id_sct** xtr_lst_a,int *nbr_lst_a,
 		  nm_id_sct** xtr_lst_b,int *nbr_lst_b,nm_id_sct** xtr_lst_c, int *nbr_lst_c)
 {
-  /* Purpose: Do a scan of the command script and return three lists  */
-  /* list a -- variables on the RHS which are present in the input file*/
-  /* list b -- variables on the LHS which are present in the input file*/
-  /* list c -- variables of attributes on the LHS which are present in the input file*/
+  /* Purpose: Scan command script and return three lists
+     list a -- variables on the RHS which are present in the input file
+     list b -- variables on the LHS which are present in the input file
+     list c -- variables of attributes on the LHS which are present in the input file */
   
-#include "ncap.tab.h"           /* TOKENS and YYSTYPE - produced by Bison */
-                                /* We need these because we are calling the scanner */
+/* We are calling scanner so get TOKENS and YYSTYPE produced by Bison */
+#include "ncap.tab.h"
+
   int i;                      
   int itoken;
   int n_lst_a=0;

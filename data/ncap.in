@@ -1,9 +1,10 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.9 2002-01-16 15:33:19 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.10 2002-01-17 08:45:35 zender Exp $
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 // Format of a valid ncap script:
 // C++ comment syntax
 // Statements end with semi-colons
 // Usage:
+// ncap -O -d lat,0 -d lon,0 -d lev,0 -D 1 -s "a9=three_dmn_var;" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
 // ncap -O -D 1 -s "a8[lat,lon,lev] = 1;" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
 // ncap -O -D 1 -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
 // ncks -H -v a5 -m ${HOME}/nco/data/foo.nc | m

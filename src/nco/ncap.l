@@ -1,5 +1,5 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.23 2002-01-16 15:33:20 zender Exp $ -*-C-*- */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.24 2002-01-17 08:45:35 zender Exp $ -*-C-*- */
 
   /* Purpose: Token generator for ncap parser */
 
@@ -107,7 +107,7 @@ static bool RHS;
   char *bfr;
                 
   bfr=nco_malloc(yyleng*sizeof(char));
-  strcpy( bfr,&yytext[1]);
+  strcpy(bfr,&yytext[1]);
   bfr[yyleng-2]='\0';
   
   /* Replace C-language escape codes with actual byte values */
@@ -165,7 +165,7 @@ static bool RHS;
   /* Short */
   short sht_tkn;
   if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a short %s\n",yytext); 	
-  if (sscanf((char*)yytext, "%hd", &sht_tkn) != 1){
+  if(sscanf((char*)yytext,"%hd",&sht_tkn) != 1){
     sprintf(err_sng,"bad short constant: %s",(char*)yytext);
     yyerror(err_sng);
   }
@@ -380,7 +380,12 @@ pow/[ ]*\(     {return POWER;}
   /* Fill in dimension structure for all extracted dimensions */
   dmn=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
   for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) dmn[dmn_idx]=dmn_fll(prs_arg->in_id,dmn_lst[dmn_idx].id,dmn_lst[dmn_idx].nm);
-
+  
+  /* This variable now has a private dimension list, dmn
+     Dimension list holds, in order, dimensions user wants output to have
+     Global dimension in prs_sct holds list all disk variable dimensions
+     Use this local dimension list (defined on LHS) to cast all ranks on RHS 
+     Casting first expression on RHS is just as good */
   if(RHS){
     lvalp->vara=var_nm;
     return(VAR);
@@ -428,15 +433,12 @@ pow/[ ]*\(     {return POWER;}
 
 bool
 yywrap()
-/* 
-   bool yywrap(): output flag whether lexer input is finished
- */
 {
   /* Purpose: Routine to replace library-defined yywrap() 
      yywrap() is called when YY_INPUT returns EOF
      Default is to return true (one) when called---this terminates scanner 
-     Returning false (zero) means there is more to scan, and the input has
-     been redirected to a new source, e.g., yyin points to a new file. */
+     Returning false (zero) means there is more to scan, and input has
+     been redirected to new source, e.g., yyin points to new file. */
  return 1;
 } /* end yywrap() */
 

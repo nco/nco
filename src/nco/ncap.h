@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.18 2002-01-16 15:33:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.19 2002-01-17 08:45:35 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -48,7 +48,7 @@
 typedef struct { /* sym_sct */
   char *nm;
   double (*fnc)(double);
-  float  (*fncf)(float);
+  float (*fncf)(float);
 } sym_sct;
 
 typedef struct { /* parse_sct */
@@ -84,7 +84,7 @@ extern int yyerror(char *sng);
 extern nm_id_sct *var_lst_copy(nm_id_sct *,int);
 extern nm_id_sct *var_lst_add(int,nm_id_sct *,int *,nm_id_sct *,int);
 extern nm_id_sct *var_lst_sub(int,nm_id_sct *,int *,nm_id_sct *,int);
-nm_id_sct * ncap_var_lst_crd_make(int,nm_id_sct *,int *);
+extern nm_id_sct *ncap_var_lst_crd_make(int,nm_id_sct *,int *);
 extern parse_sct ncap_attribute_abs(parse_sct);
 extern parse_sct ncap_attribute_calc(parse_sct,char,parse_sct);
 extern parse_sct ncap_ptr_unn_2_attribute(nc_type,ptr_unn);
