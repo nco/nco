@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.133 2002-12-13 23:38:28 rorik Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.134 2002-12-14 00:46:02 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -4975,7 +4975,7 @@ Migration to netCDF3 API.
 @command{ncap} parser, lexer, and I/O.
 Various hacks.
 @item Rorik Peterson
-Autotool build support
+Autotool build support, long options
 @item Bill Kocik
 Memory management
 @item Len Makin
