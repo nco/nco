@@ -1,3 +1,4 @@
+// $Header: /data/zender/nco_20150216/nco/bm/gne_exp.cdl,v 1.2 2005-03-23 01:06:03 mangalam Exp $
 // Purpose: CDL file to generate a netCDF file that approximates a gene expression data set.
 
 // Usage:
