@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.87 2005-02-26 02:24:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.88 2005-03-27 00:42:31 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -90,6 +90,7 @@ main(int argc,char **argv)
   char **ntp_lst_in;
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
+  char *cmd_ln;
   char *fl_in=NULL;
   char *fl_in_1;
   char *fl_in_2;
@@ -98,12 +99,12 @@ main(int argc,char **argv)
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
-  char *time_bfr_srt;
-  char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
+  char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
+  char *time_bfr_srt;
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.87 2005-02-26 02:24:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.87 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.88 2005-03-27 00:42:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.88 $";
   const char * const opt_sht_lst="ACcD:d:Fhi:l:Oo:p:rRv:xw:Z-:";
   
   dmn_sct **dim;
@@ -231,7 +232,8 @@ main(int argc,char **argv)
       break;
     case 'i':
       /* Name of variable to guide interpolation. Default is none */
-      ntp_lst_in=lst_prs(optarg,",",&nbr_ntp);
+      optarg_lcl=(char *)strdup(optarg);
+      ntp_lst_in=lst_prs(optarg_lcl,",",&nbr_ntp);
       if(nbr_ntp > 2){
 	(void)fprintf(stdout,"%s: ERROR too many arguments to -i\n",prg_nm_get());
 	(void)nco_usg_prn();
@@ -243,7 +245,7 @@ main(int argc,char **argv)
       CMD_LN_NTP_WGT=False;
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
-      fl_pth_lcl=optarg;
+      fl_pth_lcl=(char *)strdup(optarg);
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -252,7 +254,7 @@ main(int argc,char **argv)
       fl_out=(char *)strdup(optarg);
       break;
     case 'p': /* Common file path */
-      fl_pth=optarg;
+      fl_pth=(char *)strdup(optarg);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
@@ -264,12 +266,14 @@ main(int argc,char **argv)
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
-      (void)nco_lst_comma2hash(optarg);
-      var_lst_in=lst_prs(optarg,",",&nbr_xtr);
+      optarg_lcl=(char *)strdup(optarg);
+      (void)nco_lst_comma2hash(optarg_lcl);
+      var_lst_in=lst_prs(optarg_lcl,",",&nbr_xtr);
       break;
     case 'w':
       /* Weight(s) for interpolation.  Default is wgt_val_1=wgt_val_2=0.5 */
-      ntp_lst_in=lst_prs(optarg,",",&nbr_ntp);
+      optarg_lcl=(char *)strdup(optarg);
+      ntp_lst_in=lst_prs(optarg_lcl,",",&nbr_ntp);
       if(nbr_ntp > 2){
 	(void)fprintf(stdout,"%s: ERROR too many arguments to -w\n",prg_nm_get());
 	(void)nco_usg_prn();

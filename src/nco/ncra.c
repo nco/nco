@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.127 2005-02-26 02:24:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.128 2005-03-27 00:42:31 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -114,10 +114,11 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type Option y */
   char *nco_pck_plc_sng=NULL_CEWI; /* [sng] Packing policy Option P */
+  char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.127 2005-02-26 02:24:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.127 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.128 2005-03-27 00:42:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.128 $";
   const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:Z-:";
 
   dmn_sct **dim;
@@ -263,10 +264,11 @@ main(int argc,char **argv)
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
-      fl_pth_lcl=optarg;
+      fl_pth_lcl=(char *)strdup(optarg);
       break;
     case 'n': /* NINTAP-style abbreviation of files to average */
-      fl_lst_abb=lst_prs(optarg,",",&abb_arg_nbr);
+      optarg_lcl=(char *)strdup(optarg);
+      fl_lst_abb=lst_prs(optarg_lcl,",",&abb_arg_nbr);
       if(abb_arg_nbr < 1 || abb_arg_nbr > 5){
 	(void)fprintf(stdout,gettext("%s: ERROR Incorrect abbreviation for file list\n"),prg_nm);
 	(void)nco_usg_prn();
@@ -280,7 +282,7 @@ main(int argc,char **argv)
       fl_out=(char *)strdup(optarg);
       break;
     case 'p': /* Common file path */
-      fl_pth=optarg;
+      fl_pth=(char *)strdup(optarg);
       break;
     case 'P': /* Packing policy */
       nco_pck_plc_sng=(char *)strdup(optarg);
@@ -299,15 +301,17 @@ main(int argc,char **argv)
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
-      (void)nco_lst_comma2hash(optarg);
-      var_lst_in=lst_prs(optarg,",",&nbr_xtr);
+      optarg_lcl=(char *)strdup(optarg);
+      (void)nco_lst_comma2hash(optarg_lcl);
+      var_lst_in=lst_prs(optarg_lcl,",",&nbr_xtr);
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
     case 'Y': /* Pseudonym */
       /* Call prg_prs to reset pseudonym */
-      prg_nm=prg_prs(optarg,&prg);
+      optarg_lcl=(char *)strdup(optarg);
+      prg_nm=prg_prs(optarg_lcl,&prg);
       break;
     case 'y': /* Operation type */
       nco_op_typ_sng=(char *)strdup(optarg);

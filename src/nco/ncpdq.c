@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.60 2005-02-26 02:24:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.61 2005-03-27 00:42:31 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -30,9 +30,9 @@
    Irvine, CA 92697-3100 */
 
 /* Usage:
-   ncpdq -O -D 3 -a lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-   ncpdq -O -D 3 -a lon,lev,lat -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-   ncpdq -O -D 3 -a lon,time -x -v three_double_dmn ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+   ncpdq -O -D 3 -a lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -P ~/foo.nc
+   ncpdq -O -D 3 -a lon,lev,lat -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -P ~/foo.nc
+   ncpdq -O -D 3 -a lon,time -x -v three_double_dmn ~/nco/data/in.nc ~/foo.nc;ncks -P ~/foo.nc
    ncpdq -O -D 3 -P all_new ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -P all_xst ~/nco/data/in.nc ~/foo.nc
    ncpdq -O -D 3 -P xst_new ~/nco/data/in.nc ~/foo.nc
@@ -98,9 +98,9 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *nco_pck_plc_sng=NULL_CEWI; /* [sng] Packing policy Option P */
   char *nco_pck_map_sng=NULL_CEWI; /* [sng] Packing map Option M */
+  char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *rec_dmn_nm_in=NULL; /* [sng] Record dimension name, original */
   char *rec_dmn_nm_out=NULL; /* [sng] Record dimension name, re-ordered */
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.60 2005-02-26 02:24:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.60 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.61 2005-03-27 00:42:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.61 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -235,7 +235,8 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'a': /* Re-order dimensions */
-      dmn_rdr_lst_in=lst_prs((char *)strdup(optarg),",",&dmn_rdr_nbr);
+      optarg_lcl=(char *)strdup(optarg);
+      dmn_rdr_lst_in=lst_prs(optarg_lcl,",",&dmn_rdr_nbr);
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
       EXTRACT_ASSOCIATED_COORDINATES=False;
@@ -357,7 +358,10 @@ main(int argc,char **argv)
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
+    /* Dimension list no longer needed */
+    dmn_lst[idx].nm=(char *)nco_free(dmn_lst[idx].nm);
   } /* end loop over idx */
+  if(dmn_lst != NULL) dmn_lst=(nm_id_sct *)nco_free(dmn_lst);
   
   /* Merge hyperslab limit information into dimension structures */
   if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);

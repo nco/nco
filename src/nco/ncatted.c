@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.75 2005-02-14 02:14:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.76 2005-03-27 00:42:31 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.75 2005-02-14 02:14:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.75 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.76 2005-03-27 00:42:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.76 $";
   const char * const opt_sht_lst="Aa:D:hl:Oo:p:RrZ-:";
   
   extern char *optarg;
@@ -201,7 +201,7 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'a': /* Copy argument for later processing */
-      aed_arg[nbr_aed]=optarg;
+      aed_arg[nbr_aed]=(char *)strdup(optarg);
       nbr_aed++;
       break;
     case 'D': /* Debugging level. Default is 0. */
@@ -211,7 +211,7 @@ main(int argc,char **argv)
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
-      fl_pth_lcl=optarg;
+      fl_pth_lcl=(char *)strdup(optarg);
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -220,7 +220,7 @@ main(int argc,char **argv)
       fl_out=(char *)strdup(optarg);
       break;
     case 'p': /* Common file path */
-      fl_pth=optarg;
+      fl_pth=(char *)strdup(optarg);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;

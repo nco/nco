@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.72 2005-02-14 02:14:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.73 2005-03-27 00:42:31 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -85,8 +85,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.72 2005-02-14 02:14:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.72 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.73 2005-03-27 00:42:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.73 $";
   const char * const opt_sht_lst="a:D:d:hl:Oo:p:rv:Z-:";
 
   extern char *optarg;
@@ -149,21 +149,21 @@ main(int argc,char **argv)
       FORCE_APPEND=!FORCE_APPEND;
       break;
     case 'a': /* Copy argument for later processing */
-      att_rnm_arg[nbr_att_rnm]=optarg;
+      att_rnm_arg[nbr_att_rnm]=(char *)strdup(optarg);
       nbr_att_rnm++;
       break;
     case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
     case 'd': /* Copy argument for later processing */
-      dmn_rnm_arg[nbr_dmn_rnm]=optarg;
+      dmn_rnm_arg[nbr_dmn_rnm]=(char *)strdup(optarg);
       nbr_dmn_rnm++;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
-      fl_pth_lcl=optarg;
+      fl_pth_lcl=(char *)strdup(optarg);
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -172,7 +172,7 @@ main(int argc,char **argv)
       fl_out=(char *)strdup(optarg);
       break;
     case 'p': /* Common file path */
-      fl_pth=optarg;
+      fl_pth=(char *)strdup(optarg);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
@@ -183,7 +183,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case 'v': /* Copy argument for later processing */
-      var_rnm_arg[nbr_var_rnm]=optarg;
+      var_rnm_arg[nbr_var_rnm]=(char *)strdup(optarg);
       nbr_var_rnm++;
       break;
     case '?': /* Print proper usage */

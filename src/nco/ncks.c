@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.118 2005-02-25 05:21:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.119 2005-03-27 00:42:31 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -96,22 +96,23 @@ main(int argc,char **argv)
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
-  char **var_lst_in=NULL;
   char **fl_lst_abb=NULL; /* Option a */
   char **fl_lst_in;
+  char **var_lst_in=NULL;
+  char *cmd_ln;
   char *dlm_sng=NULL;
-  char *fl_in=NULL;
-  char *fl_pth_lcl=NULL; /* Option l */
-  char *lmt_arg[NC_MAX_DIMS];
   char *fl_bnr=NULL; /* [sng] Unformatted binary output file */
+  char *fl_in=NULL;
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
+  char *fl_pth_lcl=NULL; /* Option l */
+  char *lmt_arg[NC_MAX_DIMS];
+  char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *time_bfr_srt;
-  char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.118 2005-02-25 05:21:15 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.118 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.119 2005-03-27 00:42:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.119 $";
   const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   char *opt_crr; /* [sng] String representation of current long-option name */
@@ -269,7 +270,7 @@ main(int argc,char **argv)
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
-      fl_pth_lcl=optarg;
+      fl_pth_lcl=(char *)strdup(optarg);
       break;
     case 'm': /* Toggle printing variable metadata to screen */
       PRN_VAR_METADATA_TGL=True;
@@ -291,7 +292,7 @@ main(int argc,char **argv)
       PROCESS_ASSOCIATED_COORDINATES=!PROCESS_ASSOCIATED_COORDINATES;
       break;
     case 'p': /* Common file path */
-      fl_pth=optarg;
+      fl_pth=(char *)strdup(optarg);
       break;
     case 'q': /* [flg] Turn off all printing to screen */
       PRN_QUIET=True; /* [flg] Turn off all printing to screen */
@@ -309,15 +310,16 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case 's': /* User specified delimiter string for printed output */
-      dlm_sng=optarg;
+      dlm_sng=(char *)strdup(optarg);
       break;
     case 'u': /* Toggle printing dimensional units */
       PRN_DMN_UNITS_TGL=True;
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
-      (void)nco_lst_comma2hash(optarg);
-      var_lst_in=lst_prs(optarg,",",&nbr_xtr);
+      optarg_lcl=(char *)strdup(optarg);
+      (void)nco_lst_comma2hash(optarg_lcl);
+      var_lst_in=lst_prs(optarg_lcl,",",&nbr_xtr);
        break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;

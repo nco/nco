@@ -1,5 +1,12 @@
 2005-03-26  charlie  <zender@uci.edu>
 
+	* Guaranteed system memory (optarg) reaches no further than
+	command-line parsing in all operators. This has side effect
+	of temporarily increasing un-free'd memory in programs, because,
+	formerly, valgrind would not count that memory against NCO because
+	it was system memory (optarg). Now NCO owns it and needs to free
+	it. 
+
 	* Planning to eliminate all remaining memory leaks from NCO
 	Un-free'd strings cause the most memory leaks (I think)
 	When NCO originated in 1993-1994 I was zealous about memory usage. 
@@ -14,12 +21,19 @@
 	fl_pth=optarg;
         dlm_sng=optarg;
         var_lst_in=lst_prs(optarg,",",&nbr_xtr);
-
+	The first two or three lines do no cause much problem because
+	those strings are not duplicated much or contained in structures
+	and so never lead to situations that valgrind count against NCO
+	Using system memory for var_lst_in, however, causes problems
+	
 	Strategy:
 	1. Replace all such fragments in NCO by strdup()'d memory
 	2. Follow their code paths and free() these strings when possible
 	3. Add block to free all pointers at end of code (already in ncpdq)	
 	4. Modify destructors (e.g., nco_var_free()) to free strings
+	
+	Initial work to free memory will be conducted in ncpdq
+	Implement same methods in other operators once ncpdq is leak-free...
 	
 2005-03-25  charlie  <zender@uci.edu>
 

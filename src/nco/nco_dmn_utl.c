@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.16 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.17 2005-03-27 00:42:31 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -200,12 +200,6 @@ nco_dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input
   /* We now have final list of dimensions to extract. Phew. */
   
   /* Free unused space in output dimension list */
-  /* valgrind fxm: 20040814 valgrind reports: Are obsolete names free()'d before realloc()?
-     ==31046== 112 bytes in 1 blocks are definitely lost in loss record 2 of 6
-     ==31046==    at 0x1B9079FF: realloc (vg_replace_malloc.c:197)
-     ==31046==    by 0x8056084: nco_realloc (nco_mmr.c:235)
-     ==31046==    by 0x8051490: nco_dmn_lst_ass_var (nco_dmn_utl.c:203)
-     ==31046==    by 0x804A057: main (ncpdq.c:327) */
   dmn=(nm_id_sct *)nco_realloc((void *)dmn,*nbr_dmn*sizeof(nm_id_sct));
   
   return dmn;
