@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.34 2001-11-16 12:27:14 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.35 2001-11-29 16:08:37 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -85,8 +85,8 @@ lex.yy.c:1060: warning: `yyunput' defined but not used
 #endif /* not AIX */
 #endif /* not LINUX */
 
-
-
+long int line_number;    /* line number incremented in ncap.l */
+char *fl_spt_global;         /* instructions file */
 
 int 
 main(int argc,char **argv)
@@ -115,15 +115,15 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
   char *spt_arg[73];
-  char *spt_arg_cat;
+  char *spt_arg_cat=NULL;
   char *opt_sng;
   char *fl_out;
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.34 2001-11-16 12:27:14 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.34 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.35 2001-11-29 16:08:37 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.35 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -134,7 +134,6 @@ main(int argc,char **argv)
   
   int idx;
   int in_id;  
-  int int_foo;
   int out_id;  
   int nbr_abb_arg=0;
   int nbr_dmn_fl;
@@ -144,20 +143,29 @@ main(int argc,char **argv)
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
+  int nbr_xtr_2=0;
   int nbr_dmn_xtr;
   int nbr_fl=0;
+  int nbr_lst_a=0;
+  int nbr_lst_b=0;
+  int nbr_lst_c=0;
   int opt;
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int slen;
+  int var_id;
   int spt_arg_len;
   int nbr_att=0;    /* Contains the size of att_lst */ 
 
   lmt_sct *lmt=NULL_CEWI;
   
   nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
-  
+  nm_id_sct *xtr_lst=NULL;
+  nm_id_sct *xtr_lst_2=NULL;
+ 
+  nm_id_sct *xtr_lst_a=NULL;
+  nm_id_sct *xtr_lst_b=NULL;
+  nm_id_sct *xtr_lst_c=NULL;
   time_t clock;
   
   var_sct **var;
@@ -171,7 +179,6 @@ main(int argc,char **argv)
                          /* Can be realloced in yyparse */
   prs_sct prs_arg;
 
-  
  
     /* Start the clock and save the command line */ 
   cmd_ln=cmd_ln_sng(argc,argv);
@@ -182,44 +189,11 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  while(1){
-    int opt_idx=0;
 
-    static struct option opt_long[] =
-      {
-	/* The option structure is {char *name,int has_arg,int *flag,int val} 
-	   has_arg is compared to enum _argtype{no_argument,required_argument,optional_argument}, 
-	   flag points to a variable that gets set to val whenever the name option is set.
-	   For long options that have a zero flag field, getopt() returns the contents of val.
-	 */
-	{"debug",1,0,'D'},
-	{"dbg_lvl",1,0,'D'},
-	{"output",1,0,'o'},
-	{"overwrite",0,0,'O'},
-	{"script",1,0,'S'},
-	{"version",0,0,'r'},
-	{"verbose",0,0,'D'},
-	/* The last option must have a name of "0" to signal to getopt_long() to stop processing */
-	{0,0,0,0}
-      };
-    
-    opt_sng="ACcD:d:Fhl:n:Op:rs:S:Rv:x";
-    opt=getopt_long_only(argc,argv,opt_sng,opt_long,&opt_idx);
-    
-    /* Is it time to parse the positional arguments yet? */
-    if(opt == EOF) break;
-    
-    switch(opt){
-    case 0:
-      (void)fprintf(stderr,"option %s",opt_long[opt_idx].name);
-      if(optarg) (void)fprintf(stderr," with arg %s",optarg);
-      (void)fprintf(stderr,"\n");
-
-      if(!strcmp(opt_long[opt_idx].name,"debug")){
-	if(optarg) dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
-	 (void)fprintf(stderr,"dbg_lvl = %d\n",dbg_lvl);
-       } /* end if */
-      break;
+  opt_sng="ACcD:d:Fhl:n:Op:r:s:S:v:x";
+  
+ while( (opt=getopt(argc,argv,opt_sng))!= EOF){
+   switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
@@ -268,13 +242,7 @@ main(int argc,char **argv)
       exit(EXIT_SUCCESS);
       break;
     case 's': /* Copy command script for later processing */
-      
-      /* append a ';' char to the argument if it is not present */
-      slen = strlen(optarg);
-      spt_arg[nbr_spt] = malloc((slen +2)*sizeof(char));
-      strcpy(spt_arg[nbr_spt],optarg);
-      if( optarg[slen-1] != ';') strcat(spt_arg[nbr_spt],";");
-      nbr_spt++;
+      spt_arg[nbr_spt++]= strdup(optarg);
       break;
     case 'S': /* Read command script from file rather than from command line */
       fl_spt=optarg;
@@ -282,7 +250,7 @@ main(int argc,char **argv)
     case 'v': /* Variables to extract/exclude */
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
-    case 'x': /* Exclude rather than extract variables specified with -v */
+    case 'x': /* Exclude rather than extractvariables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
     default: /* Print proper usage */
@@ -292,13 +260,22 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
   
-  /* Process positional arguments */
-  if(optind < argc){
-    int_foo=optind;
-    (void)fprintf(stderr,"non-option ARGV-elements: ");
-    while(int_foo < argc) (void)fprintf(stderr,"%s ",argv[int_foo++]);
-    (void)fprintf(stderr,"\n");
-  } /* end if */
+  /* append the string  ";\n" to the command-sript args and then concatenate them */
+
+  for(idx = 0 ; idx < nbr_spt ; idx++){
+    slen = strlen (spt_arg[idx]);
+    if(idx == 0){
+      spt_arg_cat = nco_malloc(slen+3);
+      strcpy(spt_arg_cat,spt_arg[idx]);
+      strcat(spt_arg_cat,";\n");
+      spt_arg_len = slen + 3;
+      } else { 
+      spt_arg_len+=slen+2;
+      spt_arg_cat = nco_realloc(spt_arg_cat,spt_arg_len);
+      strcat(spt_arg_cat,spt_arg[idx]);
+      strcat(spt_arg_cat,";\n");
+      } /* end else */
+  } /* end if */    
 
   /* Process positional arguments and fill in filenames */
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
@@ -312,6 +289,25 @@ main(int argc,char **argv)
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
+  
+  /* Create three lists of variables    */
+  /* list a variables on the RHS of an = sign    */
+  /* list b variables on the LHS                 */
+  /* list c variables of attributes on the LHS   */
+  /* All the variables are present in the input file */
+
+  prs_arg.fl_in=fl_in;
+  prs_arg.in_id=in_id;
+  prs_arg.fl_out=NULL;
+  prs_arg.out_id=-1;
+  prs_arg.fl_spt = fl_spt;
+  prs_arg.att_lst = att_lst;
+  prs_arg.nbr_att =&nbr_att;
+  prs_arg.dim=dim;
+  prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
+  prs_arg.inital_scan = True;
+  
+  (void)ncap_initial_scan(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c, &nbr_lst_c);
 
   /* Get number of variables, dimensions, and record dimension ID of input file */
   rcd=nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
@@ -321,6 +317,12 @@ main(int argc,char **argv)
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
+  
+  /* now add list c to the extraction list  */
+  if( nbr_lst_c >0)  xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_c,nbr_lst_c);
+
+  /* now add list a to the extraction list   */
+  if( nbr_lst_a >0 ) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
 
   /* Add all coordinate variables to extraction list */
   if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
@@ -331,12 +333,23 @@ main(int argc,char **argv)
   /* Remove record coordinate, if any, from extraction list */
   if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
 
-  /* Finally, heapsort extraction list by variable ID for fastest I/O */
+ /* Finally, heapsort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
-    
-  /* We now have final list of variables to extract. Phew. */
-  /* Not! */
 
+
+  /* Make a copy of the list for later */
+  xtr_lst_2 = var_lst_copy(xtr_lst,nbr_xtr);
+  nbr_xtr_2 = nbr_xtr;
+
+  /* now subtract  list a from the copied list   */
+  if( nbr_lst_a >0 ) xtr_lst_2=var_lst_sub(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_a,nbr_lst_a);
+  /* New subtract list b  */
+  if( nbr_lst_b >0)  xtr_lst_2=var_lst_sub(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
+ 
+ /* Finally, heapsort extraction list by variable ID for fastest I/O */
+  if(nbr_xtr_2 > 1) xtr_lst_2=lst_heapsort(xtr_lst_2,nbr_xtr_2,False);
+
+     
   /* Find coordinate/dimension values associated with user-specified limits */
   for(idx=0;idx<lmt_nbr;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
   
@@ -360,11 +373,12 @@ main(int argc,char **argv)
   /* Is this an NCAR CSM-format history tape? */
   NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
 
+
   /* Fill in variable structure list for all extracted variables */
-  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
-  var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
-  for(idx=0;idx<nbr_xtr;idx++){
-    var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
+  var=(var_sct **)nco_malloc(nbr_xtr_2*sizeof(var_sct *));
+  var_out=(var_sct **)nco_malloc(nbr_xtr_2*sizeof(var_sct *));
+  for(idx=0;idx<nbr_xtr_2;idx++){
+    var[idx]=var_fll(in_id,xtr_lst_2[idx].id,xtr_lst_2[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dpl(var[idx]);
     (void)var_xrf(var[idx],var_out[idx]);
     (void)var_dmn_xrf(var_out[idx]);
@@ -372,7 +386,7 @@ main(int argc,char **argv)
 
   /* NB: ncap is not suited for var_lst_divide() */
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+    (void)var_lst_divide(var,var_out,nbr_xtr_2,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
   fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
@@ -382,9 +396,21 @@ main(int argc,char **argv)
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
-    (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
+  (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
-    nco_enddef(out_id);
+
+  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr_2,(dmn_sct **)NULL,0);
+  //(void)var_dfn(in_id,fl_out,out_id,var_fix,nbr_var_fix,(dmn_sct **)NULL,0);
+  
+  /* Turn off default filling behavior to enhance efficiency */
+  rcd=nc_set_fill(out_id,NC_NOFILL,(int *)NULL);
+  
+  /* Take output file out of define mode */
+  rcd=nco_enddef(out_id);
+  
+  /* Copy variable data for non-processed variables */
+  (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
+  //(void)var_val_cpy(in_id,out_id,var_out,nbr_xtr_2);
 
   /* Set arguments to parser */
   prs_arg.fl_in=fl_in;
@@ -394,29 +420,21 @@ main(int argc,char **argv)
   prs_arg.fl_spt = fl_spt;
   prs_arg.att_lst = att_lst;
   prs_arg.nbr_att =&nbr_att;
-  prs_arg.dim=dim;
+  prs_arg.dim=dmn_out;
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
+  prs_arg.inital_scan = False;
 
   if(fl_spt == NULL){
     if(nbr_spt == 0){
       (void)fprintf(stderr,"%s: ERROR must supply derived field scripts\n",prg_nm_get());
       exit(EXIT_FAILURE);
     } /* end if */
-    for(idx=0;idx<nbr_spt;idx++){
-      if(dbg_lvl > 0) (void)fprintf(stderr,"spt_arg[%d]= %s\n",idx,spt_arg[idx]);
-      /*  Concatenate all the arguments into one string */
-      slen = strlen(spt_arg[idx]);
-      if (idx == 0) { 
-       spt_arg_cat = nco_malloc((slen+1)*sizeof(char));
-       strcpy(spt_arg_cat,spt_arg[idx]);
-       spt_arg_len=slen+1;
-       }else{
-	 spt_arg_len+=slen;
-	 spt_arg_cat = nco_realloc(spt_arg_cat,spt_arg_len*sizeof(char)); 
-	 strcat(spt_arg_cat,spt_arg[idx]); 
-       }
-       
-    } /* end for */
+   
+    if(dbg_lvl > 0) 
+       for(idx = 0 ; idx< nbr_spt ;idx ++)
+       (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
+    fl_spt_global = "Arg";
+    line_number = 1;
     yy_scan_string(spt_arg_cat);
     rcd=yyparse((void *)&prs_arg);
   }else{
@@ -426,26 +444,25 @@ main(int argc,char **argv)
       exit(EXIT_FAILURE);
     } /* end if */
     /* Invoke parser on script file */
+    fl_spt_global = fl_spt;
+    line_number = 1;
     rcd=yyparse((void *)&prs_arg);
   } /* end else */
   /* Define dimensions in output file */
 
-  nco_redef(out_id);
-  /* Define variables in output file, and copy their attributes */
-  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
-
-  /* Turn off default filling behavior to enhance efficiency */
-  rcd=nc_set_fill(out_id,NC_NOFILL,(int *)NULL);
+   
+  rcd = nco_redef(out_id);
   
-  /* Take output file out of define mode */
-  rcd=nco_enddef(out_id);
+  /* Copy new attributes overwriting old ones */
+  for( idx =0 ; idx < nbr_att ; idx++) {
+    rcd = nco_inq_varid_flg(out_id ,att_lst[idx]->var_nm,&var_id);
+    if( rcd == NC_NOERR) {
+      att_lst[idx]->mode = aed_overwrite;
+      (void)aed_prc(out_id,var_id,*att_lst[idx]);
+    } /* end if */
+  } /* end for */
   
-  /* Zero start vectors for all output variables */
-  (void)var_srt_zero(var_out,nbr_xtr);
-
-  /* Copy variable data for non-processed variables */
-  (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
-  
+  rcd = nco_enddef(out_id);
   /* Close input netCDF file */
   rcd=nco_close(in_id);
   
