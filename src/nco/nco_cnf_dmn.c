@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.24 2004-07-29 23:14:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.25 2004-07-29 23:18:26 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -659,9 +659,8 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   } /* endif dbg */
   
   /* Is identity re-ordering requested? */
-  for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
-    if(dmn_out[dmn_out_idx]->xrf != dmn_in[dmn_out_idx]) break;
-  } /* end loop over dmn_out */
+  for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
+    if(dmn_out_idx != dmn_idx_out_in[dmn_out_idx]) break;
   if(dmn_out_idx == dmn_out_nbr) IDENTITY_REORDER=True;
   if(IDENTITY_REORDER){
     (void)fprintf(stdout,"%s: INFO %s re-ordering is identity transformation for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
