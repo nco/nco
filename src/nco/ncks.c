@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.62 2002-06-16 05:12:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.63 2002-06-16 05:49:41 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.62 2002-06-16 05:12:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.62 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.63 2002-06-16 05:49:41 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.63 $";
   
   extern char *optarg;
   
@@ -318,20 +318,20 @@ main(int argc,char **argv)
     } /* end if */
     
     /* Print all global attributes */
-    (void)prn_att(in_id,NC_GLOBAL);
+    (void)nco_prn_att(in_id,NC_GLOBAL);
   } /* endif OUTPUT_GLOBAL_METADATA */
   
   if(OUTPUT_VARIABLE_METADATA){
     for(idx=0;idx<nbr_xtr;idx++){
       /* Print variable's definition */
-      (void)prn_var_dfn(in_id,xtr_lst[idx].nm);
+      (void)nco_prn_var_dfn(in_id,xtr_lst[idx].nm);
       /* Print variable's attributes */
-      (void)prn_att(in_id,xtr_lst[idx].id);
+      (void)nco_prn_att(in_id,xtr_lst[idx].id);
     } /* end loop over idx */
   } /* end if OUTPUT_VARIABLE_METADATA */
   
   if(OUTPUT_DATA){
-    for(idx=0;idx<nbr_xtr;idx++) (void)prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_STYLE,PRINT_DIMENSIONAL_UNITS,PRN_DMN_IDX_CRD_VAL);
+    for(idx=0;idx<nbr_xtr;idx++) (void)nco_prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_STYLE,PRINT_DIMENSIONAL_UNITS,PRN_DMN_IDX_CRD_VAL);
   } /* end if OUTPUT_DATA */
   
   /* Close input netCDF file */

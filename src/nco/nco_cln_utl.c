@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.4 2002-06-07 03:22:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.5 2002-06-16 05:49:41 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -9,7 +9,7 @@
 #include "nco_cln_utl.h" /* Calendar utilities */
 
 int /* O [nbr] Number of days to end of month */
-nd2endm /* [fnc] Compute number of days to end of month */
+nco_nd2endm /* [fnc] Compute number of days to end of month */
 (const int mth, /* I [mth] Month */
  const int day) /* I [day] Current day */
 {
@@ -21,17 +21,17 @@ nd2endm /* [fnc] Compute number of days to end of month */
   int mdays[]={31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
   if(mth < 1 || mth > 12 || day < 0){
-    (void)fprintf(stdout,"%s: ERROR nd2endm() reports mth = %d, day = %d\n",prg_nm_get(),mth,day);
+    (void)fprintf(stdout,"%s: ERROR nco_nd2endm() reports mth = %d, day = %d\n",prg_nm_get(),mth,day);
     nco_exit(EXIT_FAILURE);
   } /* end if */
 
   nbr_day_2_mth_end=mdays[mth-1]-day;
 
   return nbr_day_2_mth_end;
-} /* nd2endm */
+} /* nco_nd2endm */
 
 nco_long /* O [YYMMDD] Date a specified number of days from input date */
-newdate /* [fnc] Compute date a specified number of days from input date */
+nco_newdate /* [fnc] Compute date a specified number of days from input date */
 (const nco_long date, /* I [YYMMDD] Date */
  const long day_srt) /* I [day] Days ahead of input date */
 {
@@ -71,7 +71,7 @@ newdate /* [fnc] Compute date a specified number of days from input date */
     for(mth_idx=mth_srt;mth_idx<=mth_srt+12L;mth_idx++){
       mth_tmp=mth_idx;
       if(mth_idx > 12L) mth_tmp=mth_idx-12L;
-      day_nbr_2_eom=(long)nd2endm(mth_tmp,day_crr);
+      day_nbr_2_eom=(long)nco_nd2endm(mth_tmp,day_crr);
       if(day_ncr > day_nbr_2_eom){
 	mth_crr++;
 	if(mth_crr > 12L){
@@ -118,5 +118,5 @@ newdate /* [fnc] Compute date a specified number of days from input date */
   } /* end if */
 
   return newdate_YYMMDD;
-} /* end newdate() */
+} /* end nco_newdate() */
 

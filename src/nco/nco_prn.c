@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.7 2002-06-09 01:11:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.8 2002-06-16 05:49:41 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -9,7 +9,7 @@
 #include "nco_prn.h" /* Printing variables, attributes, metadata */
 
 void 
-prn_att /* [fnc] Print all attributes of single variable */
+nco_prn_att /* [fnc] Print all attributes of single variable */
 (const int in_id, /* I [id] netCDF input file ID */
  const int var_id) /* I [id] netCDF input variable ID */
 {
@@ -101,10 +101,10 @@ prn_att /* [fnc] Print all attributes of single variable */
   /* Free rest of space allocated for attribute information */
   if(nbr_att > 0) att=(att_sct *)nco_free(att);
 
-} /* end prn_att() */
+} /* end nco_prn_att() */
 
 char * /* O [sng] sprintf() format string for type type */
-type_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
+nco_type_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 (const nc_type type) /* I [enm] netCDF type to provide format string for */
 {
   /* Purpose: Provide sprintf() format string for specified type */
@@ -132,10 +132,10 @@ type_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
   return (char *)NULL;
-} /* end type_fmt_sng() */
+} /* end nco_type_fmt_sng() */
 
 void
-prn_var_dfn /* [fnc] Print variable metadata */
+nco_prn_var_dfn /* [fnc] Print variable metadata */
 (int in_id, /* I [id] netCDF input file ID */
  char *var_nm) /* I [sng] Variable to pring */
 {
@@ -224,10 +224,10 @@ prn_var_dfn /* [fnc] Print variable metadata */
     dmn_id=(int *)nco_free(dmn_id);
   } /* end if nbr_dim > 0*/
 
-} /* end prn_var_dfn() */
+} /* end nco_prn_var_dfn() */
 
 void
-prn_var_val_lmt /* [fnc] Print variable data */
+nco_prn_var_val_lmt /* [fnc] Print variable data */
 (const int in_id, /* I [id] netCDF input file ID */
  const char * const var_nm, /* I [sng] Variable name */
  const lmt_sct * const lmt, /* I [sct] Dimension limits */
@@ -404,10 +404,10 @@ prn_var_val_lmt /* [fnc] Print variable data */
     (void)sng_ascii_trn(dlm_sng);
 
     /* Assume -s argument (dlm_sng) formats entire string
-       Otherwise, one could assume that field will be printed with format type_fmt_sng(var.type),
+       Otherwise, one could assume that field will be printed with format nco_type_fmt_sng(var.type),
        and that user is only allowed to affect text between fields. 
        This would be accomplished with:
-       (void)sprintf(var_sng,"%s%s",type_fmt_sng(var.type),dlm_sng);*/
+       (void)sprintf(var_sng,"%s%s",nco_type_fmt_sng(var.type),dlm_sng);*/
 
     for(lmn=0;lmn<var.sz;lmn++){
       switch(var.type){
@@ -426,14 +426,14 @@ prn_var_val_lmt /* [fnc] Print variable data */
   if(var.nbr_dim == 0 && dlm_sng == NULL){ 
     /* Variable is a scalar, byte, or character */
     lmn=0;
-    (void)sprintf(var_sng,"%%s = %s %%s\n",type_fmt_sng(var.type));
+    (void)sprintf(var_sng,"%%s = %s %%s\n",nco_type_fmt_sng(var.type));
     switch(var.type){
     case NC_FLOAT: (void)fprintf(stdout,var_sng,var_nm,var.val.fp[lmn],unit_sng); break;
     case NC_DOUBLE: (void)fprintf(stdout,var_sng,var_nm,var.val.dp[lmn],unit_sng); break;
     case NC_SHORT: (void)fprintf(stdout,var_sng,var_nm,var.val.sp[lmn],unit_sng); break;
     case NC_INT: (void)fprintf(stdout,var_sng,var_nm,var.val.lp[lmn],unit_sng); break;
     case NC_CHAR:
-      (void)sprintf(var_sng,"%%s='%s' %%s\n",type_fmt_sng(var.type));
+      (void)sprintf(var_sng,"%%s='%s' %%s\n",nco_type_fmt_sng(var.type));
       (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
       break;
     case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,(unsigned char)var.val.bp[lmn],unit_sng); break;
@@ -530,7 +530,7 @@ prn_var_val_lmt /* [fnc] Print variable data */
 	  /* Format and print dimension part of output string for non-coordinate variables */
 	  if(dim[dmn_idx].cid != var.id){ /* If variable is not a coordinate... */
 	    if(dim[dmn_idx].is_crd_dmn){ /* If dimension is a coordinate... */
-	      (void)sprintf(dmn_sng,"%%s%c%%ld%c=%s ",arr_lft_dlm,arr_rgt_dlm,type_fmt_sng(dim[dmn_idx].type));
+	      (void)sprintf(dmn_sng,"%%s%c%%ld%c=%s ",arr_lft_dlm,arr_rgt_dlm,nco_type_fmt_sng(dim[dmn_idx].type));
 	      /* Account for hyperslab offset in coordinate values*/
 	      crd_idx_crr=dmn_sbs_ram[dmn_idx];
 	      switch(dim[dmn_idx].type){
@@ -552,7 +552,7 @@ prn_var_val_lmt /* [fnc] Print variable data */
       
       /* Finally, print value of current element of variable */	
       idx_crr=lmn+hyp_srt+ftn_idx_off; /* Current index into equivalent 1-D array */
-      (void)sprintf(var_sng,"%%s%c%%ld%c=%s %%s\n",arr_lft_dlm,arr_rgt_dlm,type_fmt_sng(var.type));
+      (void)sprintf(var_sng,"%%s%c%%ld%c=%s %%s\n",arr_lft_dlm,arr_rgt_dlm,nco_type_fmt_sng(var.type));
       
       if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] == 0L){
 	/* Print all characters in last dimension each time penultimate dimension subscript changes to its start value
@@ -619,5 +619,5 @@ prn_var_val_lmt /* [fnc] Print variable data */
   var.nm=(char *)nco_free(var.nm);
   if(strlen(unit_sng) > 0) unit_sng=(char *)nco_free(unit_sng);
  
-} /* end prn_var_val_lmt() */
+} /* end nco_prn_var_val_lmt() */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.3 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.4 2002-06-16 05:49:41 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -32,21 +32,21 @@ extern "C" {
 #endif /* __cplusplus */
 
 void 
-prn_att /* [fnc] Print all attributes of single variable */
+nco_prn_att /* [fnc] Print all attributes of single variable */
 (const int in_id, /* I [id] netCDF input file ID */
  const int var_id); /* I [id] netCDF input variable ID */
 
 char * /* O [sng] sprintf() format string for type type */
-type_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
+nco_type_fmt_sng /* [fnc] Provide sprintf() format string for specified type */
 (const nc_type type); /* I [enm] netCDF type to provide format string for */
 
 void
-prn_var_dfn /* [fnc] Print variable metadata */
+nco_prn_var_dfn /* [fnc] Print variable metadata */
 (int in_id, /* I [id] netCDF input file ID */
  char *var_nm); /* I [sng] Variable to pring */
 
 void
-prn_var_val_lmt /* [fnc] Print variable data */
+nco_prn_var_val_lmt /* [fnc] Print variable data */
 (const int in_id, /* I [id] netCDF input file ID */
  const char * const var_nm, /* I [sng] Variable name */
  const lmt_sct * const lmt, /* I [sct] Dimension limits */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.6 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.7 2002-06-16 05:49:41 zender Exp $ */
 
 /* Purpose: CSM conventions */
 
@@ -102,7 +102,7 @@ nco_ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
 #ifdef USE_FORTRAN_ARITHMETIC
   date=FORTRAN_newdate(&nbdate,&day);
 #else /* !USE_FORTRAN_ARITHMETIC */
-  date=newdate(nbdate,day);
+  date=nco_newdate(nbdate,day);
 #endif /* !USE_FORTRAN_ARITHMETIC */
   if(var[date_idx]->val.lp != NULL) return; else var[date_idx]->val.lp[0]=date;
   
