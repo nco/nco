@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.126 2002-09-18 05:02:52 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.127 2002-09-23 00:27:19 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -30,6 +30,7 @@ cd ~/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinf
 texi2html -monolithic -verbose nco.texi
 texi2dvi --output=nco.dvi nco.texi 
 texi2dvi --pdf --output=nco.pdf nco.texi
+pdfthumb nco.pdf nco.pdf2;/bin/mv nco.pdf2 nco.pdf
 dvips -o nco.ps nco.dvi 
 makeinfo --no-split --output=nco.info nco.texi 
 makeinfo --no-headers --no-split --output=nco.txt nco.texi
@@ -64,15 +65,12 @@ http://www.gnu.ai.mit.edu/copyleft/fdl.html
 @syncodeindex fn cp
 @c end of header
 
-@ignore
-@ifinfo
-@format
-START-INFO-DIR-ENTRY
-* NCO: (nco.info).           User's Guide for the netCDF Operator suite
-END-INFO-DIR-ENTRY
-@end format
-@end ifinfo
-@end ignore
+@direntry
+* NCO::        User's Guide for the netCDF Operator suite
+@end direntry
+@iftex
+@tolerance 10000
+@end iftex
 
 @c Set smallbook if printing in smallbook format so example of
 @c smallbook font is actually written using smallbook. 
@@ -188,8 +186,34 @@ Texts. The license is available online at
 @sp 2
 @c Cover art by Robynn Rudel
 @end titlepage
-@node  Top, Foreword, (dir), (dir)
+@node Top, Foreword, (dir), (dir)
+@ifinfo
+@top NCO User's Guide
 @c node format: node-name, next, previous, up
+
+The netCDF Operators, or NCO, are a suite of programs known as
+operators. 
+The operators facilitate manipulation and analysis of self-describing
+data stored in the netCDF or HDF4 formats, which are freely available
+(@uref{http://www.unidata.ucar.edu/packages/netcdf} and
+@uref{http://hdf.ncsa.uiuc.edu}, respectively). 
+Each NCO operator (e.g., ncks) takes netCDF or HDF input file(s),
+performs an operation (e.g., averaging, hyperslabbing, or renaming),
+and outputs a processed netCDF file. 
+Although most users of netCDF and HDF data are involved in scientific
+research, these data formats, and thus NCO, are generic and are
+equally useful in fields like finance. 
+The NCO User's Guide illustrates NCO use with examples from the field
+of climate modeling and analysis. 
+The NCO homepage is @uref{http://nco.sourceforge.org}.
+
+This file documents NCO version @value{nco-edition}.
+
+NOTE: This documentation is evolving.
+Corrections, additions, and rewrites of sections are VERY WELCOME.
+
+Charlie Zender
+@end ifinfo
 
 @menu
 * Foreword::                    
@@ -197,7 +221,7 @@ Texts. The license is available online at
 * Introduction::                
 * Strategies::                  
 * Common features::             
-* Operators::                   
+* Operator Reference Manual::   
 * Contributing::                
 * General Index::               
 @end menu
@@ -1146,7 +1170,7 @@ netCDF interface (e.g., Yorick).
 The cause for this is not understood at present.
 @end enumerate
 
-@node Common features, Operators, Strategies, Top
+@node Common features, Operator Reference Manual, Strategies, Top
 @chapter Features common to most operators
 
 Many features have been implemented in more than one operator and are
@@ -2580,7 +2604,7 @@ ncks version 1.30 (2000/07/31) "Bolivia"}.
 This tells you @command{ncks} contains all patches up to version @code{1.30},
 which dates from July 31, 2000.
 
-@node Operators, Contributing, Common features, Top
+@node Operator Reference Manual, Contributing, Common features, Top
 @chapter Reference manual for all operators
 
 This chapter presents reference pages for each of the operators
@@ -2607,7 +2631,7 @@ described in any detail in the sections below.
 @end menu
 
 @page
-@node ncap netCDF Arithmetic Processor, ncatted netCDF Attribute Editor, Operators, Operators
+@node ncap netCDF Arithmetic Processor, ncatted netCDF Attribute Editor, Operator Reference Manual, Operator Reference Manual
 @section @command{ncap} netCDF Arithmetic Processor
 @cindex parser
 @cindex lexer
@@ -2696,19 +2720,22 @@ Consider now a slightly more complex example.
 In geophysical models, a coordinate system based on 
 a blend of terrain-following and density-following surfaces is 
 called a @dfn{hybrid coordinate system}.
-This command shows how to manipulate the four fields which define
-the pressure in a hybrid coordinate system: @var{PO} is the domain-mean 
-surface pressure offset (a scalar), @var{PS} is the local surface
-pressure (usually two horizontal spatial dimensions, i.e, latitude
-by longitude), @var{hyam} is the weight given to surfaces of constant
-density (one spatial dimension, pressure, which is orthogonal to
-the horizontal dimensions), and @var{hybm} is the weight 
-given to surfaces of constant elevation (also one spatial dimension):
+In this coordinate system, four variables must be manipulated to
+obtain the pressure of the vertical coordinate:
+@var{PO} is the domain-mean surface pressure offset (a scalar),
+@var{PS} is the local (time-varying) surface pressure (usually two
+horizontal spatial dimensions, i.e, latitude by longitude), @var{hyam}
+is the weight given to surfaces of constant density (one spatial
+dimension, pressure, which is orthogonal to the horizontal
+dimensions), and @var{hybm} is the weight given to surfaces of
+constant elevation (also one spatial dimension). 
 This command constructs a four-dimensional pressure @code{prs_mdp}
 from the four input variables of mixed rank and orthogonality:
 @example
 ncap -O -s "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm" in.nc out.nc
 @end example
+Manipulating the four fields which define the pressure in a hybrid
+coordinate system is easy with left hand casting.
 
 @node Syntax of ncap statements, Intrinsic functions, Left hand casting, ncap netCDF Arithmetic Processor
 @subsection Syntax of @code{ncap} statements
@@ -3011,7 +3038,7 @@ statements chained together as a single @samp{-s} argument.
 ncap -O -s "" in.nc out.nc
 @end example
 @page
-@node ncatted netCDF Attribute Editor, ncdiff netCDF Differencer, ncap netCDF Arithmetic Processor, Operators
+@node ncatted netCDF Attribute Editor, ncdiff netCDF Differencer, ncap netCDF Arithmetic Processor, Operator Reference Manual
 @section @command{ncatted} netCDF Attribute Editor
 @cindex attributes
 @cindex attribute names
@@ -3345,7 +3372,7 @@ These outer single quotes are necessary for interactive use, but may be
 omitted in batch scripts.
 
 @page
-@node ncdiff netCDF Differencer, ncea netCDF Ensemble Averager, ncatted netCDF Attribute Editor, Operators
+@node ncdiff netCDF Differencer, ncea netCDF Ensemble Averager, ncatted netCDF Attribute Editor, Operator Reference Manual
 @section @command{ncdiff} netCDF Differencer
 @cindex subtraction
 @cindex differencing data
@@ -3524,7 +3551,7 @@ ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
 @noindent
 
 @page
-@node ncea netCDF Ensemble Averager, ncecat netCDF Ensemble Concatenator, ncdiff netCDF Differencer, Operators
+@node ncea netCDF Ensemble Averager, ncecat netCDF Ensemble Concatenator, ncdiff netCDF Differencer, Operator Reference Manual
 @section @command{ncea} netCDF Ensemble Averager
 @cindex averaging data
 @cindex ensemble average
@@ -3612,7 +3639,7 @@ input files.
 Additionally, only data inside the tropics is included.
 
 @page
-@node ncecat netCDF Ensemble Concatenator, ncflint netCDF File Interpolator, ncea netCDF Ensemble Averager, Operators
+@node ncecat netCDF Ensemble Concatenator, ncflint netCDF File Interpolator, ncea netCDF Ensemble Averager, Operator Reference Manual
 @section @command{ncecat} netCDF Ensemble Concatenator
 @cindex concatenation
 @cindex ensemble concatenation
@@ -3680,7 +3707,7 @@ It contains 60 months of data (which might or might not be stored in the
 record dimension, depending on the input files).
 
 @page
-@node ncflint netCDF File Interpolator, ncks netCDF Kitchen Sink, ncecat netCDF Ensemble Concatenator, Operators
+@node ncflint netCDF File Interpolator, ncks netCDF Kitchen Sink, ncecat netCDF Ensemble Concatenator, Operator Reference Manual
 @section @command{ncflint} netCDF File Interpolator
 @cindex interpolation
 @cindex adding data
@@ -3853,7 +3880,7 @@ ncatted -O -a units,prs_sfc,o,c,millibar out.nc
 @noindent
 
 @page
-@node ncks netCDF Kitchen Sink, ncra netCDF Record Averager, ncflint netCDF File Interpolator, Operators
+@node ncks netCDF Kitchen Sink, ncra netCDF Record Averager, ncflint netCDF File Interpolator, Operator Reference Manual
 @section @command{ncks} netCDF Kitchen Sink
 @cindex kitchen sink
 @cindex printing files contents
@@ -4227,7 +4254,7 @@ ncks -d lon,260.0,45.0 in.nc out.nc
 For more details @xref{Wrapped coordinates}.
 
 @page
-@node ncra netCDF Record Averager, ncrcat netCDF Record Concatenator, ncks netCDF Kitchen Sink, Operators
+@node ncra netCDF Record Averager, ncrcat netCDF Record Concatenator, ncks netCDF Kitchen Sink, Operator Reference Manual
 @section @command{ncra} netCDF Record Averager
 @cindex averaging data
 @cindex record average
@@ -4319,7 +4346,7 @@ ncra -d time,6.,54. ??.nc 8506_8906.nc
 @end example
 
 @page
-@node ncrcat netCDF Record Concatenator, ncrename netCDF Renamer, ncra netCDF Record Averager, Operators
+@node ncrcat netCDF Record Concatenator, ncrename netCDF Renamer, ncra netCDF Record Averager, Operator Reference Manual
 @section @command{ncrcat} netCDF Record Concatenator
 @cindex concatenation
 @cindex record concatenation
@@ -4410,7 +4437,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @end example
 
 @page
-@node ncrename netCDF Renamer, ncwa netCDF Weighted Averager, ncrcat netCDF Record Concatenator, Operators
+@node ncrename netCDF Renamer, ncwa netCDF Weighted Averager, ncrcat netCDF Record Concatenator, Operator Reference Manual
 @section @command{ncrename} netCDF Renamer
 @cindex renaming variables
 @cindex renaming dimensions
@@ -4543,7 +4570,7 @@ ncrename -a _FillValue,missing_value -a Zaire,Congo in.nc out.nc
 @end example
 
 @page
-@node ncwa netCDF Weighted Averager,  , ncrename netCDF Renamer, Operators
+@node ncwa netCDF Weighted Averager,  , ncrename netCDF Renamer, Operator Reference Manual
 @section @command{ncwa} netCDF Weighted Averager
 @cindex averaging data
 @cindex weighted average
@@ -4872,7 +4899,7 @@ Thus the @samp{-N} switch, or, equivalently, the @samp{-y ttl} switch,
 are all that are needed to correctly integrate the cell areas into
 a total regional area.
 
-@node Contributing, General Index, Operators, Top
+@node Contributing, General Index, Operator Reference Manual, Top
 @chapter Contributing
 @cindex contributing
 @cindex contributors
