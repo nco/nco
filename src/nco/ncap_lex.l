@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.2 2002-08-27 21:03:16 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.3 2002-08-28 13:22:19 hmb Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -548,9 +548,9 @@ M_PI {return NAMED_CONSTANT;}
       }
     }
    if( jdx !=  *(prs_arg->nbr_dmn_out) ) continue;   
-    /* then try seach for dimension in prs_arg->dmn */
-   for (jdx =0 ;jdx < prs_arg->nbr_dmn_xtr ; jdx++){
-     dmn_item = prs_arg->dmn[jdx];
+    /* then try seach for dimension in prs_arg->dmn_in */
+   for (jdx =0 ;jdx < prs_arg->nbr_dmn_in ; jdx++){
+     dmn_item = prs_arg->dmn_in[jdx];
         /* if found add dimension to  dmn_out and dmn */
      if(!strcmp(sbs_lst[idx],dmn_item->nm)) {
        /* BEWARE -- nco_dmn_out_grow() increments *(prs_arg->nbr_dmn_out) */
@@ -564,7 +564,7 @@ M_PI {return NAMED_CONSTANT;}
      }
    }
 
-   if (jdx != prs_arg->nbr_dmn_xtr ) continue;
+  if (jdx != prs_arg->nbr_dmn_in ) continue;
     /* exit function if dimension not found */
    (void)sprintf(err_sng,"Warning: Unrecognized dimension \"%s\" in LHS subscripts",sbs_lst[idx]);
    (void)yyerror(err_sng);
