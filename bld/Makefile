@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.14 1998-12-18 20:14:23 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.15 1998-12-18 21:43:27 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -178,8 +178,8 @@ NETCDF_LIB := /usr/local/lib
 C++ := g++
 CC := gcc -ansi
 CPP := gcc
-# NB: Hack to make AIX look like SUNMP
-CPPFLAGS := -DSUNMP $(CPP_PTH) -I$(NETCDF_INC)
+# NB: Hack to make AIX look like LINUX (g77 + gcc + g++)
+CPPFLAGS := -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
 #FC := xlf
 FC := g77
 FFLAGS := -ffixed-line-length-132
@@ -204,11 +204,10 @@ ifeq ($(OPTS),D)
  FFLAGS += -g
 # FFLAGS := -g -NS2000 -qfixed=132
 endif
-#$(MY_OBJ_DIR)/%.o : %.F
-#	$(CPP) $(CPPFLAGS) $< $(MY_OBJ_DIR)/$(basename $<).f 
-#	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $(MY_OBJ_DIR)/$(basename $<).f
-#$(MY_OBJ_DIR)/%.o : %.f
-#	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
+$(MY_OBJ_DIR)/%.o : %.F
+	$(FC) -c $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
+$(MY_OBJ_DIR)/%.o : %.f
+	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
 endif
 # endif AIX
 
