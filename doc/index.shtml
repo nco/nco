@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.129 2003-01-22 00:58:19 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.130 2003-01-22 15:59:24 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -355,14 +355,20 @@ site.
 <dt><a name="NCAR"></a></dt>
 <h2>Using NCO at UCI, NCAR, and SDSC</h2>
 <p>Users at UC Irvine, NCAR, and SDSC <i>may</i> find pre-built,
-<i>almost</i> up-to-date NCO executables in the following locations:
+<i>almost</i> up-to-date NCO executables in the following locations.
+These executables are <i>unsupported</i> and are almost
+<i>guaranteed</i> to be from different NCO versions and thus to behave
+slightly differently.
+(They are built from the main trunk, not a tagged version, and
+currently it is impossible to tell exactly what version they are). 
+Moreover they may be compiled with debugging enabled and thus may be
+<i>slower</i> than custom built, optimized executables. 
 <ul>
 <li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.4.7): <tt>/home/zender/bin/LINUX</tt></li>
 <li>ESS <tt>ess1.ess.uci.edu</tt> (Linux 2.2.15): <tt>/home/zender/bin/LINUXALPHA</tt></li>
 <li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
 <li>CGD network (Solaris 2.6): <tt>/contrib/bin</tt>, <tt>/home/zender/bin/SUNMP</tt></li>
-<li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5):
-<tt>/contrib/bin</tt>, <tt>/home/dataproc/zender/bin/SGIMP64</tt></li>
+<li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5): <tt>/home/dataproc/zender/bin/SGIMP64</tt></li>
 <li>SCD <tt>babyblue.ucar.edu</tt> (AIX 4.0): <tt>/home/babyblue/zender/bin/AIX</tt></li>
 <li>SCD <tt>blackforest.ucar.edu</tt> (AIX 4.0): <tt>/home/blackforest/zender/bin/AIX</tt></li>
 <li>SCD <tt>bluesky.ucar.edu</tt> (AIX 5.0): <tt>/home/bluesky/zender/bin/AIX</tt></li>
