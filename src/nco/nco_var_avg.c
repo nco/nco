@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.11 2002-08-21 11:47:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.12 2002-12-20 17:59:49 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -307,7 +307,7 @@ nco_var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
 
 #ifndef __GNUC__
   long idx_op1;
-#endif /* !__GNUC__ */
+#endif /* __GNUC__ */
   const long sz_blk=sz_op1/sz_op2;
   long idx_op2;
   long idx_blk;
@@ -565,7 +565,7 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
 
 #ifndef __GNUC__
   long idx_op1;
-#endif /* !__GNUC__ */
+#endif /* __GNUC__ */
   const long sz_blk=sz_op1/sz_op2;
   long idx_op2;
   long idx_blk;
@@ -845,7 +845,7 @@ nco_var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of
 
 #ifndef __GNUC__
   long idx_op1;
-#endif /* !__GNUC__ */
+#endif /* __GNUC__ */
   const long sz_blk=sz_op1/sz_op2;
   long idx_op2;
   long idx_blk;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.103 2002-12-19 20:48:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.104 2002-12-20 17:59:49 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -27,7 +27,6 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
-
 #ifdef HAVE_GETOPT_H 
 /* GNU getopt() is independent system header on FREEBSD, LINUX, LINUXALPHA, WIN32
    AT&T getopt() is in unistd.h or stdlib.h on AIX, CRAY, NECSX, SUNMP, SUN4SOL2
@@ -90,8 +89,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.103 2002-12-19 20:48:24 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.103 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.104 2002-12-20 17:59:49 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.104 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
