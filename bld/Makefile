@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.154 2002-07-21 14:58:08 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.155 2002-08-13 08:00:35 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -64,6 +64,10 @@ endif # endif HDF5
 ifndef I18N
  I18N := N
 endif
+ifndef MK_DPN
+ MK_DPN = ${CPP} -M # NB: Recursive expansion required
+ MK_DPN_C++ = ${C++} -M # NB: Recursive expansion required
+endif # endif MK_DPN
 ifndef NCO_VRS
 # Used for RPM building
  NCO_VRS := $(shell cat ${MY_DOC_DIR}/VERSION)
@@ -251,23 +255,23 @@ ${MY_ES_DIR}/%.mo : %.po
 ${MY_DPN_DIR}/%.d : %.F
 # Following command makes, e.g., f.d begin "f.o f.d : f.F ..."
 # Since f.o is not preceded by ${MY_OBJ_DIR}, objects are not recompiled when sources are touched.
-#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.F\.o/$*.o $@/g;' > $@
+#	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.F\.o/$*.o $@/g;' > $@
 # Following command makes, e.g., f.d begin "/home/zender/obj/LINUX/f.o f.d : f.F ..."
 # This works fairly well, but is a hack
 # First pattern substitutes MY_OBJ_DIR_RX, which has placeholders for slashes
 # Second pattern substitutes slashes for the placeholders
-	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*(\.F)?\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*(\.F)?\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 # Following command makes, e.g., f.d begin "${MY_OBJ_DIR}/f.o f.d : f.F ..."
 # This would be the ideal command but I can't get the dollar sign to show up
-#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.F\.o/\${dollar}MY_OBJ_DIR\/$*.o $@/g;' > $@
+#	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.F\.o/\${dollar}MY_OBJ_DIR\/$*.o $@/g;' > $@
 
 ${MY_DPN_DIR}/%.d : %.c
-#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
-	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+#	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
+	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 
 ${MY_DPN_DIR}/%.d : %.cc
-#	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
-	${CPP} -M ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+#	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
+	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 
 # The first LDFLAGS is for typical C programs with netCDF, math, and networking
 # The second LDFLAGS enables C/Fortran linking
@@ -337,7 +341,7 @@ C++FLAGS := ${CFLAGS}
 # Using -P causes additional warning messages about lm 
 # Not using -P causes *.o files to be created twice
 ${MY_DPN_DIR}/%.d : %.c
-	${CPP} -M ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' $*.u > $@ ; \
+	${MK_DPN} ${CPPFLAGS} $< ;perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' $*.u > $@ ; \
 	rm -f $*.i $*.o $*.u;
 endif
 # endif AIX
@@ -555,6 +559,45 @@ ifeq (${OMP},Y)
 endif # endif OMP
 endif
 # endif LINUX or LINUXALPHA or FREEBSD
+
+ifeq (${PVM_ARCH},NECSX)
+ifeq (${OMP},Y)
+ OMP_FLG := -Popenmp
+endif # endif OMP
+C++ := c++
+#CC := c++ -Xa
+CC := cc
+CPP := c++ -E
+#CPP := /usr/lib/cpp
+CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
+FC := f90
+LD := ld
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+# LDFLAGS += -L/lib -lf
+endif
+LEX := lex
+LINT := lint
+YACC := yacc
+ifeq (${OPTS},O)
+ CFLAGS += -h2 -hmath vector -hxint
+# CFLAGS += -Cvopt -math vector -xint
+ FFLAGS = -Cvopt -f3
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+ FFLAGS = -g -f3
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -h0 -g  -hstack=nan
+# CFLAGS += -Cdebug  -init stack=nan
+ FFLAGS = -Cdebug -eR -f3 -Wf"-init stack=nan heap=nan"
+endif
+MK_DPN = /usr/local/bin/mkdep.perl /usr/lib/cpp # NECSX try this
+${MY_DPN_DIR}/%.d : %.c
+	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+endif
+# endif NECSX
 
 ifeq (${PVM_ARCH},RS6K)
 C++ := g++
@@ -951,8 +994,8 @@ dat_cln:
 	cd ${MY_DAT_DIR}; rm -f foo*
 test:	tst
 tst:	${MY_DAT_DIR}/in.nc
-	- if test -f ${MY_DAT_DIR}/nco_tst.nc; then printf "" ; else ${MY_BIN_DIR}/ncks -R -p ftp://dust.ps.uci.edu/pub/zender/nco -l ${MY_DAT_DIR} nco_tst.nc; fi
-	cd ${MY_BLD_DIR}; nco_tst.sh
+	- if test -f ${MY_DAT_DIR}/nco_tst.nc; then printf "" ; else ${MY_BIN_DIR}/ncks -R -p ftp://dust.ps.uci.edu/pub/zender/nco -l ${MY_DAT_DIR} nco_tst.nc; if [ $? != 0 ]; then printf "WARNING: Unable to retrieve ftp://dust.ps.uci.edu/pub/zender/nco/nco_tst.nc required for self-test, possible problem with getting through your firewall? Manually download and install in directory ../data to continue self test...\n"; fi; fi
+	cd ${MY_BLD_DIR}; ./nco_tst.sh
 testclean: tst_cln
 tst_cln:
 	cd ${MY_DAT_DIR}; rm -f foo* nco_tst.nc

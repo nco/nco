@@ -1,3 +1,11 @@
+2002-08-13  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_5_4
+	Changes since nco-2_5_3: NECSX support
+	
+	* Extensive support for NECSX architecture contributed by 
+	Len Makin <len at hpc.csiro.au>
+
 2002-08-10  Charlie Zender  <zender@uci.edu>
 
 	* Make Rorik Peterson a developer. Add sourceforge logo to homepage.
