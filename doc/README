@@ -1,5 +1,18 @@
-$Header: /data/zender/nco_20150216/nco/doc/README,v 1.3 1999-10-04 06:15:32 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/README,v 1.4 2000-03-06 04:04:39 zender Exp $ -*-text-*-
 
+What is NCO?
+The netCDF Operators, or NCO, is a suite of programs known as
+operators. The operators facilitate manipulation and analysis of
+scientific data in netCDF or HDF format
+(http://www.unidata.ucar.edu/packages/netcdf and
+http://hdf.ncsa.uiuc.edu, respectively).  Each NCO operator (e.g.,
+ncks) takes netCDF or HDF input file(s), performs an operation (e.g.,
+averaging, hyperslabbing, or renaming), and outputs a processed netCDF
+file.  The NCO User's Guide illustrates their use with examples from
+the field of climate modeling and analysis. The NCO homepage is 
+http://www.cgd.ucar.edu/cms/nco.
+
+Installation:
 First, note that NCO does not use ./configure to build.
 If you'd like to contribute to NCO, please consider writing the
 patches to get configure to work. NCO will run on all major UNIX
@@ -28,6 +41,7 @@ Environment variables MY_OBJ_DIR, MY_INC_DIR, MY_LIB_DIR and
 MY_BIN_DIR control locations of object files, include files,
 libraries, and executables. 
 
+Documentation and Bug Reports:
 Please read the NCO manual before you submit a bug report!  The manual
 is supplied in five different formats: Postscript (nco.ps), Texinfo
 (nco.texi), Info (nco.info), HTML (nco.html), and DVI (nco.dvi).

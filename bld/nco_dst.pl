@@ -28,7 +28,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.48 2000-02-12 02:10:44 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.49 2000-03-06 04:04:39 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -46,7 +46,7 @@ select((select(STDERR),$|=1)[0]); # Camel book, p. 110
 
 # Timing information
 my ($lcl_date_time,$srt_usr_tm,$srt_sys_tm,$srt_child_usr_tm,$srt_child_sys_tm);
-time_srt($lcl_date_time,$srt_usr_tm,$srt_sys_tm,$srt_child_usr_tm,$srt_child_sys_tm);
+($lcl_date_time,$srt_usr_tm,$srt_sys_tm,$srt_child_usr_tm,$srt_child_sys_tm)=time_srt();
 printf STDOUT ("Start user time %f\n",$srt_usr_tm);
 
 # Declare local variables
@@ -64,9 +64,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-02-12 02:10:44 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.48 2000-02-12 02:10:44 zender Exp $';
-my $CVS_Revision='$Revision: 1.48 $';
+my $CVS_Date='$Date: 2000-03-06 04:04:39 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.49 2000-03-06 04:04:39 zender Exp $';
+my $CVS_Revision='$Revision: 1.49 $';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
 my $bld=$False; # Option bld; Whether to rebuild netCDF distribution
 my $cp_cmd='cp -p -f'; # Command that behaves like cp

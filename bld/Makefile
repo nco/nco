@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.53 1999-12-15 02:51:37 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.54 2000-03-06 04:04:38 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -505,6 +505,14 @@ ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  CPPFLAGS += -DUSE_FORTRAN_ARITHMETIC
 endif
 
+# Link to Electric Fence library, see man efence
+ifeq ($(PVM_ARCH),LINUX)
+ifneq (,$(findstring $(OPTS),DX))
+ LDFLAGS += -lefence
+endif
+endif
+# endif LINUX
+
 # Define any remaining variables
 libnco := $(MY_LIB_DIR)/libnco
 
@@ -529,6 +537,17 @@ lib_dir:
 obj_dir:
 	-install -d $(MY_BIN_DIR)
 	-mkdir -p $(MY_OBJ_DIR)
+
+rpm:
+	cd /data/zender/tmp; \
+	/bin/rm -fr $(DATA)/tmp/nco*; \
+	cp -r $(HOME)/nc/nco nco-1.1.46; \
+	tar cvzf nco-1.1.46.tar.gz ./nco-1.1.46; \
+	mv $(DATA)/tmp/nco-1.1.46.tar.gz /usr/src/redhat/SOURCES; \
+	/bin/rm -f /usr/src/redhat/SPECS/nco-1.1.46.spec; \
+	ln -s $(HOME)/nc/nco/bld/nco.spec /usr/src/redhat/SPECS/nco-1.1.46.spec; \
+	cd /usr/src/redhat/SPECS; \
+	rpm -ba nco-1.1.46.spec;
 
 # Targets in bin
 ncra:	$(MY_OBJ_DIR)/ncra.o $(libnco).a

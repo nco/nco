@@ -1,3 +1,9 @@
+2000-03-01  Charlie Zender  <zender@uci.edu>
+
+	* Added nco.spec to bld directory
+
+	* Adding rpm target to Makefile
+
 2000-01-27  Charlie Zender  <zender@uci.edu>
 
 	* Tagged this as nco-1_1_45
