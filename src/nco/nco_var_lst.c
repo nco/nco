@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.17 2003-08-20 14:43:50 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.18 2003-08-21 19:49:20 rorik Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -131,17 +131,17 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
      if ( strpbrk(var_sng,".*^$\[]()<>+?|")  ) {
        
        /* Regular expression library present */
-     #ifdef HAVE_REGEX_H
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
       
        nbr_match=nco_var_meta_search(nbr_var,srch_sng,var_sng,in_bool);
        if( nbr_match==0)  
         	(void)fprintf(stdout,"%s: WARNING: regular expression \"%s\" doesn't match any variables\n",prg_nm_get(),var_sng); 
        continue;
-    #else
+#else
 
       (void)fprintf(stdout,"%s: ERROR: \"%s\" Regular expressions on variables are not available in this build.\n",prg_nm_get(),var_sng); 
        nco_exit(EXIT_FAILURE);
-    #endif
+#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
        
      }  
       
@@ -192,7 +192,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
 
 
 /* compile only if the library is present */
-#ifdef HAVE_REGEX_H
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
 
 int /* O number of matches found */
 nco_var_meta_search  /* search for pattern matches in the var string list */
@@ -274,7 +274,7 @@ bool *in_bool)       /* O matched vars holder */
    
 }
 
-#endif
+#endif /* NCO_HAVE_REGEX_FUNCTIONALITY */
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */

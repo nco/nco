@@ -76,8 +76,8 @@ AC_CHECK_FUNCS([gethostname memchr memmove pow setlocale sqrt strcasecmp strchr 
 AC_HEADER_STDC
 AC_CHECK_HEADERS([libintl.h limits.h locale.h netinet/in.h stdlib.h string.h unistd.h getopt.h netcdf.h])
 dnl headers needed for POSIX regex
-AC_CHECK_HEADERS([regex.h sys/types.h])
-NCO_CHECK_FUNCS([regexec])
+dnl AC_CHECK_HEADERS([regex.h sys/types.h])
+dnl NCO_CHECK_FUNCS([regexec])
 AC_LANG_PUSH(C++)
 AC_CHECK_HEADERS(cstdlib)
 AC_LANG_POP(C++)
@@ -92,7 +92,17 @@ AC_TYPE_UID_T
 AC_CHECK_TYPES([ptrdiff_t])
 AC_CHECK_SIZEOF(int*)
 AC_CXX_HAVE_VALARRAY
-
+#############################################
+# checks to enable regular expression stuff, allow user to override
+AC_ARG_ENABLE(regex,AC_HELP_STRING([--enable-regex],[allow regular expressions (default is yes)]),nco_have_regex=$enableval, nco_have_regex=yes)
+if test x$nco_have_regex = xyes; then
+  AC_CHECK_HEADER([regex.h],AC_DEFINE([HAVE_REGEXEC_H]),nco_have_regex=no)
+  AC_CHECK_HEADER([sys/types.h],AC_DEFINE([HAVE_SYS_TYPES_H]),nco_have_regex=no)
+  AC_CHECK_FUNC([regexec],AC_DEFINE([HAVE_REGEXEC]),nco_have_regex=no)
+  AC_CHECK_FUNC([regcomp],AC_DEFINE([HAVE_REGCOMP]),nco_have_regex=no)  
+  AC_CHECK_FUNC([regfree],AC_DEFINE([HAVE_REGFREE]),nco_have_regex=no)
+fi  
+AM_CONDITIONAL(NCO_HAVE_REGEX_FUNCTIONALITY,test x$nco_have_regex = xyes)
 #############################################
 # standard additions to compilers and preprocessors
 # do this before testing anything
@@ -219,7 +229,7 @@ AC_CHECK_HEADERS([udunits.h])
 #############################################
 # HDF5 support
 AC_ARG_VAR([HDF5_ROOT],location of HDF5 libraries)
-AC_ARG_ENABLE(hdf5,AC_HELP_STRING([--enable-hdf5],[use hdf5 support (default is NO)]),enable_hdf5=$enableval, enable_hdf5=no)
+AC_ARG_ENABLE(hdf5,AC_HELP_STRING([--enable-hdf5],[use hdf5 support (default is no)]),enable_hdf5=$enableval, enable_hdf5=no)
 
 # check for HDF5 libraries unless told not to
 if test "$enable_hdf5" != "no"; then
@@ -249,7 +259,7 @@ fi
 #############################################
 # DODS support
 AC_ARG_VAR([DODS_ROOT],[root of DODS stuff])
-AC_ARG_ENABLE(dods,AC_HELP_STRING([--enable-dods],[use DODS (default is YES)]),enable_dods=$enableval, enable_dods=yes)
+AC_ARG_ENABLE(dods,AC_HELP_STRING([--enable-dods],[use DODS (default is yes)]),enable_dods=$enableval, enable_dods=yes)
 
 # check for DODS libraries unless told not to
 if test "$enable_dods" != "no"; then
@@ -283,7 +293,7 @@ AM_CONDITIONAL(TEST_DODS,[test "$enable_dods" = "yes"])
 #############################################
 # if --enable-fortran define USE_FORTRAN_ARITHMATIC
 # is this really even used anymore?
-AC_ARG_ENABLE(fortran,AC_HELP_STRING([--enable-fortran],[use fortran arithmetic (default is NO)]), enable_fortran=$enableval, enable_fortran=no)
+AC_ARG_ENABLE(fortran,AC_HELP_STRING([--enable-fortran],[use fortran arithmetic (default is no)]), enable_fortran=$enableval, enable_fortran=no)
 
 if test "$enable_fortran" = "yes"; then
   AC_DEFINE(USE_FORTRAN_ARITHMATIC,1,use fortran arithmatic)
@@ -291,7 +301,7 @@ fi
 
 #############################################
 # if --enable-debug, add these compiler flags
-AC_ARG_ENABLE(debug,AC_HELP_STRING([--enable-debug],[more debugging info (default is NO)]),enable_debug=$enableval, enable_debug=no)
+AC_ARG_ENABLE(debug,AC_HELP_STRING([--enable-debug],[more debugging info (default is no)]),enable_debug=$enableval, enable_debug=no)
 
 if test "$enable_debug" = "yes"; then
   case $host in
@@ -327,7 +337,7 @@ fi
 
 #############################################
 # if --enable-extreme, add these compiler flags
-AC_ARG_ENABLE(extreme,AC_HELP_STRING([--enable-extreme],[extreme debugging (default is NO)]),enable_extreme=$enableval, enable_extreme=no)
+AC_ARG_ENABLE(extreme,AC_HELP_STRING([--enable-extreme],[extreme debugging (default is no)]),enable_extreme=$enableval, enable_extreme=no)
 
 if test "$enable_extreme" = "yes"; then
   case $host in
@@ -368,7 +378,7 @@ fi
 
 #############################################
 # if --enable-optimize, add these compiler flags
-AC_ARG_ENABLE(optimize,AC_HELP_STRING([--enable-optimize],[optimize (default is NO)]),enable_optimize=$enableval, enable_optimize=no)
+AC_ARG_ENABLE(optimize,AC_HELP_STRING([--enable-optimize],[optimize (default is no)]),enable_optimize=$enableval, enable_optimize=no)
 
 if test "$enable_optimize" = "yes"; then
   case $host in
@@ -402,7 +412,7 @@ fi
 
 #############################################
 # if --enable-nco_cplusplus, compile the c++ library
-AC_ARG_ENABLE(nco_cplusplus,AC_HELP_STRING([--enable-nco_cplusplus],[build the c++ library (default is YES)]),enable_nco_cxx=$enableval,enable_nco_cxx=yes)
+AC_ARG_ENABLE(nco_cplusplus,AC_HELP_STRING([--enable-nco_cplusplus],[build the c++ library (default is yes)]),enable_nco_cxx=$enableval,enable_nco_cxx=yes)
 
 #############################################
 # make defines that are currently used in nco programs based on $host_os
