@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.89 2002-08-27 19:29:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.90 2002-08-27 20:57:33 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -14,12 +14,10 @@
    ncap -O -D 1 -s two=one+two in.nc foo.nc
    scp ~/nco/src/nco/ncap.c dataproc.ucar.edu:nco/src/nco/ncap.c */
 
-/* Autotools tokens */
-#ifdef HAVE_CONFIG_H
-# include <config.h> /* Autotools tokens */
-#endif /* !HAVE_CONFIG_H */
-
 /* Standard C headers */
+#ifdef HAVE_CONFIG_H
+#include <config.h>  /* autoconf-generated header file */
+#endif
 #include <assert.h>  /* assert() debugging macro */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
@@ -89,12 +87,15 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.89 2002-08-27 19:29:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.89 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.90 2002-08-27 20:57:33 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.90 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
-  
+  dmn_sct **dmn_prc=NULL_CEWI;
+  dmn_sct **dmn_new=NULL_CEWI;
+  int nbr_dmn_out=0;
+    
   extern char *optarg;
   extern int optind;
   
@@ -134,6 +135,7 @@ main(int argc,char **argv)
 
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
+  int jdx;
   int in_id;  
   int out_id;  
   int nbr_abb_arg=0;
@@ -146,6 +148,7 @@ main(int argc,char **argv)
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
   int nbr_xtr_2=0;
   int nbr_dmn_xtr=int_CEWI;
+  int nbr_dmn_xtr_2=int_CEWI;
   int nbr_fl=0;
   int nbr_lst_a=0;
   int nbr_lst_b=0;
@@ -166,6 +169,7 @@ main(int argc,char **argv)
   lmt_sct *lmt=NULL_CEWI;
   
   nm_id_sct *dmn_lst=NULL;
+  nm_id_sct *dmn_lst_2=NULL;
   nm_id_sct *xtr_lst=NULL;
   nm_id_sct *xtr_lst_2=NULL;
   
@@ -360,143 +364,27 @@ main(int argc,char **argv)
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
-  /* Pass information parser may need in prs_arg rather than in global variables */
-  prs_arg.fl_in=fl_in; /* [fl] Input data file */
-  prs_arg.in_id=in_id; /* [id] Input data file ID */
-  prs_arg.fl_out=NULL; /* [sng] Output data file */
-  prs_arg.out_id=-1; /* [id] Output data file ID */
-  prs_arg.att_lst=att_lst; /* [sct] Attributes in script */
-  prs_arg.nbr_att=&nbr_att; /* [nbr] Number of attributes in script */
-  prs_arg.dmn=dmn; /* [dmn] List of extracted dimensions */
-  prs_arg.nbr_dmn_xtr=nbr_dmn_xtr; /* [nbr] Number of extracted dimensions */
-  prs_arg.sym_tbl=sym_tbl; /* [fnc] Symbol table for functions */
-  prs_arg.sym_tbl_nbr=sym_tbl_nbr; /* [nbr] Number of functions in table */
-  prs_arg.ntl_scn=True; /* [flg] Initial scan of script */
-  prs_arg.var_LHS=NULL; /* [var] LHS cast variable */
-  prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
-  
-  /* Initialize line counter */
-  ln_nbr_crr=(size_t *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1UL); 
-  ln_nbr_crr[ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap.l */
-  /* Copy script file name to global variable */
-  fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1UL); 
-  fl_spt_glb[ncl_dpt_crr]=fl_spt_usr;
-  /* Perform initial scan of input script to create three lists of variables:
-     lst_a: RHS variables present in input file
-     lst_b: LHS variables present in input file
-     lst_c: Variables of attributes on LHS which are present in input file 
-     lst_d: Dimensions defined in LHS subscripts */
-  (void)ncap_ntl_scn(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c,&nbr_lst_c,&xtr_lst_d,&nbr_lst_d);
-  
-  /* Get number of variables, dimensions, and record dimension ID of input file */
-  rcd=nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
 
-  if(PROCESS_ALL_VARS){
-    /* Form initial extraction list from user input */
-    xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
-    if(nbr_lst_b > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&nbr_xtr,xtr_lst_b,nbr_lst_b);
-    /* Copy list for later */
-    xtr_lst_2=nco_var_lst_copy(xtr_lst,nbr_xtr);
-    nbr_xtr_2=nbr_xtr;
-  } /* end if PROCESS_ALL_VARS */
-  
-  if(!PROCESS_ALL_VARS){
-    /* Create two lists of variables
-       xtr_lst: Used to find dimensions
-       xtr_lst_2: Actual variable extraction list     
-       
-       xtr_lst=list_a + list_c + coordinate variables 
-       xtr_lst_2=list_c + coordinate variables - list_b */
-    
-    /* Add list c to extraction list */
-    if(nbr_lst_c > 0) xtr_lst=nco_var_lst_add(xtr_lst,&nbr_xtr,xtr_lst_c,nbr_lst_c);
-    
-    /* Add list a to extraction list */
-    if(nbr_lst_a > 0) xtr_lst=nco_var_lst_add(xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
-    
-    /* Add all coordinate variables to extraction list */
-    if(PROCESS_ALL_COORDINATES) xtr_lst=nco_var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
-    
-    /* Make sure coordinates associated extracted variables are also on extraction list */
-    if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=nco_var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
-    
-    /* Create list of coordinate variables */
-    if(nbr_xtr > 0 && (PROCESS_ALL_COORDINATES || PROCESS_ASSOCIATED_COORDINATES)){
-      nbr_xtr_2=nbr_xtr;
-      xtr_lst_2=nco_var_lst_copy(xtr_lst,nbr_xtr);
-      
-      /* Add dimensions defined in LHS subscripts */
-      if(nbr_lst_d > 0) xtr_lst_2=nco_var_lst_add(xtr_lst_2,&nbr_xtr_2,xtr_lst_d,nbr_lst_d); 
-      
-      /* Creat list of coordinates only */
-      xtr_lst_2=nco_var_lst_crd_make(in_id,xtr_lst_2,&nbr_xtr_2);
-    } /* endif */
-    
-    /* Add list_c to new list */
-    if(nbr_lst_c > 0) xtr_lst_2=nco_var_lst_add(xtr_lst_2,&nbr_xtr_2,xtr_lst_c,nbr_lst_c);
-    
-    /* Subtract list_b from this list */   
-    if(nbr_lst_b > 0) xtr_lst_2=nco_var_lst_sub(xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
-  } /* end if PROCESS_ALL_VARS */
-  
-  /* Sort extraction list by variable ID for fastest I/O */
-  if(nbr_xtr > 1) xtr_lst=nco_lst_srt(xtr_lst,nbr_xtr,False);
-  if(nbr_xtr_2 > 1) xtr_lst_2=nco_lst_srt(xtr_lst_2,nbr_xtr_2,False);
-  
-  /* Find coordinate/dimension values associated with user-specified limits */
-  for(idx=0;idx<lmt_nbr;idx++) (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
-  
-  /* Find dimensions associated with variables to be extracted */
-  dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
-  
-  /* Add list d */
-  if(nbr_lst_d > 0) dmn_lst=nco_var_lst_add(dmn_lst,&nbr_dmn_xtr,xtr_lst_d,nbr_lst_d);  
-  
-  /* Fill in dimension structure for all extracted dimensions */
+  /* Form list of ALL DIMENSIONS */  
+  dmn_lst=nco_dmn_lst(in_id,&nbr_dmn_xtr);
+
   dmn=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++) dmn[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
-  
+
   /* Merge hyperslab limit information into dimension structures */
-  if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dmn,nbr_dmn_xtr,lmt,lmt_nbr);
+    if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dmn,nbr_dmn_xtr,lmt,lmt_nbr);
+
+
+    /* Open output file */
+    fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
   
-  /* Duplicate input dimension structures for output dimension structures */
-  dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++){
-    dmn_out[idx]=nco_dmn_dpl(dmn[idx]);
-    (void)nco_dmn_xrf(dmn[idx],dmn_out[idx]); 
-  } /* end loop over idx */
+    /* Copy global attributes */
+    (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
   
-  /* Is this an NCAR CSM-format history tape? */
-  NCAR_CSM_FORMAT=nco_ncar_csm_inq(in_id);
-  
-  /* Fill in variable structure list for all extracted variables */
-  var=(var_sct **)nco_malloc(nbr_xtr_2*sizeof(var_sct *));
-  var_out=(var_sct **)nco_malloc(nbr_xtr_2*sizeof(var_sct *));
-  for(idx=0;idx<nbr_xtr_2;idx++){
-    var[idx]=nco_var_fll(in_id,xtr_lst_2[idx].id,xtr_lst_2[idx].nm,dmn,nbr_dmn_xtr);
-    var_out[idx]=nco_var_dpl(var[idx]);
-    (void)nco_xrf_var(var[idx],var_out[idx]);
-    (void)nco_xrf_dmn(var_out[idx]);
-  } /* end loop over idx */
-  
-  /* NB: ncap is not suited for nco_var_lst_dvd() */
-  /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr_2,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
-  
-  /* Open output file */
-  fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
-  
-  /* Copy global attributes */
-  (void)nco_att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL,True);
-  
-  /* Catenate time-stamped command line to "history" global attribute */
-  if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
-  
-  /* Define dimensions in output file */
-  (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
-  
-  /* Take output file out of define mode */
-  (void)nco_enddef(out_id); 
+    /* Catenate time-stamped command line to "history" global attribute */
+    if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+
+    (void)nco_enddef(out_id);
 
   /* Set arguments for second scan and script execution */
   prs_arg.fl_in=fl_in; /* [sng] Input data file */
@@ -505,8 +393,10 @@ main(int argc,char **argv)
   prs_arg.out_id=out_id; /* [id] Output data file ID */
   prs_arg.att_lst=att_lst; /* [sct] Attributes in script */
   prs_arg.nbr_att=&nbr_att; /* [nbr] Number of attributes in script */
-  prs_arg.dmn=dmn_out; /* [dmn] List of extracted dimensions */
+  prs_arg.dmn=dmn; /* [dmn] List of extracted dimensions */
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr; /* [nbr] Number of extracted dimensions */
+  prs_arg.dmn_out =&dmn_prc;
+  prs_arg.nbr_dmn_out = &nbr_dmn_out;
   prs_arg.sym_tbl=sym_tbl; /* [fnc] Symbol table for functions */
   prs_arg.sym_tbl_nbr=sym_tbl_nbr; /* [nbr] Number of functions in table */
   prs_arg.ntl_scn=False; /* [flg] Initial scan of script */
@@ -549,20 +439,139 @@ main(int argc,char **argv)
   /* Invoke parser */
   rcd=yyparse((void *)&prs_arg);
 
-  rcd=nco_redef(out_id);
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr_2,(dmn_sct **)NULL,0);
+
+  /* Get number of variables, in  output  file */
+  rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
+
+  /* make a list of all NEW VARS  in output_file */  
+  xtr_lst_a=nco_var_lst_mk(out_id,nbr_var_fl,var_lst_in,False,&nbr_lst_a);
+
+
+  if(PROCESS_ALL_VARS){
+    /* Get number of variables in  of input file */
+    rcd=nco_inq(in_id,(int *)NULL ,&nbr_var_fl,(int *)NULL,(int *)NULL);
+
+  /* Form initial list of ALL VARIABLES IN INPUT FILE*/
+    xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,False,&nbr_xtr);
+  }
+   
+  if(!PROCESS_ALL_VARS){
+
+    /* make a list of vars of new attributes whose parent var is ONLY in
+       the input file */
+   xtr_lst = nco_att_lst_mk(in_id,out_id,att_lst,nbr_att,&nbr_xtr);
+  }
+
+
+    /* Find dims associated with xtr_ lst */
+    /* Write to O only new dims
+    /* Add apropriate co-ordinate vars to extraction list 
+      options -c      -process all cordinates 
+                       i.e add  co-ords to var list 
+                       Also add their dims
+
+      options --none   -process associated co-ords
+                       loop though dim_out and append to var list
+ 
+     options -C         no co-ordinates   Do nothing */
+
+    /* now subtract list a again */
+    /* now finally extract vars on list */
+
+
+   /* now subtract list a */
+   
+   if(nbr_lst_a >0)
+      xtr_lst = nco_var_lst_sub(xtr_lst, &nbr_xtr,xtr_lst_a,nbr_lst_a);
+
+   (void)nco_redef(out_id);
+
+    if(nbr_xtr > 0) 
+      dmn_lst_2 = nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr_2);
   
-  /* Turn off default filling behavior to enhance efficiency */
+    /* Find and add any new dims to output */
+    for(idx =0 ; idx < nbr_dmn_xtr_2; idx++ )
+      for(jdx =0 ; jdx < nbr_dmn_xtr ; jdx++){
+        /* if dimension in list and it hasn't been defined yet */
+	if(!strcmp(dmn_lst_2[idx].nm, dmn[jdx]->nm) && !dmn[jdx]->xrf){     
+          /* add dim to output list dmn_prc */
+          dmn_new = nco_dmn_out_grow((void *)&prs_arg);
+          *dmn_new = nco_dmn_dpl(dmn[jdx]);
+          (void)nco_dmn_xrf(*dmn_new,dmn[jdx]);
+	  /* write dim to output */
+	  (void)nco_dmn_dfn(fl_out,out_id,dmn_new,1);
+	  break;
+	}
+      } 
+
+    /* All dims for all vars are now in output    */
+    /* Need to add co-ordinate vars to extraction list */
+    /* if PROCESS_ALL_COORDINATES then the associated DIM needs to written to output */
+
+    for(idx=0; idx <nbr_dmn_xtr ; idx++){
+      if(!dmn[idx]->is_crd_dmn) continue;
+      
+      if(PROCESS_ALL_COORDINATES && !dmn[idx]->xrf) {
+
+        /* add dim to output list dmn_prc */
+        dmn_new = nco_dmn_out_grow((void *)&prs_arg);
+        *dmn_new = nco_dmn_dpl(dmn[idx]);
+        (void)nco_dmn_xrf(*dmn_new,dmn[idx]);
+	/* write dim to output */
+	(void)nco_dmn_dfn(fl_out,out_id,dmn_new,1);
+      }
+      /* now add co-odinate var to the extraction list */
+      if((PROCESS_ALL_COORDINATES ||  PROCESS_ASSOCIATED_COORDINATES) && dmn[idx]->xrf){
+      
+	for(jdx =0 ; jdx < nbr_xtr ; jdx ++)
+	  if(!strcmp(xtr_lst[jdx].nm , dmn[idx]->nm)) break;
+        if( jdx == nbr_xtr){
+          xtr_lst =(nm_id_sct *)nco_realloc(xtr_lst, (nbr_xtr+1)*sizeof(nm_id_sct));     
+          xtr_lst[nbr_xtr].nm = strdup(dmn[idx]->nm);
+          xtr_lst[nbr_xtr++].id = dmn[idx]->cid;
+        }
+          
+      }     
+    }/* for idx */	      
+     
+    /* now subtract list a again (it may contain re-defined co-ordinates !!!) */
+  if(nbr_xtr >0) xtr_lst = nco_var_lst_sub(xtr_lst, &nbr_xtr,xtr_lst_a,nbr_lst_a);
+
+    /* sort extraction list for faster I/O */
+  if(nbr_xtr > 1) xtr_lst=nco_lst_srt(xtr_lst,nbr_xtr,False);
+
+  /* Is this an NCAR CSM-format history tape? */
+  NCAR_CSM_FORMAT=nco_ncar_csm_inq(in_id);
+
+  /* now write the "fixed" variables */
+  var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+  var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
+  for(idx=0;idx<nbr_xtr;idx++){
+    var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dmn,nbr_dmn_xtr);
+    var_out[idx]=nco_var_dpl(var[idx]);
+    (void)nco_xrf_var(var[idx],var_out[idx]);
+    (void)nco_xrf_dmn(var_out[idx]);
+  } /* end loop over idx */
+  
+  /* NB: ncap is not suited for nco_var_lst_dvd() */
+  /* Divide variable lists into lists of fixed variables and variables to be processed */
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dmn_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+
+  /* define non-processed vars  */
+   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct**)NULL,0);
+
+   (void)nco_enddef(out_id);
+
+
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
-  
-  /* Take output file out of define mode */
-  rcd=nco_enddef(out_id);
-  
-  /* Copy variable data for non-processed variables */
+
+  /* copy non-processed vars */
   (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
-  
-  (void)nco_redef(out_id);
-  /* Copy new attributes overwriting old ones */
+
+
+  nco_redef(out_id);
+
+  /* Now write out new attributes possibly overwriting old ones */
   for(idx=0;idx<nbr_att;idx++){
     rcd=nco_inq_varid_flg(out_id,att_lst[idx]->var_nm,&var_id);
     if(rcd == NC_NOERR){
@@ -586,3 +595,5 @@ main(int argc,char **argv)
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
+
+
