@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.25 1999-10-15 21:07:33 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.26 1999-10-18 01:14:32 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
@@ -291,11 +291,14 @@ The NCO executables are maintained in many different locations at NCAR:
 
 <DT><A NAME="Bugs"></A></DT>
 <H2>Known Problems with NCO and/or netCDF:</H2>
-<H1>Are you encountering NCO problems on an SGI machine?</H1>
+<H1>NCO problems on SGI machines?</H1>
 <P>The netCDF 3.3.x distribution suffers from unpredictable and weird behavior on SGI machines (apparently related to NFS-mounted partitions).
 As a result, NCO operators, especially <TT>ncwa</TT>, may core dump unless you upgrade to the new netCDF3.4.x distribution.
 NCAR machines have all been upgraded to netCDF3.4+.
 All users of NCO on SGI64 machines at other institutions are urged to upgrade to netCDF3.4.x which is available from URL <A HREF="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z</A>.</P>
+
+<P>NCO may not build correctly on SGI machines unless the latest
+version of GNU make (version 3.78.1) is installed.</P>
 
 <H1>NCO on the Cray T90</H1>
 <P>NCO should be compiled with the <TT>-DC_ONLY</TT> flag on the Cray

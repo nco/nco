@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.28 1999-10-15 21:07:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.29 1999-10-18 01:14:32 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -400,9 +400,9 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     (void)free(fl_nm_lcl_tmp);
   }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
     /* 19990804
-       A colon separates the machine name from the filename in rcp requests
+       A colon separates the machine name from the filename in rcp and scp requests
        However, a colon is also legal in any UNIX filename
-       Thus determining when a colon signifies an rcp request is somewhat ambiguous 
+       Thus whether a colon signifies an rcp or scp request is somewhat ambiguous 
        NCO treats names with more than one colon as regular filenames
        In order for a colon to be interpreted as a machine name delimiter,
        it must be preceded by a period within three or four spaces, e.g., uci.edu:
@@ -481,7 +481,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       int nbr_fmt_char;
       int transfer_mode;
       int file_order;
-    } rmt_fetch_cmd_sct;
+    } rmt_fch_cmd_sct;
 
     char *cmd_sys;
     char *fl_nm_rmt;
@@ -498,17 +498,18 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       asynchronous}; /* 1 */ 
 
     enum {
-      local_remote, /* 0 */ 
-      remote_local}; /* 1 */ 
+      lcl_rmt, /* 0 */ 
+      rmt_lcl}; /* 1 */ 
 
     int fl_pth_lcl_len;
     
-    rmt_fetch_cmd_sct *rmt_cmd=NULL;
-    rmt_fetch_cmd_sct msread={"msread -R %s %s",4,synchronous,local_remote};
-    rmt_fetch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,remote_local};
-    rmt_fetch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,local_remote};
-    rmt_fetch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,remote_local};
-    rmt_fetch_cmd_sct ftp={"",4,synchronous,remote_local};
+    rmt_fch_cmd_sct *rmt_cmd=NULL;
+    rmt_fch_cmd_sct msread={"msread -R %s %s",4,synchronous,lcl_rmt};
+    rmt_fch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,rmt_lcl};
+    rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};
+    rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};
+    rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
+    rmt_fch_cmd_sct ftp={"",4,synchronous,rmt_lcl};
 
     /* Why did the stat() command fail? */ 
 /*    (void)perror(prg_nm_get());*/
@@ -573,7 +574,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       } /* end if */
     } /* end if */
 
-    /* Otherwise, a single colon preceded by a period in the filename unambiguously signals to use rcp */
+    /* Otherwise, a single colon preceded by a period in the filename unambiguously signals to use rcp or scp */
     if(rmt_cmd == NULL){
       if((cln_ptr=strchr(fl_nm_rmt,':')))
 	if(((cln_ptr-4 >= fl_nm_rmt) && *(cln_ptr-4) == '.') ||
@@ -625,14 +626,14 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_len);
     fl_pth_lcl_tmp[fl_pth_lcl_len]='\0';
     
-    /* Warn the user when the local filepath was machine-derived from the remote name */
+    /* Warn user when local filepath was machine-derived from remote name */
     if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: WARNING deriving local filepath from remote filename, using %s\n",prg_nm_get(),fl_pth_lcl_tmp);
 
-    /* Does the local filepath already exist on the local system? */
+    /* Does local filepath already exist on local system? */
     rcd=stat(fl_pth_lcl_tmp,&stat_sct);
     /* If not, then create the local filepath */
     if(rcd != 0){
-      /* Allocate enough room for the joining space ' ' and the terminating NULL */
+      /* Allocate enough room for joining space ' ' and terminating NULL */
       cmd_sys=(char *)malloc((strlen(cmd_mkdir)+fl_pth_lcl_len+2)*sizeof(char));
       (void)strcpy(cmd_sys,cmd_mkdir);
       (void)strcat(cmd_sys," ");
@@ -651,21 +652,21 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     /* Free local path space, if any */ 
     if(fl_pth_lcl_tmp != NULL) (void)free(fl_pth_lcl_tmp);
 
-    /* Allocate enough room for the joining space ' ' and the terminating NULL */ 
+    /* Allocate enough room for joining space ' ' and terminating NULL */ 
     cmd_sys=(char *)malloc((strlen(rmt_cmd->fmt)-rmt_cmd->nbr_fmt_char+strlen(fl_nm_lcl)+strlen(fl_nm_rmt)+2)*sizeof(char));
-    if(rmt_cmd->file_order == local_remote){
+    if(rmt_cmd->file_order == lcl_rmt){
       (void)sprintf(cmd_sys,rmt_cmd->fmt,fl_nm_lcl,fl_nm_rmt);
     }else{
       (void)sprintf(cmd_sys,rmt_cmd->fmt,fl_nm_rmt,fl_nm_lcl);
     } /* end else */
     if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: Retrieving file from remote location:\n%s",prg_nm_get(),cmd_sys);
     (void)fflush(stderr);
-    /* Fetch the file from the remote file system */ 
+    /* Fetch file from remote file system */ 
     rcd=system(cmd_sys);
     /* Free local command space */ 
     (void)free(cmd_sys);
 
-    /* Free the ftp script, which is the only dynamically allocated command */ 
+    /* Free ftp script, which is the only dynamically allocated command */ 
     if(rmt_cmd == &ftp) (void)free(rmt_cmd->fmt);
    
     if(rmt_cmd->transfer_mode == synchronous){
@@ -681,24 +682,24 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 
       int fl_sz_crr=-2;
       int fl_sz_ntl=-1;
-      int nbr_tm=100; /* maximum number of sleep periods before error exit */ 
+      int nbr_tm=100; /* Maximum number of sleep periods before error exit */ 
       int tm_idx;
-      int tm_sleep=10; /* seconds per stat() check for successful return */ 
+      int tm_sleep=10; /* Seconds per stat() check for successful return */ 
 
       /* Asynchronous retrieval uses a sleep and poll technique */ 
       for(tm_idx=0;tm_idx<nbr_tm;tm_idx++){
 	rcd=stat(fl_nm_lcl,&stat_sct);
 	if(rcd == 0){
-	  /* What is the current size of the file? */ 
+	  /* What is current size of file? */ 
 	  fl_sz_ntl=fl_sz_crr;
 	  fl_sz_crr=stat_sct.st_size;
-	  /* If the file size has not changed for an entire sleep period, assume 
-	     the file is completely retrieved. */ 
+	  /* If size of file has not changed for an entire sleep period, assume 
+	     file is completely retrieved. */ 
 	  if(fl_sz_ntl == fl_sz_crr){
 	    break;
 	  } /* end if */
 	} /* end if */
-	/* Sleep for the specified time */ 
+	/* Sleep for specified time */ 
 	(void)sleep((unsigned)tm_sleep);
 	if(dbg_lvl_get() > 0) (void)fprintf(stderr,".");
 	(void)fflush(stderr);
@@ -714,7 +715,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     *FILE_RETRIEVED_FROM_REMOTE_LOCATION=False;
   } /* end if file was already on the local system */ 
 
-  /* Make sure we have read permission on the local file */
+  /* Make sure we have read permission on local file */
   if((fp_in=fopen(fl_nm_lcl,"r")) == NULL){
     (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s\n",prg_nm_get(),fl_nm_lcl);
     exit(EXIT_FAILURE);

@@ -1,6 +1,6 @@
 #!/contrib/bin/perl
 				
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.29 1999-10-15 18:01:32 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.30 1999-10-18 01:14:31 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
@@ -14,7 +14,6 @@ my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.29 199
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_40
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_40
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_40
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_40
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_40
 
 # Export daily snapshot
@@ -53,9 +52,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $CVS_Date='$Date: 1999-10-15 18:01:32 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.29 1999-10-15 18:01:32 zender Exp $';
-my $CVS_Revision='$Revision: 1.29 $';
+my $CVS_Date='$Date: 1999-10-18 01:14:31 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.30 1999-10-18 01:14:31 zender Exp $';
+my $CVS_Revision='$Revision: 1.30 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -67,7 +66,6 @@ my $nst_all=$False; # Option nst_all; Whether to install version on all machines
 my $acd_cnt=$False; # Option acd_cnt; Whether to install version in acd contrib
 my $acd_prs=$True; # Option acd_prs; Whether to install version in acd personal
 my $dat_cnt=$False; # Option dat_cnt; Whether to install version in dataproc contrib
-my $wnt_cnt=$False; # Option wnt_cnt; Whether to install version in winterpark contrib
 my $ute_prs=$False; # Option ute_prs; Whether to install version in ute personal
 my $cgd_cnt=$False; # Option cgd; Whether to install version in CGD contrib
 my $cgd_prs=$False; # Option cgd; Whether to install version in CGD personal
@@ -107,7 +105,6 @@ $rcd=GetOptions(
 		'acd_cnt!' => \$acd_cnt,
 		'ute_prs!' => \$ute_prs,
 		'dat_cnt!' => \$dat_cnt,
-		'wnt_cnt!' => \$wnt_cnt,
 		'cray_prs!' => \$cray_prs,
 		);
 
@@ -123,7 +120,6 @@ if($nst_all){
     $acd_cnt=$True;
     $ute_prs=$True;
     $dat_cnt=$True;
-    $wnt_cnt=$True;
     $cray_prs=$True;
 } # endif
 
@@ -143,7 +139,6 @@ if($dbg_lvl >= 2){print ("$prg_nm: \$cgd_cnt = $cgd_cnt\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$cgd_prs = $cgd_prs\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$cray_prs = $cray_prs\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$dat_cnt = $dat_cnt\n");} # endif dbg
-if($dbg_lvl >= 2){print ("$prg_nm: \$wnt_cnt = $wnt_cnt\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$ute_prs = $ute_prs\n");} # endif dbg
 
 if($vrs_tag eq $main_trunk_tag || $vrs_tag eq ''){$dly_snp=$True;}else{$dly_snp=$False;}
@@ -255,18 +250,6 @@ if($cgd_cnt){
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
 } # endif cgd_cnt
 
-if($wnt_cnt){
-#     $rmt_mch='winterpark.ucar.edu';
-# #    rsh $rmt_mch 'printf $PVM_ARCH'
-#     print STDOUT "\n$prg_nm: Updating contrib NCO on $rmt_mch...\n";
-#     &cmd_prc("rsh $rmt_mch \"mkdir /usr/tmp/zender\"");
-#     &cmd_prc("rsh $rmt_mch \"/bin/rm -r -f /usr/tmp/zender/nco*\"");
-#     &cmd_prc("rcp -p ftp.cgd.ucar.edu:/ftp/pub/zender/nco/nco.tar.gz $rmt_mch:/usr/tmp/zender");
-#     &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender;tar -xvzf nco.tar.gz;rm -f nco.tar.gz;mv -f nco-* nco\"");
-#     &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/nco/bld; setenv MY_BIN_DIR /contrib/nco-1.1/bin; setenv MY_LIB_DIR /contrib/nco-1.1/lib; setenv MY_OBJ_DIR /usr/tmp/zender/nco/obj; make libclean binclean objclean; make\"");
-#     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
-} # endif wnt_cnt
-
 if($dat_cnt){
     $rmt_mch='dataproc.ucar.edu';
 #    rsh $rmt_mch 'printf $PVM_ARCH'
@@ -275,7 +258,7 @@ if($dat_cnt){
     &cmd_prc("rsh $rmt_mch \"/bin/rm -r -f /usr/tmp/zender/nco*\"");
     &cmd_prc("rcp -p ftp.cgd.ucar.edu:/ftp/pub/zender/nco/nco.tar.gz $rmt_mch:/usr/tmp/zender");
     &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender;tar -xvzf nco.tar.gz;rm -f nco.tar.gz;mv -f nco-* nco\"");
-    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/nco/bld; setenv MY_BIN_DIR /contrib/nco-1.1/bin; setenv MY_LIB_DIR /contrib/nco-1.1/lib; setenv MY_OBJ_DIR /usr/tmp/zender/nco/obj; gmake libclean binclean objclean; gmake\"");
+    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/nco/bld; setenv MY_BIN_DIR /contrib/nco-1.1/bin; setenv MY_LIB_DIR /contrib/nco-1.1/lib; setenv MY_OBJ_DIR /usr/tmp/zender/nco/obj; gmake dpn_cln lib_cln bin_cln obj_cln; gmake\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
 } # endif dat_cnt
 

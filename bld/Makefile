@@ -1,6 +1,8 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.41 1999-10-15 21:07:32 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.42 1999-10-18 01:14:31 zender Exp $
 
 # Purpose: Makefile for NCO module nco
+
+# Usage: 
 
 ifndef PVM_ARCH
  PVM_ARCH := $(shell $(MY_BLD_DIR)/pvmgetarch)
@@ -736,7 +738,7 @@ readnet:	$(READNET_OBJ)
 
 # Create dependency files only if they will not be immediately deleted
 INCLUDE_DPN := TRUE
-GOALS_WHICH_DELETE_DEPENDENCY_FILES := cln clean distclean dst_cln dpn_cln tags uninstall
+GOALS_WHICH_DELETE_DEPENDENCY_FILES := cln clean dir distclean dst_cln dpn_cln tags uninstall
 ifeq (,$(findstring $(MAKECMDGOALS),$(GOALS_WHICH_DELETE_DEPENDENCY_FILES)))
  INCLUDE_DPN := TRUE
 else
