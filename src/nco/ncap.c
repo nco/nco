@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.69 2002-05-17 07:36:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.70 2002-05-18 19:59:30 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -84,8 +84,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.69 2002-05-17 07:36:34 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.69 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.70 2002-05-18 19:59:30 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.70 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -131,7 +131,7 @@ main(int argc,char **argv)
   int sng_lng;
   int var_id;
   int spt_arg_lng=int_CEWI;
-  int nbr_att=0; /* [nbr] Size of att_lst */ 
+  int nbr_att=0; /* [nbr] Number of attributes in script */
   
   sym_sct **sym_tbl; /* [fnc] Symbol table for functions */
   int sym_tbl_nbr; /* [nbr] Size of symbol table */
@@ -300,15 +300,16 @@ main(int argc,char **argv)
   prs_arg.in_id=in_id; /* [id] Input data file ID */
   prs_arg.fl_out=NULL; /* [sng] Output data file */
   prs_arg.out_id=-1; /* [id] Output data file ID */
-  prs_arg.fl_spt=fl_spt; /* Instruction file to be parsed */
-  prs_arg.att_lst=att_lst;
-  prs_arg.nbr_att=&nbr_att;
+  prs_arg.fl_spt=fl_spt; /* [fl] Instruction file to be parsed */
+  prs_arg.att_lst=att_lst; /* [sct] Attributes in script */
+  prs_arg.nbr_att=&nbr_att; /* [nbr] Number of attributes in script */
   prs_arg.dmn=dmn; /* [dmn] List of extracted dimensions */
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr; /* [nbr] Number of extracted dimensions */
   prs_arg.sym_tbl=sym_tbl; /* [fnc] Symbol table for functions */
   prs_arg.sym_tbl_nbr=sym_tbl_nbr; /* [nbr] Number of functions in table */
-  prs_arg.initial_scan=True; /* [flg] Initial scan of script */
+  prs_arg.ntl_scn=True; /* [flg] Initial scan of script */
   prs_arg.var_LHS=NULL; /* [var] LHS cast variable */
+  prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
   
   /* Initialize line counter */
   ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
@@ -318,59 +319,59 @@ main(int argc,char **argv)
      list b: LHS variables present in input file
      list c: Variables of attributes on LHS which are present in input file 
      list d: Dimensions defined in LHS subscripts */
-  (void)ncap_initial_scan(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c,&nbr_lst_c,&xtr_lst_d,&nbr_lst_d);
+  (void)ncap_ntl_scn(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c,&nbr_lst_c,&xtr_lst_d,&nbr_lst_d);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
   rcd=nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
 
   if(PROCESS_ALL_VARS){
-     /* Form initial extraction list from user input */
-     xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
-     if(nbr_lst_b>0) xtr_lst=var_lst_sub(in_id,xtr_lst,&nbr_xtr,xtr_lst_b,nbr_lst_b);
+    /* Form initial extraction list from user input */
+    xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
+    if(nbr_lst_b > 0) xtr_lst=var_lst_sub(in_id,xtr_lst,&nbr_xtr,xtr_lst_b,nbr_lst_b);
     /* Copy list for later */
     xtr_lst_2=var_lst_copy(xtr_lst,nbr_xtr);
     nbr_xtr_2=nbr_xtr;
   } /* end if PROCESS_ALL_VARS */
-
+  
   if(!PROCESS_ALL_VARS){
     /* Create two lists of variables
        xtr_lst: Used to find dimensions
        xtr_lst_2: Actual variable extraction list     
-
-       xtr_lst = list_a + list_c + co_ordinate variables 
-       xtr_lst_2 = list_c + coordinate variables - list_b */
        
+       xtr_lst=list_a + list_c + coordinate variables 
+       xtr_lst_2=list_c + coordinate variables - list_b */
+    
     /* Add list c to extraction list */
-   if(nbr_lst_c>0) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_c,nbr_lst_c);
-  
-   /* Add list a to extraction list */
-   if(nbr_lst_a>0) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
-  
-   /* Add all coordinate variables to extraction list */
-   if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
-  
-  /* Make sure coordinates associated extracted variables are also on extraction list */
-   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
-   
-   /* Create list of coordinate variables */
-   if(nbr_xtr > 0 && (PROCESS_ALL_COORDINATES || PROCESS_ASSOCIATED_COORDINATES)){
-     nbr_xtr_2=nbr_xtr;
-     xtr_lst_2 = var_lst_copy(xtr_lst,nbr_xtr);
-     
-     /* Add dimensions defined in LHS subscripts */
-     if(nbr_lst_d > 0) xtr_lst_2=var_lst_add(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_d,nbr_lst_d); 
-     
-     /* Creat list of coordinates only */
-     xtr_lst_2=ncap_var_lst_crd_make(in_id,xtr_lst_2,&nbr_xtr_2);
-   } /* endif */
-
-   /* Add list_c to new list */
-   if(nbr_lst_c>0) xtr_lst_2=var_lst_add(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_c,nbr_lst_c);
-   
-   /* Subtract list_b from this list */   
-   if(nbr_lst_b > 0) xtr_lst_2=var_lst_sub(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
+    if(nbr_lst_c > 0) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_c,nbr_lst_c);
+    
+    /* Add list a to extraction list */
+    if(nbr_lst_a > 0) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
+    
+    /* Add all coordinate variables to extraction list */
+    if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
+    
+    /* Make sure coordinates associated extracted variables are also on extraction list */
+    if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
+    
+    /* Create list of coordinate variables */
+    if(nbr_xtr > 0 && (PROCESS_ALL_COORDINATES || PROCESS_ASSOCIATED_COORDINATES)){
+      nbr_xtr_2=nbr_xtr;
+      xtr_lst_2=var_lst_copy(xtr_lst,nbr_xtr);
+      
+      /* Add dimensions defined in LHS subscripts */
+      if(nbr_lst_d > 0) xtr_lst_2=var_lst_add(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_d,nbr_lst_d); 
+      
+      /* Creat list of coordinates only */
+      xtr_lst_2=ncap_var_lst_crd_make(in_id,xtr_lst_2,&nbr_xtr_2);
+    } /* endif */
+    
+    /* Add list_c to new list */
+    if(nbr_lst_c > 0) xtr_lst_2=var_lst_add(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_c,nbr_lst_c);
+    
+    /* Subtract list_b from this list */   
+    if(nbr_lst_b > 0) xtr_lst_2=var_lst_sub(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
   } /* end if PROCESS_ALL_VARS */
-
+  
   /* Heapsort extraction lists by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
   if(nbr_xtr_2 > 1) xtr_lst_2=lst_heapsort(xtr_lst_2,nbr_xtr_2,False);
@@ -380,7 +381,7 @@ main(int argc,char **argv)
   
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
-
+  
   /* Add list d */
   if(nbr_lst_d > 0) dmn_lst=var_lst_add(in_id,dmn_lst,&nbr_dmn_xtr,xtr_lst_d,nbr_lst_d);  
   
@@ -434,15 +435,16 @@ main(int argc,char **argv)
   prs_arg.in_id=in_id; /* [id] Input data file ID */
   prs_arg.fl_out=fl_out; /* [sng] Output data file */
   prs_arg.out_id=out_id; /* [id] Output data file ID */
-  prs_arg.fl_spt=fl_spt; /* Instruction file to be parsed */
-  prs_arg.att_lst=att_lst;
-  prs_arg.nbr_att=&nbr_att;
+  prs_arg.fl_spt=fl_spt; /* [fl] Instruction file to be parsed */
+  prs_arg.att_lst=att_lst; /* [sct] Attributes in script */
+  prs_arg.nbr_att=&nbr_att; /* [nbr] Number of attributes in script */
   prs_arg.dmn=dmn_out; /* [dmn] List of extracted dimensions */
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr; /* [nbr] Number of extracted dimensions */
   prs_arg.sym_tbl=sym_tbl; /* [fnc] Symbol table for functions */
   prs_arg.sym_tbl_nbr=sym_tbl_nbr; /* [nbr] Number of functions in table */
-  prs_arg.initial_scan=False; /* [flg] Initial scan of script */
+  prs_arg.ntl_scn=False; /* [flg] Initial scan of script */
   prs_arg.var_LHS=NULL; /* [var] LHS cast variable */
+  prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
   
   /* Initialize line counter */
   ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 

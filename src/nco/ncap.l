@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.48 2002-05-17 07:36:34 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.49 2002-05-18 19:59:30 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -103,14 +103,13 @@
   /* Create new scanner input buffer for include file and switch to it
      Current start conditions remains active in new input buffer */
   yy_switch_to_buffer(yy_create_buffer(yyin,YY_BUF_SIZE));
-  
   /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
   BEGIN INITIAL;
 } /* end enter #include file */
 
 <<EOF>> {
   /* Emerge from #include file if nested, else exit lexer */
-  if(dbg_lvl_get() >= 0) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from nesting depth %d to depth %d\n",prg_nm_get(),ncl_dpt_crr,ncl_dpt_crr-1);
+  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from nesting depth %d to depth %d\n",prg_nm_get(),ncl_dpt_crr,ncl_dpt_crr-1);
   /* Decrement depth of nesting */
   if(ncl_dpt_crr > 0) ncl_dpt_crr--; 
   /* De-allocate entry from line counter array */
@@ -192,7 +191,7 @@
   /* Float */
   float flt_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a float %s\n",yytext); 
-  if(sscanf((char*)yytext,"%e",&flt_tkn) != 1){
+  if(sscanf((char *)yytext,"%e",&flt_tkn) != 1){
     sprintf(err_sng,"#Bad float: %s",yytext);
     yyerror(err_sng);
     return EPROVOKE;
@@ -206,7 +205,7 @@
   /* Long */
   double dbl_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing an integer %s\n",yytext); 
-  dbl_tkn=strtod((char*)yytext, (char**)(NULL));
+  dbl_tkn=strtod((char *)yytext, (char **)(NULL));
   if (dbl_tkn < INT_MIN || dbl_tkn > INT_MAX){
     lval_ptr->scv.val.d=dbl_tkn;
     lval_ptr->scv.type=NC_DOUBLE;
@@ -222,8 +221,8 @@
   /* Short */
   short sht_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a short %s\n",yytext); 	
-  if(sscanf((char*)yytext,"%hd",&sht_tkn) != 1){
-    sprintf(err_sng,"Bad short constant: %s",(char*)yytext);
+  if(sscanf((char *)yytext,"%hd",&sht_tkn) != 1){
+    sprintf(err_sng,"Bad short constant: %s",(char *)yytext);
     yyerror(err_sng);
   } /* endif err */
   lval_ptr->scv.val.s=sht_tkn;
@@ -235,7 +234,7 @@
   /* Byte */
   int byt_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a byte %s\n",yytext); 
-  if(sscanf((char*)yytext,"%d",&byt_tkn) != 1){
+  if(sscanf((char *)yytext,"%d",&byt_tkn) != 1){
     sprintf(err_sng,"#Bad byte: %s",yytext);
     yyerror(err_sng);
     return EPROVOKE;
@@ -255,7 +254,10 @@ foo/[ ]*\( {return ABS;} /* TOKEN whitespace (: Token followed any amount of whi
 This disambiguates variable and functional namespaces. */
 abs/[ ]*\( {return ABS;}
 atostr/[ ]*\( {return ATOSTR;}
-min/[ ]*\( {return RDC;}
+avg/[ ]*\( {prs_arg->nco_op_typ=nco_op_avg;return RDC;}
+min/[ ]*\( {prs_arg->nco_op_typ=nco_op_min;return RDC;}
+max/[ ]*\( {prs_arg->nco_op_typ=nco_op_max;return RDC;}
+ttl/[ ]*\( {prs_arg->nco_op_typ=nco_op_ttl;return RDC;}
 pck/[ ]*\( {return PACK;}
 pack/[ ]*\( {return PACK;}
 pow/[ ]*\( {return POWER;}
@@ -305,7 +307,7 @@ unpack/[ ]*\( {return UNPACK;}
   
   /* We are on RHS so return value of attribute (if available) to parser
      During initial scan, just return attributes on RHS */
-  if(prs_arg->initial_scan){
+  if(prs_arg->ntl_scn){
     if(!RHS){
       lval_ptr->aed.att_nm=strdup(att_nm);
       lval_ptr->aed.var_nm=strdup(var_nm);
@@ -319,19 +321,18 @@ unpack/[ ]*\( {return UNPACK;}
     /* First check if attribute has already been saved in symbol table
        If so then obtain and return value, else check input file
        If attribute is present obtain and return value from disk else return NC_BYTE of value 0
-       If attribute is NC_CHAR then SNG type is returned
-       for others NC_FLOAT, NC_DOUBLE, NC_BYTE, NC_SHORT an SCV
-       is returned to parser. */
+       If attribute is NC_CHAR then return SNG type
+       Other types (NC_FLOAT, NC_DOUBLE, NC_BYTE, NC_SHORT) return SCV */
     att_idx=ncap_aed_lookup(var_nm,att_nm,prs_arg->att_lst,prs_arg->nbr_att,False);
     if(att_idx >= 0){
       ptr_aed=prs_arg->att_lst[att_idx]; 
-      if (ptr_aed->type == NC_CHAR){
+      if(ptr_aed->type == NC_CHAR){
 	(void)cast_void_nctype(ptr_aed->type,&ptr_aed->val);
 	lval_ptr->sng=(char *)nco_malloc((ptr_aed->sz+1)*nco_typ_lng(NC_CHAR));
 	strncpy(lval_ptr->sng,(char *)(ptr_aed->val.cp),ptr_aed->sz);
 	lval_ptr->sng[ptr_aed->sz]='\0';
 	return SNG;
-      } else {
+      }else{
 	lval_ptr->scv=ptr_unn_2_scv(ptr_aed->type,ptr_aed->val);
 	return SCV;  
       } /* end else */        
@@ -471,7 +472,7 @@ unpack/[ ]*\( {return UNPACK;}
   } /* end loop over dimensions */
   
   /* Build subscript list only once, during initial scan */
-  if(prs_arg->initial_scan){
+  if(prs_arg->ntl_scn){
     lval_ptr->sbs_lst=(nm_lst_sct *)nco_malloc(sizeof(nm_lst_sct));
     lval_ptr->sbs_lst->list=out_lst;
     lval_ptr->sbs_lst->nbr=out_nbr;
@@ -537,13 +538,13 @@ unpack/[ ]*\( {return UNPACK;}
      Nevertheless, copy 1.0 into value for safety */
   { /* Change scope to define convenience variables which reduce dereferencing */
     long var_sz; /* [nbr] Number of elements in variable */
-    int var_type_sz; /* [B] Size of single element of variable */
+    int var_typ_sz; /* [B] Size of single element of variable */
     char *var_val_cp; /* [ptr] Pointer to values */
     
     var_sz=var->sz; /* [nbr] Number of elements in variable */
-    var_type_sz=nco_typ_lng(var->type);
+    var_typ_sz=nco_typ_lng(var->type);
     var_val_cp=(char *)var->val.vp;
-    for(idx=0;idx<var_sz;idx++) (void)memcpy(var_val_cp+idx,(void *)(&val),var_type_sz);
+    for(idx=0;idx<var_sz;idx++) (void)memcpy(var_val_cp+idx,(void *)(&val),var_typ_sz);
   } /* end scope */
   
   /* Link variable into yylex() argument for use in parser */
@@ -615,7 +616,7 @@ yywrap(void)
 } /* end yywrap() */
 
 void 
-ncap_initial_scan
+ncap_ntl_scn
 (prs_sct *prs_arg,
  char *spt_arg_cat,
  nm_id_sct** xtr_lst_a,
@@ -633,15 +634,15 @@ ncap_initial_scan
      list c: Variables of attributes on LHS which are present in input file
      list d: */
   
-  /* 20020510: ncap_initial_scan() was in ncap_utl.c but g++ (not gcc) would barf
+  /* 20020510: ncap_ntl_scn() was in ncap_utl.c but g++ (not gcc) would barf
      g++ complains that since YYSTYPE is defined in ncap.tab.h,
      it is an error to call external function (yylex()) that uses this type
      Although the error is somewhat bogus, there is some merit to it
      Placing routine in ncap.l gives routine access to yylex() prototype and YYSTYPE
-     Since ncap_initial_scan() does call yylex(), it may reside in ncap.l
-     To move routine to other file, #define NCAP_INITIAL_SCAN_NOT_IN_NCAP_L */
-#undef NCAP_INITIAL_SCAN_NOT_IN_NCAP_L
-#ifdef NCAP_INITIAL_SCAN_NOT_IN_NCAP_L
+     Since ncap_ntl_scn() does call yylex(), it may reside in ncap.l
+     To move routine to other file, #define NCAP_NTL_SCN_NOT_IN_NCAP_L */
+#undef NCAP_NTL_SCN_NOT_IN_NCAP_L
+#ifdef NCAP_NTL_SCN_NOT_IN_NCAP_L
   /* Get YYSTYPE prior to calling scanner */
 #include "ncap.tab.h" /* ncap.tab.h is produced from ncap.y by parser generator */
 
@@ -652,7 +653,7 @@ ncap_initial_scan
    It is a condensation of the lexer declaration from lex.yy.c:
    YY_BUFFER_STATE yy_scan_string YY_PROTO(( yyconst char *yy_str )); */
   extern int yy_scan_string(const char *);
-#endif /* NCAP_INITIAL_SCAN_NOT_IN_NCAP_L */
+#endif /* NCAP_NTL_SCN_NOT_IN_NCAP_L */
 
   bool match;
   
@@ -745,7 +746,7 @@ ncap_initial_scan
     default: 
       /* Tokens that fall through are perfectly safe and normal
 	 Tokens values 1--256 are ASCII characters, values > 256 defined in yy.tab.h */
-      if(dbg_lvl_get() >= 5)(void)fprintf(stderr,"%s: DEBUG Token type %d not handled in ncap_initial_scan()\n",prg_nm_get(),tkn_crr);
+      if(dbg_lvl_get() >= 5)(void)fprintf(stderr,"%s: DEBUG Token type %d not handled in ncap_ntl_scn()\n",prg_nm_get(),tkn_crr);
       break;
     } /* end switch */
   } /* end while */
@@ -755,6 +756,6 @@ ncap_initial_scan
   if(n_lst_c>0){*xtr_lst_c=lst_c;*nbr_lst_c=n_lst_c;}
   if(n_lst_d>0){*xtr_lst_d=lst_d;*nbr_lst_d=n_lst_d;}
   
-} /* end ncap_initial_scan() */
+} /* end ncap_ntl_scn() */
 
 /* End user subroutines section */

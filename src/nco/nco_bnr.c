@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_bnr.c,v 1.4 2002-05-08 20:35:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_bnr.c,v 1.5 2002-05-18 19:59:30 zender Exp $ */
 
 /* Purpose: Binary write utilities */
 
@@ -63,5 +63,6 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
     nco_exit(EXIT_FAILURE);
   } /* end if */
   if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s (%s, %ld x %d b), ",var_nm,c_typ_nm(var_typ),var_sz,nco_typ_lng(var_typ));
+  if(dbg_lvl_get() > 0) (void)fflush(stderr);
   return wrt_nbr; /* O [nbr] Number of elements successfully written */
 } /* end nco_bnr_wrt() */

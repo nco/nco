@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.137 2002-05-15 06:58:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.138 2002-05-18 19:59:29 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -163,7 +163,7 @@ VPATH := $(subst ${space},:,${MDL_PTH})
 CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 
 # Variables having to do with binary executables created by module
-MDL_BIN_TRG := ncap ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted # NCO binary targets
+MDL_BIN_TRG := ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted ncap # NCO binary targets
 MDL_BIN_SYM_LNK := ncea ncrcat # Symbolic links
 MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
 MDL_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_BIN_STB}) # distclean removes these files

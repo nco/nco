@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.59 2002-05-13 19:40:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.60 2002-05-18 19:59:30 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.59 2002-05-13 19:40:32 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.59 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.60 2002-05-18 19:59:30 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.60 $";
   
   extern char *optarg;
   
@@ -294,7 +294,7 @@ main(int argc,char **argv)
 
     /* Copy variable data */
     for(idx=0;idx<nbr_xtr;idx++){
-      if(dbg_lvl > 2) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
+      if(dbg_lvl > 2 && !NCO_BNR_WRT) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
       if(lmt_nbr > 0) (void)cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
     } /* end loop over idx */

@@ -1,3 +1,8 @@
+2002-05-18  Charlie Zender  <zender@uci.edu>
+
+	* Added nco_op_typ element to prs_sct for handling dimension
+	reduction functions
+
 2002-05-14  Charlie Zender  <zender@uci.edu>
 
 	* Added skeleton code to read #include'd files. Not yet working.

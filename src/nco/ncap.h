@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.37 2002-05-17 07:36:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.38 2002-05-18 19:59:30 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -49,26 +49,42 @@ typedef struct { /* nm_lst_sct */
   int nbr;
 } nm_lst_sct;
 
-/* Parse structure */
+/* Parse structure 
+   prs_sct is easy to confuse with yylval since both are passed to lexer
+   yylval is union of all possible data types for semantic values
+   prs_sct is passed into lexer by calling routine (e.g., main())
+   prs_sct elements are essentially global variables which can be modified in lexer
+   Calling routine (e.g., main()) and parser then have access prs_sct 
+   Two elements of prs_sct, var_LHS & nco_op_typ, are more local in that
+   they may change line-to-line in input script. */
 typedef struct{ /* prs_sct */
   char *fl_in; /* [sng] Input data file */
   int in_id; /* [id] Input data file ID */
   char *fl_out; /* [sng] Output data file */
   int out_id; /* [id] Output data file ID */
-  char *fl_spt; /* Instruction file to be parsed */
-  aed_sct **att_lst;
-  int *nbr_att;
+  char *fl_spt; /* [fl] Instruction file to be parsed */
+  aed_sct **att_lst; /* [sct] Attributes in script */
+  int *nbr_att; /* [nbr] Number of attributes in script */
   dmn_sct **dmn; /* [dmn] List of extracted dimensions */
   int nbr_dmn_xtr; /* [nbr] Number of extracted dimensions */
   sym_sct **sym_tbl; /* [fnc] Symbol table for functions */
   int sym_tbl_nbr; /* [nbr] Number of functions in table */
-  bool initial_scan; /* [flg] Initial scan of script */
+  bool ntl_scn; /* [flg] Initial scan of script */
   var_sct *var_LHS; /* [var] LHS cast variable */
+  int nco_op_typ; /* [enm] Operation type */
 } prs_sct;
 
 /* These funtions are either in ncap.y or ncap_utl.c */
+
+int /* O [idx] Location of attribute in list */
+ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribute */
+(const char * const var_nm, /* I [sng] Variable name */
+ const char * const att_nm, /* I [sng] Attribute name */
+ aed_sct ** const att_lst, /* I/O [sct] Attributes in list */
+ int * const nbr_att, /* I/O [nbr] Number of attributes in list */
+ const bool update); /* I [flg] Delete existing value or add new attribute to list */
+
 bool ncap_var_stretch(var_sct **,var_sct **);
-int ncap_aed_lookup(char *,char *,aed_sct **,int *,bool);
 int ncap_scv_minus(scv_sct *);
 int ncap_var_write(var_sct *,prs_sct*);
 int yyerror(char *sng);
@@ -97,7 +113,7 @@ var_sct *ncap_var_var_divide(var_sct *var_1,var_sct *var_2);
 var_sct *ncap_var_var_multiply(var_sct *var_1,var_sct *var_2);
 var_sct *ncap_var_var_sub(var_sct *var_1,var_sct *var_2);
 void fnc_add(char *nm, double (*fnc_dbl)());
-void ncap_initial_scan(prs_sct*,char *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *);
+void ncap_ntl_scn(prs_sct*,char *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *);
 void nco_lib_vrs_prn();
 void nco_var_free(var_sct **);
 

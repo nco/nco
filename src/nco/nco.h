@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.36 2002-05-07 08:46:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.37 2002-05-18 19:59:30 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -115,15 +115,16 @@ extern "C" {
   }; /* end lmt_typ enum */
   
   enum nco_op_typ{ /* [enm] Operation type */
-    nco_op_avg, /* Average */
-    nco_op_min, /* Minimum value */
-    nco_op_max, /* Maximum value */
-    nco_op_ttl, /* Linear sum */
-    nco_op_sqravg, /*  */
-    nco_op_avgsqr,
-    nco_op_sqrt,
-    nco_op_rms,
-    nco_op_rmssdn
+    nco_op_avg, /* [enm] Average */
+    nco_op_min, /* [enm] Minimum value */
+    nco_op_max, /* [enm] Maximum value */
+    nco_op_ttl, /* [enm] Linear sum */
+    nco_op_sqravg, /* [enm] Square of mean */
+    nco_op_avgsqr, /* [enm] Mean of sum of squares */
+    nco_op_sqrt, /* [enm] Square root of mean */
+    nco_op_rms, /* [enm] Root-mean-square (normalized by N) */
+    nco_op_rmssdn, /* [enm] Root-mean square normalized by N-1 */
+    nco_op_nil /* [enm] Nil or undefined operation type  */
   }; /* end nco_op_typ enum */
   /* end enumeration section */
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.23 2002-05-08 20:35:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.24 2002-05-18 19:59:30 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -105,13 +105,9 @@ nco_typ_sng /* [fnc]   */
   return (char *)NULL;
 } /* end nco_typ_sng() */
 
-char *
-c_typ_nm /* [fnc]   */
-(nc_type type)
-/*  
-   nc_type type: I netCDF type
-   char *c_typ_nm(): O string describing type
-*/
+char * /* O [sng] Native C type */
+c_typ_nm /* [fnc] Return string describing native C type */
+(nc_type type) /* O [enm] netCDF type */
 {
   /* Purpose: Divine internal (native) C type string from netCDF external type enum
      fxm: This breaks on Crays where both NC_FLOAT and NC_DOUBLE are native type float */
@@ -135,35 +131,55 @@ c_typ_nm /* [fnc]   */
   return (char *)NULL;
 } /* end c_typ_nm() */
 
-char *
-fortran_type_nm /* [fnc]   */
-(nc_type type)
-/*  
-   nc_type type: I netCDF type
-   char *fortran_type_nm(): O string describing type
-*/
+char * /* O [sng] Native Fortran77 type */
+f77_typ_nm /* [fnc] Return string describing native Fortran77 type */
+(nc_type type) /* O [enm] netCDF type */
 {
-  /* Purpose: Divine internal (native) Fortran type string from netCDF external type enum
-     fxm: This breaks on Crays where both NC_FLOAT and NC_DOUBLE are native type real */
+  /* Purpose: Divine internal (native) Fortran type string from netCDF external type enum */
   switch(type){
   case NC_FLOAT:
-    return "real";
+    return "real*4";
   case NC_DOUBLE:
-    return "double precision";
+    return "real*8";
   case NC_INT:
-    return "integer";
+    return "integer*4";
   case NC_SHORT:
     return "integer*2";
   case NC_CHAR:
     return "character";
   case NC_BYTE:
-    return "char";
+    return "character";
   default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
   return (char *)NULL;
-} /* end fortran_type_nm() */
+} /* end f77_typ_nm() */
+
+char * /* O [sng] Native Fortran90 type */
+f90_typ_nm /* [fnc] Return string describing native Fortran90 type */
+(nc_type type) /* O [enm] netCDF type */
+{
+  /* Purpose: Divine internal (native) Fortran type string from netCDF external type enum */
+  switch(type){
+  case NC_FLOAT:
+    return "real(selected_real_kind(p=6))";
+  case NC_DOUBLE:
+    return "real(selected_real_kind(p=12))";
+  case NC_INT:
+    return "integer(selected_int_kind(6))";
+  case NC_SHORT:
+    return "integer(selected_int_kind(2))";
+  case NC_CHAR:
+    return "character(1)";
+  case NC_BYTE:
+    return "character(1)";
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+
+  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
+  return (char *)NULL;
+} /* end f90_typ_nm() */
 
 void 
 nco_dfl_case_nctype_err(void) /* [fnc]   */

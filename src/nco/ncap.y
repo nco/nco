@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.57 2002-05-17 07:36:34 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.58 2002-05-18 19:59:30 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -487,8 +487,8 @@ var_xpr '+' var_xpr {
 | RDC '(' var_xpr ')' {
   $$=ncap_var_abs($3);
   /* fxm Finish avg,min,max,ttl */
-  /* int nco_op_typ=nco_op_avg; *//* [enm] Operation type */
   /* $$=var_avg($3,dim,dmn_nbr,nco_op_typ); */
+  /* if(prs_arg->nco_op_typ == nco_op_avg) (void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val); */
   (void)fprintf(stderr,"%s: WARNING RDC tokens not implemented yet\n",prg_nm_get());
   /* $3 is freed in var_avg() */
 } /* end ABS */
@@ -529,23 +529,36 @@ var_xpr '+' var_xpr {
 %%
 /* Begin User Subroutines section */
 
-int
-ncap_aed_lookup(char *var_nm,char *att_nm,aed_sct **att_lst,int *nbr_att,bool update)
+int /* O [idx] Location of attribute in list */
+ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribute */
+(const char * const var_nm, /* I [sng] Variable name */
+ const char * const att_nm, /* I [sng] Attribute name */
+ aed_sct ** const att_lst, /* I/O [sct] Attributes in list */
+ int * const nbr_att, /* I/O [nbr] Number of attributes in list */
+ const bool update) /* I [flg] Delete existing value or add new attribute to list */
 {
   int att_idx;
-  for(att_idx=0;att_idx<*nbr_att;att_idx++)
-    if (!strcmp(att_lst[att_idx]->att_nm,att_nm) && !strcmp(att_lst[att_idx]->var_nm,var_nm)){
-      /* Free memory if we are doing an update */
-      if(update) free(att_lst[att_idx]->val.vp);   
+  for(att_idx=0;att_idx<*nbr_att;att_idx++){
+    if(!strcmp(att_lst[att_idx]->att_nm,att_nm) && !strcmp(att_lst[att_idx]->var_nm,var_nm)){
+      /* Free existing value if we are updating 
+	 This value is likely to be replaced by new value in calling routine */
+      if(update) att_lst[att_idx]->val.vp=nco_free(att_lst[att_idx]->val.vp);   
+      /* Return location of attribute entry in list */
       return att_idx;
     } /* end if */
+  } /* end for */
 
+  /* Attribute was not found in list */
+
+  /* Return with failure code if not instructed to update list */
   if(!update) return -1;
   
+  /* Otherwise update list by allocating and filling new entry */
   att_lst[*nbr_att]=(aed_sct *)nco_malloc(sizeof(aed_sct));
   att_lst[*nbr_att]->var_nm=strdup(var_nm);
   att_lst[*nbr_att]->att_nm=strdup(att_nm);
-  
+
+  /* Increment number of attributes in list then return this number which is also location of new attribute */
   return (*nbr_att)++;
 } /* end ncap_aed_lookup */
 
