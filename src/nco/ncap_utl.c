@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.12 2000-08-28 17:22:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.13 2000-09-05 20:40:09 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -62,7 +62,7 @@ ncap_var_add(var_sct *var_1,var_sct *var_2)
   /* Routine called by parser */
   var_sct *var_sum;
 
-  var_sum=var_dup(var_2);
+  var_sum=var_dpl(var_2);
   var_sum=var_conform_dim(var_1,var_2,var_sum,MUST_CONFORM,&DO_CONFORM);
   var_sum=var_conform_type(var_1->type,var_sum);
   (void)var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_sum->val);

@@ -1,3 +1,10 @@
+2000-08-31  Charlie Zender  <zender@uci.edu>
+
+	* Changed handling of netCDF convetions to search for
+	"Conventions" attribute rather than "convention" attribute
+	Not sure why I ever used "convention" in the first place!
+	This should fix things like gasussian weights being subtracted
+
 2000-08-30  Charlie Zender  <zender@uci.edu>
 
 	* Updated var_dup(), var_free() to handle scl_fct.vp, add_fst.vp,

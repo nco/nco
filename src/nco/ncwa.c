@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.50 2000-08-29 20:57:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.51 2000-09-05 20:40:09 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.50 2000-08-29 20:57:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.50 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.51 2000-09-05 20:40:09 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.51 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -413,7 +413,7 @@ main(int argc,char **argv)
 	if(!strcmp(dmn_avg_lst[idx_avg].nm,dim[idx]->nm)) break;
       } /* end loop over idx_avg */
       if(idx_avg == nbr_dmn_avg){
-	dmn_out[nbr_dmn_out]=dmn_dup(dim[idx]);
+	dmn_out[nbr_dmn_out]=dmn_dpl(dim[idx]);
 	(void)dmn_xrf(dim[idx],dmn_out[nbr_dmn_out]);
 	nbr_dmn_out++;
       } /* end if */
@@ -430,7 +430,7 @@ main(int argc,char **argv)
     nbr_dmn_out=nbr_dmn_xtr;
     dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_out*sizeof(dmn_sct *));
     for(idx=0;idx<nbr_dmn_out;idx++){
-      dmn_out[idx]=dmn_dup(dim[idx]);
+      dmn_out[idx]=dmn_dpl(dim[idx]);
       (void)dmn_xrf(dim[idx],dmn_out[idx]);
     } /* end loop over idx */
 
@@ -444,7 +444,7 @@ main(int argc,char **argv)
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
-    var_out[idx]=var_dup(var[idx]);
+    var_out[idx]=var_dpl(var[idx]);
     (void)var_xrf(var[idx],var_out[idx]);
     (void)var_dmn_xrf(var_out[idx]);
   } /* end loop over idx */
@@ -528,7 +528,7 @@ main(int argc,char **argv)
       (void)var_get(in_id,wgt);
       /* fxm: Perhaps should allocate default tally array for wgt here
        That way, when wgt conforms to the first var_prc_out and it therefore
-       does not get a tally array copied by var_dup() in var_conform_dim(), 
+       does not get a tally array copied by var_dpl() in var_conform_dim(), 
        it will at least have space for a tally array. TODO #114. */
 
     } /* end if */
@@ -624,7 +624,7 @@ main(int argc,char **argv)
 	/* Duplicate wgt_out as wgt_avg so that wgt_out is not contaminated by any
 	   averaging operation and may be reused on next variable.
 	   Be sure to free wgt_avg after each use */
-	wgt_avg=var_dup(wgt_out);
+	wgt_avg=var_dpl(wgt_out);
 
 	if(var_prc[idx]->has_mss_val){
 	  double mss_val_dbl=double_CEWI;
@@ -648,7 +648,7 @@ main(int argc,char **argv)
 	  case NC_BYTE: mss_val_dbl=wgt_avg->mss_val.bp[0]; break;
 	  } /* end switch */
 	  /* Second mask wgt_avg where the variable is the missing value */
-	  (void)var_mask(wgt_avg->type,wgt_avg->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,mss_val_dbl,nc_op_ne,var_prc[idx]->val,wgt_avg->val);
+	  (void)var_mask(wgt_avg->type,wgt_avg->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,mss_val_dbl,nco_op_ne,var_prc[idx]->val,wgt_avg->val);
 	} /* endif weight must be checked for missing values */
 
 	if(msk_nm != NULL && DO_CONFORM_MSK){
@@ -666,7 +666,7 @@ main(int argc,char **argv)
 	/* fxm: temporary kludge to make sure weight has tally space.
 	   wgt_avg may occasionally lack a valid tally array in ncwa because
 	   it is created, sometimes, before the tally array for var_prc_out[idx] is 
-	   created, and thus the var_dup() call in var_conform_dim() does not copy
+	   created, and thus the var_dpl() call in var_conform_dim() does not copy
 	   a tally array into wgt_avg. See related note about this above. TODO #114.*/
 	if((wgt_avg->tally=(long *)nco_realloc(wgt_avg->tally,wgt_avg->sz*sizeof(long))) == NULL){
 	  (void)fprintf(stdout,"%s: ERROR Unable to realloc() %ld*%ld bytes for tally buffer for weight %s in main()\n",prg_nm_get(),wgt_avg->sz,(long)sizeof(long),wgt_avg->nm);

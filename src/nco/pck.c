@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.8 2000-08-31 20:05:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.9 2000-09-05 20:40:09 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -52,7 +52,12 @@
    pck_dsk_inq(): called first, e.g., in var_fll(), before var_prc copied to var_prc_out
    var_upk(): called in data retrieval routine, e.g., in var_get()
    var_pck(): called just before writing output file, e.g., in main()
-*/     
+   Bookkeeping hassle is keeping flags in var_prc synchronized with flags in var_prc_out
+
+   From netCDF User's Guide:
+   scale_factor: If present for a variable, the data are to be multiplied by this factor after the data are read by the application that accesses the data
+   add_offset: If present for a variable, this number is to be added to the data after is is read by the application that acceses the data. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. 
+   When scale_factor and add_offset are used for packing, the associated variable (containing the packed data) is typically of type byte or short, whereas the unpacked values are intended to be of type float or double. The attributes scale_factor and add_offset should both be of the type intended for the unpacked data, e.g., float or double. */     
 
 bool /* O [flg] Variable is packed on disk */
 pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
@@ -65,25 +70,24 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
      It is best if pck_dsk_inq() is called before input list is duplicated to output list */
   /* ncea -O -D 3 -v pck ~/nco/data/in.nc ~/nco/data/foo.nc */
 
-  /* From netCDF User's Guide: */
-  /* scale_factor: If present for a variable, the data are to be multiplied by this factor after the data are read by the application that accesses the data */
-  /* add_offset: If present for a variable, this number is to be added to the data after is is read by the application that acceses the data. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. 
-     When scale_factor and add_offset are used for packing, the associated variable (containing the packed data) is typically of type byte or short, whereas the unpacked values are intended to be of type float or double. The attributes scale_factor and add_offset should both be of the type intended for the unpacked data, e.g., float or double. */
+  char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+  char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
+  int add_fst_lng; /* [idx] Number of elements in add_offset attribute */
+  int scl_fct_lng; /* [idx] Number of elements in scale_factor attribute */
   int rcd; /* [rcd] Return success code */
 
-  nc_type scl_fct_typ; /* [idx] Type of scale_factor attribute */
-  int scl_fct_lng; /* [idx] Number of elements in scale_factor attribute */
   nc_type add_fst_typ; /* [idx] Type of add_offset attribute */
-  int add_fst_lng; /* [idx] Number of elements in add_offset attribute */
+  nc_type scl_fct_typ; /* [idx] Type of scale_factor attribute */
+
   /* Vet scale_factor */
   
   /* netCDF 2.x ncattinq() returns -1 on failure, so compare rcd to -1 */
   ncopts=0; 
-  rcd=ncattinq(nc_id,var->id,"scale_factor",&scl_fct_typ,&scl_fct_lng);
+  rcd=ncattinq(nc_id,var->id,scl_fct_sng,&scl_fct_typ,&scl_fct_lng);
   ncopts=NC_VERBOSE | NC_FATAL; 
   /* netCDF 3.x nc_inq_att() returns 0 on success, so compare rcd to NC_NOERR */
-  /*  rcd=nc_inq_att(nc_id,var->id,"scale_factor",&scl_fct_typ,(size_t *)&scl_fct_lng);*/
+  /*  rcd=nc_inq_att(nc_id,var->id,scl_fct_sng,&scl_fct_typ,(size_t *)&scl_fct_lng);*/
   if(rcd != -1){
     if(scl_fct_typ != NC_FLOAT && scl_fct_typ != NC_DOUBLE){
       (void)fprintf(stderr,"%s: WARNING pck_dsk_inq() reports scale_factor for %s is not NC_FLOAT or NC_DOUBLE. Will not attempt to unpack using scale_factor.\n",prg_nm_get(),var->nm); 
@@ -99,7 +103,7 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 
   /* Vet add_offset */
   ncopts=0; 
-  rcd=ncattinq(nc_id,var->id,"add_offset",&add_fst_typ,&add_fst_lng);
+  rcd=ncattinq(nc_id,var->id,add_fst_sng,&add_fst_typ,&add_fst_lng);
   ncopts=NC_VERBOSE | NC_FATAL; 
   if(rcd != -1){
     if(add_fst_typ != NC_FLOAT && add_fst_typ != NC_DOUBLE){
@@ -141,6 +145,9 @@ var_upk /* [fnc] Unpack variable in memory */
   /* Purpose: Unpack variable
      Routine is inverse of var_pck(): var_upk(var_pck(var))=var */
 
+  char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+  char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+
   var_sct *scl_fct=NULL_CEWI; /* [sct] Variable structure for scale_factor */
   var_sct *add_fst=NULL_CEWI; /* [sct] Variable structure for add_offset */
 
@@ -157,7 +164,7 @@ var_upk /* [fnc] Unpack variable in memory */
 
   if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
     var->scl_fct.vp=(void *)nco_malloc(nctypelen(var->typ_upk));
-    (void)ncattget(var->nc_id,var->id,"scale_factor",var->scl_fct.vp);
+    (void)ncattget(var->nc_id,var->id,scl_fct_sng,var->scl_fct.vp);
     scl_fct=scl_ptr_mk_var(var->scl_fct,var->typ_upk); /* [sct] Variable structure for scale_factor */
     /* Convert var to type of scale_factor for expansion */
     var=var_conform_type(scl_fct->type,var);
@@ -167,7 +174,7 @@ var_upk /* [fnc] Unpack variable in memory */
 
   if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
     var->add_fst.vp=(void *)nco_malloc(nctypelen(var->typ_upk));
-    (void)ncattget(var->nc_id,var->id,"add_offset",var->add_fst.vp);
+    (void)ncattget(var->nc_id,var->id,add_fst_sng,var->add_fst.vp);
     add_fst=scl_ptr_mk_var(var->add_fst,var->typ_upk); /* [sct] Variable structure for add_offset */
     /* Convert var to type of add_offset for expansion */
     if(var->type != add_fst->type) var=var_conform_type(add_fst->type,var);
@@ -208,8 +215,8 @@ var_pck /* [fnc] Pack variable in memory */
   double scl_fct_dbl=double_CEWI; /* [sct] Double precision value of scale_factor */
   double add_fst_dbl=double_CEWI; /* [sct] Double precision value of add_offset */
 
-  /*  var_sct *scl_fct=NULL; */ /* [sct] Variable structure for scale_factor */
-  /* var_sct *add_fst=NULL; */ /* [sct] Variable structure for add_offset */
+  /*  var_sct *scl_fct_var=NULL; */ /* [sct] Variable structure for scale_factor */
+  /* var_sct *add_fst_var=NULL; */ /* [sct] Variable structure for add_offset */
 
   /* Return if variable in memory is currently packed */
   if(var->pck_ram) return var;
@@ -226,23 +233,36 @@ var_pck /* [fnc] Pack variable in memory */
   if(USE_EXISTING_PCK){
     /* Assume var->scl_fct.vp and var->add_fst.vp are already in memory from pck_dsk_inq() */
   }else{
-    /* Compute packing parameters to apply to var */
-    double bppv_dbl=double_CEWI; /* [frc] Double precision value of bits per packed value */
+    /* Compute packing parameters to apply to var
+
+       Linear packing in a nutshell:
+       scale_factor = (max-min)/ndrv <--> (max-min)/scale_factor = ndrv <--> scale_factor*ndrv = max-min
+       add_offset = 0.5*(min+max)
+       pck = (upk-add_offset)/scale_factor = (upk-0.5*(min+max))*ndrv/(max-min)
+       upk = scale_factor*pck + add_offset = (max-min)*pck/ndrv + 0.5*(min+max) 
+
+       where 
+
+       ndrv = number of discrete representable values for a given type of packed variable and
+       ndrv = 256 iff var->typ_pck == NC_CHAR
+       ndrv = 256*256 iff var->typ_pck == NC_SHORT */
+
+    double ndrv_dbl=double_CEWI; /* [frc] Double precision value of number of discrete representable values */
     double max_mns_min_dbl; /* [frc] Maximum value minus minimum value */
 
     ptr_unn ptr_unn_min; /* [ptr] Pointer union to minimum value of variable */
     ptr_unn ptr_unn_max; /* [ptr] Pointer union to maximum value of variable */
     
-    var_sct *var_min; /* [sct] Minimum value of variable */
-    var_sct *var_max; /* [sct] Maximum value of variable */
-    var_sct *var_max_dup; /* [sct] Copy of Maximum value of variable */
+    var_sct *min_var; /* [sct] Minimum value of variable */
+    var_sct *max_var; /* [sct] Maximum value of variable */
+    var_sct *max_var_dpl; /* [sct] Copy of Maximum value of variable */
     var_sct *hlf_var; /* [sct] NCO variable for value 0.5 */
     var_sct *zero_var; /* [sct] NCO variable for value 0.0 */
-    var_sct *bppv; /* [sct] NCO variable for number of bits per packed value */
+    var_sct *ndrv_var; /* [sct] NCO variable for number of discrete representable values */
     
     val_unn hlf_unn; /* [frc] Generic container for value 0.5 */
     val_unn zero_unn; /* [frc] Generic container for value 0.0 */
-    val_unn bppv_unn; /* [nbr] Generic container for bits per packed value */
+    val_unn ndrv_unn; /* [nbr] Generic container for number of discrete representable values */
 
     /* Initialize data */
     hlf_unn.d=0.5; /* Generic container for value 0.5 */
@@ -261,53 +281,45 @@ var_pck /* [fnc] Pack variable in memory */
     (void)var_avg_reduce_min(var->type,var->sz,1L,var->has_mss_val,var->mss_val,var->val,ptr_unn_max);
 
     /* Convert to NC_DOUBLE before 0.5*(min+max) operation */
-    var_min=scl_ptr_mk_var(ptr_unn_min,var->type);
-    var_min=var_conform_type(NC_DOUBLE,var_min);
-    var_max=scl_ptr_mk_var(ptr_unn_max,var->type);
-    var_max=var_conform_type(NC_DOUBLE,var_max);
-    /* Copy var_max for use in scale_factor computation */
-    var_max_dup=var_dup(var_max);
+    min_var=scl_ptr_mk_var(ptr_unn_min,var->type);
+    min_var=var_conform_type(NC_DOUBLE,min_var);
+    max_var=scl_ptr_mk_var(ptr_unn_max,var->type);
+    max_var=var_conform_type(NC_DOUBLE,max_var);
+    /* Copy max_var for use in scale_factor computation */
+    max_var_dpl=var_dpl(max_var);
     hlf_var=scl_mk_var(hlf_unn,NC_DOUBLE); /* [sct] NCO variable for value one half */
 
     /* add_offset is 0.5*(min+max) */
     if(var->tally == NULL) (void)fprintf(stdout,"%s: ERROR var->tally==NULL in var_pck(), no room for incrementing tally while in var_add()\n",prg_nm_get());
-    /* var_max->val is overridden with add_offset answers, no longer valid as var_max */
-    (void)var_add(NC_DOUBLE,1L,var->has_mss_val,var->mss_val,var->tally,var_min->val,var_max->val);
-    (void)var_multiply(NC_DOUBLE,1L,var->has_mss_val,var->mss_val,hlf_var->val,var_max->val);
+    /* max_var->val is overridden with add_offset answers, no longer valid as max_var */
+    (void)var_add(NC_DOUBLE,1L,var->has_mss_val,var->mss_val,var->tally,min_var->val,max_var->val);
+    (void)var_multiply(NC_DOUBLE,1L,var->has_mss_val,var->mss_val,hlf_var->val,max_var->val);
     /* Reset tally buffer to zero for any subsequent arithmetic */
     (void)zero_long(var->sz,var->tally);
-    /* Contents of var_max are actually add_offset */
-    (void)val_conform_type(NC_DOUBLE,var_max->val,var->type,var->add_fst);
+    /* Contents of max_var are actually add_offset */
+    (void)val_conform_type(NC_DOUBLE,max_var->val,var->type,var->add_fst);
 
-    /* scale_factor is bppv/(max-min) where
-       bppv = bits per packed value and 
-       bppv = 256 iff var->typ_pck == NC_CHAR
-       bppv = 256*256 iff var->typ_pck == NC_SHORT */
+    /* ndrv is 2^{bits per packed value} where bppv = 8 for NC_CHAR and bppv = 16 for NC_SHORT */
     if(typ_pck == NC_CHAR){
-      bppv_dbl=256; /* [sct] Double precision value of bits per packed value */
+      ndrv_dbl=256; /* [sct] Double precision value of number of discrete representable values */
     }else if(typ_pck == NC_SHORT){
-      bppv_dbl=65536; /* [sct] Double precision value of bits per packed value */
+      ndrv_dbl=65536; /* [sct] Double precision value of number of discrete representable values */
     } /* end else */
-    bppv_unn.d=bppv_dbl; /* Generic container for bits per packed value */
-    bppv=scl_mk_var(bppv_unn,NC_DOUBLE); /* [sct] Variable structure for bits per packed value */
+    ndrv_unn.d=ndrv_dbl; /* Generic container for number of discrete representable values */
+    ndrv_var=scl_mk_var(ndrv_unn,NC_DOUBLE); /* [sct] Variable structure for number of discrete representable values */
 
-    /* scale_factor = bppv/(max-min)
-       add_offset = 0.5*(min+max)
-       pck = (upk-add_offset)/scale_factor = bppv*pck ...
-       upk = scale_factor*pck + add_offset = (bppv*pck)/(max-min) + 0.5*(min+max) */
-
-    /* scale_factor is bppv/(max-min)
+    /* scale_factor is (max-min)/ndrv
        If max-min = 0 then variable is constant value so scale_factor=0.0 and add_offset=var
-       If bppv > (max-min) there is more than 1 bit per packed value (packing is not very lossy)
-       If bppv < (max-min) there is less than 1 bit per packed value (packing is lossy) */
-    (void)var_subtract(NC_DOUBLE,1L,var->has_mss_val,var->mss_val,var_min->val,var_max_dup->val);
-    /* max-min is currently stored in var_max_dup */
-    max_mns_min_dbl=ptr_unn_2_scl_dbl(var_max_dup->val,var_max_dup->type); 
+       If max-min > ndrv then precision is worse than 1.0
+       If max-min < ndrv then precision is better than 1.0 */
+    (void)var_subtract(NC_DOUBLE,1L,var->has_mss_val,var->mss_val,min_var->val,max_var_dpl->val);
+    /* max-min is currently stored in max_var_dpl */
+    max_mns_min_dbl=ptr_unn_2_scl_dbl(max_var_dpl->val,max_var_dpl->type); 
 
     if(max_mns_min_dbl != 0.0){
-      (void)var_divide(NC_DOUBLE,1L,var->has_mss_val,var->mss_val,var_max_dup->val,bppv->val);
-      /* Contents of bppv are actually scale_factor */
-      (void)val_conform_type(NC_DOUBLE,bppv->val,var->type,var->scl_fct);
+      (void)var_divide(NC_DOUBLE,1L,var->has_mss_val,var->mss_val,ndrv_var->val,max_var_dpl->val);
+      /* Contents of max_var_dpl are actually scale_factor */
+      (void)val_conform_type(NC_DOUBLE,max_var_dpl->val,var->type,var->scl_fct);
     }else{
       /* Variable is a constant */
       zero_var=scl_mk_var(zero_unn,var->type); /* [sct] NCO variable for value 0.0 */
@@ -323,11 +335,11 @@ var_pck /* [fnc] Pack variable in memory */
     if(ptr_unn_max.vp != NULL){(void)free(ptr_unn_max.vp); ptr_unn_max.vp=NULL;}
 
     /* Free variables */
-    if(var_min != NULL) var_min=var_free(var_min);
-    if(var_max != NULL) var_max=var_free(var_max);
-    if(var_max_dup != NULL) var_max_dup=var_free(var_max_dup);
+    if(min_var != NULL) min_var=var_free(min_var);
+    if(max_var != NULL) max_var=var_free(max_var);
+    if(max_var_dpl != NULL) max_var_dpl=var_free(max_var_dpl);
     if(hlf_var != NULL) hlf_var=var_free(hlf_var);
-    if(bppv != NULL) bppv=var_free(bppv);
+    if(ndrv_var != NULL) ndrv_var=var_free(ndrv_var);
 
     /* Do not bother creating superfluous scale_factor (0.0 or 1.0) or add_offset (0.0) */
     scl_fct_dbl=ptr_unn_2_scl_dbl(var->scl_fct,var->type); 
@@ -356,10 +368,10 @@ var_pck /* [fnc] Pack variable in memory */
      This would only be the case if NC_LONG were being packed (unlikely)
      Otherwise, just use var->scl_fct and var->add_fst directly */
 
-  /*  scl_fct=scl_ptr_mk_var(var->scl_fct,var->type);*/
-  /*  scl_fct=var_conform_type(var->type,scl_fct);*/
-  /*add_fst=scl_mk_var(var->add_fst,var->type);*/
-  /*  add_fst=var_conform_type(var->type,add_fst);*/
+  /*  scl_fct_var=scl_ptr_mk_var(var->scl_fct,var->type);*/
+  /*  scl_fct_var=var_conform_type(var->type,scl_fct_var);*/
+  /*add_fst_var=scl_mk_var(var->add_fst,var->type);*/
+  /*  add_fst_var=var_conform_type(var->type,add_fst_var);*/
 
   /* Packing factors now exist and are guaranteed to be of same type as variable in memory */
 
@@ -385,8 +397,8 @@ var_pck /* [fnc] Pack variable in memory */
   var->pck_ram=True; /* [flg] Variable is packed in memory */
 
   /* For now, free the packing variables */
-  /*  if(scl_fct != NULL){scl_fct=var_free(scl_fct); scl_fct=NULL;}*/
-  /*  if(add_fst != NULL){add_fst=var_free(add_fst); add_fst=NULL;}*/
+  /*  if(scl_fct_var != NULL) scl_fct_var=var_free(scl_fct_var); */
+  /*  if(add_fst_var != NULL) add_fst_var=var_free(add_fst_var); */
 
   (void)fprintf(stderr,"%s: PACKING Packed %s\n",prg_nm_get(),var->nm);
   (void)fprintf(stderr,"%s: WARNING Writing unpacked data to disk, or repacking and writing packed data, is not yet supported, output disk values of %s will be incorrect.\n",prg_nm_get(),var->nm);

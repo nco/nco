@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.64 2000-08-29 20:57:42 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.65 2000-09-05 20:39:53 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2131,7 +2131,7 @@ When weights are specified it is unclear how to compensate for this
 extra degree of freedom.
 Weighting the numerator and denominator of the above by $w_i$ and
 subtracting one from the denominator is only appropriate when all the  
-weights are one.
+weights are 1.0.
 When the weights are arbitrary (e.g., Gaussian weights), subtracting one 
 from the sum in the denominator does not necessarily remove one degree
 of freedom. 
@@ -4300,7 +4300,8 @@ variables:
 @} 
 @end example
 
-Average all variables in @file{in.nc} over all dimensions @file{out.nc}:
+Average all variables in @file{in.nc} over all dimensions and store
+results in @file{out.nc}:
 @example
 ncwa in.nc out.nc
 @end example

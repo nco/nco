@@ -34,10 +34,10 @@ netcdf in {
 dimensions:
 	band=2,lat=2,lev=3,rlev=3,lon=4,char_dmn_lng=80,char_dmn_sml=4,fl_dim=3,time=unlimited;
 variables:
-	:convention = "NCAR-CSM";
+	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.24 2000-08-31 17:58:12 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.25 2000-09-05 20:39:53 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -86,6 +86,16 @@ variables:
 	pck:note = "Packed value is 1s, unpacked is 2.0d0*1s + 1.0d0 = 3.0d0";
 	pck:scale_factor = 2.0d;
 	pck:add_offset = 1.0d;
+
+	short pck_arr(lon);
+	pck_arr:long_name = "Packed array";
+	pck_arr:note = "Packed value is -32767s, 0s, 1s, 32767s, unpacked is same in double";
+	pck_arr:scale_factor = 1.0d;
+	pck_arr:add_offset = 0.0d;
+
+	double upk_arr(lon);
+	upk_arr:long_name = "Unpacked array";
+	upk_arr:note = "Unpacked value is -32767.d, 0.d, 1.d, 32767.d, packed is same in short";
 
 	long val_one_lng;
 	val_one_lng:long_name = "scalar equal to 1L";
@@ -341,6 +351,8 @@ data:
 	one_dmn_rec_var_sng="Hello Wor";
 	one_dmn_var=1.,10.;
 	pck=1;
+	pck_arr=-32767,0,1,32767;
+	upk_arr=-32767,0,1,32767;
 	rec_var_dbl=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_flt=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	rec_var_flt_mss_val_dbl=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;

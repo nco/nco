@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.11 2000-08-29 20:56:01 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.12 2000-09-05 20:39:06 zender Exp $
 # Purpose: RPM spec file for NCO
 # Usage: 
 # Before nco.spec is invoked (with 'rpm -ba nco.spec'), the source tarball 
@@ -26,10 +26,10 @@ Prefix: /usr
 %description
 The netCDF Operators, or NCO, are a suite of programs known as
 operators. The operators facilitate manipulation and analysis of
-self-describing data stored in the netCDF or HDF formats, which are
+self-describing data stored in the netCDF or HDF4 formats, which are
 freely available (http://www.unidata.ucar.edu/packages/netcdf and
 http://hdf.ncsa.uiuc.edu, respectively). Each NCO operator (e.g., 
-ncks) takes netCDF or HDF input file(s), performs an operation (e.g.,
+ncks) takes netCDF or HDF4 input file(s), performs an operation (e.g.,
 averaging, hyperslabbing, or renaming), and outputs a processed netCDF
 file. Although most users of netCDF and HDF data are involved in
 scientific research, these data formats, and thus NCO, are generic and

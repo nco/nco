@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.91 2000-08-31 17:58:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.92 2000-09-05 20:40:09 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -1917,9 +1917,9 @@ var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
    int in_id: I netCDF input-file ID
    char *fl_out: I name of the output file
    int out_id: I netCDF output-file ID
-   var_sct **var: I list of pointers to variable structures to be defined in the output file
+   var_sct **var: I list of pointers to variable structures to be defined in output file
    int nbr_var: I number of variable structures in structure list
-   dmn_sct **dmn_ncl: I list of pointers to dimension structures allowed in the output file
+   dmn_sct **dmn_ncl: I list of pointers to dimension structures allowed in output file
    int nbr_dmn_ncl: I number of dimension structures in structure list
 */
 {
@@ -1931,7 +1931,11 @@ var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
      call this function with a NULL dimension list. Otherwise, this routine attempts
      to define the variable correctly in the output file (allowing the variable to be
      defined with only those dimensions that are in the dimension inclusion list) 
-     without altering the variable structures. */
+     without altering the variable structures. 
+
+     The other unusual thing about this function is that it is intended to be called with var_prc_out
+     So the local variable var usually refers to var_prc_out in the calling function 
+     That is why many of the names look reversed in this function, and why xrf is frequently used */
 
   int idx_dim;
   int dmn_id_vec[MAX_NC_DIMS];
@@ -1939,20 +1943,20 @@ var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
   
   for(idx=0;idx<nbr_var;idx++){
 
-    /* See if the requested variable is already in the output file. */
+    /* Is requested variable already in output file? */
     ncopts=0; 
     var[idx]->id=ncvarid(out_id,var[idx]->nm);
     ncopts=NC_VERBOSE | NC_FATAL; 
 
-    /* If the variable has not been defined, define it */
+    /* If variable has not been defined, define it */
     if(var[idx]->id == -1){
       
-      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of ouput dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_dfn() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in the output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
+      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of output dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_dfn() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in the output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
       if(dmn_ncl != NULL || prg_get() == ncwa){
 	int nbr_var_dim=0;
 	int idx_ncl;
 
-	/* The rank of the output variable may have to be reduced. */
+	/* Rank of output variable may have to be reduced */
 	for(idx_dim=0;idx_dim<var[idx]->nbr_dim;idx_dim++){
 	  /* Is this dimension allowed in the output file? */
 	  for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
@@ -1968,12 +1972,44 @@ var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
 	} /* end loop over idx_dim */
 	var[idx]->id=ncvardef(out_id,var[idx]->nm,var[idx]->type,var[idx]->nbr_dim,dmn_id_vec);
       } /* end else */
-
+      
+      /* endif if variable had not yet been defined in output file */
     }else{
+      /* Variable is already in output file---use existing definition
+	 This branch is executed, e.g., by operators in append mode */
       (void)fprintf(stderr,"%s: WARNING Using existing definition of variable \"%s\" in %s\n",prg_nm_get(),var[idx]->nm,fl_out);
     } /* end if */
 
-    /* NB: var actually refers to the output variable sct, so var->xrf references the input var. sct */
+    /* Always copy all attributes of a variable except in cases where packing/unpacking is involved
+
+       0. Variable is unpacked on input, unpacked on output
+       --> Copy all attributes
+       1. Variable is packed on input, is not altered, and remains packed on output
+       --> Copy all attributes
+       2. Variable is packed on input, is unpacked for some reason, and will be unpacked on output
+       --> Copy all attributes except scale_factor and add_offset
+       3. Variable is packed on input, is unpacked for some reason, and will be packed on output (possibly with new packing attributes)
+       --> Copy all attributes, but scale_factor and add_offset must be overwritten later with new values
+       4. Variable is not packed on input, packing is performed, and output is packed
+       --> Copy all attributes, define scale_factor and add_offset now, write their values later
+    */
+
+#ifdef FALSE
+    switch(nco_pck_typ){
+    case nco_pck_all_xst_att:
+    case nco_pck_all_new_att:
+      break;
+    case nco_pck_xst_xst_att:
+    case nco_pck_xst_new_att:
+      break;
+    case nco_pck_upk:
+      break;
+    default:
+      break;
+    } /* end switch */
+#endif /* not FALSE */
+
+    /* var refers to output variable structure, var->xrf refers to input variable structure */
     (void)att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id);
   } /* end loop over idx */
   
@@ -1987,8 +2023,8 @@ hst_att_cat(int out_id,char *hst_sng)
 */
 {
 
-/* Routine to add command line and a date stamp to existing history attribute, if any,
-   and write them to the specified output file */
+/* Purpose: Add command line and date stamp to existing history attribute, if any,
+   and write them to specified output file */
 
   char att_nm[MAX_NC_NAME];
   char *ctime_sng;
@@ -2069,7 +2105,7 @@ dmn_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
    nm_id_sct *dmn_lst_ass_var(): O list of dimensions associated with input variable list
  */
 {
-  /* Routine to create a list of all the dimensions associated with the input variable list */
+  /* Purpose: Create a list of all dimensions associated with input variable list */
 
   bool dmn_has_been_placed_on_list;
 
@@ -2090,28 +2126,28 @@ dmn_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
   /* Get the number of dimensions */
   (void)ncinquire(nc_id,&nbr_dmn_in,(int *)NULL,(int *)NULL,(int *)NULL);
 
-  /* The number of input dimensions is an upper bound on the number of output dimensions */
+  /* Number of input dimensions is upper bound on number of output dimensions */
   dim=(nm_id_sct *)nco_malloc(nbr_dmn_in*sizeof(nm_id_sct));
   
-  /* ...For each dimension in the file... */
+  /* ...For each dimension in file... */
   for(idx_dmn_in=0;idx_dmn_in<nbr_dmn_in;idx_dmn_in++){
-    /* ...begin a search for the dimension in the dimension list by... */
+    /* ...begin search for dimension in dimension list by... */
     dmn_has_been_placed_on_list=False;
     /* ...looking through the set of output variables... */
     for(idx_var=0;idx_var<nbr_var;idx_var++){
-      /* ...and search each dimension of the output variable... */
+      /* ...and searching each dimension of each output variable... */
       (void)ncvarinq(nc_id,var[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dmn_id,(int *)NULL);
       for(idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
-	/* ...until an output variable is found which contains the input dimension... */
+	/* ...until output variable is found which contains input dimension... */
 	if(idx_dmn_in == dmn_id[idx_var_dim]){
-	  /* ...then search each member of the output dimension list... */
+	  /* ...then search each member of output dimension list... */
 	  for(idx_dmn_lst=0;idx_dmn_lst<*nbr_dim;idx_dmn_lst++){
-	    /* ...until the input dimension is found... */
+	    /* ...until input dimension is found... */
 	    if(idx_dmn_in == dim[idx_dmn_lst].id) break; /* ...then search no further... */
 	  } /* end loop over idx_dmn_lst */
-	  /* ...and if the dimension was not found on the output dimension list... */
+	  /* ...and if dimension was not found on output dimension list... */
 	  if(idx_dmn_lst == *nbr_dim){
-	    /* ...then add the dimension to the output dimension list... */
+	    /* ...then add dimension to output dimension list... */
 	    (void)ncdiminq(nc_id,idx_dmn_in,dmn_nm,(long *)NULL);
 	    dim[*nbr_dim].id=idx_dmn_in;
 	    dim[*nbr_dim].nm=(char *)strdup(dmn_nm);
@@ -2126,7 +2162,7 @@ dmn_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
     } /* end loop over idx_var */
   } /* end loop over idx_dmn_in */
   
-  /* We now have the final list of dimensions to extract. Phew. */
+  /* We now have final list of dimensions to extract. Phew. */
   
   /* Free unused space in output dimension list */
   dim=(nm_id_sct *)nco_realloc((void *)dim,*nbr_dim*sizeof(nm_id_sct));
@@ -2142,7 +2178,7 @@ var_srt_zero(var_sct **var,int nbr_var)
    int nbr_var: I number of structures in variable structure list
  */
 {
-  /* Routine to point srt element of variable structure to array of zeroes */
+  /* Purpose: Point srt element of variable structure to array of zeroes */
 
   int idx;
   int idx_dim;
@@ -2154,94 +2190,94 @@ var_srt_zero(var_sct **var,int nbr_var)
 } /* end var_srt_zero() */
 
 var_sct *
-var_dup(var_sct *var)
+var_dpl(var_sct *var)
 /* 
    var_sct *var: I variable structure to duplicate
-   var_sct *var_dup(): O copy of input variable structure
+   var_sct *var_dpl(): O copy of input variable structure
  */
 {
   /* Purpose: nco_malloc() and return duplicate of input var_sct */
 
-  var_sct *var_dup;
+  var_sct *var_dpl;
 
-  var_dup=(var_sct *)nco_malloc(sizeof(var_sct));
+  var_dpl=(var_sct *)nco_malloc(sizeof(var_sct));
 
-  (void)memcpy((void *)var_dup,(void *)var,sizeof(var_sct));
+  (void)memcpy((void *)var_dpl,(void *)var,sizeof(var_sct));
 
   /* Copy all dyamically allocated arrays currently defined in original */
   if(var->val.vp != NULL){
-    if((var_dup->val.vp=(void *)malloc(var_dup->sz*nctypelen(var_dup->type))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in var_dup()\n",prg_nm_get(),var_dup->sz,nctypelen(var_dup->type),var_dup->nm);
+    if((var_dpl->val.vp=(void *)malloc(var_dpl->sz*nctypelen(var_dpl->type))) == NULL){
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in var_dpl()\n",prg_nm_get(),var_dpl->sz,nctypelen(var_dpl->type),var_dpl->nm);
       exit(EXIT_FAILURE); 
     } /* end if */
-    (void)memcpy((void *)(var_dup->val.vp),(void *)(var->val.vp),var_dup->sz*nctypelen(var_dup->type));
+    (void)memcpy((void *)(var_dpl->val.vp),(void *)(var->val.vp),var_dpl->sz*nctypelen(var_dpl->type));
   } /* end if */
   if(var->mss_val.vp != NULL){
-    var_dup->mss_val.vp=(void *)nco_malloc(nctypelen(var_dup->type));
-    (void)memcpy((void *)(var_dup->mss_val.vp),(void *)(var->mss_val.vp),nctypelen(var_dup->type));
+    var_dpl->mss_val.vp=(void *)nco_malloc(nctypelen(var_dpl->type));
+    (void)memcpy((void *)(var_dpl->mss_val.vp),(void *)(var->mss_val.vp),nctypelen(var_dpl->type));
   } /* end if */
   if(var->tally != NULL){
-    if((var_dup->tally=(long *)malloc(var_dup->sz*sizeof(long))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in var_dup()\n",prg_nm_get(),var_dup->sz,(long)sizeof(long),var_dup->nm);
+    if((var_dpl->tally=(long *)malloc(var_dpl->sz*sizeof(long))) == NULL){
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in var_dpl()\n",prg_nm_get(),var_dpl->sz,(long)sizeof(long),var_dpl->nm);
       exit(EXIT_FAILURE); 
     } /* end if */
-    (void)memcpy((void *)(var_dup->tally),(void *)(var->tally),var_dup->sz*sizeof(long));
+    (void)memcpy((void *)(var_dpl->tally),(void *)(var->tally),var_dpl->sz*sizeof(long));
   } /* end if */
   if(var->dim != NULL){
-    var_dup->dim=(dmn_sct **)nco_malloc(var_dup->nbr_dim*sizeof(dmn_sct *));
-    (void)memcpy((void *)(var_dup->dim),(void *)(var->dim),var_dup->nbr_dim*sizeof(var->dim[0]));
+    var_dpl->dim=(dmn_sct **)nco_malloc(var_dpl->nbr_dim*sizeof(dmn_sct *));
+    (void)memcpy((void *)(var_dpl->dim),(void *)(var->dim),var_dpl->nbr_dim*sizeof(var->dim[0]));
   } /* end if */
   if(var->dmn_id != NULL){
-    var_dup->dmn_id=(int *)nco_malloc(var_dup->nbr_dim*sizeof(int));
-    (void)memcpy((void *)(var_dup->dmn_id),(void *)(var->dmn_id),var_dup->nbr_dim*sizeof(var->dmn_id[0]));
+    var_dpl->dmn_id=(int *)nco_malloc(var_dpl->nbr_dim*sizeof(int));
+    (void)memcpy((void *)(var_dpl->dmn_id),(void *)(var->dmn_id),var_dpl->nbr_dim*sizeof(var->dmn_id[0]));
   } /* end if */
   if(var->cnt != NULL){
-    var_dup->cnt=(long *)nco_malloc(var_dup->nbr_dim*sizeof(long));
-    (void)memcpy((void *)(var_dup->cnt),(void *)(var->cnt),var_dup->nbr_dim*sizeof(var->cnt[0]));
+    var_dpl->cnt=(long *)nco_malloc(var_dpl->nbr_dim*sizeof(long));
+    (void)memcpy((void *)(var_dpl->cnt),(void *)(var->cnt),var_dpl->nbr_dim*sizeof(var->cnt[0]));
   } /* end if */
   if(var->srt != NULL){
-    var_dup->srt=(long *)nco_malloc(var_dup->nbr_dim*sizeof(long));
-    (void)memcpy((void *)(var_dup->srt),(void *)(var->srt),var_dup->nbr_dim*sizeof(var->srt[0]));
+    var_dpl->srt=(long *)nco_malloc(var_dpl->nbr_dim*sizeof(long));
+    (void)memcpy((void *)(var_dpl->srt),(void *)(var->srt),var_dpl->nbr_dim*sizeof(var->srt[0]));
   } /* end if */
   if(var->end != NULL){
-    var_dup->end=(long *)nco_malloc(var_dup->nbr_dim*sizeof(long));
-    (void)memcpy((void *)(var_dup->end),(void *)(var->end),var_dup->nbr_dim*sizeof(var->end[0]));
+    var_dpl->end=(long *)nco_malloc(var_dpl->nbr_dim*sizeof(long));
+    (void)memcpy((void *)(var_dpl->end),(void *)(var->end),var_dpl->nbr_dim*sizeof(var->end[0]));
   } /* end if */
   if(var->srd != NULL){
-    var_dup->srd=(long *)nco_malloc(var_dup->nbr_dim*sizeof(long));
-    (void)memcpy((void *)(var_dup->srd),(void *)(var->srd),var_dup->nbr_dim*sizeof(var->srd[0]));
+    var_dpl->srd=(long *)nco_malloc(var_dpl->nbr_dim*sizeof(long));
+    (void)memcpy((void *)(var_dpl->srd),(void *)(var->srd),var_dpl->nbr_dim*sizeof(var->srd[0]));
   } /* end if */
   if(var->scl_fct.vp != NULL){
-    var_dup->scl_fct.vp=(void *)nco_malloc(nctypelen(var_dup->typ_upk));
-    (void)memcpy((void *)(var_dup->scl_fct.vp),(void *)(var->scl_fct.vp),nctypelen(var_dup->typ_upk));
+    var_dpl->scl_fct.vp=(void *)nco_malloc(nctypelen(var_dpl->typ_upk));
+    (void)memcpy((void *)(var_dpl->scl_fct.vp),(void *)(var->scl_fct.vp),nctypelen(var_dpl->typ_upk));
   } /* end if */
   if(var->add_fst.vp != NULL){
-    var_dup->add_fst.vp=(void *)nco_malloc(nctypelen(var_dup->typ_upk));
-    (void)memcpy((void *)(var_dup->add_fst.vp),(void *)(var->add_fst.vp),nctypelen(var_dup->typ_upk));
+    var_dpl->add_fst.vp=(void *)nco_malloc(nctypelen(var_dpl->typ_upk));
+    (void)memcpy((void *)(var_dpl->add_fst.vp),(void *)(var->add_fst.vp),nctypelen(var_dpl->typ_upk));
   } /* end if */
 
-  return var_dup;
+  return var_dpl;
 
-} /* end var_dup() */
+} /* end var_dpl() */
 
 dmn_sct *
-dmn_dup(dmn_sct *dim)
+dmn_dpl(dmn_sct *dim)
 /* 
    dmn_sct *dim: I dimension structure to duplicate
-   dmn_sct *dmn_dup(): O copy of input dimension structure
+   dmn_sct *dmn_dpl(): O copy of input dimension structure
  */
 {
-  /* Purpose: nco_malloc() and return a duplicate of input dmn_sct */
+  /* Purpose: nco_malloc() and return duplicate of input dmn_sct */
 
-  dmn_sct *dmn_dup;
+  dmn_sct *dmn_dpl;
 
-  dmn_dup=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
+  dmn_dpl=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
 
-  (void)memcpy((void *)dmn_dup,(void *)dim,sizeof(dmn_sct));
+  (void)memcpy((void *)dmn_dpl,(void *)dim,sizeof(dmn_sct));
 
-  return dmn_dup;
+  return dmn_dpl;
 
-} /* end dmn_dup() */
+} /* end dmn_dpl() */
 
 void
 var_get(int nc_id,var_sct *var)
@@ -2278,7 +2314,6 @@ var_get(int nc_id,var_sct *var)
 var_sct *
 var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,bool *DO_CONFORM)
      /* fxm: TODO #114. Fix var_conform_dim() so returned weight always has same size tally array as template variable */
-
 /*  
    var_sct *var: I [ptr] Pointer to variable structure to serve as template
    var_sct *wgt: I [ptr] Pointer to variable structure to make conform to var
@@ -2418,7 +2453,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	/* Variables do not truly conform, but this might be OK, depending on the application, so set the conform flag to false and ... */
 	*DO_CONFORM=False;
 	/* ... return a dummy weight of 1.0, which allows program logic to pretend variable is weighted, but does not change answers */ 
-	wgt_out=var_dup(var);
+	wgt_out=var_dpl(var);
 	(void)vec_set(wgt_out->type,wgt_out->sz,wgt_out->val,1.0);
       } /* endif */
       if(CONFORMABLE){
@@ -2441,7 +2476,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
       if(wgt->nbr_dim == 0) *DO_CONFORM=True; else *DO_CONFORM=False;
     } /* end else */
     if(CONFORMABLE && *DO_CONFORM){
-      wgt_out=var_dup(wgt);
+      wgt_out=var_dpl(wgt);
       (void)var_xrf(wgt,wgt_out);
     } /* end if */
   } /* end if */
@@ -2466,7 +2501,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
     long var_sz;
 
     /* Copy main attributes of variable into current weight */
-    wgt_out=var_dup(var);
+    wgt_out=var_dpl(var);
     (void)var_xrf(wgt,wgt_out);
 
     /* Modify a few elements of weight array */
@@ -2579,7 +2614,7 @@ var_dmn_xrf(var_sct *var)
 */
 {
   /* Purpose: Switch pointers to dimension structures so var->dim points to var->dim->xrf.
-     Routine makes dim element of variable structure from var_dup() refer to counterparts
+     Routine makes dim element of variable structure from var_dpl() refer to counterparts
      of dimensions directly associated with variable it was duplicated from */
   
   int idx;
@@ -2589,7 +2624,7 @@ var_dmn_xrf(var_sct *var)
 } /* end var_xrf() */
 
 void
-dmn_xrf(dmn_sct *dim,dmn_sct *dmn_dup)
+dmn_xrf(dmn_sct *dim,dmn_sct *dmn_dpl)
 /*  
    dmn_sct *dim: I/O pointer to dimension structure
    dmn_sct *dim: I/O pointer to dimension structure
@@ -2597,22 +2632,22 @@ dmn_xrf(dmn_sct *dim,dmn_sct *dmn_dup)
 {
   /* Make xrf elements of dimension structures point to eachother */
 
-  dim->xrf=dmn_dup;
-  dmn_dup->xrf=dim;
+  dim->xrf=dmn_dpl;
+  dmn_dpl->xrf=dim;
 
 } /* end dmn_xrf() */
 
 void
-var_xrf(var_sct *var,var_sct *var_dup)
+var_xrf(var_sct *var,var_sct *var_dpl)
 /*  
    var_sct *var: I/O pointer to variable structure
-   var_sct *var_dup: I/O pointer to variable structure
+   var_sct *var_dpl: I/O pointer to variable structure
 */
 {
   /* Make xrf elements of variable structures point to eachother */
 
-  var->xrf=var_dup;
-  var_dup->xrf=var;
+  var->xrf=var_dpl;
+  var_dpl->xrf=var;
 
 } /* end var_xrf() */
 
@@ -2876,7 +2911,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
   var_sct *fix;
 
   /* Copy basic attributes of input variable into output (averaged) variable */
-  fix=var_dup(var);
+  fix=var_dpl(var);
   (void)var_xrf(fix,var->xrf);
 
   /* Create lists of averaging and fixed dimensions (in order of their appearance 
@@ -2950,7 +2985,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
   if(nbr_dmn_fix > 0) fix->end=(long *)nco_realloc(fix->end,nbr_dmn_fix*sizeof(long)); else fix->end=NULL;
   
   /* If product of sizes of all averaging dimensions is 1, input and output value arrays should be identical 
-     Since var->val was already copied to fix->val by var_dup() at the beginning
+     Since var->val was already copied to fix->val by var_dpl() at the beginning
      of this routine, only one task remains, to set fix->tally appropriately. */
   if(avg_sz == 1L){
     long fix_sz;
@@ -3010,7 +3045,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     var_cp=(char *)var->val.vp;
     var_sz=var->sz;
     
-    /* Reuse the existing value buffer (it is of size var_sz, created by var_dup())*/
+    /* Reuse the existing value buffer (it is of size var_sz, created by var_dpl())*/
     avg_val=fix->val;
     avg_cp=(char *)avg_val.vp;
     /* Create a new value buffer for output (averaged) size */
@@ -4902,62 +4937,62 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
   switch(type){
   case NC_FLOAT:
     switch(op_typ_rlt){
-    case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.fp[idx] != (float)op1) op3.fp[idx]=*mss_val.fp; break;
-    case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.fp[idx] == (float)op1) op3.fp[idx]=*mss_val.fp; break;
-    case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.fp[idx] >= (float)op1) op3.fp[idx]=*mss_val.fp; break;
-    case nc_op_gt: for(idx=0;idx<sz;idx++) if(op2.fp[idx] <= (float)op1) op3.fp[idx]=*mss_val.fp; break;
-    case nc_op_le: for(idx=0;idx<sz;idx++) if(op2.fp[idx] >  (float)op1) op3.fp[idx]=*mss_val.fp; break;
-    case nc_op_ge: for(idx=0;idx<sz;idx++) if(op2.fp[idx] <  (float)op1) op3.fp[idx]=*mss_val.fp; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.fp[idx] != (float)op1) op3.fp[idx]=*mss_val.fp; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.fp[idx] == (float)op1) op3.fp[idx]=*mss_val.fp; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.fp[idx] >= (float)op1) op3.fp[idx]=*mss_val.fp; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.fp[idx] <= (float)op1) op3.fp[idx]=*mss_val.fp; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.fp[idx] >  (float)op1) op3.fp[idx]=*mss_val.fp; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.fp[idx] <  (float)op1) op3.fp[idx]=*mss_val.fp; break;
     } /* end switch */
     break;
   case NC_DOUBLE:
     switch(op_typ_rlt){
-    case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.dp[idx] != (double)op1) op3.dp[idx]=*mss_val.dp; break;
-    case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.dp[idx] == (double)op1) op3.dp[idx]=*mss_val.dp; break;
-    case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.dp[idx] >= (double)op1) op3.dp[idx]=*mss_val.dp; break;
-    case nc_op_gt: for(idx=0;idx<sz;idx++) if(op2.dp[idx] <= (double)op1) op3.dp[idx]=*mss_val.dp; break;
-    case nc_op_le: for(idx=0;idx<sz;idx++) if(op2.dp[idx] >  (double)op1) op3.dp[idx]=*mss_val.dp; break;
-    case nc_op_ge: for(idx=0;idx<sz;idx++) if(op2.dp[idx] <  (double)op1) op3.dp[idx]=*mss_val.dp; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.dp[idx] != (double)op1) op3.dp[idx]=*mss_val.dp; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.dp[idx] == (double)op1) op3.dp[idx]=*mss_val.dp; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.dp[idx] >= (double)op1) op3.dp[idx]=*mss_val.dp; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.dp[idx] <= (double)op1) op3.dp[idx]=*mss_val.dp; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.dp[idx] >  (double)op1) op3.dp[idx]=*mss_val.dp; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.dp[idx] <  (double)op1) op3.dp[idx]=*mss_val.dp; break;
     } /* end switch */
     break;
   case NC_LONG:
     switch(op_typ_rlt){
-    case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.lp[idx] != (long)op1) op3.lp[idx]=*mss_val.lp; break;
-    case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.lp[idx] == (long)op1) op3.lp[idx]=*mss_val.lp; break;
-    case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.lp[idx] >= (long)op1) op3.lp[idx]=*mss_val.lp; break;
-    case nc_op_gt: for(idx=0;idx<sz;idx++) if(op2.lp[idx] <= (long)op1) op3.lp[idx]=*mss_val.lp; break;
-    case nc_op_le: for(idx=0;idx<sz;idx++) if(op2.lp[idx] >  (long)op1) op3.lp[idx]=*mss_val.lp; break;
-    case nc_op_ge: for(idx=0;idx<sz;idx++) if(op2.lp[idx] <  (long)op1) op3.lp[idx]=*mss_val.lp; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.lp[idx] != (long)op1) op3.lp[idx]=*mss_val.lp; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.lp[idx] == (long)op1) op3.lp[idx]=*mss_val.lp; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.lp[idx] >= (long)op1) op3.lp[idx]=*mss_val.lp; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.lp[idx] <= (long)op1) op3.lp[idx]=*mss_val.lp; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.lp[idx] >  (long)op1) op3.lp[idx]=*mss_val.lp; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.lp[idx] <  (long)op1) op3.lp[idx]=*mss_val.lp; break;
     } /* end switch */
     break;
   case NC_SHORT:
     switch(op_typ_rlt){
-    case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.sp[idx] != (short)op1) op3.sp[idx]=*mss_val.sp; break;
-    case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.sp[idx] == (short)op1) op3.sp[idx]=*mss_val.sp; break;
-    case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.sp[idx] >= (short)op1) op3.sp[idx]=*mss_val.sp; break;
-    case nc_op_gt: for(idx=0;idx<sz;idx++) if(op2.sp[idx] <= (short)op1) op3.sp[idx]=*mss_val.sp; break;
-    case nc_op_le: for(idx=0;idx<sz;idx++) if(op2.sp[idx] >  (short)op1) op3.sp[idx]=*mss_val.sp; break;
-    case nc_op_ge: for(idx=0;idx<sz;idx++) if(op2.sp[idx] <  (short)op1) op3.sp[idx]=*mss_val.sp; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.sp[idx] != (short)op1) op3.sp[idx]=*mss_val.sp; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.sp[idx] == (short)op1) op3.sp[idx]=*mss_val.sp; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.sp[idx] >= (short)op1) op3.sp[idx]=*mss_val.sp; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.sp[idx] <= (short)op1) op3.sp[idx]=*mss_val.sp; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.sp[idx] >  (short)op1) op3.sp[idx]=*mss_val.sp; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.sp[idx] <  (short)op1) op3.sp[idx]=*mss_val.sp; break;
     } /* end switch */
     break;
   case NC_CHAR:
     switch(op_typ_rlt){
-    case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
-    case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
-    case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
-    case nc_op_gt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <= (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
-    case nc_op_le: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >  (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
-    case nc_op_ge: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <  (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <= (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >  (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.cp[idx] <  (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
     } /* end switch */
     break;
   case NC_BYTE:
     switch(op_typ_rlt){
-    case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.bp[idx] != (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
-    case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.bp[idx] == (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
-    case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >= (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
-    case nc_op_gt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <= (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
-    case nc_op_le: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >  (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
-    case nc_op_ge: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
+    case nco_op_eq: for(idx=0;idx<sz;idx++) if(op2.bp[idx] != (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
+    case nco_op_ne: for(idx=0;idx<sz;idx++) if(op2.bp[idx] == (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
+    case nco_op_lt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >= (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
+    case nco_op_gt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <= (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
+    case nco_op_le: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >  (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
+    case nco_op_ge: for(idx=0;idx<sz;idx++) if(op2.bp[idx] <  (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
     } /* end switch */
     break;
   } /* end switch */
@@ -5167,6 +5202,7 @@ ncar_csm_inq(int nc_id)
 
   char *att_val;
 
+  char cnv_sng[]="Conventions"; /* Unidata standard string */
   int att_sz;
   int rcd; /* [rcd] Return code */
 
@@ -5174,20 +5210,19 @@ ncar_csm_inq(int nc_id)
 
   /* Look for signature of an NCAR CSM format file */
   ncopts=0; 
-  rcd=ncattinq(nc_id,NC_GLOBAL,"convention",&att_typ,&att_sz);
+  rcd=ncattinq(nc_id,NC_GLOBAL,cnv_sng,&att_typ,&att_sz);
   ncopts=NC_VERBOSE | NC_FATAL; 
 
   if(rcd != -1 && att_typ == NC_CHAR){
     /* Add one for NULL byte */
     att_val=(char *)nco_malloc(att_sz*nctypelen(att_typ)+1);
-    (void)ncattget(nc_id,NC_GLOBAL,"convention",att_val);
+    (void)ncattget(nc_id,NC_GLOBAL,cnv_sng,att_val);
     /* NUL-terminate convention attribute before using strcmp() */
     att_val[att_sz]='\0';
-    if(!strcmp("NCAR-CSM",att_val)) NCAR_CSM=True;
+    if(strstr(att_val,"NCAR-CSM") != NULL) NCAR_CSM=True;
+    if(NCAR_CSM) (void)fprintf(stderr,"%s: CONVENTION File convention is %s\n",prg_nm_get(),att_val);
     if(att_val != NULL) (void)free(att_val);
   } /* endif */
-
-  if(NCAR_CSM) (void)fprintf(stderr,"%s: CONVENTION File convention is NCAR CSM\n",prg_nm_get()); 
 
   return NCAR_CSM;
   
@@ -5395,7 +5430,7 @@ var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dmn_sct **dim,int nbr_d
   /* Fill in variable structure list for all extracted variables */
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(nc_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
-    var_out[idx]=var_dup(var[idx]);
+    var_out[idx]=var_dpl(var[idx]);
     (void)var_xrf(var[idx],var_out[idx]);
     (void)var_dmn_xrf(var_out[idx]);
   } /* end loop over idx */
@@ -5941,17 +5976,17 @@ op_prs_rlt(char *op_sng)
 
   /* Classify the relation */
   if(!strcmp(op_sng,"eq")){
-    return nc_op_eq;
+    return nco_op_eq;
   }else if(!strcmp(op_sng,"ne")){
-    return nc_op_ne;
+    return nco_op_ne;
   }else if(!strcmp(op_sng,"lt")){
-    return nc_op_lt;
+    return nco_op_lt;
   }else if(!strcmp(op_sng,"gt")){
-    return nc_op_gt;
+    return nco_op_gt;
   }else if(!strcmp(op_sng,"le")){
-    return nc_op_le;
+    return nco_op_le;
   }else if(!strcmp(op_sng,"ge")){
-    return nc_op_ge;
+    return nco_op_ge;
   }else{
     (void)fprintf(stdout,"%s: ERROR %s not registered in op_prs_rlt()\n",prg_nm_get(),op_sng);
     exit(EXIT_FAILURE);

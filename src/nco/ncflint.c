@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.25 2000-08-29 20:57:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.26 2000-09-05 20:40:09 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -100,8 +100,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.25 2000-08-29 20:57:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.25 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.26 2000-09-05 20:40:09 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.26 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -308,7 +308,7 @@ main(int argc,char **argv)
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
-    dmn_out[idx]=dmn_dup(dim[idx]);
+    dmn_out[idx]=dmn_dpl(dim[idx]);
     (void)dmn_xrf(dim[idx],dmn_out[idx]); 
   } /* end loop over idx */
 
@@ -320,7 +320,7 @@ main(int argc,char **argv)
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
-    var_out[idx]=var_dup(var[idx]);
+    var_out[idx]=var_dpl(var[idx]);
     (void)var_xrf(var[idx],var_out[idx]);
     (void)var_dmn_xrf(var_out[idx]);
   } /* end loop over idx */
@@ -415,8 +415,8 @@ main(int argc,char **argv)
     } /* end if */
 
     /* Turn weights into pseudo-variables */
-    wgt_1=var_dup(ntp_2);
-    wgt_2=var_dup(ntp_var_out);
+    wgt_1=var_dpl(ntp_2);
+    wgt_2=var_dpl(ntp_var_out);
 
     /* Subtract to find interpolation distances */
     (void)var_subtract(ntp_1->type,ntp_1->sz,ntp_1->has_mss_val,ntp_1->mss_val,ntp_var_out->val,wgt_1->val);
@@ -449,7 +449,7 @@ main(int argc,char **argv)
     if(dbg_lvl > 0) (void)fprintf(stderr,"%s, ",var_prc_1[idx]->nm);
     if(dbg_lvl > 0) (void)fflush(stderr);
 
-    var_prc_2[idx]=var_dup(var_prc_1[idx]);
+    var_prc_2[idx]=var_dpl(var_prc_1[idx]);
     (void)var_refresh(in_id_2,var_prc_2[idx]);
 
     (void)var_get(in_id_1,var_prc_1[idx]);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.45 2000-08-31 17:58:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.46 2000-09-05 20:40:09 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -105,12 +105,12 @@ enum{
 }; /* end enum */
 
 enum{
-  nc_op_eq,
-  nc_op_ne,
-  nc_op_lt,
-  nc_op_gt,
-  nc_op_le,
-  nc_op_ge
+  nco_op_eq,
+  nco_op_ne,
+  nco_op_lt,
+  nco_op_gt,
+  nco_op_le,
+  nco_op_ge
 }; /* end enum */
 
 enum lmt_typ{
@@ -155,12 +155,12 @@ enum nco_op_typ{
 #define ncrename 9
 #define ncwa 10
 
-#define nc_op_eq 0
-#define nc_op_ne 1
-#define nc_op_lt 2
-#define nc_op_gt 3
-#define nc_op_le 4
-#define nc_op_ge 5
+#define nco_op_eq 0
+#define nco_op_ne 1
+#define nco_op_lt 2
+#define nco_op_gt 3
+#define nco_op_le 4
+#define nco_op_ge 5
 
 #define aed_append 0
 #define aed_create 1
@@ -279,7 +279,7 @@ typedef struct dmn_sct_tag{
 
 /* Each member of var_sct structure should be initialized to default in var_dfl_set()
    Each pointer member of var_sct structure should be freed in var_free()
-   Each pointer member of var_sct structure should be copied in var_dup() */
+   Each pointer member of var_sct structure should be copied in var_dpl() */
 typedef struct var_sct_tag{
   char *nm; /* Variable name */
   int id; /* Variable ID */
@@ -404,7 +404,7 @@ extern char *prg_nm_get(void);
 extern char *prg_prs(char *,int *);
 extern char *sng_lst_prs(char **,const long, const char *);
 extern int sng_ascii_trn(char *);
-extern dmn_sct *dmn_dup(dmn_sct *);
+extern dmn_sct *dmn_dpl(dmn_sct *);
 extern dmn_sct *dmn_fll(int,int,char *);
 extern double arm_time_mk(int,double);
 extern int mss_val_get(int,var_sct *);
@@ -431,7 +431,7 @@ extern var_sct *scl_dbl_mk_var(double);
 extern var_sct *var_avg(var_sct *,dmn_sct **,int,int);
 extern var_sct *var_conform_dim(var_sct *,var_sct *,var_sct *,bool,bool *);
 extern var_sct *var_conform_type(nc_type,var_sct *);
-extern var_sct *var_dup(var_sct *);
+extern var_sct *var_dpl(var_sct *);
 extern var_sct *var_fll(int,int,char *,dmn_sct **,int);
 extern var_sct *var_free(var_sct *);
 extern void Exit_gracefully(void);

@@ -1,10 +1,10 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.70 2000-08-29 20:57:42 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.71 2000-09-05 20:39:53 zender Exp $ 
 
 *************
 NCO Wish list
 *************
 28. Use var.nc_id as file ID from now on and rewrite old routines to do so
-32. Implement scale_factor and add_offset
+32. Implement packing with scale_factor and add_offset
 41. Use GNU getopt_long()
 50. Allow user-specified scalar weights to ncwa
 51. Make getopt() a shared subroutine
@@ -132,6 +132,7 @@ sudo root screws up permissions in obj/bin directories of user
 178. Make _FillValue behave same as missing_value
 179. add netCDF to required packages list in RPM build
 180. Allow ncrename to rename attribute of single variable only
+181. Split up nc_utl.c into smaller files
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.22 2000-08-29 20:57:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.23 2000-09-05 20:40:09 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -82,8 +82,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.22 2000-08-29 20:57:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.22 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.23 2000-09-05 20:40:09 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.23 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -252,7 +252,7 @@ main(int argc,char **argv)
   /* Duplicate input dimension structures for output dimension structures */
   dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
-    dmn_out[idx]=dmn_dup(dim[idx]);
+    dmn_out[idx]=dmn_dpl(dim[idx]);
     (void)dmn_xrf(dim[idx],dmn_out[idx]); 
   } /* end loop over idx */
 
@@ -264,7 +264,7 @@ main(int argc,char **argv)
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
-    var_out[idx]=var_dup(var[idx]);
+    var_out[idx]=var_dpl(var[idx]);
     (void)var_xrf(var[idx],var_out[idx]);
     (void)var_dmn_xrf(var_out[idx]);
   } /* end loop over idx */
@@ -284,7 +284,7 @@ main(int argc,char **argv)
   /* ncecat-specific operations */
   if(True){
     /* Define the new record dimension */
-    rdim=dmn_dup(dim[0]);
+    rdim=dmn_dpl(dim[0]);
 
     rdim->nm="record";
     rdim->id=-1;
