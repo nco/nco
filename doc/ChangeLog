@@ -3,6 +3,11 @@
 	* cvs tag -c nco-2_4_0
 	Changes since nco-2_3_1: Builds out of box on all Unices
 	
+	* Surround fabsf and fmodf prototypes with ifndef __GNUG__
+	since g++ linking fails when prototypes explicitly specified
+	in header _and_ in function. This is a kludge to a kludge
+	to enable full g++ compilation.
+
 	* Version now builds on AIX (even ncap.y with pure_parser)
 	as long as cc compiler, not xlc or xlC, is used. Prototype
 	warnings similar to gcc prototype warnings can be ignored.
