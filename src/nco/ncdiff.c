@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.15 1999-10-15 21:07:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.16 1999-10-18 05:07:48 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -80,8 +80,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.15 1999-10-15 21:07:34 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.15 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.16 1999-10-18 05:07:48 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.16 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -430,14 +430,14 @@ main(int argc,char **argv)
   } /* end loop over idx */
   if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
   
-  /* Close the input netCDF files */ 
+  /* Close input netCDF files */ 
   ncclose(in_id_1);
   ncclose(in_id_2);
 
-  /* Close the output file and move it from the temporary to the permanent location */ 
-  (void)fl_out_close(fl_out,fl_out_tmp,out_id);
+  /* Close output file and move it from temporary to permanent location */ 
+  (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
   
-  /* Dispose of the local copy of the file */ 
+  /* Remove local copy of file */ 
   if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in_1);
   if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in_2);
   

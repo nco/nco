@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.11 1999-10-15 21:07:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.12 1999-10-18 05:07:47 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -100,8 +100,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.11 1999-10-15 21:07:33 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.11 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.12 1999-10-18 05:07:47 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.12 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -259,7 +259,7 @@ main(int argc,char **argv)
   /* Close the open netCDF file */ 
   ncclose(nc_id);
   
-  /* Dispose of the local copy of the file */ 
+  /* Remove local copy of file */ 
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
 
   Exit_gracefully();

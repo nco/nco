@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.16 1999-10-15 17:54:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.17 1999-10-18 05:07:47 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -375,7 +375,7 @@ extern void dim_xrf(dim_sct *,dim_sct *);
 extern void fl_cmp_err_chk(void);
 extern void fl_cp(char *,char *);
 extern void fl_mv(char *,char *);
-extern void fl_out_close(char *,char *,int);
+extern void fl_out_cls(char *,char *,int);
 extern void fl_rm(char *);
 extern void hst_att_cat(int,char *);
 extern void index_alpha(int,char **,int *);

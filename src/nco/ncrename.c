@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.9 1999-10-15 21:07:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.10 1999-10-18 05:07:49 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -58,8 +58,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.9 1999-10-15 21:07:35 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.9 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.10 1999-10-18 05:07:49 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.10 $";
   
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dim_rnm_lst=NULL_CEWI;
@@ -327,7 +327,7 @@ main(int argc,char **argv)
   /* Close the open netCDF file */ 
   ncclose(nc_id);
   
-  /* Dispose of the local copy of the file */ 
+  /* Remove local copy of file */ 
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
 
   Exit_gracefully();

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.13 1999-10-15 21:07:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.14 1999-10-18 05:07:48 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -74,8 +74,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.13 1999-10-15 21:07:34 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.13 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.14 1999-10-18 05:07:48 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.14 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -256,8 +256,8 @@ main(int argc,char **argv)
       if(nbr_lmt > 0) (void)cpy_var_val_lmt(in_id,out_id,xtr_lst[idx].nm,lmt,nbr_lmt); else (void)cpy_var_val(in_id,out_id,xtr_lst[idx].nm);
     } /* end loop over idx */
     
-    /* Close the output file and move it from the temporary to the permanent location */ 
-    (void)fl_out_close(fl_out,fl_out_tmp,out_id);
+    /* Close output file and move it from temporary to permanent location */ 
+    (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
 
   } /* end if fl_out != NULL */ 
   
@@ -290,10 +290,10 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_xtr;idx++) (void)prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,nbr_lmt,dlm_sng,FORTRAN_STYLE,PRINT_DIMENSIONAL_UNITS);
   } /* end if OUTPUT_DATA */
   
-  /* Close the input netCDF file */ 
+  /* Close input netCDF file */ 
   ncclose(in_id);
   
-  /* Dispose of the local copy of the file */ 
+  /* Remove local copy of file */ 
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
 
   Exit_gracefully();

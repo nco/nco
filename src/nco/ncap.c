@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.11 1999-10-15 21:07:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.12 1999-10-18 05:07:47 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -84,8 +84,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.11 1999-10-15 21:07:33 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.11 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.12 1999-10-18 05:07:47 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.12 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -405,14 +405,14 @@ main(int argc,char **argv)
     rcd=yyparse((void *)&prs_arg);
   } /* end else */
   
-  /* Close the input netCDF file */ 
+  /* Close input netCDF file */ 
   rcd=nc_close(in_id);
   
-  /* Dispose of the local copy of the file */ 
+  /* Remove local copy of file */ 
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
 
-  /* Close the output file and move it from the temporary to the permanent location */ 
-  (void)fl_out_close(fl_out,fl_out_tmp,out_id);
+  /* Close output file and move it from temporary to permanent location */ 
+  (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
 
   Exit_gracefully();
 

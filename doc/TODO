@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.33 1999-10-18 01:33:45 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.34 1999-10-18 05:07:46 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -73,9 +73,11 @@ entry, problems arise in C version when missing_value = 0.0. Only fix seems
 to be checking whether tally == 0 before checking whether op2 == mss_val
 123. Add scp protocol to fl_get()
 124. Use `install' program and mkdir -p
-125. Fix install on SGI, Cray
+125. Fix install on Cray
 126. Fix install on Blackforest
 127. Make mss: signal retrieval from NCAR mass store
+128. Ensure target 'dir' is made before *.d dependency files 
+129. ncwa -O -a lat,lon -w gw foo.nc foo2.nc from dumps core on ute in nco_tst.sh
 ************************************************************************
 End NCO Wish list
 ************************************************************************

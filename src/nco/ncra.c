@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.14 1999-10-15 21:07:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.15 1999-10-18 05:07:49 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -67,8 +67,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.14 1999-10-15 21:07:35 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.14 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.15 1999-10-18 05:07:49 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.15 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -438,8 +438,8 @@ main(int argc,char **argv)
     } /* end loop over idx */
   } /* end if */
   
-  /* Close the output file and move it from the temporary to the permanent location */ 
-  (void)fl_out_close(fl_out,fl_out_tmp,out_id);
+  /* Close output file and move it from temporary to permanent location */ 
+  (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
   
   Exit_gracefully();
   return EXIT_SUCCESS;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.37 1999-10-15 17:54:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.38 1999-10-18 05:07:47 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -1641,10 +1641,10 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
 } /* end fl_out_open() */ 
 
 void
-fl_out_close(char *fl_out,char *fl_out_tmp,int nc_id)
+fl_out_cls(char *fl_out,char *fl_out_tmp,int nc_id)
 /* 
-   char *fl_out: I name of the permanent output file
-   char *fl_out_tmp: I name of the temporary output file to close and move to permanent output file
+   char *fl_out: I name of permanent output file
+   char *fl_out_tmp: I name of temporary output file to close and move to permanent output file
    int nc_id: I file ID of fl_out_tmp
  */ 
 {
@@ -1653,13 +1653,13 @@ fl_out_close(char *fl_out,char *fl_out_tmp,int nc_id)
 
   rcd=ncclose(nc_id);
   if(rcd == -1){
-    (void)fprintf(stdout,"%s: ERROR fl_out_close() is unable to ncclose() file %s\n",prg_nm_get(),fl_out_tmp);
+    (void)fprintf(stdout,"%s: ERROR fl_out_cls() is unable to ncclose() file %s\n",prg_nm_get(),fl_out_tmp);
     exit(EXIT_FAILURE); 
   } /* end if */ 
   
   (void)fl_mv(fl_out_tmp,fl_out);
 
-} /* end fl_out_close() */ 
+} /* end fl_out_cls() */ 
 
 void
 fl_cmp_err_chk()

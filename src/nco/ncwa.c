@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.23 1999-10-15 21:07:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.24 1999-10-18 05:07:49 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -73,8 +73,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.23 1999-10-15 21:07:35 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.23 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.24 1999-10-18 05:07:49 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.24 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -398,6 +398,7 @@ main(int argc,char **argv)
   
   /* Open output file */ 
   fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
+  if(dbg_lvl > 4) (void)fprintf(stderr,"Output file ID = %d\n",out_id);
 
   /* Copy all global attributes */ 
   (void)att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
@@ -636,16 +637,16 @@ main(int argc,char **argv)
 
     if(dbg_lvl > 0) (void)fprintf(stderr,"\n");
     
-    /* Close the input netCDF file */ 
+    /* Close input netCDF file */ 
     ncclose(in_id);
     
-    /* Dispose of the local copy of the file */ 
+    /* Remove local copy of file */ 
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
 
   } /* end loop over idx_fl */
   
-  /* Close the output file and move it from the temporary to the permanent location */ 
-  (void)fl_out_close(fl_out,fl_out_tmp,out_id);
+  /* Close output file and move it from temporary to permanent location */ 
+  (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
   
   Exit_gracefully();
   return EXIT_SUCCESS;
