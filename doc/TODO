@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.407 2004-09-06 20:36:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.408 2004-09-06 22:48:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -252,12 +252,9 @@ nco404. Does Ersoy's XML stylesheet nco.css work?
 nco406. Add advantages/disadvantages of NCO (compared to e.g., ANTS) description
 nco408. How to get new SDO tasks done? How to advertise pay-per-feature requests? How to evaluate responses? GNOME has something similar
 nco421. ncpdq: Make packing offer to move missing value to inside range
-nco422. ncpdq: packing missing values-ridden variables still leads to
-   memory errors, why? Possibly because missing values outside range?
-        valgrind ncpdq -D 3 -O -C -P all_new -v rec_var_dbl_mss_val_dbl_pck ~/nco/data/in.nc ~/foo.nc > ~/foo.valgrind 2>&1
 nco425. ncpdq: Make unpacking offer to unpack missing value to preserve its usefulness
 nco426. ncpdq: Make packing offer to pack missing value to the packed type to preserve its usefulness
-nco427. Search and fix all pck_dbg statements
+nco427. ncpdq, ncra: Fix pck_dbg problems in nco_var_get() which automatically down-convert missing value to typ_dsk.
 nco431. Implement ncpdq -P optional options
 nco439. Verify packing NC_INT->NC_SHORT
 nco440. Verify packing NC_DOUBLE->NC_INT
@@ -265,12 +262,9 @@ nco441. Verify packing NC_DOUBLE->NC_CHAR
 nco442. Verify packing NC_INT->NC_CHAR
 nco443. Verify packing NC_SHORT->NC_CHAR
 nco444. ncpdq: Split var_prc from var_fix in nco_var_lst_dvd()
-nco447. Fix memory double free for xst_new
-        ncpdq -D 5 -O -C -P xst_new ~/nco/data/in.nc ~/foo.nc 
-nco448. Fix all_xst core dump
-        ncpdq -D 5 -O -C -P all_xst ~/nco/data/in.nc ~/foo.nc 
 nco449. Incorporate pck_map into nco_is_packable()
-nco450. 
+nco450. Run ncra on two multiple record files with packed variables and look for pck_dbg memory problems with valgrind
+nco451. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

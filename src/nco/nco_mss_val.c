@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.17 2004-09-03 23:06:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.18 2004-09-06 22:48:48 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -193,14 +193,14 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
     (void)nco_inq_attname(nc_id,var->id,idx,att_nm);
     if((int)strcasecmp(att_nm,"missing_value") != 0) continue;
     (void)nco_inq_att(nc_id,var->id,att_nm,&att_typ,&att_sz);
-    if(att_sz != 1 && att_typ != NC_CHAR){
+    if(att_sz != 1L && att_typ != NC_CHAR){
       (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s has %li elements and so will not be used\n",prg_nm_get(),att_nm,var->nm,att_sz);
       continue;
     } /* end if */
     /* if(att_typ != var->type) (void)fprintf(stderr,"%s: WARNING the \"%s\" attribute for %s will be typecast from %s to %s for arithmetic purposes\n",prg_nm_get(),att_nm,var->nm,nco_typ_sng(att_typ),nco_typ_sng(var->type)); */
     /* If we got this far then try to retrieve attribute and make sure it conforms to variable's type */
     var->has_mss_val=True;
-    /* Oddly, ARM uses NC_CHAR for type of missing_value, so we must make allowances for this */
+    /* Oddly, ARM uses NC_CHAR for type of missing_value, so make allowances for this */
     att_lng=att_sz*nco_typ_lng(att_typ);
     mss_tmp.vp=(void *)nco_malloc(att_lng);
     (void)nco_get_att(nc_id,var->id,att_nm,mss_tmp.vp,att_typ);

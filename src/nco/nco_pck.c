@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.41 2004-09-06 20:37:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.42 2004-09-06 22:48:48 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -611,6 +611,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     /* Create double precision missing_value for use in min/max arithmetic */
     if(var->has_mss_val){
       ptr_unn_mss_val_dbl.vp=(void *)nco_malloc(nco_typ_lng((nc_type)NC_DOUBLE));
+      /* fxm nco422: packing rec_var_dbl_mss_val_dbl_pck with all_new, xst_new causes valgrind memory error here in val_cnf_typ() routine. Probably because missing_value already converted to double? */
       (void)nco_val_cnf_typ(var->type,var->mss_val,(nc_type)NC_DOUBLE,ptr_unn_mss_val_dbl);
     } /* endif has_mss_val */
 
@@ -789,7 +790,10 @@ nco_var_upk /* [fnc] Unpack variable in memory */
 {
   /* Threads: Routine is thread-unsafe */
   /* Purpose: Unpack variable
-     Routine is inverse of nco_var_pck(): nco_var_upk[nco_var_pck(var)]=var */
+     Routine is inverse of nco_var_pck(): nco_var_upk[nco_var_pck(var)]=var
+     Routine handles missing_value's implicitly:
+     nco_var_cnf_typ() automatically converts missing_value, if any, to unpacked type
+     This may need to change when nco427 is addressed */
 
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
@@ -801,7 +805,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
   if(var->val.vp == NULL) (void)fprintf(stdout,"%s: ERROR nco_var_upk() called with empty var->val.vp\n",prg_nm_get());
 
   /* Packed variables are not guaranteed to have both scale_factor and add_offset
-     scale_facto is guaranteed to be of type NC_FLOAT or NC_DOUBLE and of size 1 (a scalar) */
+     scale_factor is guaranteed to be of type NC_FLOAT or NC_DOUBLE and of size 1 (a scalar) */
 
   /* Create scalar value structures from values of scale_factor, add_offset */
   if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
@@ -825,6 +829,8 @@ nco_var_upk /* [fnc] Unpack variable in memory */
     /* Add add_offset to var */
     (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
   } /* endif has_add_fst */
+
+  if(var->has_mss_val) var=nco_cnv_mss_val_typ(var,var->type);
 
   /* Tell the world */  
   var->pck_ram=False;
@@ -878,12 +884,20 @@ nco_var_upk_swp /* [fnc] Unpack var_in into var_out */
   var_out->type=var_tmp->type;
   var_out->val=var_tmp->val;
   var_out->pck_ram=var_tmp->pck_ram;
+  /* nco_var_cnf_typ() in nco_var_upk() automatically converts missing_value, if any, to unpacked type */
+  if(var_out->has_mss_val){
+    /* Free current missing value before obtaining new one */
+    var_out->mss_val.vp=(void *)nco_free(var_out->mss_val.vp);
+    var_out->mss_val=var_tmp->mss_val;
+    /* var_out now owns mss_val, make sure nco_var_free(var_tmp) ignores it */
+    var_tmp->mss_val.vp=NULL;
+  } /* endif */
   var_out->has_scl_fct=var_tmp->has_scl_fct;
   var_out->has_add_fst=var_tmp->has_add_fst;
   var_out->scl_fct.vp=nco_free(var_out->scl_fct.vp);
   var_out->add_fst.vp=nco_free(var_out->add_fst.vp);
   /* var_tmp->val buffer now doubles as var_out->val buffer
-     Must prevent nco_var_free() from free()'ing var_tmp->val
+     Prevent nco_var_free() from free()'ing var_tmp->val
      Setting var_tmp->val.vp=NULL accomplishes this
      Use var_out->val.vp to free() this buffer later with nco_var_free() */
   var_tmp->val.vp=NULL;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.21 2004-09-03 23:59:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.22 2004-09-06 22:48:47 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -107,14 +107,14 @@ nco_cnv_var_typ_dsk  /* [fnc] Revert variable to on-disk type */
 } /* nco_cnv_var_typ_dsk() */
 
 var_sct * /* O [sct] Variable with mss_val converted to typ_upk */
-nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to typ_upk */
-(var_sct *var, /* I [sct] Variable with missing_value to be converted */
+nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to mss_val_out_typ */
+(var_sct *var, /* I [sct] Variable with missing_value to convert */
  const nc_type mss_val_out_typ) /* I [enm] Type of mss_val on output */
 {
-  /* Purpose: Convert variable missing_value field, if any, to typ_upk
-     Routine is currently called only by ncra, for following reason:
+  /* Purpose: Convert variable missing_value field, if any, to mss_val_out_typ
+     Routine is currently called only by ncra and by nco_var_get(), for following reason:
      Most applications should call nco_var_cnf_typ() without calling nco_cnv_mss_val_typ()
-     since that routine converts misssing_value type along with variable type
+     since nco_var_cnf_typ() converts misssing_value type along with variable type
      The important exception to this is ncra
      ncra refreshes variable metadata (including missing_value, if any) 
      once per file (naturally), but refreshes variable values once per record.
@@ -153,7 +153,10 @@ nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to typ_upk */
   mss_val_out.vp=(void *)nco_malloc(nco_typ_lng(mss_val_out_typ));
   (void)nco_val_cnf_typ(var_in_typ,mss_val_in,mss_val_out_typ,mss_val_out);
   var->mss_val=mss_val_out;
-  /* Free original */
+  /* Free original 
+     Of course this only changes var_in->mss_val
+     Calling routine must update var_out->mss_val if var_out->val points to var_in->val
+     This dangling pointer was a problem in ncpdq */
   mss_val_in.vp=nco_free(mss_val_in.vp);
   
   return var; /* O [sct] Variable with mss_val converted to typ_upk */
@@ -167,7 +170,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   /* Threads: Routine is thread safe and makes no unsafe routines */
   /* Purpose: Return copy of input variable typecast to desired type
      Routine assumes variable and missing_value are same type in memory
-     This is currently always true except for a brief time in ncra
+     This is currently always true except briefly in ncra (and possibly ncpdq)
      This condition is unsafe and is described more fully in nco_cnv_mss_val_typ() */
   long idx;
   long sz;
@@ -204,7 +207,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   val_out=var_out->val;
   
   /* Copy and typecast missing_value attribute, if any */
-  /* fxm: 20020814: ncra bug here since this tries to re-convert missing values that have already been promoted to double during arithmetic */
+  /* fxm: 20020814: ncra bug here since this tries to re-convert missing values that have already been promoted to double during arithmetic pck_dbg */
   if(var_out->has_mss_val){
     ptr_unn var_in_mss_val;
 

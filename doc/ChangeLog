@@ -3,6 +3,8 @@
 	* cvs tag -c nco-2_9_9
 	Changes since nco-2_9_8: 1. ncbo threading 2. ncpdq -P packing
 
+	* Update missing value in nco_var_upk_swp()
+
 	* Handle all nco_pck_typ cases in nco_var_dfn() and end clause of ncpdq
 
 	* Remove dangling pointer from ncpdq all_xst clause

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.61 2004-09-06 20:37:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.62 2004-09-06 22:48:48 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -624,8 +624,10 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
      Thus it is important to refresh (some) packing attributes on each read */
 
   /* Synchronize missing value type with (possibly) new disk type */
-  /* fxm: pck_dbg potential big bug on non-packed types in ncra here,
-     due to potential double conversion of missing_value */
+  /* fxm nco427: pck_dbg potential big bug on non-packed types in ncra here,
+     due to potential double conversion of missing_value
+     First conversion to typ_dsk occurs when nco_var_fll() reads in mss_val
+     Second conversion occurs here mss_val again converted to typ_dsk */
   if(var->pck_dsk) var=nco_cnv_mss_val_typ(var,var->typ_dsk);
 
   /* Type of variable and missing value in memory are now same as type on disk */
@@ -951,7 +953,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	   /* ...or because operator newly packs un-packed variables like this one... */
 	   (nco_pck_typ == nco_pck_all_xst_att && !var[idx]->pck_ram) ||
 	   /* ...or because operator re-packs packed variables like this one... */
-	   (nco_pck_typ == nco_pck_all_xst_att && var[idx]->pck_ram)
+	   (nco_pck_typ == nco_pck_xst_new_att && var[idx]->pck_ram)
 	   ){
 	  
 	  /* ...then add/overwrite dummy scale_factor and add_offset attributes

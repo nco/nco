@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.49 2004-09-06 20:37:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.50 2004-09-06 22:48:48 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.49 2004-09-06 20:37:01 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.49 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.50 2004-09-06 22:48:48 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.50 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -628,7 +628,7 @@ main(int argc,char **argv)
   /* Alter metadata for variables that will be packed */
   if(nco_pck_typ != nco_pck_nil){
     if(nco_pck_typ != nco_pck_upk){
-      /* Create attribute edit lists */
+      /* Allocate attribute list container for maximum number of entries */
       aed_lst_add_fst=(aed_sct *)nco_malloc(nbr_var_prc*sizeof(aed_sct));
       aed_lst_scl_fct=(aed_sct *)nco_malloc(nbr_var_prc*sizeof(aed_sct));
     } /* endif packing */
@@ -746,9 +746,10 @@ main(int argc,char **argv)
 	     /* ...or because operator newly packs un-packed variables like this one... */
 	     (nco_pck_typ == nco_pck_all_xst_att && !var_prc[idx]->pck_ram) ||
 	     /* ...or because operator re-packs packed variables like this one... */
-	     (nco_pck_typ == nco_pck_all_xst_att && var_prc[idx]->pck_ram)
+	     (nco_pck_typ == nco_pck_xst_new_att && var_prc[idx]->pck_ram)
 	     ){
 	    /* Replace dummy packing attributes with final values, or delete them */
+	    if(dbg_lvl >= 5) (void)fprintf(stderr,"%s: main() replacing dummy packing attribute values for variable %s\n",prg_nm,var_prc[idx]->nm);
 	    (void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
 	    (void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
 	  } /* endif variable is newly packed by this operator */
