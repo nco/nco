@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.285 2004-02-09 07:54:39 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.286 2004-02-25 01:33:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -200,7 +200,9 @@ nco308. Add shared library flag to nco_ctl.c flags
 nco309. Free memory allocated in nco_fl_utl.c: fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
 nco310. Add ENABLE_DEBUG_CUSTOM, ENABLE_OPTIMIZE_CUSTOM, ... to bld/Makefile
 nco311. Automatically convert int,short to float in nco_var_pwr()
-nco314. 
+nco314. nco -O -C -a lat,lon,time http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface/pres.sfc.1969.nc foo.nc 
+causes SIGSEGV in nco_var_avg_reduce_ttl ad nco_var_avg.c:413
+http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface/pres.sfc.1969.nc foo.nc
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
