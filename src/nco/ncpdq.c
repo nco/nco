@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.40 2004-09-03 21:50:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.41 2004-09-04 05:22:22 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.40 2004-09-03 21:50:59 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.40 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.41 2004-09-04 05:22:22 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.41 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:P:p:Rrt:v:x-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -756,14 +756,9 @@ main(int argc,char **argv)
   if(nco_pck_typ != nco_pck_nil){
     if(nco_pck_typ_sng != NULL) nco_pck_typ_sng=(char *)nco_free(nco_pck_typ_sng);
     if(nco_pck_typ != nco_pck_upk){
-      /* Variable structures and attribute edit lists both share attribute values
+      /* No need for loop over var_prc variables to free attribute values
+	 Variable structures and attribute edit lists share same attribute values
 	 Free them only once, and do it in nco_var_free() */
-      /* for(idx=0;idx<nbr_var_prc;idx++){
-	if(nco_is_packable(var_prc[idx]->type)){
-	  aed_lst_add_fst[idx].val.vp=nco_free(aed_lst_add_fst[idx].val.vp);
-	  aed_lst_scl_fct[idx].val.vp=nco_free(aed_lst_scl_fct[idx].val.vp);
-	}
-	} */
       aed_lst_add_fst=(aed_sct *)nco_free(aed_lst_add_fst);
       aed_lst_scl_fct=(aed_sct *)nco_free(aed_lst_scl_fct);
     } /* nco_pck_typ == nco_pck_upk */
@@ -887,7 +882,7 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
       if(var_out->scl_fct.vp != NULL || var_out->add_fst.vp != NULL) (void)fprintf(stderr,"%s: WARNING %s reports variable %s has packing attribute values in memory. This is not supposed to happen through known code paths, but is not necessarily dangerous.\n",prg_nm_get(),fnc_nm,var_in->nm);
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s keeping existing packing attributes for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
     }else{
-      /* NB: same if-then-else as nco_pck_all_new_att */
+      /* NB: Same if-then-else as nco_pck_all_new_att, funcion-ify? */
       if(nco_is_packable(var_out->type)){
 	if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s packing variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk),nco_typ_sng(typ_out));
 	var_out=nco_var_pck(var_out,typ_out,USE_EXISTING_PCK);
@@ -911,7 +906,7 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
       /* nco_var_pck() expects to alter var_out->type itself, if necessary */
       var_out->type=var_in->typ_dsk;
     } /* endif */
-      /* NB: same if-then-else as nco_pck_all_xst_att */
+    /* NB: Same if-then-else as nco_pck_all_xst_att, funcion-ify? */
     if(nco_is_packable(var_out->type)){
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s packing variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk),nco_typ_sng(typ_out));
       var_out=nco_var_pck(var_out,typ_out,USE_EXISTING_PCK);

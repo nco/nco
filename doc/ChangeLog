@@ -1,5 +1,8 @@
 2004-09-03  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_9_9
+	Changes since nco-2_9_8: 1. ncbo threading 2. ncpdq -P packing
+
 	* Fix double-free()'d value buffer problem by NULLifying dangling 
 	pointer 
 

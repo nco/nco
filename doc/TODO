@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.392 2004-09-04 00:05:42 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.393 2004-09-04 05:22:22 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -246,21 +246,21 @@ nco394. strdup() all system-owned memory so var_free() can free strings
 nco395. ncpdq: document rdr shr lists
 nco396. free() memory at end of each operator
 nco397. make ncpack symbolic link to ncpdq? Re-order/pack are completely independent yet need same structure of program
-nco399. ncpdq: add scl_fct add_fst attributes in metadata loop or in single loop after writing variable values
-nco400. ncpdq: modify nco_var_dfn() to make room for scale factor and add offset
-nco401. ncpdq: fix "use ncpdq fxm" hint in nco_pck_dsk_inq() message
 nco402. Leave alone [un-]packing of fixed variables in arithmetic operators
         See notes about this in nco_var_dfn()
-nco403. ncpdq: Do not pack already packed variables
-        ncpdq -O -D 3 -P all_new -v pck ~/nco/data/in.nc ~/foo.nc
 nco404. Does Ersoy's XML stylesheet nco.css work?
 nco406. Add advantages/disadvantages of NCO (compared to e.g., ANTS) description
 nco408. How to get new SDO tasks done? How to advertise pay-per-feature requests? How to evaluate responses? GNOME has something similar
 nco418. ncpdq: Make packing play nice with missing values outside range
         ncpdq -D 3 -O -C -P all_new -v mss_val_scl ~/nco/data/in.nc ~/foo.nc
-nco420. ncpdq: Make packing work with NC_INT->NC_SHORT
-        ncpdq -D 3 -O -C -P all_new -v bnd_var ~/nco/data/in.nc ~/foo.nc
-nco421. 
+nco421. ncpdq: Make packing offer to move missing value to inside range
+nco422. ncpdq: packing missing values-ridden variables still leads to memory errors
+        ncpdq -D 3 -O -C -P all_new -v rec_var_dbl_mss_val_dbl_pck ~/nco/data/in.nc ~/foo.nc
+nco423. ncpdq: test on AIX
+nco425. ncpdq: Make unpacking offer to unpack missing value to preserve its usefulness
+nco426. ncpdq: Make packing offer to pack missing value to the packed type to preserve its usefulness
+nco427. ncpdq: Search and fix all pck_dbg statements
+nco428. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

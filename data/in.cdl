@@ -18,6 +18,7 @@
 // WARNING: Changing values of variables below, especially coordinate variables, affects outcome of nco_tst.pl test script
 // Other programs, e.g., ~/f/fff.F90, ~/c++/ccc.cc, ~/c/c.c may also break
 // In particular, do not change number of elements in record coordinate, time, without simultaneously changing number of data in all record variables
+// My convention is that the missing_value, if any, of any packed variable should be of the same type as the expanded variable. Hence missing_value, add_offset, and scale_factor should all be of the same type. Variables that do not adhere to this convention are not supported.
 
 // Data constants in CDL:
 // byte: 'a'
@@ -39,7 +40,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.52 2004-09-03 23:06:45 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.53 2004-09-04 05:22:21 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -332,14 +333,14 @@ variables:
 
 	double rec_var_dbl_mss_val_dbl_upk(time);
 	rec_var_dbl_mss_val_dbl_upk:long_name = "record variable, double, with double missing values";
-	rec_var_dbl_mss_val_dbl_upk:purpose = "This variable is used to generate the packed variable rec_var_dbl_mss_val_dbl_pck, so its missing_value should not be too far out of range, i.e., it should be representable by a short";
+	rec_var_dbl_mss_val_dbl_upk:purpose = "This variable is used to generate the packed variable rec_var_dbl_mss_val_dbl_pck, so its missing_value should not be too far out of range, i.e., it should be representable by a short. However, the missing_value should itself be the same type as the unpacked variable, NC_DOUBLE in this case.";
 	rec_var_dbl_mss_val_dbl_upk:missing_value = -999.;
 
 	short rec_var_dbl_mss_val_dbl_pck(time);
 	rec_var_dbl_mss_val_dbl_pck:long_name = "record variable, double, with double missing values, packed";
 	rec_var_dbl_mss_val_dbl_pck:purpose = "Packed version of rec_var_dbl_mss_val_dbl_upk";
-	rec_var_dbl_mss_val_dbl_pck:missing_value = -999s;
-        rec_var_dbl_mss_val_dbl_pck:scale_factor = -9.15541313801785e-05 ;
+	rec_var_dbl_mss_val_dbl_pck:missing_value = -999.;
+        rec_var_dbl_mss_val_dbl_pck:scale_factor = -9.15541313801785e-05;
         rec_var_dbl_mss_val_dbl_pck:add_offset = 5. ;
 
 	float rec_var_flt_mss_val_flt(time);
@@ -381,7 +382,7 @@ variables:
 	int rec_var_dbl_mss_val_dbl_pck_lng(time);
 	rec_var_dbl_mss_val_dbl_pck_lng:long_name = "record variable, double packed as long, with double missing values";
 	rec_var_dbl_mss_val_dbl_pck_lng:purpose = "although not usual, packing doubles into longs (rather than shorts) is still a considerable cost savings";
-	rec_var_dbl_mss_val_dbl_pck_lng:missing_value = -999;
+	rec_var_dbl_mss_val_dbl_pck_lng:missing_value = -999.0;
         rec_var_dbl_mss_val_dbl_pck_lng:scale_factor = -9.15541313801785e-05 ;
         rec_var_dbl_mss_val_dbl_pck_lng:add_offset = 5. ;
 

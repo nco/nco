@@ -1,31 +1,59 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.116 2004-08-11 01:30:41 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.117 2004-09-04 05:22:22 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.9.8 are ready. 
+The netCDF operators NCO version 2.9.9 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-The significant new changes are that ncbo supports threading.
+There are two significant new changes in this version.
+
+1. ncbo now supports threading.
 Manually configure threading with -t (as with ncra, ncpdq, ncea), or
 ncbo will pick a default for you.
 
-fxm First, AIX NCO installations should upgrade to this version to get the 
-AIX-specific ncap bug-fix. 
+2. ncpdq has powerful packing capabilities
+ncpdq stands for "Permute Dimensions Quickly" and now "Pack Data
+Quickly" too. 
+Prior to this release, ncap sported the only packing features in NCO.
+However, ncap only packs one variable at a time.
+ncpdq is more consistent with the NCO file-at-a-time paradigm.
+To pack the entire file in.nc into output file out.nc use
+
+ncpdq -P all_new in.nc out.nc
+
+The main options to -P are 
+  all_new: Pack all unpacked variables and re-pack all packed variables
+  all_xst: Pack all unpacked variables and do not touch packed variables
+  upk: Unpack all packed variables
+This basic packing reduces the size of the average floating point file
+by a factor of two with no additional work on the user's part.
+One nice feature of (lossy) scale_factor/add_offset packing is that
+additional, loss-less packing algorithms can layer on top of it.
+
+Right now, ncpdq picks the packing type (e.g., NC_SHORT) for you.
+The next version will introduce options for more fine-grained control.
+Caveats: Packing tends to remove the utility of missing_values.
+The interaction of packing and missing_values is hard to handle.
+I am reluctant to implement any such features until/unless multiple
+users agree on the most useful features and specifically request
+them. So the ball is your court.
 
 Enjoy,
 Charlie
 
 Feature changes:
 1. ncbo supports threading
+1. ncpdq packs/unpacks
 
 Bug-fixes:
-1. fxm: AIX uses NCO-supplied float-valued functions (e.g., cosf())
+1. Fix regex capability on Mac OS X
 
 Build changes:
 1. None
 
 Other user-visible changes:
-1. None
+1. Documentated thread options http://nco.sf.net/nco.html#openmp
+2. Yummier ncpdq documentation http://nco.sf.net/nco.html#ncpdq
 
 User-invisible changes:
 1. None

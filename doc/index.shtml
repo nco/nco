@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.255 2004-09-03 20:25:30 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.256 2004-09-04 05:22:22 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -262,7 +262,7 @@ Tarballs and RPMs are no long uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.9.9</b>: (<i>In progress</i>) <tt>ncpdq</tt> packs/unpacks entire files, <tt>ncap</tt> float functions work in AIX (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users)
+<li><b>NCO 2.9.9</b>: (<i>In progress</i>) <tt>ncpdq</tt> packs/unpacks entire files
 <li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released, <tt>ncwa --msk_sng</tt> consolidated mask switch, C99 compiler required
 <li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>nco_input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS), write <tt>nco_openmp_thread_number</tt> attribute
 <li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax, 64-bit ABI for x86_64, <a href="http://www.debian.org">Debian</a> builds libnco_c++
@@ -356,19 +356,19 @@ Simply hit return when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>2.9.8</tt> (which is
-tagged as <tt>nco-2_9_8</tt> due to CVS rules) into local directory
-<tt>nco-2.9.8</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -r nco-2_9_8 -d nco-2.9.8 nco</tt></p>
+This command retrieves and places NCO version <tt>2.9.9</tt> (which is
+tagged as <tt>nco-2_9_9</tt> due to CVS rules) into local directory
+<tt>nco-2.9.9</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -r nco-2_9_9 -d nco-2.9.9 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-2_9_8</tt>) and the development version is that the
+(e.g., <tt>nco-2_9_9</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>2.9.8</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>2.9.9</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -395,15 +395,15 @@ testing and porting of NCO on the
 <h3><a href="http://www.debian.org">Debian GNU/Linux</a></h3>
 <ul>
 <!--
-<li><a href="http://www.debian.org">Debian</a> GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.9.8</a></li>
+<li><a href="http://www.debian.org">Debian</a> GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.9.9</a></li>
 -->
 <a href="http://packages.debian.org/unstable/math/nco.html">Debian GNU/Linux homepage for NCO</a>.
 <a href="http://www.debian.org">debs</a> by Rorik Peterson and Charlie Zender:
-<li><a href="src/nco_2.9.8-1_i386.deb">nco_2.9.8-1_i386.deb</a> (<!--#fsize file="src/nco_2.9.8-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
-<li><a href="src/nco_2.9.8-1.dsc">nco_2.9.8-1.dsc</a> (<!--#fsize file="src/nco_2.9.8-1.dsc"-->): Description</li>
-<li><a href="src/nco_2.9.8-1.tar.gz">nco_2.9.8-1.tar.gz</a> (<!--#fsize file="src/nco_2.9.8-1.tar.gz"-->): Gzipped Source Tarball</li>
+<li><a href="src/nco_2.9.9-1_i386.deb">nco_2.9.9-1_i386.deb</a> (<!--#fsize file="src/nco_2.9.9-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
+<li><a href="src/nco_2.9.9-1.dsc">nco_2.9.9-1.dsc</a> (<!--#fsize file="src/nco_2.9.9-1.dsc"-->): Description</li>
+<li><a href="src/nco_2.9.9-1.tar.gz">nco_2.9.9-1.tar.gz</a> (<!--#fsize file="src/nco_2.9.9-1.tar.gz"-->): Gzipped Source Tarball</li>
 <li><a
-href="src/nco_2.9.8-1_i386.changes">nco_2.9.8-1_i386.changes</a> (<!--#fsize file="src/nco_2.9.8-1.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
+href="src/nco_2.9.9-1_i386.changes">nco_2.9.9-1_i386.changes</a> (<!--#fsize file="src/nco_2.9.9-1.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
 </ul>
 
 <a name="redhat"></a>
@@ -747,7 +747,7 @@ Version 2.8.7 fixes this problem.
 <ul><b>Platform-specific Run-time Problems:</b>
 <a name="bug_ncap_flt_fnc_aix"></a>
 <li><i>Float-valued intrinsic arithmetic functions in <tt>ncap</tt> on AIX:</i>
-<tt>ncap</tt> versions through 2.9.8 have a bug that cause all float-valued
+<tt>ncap</tt> versions through 3.0.0 have a bug that cause all float-valued
 intrinsic math functions to fail under AIX.
 Float-valued math functions are the ISO&nbsp;C99 functions, e.g.,
 <tt>cosf()</tt>, <tt>fabsf()</tt>, <tt>logf()</tt>.
@@ -761,8 +761,17 @@ variables stored as <tt>NC_FLOAT</tt>).
 Double precision arguments cause NCO to invoke the standard
 (double-valued) form of the generic function, e.g., <tt>cos()</tt>, 
 <tt>fabs()</tt>, <tt>log()</tt>. 
-Version 2.9.8 fixes this problem by using its own float-valued
+Version 3.0.0 fixes this problem by using its own float-valued
 functions instead of the native AIX functions. 
+<!-- Whevnever this bug is fixed, here is some text
+Version info:
+<tt>ncap</tt> float functions work in AIX (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users)
+ANNOUNCE info:
+First, AIX NCO installations should upgrade to this version to get the
+AIX-specific ncap bug-fix.
+Bug-fixes:
+1. fxm: AIX uses NCO-supplied float-valued functions (e.g., cosf())
+-->
 </li>
 </ul>
 <p><hr></p>

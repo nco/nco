@@ -1,3 +1,9 @@
+nco (2.9.9-1) unstable; urgency=low
+
+  * 1. ncbo threading 2. ncpdq -P packing
+
+ -- Charlie Zender <zender@uci.edu>  Fri,  3 Sep 2004 22:05:59 -0700
+
 nco (2.9.8-1) unstable; urgency=low
 
   * 1. ncpdq, 2. ncwa --msk_sng consolidated mask switch, and 3. C99

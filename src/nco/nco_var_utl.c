@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.58 2004-09-03 20:25:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.59 2004-09-04 05:22:22 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -629,7 +629,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   if(var->pck_dsk) var=nco_cnv_mss_val_typ(var,var->typ_dsk);
 
   /* Type of variable and missing value in memory are now same as type on disk */
-  var->type=var->typ_dsk; /* Type of variable in RAM */
+  var->type=var->typ_dsk; /* [enm] Type of variable in RAM */
 
   /* Packing in RAM is now same as packing on disk pck_dbg 
      fxm: Following call to nco_pck_dsk_inq() is never necessary for non-packed variables */
