@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.1 2002-12-19 20:48:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.2 2002-12-22 17:45:27 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -8,92 +8,11 @@
 
 #include "nco_msa.h" /* Multi-slabbing algorithm */
 
-void *
-nco_msa_merge_slabs(
-int i,               /* current depth, we start at 0 */
-int imax,            /* maximium depth (i.e the number of dims in variable (does not change)*/		  
-lmt_all **lmt_lst,   /* list of limits in each dimension (this remains STATIC as we recurse) */
-void **vp_wrap,     /* pointers to hyperslabs */ 
-long *vp_size,      /* size of each hyperslab */
-long *var_sz,       /* Var size of merged hyprslab */ 
-var_sct *vara)
-{
-  int slb_nbr; 
-  int idx;
-  int jdx;
-  int size = lmt_lst[i]->lmt_dmn_nbr;
-  long indices[size];
-  lmt_sct lmt;
-  lmt_all *lmt_i;
-  
-  void *vp;
-  void *vp_step;
-  void *slab;
-
-  long lcnt;
-  long vp_inc;
-  long vp_max;
-  long slab_step; 
-  long vp_offset;
-  long slab_size;
- 
-  
-  lmt_i = lmt_lst[i];
-
-  vp = nco_calloc(*var_sz,nco_typ_lng(vara->type));
-  
-  for( idx=0 ; idx < size ; idx++)
-    indices[idx] = lmt_i->lmt_dmn[idx]->srt;
-
-
-  lcnt = nco_typ_lng(vara->type);
-
-  for(idx=(i+1) ; idx < imax ; idx++)
-    lcnt  *=  lmt_lst[idx]->dmn_cnt;
-
-
-  vp_inc = lcnt*(lmt_i->dmn_cnt);
-
-  
-  vp_max = *var_sz * nco_typ_lng(vara->type);
-
-
-
-  /* Id we are at the top level we simple concatenate the hyperslabs */
-  
-
-  vp_offset = 0L;
-  while(nco_msa_calc_indices(True,lmt_i,&indices[0],&lmt,&slb_nbr))
-    {
-      vp_step = vp + (ptrdiff_t)vp_offset ;  
-      slab_step = lcnt* (lmt_i->lmt_dmn[slb_nbr]->cnt);  
-      slab = vp_wrap[slb_nbr]+(ptrdiff_t)(lmt.srt*lcnt);
-      slab_size = lmt.cnt*lcnt;
-
-      while( vp_step - vp < (ptrdiff_t)vp_max){
-        
-	 (void)memcpy(vp_step ,slab,slab_size);
-
-          slab += (ptrdiff_t)slab_step;
-	  vp_step += (ptrdiff_t)vp_inc;
-      }    
-      vp_offset += slab_size;
-           
-    }
- 
-  
-
-  
-  return vp;
-
-}       
-
-
 
 void *
 nco_msa_rec_calc(  /* Multi slab algorithm (recursive routine, returns a single slab pointer */
-int i,             /* current depth, we start at 0 */
-int imax,          /* maximium depth (i.e the number of dims in variable (does not change)*/	      
+int cd,             /* current depth, we start at 0 */
+int cd_max,          /* maximium depth (i.e the number of dims in variable (does not change)*/	      
 lmt_sct **lmt,    /* limits of the current hyperslabs these change as we recurse */
 lmt_all **lmt_lst, /* list of limits in each dimension (this remains STATIC as we recurse) */
 var_sct *vara)     /* Info for routine to read var info and pass info between calls */
@@ -103,17 +22,17 @@ var_sct *vara)     /* Info for routine to read var info and pass info between ca
   int nbr_slb;
   void *vp;
 
-  if( i == imax) goto read;
+  if( cd == cd_max) goto read;
 
-  nbr_slb = lmt_lst[i]->lmt_dmn_nbr;       
+  nbr_slb = lmt_lst[cd]->lmt_dmn_nbr;       
 
   if(nbr_slb == 1 ) {
 
     /* check to see if we have a wrapped dimension */
-    if( lmt_lst[i]->lmt_dmn[0]->srt > lmt_lst[i]->lmt_dmn[0]->end) goto wrap;
+    if( lmt_lst[cd]->lmt_dmn[0]->srt > lmt_lst[cd]->lmt_dmn[0]->end) goto wrap;
 
-    lmt[i]=lmt_lst[i]->lmt_dmn[0];
-    vp = nco_msa_rec_calc(i+1,imax,lmt,lmt_lst,vara);
+    lmt[cd]=lmt_lst[cd]->lmt_dmn[0];
+    vp = nco_msa_rec_calc(cd+1,cd_max,lmt,lmt_lst,vara);
     return vp;
       
   }
@@ -124,10 +43,10 @@ var_sct *vara)     /* Info for routine to read var info and pass info between ca
     int slb_index; 
     long var_sz=1L;   
     long lcnt ;
-    long vp_size[nbr_slb];
-    long indices[nbr_slb];
+    long *vp_size;
+    long *indices;
 
-    void *vp_wrap[nbr_slb];
+    void **vp_wrap;
     void *vp_step;
     void *slab;
 
@@ -140,39 +59,43 @@ var_sct *vara)     /* Info for routine to read var info and pass info between ca
 
 
     lmt_sct lmt_ret;
+
+    vp_size = (long *)nco_malloc(nbr_slb * sizeof(long));
+    indices = (long *)nco_malloc(nbr_slb * sizeof(long));
+    vp_wrap =(void **)nco_malloc(nbr_slb * sizeof(void *));
     
     for(idx = 0 ; idx < nbr_slb ; idx++) {
 
-      lmt[i]=lmt_lst[i]->lmt_dmn[idx];
-      vp_wrap[idx]=nco_msa_rec_calc(i+1,imax,lmt,lmt_lst,vara);
+      lmt[cd]=lmt_lst[cd]->lmt_dmn[idx];
+      vp_wrap[idx]=nco_msa_rec_calc(cd+1,cd_max,lmt,lmt_lst,vara);
       vp_size[idx]=vara->sz;
     }       
     
-    for(idx = 0 ; idx < imax ; idx++)
-      var_sz *=  (idx < i ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt) ;           
+    for(idx = 0 ; idx < cd_max ; idx++)
+      var_sz *=  (idx < cd ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt) ;           
     
 
     vp = nco_calloc(var_sz,nco_typ_lng(vara->type)); 
     
     lcnt = nco_typ_lng(vara->type);
-    for(idx=(i+1) ; idx < imax ; idx++)
+    for(idx=(cd+1) ; idx < cd_max ; idx++)
       lcnt  *=  lmt_lst[idx]->dmn_cnt;
 
 
-    vp_inc = (ptrdiff_t)( lcnt*(lmt_lst[i]->dmn_cnt) );
+    vp_inc = (ptrdiff_t)( lcnt*(lmt_lst[cd]->dmn_cnt) );
   
     vp_max = (ptrdiff_t)( var_sz * nco_typ_lng(vara->type) );
 
     for( idx=0 ; idx < nbr_slb ; idx++)
-      indices[idx] = lmt_lst[i]->lmt_dmn[idx]->srt;
+      indices[idx] = lmt_lst[cd]->lmt_dmn[idx]->srt;
 
 
   vp_offset = 0L;
-  while(nco_msa_calc_indices(True,lmt_lst[i],&indices[0],&lmt_ret,&slb_index))
+  while(nco_msa_calc_indices(True,lmt_lst[cd],&indices[0],&lmt_ret,&slb_index))
     {
      vp_step = vp + (ptrdiff_t)vp_offset ;  
      slab = vp_wrap[slb_index]+(ptrdiff_t)(lmt_ret.srt*lcnt); 
-     slab_step = (ptrdiff_t) ( lcnt* (lmt_lst[i]->lmt_dmn[slb_index]->cnt));  
+     slab_step = (ptrdiff_t) ( lcnt* (lmt_lst[cd]->lmt_dmn[slb_index]->cnt));  
  
      slab_size = (ptrdiff_t)(lmt_ret.cnt*lcnt);
 
@@ -210,7 +133,7 @@ var_sct *vara)     /* Info for routine to read var info and pass info between ca
      long cnt;
      long srd;
      long vp_size[2]; 
-     long icnt; 
+     long lcnt; 
      
      void *vp_step;
      void *vp_tmp[2];  
@@ -219,12 +142,12 @@ var_sct *vara)     /* Info for routine to read var info and pass info between ca
      ptrdiff_t post_map[2];
      lmt_sct lmt_wrp[2];
 
-     srt = lmt_lst[i]->lmt_dmn[0]->srt;
-     end = lmt_lst[i]->lmt_dmn[0]->end;
-     cnt = lmt_lst[i]->lmt_dmn[0]->cnt;
-     srd = lmt_lst[i]->lmt_dmn[0]->srd;
+     srt = lmt_lst[cd]->lmt_dmn[0]->srt;
+     end = lmt_lst[cd]->lmt_dmn[0]->end;
+     cnt = lmt_lst[cd]->lmt_dmn[0]->cnt;
+     srd = lmt_lst[cd]->lmt_dmn[0]->srd;
 
-    (void)nco_inq_dimlen(vara->nc_id,lmt_lst[i]->lmt_dmn[0]->id,&dmn_sz);
+    (void)nco_inq_dimlen(vara->nc_id,lmt_lst[cd]->lmt_dmn[0]->id,&dmn_sz);
      
 
    for(idx=0 ; idx < cnt ; idx++){
@@ -257,16 +180,17 @@ var_sct *vara)     /* Info for routine to read var info and pass info between ca
     
      
     /* Get hyperslabs for each element */
-    lmt[i] = &lmt_wrp[0];    
-    vp_wrap[0] = (void *)nco_msa_rec_calc(i+1,imax,lmt,lmt_lst,vara);
-    vp_size[0] = vara->sz;
-      
-    lmt[i]=&lmt_wrp[1];
-    vp_wrap[1] = (void *)nco_msa_rec_calc(i+1,imax,lmt,lmt_lst,vara);
-    vp_size[1] = vara->sz;
 
-    for(idx = 0 ; idx < imax ; idx++)
-      var_sz *=  idx < i ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt ;      
+    for(idx=0 ; idx < 2 ;idx++){
+
+      lmt[cd] = &lmt_wrp[idx];    
+      vp_wrap[idx] = (void *)nco_msa_rec_calc(cd+1,cd_max,lmt,lmt_lst,vara);
+      vp_size[idx] = vara->sz;
+    }
+
+    
+    for(idx = 0 ; idx < cd_max ; idx++)
+      var_sz *=  idx < cd ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt ;      
     
     /* Sanity check */ 
     if( var_sz != vp_size[0] + vp_size[1] ) {
@@ -279,22 +203,22 @@ var_sct *vara)     /* Info for routine to read var info and pass info between ca
 
 
    /* Merge slabs into a single entity */
-    icnt = nco_typ_lng(vara->type);
+    lcnt = nco_typ_lng(vara->type);
 
-    for(idx=(i+1) ; idx < imax ; idx++)
-      icnt  *=  lmt_lst[idx]->dmn_cnt;
+    for(idx=(cd+1) ; idx < cd_max ; idx++)
+      lcnt  *=  lmt_lst[idx]->dmn_cnt;
       
-    post_map[0] =  (ptrdiff_t)(icnt * lmt_wrp[0].cnt);
-    post_map[1] =  (ptrdiff_t)(icnt * lmt_wrp[1].cnt);
+    post_map[0] =  (ptrdiff_t)(lcnt * lmt_wrp[0].cnt);
+    post_map[1] =  (ptrdiff_t)(lcnt * lmt_wrp[1].cnt);
      
     vp_tmp[0] = vp_wrap[0]; /* we move through hyperslabs in these increments */
     vp_tmp[1] = vp_wrap[1]; /* these blocks represent the slabs already processed */
           
     vp_step = vp;
 
-    icnt = var_sz * nco_typ_lng(vara->type);
+    lcnt = var_sz * nco_typ_lng(vara->type);
 
-    while( vp_step - vp < (ptrdiff_t)icnt ) {
+    while( vp_step - vp < (ptrdiff_t)lcnt ) {
       
       (void)memcpy(vp_step,vp_tmp[0],post_map[0]);
       (void)memcpy(vp_step + post_map[0],vp_tmp[1],post_map[1]);
@@ -317,12 +241,16 @@ var_sct *vara)     /* Info for routine to read var info and pass info between ca
   {   
   long var_sz = 1L;
   long mult_srd=1L;
-  long dmn_srt[imax];
-  long dmn_cnt[imax];
-  long dmn_srd[imax]; 
+  long *dmn_srt;
+  long *dmn_cnt;
+  long *dmn_srd;
+
+  dmn_srt = (long*)nco_malloc(cd_max * sizeof(long)); 
+  dmn_cnt = (long*)nco_malloc(cd_max * sizeof(long)); 
+  dmn_srd = (long*)nco_malloc(cd_max * sizeof(long)); 
 
 
-  for(idx=0 ; idx < imax ; idx++) {
+  for(idx=0 ; idx < cd_max ; idx++) {
 
     dmn_srt[idx] = lmt[idx]->srt;
     dmn_cnt[idx] = lmt[idx]->cnt;
@@ -355,19 +283,20 @@ nco_msa_print_indices(lmt_all *lmt_i)
 
   int slb_nbr; 
   int idx;
-  int jdx;
   int size = lmt_i->lmt_dmn_nbr;
-  long indices[size];
+  long *indices;
   lmt_sct lmt;
 
-  printf("name=%s total size=%d\n",lmt_i->dmn_nm,lmt_i->dmn_cnt);
+  indices = (long *)nco_malloc(size *sizeof(long));
+
+  printf("name=%s total size=%ld\n",lmt_i->dmn_nm,lmt_i->dmn_cnt);
   
   for( idx=0 ; idx < size ; idx++)
     indices[idx] = lmt_i->lmt_dmn[idx]->srt;
 
   
   while(nco_msa_calc_indices(False,lmt_i,&indices[0],&lmt,&slb_nbr))
-    printf("slb_nbr=%d srt=%d end=%d cnt=%d srd=%d\n",slb_nbr, lmt.srt,lmt.end, lmt.cnt,lmt.srd);
+    printf("slb_nbr=%d srt=%ld end=%ld cnt=%ld srd=%ld\n",slb_nbr, lmt.srt,lmt.end, lmt.cnt,lmt.srd);
   
   
 }
@@ -387,7 +316,7 @@ int *slb)         /* slab which the above limit refers to */
 {
   int i;
   int  size = lmt_a->lmt_dmn_nbr;
-  bool min[size];
+  bool *min;
   
   int previous_slab = 0;
   int current_slab  = 0;
@@ -395,6 +324,8 @@ int *slb)         /* slab which the above limit refers to */
   long previous_index;
   long cnt=0L;
 
+
+  min = (bool*)nco_malloc(size*sizeof(bool));
 
   lmt->srt = -1L;
   lmt->cnt = 0L;
@@ -468,12 +399,14 @@ void
 nco_msa_calc_cnt(lmt_all *lmt_a)
 
 {
-  int i;
+  int idx;
   long cnt=0;
   int  size = lmt_a->lmt_dmn_nbr;
-  long indices[size];
-  bool min[size];
+  long *indices;
+  bool *min;
 
+  indices = (long *)nco_malloc(size * sizeof(long));
+  min = (bool *)nco_malloc(size * sizeof(bool));
   
   if( size == 1) {
     lmt_a->dmn_cnt = lmt_a->lmt_dmn[0]->cnt;
@@ -481,15 +414,15 @@ nco_msa_calc_cnt(lmt_all *lmt_a)
 
   }
   /* initialise indices with srt from    */
-  for( i=0 ; i < size ; i++)
-    indices[i] = lmt_a->lmt_dmn[i]->srt;
+  for( idx=0 ; idx < size ; idx++)
+    indices[idx] = lmt_a->lmt_dmn[idx]->srt;
 
   
   while( nco_msa_min_indices(indices,min,size) != LONG_MAX ) {
-   for(i = 0 ; i < size ; i++ ) {
-     if( min[i] ) { 
-	indices[i] += lmt_a->lmt_dmn[i]->srd;
-	if( indices[i] > lmt_a->lmt_dmn[i]->end) indices[i] = -1; 
+   for(idx = 0 ; idx < size ; idx++ ) {
+     if( min[idx] ) { 
+	indices[idx] += lmt_a->lmt_dmn[idx]->srd;
+	if( indices[idx] > lmt_a->lmt_dmn[idx]->end) indices[idx] = -1; 
         }
    }   
     cnt++;
@@ -528,22 +461,18 @@ nco_cpy_var_val_multi_lmt /* [fnc] Copy variable data from input to output file 
  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
  const bool NCO_BNR_WRT, /* I [flg] Write binary file */
  char *var_nm, /* I [sng] Variable name */
- const lmt_all * const lmt_lst, /* I multi-hyperslab limits */
- const int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
+ lmt_all * const lmt_lst, /* I multi-hyperslab limits */
+ int nbr_dmn_fl) /* I [nbr] Number of multi-hyperslab limits */
 {
 
  /* Routine to copy variable data from input netCDF file to output netCDF file. 
      Routine truncates dimensions in variable definition in output file according to user-specified limits.
      Routine copies_variable by variable, old-style, used only by ncks */
 
-  bool SRD=False;
-  bool WRP=False;
 
   int *dmn_id;
   int idx;
   int jdx;
-  int dmn_idx;
-  int lmt_idx;
   int nbr_dim;
   int nbr_dmn_in;
   int nbr_dmn_out;
@@ -551,14 +480,10 @@ nco_cpy_var_val_multi_lmt /* [fnc] Copy variable data from input to output file 
   int var_out_id;
 
   /* For regular data */
-  long *dmn_cnt;
-  long *dmn_in_srt;
+
   long *dmn_map_in;
   long *dmn_map_out;
   long *dmn_map_srt;
-  long *dmn_srd;
-  long *dmn_sz;
-
   long var_sz=1L;
 
   nc_type var_type;
@@ -568,7 +493,6 @@ nco_cpy_var_val_multi_lmt /* [fnc] Copy variable data from input to output file 
   void *void_ptr;
 
   lmt_all **lmt_mult;
-  
   lmt_sct **lmt;
   
   /* Get var_id for requested variable from both files */
