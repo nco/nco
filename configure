@@ -1116,7 +1116,7 @@ Some influential environment variables:
   I18N_SHARE  Root of internationalization (i18n) locale directories
               (run-time)
   UDUNITS_PATH
-              Location of UDUnits database 'udunits.dat' (run-time)
+              Root dir of compiled UDUnits code if not installed for system
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -25966,6 +25966,7 @@ echo "$as_me: UDUnits support enabled" >&6;}
 fi
 # When empty, utInit() uses environment variable UDUNITS_PATH, if any (see nco_lmt.c)
 # Thus UDUNITS_PATH need not be known at compile time
+#    AC_ARG_VAR([UDUNITS_PATH],Location of UDUnits database 'udunits.dat' (run-time))
 
 fi
 # This would activate conditional UDUnits tests, if there were any

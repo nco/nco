@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.108 2005-03-03 06:25:40 mangalam Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.109 2005-03-03 06:43:25 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -434,7 +434,8 @@ if test "${enable_udunits}" != 'no'; then
 fi
 # When empty, utInit() uses environment variable UDUNITS_PATH, if any (see nco_lmt.c)
 # Thus UDUNITS_PATH need not be known at compile time
-    AC_ARG_VAR([UDUNITS_PATH],Location of UDUnits database 'udunits.dat' (run-time))
+#    AC_ARG_VAR([UDUNITS_PATH],Location of UDUnits database 'udunits.dat' (run-time))
+    AC_ARG_VAR([UDUNITS_PATH], Root dir of compiled UDUnits code if not installed for system)
 fi
 # This would activate conditional UDUnits tests, if there were any
 #AM_CONDITIONAL(TEST_UDUNITS,[test "${enable_udunits}" = 'yes'])
