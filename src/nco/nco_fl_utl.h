@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.6 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.7 2002-09-03 01:19:54 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -11,6 +11,10 @@
 
 #ifndef NCO_FL_UTL_H
 #define NCO_FL_UTL_H
+
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */

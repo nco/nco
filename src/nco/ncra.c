@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.75 2002-08-28 07:07:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.76 2002-09-03 01:19:54 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -22,6 +22,10 @@
    ncea -n 3,4,1 -p /ZENDER/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
    ncea -n 3,4,1 -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc foo.nc
  */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
 
 /* Standard C headers */
 #include <math.h> /* sin cos cos sin 3.14159 */
@@ -79,8 +83,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.75 2002-08-28 07:07:21 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.75 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.76 2002-09-03 01:19:54 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.76 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   

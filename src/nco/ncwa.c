@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.88 2002-08-22 06:10:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.89 2002-09-03 01:19:54 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -50,6 +50,10 @@
    ncwa -O -C -a lat,lon,time -w gw -v PS -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc;ncks -H foo.nc
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
+
 /* Standard C headers */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
@@ -64,7 +68,6 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
-#include "nco_netcdf.h" /*netCDF 3.0 wrapper functions */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
@@ -109,8 +112,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.88 2002-08-22 06:10:19 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.88 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.89 2002-09-03 01:19:54 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.89 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;

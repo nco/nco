@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.15 2002-08-21 11:47:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.16 2002-09-03 01:19:54 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -355,7 +355,11 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 
   for(idx=0;idx<nbr_glb_att;idx++){
     (void)nco_inq_attname(out_id,NC_GLOBAL,idx,att_nm);
+#ifdef HAVE_STRCASECMP
     if(!strcasecmp(att_nm,sng_history)) break;
+#else /* fxm: make strcmp() branch equivalent to strcasecmp() */
+    if(!strcmp    (att_nm,sng_history)) break;
+#endif /* !HAVE_STRCASECMP */
   } /* end loop over att */
 
   /* Fill in history string */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.5 2002-08-21 11:47:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.6 2002-09-03 01:19:54 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -11,6 +11,10 @@
 
 #ifndef NCO_PRN_H
 #define NCO_PRN_H
+
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.42 2002-08-21 11:47:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.43 2002-09-03 01:19:54 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -39,20 +39,25 @@
    Irvine, CA 92697-3100
  */
 
-/* Standard header files */
-#include <math.h>               /* sin cos cos sin 3.14159 */
-#include <netcdf.h>             /* netCDF definitions */
-#include "nco_netcdf.h"	        /* netCDF3.0 wrapper functions */
-#include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */
-#include <string.h>             /* strcmp. . . */
-#include <sys/stat.h>           /* stat() */
-#include <time.h>               /* machine time */
-#include <unistd.h>             /* POSIX stuff */
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
 
+/* Standard header files */
+#include <math.h> /* sin cos cos sin 3.14159 */
+#include <stdio.h> /* stderr, FILE, NULL, etc. */
+#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <string.h> /* strcmp. . . */
+#include <sys/stat.h> /* stat() */
+#include <time.h> /* machine time */
+#include <unistd.h> /* POSIX stuff */
+
+/* 3rd party vendors */
+#include <netcdf.h> /* netCDF definitions */
+
+/* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
-#include "nco.h"                 /* NCO definitions */
 #include "libnco.h" /* netCDF operator library */
 
 int 
@@ -81,8 +86,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.42 2002-08-21 11:47:42 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.42 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.43 2002-09-03 01:19:54 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.43 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;

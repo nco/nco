@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.4 2002-08-14 19:45:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.5 2002-09-03 01:19:54 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -11,6 +11,10 @@
 
 #ifndef NCO_MSS_VAL_H
 #define NCO_MSS_VAL_H
+
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */

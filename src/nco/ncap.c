@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.92 2002-08-29 14:38:38 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.93 2002-09-03 01:19:54 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -14,10 +14,11 @@
    ncap -O -D 1 -s two=one+two in.nc foo.nc
    scp ~/nco/src/nco/ncap.c dataproc.ucar.edu:nco/src/nco/ncap.c */
 
-/* Standard C headers */
 #ifdef HAVE_CONFIG_H
-#include <config.h>  /* autoconf-generated header file */
-#endif
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
+
+/* Standard C headers */
 #include <assert.h>  /* assert() debugging macro */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
@@ -31,7 +32,7 @@
 /* GNU getopt() is independent system header on FREEBSD, LINUX, LINUXALPHA, WIN32
    AT&T getopt() is in unistd.h or stdlib.h on AIX, CRAY, NECSX, SUNMP, SUN4SOL2
    fxm: I'm not sure what ALPHA and SGI do */
-# include <getopt.h>
+#include <getopt.h>
 #endif /* !HAVE_GETOPT_H */
 
 /* 3rd party vendors */
@@ -89,8 +90,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.92 2002-08-29 14:38:38 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.92 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.93 2002-09-03 01:19:54 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.93 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -473,7 +474,7 @@ main(int argc,char **argv)
   }
     /* Find dims associated with xtr_ lst */
     /* Write to O only new dims
-    /* Add apropriate co-ordinate vars to extraction list 
+       Add apropriate co-ordinate vars to extraction list 
       options -c      -process all cordinates 
                        i.e add  co-ords to var list 
                        Also add their dims

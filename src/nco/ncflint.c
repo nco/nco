@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.44 2002-08-21 11:47:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.45 2002-09-03 01:19:54 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -47,6 +47,10 @@
 
    ncdiff -O foo.nc /data/zender/arese/crm/951030_0900_arese_crm.nc foo2.nc;ncks -H foo2.nc | m
  */
+
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
 
 /* Standard C headers */
 #include <math.h> /* sin cos cos sin 3.14159 */
@@ -100,8 +104,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.44 2002-08-21 11:47:42 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.44 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.45 2002-09-03 01:19:54 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.45 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.175 2002-09-02 21:45:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.176 2002-09-03 01:19:53 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -21,6 +21,7 @@ Autoconf-build items:
     fl_out_hnd=creat(mktemp(fl_out_tmp_sys),0600);
 #endif /* !CRAY */
 17. Fix CXX valarray to work on AIX
+18. Autoconf workarounds for strdup(), strcasecmp() (#234, 235 below)
 
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

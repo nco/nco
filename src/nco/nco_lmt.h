@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.4 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.5 2002-09-03 01:19:54 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -11,6 +11,10 @@
 
 #ifndef NCO_LMT_H
 #define NCO_LMT_H
+
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */

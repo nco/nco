@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.64 2002-08-21 11:47:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.65 2002-09-03 01:19:54 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -54,6 +54,10 @@
    ncks -H -C -v lon -d lon,3,1 in.nc
 */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
+
 /* Standard C headers */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
@@ -105,8 +109,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.64 2002-08-21 11:47:42 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.64 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.65 2002-09-03 01:19:54 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.65 $";
   
   extern char *optarg;
   

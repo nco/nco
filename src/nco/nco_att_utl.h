@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.7 2002-08-21 11:47:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.8 2002-09-03 01:19:54 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -11,6 +11,10 @@
 
 #ifndef NCO_ATT_UTL_H
 #define NCO_ATT_UTL_H
+
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */

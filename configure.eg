@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.30 2002-09-02 21:45:34 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.31 2002-09-03 01:19:53 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -34,7 +34,7 @@ Footnotes to summary table:
 08. Fails to build ncap because cannot find float math functions ncap TODO#18
 09. tst fails to find in.nc
 10. Major problems with make script
-11. como insists strdup(), strcasecmp() are not ANSI standard
+11. Comeau (correctly) insists strdup(), strcasecmp() are not ANSI standard
 -----------------------------------------------------------------------
 
 Default installation procedure for system-wide installation,

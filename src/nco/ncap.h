@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.48 2002-08-29 14:40:39 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.49 2002-09-03 01:19:54 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -11,6 +11,10 @@
 
 #ifndef NCAP_H /* Header file has not yet been defined in current source file */
 #define NCAP_H
+
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.163 2002-09-02 22:02:01 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.164 2002-09-03 01:19:53 zender Exp $ -*-makefile-*-
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -276,6 +276,17 @@ ${MY_DPN_DIR}/%.d : %.cc
 # The first LDFLAGS is for typical C programs with netCDF, math, and networking
 # The second LDFLAGS enables C/Fortran linking
 
+# Manually define autotools tokens normally defined in HAVE_CONFIG_H
+# Initialize OS-specific tokens to empty
+CPP_TKN_OS := 
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32))
+# HAVE_GETOPT_H
+ CPP_TKN_OS += -DHAVE_GETOPT_H
+endif # !LINUX
+# Assume strcasecmp() and strdup() routines are present (Comeau is exception)
+CPP_TKN_OS += -DHAVE_STRCASECMP -DHAVE_STRDUP
+# fxm: Define HAVE_LIBINTL, HAVE_LOCALE_H, HAVE_GETTEXT, HAVE_OMP_H
+
 # Works on AIX and AIX46K
 ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 ifeq (${OMP},Y)
@@ -294,7 +305,7 @@ C++ := xlC
 # -qlanglvl=extended: Allow C++ constructs in C, keeps xlc from dying on type ** prototypes
 CFLAGS := -qmaxmem=8192 -qlanglvl=extended
 CPP := xlc -c -qlanglvl=extended
-CPPFLAGS := ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FFLAGS := ${OMP_FLG} -qmaxmem=-1 -qarch=auto -qspillsize=2500
 FIXEDFLAGS := -qsuffix=f=f:cpp=F -qfixed=132
 FREEFLAGS := -qsuffix=f=f90:cpp=F90
@@ -391,7 +402,7 @@ ifeq (${PVM_ARCH},CRAY)
 C++ := g++
 CC := cc
 CPP := cpp
-CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
 FC := f90
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -439,7 +450,7 @@ CC := gcc
 #CC := insure
 CPP := ${CC}
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := ${CPP_TKN} -DHAVE_GETOPT_H -Di386 -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -Di386 -I${NETCDF_INC}
 FC := g77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -452,6 +463,8 @@ YACC := bison
 # Comeau C Compiler
 ifeq (${C++},como)
  CFLAGS := 
+ CPPFLAGS := $(filter-out -DHAVE_STRCASECMP,${CPPFLAGS})
+ CPPFLAGS := $(filter-out -DHAVE_STRCMP,${CPPFLAGS})
  LDFLAGS := ${COMOROOT}/libcomo/libcomo.a ${LDFLAGS}
 ifeq (${OPTS},O)
  CFLAGS += -O
@@ -590,7 +603,7 @@ C++ := c++
 CC := cc
 CPP := c++ -E
 #CPP := /usr/lib/cpp
-CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
 FC := f90
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -624,7 +637,7 @@ ifeq (${PVM_ARCH},RS6K)
 C++ := g++
 CC := gcc -ansi
 CPP := /lib/cpp -P
-CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
 FC := xlf
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -664,7 +677,7 @@ CC := cc
 # 20000302: -w suppresses warnings which will swamp linker
 #C++ := g++ -w
 #CC := gcc
-CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
 ifdef $(MIPSPRO_SGI)
 # SGIs like dataproc keep omp.h in special location determined by module MIPSpro
  CPPFLAGS := -I$(MIPSPRO_SGI)/usr/include ${CPPFLAGS}
@@ -744,7 +757,7 @@ endif
 ifeq (${PVM_ARCH},SUN4)
 C++ := g++
 CC := acc
-CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
 FC := f77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -769,7 +782,7 @@ endif
 ifeq (${PVM_ARCH},SUN4SOL2)
 C++ := g++
 CC := gcc -ansi
-CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
 FC := f77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsocket -lnsl -lm
@@ -803,7 +816,7 @@ ifeq (${PVM_ARCH},SUNMP)
 C++ := g++
 #CC := gcc -ansi -pedantic
 CC := gcc 
-CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
 FC := f77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsunmath -lthread -lsocket -lnsl -lm
@@ -837,7 +850,7 @@ ifeq (${PVM_ARCH},WIN32)
 C++ := g++
 CC := gcc -ansi
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := ${CPP_TKN} -DHAVE_GETOPT_H -Di386 -I/usr/include -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -Di386 -I/usr/include -I${NETCDF_INC}
 FC := g77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm

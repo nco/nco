@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.h,v 1.3 2002-05-07 08:34:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.h,v 1.4 2002-09-03 01:19:54 zender Exp $ */
 
 /* Purpose: Scalar utilities */
 
@@ -11,6 +11,10 @@
 
 #ifndef NCO_SCL_UTL_H
 #define NCO_SCL_UTL_H
+
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */

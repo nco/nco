@@ -1,3 +1,13 @@
+2002-09-02  Charlie Zender  <zender@uci.edu>
+
+	* #include <config.h> in all headers which reference strdup()
+
+	* Crude but workable HAVE_STRCASECMP support, 
+	HAVE_STRDUP hook
+
+	* Implement some Comeau support, but presence of non-ANSI
+	functions makes full Comeau support unlikely anytime soon
+
 2002-08-27  Charlie Zender  <zender@uci.edu>
 
 	* Tweak CC list in configure.in, remove c89, xlc_r
