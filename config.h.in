@@ -39,6 +39,9 @@
 /* Define to 1 if you have the `coshf' function. */
 #undef HAVE_COSHF
 
+/* Define to 1 if you have the <cstdlib> header file. */
+#undef HAVE_CSTDLIB
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 

@@ -76,6 +76,9 @@ AC_CHECK_FUNCS([gethostname memchr memmove pow setlocale sqrt strcasecmp strchr 
 # Checks for header files.
 AC_HEADER_STDC
 AC_CHECK_HEADERS([libintl.h limits.h locale.h netinet/in.h stdlib.h string.h unistd.h getopt.h netcdf.h])
+AC_LANG_PUSH(C++)
+AC_CHECK_HEADERS(cstdlib)
+AC_LANG_POP(C++)
 
 # Checks for typedefs, structures, and compiler characteristics.
 # allow for wanton use of 'const' dispite the compiler
