@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.13 2003-08-26 14:48:25 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.14 2003-11-14 12:40:37 hmb Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -60,7 +60,7 @@ nco_var_lst_mk_old /* [fnc] Create variable extraction list */
 int /* O number of matches found */
 nco_var_meta_search  /* search for pattern matches in the var string list */
 (int nbr_var,        /* I number of vars in srch_sng and size of in_bool */
-char *srch_sng,     /* I concatentaed list of vars */
+nm_id_sct *in_lst,    /* I list of vars with id nums */
 char *rexp,          /* I regular expression pattern */
 bool *in_bool);       /* O matched vars holder */
 
