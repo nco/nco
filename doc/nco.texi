@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.253 2004-08-05 22:37:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.254 2004-08-07 03:23:30 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -130,8 +130,16 @@ x
 % Define TeX macros to roughly correspond to LaTeX style files
 % Use \gdef instead of \def to make definition persistent across TeX blocks
 % These should be consistent with any TeXInfo macros
-\gdef\dmn{D} % [frc] Dimension
+% 1. Primary commands
+\gdef\dmn{D} % [dmn] Variable dimension
+\gdef\rdr{R} % [dmn] Re-order dimension
+\gdef\shr{S} % [dmn] Share dimension
+\gdef\dmnidx{n} % [idx] Dimension index
 \gdef\dmnnbr{N} % [nbr] Dimension number
+\gdef\rdridx{r} % [idx] Re-order index
+\gdef\rdrnbr{R} % [nbr] Re-order number
+\gdef\shridx{s} % [idx] Share index
+\gdef\shrnbr{S} % [nbr] Share number
 \gdef\dfr{d} % [frc] Math differential fxm: upright
 \gdef\idx{i} % [idx] Index
 \gdef\iii{i} % [idx] i
@@ -152,6 +160,11 @@ x
 \gdef\wndznl{u} % [m s-1] Zonal wind speed
 \gdef\xxx{x} % [ltr] x
 \gdef\yyy{y} % [ltr] y
+
+% 2. Derived commands
+\gdef\dmnvct{{\bf \dmn}} % [vct] Dimension vector
+\gdef\rdrvct{{\bf \rdr}} % [vct] Reorder vector
+\gdef\shrvct{{\bf \shr}} % [vct] Share vector
 @end tex
 
 @direntry
@@ -6517,14 +6530,34 @@ one record dimension amongst all the output variables
 may be relaxed in the future with netCDF4.}.
 
 @tex
-The dimensionality of a variable $\xxx$ of rank $\dmnnbr$ can be
-represented as  
+Let $\dmnvct(\xxx)$ represent the dimensionality of the variable $\xxx$. 
+If $\xxx$ has rank $\dmnnbr$, then we may write $\dmnvct(\xxx)$ as the
+$\dmnnbr$-element vector 
 $$
-\xxx = [ \dmn_{1}, \dmn_{2}, \dmn_{3}, \ldots, 
-\dmn_{\kkk-1}, \dmn_{\kkk}, \dmn_{\kkk+1}, 
+\dmnvct(\xxx) = [ \dmn_{1}, \dmn_{2}, \dmn_{3}, \ldots, 
+\dmn_{\dmnidx-1}, \dmn_{\dmnidx}, \dmn_{\dmnidx+1}, 
 \ldots, \dmn_{\dmnnbr-2}, \dmn_{\dmnnbr-1}, \dmn_{\dmnnbr} ] 
 $$
-where 
+where $\dmn_{\dmnidx}$ is the size of the $\dmnidx$'th dimension.
+The dimension re-order list specified with @samp{-a} is the
+$\rdrnbr$-element vector 
+$$
+\rdrvct = [ \rdr_{1}, \rdr_{2}, \rdr_{3}, \ldots, 
+\rdr_{\rdridx-1}, \rdr_{\rdridx}, \rdr_{\rdridx+1}, 
+\ldots, \rdr_{\rdrnbr-2}, \rdr_{\rdrnbr-1}, \rdr_{\rdrnbr} ] 
+$$
+There need be no relation between $\dmnnbr$ and $\rdrnbr$.
+Let the $\shrnbr$-element vector $\shrvct$ be the intersection
+(i.e., the ordered set of shared dimensions) of $\dmnvct$ and $\rdrvct$, 
+i.e., $\shrvct = \rdrvct \cap \dmnvec$.
+Then
+$$
+\shrvct = [ \shr_{1}, \shr_{2}, \shr_{3}, \ldots, 
+\shr_{\shridx-1}, \shr_{\shridx}, \shr_{\shridx+1}, 
+\ldots, \shr_{\shrnbr-2}, \shr_{\shrnbr-1}, \shr_{\shrnbr} ] 
+$$
+$\shrvct$ is empty if $\rdrvct \notin \dmnvct$.
+This may be the case for none, some, or all the extracted variables.
 @end tex
 
 @noindent

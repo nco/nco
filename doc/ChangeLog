@@ -1,6 +1,7 @@
 2004-08-06  Charlie Zender  <zender@uci.edu>
 
 	* split ncpdq var list into var_fix and var_prc like in ncwa
+	All tests appear to work
 
 	* Fixed last known ncpdq problem caused by indexing var_prc_out
 	list with var_out index 
