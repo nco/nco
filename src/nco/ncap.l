@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.60 2002-06-17 00:06:02 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.61 2002-07-04 17:05:02 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -309,7 +309,8 @@ XPN [eE][+-]?[0-9]+
 foo1_zyx {return ABS;} /* Strategy for lexing control statements: 
 1. Look for language control statements (if, while, do, for)
 2. Look for NCO-defined intrinsic functions (abs, pack, unpack)
-3. Look for mathematical intrinsic functions (sin, cos) */
+3. Look for mathematical intrinsic functions (sin, cos)
+4. Look for NCO-defined named constants (M_PI, M_E) */
 "if" {return IF;}
 "print" {return PRINT;}
 
@@ -330,7 +331,7 @@ End result:
 foo=min(lat) Returns minimum value of lat
 foo=min(lat,(/lat/)) Returns minimum value of lat
 foo=min(lat,lat) Returns copy of lat (i.e., pointwise minimum of lat and lat)
-foo=min(var,(/dmn_1,dmn_2)) Returns minimum of variable over dmn_1, dmn_2 dimensions */
+foo=min(var,(/dmn_1,dmn_2/)) Returns minimum of variable over dmn_1, dmn_2 dimensions */
 abs/[ ]*\( {return ABS;}
 atostr/[ ]*\( {return ATOSTR;}
 avg/[ ]*\( {prs_arg->nco_op_typ=nco_op_avg;return RDC;}
@@ -342,6 +343,8 @@ pack/[ ]*\( {return PACK;}
 pow/[ ]*\( {return POWER;}
 upk/[ ]*\( {return UNPACK;}
 unpack/[ ]*\( {return UNPACK;}
+
+M_PI {return NAMED_CONSTANT;}
 
 {LPH}{LPHDGT}*/[ ]*\( {
 /* Compare input with mathematical function names in table and return

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.68 2002-06-17 00:06:02 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.69 2002-07-04 17:05:02 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -89,7 +89,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 %token <sym> FUNCTION
 %token <var_nm_LHS> OUT_VAR
 %token <var_nm_RHS> VAR
-%token ABS ATOSTR EPROVOKE IGNORE RDC PACK POWER UNPACK
+%token ABS ATOSTR EPROVOKE IGNORE NAMED_CONSTANT PACK POWER RDC UNPACK
 %token IF PRINT
 
 /* "type" declaration sets type for non-terminal symbols which otherwise need no declaration
@@ -103,7 +103,8 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 %type <aed> out_att_xpr
 
 /* "left", "right", and "nonassoc" perform same function as "token" and,
-   in addition, specify associativity and relative precedence of symbols */
+   in addition, specify associativity and relative precedence of symbols.
+   Each successive line has higher precedence than preceding lines */
 /* fxm: 20020608 AND, NOT, OR not implemented in lexer yet */
 %left AND NOT OR /* && ! || */
 %left COMPARISON /* == != < > <= >= */
@@ -543,6 +544,9 @@ var_xpr '+' var_xpr {
 }  
 | '(' var_xpr ')' {
   $$=$2;
+}
+| NAMED_CONSTANT { /* Terminal symbol action */
+  /* fxm: Allow commands like a=M_PI*rds^2; to work */
 }
 | VAR { /* Terminal symbol action */
   $$=ncap_var_init($1,(prs_sct *)prs_arg);
