@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.40 2002-09-07 01:39:41 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.41 2002-09-10 04:51:08 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -67,6 +67,7 @@ alias mv='mv -i' # -i = inquire
 alias rm='rm -i' # -i = inquire
 alias scp='scp -C' # -p = preserve mode, time, -C = enable compression
 export CVS_RSH='ssh'
+export HOST=`/bin/hostname`
 export MY_BIN_DIR="${HOME}/bin/${GNU_TRP}"
 export MY_LIB_DIR="${HOME}/lib/${GNU_TRP}"
 export NETCDF_INC="${HOME}/include"

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.1 2002-09-09 07:12:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.2 2002-09-10 04:54:10 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -37,72 +37,72 @@
 #define NEED_TANHF 1
 #endif /* !MACOSX */
 #ifdef NEED_FMODF
-inline float fmodf(float x,float y){return (float)(fmod(x,y));}
+inline float fmodf(float x,float y){return (float)(fmod((double)x,(double)y));}
 #endif /* !NEED_FMODF */ 
 #ifdef NEED_POWF
-inline float powf(float x,float y){return (float)(pow(x,y));}
+inline float powf(float x,float y){return (float)(pow((double)x,(double)y));}
 #endif /* !NEED_POWF */ 
 #ifdef NEED_GAMMAF
 #ifdef NEED_ACOSF
-inline float acosf(float x){return (float)(acos(x));}
+inline float acosf(float x){return (float)(acos((double)x));}
 #endif /* !NEED_ACOSF */ 
 #ifdef NEED_ACOSHF
-inline float acoshf(float x){return (float)(acosh(x));}
+inline float acoshf(float x){return (float)(acosh((double)x));}
 #endif /* !NEED_ACOSHF */ 
 #ifdef NEED_ASINF
-inline float asinf(float x){return (float)(asin(x));}
+inline float asinf(float x){return (float)(asin((double)x));}
 #endif /* !NEED_ASINF */ 
 #ifdef NEED_ASINHF
-inline float asinhf(float x){return (float)(asinh(x));}
+inline float asinhf(float x){return (float)(asinh((double)x));}
 #endif /* !NEED_ASINHF */ 
 #ifdef NEED_ATANF
-inline float atanf(float x){return (float)(atan(x));}
+inline float atanf(float x){return (float)(atan((double)x));}
 #endif /* !NEED_ATANF */ 
 #ifdef NEED_ATANHF
-inline float atanhf(float x){return (float)(atanh(x));}
+inline float atanhf(float x){return (float)(atanh((double)x));}
 #endif /* !NEED_ATANHF */ 
 #ifdef NEED_CEILF
-inline float ceilf(float x){return (float)(ceil(x));}
+inline float ceilf(float x){return (float)(ceil((double)x));}
 #endif /* !NEED_CEILF */ 
 #ifdef NEED_COSF
-inline float cosf(float x){return (float)(cos(x));}
+inline float cosf(float x){return (float)(cos((double)x));}
 #endif /* !NEED_COSF */ 
 #ifdef NEED_COSHF
-inline float coshf(float x){return (float)(cosh(x));}
+inline float coshf(float x){return (float)(cosh((double)x));}
 #endif /* !NEED_COSHF */ 
 #ifdef NEED_ERFCF
-inline float erfcf(float x){return (float)(erfc(x));}
+inline float erfcf(float x){return (float)(erfc((double)x));}
 #endif /* !NEED_ERFCF */ 
 #ifdef NEED_ERFF
-inline float erff(float x){return (float)(erf(x));}
+inline float erff(float x){return (float)(erf((double)x));}
 #endif /* !NEED_ERFF */ 
 #ifdef NEED_EXPF
-inline float expf(float x){return (float)(exp(x));}
+inline float expf(float x){return (float)(exp((double)x));}
 #endif /* !NEED_EXPF */ 
 #ifdef NEED_FLOORF
-inline float floorf(float x){return (float)(floor(x));}
+inline float floorf(float x){return (float)(floor((double)x));}
 #endif /* !NEED_FLOORF */ 
-inline float gammaf(float x){return (float)(gamma(x));}
+inline float gammaf(float x){return (float)(gamma((double)x));}
 #endif /* !NEED_GAMMAF */ 
 #ifdef NEED_LOG10F
-inline float log10f(float x){return (float)(log10(x));}
+inline float log10f(float x){return (float)(log10((double)x));}
 #endif /* !NEED_LOG10F */ 
 #ifdef NEED_LOGF
-inline float logf(float x){return (float)(log(x));}
+inline float logf(float x){return (float)(log((double)x));}
 #endif /* !NEED_LOGF */ 
 #ifdef NEED_SINF
-inline float sinf(float x){return (float)(sin(x));}
+inline float sinf(float x){return (float)(sin((double)x));}
 #endif /* !NEED_SINF */ 
 #ifdef NEED_SINHF
-inline float sinhf(float x){return (float)(sinh(x));}
+inline float sinhf(float x){return (float)(sinh((double)x));}
 #endif /* !NEED_SINHF */ 
 #ifdef NEED_SQRTF
-inline float sqrtf(float x){return (float)(sqrt(x));}
+inline float sqrtf(float x){return (float)(sqrt((double)x));}
 #endif /* !NEED_SQRTF */ 
 #ifdef NEED_TANF
-inline float tanf(float x){return (float)(tan(x));}
+inline float tanf(float x){return (float)(tan((double)x));}
 #endif /* !NEED_TANF */ 
 #ifdef NEED_TANHF
-inline float tanhf(float x){return (float)(tanh(x));}
+inline float tanhf(float x){return (float)(tanh((double)x));}
 #endif /* !NEED_TANHF */ 
 #endif /* MACOSX_FLT_FNC */

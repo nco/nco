@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.1 2002-09-09 07:12:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.h,v 1.2 2002-09-10 04:51:08 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -30,37 +30,37 @@ extern "C" {
 
   /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
   /* Basic math: acos, asin, atan, cos, exp, log, log10, sin, sqrt, tan */
-  extern float acosf(float);
-  extern float asinf(float);
-  extern float atanf(float);
-  extern float cosf(float);
-  extern float erff(float);
-  extern float erfcf(float);
-  extern float expf(float);
-  extern float gammaf(float);
-  extern float logf(float);
-  extern float log10f(float);
-  extern float sinf(float);
-  extern float sqrtf(float);
-  extern float tanf(float);
+  float acosf(float);
+  float asinf(float);
+  float atanf(float);
+  float cosf(float);
+  float erff(float);
+  float erfcf(float);
+  float expf(float);
+  float gammaf(float);
+  float logf(float);
+  float log10f(float);
+  float sinf(float);
+  float sqrtf(float);
+  float tanf(float);
 
   /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
-  extern float acoshf(float);
-  extern float asinhf(float);
-  extern float atanhf(float);
-  extern float coshf(float);
-  extern float sinhf(float);
-  extern float tanhf(float);
+  float acoshf(float);
+  float asinhf(float);
+  float atanhf(float);
+  float coshf(float);
+  float sinhf(float);
+  float tanhf(float);
 
   /* Basic Rounding: ceil, floor */
-  extern float ceilf(float);
-  extern float floorf(float);
+  float ceilf(float);
+  float floorf(float);
 
   /* Advanced Rounding: nearbyint, rint, round, trunc */
-  extern float nearbyintf(float);
-  extern float rintf(float);
-  extern float roundf(float);
-  extern float truncf(float);
+  float nearbyintf(float);
+  float rintf(float);
+  float roundf(float);
+  float truncf(float);
 
 #ifdef __cplusplus
 } /* end extern "C" */
