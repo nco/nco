@@ -1,5 +1,7 @@
 2004-01-15  Charlie Zender  <zender@uci.edu>
 
+	* Change dods.sh from RC6 to 3.4 final, and pre-clean
+
 	* Correct documentation of covariance procedure
 
 2004-01-13  Charlie Zender  <zender@uci.edu>

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.3 2004-01-12 18:11:06 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.4 2004-01-16 01:42:17 zender Exp $
 
 # Purpose: Install DODS prior to building NCO as DODS-enabled clients
 
@@ -9,8 +9,10 @@
 
 # ${DATA}/tmp exists on most machines, and equals /tmp when ${DATA} is not defined
 cd ${DATA}/tmp
+# Remove debris from last DODS install
+/bin/rm -r -f DODS*
 # Get about 2.5 more MB than we need
-wget "ftp://ftp.unidata.ucar.edu/pub/dods/DODS-3.4/RC6/source/DODS*.tar.gz"
+wget "ftp://ftp.unidata.ucar.edu/pub/dods/DODS-3.4/source/DODS*.tar.gz"
 # Assume tar is GNU tar, otherwise must gunzip tarballs first
 # NCO only needs these packages pre-installed to enable NCO as DODS clients...
 tar xvzf DODS-dap-3.4.?.tar.gz
@@ -32,8 +34,8 @@ DODS_ROOT=`pwd`
 ./configure --prefix=${DODS_ROOT}
 # Build necessary libraries
 make
-# 'make' usually fails because we did not extract all DODS source
-# This is fine since it fails only after building the libraries that NCO needs
+# 'make' usually fails because we did not extract (and build) all DODS sources
+# This is fine since 'make' fails only after building the libraries that NCO needs
 # If 'make' works, install DODS libraries in ${DODS_ROOT}
 # make install
 

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.201 2004-01-16 01:09:32 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.202 2004-01-16 01:42:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -5548,22 +5548,21 @@ control the formatted appearance of the data.
 
 @cindex global attributes
 @cindex attributes, global
-@command{ncks} will extract (and optionally create a new netCDF file
-comprised of) only selected variable from the input file, like
-@command{ncextr} but with these differences: Only variables and
-coordinates may be specifically included or excluded---all global
-attributes and any attribute associated with an extracted variable will
-be copied to the screen and/or output netCDF file. 
+@command{ncks} extracts (and optionally creates a new netCDF file
+comprised of) only selected variables from the input file
+(similar to the old @command{ncextr} specification).
+Only variables and coordinates may be specifically included or
+excluded---all global attributes and any attribute associated with an
+extracted variable are copied to the screen and/or output netCDF file. 
 Options @samp{-c}, @samp{-C}, @samp{-v}, and @samp{-x} (and their long 
 option synomyms) control which variables are extracted.
 
-@command{ncks} will extract hyperslabs from the specified variables.
-In fact @command{ncks} implements the nccut specification exactly.
+@command{ncks} extracts hyperslabs from the specified variables
+(@command{ncks} implements the original @command{nccut} specification). 
 Option @samp{-d} controls the hyperslab specification.
-
-Input dimensions that are not associated with any output variable will
+Input dimensions that are not associated with any output variable do
 not appear in the output netCDF.
-This feature removes superfluous dimensions from a netCDF file. 
+This feature removes superfluous dimensions from netCDF files. 
 
 @cindex appending data
 @cindex merging files
@@ -5574,11 +5573,11 @@ sizes of @var{input-file}.
 The append features of @command{ncks} are intended to provide a
 rudimentary means of adding data from one netCDF file to another,
 conforming, netCDF file. 
-When naming conflicts exists between the two files, data in
-@var{output-file} is usually overwritten by the corresponding data from
+If naming conflicts exist between the two files, data in
+@var{output-file} is usually overwritten by the corresponding data from 
 @var{input-file}.  
-Thus it is recommended that the user backup @var{output-file} in case
-valuable data are accidentally overwritten.
+Thus, when appending, the user should backup @var{output-file} in case 
+valuable data are inadvertantly overwritten.
 
 If @var{output-file} exists, the user will be queried whether to
 @dfn{overwrite}, @dfn{append}, or @dfn{exit} the @command{ncks} call
