@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.17 2004-01-12 19:37:01 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.18 2004-01-12 19:53:39 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -35,7 +35,11 @@
      Unidata ${DATA}/tmp/netcdf-3.5.1-beta10/src/ncgen/ncgen.l */
 
   /* Usage:
+     scp ~/nco/src/nco/ncap_lex.l goldhill.cgd.ucar.edu:nco/src/nco
+     scp ~/nco/src/nco/ncap_lex.l krein.math.uci.edu:nco/src/nco
+
      flex --stdout ~/nco/src/nco/ncap_lex.l > ~/nco/src/nco/ncap_lex.c
+     flex --header-file=foo.h --stdout ~/nco/src/nco/ncap_lex.l > ~/nco/src/nco/ncap_lex.c
      NB: flex with -Cf or -CF not -I if this scanner will not be interactive */
 
   /* Standard header files */
@@ -77,8 +81,9 @@
 #define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
   YY_DECL;
 
+#ifdef __GNUC__
   /* CEWI fxm 20040110 Prototype functions that cause warnings with pedantic GCC compiling
-     Portability of this entire section is questionable
+     Portability of this entire section is questionable, so enclose in ifdef GCC
      We already assume lexer is flex since AT&T lex does not understand <EOF> rules
      Thus prototyping following flex-specific functions adds no additional assumptions */
   FILE *yyget_in(void); /* fixes: warning: no previous prototype for `yyget_in' */
@@ -94,6 +99,7 @@
   void yyset_in(FILE *in_str); /* fixes: warning: no previous prototype for `yyset_in' */
   void yyset_lineno(int line_number); /* fixes: warning: no previous prototype for `yyset_lineno' */
   void yyset_out(FILE *out_str); /* fixes: warning: no previous prototype for `yyset_out' */
+#endif /* !__GNUC__ */
 
   /* Global variables */
   extern size_t ncap_ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
