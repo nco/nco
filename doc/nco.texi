@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.215 2004-03-05 20:38:54 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.216 2004-03-08 06:03:21 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -32,7 +32,6 @@ M-x texinfo-multiple-files-update
 
 Usage: 
 cd ~/nco/doc;texi2dvi nco.texi; makeinfo --html --ifinfo --no-split --output=nco.html nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml --no-split --output=nco.xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
-pdfthumb nco.pdf nco.pdf2;/bin/mv nco.pdf2 nco.pdf
 dvips -o nco.ps nco.dvi 
 dvips -Ppdf -G0 -o nco.ps nco.dvi 
 makeinfo --html --ifinfo --no-split --output=nco.html nco.texi
@@ -6846,53 +6845,40 @@ Excellent bug reports.
 @cindex proposals
 @cindex @acronym{NSF}
 @cindex server-side processing
+@cindex Distributed Data Reduction & Analysis
+@cindex @acronym{DDRA}
+@cindex Server-Side Distributed Data Reduction & Analysis
+@cindex @acronym{SSDDRA}
+@cindex @acronym{CCSM}
+@cindex @acronym{IPCC}
+@cindex @acronym{NSF}
+@cindex @acronym{SEIII}
+@cindex OptIPuter
 We have written an @acronym{NSF}
-@uref{http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf, proposal} to 
-improve Distributed Data Reduction & Analysis (DDRA) with NCO.
-The two main components of this proposal are NCO parallelism (OpenMP,
-MPI) and Server-Side DDRA (SSDDRA) implemented through extensions
-to DODS/OPeNDAP and netCDF4.
-This would dramatically reduce bandwidth usage for DDRA.
-With the first NCO proposal out the door, the content of the next two
-NCO proposals is clear.
-
-The second NCO proposal will be re-written and improved from the first.
-The certain changes amount to a
-more comvinincing description of why CCSM IPCC data reduction
-exemplifies a computational, storage, and network-constrained problem
-common to many domains besides geophysics,   
-articulating the plausible SSDRA extensions to OPeNDAP and netCDF4, 
-and deeper involvement (and funding) for distributed computing experts
-(e.g., UCSD/OptIPuter) on the parallelization and SSDRA issues.
-These and other, less certain changes are outlined on the second page of
-the @uref{http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf, proposal}.
-Unfortunately, the NSF SEIII program has relatively limited funding.
-The average three-year award size is $500,000.
-Our budget is already $600,000 and I want to grow the UCSD component.
-Unfortunately, the NSF SEIII program has relatively limited funding.
-There most ideas for significant expansion of the proposal should be
-sent to a different government program (e.g., NASA).
-
-Extensions under consideration include a bioinformatics component 
-(led by Harry Mangalam, TACGI), and arithmetic speed-ups on
-multi-processor single-core nodes, led by Steve Jenks, UCI.
-We will re-submit this re-write to the next NSF SEIII round, due
-20041215, if we are not funded this round.
-
-The third NCO proposal will be 
-
-Please contact us if you wish to be involved with any future proposals.  
-Comments on the proposals and letters of support are very welcome.
+@uref{http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf, proposal}
+to improve Distributed Data Reduction & Analysis (@acronym{DDRA}) with
+@acronym{NCO}. 
+The two main components of this proposal are @acronym{NCO} parallelism
+(OpenMP, @acronym{MPI}) and Server-Side @acronym{DDRA}
+(@acronym{SSDDRA}) implemented through extensions to @acronym{OPeNDAP}
+and netCDF4. 
+This project would dramatically reduce bandwidth usage for @acronym{NCO}
+@acronym{DDRA}. 
 
 @cindex @acronym{NASA}
 @cindex @acronym{NRA}
 @cindex @acronym{HDF}
-We are also interested in obtaining @acronym{NASA} support for
-@acronym{HDF}-specific enhancements to @acronym{NCO}.
-We will probably submit a proposal to the next suitable @acronym{NASA}  
-@acronym{NRA}.
-Contact us if you are interested in contributing to or becoming involved
-in that project, too.
+With this first @acronym{NCO} proposal out the door, the content of the
+next @acronym{NCO} proposal is clear.
+We are interested in obtaining @acronym{NASA} support for
+@acronym{HDF}-specific enhancements to @acronym{NCO}. 
+We plan to submit a proposal to the next suitable @acronym{NASA}
+@acronym{NRA}. 
+
+We are considering a lot of interesting ideas for still more proposals.
+Please contact us if you wish to be involved with any future
+@acronym{NCO}-related proposals.  
+Comments on the proposals and letters of support are also very welcome.
 
 @c @ignore
 @c @node CCSM Example, General Index, Operators, Top

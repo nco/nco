@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.78 2004-02-26 15:39:34 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.79 2004-03-08 06:03:19 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -81,7 +81,6 @@ export GNU_TRP=`~/nco/autobld/config.guess`
 export OBJECT_MODE='64' # AIX-specific hack
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB=${NETCDF_LIB} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
-CC='xlc_r' CPPFLAGS='-I${HOME}/include -I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB=${NETCDF_LIB} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1

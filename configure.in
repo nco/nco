@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.75 2004-03-05 00:58:31 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.76 2004-03-08 06:03:19 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -229,6 +229,7 @@ if test "${enable_dods}" != 'no'; then
 #  AC_CHECK_LIB([www],[HTLibInit],,enable_dods=no)
 #  AC_CHECK_LIB([rx],[main],,enable_dods=no)
 # DODS version 3.4.x tests:
+    AC_MSG_NOTICE([NB: Following six libraries required for DODS/OPeNDAP clients:])
     AC_CHECK_LIB([z],[inflate],,enable_dods=no)
     AC_CHECK_LIB([dl],[dlopen],,enable_dods=no)
     AC_CHECK_LIB([pthread],[pthread_once],,enable_dods=no)
