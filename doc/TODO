@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.93 2001-08-10 16:12:04 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.94 2001-08-27 02:37:24 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -169,33 +169,10 @@ to accomplish this.
 204. Update user's guide to reflect new netCDF 3.x API
 205. Add .cvsignore files to all directories
 206. Add example NCO script, such as dst.sh, to doc directory
+207. Bug on Linux. Core dump converting datesec,date from NC_INT to NC_DOUBLE:
+ncwa -D 5 -O -a time,lat,lon -w gw $DATA/dstccm34/dstccm34_1990.nc $DATA/dstccm34/dstccm34_1990_xy.nc
+This must be a memory bug because bug disappears when -w gw removed,
+or variable list is made more specific
 ************************************************************************
 End NCO Wish list
 ************************************************************************
-
-************************************************************************
-Machine-specific problems
-************************************************************************
-SUN4SOL2/SUNMP:
-Solaris requires explicit casting output of strdup() to char * even though string.h is #include'd
-
-SGI64:
-Problems arise in treatment on long int's on this machine. Make sure to
-define long data as nclong, and be careful that fortran uses integer*8
-when receiving all longs.
-
-AIX:
-realloc(NULL,sz) does not act like malloc(sz), contrary to ANSI specs.
-getopt() is (re-)declared in stdlib.h
-is text trashed in history global attribute in optimized executables?
-
-UNICOS:
-alloca(), needed by getopt(), is missing.
-
-LINUX:
-no liby.a library, meaning yyerror() is undefined
-item 92.: problem with LINUX adding record coordinate to open file?
-************************************************************************
-End machine-specific problems
-************************************************************************
-

@@ -1,0 +1,62 @@
+Posted to SourceForge Jobs/Help Needed 20000826:
+
+The NCO project (http://nco.sourceforge.net) is looking for
+volunteers interesting in contributing to improving free
+software solutions for geophysical data processing.  NCO
+software is used in most climate modeling and satellite data
+reduction research performed today. NCO is stable software
+written in C with a complete TeXInfo user's guide.  NCO is
+uses the GPL license. See below*** for project description.
+We put out version 2.0 earlier this year, and are now
+seeking additional help to lead the significant
+modifications required to maintain NCO as a workhorse of the
+geophysical sciences.
+
+Our TODO list includes many items that any competent
+programmer could solve. Items range from straightforward
+technical extensions in C (e.g., migrating to GNU getopt()),
+to packaging (RPM generation), to build configurations
+(Makefile extensions, autoconf support) and web page
+improvements (a logo?) and maintenance.  If you would like
+to hone your programming skills on a project that enjoys
+wide international scientific usage, contact zender@uci.edu
+for more information.
+
+More creative and challenging improvements to NCO are also
+desired.  We have built a lexer-parser prototype capable of
+interpreting and performing generic mathematical operations
+on entire files from the shell level. This grammar needs
+sundry I/O and algebraic improvements as well as
+implementation and testing. The opportunity to code this in
+C++ is appealing.
+
+New metadata conventions in the geophysical modeling
+community require implementation/support in NCO. See, for
+example, the Climate/Forecasting (CF) and COORDS conventions
+at
+http://www.unidata.ucar.edu/packages/netcdf/conventions.html.
+These include support for packed data and for irregular and
+reduced coordinate grids.
+
+The NCO TODO list is at http://nco.sourceforge.net/TODO
+Contact Charlie Zender <zender@uci.edu> or Henry Butowsky
+<thin@thin.screaming.net> if you think you'd like to help.
+
+Thanks,
+Charlie 
+
+***NCO Project Description: The netCDF Operators, or NCO,
+are a suite of programs known as operators. The operators
+facilitate manipulation and analysis of self-describing data
+stored in the netCDF or HDF4 formats, which are freely
+available (http://www.unidata.ucar.edu/packages/netcdf and
+http://hdf.ncsa.uiuc.edu, respectively). Each NCO operator
+(e.g., ncks) takes netCDF or HDF input file(s), performs an
+operation (e.g., averaging, hyperslabbing, or renaming), and
+outputs a processed netCDF file. Although most users of
+netCDF and HDF data are involved in scientific research,
+these data formats, and thus NCO, are generic and are
+equally useful in fields like finance. The NCO User's Guide
+illustrates NCO use with examples from the field of climate
+modeling and analysis. The NCO homepage is currently
+http://nco.sourceforge.org.
