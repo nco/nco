@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.50 2004-06-18 23:56:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.51 2004-07-01 17:31:04 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -124,7 +124,7 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
   /* Configuration option tokens must be consistent among configure.in, bld/Makefile, and nco_ctl.c
      Arrange tokens alphabetically by first word in English text description */
-  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nDODS/OpenDAP clients\t%s\thttp://nco.sf.net/nco.html#DODS\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nOpenMP Multi-threading\t%s\thttp://nco.sf.net/nco.html#omp (alpha testing)\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
+  (void)fprintf(stderr,"Configuration Option:\tActive?\tMeaning or Reference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nDODS/OpenDAP clients\t%s\thttp://nco.sf.net/nco.html#DODS\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n (pre-alpha)\nLarge File Support\t%s\thttp://nco.sf.net/nco.html#lfs\nOpenMP threading\t%s\thttp://nco.sf.net/nco.html#omp (alpha testing)\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nShared libraries built\t%s\tSmall, dynamically linked executables\nStatic libraries built\t%s\tLarge executables with private namespaces\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
 #if defined(ENABLE_DEBUG_CUSTOM) && (ENABLE_DEBUG_CUSTOM)
 		"Yes",
 #else /* !ENABLE_DEBUG_CUSTOM */
@@ -145,6 +145,11 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #else /* !I18N */
 		"No",
 #endif /* !I18N */
+#if defined(ENABLE_LARGEFILE) && (ENABLE_LARGEFILE)
+		"Yes",
+#else /* !ENABLE_LARGEFILE */
+		"No",
+#endif /* !ENABLE_LARGEFILE */
 #if defined(_OPENMP) && (_OPENMP)
 		"Yes",
 #else /* !_OPENMP */

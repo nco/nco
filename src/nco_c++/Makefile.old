@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.24 2004-06-29 07:38:05 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.25 2004-07-01 17:31:05 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -503,6 +503,7 @@ endif
 endif # endif Comeau C Compiler
 # GNU Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
+ CPPFLAGS += -D_FILE_OFFSET_BITS=64 -D_LARGEFILE_SOURCE
  CFLAGS := -Wall -Wno-unused-variable
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
 # CFLAGS += -Werror -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4
