@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.48 2000-07-31 00:29:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.49 2000-08-11 01:13:41 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
 
@@ -1064,7 +1064,7 @@ nc_lib_vrs_prn()
   (void)free(lib_sng);
   (void)free(nst_sng);
 #endif /* NETCDF2_ONLY */ 
-  (void)fprintf(stdout,"NCO homepage URL is http://www.cgd.ucar.edu/cms/nco\n");
+  (void)fprintf(stdout,"NCO homepage URL is http://nco.sourceforge.net\n");
 } /* end nc_lib_vrs_prn() */
 
 void
