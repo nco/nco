@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.31 2002-01-25 08:23:56 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.32 2002-01-25 17:27:24 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -81,13 +81,16 @@ extern long ln_nbr_crr; /* [cnt] Line number incremented in ncap.l */
 extern char *fl_spt_glb; /* [fl] Script file */
 
 /* File scope variables */
+/* fxm: turn arbitrary size into pre-processor token */
 char err_sng[200]; /* Error string for short error messages */
 
 /* End C declarations section */
 %}
 /* Begin parser declaration section */
 
-/* Request pure, reentrant parser, so we can pass a structure to parser */
+/* Request pure, reentrant parser, so we can pass a structure to parser
+   fxm: 20020122 Code breaks on Linux when pure_parser is not used---why?
+   Possibly because hardcoded yy* function prototypes change? */
 %pure_parser
 
 /* NB: "terminal symbol" is just a fancy name for token produced by lexer 
@@ -364,10 +367,10 @@ att_exp: att_exp '+' att_exp {
 | ATTRIBUTE {$$=$1;}
 ;
 
-out_var_exp: OUT_VAR {$$=$1}
+out_var_exp: OUT_VAR {$$=$1;}
 ;
 
-out_att_exp: OUT_ATT {$$=$1}
+out_att_exp: OUT_ATT {$$=$1;}
 ;
       
 string_exp: string_exp '+' string_exp {

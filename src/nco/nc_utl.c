@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.124 2002-01-25 07:58:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.125 2002-01-25 17:27:24 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -1949,13 +1949,13 @@ hst_att_cat(int out_id,char *hst_sng)
 /* Purpose: Add command line and date stamp to existing history attribute, if any,
    and write them to specified output file */
 
-  const int time_stamp_sng_lng=25;
+#define TIME_STAMP_SNG_LNG 25 
 
   char att_nm[NC_MAX_NAME];
   char *ctime_sng;
   char *history_crr=NULL;
   char *history_new;
-  char time_stamp_sng[time_stamp_sng_lng];
+  char time_stamp_sng[TIME_STAMP_SNG_LNG];
   
   int idx;
   int nbr_glb_att;
@@ -1970,9 +1970,9 @@ hst_att_cat(int out_id,char *hst_sng)
   clock=time((time_t *)NULL);
   ctime_sng=ctime(&clock);
   /* NUL-terminate time_stamp_sng */
-  time_stamp_sng[time_stamp_sng_lng-1]='\0';
+  time_stamp_sng[TIME_STAMP_SNG_LNG-1]='\0';
   /* Get rid of carriage return in ctime_sng */
-  (void)strncpy(time_stamp_sng,ctime_sng,time_stamp_sng_lng-1);
+  (void)strncpy(time_stamp_sng,ctime_sng,TIME_STAMP_SNG_LNG-1);
 
   /* Get number of global attributes in file */
   (void)nco_inq(out_id,(int *)NULL,(int *)NULL,&nbr_glb_att,(int *)NULL);

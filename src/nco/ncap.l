@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.27 2002-01-25 07:58:36 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.28 2002-01-25 17:27:24 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -120,8 +120,8 @@
   BEGIN INITIAL;
 } /* end CCOMMENT start state rules */
 
-  /* Remaining rules are default state, also known as INITIAL state, or 0 state */
 \n { 
+  /* NB: Remaining rules are default state, also known as INITIAL state, or 0 state */
   /* Ignore new lines */
   ln_nbr_crr++; /* [cnt] Line number incremented in ncap.l */
 }
