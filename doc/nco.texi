@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.144 2003-01-31 06:07:00 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.145 2003-02-21 06:38:53 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -996,10 +996,10 @@ Joining independent files together along a record coordinate is called
 @dfn{concatenation}.    
 @command{ncrcat} is designed for concatenating record variables, while
 @command{ncecat} is designed for concatenating fixed length variables.
-Consider 5 files, @file{85.nc}, @file{86.nc}, @dots{}
+Consider five files, @file{85.nc}, @file{86.nc}, @dots{}
 @file{89.nc} each containing a year's worth of data. 
 Say you wish to create from them a single file, @file{8589.nc}
-containing all the data, i.e., spanning all 5 years.
+containing all the data, i.e., spanning all five years.
 If the annual files make use of the same record variable, then
 @command{ncrcat} will do the job nicely with, e.g., @code{ncrcat 8?.nc
 8589.nc}. 
@@ -1522,11 +1522,11 @@ The second example shows how to use the optional fourth and fifth
 elements of the @samp{-n} option to specify a wrap value to @acronym{NCO}.
 The fourth argument to @samp{-n}, if present, specifies the maximum
 integer value of @var{numeric_suffix}.
-In this case the maximum value is 12, and will be formatted as @file{12}
+In this case the maximum value @w{is 12,} and will be formatted as @file{12}
 in the filename string. 
 The fifth argument to @samp{-n}, if present, specifies the minimum
 integer value of @var{numeric_suffix}.
-The default minimum filename suffix is 1, which is formatted as
+The default minimum filename suffix @w{is 1,} which is formatted as
 @file{01} in this case.   
 Thus the second and third examples have the same effect, that is, they
 automatically generate, in order, the filenames @file{85_12.nc},
@@ -2030,8 +2030,8 @@ Longitude (i.e., degrees on a circle) is a familiar example of a wrapped
 coordinate.
 Longitude increases to the East of Greenwich, England, where it is
 defined to be zero.
-Halfway around the globe, the longitude is 180 degrees East (or West). 
-Continuing eastward, longitude increases to 360 degrees East at
+Halfway around the globe, the longitude is @w{180 degrees} East (or West). 
+Continuing eastward, longitude increases to @w{360 degrees} East at
 Greenwich. 
 The longitude values of most geophysical data are either in the range
 [0,360), or [@minus{}180,180).
@@ -2118,14 +2118,14 @@ Thus @samp{-d time,,,@var{stride}} is syntactically equivalent to
 This means, for example, that specifying the operation @samp{-d
 time,,,2} on the array @samp{1,2,3,4,5} selects the hyperslab @samp{1,3,5}.
 To obtain the hyperslab @samp{2,4} instead, simply explicitly specify
-the starting index as 1, i.e., @samp{-d time,1,,2}. 
+the starting index @w{as 1,} i.e., @samp{-d time,1,,2}. 
 
 For example, consider a file @file{8501_8912.nc} which contains 60
 consecutive months of data. 
 Say you wish to obtain just the March data from this file.
 Using 0-based subscripts (@pxref{Fortran indexing}) these
 data are stored in records 2, 14, @dots{} 50 so the desired @var{stride}
-is 12.  
+@w{is 12.}
 Without the @var{stride} option, the procedure is very awkward.
 One could use @command{ncks} five times and then use @command{ncrcat} to
 concatenate the resulting files together:
@@ -2376,11 +2376,11 @@ Points $x_{i}$ in either of these two categories do not contribute to
 $x_{j}$, they are ignored.
 We now define these criteria more rigorously.
 
-Each $x_{i}$ has an associated Boolean weight $\mu_{i}$ whose value is~0
+Each~$x_{i}$ has an associated Boolean weight~$\mu_{i}$ whose value is~0
 or~1 (false or true). 
-The value of $\mu_{i}$ is~1 (true) unless $x_{i}$ equals the @var{missing
+The value of~$\mu_{i}$ is~1 (true) unless $x_{i}$ equals the @var{missing
 value} (@pxref{Missing values}) for the variable.
-Thus, for a variable with no @code{missing_value} attribute, $\mu_{i}$ is
+Thus, for a variable with no @code{missing_value} attribute, $\mu_{i}$~is
 always~1.
 All @acronym{NCO} arithmetic operators (@command{ncdiff}, @command{ncra},
 @command{ncea}, @command{ncflint}, @command{ncwa}) treat missing values
@@ -2391,32 +2391,32 @@ Besides (weighted) averaging, @command{ncwa}, @command{ncra}, and
 be specified with the @samp{-y} switch (@pxref{Operation Types}).
 The other rank-reducing operations are simple variations of the generic
 weighted mean described above.
-The total value of $x$ (@code{-y ttl}) is 
+The total value of~$x$ (@code{-y ttl}) is 
 $$
 \bar x_{j} = \sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x_{i} 
 $$
 Note that the total is the same as the numerator of the mean
-of $x$, and may also be obtained in @command{ncwa} by using the @samp{-N}
+of~$x$, and may also be obtained in @command{ncwa} by using the @samp{-N}
 switch (@pxref{ncwa netCDF Weighted Averager}).
 
-The minimum value of $x$ (@code{-y min}) is 
+The minimum value of~$x$ (@code{-y min}) is 
 $$
 \bar x_{j} = \min [ \mu_1 m_1 w_1 x_1, \mu_2 m_2 w_2 x_2, \ldots, \mu_N
 m_N w_N x_N ] 
 $$
-Analogously, the maximum value of $x$ (@code{-y max}) is 
+Analogously, the maximum value of~$x$ (@code{-y max}) is 
 $$
 \bar x_{j} = \max [ \mu_1 m_1 w_1 x_1, \mu_2 m_2 w_2 x_2, \ldots, \mu_N
 m_N w_N x_N ] 
 $$
 Thus the minima and maxima are determined after any weights are applied.
 
-The square of the mean value of $x$ (@code{-y sqravg}) is 
+The square of the mean value of~$x$ (@code{-y sqravg}) is 
 $$
 \bar x_{j} = \left( {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x_{i} \over \sum_{i =
 1}^{i = N} \mu_{i} m_{i} w_{i}} \right)^2
 $$
-The mean of the sum of squares of $x$ (@code{-y avgsqr}) is 
+The mean of the sum of squares of~$x$ (@code{-y avgsqr}) is 
 $$
 \bar x_{j} = {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x^2_{i} \over \sum_{i =
 1}^{i = N} \mu_{i} m_{i} w_{i}}
@@ -2425,12 +2425,12 @@ If $x$ represents a deviation from the mean of another variable, $x_{i} =
 y_{i} - \bar{y}$ (possibly created by @command{ncdiff} in a previous step),
 then applying @code{avgsqr} to $x$ computes the approximate variance of
 $y$. 
-Computing the true variance of $y$ requires subtracting~1 from the
+Computing the true variance of~$y$ requires subtracting~1 from the
 denominator, discussed below.
 For a large sample size however, the two results will be nearly
 indistinguishable. 
 
-The root mean square of $x$ (@code{-y rms}) is 
+The root mean square of~$x$ (@code{-y rms}) is 
 $$
 \bar x_{j} = \sqrt{ {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x^2_{i} \over \sum_{i =
 1}^{i = N} \mu_{i} m_{i} w_{i}} }
@@ -2438,10 +2438,10 @@ $$
 Thus @code{rms} simply computes the squareroot of the quantity computed
 by @code{avgsqr}.
 
-The root mean square of $x$ with standard-deviation-like normalization
+The root mean square of~$x$ with standard-deviation-like normalization
 (@code{-y rmssdn}) is implemented as follows.
 When weights are not specified, this function is the same as the root
-mean square of $x$ except one is subtracted from the sum in the
+mean square of~$x$ except one is subtracted from the sum in the
 denominator 
 $$
 \bar x_{j} = \sqrt{ {\sum_{i = 1}^{i = N} \mu_{i} m_{i} x^2_{i} \over -1 + 
@@ -2449,7 +2449,7 @@ $$
 $$
 If $x$ represents the deviation from the mean of another variable, 
 $x_{i} = y_{i} - \bar{y}$, then applying @code{rmssdn} to $x$ computes the
-standard deviation of $y$.
+standard deviation of~$y$.
 In this case the $-1$ in the denominator compensates for the degree of
 freedom already used in computing $\bar{y}$ in the numerator.
 Consult a statistics book for more details.
@@ -2458,7 +2458,7 @@ When weights are specified it is unclear how to compensate for this
 extra degree of freedom.
 Weighting the numerator and denominator of the above by $w_{i}$ and
 subtracting one from the denominator is only appropriate when all the  
-weights are 1.0.
+weights are~1.0.
 When the weights are arbitrary (e.g., Gaussian weights), subtracting one 
 from the sum in the denominator does not necessarily remove one degree
 of freedom. 
@@ -2467,7 +2467,7 @@ Therefore when @code{-y rmssdn} is requested and weights are specified,
 @command{ncea} and @command{ncra}, which do not allow weights to be specified,
 always implement the @code{rmssdn} procedure when asked.
 
-The square root of the mean of $x$ (@code{-y sqrt}) is 
+The square root of the mean of~$x$ (@code{-y sqrt}) is 
 $$
 \bar x_{j} = \sqrt{ {\sum_{i = 1}^{i = N} \mu_{i} m_{i} w_{i} x_{i} \over \sum_{i =
 1}^{i = N} \mu_{i} m_{i} w_{i}} }
@@ -3401,7 +3401,7 @@ Symbolically, the covariance
 @set flg
 @tex
 $[u^{\prime} v^{\prime}] = [uv]-[u][v]$ where $[\xxx]$ denotes the 
-time-average of $\xxx$,
+time-average of~$\xxx$,
 $[x] \equiv {1 \over \tau} \int_{\tm=0}^{\tm=\tau}
 \xxx(\tm) \,\dfr\tm$ and $\xxx^{\prime}$ @clear flg 
 @end tex
@@ -3812,7 +3812,8 @@ Furthermore, the size of all dimensions common to both @var{file_1} and
 
 When computing anomalies from the mean it is often the case that
 @var{file_2} was created by applying an averaging operator to a file
-with the same dimensions as @var{file_1}, if not @var{file_1} itself.
+with initially the same dimensions as @var{file_1} (often @var{file_1}
+itself).  
 In these cases, creating @var{file_2} with @command{ncra} rather than
 @command{ncwa} will cause the @command{ncdiff} operation to fail.
 For concreteness say the record dimension in @code{file_1} is
@@ -4169,7 +4170,7 @@ One can use this functionality to multiply all the values in a given
 file by a constant.
 
 The second method of using @command{ncflint} is specifying the
-interpolation option with @samp{-i}.
+interpolation option @w{with @samp{-i}.}
 This is really the inverse of the first method in the following sense.
 When the user specifies the weights directly, @command{ncflint} has no
 work to do besides multiplying the input values by their respective
@@ -5112,13 +5113,13 @@ is given above (@pxref{Operation Types}).
 @subsection Masking condition
 @cindex masking condition
 @tex
-Each $x_{i}$ also has an associated masking weight $m_{i}$ whose value is 0
+Each $x_{i}$ also has an associated masking weight~$m_{i}$ whose value is~0
 or~1 (false or true).
-The value of $m_{i}$ is always~1 unless a @var{mask\_var} is specified (with
+The value of~$m_{i}$ is always~1 unless a @var{mask\_var} is specified (with
 @samp{-m}).
 As noted above, @var{mask\_var} is broadcast, if possible, to conform 
 to the variable being averaged.  
-In this case, the value of $m_{i}$ depends on the @dfn{masking
+In this case, the value of~$m_{i}$ depends on the @dfn{masking
 condition}. 
 As expected, $m_{i} = 1$ when the masking condition is @dfn{true} and
 $m_{i} = 0$ otherwise.   
@@ -5175,12 +5176,12 @@ the masking condition is
 @end ifset
 
 @tex
-Each $x_{i}$ is also associated with an additional weight $w_{i}$ whose
+Each~$x_{i}$ is also associated with an additional weight~$w_{i}$ whose
 value may be user-specified.
-The value of $w_{i}$ is identically~1 unless the user specifies a
+The value of~$w_{i}$ is identically~1 unless the user specifies a
 weighting variable @var{weight} (with @samp{-w}, @samp{--weight}, or
 @samp{--wgt\_var}). 
-In this case, the value of $w_{i}$ is determined by the @var{weight}
+In this case, the value of~$w_{i}$ is determined by the @var{weight}
 variable in the @var{input-file}. 
 As noted above, @var{weight} is broadcast, if possible, to conform 
 to the variable being averaged.  
@@ -5282,8 +5283,8 @@ model.}:
 ncwa -w gw -a lat in.nc out.nc
 @end example
 @noindent
-Here the tally is simply the size of @code{lat}, or 64.
-The sum of the Gaussian weights is 2.0.
+Here the tally is simply the size of @code{lat}, @w{or 64.}
+The sum of the Gaussian weights @w{is 2.0.}
 
 Compute the area mean over the tropical Pacific:
 @example
