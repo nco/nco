@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.72 2001-05-08 01:36:03 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.73 2001-05-08 05:26:11 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -66,9 +66,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2001-05-08 01:36:03 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.72 2001-05-08 01:36:03 zender Exp $';
-my $CVS_Revision='$Revision: 1.72 $';
+my $CVS_Date='$Date: 2001-05-08 05:26:11 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.73 2001-05-08 05:26:11 zender Exp $';
+my $CVS_Revision='$Revision: 1.73 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -92,7 +92,7 @@ my $vrs_tag='';
 my $www_mch='ftp.cgd.ucar.edu'; # WWW machine for package
 my $www_drc='/web/web-data/cms/nco'; # WWW directory for package
 my $www_mch_mrr='nco.sourceforge.net'; # WWW machine for package mirror
-my $www_drc_mrr='/home/groups/nco/htdocs'; # WWW directory for package mirror
+my $www_drc_mrr='/home/groups/n/nc/nco/htdocs'; # WWW directory for package mirror
 
 # Set defaults for command line arguments
 my $cln=$True; # GNU standard Makefile option `clean'

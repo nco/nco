@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.77 2001-05-08 01:36:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.78 2001-05-08 05:26:11 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -22,7 +22,7 @@ makeinfo nco.texi
 texi2html -monolithic -verbose nco.texi 
 dvips -o nco.ps nco.dvi 
 ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
-cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.ps nco.info* nco.ps nco.pdf nco.sourceforge.net:/home/groups/nco/htdocs;cd -
+cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.ps nco.info* nco.ps nco.pdf nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
 cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.ps nco.info* nco.ps nco.pdf www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 
 Copyright (C) 1995--2001 Charlie Zender
