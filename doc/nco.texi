@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.75 2000-12-30 02:23:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.76 2001-02-12 05:37:57 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -62,10 +62,10 @@ END-INFO-DIR-ENTRY
 
 @set nco-edition 1.2.2
 @set doc-edition 1.2.2
-@set copyright-years 1995--2000
-@set update-year 2000
-@set update-date 26 September 2000
-@set update-month September 2000
+@set copyright-years 1995--2001
+@set update-year 2001
+@set update-date 10 February 2001
+@set update-month February 2001
 
 @c Experiment with smaller amounts of whitespace between chapters and sections
 @tex
@@ -417,9 +417,9 @@ platform is standardization of various C and Fortran interface and
 system calls.
 The C-code has been tested for @acronym{ANSI} compliance by compiling with @acronym{GNU} 
 @code{gcc -ansi -pedantic}. 
-@cindex @acronym{ANSI} C
+@cindex @acronym{ANSI}
 Certain branches in the code were required to satisfy the native SGI and
-SunOS @command{cc} compilers, which are strictly ANSI compliant and do not
+SunOS @command{cc} compilers, which are strictly @acronym{ANSI} compliant and do not
 allow variable-size arrays, a nice feature supported by @acronym{GNU},
 @acronym{UNICOS}, Solaris, and @acronym{AIX} compilers. 
 
@@ -435,7 +435,7 @@ subroutines with C subroutines.
 Furthermore, this greatly simplifies the task of compiling on nominally 
 unsupported platforms. 
 As of August 1999, @acronym{NCO} is built entirely in C by default.
-This allows @acronym{NCO} to compile on any machine with an ANSI C compiler.
+This allows @acronym{NCO} to compile on any machine with an @acronym{ANSI} C compiler.
 Furthermore, @acronym{NCO} automatically takes advantage of extensions
 to @acronym{ANSI} C when compiled with the @acronym{GNU} compiler
 collection, @acronym{GCC}. 
@@ -3612,7 +3612,6 @@ This displays all metadata pertaining to each variable, one variable
 at a time.
 
 @cindex @code{-q}
-@cindex @code{}
 @item -q 
 Toggle printing of dimension indices and coordinate values when printing
 arrays. 
