@@ -1,11 +1,11 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.213 2004-05-05 00:47:29 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.214 2004-05-05 00:50:01 zender Exp $
 Purpose: NCO homepage
 
 Usage:
 http://dust.ess.uci.edu/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
-/usr/bin/scp ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs/index.shtml
+/usr/bin/scp ~/nco/doc/index.shtml nco.sf.net:/home/groups/n/nc/nco/htdocs/index.shtml
 scp -p ~/nco/doc/index.shtml dust.ess.uci.edu:/var/www/html/nco/index.shtml
 -->
 
@@ -38,13 +38,13 @@ Try to disable Spammers' machines:
 <body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
 <table width="100%"><tr><td align="left" valign="top">/
-<a href="http://nco.sourceforge.net">NCO Homepage</a> /
-<a href="http://sourceforge.net/projects/nco">Project</a> /
+<a href="http://nco.sf.net">NCO Homepage</a> /
+<a href="http://sf.net/projects/nco">Project</a> /
 <a href="#RTFM">User's Guide</a> /
-<a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Discussion</a> /
-<a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help</a> /
-<a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developer</a> /
-<a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce">nco-announce</a> /
+<a href="http://sf.net/forum/forum.php?forum_id=9829">Discussion</a> /
+<a href="http://sf.net/forum/forum.php?forum_id=9830">Help</a> /
+<a href="http://sf.net/forum/forum.php?forum_id=9831">Developer</a> /
+<a href="http://lists.sf.net/mailman/listinfo/nco-announce">nco-announce</a> /
 </td>
 
 <td align="right" valign="top">
@@ -155,7 +155,7 @@ No matter what your programming background there is a task you can help with.
 From re-organizing the TODO list itself, to improving this cheesy
 webpage, to documentation, to designing and implementing new features
 and interfaces, we need your help!   
-The <a href="http://sourceforge.net/projects/nco">NCO project
+The <a href="http://sf.net/projects/nco">NCO project
 homepage</a> contains mailing lists, discussion forums, and
 instructions to make contributing to NCO easy.
 
@@ -281,7 +281,7 @@ The best way to acquire NCO is with <a href="http://www.cvshome.org">CVS</a>.
 The second best way is to download the compressed tarfile 
 <a href="nco.tar.gz">here</a>.
 <p>The 
-<a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> 
+<a href="http://sf.net/cvs/?group_id=3331">NCO CVS Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay
 synchronized with NCO features.
 Retrieving NCO requires some familiarity with GNU development tools,
@@ -317,7 +317,7 @@ to upload tarballs to SourceForge (a PITA), or to provide prebuilt
 binary executables of any format. 
 Volunteers or organizations interested in porting and providing NCO 
 binaries on a variety of platforms (using, e.g.,  
-<a href="http://sourceforge.net/docman/display_doc.php?docid=762&group_id=1">Compile Farm</a> or 
+<a href="http://sf.net/docman/display_doc.php?docid=762&group_id=1">Compile Farm</a> or 
 <a href="http://www.testdrive.compaq.com">HP Testdrive</a> sites)
 would be very welcome to join the NCO team.
 Tarballs are usually up-to-date, as are binaries for x86 Debian
@@ -327,7 +327,7 @@ distribution by many months, if not years:
 <li>Source and documentation in tarball format: 
 <a href="nco.tar.gz">nco.tar.gz</a> (<!--#fsize file="nco.tar.gz"--> compressed tar-file)</li>
 <!-- 
-<a href="http://prdownloads.sourceforge.net/nco/nco-2.2.0.tar.gz">nco-2.2.0.tar.gz</a> (901 Kb compressed tar-file)</li>
+<a href="http://prdownloads.sf.net/nco/nco-2.2.0.tar.gz">nco-2.2.0.tar.gz</a> (901 Kb compressed tar-file)</li>
 -->
 </ul>
 
@@ -346,8 +346,8 @@ href="src/nco_2.9.3-1_i386.changes">nco_2.9.3-1_i386.changes</a> (<!--#fsize fil
 <ul>
 <a href="www.redhat.com">Redhat 7.0 GNU/Linux</a>-compatible Intel
 systems <a href="http://www.rpm.org">RPMs</a>:
-<li><a href="http://prdownloads.sourceforge.net/nco/nco-2.0.0-1.i386.rpm">nco-2.0.0-1.i386.rpm</a>: Pre-built executable RPM (install with <tt>rpm -i nco</tt>)</li>
-<li><a href="http://prdownloads.sourceforge.net/nco/nco-2.0.0-1.src.rpm">nco-2.0.0-1.src.rpm</a>: Source RPM</li>
+<li><a href="http://prdownloads.sf.net/nco/nco-2.0.0-1.i386.rpm">nco-2.0.0-1.i386.rpm</a>: Pre-built executable RPM (install with <tt>rpm -i nco</tt>)</li>
+<li><a href="http://prdownloads.sf.net/nco/nco-2.0.0-1.src.rpm">nco-2.0.0-1.src.rpm</a>: Source RPM</li>
 </ul>
 <hr></p>
 
@@ -421,18 +421,18 @@ developers as described below.
 </li>
 <li><i>Is there an easy way to keep up with new NCO releases?</i>
 Subscribe to the 
-<a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a>
+<a href="http://lists.sf.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a>
 mailing list. 
 This list is for NCO-related announcements, not for questions.
 <tt>nco-announce</tt> is very low volume, averaging one message every few months.</li>
 <li><i>Where should I ask my questions on how to use NCO?</i>
-On the <a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help</a> site.
+On the <a href="http://sf.net/forum/forum.php?forum_id=9830">Help</a> site.
 </li>
 <li><i>Where should I post suggestions/comments on NCO features and usage?</i>
-On the <a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Discussion</a> site.
+On the <a href="http://sf.net/forum/forum.php?forum_id=9829">Discussion</a> site.
 </li>
 <li><i>Where are NCO development and bug-squashing discussed?</i>
-At the <a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developer</a>
+At the <a href="http://sf.net/forum/forum.php?forum_id=9831">Developer</a>
 site.</li>
 </ul>
 <hr></p>
@@ -626,16 +626,16 @@ Version 2.8.7 fixes this problem.
 </ul>
 <p><hr></p>
 
-<a href="http://sourceforge.net"><img src="http://sourceforge.net/sflogo.php?group_id=3331&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo"></a>
+<a href="http://sf.net"><img src="http://sf.net/sflogo.php?group_id=3331&amp;type=1" width="88" height="31" border="0" alt="SourceForge.net Logo"></a>
 
 <table width="100%"><tr><td align="left" valign="top">/
-<a href="http://nco.sourceforge.net">NCO Homepage</a> /
-<a href="http://sourceforge.net/projects/nco">Project</a> /
+<a href="http://nco.sf.net">NCO Homepage</a> /
+<a href="http://sf.net/projects/nco">Project</a> /
 <a href="#RTFM">User's Guide</a> /
-<a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Discussion</a> /
-<a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help</a> /
-<a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developer</a> /
-<a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce">nco-announce</a> /
+<a href="http://sf.net/forum/forum.php?forum_id=9829">Discussion</a> /
+<a href="http://sf.net/forum/forum.php?forum_id=9830">Help</a> /
+<a href="http://sf.net/forum/forum.php?forum_id=9831">Developer</a> /
+<a href="http://lists.sf.net/mailman/listinfo/nco-announce">nco-announce</a> /
 </td>
 
 <td align="right" valign="top">

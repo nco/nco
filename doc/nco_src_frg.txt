@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.59 2003-11-16 22:45:43 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.60 2004-05-05 00:47:30 zender Exp $ -*-text-*-
 
 # Purpose: Potpurri of Sourceforge information for NCO netCDF Operators project
 
@@ -8,8 +8,8 @@ CVS Server:         cvs.nco.sf.net
 Shell/Web Server:   nco.sf.net:/home/users/z/ze/zender
 		    nco.sf.net:/home/groups/n/nc/nco
 Project Websites:   http://nco.sf.net
-		    http://sourceforge.net/projects/nco
-		    http://sourceforge.net/project/?group_id=3331
+		    http://sf.net/projects/nco
+		    http://sf.net/project/?group_id=3331
 		    http://freshmeat.net/projects/nco
 Project FTP:        ftp://nco.sf.net/pub/nco
 		    nco.sf.net:/home/groups/ftp/pub/nco
@@ -24,8 +24,8 @@ CVS:		    Anonymous check out:
 		    Checkouts inside sourceforge firewall:
 		    cvs -dzender@cvs1:/cvsroot/nco co -kk nco
 Daily tarballs of entire CVS tree for mirroring:
-		    http://cvs.sourceforge.net/cvstarballs/nco-cvsroot.tar.gz
-Compile Farm:       ssh cf.sourceforge.net cf.sf.net
+		    http://cvs.sf.net/cvstarballs/nco-cvsroot.tar.gz
+Compile Farm:       ssh cf.sf.net cf.sf.net
 HP Testdrive:       telnet 192.233.54.169
 
 # Create tarballs for uploading to sourceforge
@@ -35,8 +35,8 @@ cp /data/zender/tmp/netcdf-3.5.1-beta10.tar.Z /usr/local/lib/libnetcdf* /usr/loc
 tar cvzf sf.tar.gz ./sf
 mv sf.tar.gz /var/www/html/nco
 /bin/rm -r sf
-ncftpput upload.sourceforge.net /incoming /var/www/html/nco/sf.tar.gz
-scp upload.sourceforge.net:/incoming/sf.tar.gz .
+ncftpput upload.sf.net /incoming /var/www/html/nco/sf.tar.gz
+scp upload.sf.net:/incoming/sf.tar.gz .
 
 # Copy docs from compile farm to NCO websites
 cd ~/nco/doc;scp -C nco.dvi nco.html nco.info* nco.pdf nco.ps* zender@nco.sf.net:/home/groups/n/nc/nco/htdocs
@@ -123,33 +123,33 @@ scientific research, these data formats, and thus NCO, are generic and
 are equally useful in fields like finance. The NCO User's Guide
 illustrates NCO use with examples from the field of climate modeling
 and analysis. The NCO homepage is currently 
-http://nco.sourceforge.org
+http://nco.sf.net
 
 To build NCO on SourceForge, 
 make NETCDF_LIB=/home/groups/n/nc/nco/lib/LINUX NETCDF_INC=/home/groups/n/nc/nco/include
 
 To make a new release of NCO on SourceForge:
-ncftpput upload.sourceforge.net /incoming /var/www/html/nco/nco-2.7.1.tar.gz
-ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.2.0-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.2.0-*.i386.rpm /usr/src/redhat/SOURCES/nco-2.2.0.tar.gz
+ncftpput upload.sf.net /incoming /var/www/html/nco/nco-2.7.1.tar.gz
+ncftpput upload.sf.net /incoming /usr/src/redhat/SRPMS/nco-2.2.0-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.2.0-*.i386.rpm /usr/src/redhat/SOURCES/nco-2.2.0.tar.gz
 
 To upload to RedHat for inclusion in, e.g., rpmfind.net:
 ncftpput incoming.redhat.com /libc6 /usr/src/redhat/SRPMS/nco-2.2.0-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.2.0-*.i386.rpm
 
 Mailing lists nco-announce:
 Web page for users:
-http://lists.sourceforge.net/mailman/listinfo/nco-announce
+http://lists.sf.net/mailman/listinfo/nco-announce
 
 Address for posting:
-nco-announce@lists.sourceforge.net
+nco-announce@lists.sf.net
 
 Subscriber info, Send message with "help" in it to 
-nco-announce-request@lists.sourceforge.net
+nco-announce-request@lists.sf.net
 
 Subscription page for changing password, options, etc:
-http://lists.sourceforge.net/mailman/options/nco-announce/zender@uci.edu
+http://lists.sf.net/mailman/options/nco-announce/zender@uci.edu
 
 List administration:
-http://lists.sourceforge.net/mailman/admin/nco-announce
+http://lists.sf.net/mailman/admin/nco-announce
 
 Contributors with active projects:
 Name, E-mail, Sourceforge name, Project
@@ -170,7 +170,7 @@ since they were released. Eventually, therefore, you must learn to
 use CVS so that you can make serious code changes and keep up with the
 development branch. NCO-specific instructions on how to check out the
 code with CVS are posted to the Developer's forum on Sourceforge 
-http://sourceforge.net/forum/forum.php?forum_id=9831 
+http://sf.net/forum/forum.php?forum_id=9831 
 in the message dated June 21, 2000.
 
 Once you have NCO, build it! If you must make non-trivial

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.18 2004-04-07 00:46:22 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.19 2004-05-05 00:50:05 zender Exp $
 
 Purpose: NCO news archive
 
@@ -8,7 +8,7 @@ file:/home/zender/nco/doc/nco_news.shtml
 /bin/cp -f ~/nco/doc/nco_news.shtml /web/web-data/cms/nco/nco_news.shtml
 
 scp -p ~/nco/doc/nco_news.shtml dust.ess.uci.edu:/var/www/html/nco/nco_news.shtml
-scp -p ~/nco/doc/nco_news.shtml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs/nco_news.shtml
+scp -p ~/nco/doc/nco_news.shtml nco.sf.net:/home/groups/n/nc/nco/htdocs/nco_news.shtml
 -->
 
 <!doctype html public "-//W3C//DTD HTML 3.2//EN">
@@ -162,12 +162,12 @@ Summary of administrative changes:
 These new capabilities are the result of contributions from Henry
 Butowski, Bill Kocik, and Roland Schweitzer.
 For more information on how to contribute to NCO,
-visit the <a href="http://sourceforge.net/projects/nco">NCO
+visit the <a href="http://sf.net/projects/nco">NCO
 administration homepage</a>.</li>
 
 <li>New NCO releases and important announcements will be made on the
 netCDF list and on the new 
-<a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a>
+<a href="http://lists.sf.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a>
 mailing list.</li>  
 
 <li>Questions, suggestions, ideas, and pleas for help should be posted to 
@@ -175,20 +175,20 @@ the appropriate discussion forum at the NCO administration site.
 NCO developers monitor these open forums, and your message will get a
 quicker response if it is posted on one of these forums:
 <ul>
-<li><a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Open
+<li><a href="http://sf.net/forum/forum.php?forum_id=9829">Open
 Discussion Forum</a>: General discussion, discussion of tips, tricks,
 future directions for NCO.</li>
-<li><a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help
+<li><a href="http://sf.net/forum/forum.php?forum_id=9830">Help
 Forum</a>: Installation problems, user's questions (e.g., "How do I
 average x and y...?")</li>
-<li><a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developers
+<li><a href="http://sf.net/forum/forum.php?forum_id=9831">Developers
 forum</a>: Discussion of patches, technical questions related to
 modifying NCO, and discussion of specific items on the 
 <a href="./TODO">TODO list</a> and how best to address them</li>  
 </ul></li>
 </ul>
 Note: You must first 
-<a href="https://sourceforge.net/account/register.php">register</a> 
+<a href="https://sf.net/account/register.php">register</a> 
 in order to post to these forums.
 Once registered you may choose to "monitor" the forums and to receive
 email when there are any postings.

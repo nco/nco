@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.221 2004-04-14 00:23:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.222 2004-05-05 00:50:01 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -45,7 +45,7 @@ texi2dvi --output=nco.dvi nco.texi
 texi2dvi --pdf --output=nco.pdf nco.texi
 texi2html -monolithic -verbose nco.texi
 texi2html -l2h -l2h_tmp=./l2h_tmp -monolithic -verbose nco.texi # Invoke latex2html
-cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco.sf.net:/home/groups/n/nc/nco/htdocs;cd -
 cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml dust.ess.uci.edu:/var/www/html/nco;cd -
 
 NB: @cindex references in footnotes propogate to PDF file, but not to
@@ -293,7 +293,7 @@ research, these data formats, and thus @acronym{NCO}, are generic and
 are equally useful in fields like finance. 
 The @acronym{NCO} User's Guide illustrates @acronym{NCO} use with
 examples from the field of climate modeling and analysis. 
-The @acronym{NCO} homepage is @uref{http://nco.sourceforge.net}, and
+The @acronym{NCO} homepage is @uref{http://nco.sf.net}, and
 there is a mirror at @uref{http://dust.ess.uci.edu/nco}.
 
 This file documents @acronym{NCO} version @value{nco-edition}.
@@ -410,7 +410,7 @@ itself.
 @cindex source code
 The complete @acronym{NCO} source distribution is currently distributed
 as a @dfn{compressed tarfile} from
-@uref{http://sourceforge.net/projects/nco}
+@uref{http://sf.net/projects/nco}
 and from
 @uref{http://dust.ess.uci.edu/nco/nco.tar.gz}.
 The compressed tarfile must be uncompressed and untarred before building
@@ -456,10 +456,10 @@ formats.
 If you want to quickly see what the latest improvements in @acronym{NCO}
 are (without downloading the entire source distribution), visit the
 @acronym{NCO} homepage at 
-@uref{http://nco.sourceforge.net}.
+@uref{http://nco.sf.net}.
 The @acronym{HTML} version of the @cite{User's Guide} is also available 
 online through the World Wide Web at @acronym{URL}
-@uref{http://nco.sourceforge.net/nco.html}.
+@uref{http://nco.sf.net/nco.html}.
 @cindex netCDF
 To build and use @acronym{NCO}, you must have netCDF installed.
 The netCDF homepage is
@@ -467,7 +467,7 @@ The netCDF homepage is
 
 New @acronym{NCO} releases are announced on the netCDF list and on the  
 @code{nco-announce} mailing list 
-@uref{http://lists.sourceforge.net/mailman/listinfo/nco-announce}.
+@uref{http://lists.sf.net/mailman/listinfo/nco-announce}.
 
 @ignore
 This tests incorporates an image using the @code{@@image} command.
@@ -865,7 +865,7 @@ Also, should @acronym{NCO} ever be funded (as is our hope), this record
 will provide program officers with information they need to evaluate us.
 
 Before posting to the @acronym{NCO} forums described below, you might
-first @uref{https://sourceforge.net/account/register.php, register}
+first @uref{https://sf.net/account/register.php, register}
 your name and email address with SourceForge.net or else all of your
 postings will be attributed to "nobody".
 Once registered you may choose to "monitor" any forum and to receive
@@ -875,7 +875,7 @@ If you want us to include a new feature in @acronym{NCO}, check first to
 see if that feature is already on the @uref{file:./TODO, TODO} list.
 If it is, why not implement that feature yourself and send us the patch?
 If the feature is not yet on the list, then send a note to the
-@uref{http://sourceforge.net/forum/forum.php?forum_id=9829, NCO Discussion forum}.
+@uref{http://sf.net/forum/forum.php?forum_id=9829, NCO Discussion forum}.
 
 Read the manual before reporting a bug or posting a help request.
 Sending questions whose answers are not in the manual is the best
@@ -894,7 +894,7 @@ That is, describe what you are trying to do, and include the complete
 commands (with @samp{-r -D 5}), error messages, and version of
 @acronym{NCO}. 
 Post your help request to the 
-@uref{http://sourceforge.net/forum/forum.php?forum_id=9830, NCO Help forum}.
+@uref{http://sf.net/forum/forum.php?forum_id=9830, NCO Help forum}.
 
 If you think you are using the right command, but @acronym{NCO} is
 misbehaving, then you might have found a bug. 
@@ -925,7 +925,7 @@ and compile-time environment printed by @samp{-r -D 5}.
 Include a copy of your sample input file, or place one on a 
 publically accessible location, of the file(s).
 Post the full bug report to the 
-@uref{http://sourceforge.net/bugs/?group_id=3331, NCO Project buglist}.
+@uref{http://sf.net/bugs/?group_id=3331, NCO Project buglist}.
 
 @html
 <a name="str"></a> <!-- http://nco.sf.net/nco.html#str -->
