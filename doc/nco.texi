@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.59 2000-08-11 01:04:17 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.60 2000-08-15 06:40:06 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -222,12 +222,13 @@ Features common to most operators
 * Wrapped coordinates::         
 * Stride::                      
 * Missing values::              
+* Operation Types::             
+* Type conversion::             
 * Suppressing interactive prompts::  
-* Operator version::            
 * History attribute::           
 * NCAR CSM Conventions::        
 * ARM Conventions::             
-* Operation Types::             
+* Operator version::            
 
 Accessing files stored remotely
 
@@ -271,10 +272,10 @@ Sheldon, and William Weibel for stimulating suggestions and correspondence.
 Your encouragment motivated me to complete the @cite{NCO User's Guide}.
 So if you like NCO, send me a note!
 I should mention that NCO is not connected to or officially endorsed by
-Unidata, ACD, ASP, CGD, or Nike.
+Unidata, ACD, ASP, CGD, or Nike.@*
 @sp 1
 @noindent
-Charlie Zender
+Charlie Zender@*
 @sp 1
 @noindent
 May 1997@*
@@ -1186,12 +1187,13 @@ feature is automatic and cannot be controlled by the user.
 * Wrapped coordinates::         
 * Stride::                      
 * Missing values::              
+* Operation Types::             
+* Type conversion::             
 * Suppressing interactive prompts::  
-* Operator version::            
 * History attribute::           
 * NCAR CSM Conventions::        
 * ARM Conventions::             
-* Operation Types::             
+* Operator version::            
 @end menu
 
 @node Specifying input files, Remote storage, Common features, Common features
@@ -1378,7 +1380,8 @@ ncks -H -l ./ ftp://ftp.cgd.ucar.edu/pub/zender/nc/in.nc
 ncks -H -l ./ dust.ps.uci.edu:/home/zender/nc/in.nc
 ncks -H -l ./ /ZENDER/nc/in.nc 
 ncks -H -l ./ mss:/ZENDER/nc/in.nc
-ncks -H -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc
+ncks -H -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/-
+ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc
 @end example
 @noindent
 The first example will work verbatim on your system if your system is
@@ -1461,7 +1464,8 @@ All DODS clients have network transparent access to any files controlled
 by a DODS server. 
 Simply specify the path to the file in URL notation
 @example
-ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc
+ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/
+Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc
 @end example
 @noindent
 NCO operates on these remote files without having to transfer the
@@ -1823,7 +1827,7 @@ ncra -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8589_03.nc
 ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @end example
 
-@node Missing values, Suppressing interactive prompts, Stride, Common features
+@node Missing values, Operation Types, Stride, Common features
 @section Missing values
 @cindex missing values
 @cindex data, missing 
@@ -1924,206 +1928,7 @@ Suffice it to say that, in all known cases, NCO does ``the right thing''.
 
 @end enumerate
 
-@node  Suppressing interactive prompts, Operator version, Missing values, Common features
-@section Suppressing interactive prompts
-@cindex overwriting files
-@cindex appending to files
-@cindex force overwrite
-@cindex force append
-@cindex @code{-O}
-@cindex @code{-A}
-@cartouche
-@noindent
-Availability: All operators@*
-Key switches: @samp{-O}, @samp{-A}@*
-@end cartouche
-If the @var{output-file} specified for a command is a pre-existing file,
-then the operator will prompt the user whether to overwrite (erase) the
-existing @var{output-file}, attempt to append to it, or abort the
-operation. 
-However, in processing large amounts of data, too many interactive
-questions can be a curse to productivity.
-Therefore NCO also implements two ways to override its own safety
-features, the @samp{-O} and @samp{-A} switches.
-Specifying @samp{-O} tells the operator to overwrite any existing
-@var{output-file} without prompting the user interactively.
-Specifying @samp{-A} tells the operator to attempt to append to any
-existing @var{output-file} without prompting the user interactively.
-These switches are useful in batch environments because they suppress
-interactive keyboard input.
-
-@node Operator version, History attribute, Suppressing interactive prompts, Common features
-@section Operator version
-@cindex version
-@cindex RCS
-@cindex @code{-r}
-@cartouche
-@noindent
-Availability: All operators@*
-Key switches: @samp{-r}@*
-@end cartouche
-All operators can be told to print their internal version number and
-copyright notice and then quit with the @samp{-r} switch.
-The internal version number varies between operators, and indicates the
-most recent change to a particular operator's source code.
-This is useful in making sure you are working with the most recent
-operators.
-The version of NCO you are using might be, e.g., 1.0.
-However using @samp{-r} on, say, @code{ncks}, will produce something
-like @samp{ncks 3.24 (1997/05/06) Copyright 1995--1997 University
-Corporation for Atmospheric Research}.
-This tells you @code{ncks} contains all patches up to version 3.24,
-which dates from May 6, 1997. 
-
-@node History attribute, NCAR CSM Conventions, Operator version, Common features
-@section History attribute
-@cindex @code{history} attribute
-@cindex timestamp
-@cindex global attributes
-@cindex attributes, global
-@cindex @code{-h}
-@cartouche
-@noindent
-Availability: All operators@*
-Key switches: @samp{-h}@*
-@end cartouche
-All operators automatically append a @code{history} global attribute to
-any file they modify or create.
-The @code{history} attribute consists of a timestamp and the full string
-of the invocation command to the operator, e.g., @samp{Mon May 26 20:10:24
-1997: ncks in.nc foo.nc}.
-The full contents of an existing @code{history} attribute are copied
-from the first @var{input-file} to the @var{output-file}.
-The timestamps appear in reverse chronological order, with the most
-recent timestamp appearing first in the @code{history} attribute.
-Since NCO and many other netCDF operators adhere to the @code{history}
-convention, the entire data processing path of a given netCDF file may
-often be deduced from examination of its @code{history} attribute.
-@cindex @code{ncatted}
-To avoid information overkill, all operators have an optional switch
-(@samp{-h}) to override automatically appending the @code{history}
-attribute (@pxref{ncatted netCDF Attribute Editor}).  
-
-@node NCAR CSM Conventions, ARM Conventions, History attribute, Common features
-@section NCAR CSM Conventions
-@cindex NCAR CSM conventions
-@cindex CSM conventions
-@cindex @code{gw}
-@cindex @code{ORO}
-@cindex @code{date}
-@cindex @code{datesec}
-@cindex @code{time}
-@cartouche
-@noindent
-Availability: @code{ncdiff}, @code{ncea}, @code{ncecat}, @code{ncflint},
-@code{ncra}, @code{ncwa}@*
-Key switches: None@*
-@end cartouche
-NCO recognizes NCAR CSM history tapes, and treats them specially.
-If you do not work with NCAR CSM data then you may skip this section.
-The CSM netCDF convention is described at
-@ifhtml
-<a href="http://www.cgd.ucar.edu/csm/experiments/output.format.html"> http://www.cgd.ucar.edu/csm/experiments/output.format.html</a>.
-@end ifhtml
-@ifclear html
-@c fxm: printed manual is not hyphenating this long web-page name.
-@code{http://@-www.cgd.ucar.edu/@-csm/@-experiments/@-output.@-format.@-html}.
-@end ifclear
-Most of the CSM netCDF convention is transparent to NCO
-@footnote{
-The exception is appending/altering the attributes @code{x_op},
-@code{y_op}, @code{z_op}, and @code{t_op} for variables which have been
-averaged across space and time dimensions.
-This feature is scheduled for future inclusion in NCO.
-}.
-There are no known pitfalls associated with using any NCO operator on
-files adhering to this convention
-@footnote{
-The CSM convention recommends @code{time} be stored in the format
-@var{time} since @var{base_time}, e.g., the @code{units} attribute of
-@code{time} might be @samp{days since 1992-10-8 15:15:42.5 -6:00}. 
-A problem with this format occurs when using @code{ncrcat} to
-concatenate multiple files together, each with a different
-@var{base_time}. 
-That is, any @code{time} values from files following the first file to
-be concatenated should be corrected to the @var{base_time} offset
-specified in the @code{units} attribute of @code{time} from the first
-file. 
-The analogous problem has been fixed in ARM files (@pxref{ARM Conventions})
-and could be fixed for CSM files if there is sufficient lobbying, and if
-Unidata fixes the UDUNITS package to build out of the box on Linux.
-}.
-However, to facilitate maximum user friendliness, NCO does treat certain
-variables in some CSM files specially. 
-The special functions are not required by the CSM netCDF convention,
-but experience has shown they do make life easier.
-
-Currently, NCO determines whether a datafile is a CSM output datafile
-simply by checking whether value of the global attribute
-@code{convention} (if it exists) equals @samp{NCAR-CSM}.  
-Should @code{convention} equal @samp{NCAR-CSM} in the (first)
-@var{input-file}, NCO will attempt to treat certain variables specially,
-because of their meaning in CSM files. 
-NCO will not average the following variables often found in CSM files:
-@code{ntrm}, @code{ntrn}, @code{ntrk}, @code{ndbase}, @code{nsbase},
-@code{nbdate}, @code{nbsec}, @code{mdt}, @code{mhisf}.
-These variables contain scalar metadata such as the resolution of the
-host CSM model and it makes no sense to change their values.
-Furthermore, the @code{ncdiff} operator will not attempt to difference
-the following variables: @code{gw}, @code{ORO}, @code{date},
-@code{datesec}, @code{hyam}, @code{hybm}, @code{hyai}, @code{hybi}.
-These variables represent the Gaussian weights, the orography field,
-time fields, and hybrid pressure coefficients.
-These are fields which you want to remain unaltered in the differenced
-file 99% of the time.
-If you decide you would like any of the above CSM fields processed, you
-must use @code{ncrename} to rename them first.
-
-@node ARM Conventions, Operation Types, NCAR CSM Conventions, Common features
-@section ARM Conventions
-@cindex ARM conventions
-@cindex @code{time_offset}
-@cindex @code{base_time}
-@cindex @code{time}
-@cartouche
-@noindent
-Availability: @code{ncrcat}@*
-Key switches: None@*
-@end cartouche
-@code{ncrcat} has been programmed to recognize ARM (Atmospheric
-Radiation Measurement Program) data files.
-If you do not work with ARM data then you may skip this section.
-ARM data files store time information in two variables, a scalar,
-@code{base_time}, and a record variable, @code{time_offset}.
-Subtle but serious problems can arise when these type of files are
-just blindly concatenated.
-Therefore @code{ncrcat} has been specially programmed to be able to
-chain together consecutive ARM @var{input-files} and produce and
-an @var{output-file} which contains the correct time information.
-Currently, @code{ncrcat} determines whether a datafile is an ARM
-datafile simply by testing for the existence of the variables
-@code{base_time}, @code{time_offset}, and the dimension @code{time}. 
-If these are found in the @var{input-file} then @code{ncrcat} will 
-automatically perform two non-standard, but hopefully useful,
-procedures. 
-First, @code{ncrcat} will ensure that values of @code{time_offset}
-appearing in the @var{output-file} are relative to the @code{base_time}
-appearing in the first @var{input-file} (and presumably, though not
-necessarily, also appearing in the @var{output-file}).
-Second, if a coordinate variable named @code{time} is not found in the
-@var{input-files}, then @code{ncrcat} automatically creates the
-@code{time} coordinate in the @var{output-file}.  
-The values of @code{time} are defined by the ARM convention
-@math{@var{time} = @var{base_time} + @var{time_offset}}.
-Thus, if @var{output-file} contains the @code{time_offset}
-variable, it will also contain the @code{time} coordinate.
-@cindex @code{history} attribute
-@cindex global attributes
-@cindex attributes, global
-A short message is added to the @code{history} global attribute whenever
-these ARM-specific procedures are executed.
-
-@node Operation Types,  , ARM Conventions, Common features
+@node Operation Types, Type conversion, Missing values, Common features
 @section Operation Types
 @cindex operation types
 @cindex @code{avg}
@@ -2443,6 +2248,300 @@ ncra -O -y rmssdn foo2.nc out.nc
 The first step assembles all the data into a single file.
 This may require a lot of temporary disk space, but is more or less
 required by the @code{ncdiff} operation in the fourth step.
+
+@node Type conversion, Suppressing interactive prompts, Operation Types, Common features
+@section Type conversion
+@cindex type conversion
+@cartouche
+@noindent
+Availability: @code{ncdiff}, @code{ncea}, @code{ncflint}, @code{ncra}, @code{ncwa}@*
+Key switches: None@*
+@end cartouche
+Type conversion refers to the casting of one fundamental data type 
+to another, e.g., converting @code{NC_SHORT} (2 bytes) to
+@code{NC_DOUBLE} (8 bytes). 
+As a general rule, type conversions should be avoided for at least two   
+reasons. 
+First, type conversions are expensive since they require creating
+(temporary) buffers and casting each element of a variable from 
+the type it was stored at to some other type.
+Second, the dataset's creator probably had a good reason
+for storing data as, say, @code{NC_FLOAT} rather than @code{NC_DOUBLE}. 
+In a scientific framework there is no reason to store data with more
+precision than the observations were made.  
+Thus NCO tries to avoid performing type conversions when performing
+arithmetic. 
+
+Type conversion during arithmetic in the languages C and Fortran is 
+performed only when necessary.
+All operands in an operation are converted to the most precise type
+before the operation takes place.
+However, following this parsimonious conversion rule dogmatically
+results in numerous headaches.
+For example, the average of the two @code{NC_SHORT}s @code{17000s} and
+@code{17000s} results in garbage since the intermediate value which
+holds their sum is also of type @code{NC_SHORT} and thus cannot
+represent values greater than 32,767
+@footnote{
+@set flg
+@tex
+$32767 = 2^{15}-1$
+@clear flg
+@end tex
+@ifinfo
+@math{32767 = 2^15-1}
+@clear flg
+@end ifinfo
+@ifset flg
+@c texi2html doesn't like @math{}
+@math{32767 = 2^15-1}
+@clear flg
+@end ifset
+}.
+There are valid reasons for expecting this operation to succeed and 
+the NCO philosophy is to make operators do what you want, not what is
+most pure.
+Thus, unlike C and Fortran, but like many other higher level interpreted
+languages, NCO arithmetic operators will perform automatic type
+conversion when all the following conditions are met
+@footnote{Until August 2000, NCO never performed type conversions before  
+arithmetic.}:
+@enumerate
+@item The operator is @code{ncea}, @code{ncflint}, @code{ncra}, or
+@code{ncwa}. 
+@code{ncdiff} is not included because subtraction does not benefit from 
+type conversion.
+@item The arithmetic operation could benefit from type conversion.
+Operations that could benefit (e.g., from larger representable sums) 
+include averaging, summation, or any "hard" arithmetic. 
+Type conversion does not benefit searching for minima and maxima
+(@samp{-y min}, or @samp{-y max}).
+@item The variable on disk is of type @code{NC_BYTE}, @code{NC_CHAR},
+@code{NC_SHORT}, or @code{NC_LONG}.
+Type @code{NC_DOUBLE} is not type converted because there is no type of
+higher precision to convert to.
+Type @code{NC_FLOAT} is not type converted because, in our judgement,
+the performance penalty of always doing so would outweigh the (extremely
+rare) potential benefits.  
+@end enumerate
+
+When these criteria are all met, the operator converts the variable in
+question to type @code{NC_DOUBLE}, performs all the arithmetic
+operations, casts the @code{NC_DOUBLE} type back to the original type,
+and finally writes the result to disk. 
+The result written to disk may not be what you expect. 
+To continue the example given above, the average (e.g., @samp{-y avg})
+of @code{17000s} and @code{17000s} is written to disk as @code{17000s}.
+The type conversion feature of NCO makes this possible since the
+arithmetic and intermediate values are stored as @code{NC_DOUBLES},
+i.e., @code{34000.0d} and only the final result is must be represented
+as an @code{NC_SHORT}.
+Without the type conversion feature of NCO, the average would have
+been garbage (albeit predictable garbage near @code{-15768s}). 
+Similarly, the total (e.g., @samp{-y ttl}) of @code{17000s} and
+@code{17000s} written to disk is garbage (actually @code{-31536s}) since
+the final result (the true total) of @math{34000} is outside the range
+of type @code{NC_SHORT}.  
+
+@node  Suppressing interactive prompts, History attribute, Type conversion, Common features
+@section Suppressing interactive prompts
+@cindex overwriting files
+@cindex appending to files
+@cindex force overwrite
+@cindex force append
+@cindex @code{-O}
+@cindex @code{-A}
+@cartouche
+@noindent
+Availability: All operators@*
+Key switches: @samp{-O}, @samp{-A}@*
+@end cartouche
+If the @var{output-file} specified for a command is a pre-existing file,
+then the operator will prompt the user whether to overwrite (erase) the
+existing @var{output-file}, attempt to append to it, or abort the
+operation. 
+However, in processing large amounts of data, too many interactive
+questions can be a curse to productivity.
+Therefore NCO also implements two ways to override its own safety
+features, the @samp{-O} and @samp{-A} switches.
+Specifying @samp{-O} tells the operator to overwrite any existing
+@var{output-file} without prompting the user interactively.
+Specifying @samp{-A} tells the operator to attempt to append to any
+existing @var{output-file} without prompting the user interactively.
+These switches are useful in batch environments because they suppress
+interactive keyboard input.
+
+@node History attribute, NCAR CSM Conventions, Suppressing interactive prompts, Common features
+@section History attribute
+@cindex @code{history} attribute
+@cindex timestamp
+@cindex global attributes
+@cindex attributes, global
+@cindex @code{-h}
+@cartouche
+@noindent
+Availability: All operators@*
+Key switches: @samp{-h}@*
+@end cartouche
+All operators automatically append a @code{history} global attribute to
+any file they modify or create.
+The @code{history} attribute consists of a timestamp and the full string
+of the invocation command to the operator, e.g., @samp{Mon May 26 20:10:24
+1997: ncks in.nc foo.nc}.
+The full contents of an existing @code{history} attribute are copied
+from the first @var{input-file} to the @var{output-file}.
+The timestamps appear in reverse chronological order, with the most
+recent timestamp appearing first in the @code{history} attribute.
+Since NCO and many other netCDF operators adhere to the @code{history}
+convention, the entire data processing path of a given netCDF file may
+often be deduced from examination of its @code{history} attribute.
+@cindex @code{ncatted}
+To avoid information overkill, all operators have an optional switch
+(@samp{-h}) to override automatically appending the @code{history}
+attribute (@pxref{ncatted netCDF Attribute Editor}).  
+
+@node NCAR CSM Conventions, ARM Conventions, History attribute, Common features
+@section NCAR CSM Conventions
+@cindex NCAR CSM conventions
+@cindex CSM conventions
+@cindex @code{gw}
+@cindex @code{ORO}
+@cindex @code{date}
+@cindex @code{datesec}
+@cindex @code{time}
+@cartouche
+@noindent
+Availability: @code{ncdiff}, @code{ncea}, @code{ncecat}, @code{ncflint},
+@code{ncra}, @code{ncwa}@*
+Key switches: None@*
+@end cartouche
+NCO recognizes NCAR CSM history tapes, and treats them specially.
+If you do not work with NCAR CSM data then you may skip this section.
+The CSM netCDF convention is described at
+@ifhtml
+<a href="http://www.cgd.ucar.edu/csm/experiments/output.format.html"> http://www.cgd.ucar.edu/csm/experiments/output.format.html</a>.
+@end ifhtml
+@ifclear html
+@c fxm: printed manual is not hyphenating this long web-page name.
+@code{http://@-www.cgd.ucar.edu/@-csm/@-experiments/@-output.@-format.@-html}.
+@end ifclear
+Most of the CSM netCDF convention is transparent to NCO
+@footnote{
+The exception is appending/altering the attributes @code{x_op},
+@code{y_op}, @code{z_op}, and @code{t_op} for variables which have been
+averaged across space and time dimensions.
+This feature is scheduled for future inclusion in NCO.
+}.
+There are no known pitfalls associated with using any NCO operator on
+files adhering to this convention
+@footnote{
+The CSM convention recommends @code{time} be stored in the format
+@var{time} since @var{base_time}, e.g., the @code{units} attribute of
+@code{time} might be @samp{days since 1992-10-8 15:15:42.5 -6:00}. 
+A problem with this format occurs when using @code{ncrcat} to
+concatenate multiple files together, each with a different
+@var{base_time}. 
+That is, any @code{time} values from files following the first file to
+be concatenated should be corrected to the @var{base_time} offset
+specified in the @code{units} attribute of @code{time} from the first
+file. 
+The analogous problem has been fixed in ARM files (@pxref{ARM Conventions})
+and could be fixed for CSM files if there is sufficient lobbying, and if
+Unidata fixes the UDUNITS package to build out of the box on Linux.
+}.
+However, to facilitate maximum user friendliness, NCO does treat certain
+variables in some CSM files specially. 
+The special functions are not required by the CSM netCDF convention,
+but experience has shown they do make life easier.
+
+Currently, NCO determines whether a datafile is a CSM output datafile
+simply by checking whether value of the global attribute
+@code{convention} (if it exists) equals @samp{NCAR-CSM}.  
+Should @code{convention} equal @samp{NCAR-CSM} in the (first)
+@var{input-file}, NCO will attempt to treat certain variables specially,
+because of their meaning in CSM files. 
+NCO will not average the following variables often found in CSM files:
+@code{ntrm}, @code{ntrn}, @code{ntrk}, @code{ndbase}, @code{nsbase},
+@code{nbdate}, @code{nbsec}, @code{mdt}, @code{mhisf}.
+These variables contain scalar metadata such as the resolution of the
+host CSM model and it makes no sense to change their values.
+Furthermore, the @code{ncdiff} operator will not attempt to difference
+the following variables: @code{gw}, @code{ORO}, @code{date},
+@code{datesec}, @code{hyam}, @code{hybm}, @code{hyai}, @code{hybi}.
+These variables represent the Gaussian weights, the orography field,
+time fields, and hybrid pressure coefficients.
+These are fields which you want to remain unaltered in the differenced
+file 99% of the time.
+If you decide you would like any of the above CSM fields processed, you
+must use @code{ncrename} to rename them first.
+
+@node ARM Conventions, Operator version, NCAR CSM Conventions, Common features
+@section ARM Conventions
+@cindex ARM conventions
+@cindex @code{time_offset}
+@cindex @code{base_time}
+@cindex @code{time}
+@cartouche
+@noindent
+Availability: @code{ncrcat}@*
+Key switches: None@*
+@end cartouche
+@code{ncrcat} has been programmed to recognize ARM (Atmospheric
+Radiation Measurement Program) data files.
+If you do not work with ARM data then you may skip this section.
+ARM data files store time information in two variables, a scalar,
+@code{base_time}, and a record variable, @code{time_offset}.
+Subtle but serious problems can arise when these type of files are
+just blindly concatenated.
+Therefore @code{ncrcat} has been specially programmed to be able to
+chain together consecutive ARM @var{input-files} and produce and
+an @var{output-file} which contains the correct time information.
+Currently, @code{ncrcat} determines whether a datafile is an ARM
+datafile simply by testing for the existence of the variables
+@code{base_time}, @code{time_offset}, and the dimension @code{time}. 
+If these are found in the @var{input-file} then @code{ncrcat} will 
+automatically perform two non-standard, but hopefully useful,
+procedures. 
+First, @code{ncrcat} will ensure that values of @code{time_offset}
+appearing in the @var{output-file} are relative to the @code{base_time}
+appearing in the first @var{input-file} (and presumably, though not
+necessarily, also appearing in the @var{output-file}).
+Second, if a coordinate variable named @code{time} is not found in the
+@var{input-files}, then @code{ncrcat} automatically creates the
+@code{time} coordinate in the @var{output-file}.  
+The values of @code{time} are defined by the ARM convention
+@math{@var{time} = @var{base_time} + @var{time_offset}}.
+Thus, if @var{output-file} contains the @code{time_offset}
+variable, it will also contain the @code{time} coordinate.
+@cindex @code{history} attribute
+@cindex global attributes
+@cindex attributes, global
+A short message is added to the @code{history} global attribute whenever
+these ARM-specific procedures are executed.
+
+@node Operator version,  , ARM Conventions, Common features
+@section Operator version
+@cindex version
+@cindex RCS
+@cindex @code{-r}
+@cartouche
+@noindent
+Availability: All operators@*
+Key switches: @samp{-r}@*
+@end cartouche
+All operators can be told to print their internal version number and
+copyright notice and then quit with the @samp{-r} switch.
+The internal version number varies between operators, and indicates the
+most recent change to a particular operator's source code.
+This is useful in making sure you are working with the most recent
+operators.
+The version of NCO you are using might be, e.g., 1.2.
+However using @samp{-r} on, say, @code{ncks}, will produce something
+like @samp{NCO netCDF Operators version -1.2
+Copyright (C) 1995--2000 Charlie Zender
+ncks version 1.30 (2000/07/31) "Whistler"}.
+This tells you @code{ncks} contains all patches up to version 1.30,
+which dates from July 7, 2000.
 
 @node Operators, Contributing, Common features, Top
 @chapter Reference manual for all operators
@@ -4217,7 +4316,7 @@ $0.70 \times 8192 \approx 5734$.
 Compute the global annual average over the maritime tropical Pacific:
 @example
 ncwa -m ORO -M 0.5 -o lt -w gw -a lat,lon,time 
--d lat,-20.,20. -d lon,120.,270. in.nc out.nc
+-d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
 @end example
 
 @node Contributing, General Index, Operators, Top
@@ -4237,7 +4336,8 @@ contains more information on how to contribute.
 @item Charlie Zender
 Concept, design and implementation of NCO from 1995--2000
 @item Henry Butowsky
-Min, max, total, non-linear operations
+Min, max, total, and non-linear operations. 
+Type conversion for arithmetic.
 @item Bill Kocik
 Memory management
 @item Juliana Rew

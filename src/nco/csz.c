@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.50 2000-08-11 01:15:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.51 2000-08-15 06:40:06 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
 
@@ -916,6 +916,7 @@ cvs_vrs_prs()
   char *cvs_nm_sng=NULL;
   char *cvs_pch_vrs_sng=NULL;
   char *cvs_vrs_sng=NULL;
+  char *dsh_ptr=NULL;
   char *dlr_ptr=NULL;
   char *nco_sng_ptr=NULL;
   char *usc_1_ptr=NULL;
@@ -974,12 +975,14 @@ cvs_vrs_prs()
   nco_sng_len=strlen(nco_sng);
   nco_sng_ptr=strstr(cvs_nm_sng,nco_sng);
   if(nco_sng_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports nco_sng_ptr == NULL\n",prg_nm_get());
+  dsh_ptr=strstr(cvs_nm_sng,"-");
+  if(dsh_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports dsh_ptr == NULL\n",prg_nm_get());
   usc_1_ptr=strstr(cvs_nm_sng,"_");
   if(usc_1_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports usc_1_ptr == NULL\n",prg_nm_get());
-  cvs_mjr_vrs_len=(int)(usc_1_ptr-cvs_nm_sng)-nco_sng_len; /* NB: cast pointer to int before subtracting */ 
+  cvs_mjr_vrs_len=(int)(usc_1_ptr-dsh_ptr)-1; /* NB: cast pointer to int before subtracting */ 
   usc_2_ptr=strstr(usc_1_ptr+1,"_");
   cvs_mjr_vrs_sng=(char *)nco_malloc(cvs_mjr_vrs_len+1);
-  cvs_mjr_vrs_sng=strncpy(cvs_mjr_vrs_sng,cvs_nm_sng+nco_sng_len,cvs_mjr_vrs_len);
+  cvs_mjr_vrs_sng=strncpy(cvs_mjr_vrs_sng,cvs_nm_sng+nco_sng_len+1,cvs_mjr_vrs_len);
   cvs_mjr_vrs_sng[cvs_mjr_vrs_len]='\0';
   cvs_mjr_vrs=strtol(cvs_mjr_vrs_sng,(char **)NULL,10);
   if(usc_2_ptr == NULL){

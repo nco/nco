@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.17 2000-08-13 21:51:44 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.18 2000-08-15 06:40:06 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -57,7 +57,7 @@ To build NCO on SourceForge,
 make NETCDF_LIB=/home/groups/nco/lib/LINUX NETCDF_INC=/home/groups/nco/include
 
 To make a new release of NCO on SourceForge:
-ncftpput -V download.sourceforge.net /incoming nco-1.2.tar.gz
+ncftpput download.sourceforge.net /incoming nco-1.2.tar.gz
 
 Mailing lists nco-announce:
 Web page for users:

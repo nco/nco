@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.84 2000-08-04 23:09:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.85 2000-08-15 06:40:06 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -951,7 +951,7 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
    var_sct *var_fll(): O variable structure
  */ 
 {
-  /* Routine to nco_malloc() and return a completed var_sct */ 
+  /* Purpose: nco_malloc() and return a completed var_sct */ 
 
   char dmn_nm[MAX_NC_NAME];
 
@@ -994,6 +994,7 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
   var->val.vp=NULL;
   var->tally=NULL;
   var->xrf=NULL;
+  var->typ_prv=0;
 
   /* Refresh the number of attributes and the missing value attribute, if any */
   var->has_mss_val=mss_val_get(var->nc_id,var);

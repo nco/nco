@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.55 2000-08-11 01:04:17 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.56 2000-08-15 06:40:06 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -183,10 +183,10 @@ email when there are any postings.
 <p>In March, 2000 NCO became an Open Source project hosted by
 SourceForge.net in order to facilitate collaboration and code
 contribution by a wide variety of people. 
-There is a <a href="./TODO">TODO list</a> over 100 items long! 
+There is a <a href="./TODO">TODO list</a> about 100 items long! 
 No matter what your programming background there is a task you can
 help with. 
-From improving this terrible webpage, to adding documentation, 
+From improving this cheesy webpage, to adding documentation, 
 to helping design the new features and interfaces for future NCO
 capability, we need your help! 
 The <a href="http://sourceforge.net/projects/nco">NCO project
@@ -196,13 +196,13 @@ instructions for helping the NCO project.
 
 <dt><a name="Download"></a></dt>
 <h2>Download NCO distributions</h2>
-<p>Complete source and documentation in tarball format: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz">nco.tar.gz</a> (430 Kb compressed tar-file)
-<p>Complete source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco-1.1.46-1.src.rpm">nco-1.1.46-1.src.rpm</a> (492 Kb SRPM)
+<p>Complete source and documentation in tarball format: <a href="ftp://nco.sourceforge.net/pub/nco/nco.tar.gz">nco.tar.gz</a> (901 Kb compressed tar-file)
+<p>Complete source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="ftp://nco.sourceforge.net/pub/nco/nco-1.2-1.src.rpm">nco-1.2-1.src.rpm</a> (1029 Kb SRPM)
 
 <p>Unfortunately the package versions tend to lag the most current
 tarball by a few months:
 
-<p>Those running GNU/Linux on Redhat 6.1-compatible Intel systems, should try the prebuilt binary executable <a href="http://www.rpm.org">RPM</a>: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco-1.1.46-1.i386.rpm">nco-1.1.46-1.i386.rpm</a> (526 Kb RPM)
+<p>Those running GNU/Linux on Redhat 6.1-compatible Intel systems, should try the prebuilt binary executable <a href="http://www.rpm.org">RPM</a>: <a href="ftp://nco.sourceforge.net/pub/nco/nco-1.2-1.i386.rpm">nco-1.2-1.i386.rpm</a> (588 Kb RPM)
 
 <p>Those running GNU/Linux on Debian compatible Intel systems, should try the prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://www.debian.org/packages/unstable/math/nco.html">nco-1.1.48-1</a>
 <hr></p>

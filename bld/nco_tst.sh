@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.25 2000-07-31 05:36:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.26 2000-08-15 06:40:05 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -139,6 +139,18 @@ echo "ncwa 29: Dimension reduction on type short, max switch variable: 69 =?= $a
 ncwa -O -y rms -w lat_wgt -v lat in.nc foo.nc 2>>foo.tst
 avg=`ncks -C -H -s "%f" -v lat foo.nc`
 echo "ncwa 30: rms with weights: 90 =?= $avg" 
+
+ncwa -O -w val_half_half -v val_one_one_lng in.nc foo.nc 2>>foo.tst
+avg=`ncks -C -H -s "%ld" -v val_one_one_lng foo.nc`
+echo "ncwa 31: weights would cause SIGFPE without dbl_prc patch: 1L =?= $avg" 
+
+ncwa -O -y avg -v val_max_max_sht in.nc foo.nc 2>>foo.tst
+avg=`ncks -C -H -s "%d" -v val_max_max_sht foo.nc`
+echo "ncwa 32: avg would overflow without dbl_prc patch: 17000S =?= $avg" 
+
+ncwa -O -y ttl -v val_max_max_sht in.nc foo.nc 2>>foo.tst
+avg=`ncks -C -H -s "%d" -v val_max_max_sht foo.nc`
+echo "ncwa 33: ttl would overflow without dbl_prc patch, wraps anyway: -31536S =?= $avg" 
 
 ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`

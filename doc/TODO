@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.67 2000-08-03 22:20:19 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.68 2000-08-15 06:40:06 zender Exp $ 
 
 *************
 NCO Wish list
@@ -18,7 +18,6 @@ NCO Wish list
 70. ncxx with no options should do usg_prn() without error msg (like ncwa does)
 75. Add warning to ncwa triggered by averaging over lat without weighting by gw with NCAR_CSM_FORMAT
 79. Allow ncrename .$var_nm syntax to work on all operators (so variables not present cause warning, not error)
-81. Convert long,short,byte,char data to double precision before arithmetic, then convert back after arithmetic. This is the only way to sensibly handle byte data, and #116 below
 82. Make libnco namespace-safe by prefixing all possibly dynamically loaded subroutines with, e.g., nco_
 83. Always build operators to link dynamically to libnco.so (autoconf/autotool?)
 86. Extend stride/wraparound capability to all operators possible
@@ -46,16 +45,13 @@ i.e., LSM variable timecom caused subtle ncra problems for a while.
 115. When sum of denominator in ncwa (i.e., sum of weight) is zero, SIGFPE results 
 Users should not be doing weighted averages if denominator sums to zero, but...
 Desired fix here is a graceful exit instead of a core dump
-116. Weighting integer by float causes weight to be converted to integer first, so that weighting, e.g., nlons by gw, will cause zero in denominator since all gw's convert to integer value of 0. This causes core dumps with, e.g., 
-ncwa -O -a lat -w gw foo.nc foo2.nc
-Thus the best fix for #116 is to implement #81 ASAP
 121. Problem reported when mss_val = 0.0 in averagers. C and Fortran 
 versions of var_add_real() etc. do not handle missing_value attributes in 
 exactly the same way. C versions test both operands agains mss_val,
 Fortran tests only op1. Since running averages are initialized to 0.0 before
 entry, problems arise in C version when missing_value = 0.0. Only fix seems
 to be checking whether tally == 0 before checking whether op2 == mss_val
-123. Add http protocol to fl_get()
+123. Add HTTP protocol to fl_get() (in addition to DODS)
 124. Use `install' program and mkdir -p
 127. Make mss: signal retrieval from NCAR mass store
 128. Ensure target 'dir' is made before *.d dependency files 
@@ -128,10 +124,11 @@ with nco_dst.pl
 168. Implement autoconf/automake build environment?
 169. Merge TODO into sourceforge Task manager and bug manager as appropriate
 170. rgn.sh appears to cause core dump over some ocean basins?
-171. Add DODS options to all NCAR architectures (buja?)
 173. Add switch to ncra which allows user to remove degenerate time dimension from result
 174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
 176. Replace Bison, Flex components of ncap with smaller C++ parser
+177. Make RPM production allowable by non-root, since building RPMs as 
+sudo root screws up permissions in obj/bin directories of user
 ************************************************************************
 End NCO Wish list
 ************************************************************************

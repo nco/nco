@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.39 2000-08-04 23:09:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.40 2000-08-15 06:40:06 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -268,6 +268,7 @@ typedef struct var_sct_tag{
   int nc_id; /* file ID */
   nc_type type; /* type of variable */ 
   int nbr_dim; /* number of dimensions of variable in input file */ 
+  int typ_prv; /* Contains original type iff type conversion has taken place else is 0 */
   short is_rec_var; /* is this a record variable? */ 
   short is_crd_var; /* is this a coordinate variable? */ 
   long sz; /* number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */ 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.45 2000-08-04 23:09:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.46 2000-08-15 06:40:06 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.45 2000-08-04 23:09:01 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.45 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.46 2000-08-15 06:40:06 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.46 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -563,6 +563,16 @@ main(int argc,char **argv)
       (void)var_refresh(in_id,var_prc[idx]);
       /* Retrieve variable from disk into memory */ 
       (void)var_get(in_id,var_prc[idx]);
+      
+      /* Convert short,char,long,int types to doubles before arithmetic
+      /* Remember to convert back after weighting and arithmetic are complete */
+      if(var_prc[idx]->type != NC_FLOAT && var_prc[idx]->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max){
+	var_prc[idx]->typ_prv=var_prc[idx]->type;
+	var_prc[idx]=var_conform_type(NC_DOUBLE,var_prc[idx]);
+	var_prc_out[idx]->typ_prv=var_prc_out[idx]->type;
+	var_prc_out[idx]=var_conform_type(NC_DOUBLE,var_prc_out[idx]);
+      } /* endif */
+		
       if(msk_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	msk_out=var_conform_dim(var_prc[idx],msk,msk_out,MUST_CONFORM,&DO_CONFORM_MSK);
 	/* If msk and var did not conform then do not mask var! */ 
@@ -736,9 +746,15 @@ main(int argc,char **argv)
       } /* end switch */
       /* Free tallying buffer */
       (void)free(var_prc_out[idx]->tally); var_prc_out[idx]->tally=NULL;
+      
+      /* Revert to original type if required */
+      if(var_prc_out[idx]->typ_prv != 0){ /* fxm: Hardcoded 0 is unsafe */
+	var_prc_out[idx]=var_conform_type(var_prc_out[idx]->typ_prv,var_prc_out[idx]);
+	var_prc_out[idx]->typ_prv=0;
+      }	/* endif */
+	  
       /* Free current input buffer */
-      (void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
-
+      (void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;	
       /* Copy average to output file and free averaging buffer */ 
       if(var_prc_out[idx]->nbr_dim == 0){
 	(void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp);
