@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.19 2002-06-17 00:06:01 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.20 2002-06-17 00:41:08 zender Exp $
 # Purpose: RPM spec file for NCO
 # Usage: 
 # Before nco.spec is invoked (with 'rpm -ba nco.spec'), the source tarball 
@@ -23,7 +23,6 @@ Requires: netcdf
 Packager: Charlie Zender <zender@uci.edu>
 # Prefix tag is required to allow installation to be relocatable
 Prefix: /usr
-
 
 %description
 The netCDF Operators, or NCO, are a suite of programs known as

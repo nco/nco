@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.37 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.38 2002-06-17 00:41:09 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -68,8 +68,8 @@ main(int argc,char **argv)
 /*  int initscr(void);*/
 /*  int cbreak(void);*/
 
-  rnm_sct *prs_rnm_lst(int,char **);
-  int prs_att(rnm_sct *, char *);
+  rnm_sct *nco_prs_rnm_lst(int,char **);
+  int nco_prs_att(rnm_sct *, char *);
   bool OUTPUT_TO_NEW_NETCDF_FILE=False;
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
@@ -89,8 +89,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.37 2002-06-16 05:12:04 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.37 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.38 2002-06-17 00:41:09 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.38 $";
   
   extern char *optarg;
   
@@ -179,9 +179,9 @@ main(int argc,char **argv)
   } /* end if */ 
 
   /* Make a uniform list of the user-specified rename structures */
-  if(nbr_var_rnm > 0) var_rnm_lst=prs_rnm_lst(nbr_var_rnm,var_rnm_arg);
-  if(nbr_dmn_rnm > 0) dmn_rnm_lst=prs_rnm_lst(nbr_dmn_rnm,dmn_rnm_arg);
-  if(nbr_att_rnm > 0) att_rnm_lst=prs_rnm_lst(nbr_att_rnm,att_rnm_arg);
+  if(nbr_var_rnm > 0) var_rnm_lst=nco_prs_rnm_lst(nbr_var_rnm,var_rnm_arg);
+  if(nbr_dmn_rnm > 0) dmn_rnm_lst=nco_prs_rnm_lst(nbr_dmn_rnm,dmn_rnm_arg);
+  if(nbr_att_rnm > 0) att_rnm_lst=nco_prs_rnm_lst(nbr_att_rnm,att_rnm_arg);
 
   /* We now have the final list of variables, dimensions, and attributes to rename. */
   
@@ -199,7 +199,7 @@ main(int argc,char **argv)
       
       rcd=stat(fl_out,&stat_sct);
 
-      /* If file already exists, then query the user whether to overwrite */
+      /* If file already exists, then query user whether to overwrite */
       if(rcd != -1){
         char usr_reply='z';
 	short nbr_itr=0;
@@ -224,8 +224,8 @@ main(int argc,char **argv)
       } /* end if */
     } /* end if */
     
-    /* Copy input file to output file and then search through
-       the output, changing names as you go. This avoids the possible XDR translation
+    /* Copy input file to output file and then search through output, 
+       changing names on the fly. This avoids possible XDR translation
        performance penalty of copying each variable with netCDF. */
     (void)nco_fl_cp(fl_in,fl_out);
 
@@ -235,7 +235,7 @@ main(int argc,char **argv)
   rcd=nco_open(fl_out,NC_WRITE,&nc_id);
   (void)nco_redef(nc_id);
 
-  /* Without further ado, change the names */
+  /* Without further ado, change names */
   for(idx=0;idx<nbr_var_rnm;idx++){
     if(var_rnm_lst[idx].old_nm[0] == '.'){
       rcd=nco_inq_varid_flg(nc_id,var_rnm_lst[idx].old_nm+1,&var_rnm_lst[idx].id);
@@ -281,11 +281,11 @@ main(int argc,char **argv)
       int var_id;
       int nbr_rnm=0;
       
-      /* Check if we are renaming attribute of a single variable */
+      /* Check if we are renaming attribute of single variable */
       if(strchr(att_rnm_lst[idx].old_nm,':')){
 	/* Get variable name from old name */
 	char var_nm[NC_MAX_NAME];
-	if(prs_att((att_rnm_lst+idx),var_nm)){
+	if(nco_prs_att((att_rnm_lst+idx),var_nm)){
 	  /* Get var_id of variable */
 	  rcd=nco_inq_varid_flg(nc_id,var_nm,&var_id);
 	  if(rcd == NC_NOERR){
@@ -318,8 +318,8 @@ main(int argc,char **argv)
 	      (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);
 	      nbr_rnm++;
 	      
-	      /* There can be many attributes of the same name in a given file
-		 Inform user what has actually been renamed */
+	      /* There can be many attributes with same name in given file
+		 Inform user what was actually renamed */
 	      if(var_id > -1){
 		char var_nm[NC_MAX_NAME];
 		
@@ -335,8 +335,8 @@ main(int argc,char **argv)
 	      (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
 	      nbr_rnm++;
 	      
-	      /* There can be many attributes of the same name in a file, so
-		 tell the user what was actually changed */
+	      /* There can be many attributes with same name in given file
+		 Inform user what was actually renamed */
 	      if(var_id > -1){
 		char var_nm[NC_MAX_NAME];
 		
@@ -363,7 +363,7 @@ main(int argc,char **argv)
      
   }/* end if */
   
-  /* Catenate the timestamped command line to the "history" global attribute */
+  /* Catenate timestamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(nc_id,cmd_ln);
   
   /* Take file out of define mode */
@@ -380,9 +380,9 @@ main(int argc,char **argv)
 } /* end main() */
 
 rnm_sct *
-prs_rnm_lst(int nbr_rnm,char **rnm_arg)
+nco_prs_rnm_lst(int nbr_rnm,char **rnm_arg)
 {
-  /* Routine to set old_nm, new_nm elements of a rename structure
+  /* Routine to set old_nm, new_nm elements of rename structure
      This routine merely fills rename structure and does not attempt to validate 
      presence of variables in input netCDF file. */
 
@@ -436,10 +436,10 @@ prs_rnm_lst(int nbr_rnm,char **rnm_arg)
   } /* end debug */
 
   return rnm_lst;
-} /* end prs_rnm_lst() */
+} /* end nco_prs_rnm_lst() */
 
 int
-prs_att(rnm_sct *rnm_att,char *var_nm)
+nco_prs_att(rnm_sct *rnm_att,char *var_nm)
 {
   /* Purpose: Check if attribute name space contains variable name before attribute name of form var_nm:att_name
      Attribute name is then extracted from from old_nm and new_nm as necessary */
@@ -467,4 +467,4 @@ prs_att(rnm_sct *rnm_att,char *var_nm)
     else return 0;
   } /* endif */
   return 1;
-} /* end prs_att() */
+} /* end nco_prs_att() */

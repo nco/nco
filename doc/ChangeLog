@@ -1,5 +1,7 @@
 2002-06-16  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_5_0
+
 	* Added man pages for NCO operators to man directory.
 	Source of man pages is Debian distribution by Brian Mays,
 	which automatically generates man pages from texinfo source.

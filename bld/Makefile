@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.148 2002-06-08 00:35:38 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.149 2002-06-17 00:41:08 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -903,7 +903,7 @@ strip:
 buildclean: bld_cln
 bld_cln:
 	cd ${MY_BLD_DIR}; rm -f TAGS
-rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.1.1 rpm
+rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.5.0 rpm
 	cd ${DATA}/tmp; \
 	/bin/rm -fr ${DATA}/tmp/nco*; \
 	cp -r ${HOME}/nco nco-$(NCO_VRS); \
@@ -913,7 +913,7 @@ rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo 
 	ln -s ${HOME}/nco/bld/nco.spec /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SPECS; \
 	rpm -ba nco-$(NCO_VRS).spec;
-rpmnet:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.1.1 rpmnet
+rpmnet:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.5.0 rpmnet
 	- if test -f /usr/src/redhat/SOURCES/nco-$(NCO_VRS).tar.gz; then printf "Using existing nco-$(NCO_VRS).tar.gz\n" ; else ${MY_BIN_DIR}/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-$(NCO_VRS).tar.gz; fi
 	/bin/rm -f /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SOURCES; \
@@ -923,7 +923,7 @@ rpmnet:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., su
 	rpm -ba nco.spec; \
 	scp /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm zender@ftp.cgd.ucar.edu:/ftp/pub/zender/nco
 	scp /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm zender@nco.sourceforge.net:/home/groups/ftp/pub/nco
-	ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.1.1-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.1.1-*.i386.rpm /usr/src/redhat/SOURCES/nco-2.1.1.tar.gz
+	ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.5.0-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.5.0-*.i386.rpm /usr/src/redhat/SOURCES/nco-2.5.0.tar.gz
 rpm_cln:
 	rpm --erase $(MDL_RPM_NST_NM)
 # Targets in dat
