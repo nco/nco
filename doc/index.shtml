@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.186 2004-01-07 22:44:37 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.187 2004-01-08 00:18:58 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -416,7 +416,7 @@ On the <a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Discussion
 </li>
 <li><i>Where is NCO development discussed?</i>
 At the <a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developer</a>
-site.
+site.</li>
 </ul>
 <hr></p>
 
@@ -434,8 +434,7 @@ Moreover they may be compiled with debugging enabled and thus may be
 Users at NCAR should try the <i>supported</i> executables in
 <tt>/usr/local/bin</tt> first. 
 <ul>
-<li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.4.7): <tt>/home/zender/bin/LINUX</tt></li>
-<li>ESS <tt>ess1.ess.uci.edu</tt> (Linux 2.2.15): <tt>/home/zender/bin/LINUXALPHA</tt></li>
+<li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.4.20): <tt>/home/zender/bin/LINUX</tt></li>
 <li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
 <li>CGD network (Solaris 2.6): <tt>/home/zender/bin/SUNMP</tt></li>
 <li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5): <tt>/home/dataproc/zender/bin/SGIMP64</tt></li>
