@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.9 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.10 2003-07-30 21:58:30 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -37,7 +37,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
   case nco_op_sqrt: /* Squareroot will produce the squareroot of the mean */
   case nco_op_ttl: /* Total */
   case nco_op_sqravg: /* Square of the mean */
-    (void)nco_var_add(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)nco_var_add_tll(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   case nco_op_rms: /* Root mean square */
   case nco_op_rmssdn: /* Root mean square normalized by N-1 */
@@ -45,7 +45,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
     /* Square values in var_prc first */
     nco_var_mlt(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc->val);
     /* Sum the squares */
-    (void)nco_var_add(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    (void)nco_var_add_tll(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   } /* end switch */
 } /* end nco_opr_drv() */
@@ -55,8 +55,27 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
 (const char * const nco_op_sng) /* I [sng] User-specified operation */
 {
   /* Purpose: Process '-y' command line argument
-     Convert user-specified string to enumerated operation type 
-     Return nco_op_avg by default */
+     Convert user-specified string to enumerated operation type */
+  char *prg_nm; /* [sng] Program name */
+  int prg_id; /* [enm] Program ID */
+
+  prg_nm=prg_nm_get(); /* [sng] Program name */
+  prg_id=prg_get(); /* [enm] Program ID */
+
+  if(nco_op_sng == NULL){
+    /* If nco_op_typ_get() is called when user-specified option string is NULL, 
+       then operation may be specified by program name itself */
+    if(!strcmp(prg_nm,"ncadd")) return nco_op_add;
+    if(!strcmp(prg_nm,"ncdiff")) return nco_op_sbt;
+    if(!strcmp(prg_nm,"ncsub")) return nco_op_sbt;
+    if(!strcmp(prg_nm,"ncsubtract")) return nco_op_sbt;
+    if(!strcmp(prg_nm,"ncmult")) return nco_op_mlt;
+    if(!strcmp(prg_nm,"ncmultiply")) return nco_op_mlt;
+    if(!strcmp(prg_nm,"ncdivide")) return nco_op_dvd;
+    (void)fprintf(stderr,"%s: ERROR nco_op_typ_get() reports empty user-specified operation string in conjunction with unknown or ambiguous executable name %s\n",prg_nm,prg_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+
   if(!strcmp(nco_op_sng,"min")) return nco_op_min;
   if(!strcmp(nco_op_sng,"max")) return nco_op_max;
   if(!strcmp(nco_op_sng,"total") || !strcmp(nco_op_sng,"ttl")) return nco_op_ttl;
@@ -66,7 +85,16 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
   if(!strcmp(nco_op_sng,"rms")) return nco_op_rms;
   if(!strcmp(nco_op_sng,"rmssdn")) return nco_op_rmssdn;
 
-  return nco_op_avg;
+  if(!strcmp(nco_op_sng,"add") || !strcmp(nco_op_sng,"+") || !strcmp(nco_op_sng,"addition")) return nco_op_add;
+  if(!strcmp(nco_op_sng,"sbt") || !strcmp(nco_op_sng,"-") || !strcmp(nco_op_sng,"dff") || !strcmp(nco_op_sng,"diff") || !strcmp(nco_op_sng,"sub") || !strcmp(nco_op_sng,"subtract") || !strcmp(nco_op_sng,"subtraction")) return nco_op_sbt;
+  if(!strcmp(nco_op_sng,"dvd") || !strcmp(nco_op_sng,"/") || !strcmp(nco_op_sng,"divide") || !strcmp(nco_op_sng,"division")) return nco_op_dvd;
+  if(!strcmp(nco_op_sng,"mlt") || !strcmp(nco_op_sng,"*") || !strcmp(nco_op_sng,"mult") || !strcmp(nco_op_sng,"multiply") || !strcmp(nco_op_sng,"multiplication")) return nco_op_mlt;
+
+  (void)fprintf(stderr,"%s: ERROR nco_op_typ_get() reports unknown user-specified operation type %s\n",prg_nm,nco_op_sng);
+  (void)fprintf(stderr,"%s: HINT Valid operation type (op_typ) choices:\n",prg_nm);
+  if(prg_id == ncbnr) (void)fprintf(stderr,"addition: add,+,addition\nsubtration: sbt,-,dff,diff,sub,subtract,subtraction\nmultiplication: mlt,*,mult,multiply,multiplication\ndivision: dvd,/,divide,division\n"); else (void)fprintf(stderr,"min,max,ttl,total,sqrt,sqravg,avgsqr,rms,rmssdn");
+  nco_exit(EXIT_FAILURE);
+  return False; /* Statement should not be reached */
 } /* end nco_op_typ_get() */
 
 int /* O [enm] Relational operation */
@@ -93,8 +121,8 @@ nco_op_prs_rlt /* [fnc] Convert Fortran abbreviation for relational operator int
     nco_exit(EXIT_FAILURE);
   } /* end else */
 
-  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
-  return 1;
+  /* Some C compilers, e.g., SGI cc, need return statement at end of non-void functions */
+  return False; /* Statement should not be reached */
 } /* end nco_op_prs_rlt() */
 
 void

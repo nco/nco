@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.25 2003-07-20 21:59:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.26 2003-07-30 21:58:30 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -39,9 +39,10 @@ bool /* [flg] Program does arithmetic */
 is_rth_opr /* [fnc] Query whether program does arithmetic */
 (const int prg_id) /* [enm] Program ID */
 {
-  /* Purpose: Does program do arithmetic? */
+  /* Purpose: Does operator do arithmetic? */
   switch(prg_id){
   case ncap: 
+  case ncbnr:
   case ncdiff:
   case ncea:
   case ncflint:
@@ -118,7 +119,16 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   if(!strcmp(nm_out,"ncra")){*prg=ncra;}
   else if(!strcmp(nm_out,"ncap")){*prg=ncap;}
   else if(!strcmp(nm_out,"ncea")){*prg=ncea;}
-  else if(!strcmp(nm_out,"ncdiff")){*prg=ncdiff;}
+  else if(!strcmp(nm_out,"ncbnr")){*prg=ncbnr;}
+  /* Synonyms for ncbnr */
+  else if(!strcmp(nm_out,"ncadd")){*prg=ncbnr;}
+  else if(!strcmp(nm_out,"ncdiff")){*prg=ncbnr;}
+  else if(!strcmp(nm_out,"ncsub")){*prg=ncbnr;}
+  else if(!strcmp(nm_out,"ncsubtract")){*prg=ncbnr;}
+  else if(!strcmp(nm_out,"ncmult")){*prg=ncbnr;}
+  else if(!strcmp(nm_out,"ncmultiply")){*prg=ncbnr;}
+  else if(!strcmp(nm_out,"ncdivide")){*prg=ncbnr;}
+  /* End synonyms for ncbnr */
   else if(!strcmp(nm_out,"ncflint")){*prg=ncflint;}
   else if(!strcmp(nm_out,"ncwa")){*prg=ncwa;}
   else if(!strcmp(nm_out,"ncrcat")){*prg=ncrcat;}
@@ -127,7 +137,7 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   else if(!strcmp(nm_out,"ncrename")){*prg=ncrename;}
   else if(!strcmp(nm_out,"ncatted")){*prg=ncatted;}
   else{
-    (void)fprintf(stdout,"%s: ERROR %s not registered in prg_prs()\n",nm_out,nm_out);
+    (void)fprintf(stdout,"%s: ERROR executable name %s not registered in prg_prs()\n",nm_out,nm_out);
     nco_exit(EXIT_FAILURE);
   } /* end else */
 
@@ -154,6 +164,9 @@ nco_usg_prn(void)
   case ncrcat:
   case ncecat:
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-n ...] [-O] [-p path] [-R] [-r] [-v ...] [-x] in.nc [...] out.nc\n");
+    break;
+  case ncbnr:
+    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-n ...] [-O] [-p path] [-R] [-r] [-v ...] [-x] [-y op_typ] in_1.nc in_2.nc out.nc\n");
     break;
   case ncdiff:
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-n ...] [-O] [-p path] [-R] [-r] [-v ...] [-x] in_1.nc in_2.nc out.nc\n");
@@ -246,7 +259,10 @@ nco_usg_prn(void)
     if(prg == ncflint) (void)fprintf(stdout,"-w, --wgt_var, --weight wgt_1[,wgt_2] Weight(s) of file(s)\n");
   } /* end if */
   if(strstr(opt_sng,"-x")) (void)fprintf(stdout,"-x, --xcl, --exclude\tExtract all variables EXCEPT those specified with -v\n");
-  if(strstr(opt_sng,"-y")) (void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tArithmetic operation: avg,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n");
+  if(strstr(opt_sng,"-y")){
+    if(prg == ncbnr)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tBinary arithmetic operation: add,sbt,mlt,dvd (+,-,*,/)\n");
+    if(prg == ncra || prg == ncea || prg == ncwa)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tArithmetic operation: avg,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n");
+  }
   if(strstr(opt_sng,"in.nc")) (void)fprintf(stdout,"in.nc\t\t\tInput file name(s)\n");
   if(strstr(opt_sng,"out.nc")) (void)fprintf(stdout,"out.nc\t\t\tOutput file name\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/

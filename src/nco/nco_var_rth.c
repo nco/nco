@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.13 2003-04-04 19:46:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.14 2003-07-30 21:58:30 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -10,13 +10,11 @@
 
 void
 nco_var_abs(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1)
-     /* 
-	const nc_type type: I netCDF type of operands
-	const long sz: I size (in elements) of operands
-	const int has_mss_val: I flag for missing values
-	ptr_unn mss_val: I value of missing value
-	ptr_unn op1: I values of first operand
-     */
+/* const nc_type type: I netCDF type of operands
+   const long sz: I size (in elements) of operands
+   const int has_mss_val: I flag for missing values
+   ptr_unn mss_val: I value of missing value
+   ptr_unn op1: I values of first operand */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Find the absolute value of all numbers in op1
@@ -94,7 +92,7 @@ nco_var_abs(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
 } /* end nco_var_abs() */
 
 void
-nco_var_add(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
+nco_var_add_tll(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
 /* 
   const nc_type type: I netCDF type of operands
   const long sz: I size (in elements) of operands
@@ -196,16 +194,16 @@ nco_var_add(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
 
-} /* end nco_var_add() */
+} /* end nco_var_add_tll() */
 
 void
-nco_var_add_no_tally(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
-/* const nc_type type: I [type] netCDF type of operands
-  const long sz: I [nbr] Size (in elements) of operands
-  const int has_mss_val: I [flg] Flag for missing values
-  ptr_unn mss_val: I [flg] Value of missing value
-  ptr_unn op1: I [val] Values of first operand
-  ptr_unn op2: I/O [val] Values of second operand on input, values of sum on output */
+nco_var_add /* [fnc] Add first operand to second operand */
+(const nc_type type, /* I [type] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of operands */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [flg] Value of missing value */
+ ptr_unn op1, /* I [val] Values of first operand */
+ ptr_unn op2) /* I/O [val] Values of second operand on input, values of sum on output */
 {
   /* Routine to add value of first operand to value of second operand 
      and store result in second operand. Operands are assumed to have conforming
@@ -274,18 +272,16 @@ nco_var_add_no_tally(const nc_type type,const long sz,const int has_mss_val,ptr_
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
   
-} /* end nco_var_add_no_tally() */
+} /* end nco_var_add() */
 
 void
-nco_var_sbt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
-/* 
-  const nc_type type: I [type] netCDF type of operands
-  const long sz: I [nbr] Size (in elements) of operands
-  const int has_mss_val: I [flg] Flag for missing values
-  ptr_unn mss_val: I [flg] Value of missing value
-  ptr_unn op1: I [val] Values of first operand
-  ptr_unn op2: I/O [val] Values of second operand on input, values of difference on output
- */
+nco_var_sbt /* [fnc] Subtract first operand from second operand */
+(const nc_type type, /* I [type] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of operands */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [flg] Value of missing value */
+ ptr_unn op1, /* I [val] Values of first operand */
+ ptr_unn op2) /* I/O [val] Values of second operand on input, values of difference on output */
 {
   /* Purpose: Subtract value of first operand from value of second operand 
      and store result in second operand. 
@@ -357,15 +353,13 @@ nco_var_sbt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
 } /* end nco_var_sbt() */
 
 void
-nco_var_mlt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
-     /* 
-	const nc_type type: I netCDF type of operands
-	const long sz: I size (in elements) of operands
-	const int has_mss_val: I flag for missing values
-	ptr_unn mss_val: I value of missing value
-	ptr_unn op1: I values of first operand
-	ptr_unn op2: I/O values of second operand on input, values of product on output
-     */
+nco_var_mlt /* [fnc] Multiply first operand by second operand */
+(const nc_type type, /* I [type] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of operands */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [flg] Value of missing value */
+ ptr_unn op1, /* I [val] Values of first operand */
+ ptr_unn op2) /* I/O [val] Values of second operand on input, values of product on output */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: multiply value of first operand by value of second operand 
@@ -438,15 +432,13 @@ nco_var_mlt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
 } /* end nco_var_mlt() */
 
 void
-nco_var_dvd(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
-/* 
-  const nc_type type: I netCDF type of operands
-  const long sz: I size (in elements) of operands
-  const int has_mss_val: I flag for missing values
-  ptr_unn mss_val: I value of missing value
-  ptr_unn op1: I values of first operand
-  ptr_unn op2: I/O values of second operand on input, values of quotient on output
- */
+nco_var_dvd /* [fnc] Divide second operand by first operand */
+(const nc_type type, /* I [type] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of operands */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [flg] Value of missing value */
+ ptr_unn op1, /* I [val] Values of first operand */
+ ptr_unn op2) /* I/O [val] Values of second operand on input, values of quotient on output */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Divide value of first operand by value of second operand 

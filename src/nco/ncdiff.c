@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.68 2003-06-16 16:37:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.69 2003-07-30 21:58:30 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.68 2003-06-16 16:37:27 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.68 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.69 2003-07-30 21:58:30 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.69 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -144,7 +144,7 @@ main(int argc,char **argv)
   long *lp;
 
   nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
   
   ptr_unn mss_val;
 
@@ -268,7 +268,6 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   
-  
   /* Parse filename */
   idx_fl=0;
   fl_in=nco_fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
@@ -377,7 +376,7 @@ main(int argc,char **argv)
      The other unique "feature" to know about ncdiff is that it tries too hard to save memory
      For example, ncdiff is a three file operator (input, input, output) but manages to get by 
      with having only two lists of variable structures at any given time.
-     As a result, the logic it employs is fairly convoluted
+     As a result, its logic is fairly convoluted and hard to maintain
      ncdiff overwrites variable structure from file_2 with the structure for file_3 (output file)
      but, at the same time, it writes value array for file_3 into value part of file_1
      variable structures. 
@@ -476,7 +475,7 @@ main(int argc,char **argv)
     /* Copy differences to output file and free differencing buffer */
     if(var_prc[idx]->nbr_dim == 0){
       (void)nco_put_var1(out_id,var_prc[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp,var_prc[idx]->type);
-    }else{ /* end if variable is a scalar */
+    }else{ /* end if variable is scalar */
       (void)nco_put_vara(out_id,var_prc[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
     } /* end else */
     var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);

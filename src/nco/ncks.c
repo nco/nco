@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.86 2003-07-01 23:00:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.87 2003-07-30 21:58:30 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.86 2003-07-01 23:00:18 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.86 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.87 2003-07-30 21:58:30 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.87 $";
   
   extern char *optarg;
   
@@ -136,7 +136,7 @@ main(int argc,char **argv)
   char dmn_nm[NC_MAX_NAME];
   long dmn_sz;
 
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
 
   time_t clock;
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.85 2003-04-26 00:47:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.86 2003-07-30 21:58:30 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -184,9 +184,9 @@ ncap_var_var_add /* [fnc] Add two variables */
   (void)ncap_var_cnf_dmn(&var_1,&var_nsw);
   /* fxm: bug in nco_var_add. missing_value is not carried over to var_nsw in result when var_1->has_mss_val is true */
   if(var_1->has_mss_val){
-    (void)nco_var_add_no_tally(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
   }else{
-    (void)nco_var_add_no_tally(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
+    (void)nco_var_add(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
   } /* end if */
   return var_nsw;
 } /* end ncap_var_var_add() */

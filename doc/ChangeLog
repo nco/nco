@@ -1,3 +1,18 @@
+2003-07-29  Charlie Zender  <zender@uci.edu>
+
+	* Verify ncdiff and ncbnr -y sbt work as expected but problems
+	exist with add, mult, and, presumably, divide.
+
+	* Make ncdiff symbolic link to ncbnr for backward compatibility
+
+2003-07-27  Charlie Zender  <zender@uci.edu>
+
+	* Create ncbnr operator
+
+	* Rename nco_var_add_no_tally() to nco_var_add()
+
+	* Rename nco_var_add() to nco_var_add_tll()
+
 2003-07-20  Charlie Zender  <zender@uci.edu>
 
 	* Changed math table printing from -r to -f in ncap so that -r is

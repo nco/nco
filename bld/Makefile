@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.211 2003-07-07 01:29:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.212 2003-07-30 21:58:29 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -92,6 +92,9 @@ endif # endif OMP
 ifndef OPTS
  OPTS := O
 endif
+ifndef RPM
+ RPM := N
+endif # endif RPM
 ifndef UDUNITS
 # Use UDUnits functionality
  UDUNITS := Y
@@ -148,11 +151,12 @@ ifeq (${I18N},Y)
  MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
 endif
 
-ifeq (${PVM_ARCH},LINUX)
+ifeq (${RPM},Y)
 # rpm command, and thus RPM variables only guaranteed in RedHat Linux
- MDL_RPM_NST_NM := $(shell rpm -qa | grep nco-) # Name of installed package
-# MDL_RPM_PRV_NM := $(shell rpm -qp foo) # Name of package provided by specified RPM
-endif # endif LINUX
+# Use recursive expansion so rpm command is not executed on non-RPM systems
+ MDL_RPM_NST_NM = $(shell rpm -qa | grep nco-) # Name of installed package
+# MDL_RPM_PRV_NM = $(shell rpm -qp foo) # Name of package provided by specified RPM
+endif # endif RPM
 
 ifeq (${PVM_ARCH},WIN32)
  BNR_SFX := .exe
@@ -219,8 +223,8 @@ VPATH := $(subst ${space},:,${MDL_PTH})
 CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 
 # Variables having to do with binary executables created by module
-MDL_BIN_TRG := ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted ncap # NCO binary targets
-MDL_BIN_SYM_LNK := ncea ncrcat # Symbolic links
+MDL_BIN_TRG := ncap ncatted ncbnr ncecat ncflint ncks ncra ncrename ncwa # NCO binary targets
+MDL_BIN_SYM_LNK := ncdiff ncea ncrcat # Symbolic links
 MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
 MDL_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_BIN_STB}) # distclean removes these files
 
@@ -999,39 +1003,40 @@ obj_dir:
 #	-install -d ${MY_BIN_DIR}
 	-mkdir -p ${MY_OBJ_DIR}
 # Targets in bin
-.PHONY:  ncra ncatted ncks ncwa ncecat ncdiff ncflint ncrename
-ncra:   ${MY_BIN_DIR}/ncra
-${MY_BIN_DIR}/ncra:	${MY_OBJ_DIR}/ncra.o lib
-	${CC} -o $@ $< ${LDFLAGS}
-	chmod 755 $@${BNR_SFX}
-	cd ${MY_BIN_DIR}; rm -f ncea; ln -f -s ncra ncea
-	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -f -s ncra ncrcat
+.PHONY:  ncap ncatted ncbnr ncecat ncflint ncks ncra ncrename ncwa
 ncatted:   ${MY_BIN_DIR}/ncatted
 ${MY_BIN_DIR}/ncatted:	${MY_OBJ_DIR}/ncatted.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
-ncks:   ${MY_BIN_DIR}/ncks
-${MY_BIN_DIR}/ncks:	${MY_OBJ_DIR}/ncks.o lib
+ncbnr:   ${MY_BIN_DIR}/ncbnr
+${MY_BIN_DIR}/ncbnr:	${MY_OBJ_DIR}/ncbnr.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
-ncwa:   ${MY_BIN_DIR}/ncwa
-${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o lib
-	${CC} -o $@ $< ${LDFLAGS}
-	chmod 755 $@${BNR_SFX}
+	cd ${MY_BIN_DIR}; rm -f ncdiff; ln -f -s ncbnr ncdiff
 ncecat:   ${MY_BIN_DIR}/ncecat
 ${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o lib
-	${CC} -o $@ $< ${LDFLAGS}
-	chmod 755 $@${BNR_SFX}
-ncdiff:   ${MY_BIN_DIR}/ncdiff
-${MY_BIN_DIR}/ncdiff:	${MY_OBJ_DIR}/ncdiff.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 ncflint:   ${MY_BIN_DIR}/ncflint
 ${MY_BIN_DIR}/ncflint:	${MY_OBJ_DIR}/ncflint.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
+ncks:   ${MY_BIN_DIR}/ncks
+${MY_BIN_DIR}/ncks:	${MY_OBJ_DIR}/ncks.o lib
+	${CC} -o $@ $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
+ncra:   ${MY_BIN_DIR}/ncra
+${MY_BIN_DIR}/ncra:	${MY_OBJ_DIR}/ncra.o lib
+	${CC} -o $@ $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
+	cd ${MY_BIN_DIR}; rm -f ncea; ln -f -s ncra ncea
+	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -f -s ncra ncrcat
 ncrename:   ${MY_BIN_DIR}/ncrename
 ${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o lib
+	${CC} -o $@ $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
+ncwa:   ${MY_BIN_DIR}/ncwa
+${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o lib
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@${BNR_SFX}
 bin: ${MDL_BIN_TRG}
@@ -1220,6 +1225,7 @@ dbg:
 	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
 	@printf "OMP = ${OMP}\n"
 	@printf "PVM_ARCH = ${PVM_ARCH}\n"
+	@printf "RPM = ${RPM}\n"
 	@printf "SRC_LST = $(SRC_LST)\n"
 	@printf "TMP_LDFLAGS = $(TMP_LDFLAGS)\n"
 	@printf "TMP_LIBS = $(TMP_LIBS)\n"

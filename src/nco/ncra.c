@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.91 2003-06-16 16:37:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.92 2003-07-30 21:58:30 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.91 2003-06-16 16:37:27 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.91 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.92 2003-07-30 21:58:30 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.92 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -132,7 +132,7 @@ main(int argc,char **argv)
   nco_long base_time_crr=nco_long_CEWI;
 
   nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
   
   time_t clock;
   

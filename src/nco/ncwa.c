@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.104 2003-06-16 16:37:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.105 2003-07-30 21:58:30 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -92,23 +92,23 @@ main(int argc,char **argv)
   bool opt_a_flg=False; /* Option a */
 
   char **dmn_avg_lst_in=NULL_CEWI; /* Option a */
-  char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in=NULL_CEWI;
+  char **var_lst_in=NULL_CEWI;
+  char *cmd_ln;
   char *fl_in=NULL;
-  char *fl_pth_lcl=NULL; /* Option l */
-  char *lmt_arg[NC_MAX_DIMS];
-  char *opt_sng;
   char *fl_out;
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
-  char *time_bfr_srt;
+  char *fl_pth_lcl=NULL; /* Option l */
+  char *lmt_arg[NC_MAX_DIMS];
   char *msk_nm=NULL;
   char *nco_op_typ_sng; /* Operation type */
+  char *opt_sng;
+  char *time_bfr_srt;
   char *wgt_nm=NULL;
-  char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.104 2003-06-16 16:37:27 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.104 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.105 2003-07-30 21:58:30 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.105 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -145,7 +145,7 @@ main(int argc,char **argv)
   lmt_sct *lmt;
   
   nm_id_sct *dmn_lst;
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
   nm_id_sct *dmn_avg_lst;
   
   time_t clock;
@@ -232,7 +232,7 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:xWw:y:-:";
+  opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:Ww:xy:-:";
   while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
@@ -764,6 +764,7 @@ main(int argc,char **argv)
 	  break;
 	default:
 	  (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in weighted normalization\n",prg_nm);
+	  nco_exit(EXIT_FAILURE);
 	  break;
 	} /* end switch */
 	/* Free wgt_avg, but keep wgt_out, after each use */
@@ -786,7 +787,10 @@ main(int argc,char **argv)
 	case nco_op_min: /* Minimum is already in buffer, do nothing */
 	case nco_op_max: /* Maximum is already in buffer, do nothing */	
 	case nco_op_ttl: /* Total is already in buffer, do nothing */	
+	  break;
 	default:
+	  (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in non-weighted normalization\n",prg_nm);
+	  nco_exit(EXIT_FAILURE);
 	  break;
 	} /* end switch */
       }else if(!NRM_BY_DNM){

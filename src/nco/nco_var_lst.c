@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.12 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.13 2003-07-30 21:58:30 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -21,7 +21,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list */
   int rcd=NC_NOERR; /* [rcd] Return code */
   int idx;
 
-  nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
+  nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
 
   if(*nbr_xtr > 0){
     /* If user named variables with -v option then check validity of user's list and find IDs */
@@ -253,6 +253,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     case ncea:
       if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_typ[idx]=fix;
       break;
+    case ncbnr:
     case ncdiff:
       if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_typ[idx]=fix;
       break;
@@ -283,7 +284,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     
     if(NCAR_CSM_FORMAT){
       if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ[idx]=fix;
-      if(prg == ncdiff && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec"))) var_op_typ[idx]=fix;
+      if((prg == ncbnr || prg == ncdiff) && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec"))) var_op_typ[idx]=fix;
     } /* end if NCAR_CSM_FORMAT */
 
   } /* end loop over var */
@@ -299,10 +300,6 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
       var_prc[*nbr_var_prc]=var[idx];
       var_prc_out[*nbr_var_prc]=var_out[idx];
       ++*nbr_var_prc;
-/*      if(var[idx]->type != NC_FLOAT && var[idx]->type != NC_DOUBLE && prg != ncdiff && prg != ncrcat){
-	(void)fprintf(stderr,"%s: WARNING variable \"%s\" will be coerced from %s to NC_FLOAT\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
-	var_out[idx]->type=NC_FLOAT;
-      } *//* end if */
       if(((var[idx]->type == NC_CHAR) || (var[idx]->type == NC_BYTE)) && ((prg != ncrcat) && (prg != ncecat))){
 	(void)fprintf(stderr,"%s: WARNING Variable %s is of type %s, for which processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nco_typ_sng(var[idx]->type));
       } /* end if */
@@ -327,8 +324,9 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     case ncea:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables that are not NC_CHAR or NC_BYTE in order to perform an ensemble average\n",prg_nm_get());
       break;
+    case ncbnr:
     case ncdiff:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables that are not NC_CHAR or NC_BYTE in order to subtract\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables that are not NC_CHAR or NC_BYTE in order to perform a binary operation (e.g., subtraction)\n",prg_nm_get());
       break;
     case ncflint:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain variables that are not NC_CHAR or NC_BYTE in order to interpolate\n",prg_nm_get());
