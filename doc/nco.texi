@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.233 2004-06-17 01:41:56 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.234 2004-06-18 01:21:02 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -99,7 +99,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 2.9.6
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 16 June 2004
+@set update-date 17 June 2004
 @set update-month June 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -1396,6 +1396,22 @@ The @samp{-n @var{loop}} option tells the @acronym{NCO} operator to
 automatically generate the filnames of the symbolic links.
 This circumvents any @acronym{OS} and shell limits on command line size.
 The symbolic links are easily removed once @acronym{NCO} is finished.
+@cindex @code{history} attribute
+One side-effect of using this method is that the @code{history} attribute
+(@pxref{History attribute}) only contains the filename list encoding
+that represents the symbolic links.
+This makes it difficult to determine the data provenance at a later date.
+
+@example
+# Alternative Method using stdin
+/bin/ls | grep $@{CASEID@}_'......'.nc | ncecat -o foo.nc
+cd ~/nco/data
+/bin/ls | grep '8.'.nc | ncecat -o foo.nc
+@end example
+A side-effect of using this method is that the @code{history} attribute 
+(@pxref{History attribute}) does not record the name of any input
+files since the names were not passed on the command line.
+This makes it difficult to determine the data provenance at a later date.
 
 @node Large files and Memory, Memory usage, Large numbers of input files, Strategies
 @section Working with large files

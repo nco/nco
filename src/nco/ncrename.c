@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.64 2004-06-14 21:31:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.65 2004-06-18 01:21:05 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -84,8 +84,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.64 2004-06-14 21:31:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.64 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.65 2004-06-18 01:21:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.65 $";
   const char * const opt_sng="a:D:d:hl:Oo:p:rv:-:";
 
   extern char *optarg;
@@ -97,7 +97,7 @@ main(int argc,char **argv)
   int nbr_var_rnm=0; /* Option v. NB: nbr_var_rnm gets incremented */
   int nbr_att_rnm=0; /* Option a. NB: nbr_att_rnm gets incremented */
   int nbr_dmn_rnm=0; /* Option d. NB: nbr_dmn_rnm gets incremented */
-  int nbr_fl=0;
+  int fl_nbr=0;
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
   
@@ -199,7 +199,7 @@ main(int argc,char **argv)
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out);
   if(fl_out != NULL) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=fl_lst_in[0];
 
   if(nbr_var_rnm == 0 && nbr_att_rnm == 0 && nbr_dmn_rnm == 0){
@@ -216,7 +216,7 @@ main(int argc,char **argv)
   /* We have final list of variables, dimensions, and attributes to rename */
   
   /* Parse filename */
-  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
 

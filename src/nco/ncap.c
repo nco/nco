@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.125 2004-06-14 21:31:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.126 2004-06-18 01:21:04 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.125 2004-06-14 21:31:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.125 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.126 2004-06-18 01:21:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.126 $";
   const char * const opt_sng="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -175,7 +175,7 @@ main(int argc,char **argv)
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
   int nbr_dmn_in=int_CEWI; /* number of dims in dim_in */
   int nbr_dmn_ass=int_CEWI;/* number of dims in temporary list */
-  int nbr_fl=0;
+  int fl_nbr=0;
   int nbr_lst_a=0; /* size of xtr_lst_a */
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -436,13 +436,13 @@ main(int argc,char **argv)
   } /* end if PRN_FNC_TBL */
   
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out);
   
   /* Make uniform list of user-specified dimension limits */
   if(lmt_nbr > 0) lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   
   /* Parse filename */
-  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */

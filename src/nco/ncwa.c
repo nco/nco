@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.115 2004-06-14 21:31:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.116 2004-06-18 01:21:05 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -106,8 +106,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.115 2004-06-14 21:31:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.115 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.116 2004-06-18 01:21:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.116 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRt:v:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -122,7 +122,7 @@ main(int argc,char **argv)
   int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
   int idx_avg;
-  int idx_fl=int_CEWI;
+  int fl_idx=int_CEWI;
   int in_id=int_CEWI;  
   int out_id;  
   int abb_arg_nbr=0;
@@ -135,7 +135,7 @@ main(int argc,char **argv)
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nbr_dmn_out;
   int nbr_dmn_xtr;
-  int nbr_fl=0;
+  int fl_nbr=0;
   int nco_op_typ=nco_op_avg; /* Operation type */
   int opt;
   int op_typ_rlt=0; /* Option o */
@@ -348,13 +348,13 @@ main(int argc,char **argv)
   if(wgt_nm == NULL) NORMALIZE_BY_WEIGHT=False;
 
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out);
 
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
     
   /* Parse filename */
-  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */
@@ -542,13 +542,13 @@ main(int argc,char **argv)
   /* Close first input netCDF file */
   nco_close(in_id);
   
-  /* Loop over input files (not currently used, nbr_fl == 1) */
-  for(idx_fl=0;idx_fl<nbr_fl;idx_fl++){
+  /* Loop over input files (not currently used, fl_nbr == 1) */
+  for(fl_idx=0;fl_idx<fl_nbr;fl_idx++){
     /* Parse filename */
-    if(idx_fl != 0) fl_in=nco_fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",idx_fl,fl_in);
+    if(fl_idx != 0) fl_in=nco_fl_nm_prs(fl_in,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+    if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
     /* Make sure file is on local system and is readable or die trying */
-    if(idx_fl != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
+    if(fl_idx != 0) fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
     if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
     rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
@@ -857,7 +857,7 @@ main(int argc,char **argv)
     /* Remove local copy of file */
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
     
-  } /* end loop over idx_fl */
+  } /* end loop over fl_idx */
   
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);

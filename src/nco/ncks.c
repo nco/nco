@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.101 2004-06-14 21:31:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.102 2004-06-18 01:21:04 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.101 2004-06-14 21:31:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.101 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.102 2004-06-18 01:21:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.102 $";
   const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qrRs:uv:x-:";
 
   extern char *optarg;
@@ -121,7 +121,7 @@ main(int argc,char **argv)
   int glb_att_nbr;
   int nbr_var_fl;
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
-  int nbr_fl=0;
+  int fl_nbr=0;
   int opt;
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
     
@@ -299,13 +299,13 @@ main(int argc,char **argv)
 
   
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out);
   
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
   
   /* Parse filename */
-  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open file for reading */

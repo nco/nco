@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.29 2004-06-14 21:31:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.30 2004-06-18 01:21:05 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -83,25 +83,30 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 (CST_X_PTR_CST_PTR_CST_Y(char,argv), /* I [sng] Argument list */
  const int argc, /* I [nbr] Argument count */
  int arg_crr, /* I [idx] Index of current argument */
- int * const nbr_fl, /* O [nbr] Number of files in input file list */
+ int * const fl_nbr, /* O [nbr] Number of files in input file list */
  char ** const fl_out) /* I/O [sng] Name of output file */
 {
   /* Purpose: Parse positional arguments on command line
      Name of calling program plays a role in this */
 
-  /* Command-line switches are expected to have been digested already (e.g., by getopt()),
-     and argv[arg_crr] points to the first positional argument (i.e., the first argument
-     following all the switches and their arugments). 
-     fl_out is filled in if it was not specified as a command line switch */
+  /* Assume command-line switches have been digested already (e.g., by getopt())
+     Assume argv[arg_crr] points to first positional argument (i.e., first argument
+     following all switches and their arugments). 
+     fl_out is filled in if it was not specified as a command line switch
+     Multi-file operators take input filenames from positional arguments, if any 
+     Otherwise, multi-file operators try to get input filenames from stdin */
 
   bool FL_OUT_FROM_PSN_ARG=True; /* [flg] fl_out comes from positional argument */
+  bool FL_IN_FROM_STDIN=False; /* [flg] fl_in comes from stdin */
 
-  char **fl_lst_in;
+  char **fl_lst_in=NULL_CEWI; /* [sng] List of user-specified filenames */
 
   int idx;
   int fl_nm_sz_wrn=255;
   int psn_arg_fst=0; /* [nbr] Offset for expected number of positional arguments */
   int psn_arg_nbr; /* [nbr] Number of remaining positional arguments */
+
+  psn_arg_nbr=argc-arg_crr; /* [nbr] Number of remaining positional arguments */
 
   /* Is output file already known from command line switch (i.e., -o fl_out)? */
   if(*fl_out != NULL){
@@ -111,19 +116,11 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     psn_arg_fst=1;
   } /* end if */
 
-  /* Do any positional arguments (i.e., filenames) remain? */
-  if(arg_crr >= argc){
-    (void)fprintf(stdout,"%s: ERROR must specify filename(s)\n",prg_nm_get());
-    (void)nco_usg_prn();
-    nco_exit(EXIT_FAILURE);
-  } /* end if */
-
   /* Might there be problems with any specified files? */
   for(idx=arg_crr;idx<argc;idx++){
     if((int)strlen(argv[idx]) >= fl_nm_sz_wrn) (void)fprintf(stderr,"%s: WARNING filename %s is very long (%ld characters) and may not be portable to older operating systems\n",prg_nm_get(),argv[idx],(long)strlen(argv[idx]));
   } /* end loop over idx */
 
-  psn_arg_nbr=argc-arg_crr; /* [nbr] Number of remaining positional arguments */
   switch(prg_get()){
   case ncks:
   case ncatted:
@@ -135,10 +132,11 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       nco_exit(EXIT_FAILURE);
     } /* end if */
     fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
-    fl_lst_in[(*nbr_fl)++]=(char *)strdup(argv[arg_crr++]);
+    fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+    /* Output file is optional for these operators */
     if(arg_crr == argc-1) *fl_out=(char *)strdup(argv[arg_crr]);
     return fl_lst_in;
-    /*    break;*//* NB: putting break after return in case statement causes warning on SGI cc */
+    /* break; *//* NB: break after return in case statement causes SGI cc warning */
   case ncbo:
   case ncflint:
     /* Operators with dual fl_in and required fl_out */
@@ -163,27 +161,92 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
   case ncecat:
     /* Operators with multiple fl_in and required fl_out */
     if(psn_arg_nbr < 2-psn_arg_fst){
-      if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least two\n",prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least one (output file was specified with -o switch)\n",prg_nm_get(),psn_arg_nbr);
-      (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
-    } /* end if */
+      
+      /* If multi-file operator has no positional arguments for input files... */
+      if(nco_is_mlt_fl_opr(prg_get()) && ((!FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 0) || (FL_OUT_FROM_PSN_ARG && psn_arg_nbr == 1))){
+	/* ...then try to obtain input files from stdin... */
+	char *fl_in=NULL; /* [sng] Input file name */
+	FILE *fp_in; /* [enm] Input file handle */
+	char *bfr_in; /* [sng] Temporary buffer for stdin filenames */
+	int cnv_nbr; /* [nbr] Number of scanf conversions performed this scan */
+	long chr_nbr; /* [nbr] Number of characters */
+	size_t fl_nm_lng; /* [nbr] Filename length */
+	
+	(void)fprintf(stderr,"%s: INFO nco_fl_lst_mk() reports input files not specified as positional arguments...attempting to read from stdin fxm TODO#339\n",prg_nm_get());
+	
+	/* Initialize information to read stdin */
+	chr_nbr=0L; /* [nbr] Number of characters */
+	
+	if(fl_in == NULL){
+	  fp_in=stdin; /* [enm] Input file handle */
+	}else{
+	  if((fp_in=fopen(fl_in,"r")) == NULL){
+	    (void)fprintf(stderr,"%s: ERROR in opening file containing input filename list %s\n",prg_nm_get(),fl_in);
+	    nco_exit(EXIT_FAILURE);
+	  } /* endif err */
+	} /* endelse */
+
+	/* Allocate temporary space for input buffer */
+#define FL_NM_IN_MAX_LNG 256 /* [nbr] Maximum length of input filenames */
+	bfr_in=(char *)nco_malloc((FL_NM_IN_MAX_LNG+1L)*sizeof(char));
+	
+	/* Assume filenames are whitespace-separated */
+	while((cnv_nbr=fscanf(fp_in,"%256s\n",bfr_in)) != EOF){
+	  if(cnv_nbr == 0){
+	    (void)fprintf(stdout,"%s: ERROR stdin input not convertable to filename. HINT: Maximum length for input filenames is %d characters. HINT: Separate filenames with whitespace. Carriage returns are automatically stripped out.\n",prg_nm_get(),FL_NM_IN_MAX_LNG);
+	    nco_exit(EXIT_FAILURE);
+	  } /* endif err */
+	  fl_nm_lng=strlen(bfr_in);
+	  chr_nbr+=fl_nm_lng;
+	  (*fl_nbr)++;
+	  (void)fprintf(stderr,"%s: INFO input file #%d is \"%s\", filename length=%li\n",prg_nm_get(),*fl_nbr,bfr_in,(long)fl_nm_lng);
+	  /* Increment file number */
+	  fl_lst_in=(char **)nco_realloc(fl_lst_in,(*fl_nbr*sizeof(char *)));
+	  fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);
+	} /* end while */
+	
+	/* Close input stream */
+	(void)fflush(stdin);
+	/*	(void)fclose(fp_in);*/
+
+	  /* Free temporary buffer */
+	bfr_in=(char *)nco_free(bfr_in);
+	
+	(void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",prg_nm_get(),*fl_nbr,(long)chr_nbr);
+	if(*fl_nbr > 0) FL_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING Tried but failed to get input filenames from stdin\n",prg_nm_get());
+	
+      } /* endif multi-file operator without positional arguments for fl_in */
+      
+      if(!FL_IN_FROM_STDIN){ 
+	if(FL_OUT_FROM_PSN_ARG) (void)fprintf(stdout,"%s: ERROR received %d filenames; need at least two\n",prg_nm_get(),psn_arg_nbr); else (void)fprintf(stdout,"%s: ERROR received %d input filenames; need at least one (output file was specified with -o switch)\n",prg_nm_get(),psn_arg_nbr);
+	(void)nco_usg_prn();
+	nco_exit(EXIT_FAILURE);
+      } /* FL_IN_FROM_STDIN */
+      
+    } /* end Operators with multiple fl_in and required fl_out */
     break;
   default:
     break;
   } /* end switch */
-
-  /* Fill in file list and output file */
-  fl_lst_in=(char **)nco_malloc((psn_arg_nbr-1+psn_arg_fst)*sizeof(char *));
-  while(arg_crr < argc-1+psn_arg_fst) fl_lst_in[(*nbr_fl)++]=(char *)strdup(argv[arg_crr++]);
-  if(*nbr_fl == 0){
+  
+    /* If input files are required but have not been obtained yet from stdin */
+  if(!FL_IN_FROM_STDIN){ 
+    /* Fill in input file list from positional arguments */
+    fl_lst_in=(char **)nco_malloc((psn_arg_nbr-1+psn_arg_fst)*sizeof(char *));
+    while(arg_crr < argc-1+psn_arg_fst) fl_lst_in[(*fl_nbr)++]=(char *)strdup(argv[arg_crr++]);
+  } /* FL_IN_FROM_STDIN */
+  
+  if(*fl_nbr == 0){
     (void)fprintf(stdout,"%s: ERROR Must specify input filename.\n",prg_nm_get());
     (void)nco_usg_prn();
     nco_exit(EXIT_FAILURE);
   } /* end if */
+  
+  /* Assign output file from positional argument */
   if(FL_OUT_FROM_PSN_ARG) *fl_out=(char *)strdup(argv[argc-1]);
-
+  
   return fl_lst_in;
-
+  
 } /* end nco_fl_lst_mk() */
 
 char * /* O [sng] Filename of locally available file */
@@ -195,7 +258,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   /* Purpose: Locate input file, retrieve it from remote storage system if necessary, 
      create local storage directory if neccessary, check file for read-access,
      return name of file on local system */
-
+  
   FILE *fp_in;
   char *cln_ptr; /* [ptr] Colon pointer */
   char *fl_nm_lcl;
@@ -205,12 +268,12 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   
   /* Assume local filename is input filename */
   fl_nm_lcl=(char *)strdup(fl_nm);
-
+  
   /* Remove any URL and machine-name components from local filename */
   if(strstr(fl_nm_lcl,"ftp://") == fl_nm_lcl){
     char *fl_nm_lcl_tmp;
     char *fl_pth_lcl_tmp;
-
+    
     /* Rearrange fl_nm_lcl to get rid of ftp://hostname part */
     fl_pth_lcl_tmp=strchr(fl_nm_lcl+6,'/');
     fl_nm_lcl_tmp=fl_nm_lcl;
@@ -218,9 +281,9 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
     fl_nm_lcl_tmp=(char *)nco_free(fl_nm_lcl_tmp);
   }else if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
-
+    
     /* If file is http protocol then pass file name on unaltered and let DODS deal with it */
-
+    
   }else if((cln_ptr=strchr(fl_nm_lcl,':'))){
     /* 19990804
        A colon separates machine name from filename in rcp and scp requests
@@ -246,7 +309,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   
   /* Does file exist on local system? */
   rcd=stat(fl_nm_lcl,&stat_sct);
-
+  
   /* One exception: let DODS try to access remote HTTP protocol files as local files */
   if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl) rcd=0;
   
@@ -581,8 +644,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 char * /* O [sng] Name of file to retrieve */
 nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
 (char *fl_nm, /* I/O [sng] Current filename, if any */
- const int fl_nbr, /* I [nbr] Ordinal index of file in input file list */
- int * const nbr_fl, /* I/O [nbr] number of files to be processed */
+ const int fl_idx, /* I [nbr] Ordinal index of file in input file list */
+ int * const fl_nbr, /* I/O [nbr] Number of files to be processed */
  char * const * const fl_lst_in, /* I [sng] User-specified filenames */
  const int abb_arg_nbr, /* I [nbr] Number of abbreviation arguments */
  CST_X_PTR_CST_PTR_CST_Y(char,fl_lst_abb), /* I [sng] NINTAP-style arguments, if any */
@@ -613,7 +676,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       int fl_nm_sfx_lng=0;
       
       /* Parse abbreviation list analogously to CCM Processor ICP "NINTAP" */
-      if(nbr_fl != NULL) *nbr_fl=(int)strtol(fl_lst_abb[0],(char **)NULL,10);
+      if(fl_nbr != NULL) *fl_nbr=(int)strtol(fl_lst_abb[0],(char **)NULL,10);
       
       if(abb_arg_nbr > 1){
 	fl_nm_nbr_dgt=(int)strtol(fl_lst_abb[1],(char **)NULL,10);
@@ -674,7 +737,7 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
       (void)strncpy(fl_nm+(fl_nm_1st_dgt-fl_lst_in[0]),fl_nm_nbr_sng,(size_t)fl_nm_nbr_dgt);
     } /* end if not FIRST_INVOCATION */
   }else{ /* end if abbreviation list */
-    fl_nm=(char *)strdup(fl_lst_in[fl_nbr]);
+    fl_nm=(char *)strdup(fl_lst_in[fl_idx]);
   } /* end if no abbreviation list */
   
   /* Prepend path prefix */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.47 2004-06-16 20:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.48 2004-06-18 01:21:04 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -34,6 +34,30 @@ nco_exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, memory, th
 
   nco_exit(EXIT_SUCCESS);
 } /* end nco_exit_gracefully() */
+
+bool /* [flg] Program is multi-file operator */
+nco_is_mlt_fl_opr /* [fnc] Query whether program is multi-file operator */
+(const int prg_id) /* [enm] Program ID */
+{
+  /* Purpose: Is this a multi-file operator?
+     Such operators attempt to read input filenames from stdin when input filenames are not positional arguments */
+  switch(prg_id){
+  case ncea:
+  case ncecat: 
+  case ncra:
+  case ncrcat: 
+    return True;
+    break;
+  case ncap: 
+  case ncatted: 
+  case ncbo: 
+  case ncflint: 
+  case ncks: 
+  default:
+    return False;
+    break;
+  } /* end switch */
+} /* end nco_is_mlt_fl_opr() */
 
 bool /* [flg] Program does arithmetic */
 nco_is_rth_opr /* [fnc] Query whether program does arithmetic */

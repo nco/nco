@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.73 2004-06-14 21:31:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.74 2004-06-18 01:21:04 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -100,8 +100,8 @@ main(int argc,char **argv)
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.73 2004-06-14 21:31:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.73 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.74 2004-06-18 01:21:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.74 $";
   const char * const opt_sng="ACcD:d:Fhi:l:Oo:p:rRv:xw:-:";
   
   dmn_sct **dim;
@@ -117,7 +117,7 @@ main(int argc,char **argv)
   int fll_md_old; /* [enm] Old fill mode */
   int has_mss_val=False;
   int idx;
-  int idx_fl;
+  int fl_idx;
   int in_id;  
   int in_id_1;  
   int in_id_2;  
@@ -131,7 +131,7 @@ main(int argc,char **argv)
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nbr_dmn_xtr;
-  int nbr_fl=0;
+  int fl_nbr=0;
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
     
@@ -307,15 +307,15 @@ main(int argc,char **argv)
   } /* end else */
 
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out);
   
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
     
   /* Parse filename */
-  idx_fl=0;
-  fl_in=nco_fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-  if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",idx_fl,fl_in);
+  fl_idx=0;
+  fl_in=nco_fl_nm_prs(fl_in,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+  if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
@@ -405,12 +405,12 @@ main(int argc,char **argv)
   (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 
   in_id_1=in_id;
-  idx_fl=1;
+  fl_idx=1;
   fl_in_1=(char *)strdup(fl_in);
 
   /* Parse filename */
-  fl_in=nco_fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
-  if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",idx_fl,fl_in);
+  fl_in=nco_fl_nm_prs(fl_in,fl_idx,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+  if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",fl_idx,fl_in);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);

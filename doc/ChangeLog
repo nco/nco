@@ -1,3 +1,8 @@
+2004-06-17  Charlie Zender  <zender@uci.edu>
+
+	* nco_fl_ls_mk() reads input file list from stdin when appropriate
+	for multi-file operators
+
 2004-06-16  Charlie Zender  <zender@uci.edu>
 
 	* Fixed numerous errors in xargs example

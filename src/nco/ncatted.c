@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.67 2004-06-14 21:31:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.68 2004-06-18 01:21:04 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -142,8 +142,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.67 2004-06-14 21:31:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.67 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.68 2004-06-18 01:21:04 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.68 $";
   const char * const opt_sng="Aa:D:hl:Oo:p:Rr-:";
   
   extern char *optarg;
@@ -155,7 +155,7 @@ main(int argc,char **argv)
   int abb_arg_nbr=0;
   int nbr_var_fl;
   int nbr_aed=0; /* Option a. NB: nbr_var_aed gets incremented */
-  int nbr_fl=0;
+  int fl_nbr=0;
   int opt;
   int rcd=NC_NOERR; /* [rcd] Return code */
 
@@ -244,7 +244,7 @@ main(int argc,char **argv)
   } /* end while loop */
   
   /* Process positional arguments and fill in filenames */
-  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
+  fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out);
   if(fl_out != NULL) OUTPUT_TO_NEW_NETCDF_FILE=True; else fl_out=fl_lst_in[0];
 
   if(nbr_aed == 0){
@@ -259,7 +259,7 @@ main(int argc,char **argv)
   /* We now have final list of attributes to edit */
   
   /* Parse filename */
-  fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
+  fl_in=nco_fl_nm_prs(fl_in,0,&fl_nbr,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=nco_fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
 
