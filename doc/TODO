@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.445 2004-12-18 01:50:23 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.446 2005-01-09 00:14:11 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -277,7 +277,8 @@ nco474. Incorporate alternative "chunking" for ncrcat when data are one-dimensio
 nco477. Make default to copy but not to print associated coordinate variables
 nco479. netCDF/L  from Loci: http://loci.cs.utk.edu/modules.php?name=News&file=article&sid=40
 nco480. Add boxcar averaging option (average in groups of n records) to ncra
-nco481. 
+nco481. Fix nco_c++ on GCC 3.4 nco_att.hh problem. Use -fpermissive? Break into finer grain files?
+nco482. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

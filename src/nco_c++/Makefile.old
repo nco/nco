@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.28 2005-01-08 00:01:08 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.29 2005-01-09 00:14:12 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -76,6 +76,9 @@ ifndef I18N
  MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
  MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
 endif # endif I18N
+ifndef GCC_RCH_ARG
+ GCC_RCH_ARG :=
+endif # endif GCC_RCH_ARG
 ifdef GSL_LIB
  GSL_LIB := -L${GSL_LIB}
 else
@@ -150,7 +153,7 @@ ifndef LINUX_FC
 ifeq (${PVM_ARCH},LINUXAMD64)
 # GCC 3.3 fails in atomicity.h with -O, -O0, and -O2 so use 3.4 instead 
  LINUX_CXX := g++-3.4
- LINUX_CC := gcc-3.4
+ LINUX_CC := gcc-3.4 -std=c99 -pedantic -D_BSD_SOURCE
  LINUX_FC := g95
 endif # endif LINUXAMD64
 ifeq (${PVM_ARCH},LINUXALPHA)
@@ -366,7 +369,7 @@ endif # endif AIX VA Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
  CFLAGS := -Wall -Wunused
 ifeq (${OPTS},O)
- CFLAGS += -O
+ CFLAGS += -O -g ${GCC_RCH_ARG}
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
@@ -539,7 +542,7 @@ ifneq (${null},$(findstring gcc,${CC}))
 # -Dinline=: inline is not an ANSI keyword, must undefine inline to work with -ansi
 # -fshort-enums: Make enums as short as possible, ususally non-int. Do not ever invoke this! This breaks ABI and causes subtle problems
 ifeq (${OPTS},O)
- CFLAGS += -O
+ CFLAGS += -O -g ${GCC_RCH_ARG}
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g

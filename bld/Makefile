@@ -1,9 +1,10 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.265 2005-01-08 00:01:05 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.266 2005-01-09 00:14:10 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
-# scp ~/nco/bld/Makefile goldhill.cgd.ucar.edu:nco/bld
+# scp ~/nco/bld/Makefile dust.ess.uci.edu:nco/bld
 # scp ~/nco/bld/Makefile esmf.ess.uci.edu:nco/bld
+# scp ~/nco/bld/Makefile goldhill.cgd.ucar.edu:nco/bld
 
 # Copyright (C) 1994--2004 Charlie Zender
 # This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL)
@@ -69,6 +70,9 @@ endif # endif DBG
 ifndef DODS
  DODS := N
 endif
+ifndef GCC_RCH_ARG
+ GCC_RCH_ARG :=
+endif # endif GCC_RCH_ARG
 ifndef HDF5
  HDF5 := N
 endif # endif HDF5
@@ -185,7 +189,7 @@ ifndef LINUX_FC
 ifeq (${PVM_ARCH},LINUXAMD64)
 # GCC 3.3 fails in atomicity.h with -O, -O0, and -O2 so use 3.4 instead 
  LINUX_CXX := g++-3.4
- LINUX_CC := gcc-3.4
+ LINUX_CC := gcc-3.4 -std=c99 -pedantic -D_BSD_SOURCE
  LINUX_FC := g95
 endif # endif LINUXAMD64
 ifeq (${PVM_ARCH},LINUXALPHA)
@@ -475,7 +479,7 @@ endif # endif AIX VA Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
  CFLAGS := -Wall -Wunused
 ifeq (${OPTS},O)
- CFLAGS += -O -g
+ CFLAGS += -O -g ${GCC_RCH_ARG}
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
@@ -686,7 +690,7 @@ ifneq (${null},$(findstring gcc,${CC}))
 # -Dinline=: inline is not an ANSI keyword, must undefine inline to work with -ansi
 # -fshort-enums: Make enums as short as possible, ususally non-int. Do not ever invoke this! This breaks ABI and causes subtle problems
 ifeq (${OPTS},O)
- CFLAGS += -O -g
+ CFLAGS += -O -g ${GCC_RCH_ARG}
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
@@ -1379,6 +1383,7 @@ dbg:
 	@printf "DODS_ROOT = ${DODS_ROOT}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"
+	@printf "GCC_RCH_ARG = ${GCC_RCH_ARG}\n"
 	@printf "HDF5 = ${HDF5}\n"
 	@printf "LDFLAGS = ${LDFLAGS}\n"
 	@printf "LEX = $(LEX)\n"

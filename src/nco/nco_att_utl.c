@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.42 2005-01-07 23:54:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.43 2005-01-09 00:14:11 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -384,10 +384,10 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   fl_in_lst_sng=(char *)nco_free(fl_in_lst_sng);
 } /* end nco_fl_lst_att_cat() */
  
- void 
- nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
- (const int out_id, /* I [id] netCDF output-file ID */
-  const char * const hst_sng) /* I [sng] String to add to history attribute */
+void 
+nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
+(const int out_id, /* I [id] netCDF output-file ID */
+ const char * const hst_sng) /* I [sng] String to add to history attribute */
 {
   /* Purpose: Add command line and date stamp to existing history attribute, if any,
      and write them to specified output file */
