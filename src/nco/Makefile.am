@@ -68,12 +68,15 @@ TESTS = test1.sh ${DODS_TESTS}
 EXTRA_DIST = nco_getopt.c
 
 install-exec-hook:
-	ln -s -f $(DESTDIR)$(bindir)/ncbo $(DESTDIR)$(bindir)/ncdiff
-	ln -s -f $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncea
-	ln -s -f $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncrcat
+#	ln -s -f $(DESTDIR)$(bindir)/ncbo $(DESTDIR)$(bindir)/ncdiff
+#	ln -s -f $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncea
+#	ln -s -f $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncrcat
+	cd $(DESTDIR)$(bindir) && ln -sf ncbo ncdiff
+	cd $(DESTDIR)$(bindir) && ln -sf ncra ncea
+	cd $(DESTDIR)$(bindir) && ln -sf ncra ncrcat
 
 uninstall-hook:
-	rm -f $(DESTDIR)$(bindir)/ncdiff
-	rm -f $(DESTDIR)$(bindir)/ncea
-	rm -f $(DESTDIR)$(bindir)/ncrcat
-	
+#	rm -f $(DESTDIR)$(bindir)/ncdiff
+#	rm -f $(DESTDIR)$(bindir)/ncea
+#	rm -f $(DESTDIR)$(bindir)/ncrcat
+	cd $(DESTDIR)$(bindir) && rm -f ncdiff ncea ncrcat

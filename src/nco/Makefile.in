@@ -834,14 +834,18 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
 
 
 install-exec-hook:
-	ln -s -f $(DESTDIR)$(bindir)/ncbo $(DESTDIR)$(bindir)/ncdiff
-	ln -s -f $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncea
-	ln -s -f $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncrcat
+#	ln -s -f $(DESTDIR)$(bindir)/ncbo $(DESTDIR)$(bindir)/ncdiff
+#	ln -s -f $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncea
+#	ln -s -f $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncrcat
+	cd $(DESTDIR)$(bindir) && ln -sf ncbo ncdiff
+	cd $(DESTDIR)$(bindir) && ln -sf ncra ncea
+	cd $(DESTDIR)$(bindir) && ln -sf ncra ncrcat
 
 uninstall-hook:
-	rm -f $(DESTDIR)$(bindir)/ncdiff
-	rm -f $(DESTDIR)$(bindir)/ncea
-	rm -f $(DESTDIR)$(bindir)/ncrcat
+#	rm -f $(DESTDIR)$(bindir)/ncdiff
+#	rm -f $(DESTDIR)$(bindir)/ncea
+#	rm -f $(DESTDIR)$(bindir)/ncrcat
+	cd $(DESTDIR)$(bindir) && rm -f ncdiff ncea ncrcat
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
