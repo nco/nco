@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.94 2004-06-18 23:33:54 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.95 2004-06-19 00:49:26 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.6 are ready. 
 
@@ -18,9 +18,12 @@ names directly to NCO multi-file operators, e.g.,
 /bin/ls | grep ${CASEID}_'......'.nc | ncra -O -o output.nc
 
 This avoids all shell limitations.
-NCO automatically stores the names of the input files in the
-"input_file_list" global attribute (unless you pass it -H), so the
-"chain of evidence" is maintained.
+When the input file names are specified via stdin, NCO multi-file
+operators will store the number of input files in the
+"input_file_number" global attribute and the input file names in the  
+"input_file_list" global attribute (unless you pass it -H).
+
+This preserves the data processing "chain of evidence".
 
 Read more about it in 
 

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.237 2004-06-18 23:33:54 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.238 2004-06-19 00:49:26 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1299,42 +1299,75 @@ units.
 
 Occasionally one desires to digest (i.e., concatenate or average)
 hundreds or thousands of input files.
-One brave user, for example, recently created a five year time-series of
-satellite observations by using @command{ncecat} to join thousands of
-daily data files together.
 @cindex automagic
+@cindex @acronym{NASA EOSDIS}
 Unfortunately, data archives (e.g., @acronym{NASA EOSDIS}) may not
 name netCDF files in a format understood by the @samp{-n @var{loop}}
 switch that automagically generates arbitrary numbers of input
 filenames. 
-The @samp{-n @var{loop}} switch is useless when there is no simple,
-arithmetic pattern to the input filenames (e.g., @file{h00001.nc},
-@file{h00002.nc}, @w{@dots{} @file{h90210.nc}}).
-Moreover, filename globbing does not work when the input files are to
+The @samp{-n @var{loop}} switch has the virtue of being concise,
+and of minimizing the command line.
+This helps keeps output file small since the command line is stored
+as metadata in the @code{history} attribute 
+(@pxref{History attribute}). 
+However, the @samp{-n @var{loop}} switch is useless when there is no
+simple, arithmetic pattern to the input filenames (e.g.,
+@file{h00001.nc}, @file{h00002.nc}, @w{@dots{} @file{h90210.nc}}).
+Moreover, filename globbing does not work when the input files are too
 numerous or their names are too lengthy (when strung together as a
 single argument) to be passed by the calling shell to the @acronym{NCO}
-operator.
+operator
 @footnote{The exact length which exceeds the operating system internal
 limit for command line lengths varies from @acronym{OS} to @acronym{OS}
 and from shell to shell.  
 @acronym{GNU} @code{bash} may not have any arbitrary fixed limits to the
 size of command line arguments. 
 Many @acronym{OS}s cannot handle command line arguments (including
-results of file globbing) exceeding 4096 characters.
+results of file globbing) exceeding 4096 characters.}.
 When this occurs, the @acronym{ANSI} C-standard @code{argc}-@code{argv} 
 method of passing arguments from the calling shell to a C-program (i.e.,
-an @acronym{NCO} operator) breaks down.}. 
+an @acronym{NCO} operator) breaks down. 
+There are (at least) three alternative methods of specifying the input 
+filenames to @acronym{NCO} in environment-limited situations.
+
+@html
+<a name="stdin"></a> <!-- http://nco.sf.net/nco.html#stdin -->
+@end html
+@cindex standard input
+@cindex @code{stdin}
+The recommended method for sending very large numbers (hundreds or
+more, typically) of input filenames to the multi-file operators is
+to use the @dfn{standard input}, aka @code{stdin}, feature of
+@acronym{UNIX}. 
+@example
+# Pipe large numbers of filenames to stdin
+/bin/ls | grep $@{CASEID@}_'......'.nc | ncecat -O -o foo.nc
+@end example
+This method avoids all constraints on command line size imposed by
+the operating system. 
+A drawback to this method is that the @code{history} attribute
+(@pxref{History attribute}) does not record the name of any input 
+files since the names were not passed on the command line.
+This makes determining the data provenance at a later date difficult.
+@cindex @code{input_file_number}
+@cindex @code{input_file_list}
+@cindex global attributes
+To remedy this situation, multi-file operators store the number of
+input files in the @code{input_file_number} global attribute and the
+input file list itself in the @code{input_file_list} global attribute
+(@pxref{Input file list attributes}).
+Although this does not preserve the exact command used to generate the
+file, it does retains all the information required to reconstruct the
+command and determine the data provenance.
 
 @cindex globbing
 @cindex shell
 @cindex extended regular expressions
 @cindex regular expressions
 @cindex pattern matching
-There are (at least) two alternative methods of specifying the input
-filenames to @acronym{NCO} in environment-limited situations.
 @cindex @command{xargs}
 @cindex @acronym{UNIX}
-The simpler option is to use the @acronym{UNIX} @command{xargs} command.
+A second option is to use the @acronym{UNIX} @command{xargs} command.
 This simple example selects as input to @command{xargs} all the
 filenames in the current directory that match a given pattern.
 For illustration, consider a user trying to average millions of 
@@ -1349,7 +1382,7 @@ and to pipe the results to @command{xargs} which, in turn, passes the
 matching filenames to an @acronym{NCO} multi-file operator, e.g.,
 @command{ncecat}.
 @example
-# Alternative Method using xargs
+# Use xargs to transfer filenames on the command line
 /bin/ls | grep $@{CASEID@}_'......'.nc | xargs -x ncecat -o foo.nc
 @end example
 @cindex pipes
@@ -1365,14 +1398,16 @@ command options.
 @cindex @code{-o @var{fl_out}}
 The @code{-o foo.nc} switch ensures that the input files supplied by
 @command{xargs} are not confused with the output file name. 
-@command{xargs} does, unfortunately, have its own limit (usually about
+@command{xargs} does, unfortunately, have its own limit (usually about 
 20,000 characters) on the size of command lines it can pass.
 Give @command{xargs} the @samp{-x} switch to ensure it dies if it
 reaches this internal limit.
+When this occurs, use either the @code{stdin} method above, or the
+symbolic link presented next.
 
 @cindex symbolic links
 Even when its internal limits have not been reached, the
-@command{xargs} technique may not be sophisticated enough to handle
+@command{xargs} technique may not be sophisticated enough to handle 
 all situations. 
 A full scripting language like Perl can handle any level of complexity
 of filtering input filenames, and any number of filenames.
@@ -1397,27 +1432,10 @@ automatically generate the filnames of the symbolic links.
 This circumvents any @acronym{OS} and shell limits on command line size.
 The symbolic links are easily removed once @acronym{NCO} is finished.
 @cindex @code{history} attribute
-One side-effect of using this method is that the @code{history} attribute
-(@pxref{History attribute}) only contains the filename list encoding
-that represents the symbolic links.
+One drawback to this method is that the @code{history} attribute
+(@pxref{History attribute}) retains the filename list of the symbolic
+links, rather than the data files themselves. 
 This makes it difficult to determine the data provenance at a later date.
-
-@html
-<a name="lrg"></a> <!-- http://nco.sf.net/nco.html#stdin -->
-@end html
-@example
-# Alternative Method piping filenames to stdin
-/bin/ls | grep $@{CASEID@}_'......'.nc | ncecat -o foo.nc
-cd ~/nco/data
-/bin/ls | grep '8.'.nc | ncecat -o foo.nc
-@end example
-A side-effect of using this method is that the @code{history} attribute 
-(@pxref{History attribute}) does not record the name of any input
-files since the names were not passed on the command line.
-This makes determining the data provenance at a later date difficult.
-To remedy this situation, multi-file operators always store the input
-file list in the @code{input_file_list} global attribute.
-@cindex global attributes
 
 @node Large files and Memory, Memory usage, Large numbers of input files, Strategies
 @section Working with large files
@@ -1672,7 +1690,7 @@ feature is automatic and cannot be controlled by the user.
 * Type conversion::             
 * Suppressing interactive prompts::  
 * History attribute::           
-* Input file list attribute::   
+* Input file list attributes::  
 * NCAR CCSM Conventions::       
 * ARM Conventions::             
 * Operator version::            
@@ -3761,7 +3779,7 @@ existing @var{output-file} without prompting the user interactively.
 These switches are useful in batch environments because they suppress
 interactive keyboard input.
 
-@node History attribute, Input file list attribute, Suppressing interactive prompts, Common features
+@node History attribute, Input file list attributes, Suppressing interactive prompts, Common features
 @section History attribute
 @cindex @code{history} attribute
 @cindex timestamp
@@ -3803,14 +3821,16 @@ automatically appending the @code{history} attribute
 (@pxref{ncatted netCDF Attribute Editor}).   
 Note that the @samp{-h} switch also turns off writing the
 @code{input_file_list} attribute for multi-file operators
-(@pxref{Input file list attribute}).
+(@pxref{Input file list attributes}).
 
 @html
 <a name="fl_lst_in_att"></a> <!-- http://nco.sf.net/nco.html#fl_lst_in_att -->
 @end html
-@node Input file list attribute, NCAR CCSM Conventions, History attribute, Common features
-@section Input file list attribute
+@node Input file list attributes, NCAR CCSM Conventions, History attribute, Common features
+@section Input file list attributes
 @cindex @code{input_file_list} attribute
+@cindex @code{input_file_number} attribute
+@cindex @code{stdin}
 @cindex global attributes
 @cindex attributes, global
 @cindex @code{-H}
@@ -3821,31 +3841,40 @@ Availability: @command{ncea}, @command{ncecat}, @command{ncra}, @command{ncrcat}
 Short options: @samp{-H}@*
 Long options: @samp{--fl_lst_in}, @samp{--file_list}@*
 @end cartouche
-The multi-file operators automatically append an
-@code{input_file_list} global attribute to any file they create or  
-modify.
-The @code{input_file_list} global attribute contains a list of all
-input files specified as input in the last invocation of a multi-file
-operator. 
 Many methods of specifying large numbers of input file names pass
 these names via pipes, encodings, or argument transfer programs
 (@pxref{Large numbers of input files}).
 When these methods are used, the input file list is not explicitly
 passed on the command line.
-This results in a loss of information since the full information
-required to recreate the processed files is not contained in the
-@code{history} attribute.
+This results in a loss of information since the @code{history}
+attribute no longer contains the exact command by which the file
+was created.
+
+@acronym{NCO} solves this dilemma by archiving input file list
+attributes.
+When the input file list to a multi-file operator is specified
+via @code{stdin}, the operator, by default, attaches two global
+attributes to any file they create or modify.
+The @code{input_file_number} global attribute contains the number of
+input files, and @code{input_file_list} contains the file names,
+specified as standard input to the multi-file operator. 
+This information helps to verify that all input files the user thinks
+were piped through @code{stdin} actually arrived.
 Without the @code{input_file_list} attribute, the information is lost
 forever and the ``chain of evidence'' would be broken.
-The @code{input_file_list} global attribute is not written when the 
-@samp{-h} switch is used to turn off the @code{history} attribute.
-This allows space-conscious users to avoid storing what may amount to
-many thousands of filenames in a metadata attribute.
+
+The @samp{-H} switch overrides (turns off) the default behavior of
+writing the input file list global attributes when input is from
+@code{stdin}. 
+The @samp{-h} switch does this too, and turns off the @code{history}
+attribute as well (@pxref{History attribute}).
+Hence both switches allows space-conscious users to avoid storing what
+may amount to many thousands of filenames in a metadata attribute.
 
 @html
 <a name="cnv_CCSM"></a> <!-- http://nco.sf.net/nco.html#cnv_CCSM -->
 @end html
-@node NCAR CCSM Conventions, ARM Conventions, Input file list attribute, Common features
+@node NCAR CCSM Conventions, ARM Conventions, Input file list attributes, Common features
 @section @acronym{NCAR CCSM} Conventions
 @cindex @acronym{NCAR CCSM} conventions
 @cindex @acronym{CCSM} conventions

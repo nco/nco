@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.318 2004-06-18 16:33:41 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.319 2004-06-19 00:49:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -196,8 +196,6 @@ nco333. Clean up preprocessor symbols with cd ~/nco/src/nco;ifnames *.c
 nco335. ncflint: implement interpolation/mss_val algorithms two and three as options?
 nco336. Allow input file lists to be specified in a text file and to supercede command line arguments. This will be useful on platforms with limited buffers for command line arguments and globbing expansions (e.g., AIX)
 nco337. When input file is a symbolic link, print name of linked-to-file as debugging information
-nco338. Read input filenames from stdin on MFOs when not positional arguments exist
-nco339. Record stdin input filenames in Global attribute somewhere, somehow
 nco340. o/a/e stdin is overwritten when stdin input method used
 cd ~/nco/data;echo "in.nc" | ncecat -o foo.nc
 nco341. 

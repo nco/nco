@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.32 2004-06-18 23:33:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.33 2004-06-19 00:49:29 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -322,9 +322,10 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
 {
   /* Purpose: Write input file list to global metadata fxm TODO nco339 */
   aed_sct fl_in_lst_aed;
-  char att_nm[]="input_file_list"; /* [sng] Name of input file list attribute */
+  aed_sct fl_in_nbr_aed;
   char spc_sng[]=" "; /* [sng] Intervening space */
   char *fl_in_lst_sng;
+  int fl_in_nbr;
   int fl_idx;
   size_t fl_in_lst_sng_lng; /* [nbr] Filename list string length */
   ptr_unn att_val;
@@ -342,10 +343,26 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
     if(fl_idx != fl_nbr-1) fl_in_lst_sng=strcat(fl_in_lst_sng,spc_sng);
   } /* end loop over fl */
   
+  /* Copy fl_nbr so can take address without endangering number */
+  fl_in_nbr=fl_nbr;
+  /* Insert number of files into value */
+  att_val.lp=(nco_long *)&fl_in_nbr;
+  /* Initialize input_file_list attribute edit structure */
+  fl_in_nbr_aed.att_nm="input_file_number";
+  fl_in_nbr_aed.var_nm=NULL;
+  fl_in_nbr_aed.id=NC_GLOBAL;
+  fl_in_nbr_aed.sz=1L;
+  fl_in_nbr_aed.type=NC_INT;
+  /* Insert value into attribute structure */
+  fl_in_nbr_aed.val=att_val;
+  fl_in_nbr_aed.mode=aed_overwrite;
+  /* Write input_file_number attribute to disk */
+  (void)nco_aed_prc(out_id,NC_GLOBAL,fl_in_lst_aed);
+
   /* Insert file list into value */
   att_val.cp=(unsigned char *)fl_in_lst_sng;
-  /* Initialize attribute edit structure */
-  fl_in_lst_aed.att_nm=att_nm;
+  /* Initialize input_file_list attribute edit structure */
+  fl_in_lst_aed.att_nm="input_file_list";
   fl_in_lst_aed.var_nm=NULL;
   fl_in_lst_aed.id=NC_GLOBAL;
   fl_in_lst_aed.sz=(long)strlen(fl_in_lst_sng)+1L;
@@ -353,8 +370,7 @@ nco_fl_lst_att_cat /* [fnc] Add input file list global attribute */
   /* Insert value into attribute structure */
   fl_in_lst_aed.val=att_val;
   fl_in_lst_aed.mode=aed_overwrite;
-  
-  /* Write input file list attribute to disk */
+  /* Write input_file_list attribute to disk */
   (void)nco_aed_prc(out_id,NC_GLOBAL,fl_in_lst_aed);
   
   /* Free string holding file list attribute */
