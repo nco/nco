@@ -28,7 +28,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.51 2000-03-07 22:32:01 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.52 2000-03-08 07:58:07 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -64,9 +64,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-03-07 22:32:01 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.51 2000-03-07 22:32:01 zender Exp $';
-my $CVS_Revision='$Revision: 1.51 $';
+my $CVS_Date='$Date: 2000-03-08 07:58:07 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.52 2000-03-08 07:58:07 zender Exp $';
+my $CVS_Revision='$Revision: 1.52 $';
 my $CVSROOT='$CVSROOT'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -86,6 +86,7 @@ my $rsh_cmd='ssh'; # Command that behaves like rsh
 my $usr_nm=$ENV{'USER'};
 my $vrs_tag='';
 my $www_drc='/web/web-data/cms/nco'; # WWW directory for package
+my $src_frg_drc='nco.sourceforge.net:/home/groups/nco/htdocs'; # WWW mirror directory for package
 
 # Set defaults for command line arguments
 my $cln=$True; # GNU standard Makefile option `clean'
@@ -259,6 +260,11 @@ if($bld){
 	cmd_prc("/bin/cp $dst_pth_bld/doc/ChangeLog $www_drc/ChangeLog");
     } # endif 
     
+# Update SourceForge mirror
+    if($True){
+	cmd_prc("$rcp_cmd $dst_pth_bld/doc/index.shtml $src_frg_drc/index.shtml");
+    } # endif SourceForge
+
 # Housekeeping
     if($cln){cmd_prc("$rm_cmd $dst_pth_pfx/$dst_fl");} # Remove local tarfile
     if($dst_cln){cmd_prc("$rm_cmd -r $dst_pth_bld");} # Remove local distribution
