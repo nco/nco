@@ -1,3 +1,22 @@
+2000-08-14  Charlie Zender  <zender@uci.edu>
+
+	* Added this text to the license, provided by Steven G. Johnson 
+
+	"As a special exception to the terms of the GPL, you are permitted 
+	to link the NCO source code with the NetCDF and HDF libraries 
+	and distribute the resulting executables under the terms of the GPL, 
+	but in addition obeying the extra stipulations of the netCDF and 
+	HDF library licenses."
+
+	This is intended to allow NCO to link to the non-GPL licenses of
+	netCDF and HDF and avoid the "KDE problem". Apparently binaries
+	are considered derived works of any libraries they are statically
+	linked to, i.e., netCDF and/or HDF. This means both licenses must
+	be obeyed, but that is impossible because no license except the
+	GPL is compatible with the GPL. So we the developers of NCO must
+	explicitly grant permission to all users to redistribute NCO under
+	both licenses.
+
 2000-08-03  Charlie Zender  <zender@uci.edu>
 
 	* Tagged nco-1_2

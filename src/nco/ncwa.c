@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.46 2000-08-15 06:40:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.47 2000-08-15 06:58:35 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -12,6 +12,12 @@
    as published by the Free Software Foundation; either version 2
    of the License, or (at your option) any later version.
    
+   As a special exception to the terms of the GPL, you are permitted 
+   to link the NCO source code with the NetCDF and HDF libraries 
+   and distribute the resulting executables under the terms of the GPL, 
+   but in addition obeying the extra stipulations of the netCDF and 
+   HDF library licenses.
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -26,7 +32,7 @@
 
    The author of this software, Charlie Zender, would like to receive
    your suggestions, improvements, bug-reports, and patches for NCO.
-   Please contact me via e-mail at zender@uci.edu or by writing
+   Please contact the project at http://sourceforge.net/projects/nco or by writing
 
    Charlie Zender
    Department of Earth System Science
@@ -105,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.46 2000-08-15 06:40:06 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.46 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.47 2000-08-15 06:58:35 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.47 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

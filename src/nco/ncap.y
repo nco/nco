@@ -1,7 +1,7 @@
 %{
 /* Begin C declarations section */ 
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.7 2000-07-31 00:29:18 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.8 2000-08-15 06:58:35 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */ 
 
@@ -12,6 +12,12 @@
    as published by the Free Software Foundation; either version 2
    of the License, or (at your option) any later version.
    
+   As a special exception to the terms of the GPL, you are permitted 
+   to link the NCO source code with the NetCDF and HDF libraries 
+   and distribute the resulting executables under the terms of the GPL, 
+   but in addition obeying the extra stipulations of the netCDF and 
+   HDF library licenses.
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -26,7 +32,7 @@
 
    The author of this software, Charlie Zender, would like to receive
    your suggestions, improvements, bug-reports, and patches for NCO.
-   Please contact me via e-mail at zender@uci.edu or by writing
+   Please contact the project at http://sourceforge.net/projects/nco or by writing
 
    Charlie Zender
    Department of Earth System Science
