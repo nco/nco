@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.123 2004-07-01 18:23:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.124 2004-07-06 05:22:27 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.123 2004-07-01 18:23:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.123 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.124 2004-07-06 05:22:27 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.124 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -602,7 +602,7 @@ main(int argc,char **argv)
       (void)nco_var_get(in_id,msk); /* Routine contains OpenMP critical regions */
     } /* end if */
 
-  /* 
+  /* Test OpenMP parallelization:
      cd ~/nco/bld;make OPTS=D;cd -
      cd ~/nco/data;ncwa -D 1 -O in.nc foo.nc 2>&1 | m;cd -
 

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.8 2004-06-03 05:52:43 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.9 2004-07-06 05:22:27 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface utilities for netCDF routines
 
@@ -45,6 +45,11 @@ nco_err_exit // [fnc] Lookup, print netCDF error message, exit
  const std::string &msg, // I [sng] supplemental error message
  const std::string &msg_opt=""); // I [sng] Optional supplemental error message
 // end nco_err_exit() prototype
+
+void 
+nco_wrn_prn // [fnc] Print NCO warning message and return
+(const std::string &msg, // I [sng] Supplemental warning message
+ const std::string &msg_opt=""); // I [sng] Optional supplemental warning message
 
 // Begin nco_inq_varsz() overloads
 

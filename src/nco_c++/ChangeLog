@@ -1,3 +1,7 @@
+2004-07-05  Charlie Zender  <zender@uci.edu>
+
+	* Added nco_wrn_prn() to standardize printing warnings
+
 2004-06-27  Charlie Zender  <zender@uci.edu>
 
 	* Makefile.old: MY_*_DIRS now check environment first to allow for

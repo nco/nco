@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.337 2004-07-02 22:59:55 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.338 2004-07-06 05:22:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -213,7 +213,14 @@ ncks -H -C -v ${var_lst} ~/foo.nc > foo 2>&1
 2. Create threaded answer:
 nco351. Ask Jim Edwards to fix make test rtld errors on AIX with OpenMP
 nco352. Probably related to 351: OpenMP directive must appear in main() or ldd will not associate /usr/lib/libxlsmp.a(smprt_64.o) with executable so rtld errors occur on AIX
-nco353. 
+nco353. Change all %z's to %lu with (unsigned long) casts
+nco354. ncwa coredumps with large files on ESMF: 
+ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA_MIE}/mie/mie_${wvl_nbr}.nc ${DATA_MIE}/mie/mie_avg_10000000.nc
+fails with 
+Segmentation fault (core dumped)
+ncwa -O -a wvl -w flx_slr_frc -v sca_cff_mss,ext_cff_mss,abs_cff_mss,ss_alb,ss_co_alb ${DATA_MIE}/mie/mie_${wvl_nbr}.nc ${DATA_MIE}/mie/mie_avg_${wvl_nbr}.nc
+
+nco355. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

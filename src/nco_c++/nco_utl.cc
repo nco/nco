@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.12 2004-06-03 05:52:43 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.13 2004-07-06 05:22:27 zender Exp $ 
 
 // Implementation (declaration) of C++ interface utilities for netCDF routines
 
@@ -54,6 +54,21 @@ nco_err_exit // [fnc] Lookup, print netCDF error message, exit
 #endif // !ABORT_ON_ERROR
   } // endif error
 } // end nco_err_exit()
+
+void 
+nco_wrn_prn // [fnc] Print NCO warning message and return
+(const std::string &msg, // I [sng] Supplemental warning message
+ const std::string &msg_opt) // I [sng] Optional supplemental warning message
+{
+  /* Purpose: Print NCO warning message and return
+     Routine is called by some wrappers when non-fatal weirdness is encountered
+     msg variable allows wrapper to pass descriptive information
+     Use msg to print, e.g., name of variable which caused warning */
+  const std::string sbr_nm("nco_wrn_prn()");
+  std::cout << sbr_nm << ": WARNING " << msg << std::endl;
+  if(msg_opt != "") std::cout << sbr_nm << ": " << msg_opt << std::endl;
+  return;
+} // end nco_wrn_prn()
 
 // Begin nco_inq_varsz() overloads
 

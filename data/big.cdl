@@ -20,7 +20,7 @@
 // ls -l ${DATA}/mie/big.nc
 
 // On small-RAM machines, create 4 GB file with multiple variables instead
-// This reduces peak memory usage considerably:
+// This reduces peak memory usage to ~400 MB, and still tests LFS capability.
 // ncap -D 3 -O -s "wvl_1e8[wvl_1e8]=1.0f" ${DATA}/mie/big.nc ${DATA}/mie/big.nc
 // ncrename -D -d wvl_1e8,wvl big.nc # Rename because ncecat does not do coordinate variables
 // Aggregate ten files together

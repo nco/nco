@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.cc,v 1.9 2004-06-20 20:00:12 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.cc,v 1.10 2004-07-06 05:22:27 zender Exp $ 
 
 // Implementation (declaration) of C++ interface to netCDF attribute routines
 
@@ -443,6 +443,7 @@ nco_get_att // [fnc] Get attribute value
 {
   // Purpose: Wrapper for nc_get_att_text()
   size_t att_sz=nco_inq_attlen(nc_id,var_id,att_nm);
+  if(att_sz == 0) nco_wrn_prn("nco_get_att<std::string> will attempt to read NC_CHAR of size zero");
   char *att_val_chr=new char[att_sz];
   int rcd=nc_get_att_text(nc_id,var_id,att_nm.c_str(),att_val_chr);
   att_val=att_val_chr;
