@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.59 2002-02-05 07:39:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.60 2002-02-05 07:43:59 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.59 2002-02-05 07:39:15 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.59 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.60 2002-02-05 07:43:59 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.60 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -136,7 +136,7 @@ main(int argc,char **argv)
   extern char *optarg;
   extern int optind;
   
-  /* Declarations required on Sun, AIX platforms */
+  /* Math float prototypes required by AIX, Solaris, but not by Linux, IRIX */
   extern float acosf(float);
   extern float asinf(float);
   extern float atanf(float);
@@ -397,7 +397,7 @@ main(int argc,char **argv)
      xtr_lst_2 = var_lst_copy(xtr_lst,nbr_xtr);
      
      /* Add dimensions defined in LHS subscripts */
-     if(xtr_lst_d > 0) xtr_lst_2=var_lst_add(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_d,nbr_lst_d); 
+     if(nbr_lst_d > 0) xtr_lst_2=var_lst_add(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_d,nbr_lst_d); 
      
      /* Creat list of coordinates only */
      xtr_lst_2=ncap_var_lst_crd_make(in_id,xtr_lst_2,&nbr_xtr_2);
