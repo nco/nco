@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.250 2004-08-22 20:44:53 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.251 2004-08-24 05:02:11 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -186,7 +186,8 @@ donations on NCO development:
 <h2>NCO News & Announcements</h2>
 <ul>
 
-<li>August&nbsp;21, 2004:
+  <li>August&nbsp;21, 2004:
+  <a name="prp_sei"><b>NCO/SDO Proposal</b></a>:
   The <a href="http://www.nsf.gov">National Science Foundation (NSF)</a> has funded the
   <a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">NCO/SDO Proposal</a>!
   Thanks to the wise, generous, and, need I add, good-looking, proposal
@@ -196,7 +197,11 @@ donations on NCO development:
   <a href="http://www.cise.nsf.gov/div/index.cfm?div=sci">Shared Cyberinfrastructure (SC)</a>
   in the 
   <a href="http://www.nsf.gov/home/cise">Directorate for Computer and Information Science and Engineering (CISE)</a>.
-  We will soon devise a new mechanism to update users on our plans and progress towards the proposal's milestones.
+  We will soon devise a new mechanism to update users on our plans and progress towards the proposal's objectives.
+  This URL 
+  <a href="http://nco.sf.net#prp_sei"><tt>http://nco.sf.net#prp_sei</tt></a> 
+  will always point to the most up-to-date information on the NCO/SDO
+  proposal. 
 </li>
 
 <li>August&nbsp;7, 2004: New operator <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released&mdash;performs arbitrary dimension re-ordering and reversal

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.381 2004-08-20 17:10:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.382 2004-08-24 05:02:10 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -38,6 +38,7 @@ wvl_1e5 = 1
 wvl_1e6 = 1
 wvl_1e7 = 1
 wvl_1e8 = 0.167772 (NB: this is approximately 1/6)
+nco405. Modify multi-slabbing so that it places the output slabs in the order in which they were specified rather than the order they appear in the input file
 
 NCO-wide items of lesser priority:
 nco28. Use var.nc_id as file ID from now on and rewrite old routines to do so
@@ -249,7 +250,6 @@ nco402. Leave alone [un-]packing of fixed variables in arithmetic operators
         See notes about this in nco_var_dfn()
 nco403. ncpdq: Do not pack already packed variables
 nco404. See if Ersoy's XML stylesheet nco.css works
-nco405. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
