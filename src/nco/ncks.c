@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.11 1999-08-30 07:07:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.12 1999-10-04 05:13:36 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -61,7 +61,7 @@ main(int argc,char **argv)
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */ 
 
-  char **var_lst_in;
+  char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option a */ 
   char **fl_lst_in;
   char *dlm_sng=NULL;
@@ -74,8 +74,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.11 1999-08-30 07:07:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.11 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.12 1999-10-04 05:13:36 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.12 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -370,7 +370,7 @@ prn_att(int in_id,int var_id)
   int idx;
   int nbr_att;
 
-  att_sct *att;
+  att_sct *att=NULL_CEWI;
 
   if(var_id == NC_GLOBAL){
     /* Get the number of global attributes for the file */
@@ -994,7 +994,7 @@ prn_var_def(int in_id,char *var_nm)
 
   extern int ncopts;
 
-  int *dim_id;
+  int *dim_id=NULL_CEWI;
   int idx;
   int nbr_dim;
   int nbr_att;
@@ -1003,7 +1003,7 @@ prn_var_def(int in_id,char *var_nm)
   
   nc_type var_type;
   
-  dim_sct *dim;
+  dim_sct *dim=NULL_CEWI;
 
   /* See if the requested variable is in the input file. */
   var_id=ncvarid(in_id,var_nm);
@@ -1106,19 +1106,19 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int nbr_lmt,char *dlm_sng,bo
 
   extern int ncopts;
 
-  int *dim_id;
+  int *dim_id=NULL_CEWI;
   int idx;
   
-  long *dim_map;
-  long *dim_srd;
-  long *dim_cnt;
-  long *dim_srt;
-  long *dim_ss;
-  long *dim_mod;
-  long *hyp_mod;
+  long *dim_map=NULL_CEWI;
+  long *dim_srd=NULL_CEWI;
+  long *dim_cnt=NULL_CEWI;
+  long *dim_srt=NULL_CEWI;
+  long *dim_ss=NULL_CEWI;
+  long *dim_mod=NULL_CEWI;
+  long *hyp_mod=NULL_CEWI;
   long lmn;  
   
-  dim_sct *dim;
+  dim_sct *dim=NULL_CEWI;
   var_sct var;
 
   /* Copy name into var structure for aesthetics. Unfortunately,

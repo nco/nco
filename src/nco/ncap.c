@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.9 1999-07-01 23:13:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.10 1999-10-04 05:13:34 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -28,7 +28,12 @@
 #define MAIN_PROGRAM_FILE
 #include <netcdf.h>             /* netCDF def'ns */
 #include "nc.h"                 /* global definitions */
-#include "/home/zender/fsf/getopt.h"             /* GNU getopt() */
+
+#ifndef LINUX
+#include "getopt.h" /* GNU getopt() */
+#else /* LINUX */
+#include <getopt.h> /* GNU getopt() is standard on Linux */
+#endif /* LINUX */
 
 int 
 main(int argc,char **argv)
@@ -65,7 +70,7 @@ main(int argc,char **argv)
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */ 
 
-  char **var_lst_in;
+  char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
   char *fl_spt=NULL; /* Option s */ 
@@ -79,8 +84,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.9 1999-07-01 23:13:18 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.9 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.10 1999-10-04 05:13:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.10 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -89,7 +94,6 @@ main(int argc,char **argv)
   extern int optind;
 
   int idx;
-  int idx_fl;
   int in_id;  
   int int_foo;
   int out_id;  
@@ -107,11 +111,7 @@ main(int argc,char **argv)
   int rec_dim_id=-1;
   int rcd; /* Return code */ 
   
-  lmt_sct *lmt;
-  lmt_sct lmt_rec;
-  
-  long idx_rec;
-  long idx_rec_out=0L; /* idx_rec_out gets incremented */ 
+  lmt_sct *lmt=NULL_CEWI;
   
   nm_id_sct *dim_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */ 
@@ -308,7 +308,7 @@ main(int argc,char **argv)
   for(idx=0;idx<nbr_dim_xtr;idx++) dim[idx]=dim_fll(in_id,dim_lst[idx].id,dim_lst[idx].nm);
   
   /* Merge the hyperslab limit information into the dimension structures */ 
-  if(nbr_lmt > 0) (void)dim_lmt_merge(dim,nbr_dim_xtr,lmt.nbr_lmt);
+  if(nbr_lmt > 0) (void)dim_lmt_merge(dim,nbr_dim_xtr,lmt,nbr_lmt);
 
   /* Duplicate the input dimension structures for output dimension structures */ 
   dim_out=(dim_sct **)malloc(nbr_dim_xtr*sizeof(dim_sct *));

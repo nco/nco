@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.11 1999-08-30 07:07:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.12 1999-10-04 05:13:35 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -55,7 +55,7 @@ main(int argc,char **argv)
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */ 
   
-  char **var_lst_in;
+  char **var_lst_in=NULL_CEWI;
   char **ntp_lst_in;
   char **fl_lst_abb=NULL; /* Option a */ 
   char **fl_lst_in;
@@ -71,13 +71,13 @@ main(int argc,char **argv)
   char *time_buf_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */ 
-  char CVS_Id[]="$Id: ncflint.c,v 1.11 1999-08-30 07:07:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.11 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.12 1999-10-04 05:13:35 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.12 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
   
-  double ntp_val_out; /* Option i */ 
+  double ntp_val_out=double_CEWI; /* Option i */ 
   double wgt_val_1=.5; /* Option w */ 
   double wgt_val_2=.5; /* Option w */ 
 
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   
   time_t clock;
   
-  var_sct *wgt_1;
-  var_sct *wgt_2;
+  var_sct *wgt_1=NULL_CEWI;
+  var_sct *wgt_2=NULL_CEWI;
   var_sct *wgt_out_1=NULL;
   var_sct *wgt_out_2=NULL;
   var_sct **var;

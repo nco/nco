@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.12 1999-07-29 17:49:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.13 1999-10-04 05:13:36 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -55,7 +55,7 @@ main(int argc,char **argv)
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */ 
 
-  char **var_lst_in;
+  char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
   char *fl_in=NULL;
@@ -67,8 +67,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.12 1999-07-29 17:49:06 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.12 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.13 1999-10-04 05:13:36 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.13 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -93,14 +93,14 @@ main(int argc,char **argv)
   int opt;
   int rec_dim_id=-1;
   
-  lmt_sct *lmt;
+  lmt_sct *lmt=NULL_CEWI;
   lmt_sct lmt_rec;
   
   long idx_rec;
   long idx_rec_out=0L; /* idx_rec_out gets incremented */ 
   
-  nclong base_time_srt;
-  nclong base_time_crr;
+  nclong base_time_srt=nclong_CEWI;
+  nclong base_time_crr=nclong_CEWI;
 
   nm_id_sct *dim_lst;
   nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */ 

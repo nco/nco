@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.5 1998-12-04 22:23:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.6 1999-10-04 05:13:35 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -16,12 +16,6 @@
 
 #include <netcdf.h>             /* netCDF def'ns */
 #include "nc.h"                 /* netCDF operator universal def'ns */
-
-void
-nc_lib_vrs_prn()
-{
-  (void)fprintf(stderr,"Linked to netCDF library version %s\n",nc_inq_libvers());
-} /* end nc_lib_vrs_prn() */
 
 var_sct *
 ncap_var_add(var_sct *var_1,var_sct *var_2)

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.13 1999-08-30 07:07:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.14 1999-10-04 05:13:34 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -12,6 +12,17 @@
 #define bool int
 #define True 1
 #define False 0
+
+/* Variables marked CEWI "Compiler Error Warning Initialization" are initialized
+   to prevent spurious "warning: `float foo' might be used uninitialized in 
+   this function" warnings when -Wunitialized is turned on. */
+#define NULL_CEWI NULL
+#define nclong_CEWI 0L
+#define int_CEWI 0
+#define double_CEWI 0.0
+#define float_CEWI 0.0
+#define long_CEWI 0L
+#define short_CEWI 0
 
 /*const short True=1;*/
 /*const short False=0;*/

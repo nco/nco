@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.20 1999-08-31 22:25:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.21 1999-10-04 05:13:36 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -58,8 +58,8 @@ main(int argc,char **argv)
   bool NORMALIZE_BY_WEIGHT=True; /* Not currently implemented */ 
   bool WGT_MSK_CRD_VAR=True; /* Option I */ 
 
-  char **dim_avg_lst_in; /* Option a */ 
-  char **var_lst_in;
+  char **dim_avg_lst_in=NULL_CEWI; /* Option a */ 
+  char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option n */ 
   char **fl_lst_in;
   char *fl_in=NULL;
@@ -73,12 +73,12 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.20 1999-08-31 22:25:56 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.20 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.21 1999-10-04 05:13:36 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.21 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
-  dim_sct **dim_avg;
+  dim_sct **dim_avg=NULL_CEWI;
   
   double msk_val=1.; /* Option M */ 
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.34 1999-08-31 22:25:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.35 1999-10-04 05:13:34 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -199,8 +199,8 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 
   lmt_sct lmt;
 
-  int min_lmt_typ;
-  int max_lmt_typ;
+  int min_lmt_typ=int_CEWI;
+  int max_lmt_typ=int_CEWI;
   int monotonic_direction;
   
   long idx;
@@ -3244,10 +3244,10 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
   long idx_blk;
   long sz_blk;
 #ifndef USE_FORTRAN_ARITHMETIC
-  double mss_val_double;
-  float mss_val_float;
-  nclong mss_val_long;
-  short mss_val_short;
+  double mss_val_double=double_CEWI;
+  float mss_val_float=float_CEWI;
+  nclong mss_val_long=long_CEWI;
+  short mss_val_short=short_CEWI;
   signed char mss_val_char;
   unsigned char mss_val_byte;
 #endif /* USE_FORTRAN_ARITHMETIC */
@@ -4514,7 +4514,7 @@ usg_prn(void)
 {
 /* Routine to print the correct command-line usage of the programs (currently to stdout) */ 
 
-  char *opt_sng;
+  char *opt_sng=NULL_CEWI;
 
   int prg;
 
