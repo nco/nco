@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.2 1998-08-19 04:27:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.3 1998-10-30 07:57:40 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -70,8 +70,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncwa.c,v 1.2 1998-08-19 04:27:27 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.2 $";
+  char rcs_Id[]="$Id: ncwa.c,v 1.3 1998-10-30 07:57:40 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.3 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -335,7 +335,7 @@ main(int argc,char **argv)
       } /* end loop over idx_avg */
     } /* end loop over idx */
 
-    /* Dimensions to be averaged will not appear in the output file */ 
+    /* Dimensions to be averaged will not appear in output file */ 
     dim_out=(dim_sct **)malloc((nbr_dim_xtr-nbr_dim_avg)*sizeof(dim_sct *));
     nbr_dim_out=0;
     for(idx=0;idx<nbr_dim_xtr;idx++){
@@ -356,7 +356,7 @@ main(int argc,char **argv)
     
   }else{
 
-    /* Duplicate the input dimension structures for output dimension structures */ 
+    /* Duplicate input dimension structures for output dimension structures */ 
     nbr_dim_out=nbr_dim_xtr;
     dim_out=(dim_sct **)malloc(nbr_dim_out*sizeof(dim_sct *));
     for(idx=0;idx<nbr_dim_out;idx++){
@@ -379,7 +379,7 @@ main(int argc,char **argv)
     (void)var_dim_xrf(var_out[idx]);
   } /* end loop over idx */
 
-  /* Divide the variable lists into lists of fixed variables and variables to be processed */ 
+  /* Divide variable lists into lists of fixed variables and variables to be processed */ 
   (void)var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,dim_avg,nbr_dim_avg,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* We now have the final list of variables to extract. Phew. */
@@ -389,19 +389,19 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stderr,"var_prc[%d]->nm = %s, ->id=[%d]\n",idx,var_prc[idx]->nm,var_prc[idx]->id);
   } /* end if */
   
-  /* Open the output file */ 
+  /* Open output file */ 
   fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
 
-  /* Copy all the global attributes */ 
+  /* Copy all global attributes */ 
   (void)att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
   
-  /* Catenate the time-stamped command line to the "history" global attribute */ 
+  /* Catenate time-stamped command line to "history" global attribute */ 
   if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
 
-  /* Define the dimensions in the output file */ 
+  /* Define dimensions in output file */ 
   (void)dim_def(fl_out,out_id,dim_out,nbr_dim_out);
 
-  /* Define the variables in the output file, and copy their attributes */ 
+  /* Define variables in output file, and copy their attributes */ 
   (void)var_def(in_id,fl_out,out_id,var_out,nbr_xtr,dim_out,nbr_dim_out);
 
   /* New missing values must be added to the output file in define mode */

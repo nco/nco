@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.4 1998-10-30 07:16:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.5 1998-10-30 07:57:40 zender Exp $ */
 
 /* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -662,6 +662,7 @@ rec_var_dbg(int nc_id,char *dbg_sng)
 */ 
 {
   /* Purpose: Aid in debugging problems with record dimension */ 
+  /* Usage: if(dbg_lvl == 73) rec_var_dbg(out_id,"After ncvarput()") */ 
   int nbr_dim_fl;
   int nbr_var_fl;
   int rec_dim_id=-1;
