@@ -1,7 +1,14 @@
+2002-06-06  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_4_4
+	* Changes since nco-2_4_3: Build system
+
 2002-06-05  Charlie Zender  <zender@uci.edu>
 
-	* Change AIX default to 64 bit mode (addresses are all 64 bits)
+	* Allow 64 bit mode ABI (addresses are all 64 bits) on AIX
+	when compiled with ABI=64.
 	This should allow NCO to work on files larger than 2--4 GB
+	The default for SGI was already 64 bits.
 
 2002-06-04  Charlie Zender  <zender@uci.edu>
 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.146 2002-06-06 00:13:54 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.147 2002-06-06 23:07:36 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -18,6 +18,8 @@
 # cd ~/nco/bld;make DODS=Y;cd -
 # HDF5 version of netCDF libraries:
 # cd ~/nco/bld;make cln bin_cln all HDF5=Y;cd -
+# 64-bit ABI on NCAR AIX systems:
+# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 make lib_cln cln all ABI=64;cd -
 
 # Top-level tokens defining directory structure
 # These tokens may be over-ridden by environment variables or when invoking make, e.g. make DODS=Y
@@ -309,8 +311,10 @@ endif
 ifeq (${ABI},64)
  AR := ar -X 64
  CFLAGS += -q64
+ FFLAGS += -q64
  LDFLAGS += -q64 
 endif # endif ABI
+C++FLAGS := ${CFLAGS}
 # Additional flags for AIX:
 # -M Generate information to be included in a "make" description file; output goes to .u file
 # -c Do not send object files to the linkage editor
