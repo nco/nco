@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.12 2003-02-25 22:12:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.13 2003-02-25 22:17:34 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -865,7 +865,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	  /* Memory region is not NUL-terminated, print block of chars instead */
 	  /* Print block of chars inside single quotes */
           prn_sng=(char*)nco_malloc(dmn_sz+1);
-          (void)strncpy(prn_sng,var.val.cp+lmn,dmn_sz);
+          (void)strncpy(prn_sng,(char *)(var.val.cp+lmn),dmn_sz);
           *(prn_sng+dmn_sz)='\0';
           (void)printf("DMN SIZE= %ld\n",dmn_sz);
           (void)sprintf(var_sng,"%%s(%%ld--%%ld)=%%s %%s" );
