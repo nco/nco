@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.243 2004-08-03 17:06:43 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.244 2004-08-04 15:58:28 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -366,6 +366,15 @@ href="src/nco_2.9.7-1_i386.changes">nco_2.9.7-1_i386.changes</a> (<!--#fsize fil
 <li><a href="http://mitgcm.org/eh3/packages">nco-2.9.7-0.fdr.2.i386.rpm</a>: Fedora Core&nbsp;2, i386 Binary RPM</li>
 <li><a href="http://mitgcm.org/eh3/packages">nco-2.9.7-0.fdr.2.x86_64.rpm</a>: Fedora Core&nbsp;2, x86_64 Binary RPM</li>
 <li><a href="http://mitgcm.org/eh3/packages">nco-2.9.7-0.fdr.2.src.rpm</a>: Fedora Core&nbsp;1, Source RPM</li>
+</ul>
+
+<a name="fink"></a>
+<a name="fnk"></a>
+<h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;X/Darwin</a></h3>
+<ul>
+<a href="http://fink.sf.net/pdb/package.php/nco"">Mac&nbsp;OS&nbsp;X/Darwin homepage for NCO</a>.
+<a href="http://fink.sf.net">Fink packages</a> by Takeshi Enomoto:
+<li><a href="http://fink.sf.net/pdb/package.php/nco">nco-2.9.6-darwin-powerpc.deb</a>: Mac&nbsp;OS&nbsp;X&nbsp;10.3, PowerPC package</li>
 </ul>
 
 <a name="gentoo"></a>
