@@ -36,8 +36,7 @@ endif
 config.status: configure
 	dh_testdir
 	# Add here commands to configure the package.
-	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info 
-
+	./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --disable-nco_cplusplus --disable-static UDUNITS_PATH=/usr/share/nco/udunits.dat
 
 #Architecture 
 build: build-arch
@@ -58,13 +57,6 @@ clean:
 
 	# Add here commands to clean up after the build process.
 	-$(MAKE) distclean
-ifneq "$(wildcard /usr/share/misc/config.sub)" ""
-	cp -f /usr/share/misc/config.sub config.sub
-endif
-ifneq "$(wildcard /usr/share/misc/config.guess)" ""
-	cp -f /usr/share/misc/config.guess config.guess
-endif
-
 	
 	dh_clean
 
@@ -81,18 +73,19 @@ install-arch:
 	# debian/tmp.
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/nco
 
-	dh_install -a
+	# NCO installs header files by default, which we don't want
+	dh_install -a --exclude="*.h *.hh"
+
 # Must not depend on anything. This is to be called by
 # binary-arch/binary-multi
 # in another 'make' thread.
 binary-common:
 	dh_testdir
 	dh_testroot
-	dh_installchangelogs 
-# fix changelog name, see Policy 12.7
-	cd doc && test -e changelog || mv ChangeLog changelog
+	dh_installchangelogs doc/ChangeLog
 	dh_installdocs doc/*.html
 	dh_installexamples
+	dh_install data/udunits.dat /usr/share/nco/
 #	dh_installmenu
 #	dh_installdebconf	
 #	dh_installlogrotate	
