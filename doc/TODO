@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.59 2000-06-25 18:39:47 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.60 2000-06-26 10:34:41 zender Exp $ -*-text-*-
 
 *************
 NCO Wish list
@@ -24,7 +24,6 @@ NCO Wish list
 81. Convert all data to double precision before arithmetic, then convert back after arithmetic. This is the only way to sensibly handle byte data, and #116 below
 82. Make libnco namespace-safe by prefixing all possibly dynamically loaded subroutines with, e.g., nco_
 83. Always build operators to link dynamically to libnco.so
-84. Check malloc() and realloc() for failure instead of mysteriously dumping core later
 86. Extend stride/wraparound capability to all operators possible
 88. ncks is slow on large files on Crays: ncks -H -v time,date,datesec /tmp/eaton/pcw101/h0009.nc will this be fixed when move beyond netcdf2.4.2 cray libs?
 92. ncrcat -O -v base_time,time_offset arm.cdf arm.cdf foo.nc;ncks -H -C -h foo.nc | m gives bad time_offset on LINUX not SUNMP (problem with LINUX adding record coordinate to open file?)
@@ -132,6 +131,7 @@ with nco_dst.pl
 167. Improve/redesign test suite so it is more comprehensive and easier to add to
 168. Implement autoconf/automake build environment?
 169. Merge TODO into Task manager and bug manager as appropriate
+170. rgn.sh appears to cause core dump over some ocean basins
 ************************************************************************
 End NCO Wish list
 ************************************************************************
