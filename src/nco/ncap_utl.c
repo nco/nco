@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.24 2001-12-29 06:22:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.25 2001-12-29 18:18:38 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -54,23 +54,23 @@
 var_sct *
 ncap_var_init(char *var_nm,prs_sct *prs_arg)
 {
-  /* Purpose: initialize var structure, retrieve var values from disk */
+  /* Purpose: Initialize var structure, retrieve var values from disk */
   
   int var_id;
   int rcd;
   int fl_id;
   var_sct *vara;
   
-  /* check output file for var */  
-  rcd = nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
+  /* Check output file for var */  
+  rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
   
-  if( rcd == NC_NOERR ) {
-    fl_id = prs_arg->out_id;
+  if( rcd == NC_NOERR ){
+    fl_id=prs_arg->out_id;
   }else{
-    /* check input file for id */
-    rcd = nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
-    if ( rcd == NC_NOERR ) {
-      fl_id = prs_arg->in_id;
+    /* Check input file for id */
+    rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
+    if( rcd == NC_NOERR ){
+      fl_id=prs_arg->in_id;
     }else{
       (void)fprintf(stderr,"can't find %s in %s or %s\n",var_nm,prs_arg->fl_in,prs_arg->fl_out);     
       return (var_sct*)NULL;
@@ -79,7 +79,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   
   if(dbg_lvl_get() > 1) (void)fprintf(stderr,"VAR: retriving %s from disk\n",var_nm);  
   vara=var_fll(fl_id,var_id,var_nm,prs_arg->dmn,prs_arg->nbr_dmn_xtr);
-  vara->nm = nco_malloc((strlen(var_nm)+1)*sizeof(char)); strcpy(vara->nm,var_nm);
+  vara->nm=nco_malloc((strlen(var_nm)+1)*sizeof(char)); strcpy(vara->nm,var_nm);
   vara->tally=(long *)malloc(vara->sz*nco_typ_lng(NC_INT));
   (void)zero_long(vara->sz,vara->tally);
   vara->val.vp=(void *)malloc(vara->sz*nco_typ_lng(vara->type));
@@ -122,8 +122,8 @@ ncap_sym_init(char *name,double (*function)())
 { 
   /* purpose: Allocate space for sym_sct then initialize */
   sym_sct *symbol;
-  symbol = malloc(sizeof(sym_sct));
-  symbol->nm = strdup(name);
+  symbol=malloc(sizeof(sym_sct));
+  symbol->nm=strdup(name);
   symbol->fnc= function;
   return symbol;
 } /* end ncap_sym_init */
@@ -140,8 +140,8 @@ ncap_ptr_unn_2_attribute(nc_type type, ptr_unn val)
   
   parse_sct a;
   (void)cast_void_nctype(type,&val);
-  switch(type) {
-  case NC_FLOAT: a.val.f = *val.fp ; break;
+  switch(type){
+  case NC_FLOAT: a.val.f=*val.fp ; break;
   case NC_DOUBLE: a.val.d =*val.dp ; break;
   case NC_INT:    a.val.l =*val.lp ; break;
   case NC_SHORT:  a.val.s=*val.sp  ; break;
@@ -149,7 +149,7 @@ ncap_ptr_unn_2_attribute(nc_type type, ptr_unn val)
   case NC_CHAR:   break; /* do nothing */
   default: nco_dfl_case_nctype_err(); break;
   } 
-  a.type = type;
+  a.type=type;
   /* don't have to uncast pointer as we are working with acopy */
   return a;
 } /* end ncap_ptr_unn_2_attribute */
@@ -161,16 +161,16 @@ ncap_attribute_2_ptr_unn(parse_sct a)
   /* It mallocs the appropriate space for the single type */
   /* n.b It doesn't do strings */
   ptr_unn val;
-  nc_type type = a.type;
-  val.vp = (void *)nco_malloc(nco_typ_lng(type));
+  nc_type type=a.type;
+  val.vp=(void *)nco_malloc(nco_typ_lng(type));
   (void)cast_void_nctype(type,&val);
   
-  switch(type) {
-  case NC_FLOAT: *val.fp = a.val.f; break;
-  case NC_DOUBLE: *val.dp = a.val.d; break;
-  case NC_INT:   *val.lp = a.val.l; break;
-  case NC_SHORT: *val.sp = a.val.s; break;
-  case NC_BYTE:  *val.bp = a.val.b;  break;
+  switch(type){
+  case NC_FLOAT: *val.fp=a.val.f; break;
+  case NC_DOUBLE: *val.dp=a.val.d; break;
+  case NC_INT:   *val.lp=a.val.l; break;
+  case NC_SHORT: *val.sp=a.val.s; break;
+  case NC_BYTE:  *val.bp=a.val.b;  break;
   case NC_CHAR:   break; /* do nothing */
   default: nco_dfl_case_nctype_err(); break;
   } 
@@ -258,14 +258,14 @@ ncap_var_attribute_power(var_sct *var_in,parse_sct attribute)
   var_sct *var;
   /* convert attribute and var to type DOUBLE */
   (void)ncap_attribute_conform_type(NC_DOUBLE,&attribute);
-  var_in = var_conform_type(NC_DOUBLE,var_in);
-  var = var_dpl(var_in);
+  var_in=var_conform_type(NC_DOUBLE,var_in);
+  var=var_dpl(var_in);
   op1=var->val;
   (void)cast_void_nctype(NC_DOUBLE,&op1);
   if(var->has_mss_val) (void)cast_void_nctype(NC_DOUBLE,&(var->mss_val));
   
-  att_dpl = attribute.val.d;
-  sz = var->sz;
+  att_dpl=attribute.val.d;
+  sz=var->sz;
   if(!var->has_mss_val){
     for(idx=0;idx<sz;idx++) op1.dp[idx]=pow(op1.dp[idx],att_dpl);
     
@@ -290,13 +290,13 @@ ncap_var_function(var_sct *var_in, double(*fnc)())
   ptr_unn op1;
   var_sct *var;
   /* convert attribute and var to type DOUBLE */
-  var_in = var_conform_type(NC_DOUBLE,var_in);
-  var = var_dpl(var_in);
+  var_in=var_conform_type(NC_DOUBLE,var_in);
+  var=var_dpl(var_in);
   op1=var->val;
   (void)cast_void_nctype(NC_DOUBLE,&op1);
   if(var->has_mss_val) (void)cast_void_nctype(NC_DOUBLE,&(var->mss_val));
   
-  sz = var->sz;
+  sz=var->sz;
   if(!var->has_mss_val){
     for(idx=0;idx<sz;idx++) op1.dp[idx]=fnc(op1.dp[idx]);
     
@@ -399,7 +399,7 @@ var_attribute_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
   
   switch(type){
   case NC_FLOAT:{
-    float att_flt = attribute->val.f;
+    float att_flt=attribute->val.f;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]+=att_flt;
     }else{
@@ -411,7 +411,7 @@ var_attribute_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
     break;
   }
   case NC_DOUBLE:{
-    double att_dpl = attribute->val.d;
+    double att_dpl=attribute->val.d;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]+=att_dpl;
     }else{
@@ -423,7 +423,7 @@ var_attribute_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
     break;
   }
   case NC_INT:{
-    nco_long att_lng = attribute->val.l;
+    nco_long att_lng=attribute->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]+=att_lng;
     }else{
@@ -435,7 +435,7 @@ var_attribute_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
     break;
   }
   case NC_SHORT:{
-    short att_shrt = attribute->val.s; 
+    short att_shrt=attribute->val.s; 
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]+=att_shrt;
     }else{
@@ -485,7 +485,7 @@ var_attribute_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_
   
   switch(type){
   case NC_FLOAT:{
-    float att_flt = attribute->val.f;
+    float att_flt=attribute->val.f;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]*=att_flt;
     }else{
@@ -497,7 +497,7 @@ var_attribute_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_
     break;
   }
   case NC_DOUBLE:{
-    double att_dpl = attribute->val.d;
+    double att_dpl=attribute->val.d;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]*=att_dpl;
     }else{
@@ -509,7 +509,7 @@ var_attribute_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_
     break;
   }
   case NC_INT:{
-    nco_long att_lng = attribute->val.l;
+    nco_long att_lng=attribute->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]*=att_lng;
     }else{
@@ -521,7 +521,7 @@ var_attribute_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_
     break;
   }
   case NC_SHORT:{
-    short att_shrt = attribute->val.s; 
+    short att_shrt=attribute->val.s; 
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]*=att_shrt;
     }else{
@@ -571,7 +571,7 @@ var_attribute_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_un
   
   switch(type){
   case NC_FLOAT:{
-    float att_flt = attribute->val.f;
+    float att_flt=attribute->val.f;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]/=att_flt;
     }else{
@@ -583,7 +583,7 @@ var_attribute_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_un
     break;
   }
   case NC_DOUBLE:{
-    double att_dpl = attribute->val.d;
+    double att_dpl=attribute->val.d;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]/=att_dpl;
     }else{
@@ -595,7 +595,7 @@ var_attribute_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_un
     break;
   }
   case NC_INT:{
-    nco_long att_lng = attribute->val.l;
+    nco_long att_lng=attribute->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]/=att_lng;
     }else{
@@ -607,7 +607,7 @@ var_attribute_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_un
     break;
   }
   case NC_SHORT:{
-    short att_shrt = attribute->val.s; 
+    short att_shrt=attribute->val.s; 
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]/=att_shrt;
     }else{
@@ -657,7 +657,7 @@ var_attribute_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_u
   
   switch(type){
   case NC_FLOAT:{ 
-    float att_flt = fabsf(attribute->val.f);
+    float att_flt=fabsf(attribute->val.f);
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]=fmodf(op1.fp[idx],att_flt);
     }else{
@@ -669,7 +669,7 @@ var_attribute_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_u
   }
   break; 
   case NC_DOUBLE:{
-    double att_dpl = fabs(attribute->val.d);
+    double att_dpl=fabs(attribute->val.d);
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]=fmod(op1.dp[idx],att_dpl);
     }else{
@@ -682,7 +682,7 @@ var_attribute_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_u
   }
   
   case NC_INT:{
-    nco_long att_lng = attribute->val.l;
+    nco_long att_lng=attribute->val.l;
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]%=att_lng;
     }else{
@@ -694,7 +694,7 @@ var_attribute_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_u
     break;
   }
   case NC_SHORT:{
-    short att_shrt = attribute->val.s; 
+    short att_shrt=attribute->val.s; 
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]%=att_shrt;
     }else{
@@ -806,8 +806,8 @@ ncap_var_retype(var_sct* vara, var_sct* varb)
   /* Purpose: Convert a variable if necessary so the vars are of the same type */
   
   if( vara->type == varb->type) return vara->type;
-  if (vara->type > varb->type){
-    varb = var_conform_type(vara->type,varb);
+  if(vara->type > varb->type){
+    varb=var_conform_type(vara->type,varb);
     return vara->type;
   }else{
     vara=var_conform_type(varb->type,vara);
@@ -825,7 +825,7 @@ ncap_var_conform_dim(var_sct* vara,var_sct *varb)
   else
     vara=var_conform_dim(varb,vara,varb,MUST_CONFORM,&DO_CONFORM);
   
-  if (!DO_CONFORM) {
+  if(!DO_CONFORM){
     (void)fprintf(stderr,"%s: Variables don't have have conforming dimensions. Cannot proceed with operation\n",prg_nm_get());
     exit(EXIT_FAILURE);
   }
@@ -836,8 +836,8 @@ int
 ncap_retype(parse_sct *a,parse_sct *b)
 {
   /* Purpose: Convert an attribute if necessary so the attributes  are of the same type */
-  if (a->type == b->type) return a->type;
-  if ((a->type) > (b->type)){ (void)ncap_attribute_conform_type(a->type,b);}
+  if(a->type == b->type) return a->type;
+  if((a->type) > (b->type)){ (void)ncap_attribute_conform_type(a->type,b);}
   else {(void)ncap_attribute_conform_type(b->type,a);}
   
   return a->type;    
@@ -847,7 +847,7 @@ int
 ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
 {
   /* purpose: Convert an attribute to type_new using implicit C convertions */
-  nc_type type_old = a->type;
+  nc_type type_old=a->type;
   
   parse_sct b;
   switch (type_new){ 
@@ -891,7 +891,7 @@ ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
     
   case NC_FLOAT:
     switch(type_old){
-    case NC_FLOAT:  b.val.f = (a->val).d; 
+    case NC_FLOAT:  b.val.f=(a->val).d; 
     case NC_DOUBLE: b.val.f=(a->val).d; break; 
     case NC_INT: (b.val).f=(a->val).l; break;
     case NC_SHORT: (b.val).f=(a->val).s; break;
@@ -913,8 +913,8 @@ ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
   default: nco_dfl_case_nctype_err(); break;
     
   } /* end switch */
-  b.type = type_new;
-  *a = b;
+  b.type=type_new;
+  *a=b;
   return 1;      
 } /* end ncap_attribute_conform_type */
 
@@ -923,53 +923,53 @@ ncap_attribute_calc(parse_sct a, char op, parse_sct b)
 {
   /* Purpose: Calculate (a op b) . n.b Attributes must be of the same type */
   parse_sct c;
-  c.type = a.type;
+  c.type=a.type;
   switch(c.type){ 
     
   case NC_BYTE:
     switch(op){
-      case'+': c.val.b = a.val.b + b.val.b;break;
-      case'-': c.val.b = a.val.b - b.val.b;break;
-      case'/': c.val.b = a.val.b / b.val.b;break;
-      case'*': c.val.b = a.val.b * b.val.b;break;
-      case'%': c.val.b = a.val.b % b.val.b;break;
+      case'+': c.val.b=a.val.b + b.val.b;break;
+      case'-': c.val.b=a.val.b - b.val.b;break;
+      case'/': c.val.b=a.val.b / b.val.b;break;
+      case'*': c.val.b=a.val.b * b.val.b;break;
+      case'%': c.val.b=a.val.b % b.val.b;break;
     } break;
   case NC_CHAR:
     /* Do nothing */
     break;
   case NC_SHORT:
     switch(op){
-      case'+': c.val.s = a.val.s + b.val.s;break;
-      case'-': c.val.s = a.val.s - b.val.s;break;
-      case'/': c.val.s = a.val.s / b.val.s;break;
-      case'*': c.val.s = a.val.s * b.val.s;break;
-      case'%': c.val.s = a.val.s % b.val.s;break;
+      case'+': c.val.s=a.val.s + b.val.s;break;
+      case'-': c.val.s=a.val.s - b.val.s;break;
+      case'/': c.val.s=a.val.s / b.val.s;break;
+      case'*': c.val.s=a.val.s * b.val.s;break;
+      case'%': c.val.s=a.val.s % b.val.s;break;
     } break;
   case NC_INT:
     switch(op){
-      case'+': c.val.l = a.val.l + b.val.l;break;
-      case'-': c.val.l = a.val.l - b.val.l;break;
-      case'/': c.val.l = a.val.l / b.val.l;break;
-      case'*': c.val.l = a.val.l * b.val.l;break;
-      case'%': c.val.l = a.val.l % b.val.l;break;
+      case'+': c.val.l=a.val.l + b.val.l;break;
+      case'-': c.val.l=a.val.l - b.val.l;break;
+      case'/': c.val.l=a.val.l / b.val.l;break;
+      case'*': c.val.l=a.val.l * b.val.l;break;
+      case'%': c.val.l=a.val.l % b.val.l;break;
     } break;
     
   case NC_FLOAT:
     switch(op){
-      case'+': c.val.f = a.val.f + b.val.f;break;
-      case'-': c.val.f = a.val.f - b.val.f;break;
-      case'/': c.val.f = a.val.f / b.val.f;break;
-      case'*': c.val.f = a.val.f * b.val.f;break;
-      case'%': c.val.f = fmodf(a.val.f, fabsf(b.val.f));break;
+      case'+': c.val.f=a.val.f + b.val.f;break;
+      case'-': c.val.f=a.val.f - b.val.f;break;
+      case'/': c.val.f=a.val.f / b.val.f;break;
+      case'*': c.val.f=a.val.f * b.val.f;break;
+      case'%': c.val.f=fmodf(a.val.f, fabsf(b.val.f));break;
     } break;
     
   case NC_DOUBLE:
     switch(op){
-      case'+': c.val.d = a.val.d + b.val.d;break;
-      case'-': c.val.d = a.val.d - b.val.d;break;
-      case'/': c.val.d = a.val.d / b.val.d;break;
-      case'*': c.val.d = a.val.d * b.val.d;break;
-      case'%': c.val.d = fmod(a.val.d, fabs(b.val.d));break;
+      case'+': c.val.d=a.val.d + b.val.d;break;
+      case'-': c.val.d=a.val.d - b.val.d;break;
+      case'/': c.val.d=a.val.d / b.val.d;break;
+      case'*': c.val.d=a.val.d * b.val.d;break;
+      case'%': c.val.d=fmod(a.val.d, fabs(b.val.d));break;
     } break;
   default: nco_dfl_case_nctype_err(); break;
   }/* end switch */    
@@ -983,25 +983,25 @@ ncap_attribute_abs(parse_sct a)
   /* Purpose: Find the absolute value of an attribute */
   
   parse_sct b;
-  b.type = a.type;
+  b.type=a.type;
   switch(a.type){ 
   case NC_BYTE:
-    b.val.b = ( (a.val.b >= 0) ? a.val.b : -a.val.b) ;
+    b.val.b=( (a.val.b >= 0) ? a.val.b : -a.val.b) ;
     break;
   case NC_CHAR:
     /* Do nothing */
     break;
   case NC_SHORT:
-    b.val.s = ( (a.val.s >= 0) ? a.val.s : -a.val.s) ;
+    b.val.s=( (a.val.s >= 0) ? a.val.s : -a.val.s) ;
     break;
   case NC_INT:
     b.val.l=abs(a.val.l);
     break;            
   case NC_FLOAT:
-    b.val.f = fabsf(a.val.f);
+    b.val.f=fabsf(a.val.f);
     break;
   case NC_DOUBLE:
-    b.val.d = fabs(a.val.d);
+    b.val.d=fabs(a.val.d);
     break;
   default: nco_dfl_case_nctype_err(); break;    
   } /* end switch */
@@ -1018,16 +1018,16 @@ ncap_attribute_minus(parse_sct *a)
     /* Do nothing */
     break;
   case NC_SHORT:
-    a->val.s = -a->val.s;
+    a->val.s=-a->val.s;
     break;
   case NC_INT:
-    a->val.l = -a->val.l;
+    a->val.l=-a->val.l;
     break;            
   case NC_FLOAT:
-    a->val.f = -a->val.f;
+    a->val.f=-a->val.f;
     break;
   case NC_DOUBLE:
-    a->val.d = -a->val.d;
+    a->val.d=-a->val.d;
     break;
   default: nco_dfl_case_nctype_err(); break;   
   }/* end switch */    
@@ -1042,10 +1042,10 @@ var_lst_copy(nm_id_sct *xtr_lst,int n)
   nm_id_sct *xtr_new_lst;
   
   if(n == 0 ) return NULL;
-  xtr_new_lst = (nm_id_sct*)nco_malloc(n*sizeof(nm_id_sct));
+  xtr_new_lst=(nm_id_sct*)nco_malloc(n*sizeof(nm_id_sct));
   for (i =0 ; i< n ; i++){
-    xtr_new_lst[i].nm = strdup(xtr_lst[i].nm);
-    xtr_new_lst[i].id = xtr_lst[i].id;
+    xtr_new_lst[i].nm=strdup(xtr_lst[i].nm);
+    xtr_new_lst[i].id=xtr_lst[i].id;
   }
   return xtr_new_lst;            
 } /* end var_lst_copy */
@@ -1064,16 +1064,16 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
   
   if(*nbr_xtr == 0 ) return xtr_lst;
   
-  xtr_new_lst = (nm_id_sct*)nco_malloc((*nbr_xtr)*sizeof(nm_id_sct));  
-  for(i =0 ; i < *nbr_xtr ; i++) {
-    match = False;
-    for(j = 0; j < nbr_lst_b ; j++)
-      if(!strcmp(xtr_lst[i].nm,xtr_lst_b[j].nm)){ match = True ; break; }
+  xtr_new_lst=(nm_id_sct*)nco_malloc((*nbr_xtr)*sizeof(nm_id_sct));  
+  for(i =0 ; i < *nbr_xtr ; i++){
+    match=False;
+    for(j=0; j < nbr_lst_b ; j++)
+      if(!strcmp(xtr_lst[i].nm,xtr_lst_b[j].nm)){ match=True ; break; }
     if(match) continue;
-    xtr_new_lst[n].nm = strdup(xtr_lst[i].nm);
-    xtr_new_lst[n++].id = xtr_lst[i].id;
+    xtr_new_lst[n].nm=strdup(xtr_lst[i].nm);
+    xtr_new_lst[n++].id=xtr_lst[i].id;
   }
-  *nbr_xtr = n;
+  *nbr_xtr=n;
   return xtr_new_lst;      
   
 }/* end var_lst_sub */
@@ -1093,29 +1093,29 @@ var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int n
   
   
   if(*nbr_xtr >0 ){
-    xtr_new_lst = (nm_id_sct*)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
-    n = *nbr_xtr;
+    xtr_new_lst=(nm_id_sct*)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
+    n=*nbr_xtr;
     for (i =0 ; i< *nbr_xtr ; i++){
-      xtr_new_lst[i].nm = strdup(xtr_lst[i].nm);
-      xtr_new_lst[i].id = xtr_lst[i].id;
+      xtr_new_lst[i].nm=strdup(xtr_lst[i].nm);
+      xtr_new_lst[i].id=xtr_lst[i].id;
     }
   }else{
-    *nbr_xtr = nbr_lst_a;
+    *nbr_xtr=nbr_lst_a;
     return var_lst_copy(xtr_lst_a,nbr_lst_a);
   }/* end if */
   
   
-  for( i = 0 ; i < nbr_lst_a ; i++) {
-    match = False;
-    for(j = 0 ; j < *nbr_xtr ;j++)
-      if(!strcmp(xtr_lst[j].nm,xtr_lst_a[i].nm)){ match = True ; break;}
-    if (match) continue;
-    xtr_new_lst = (nm_id_sct*)nco_realloc(xtr_new_lst,(n+1)*sizeof(nm_id_sct));
-    xtr_new_lst[n].nm = strdup(xtr_lst_a[i].nm);
-    xtr_new_lst[n++].id = xtr_lst_a[i].id;
+  for( i=0 ; i < nbr_lst_a ; i++){
+    match=False;
+    for(j=0 ; j < *nbr_xtr ;j++)
+      if(!strcmp(xtr_lst[j].nm,xtr_lst_a[i].nm)){ match=True ; break;}
+    if(match) continue;
+    xtr_new_lst=(nm_id_sct*)nco_realloc(xtr_new_lst,(n+1)*sizeof(nm_id_sct));
+    xtr_new_lst[n].nm=strdup(xtr_lst_a[i].nm);
+    xtr_new_lst[n++].id=xtr_lst_a[i].id;
   }
   
-  *nbr_xtr = n;
+  *nbr_xtr=n;
   return xtr_new_lst;            
 } /* var_lst_add */
 
@@ -1147,7 +1147,7 @@ ncap_initial_scan(prs_sct *prs_arg,char *spt_arg_cat, nm_id_sct** xtr_lst_a,int 
   extern FILE *yyin;
   extern int yylex(YYSTYPE*,prs_sct *);
   
-  if(spt_arg_cat) {
+  if(spt_arg_cat){
     yy_scan_string(spt_arg_cat);
   }else{
     /* Open script file for reading */
@@ -1157,63 +1157,63 @@ ncap_initial_scan(prs_sct *prs_arg,char *spt_arg_cat, nm_id_sct** xtr_lst_a,int 
     }
   }
   
-  itoken = yylex(&lvalp,prs_arg);
+  itoken=yylex(&lvalp,prs_arg);
   
   while(itoken != 0){
     
-    switch (itoken) {
+    switch (itoken){
       
     case IGNORE:      break; /* Do nothing  */
     case ATTRIBUTE:   break; /* Do nothing  */
     case EPROVOKE:    break; /* Do nothing */
     case VAR: 
-      var_nm = lvalp.vara;
+      var_nm=lvalp.vara;
       if( NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id) ){
-	match = False;
+	match=False;
 	for(i=0; i < n_lst_a ; i++)
-	  if(!strcmp(lst_a[i].nm,var_nm)){ match = True; break; }
-	if (match) break;
-	if (n_lst_a==0) lst_a = (nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
-	else lst_a = (nm_id_sct *)nco_realloc(lst_a,((n_lst_a+1)*sizeof(nm_id_sct)));
+	  if(!strcmp(lst_a[i].nm,var_nm)){ match=True; break; }
+	if(match) break;
+	if(n_lst_a==0) lst_a=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
+	else lst_a=(nm_id_sct *)nco_realloc(lst_a,((n_lst_a+1)*sizeof(nm_id_sct)));
 	lst_a[n_lst_a].nm=strdup(var_nm);
 	lst_a[n_lst_a++].id=var_id;
       }
       break; 
     case OUT_VAR: 
-      var_nm = lvalp.output_var;
+      var_nm=lvalp.output_var;
       
       if( NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id) ){
-	match = False;
+	match=False;
 	for(i=0; i < n_lst_b ; i++)
-	  if(!strcmp(lst_b[i].nm,var_nm)){ match = True; break; }
-	if (match) break;
-	if (n_lst_b == 0) lst_b = (nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
-	else lst_b = (nm_id_sct *)nco_realloc(lst_b,((n_lst_b+1)*sizeof(nm_id_sct)));
+	  if(!strcmp(lst_b[i].nm,var_nm)){ match=True; break; }
+	if(match) break;
+	if(n_lst_b == 0) lst_b=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
+	else lst_b=(nm_id_sct *)nco_realloc(lst_b,((n_lst_b+1)*sizeof(nm_id_sct)));
 	lst_b[n_lst_b].nm=strdup(var_nm);
 	lst_b[n_lst_b++].id=var_id;
       }
       break;
       
-    case OUT_ATT:       var_nm = lvalp.att.var_nm;     
+    case OUT_ATT:       var_nm=lvalp.att.var_nm;     
       
       if( NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id) ){
-	match = False;
+	match=False;
 	for(i=0; i < n_lst_c ; i++)
-	  if(!strcmp(lst_c[i].nm,var_nm)){ match = True; break; }
-	if (match) break;
-	if (n_lst_c == 0) lst_c = (nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
-	else lst_c = (nm_id_sct *)nco_realloc(lst_c,((n_lst_c+1)*sizeof(nm_id_sct)));
+	  if(!strcmp(lst_c[i].nm,var_nm)){ match=True; break; }
+	if(match) break;
+	if(n_lst_c == 0) lst_c=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
+	else lst_c=(nm_id_sct *)nco_realloc(lst_c,((n_lst_c+1)*sizeof(nm_id_sct)));
 	lst_c[n_lst_c].nm=strdup(var_nm);
 	lst_c[n_lst_c++].id=var_id;
       }
       break;
     default: break;
     }
-    itoken = yylex(&lvalp,prs_arg);
+    itoken=yylex(&lvalp,prs_arg);
   }
   
-  if(n_lst_a >0) { *xtr_lst_a = lst_a ; *nbr_lst_a = n_lst_a ;}  
-  if(n_lst_b >0) { *xtr_lst_b = lst_b ; *nbr_lst_b = n_lst_b ;}  
-  if(n_lst_c >0) { *xtr_lst_c = lst_c ; *nbr_lst_c = n_lst_c ;}  
+  if(n_lst_a >0){ *xtr_lst_a=lst_a ; *nbr_lst_a=n_lst_a ;}  
+  if(n_lst_b >0){ *xtr_lst_b=lst_b ; *nbr_lst_b=n_lst_b ;}  
+  if(n_lst_c >0){ *xtr_lst_c=lst_c ; *nbr_lst_c=n_lst_c ;}  
   
 } /* end ncap_initial_scan */

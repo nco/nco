@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.41 2001-12-29 17:57:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.42 2001-12-29 18:18:38 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -121,8 +121,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.41 2001-12-29 17:57:55 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.41 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.42 2001-12-29 18:18:38 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.42 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -142,7 +142,7 @@ main(int argc,char **argv)
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
   int nbr_xtr_2=0;
-  int nbr_dmn_xtr;
+  int nbr_dmn_xtr=int_CEWI;
   int nbr_fl=0;
   int nbr_lst_a=0;
   int nbr_lst_b=0;
@@ -394,7 +394,6 @@ main(int argc,char **argv)
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
   (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
-  
   
   (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr_2,(dmn_sct **)NULL,0);
   //(void)var_dfn(in_id,fl_out,out_id,var_fix,nbr_var_fix,(dmn_sct **)NULL,0);

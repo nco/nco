@@ -1,7 +1,7 @@
  %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.20 2001-12-29 05:52:50 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.21 2001-12-29 18:18:38 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -76,7 +76,7 @@ int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 int rcd; /* [enm] Return value for function calls */
 
 extern long int line_number; /* Current line number. Incremented in ncap.l */
-extern char *fl_spt_global; /* Global variable for instruction file */
+extern char *fl_spt_global; /* Global variable for script file */
 
 char errstr[200]; /* Error string for short error messages */
 /* End C declarations section */
