@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.12 2004-06-03 05:52:43 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.13 2004-07-08 06:11:16 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -56,7 +56,7 @@ nco_def_var // [fnc] Create variable in netCDF file
   /* fxm: It would be nice if dmn_id could be passed as const, but I cannot
      figure out how to do this and pass a const int * to nc_def_var */
   //  int rcd=nco_def_var(nc_id,var_nm,var_xtype,dmn_id.size(),&dmn_id[0],var_id);
-  int rcd=nco_def_var(nc_id,var_nm,var_xtype,dmn_id.size(),&(const_cast<std::valarray<int> &>(dmn_id)[0]),var_id);
+  int rcd=nco_def_var(nc_id,var_nm,var_xtype,static_cast<int>(dmn_id.size()),&(const_cast<std::valarray<int> &>(dmn_id)[0]),var_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_def_var");
   return rcd;
 } // end nco_def_var<std::valarray<int>>()
@@ -373,7 +373,7 @@ nco_put_var // [fnc] Write variable to netCDF file
 {
   // Purpose: Wrapper for nc_put_var1_float()
   // fxm: Decide which method is best, this one or the one used for longs */
-  std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
+  std::valarray<size_t> srt(static_cast<size_t>(0U),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
   int rcd=nc_put_var1_float(nc_id,var_id,&srt[0],&(const_cast<float &>(var_val)));
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<float> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
@@ -386,7 +386,7 @@ nco_put_var // [fnc] Write variable to netCDF file
  const double &var_val) // I [frc] Variable value
 {
   // Purpose: Wrapper for nc_put_var1_double()
-  std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
+  std::valarray<size_t> srt(static_cast<size_t>(0U),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
   int rcd=nc_put_var1_double(nc_id,var_id,&srt[0],&(const_cast<double &>(var_val)));
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<double> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
@@ -400,7 +400,7 @@ nco_put_var // [fnc] Write variable to netCDF file
 {
   // Purpose: Wrapper for nc_put_var1_double()
   const double var_val_dbl(var_val); // [frc] Double precision value
-  std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
+  std::valarray<size_t> srt(static_cast<size_t>(0U),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
   int rcd=nc_put_var1_double(nc_id,var_id,&srt[0],&(const_cast<double &>(var_val_dbl)));
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<long double> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
@@ -413,7 +413,7 @@ nco_put_var // [fnc] Write variable to netCDF file
  const int &var_val) // I [frc] Variable value
 {
   // Purpose: Wrapper for nc_put_var1_int()
-  std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
+  std::valarray<size_t> srt(static_cast<size_t>(0U),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
   int rcd=nc_put_var1_int(nc_id,var_id,&srt[0],&(const_cast<int &>(var_val)));
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<int> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
@@ -438,7 +438,7 @@ nco_put_var // [fnc] Write variable to netCDF file
     rcd=nc_put_var1_long(nc_id,var_id,srt_dmn_0_ptr,&(const_cast<long &>(var_val)));
   }else{
     // Default starting index is 0
-    std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(dmn_nbr));
+    std::valarray<size_t> srt(static_cast<size_t>(0U),static_cast<size_t>(dmn_nbr));
     rcd=nc_put_var1_long(nc_id,var_id,&srt[0],&(const_cast<long &>(var_val)));
   } // endelse
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<long> failed with variable "+nco_inq_varname(nc_id,var_id));
@@ -452,7 +452,7 @@ nco_put_var // [fnc] Write variable to netCDF file
  const short &var_val) // I [frc] Variable value
 {
   // Purpose: Wrapper for nc_put_var1_short()
-  std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
+  std::valarray<size_t> srt(static_cast<size_t>(0U),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
   int rcd=nc_put_var1_short(nc_id,var_id,&srt[0],&(const_cast<short &>(var_val)));
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<short> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;

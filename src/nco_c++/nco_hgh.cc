@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_hgh.cc,v 1.5 2004-06-03 05:52:43 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_hgh.cc,v 1.6 2004-07-08 06:11:16 zender Exp $ 
 
 // Implementation (declaration) of C++ interface to high-level NCO utilities
 
@@ -56,7 +56,7 @@ nco_var_dfn // [fnc] Define variables in output netCDF file
   // Allow file to already be in define mode
   rcd=nco_redef(nc_id,NC_EINDEFINE); // [fnc] Put open netCDF dataset into define mode
 
-  register long dmn_idx; // [idx] Counting index for dmn
+  register int dmn_idx; // [idx] Counting index for dmn
   for(idx=0;idx<var_mtd_nbr;idx++){
     // Set dmn_nbr_max to, e.g., 1, to limit output file size at expense of losing all 2-D variables
     if(var_mtd[idx].dmn_nbr <= dmn_nbr_max){
