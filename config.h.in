@@ -1,10 +1,13 @@
 /* config.h.in.  Generated from configure.in by autoheader.  */
 
-/* AIX OS */
+/* IBM AIX OS */
 #undef AIX
 
 /* have DODS support */
 #undef ENABLE_DODS
+
+/* FreeBSD OS */
+#undef FREEBSD
 
 /* Autoconf-generated architecture "triplet" */
 #undef GNU_TRP
@@ -151,9 +154,21 @@
 /* Linux OS */
 #undef LINUX
 
+/* Linux OS */
+#undef LINUXALPHA
+
+/* Linux OS */
+#undef LINUXPPC
+
+/* Linux OS */
+#undef LINUXSPARC64
+
 /* Define to 1 if `lstat' dereferences a symlink specified with a trailing
    slash. */
 #undef LSTAT_FOLLOWS_SLASHED_SYMLINK
+
+/* Apple OS X */
+#undef MACOSX
 
 /* NEC SuperX OS */
 #undef NECSX
@@ -189,7 +204,7 @@
 #undef STDC_HEADERS
 
 /* Solaris 2.* OS */
-#undef SUN4SOL2
+#undef SUNMP
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
