@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.67 2000-06-06 05:49:21 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.68 2000-06-20 17:52:08 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -529,15 +529,24 @@ endif
 
 # Link to DODS libraries first, see DODS User's Guide
 # Currently this is invoked by using 'make DODS=Y' on the command
-# 20000602: This fails with Redhat Linux 6.1
-# Possible reasons are libstdc++ and libexpect
+# NB: Yes, nc-dods, dap++ must be linked twice!
+ifeq ($(DODS),Y)
+ifeq (CC,g++)
+# -lstdc++ automatically linked by g++
+ LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -ltcl -lexpect5.28 -lz -lrx $(LDFLAGS)
+else
+ LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lstdc++ -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -ltcl -lexpect5.28 -lz -lrx $(LDFLAGS)
+endif
+endif
+# endif DODS
+
 ifeq ($(DODS),Y)
 # NB: Order is important here
-# LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lwww -ltcl -lexpect -lz -lrx $(LDFLAGS)
- LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lstdc++ -lnc-dods -ldap++ -lwww -ltcl -lexpect5.28 -lz -lrx $(LDFLAGS)
+# LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -ltcl -lexpect -lz -lrx $(LDFLAGS)
+ LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lstdc++ -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -ltcl -lexpect5.28 -lz -lrx $(LDFLAGS)
 # -lstdc++ automatically called when g++ used to link 
 # CC := g++
-# LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lwww -ltcl -lz -lrx $(LDFLAGS)
+# LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -ltcl -lz -lrx $(LDFLAGS)
 endif
 
 # Link to Electric Fence library, see man efence
