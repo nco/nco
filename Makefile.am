@@ -1,2 +1,2 @@
 SUBDIRS = src man
-EXTRA_DIST = autobld data doc bld
+EXTRA_DIST = autobld bld data debian doc
