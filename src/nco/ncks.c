@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.111 2004-11-05 23:56:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.112 2004-12-08 04:54:10 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -107,8 +107,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.111 2004-11-05 23:56:27 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.111 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.112 2004-12-08 04:54:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.112 $";
   const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qrRs:uv:xZ-:";
 
   extern char *optarg;
@@ -413,6 +413,11 @@ main(int argc,char **argv)
     if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=!PRN_VAR_METADATA;
   } /* endelse */
 
+  if(NCO_BNR_WRT && fl_out == NULL){
+    /* Native binary files depend on writing netCDF file to enter generic I/O logic */
+    (void)fprintf(stdout,"%s: ERROR Native binary files cannot be written unless netCDF output filename also specified. HINT: Repeat command with throw-away netCDF file specified for output file (e.g., -o foo.nc)\n",prg_nm_get());
+  } /* endif NCO_BNR_WRT */
+    
   if(fl_out != NULL){
     int out_id;  
     
