@@ -1,7 +1,7 @@
  %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.27 2002-01-17 08:45:35 zender Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.28 2002-01-22 08:54:46 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -53,7 +53,11 @@
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strcmp. . . */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
+
+/* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
+
+/* Personal headers */
 #include "nco.h" /* NCO definitions */
 #include "nco_netcdf.h" /* netCDF3 wrapper calls */
 #include "ncap.h" /* symbol table definition */
@@ -74,7 +78,7 @@ int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 int rcd; /* [enm] Return value for function calls */
 
 extern long int ln_nbr_crr; /* Current line number. Incremented in ncap.l */
-extern char *fl_spt_global; /* Global variable for script file */
+extern char *fl_spt_glb; /* Global variable for script file */
 
 char err_sng[200]; /* Error string for short error messages */
 /* End C declarations section */
@@ -90,7 +94,7 @@ char err_sng[200]; /* Error string for short error messages */
    Examples of terminal symbols, or tokens, are NAME, NUMBER
    Convention is to make token names all uppercase, and non-terminals lowercase */
 
-/* Define YYSTYPE union (type of lex variable yylval) */
+/* Define YYSTYPE union (type of lex variable yylval value) */
 %union{
   char *str;
   char *output_var;
@@ -99,7 +103,7 @@ char err_sng[200]; /* Error string for short error messages */
   sym_sct *sym;
   parse_sct attribute;
   var_sct *var;
-}
+} /* end YYSTYPE union (type of yylval value) */
 
 /* Tell parser which kind of values each token takes */
 %token <str> STRING
@@ -126,8 +130,9 @@ char err_sng[200]; /* Error string for short error messages */
 
 /* End parser declaration section */
 %%
-/* Begin Rules section */
-/* Format is rule: action */
+/* Begin Rules section
+   Format is rule: action
+   Comments OK in space between C code but must be indented */
 
 program: statement_list
 ;
@@ -135,20 +140,20 @@ program: statement_list
 statement_list: statement_list statement ';'
 | statement_list error ';'
 | statement ';'
-| error ';'  /* Catches most errors then reads up to next ; */
+| error ';' /* Catches most errors then reads up to next semicolon */
 ;
 
 statement: out_att_exp '=' att_exp { 
   int aed_idx; 
   aed_sct *ptr_aed;
   
-  aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
-  ptr_aed=((prs_sct*)prs_arg)->att_lst[aed_idx];                               
+  aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->att_lst,((prs_sct *)prs_arg)->nbr_att,True);
+  ptr_aed=((prs_sct *)prs_arg)->att_lst[aed_idx];                               
   ptr_aed->val=ncap_attribute_2_ptr_unn($3);
   ptr_aed->type=$3.type;
   ptr_aed->sz=1L;
   (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
-  (void)sprintf(err_sng,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->fl_out);
+  (void)sprintf(err_sng,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->fl_out);
   (void)yyerror(err_sng);
   if(dbg_lvl_get() > 1){
     (void)fprintf(stderr,"Saving in array attribute %s@%s=",$1.var_nm,$1.att_nm);
@@ -160,11 +165,11 @@ statement: out_att_exp '=' att_exp {
     case NC_FLOAT: (void)fprintf(stderr,"%G\n",$3.val.f); break;		  
     case NC_DOUBLE: (void)fprintf(stderr,"%.5G\n",$3.val.d);break;
     default: break;
-    }/* end switch */
+    } /* end switch */
   } /* end if */
   (void)free($1.var_nm);
   (void)free($1.att_nm);
-}
+} /* end out_att_exp '=' att_exp */
 | out_att_exp '=' string_exp 
 {
   int aed_idx; 
@@ -172,8 +177,8 @@ statement: out_att_exp '=' att_exp {
   aed_sct *ptr_aed;
   
   sng_lng=strlen($3);
-  aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
-  ptr_aed=((prs_sct*)prs_arg)->att_lst[aed_idx];
+  aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->att_lst,((prs_sct *)prs_arg)->nbr_att,True);
+  ptr_aed=((prs_sct *)prs_arg)->att_lst[aed_idx];
   ptr_aed->type=NC_CHAR;
   ptr_aed->sz=(long)((sng_lng+1)*nco_typ_lng(NC_CHAR));
   ptr_aed->val.cp=(char *)nco_malloc((sng_lng+1)*nco_typ_lng(NC_CHAR));
@@ -185,7 +190,7 @@ statement: out_att_exp '=' att_exp {
   (void)free($1.var_nm);
   (void)free($1.att_nm);
   (void)free($3);
-}
+} /* end out_att_exp '=' string_exp */
 | out_att_exp '=' var_exp
 { 
   /* It is OK to store 0 dimensional variables in an attribute */ 
@@ -193,8 +198,8 @@ statement: out_att_exp '=' att_exp {
   aed_sct *ptr_aed;
   
   if($3->nbr_dim < 2 ){
-    aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
-    ptr_aed=((prs_sct*)prs_arg)->att_lst[aed_idx];
+    aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->att_lst,((prs_sct *)prs_arg)->nbr_att,True);
+    ptr_aed=((prs_sct *)prs_arg)->att_lst[aed_idx];
     ptr_aed->sz=$3->sz;
     ptr_aed->type= $3->type;
     ptr_aed->val.vp=(void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
@@ -209,7 +214,7 @@ statement: out_att_exp '=' att_exp {
   (void)free($1.var_nm);
   (void)free($1.att_nm);
   (void)var_free($3); 
-}   
+} /* end out_att_exp '=' var_exp */
 | out_var_exp '=' var_exp 
 {
   int rcd;
@@ -219,7 +224,7 @@ statement: out_att_exp '=' att_exp {
   /* Is variable already in output file? */
   rcd=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$3->nm,&var_id);
   if(rcd == NC_NOERR){
-    (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s",$3->nm,((prs_sct*)prs_arg)->fl_out);
+    (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s",$3->nm,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);                                   
   }else{  
     (void)ncap_var_write($3,(prs_sct *)prs_arg);
@@ -228,44 +233,42 @@ statement: out_att_exp '=' att_exp {
   } /* end else */
   (void)free($1);
   (void)var_free($3);
-}
+} /* end out_var_exp '=' var_exp */
 | out_var_exp '=' att_exp
 {
   int rcd;
   int var_id;
   var_sct *var;
-  rcd=nco_inq_varid_flg(((prs_sct*)prs_arg)->out_id,$1,&var_id);
+  rcd=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$1,&var_id);
   if(rcd == NC_NOERR){
-    (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s", $1,((prs_sct*)prs_arg)->fl_out);
+    (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   }else{  
-    var=(var_sct*)calloc(1,sizeof(var_sct));
+    var=(var_sct *)nco_calloc((size_t)1,sizeof(var_sct));
     var->nm=strdup($1);
     var->nbr_dim=0;
     var->dmn_id=(int *)NULL;
     var->sz=1;
     var->val=ncap_attribute_2_ptr_unn($3);
     var->type=$3.type;
-    (void)ncap_var_write(var,(prs_sct*)prs_arg);
+    (void)ncap_var_write(var,(prs_sct *)prs_arg);
     (void)var_free(var);
-    (void)sprintf(err_sng,"Saving variable %s to %s", $1,((prs_sct*)prs_arg)->fl_out);
-    
+    (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   }
   (void)free($1);
-  
-}
+} /* end out_var_exp '=' att_exp */
 | out_var_exp '=' string_exp
 {
   int rcd;
   int var_id;
   var_sct *var;
-  rcd=nco_inq_varid_flg(((prs_sct*)prs_arg)->out_id,$1,&var_id);
+  rcd=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$1,&var_id);
   if(rcd == NC_NOERR){
-    (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s", $1,((prs_sct*)prs_arg)->fl_out);
+    (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);  
   }else{  
-    var=(var_sct*)calloc(1,sizeof(var_sct));
+    var=(var_sct *)nco_calloc((size_t)1,sizeof(var_sct));
     var->nm=strdup($1);
     var->nbr_dim=0;
     var->dmn_id=(int *)NULL;
@@ -273,14 +276,14 @@ statement: out_att_exp '=' att_exp {
     var->val.cp=strdup($3);
     var->type=NC_CHAR;
     (void)cast_nctype_void(NC_CHAR,&var->val);
-    (void)ncap_var_write(var,(prs_sct*)prs_arg);
+    (void)ncap_var_write(var,(prs_sct *)prs_arg);
     (void)var_free(var);
-    (void)sprintf(err_sng,"Saving variable %s to %s", $1,((prs_sct*)prs_arg)->fl_out);
+    (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   }
   (void)free($1);
   (void)free($3);
-}
+} /* end out_var_exp '=' string_exp */
 ;                    
 
 att_exp: att_exp '+' att_exp {
@@ -496,7 +499,7 @@ var_exp: var_exp '+' var_exp {
 /* Begin User Subroutines section */
 
 int
-ncap_aed_lookup(char *var_nm,char *att_nm,aed_sct **att_lst,int *nbr_att, bool update)
+ncap_aed_lookup(char *var_nm,char *att_nm,aed_sct **att_lst,int *nbr_att,bool update)
 {
   int att_idx;
   for(att_idx=0;att_idx<*nbr_att;att_idx++)
@@ -506,7 +509,7 @@ ncap_aed_lookup(char *var_nm,char *att_nm,aed_sct **att_lst,int *nbr_att, bool u
       return att_idx;
     } /* end if */
 
-  if (!update) return -1;
+  if(!update) return -1;
   
   att_lst[*nbr_att]=(aed_sct *)nco_malloc(sizeof(aed_sct));
   att_lst[*nbr_att]->var_nm=strdup(var_nm);
@@ -516,23 +519,17 @@ ncap_aed_lookup(char *var_nm,char *att_nm,aed_sct **att_lst,int *nbr_att, bool u
 } /* end ncap_aed_lookup */
 
 int
-yyerror(char *sng)
+yyerror(char *err_sng)
 {
-  /* Use eprokoke_skip to skip error message after sending error message from yylex
+  /* Use eprokoke_skip to skip error message after sending error message from yylex()
      Stop provoked error message from yyparse being printed */
 
   static bool eprovoke_skip;
   
   /* if(eprovoke_skip){eprovoke_skip=False ; return 0;} */
-  (void)fprintf(stderr,"%s: %s line %ld  %s\n",prg_nm_get(),fl_spt_global,ln_nbr_crr,sng);
+  (void)fprintf(stderr,"%s: %s line %ld %s\n",prg_nm_get(),fl_spt_glb,ln_nbr_crr,err_sng);
   
-  if(sng[0] == '#') eprovoke_skip=True;
+  if(err_sng[0] == '#') eprovoke_skip=True;
   eprovoke_skip=eprovoke_skip; /* Do nothing except avoid compiler warnings */
   return 0;
 } /* end yyerror() */
-
-
-
-
-
-

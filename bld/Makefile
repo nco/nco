@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.107 2002-01-16 23:25:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.108 2002-01-22 08:54:46 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -235,7 +235,7 @@ ${MY_DPN_DIR}/%.d : %.cc
 # The second LDFLAGS enables C/Fortran linking
 
 # Works on AIX and AIX46K
-ifneq (,$(findstring AIX,${PVM_ARCH}))
+ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 ifeq (${OMP},Y)
  CC := xlc_r
  FC := xlf95_r
@@ -366,15 +366,15 @@ endif
 # endif CRAY
 
 # Works on LINUX and LINUXALPHA
-ifneq (,$(findstring LINUX,${PVM_ARCH}))
+ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
 C++ := g++
 # 19980517: As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
+ CC := gcc
 #CC := gcc -ansi
-CC := gcc
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
 CPPFLAGS := ${CPP_TKN} -Di386 -I${NETCDF_INC}
 FC := g77
- LD := ld
+LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
@@ -403,6 +403,7 @@ ifeq (${OPTS},R)
 endif
 ifeq (${OPTS},X)
  CFLAGS += -g -O
+ LDFLAGS += /usr/local/lib/ccmalloc-gcc.o -L/usr/local/lib -lccmalloc -ldl
 endif
  C++FLAGS := ${CFLAGS}
 endif
@@ -529,7 +530,7 @@ endif
 # endif RS6K
 
 # SGI6, SGI64, SGIMP64
-ifneq (,$(findstring SGI,${PVM_ARCH}))
+ifneq (${null},$(findstring SGI,${PVM_ARCH}))
 ifeq (${OMP},Y)
  OMP_FLG := -mp -mpio
 endif # endif OMP
@@ -767,15 +768,15 @@ endif
 
 # Link to Electric Fence library, see man efence
 ifeq (${PVM_ARCH},LINUX)
-ifneq (,$(findstring ${OPTS},DX))
- LDFLAGS += -lefence
+ifneq (${null},$(findstring ${OPTS},X))
+# LDFLAGS += -lefence
 endif
 endif
 # endif LINUX
 
 # Disable OpenMP on platforms that automatically support it
 ifeq (${OMP},N)
-ifneq (,$(findstring SGI,${PVM_ARCH}))
+ifneq (${null},$(findstring SGI,${PVM_ARCH}))
  CFLAGS := $(filter-out -mp -mpio,${CFLAGS})
  LDFLAGS := $(filter-out -mp -mpio,${LDFLAGS})
 endif # endif SGI
@@ -981,7 +982,7 @@ dbg:
 	@printf "USE_FORTRAN_ARITHMETIC = $(USE_FORTRAN_ARITHMETIC)\n"
 	@printf "VPATH = ${VPATH}\n"
 	@printf "VRS_SNG = ${VRS_SNG}\n"
-	@printf "YACC = $(YACC)\n"
+	@printf "YACC = ${YACC}\n"
 distclean: dst_cln
 dst_cln: cln bin_cln doc_cln dat_cln
 	cd ${MY_BLD_DIR}; rm -f *~
@@ -997,13 +998,13 @@ tags:
 # Otherwise only changing one and then switching, e.g., from bison to yacc, can cause problems
 # NB: Bison has a problem when bison.simple declares yyparse() as int yyparse (void);
 # The solution is to comment out that definition in bison.simple
-ifeq ($(YACC),bison)
+ifeq (${YACC},bison)
 ${MY_SRC_DIR}/%.tab.c ${MY_SRC_DIR}/%.tab.h : ${MY_SRC_DIR}/%.y
-	$(YACC) -d $<
+	${YACC} -d $<
 endif
-ifeq ($(YACC),yacc)
+ifeq (${YACC},yacc)
 %.tab.c %.tab.h : %.y
-	$(YACC) -d $<
+	${YACC} -d $<
 	mv y.tab.c $(basename $<).tab.c
 	mv y.tab.h $(basename $<).tab.h
 endif
@@ -1014,19 +1015,19 @@ endif
 
 # For some reason, ncap_lex.c is not remade when I expect it to be, so I explicitly remove the object file every time
 ncap:	${MY_OBJ_DIR}/ncap.tab.o ncap.tab.h ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap.o ${MY_OBJ_DIR}/ncap_utl.o $(libnco).a
-#        $(YACC) --name-prefix=nc_
+#        ${YACC} --name-prefix=nco_
 ifeq (${PVM_ARCH},LINUX)
 	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@.tab.o ${MY_OBJ_DIR}/$@_lex.o ${LDFLAGS}
 else	
 	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/getopt.o ${MY_OBJ_DIR}/getopt1.o ${MY_OBJ_DIR}/$@.tab.o ${MY_OBJ_DIR}/$@_lex.o -ll -ly ${LDFLAGS}
 endif
 	chmod 755 ${MY_BIN_DIR}/$@
-	/bin/rm -f $(MDL_NCAP) ${MY_OBJ_DIR}/$@_lex.o
+#	/bin/rm -f $(MDL_NCAP) ${MY_OBJ_DIR}/$@_lex.o ${MY_OBJ_DIR}/lex.yy.c ${MY_OBJ_DIR}/ncap.tab.h ${MY_OBJ_DIR}/ncap.tab.c
 
 # Create dependency files only if they will not be immediately deleted
 INCLUDE_DPN := TRUE
 GOALS_WHICH_DELETE_DEPENDENCY_FILES := cln clean dir distclean dst_cln dpn_cln tags uninstall
-ifeq (,$(findstring $(MAKECMDGOALS),${GOALS_WHICH_DELETE_DEPENDENCY_FILES}))
+ifeq (${null},$(findstring $(MAKECMDGOALS),${GOALS_WHICH_DELETE_DEPENDENCY_FILES}))
  INCLUDE_DPN := TRUE
 else
  INCLUDE_DPN := FALSE

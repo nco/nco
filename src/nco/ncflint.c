@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.34 2001-12-29 05:52:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.35 2002-01-22 08:54:46 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.34 2001-12-29 05:52:50 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.34 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.35 2002-01-22 08:54:46 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.35 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -115,6 +115,7 @@ main(int argc,char **argv)
   extern char *optarg;
   extern int optind;
   
+  int fll_md_old; /* [enm] Old fill mode */
   int idx;
   int idx_fl;
   int in_id;  
@@ -343,9 +344,7 @@ main(int argc,char **argv)
   (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
 
   /* Turn off default filling behavior to enhance efficiency */
-#if ( ! defined SUN4 ) && ( ! defined SUN4SOL2 ) && ( ! defined SUNMP )
-  (void)nc_set_fill(out_id,NC_NOFILL,(int *)NULL);
-#endif
+  rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
   
   /* Take output file out of define mode */
   (void)nco_enddef(out_id);

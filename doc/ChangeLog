@@ -1,3 +1,20 @@
+2002-01-21  Charlie Zender  <zender@uci.edu>
+
+	* Remove templates for math functions from ncap.c
+
+	* Implement CCOMMENT start state to recognize C comments /* */ 
+
+	* Explicitly declare yy_scan_string() to remove compiler warnings
+
+	* Implement/use nco_set_fill() wrapper 
+	Remove architecture-dependent wrapper on usage
+	Pass pointer to valid fll_md_old since NULL is not safe
+	because nc_set_fill() may try to write to it
+
+2002-01-17  Charlie Zender  <zender@uci.edu>
+
+	* Initialize RHS to False, add global LHS_cast
+
 2002-01-16  Charlie Zender  <zender@uci.edu>
 
 	* Began implementation of lexer for subscripted variables

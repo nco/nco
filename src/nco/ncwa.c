@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.71 2001-12-29 05:52:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.72 2002-01-22 08:54:47 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.71 2001-12-29 05:52:50 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.71 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.72 2002-01-22 08:54:47 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.72 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -121,6 +121,7 @@ main(int argc,char **argv)
   extern char *optarg;
   extern int optind;
   
+  int fll_md_old; /* [enm] Old fill mode */
   int idx=int_CEWI;
   int idx_avg;
   int idx_fl=int_CEWI;
@@ -475,9 +476,7 @@ main(int argc,char **argv)
   } /* end if */
 
   /* Turn off default filling behavior to enhance efficiency */
-#if ( ! defined SUN4 ) && ( ! defined SUN4SOL2 ) && ( ! defined SUNMP )
-  (void)nc_set_fill(out_id,NC_NOFILL,(int *)NULL);
-#endif
+  rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
   
   /* Take output file out of define mode */
   (void)nco_enddef(out_id);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.6 2001-12-29 05:52:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.7 2002-01-22 08:54:47 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -75,6 +75,7 @@ extern int nco_open(const char *,int,int *);
 extern int nco_redef(int);
 extern int nco_enddef(int);
 extern int nco_sync(int);
+extern int nco_set_fill(int,int,int *);
 extern int nco_abort(int);
 extern int nco_close(int);
 extern int nco_inq(int,int *,int *,int *,int *);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.15 2001-12-29 05:52:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.16 2002-01-22 08:54:47 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -270,6 +270,16 @@ nco_redef(int nc_id)
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_redef");
   return rcd;
 } /* end nco_redef */
+
+int 
+nco_set_fill(int nc_id,int fill_mode,int *old_mode)
+{
+  /* Purpose: Wrapper for nc_set_fill() */
+  int rcd=NC_NOERR;
+  rcd=nc_set_fill(nc_id,fill_mode,old_mode);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_set_fill");
+  return rcd;
+} /* end nco_set_fill */
 
 int 
 nco_enddef(int nc_id)

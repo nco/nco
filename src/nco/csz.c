@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.78 2001-12-29 05:52:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.79 2002-01-22 08:54:46 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -1295,6 +1295,25 @@ void *nco_malloc(size_t size)
   } /* endif */
   return ptr; /* [ptr] Pointer to new buffer */
 } /* nco_malloc() */
+
+void *nco_calloc(size_t lmn_nbr,size_t lmn_sz)
+{
+  /* Purpose: Custom wrapper for calloc(), modified from nco_malloc()
+     Routine prints error when calloc() returns a NULL pointer 
+     Routine does not call calloc() when lmn_sz == 0 or lmn_nbr == 0 */
+  
+  void *ptr; /* [ptr] Pointer to new buffer */
+  
+  /* Circumvent calloc() calls when lmn_sz == 0 */
+  if(lmn_sz == 0 || lmn_nbr == 0) return NULL;
+  
+  ptr=calloc(lmn_nbr,lmn_sz); /* [ptr] Pointer to new buffer */
+  if(ptr == NULL){
+    (void)fprintf(stdout,"%s: ERROR nco_calloc() unable to allocate %li elements of %li bytes = %li bytes\n",prg_nm_get(),(long)lmn_nbr,(long)lmn_sz,(long)(lmn_nbr*lmn_sz));
+    exit(EXIT_FAILURE);
+  } /* endif */
+  return ptr; /* [ptr] Pointer to new buffer */
+} /* nco_calloc() */
 
 void *nco_realloc(void *ptr,size_t size)
 {

@@ -1,5 +1,5 @@
-%{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.25 2002-01-19 20:05:09 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.26 2002-01-22 08:54:46 zender Exp $ -*-C-*- */
+  /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
 
@@ -42,10 +42,11 @@
      /data/zender/ora/lexyacc/ch3-05.l
      GCC lexer is hard-coded in C for speed, but is easy to read:
      ../src/gcc-3.x.x/c-lex.c
-     Unidata ${DATA}/tmp/netcdf-3.5.0/src/ncgen/ncgen.l 
-   */
+     Unidata ${DATA}/tmp/netcdf-3.5.0/src/ncgen/ncgen.l */
 
-  /* NB: flex with -Cf or -Cf not -I if this scanner will not be interactive */
+  /* Usage:
+     flex ncap.l
+     NB: flex with -Cf or -Cf not -I if this scanner will not be interactive */
 
   /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */
@@ -64,34 +65,65 @@
 #define INT_MIN (-2147483647-1) /* Minimum value of 4 byte integer -2^32 */
 #define INT_MAX 2147483647 /* Maximum value of 4 byte integer  2^32 -1 */
 
-/* We want yylex errors to skip current line rather than stop execution
-   We do this by provoking error in parser by returning unrecognized token
-   This causes parser to read up to next ';'
-   To avoid having two error messages we prefix error message to yyerror with '#'
-   This causes yyerror to print current error and skip next error
-   fxm: Hackish, but I see no other way */ 
+  /* We want yylex() errors to skip current line rather than stop execution
+     We do this by provoking error in parser by returning unrecognized token
+     This causes parser to read up to next ';'
+     To avoid having two error messages we prefix error message to yyerror with '#'
+     This causes yyerror to print current error and skip next error
+     fxm: Hackish, but I see no other way */ 
 
-extern long int ln_nbr_crr;
+  extern long int ln_nbr_crr; /* [cnt] Line number incremented in ncap.l */
 
-/* Re-prototype yylex() to accept re-entrant arguments (Flex p. 12, Bison p. 60) */
+  /* Re-prototype yylex() to accept re-entrant arguments (Flex p. 12, Bison p. 60) */
 #define YY_DECL int yylex(YYSTYPE *lvalp,prs_sct *prs_arg)
 
-char err_sng[200]; 
+  char err_sng[200]; /* [sng] Buffer for error messages defined in lexer */
 
-/* Is lexer on left or right hand side of equals sign?
-   LHS should contain only a variable or attribute
-   In this case return variable/attribute name to parser
-   If on RHS then return attribute value or variable struture */
-static bool RHS;
+  /* Is lexer on left or right hand side of equals sign?
+     LHS should contain only a variable or attribute
+     In this case return variable/attribute name to parser
+     If on RHS then return attribute value or variable struture
+     Initialize to false, change to true if token is '=', false is token is ';' */
+  static bool RHS=False; /* [flg] Is lexer on RHS of '=' sign? */
+
+  /* Has a LHS-cast been requested on current input line?
+     If so, variables and attributes on RHS must be cast to LHS properties */
+  static bool LHS_cast; /* [flg] Cast RHS structures to LHS properties */
 %}
+
+/* Handle C comments LMB92 p. 172, p. 43
+   The %x defines an exclusive start state for CCOMMENT
+   When CCOMMENT state is active, other rules do not match */
+%x CCOMMENT
 
 /* Following sections after %% are lexer rules
    Each rule is regular expression followed by C-code for action
    If token matches regular expression then C-code is executed */
 %%
+
+"/*" {
+   /* CCOMMENT is exclusive start state for C comments LMB92 p. 172
+      When CCOMMENT state is active, only CCOMMENT rules will match 
+      (hence an "exclusive start state" rather than "regular start state")
+      Thus must (re)-define line number incrementing */
+  BEGIN CCOMMENT;
+}
+<CCOMMENT>\n {
+  /* Throw away comment text but increment lines */
+  ln_nbr_crr++;
+}
+<CCOMMENT>. {
+  /* Throw away everything except end comment text */
+}
+<CCOMMENT>"*/" {
+  /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */
+  BEGIN INITIAL;
+} /* end CCOMMENT start state rules */
+
+  /* Remaining rules are default state, also known as INITIAL state, or 0 state */
 \n { 
   /* Ignore new lines */
-  ln_nbr_crr++;
+  ln_nbr_crr++; /* [cnt] Line number incremented in ncap.l */
 }
 
 [ \t]+ { 
@@ -114,11 +146,11 @@ static bool RHS;
   (void)sng_ascii_trn(bfr);
   lvalp->str=strdup(bfr);       
   if( dbg_lvl_get() > 1){
-      printf( "Lexing string: %s\n",yytext);
-      printf( "Made   string: %s\n",lvalp->str);
+    printf("Lexing string: %s\n",yytext);
+    printf("Made   string: %s\n",lvalp->str);
   } /* endif */
   return(STRING);
-}
+} /* end quoted strings */
 
 [0-9]*\.[0-9]*([eE][+-]?[0-9]+)?[LlDd]?|[0-9]*([eE][+-]?[0-9]+)[LlDd]? {
   /* Double or long double */
@@ -129,7 +161,7 @@ static bool RHS;
   lvalp->attribute.val.d=strtod(yytext,(char **)NULL);
   lvalp->attribute.type=NC_DOUBLE;
   return(ATTRIBUTE);
-}
+} /* end double or long double */
 
 [0-9]*\.[0-9]*([eE][+-]?[0-9]+)?[Ff]|[0-9]*([eE][+-]?[0-9]+)[Ff] {
   /* Float */
@@ -143,7 +175,7 @@ static bool RHS;
   lvalp->attribute.val.f=flt_tkn;
   lvalp->attribute.type=NC_FLOAT;
   return(ATTRIBUTE);    
-}
+} /* end float */
 
 [0-9]+[lL]? {
   /* Long */
@@ -159,7 +191,7 @@ static bool RHS;
     lvalp->attribute.type=NC_INT;
     return(ATTRIBUTE);
   } /* end else */
-}
+} /* end long */
 
 [0-9]+[sS] {
   /* Short */
@@ -172,7 +204,7 @@ static bool RHS;
   lvalp->attribute.val.s=sht_tkn;
   lvalp->attribute.type=NC_SHORT;
   return(ATTRIBUTE);    
-}
+} /* end short */
 
 [0-9]+[Bb] {
   /* Byte */
@@ -191,12 +223,12 @@ static bool RHS;
     lvalp->attribute.val.b=byt_tkn;
     lvalp->attribute.type=NC_BYTE;
     return(ATTRIBUTE);                    
-  }/* end else */
-}
+  } /* end else */
+} /* end byte */
 
-abs/[ ]*\(     {return ABS;}
-atostr/[ ]*\(  {return ATOSTR;}
-pow/[ ]*\(     {return POWER;}
+abs/[ ]*\( {return ABS;}
+atostr/[ ]*\( {return ATOSTR;}
+pow/[ ]*\( {return POWER;}
 
 [A-Za-z_][A-Za-z0-9_]*/[ ]*\( {
 /* Compare input with mathematical function names in table and return
@@ -210,7 +242,6 @@ pow/[ ]*\(     {return POWER;}
    (void)sprintf(err_sng,"Warning: Unable to locate function %s. Is this really a variable ?",yytext);
    (void)yyerror(err_sng);       
    return EPROVOKE;             
-
 } /* end functions */
 
 [A-Za-z_][A-Za-z0-9_]*@[A-Za-z_][A-Za-z0-9_]* { 
@@ -329,6 +360,7 @@ pow/[ ]*\(     {return POWER;}
   /* Recognize subscripted (hyperslabbed) variables
      Hyperslabbed variables for now indicated with square brackets
      Using square brackets so development does not break functions
+     Left context is described in LMB92 p. 152
      
      Subscript syntax is taken from Fortran9X specification:
      x[dmn1,dmn2,...,dmnN]
@@ -387,12 +419,20 @@ pow/[ ]*\(     {return POWER;}
      Use this local dimension list (defined on LHS) to cast all ranks on RHS 
      Casting first expression on RHS is just as good */
   if(RHS){
+    (void)fprintf(stderr,"ERROR: Found hyperslab (subscripted) variable on RHS\n");
     lvalp->vara=var_nm;
     return(VAR);
   }else{ 
+    LHS_cast=True;
     lvalp->output_var=var_nm;
     return(OUT_VAR);
   } /* end else */
+
+  if(0){ /* Attempt to remove compier warning messages */
+    /* Following two statements remove "defined but not used" messages in lex.yy.c */
+    (void)yyunput((int)NULL,(char *)NULL);
+    (void)yy_flex_realloc((void *)NULL,(size_t)NULL);
+  } /* endif False */
 
   /* Do not attempt arithmetic yet, just return error */
   return EPROVOKE;             
@@ -400,7 +440,6 @@ pow/[ ]*\(     {return POWER;}
 
 [A-Za-z_][A-Za-z0-9_]* {
   /* Recognize variables */
-  
   if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing variable %s\n",yytext);
   if(RHS){
     lvalp->vara=strdup(yytext); 

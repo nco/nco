@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.34 2002-01-17 08:45:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.35 2002-01-22 08:54:46 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -38,23 +38,25 @@
 */
 
 /* Standard header files */
-#include <math.h>               /* sin cos cos sin 3.14159 */
-#include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */
-#include <string.h>             /* strcmp. . . */
-#include <time.h>               /* machine time */
-#include <unistd.h>             /* POSIX stuff */
+#include <math.h> /* sin cos cos sin 3.14159 */
+#include <stdio.h> /* stderr, FILE, NULL, etc. */
+#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <string.h> /* strcmp. . . */
+#include <time.h> /* machine time */
+#include <unistd.h> /* POSIX stuff */
 
-#include <netcdf.h>             /* netCDF definitions */
-#include "nco_netcdf.h"         /* netCDF wrapper functions */
+/* 3rd party vendors */
+#include <netcdf.h> /* netCDF definitions */
+#include "nco_netcdf.h" /* netCDF wrapper functions */
 
-#include "nco.h"                /* netCDF operator universal def'ns */
-#include "ncap.h"               /* include prs_arg */
+/* Personal headers */
+#include "nco.h" /* netCDF operator universal def'ns */
+#include "ncap.h" /* ncap functions, sym_sct, prs_sct, parse_sct */
 
 var_sct *
 ncap_var_init(char *var_nm,prs_sct *prs_arg)
 {
-  /* Purpose: Initialize var structure, retrieve var values from disk */
+  /* Purpose: Initialize variable structure, retrieve variable values from disk */
   int var_id;
   int rcd;
   int fl_id;
@@ -66,7 +68,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   if(rcd == NC_NOERR ){
     fl_id=prs_arg->out_id;
   }else{
-    /* Check input file for id */
+    /* Check input file for ID */
     rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
     if(rcd == NC_NOERR ){
       fl_id=prs_arg->in_id;
@@ -88,7 +90,6 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   /* free(var_nm->nm);*/
   /* vara=var_upk(vara); */
   return vara;
-  
 } /* end ncap_var_init */
 
 int 
@@ -116,49 +117,48 @@ ncap_var_write(var_sct *var,prs_sct *prs_arg)
 } /* end ncap_var_write */
 
 sym_sct *
-ncap_sym_init(char *name,double (*function)(double ),float (*functionf)(float ))
+ncap_sym_init(char *name,double (*fnc_dbl)(double),float (*fnc_flt)(float))
 { 
-  /* purpose: Allocate space for sym_sct then initialize */
+  /* Purpose: Allocate space for sym_sct then initialize */
   sym_sct *symbol;
   symbol=(sym_sct *)nco_malloc(sizeof(sym_sct));
   symbol->nm=strdup(name);
-  symbol->fnc= function;
-  symbol->fncf = functionf;
+  symbol->fnc=fnc_dbl;
+  symbol->fncf=fnc_flt;
   return symbol;
 } /* end ncap_sym_init */
 
 parse_sct 
 ncap_ptr_unn_2_attribute(nc_type type, ptr_unn val)
 {
-  /* convert a ptr_unn to an attribute parse_sct */
-  /* Assumes theat val is initially cast to void */
-  /* Note does not convert cp ( strings) as these */
-  /* are not handled by parse_sct */
-  /* Note: a netCDF attribute can contain MULTIPLE values */
-  /* only the FIRST value in the memory block is converted */
+  /* Purpose: Convert a ptr_unn to an attribute parse_sct
+     Assumes that val is initially cast to void
+     Note does not convert cp (strings) as these are not handled by parse_sct
+     Note: netCDF attributes can contain MULTIPLE values
+     Only FIRST value in memory block is converted */
   
   parse_sct a;
   (void)cast_void_nctype(type,&val);
   switch(type){
-  case NC_FLOAT: a.val.f=*val.fp ; break;
-  case NC_DOUBLE: a.val.d =*val.dp ; break;
-  case NC_INT:    a.val.l =*val.lp ; break;
-  case NC_SHORT:  a.val.s=*val.sp  ; break;
-  case NC_BYTE:   a.val.b =*val.bp;  break;
-  case NC_CHAR:   break; /* do nothing */
+  case NC_FLOAT: a.val.f=*val.fp; break;
+  case NC_DOUBLE: a.val.d =*val.dp; break;
+  case NC_INT: a.val.l =*val.lp; break;
+  case NC_SHORT: a.val.s=*val.sp; break;
+  case NC_BYTE: a.val.b =*val.bp;  break;
+  case NC_CHAR: break; /* do nothing */
   default: nco_dfl_case_nctype_err(); break;
-  } 
+  } /* end switch */
   a.type=type;
-  /* don't have to uncast pointer as we are working with acopy */
+  /* Do not uncast pointer as we are working with a copy */
   return a;
 } /* end ncap_ptr_unn_2_attribute */
 
 ptr_unn
 ncap_attribute_2_ptr_unn(parse_sct a)
 {
-  /* converts a parse_sct to a ptr_unn */
-  /* It mallocs the appropriate space for the single type */
-  /* n.b It doesn't do strings */
+  /* Purpose: Convert parse_sct to ptr_unn
+     malloc() appropriate space for single type
+     NB: Does not work on strings */
   ptr_unn val;
   nc_type type=a.type;
   val.vp=(void *)nco_malloc(nco_typ_lng(type));
@@ -167,12 +167,12 @@ ncap_attribute_2_ptr_unn(parse_sct a)
   switch(type){
   case NC_FLOAT: *val.fp=a.val.f; break;
   case NC_DOUBLE: *val.dp=a.val.d; break;
-  case NC_INT:   *val.lp=a.val.l; break;
+  case NC_INT: *val.lp=a.val.l; break;
   case NC_SHORT: *val.sp=a.val.s; break;
-  case NC_BYTE:  *val.bp=a.val.b;  break;
-  case NC_CHAR:   break; /* do nothing */
+  case NC_BYTE: *val.bp=a.val.b; break;
+  case NC_CHAR: break; /* do nothing */
   default: nco_dfl_case_nctype_err(); break;
-  } 
+  } /* end switch */
   (void)cast_nctype_void(type,&val);
   return val;
 } /* end ncap_attribute_2_ptr_unn */
@@ -236,7 +236,7 @@ ncap_var_var_multiply(var_sct *var_1,var_sct *var_2)
 var_sct *
 ncap_var_attribute_multiply(var_sct *var,parse_sct attribute)
 {
-  /* purpose: Multiply variable by value in attribute */
+  /* Purpose: Multiply variable by value in attribute */
   var_sct *var_nsw;
   var_nsw=var_dpl(var);
   (void)ncap_attribute_conform_type(var->type,&attribute);
@@ -300,8 +300,8 @@ ncap_var_attribute_power(var_sct *var_in,parse_sct attribute)
 var_sct *
 ncap_var_function(var_sct *var_in, sym_sct *app)
 {
-  /* purpose: evalue fnc(var) or fncf(var) for each value in variable */
-  /* The float and double functions are in app                        */
+  /* Purpose: Evaluate fnc(var) or fncf(var) for each value in variable
+     Float and double functions are in app */
   long idx;
   long sz;
   ptr_unn op1;
@@ -349,7 +349,7 @@ ncap_var_function(var_sct *var_in, sym_sct *app)
 var_sct *
 ncap_var_attribute_add(var_sct *var,parse_sct attribute)
 {
-  /* purpose: add the value in attribute to each element of var */
+  /* Purpose: add the value in attribute to each element of var */
   var_sct *var_nsw;
   var_nsw=var_dpl(var);
   (void)ncap_attribute_conform_type(var->type,&attribute);
@@ -361,7 +361,7 @@ ncap_var_attribute_add(var_sct *var,parse_sct attribute)
 var_sct *
 ncap_var_attribute_sub(var_sct *var,parse_sct attribute)
 {
-  /* purpose: Subtract the value in attribute from each element of var */
+  /* Purpose: Subtract the value in attribute from each element of var */
   var_sct *var_nsw;
   var_nsw=var_dpl(var);
   (void)ncap_attribute_minus(&attribute);
@@ -912,7 +912,7 @@ ncap_retype(parse_sct *a,parse_sct *b)
 int  
 ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
 {
-  /* purpose: Convert an attribute to type_new using implicit C convertions */
+  /* Purpose: Convert an attribute to type_new using implicit C convertions */
   nc_type type_old=a->type;
   
   parse_sct b;
@@ -1107,20 +1107,20 @@ var_lst_copy(nm_id_sct *xtr_lst,int n)
   int i;
   nm_id_sct *xtr_new_lst;
   
-  if(n == 0 ) return NULL;
+  if(n == 0) return NULL;
   xtr_new_lst=(nm_id_sct*)nco_malloc(n*sizeof(nm_id_sct));
-  for (i =0 ; i< n ; i++){
+  for (i=0;i<n;i++){
     xtr_new_lst[i].nm=strdup(xtr_lst[i].nm);
     xtr_new_lst[i].id=xtr_lst[i].id;
-  }
+  } /* end loop over variable */
   return xtr_new_lst;            
 } /* end var_lst_copy */
 
 nm_id_sct *
 var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst_b)
 {
-  /* Purpose: subtract from xtr_lst any elements from xtr_lst_b which are present */
-  /* and return a new list */
+  /* Purpose: Subtract from xtr_lst any elements from xtr_lst_b which are present
+     and return new list */
   int i;
   int j;
   int n=0;
@@ -1157,34 +1157,30 @@ var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int n
   
   bool match;
   
-  
   if(*nbr_xtr >0 ){
     xtr_new_lst=(nm_id_sct*)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
     n=*nbr_xtr;
-    for (i =0 ; i< *nbr_xtr ; i++){
+    for(i=0;i<*nbr_xtr;i++){
       xtr_new_lst[i].nm=strdup(xtr_lst[i].nm);
       xtr_new_lst[i].id=xtr_lst[i].id;
-    }
+    } /* end loop over variables */
   }else{
     *nbr_xtr=nbr_lst_a;
     return var_lst_copy(xtr_lst_a,nbr_lst_a);
   }/* end if */
   
-  
-  for( i=0 ; i < nbr_lst_a ; i++){
+  for(i=0;i<nbr_lst_a;i++){
     match=False;
-    for(j=0 ; j < *nbr_xtr ;j++)
-      if(!strcmp(xtr_lst[j].nm,xtr_lst_a[i].nm)){ match=True ; break;}
+    for(j=0;j<*nbr_xtr;j++)
+      if(!strcmp(xtr_lst[j].nm,xtr_lst_a[i].nm)){match=True;break;}
     if(match) continue;
     xtr_new_lst=(nm_id_sct*)nco_realloc(xtr_new_lst,(n+1)*sizeof(nm_id_sct));
     xtr_new_lst[n].nm=strdup(xtr_lst_a[i].nm);
     xtr_new_lst[n++].id=xtr_lst_a[i].id;
   }
-  
   *nbr_xtr=n;
   return xtr_new_lst;            
 } /* var_lst_add */
-
 
 nm_id_sct *
 ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
@@ -1195,8 +1191,7 @@ ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
    nm_id_sct ncap_var_lst_crd_make: list of coordinate dimensions 
  */
 {
-  /* Make a list of just the co-ordinate dimensions from a list containing */
-  /* ordinary vars and co-ordinate vars                                    */ 
+  /* Purpose: Make list co-ordinate dimensions from list of ordinary and co-ordinate variables */
 
   char dmn_nm[NC_MAX_NAME];
 
@@ -1226,43 +1221,51 @@ ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 	  new_lst[nbr_new_lst++].id=crd_id;
 	  break;
         } /* end if */
-      } /*end for */
+      } /* end for */
     } /* end if */
   } /* end for */
 
-  *nbr_xtr = nbr_new_lst;
+  *nbr_xtr=nbr_new_lst;
   return new_lst;
 } /* end ncap_var_lst_crd_make() */
 
 void 
-ncap_initial_scan(prs_sct *prs_arg,char *spt_arg_cat, nm_id_sct** xtr_lst_a,int *nbr_lst_a,
-		  nm_id_sct** xtr_lst_b,int *nbr_lst_b,nm_id_sct** xtr_lst_c, int *nbr_lst_c)
+ncap_initial_scan
+(prs_sct *prs_arg,char *spt_arg_cat, nm_id_sct** xtr_lst_a,int *nbr_lst_a,
+ nm_id_sct** xtr_lst_b,int *nbr_lst_b,nm_id_sct** xtr_lst_c, int *nbr_lst_c)
 {
   /* Purpose: Scan command script and return three lists
-     list a -- variables on the RHS which are present in the input file
-     list b -- variables on the LHS which are present in the input file
-     list c -- variables of attributes on the LHS which are present in the input file */
+     list a -- RHS variables present in input file
+     list b -- LHS variables present in input file
+     list c -- variables of attributes on LHS which are present in input file */
   
 /* We are calling scanner so get TOKENS and YYSTYPE produced by Bison */
-#include "ncap.tab.h"
+#include "ncap.tab.h" /* ncap.tab.h is produced from ncap.y by parser generator */
 
-  int i;                      
+  extern FILE *yyin;
+  extern int yylex(YYSTYPE *,prs_sct *);
+  /* Following declaration gets rid of implicit declaration compiler warning
+     It is a condensation of the lexer declaration from lex.yy.c:
+     YY_BUFFER_STATE yy_scan_string YY_PROTO(( yyconst char *yy_str )); */
+  extern int yy_scan_string(char *);
+  
+  bool match;
+  
+  char *var_nm;  
+
+  int var_idx;
   int itoken;
   int n_lst_a=0;
   int n_lst_b=0;
   int n_lst_c=0;
   int var_id;
-  bool match;
-  char *var_nm;  
-  
+
   nm_id_sct *lst_a=NULL_CEWI;
   nm_id_sct *lst_b=NULL_CEWI;
   nm_id_sct *lst_c=NULL_CEWI;
   
   YYSTYPE lvalp;
-  extern FILE *yyin;
-  extern int yylex(YYSTYPE*,prs_sct *);
-  
+
   if(spt_arg_cat){
     yy_scan_string(spt_arg_cat);
   }else{
@@ -1270,52 +1273,48 @@ ncap_initial_scan(prs_sct *prs_arg,char *spt_arg_cat, nm_id_sct** xtr_lst_a,int 
     if((yyin=fopen(prs_arg->fl_spt,"r")) == NULL){
       (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),prs_arg->fl_spt);
       exit(EXIT_FAILURE);
-    }
-  }
+    } /* endif error */
+  } /* endif input from script */
   
+  /* Obtain first token from lexer */
   itoken=yylex(&lvalp,prs_arg);
   
   while(itoken != 0){
-    
     switch (itoken){
-      
-    case IGNORE:      break; /* Do nothing  */
-    case ATTRIBUTE:   break; /* Do nothing  */
-    case EPROVOKE:    break; /* Do nothing */
+    case IGNORE: break; /* Do nothing  */
+    case ATTRIBUTE: break; /* Do nothing  */
+    case EPROVOKE: break; /* Do nothing */
     case VAR: 
       var_nm=lvalp.vara;
-      if( NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id) ){
+      if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
-	for(i=0; i < n_lst_a ; i++)
-	  if(!strcmp(lst_a[i].nm,var_nm)){ match=True; break; }
+	for(var_idx=0;var_idx<n_lst_a;var_idx++)
+	  if(!strcmp(lst_a[var_idx].nm,var_nm)){match=True; break;}
 	if(match) break;
 	if(n_lst_a==0) lst_a=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	else lst_a=(nm_id_sct *)nco_realloc(lst_a,((n_lst_a+1)*sizeof(nm_id_sct)));
 	lst_a[n_lst_a].nm=strdup(var_nm);
 	lst_a[n_lst_a++].id=var_id;
-      }
+      } /* endif variable is in input file */
       break; 
     case OUT_VAR: 
       var_nm=lvalp.output_var;
-      
-      if( NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id) ){
+      if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
-	for(i=0; i < n_lst_b ; i++)
-	  if(!strcmp(lst_b[i].nm,var_nm)){ match=True; break; }
+	for(var_idx=0;var_idx<n_lst_b;var_idx++)
+	  if(!strcmp(lst_b[var_idx].nm,var_nm)){match=True; break;}
 	if(match) break;
 	if(n_lst_b == 0) lst_b=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	else lst_b=(nm_id_sct *)nco_realloc(lst_b,((n_lst_b+1)*sizeof(nm_id_sct)));
 	lst_b[n_lst_b].nm=strdup(var_nm);
 	lst_b[n_lst_b++].id=var_id;
-      }
+      } /* endif LHS variable is in input file */
       break;
-      
     case OUT_ATT:       var_nm=lvalp.att.var_nm;     
-      
-      if( NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id) ){
+      if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
-	for(i=0; i < n_lst_c ; i++)
-	  if(!strcmp(lst_c[i].nm,var_nm)){ match=True; break; }
+	for(var_idx=0;var_idx<n_lst_c;var_idx++)
+	  if(!strcmp(lst_c[var_idx].nm,var_nm)){ match=True; break; }
 	if(match) break;
 	if(n_lst_c == 0) lst_c=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	else lst_c=(nm_id_sct *)nco_realloc(lst_c,((n_lst_c+1)*sizeof(nm_id_sct)));
@@ -1324,13 +1323,13 @@ ncap_initial_scan(prs_sct *prs_arg,char *spt_arg_cat, nm_id_sct** xtr_lst_a,int 
       }
       break;
     default: break;
-    }
+    } /* end switch */
     itoken=yylex(&lvalp,prs_arg);
-  }
+  } /* end while */
   
-  if(n_lst_a >0){ *xtr_lst_a=lst_a ; *nbr_lst_a=n_lst_a ;}  
-  if(n_lst_b >0){ *xtr_lst_b=lst_b ; *nbr_lst_b=n_lst_b ;}  
-  if(n_lst_c >0){ *xtr_lst_c=lst_c ; *nbr_lst_c=n_lst_c ;}  
+  if(n_lst_a>0){*xtr_lst_a=lst_a;*nbr_lst_a=n_lst_a;}
+  if(n_lst_b>0){*xtr_lst_b=lst_b;*nbr_lst_b=n_lst_b;}
+  if(n_lst_c>0){*xtr_lst_c=lst_c;*nbr_lst_c=n_lst_c;}
   
 } /* end ncap_initial_scan */
 

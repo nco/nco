@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.48 2002-01-17 08:45:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.49 2002-01-22 08:54:46 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -57,6 +57,7 @@
 */
 
 /* Standard C headers */
+#include <assert.h>  /* assert() debugging macro */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
@@ -64,18 +65,8 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
-#include <assert.h>  /* assert() debugging macro */
 /* #include <errno.h> */ /* errno */
 /* #include <malloc.h> */ /* malloc() stuff */
-
-/* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
-#include "nco_netcdf.h"  /* neCDF wrapper functions */
-
-/* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
-#define MAIN_PROGRAM_FILE
-#include "nco.h" /* NCO definitions */
-#include "ncap.h" /* ncap-specific definitions */
 
 #if ( defined LINUX || defined LINUXALPHA )
 #include <getopt.h> /* GNU getopt() is standard on Linux */
@@ -85,8 +76,18 @@
 #endif /* not AIX */
 #endif /* not LINUX */
 
+/* 3rd party vendors */
+#include <netcdf.h> /* netCDF definitions */
+
+/* Personal headers */
+/* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
+#define MAIN_PROGRAM_FILE
+#include "nco.h" /* NCO definitions */
+#include "nco_netcdf.h"  /* neCDF wrapper functions */
+#include "ncap.h" /* ncap-specific definitions */
+
 long int ln_nbr_crr; /* [cnt] Line number incremented in ncap.l */
-char *fl_spt_global; /* [fl] Script file */
+char *fl_spt_glb; /* [fl] Script file */
 
 int 
 main(int argc,char **argv)
@@ -94,33 +95,6 @@ main(int argc,char **argv)
   extern int yyparse (void *); /* Prototype here as in bison.simple to avoid compiler warning */
   
   extern FILE *yyin;
-  
-  /* These declarations may be needed on some platforms */
-  /*
-  extern double acos();
-  extern double asin();
-  extern double atan();
-  extern double cos();
-  extern double exp();
-  extern double gamma();
-  extern double log();
-  extern double log10();
-  extern double sin();
-  extern double sqrt();
-  extern double tan();
-
-  extern float acosf(float);
-  extern float asinf(float);
-  extern float atanf(float);
-  extern float cosf(float);
-  extern float expf(float);
-  extern float gammaf(float);
-  extern float logf(float);
-  extern float log10f(float);
-  extern float sinf(float);
-  extern float sqrtf(float);
-  extern float tanf(float);
-  */
   
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
@@ -148,8 +122,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.48 2002-01-17 08:45:35 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.48 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.49 2002-01-22 08:54:46 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.49 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -157,6 +131,7 @@ main(int argc,char **argv)
   extern char *optarg;
   extern int optind;
   
+  int fll_md_old; /* [enm] Old fill mode */
   int idx;
   int in_id;  
   int out_id;  
@@ -281,7 +256,7 @@ main(int argc,char **argv)
     case 'v': /* Variables to extract/exclude */
       PROCESS_ALL_VARS=False;
       nbr_xtr = 0;
-      //var_lst_in=lst_prs(optarg,",",&nbr_xtr);
+      /* var_lst_in=lst_prs(optarg,",",&nbr_xtr); */
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
@@ -301,7 +276,7 @@ main(int argc,char **argv)
       strcpy(spt_arg_cat,spt_arg[idx]);
       strcat(spt_arg_cat,";\n");
       spt_arg_len=slen+3;
-    } else { 
+    }else{
       spt_arg_len+=slen+2;
       spt_arg_cat=(char *)nco_realloc(spt_arg_cat,spt_arg_len);
       strcat(spt_arg_cat,spt_arg[idx]);
@@ -469,51 +444,56 @@ main(int argc,char **argv)
   prs_arg.out_id=out_id;
   prs_arg.fl_spt=fl_spt;
   prs_arg.att_lst=att_lst;
-  prs_arg.nbr_att =&nbr_att;
+  prs_arg.nbr_att=&nbr_att;
   prs_arg.dmn=dmn_out;
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
-  prs_arg.sym_tbl= sym_tbl;
-  prs_arg.sym_tbl_nbr = sym_tbl_nbr;
+  prs_arg.sym_tbl=sym_tbl;
+  prs_arg.sym_tbl_nbr=sym_tbl_nbr;
   prs_arg.initial_scan=False;
   
   if(fl_spt == NULL){
+    /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0){
-      (void)fprintf(stderr,"%s: ERROR must supply derived field scripts\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: ERROR no script file or command line scripts specified\n",prg_nm_get());
+      (void)fprintf(stderr,"%s: HINT Use, e.g., -s \"foo=bar\"\n",prg_nm_get());
       exit(EXIT_FAILURE);
     } /* end if */
     
-    if(dbg_lvl > 0)
-      for(idx=0;idx<nbr_spt;idx++)
-	(void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
-    fl_spt_global="Arg";
-    ln_nbr_crr=1;
+    /* Print all command line scripts */
+    if(dbg_lvl > 0){
+      for(idx=0;idx<nbr_spt;idx++) (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
+    } /* endif debug */
+    fl_spt_glb="Command-line arguments";
+    ln_nbr_crr=1; /* [cnt] Line number incremented in ncap.l */
     yy_scan_string(spt_arg_cat);
     rcd=yyparse((void *)&prs_arg);
-  }else{
+
+  }else{ /* ...endif command-line scripts, begin script file... */
+
     /* Open script file for reading */
     if((yyin=fopen(fl_spt,"r")) == NULL){
       (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt);
       exit(EXIT_FAILURE);
     } /* end if */
     /* Invoke parser on script file */
-    fl_spt_global=fl_spt;
-    ln_nbr_crr=1;
+    fl_spt_glb=fl_spt;
+    ln_nbr_crr=1; /* [cnt] Line number incremented in ncap.l */
     rcd=yyparse((void *)&prs_arg);
   } /* end else */
 
   rcd=nco_redef(out_id);
   (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr_2,(dmn_sct **)NULL,0);
-  //(void)var_dfn(in_id,fl_out,out_id,var_fix,nbr_var_fix,(dmn_sct **)NULL,0);
+  /* (void)var_dfn(in_id,fl_out,out_id,var_fix,nbr_var_fix,(dmn_sct **)NULL,0); */
   
   /* Turn off default filling behavior to enhance efficiency */
-  rcd=nc_set_fill(out_id,NC_NOFILL,(int *)NULL);
+  rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
   
   /* Take output file out of define mode */
   rcd=nco_enddef(out_id);
   
   /* Copy variable data for non-processed variables */
   (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
-  //(void)var_val_cpy(in_id,out_id,var_out,nbr_xtr_2);
+  /* (void)var_val_cpy(in_id,out_id,var_out,nbr_xtr_2); */
   
   (void)nco_redef(out_id);
   /* Copy new attributes overwriting old ones */
