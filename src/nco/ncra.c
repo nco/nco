@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.113 2004-07-01 18:23:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.114 2004-07-03 18:04:21 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -112,12 +112,12 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
-  char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
+  char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type Option y */
+  char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type Option P */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.113 2004-07-01 18:23:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.113 $";
-  const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xy:-:";
+  const char * const CVS_Id="$Id: ncra.c,v 1.114 2004-07-03 18:04:21 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.114 $";
+  const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -208,6 +208,9 @@ main(int argc,char **argv)
       {"vrs",no_argument,0,'r'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
+      {"pseudonym",required_argument,0,'Y'},
+      {"program",required_argument,0,'Y'},
+      {"prg_nm",required_argument,0,'Y'},
       {"math",required_argument,0,'y'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
@@ -299,6 +302,10 @@ main(int argc,char **argv)
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
+      break;
+    case 'Y': /* Pseudonym */
+      /* Call prg_prs to reset pseudonym */
+      prg_nm=prg_prs(optarg,&prg);
       break;
     case 'y': /* Operation type */
       nco_op_typ_sng=(char *)strdup(optarg);

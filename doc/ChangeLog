@@ -1,3 +1,8 @@
+2004-07-03  Charlie Zender  <zender@uci.edu>
+
+	* Add undocumented -Y, --pseudonym, or --prg_nm switch to ncra
+	to force it to behave as ncea or ncrcat
+
 2004-07-02  Charlie Zender  <zender@uci.edu>
 
 	* Change default from OMP=N to OMP=Y in old Makefile
