@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.50 2003-05-27 18:16:12 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.51 2003-05-30 19:28:05 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -49,9 +49,7 @@ Recommended/current custom ./configure invocation, alphabetized by pvmgetarch:
 Start AIX
 status: Appears to work
 Updated 5/27/2003   Jim Edwards   
-AIX 5.1.03,  xlc 6.0, xlC_r 6.0 
-Set LDFLAGS=-brtl before running configure.  Use the environment variable 
-OBJECT_MODE=64 to build ABI64.  Compiler warnings about incorrect file suffix and duplicate symbols may be safely ignored.
+Compiler warnings about incorrect file suffix and duplicate symbols may be safely ignored.
 ************************************************************************
 zender@bs1201en:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 AIX
@@ -61,7 +59,7 @@ powerpc-ibm-aix5.1.0.0
 For ABI=64:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' OBJECT_MODE='64' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' OBJECT_MODE='64' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr

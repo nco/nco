@@ -1,3 +1,11 @@
+2003-05-30  Charlie Zender  <zender@uci.edu>
+
+	* Add CPP_TKN_OS += -I/usr/vacpp/include for nco_C++ on AIX
+
+	* AIX autotools modifications by Jim
+
+	* Jim Edwards completed Autoconf TODO 17. Fix CXX valarray to work on AIX
+
 2003-05-21  Charlie Zender  <zender@uci.edu>
 
 	* Replaced malloc() with nco_malloc_flg() in about 10 locations

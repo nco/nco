@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.9 2002-12-02 16:23:15 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.10 2003-05-30 19:28:10 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -210,8 +210,11 @@ ${MY_DPN_DIR}/%.d : %.cc
 # Manually define autotools tokens normally defined in HAVE_CONFIG_H
 # Initialize OS-specific tokens to empty
 CPP_TKN_OS := 
+ifneq (${PVM_ARCH},AIX)
+ CPP_TKN_OS += -I/usr/vacpp/include
+endif # AIX
 ifeq (${null},$(findstring SGI,${PVM_ARCH}))
-CPP_TKN_OS += -DHAVE_CSTDLIB
+ CPP_TKN_OS += -DHAVE_CSTDLIB
 endif # SGI
 
 # Works on AIX and AIX46K

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.216 2003-05-21 22:45:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.217 2003-05-30 19:28:10 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -13,7 +13,6 @@ Autoconf-build items:
 06. Track VERSION in ./configure, use doc/VERSION for now
 11. Use autoconf standard for VERSION, HOSTNAME, USER
 14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, I18N, _LIBINTL_H, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
-17. Fix CXX valarray to work on AIX
 19. Implement autotools processing of doc/nco.texi to generate standard documentation: nco.info, nco.dvi, nco.ps, nco.pdf
 20. DODS linkage appears broken on Linux
 22. Many compiler flags in configure.in should be compiler specific--not just OS specific, e.g., case $host in *-cray-unicos) case $CC in CC) CFLAGS= ....
