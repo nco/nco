@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.45 2004-09-07 04:31:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.46 2004-09-07 05:04:20 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -571,10 +571,9 @@ nco_var_pck /* [fnc] Pack variable in memory */
   /* Routine should be called with variable already in memory */
   if(var->val.vp == NULL) (void)fprintf(stdout,"%s: ERROR %s called with empty var->val.vp\n",prg_nm_get(),fnc_nm);
   
-  /* Packed type must be NC_CHAR or NC_SHORT */
-  /* fxm: Allow packing NC_DOUBLE to NC_INT */
-  if(nc_typ_pck != NC_CHAR && nc_typ_pck != NC_SHORT){
-    (void)fprintf(stdout,"%s: ERROR %s called with invalid packed type nc_typ_pck = %s\n",prg_nm_get(),fnc_nm,nco_typ_sng(nc_typ_pck));
+  /* Packed type must be NC_CHAR or NC_SHORT or NC_INT */
+  if(nc_typ_pck != NC_CHAR && nc_typ_pck != NC_SHORT && nc_typ_pck != NC_INT){
+    (void)fprintf(stdout,"%s: ERROR %s called to pack variable %s with invalid packed type nc_typ_pck = %s\n",prg_nm_get(),fnc_nm,var->nm,nco_typ_sng(nc_typ_pck));
     nco_exit(EXIT_FAILURE);
   } /* endif */
 

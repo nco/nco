@@ -3,6 +3,10 @@
 	* cvs tag -c nco-2_9_9
 	Changes since nco-2_9_8: 1. ncbo threading 2. ncpdq -P packing
 
+	* Verified each pack map works without memory problems for all_new policy
+
+	* Allow packing to NC_INT in nco_var_pck()
+
 	* Successfully segregated var_fix from var_prc
 
 	* Change nco_pck_typ to nco_pck_plc for "Packing Policy"
