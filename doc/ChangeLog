@@ -1,5 +1,8 @@
 2004-08-04  Charlie Zender  <zender@uci.edu>
 
+	* Fix ncwa bug introduced in nco_var_dmn() last week.
+	nco_tst.pl completes successfully again.
+
 	* Improved/updated man_end.txt and catenated onto end of all man pages
 
 	* Wrote ncap man page ncap.1
