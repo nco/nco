@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.37 2004-09-06 06:00:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.38 2004-09-06 06:26:28 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -60,9 +60,41 @@ nco_is_packable /* [fnc] Will NCO attempt to pack variable? */
   return False;
 } /* end nco_is_packable() */
 
+int /* O [enm] Packing map */
+nco_pck_map_get /* [fnc] Convert user-specified packing map to key */
+(const char *nco_pck_map_sng) /* [sng] User-specified packing map */
+{
+  /* Purpose: Process ncpdq '-P' command line argument
+     Convert user-specified string to packing map
+     Return nco_pck_map_nil by default */
+  const char fnc_nm[]="nco_pck_map_get()"; /* [sng] Function name */
+  char *prg_nm; /* [sng] Program name */
+  prg_nm=prg_nm_get(); /* [sng] Program name */
+
+  if(nco_pck_map_sng == NULL){ 
+    (void)fprintf(stderr,"%s: ERROR %s reports empty user-specified packing map string %s\n",prg_nm,fnc_nm,nco_pck_map_sng);
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+
+  if(!strcmp(nco_pck_map_sng,"hgh_sht")) return nco_pck_map_hgh_sht;
+  if(!strcmp(nco_pck_map_sng,"pck_map_hgh_sht")) return nco_pck_map_hgh_sht;
+  if(!strcmp(nco_pck_map_sng,"hgh_chr")) return nco_pck_map_hgh_chr;
+  if(!strcmp(nco_pck_map_sng,"pck_map_hgh_chr")) return nco_pck_map_hgh_chr;
+  if(!strcmp(nco_pck_map_sng,"dwn_one")) return nco_pck_map_dwn_one;
+  if(!strcmp(nco_pck_map_sng,"pck_map_dwn_one")) return nco_pck_map_dwn_one;
+  if(!strcmp(nco_pck_map_sng,"flt_sht")) return nco_pck_map_flt_sht;
+  if(!strcmp(nco_pck_map_sng,"pck_map_flt_sht")) return nco_pck_map_flt_sht;
+  if(!strcmp(nco_pck_map_sng,"flt_chr")) return nco_pck_map_flt_chr;
+  if(!strcmp(nco_pck_map_sng,"pck_map_flt_chr")) return nco_pck_map_flt_chr;
+
+  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified packing type %s\n",prg_nm_get(),fnc_nm,nco_pck_map_sng);
+  nco_exit(EXIT_FAILURE);
+  return nco_pck_map_nil; /* Statement should not be reached */
+} /* end nco_pck_map_get() */
+
 int /* O [enm] Packing type */
 nco_pck_typ_get /* [fnc] Convert user-specified packing type to key */
-(const char *nco_pck_sng) /* [sng] User-specified packing type */
+(const char *nco_pck_typ_sng) /* [sng] User-specified packing type */
 {
   /* Purpose: Process ncpdq '-P' command line argument
      Convert user-specified string to packing operation type 
@@ -71,24 +103,24 @@ nco_pck_typ_get /* [fnc] Convert user-specified packing type to key */
   char *prg_nm; /* [sng] Program name */
   prg_nm=prg_nm_get(); /* [sng] Program name */
 
-  if(nco_pck_sng == NULL){
+  if(nco_pck_typ_sng == NULL){
     if(!strcmp(prg_nm,"ncpack")) return nco_pck_all_new_att;
     if(!strcmp(prg_nm,"ncunpack")) return nco_pck_upk;
     (void)fprintf(stderr,"%s: ERROR %s reports empty user-specified packing string in conjunction with unknown or ambiguous executable name %s\n",prg_nm,fnc_nm,prg_nm);
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
-  if(!strcmp(nco_pck_sng,"all_xst")) return nco_pck_all_xst_att;
-  if(!strcmp(nco_pck_sng,"pck_all_xst_att")) return nco_pck_all_xst_att;
-  if(!strcmp(nco_pck_sng,"all_new")) return nco_pck_all_new_att;
-  if(!strcmp(nco_pck_sng,"pck_all_new_att")) return nco_pck_all_new_att;
-  if(!strcmp(nco_pck_sng,"xst_new")) return nco_pck_xst_new_att;
-  if(!strcmp(nco_pck_sng,"pck_xst_new_att")) return nco_pck_xst_new_att;
-  if(!strcmp(nco_pck_sng,"upk")) return nco_pck_upk;
-  if(!strcmp(nco_pck_sng,"unpack")) return nco_pck_upk;
-  if(!strcmp(nco_pck_sng,"pck_upk")) return nco_pck_upk;
+  if(!strcmp(nco_pck_typ_sng,"all_xst")) return nco_pck_all_xst_att;
+  if(!strcmp(nco_pck_typ_sng,"pck_all_xst_att")) return nco_pck_all_xst_att;
+  if(!strcmp(nco_pck_typ_sng,"all_new")) return nco_pck_all_new_att;
+  if(!strcmp(nco_pck_typ_sng,"pck_all_new_att")) return nco_pck_all_new_att;
+  if(!strcmp(nco_pck_typ_sng,"xst_new")) return nco_pck_xst_new_att;
+  if(!strcmp(nco_pck_typ_sng,"pck_xst_new_att")) return nco_pck_xst_new_att;
+  if(!strcmp(nco_pck_typ_sng,"upk")) return nco_pck_upk;
+  if(!strcmp(nco_pck_typ_sng,"unpack")) return nco_pck_upk;
+  if(!strcmp(nco_pck_typ_sng,"pck_upk")) return nco_pck_upk;
 
-  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified packing type %s\n",prg_nm_get(),fnc_nm,nco_pck_sng);
+  (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified packing type %s\n",prg_nm_get(),fnc_nm,nco_pck_typ_sng);
   nco_exit(EXIT_FAILURE);
   return nco_pck_nil; /* Statement should not be reached */
 } /* end nco_pck_typ_get() */
@@ -101,12 +133,12 @@ nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */
   /* fxm: devise better system to allow user to specify output type for packed variable */
   const char fnc_nm[]="nco_typ_pck_get()"; /* [sng] Function name */
   nc_type nc_typ_pck_out=NC_NAT; /* [enm] Type to pack to */
-  int nco_pck_cnv=nco_pck_cnv_hgh_sht;  /* [enm] Packing conversion */
+  int nco_pck_map=nco_pck_map_hgh_sht;  /* [enm] Packing conversion */
   
-  switch(nco_pck_cnv){ 
-  case nco_pck_cnv_nil:
+  switch(nco_pck_map){ 
+  case nco_pck_map_nil:
     nc_typ_pck_out=nc_typ_in; break;
-  case nco_pck_cnv_hgh_sht:
+  case nco_pck_map_hgh_sht:
     switch(nc_typ_in){ 
     case NC_DOUBLE: 
     case NC_FLOAT: 
@@ -119,7 +151,7 @@ nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
     break;
-  case nco_pck_cnv_hgh_chr:
+  case nco_pck_map_hgh_chr:
     switch(nc_typ_in){ 
     case NC_DOUBLE: 
     case NC_FLOAT: 
@@ -132,7 +164,7 @@ nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
     break;
-  case nco_pck_cnv_dwn_one:
+  case nco_pck_map_dwn_one:
     switch(nc_typ_in){ 
     case NC_DOUBLE: nc_typ_pck_out=NC_INT; break; 
     case NC_FLOAT: 
@@ -145,7 +177,7 @@ nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
     break;
-  case nco_pck_cnv_flt_sht:
+  case nco_pck_map_flt_sht:
     switch(nc_typ_in){ 
     case NC_DOUBLE: 
     case NC_FLOAT: 
@@ -158,7 +190,7 @@ nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
     break;
-  case nco_pck_cnv_flt_chr:
+  case nco_pck_map_flt_chr:
     switch(nc_typ_in){ 
     case NC_DOUBLE: 
     case NC_FLOAT: 
@@ -172,10 +204,10 @@ nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */
     } /* end nc_type switch */ 
     break;
   default: 
-    (void)fprintf(stdout,"%s: ERROR %s reports switch(nco_pck_cnv) statement fell through to default case\n",prg_nm_get(),fnc_nm);
+    (void)fprintf(stdout,"%s: ERROR %s reports switch(nco_pck_map) statement fell through to default case\n",prg_nm_get(),fnc_nm);
     nco_err_exit(0,fnc_nm);
     break;
-  } /* end nco_pck_cnv switch */ 
+  } /* end nco_pck_map switch */ 
   
   return nc_typ_pck_out;
 } /* end nco_typ_pck_get() */

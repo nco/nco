@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.23 2004-09-06 06:00:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.24 2004-09-06 06:26:28 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -42,19 +42,19 @@ enum nco_pck_typ{ /* [enm] Packing type */
 }; /* end nco_pck_typ enum */
 
 /* Packing conversions: */
-enum nco_pck_cnv{ /* [enm] Packing conversion */
-  nco_pck_cnv_nil, /* 0 [enm] Do not convert anything, i.e., all types remain unchanged */
-  nco_pck_cnv_hgh_sht, /* 1 [enm] Pack higher precision types to NC_SHORT, pack nothing else
+enum nco_pck_map{ /* [enm] Packing conversion map */
+  nco_pck_map_nil, /* 0 [enm] Do not convert anything, i.e., all types remain unchanged */
+  nco_pck_map_hgh_sht, /* 1 [enm] Pack higher precision types to NC_SHORT, pack nothing else
 			  [NC_DOUBLE,NC_FLOAT,NC_INT]->NC_SHORT, [NC_SHORT,NC_CHAR,NC_BYTE]->remain */
-  nco_pck_cnv_hgh_chr, /* 2 [enm] Pack higher precision types to NC_CHAR, pack nothing else
+  nco_pck_map_hgh_chr, /* 2 [enm] Pack higher precision types to NC_CHAR, pack nothing else
 			  [NC_DOUBLE,NC_FLOAT,NC_INT,NC_SHORT]->NC_CHAR, [NC_CHAR,NC_BYTE]->remain */
-  nco_pck_cnv_dwn_one, /* 3 [enm] Convert each type of each size to type of next size down
+  nco_pck_map_dwn_one, /* 3 [enm] Convert each type of each size to type of next size down
 			  NC_DOUBLE->NC_INT, [NC_FLOAT,NC_INT]->NC_SHORT, [NC_CHAR,NC_BYTE]->remain */
-  nco_pck_cnv_flt_sht, /* 4 [enm] Pack floating precision types to NC_SHORT, pack nothing else
+  nco_pck_map_flt_sht, /* 4 [enm] Pack floating precision types to NC_SHORT, pack nothing else
 			  [NC_DOUBLE,NC_FLOAT]->NC_SHORT, [NC_INT,NC_SHORT,NC_CHAR,NC_BYTE]->remain */
-  nco_pck_cnv_flt_chr /* 5 [enm] Pack floating precision types to NC_CHAR, pack nothing else
+  nco_pck_map_flt_chr /* 5 [enm] Pack floating precision types to NC_CHAR, pack nothing else
 			  [NC_DOUBLE,NC_FLOAT]->NC_CHAR, [NC_INT,NC_SHORT,NC_CHAR,NC_BYTE]->remain */
-}; /* end nco_pck_cnv enum */
+}; /* end nco_pck_map enum */
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,9 +86,13 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
  aed_sct * const aed_lst_add_fst, /* O [enm] Attribute edit structure, add_offset */
  aed_sct * const aed_lst_scl_fct); /* O [enm] Attribute edit structure, scale_factor */
 
+int /* O [enm] Packing map */
+nco_pck_map_get /* [fnc] Convert user-specified packing map to key */
+(const char *nco_pck_map_sng); /* [sng] User-specified packing map */
+
 int /* O [enm] Packing type */
 nco_pck_typ_get /* [fnc] Convert user-specified packing type to key */
-(const char *nco_pck_sng); /* [sng] User-specified packing type */
+(const char *nco_pck_typ_sng); /* [sng] User-specified packing type */
   
 bool /* O [flg] Variable is packed on disk */
 nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */

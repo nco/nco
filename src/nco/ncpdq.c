@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.44 2004-09-06 04:53:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.45 2004-09-06 06:26:28 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -96,6 +96,7 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type Option P */
+  char *nco_pck_map_sng=NULL_CEWI; /* [sng] Packing map Option M */
   char *rec_dmn_nm_in=NULL; /* [sng] Record dimension name, original */
   char *rec_dmn_nm_out=NULL; /* [sng] Record dimension name, re-ordered */
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
@@ -104,9 +105,9 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.44 2004-09-06 04:53:03 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.44 $";
-  const char * const opt_sng="Aa:CcD:d:Fhl:Oo:P:p:Rrt:v:Ux-:";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.45 2004-09-06 06:26:28 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.45 $";
+  const char * const opt_sng="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -139,6 +140,7 @@ main(int argc,char **argv)
   int nbr_var_fl;
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
+  int nco_pck_map=nco_pck_map_hgh_sht; /* [enm] Packing conversion map */
   int nco_pck_typ=nco_pck_nil; /* [enm] Packing type */
   int opt;
   int out_id;  
@@ -184,6 +186,8 @@ main(int argc,char **argv)
       {"hst",no_argument,0,'h'},
       {"local",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
+      {"map_pck",required_argument,0,'M'},
+      {"map_pack",required_argument,0,'M'},
       {"overwrite",no_argument,0,'O'},
       {"ovr",no_argument,0,'O'},
       {"output",required_argument,0,'o'},
@@ -249,6 +253,10 @@ main(int argc,char **argv)
       break;
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=(char *)strdup(optarg);
+      break;
+    case 'M': /* Packing map */
+      nco_pck_map_sng=(char *)strdup(optarg);
+      nco_pck_map=nco_pck_map_get(nco_pck_map_sng);
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -767,6 +775,7 @@ main(int argc,char **argv)
   } /* endif dmn_rdr_nbr > 0 */
   if(nco_pck_typ != nco_pck_nil){
     if(nco_pck_typ_sng != NULL) nco_pck_typ_sng=(char *)nco_free(nco_pck_typ_sng);
+    if(nco_pck_map_sng != NULL) nco_pck_map_sng=(char *)nco_free(nco_pck_map_sng);
     if(nco_pck_typ != nco_pck_upk){
       /* No need for loop over var_prc variables to free attribute values
 	 Variable structures and attribute edit lists share same attribute values

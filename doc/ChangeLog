@@ -3,8 +3,10 @@
 	* cvs tag -c nco-2_9_9
 	Changes since nco-2_9_8: 1. ncbo threading 2. ncpdq -P packing
 
-	* Introduce nco_pck_cnv to nco_typ_pck_get() 
-	Only default type nco_pck_cnv_hgh_sht currently works
+	* Create nco_pck_map_get() to parse nco_pck_map arguments to ncpdq -M option
+
+	* Introduce nco_pck_map to nco_typ_pck_get() 
+	Only default type nco_pck_map_hgh_sht currently works
 
 	* Move high level packing routines from ncpdq.c to nco_pck.c
 
