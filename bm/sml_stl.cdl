@@ -1,3 +1,4 @@
+// $Header: /data/zender/nco_20150216/nco/bm/sml_stl.cdl,v 1.2 2005-03-23 18:28:15 mangalam Exp $
 // when sent thru ncgen:
 // ncgen -b -o smallsat.nc smallsat.cdl 
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-
+# $Header: /data/zender/nco_20150216/nco/bm/stl_5km.sh,v 1.2 2005-03-23 18:28:16 mangalam Exp $
 # top section is all the shell cruft to set DATA dir and testing to see if
 # we can use the GNU time command to test various things.  
 # The guts of the script start at ~line 100.
@@ -105,7 +105,7 @@ $TIMER ncgen -b -o ${DATA}/nco/stl_5km.nc stl_5km.cdl
 
 echo ""
 echo "Populating stl_5km file with floats"
-echo "This takes ~5.5m on the Thinkpad, 
+echo "This takes ~5.5m on the Thinkpad"
 echo "           ~2m on the 2.8GHz Xeon"
 echo "           ~1.2m on the ESMF - YMMV"
 echo ""
@@ -113,9 +113,9 @@ echo ""
 echo "ncapping 8 2D vars"
 $TIMER ncap -O -s "d2_00[lat,lon]=2.8f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=2.8f;d2_03[lat,lon]=2.8f;d2_04[lat,lon]=2.8f;d2_05[lat,lon]=2.8f;d2_06[lat,lon]=2.8f;d2_07[lat,lon]=2.8f;"  ${DATA}/nco/stl_5km.nc ${DATA}/nco/stl_5km.nc 
 
-echo "";echo ""
+echo ""; echo ""
 echo "ncks has this to say about the test file: [stl_5km.nc]"
-echo "";echo ""
+echo ""; echo ""
 
 ncks stl_5km.nc |head -60
 

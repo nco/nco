@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+# $Header: /data/zender/nco_20150216/nco/bm/sml_fls.sh,v 1.2 2005-03-23 18:28:15 mangalam Exp $
 # top section is all the shell cruft to set DATA dir and testing to see if
 # we can use the GNU time command to test various things.  
 # The guts of the script start at ~line 100.
@@ -95,10 +96,9 @@ echo
 #echo "hit [Enter] to continue or ^C to abort"; echo ""
 #read continue
 
-echo "Creating ${DATA}/nco/ipcc_dly_T85.nc file from template"
 mkdir -p ${DATA}/nco
 
-echo "The entire script takes ~47 s on a 900MHz/512MB THinkpad"
+echo "The entire script takes ~1m  on a 900MHz/512MB THinkpad"
 echo "                        ~56s on a 2.8GHz/2GB Xeon" 
 echo "                        ~35s on the ESMF"
 echo "                        YMMV"
@@ -106,29 +106,29 @@ echo "                        YMMV"
     echo ""
 	echo "Making ge test file template..."
     echo "Creating ${DATA}/nco/ge.nc file from template"  
-    ncgen -b -o ${DATA}/nco/ge.nc ge.cdl
+    ncgen -b -o ${DATA}/nco/gne_exp.nc gne_exp.cdl
     echo "   ...done."
     echo ""
     echo "Now making ${DATA}/nco/smallsat.nc from template..."
-    ncgen -b -o ${DATA}/nco/smallsat.nc smallsat.cdl
+    ncgen -b -o ${DATA}/nco/sml_stl.nc sml_stl.cdl
     echo "   ...done."
     echo ""
     echo "Now populating ge test file. Timing follows:"
-    $TIMER ncap -O -s "base[rep,treat,cell,params,ge_atoms]=5.67f" ${DATA}/nco/ge.nc ${DATA}/nco/ge.nc 
+    $TIMER ncap -O -s "base[rep,treat,cell,params,ge_atoms]=5.67f" ${DATA}/nco/gne_exp.nc ${DATA}/nco/gne_exp.nc 
     echo "   ...done."
     echo ""
     echo "Now populating smallsat test file. Timing follows:"
-    $TIMER ncap -O -s "d2_00[lat,lon]=0.1f;d2_01[lat,lon]=1.2f;d2_02[lat,lon]=2.3f;" ${DATA}/nco/smallsat.nc ${DATA}/nco/smallsat.nc
+    $TIMER ncap -O -s "d2_00[lat,lon]=0.1f;d2_01[lat,lon]=1.2f;d2_02[lat,lon]=2.3f;" ${DATA}/nco/sml_stl.nc ${DATA}/nco/sml_stl.nc
     echo "   ...done."
     echo ""
-    echo "What ncks says about ge.nc:"
+    echo "What ncks says about gne_exp.nc:"
     echo "===================================="
-    ncks ${DATA}/nco/ge.nc |head -44
+    ncks ${DATA}/nco/gne_exp.nc |head -44
     echo ""
     echo ""
     echo ""
-    echo "What ncks says about smallsat.nc"  
+    echo "What ncks says about sml_stl.nc"  
     echo "===================================="
-    ncks ${DATA}/nco/smallsat.nc |head -44
+    ncks ${DATA}/nco/sml_stl.nc |head -44
     echo ""
     

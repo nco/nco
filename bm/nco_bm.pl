@@ -1,5 +1,6 @@
 #!/usr/bin/perl
 
+# $Header: /data/zender/nco_20150216/nco/bm/nco_bm.pl,v 1.2 2005-03-23 18:28:14 mangalam Exp $
 # Usage:  (see usage() below for more info)
 # <BUILD_ROOT>/nco/bld/nco_tst.pl # Tests all operators
 # <BUILD_ROOT>/nco/bld/nco_tst.pl ncra # Test one operator
