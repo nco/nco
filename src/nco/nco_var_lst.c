@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.21 2003-08-26 14:46:48 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.22 2003-11-14 12:42:43 hmb Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -70,14 +70,12 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
 {
   /* Purpose: Create variable extraction list with or without regular expressions*/
 
+
   int idx;
   int jdx;
-  int sng_lng;
-  int srch_sng_lng=0; /* size of srch sng */
   int nbr_tmp=0;
   int nbr_match;
 
-  char *srch_sng=NULL;  /* all var names concatenated WITH \n\0 as a separator */
   char *var_sng;
 
   nm_id_sct *xtr_lst=NULL; /* xtr_lst may bealloc()'d from NULL with -c option */
@@ -108,21 +106,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
   in_bool=(bool *)nco_calloc(nbr_var,sizeof(bool));
   
   
-
   
-  /* create search string from list */
-  /* string is of form "var1/n/0/var2/n/0/var3/n/0"  */
-  for(idx=0;idx<nbr_var;idx++){
-    sng_lng=strlen(in_lst[idx].nm);
-    srch_sng=(char*)nco_realloc(srch_sng,(srch_sng_lng+sng_lng+2)*sizeof(char));
-    strncpy(srch_sng+srch_sng_lng,in_lst[idx].nm,sng_lng);
-     srch_sng_lng=srch_sng_lng+sng_lng+2;
-    *(srch_sng+srch_sng_lng-2)='\n';
-    *(srch_sng+srch_sng_lng-1)='\0';
-    }    /* end loop over idx */
-
-  
-
   /* loop through var_lst_in */
 
   for(idx=0 ; idx<*nbr_xtr ; idx++) {
@@ -143,7 +127,8 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
        /* Regular expression library present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
       
-       nbr_match=nco_var_meta_search(nbr_var,srch_sng,var_sng,in_bool);
+
+       nbr_match=nco_var_meta_search(nbr_var,in_lst,var_sng,in_bool);
        if( nbr_match==0)  
         	(void)fprintf(stdout,"%s: WARNING: regular expression \"%s\" doesn't match any variables\n",prg_nm_get(),var_sng); 
        continue;
@@ -193,7 +178,6 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
 
   (void)nco_free(in_lst);
   (void)nco_free(in_bool);
-  (void)nco_free(srch_sng);
 
   *nbr_xtr=nbr_tmp;    
   return xtr_lst;
@@ -207,7 +191,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
 int /* O number of matches found */
 nco_var_meta_search  /* search for pattern matches in the var string list */
 (int nbr_var,        /* I number of vars in srch_sng and size of in_bool */
-char *srch_sng,     /* I concatentaed list of vars */
+nm_id_sct *in_lst,   /* I list of all variables in input file (with id's) */
 char *rexp,          /* I regular expression pattern */
 bool *in_bool)       /* O matched vars holder */
 {
@@ -217,8 +201,6 @@ bool *in_bool)       /* O matched vars holder */
   int cflags;
   int eflags;
   int nbr_mtch=0;
-  char *cp;
-  
   size_t no_sub;
   
   regmatch_t *result;
@@ -266,14 +248,12 @@ bool *in_bool)       /* O matched vars holder */
   /* search string */
    result = (regmatch_t *) malloc(sizeof(regmatch_t) * no_sub);
 
-   cp=srch_sng;
    /* search each of the var strings for matches */
    for(idx=0; idx<nbr_var ;idx++){  
-     if( !regexec(r, cp, no_sub, result, eflags))
+      if( !regexec(r, in_lst[idx].nm, no_sub, result, eflags))
        { in_bool[idx]=True;
          nbr_mtch++;
        }
-      cp+=strlen(cp)+1; 
    }
 
   regfree(r); /* Free the regular expression data structure */
