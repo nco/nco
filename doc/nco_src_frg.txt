@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.47 2003-02-06 07:36:51 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.48 2003-02-11 01:51:42 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -23,6 +23,8 @@ CVS:		    Anonymous check out:
 		    cvs -z3 -dzender@cvs.nco.sourceforge.net:/cvsroot/nco co -kk -r netcdf3 -d nco-1_3 nco 
 		    Checkouts inside sourceforge firewall:
 		    cvs -dzender@cvs1:/cvsroot/nco co -kk nco
+Debian:		    http://packages.debian.org/unstable/math/nco.html
+Gentoo:		    http://gentoo-stable.iq-computing.de/browse?type=version&category=app-sci&package=nco&version=2.2.0
 Daily tarballs of entire CVS tree for mirroring:
 		    http://cvs.sourceforge.net/cvstarballs/nco-cvsroot.tar.gz
 Compile Farm:       ssh cf.sourceforge.net cf.sf.net

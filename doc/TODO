@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.204 2003-02-08 02:25:29 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.205 2003-02-11 01:51:42 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -227,6 +227,7 @@ Command executes but in.hdf is full of screwy values
 246. Deprecate USE_FORTRAN_ARITHMETIC from Makefile
 247. Automate .deb builds
 248. Merge downstream Debian mods by Brian Mays into main tree
+249. Merge downstream Gentoo mods by George Shapovalov <george@gentoo.org> and Jordan Dawe <freedryk@hotmail.com> into main tree
 ************************************************************************
 End NCO Wish list
 ************************************************************************
