@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.121 2002-02-03 08:40:08 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.122 2002-02-03 19:32:38 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -32,6 +32,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 14. If tally is superfluous in ncap then do not ever allocate it
 15. Link to GSL functions, especially gsl_sf_* (special functions)
 16. Get ncap build working with pure_parser turned off so lex/yacc builds work
+17. Start in console mode if no script and no output file specified, e.g., nco> 
 
 Highest priority NCO-wide items that You can help with:
 41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)
