@@ -1,3 +1,9 @@
+nco (2.8.6-1) unstable; urgency=low
+
+  * Add -Werror to GCC compiles, fix AIX and SGI builds
+
+ -- Charlie Zender <zender@uci.edu>  Mon, 12 Jan 2004 12:12:48 -0800
+
 nco (2.8.5-1) unstable; urgency=low
 
   * DODS support, configure.in rewrite,	ncap attribute assignment fix
