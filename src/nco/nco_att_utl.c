@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.3 2002-05-12 06:12:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.4 2002-05-31 21:00:40 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -264,7 +264,9 @@ hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   char *ctime_sng;
   char *history_crr=NULL;
   char *history_new;
+  char *hst_att_nm=NULL; /* [sng] Actual name of history attribute */
   char time_stamp_sng[TIME_STAMP_SNG_LNG];
+  char sng_history[]="history"; /* [sng] Possible name of history attribute */
   
   int idx;
   int nbr_glb_att;
@@ -288,21 +290,21 @@ hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 
   for(idx=0;idx<nbr_glb_att;idx++){
     (void)nco_inq_attname(out_id,NC_GLOBAL,idx,att_nm);
-    if(strcasecmp(att_nm,"history") == 0) break;
+    if(!strcasecmp(att_nm,sng_history)) break;
   } /* end loop over att */
 
   /* Fill in history string */
   if(idx == nbr_glb_att){
-    /* history global attribute does not yet exist */
+    /* Global attribute "[hH]istory" does not yet exist */
 
     /* Add 3 for formatting characters */
     history_new=(char *)nco_malloc((strlen(hst_sng)+strlen(time_stamp_sng)+3)*sizeof(char));
     (void)sprintf(history_new,"%s: %s",time_stamp_sng,hst_sng);
   }else{ 
-    /* history global attribute currently exists */
+    /* Global attribute "[hH]istory" currently exists */
   
     /* NB: ncattinq(), unlike strlen(), counts terminating NUL for stored NC_CHAR arrays */
-    (void)nco_inq_att(out_id,NC_GLOBAL,"history",&att_typ,&att_sz);
+    (void)nco_inq_att(out_id,NC_GLOBAL,att_nm,&att_typ,&att_sz);
     if(att_typ != NC_CHAR){
       (void)fprintf(stderr,"%s: WARNING the \"%s\" global attribute is type %s, not %s. Therefore current command line will not be appended to %s in output file.\n",prg_nm_get(),att_nm,nco_typ_sng(att_typ),nco_typ_sng(NC_CHAR),att_nm);
       return;
@@ -312,14 +314,14 @@ hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
        If history attribute is of size zero then ensure strlen(history_crr) = 0 */
     history_crr=(char *)nco_malloc((att_sz+1)*sizeof(char));
     history_crr[att_sz]='\0';
-    if(att_sz > 0) (void)nco_get_att(out_id,NC_GLOBAL,"history",(void *)history_crr,NC_CHAR);
+    if(att_sz > 0) (void)nco_get_att(out_id,NC_GLOBAL,att_nm,(void *)history_crr,NC_CHAR);
 
     /* Add 4 for formatting characters */
     history_new=(char *)nco_malloc((strlen(history_crr)+strlen(hst_sng)+strlen(time_stamp_sng)+4)*sizeof(char));
     (void)sprintf(history_new,"%s: %s\n%s",time_stamp_sng,hst_sng,history_crr);
   } /* endif history global attribute currently exists */
 
-  (void)nco_put_att(out_id,NC_GLOBAL,"history",NC_CHAR,strlen(history_new)+1,(void *)history_new);
+  (void)nco_put_att(out_id,NC_GLOBAL,att_nm,NC_CHAR,strlen(history_new)+1,(void *)history_new);
 
   history_crr=(char *)nco_free(history_crr);
   history_new=(char *)nco_free(history_new);
