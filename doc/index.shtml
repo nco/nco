@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.50 2000-08-03 20:38:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.51 2000-08-03 22:20:19 zender Exp $
 
 Purpose: NCO homepage
 
@@ -50,6 +50,7 @@ scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.s
 <dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#README">README</a> </dd>
 <dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#ChangeLog">ChangeLog</a> </dd>
 <dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#Version">Version Info</a> </dd>
+<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#TODO">TODO</a> </dd>
 <dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#NCAR">Using NCO at NCAR</a> </dd>
 <dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#Bugs">Known Problems</a> </dd>
 
@@ -229,7 +230,7 @@ average x and y...?")
 <a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developers
 forum</a>: Discussion of patches, technical questions related to
 modifying NCO, and discussion of specific items on the 
-<a href="">TODO list</a> and how best to address them   
+<a href="./TODO">TODO list</a> and how best to address them   
 
 <p>2000/05/15: 
 nco-1.1.48 fixes a bug introduced in nco-1.1.15 (November 1998) with
@@ -348,7 +349,7 @@ See the <a href="./nco.html">User's Guide</a> for details.
 In March, 2000 NCO became an Open Source project hosted by
 SourceForge.net in order to facilitate collaboration and code
 contribution by a wide variety of people. 
-There is a TODO list over 100 items long! 
+There is a <a href="./TODO">TODO list</a> over 100 items long! 
 No matter what your programming background there is a task you can
 help with. 
 From improving this terrible webpage, to adding documentation, 
@@ -425,6 +426,15 @@ as having been fixed in the latest revision.
 <p>You easily can tell whether you have the most recent version by
 typing <tt>ncks -r</tt>. 
 Decide whether to upgrade by reading the most recent <tt><a href="./ChangeLog">ChangeLog</a></tt>.
+
+<hr></p>
+
+<dt><a name="TODO"></a></dt>
+<h2>See the <tt><FONT SIZE=+4><a href="./TODO">TODO</a></FONT></tt>
+file.</h2>
+
+<p><tt>`TODO'</tt> is an unordered list describing the features and
+fixes we currently have in mind for NCO.
 
 <hr></p>
 

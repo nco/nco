@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.66 2000-07-31 05:36:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.67 2000-08-03 22:20:19 zender Exp $ 
 
 *************
 NCO Wish list
@@ -57,8 +57,6 @@ entry, problems arise in C version when missing_value = 0.0. Only fix seems
 to be checking whether tally == 0 before checking whether op2 == mss_val
 123. Add http protocol to fl_get()
 124. Use `install' program and mkdir -p
-125. Fix install on Cray
-126. Fix nco_dst.pl install for Babyblue/Blackforest
 127. Make mss: signal retrieval from NCAR mass store
 128. Ensure target 'dir' is made before *.d dependency files 
 134. Problem on CRAY with ncra test #2, averaging float whose
@@ -131,7 +129,6 @@ with nco_dst.pl
 169. Merge TODO into sourceforge Task manager and bug manager as appropriate
 170. rgn.sh appears to cause core dump over some ocean basins?
 171. Add DODS options to all NCAR architectures (buja?)
-172. Create NCO announce list
 173. Add switch to ncra which allows user to remove degenerate time dimension from result
 174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
 176. Replace Bison, Flex components of ncap with smaller C++ parser

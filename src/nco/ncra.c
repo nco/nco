@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.33 2000-07-31 00:29:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.34 2000-08-03 22:20:19 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -92,9 +92,9 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.33 2000-07-31 00:29:18 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.33 $";
-  char *nco_op_typ_sng=NULL_CEWI; /*  for average,  for minimium,  for maximium,  for total */
+  char CVS_Id[]="$Id: ncra.c,v 1.34 2000-08-03 22:20:19 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.34 $";
+  char *nco_op_typ_sng=NULL_CEWI; /* Operation type */
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -206,7 +206,7 @@ main(int argc,char **argv)
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
-    case 'y': /* Option minmax,average */
+    case 'y': /* Operation type */
       nco_op_typ_sng=(char *)strdup(optarg);
       if(prg == ncra || prg == ncea ) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;

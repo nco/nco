@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.43 2000-07-31 05:36:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.44 2000-08-03 22:20:19 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -102,11 +102,11 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *msk_nm=NULL;
-  char *nco_op_typ_sng;
+  char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.43 2000-07-31 05:36:26 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.43 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.44 2000-08-03 22:20:19 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.44 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -135,7 +135,7 @@ main(int argc,char **argv)
   int nbr_dmn_out;
   int nbr_dmn_xtr;
   int nbr_fl=0;
-  int nco_op_typ=nco_op_avg; /* Flag for average,min,max,ttl operations */
+  int nco_op_typ=nco_op_avg; /* Operation type */
   int opt;
   int op_typ_rlt=0; /* Option o */ 
   int rec_dmn_id=-1;
@@ -272,7 +272,7 @@ main(int argc,char **argv)
       /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
-    case 'y': /* Option minmax,average */
+    case 'y': /* Operation type */
       nco_op_typ_sng=(char *)strdup(optarg);
       nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;

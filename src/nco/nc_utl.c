@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.82 2000-07-31 05:36:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.83 2000-08-03 22:20:19 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -5795,11 +5795,11 @@ usg_prn(void)
     break;
   } /* end switch */
   
-  /* Public service announcement */ 
+  /* Public service announcements */ 
   (void)fprintf(stdout,"NCO homepage at http://nco.sourceforge.net has complete online User's Guide\n");
-  (void)fprintf(stdout,"Questions, suggestions, patches  \n");
+  (void)fprintf(stdout,"Post questions, suggestions, patches at http://sourceforge.net/projects/nco\n");
 
-  /* We now have the command-specific command line option string */ 
+  /* We now have command-specific command line option string */ 
   (void)fprintf(stdout,"%s %s\n",prg_nm_get(),opt_sng);
 
   if(strstr(opt_sng,"-A")) (void)fprintf(stdout,"-A\t\tAppend to existing output file, if any\n");

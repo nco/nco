@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.53 2000-08-03 20:38:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.54 2000-08-03 22:20:19 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -184,7 +184,7 @@ Introduction
 * Compatability::               
 * Libraries::                   
 * netCDF 2.x vs. 3.x::          
-* Reporting bugs::              
+* Help and Bug reports::        
 
 Operating systems compatible with NCO
 
@@ -206,6 +206,7 @@ Averagers vs. Concatenators
 
 * Concatenation::               
 * Averaging::                   
+* Interpolating::               
 
 Features common to most operators
 
@@ -304,7 +305,7 @@ itself.
 * Compatability::               
 * Libraries::                   
 * netCDF 2.x vs. 3.x::          
-* Reporting bugs::              
+* Help and Bug reports::        
 @end menu
 
 @node Availability, Compatability, Introduction, Introduction
@@ -570,7 +571,7 @@ simply need to alter your library search path.
 As a final remedy, you can reinstall NCO with all operators statically
 linked.  
 
-@node netCDF 2.x vs. 3.x, Reporting bugs, Libraries, Introduction
+@node netCDF 2.x vs. 3.x, Help and Bug reports, Libraries, Introduction
 @section netCDF 2.x vs. 3.x
 @cindex netCDF 2.x
 @cindex netCDF 3.x
@@ -621,20 +622,43 @@ HDF version 5.x became available in 1999, but did not support netCDF
 Support for netCDF 3.x in HDF 5.x is being worked on and we will attempt
 to convert NCO to netCDF 3.x once this is complete.
 
-@node Reporting bugs,  , netCDF 2.x vs. 3.x, Introduction
-@section Reporting bugs
+@node Help and Bug reports,  , netCDF 2.x vs. 3.x, Introduction
+@section Help and Bug reports
 @cindex reporting bugs
 @cindex bugs, reporting
 @cindex core dump
-We consider the following to be bugs:
-@list
-@item Incorrect numerical results
-@item Aything that causes a core dump
-@item Operators not performing as advertised
-@end list
+@cindex help
+@cindex features, requesting
+We generally receive three categories of mail from user's: requests for
+help, bug reports, and requests for new features.
+Notes saying the equivalent of "Hey, NCO continues to work great
+and it saves me more time everyday than it took to write this note" are
+a distant fourth.
+There is a different protocol for each type of request.
 
-Please read the manual before reporting a bug or posting a request for
-help. 
+If you would like NCO to include a new feature, first check to see
+if that feature is already on the 
+@ifhtml
+<a href="./TODO">TODO</a>
+@end ifhtml
+@ifclear html
+@code{TODO}
+@end ifclear
+list.
+If it is, please consider implementing that feature yourself and sending
+us the patch!
+If the feature is not yet on the list then send a note to the
+@ifhtml
+<a href="http://sourceforge.net/forum/forum.php?forum_id=9829">NCO
+Discussion forum</a>.
+@end ifhtml
+@ifclear html
+NCO Discussion forum at
+@code{http://sourceforge.net/forum/forum.php?forum_id=9829}. 
+@end ifclear
+
+Please read the manual before reporting a bug or posting a
+request for help. 
 Sending questions whose answers are not in the manual is the best
 way to motivate us to write more documentation.  
 We would also like to accentuate the contrapositive of this statement.  
@@ -643,6 +667,19 @@ can do is simplify the problem to a manageable size and report it}.
 The first thing to do is to make sure you are running the latest
 publicly released version of NCO.  
 
+Once you have read the manual, if you are still unable to get NCO
+to perform a documented function, send a request for help to the
+@ifhtml
+<a href="http://sourceforge.net/forum/forum.php?forum_id=9830">NCO Help forum</a>.
+@end ifhtml
+@ifclear html
+NCO Help forum at @code{http://sourceforge.net/forum/forum.php?forum_id=9830}.
+@end ifclear
+
+If you think you are using the right command, but NCO is misbehaving,
+then you might have found a bug. 
+A core dump, sementation violation, or incorrect numerical answers is
+always considered a high priority bug.
 How do you simplify a problem that may be revealing a bug?
 Cut out extraneous variables, dimensions, and metadata from the
 offending files and re-run the command until it no longer breaks.  
@@ -653,12 +690,12 @@ Include in the report your run-time environment, the exact error
 messages (and run the operator with @samp{-D 5} to increase the
 verbosity of the debugging output), and a copy, or the publically
 accessible location, of the file(s).
-Post the bug report to NCO project at
+Post the bug report to the 
 @ifhtml
-<a href="http://sourceforge.net/bugs/?group_id=3331"> http://sourceforge.net/bugs/?group_id=3331</a>.
+<a href="http://sourceforge.net/bugs/?group_id=3331"> NCO Project buglist</a>.
 @end ifhtml
 @ifclear html
-@code{http://sourceforge.net/bugs/?group_id=3331}.
+NCO Project buglist at @code{http://sourceforge.net/bugs/?group_id=3331}.
 @end ifclear
 
 @node Strategies, Common features, Introduction, Top
@@ -847,6 +884,7 @@ First, let's describe the concatenators, then the averagers.
 @menu
 * Concatenation::               
 * Averaging::                   
+* Interpolating::               
 @end menu
 
 @node Concatenation, Averaging, Averaging vs. Concatenating, Averaging vs. Concatenating
@@ -901,7 +939,7 @@ variables.
 To conserve system memory, use @code{ncrcat} rather than
 @code{ncecat} when concatenating record variables.
 
-@node Averaging,  , Concatenation, Averaging vs. Concatenating
+@node Averaging, Interpolating, Concatenation, Averaging vs. Concatenating
 @subsection Averagers @code{ncea}, @code{ncra}, and @code{ncwa} 
 @cindex @code{ncea}
 @cindex @code{ncra}
@@ -930,6 +968,17 @@ The file output from @code{ncra} will have the same dimensions as
 the input hyperslabs except for the record dimension, which will have a 
 size of 1 (@pxref{ncra netCDF Record Averager}, for a complete
 description of @code{ncra}). 
+
+@node Interpolating,  , Averaging, Averaging vs. Concatenating
+@subsection Interpolator @code{ncflint}
+@cindex @code{ncflint}
+
+@code{ncflint} can interpolate data between or two files.
+Since no other operators have this ability, the description of
+interpolation is given fully on the @code{ncflint} reference page
+(@pxref{ncflint netCDF File Interpolator}). 
+Note that this capability also allows @code{ncflint} to linearly rescale
+any data in a netCDF file, e.g., to convert between differing units.
 
 @node Large numbers of input files, Large files and Memory, Averaging vs. Concatenating, Strategies
 @section Working with large numbers of input files
@@ -2636,6 +2685,7 @@ variables in the file.
 The values of @var{att_type} and @var{att_val} were left blank because
 they are superfluous in @dfn{Delete} mode. 
 
+@cindex @code{units}
 Modify all existing @code{units} attributes to "meter second-1"
 @example
 ncatted -O -a units,,m,c,"meter second-1" in.nc
@@ -3045,6 +3095,8 @@ computed as @math{@var{wgt2} = 1 - @var{wgt1}}.
 Note that weights larger than 1 are allowed. 
 Thus it is possible to specify @math{@var{wgt1} = 2} and
 @math{@var{wgt2} = -3}.
+One can use this functionality to multiply all the values in a given
+file by a constant.
 
 The second method of using @code{ncflint} is specifying the
 interpolation option with @samp{-i}.
@@ -3133,6 +3185,15 @@ ncflint -w 3,-2 85.nc 85.nc tst.nc
 @noindent
 This is an example of a null operation, so @file{tst.nc} should be
 identical (within machine precision) to @file{85.nc}.
+
+@cindex @code{units}
+Rescale the dimensional units of the surface pressure @code{prs_sfc}
+from Pascals to hectopascals (millibars)
+@example
+ncflint -O -C -v prs_sfc -w 0.01,0.0 in.nc in.nc out.nc
+ncatted -O -a units,prs_sfc,o,c,millibar out.nc
+@end example
+@noindent
 
 @page
 @node ncks netCDF Kitchen Sink, ncra netCDF Record Averager, ncflint netCDF File Interpolator, Operators
@@ -3349,6 +3410,7 @@ String format for text output. Accepts C language escape sequences and
 @code{printf()} formats. 
 
 @cindex @code{-u}
+@cindex @code{units}
 @item -u 
 Accompany the printing of a variable's values with its units attribute,
 if it exists.  
