@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.70 2001-07-30 18:40:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.71 2001-08-06 15:44:51 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -218,9 +218,9 @@ sng_lst_prs(char **sng_lst,const long lmn_nbr, const char *dlm_sng)
    char *sng_lst_prs: O Concatenated string formed by joining all input strings
  */
 {
-  /* Routine takes a list of strings and joins them together into one string
+  /* Routine takes list of strings and joins them together into one string
      Elements of input list should all be NUL-terminated strings
-     Element with the value NULL, will be interpreted as strings of zero length
+     Elements with the value NUL will be interpreted as strings of zero length
   */
 
   char *sng; /* Output string */
@@ -240,7 +240,7 @@ sng_lst_prs(char **sng_lst,const long lmn_nbr, const char *dlm_sng)
 
   /* List elements must be NUL-terminated (strings) so strlen() works */
   for(lmn=0L;lmn<lmn_nbr;lmn++) sng_sz+=(sng_lst[lmn] == NULL) ? 0L : strlen(sng_lst[lmn])+dlm_len;
-  /* Add one for NULL byte */
+  /* Add one for NUL byte */
   sng=(char *)nco_malloc(sizeof(char)*(sng_sz+1));
   /* NUL-terminate string for safety */
   sng[0]='\0';
@@ -251,23 +251,20 @@ sng_lst_prs(char **sng_lst,const long lmn_nbr, const char *dlm_sng)
   } /* end loop over lmn */
 
   return sng;
-} /* end lst_prs() */
+} /* end sng_lst_prs() */
 
-char **
-lst_prs(char *sng_in,const char *dlm_sng,int *nbr_lst)
-/* 
-   char *sng_in: I/O [sng] delimited argument list (delimiters are changed to NULL on output)
-   const char *dlm_sng: I [sng] delimiter string
-   int *nbr_lst: O [nbr] Number of elements in list
-   char **lst_prs: O [sng] array of list elements
- */
+char ** /* O [sng] Array of list elements */
+lst_prs /* [fnc] Create list of strings from given string and arbitrary delimiter */
+(char *sng_in, /* I/O [sng] Delimited argument list (delimiters are changed to NULL on output */
+ const char *dlm_sng, /* I [sng] delimiter string */
+ int *nbr_lst) /* O [nbr] number of elements in list */
 {
   /* Purpose: Create list of strings from given string and arbitrary delimiter
      This routine is often called with system memory, e.g., with strings from
      command line arguments whose memory was allocated by the shell or getopt().
      A conservative policy would be, therefore, to never modify the input string
      However, we are safe if any modifications do not extend the input string
-     Thus this routine is allowed to replace delimiter strings by NULLs */
+     Thus this routine is allowed to replace delimiter strings by NULs */
 
   /* Number of list members is always one more than number of delimiters, e.g.,
      foo,,3, has 4 arguments: "foo", "", "3" and "".
