@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.9 2004-01-05 17:29:05 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.10 2004-03-11 08:19:48 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -294,7 +294,7 @@ nco_put_var // [fnc] Write variable to netCDF file
 {
   // Purpose: Wrapper for nc_put_var_float()
   int rcd=nc_put_var_float(nc_id,var_id,var_val);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<float *>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<float *> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_var<float *>()
 
@@ -306,7 +306,7 @@ nco_put_var // [fnc] Write variable to netCDF file
 {
   // Purpose: Wrapper for nc_put_var_double()
   int rcd=nc_put_var_double(nc_id,var_id,var_val);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<double *>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<double *> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_var<double *>()
 
@@ -323,7 +323,7 @@ nco_put_var // [fnc] Write variable to netCDF file
     var_val_dbl[lmn_idx]=var_val[lmn_idx];
   } // end loop over idx
   int rcd=nc_put_var_double(nc_id,var_id,var_val_dbl);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<long double *>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<long double *> failed with variable "+nco_inq_varname(nc_id,var_id));
   delete []var_val_dbl;
   return rcd;
 } // end nco_put_var<long double *>()
@@ -336,7 +336,7 @@ nco_put_var // [fnc] Write variable to netCDF file
 {
   // Purpose: Wrapper for nc_put_var_int()
   int rcd=nc_put_var_int(nc_id,var_id,var_val);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<int *>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<int *> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_var<int *>()
 
@@ -348,7 +348,7 @@ nco_put_var // [fnc] Write variable to netCDF file
 {
   // Purpose: Wrapper for nc_put_var_long()
   int rcd=nc_put_var_long(nc_id,var_id,var_val);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<long *>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<long *> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_var<long *>()
 
@@ -360,7 +360,7 @@ nco_put_var // [fnc] Write variable to netCDF file
 {
   // Purpose: Wrapper for nc_put_var_short()
   int rcd=nc_put_var_short(nc_id,var_id,var_val);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<short *>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<short *> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_var<short *>()
 
@@ -375,7 +375,7 @@ nco_put_var // [fnc] Write variable to netCDF file
   // fxm: Decide which method is best, this one or the one used for longs */
   std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
   int rcd=nc_put_var1_float(nc_id,var_id,&srt[0],&(const_cast<float &>(var_val)));
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<float>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<float> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_var<float>()
 
@@ -388,7 +388,7 @@ nco_put_var // [fnc] Write variable to netCDF file
   // Purpose: Wrapper for nc_put_var1_double()
   std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
   int rcd=nc_put_var1_double(nc_id,var_id,&srt[0],&(const_cast<double &>(var_val)));
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<double>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<double> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_var<double>()
 
@@ -402,7 +402,7 @@ nco_put_var // [fnc] Write variable to netCDF file
   const double var_val_dbl(var_val); // [frc] Double precision value
   std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
   int rcd=nc_put_var1_double(nc_id,var_id,&srt[0],&(const_cast<double &>(var_val_dbl)));
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<long double>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<long double> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_var<long double>()
 
@@ -415,7 +415,7 @@ nco_put_var // [fnc] Write variable to netCDF file
   // Purpose: Wrapper for nc_put_var1_int()
   std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
   int rcd=nc_put_var1_int(nc_id,var_id,&srt[0],&(const_cast<int &>(var_val)));
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<int>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<int> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_var<int>()
 
@@ -441,7 +441,7 @@ nco_put_var // [fnc] Write variable to netCDF file
     std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(dmn_nbr));
     rcd=nc_put_var1_long(nc_id,var_id,&srt[0],&(const_cast<long &>(var_val)));
   } // endelse
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<long>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<long> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_var<long>()
 
@@ -454,7 +454,7 @@ nco_put_var // [fnc] Write variable to netCDF file
   // Purpose: Wrapper for nc_put_var1_short()
   std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
   int rcd=nc_put_var1_short(nc_id,var_id,&srt[0],&(const_cast<short &>(var_val)));
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<short>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<short> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_var<short>()
 
