@@ -23,7 +23,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.38 1999-12-15 00:24:56 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.39 1999-12-15 00:26:29 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -60,9 +60,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $CVS_Date='$Date: 1999-12-15 00:24:56 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.38 1999-12-15 00:24:56 zender Exp $';
-my $CVS_Revision='$Revision: 1.38 $';
+my $CVS_Date='$Date: 1999-12-15 00:26:29 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.39 1999-12-15 00:26:29 zender Exp $';
+my $CVS_Revision='$Revision: 1.39 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -294,7 +294,7 @@ if($ute_prs){
     &cmd_prc("rsh $rmt_mch \"mkdir -p /usr/tmp/zender/$dst_vrs/obj\"");
     &cmd_prc("rcp -p ftp.cgd.ucar.edu:/ftp/pub/zender/nco/nco.tar.gz $rmt_mch:/usr/tmp/zender");
     &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender;tar -xvzf nco.tar.gz;rm -f nco.tar.gz\"");
-    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/$dst_vrs/bld; setenv MY_BIN_DIR /home/ute/zender/bin/SGIMP64/bin; setenv MY_LIB_DIR /home/ute/zender/bin/SGIMP64/lib; setenv MY_OBJ_DIR /usr/tmp/zender/$dst_vrs/obj; make cln all tst\"");
+    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/$dst_vrs/bld; setenv MY_BIN_DIR /home/ute/zender/bin/SGIMP64/bin; setenv MY_LIB_DIR /home/ute/zender/bin/SGIMP64/lib; setenv MY_OBJ_DIR /usr/tmp/zender/$dst_vrs/obj; gmake cln all tst\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
 } # endif ute_prs
 
