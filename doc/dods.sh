@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.8 2005-02-17 02:38:12 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/doc/dods.sh,v 1.9 2005-02-26 05:21:22 zender Exp $
 
 # Purpose: Install DODS prior to building NCO as DODS-enabled clients
 
@@ -6,6 +6,7 @@
 # NCO/SDO DODS server/repository is at 
 # soot.ess.uci.edu:/var/www/html/dodsdata
 # http://soot.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/
+# http://dust.ess.uci.edu/cgi-bin/dods/nph-dods/dodsdata/
 
 # Usage: 
 # Set installation directory below ($DODS_ROOT)
