@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.113 2003-08-16 16:57:25 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.114 2003-08-28 00:12:15 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -67,9 +67,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2003-08-16 16:57:25 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.113 2003-08-16 16:57:25 zender Exp $';
-my $CVS_Revision='$Revision: 1.113 $';
+my $CVS_Date='$Date: 2003-08-28 00:12:15 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.114 2003-08-28 00:12:15 zender Exp $';
+my $CVS_Revision='$Revision: 1.114 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -208,7 +208,7 @@ if($dly_snp){
 $dst_fl=$dst_vrs.'.tar.gz'; # Standard tarball distribution
 $dst_fl_chg=$mdl_sng.'_'.$nco_vrs.'-1_i386.changes'; # Debian changes
 $dst_fl_deb=$mdl_sng.'_'.$nco_vrs.'-1_i386.deb'; # Debian executables and libraries
-$dst_fl_doc=$mdl_sng.'-doc_'.$nco_vrs.'-1_all.deb'; # Debian documentation
+$dst_fl_doc=$mdl_sng.'-doc_'.$nco_vrs.'-1_all.deb'; # Debian documentation (deprecated)
 $dst_fl_dsc=$mdl_sng.'_'.$nco_vrs.'-1.dsc'; # Debian description
 $dst_fl_tgz=$mdl_sng.'_'.$nco_vrs.'-1.tar.gz'; # Debian tarball
 
@@ -251,7 +251,7 @@ if($bld){
     cmd_prc("$rsh_cmd $www_mch $rm_cmd $www_drc/src/$dst_fl"); # Remove any distribution with same name
     if($dly_snp){cmd_prc("$rsh_cmd $www_mch $rm_cmd -r $www_drc/src/nco-????????.tar.gz");} # Remove previous daily snapshots from WWW server
     cmd_prc("$rcp_cmd $dst_fl $www_mch:$www_drc/src"); # Copy local tarfile to WWW server
-    cmd_prc("$rcp_cmd $HOME/$dst_fl_chg $HOME/$dst_fl_deb $HOME/$dst_fl_doc $HOME/$dst_fl_dsc $HOME/$dst_fl_tgz $www_mch:$www_drc/src"); # Copy Debian files to WWW server
+    cmd_prc("$rcp_cmd $HOME/$dst_fl_chg $HOME/$dst_fl_deb $HOME/$dst_fl_dsc $HOME/$dst_fl_tgz $www_mch:$www_drc/src"); # Copy Debian files to WWW server
  
 # Full release procedure (public releases only) includes update Web pages
     if(!$dly_snp){
@@ -273,7 +273,7 @@ if($bld){
     if($True){
 	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_bld/doc/index.shtml $dst_pth_bld/doc/nco_news.shtml $dst_pth_bld/doc/README $dst_pth_bld/doc/TODO $dst_pth_bld/doc/VERSION $dst_pth_bld/doc/ChangeLog $www_mch_mrr:$www_drc_mrr");
 	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_bld/doc/nco.html $dst_pth_bld/doc/nco.info* $dst_pth_bld/doc/nco.dvi $dst_pth_bld/doc/nco.pdf $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.texi $www_mch_mrr:$www_drc_mrr");
-	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_pfx/$dst_fl $HOME/$dst_fl_chg $HOME/$dst_fl_deb $HOME/$dst_fl_doc $HOME/$dst_fl_dsc $HOME/$dst_fl_tgz $www_mch_mrr:$www_drc_mrr/src"); # Copy Debian files to WWW server
+	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_pfx/$dst_fl $HOME/$dst_fl_chg $HOME/$dst_fl_deb $HOME/$dst_fl_dsc $HOME/$dst_fl_tgz $www_mch_mrr:$www_drc_mrr/src"); # Copy Debian files to WWW server
 	cmd_prc("$rsh_cmd $www_mch_mrr \"cd $www_drc_mrr; ln -s -f ./src/$dst_fl nco.tar.gz\"");
     } # endif SourceForge
 
