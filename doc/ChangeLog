@@ -1,8 +1,9 @@
 2002-06-06  Charlie Zender  <zender@uci.edu>
 
-	* Noticed that GCC gives warnings when printf'ing size_t with %ld
-	format flag. This seems like a compiler warning. GCC offers
-	non-portable %z workaround.
+	* Noticed that GCC gives warnings when printf'ing size_t with %lu
+	format flag since type of size_t is non-portable. GNU offers
+	non-portable %z workaround. Recommended solution is to typecast
+	all size_t's to unsigned longs before printf'ing.
 
 	* Worked on 64-bit clean issues identified by AIX -qwarn64 flag
 	The only possible non-functioning code found was date conversion

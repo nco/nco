@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.65 2002-06-07 05:53:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.66 2002-06-07 06:27:05 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -792,7 +792,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
     long var_lsr_lmn;
     long var_gtr_sz;
 
-    size_t var_lsr_type_sz;
+    size_t var_lsr_typ_sz;
 
     /* Copy main attributes of greater variable into lesser variable */
     var_lsr_out=var_dpl(var_gtr);
@@ -805,12 +805,12 @@ ncap_var_stretch /* [fnc] Stretch variables */
     var_lsr_out->val.vp=(void *)nco_malloc(var_lsr_out->sz*nco_typ_lng(var_lsr_out->type));
     var_lsr_cp=(char *)var_lsr->val.vp;
     var_lsr_out_cp=(char *)var_lsr_out->val.vp;
-    var_lsr_type_sz=nco_typ_lng(var_lsr_out->type);
+    var_lsr_typ_sz=nco_typ_lng(var_lsr_out->type);
 
     if(var_lsr_out->nbr_dim == 0){
       /* Variables are scalars, not arrays */
 
-      (void)memcpy(var_lsr_out_cp,var_lsr_cp,var_lsr_type_sz);
+      (void)memcpy(var_lsr_out_cp,var_lsr_cp,var_lsr_typ_sz);
 
     }else{
       /* Variables are arrays, not scalars */
@@ -882,7 +882,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	var_lsr_lmn=0L;
 	for(idx=0;idx<var_lsr_nbr_dim;idx++) var_lsr_lmn+=dmn_ss[idx_var_lsr_var_gtr[idx]]*dmn_var_lsr_map[idx];
 	
-	(void)memcpy(var_lsr_out_cp+var_gtr_lmn*var_lsr_type_sz,var_lsr_cp+var_lsr_lmn*var_lsr_type_sz,var_lsr_type_sz);
+	(void)memcpy(var_lsr_out_cp+var_gtr_lmn*var_lsr_typ_sz,var_lsr_cp+var_lsr_lmn*var_lsr_typ_sz,var_lsr_typ_sz);
 	
       } /* end loop over var_gtr_lmn */
       

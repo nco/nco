@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.54 2002-06-07 05:53:44 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.55 2002-06-07 06:27:05 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -87,10 +87,10 @@
 <INCLUDE>[^ \t\n]+ {
   /* Get include file name */
   if(ncl_dpt_crr >= NCO_MAX_NCL_DPT){
-    (void)fprintf(stderr,"%s: ERROR File %s nesting depth of %ld is too deep",prg_nm_get(),yytext,ncl_dpt_crr);
+    (void)fprintf(stderr,"%s: ERROR File %s nesting depth of %lu is too deep",prg_nm_get(),yytext,ncl_dpt_crr);
     nco_exit(EXIT_FAILURE);
   } /* endif */
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO Will descend from file %s at nesting depth %ld to #include'd file %s at depth %ld\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,yytext,ncl_dpt_crr+1UL);
+  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO Will descend from file %s at nesting depth %lu to #include'd file %s at depth %lu\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,yytext,ncl_dpt_crr+1UL);
   /* Put current input buffer on stack */
   ncl_stk[ncl_dpt_crr]=YY_CURRENT_BUFFER; 
   /* Increment nesting level */
@@ -121,7 +121,7 @@
   if(ncl_dpt_crr > 0UL){
     /* If we are exiting a #include'd script, delete its buffers */
     NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL=False; /* [flg] */
-    if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from file %s at nesting depth %ld to file %s at depth %ld\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,fl_spt_glb[ncl_dpt_crr-1],ncl_dpt_crr-1UL);
+    if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from file %s at nesting depth %lu to file %s at depth %lu\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,fl_spt_glb[ncl_dpt_crr-1],ncl_dpt_crr-1UL);
     fl_spt_glb[ncl_dpt_crr]=(char *)nco_free(fl_spt_glb[ncl_dpt_crr]);
     /* Decrement depth of nesting */
     ncl_dpt_crr--; 
@@ -591,7 +591,7 @@ unpack/[ ]*\( {return UNPACK;}
   /* Allocate space for variable values 
      fxm: more efficient and safer to use calloc() and not fill with values? */
   if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type))) == NULL){
-    (void)fprintf(stderr,"%s: ERROR Unable to malloc() %ld*%d bytes for var_LHS() in lexer\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
+    (void)fprintf(stderr,"%s: ERROR Unable to malloc() %ld*%lu bytes for var_LHS() in lexer\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
     nco_exit(EXIT_FAILURE); 
   } /* end if */
   
@@ -673,7 +673,7 @@ yywrap(void)
      been redirected to new source, e.g., yyin points to new file. 
      Returning true (non-zero) means scanning is complete, so scanner terminates and returns 0 to calling function
      Default is to return true (one) when called---this terminates scanner */
-  if(dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: DEBUG yywrap() called with ncl_dpt_crr = %ld\n",prg_nm_get(),ncl_dpt_crr);
+  if(dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: DEBUG yywrap() called with ncl_dpt_crr = %lu\n",prg_nm_get(),ncl_dpt_crr);
   /* comp.compilers thread 20020523 yywrap() should always return 1, even when
      scanning a #include'd file
      return (ncl_dpt_crr <= 1) ? 1 : 0; */

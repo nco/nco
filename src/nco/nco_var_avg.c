@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.6 2002-05-12 06:12:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.7 2002-06-07 06:27:05 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -309,17 +309,15 @@ var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
   long blk_off;
   long idx_op1;
 #endif /* !__GNUC__ */
+  const long sz_blk=sz_op1/sz_op2;
   long idx_op2;
   long idx_blk;
-  long sz_blk;
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
   unsigned char mss_val_chr;
   signed char mss_val_byt;
   nco_long mss_val_lng=nco_long_CEWI;
   short mss_val_sht=short_CEWI;
-
-  sz_blk=sz_op1/sz_op2;
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
