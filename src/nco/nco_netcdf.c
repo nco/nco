@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.7 2001-10-08 07:25:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.8 2001-10-08 08:37:24 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -45,14 +45,14 @@
    These routines have no direct netCDF library counterpart
    2. File-routine wrappers, e.g., nco_open()
    3. Dimension-routine wrappers, e.g., nco_dimid()
-   4. Variable-routine wrappers, e.g., nco_var_get()
-   5. Attribute-routine wrappers, e.g., nco_attput()
+   4. Variable-routine wrappers, e.g., nco_get_var()
+   5. Attribute-routine wrappers, e.g., nco_put_att()
 
    Naming Convention: Where appropriate, routine name is identical to netCDF C-library name,
    except nc_ is replaced by nco_
 
    Argument Ordering Convention: Routines follow same argument order as netCDF C-library 
-   Additional arguments, such as nc_type, are appended to the end of the argument list 
+   Additional arguments, such as nc_type, are appended to end of argument list 
 
    Return value convention: Functions return a success/failure code
    Errors in netCDF functions cause NCO wrapper to abort, except *_flg() wrappers

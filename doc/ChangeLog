@@ -3,7 +3,9 @@
 	* cvs tag -c nco-2_0_2
 	Changes since nco-2_0_1: No user-visible changes
 	All changes are in netCDF3 compliant function semantics
-	for the nco_netcdf wrappers, and rearrangement of some routines.
+	for the nco_netcdf wrappers. Altered many routines to call
+	information-specific versions of inquire functions where
+	possible.
 
 	* Verified nco-2_0_2 passes test suite 
 
