@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.12 1998-12-04 22:23:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.13 1998-12-06 02:14:25 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -2185,7 +2185,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
   if(*DO_CONFORM == -1){
     (void)fprintf(stdout,"%s: ERROR *DO_CONFORM == -1 on exit from var_conform_dim()\n",prg_nm_get());
     exit(EXIT_FAILURE);
-  } // end if
+  } /* endif */ 
   
   /* The current weight (wgt_out) now conforms to the current variable */ 
   return wgt_out;
