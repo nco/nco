@@ -93,8 +93,8 @@ am__include = @am__include@
 am__quote = @am__quote@
 install_sh = @install_sh@
 path_to_ncgen = @path_to_ncgen@
-@NOT_YACC_TRUE@NCAP = ncap
-@NOT_YACC_FALSE@NCAP = 
+@BUILD_NCAP_TRUE@NCAP = ncap
+@BUILD_NCAP_FALSE@NCAP = 
 
 bin_PROGRAMS = ${NCAP} ncatted ncdiff ncecat ncflint ncks ncra ncrename ncwa
 
@@ -128,7 +128,7 @@ ncwa_SOURCES = ncwa.c
 ncwa_LDADD = libnco.la
 
 HEADER_SRC = libnco.h nco_cnf_dmn.h nco_fl_utl.h nco_omp.h nco_sng_utl.h \
-ncap.h nco_cnf_typ.h nco_fortran.h nco_pck.h nco_var_avg.h \
+ncap.h nco_cnf_typ.h nco_pck.h nco_var_avg.h \
 ncap_yacc.h nco_cnv_arm.h nco_lmt.h nco_prn.h nco_var_lst.h \
 nco.h nco_cnv_csm.h nco_lst_utl.h nco_rec_var.h nco_var_rth.h \
 nco_att_utl.h nco_ctl.h nco_mmr.h nco_rth_utl.h nco_var_scv.h \
@@ -164,13 +164,14 @@ am_libnco_la_OBJECTS = nco_att_utl.lo nco_bnr.lo nco_cln_utl.lo \
 	nco_var_lst.lo nco_var_rth.lo nco_var_scv.lo nco_var_utl.lo \
 	$(am__objects_1)
 libnco_la_OBJECTS = $(am_libnco_la_OBJECTS)
-@NOT_YACC_TRUE@bin_PROGRAMS = ncap$(EXEEXT) ncatted$(EXEEXT) \
-@NOT_YACC_TRUE@	ncdiff$(EXEEXT) ncecat$(EXEEXT) ncflint$(EXEEXT) \
-@NOT_YACC_TRUE@	ncks$(EXEEXT) ncra$(EXEEXT) ncrename$(EXEEXT) \
-@NOT_YACC_TRUE@	ncwa$(EXEEXT)
-@NOT_YACC_FALSE@bin_PROGRAMS = ncatted$(EXEEXT) ncdiff$(EXEEXT) \
-@NOT_YACC_FALSE@	ncecat$(EXEEXT) ncflint$(EXEEXT) ncks$(EXEEXT) \
-@NOT_YACC_FALSE@	ncra$(EXEEXT) ncrename$(EXEEXT) ncwa$(EXEEXT)
+@BUILD_NCAP_TRUE@bin_PROGRAMS = ncap$(EXEEXT) ncatted$(EXEEXT) \
+@BUILD_NCAP_TRUE@	ncdiff$(EXEEXT) ncecat$(EXEEXT) \
+@BUILD_NCAP_TRUE@	ncflint$(EXEEXT) ncks$(EXEEXT) ncra$(EXEEXT) \
+@BUILD_NCAP_TRUE@	ncrename$(EXEEXT) ncwa$(EXEEXT)
+@BUILD_NCAP_FALSE@bin_PROGRAMS = ncatted$(EXEEXT) ncdiff$(EXEEXT) \
+@BUILD_NCAP_FALSE@	ncecat$(EXEEXT) ncflint$(EXEEXT) \
+@BUILD_NCAP_FALSE@	ncks$(EXEEXT) ncra$(EXEEXT) ncrename$(EXEEXT) \
+@BUILD_NCAP_FALSE@	ncwa$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_ncap_OBJECTS = ncap_utl.$(OBJEXT) ncap.$(OBJEXT) ncap_yacc.$(OBJEXT) \

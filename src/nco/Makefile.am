@@ -1,4 +1,4 @@
-if NOT_YACC 
+if BUILD_NCAP 
   NCAP=ncap
 else
   NCAP=
@@ -36,7 +36,7 @@ ncwa_SOURCES = ncwa.c
 ncwa_LDADD = libnco.la
 
 HEADER_SRC = libnco.h nco_cnf_dmn.h nco_fl_utl.h nco_omp.h nco_sng_utl.h \
-ncap.h nco_cnf_typ.h nco_fortran.h nco_pck.h nco_var_avg.h \
+ncap.h nco_cnf_typ.h nco_pck.h nco_var_avg.h \
 ncap_yacc.h nco_cnv_arm.h nco_lmt.h nco_prn.h nco_var_lst.h \
 nco.h nco_cnv_csm.h nco_lst_utl.h nco_rec_var.h nco_var_rth.h \
 nco_att_utl.h nco_ctl.h nco_mmr.h nco_rth_utl.h nco_var_scv.h \

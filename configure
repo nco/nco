@@ -8384,12 +8384,12 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 
-if test "$YACC" != "yacc"; then
-  NOT_YACC_TRUE=
-  NOT_YACC_FALSE='#'
+if test "$YACC" != "yacc" || test -e "src/nco/ncap_yacc.c"; then
+  BUILD_NCAP_TRUE=
+  BUILD_NCAP_FALSE='#'
 else
-  NOT_YACC_TRUE='#'
-  NOT_YACC_FALSE=
+  BUILD_NCAP_TRUE='#'
+  BUILD_NCAP_FALSE=
 fi
 
 
@@ -12031,10 +12031,10 @@ echo "$as_me: error: conditional \"AMDEP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
-if test -z "${NOT_YACC_TRUE}" && test -z "${NOT_YACC_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"NOT_YACC\" was never defined.
+if test -z "${BUILD_NCAP_TRUE}" && test -z "${BUILD_NCAP_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"BUILD_NCAP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"NOT_YACC\" was never defined.
+echo "$as_me: error: conditional \"BUILD_NCAP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
@@ -12597,8 +12597,8 @@ s,@ECHO@,$ECHO,;t t
 s,@RANLIB@,$RANLIB,;t t
 s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@LIBTOOL@,$LIBTOOL,;t t
-s,@NOT_YACC_TRUE@,$NOT_YACC_TRUE,;t t
-s,@NOT_YACC_FALSE@,$NOT_YACC_FALSE,;t t
+s,@BUILD_NCAP_TRUE@,$BUILD_NCAP_TRUE,;t t
+s,@BUILD_NCAP_FALSE@,$BUILD_NCAP_FALSE,;t t
 s,@MAINTAINER_MODE_TRUE@,$MAINTAINER_MODE_TRUE,;t t
 s,@MAINTAINER_MODE_FALSE@,$MAINTAINER_MODE_FALSE,;t t
 s,@MAINT@,$MAINT,;t t
