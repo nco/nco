@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.52 2003-03-10 04:34:23 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.53 2003-03-11 02:22:28 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -167,6 +167,8 @@ Igor Crane <igor_crane at hotmail dot com> ncap?
 John Parish <gerbil at planetquake dot com> http? C++ interface?
 Mohan Thiyagarajah <mthiyagarajah at yahoo dot com> C++ interface? namespace/nc_utl?
 Brian Mays <brian at debian dot org> Debian packaging
+George Shapovalov <george at gentoo dot org> Gentoo 
+Jordan Dawe <freedryk at hotmail dot com> Gentoo packaging
 
 Debian notes:
 apt-get install dh-make debhelper devscripts fakeroot gnupg debian-policy developers-reference
