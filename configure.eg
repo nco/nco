@@ -1,10 +1,12 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.47 2003-01-21 06:04:57 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.48 2003-02-24 06:13:35 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
 Develop recommended ./configure invocations for each architecture
 
-Summary table: Y: feature works, N feature broken, blank: not yet tested
+NCO successfully builds (e.g., with bld/Makefile) and runs on virtually all OSs.
+This table tracks how well NCO _autobuilds_ (./configure's) on various OSs.
+GNU Autotools seem to require a lot of hand tuning on non-LINUX platforms...
 Architecture	ABI32	ABI64	DODS	I18N	OpenMP	nco_c++	check
 AIX		Y	N(2)				N(5)	
 ALPHA
@@ -25,17 +27,18 @@ SUNMP cc/CC	Y					Y	N(3)
 SUNMP gcc/g++
 WIN32		
 -----------------------------------------------------------------------
-Footnotes to summary table:
-02. After much environment variable passing, programs link but core dump
+Key: Y: feature works, N feature broken, N/A not-applicable, blank: not tested (send us your results!)
+-----------------------------------------------------------------------
+Table footnotes:
+02. After much manual environment variable passing, programs link but core dump
 03. Does not link tst.o because missing valarray= symbol
-05. xlC fails valarray test, but I believe xlC does support valarray. Hmm.
+05. xlC fails valarray test, but xlC does support valarray. Hmm.
 06. CC unable to link tst.o because -LANG:std flag not passed to crucial link CC
 07. Error making ncap_yacc.c
 08. I can't remember
 09. tst fails to find in.nc
 10. Major problems with configure script and permissions on installed files
-11. Comeau (correctly) insists strdup(), strcasecmp() are not ANSI standard
-(this should now be fixed, retry)
+11. Comeau (correctly) insists strdup(), strcasecmp() are not ANSI standard (this should now be fixed, retry)
 12. C++ version problems in linking DODS libraries
 -----------------------------------------------------------------------
 
