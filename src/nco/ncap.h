@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.26 2002-02-02 17:34:45 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.27 2002-02-03 08:40:08 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -42,7 +42,7 @@
 
 /* Define symbol table */
 /* YACC seems to initialize all user-defined pointers (like those in symbol table) to NULL
-   Symbol type may, therefore, safely be determined by testing for non-NULL members
+   Symbol type may, therefore, be determined safely by testing for non-NULL members
    This technique is frequently used in Pigeon book */
 
 typedef struct { /* sym_sct */
@@ -56,11 +56,10 @@ typedef struct { /* parse_sct */
   nc_type type;
 } parse_sct;      
 
-typedef struct {
+typedef struct { /* nm_lst_sct */
   nm_id_sct *list;
   int nbr;
 } nm_lst_sct;
-  
 
 typedef struct{ /* prs_sct */
   char *fl_in; /* [sng] Input data file */

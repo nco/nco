@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.56 2002-02-02 17:32:38 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.57 2002-02-03 08:40:08 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.56 2002-02-02 17:32:38 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.56 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.57 2002-02-03 08:40:08 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.57 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -344,7 +344,7 @@ main(int argc,char **argv)
      list a: RHS variables present in input file
      list b: LHS variables present in input file
      list c: Variables of attributes on LHS which are present in input file 
-     list d: Dimensions defined in LHS subscripts         */
+     list d: Dimensions defined in LHS subscripts */
   (void)ncap_initial_scan(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c,&nbr_lst_c,&xtr_lst_d,&nbr_lst_d);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
@@ -384,12 +384,11 @@ main(int argc,char **argv)
      nbr_xtr_2=nbr_xtr;
      xtr_lst_2 = var_lst_copy(xtr_lst,nbr_xtr);
      
-     /* add the dimensions defined in LHS subscripts */
-     if(xtr_lst_d > 0) xtr_lst_2 = var_lst_add(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_d,nbr_lst_d); 
+     /* Add dimensions defined in LHS subscripts */
+     if(xtr_lst_d > 0) xtr_lst_2=var_lst_add(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_d,nbr_lst_d); 
      
-     /* now make a list of just the co-ordinates */
+     /* Creat list of coordinates only */
      xtr_lst_2=ncap_var_lst_crd_make(in_id,xtr_lst_2,&nbr_xtr_2);
-     
    } /* endif */
 
    /* Add list_c to new list */
@@ -409,7 +408,7 @@ main(int argc,char **argv)
   /* Find dimensions associated with variables to be extracted */
   dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
 
-  /* now add list d */
+  /* Add list d */
   if(nbr_lst_d > 0) dmn_lst=var_lst_add(in_id,dmn_lst,&nbr_dmn_xtr,xtr_lst_d,nbr_lst_d);  
   
   /* Fill in dimension structure for all extracted dimensions */

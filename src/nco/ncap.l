@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.35 2002-02-02 17:28:01 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.36 2002-02-03 08:40:08 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -197,7 +197,7 @@
   short sht_tkn;
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a short %s\n",yytext); 	
   if(sscanf((char*)yytext,"%hd",&sht_tkn) != 1){
-    sprintf(err_sng,"bad short constant: %s",(char*)yytext);
+    sprintf(err_sng,"Bad short constant: %s",(char*)yytext);
     yyerror(err_sng);
   }
   lval_ptr->attribute.val.s=sht_tkn;
@@ -354,7 +354,6 @@ pow/[ ]*\( {return POWER;}
   
 } /* End attributes. Phew! */
 
-
 [A-Za-z_][A-Za-z0-9_]*/\[ {
   /* Recognize variables with subscript */
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable with subscripts%s\n",yytext);
@@ -367,7 +366,7 @@ pow/[ ]*\( {return POWER;}
     BEGIN LHS_SUBSCRIPT;
     return OUT_VAR;
   } /* end else */
-} /* end variables */
+} /* end variables with subscripts */
 
 [A-Za-z_][A-Za-z0-9_]* {
   /* Recognize plain variables */
@@ -379,7 +378,7 @@ pow/[ ]*\( {return POWER;}
     lval_ptr->output_var=strdup(yytext);
     return OUT_VAR;
   } /* end else */
-} /* end variables */
+} /* end variables without subscripts */
 
 <LHS_SUBSCRIPT>\[[^\]\n]*[\]\n] {
   /* Recognize subscripted (hyperslabbed) variables
@@ -392,126 +391,126 @@ pow/[ ]*\( {return POWER;}
      x[a:b,c:,:d,e] */
   const char *sbs_dlm=","; /* [sng] Subscript delimiter */
   static char *tpl_nm="Internally generated template";
-
+  
   char **sbs_lst; /* [sng] Array of dimension subscripts */
   char *sbs_sng;
   
   int dmn_nbr; /* [nbr] Number of dimensions */
   int dmn_id; /* [id] Dimension ID */
-  int idx;    /* [idx] Counter */
-  int jdx;    /* another counter */
+  int idx; /* [idx] Counter */
+  int jdx; /* [idx] Counter */
   int rcd;
-
-  double val=1.0;
-
+  
+  double val=1.0; /* [frc] Value of template */
+  
   var_sct *var; /* [sct] Variable */
-
+  
   nm_id_sct *dmn_lst; /* [sng] Dimension name-ID list */
   dmn_sct **dmn; /* [dmn] Dimension structure list */
   
-  if(yyleng < 3 ) goto end;
-
-  sbs_sng = (char *)nco_malloc(yyleng*sizeof(char));
+  /* Valid subscripts must contain alphanumeric string */
+  if(yyleng < 3) goto end_LHS_sbs;
+  
+  /* Copy token into user memory and turn into list of dimension names */
+  sbs_sng=(char *)nco_malloc(yyleng*sizeof(char));
   strcpy(sbs_sng,&yytext[1]);
   sbs_sng[yyleng-2]='\0';  
-   
   sbs_lst=lst_prs(sbs_sng,sbs_dlm,&dmn_nbr);
-  /* Translate dimension names into dimension structure list variables */
+
+  /* Use dimension names to populate list of dimension structures */
   dmn_lst=(nm_id_sct *)nco_malloc(dmn_nbr*sizeof(nm_id_sct));
   for(idx=0;idx<dmn_nbr;idx++){
     rcd=nco_inq_dimid_flg(prs_arg->in_id,sbs_lst[idx],&dmn_id);
     if(rcd != NC_NOERR) {
-        (void)sprintf(err_sng,"Warning unrecognized dimension %s in LHS subscripts",sbs_lst[idx]);
-        (void)yyerror(err_sng);
-        goto end;                 
-    }
+      (void)sprintf(err_sng,"Warning: Lexer does not recognize user-specified LHS dimension %s\n",sbs_lst[idx]);
+      (void)yyerror(err_sng);
+      goto end_LHS_sbs;                 
+    } /* endif err */
     dmn_lst[idx].nm=sbs_lst[idx];
     dmn_lst[idx].id=dmn_id;
   } /* end loop over dimensions */
-
+  
+  /* Build subscript list only once, during initial scan */
   if(prs_arg->initial_scan){
-    lval_ptr->sbs_lst = (nm_lst_sct *)nco_malloc(sizeof(nm_lst_sct));
-    lval_ptr->sbs_lst->list = dmn_lst;
+    lval_ptr->sbs_lst=(nm_lst_sct *)nco_malloc(sizeof(nm_lst_sct));
+    lval_ptr->sbs_lst->list=dmn_lst;
     lval_ptr->sbs_lst->nbr=dmn_nbr;
+    /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
     BEGIN INITIAL;
     return LHS_SBS;
-  }
-
+  } /* endif */
   
-  /* Fill in dimension structure for all extracted dimensions */
+  /* Create private, temporary list of LHS dimensions for current variable
+     Each item of list points to public, permanent dimension in global list */
   dmn=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
- 
-  for(idx=0 ;idx<dmn_nbr ; idx++){
-    for(jdx = 0; jdx < prs_arg->nbr_dmn_xtr ; jdx++) 
+  for(idx=0;idx<dmn_nbr;idx++){
+    for(jdx=0;jdx<prs_arg->nbr_dmn_xtr;jdx++) 
       if(!strcmp(dmn_lst[idx].nm,prs_arg->dmn[jdx]->nm)) break;
-      if(jdx == prs_arg->nbr_dmn_xtr){
-        (void)sprintf(err_sng,"Warning Unrecognized dimension %s in LHS subscripts",dmn_lst[idx].nm);
-        (void)yyerror(err_sng);
-        goto end;                 
-      } /* end if */
-   dmn[idx] = prs_arg->dmn[jdx];
-  }
-
-
-    var=(var_sct *)nco_malloc(sizeof(var_sct));
-
-    /* Set defaults */
-    (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
-    /* Overwrite with LHS information */
-    var->nm=(char *)strdup(tpl_nm);
-    var->type=NC_DOUBLE;
-    var->nbr_dim=dmn_nbr;
-    var->dim=dmn;
-    /* Allocate space for dimension structures */
-    if(var->nbr_dim > 0) var->dmn_id=(int *)nco_malloc(var->nbr_dim*sizeof(int)); else var->dmn_id=(int *)NULL;
-    if(var->nbr_dim > 0) var->cnt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->cnt=(long *)NULL;
-    if(var->nbr_dim > 0) var->srt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srt=(long *)NULL;
-    if(var->nbr_dim > 0) var->end=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->end=(long *)NULL;
-    if(var->nbr_dim > 0) var->srd=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srd=(long *)NULL;
-
-    /* Defensive programming */
-    var->sz=1L; 
-    /* Attach LHS dimensions to variable */
-    for(idx=0;idx<dmn_nbr;idx++){
-      var->dim[idx]=dmn[idx];
-      var->dmn_id[idx]=dmn[idx]->id;
-      var->cnt[idx]=dmn[idx]->cnt;
-      var->srt[idx]=dmn[idx]->srt;
-      var->end[idx]=dmn[idx]->end;
-      var->srd[idx]=dmn[idx]->srd;
-      var->sz*=var->cnt[idx];
-    } /* end loop over dim */
-
-    /* Allocate space for variable values 
-       fxm: more efficient and safer to use calloc() and not fill with values? */
-    if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for var_LHS() in lexer\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
-      exit(EXIT_FAILURE); 
+    if(jdx == prs_arg->nbr_dmn_xtr){
+      (void)sprintf(err_sng,"Warning: Unrecognized dimension %s in LHS subscripts",dmn_lst[idx].nm);
+      (void)yyerror(err_sng);
+      goto end_LHS_sbs;                 
     } /* end if */
+    dmn[idx]=prs_arg->dmn[jdx];
+  } /* end for */
 
-    /* Copy arbitrary value into variable 
-       Placing a uniform value in variable should be necessary since variable
-       is intended for use solely as dimensional template for var_conform_dim() 
-       Nevertheless, copy 1.0 into value for safety */
-    { /* Change scope to define convenience variables which reduce dereferencing */
-      long var_sz; /* [nbr] Number of elements in variable */
-      int var_type_sz; /* [B] Size of single element of variable */
-      char *var_val_cp; /* [ptr] Pointer to values */
-
-      var_sz=var->sz; /* [nbr] Number of elements in variable */
-      var_type_sz=nco_typ_lng(var->type);
-      var_val_cp=(char *)var->val.vp;
-      for(idx=0;idx<var_sz;idx++) (void)memcpy(var_val_cp+idx,(void *)(&val),var_type_sz);
-    } /* end scope */
-
-    /* Link variable into yylex() argument for use in parser */
-    prs_arg->var_LHS=var;
-
-    if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Lexer creating LHS cast template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),prs_arg->var_LHS->nm,prs_arg->var_LHS->nbr_dim,prs_arg->var_LHS->sz);
-
-
-
-
+  /* Create template variable to cast all RHS expressions */
+  var=(var_sct *)nco_malloc(sizeof(var_sct));
+  
+  /* Set defaults */
+  (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
+  /* Overwrite with LHS information */
+  var->nm=(char *)strdup(tpl_nm);
+  var->type=NC_DOUBLE;
+  var->nbr_dim=dmn_nbr;
+  var->dim=dmn;
+  /* Allocate space for dimension structures */
+  if(var->nbr_dim > 0) var->dmn_id=(int *)nco_malloc(var->nbr_dim*sizeof(int)); else var->dmn_id=(int *)NULL;
+  if(var->nbr_dim > 0) var->cnt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->cnt=(long *)NULL;
+  if(var->nbr_dim > 0) var->srt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srt=(long *)NULL;
+  if(var->nbr_dim > 0) var->end=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->end=(long *)NULL;
+  if(var->nbr_dim > 0) var->srd=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srd=(long *)NULL;
+  
+  /* Defensive programming */
+  var->sz=1L; 
+  /* Attach LHS dimensions to variable */
+  for(idx=0;idx<dmn_nbr;idx++){
+    var->dim[idx]=dmn[idx];
+    var->dmn_id[idx]=dmn[idx]->id;
+    var->cnt[idx]=dmn[idx]->cnt;
+    var->srt[idx]=dmn[idx]->srt;
+    var->end[idx]=dmn[idx]->end;
+    var->srd[idx]=dmn[idx]->srd;
+    var->sz*=var->cnt[idx];
+  } /* end loop over dim */
+  
+  /* Allocate space for variable values 
+     fxm: more efficient and safer to use calloc() and not fill with values? */
+  if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type))) == NULL){
+    (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for var_LHS() in lexer\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
+    exit(EXIT_FAILURE); 
+  } /* end if */
+  
+  /* Copy arbitrary value into variable 
+     Placing a uniform value in variable should be necessary since variable
+     is intended for use solely as dimensional template for var_conform_dim() 
+     Nevertheless, copy 1.0 into value for safety */
+  { /* Change scope to define convenience variables which reduce dereferencing */
+    long var_sz; /* [nbr] Number of elements in variable */
+    int var_type_sz; /* [B] Size of single element of variable */
+    char *var_val_cp; /* [ptr] Pointer to values */
+    
+    var_sz=var->sz; /* [nbr] Number of elements in variable */
+    var_type_sz=nco_typ_lng(var->type);
+    var_val_cp=(char *)var->val.vp;
+    for(idx=0;idx<var_sz;idx++) (void)memcpy(var_val_cp+idx,(void *)(&val),var_type_sz);
+  } /* end scope */
+  
+  /* Link variable into yylex() argument for use in parser */
+  prs_arg->var_LHS=var;
+  
+  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Lexer creating LHS cast template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),prs_arg->var_LHS->nm,prs_arg->var_LHS->nbr_dim,prs_arg->var_LHS->sz);
+  
   if(0){ /* Remove some compiler warning messages */
     /* Following two statements remove "defined but not used" messages in lex.yy.c */
     (void)yyunput((int)NULL,(char *)NULL);
@@ -521,23 +520,23 @@ pow/[ ]*\( {return POWER;}
     yy_full_lp=yy_full_lp;
     yy_full_state=yy_full_state;
   } /* endif False */
-    
-  /* now free the list */
+  
+  /* Free dimension list memory */
   (void)nco_free(sbs_sng);    
   (void)nco_free(dmn_lst);
-
-  end:
+  
+ end_LHS_sbs: /* Errors encountered during LHS processing jump to here */
+  /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
   BEGIN INITIAL;
-
-} /* end subscripted variables */
+} /* end LHS subscripted variables */
 
 <RHS_SUBSCRIPT>\[[^\]\n]*[\]\n] {
+  /* RHS_SUBSCRIPT */
   (void)sprintf(err_sng,"Warning RHS subscripts are not yet implemented");
   (void)yyerror(err_sng);
+  /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
   BEGIN INITIAL;
-  }  
-
-
+} /* end RHS_SUBSCRIPT */
 
 = {
   /* Equals */

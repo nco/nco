@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.120 2002-01-30 08:24:11 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.121 2002-02-03 08:40:08 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -27,8 +27,6 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
   The indicated argument is incompatible with the corresponding formal parameter.
         __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
 9. Add outer loop over files so script may apply to each file
-10. Add lmt information to LHS casting
-11. Add LHS casting dimensions to output file after dmn_dfn()
 12. Ensure lexer does not perform un-necessary work during initial_scan (e.g., LHS casting...)
 13. Test that LHS casting works regardless of value of LHS template. If true, remove value initialization block
 14. If tally is superfluous in ncap then do not ever allocate it
@@ -213,6 +211,7 @@ or variable list is made more specific, or MALLOC_CHECK_=1 is used
 219. Sourceforge FTP nco.tar.gz link appears broken
 ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 220. Modify network code in csz.c so gcc -ansi works (fix resolv.h structures) 
+221. Add option to strip executables
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,3 +1,15 @@
+2002-02-02  Charlie Zender  <zender@uci.edu>
+
+	* Quieted output by removing verbose printing from debug level = 0
+	Execution is now silent except for WARNINGS and INFOs.
+
+2002-01-30  Charlie Zender  <zender@uci.edu>
+
+	* Added some Compile Farm procedures to nco_src_frg.txt
+
+	* Add FREEBSD support to Makefile, and allow environment
+	to override CC and C++ compiler variables
+
 2002-01-29  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_1_3

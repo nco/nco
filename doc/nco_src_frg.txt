@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.30 2002-01-30 08:24:11 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.31 2002-02-03 08:40:08 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -26,6 +26,8 @@ CVS:		    Anonymous check out:
 Daily tarballs of entire CVS tree for mirroring:
 		    http://cvs.sourceforge.net/cvstarballs/nco-cvsroot.tar.gz
 Compile Farm:       cf.sourceforge.net
+
+# Create tarballs for uploading to sourceforge
 cd /data/zender/tmp
 mkdir sf
 cp /data/zender/tmp/netcdf-3.5.0.tar.Z /usr/local/lib/libnetcdf* /usr/local/include/netcdf* sf
@@ -35,8 +37,16 @@ mv sf.tar.gz /var/ftp/pub/zender/nco
 ncftpput upload.sourceforge.net /incoming/var/ftp/pub/zender/nco/sf.tar.gz
 scp upload.sourceforge.net:/incoming/sf.tar.gz .
 
-		    scp nco.sf.net:/home/groups/n/nc/nco/lib/LINUX/libnetcdf.a nco.sf.net:/home/groups/n/nc/nco/include/netcdf.h .
-		    NETCDF_INC=. NETCDF_LIB=. gmake
+# Copy netCDF libraries from NCO group account
+cd ~/nco/bld
+scp nco.sf.net:/home/groups/n/nc/nco/lib/LINUX/libnetcdf.a nco.sf.net:/home/groups/n/nc/nco/include/netcdf.h .
+
+# Build NCO on Compile Farm
+cd ~/nco/bld
+NETCDF_INC=~/nco/bld NETCDF_LIB=~/nco/bld gmake
+# Build nco_c++ on Compile Farm
+cd ~/nco/src/nco_c++
+NETCDF_INC=~/nco/bld NETCDF_LIB=~/nco/bld MY_INC_DIR=. gmake
 
 Building group NCO: 
 export MY_BIN_DIR='/home/groups/n/nc/nco/nco/bin'

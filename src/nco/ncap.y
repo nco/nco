@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.39 2002-02-02 17:28:57 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.40 2002-02-03 08:40:08 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -78,12 +78,11 @@ extern long ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
 extern char *fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
 extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) */
 
-
 /* End C declarations section */
 %}
 /* Begin parser declaration section */
 
-/* Request pure, reentrant parser, so we can pass a structure to parser
+/* Request pure, re-entrant parser, so we can pass a structure to parser
    fxm: 20020122 Code breaks on Linux when pure_parser is not used---why?
    Possibly because hardcoded yy* function prototypes change? */
 %pure_parser
@@ -128,7 +127,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 %type <att> out_att_exp
 
 /* "left", "right", and "nonassoc" perform same function as "token" and,
-   in addition, specify associativity and relative precedense of symbols */
+   in addition, specify associativity and relative precedence of symbols */
 %left '+' '-'
 %left '*' '/' '%'
 %right '^'
@@ -147,13 +146,12 @@ statement_list:
 statement_list statement ';' {
   /* Purpose: Actions to be performed at end-of-statement go here */
   /* Clean up from and exit LHS_cst mode */
-                            (void)quick_free(&((prs_sct *)prs_arg)->var_LHS);
- 
+  (void)quick_free(&((prs_sct *)prs_arg)->var_LHS);
 } /* end statement ';' */
-| statement_list error ';'{ (void)quick_free(&((prs_sct *)prs_arg)->var_LHS); }
-| statement ';'           { (void)quick_free(&((prs_sct *)prs_arg)->var_LHS); }
-| error ';'               { (void)quick_free(&((prs_sct *)prs_arg)->var_LHS); }
-          /* Catch most errors then read up to next semi-colon */
+| statement_list error ';' {(void)quick_free(&((prs_sct *)prs_arg)->var_LHS);}
+| statement ';' {(void)quick_free(&((prs_sct *)prs_arg)->var_LHS);}
+| error ';' {(void)quick_free(&((prs_sct *)prs_arg)->var_LHS);}
+/* Catch most errors then read up to next semi-colon */
 ; /* end statement_list */
 
 statement: /* statement is definition of out_att_exp or out_var_exp (LHS tokens)
@@ -169,7 +167,7 @@ out_att_exp '=' att_exp {
   ptr_aed->type=$3.type;
   ptr_aed->sz=1L;
   (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
-  (void)sprintf(err_sng,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->fl_out);
+  if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->fl_out);
   (void)yyerror(err_sng);
 
   if(dbg_lvl_get() > 1){
@@ -201,7 +199,7 @@ out_att_exp '=' att_exp {
   strcpy((char *)(ptr_aed->val.cp),$3);
   (void)cast_nctype_void(NC_CHAR,&ptr_aed->val);    
   
-  (void)sprintf(err_sng,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
+  if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
   (void)yyerror(err_sng);
   $1.var_nm=nco_free($1.var_nm);
   $1.att_nm=nco_free($1.att_nm);
@@ -221,7 +219,7 @@ out_att_exp '=' att_exp {
     ptr_aed->val.vp=(void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
     (void)var_copy(ptr_aed->type,ptr_aed->sz,$3->val,ptr_aed->val);
     /* cast_nctype_void($3->type,&ptr_aed->val); */
-    (void)sprintf(err_sng,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
+    if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving attribute %s@%s %d dimensional variable",$1.var_nm,$1.att_nm,$3->nbr_dim);
     (void)yyerror(err_sng); 
   }else{
     (void)sprintf(err_sng,"Warning: Cannot store in attribute %s@%s a variable with dimension %d",$1.var_nm,$1.att_nm,$3->nbr_dim);
@@ -243,7 +241,7 @@ out_att_exp '=' att_exp {
     (void)yyerror(err_sng);                                   
   }else{  
     (void)ncap_var_write($3,(prs_sct *)prs_arg);
-    (void)sprintf(err_sng,"Saving variable %s to %s",$3->nm,((prs_sct *)prs_arg)->fl_out);
+    if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving variable %s to %s",$3->nm,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   } /* end else */
   $1=nco_free($1);
@@ -283,7 +281,7 @@ out_att_exp '=' att_exp {
     
     (void)ncap_var_write(var,(prs_sct *)prs_arg);
     (void)var_free(var);
-    (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
+    if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   } /* endif */
   $1=nco_free($1);
@@ -308,9 +306,9 @@ out_att_exp '=' att_exp {
     (void)cast_nctype_void(NC_CHAR,&var->val);
     (void)ncap_var_write(var,(prs_sct *)prs_arg);
     (void)var_free(var);
-    (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
+    if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
-  }
+  } /* endelse */
   $1=nco_free($1);
   $3=nco_free($3);
 } /* end out_var_exp '=' string_exp */
@@ -410,10 +408,10 @@ string_exp '+' string_exp {
   char bfr[50];
   switch ($3.type){
   case NC_DOUBLE: sprintf(bfr,"%.10G",$3.val.d); break;
-  case NC_FLOAT:  sprintf(bfr,"%G",$3.val.f); break;
-  case NC_INT:    sprintf(bfr,"%ld",$3.val.l); break;
-  case NC_SHORT:  sprintf(bfr,"%d",$3.val.s); break;
-  case NC_BYTE:   sprintf(bfr,"%d",$3.val.b); break;
+  case NC_FLOAT: sprintf(bfr,"%G",$3.val.f); break;
+  case NC_INT: sprintf(bfr,"%ld",$3.val.l); break;
+  case NC_SHORT: sprintf(bfr,"%d",$3.val.s); break;
+  case NC_BYTE: sprintf(bfr,"%d",$3.val.b); break;
   default:  break;
   } /* end switch */
   $$=strdup(bfr);      
@@ -424,10 +422,10 @@ string_exp '+' string_exp {
   /* User decides which format corresponds to which type */
   switch ($3.type){
   case NC_DOUBLE: sprintf(bfr,$5,$3.val.d); break;
-  case NC_FLOAT:  sprintf(bfr,$5,$3.val.f); break;
-  case NC_INT:    sprintf(bfr,$5,$3.val.l); break;
-  case NC_SHORT:  sprintf(bfr,$5,$3.val.s); break;
-  case NC_BYTE:   sprintf(bfr,$5,$3.val.b); break;
+  case NC_FLOAT: sprintf(bfr,$5,$3.val.f); break;
+  case NC_INT: sprintf(bfr,$5,$3.val.l); break;
+  case NC_SHORT: sprintf(bfr,$5,$3.val.s); break;
+  case NC_BYTE: sprintf(bfr,$5,$3.val.b); break;
   default:  break;
   } /* end switch */
   $5=nco_free($5);
@@ -575,7 +573,9 @@ yyerror(char *err_sng)
   static bool eprovoke_skip;
   
   /* if(eprovoke_skip){eprovoke_skip=False ; return 0;} */
-  (void)fprintf(stderr,"%s: %s line %ld %s\n",prg_nm_get(),fl_spt_glb,ln_nbr_crr,err_sng);
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: %s line %ld",prg_nm_get(),fl_spt_glb,ln_nbr_crr);
+  if(dbg_lvl_get() > 1) (void)fprintf(stderr," %s",err_sng);
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"\n");
   
   if(err_sng[0] == '#') eprovoke_skip=True;
   eprovoke_skip=eprovoke_skip; /* Do nothing except avoid compiler warnings */
@@ -584,8 +584,5 @@ yyerror(char *err_sng)
 
 void quick_free(var_sct **var)
 {
-  if(*var !=NULL) *var = var_free(*var);
+  if(*var != NULL) *var=var_free(*var);
 }
-
-
-

@@ -1,11 +1,12 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.11 2002-01-25 07:58:36 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.12 2002-02-03 08:40:08 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.2.0 are ready. 
 Changes since version 2.0.0 include bugfixes and a 
 working (and powerful!) ncap implementation.
 ncap is the netCDF arithmetic processor, an operator
-which uses a built-in lexer/parser to perform arbitrary
-arithmetic commands on netCDF variables and attributes.
+which carries out arbitrary arithmetic commands on 
+netCDF variables and attributes using short command-line 
+instructions or long scripts as input.
 In the fine tradition of beta quality software, ncap 
 is completely undocumented but see 
 nco/data/ncap.in for a sample run script. 
@@ -35,19 +36,25 @@ variables, exclusive state lexing, LHS casting (Zender)
 
 A few notes on the objective of ncap: 
 ncap's objective is to solve everyday needs of recurring tasks
-in scientific data analysis without requiring tedious programming.  
+in scientific data analysis without requiring tedious programming.
 The capabilities of ncap today are between those of a regular NCO
 operator and those of a full-featured, high-level, interactive
 language (e.g., IDL, Matlab, NCL). 
-However, now that ncap has a rudimentary language parser, there is no
-real limit to what syntactic features could be added. Of course the
+However, now that ncap has a language parser, there is no real limit
+to what syntactic features could be added. Of course the 
 only features that will be added are those the developers care about,
 so your feedback is encouraged: 
 What is the highest priority feature for you?
 
 ncap is best suited now to compute simple derived variables, e.g.,
-x=sqrt(u^2+v^2). Hyperslabs (subscripting) are not yet supported, 
-but broadcasting (unambiguous array expansion) is fully supported. 
+x=gw*sqrt(u^2+v^2). Hyperslabs (subscripting) are not yet supported, 
+but broadcasting (unambiguous array expansion) is fully supported,
+Also supported is "LHS casting", where the desired dimensions of the
+result are simply specified on the LHS of an expression, e.g.,
+
+a[lat,lon,lev]=1.0; // a is created and stored as 3-dimensional array
+pressure[time,lat,lon,lev]=P0*hyam+hybm*PS; // No fuss, no muss
+
 There are undoubtedly small bugs remaining in the parsing
 of expressions. We encourage you to stress the parser with complex
 expressions and send us any problems you find. Concurrently, we will
@@ -58,11 +65,9 @@ Some of the most interesting ideas for for new features include:
 2. Fortran-like index-based hyperslab specification, e.g., y=u(:,2:4,:)^2
 3. Coordinate value subscripting, e.g., y=u(-90.0:0.0,0.0:180.0)^2
 4. Pre-defined functions to access NCO internals, e.g.,
-type_convert(variable,"double"), min(variable,variable),...
+type_convert(variable,"double"), min/max/avg(variable,variable),...
 5. Linking with GNU Scientific Library (GSL)
 6. filename::variable@attribute notation for using multiple files
-7. LHS-casting of ambiguous RHS expressions, e.g., 
-pressure_midpoint(lat,lev,lon)=hyam*PO+hybm*PS
 
 The list of ncap-specific features that we consider the top priority 
 appears at the top of the NCO TODO file.
