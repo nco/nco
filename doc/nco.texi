@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.87 2002-02-18 19:08:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.88 2002-02-18 19:16:58 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -729,6 +729,7 @@ Post the bug report to the
 @node Philosophy, Climate model paradigm, Strategies, Strategies
 @section @acronym{NCO} operator philosophy
 @cindex philosophy
+@cindex climate model
 
 The main design goal has been to produce operators that can be invoked
 from the command line to perform useful operations on netCDF files. 
@@ -937,6 +938,7 @@ file to file.
 However, suppose the annual files have no record variable, and thus
 their data is all fixed length. 
 @cindex ensemble
+@cindex climate model
 For example, the files may not be conceptually sequential, but rather
 members of the same group, or @dfn{ensemble}. 
 Members of an ensemble may have no reason to contain a record dimension.
@@ -1298,6 +1300,7 @@ are ignored by @acronym{NCO} as it uses the @samp{-n} arguments to locate,
 evaluate, and compute the @var{numeric_suffix} component of filenames.  
 
 @cindex wrapped filenames
+@cindex climate model
 Recently the @samp{-n} option has been extended to allow convenient
 specification of filenames with ``circular'' characteristics.
 This means it is now possible for @acronym{NCO} to automatically generate
@@ -3363,6 +3366,7 @@ files.
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 
 
+@cindex climate model
 Consider five realizations, @file{85a.nc}, @file{85b.nc}, @dots{}
 @file{85e.nc} of 1985 predictions from the same climate model.
 Then @code{ncecat 85?.nc 85_ens.nc} glues the individual realizations
@@ -4501,6 +4505,7 @@ Here the tally is simply the size of @code{lon}, or 128.
 
 @cindex @code{gw}
 @cindex Gaussian weights
+@cindex climate model
 Compute the meridional (latitudinal) mean, with values weighted by
 the corresponding element of @var{gw}
 @footnote{@code{gw} stands for @dfn{Gaussian weight} in the NCAR climate
@@ -4530,6 +4535,7 @@ $64 \times 128 = 8192$.
 @end ifset
 
 @cindex @code{ORO}
+@cindex climate model
 Compute the area mean over the globe, but include only points for
 which 
 @set flg
