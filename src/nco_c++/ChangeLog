@@ -1,3 +1,8 @@
+2004-09-20  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco_c++-0_1_7 mie c++ nco/src/nco_c++
+	Changes since nco_c++-0_1_7: nco_put_vara_crd() interface, compiler tweaks
+
 2004-09-17  Charlie Zender  <zender@uci.edu>
 
 	* Added nco_put_vara_crd() to handle writing coordinates
