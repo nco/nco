@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.22 1999-08-04 16:52:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.23 1999-08-04 18:53:04 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -379,7 +379,6 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 
   FILE *fp_in;
   char *cln_ptr; /* [ptr] Colon pointer */
-  char *prd_ptr; /* [ptr] Period pointer */
   char *fl_nm_lcl;
   char *fl_nm_stub;
   int rcd;
@@ -506,6 +505,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     
     rmt_fetch_cmd_sct *rmt_cmd=NULL;
     rmt_fetch_cmd_sct msread={"msread -R %s %s",4,synchronous,local_remote};
+    rmt_fetch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,remote_local};
     rmt_fetch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,local_remote};
     rmt_fetch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,remote_local};
     rmt_fetch_cmd_sct ftp={"",4,synchronous,remote_local};
@@ -582,6 +582,15 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     } /* end if */
     
     if(rmt_cmd == NULL){
+      /* Does the msrcp command exist on the local system? */ 
+      rcd=stat("/usr/local/bin/msrcp",&stat_sct); /* SCD Dataproc, Ouray */
+      if(rcd != 0) rcd=stat("/usr/bin/msrcp",&stat_sct); /* ACD Linux */
+      if(rcd != 0) rcd=stat("/opt/local/bin/msrcp",&stat_sct); /* CGD */
+      if(rcd != 0) rcd=stat("/usr/local/dcs/bin/msrcp",&stat_sct); /* ACD */
+      if(rcd == 0) rmt_cmd=&msrcp;
+    } /* end if */
+	
+    if(rmt_cmd == NULL){
       /* Does the msread command exist on the local system? */ 
       rcd=stat("/usr/local/bin/msread",&stat_sct);
       if(rcd == 0) rmt_cmd=&msread;
@@ -595,7 +604,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 
     /* Before we look on the remote system for the filename, make sure 
        the filename has the correct syntax to exist on the remote system */
-    if(rmt_cmd == &msread || rmt_cmd == &nrnet){
+    if(rmt_cmd == &msread || rmt_cmd == &nrnet || rmt_cmd == &msrcp){
       if (fl_nm_rmt[0] != '/' || fl_nm_rmt[1] < 'A' || fl_nm_rmt[1] > 'Z'){
 	(void)fprintf(stderr,"%s: ERROR %s is not on local filesystem and is not a syntactically valid filename on remote file system\n",prg_nm_get(),fl_nm_rmt);
 	exit(EXIT_FAILURE);

@@ -1,10 +1,10 @@
 \input texinfo @c -*-texinfo-*- 
-@c 98/08/17: texi2html and makeinfo do not require texinfo.tex anymore
+@c 1998/08/17: texi2html and makeinfo do not require texinfo.tex anymore
 @c Unfortunately, texi2dvi does seem to need it
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.26 1999-07-29 17:49:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.27 1999-08-04 18:53:03 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -48,12 +48,12 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.1.34
-@set doc-edition 1.1.34
+@set nco-edition 1.1.37
+@set doc-edition 1.1.37
 @set copyright-years 1995, 1996, 1997, 1998, 1999
 @set update-year 1999
-@set update-date 3 July 1999
-@set update-month July 1999
+@set update-date 5 August 1999
+@set update-month August 1999
 
 @c Experiment with smaller amounts of whitespace between chapters and sections.
 @tex
@@ -1160,19 +1160,38 @@ To access a file using @code{rcp(1)}, specify the Internet address of
 the remote file.
 You must have @code{rcp(1)} privileges on the remote machine (e.g.,
 @file{.rhosts} should be set accordingly).
+
+@cindex @code{msrcp}
+@cindex @code{msread}
+@cindex @code{nrnet}
 To access a file on NCAR's MSS, specify the full MSS pathname of the
 remote file. 
 NCO will attempt to detect whether the local machine has direct
 (synchronous) MSS access. 
-Otherwise NCO will attempt to retrieve the MSS file through the
-(asynchronous) Masnet Interface Gateway System (MIGS). 
+In this case, NCO attempts to use the NCAR @code{msrcp} command
+@footnote{The @code{msrcp} command must be in the user's path and
+located in one of the following directories: @code{/usr/local/bin},
+@code{/usr/bin}, @code{/opt/local/bin}, or @code{/usr/local/dcs/bin}.
+}, or, failing that, @code{/usr/local/bin/msread}.
+Otherwise NCO attempts to retrieve the MSS file through the
+(asynchronous) Masnet Interface Gateway System (MIGS) using the
+@code{nrnet} command. 
+
+The following examples show how one might analyzed files stored on  
+remote systems.
 @example
 ncks -H -l ./ ftp://ftp.cgd.ucar.edu/pub/zender/nc/in.nc
-ncks -H -l ./ odin.cgd.ucar.edu:/home/zender/nc/in.nc
+ncks -H -l ./ dust.acd.ucar.edu:/home/zender/nc/in.nc
 ncks -H -l ./ /ZENDER/nc/in.nc 
 @end example
 @noindent
-These commands can be rewritten using the @samp{-p @var{input-path}}
+The first example should work verbatim on your system if your system is
+connected to the Internet and is not behind a firewall.
+The second example should fail on your system unless you have @code{rcp}
+priveleges on the machine @code{dust.acd.ucar.edu}.
+The third example should work from NCAR computers with local access to 
+the @code{msrcp}, @code{msread}, or @code{nrnet} commands.
+The above commands can be rewritten using the @samp{-p @var{input-path}}
 option as follows: 
 @cindex @code{-p @var{input-path}}
 @cindex @var{input-path}
@@ -1180,7 +1199,7 @@ option as follows:
 @cindex @var{output-path}
 @example
 ncks -H -p ftp://ftp.cgd.ucar.edu/pub/zender/nc -l ./ in.nc
-ncks -H -p odin.cgd.ucar.edu:/home/zender/nc -l ./ in.nc
+ncks -H -p dust.acd.ucar.edu:/home/zender/nc -l ./ in.nc
 ncks -H -p /ZENDER/nc -l ./ in.nc 
 @end example
 @noindent

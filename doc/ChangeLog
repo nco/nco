@@ -1,5 +1,9 @@
 1999-08-04  Charlie Zender  <zender@dust.acd.ucar.edu>
 
+	* Tagged this as nco1_1_37
+
+	* Implemented first attempt to use msrcp, seems to work
+
 	* Tagged this as nco1_1_36
 
 	* Improved patch to fl_mk_lcl() so it "does the right thing"
