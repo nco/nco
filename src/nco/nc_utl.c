@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.22 1999-05-07 23:06:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.23 1999-05-07 23:16:15 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -491,7 +491,7 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
       exit(EXIT_FAILURE);
     } /* end if */
     
-    /* 19990507:
+    /* 19990507: TODO #117
        Allow for possibility that limit pertains to record dimension of a multi file operator 
        In this case, the user-specified maximum index may be larger than the number of records in this particular file
        Thus lim.srt does not necessarily equal lim.min_idx, 
