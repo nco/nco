@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.226 2004-06-03 05:52:42 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.227 2004-06-05 00:32:41 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4616,9 +4616,10 @@ quickly and painlessly as possible.
 @command{ncatted} can @dfn{append}, @dfn{create}, @dfn{delete},
 @dfn{modify}, and @dfn{overwrite} attributes (all explained below).  
 Furthermore, @command{ncatted} allows each editing operation to be applied
-to every variable in a file, thus saving you time when you want to
-change attribute conventions throughout a file.
-@command{ncatted} interprets character attributes as strings.
+to every variable in a file.
+This saves time when changing attribute conventions throughout a file. 
+Note that @command{ncatted} interprets character attributes
+(i.e., attributes of type @code{NC_CHAR}) as strings.
 
 @cindex @code{history} attribute
 @cindex @code{-h}

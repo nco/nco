@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.307 2004-06-03 05:52:42 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.308 2004-06-05 00:32:40 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -231,9 +231,9 @@ ncap48. Search ncap_yacc.y for non-symmetric arithmetic operations, implement sy
 ncap49. Cause "**" in arithmetic context to cause error, print HINT to Fortran syntax users
 ncap52. Combine pow() with ^ parsing in parser ncap_yacc.y 
 ncap53. Bug in ncap pack() on Alpha/Tru64: ncap -O -D 10 -s 'hsig=pack(hsig)' foo.nc foo2.nc details on sourceforge
-ncap54. Add option (true by default?) to retain variable attributes when variable re-defined or defined in terms of single other variable
-ncap -v -O -s "one=one*1" -s "two=one*2" in.nc foo.nc
-ncks -m -H -v one,two foo.nc
+ncap54. Add option (true by default?) to retain variable attributes when variable re-defined or defined in terms of single other variable or perhaps always retain attributes of left-most variable on RHS of definition?
+ncap -v -O -s "one=one*1" -s "two=one*2" -s "pck=pack(upk)" ~/nco/data/in.nc ~/foo.nc
+ncks -m -H -v one,two,pck ~/foo.nc
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
