@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.68 2005-03-27 01:04:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.69 2005-03-27 20:35:16 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -656,14 +656,11 @@ void
 nco_xrf_dmn /* [fnc] Switch pointers to dimension structures so var->dim points to var->dim->xrf */
 (var_sct * const var) /* I [sct] Variable to manipulate */
 {
-  /* Purpose: Switch pointers to dimension structures so var->dim points to var->dim->xrf.
+  /* Purpose: Switch pointers to dimension structures so var->dim points to var->dim->xrf
      Routine makes dim element of variable structure from nco_var_dpl() refer to counterparts
      of dimensions directly associated with variable it was duplicated from */
-  
   int idx;
-  
   for(idx=0;idx<var->nbr_dim;idx++) var->dim[idx]=var->dim[idx]->xrf;
-  
 } /* end nco_xrf_dmn() */
 
 void
@@ -672,10 +669,8 @@ nco_xrf_var /* [fnc] Make xrf elements of variable structures point to eachother
  var_sct * const var_2) /* I/O [sct] Related variable */
 {
   /* Purpose: Make xrf elements of variable structures point to eachother */
-
   var_1->xrf=var_2;
   var_2->xrf=var_1;
-
 } /* end nco_xrf_var() */
 
 var_sct * /* O [sct] Pointer to free'd variable */
@@ -684,8 +679,9 @@ nco_var_free /* [fnc] Free all memory associated with variable structure */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with a dynamically allocated variable structure */
-  
-  var->nm=(char *)nco_free(var->nm);
+
+  /* fxm: Free'ing var_nm causes ncwa regression TODO nco490 */
+  /*  var->nm=(char *)nco_free(var->nm);*/
   var->val.vp=nco_free(var->val.vp);
   var->mss_val.vp=nco_free(var->mss_val.vp);
   var->tally=(long *)nco_free(var->tally);

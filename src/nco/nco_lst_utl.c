@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.23 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.24 2005-03-27 20:35:16 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -110,9 +110,14 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
   /* Purpose: Create list of strings from given string and arbitrary delimiter
      Routine is often called with system memory, e.g., with strings from
      command line arguments whose memory was allocated by shell or by getopt().
-     A conservative policy would be, therefore, to never modify input string
+     Conservative policy would be, therefore, to never modify input string
      However, we are safe if any modifications do not extend input string
-     Thus this routine is allowed to replace delimiter strings by NULs */
+     Thus this routine is allowed to replace delimiter strings by NULs
+
+     NB: File takes single string as input and returns "list of strings" 
+     However, this list of strings was not obtained by malloc'ing each string 
+     It was obtained by inserting delimiters in a single string 
+     Hence do not try to separately free() each member of list of strings */
 
   /* Number of list members is always one more than number of delimiters, e.g.,
      foo,,3, has 4 arguments: "foo", "", "3" and "".
@@ -345,8 +350,27 @@ nco_lst_srt_nm_id /* [fnc] Sort name/ID input list numerically or alphabetically
   return lst;
 } /* end nco_lst_srt_nm_id() */
 
+nm_id_sct * /* O [sct] Pointer to free'd structure list */
+nco_nm_id_lst_free /* [fnc] Free memory associated with name-ID structure list */
+(nm_id_sct *nm_id_lst, /* I/O [sct] Name-ID struture list to free */
+ const int nm_id_nbr) /* I [nbr] Number of name-ID strutures in list */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with dynamically allocated name-ID structure list */
+  int idx;
+
+  for(idx=0;idx<nm_id_nbr;idx++){
+    nm_id_lst[idx].nm=(char *)nco_free(nm_id_lst[idx].nm);
+  } /* end loop over idx */
+
+  /* Free structure pointer last */
+  nm_id_lst=(nm_id_sct *)nco_free(nm_id_lst);
+
+  return nm_id_lst;
+} /* end nco_nm_id_lst_free() */
+
 char * /* O [sng] Concatenated string formed by joining all input strings */
-sng_lst_prs /* [fnc] Join list of strings together into one string */
+sng_lst_cat /* [fnc] Join list of strings together into one string */
 (X_CST_PTR_CST_PTR_Y(char,sng_lst), /* I [sng] List of pointers to strings to join together */
  const long lmn_nbr, /* O [nbr] Number of strings in list */
  const char * const dlm_sng) /* I [sng] delimiter string to use as glue */
@@ -365,7 +389,7 @@ sng_lst_prs /* [fnc] Join list of strings together into one string */
 
   /* Delimiter must be NUL-terminated (a string) so strlen() works */
   if(dlm_sng == NULL){
-    (void)fprintf(stdout,"%s: ERROR sng_lst_prs() reports delimiter string is NULL\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR sng_lst_cat() reports delimiter string is NULL\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* end if */
   dlm_lng=strlen(dlm_sng); 
@@ -383,5 +407,5 @@ sng_lst_prs /* [fnc] Join list of strings together into one string */
   } /* end loop over lmn */
 
   return sng;
-} /* end sng_lst_prs() */
+} /* end sng_lst_cat() */
 

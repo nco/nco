@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.86 2005-03-24 20:48:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.87 2005-03-27 20:35:16 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -62,6 +62,7 @@ nco_exit /* [fnc] Wrapper for exit() */
 void 
 nco_exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, memory, then exit */
 {
+  /* Purpose: Clean up timers, file descriptors, memory, then exit */
   char *time_bfr_end;
   time_t time_crr_time_t;
   
@@ -73,6 +74,10 @@ nco_exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, memory, th
   (void)fclose(stderr);
   (void)fclose(stdin);
   (void)fclose(stdout);
+
+  /* This should be penultimate command in program 
+     After program name is free'd, calls to prg_nm_get() will fail */
+  (void)nco_free(prg_nm_get());
 
   nco_exit(EXIT_SUCCESS);
 } /* end nco_exit_gracefully() */
@@ -258,49 +263,52 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
  int * const prg_lcl) /* O [enm] Enumerated number corresponding to nm_in */
 {
   /* Purpose: Set program name and enum */
-
   char *nm_out;
+  char *nm_out_tmp;
+  char *nm_out_orig;
 
-  /* Get program name (use strrchr() first in case nm_in contains a path)
-     fxm: Put initial nm_out pointer in list of malloc()'s to be free()'d
-     Then free() this memory in nco_exit() */
-  nm_out=(char *)strdup(nm_in);
-  if(strrchr(nm_out,'/') != NULL) nm_out=strrchr(nm_out,'/')+1;
+  /* Get program name (use strrchr() first in case nm_in contains a path) */
+  nm_out_orig=nm_out_tmp=(char *)strdup(nm_in);
+  if(strrchr(nm_out_tmp,'/') != NULL) nm_out_tmp=strrchr(nm_out_tmp,'/')+1;
 
   /* Skip possible libtool prefix */
-  if(!strncmp(nm_out,"lt-",3)){nm_out+=3;}
+  if(!strncmp(nm_out_tmp,"lt-",3)){nm_out_tmp+=3;}
 
   /* Classify calling program */
-  if(!strcmp(nm_out,"ncra")){*prg_lcl=ncra;}
-  else if(!strcmp(nm_out,"ncap")){*prg_lcl=ncap;}
-  else if(!strcmp(nm_out,"ncea")){*prg_lcl=ncea;}
-  else if(!strcmp(nm_out,"ncbo")){*prg_lcl=ncbo;}
+  if(!strcmp(nm_out_tmp,"ncra")){*prg_lcl=ncra;}
+  else if(!strcmp(nm_out_tmp,"ncap")){*prg_lcl=ncap;}
+  else if(!strcmp(nm_out_tmp,"ncea")){*prg_lcl=ncea;}
+  else if(!strcmp(nm_out_tmp,"ncbo")){*prg_lcl=ncbo;}
   /* Synonyms for ncbo: These are acceptable symbolic links for ncbo */
-  else if(!strcmp(nm_out,"ncadd")){*prg_lcl=ncbo;}
-  else if(!strcmp(nm_out,"ncdiff")){*prg_lcl=ncbo;}
-  else if(!strcmp(nm_out,"ncsub")){*prg_lcl=ncbo;}
-  else if(!strcmp(nm_out,"ncsubtract")){*prg_lcl=ncbo;}
-  else if(!strcmp(nm_out,"ncmult")){*prg_lcl=ncbo;}
-  else if(!strcmp(nm_out,"ncmultiply")){*prg_lcl=ncbo;}
-  else if(!strcmp(nm_out,"ncdivide")){*prg_lcl=ncbo;}
+  else if(!strcmp(nm_out_tmp,"ncadd")){*prg_lcl=ncbo;}
+  else if(!strcmp(nm_out_tmp,"ncdiff")){*prg_lcl=ncbo;}
+  else if(!strcmp(nm_out_tmp,"ncsub")){*prg_lcl=ncbo;}
+  else if(!strcmp(nm_out_tmp,"ncsubtract")){*prg_lcl=ncbo;}
+  else if(!strcmp(nm_out_tmp,"ncmult")){*prg_lcl=ncbo;}
+  else if(!strcmp(nm_out_tmp,"ncmultiply")){*prg_lcl=ncbo;}
+  else if(!strcmp(nm_out_tmp,"ncdivide")){*prg_lcl=ncbo;}
   /* End synonyms for ncbo */
-  else if(!strcmp(nm_out,"ncflint")){*prg_lcl=ncflint;}
-  else if(!strcmp(nm_out,"ncwa")){*prg_lcl=ncwa;}
-  else if(!strcmp(nm_out,"ncrcat")){*prg_lcl=ncrcat;}
-  else if(!strcmp(nm_out,"ncecat")){*prg_lcl=ncecat;}
-  else if(!strcmp(nm_out,"ncks")){*prg_lcl=ncks;}
-  else if(!strcmp(nm_out,"ncpdq")){*prg_lcl=ncpdq;}
+  else if(!strcmp(nm_out_tmp,"ncflint")){*prg_lcl=ncflint;}
+  else if(!strcmp(nm_out_tmp,"ncwa")){*prg_lcl=ncwa;}
+  else if(!strcmp(nm_out_tmp,"ncrcat")){*prg_lcl=ncrcat;}
+  else if(!strcmp(nm_out_tmp,"ncecat")){*prg_lcl=ncecat;}
+  else if(!strcmp(nm_out_tmp,"ncks")){*prg_lcl=ncks;}
+  else if(!strcmp(nm_out_tmp,"ncpdq")){*prg_lcl=ncpdq;}
   /* Synonyms for ncpdq: These are acceptable symbolic links for ncpdq */
-  else if(!strcmp(nm_out,"ncpack")){*prg_lcl=ncpdq;}
-  else if(!strcmp(nm_out,"ncunpack")){*prg_lcl=ncpdq;}
+  else if(!strcmp(nm_out_tmp,"ncpack")){*prg_lcl=ncpdq;}
+  else if(!strcmp(nm_out_tmp,"ncunpack")){*prg_lcl=ncpdq;}
   /* End synonyms for ncpdq */
-  else if(!strcmp(nm_out,"ncrename")){*prg_lcl=ncrename;}
-  else if(!strcmp(nm_out,"ncatted")){*prg_lcl=ncatted;}
+  else if(!strcmp(nm_out_tmp,"ncrename")){*prg_lcl=ncrename;}
+  else if(!strcmp(nm_out_tmp,"ncatted")){*prg_lcl=ncatted;}
   else{
-    (void)fprintf(stdout,"%s: ERROR executable name %s not registered in prg_prs()\n",nm_out,nm_out);
+    (void)fprintf(stdout,"%s: ERROR executable name %s not registered in prg_prs()\n",nm_out_tmp,nm_out_tmp);
     nco_exit(EXIT_FAILURE);
   } /* end else */
 
+  /* Duplicate stub for returning */
+  nm_out=(char *)strdup(nm_out_tmp);
+  /* Free copy of argv[0] */
+  nm_out_orig=(char *)nco_free(nm_out_orig);
   return nm_out;
 
 } /* end prg_prs() */

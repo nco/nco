@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.148 2005-03-27 00:42:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.149 2005-03-27 20:35:15 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -100,24 +100,25 @@ main(int argc,char **argv)
   bool PROCESS_ALL_VARS=True; /* Option v */  
   bool PRN_FNC_TBL=False; /* Option f */  
   
-  char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
-  char *fl_spt_usr=NULL; /* Option s */
+  char **var_lst_in=NULL_CEWI;
+  char *cmd_ln;
   char *fl_in=NULL;
-  char *fl_pth_lcl=NULL; /* Option l */
-  char *lmt_arg[NC_MAX_DIMS];
-#define NCAP_SPT_NBR_MAX 100
-  char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
-  char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *fl_out=NULL; /* Option o */
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
+  char *fl_pth_lcl=NULL; /* Option l */
+  char *fl_spt_usr=NULL; /* Option s */
+  char *lmt_arg[NC_MAX_DIMS];
+  char *optarg_lcl=NULL; /* [sng] Local copy of system optarg */
+#define NCAP_SPT_NBR_MAX 100
+  char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
+  char *spt_arg_cat=NULL; /* [sng] User-specified script */
   char *time_bfr_srt;
-  char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.148 2005-03-27 00:42:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.148 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.149 2005-03-27 20:35:15 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.149 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */

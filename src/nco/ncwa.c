@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.153 2005-03-27 00:42:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.154 2005-03-27 20:35:16 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.153 2005-03-27 00:42:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.153 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.154 2005-03-27 20:35:16 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.154 $";
   const char * const opt_sht_lst="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:Zz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -270,7 +270,8 @@ main(int argc,char **argv)
 	(void)nco_usg_prn();
 	nco_exit(EXIT_FAILURE);
       } /* endif */
-      dmn_avg_lst_in=lst_prs(optarg,",",&nbr_dmn_avg);
+      optarg_lcl=(char *)strdup(optarg);
+      dmn_avg_lst_in=lst_prs(optarg_lcl,",",&nbr_dmn_avg);
       opt_a_flg=True;
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
@@ -349,7 +350,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     case 'w': /* Variable to use as weight in reducing.  Default is none */
-      wgt_nm=optarg;
+      wgt_nm=(char *)strdup(optarg);
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
@@ -359,7 +360,7 @@ main(int argc,char **argv)
       nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
     case 'z': /* Mask string to be parsed */
-      msk_sng=optarg;
+      msk_sng=(char *)strdup(optarg);
       break;
     case 'Z': /* [flg] Create output file with 64-bit offsets */
       FORCE_64BIT_OFFSET=True;

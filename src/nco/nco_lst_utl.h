@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.17 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.18 2005-03-27 20:35:16 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -95,8 +95,13 @@ nco_lst_srt_nm_id /* [fnc] Sort name/ID input list numerically or alphabetically
  const int nbr_lst, /* I [nbr] number of members in list */
  const bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */
 
+nm_id_sct * /* O [sct] Pointer to free'd structure list */
+nco_nm_id_lst_free /* [fnc] Free memory associated with name-ID structure list */
+(nm_id_sct *nm_id_lst, /* I/O [sct] Name-ID struture list to free */
+ const int nm_id_nbr); /* I [nbr] Number of name-ID strutures in list */
+
 char * /* O [sng] Concatenated string formed by joining all input strings */
-sng_lst_prs /* [fnc] Join list of strings together into one string */
+sng_lst_cat /* [fnc] Join list of strings together into one string */
 (X_CST_PTR_CST_PTR_Y(char,sng_lst), /* I [sng] List of pointers to strings to join together */
  const long lmn_nbr, /* O [nbr] Number of strings in list */
  const char * const dlm_sng); /* I [sng] delimiter string to use as glue */

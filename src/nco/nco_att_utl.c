@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.44 2005-01-10 02:22:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.45 2005-03-27 20:35:16 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -606,7 +606,7 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
 	lmn_nbr=arg_nbr-idx_att_val_arg; 
 	if(dbg_lvl_get() >= 2) (void)fprintf(stdout,"%s: WARNING NC_CHAR (string) attribute is embedded with %li literal element delimiters (\"%s\"), re-assembling...\n",prg_nm_get(),lmn_nbr-1L,dlm_sng);
 	/* Rewrite list, splicing in original delimiter string */
-	arg_lst[idx_att_val_arg]=sng_lst_prs(arg_lst+idx_att_val_arg,lmn_nbr,dlm_sng);
+	arg_lst[idx_att_val_arg]=sng_lst_cat(arg_lst+idx_att_val_arg,lmn_nbr,dlm_sng);
 	/* Keep bookkeeping straight, just in case */
 	arg_nbr=idx_att_val_arg+1L;
 	lmn_nbr=1L;

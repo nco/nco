@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.459 2005-03-27 19:42:45 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.460 2005-03-27 20:35:10 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -292,8 +292,6 @@ nco490. regression in ncwa:
         part of regression symptom is that freeing var->nm in nco_var_free() fails
 nco491. Change lst_prs() to return true two-dimensional lists rather
         than filling 1-d list with NULs. It's confusing.
-nco492. XML build fails with new cartouche in header:
-        makeinfo --xml --no-split --output=nco.xml nco.texi
 nco493. 
 
 ncap-specific items:

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.62 2005-03-27 01:04:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.63 2005-03-27 20:35:16 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.62 2005-03-27 01:04:09 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.62 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.63 2005-03-27 20:35:16 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.63 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -358,10 +358,10 @@ main(int argc,char **argv)
   dim=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
   for(idx=0;idx<nbr_dmn_xtr;idx++){
     dim[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
-    /* Dimension list no longer needed */
-    dmn_lst[idx].nm=(char *)nco_free(dmn_lst[idx].nm);
   } /* end loop over idx */
-  if(dmn_lst != NULL) dmn_lst=(nm_id_sct *)nco_free(dmn_lst);
+
+  /* Dimension list no longer needed */
+  dmn_lst=nco_nm_id_lst_free(dmn_lst,nbr_dmn_xtr);
   
   /* Merge hyperslab limit information into dimension structures */
   if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dim,nbr_dmn_xtr,lmt,lmt_nbr);
@@ -396,7 +396,14 @@ main(int argc,char **argv)
       if(dmn_rdr_lst_in[idx_rdr][0] == '-'){
 	dmn_rvr_rdr[idx_rdr]=True;
 	/* Move name pointer one past negative sign (lose one byte) */
-	dmn_rdr_lst_in[idx_rdr]++;
+	if(idx_rdr == 0){
+	  /* Copy string to new memory to avoid losing byte */
+	  optarg_lcl=dmn_rdr_lst_in[idx_rdr];
+	  dmn_rdr_lst_in[idx_rdr]=(char *)strdup(optarg_lcl+1);
+	  optarg_lcl=(char *)nco_free(optarg_lcl);
+	}else{
+	  dmn_rdr_lst_in[idx_rdr]++;
+	} /* end else */
       }else{
 	dmn_rvr_rdr[idx_rdr]=False;
       } /* end else */
@@ -418,7 +425,7 @@ main(int argc,char **argv)
     /* Collapse extra dimension structure space to prevent accidentally using it */
     dmn_rdr=(dmn_sct **)nco_realloc(dmn_rdr,dmn_rdr_nbr*sizeof(dmn_sct *));
     /* Dimension list space now refers to requested rather than utilized dimensions */
-    dmn_rdr_lst=(nm_id_sct *)nco_free(dmn_rdr_lst);
+    dmn_rdr_lst=nco_nm_id_lst_free(dmn_rdr_lst,dmn_rdr_nbr);
 
     /* Make sure no re-ordering dimension is specified more than once */
     for(idx=0;idx<dmn_rdr_nbr;idx++){
@@ -452,6 +459,9 @@ main(int argc,char **argv)
     (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
 
+  /* Extraction list no longer needed */
+  xtr_lst=nco_nm_id_lst_free(xtr_lst,nbr_xtr);
+  
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_map,nco_pck_plc,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
@@ -471,6 +481,7 @@ main(int argc,char **argv)
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)nco_hst_att_cat(out_id,cmd_ln);
+  cmd_ln=(char *)nco_free(cmd_ln);
 
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
@@ -787,14 +798,11 @@ main(int argc,char **argv)
     } /* end loop over idx */
     if(dmn_idx_out_in != NULL) dmn_idx_out_in=(int **)nco_free(dmn_idx_out_in);
     if(dmn_rvr_in != NULL) dmn_rvr_in=(bool **)nco_free(dmn_rvr_in);
-    /* Free string list members */
-    for(idx=0;idx<dmn_rdr_nbr;idx++){
-    /* fxm: Generates a invalid free()---not sure why
-       fxm: shifting negative signs by one may do same */
-    /*    dmn_rdr_lst_in[idx]=(char *)nco_free(dmn_rdr_lst_in[idx]);*/
-      ;
-    } /* end loop over idx */
+    if(dmn_rvr_rdr != NULL) dmn_rvr_rdr=(bool *)nco_free(dmn_rvr_rdr);
     if(dmn_rdr_lst_in != NULL) dmn_rdr_lst_in=(char **)nco_free(dmn_rdr_lst_in);
+    for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
+      dmn_rdr[idx_rdr]=nco_dmn_free(dmn_rdr[idx_rdr]);
+    } /* end loop over idx_rdr */
   } /* endif dmn_rdr_nbr > 0 */
   if(nco_pck_plc != nco_pck_plc_nil){
     if(nco_pck_plc_sng != NULL) nco_pck_plc_sng=(char *)nco_free(nco_pck_plc_sng);
@@ -815,6 +823,7 @@ main(int argc,char **argv)
   if(var_lst_in != NULL) var_lst_in=(char **)nco_free(var_lst_in);
   /* Free individual strings */
   if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+  if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
   /* Free limits */
   for(idx=0;idx<lmt_nbr;idx++){
     lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
