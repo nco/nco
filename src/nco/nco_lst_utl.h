@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.15 2004-08-05 04:27:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.16 2004-09-05 22:59:03 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -55,14 +55,14 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
  const bool ALPHABETIZE_OUTPUT); /* I [flg] Alphabetize extraction list */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
-nco_cmp_int /* [fnc] Compare two integers */
-(const void *val_1, /* I [nbr] Number to compare */
- const void *val_2); /* I [nbr] Number to compare */
-
-int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_chr /* [fnc] Compare two characters */
 (const void *val_1, /* I [chr] Character to compare */
  const void *val_2); /* I [chr] Character to compare */
+
+int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
+nco_cmp_int /* [fnc] Compare two integers */
+(const void *val_1, /* I [nbr] Number to compare */
+ const void *val_2); /* I [nbr] Number to compare */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_sng /* [fnc] Compare two strings */
@@ -78,6 +78,12 @@ int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_nm_id_id /* [fnc] Compare two nm_id_sct's by ID member */
 (const void *val_1, /* I [sct] nm_id_sct to compare */
  const void *val_2); /* I [sct] nm_id_sct to compare */
+
+int /* O [enm]  Comparison result [<,=,>] 0 iff op1 [<,==,>] op2 */
+nco_cmp_ptr_unn /* Compare values of two pointer unions of same type */
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const ptr_unn op1, /* I [sct] First operand to compare */
+ const ptr_unn op2); /* I [sct] Second operand to compare */
 
 void 
 nco_lst_comma2hash /* [fnc] Convert {...,...} to {...#...} in regular expressions */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.34 2004-09-05 20:13:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.35 2004-09-05 22:59:03 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -271,6 +271,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
      NB: Value buffer var->val.vp is usually free()'d here
      Variables in calling routine which point to var->val.vp will be left dangling */
 
+  bool PURE_MSS_VAL_FLD=False; /* [flg] Field is pure missing_value, i.e., no valid values */
   const char fnc_nm[]="nco_var_pck()"; /* [sng] Function name */
   double scl_fct_dbl=double_CEWI; /* [sct] Double precision value of scale_factor */
   double add_fst_dbl=double_CEWI; /* [sct] Double precision value of add_offset */
@@ -297,7 +298,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     nco_exit(EXIT_FAILURE);
   } /* endif */
 
-  if(True){
+  if(True){ /* Keep in own scope for eventual functionalization of core packing algorithm */
     /* Compute packing parameters to apply to var
 
        Linear packing in a nutshell:
@@ -354,6 +355,11 @@ nco_var_pck /* [fnc] Pack variable in memory */
     (void)nco_var_avg_reduce_max(var->type,var->sz,1L,var->has_mss_val,var->mss_val,var->val,ptr_unn_min);
     (void)nco_var_avg_reduce_min(var->type,var->sz,1L,var->has_mss_val,var->mss_val,var->val,ptr_unn_max);
 
+    /* Field is pure missing_value iff either max or min equals missing_value */
+    if(var->has_mss_val)
+      if(!nco_cmp_ptr_unn(var->type,ptr_unn_min,var->mss_val))
+	PURE_MSS_VAL_FLD=True;
+
     /* Convert to NC_DOUBLE before 0.5*(min+max) operation */
     min_var=scl_ptr_mk_var(ptr_unn_min,var->type);
     min_var=nco_var_cnf_typ((nc_type)NC_DOUBLE,min_var);
@@ -391,6 +397,9 @@ nco_var_pck /* [fnc] Pack variable in memory */
     (void)nco_var_sbt((nc_type)NC_DOUBLE,1L,var->has_mss_val,ptr_unn_mss_val_dbl,min_var->val,max_var_dpl->val);
     /* max-min is currently stored in max_var_dpl */
     max_mns_min_dbl=ptr_unn_2_scl_dbl(max_var_dpl->val,max_var_dpl->type); 
+
+    /* Manually set max-min=0.0 for pure missing_value fields to set add_offset correctly */
+    if(PURE_MSS_VAL_FLD) max_mns_min_dbl=0.0;
 
     if(max_mns_min_dbl != 0.0){
       (void)nco_var_dvd((nc_type)NC_DOUBLE,1L,var->has_mss_val,ptr_unn_mss_val_dbl,ndrv_var->val,max_var_dpl->val);
@@ -461,12 +470,21 @@ nco_var_pck /* [fnc] Pack variable in memory */
      Using var_scv_[sub,multiply] instead of ncap_var_scv_[sub,multiply] avoids cost of deep copies
      Moreover, this keeps variable structure from changing (because ncap_var_scv_* functions all do deep copies before operations) and thus complicating memory management */
   if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
+    bool has_mss_val_tmp; /* [flg] Temporary missing_value flag */
+
     /* Subtract add_offset from var */
     scv_sct add_fst_scv;
     add_fst_scv.type=NC_DOUBLE;
     add_fst_scv.val.d=add_fst_dbl;
     (void)nco_scv_cnf_typ(var->type,&add_fst_scv);
-    (void)var_scv_sub(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
+    /* Pass temporary missing_value flag to accomodate pure missing_value fields */
+    has_mss_val_tmp=var->has_mss_val;
+    /* Dupe var_scv_sub() into subtracting missing values when all values are missing */
+    if(PURE_MSS_VAL_FLD){
+      has_mss_val_tmp=False;
+      (void)fprintf(stdout,"%s: WARNING %s reports variable %s is completely missing_value = %g, i.e., there are no valid values\n",prg_nm_get(),fnc_nm,var->nm,add_fst_dbl);
+    } /* !PURE_MSS_VAL_FLD */
+    (void)var_scv_sub(var->type,var->sz,has_mss_val_tmp,var->mss_val,var->val,&add_fst_scv);
   } /* endif */
 
   if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
@@ -485,7 +503,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     *PCK_VAR_WITH_NEW_PCK_ATT=True; /* O [flg] Routine generated new scale_factor/add_offset */
   } /* endif */
 
-  /* Tell the world we have packed the variable
+  /* Tell the world we packed the variable
      This is true if input variable satisfied nco_is_packable() criteria
      Variables that fail nco_is_packable() (e.g., type == NC_CHAR) are not packed 
      and should not have their packing attributes set */
@@ -520,7 +538,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
   if(var->val.vp == NULL) (void)fprintf(stdout,"%s: ERROR nco_var_upk() called with empty var->val.vp\n",prg_nm_get());
 
   /* Packed variables are not guaranteed to have both scale_factor and add_offset
-     The scale factor is guaranteed to be of type NC_FLOAT or NC_DOUBLE and of size 1 (a scalar) */
+     scale_facto is guaranteed to be of type NC_FLOAT or NC_DOUBLE and of size 1 (a scalar) */
 
   /* Create scalar value structures from values of scale_factor, add_offset */
   if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */

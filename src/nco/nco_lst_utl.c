@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.21 2004-08-14 21:00:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.22 2004-09-05 22:59:03 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -181,21 +181,6 @@ lst_prs /* [fnc] Create list of strings from given string and arbitrary delimite
 } /* end lst_prs() */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
-nco_cmp_int /* [fnc] Compare two integers */
-(const void *val_1, /* I [nbr] Number to compare */
- const void *val_2) /* I [nbr] Number to compare */
-{
-  /* Purpose: Compare two integers
-     Function is suitable for argument to ANSI C qsort() routine in stdlib.h
-     Code based on responses to my comp.lang.c thread 20040101 */
-  const int * const val_1_ip=val_1;
-  const int * const val_2_ip=val_2;
-  return *val_1_ip < *val_2_ip ? -1 : (*val_1_ip > *val_2_ip);
-  /* Alternative one-liner:
-     return (*val_1_ip > *val_2_ip) - (*val_1_ip < *val_2_ip); */
-} /* end nco_cmp_int() */
-
-int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_chr /* [fnc] Compare two characters */
 (const void *val_1, /* I [chr] Character to compare */
  const void *val_2) /* I [chr] Character to compare */
@@ -209,6 +194,21 @@ nco_cmp_chr /* [fnc] Compare two characters */
   /* Alternative one-liner:
      return (*val_1_cp > *val_2_cp) - (*val_1_cp < *val_2_cp); */
 } /* end nco_cmp_chr() */
+
+int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
+nco_cmp_int /* [fnc] Compare two integers */
+(const void *val_1, /* I [nbr] Number to compare */
+ const void *val_2) /* I [nbr] Number to compare */
+{
+  /* Purpose: Compare two integers
+     Function is suitable for argument to ANSI C qsort() routine in stdlib.h
+     Code based on responses to my comp.lang.c thread 20040101 */
+  const int * const val_1_ip=val_1;
+  const int * const val_2_ip=val_2;
+  return *val_1_ip < *val_2_ip ? -1 : (*val_1_ip > *val_2_ip);
+  /* Alternative one-liner:
+     return (*val_1_ip > *val_2_ip) - (*val_1_ip < *val_2_ip); */
+} /* end nco_cmp_int() */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
 nco_cmp_sng /* [fnc] Compare two strings */
@@ -249,6 +249,51 @@ nco_cmp_nm_id_id /* [fnc] Compare two nm_id_sct's by ID member */
      comparison function may be written (albeit unsafely) in one line. */
   return (*(nm_id_sct const *)val_1).id-(*(nm_id_sct const *)val_2).id;
 } /* end nco_cmp_nm_id_nm() */
+
+int /* O [enm]  Comparison result [<,=,>] 0 iff op1 [<,==,>] op2 */
+nco_cmp_ptr_unn /* Compare values of two pointer unions of same type */
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const ptr_unn op1, /* I [sct] First operand to compare */
+ const ptr_unn op2) /* I [sct] Second operand to compare */
+{
+  /* Purpose: Compare values of two scalar pointer unions of same type 
+     Function is almost suitable for argument to ANSI C qsort() routine in stdlib.h
+     Like strcmp(), this routine returns <,=,> zero iff op1 <,=,> op2
+     Routine based on nco_cmp_int()
+     Note that only first value of pointer unions is compared */
+  switch(type){
+  case NC_FLOAT: 
+    {const float * const op1_fp=op1.fp;
+    const float * const op2_fp=op2.fp;
+    return *op1_fp < *op2_fp ? -1 : (*op1_fp > *op2_fp);}
+    break;
+  case NC_DOUBLE: break;
+    {const double * const op1_dp=op1.dp;
+    const double * const op2_dp=op2.dp;
+    return *op1_dp < *op2_dp ? -1 : (*op1_dp > *op2_dp);}
+  case NC_SHORT: break;
+    {const short * const op1_sp=op1.sp;
+    const short * const op2_sp=op2.sp;
+    return *op1_sp < *op2_sp ? -1 : (*op1_sp > *op2_sp);}
+  case NC_INT: break;
+    {const nco_long * const op1_lp=op1.lp;
+    const nco_long * const op2_lp=op2.lp;
+    return *op1_lp < *op2_lp ? -1 : (*op1_lp > *op2_lp);}
+  case NC_BYTE: break;
+    {const signed char * const op1_bp=op1.bp;
+    const signed char * const op2_bp=op2.bp;
+    return *op1_bp < *op2_bp ? -1 : (*op1_bp > *op2_bp);}
+  case NC_CHAR: break;
+    {const unsigned char * const op1_cp=op1.cp;
+    const unsigned char * const op2_cp=op2.cp;
+    return *op1_cp < *op2_cp ? -1 : (*op1_cp > *op2_cp);}
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return 0;
+
+} /* end nco_cmp_ptr_unn() */
 
 void 
 nco_lst_comma2hash /* [fnc] Replace commas with hashes when within braces */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.19 2004-07-26 05:45:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.20 2004-09-05 22:59:03 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -582,7 +582,7 @@ nco_var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of
   unsigned char mss_val_chr;
   signed char mss_val_byt;
   
-  bool flg_mss=False;
+  bool flg_mss=False; /* [flg] Block has valid (non-missing) values */
   
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);

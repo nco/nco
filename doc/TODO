@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.397 2004-09-05 21:41:35 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.398 2004-09-05 22:59:01 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -263,10 +263,11 @@ nco425. ncpdq: Make unpacking offer to unpack missing value to preserve its usef
 nco426. ncpdq: Make packing offer to pack missing value to the packed type to preserve its usefulness
 nco427. Search and fix all pck_dbg statements
 nco431. Implement ncpdq -P optional options
-nco436. ncpdq: Make packing play nice with complete missing values
-        Currently, variables which are completely missing_value (1.e36) do get "packed" but resulting scale_factor, add_offset equal 1.0e36 rather than scale_factor == 0.0 val = 0.0 add_offset=1.0e36
+nco437. ncpdq: Re-inflating pure missing value field---does it work?
         ncpdq -D 3 -O -C -P all_new -v mss_val_scl ~/nco/data/in.nc ~/foo.nc
-nco437. 
+        ncpdq -D 3 -O -C -P upk -v mss_val_scl ~/foo.nc ~/foo.nc
+        ncks -H -m -v mss_val_scl ~/foo.nc
+nco438. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
