@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.183 2003-12-24 01:21:02 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.184 2004-01-07 20:51:42 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -57,7 +57,8 @@ Try to disable Spammers' machines:
 <p><hr width="100%"></p>
 <p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
 
-If you like NCO and want to send us a little money, click here:
+If you like NCO and want to support its further development with a
+little money, click on the PayPal button: 
 <center><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
 <input type="hidden" name="cmd" value="_xclick">
 <input type="hidden" name="business" value="zender@uci.edu">
@@ -118,8 +119,10 @@ files etc.
 NCO is designed to be used both interactively and with large batch jobs.
 There are plenty of command line (i.e., runtime) options, but the defaults
 settings are often sufficient for everyday needs.
-NCO works on AIX, Alpha, ARM, *BSD, IRIX, Linux, NEC-SX, OSX, Solaris,
-Tru64, UNICOS, and Windows. 
+NCO works well on all modern operating systems, including:
+Apple OS&nbsp;X, *BSD, Cray UNICOS, DEC Tru64, IBM AIX, HPUX,
+Linux, Microsoft Windows, NEC Super&nbsp;UX, SGI IRIX, and Sun
+Solaris.   
 
 The following operators are thoroughly described in the 
 <a href="./nco.html">NCO User's Guide</a>. 

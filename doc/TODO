@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.269 2004-01-05 21:38:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.270 2004-01-07 20:51:42 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -13,6 +13,8 @@ Autoconf-build items:
 14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
 23. Implement ncra i18n support I18N with autotools: Add .po files, update doc/i18n.txt
 24. --enable-[debug/optimize]-custom dies on ncdiff re-link in 'make install'
+25. --enable-debug-custom dies on libnco_c++
+26. 
 
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
