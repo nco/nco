@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.271 2004-11-06 01:15:53 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.272 2004-12-13 02:02:36 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -88,7 +88,8 @@ little money, click on the PayPal button:
 </ul>
 <hr>
 
-<dt><a name="News"></a></dt>
+<!-- http://nco.sf.net#news -->
+<dt><a name="News"></a><a name="news"></a></dt>
 <h2>NCO News &amp; Announcements</h2>
 
 <ul>
@@ -109,7 +110,8 @@ for Institutional funding for NCO.</li>
 </ul>
 <hr></p>
 
-<dt><a name="Definition"></a></dt>
+<!-- http://nco.sf.net#Definition -->
+<dt><a name="Definition"></a><a name="dfn"></a></dt>
 <h2>What is NCO?</h2>
 <p>The <a
 href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
@@ -169,6 +171,7 @@ e.g., total, minimum, maximum, RMS:
 </ul>
 <p><hr width="100%"></p>
 
+<!-- http://nco.sf.net#Contribute -->
 <dt><a name="Contribute"></a></dt>
 <h2>How to Contribute</h2>
 <p>In March, 2000, NCO became an Open Source project hosted by
@@ -202,6 +205,7 @@ donations on NCO development:
 <dt>NCO features "incentivized" by these donations: None.</dt>
 <hr></p>
 
+<!-- http://nco.sf.net#prp_sei -->
 <dt><a name="prp_sei"></a></dt>
 <h2>NCO&rarr;SDO Project</h2>
 
@@ -286,7 +290,8 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 </ul>
 <hr></p>
 
-<dt><a name="Version"></a></dt>
+<!-- http://nco.sf.net#vrs -->
+<dt><a name="Version"></a><a name="vrs"></a></dt>
 <h2>Version Summary</h2>
 New releases receive unique CVS tags and their tarballs and stored  
 <a href="http://dust.ess.uci.edu/nco/src">here</a>. 
@@ -367,6 +372,7 @@ Instead, retrieve all recently tagged versions
 </ul>
 <hr></p>
 
+<!-- http://nco.sf.net#dwn -->
 <dt><a name="Download"></a><a name="dwn"></a></dt>
 <h2>Download/CVS NCO Software</h2>
 
@@ -476,6 +482,7 @@ href="src/nco_2.9.9-1_i386.changes">nco_2.9.9-1_i386.changes</a> (<!--#fsize fil
 </ul>
 <hr></p>
 
+<!-- http://nco.sf.net#RTFM -->
 <dt><a name="RTFM"></a></dt>
 <h2>Documentation and User's Guide</h2> 
 <p>View the NCO User's Guide in any of these formats:
@@ -507,6 +514,7 @@ They were created by Sylvia Murphy of the NCAR
 
 <hr></p>
 
+<!-- http://nco.sf.net#README -->
 <dt><a name="README/ChangeLog/TODO"></a></dt>
 <h2>README/ChangeLog/TODO</h2>
 <p>Files containing useful information about the current NCO distribution:
@@ -520,6 +528,7 @@ fixes we currently have in mind for NCO.</li>
 </ul>
 <hr></p>
 
+<!-- http://nco.sf.net#FAQ -->
 <dt><a name="FAQ"></a></dt>
 <h2>FAQ: Frequently Asked Questions</h2>
 <p>These questions show up almost as frequently as my mother.
@@ -558,6 +567,7 @@ This list is for NCO-related announcements, not for questions.
 </ul>
 <hr></p>
 
+<!-- http://nco.sf.net#NCAR -->
 <dt><a name="NCAR"></a></dt>
 <h2>Using NCO at UCI, NCAR, and other High Performance Computing Centers (HPCCs)</h2>
 <p>Users at UC Irvine, NCAR, and SDSC <i>may</i> find pre-built,
@@ -588,7 +598,8 @@ Users at NCAR should try the <i>supported</i> executables in
 </ul>
 <hr></p>
 
-<dt><a name="Bugs"></a></dt>
+<!-- http://nco.sf.net#bugs -->
+<dt><a name="Bugs"></a><a name="bugs"></a></dt>
 <h2>Common NCO Build/Run Problems</h2>
 
 <ul><b>Generic Build Problems:</b>
@@ -823,12 +834,13 @@ Bug-fixes:
 </ul>
 <p><hr></p>
 
+<!-- http://nco.sf.net#contact -->
 <dt><a name="Contacting Us"></a></dt>
 <h2>Contacting Us:</h2>
 <p>Contact us through one of these forums so other users can benefit
 from and contribute to our exchange.
 Let us know how NCO is working for you&mdash;we'd like to hear.
-Have you browsed the forums to see if your question/comment has been reported before?
+Have you read the <a href="#RTFM">documentation</a> and browsed the forums to see if your question/comment has been reported before?
 <ul>
 <li><i>Where should I ask my questions on how to use NCO?</i>
 On the <a href="http://sf.net/forum/forum.php?forum_id=9830">Help</a> site.
