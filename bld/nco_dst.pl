@@ -1,7 +1,5 @@
-#!/contrib/bin/perl
+#!/usr/bin/perl
 				
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.36 1999-12-14 22:39:30 zender Exp $';
-
 # Purpose: Perform NCO distributions
 
 # Usage:
@@ -21,21 +19,30 @@ my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.36 199
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=1 --cln --nst
 
-use strict; # Protect all namespaces
-use File::Basename; # Parses filenames
+BEGIN{
+    unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
+} # end BEGIN
+
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.37 1999-12-15 00:04:45 zender Exp $';
 
 # Specify modules
+use strict; # Protect all namespaces
 use Getopt::Long; # GNU-style getopt
-require '/home/zender/perl/csz.pl'; # Personal library: date_time(), YYYYMMDD(), ...
+use File::Basename; # For parsing filenames
 
-# Set output flushing to help debugging on hard crashes. 
-# These options update the filehandle after every output statement.
-# See Camel book, p. 110.
-select((select(STDOUT),$|=1)[0]);
-select((select(STDERR),$|=1)[0]);
+# Personal modules
+use DBG; # Debugging constants
+require 'csz.pl'; # Contains date_time()
+
+# Set output flushing to help debugging on hard crashes 
+# These options update the filehandle after every output statement
+select((select(STDOUT),$|=1)[0]); # Camel book, p. 110
+select((select(STDERR),$|=1)[0]); # Camel book, p. 110
 
 # Timing information
-my $lcl_date_time=&time_srt();
+my ($lcl_date_time,$srt_usr_tm,$srt_sys_tm,$srt_child_usr_tm,$srt_child_sys_tm);
+&time_srt($lcl_date_time,$srt_usr_tm,$srt_sys_tm,$srt_child_usr_tm,$srt_child_sys_tm);
+printf STDOUT ("Start user time %f\n",$srt_usr_tm);
 
 # Declare local variables
 my ($idx,$rcd);
@@ -53,9 +60,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $CVS_Date='$Date: 1999-12-14 22:39:30 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.36 1999-12-14 22:39:30 zender Exp $';
-my $CVS_Revision='$Revision: 1.36 $';
+my $CVS_Date='$Date: 1999-12-15 00:04:45 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.37 1999-12-15 00:04:45 zender Exp $';
+my $CVS_Revision='$Revision: 1.37 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -280,7 +287,7 @@ if($blk_cnt){
 } # endif blk_cnt
 
 if($ute_prs){
-    $rmt_mch='ute.ucar.edu';
+    $rmt_mch='utefe.ucar.edu'; # utefe and ute are cross-mounted, utefe is for interactive logins
 #    rsh $rmt_mch 'printf $PVM_ARCH'
     print STDOUT "\n$prg_nm: Updating personal NCO on $rmt_mch...\n";
     &cmd_prc("rsh $rmt_mch \"/bin/rm -r -f /usr/tmp/zender/nco*\"");

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.29 1999-12-14 22:39:31 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.30 1999-12-15 00:04:45 zender Exp $
 
 Purpose: NCO homepage
 
@@ -307,7 +307,7 @@ The NCO executables are maintained in many different locations at NCAR:
 <DD>CGD/SCD Dataproc (IRIX 6.5): /contrib/bin</DD>
 <DD>SCD Blackforest (AIX 4.0): /home/blackforest/zender/bin/AIX</DD>
 <DD>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</DD>
-<DD>SCD Ute (IRIX 6.5): /home/ute/zender/bin/SGIMP64</DD>
+<DD>SCD Ute and Utefe (IRIX 6.5): /home/ute/zender/bin/SGIMP64</DD>
 <br>and at two locations at UCI:
 <DD>ESS dust.ps.uci.edu (Linux 2.2.5): /home/zender/bin/LINUX</DD>
 <DD>ESS krein.math.uci.edu (IRIX 6.5): /home/zender/zender/bin/SGIMP64</DD>
