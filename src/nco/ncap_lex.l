@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.25 2004-07-20 16:42:31 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.26 2004-07-20 20:00:59 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -952,8 +952,6 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
   
 } /* end ncap_ntl_scn() */
 
-
-
 /* scan mask string for ncwa */
 int                          /* O sucess/failure */ 
 ncap_ncwa_scn                /* [fnc] Scan command script, construct I/O lists */
@@ -971,14 +969,11 @@ ncap_ncwa_scn                /* [fnc] Scan command script, construct I/O lists *
   */
 
  bool scv_def=False;
- int icnt=0;
  int op_typ=-1;
  int iret=1;
  char *fnl_sng;
  char *msk_nm_LHS=NULL;
  scv_sct scv_out;
- 
-
   
  int tkn_crr=-1; /* [tkn] Current token, must initialize to non-zero value */
   
@@ -1041,10 +1036,5 @@ ncap_ncwa_scn                /* [fnc] Scan command script, construct I/O lists *
   return iret;
   
 } /* end ncap_ncwa_scn() */
-
-
-
-
-
 
 /* End user functions section */
