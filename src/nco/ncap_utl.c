@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.40 2002-01-29 08:40:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.41 2002-02-02 17:31:27 hmb Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -1115,6 +1115,19 @@ var_lst_copy(nm_id_sct *xtr_lst,int n)
 } /* end var_lst_copy */
 
 nm_id_sct *
+var_lst_free(nm_id_sct *xtr_lst,int n)
+{
+  /* Purpose: free xtr_lst and return null pointer */
+  int i;
+
+  for(i = 0 ; i<n ; i++)
+    nco_free(xtr_lst[i].nm);
+  nco_free(xtr_lst);
+
+  return NULL;
+}
+
+nm_id_sct *
 var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst_b)
 {
   /* Purpose: Subtract from xtr_lst any elements from xtr_lst_b which are present
@@ -1141,6 +1154,7 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
   *nbr_xtr=n;
   return xtr_new_lst;      
 }/* end var_lst_sub */
+
 
 nm_id_sct *
 var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst_a)
@@ -1211,7 +1225,7 @@ ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
     if(rcd == NC_NOERR){
       /* Is this coordinate already on extraction list? */
       for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
-	if(crd_id == xtr_lst[idx_var].id) {
+	if(!strcmp(dmn_nm,xtr_lst[idx_var].nm)) {
 	  if(nbr_new_lst == 0) new_lst=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	  else new_lst=(nm_id_sct *)nco_realloc((void *)new_lst,(nbr_new_lst+1)*sizeof(nm_id_sct));
 	  new_lst[nbr_new_lst].nm=(char *)strdup(dmn_nm);
@@ -1229,7 +1243,7 @@ ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 void 
 ncap_initial_scan
 (prs_sct *prs_arg,char *spt_arg_cat, nm_id_sct** xtr_lst_a,int *nbr_lst_a,
- nm_id_sct** xtr_lst_b,int *nbr_lst_b,nm_id_sct** xtr_lst_c, int *nbr_lst_c)
+ nm_id_sct** xtr_lst_b,int *nbr_lst_b,nm_id_sct** xtr_lst_c, int *nbr_lst_c,nm_id_sct** xtr_lst_d,int *nbr_lst_d)
 {
   /* Purpose: Scan command script and return three lists
      list a: RHS variables present in input file
@@ -1254,6 +1268,8 @@ ncap_initial_scan
   int n_lst_a=0;
   int n_lst_b=0;
   int n_lst_c=0;
+  int n_lst_d=0;
+  int n_lst_t=0;
   int tkn_crr=-1; /* [tkn] Current token, must initialize to non-zero value */
   int var_id;
   int var_idx;
@@ -1261,6 +1277,8 @@ ncap_initial_scan
   nm_id_sct *lst_a=NULL_CEWI;
   nm_id_sct *lst_b=NULL_CEWI;
   nm_id_sct *lst_c=NULL_CEWI;
+  nm_id_sct *lst_d=NULL_CEWI;
+  nm_id_sct *lst_t=NULL_CEWI;  
   
   YYSTYPE lval; /* [tkn] Token */
 
@@ -1325,6 +1343,14 @@ ncap_initial_scan
 	lst_c[n_lst_c++].id=var_id;
       } /* endif LHS attribute's parent variable is in input file  */
       break;
+
+   case LHS_SBS:
+     /* add dimensions defined in LHS subscripts */
+     lst_t = lst_d;n_lst_t = n_lst_t;
+     lst_d = var_lst_add(prs_arg->in_id,lst_d,&n_lst_d,lval.sbs_lst->list,lval.sbs_lst->nbr);          
+     if(n_lst_t >0) (void)var_lst_free(lst_t,n_lst_t);
+         
+   break;
     default: break;
     } /* end switch */
   } /* end while */
@@ -1332,6 +1358,7 @@ ncap_initial_scan
   if(n_lst_a>0){*xtr_lst_a=lst_a;*nbr_lst_a=n_lst_a;}
   if(n_lst_b>0){*xtr_lst_b=lst_b;*nbr_lst_b=n_lst_b;}
   if(n_lst_c>0){*xtr_lst_c=lst_c;*nbr_lst_c=n_lst_c;}
+  if(n_lst_d>0){*xtr_lst_d=lst_d;*nbr_lst_d=n_lst_d;}
   
 } /* end ncap_initial_scan() */
 
