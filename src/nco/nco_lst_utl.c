@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.13 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.14 2003-08-26 14:49:53 hmb Exp $ */
 
 /* Purpose: List utilities */
 
@@ -287,3 +287,30 @@ nco_lst_srt /* [fnc] Sort input list numerically or alphabetically */
   return lst;
 } /* end nco_lst_srt() */
 
+void 
+nco_lst_comma2hash   /* convert  {, } to {# } in regular expressions */
+( char *const sng
+)  
+{
+  char *cp;
+  char *cp_cnvt=NULL;
+  bool openbrace=False;
+
+  cp=sng;
+  
+  while(*cp){
+
+    if (*cp=='{') openbrace=True;
+    if( openbrace && *cp==',') cp_cnvt=cp;
+  
+    if (*cp=='}') { 
+      openbrace=False;
+      if(cp_cnvt) *cp_cnvt='#';
+      openbrace=False;
+      cp_cnvt=NULL;
+    } 
+    cp++;
+  }
+  
+
+}/* end nco_lst_comma2hash() */
