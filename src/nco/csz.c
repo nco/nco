@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.13 1999-01-29 19:24:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.14 1999-04-05 00:37:35 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -699,8 +699,8 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 
 } /* end fl_mk_lcl() */ 
 
-/* indexx() is from Numerical Recipes. It computes an index table which places
-   sorts the input array in ascending order. I have made the arrin argument 
+/* indexx() is from Numerical Recipes. It computes an index table which 
+   sorts the input array into ascending order. I have made the arrin argument 
    and the local variable q integers for netCDF purposes. */ 
 /* NB: Many Numerical Recipes routines, including this one, employ "one-based" arrays */ 
 void indexx(int n,int *arrin,int *indx)
@@ -739,6 +739,43 @@ void indexx(int n,int *arrin,int *indx)
     indx[i]=indxt;
   }
 } /* end indexx() */ 
+
+void index_alpha(int n,char **arrin,int *indx)
+     /* This is indexx() from Numerical recipes hacked to alphabetize a list of strings */
+{
+  int l,j,ir,indxt,i;
+/*  float q;*/
+  char *q;
+  
+  for (j=1;j<=n;j++) indx[j]=j;
+  l=(n >> 1) + 1;
+  ir=n;
+  for (;;) {
+    if (l > 1)
+      q=arrin[(indxt=indx[--l])];
+    else {
+      q=arrin[(indxt=indx[ir])];
+      indx[ir]=indx[1];
+      if (--ir == 1) {
+	indx[1]=indxt;
+	return;
+      }
+    }
+    i=l;
+    j=l << 1;
+    while (j <= ir) {
+      /*      if (j < ir && arrin[indx[j]] < arrin[indx[j+1]]) j++;*/
+      if (j < ir && strcmp(arrin[indx[j]],arrin[indx[j+1]]) < 0) j++;
+      /*      if (q < arrin[indx[j]]) {*/
+      if (strcmp(q,arrin[indx[j]]) < 0) {
+	indx[i]=indx[j];
+	j += (i=j);
+      }
+      else j=ir+1;
+    }
+    indx[i]=indxt;
+  }
+} /* end index_alpha() */ 
 
 char *
 cvs_vrs_prs()

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.18 1999-01-29 22:11:46 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.19 1999-04-05 00:37:35 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -48,12 +48,12 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.1.21
-@set doc-edition 1.1.21
+@set nco-edition 1.1.23
+@set doc-edition 1.1.23
 @set copyright-years 1995, 1996, 1997, 1998, 1999
 @set update-year 1999
-@set update-date 23 January 1999
-@set update-month January 1999
+@set update-date 4 April 1999
+@set update-month April 1999
 
 @c Experiment with smaller amounts of whitespace between chapters and sections.
 @tex
@@ -309,7 +309,7 @@ The complete NCO source distribution is currently distributed as a
 <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz"> ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz</a>.
 @end ifhtml
 @ifclear html
-@code{ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz}.
+@code{ftp://ftp.cgd.ucar.edu/@-pub/@-zender/@-nco/@-nco.@-tar.@-gz}.
 @end ifclear
 The compressed tarfile must be uncompressed and untarred before building
 NCO.
@@ -505,8 +505,8 @@ installed, it is possible an NCO operator will fail with a message that
 it cannot find a dynamically loaded (aka @dfn{shared object} or
 @samp{.so}) library. 
 This usually produces a distinctive error message, such as
-@samp{ld.so.1: /usr/local/bin/ncea: fatal: libsunmath.so.1: can't
-open file: errno=2}.   
+@samp{ld.so.1:@- /usr/local/bin/ncea:@- fatal:@- libsunmath.@-so.1:@- can't
+open@- file:@- errno@-=2}.   
 If you received an error message like this, ask your system 
 administrator to diagnose whether the library is truly missing
 @footnote{The @code{ldd} command, if it is available on your system,
@@ -726,7 +726,7 @@ the results of the operation in the existing @var{output-file}.
 @xref{ncks netCDF Kitchen Sink} for more information.
 
 @node Averaging vs. Concatenating, Large numbers of input files, Appending, Strategies
-@section Differences between averagers and concatenators
+@section Averagers vs. Concatenators
 
 The most frequently used operators of NCO are probably the averagers and
 concatenators.
@@ -1731,7 +1731,7 @@ The CSM netCDF convention is described at
 @end ifhtml
 @ifclear html
 @c DBG XXX: printed manual is not hyphenating this long web-page name.
-@code{http://www.cgd.ucar.edu/csm/experiments/output.format.html}.
+@code{http://@-www.cgd.ucar.edu/@-csm/@-experiments/@-output.@-format.@-html}.
 @end ifclear
 Most of the CSM netCDF convention is transparent to NCO
 @footnote{
@@ -2542,7 +2542,8 @@ identical (within machine precision) to @file{85.nc}.
 @noindent
 SYNTAX
 @example
-ncks [-A] [-C] [-c] [-D] [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]]
+ncks [-A] [-a] [-C] [-c] [-D] 
+[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]]
 [-F] [-H] [-h] [-l @var{path}] [-M] [-m] [-O] [-p @var{path}] [-R] 
 [-r] [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-x]
 @var{input-file} [@var{output-file}] 
@@ -2566,8 +2567,8 @@ dimension subscripts and coordinate values (if any) preceding the datum.
 Option @samp{-s} allows the user the format the data using C-style
 format strings.
 
-Options @samp{-M}, @samp{-m}, @samp{-H}, @samp{-F}, @samp{-s}, and @samp{-u}
-control the formatted appearance of the data. 
+Options @samp{-a}, @samp{-M}, @samp{-m}, @samp{-H}, @samp{-F}, @samp{-s},
+and @samp{-u} control the formatted appearance of the data. 
 
 @cindex global attributes
 @cindex attributes, global
@@ -2662,6 +2663,18 @@ Features common to many operators are described in
 
 @table @samp
 
+@cindex alphabetize output
+@cindex sort alphabetically
+@cindex @code{-a}
+@item -a 
+Alphabetize extracted fields. 
+By default, the specified output variables are extracted in the order in
+which they are saved in the input file.
+Specifying @code{-a} results in the variables being extracted
+alphabetically. 
+This option makes long output lists easier to search for particular
+variables. 
+
 @cindex stride
 @item -d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]
 Add @dfn{stride} argument to hyperslabber. 
@@ -2740,7 +2753,8 @@ two variables @code{time} and @code{pressure}.
 
 Create netCDF @file{out.nc} containing all variables from file @file{in.nc}. 
 Restrict the dimensions of these variables to a hyperslab. 
-Print the hyperslabs to the screen for good measure. 
+Alphabetize (with @code{-a}) and print (with @code{-H}) the hyperslabs
+to the screen for good measure.  
 The specified hyperslab is: the fifth value in dimension @code{time}; the
 half-open range @math{@var{lat} > 0.} in coordinate @code{lat}; the
 half-open range @math{@var{lon} < 330.} in coordinate @code{lon}; the
@@ -2750,7 +2764,7 @@ Note that limits applied to coordinate values are specified with a
 decimal point, and limits applied to dimension indices do not have a
 decimal point (@xref{Hyperslabs}): 
 @example
-ncks -d time,5 -d lat,,0. -d lon,330., -d band,.3,.5 
+ncks -a -H -d time,5 -d lat,,0. -d lon,330., -d band,.3,.5 
 -d lev,1000. in.nc out.nc 
 @end example
 
@@ -3342,7 +3356,8 @@ The sum of the Gaussian weights is 2.0.
 
 Compute the area average over the tropical Pacific:
 @example
-ncwa -w gw -a lat,lon -d lat,-20.,20. -d lon,120.,270. in.nc out.nc
+ncwa -w gw -a lat,lon -d lat,-20.,20. -d lon,120.,270. 
+in.nc out.nc
 @end example
 @noindent
 Here the tally is 
@@ -3387,8 +3402,8 @@ $0.70 \times 8192 \approx 5734$.
 
 Compute the global annual average over the maritime tropical Pacific:
 @example
-ncwa -m ORO -M 0.5 -o lt -w gw -a lat,lon,time -d lat,-20.,20. 
--d lon,120.,270. in.nc out.nc
+ncwa -m ORO -M 0.5 -o lt -w gw -a lat,lon,time 
+-d lat,-20.,20. -d lon,120.,270. in.nc out.nc
 @end example
 
 @c @ignore

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.4 1998-11-26 04:51:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.5 1999-04-05 00:37:36 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -46,6 +46,7 @@ main(int argc,char **argv)
   void prn_var_def(int,char *);
   void prn_var_val_lim(int,char *,lim_sct *,int,char *,bool,bool);
    
+  bool ALPHABETIZE_OUTPUT=False; /* Option a */ 
   bool EXCLUDE_INPUT_LIST=False; /* Option c */ 
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FORCE_APPEND=False; /* Option A */ 
@@ -73,8 +74,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncks.c,v 1.4 1998-11-26 04:51:39 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.4 $";
+  char rcs_Id[]="$Id: ncks.c,v 1.5 1999-04-05 00:37:36 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.5 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -116,9 +117,12 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="ACcD:d:FHhl:MmOp:rRs:uv:x";
+  opt_sng="aACcD:d:FHhl:MmOp:rRs:uv:x";
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
     switch(opt){
+    case 'a': /* Toggle ALPHABETIZE_OUTPUT */
+      ALPHABETIZE_OUTPUT=!ALPHABETIZE_OUTPUT;
+      break;
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
@@ -218,7 +222,7 @@ main(int argc,char **argv)
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
   /* Finally, heapsort the extraction list by variable ID for fastest I/O */ 
-  if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr);
+  if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,ALPHABETIZE_OUTPUT);
     
   /* We now have the final list of variables to extract. Phew. */
   

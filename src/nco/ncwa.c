@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.14 1999-02-26 01:52:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.15 1999-04-05 00:37:36 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -75,8 +75,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncwa.c,v 1.14 1999-02-26 01:52:11 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.14 $";
+  char rcs_Id[]="$Id: ncwa.c,v 1.15 1999-04-05 00:37:36 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.15 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -293,7 +293,7 @@ main(int argc,char **argv)
   if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dim_id,xtr_lst,&nbr_xtr);
 
   /* Finally, heapsort the extraction list by variable ID for fastest I/O */ 
-  if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr);
+  if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
     
   /* Find the coordinate/dimension values associated with the limits */ 
   for(idx=0;idx<nbr_lim;idx++){

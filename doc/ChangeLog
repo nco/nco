@@ -1,3 +1,11 @@
+1999-04-04  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Tagged and released this as nco1_1_22
+
+	* Added -a swicht to ncks for alphabetizing the output list.
+	Added index_alpha() and changed lst_heapsort() to accept an
+	boolean switch argument to accomplish this.
+
 1999-02-25  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Added partial diagnostic message and workaround for TODO #116

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.7 1999-01-29 19:24:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.8 1999-04-05 00:37:36 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -80,8 +80,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncdiff.c,v 1.7 1999-01-29 19:24:07 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.7 $";
+  char rcs_Id[]="$Id: ncdiff.c,v 1.8 1999-04-05 00:37:36 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.8 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -234,7 +234,7 @@ main(int argc,char **argv)
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
   /* Finally, heapsort the extraction list by variable ID for fastest I/O */ 
-  if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr);
+  if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
     
   /* We now have the final list of variables to extract. Phew. */
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.18 1999-02-24 01:44:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.19 1999-04-05 00:37:36 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -1226,39 +1226,46 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 } /* end var_lst_ass_crd_add() */ 
 
 nm_id_sct *
-lst_heapsort(nm_id_sct *lst,int nbr_lst)
+lst_heapsort(nm_id_sct *lst,int nbr_lst,bool ALPHABETIZE_OUTPUT)
      /* 
-   nm_id_sct *lst: current list (destroyed)
-   int nbr_lst: input number of members in list
-   nm_id_sct lst_heapsort(): output list
- */ 
+	nm_id_sct *lst: current list (destroyed)
+	int nbr_lst: input number of members in list
+	bool ALPHABETIZE_OUTPUT): whether to alphabetize extraction list
+	nm_id_sct lst_heapsort(): output list
+     */ 
 {
-  /* Heapsort the list by ID for fastest I/O */ 
-
-  int *srt_idx;
-  int *xtr_id;
-  int idx;
+  int *srt_idx; /* List to store sorted key map */
+  int idx; /* Counting index */
+  nm_id_sct *lst_tmp; /* Temporary copy of original extraction list */
   
-  nm_id_sct *lst_tmp;
-  
-  xtr_id=(int *)malloc(nbr_lst*sizeof(int));
   srt_idx=(int *)malloc(nbr_lst*sizeof(int));
   lst_tmp=(nm_id_sct *)malloc(nbr_lst*sizeof(nm_id_sct));
   (void)memcpy((void *)lst_tmp,(void *)lst,nbr_lst*sizeof(nm_id_sct));
   
-  for(idx=0;idx<nbr_lst;idx++){
-    xtr_id[idx]=lst[idx].id;
-  } /* end loop over idx */
-  /* NB: Many Numerical Recipes routines, including this one, employ "one-based" arrays */ 
-  (void)indexx(nbr_lst,xtr_id-1,srt_idx-1);
+  /* NB: indexx employs "one-based" arrays */ 
+  if(ALPHABETIZE_OUTPUT){
+    /* Alphabetize list by variable name. Easiest to read */ 
+    char **xtr_nm;
+    xtr_nm=(char **)malloc(nbr_lst*sizeof(char *));
+    for(idx=0;idx<nbr_lst;idx++) xtr_nm[idx]=lst[idx].nm;
+    (void)index_alpha(nbr_lst,xtr_nm-1,srt_idx-1);
+    (void)free(xtr_nm);
+  }else{
+    /* Heapsort the list by ID. Fastest I/O */ 
+    int *xtr_id;
+    xtr_id=(int *)malloc(nbr_lst*sizeof(int));
+    for(idx=0;idx<nbr_lst;idx++) xtr_id[idx]=lst[idx].id;
+    (void)indexx(nbr_lst,xtr_id-1,srt_idx-1);
+    (void)free(xtr_id);
+  } /* end else */
+
+  /* NB: indexx employs "one-based" arrays */ 
   for(idx=0;idx<nbr_lst;idx++){
     lst[idx].id=lst_tmp[srt_idx[idx]-1].id;
     lst[idx].nm=lst_tmp[srt_idx[idx]-1].nm;
   } /* end loop over idx */
-  
   (void)free(lst_tmp);
   (void)free(srt_idx);
-  (void)free(xtr_id);
   
   return lst;
   
@@ -4270,7 +4277,7 @@ usg_prn(void)
     opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-m mask] [-M val] [-o op_type] [-O] [-p path] [-R] [-r] [-v ...] [-w wgt] [-x] in.nc out.nc\n");
     break;
   case ncks:
-    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-O] [-p path] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-A] [-a] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-O] [-p path] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [out.nc]\n");
     break;
   case ncatted:
     opt_sng=(char *)strdup("[-a ...] [-D dbg_lvl] [-h] [-l path] [-O] [-p path] [-R] [-r] in.nc [out.nc]\n");
@@ -4290,6 +4297,7 @@ usg_prn(void)
   if(strstr(opt_sng,"-a")){
     if(prg == ncrename) (void)fprintf(stdout,"-a old_att,new_att Attribute's old and new names\n");
     if(prg == ncwa) (void)fprintf(stdout,"-a avg_dim1[,avg_dim2[...]] Averaging dimensions\n");
+    if(prg == ncks) (void)fprintf(stdout,"-a\t\tAlphabetize extracted variables\n");
     if(prg == ncatted) (void)fprintf(stdout,"-a att_nm,var_nm,mode,att_type,att_val Attribute specification:\n\t\tmode = a,c,d,m,o and att_type = f,d,l,s,c,b\n");
   } /* end if */
   if(strstr(opt_sng,"-c")) (void)fprintf(stdout,"-c\t\tCoordinate variables will all be processed\n");

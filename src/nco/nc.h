@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.7 1999-01-29 19:24:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.8 1999-04-05 00:37:35 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -301,7 +301,7 @@ extern lim_sct lim_dim_mk(int,int,lim_sct *,int,bool);
 extern nclong arm_base_time_get(int);
 extern nm_id_sct *dim_lst_ass_var(int,nm_id_sct *,int,int *);
 extern nm_id_sct *dim_lst_mk(int,char **,int);
-extern nm_id_sct *lst_heapsort(nm_id_sct *,int);
+extern nm_id_sct *lst_heapsort(nm_id_sct *,int,bool);
 extern nm_id_sct *var_lst_add_crd(int,int,int,nm_id_sct *,int *);
 extern nm_id_sct *var_lst_ass_crd_add(int,nm_id_sct *,int *);
 extern nm_id_sct *var_lst_crd_xcl(int,int,nm_id_sct *,int *);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.4 1999-02-24 04:58:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.5 1999-04-05 00:37:36 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -79,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncap.c,v 1.4 1999-02-24 04:58:13 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.4 $";
+  char rcs_Id[]="$Id: ncap.c,v 1.5 1999-04-05 00:37:36 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.5 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -292,7 +292,7 @@ main(int argc,char **argv)
   if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dim_id,xtr_lst,&nbr_xtr);
 
   /* Finally, heapsort the extraction list by variable ID for fastest I/O */ 
-  if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr);
+  if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
     
   /* We now have the final list of variables to extract. Phew. */
   /* Not! */ 
