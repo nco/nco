@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.48 1999-12-14 22:39:29 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.49 1999-12-15 00:33:34 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -209,6 +209,7 @@ ifeq ($(OPTS),D)
  FFLAGS += -g
 endif
 endif
+# endif ALPHA
 
 ifeq ($(PVM_ARCH),CRAY)
 C++ := g++
@@ -246,6 +247,7 @@ $(MY_OBJ_DIR)/%.o : %.f
 	$(FC) -c $(FFLAGS) $<
 	mv -f $(notdir $@) $(MY_OBJ_DIR)
 endif
+# endif CRAY
 
 ifeq ($(PVM_ARCH),LINUX)
 C++ := g++
@@ -307,6 +309,7 @@ ifeq ($(OPTS),X)
 endif
 endif
 endif
+# endif LINUX
 
 ifeq ($(PVM_ARCH),RS6K)
 C++ := g++
@@ -340,66 +343,9 @@ $(MY_OBJ_DIR)/%.o : %.F
 $(MY_OBJ_DIR)/%.o : %.f
 	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
 endif
+# endif RS6K
 
-ifeq ($(PVM_ARCH),SGI5)
-C++ := g++
-CC := gcc -ansi
-CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
-FC := f77
-LD := ld
-LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS += -lF77 -lI77 -lU77 -lftn
-endif
-LEX := lex
-LINT := lint
-YACC := yacc
-ifeq ($(OPTS),O)
- CFLAGS += -O2
- FFLAGS := -O2 -e -Nl99 -extend_source
-endif
-ifeq ($(OPTS),D)
- CFLAGS += -g
- FFLAGS := -g -e -Nl99 -extend_source
-endif
-endif
-
-ifeq ($(PVM_ARCH),SGI64)
-C++ := c++
-CC := cc
-CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
-FC := f77
-LD := ld
-LDFLAGS += -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS +=
-endif
-LEX := flex
-LINT := lint
-YACC := bison
-ifeq ($(OPTS),O)
- CFLAGS += -64 -mips4 -O2
- FFLAGS := -64 -mips4 -O2 -extend_source
-endif
-ifeq ($(OPTS),R)
- CFLAGS += -64 -mips4
- FFLAGS := -64 -mips4 -extend_source
-endif
-ifeq ($(OPTS),D)
- CFLAGS += -64 -mips4 -g
- FFLAGS := -64 -mips4 -g -extend_source
-endif
-ifeq ($(OPTS),X)
- CFLAGS += -64 -mips4 -g -trapuv
- FFLAGS := -64 -mips4 -g -extend_source -check_bounds -trapuv
-# 1998/08/20: Using range checking results in unresolved symbol errors unless linking to this library
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS += -L/usr/lib64 -lftn
-endif
-endif
-endif
-
-ifeq ($(PVM_ARCH),SGIMP64)
+if ($(findstring SGI,$(PVM_ARCH))
 C++ := c++
 CC := cc
 # spoof SGI64
@@ -434,6 +380,7 @@ ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 endif
 endif
 endif
+# endif SGI5, SGI64, SGIMP64
 
 ifeq ($(PVM_ARCH),SUN4)
 C++ := g++
@@ -458,6 +405,7 @@ ifeq ($(OPTS),D)
  FFLAGS := -g -e -Nl99
 endif
 endif
+# endif SUN4
 
 ifeq ($(PVM_ARCH),SUN4SOL2)
 C++ := g++
@@ -490,6 +438,7 @@ ifeq ($(FC),f77)
 endif
 endif
 endif
+# endif SUN4SOL2
 
 ifeq ($(PVM_ARCH),SUNMP)
 C++ := g++
@@ -523,6 +472,7 @@ ifeq ($(FC),f77)
 endif
 endif
 endif
+# endif SUNMP
 
 ifeq ($(PVM_ARCH),WIN32)
 C++ := g++
@@ -549,6 +499,7 @@ $(MY_OBJ_DIR)/%.o : %.F
 $(MY_OBJ_DIR)/%.o : %.f
 	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
 endif
+# endif WIN32
 
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  CPPFLAGS += -DUSE_FORTRAN_ARITHMETIC
