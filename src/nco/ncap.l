@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.43 2002-05-06 02:17:56 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.44 2002-05-12 00:24:15 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -360,7 +360,7 @@ unpack/[ ]*\( {return UNPACK;}
 } /* End scalar values. Phew! */
 
 [A-Za-z_][A-Za-z0-9_]*/\[ {
-  /* Recognize variables with subscript */
+  /* Recognize variables with subscripts */
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable with subscripts%s\n",yytext);
   if(RHS){
     lval_ptr->var_nm_RHS=strdup(yytext);
@@ -437,10 +437,10 @@ unpack/[ ]*\( {return UNPACK;}
     dmn_lst[idx].nm=sbs_lst[idx];
     dmn_lst[idx].id=dmn_id;
 
-    /* make another list without any double entries */
-    for(jdx = 0; jdx < out_nbr  ; jdx++)
+    /* Make another list without any double entries */
+    for(jdx=0;jdx<out_nbr;jdx++)
       if(!strcmp(dmn_lst[idx].nm,out_lst[jdx].nm)) break;
-    if (jdx == 0 || jdx == out_nbr ) out_lst[out_nbr++]=dmn_lst[idx];
+    if(jdx == 0 || jdx == out_nbr) out_lst[out_nbr++]=dmn_lst[idx];
   } /* end loop over dimensions */
   
   /* Build subscript list only once, during initial scan */
@@ -574,7 +574,7 @@ unpack/[ ]*\( {return UNPACK;}
 /* Begin user subroutines section */
 
 bool
-yywrap()
+yywrap(void)
 {
   /* Purpose: Routine to replace library-defined yywrap() 
      yywrap() is called when YY_INPUT returns EOF
@@ -583,5 +583,139 @@ yywrap()
      been redirected to new source, e.g., yyin points to new file. */
  return 1;
 } /* end yywrap() */
+
+void 
+ncap_initial_scan
+(prs_sct *prs_arg,
+ char *spt_arg_cat,
+ nm_id_sct** xtr_lst_a,
+ int *nbr_lst_a,
+ nm_id_sct** xtr_lst_b,
+ int *nbr_lst_b,
+ nm_id_sct** xtr_lst_c,
+ int *nbr_lst_c,
+ nm_id_sct** xtr_lst_d,
+ int *nbr_lst_d)
+{
+  /* Purpose: Scan command script and return three lists
+     Routine used to be called from ncap_utl:ncap_initial_scan() 
+     but would only compile with gcc, not g++ */
+
+     list a: RHS variables present in input file
+     list b: LHS variables present in input file
+     list c: Variables of attributes on LHS which are present in input file
+     list d: */
+  
+  /* Get YYSTYPE prior to calling scanner
+     20020510: g++ complains that since YYSTYPE is defined in ncap.tab.h,
+     it is an error to call an external function (yylex) that uses this type */
+#include "ncap.tab.h" /* ncap.tab.h is produced from ncap.y by parser generator */
+
+  extern FILE *yyin; /* [fnc] File handle for script file */
+  extern int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg); /* [fnc] Scanner entrypoint */
+  
+/* Following declaration gets rid of implicit declaration compiler warning
+   It is a condensation of the lexer declaration from lex.yy.c:
+   YY_BUFFER_STATE yy_scan_string YY_PROTO(( yyconst char *yy_str )); */
+  extern int yy_scan_string(const char *);
+
+  bool match;
+  
+  char *var_nm;  
+
+  int n_lst_a=0;
+  int n_lst_b=0;
+  int n_lst_c=0;
+  int n_lst_d=0;
+  int n_lst_t=0;
+  int tkn_crr=-1; /* [tkn] Current token, must initialize to non-zero value */
+  int var_id;
+  int var_idx;
+
+  nm_id_sct *lst_a=NULL_CEWI;
+  nm_id_sct *lst_b=NULL_CEWI;
+  nm_id_sct *lst_c=NULL_CEWI;
+  nm_id_sct *lst_d=NULL_CEWI;
+  nm_id_sct *lst_t=NULL_CEWI;  
+  
+  YYSTYPE lval; /* [tkn] Token */
+
+  if(spt_arg_cat){
+    yy_scan_string(spt_arg_cat);
+  }else{
+    /* Open script file for reading */
+    if((yyin=fopen(prs_arg->fl_spt,"r")) == NULL){
+      (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),prs_arg->fl_spt);
+      nco_exit(EXIT_FAILURE);
+    } /* endif error */
+  } /* endif input from script */
+  
+  /* While there are more tokens... */
+  while(tkn_crr != 0){
+    /* ...obtain next token from lexer... */
+    tkn_crr=yylex(&lval,prs_arg);
+    /* ...determine which variables and attributes exist in input file... */
+    switch (tkn_crr){
+    case IGNORE: break; /* Do nothing  */
+    case SCV: break; /* Do nothing  */
+    case EPROVOKE: break; /* Do nothing */
+    case VAR: 
+      /* Search for RHS variables in input file */
+      var_nm=lval.var_nm_RHS;
+      if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
+	match=False;
+	for(var_idx=0;var_idx<n_lst_a;var_idx++)
+	  if(!strcmp(lst_a[var_idx].nm,var_nm)){match=True; break;}
+	if(match) break;
+	if(n_lst_a==0) lst_a=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
+	else lst_a=(nm_id_sct *)nco_realloc(lst_a,((n_lst_a+1)*sizeof(nm_id_sct)));
+	lst_a[n_lst_a].nm=strdup(var_nm);
+	lst_a[n_lst_a++].id=var_id;
+      } /* endif RHS variable is in input file */
+      break; 
+    case OUT_VAR: 
+      /* Search for LHS variables in input file */
+      var_nm=lval.var_nm_LHS;
+      if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
+	match=False;
+	for(var_idx=0;var_idx<n_lst_b;var_idx++)
+	  if(!strcmp(lst_b[var_idx].nm,var_nm)){match=True; break;}
+	if(match) break;
+	if(n_lst_b == 0) lst_b=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
+	else lst_b=(nm_id_sct *)nco_realloc(lst_b,((n_lst_b+1)*sizeof(nm_id_sct)));
+	lst_b[n_lst_b].nm=strdup(var_nm);
+	lst_b[n_lst_b++].id=var_id;
+      } /* endif LHS variable is in input file */
+      break;
+    case OUT_ATT:
+      /* Search for LHS attribute's parent variable in input file */
+      var_nm=lval.aed.var_nm;     
+      if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
+	match=False;
+	for(var_idx=0;var_idx<n_lst_c;var_idx++)
+	  if(!strcmp(lst_c[var_idx].nm,var_nm)){match=True; break;}
+	if(match) break;
+	if(n_lst_c == 0) lst_c=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
+	else lst_c=(nm_id_sct *)nco_realloc(lst_c,((n_lst_c+1)*sizeof(nm_id_sct)));
+	lst_c[n_lst_c].nm=strdup(var_nm);
+	lst_c[n_lst_c++].id=var_id;
+      } /* endif LHS attribute's parent variable is in input file  */
+      break;
+   case LHS_SBS:
+     /* Add dimensions defined in LHS subscripts */
+     lst_t=lst_d;n_lst_t=n_lst_t;
+     lst_d=var_lst_add(prs_arg->in_id,lst_d,&n_lst_d,lval.sbs_lst->list,lval.sbs_lst->nbr);          
+     if(n_lst_t >0) (void)var_lst_free(lst_t,n_lst_t);
+   break;
+    default: break;
+    } /* end switch */
+  } /* end while */
+  
+  if(n_lst_a>0){*xtr_lst_a=lst_a;*nbr_lst_a=n_lst_a;}
+  if(n_lst_b>0){*xtr_lst_b=lst_b;*nbr_lst_b=n_lst_b;}
+  if(n_lst_c>0){*xtr_lst_c=lst_c;*nbr_lst_c=n_lst_c;}
+  if(n_lst_d>0){*xtr_lst_d=lst_d;*nbr_lst_d=n_lst_d;}
+  
+} /* end ncap_initial_scan() */
 
 /* End user subroutines section */

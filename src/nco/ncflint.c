@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.38 2002-05-06 03:39:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.39 2002-05-12 00:24:16 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -56,9 +56,6 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
-/* #include <assert.h> */ /* assert() debugging macro */
-/* #include <errno.h> */ /* errno */
-/* #include <malloc.h> */ /* malloc() stuff */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -103,8 +100,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.38 2002-05-06 03:39:55 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.38 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.39 2002-05-12 00:24:16 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.39 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.65 2002-05-07 08:56:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.66 2002-05-12 00:24:16 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -31,9 +31,6 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
-/* #include <assert.h> */ /* assert() debugging macro */
-/* #include <errno.h> */ /* errno */
-/* #include <malloc.h> */ /* malloc() stuff */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -82,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.65 2002-05-07 08:56:16 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.65 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.66 2002-05-12 00:24:16 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.66 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -307,7 +304,7 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(const dmn_sct * const * const)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
   fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
@@ -322,7 +319,7 @@ main(int argc,char **argv)
   (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
   /* Define variables in output file, and copy their attributes */
-  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
+  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,NULL,0);
 
   /* Turn off default filling behavior to enhance efficiency */
   (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);

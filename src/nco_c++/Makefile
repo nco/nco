@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile,v 1.6 2002-02-12 07:33:33 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile,v 1.7 2002-05-12 00:24:16 zender Exp $
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -336,13 +336,19 @@ endif
 
 # Works on LINUX and LINUXALPHA and FREEBSD
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
-C++ ?= g++
-CC ?= gcc -ansi
+#C++ ?= g++
+C++ := icc
+#C++ := insure
+#CC := gcc -ansi
+CC := icc
+#CC := insure
 CPP := ${C++}
 # HAVE_INLINE is GNU standard to activate inline functions (used by GSL)
 CPPFLAGS += ${CPP_TKN} -DHAVE_INLINE ${CPP_PTH} -I${NETCDF_INC} 
 ifeq (${PVM_ARCH},LINUX)
  FC := pgf90
+# FC := lf95
+# FC := ifc
 else # LINUXALPHA
  FC := g77
 endif

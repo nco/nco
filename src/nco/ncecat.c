@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.37 2002-05-06 03:39:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.38 2002-05-12 00:24:16 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -49,9 +49,6 @@
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
 #include <unistd.h>             /* POSIX stuff */
-/* #include <assert.h> */           /* assert() debugging macro */
-/* #include <errno.h> */            /* errno */
-/* #include <malloc.h>    */        /* malloc() stuff */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
@@ -84,8 +81,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.37 2002-05-06 03:39:55 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.37 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.38 2002-05-12 00:24:16 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.38 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;

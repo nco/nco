@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.51 2002-04-27 17:04:07 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.52 2002-05-12 00:24:15 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -96,14 +96,14 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 /* Define YYSTYPE union (type of lex variable yylval value)
    This specifies all possible data types for semantic values */
 %union{
-  char *sng;
-  char *var_nm_LHS;
-  char *var_nm_RHS;
-  aed_sct aed;
-  sym_sct *sym;
-  scv_sct scv;
-  var_sct *var;
-  nm_lst_sct *sbs_lst;
+  char *sng; /* [sng] String value */
+  char *var_nm_LHS; /* [sng] Variables on LHS */
+  char *var_nm_RHS; /* [sng] Variables on RHS */
+  aed_sct aed; /* [sct] Attribute */
+  sym_sct *sym; /* [sct] Intrinsic function name */
+  scv_sct scv; /* [sct] Scalar value */
+  var_sct *var; /* [sct] Variable */
+  nm_lst_sct *sbs_lst; /* [sct] LHS subscripts */
 } /* end YYSTYPE union (type of yylval value) */
 
 /* Tell parser which kind of values each token takes

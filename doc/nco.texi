@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.93 2002-03-29 02:00:13 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.94 2002-05-12 00:24:15 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -3661,7 +3661,7 @@ ncatted -O -a units,prs_sfc,o,c,millibar out.nc
 @noindent
 SYNTAX
 @example
-ncks [-A] [-a] [-C] [-c] [-D @var{dbg}] 
+ncks [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]]
 [-F] [-H] [-h] [-l @var{path}] [-M] [-m] [-O] [-p @var{path}] [-q]
 [-R] [-r] [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-x]
@@ -3675,8 +3675,9 @@ DESCRIPTION
 @command{ncextr}, and the nccut and ncpaste specifications into one
 versatile utility. 
 @command{ncks} extracts a subset of the data from @var{input-file} and
-either prints it as @acronym{ASCII} text to stdout, or writes (or pastes) it to
-@var{output-file}, or both. 
+prints it as @acronym{ASCII} text to @file{stdout}, writes it in
+flat binary format to @file{binary-file}, and writes (or pastes) it in
+netCDF format to @var{output-file}.
 
 @command{ncks} will print netCDF data in @acronym{ASCII} format to @code{stdout},
 like @command{ncdump}, but with these differences: 
@@ -3796,6 +3797,11 @@ Specifying @code{-a} results in the variables being extracted, printed,
 and written to disk in the order in which they were saved in the input
 file.
 Thus @code{-a} retains the original ordering of the variables.
+
+@cindex binary format
+@cindex @code{-b}
+@item -b 
+
 
 @cindex stride
 @item -d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]
