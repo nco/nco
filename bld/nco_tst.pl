@@ -689,9 +689,13 @@ if (scalar @ARGV > 0)
   die "$MY_BIN_DIR/$operators[0] doesn't exist\n" unless (-e "$MY_BIN_DIR/$operators[0]");
   
   # create symbolic links for testing
-  $sym_link{ncdiff}="ncbo";
-	$sym_link{ncea}="ncra";
-	$sym_link{ncrcat}="ncra";
+	# if shared libraries were created, then the real executables are
+	# in src/nco/.libs, so point to them instead
+	my $dotlib = "";
+	$dotlib = ".libs/lt-" if `head -1 $MY_BIN_DIR/ncatted` =~ m/sh/;
+  $sym_link{ncdiff}=$dotlib . "ncbo";
+	$sym_link{ncea}=$dotlib . "ncra";
+	$sym_link{ncrcat}=$dotlib . "ncra";
 	foreach(keys %sym_link) {
 	  system("cd $MY_BIN_DIR && ln -s -f $sym_link{$_} $_ || (rm -f $_ && ln -s -f $sym_link{$_} $_)");
 	}
