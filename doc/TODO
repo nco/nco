@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.428 2004-09-18 23:24:30 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.429 2004-09-20 05:29:46 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -272,7 +272,7 @@ nco464. ncpdq: convert missing_value to packed type
         ncks -C -m -H ~/foo_upk.nc
 nco465. Create UCI IP-compliant license/copyright notice for version 3.0+
 nco466. Change ncks -H -M -m switches to toggles?
-nco467. 
+nco467. Keep track of CDO "Climate Data Operators" http://www.mpimet.mpg.de/~cdo/
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
