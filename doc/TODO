@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.299 2004-05-07 01:16:00 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.300 2004-05-13 18:04:17 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -228,7 +228,8 @@ ncap46. Define YYMALLOC/FREE/REALLOC etc so lexer/parser use nco_malloc() etc.
 ncap48. Search ncap_yacc.y for non-symmetric arithmetic operations, implement symmetric operations
 ncap49. Cause "**" in arithmetic context to cause error, print HINT to Fortran syntax users
 ncap52. Combine pow() with ^ parsing in parser ncap_yacc.y 
-ncap53. 
+ncap53. Bug in ncap pack() on Alpha/Tru64: ncap -O -D 10 -s 'hsig=pack(hsig)' foo.nc foo2.nc  details on sourceforge
+ncap54. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
