@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.138 2002-04-27 06:23:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.139 2002-05-02 06:56:41 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -213,6 +213,7 @@ ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
 223. texi2dvi nco.texi works on old RHL not on RHL 7.2
 224. Copy var_nm from command line so program, not system, owns memory. Then modify var_free() to release var_nm structure member
+225. Pass aed by reference in aed_prc()
 ************************************************************************
 End NCO Wish list
 ************************************************************************

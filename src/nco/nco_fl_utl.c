@@ -1,3 +1,13 @@
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.2 2002-05-02 06:56:41 zender Exp $ */
+
+/* Purpose: File manipulation */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_fl_utl.h" /* File manipulation */
+
 char *
 fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,char **fl_lst_abb,char *fl_pth)
 /* 
@@ -10,9 +20,9 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
    char *fl_nm_prs: O name of file to retrieve
  */
 {
-  /* Routine to construct a file name from various input arguments and switches.
-     This routine implements the NINTAP-style specification by using static
-     memory to avoid repetition in the construction of the filename */
+  /* Purpose: Construct file name from various input arguments and switches.
+     Routine implements NINTAP-style specification by using static
+     memory to avoid repetition in construction of filename */
 
   static short FIRST_INVOCATION=1;
 
@@ -858,4 +868,3 @@ fl_rm(char *fl_nm)
 
   rm_cmd=nco_free(rm_cmd);
 } /* end fl_rm() */
-

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.125 2002-05-02 06:19:32 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.126 2002-05-02 06:56:40 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -807,37 +807,37 @@ obj_dir:
 # Targets in bin
 .PHONY:  ncra ncatted ncks ncwa ncecat ncdiff ncflint ncrename
 ncra:   ${MY_BIN_DIR}/ncra
-${MY_BIN_DIR}/ncra:	${MY_OBJ_DIR}/ncra.o $(libnco).a
+${MY_BIN_DIR}/ncra:	${MY_OBJ_DIR}/ncra.o ${libnco}.a
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 	cd ${MY_BIN_DIR}; rm -f ncea; ln -f -s ncra ncea
 	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -f -s ncra ncrcat
 ncatted:   ${MY_BIN_DIR}/ncatted
-${MY_BIN_DIR}/ncatted:	${MY_OBJ_DIR}/ncatted.o $(libnco).a
+${MY_BIN_DIR}/ncatted:	${MY_OBJ_DIR}/ncatted.o ${libnco}.a
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncks:   ${MY_BIN_DIR}/ncks
-${MY_BIN_DIR}/ncks:	${MY_OBJ_DIR}/ncks.o $(libnco).a
+${MY_BIN_DIR}/ncks:	${MY_OBJ_DIR}/ncks.o ${libnco}.a
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncwa:   ${MY_BIN_DIR}/ncwa
-${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o $(libnco).a
+${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o ${libnco}.a
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncecat:   ${MY_BIN_DIR}/ncecat
-${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o $(libnco).a
+${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o ${libnco}.a
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncdiff:   ${MY_BIN_DIR}/ncdiff
-${MY_BIN_DIR}/ncdiff:	${MY_OBJ_DIR}/ncdiff.o $(libnco).a
+${MY_BIN_DIR}/ncdiff:	${MY_OBJ_DIR}/ncdiff.o ${libnco}.a
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncflint:   ${MY_BIN_DIR}/ncflint
-${MY_BIN_DIR}/ncflint:	${MY_OBJ_DIR}/ncflint.o $(libnco).a
+${MY_BIN_DIR}/ncflint:	${MY_OBJ_DIR}/ncflint.o ${libnco}.a
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncrename:   ${MY_BIN_DIR}/ncrename
-${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o $(libnco).a
+${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o ${libnco}.a
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 bin: ${MDL_BIN_TRG}
@@ -917,14 +917,8 @@ inc_cln:
 	rm -f ${MDL_INC}
 # Targets in lib
 library: lib
-lib: inc $(libnco).a
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
-$(libnco).a: $(libnco).a(${MY_OBJ_DIR}/nco_utl.o) \
-	$(libnco).a(${MY_OBJ_DIR}/nco_fortran.o) \
-	$(libnco).a(${MY_OBJ_DIR}/nco_cal_utl.o) \
-	$(libnco).a(${MY_OBJ_DIR}/nco_csz.o)
-else
-$(libnco).a: $(libnco.a(${MY_OBJ_DIR}/nco_att_utl.c) \
+lib: inc ${libnco}.a
+${libnco}.a: $(libnco.a(${MY_OBJ_DIR}/nco_att_utl.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_cln_utl.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_cnf_dmn.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_cnf_typ.c) \
@@ -948,17 +942,15 @@ $(libnco).a: $(libnco.a(${MY_OBJ_DIR}/nco_att_utl.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_scl_utl.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_scm.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_dbg.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_typ.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_scv_utl.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_sng_utl.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_var_avg.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_var_lst.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_var_rth.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_var_utl.c)
-endif
 libclean: lib_cln
 lib_cln:
-	rm -f $(libnco).a
+	rm -f ${libnco}.a
 # Targets in obj
 object: obj
 obj: ${MDL_OBJ}
@@ -1037,7 +1029,7 @@ endif
 	mv lex.yy.c $(basename $<)_lex.c
 
 # For some reason, ncap_lex.c is not remade when I expect it to be, so I explicitly remove the object file every time
-ncap:	${MY_OBJ_DIR}/ncap.tab.o ncap.tab.h ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap.o ${MY_OBJ_DIR}/ncap_utl.o $(libnco).a
+ncap:	${MY_OBJ_DIR}/ncap.tab.o ncap.tab.h ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap.o ${MY_OBJ_DIR}/ncap_utl.o ${libnco}.a
 #        ${YACC} --name-prefix=nco_
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
 	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@.tab.o ${MY_OBJ_DIR}/$@_lex.o ${LDFLAGS}

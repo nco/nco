@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.2 2002-05-02 06:56:41 zender Exp $ */
 
 /* Purpose: Prototypes, typedefs, and global variables for libcsm_c++ */
 
@@ -25,6 +25,7 @@
 #include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_cnv_arm.h" /* ARM conventions */
 #include "nco_cnv_csm.h" /* CSM conventions */
+#include "nco_fl_utl.h" *//* File manipulation */
 #include "nco_pck.h" /* Packing and unpacking variables */
 
 #endif /* LIBNCO_H */
