@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.194 2003-12-23 21:04:07 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.195 2003-12-24 01:21:02 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1528,6 +1528,7 @@ If no ``key switches'' are listed for a feature, then that particular
 feature is automatic and cannot be controlled by the user. 
 
 @menu
+* Internationalization::        
 * Command line options::        
 * Specifying input files::      
 * Remote storage::              
@@ -1551,9 +1552,27 @@ feature is automatic and cannot be controlled by the user.
 @end menu
 
 @html
+<a name="i18n"></a> <!-- http://nco.sf.net/nco.html#i18n -->
+@end html
+@node Internationalization, Command line options, Common features, Common features
+@section Internationalization
+@cindex Internationalization
+@cindex I18N
+@cartouche
+Availability: All operators@*
+Short options: All@*
+Long options: All@*
+@end cartouche
+@cindex L10N
+@acronym{NCO} support for @dfn{internationalization} of textual input
+and output (e.g., Warning messages) is nascent.
+We hope to produce foreign language string catalogues in 2004.
+@c fxm: Work on this section
+
+@html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
 @end html
-@node Command line options, Specifying input files, Common features, Common features
+@node Command line options, Specifying input files, Internationalization, Common features
 @section Command line options
 @cindex command line options
 @cartouche
@@ -2097,6 +2116,7 @@ that @emph{only} user-defined variables should be output.
 @command{ncap} neither accepts nor understands the @var{-x} switch.
 
 @html
+<a name="rx"></a> <!-- http://nco.sf.net/nco.html#rx -->
 <a name="wildcarding"></a> <!-- http://nco.sf.net/nco.html#wildcarding -->
 @end html
 @cindex extended regular expressions

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.13 2003-12-21 19:32:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.14 2003-12-24 01:21:03 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -190,6 +190,30 @@ copyright_prn /* [fnc] Print copyright notice */
   }else{
     (void)fprintf(stderr,"%s version %s\n",prg_nm_get(),vrs_cpp);
   } /* endif */
+  (void)fprintf(stderr,"NCO configuration options:\nOperators are DODS clients: %s (http://nco.sf.net/nco.html#DODS)\nOperators have UDUnits accessibility: %s (http://nco.sf.net/nco.html#UDUnits)\nOperators understand regular expressions in variable lists: %s (http://nco.sf.net/nco.html#rx)\nOperators are internationalized: %s (http://nco.sf.net/nco.html#i18n)\n%s",
+		/* #define TKN2YESNO(x) ((x)==0 ? ("No"):("Yes"))
+		   TKN2YESNO(HAVE_DODS), */ 
+#ifdef HAVE_DODS
+		"Yes",
+#else /* !HAVE_DODS */
+		"No",
+#endif /* !HAVE_DODS */
+#ifdef HAVE_LIBUDUNITS
+		"Yes",
+#else /* !HAVE_LIBUDUNITS */
+		"No",
+#endif /* !HAVE_LIBUDUNITS */
+#ifdef NCO_HAVE_REGEX_FUNCTIONALITY
+		"Yes",
+#else /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+		"No",
+#endif /* !NCO_HAVE_REGEX_FUNCTIONALITY */
+#ifdef I18N
+		"Yes",
+#else /* !I18N */
+		"No",
+#endif /* !I18N */
+		""); /* End of print statement marker */
   (void)fprintf(stdout,"NCO is free software and comes with ABSOLUTELY NO WARRANTY\nNCO is distributed under the terms of the GNU General Public License\n");
   (void)fprintf(stderr,"\"%s\"\n",nmn_get());
 

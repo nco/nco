@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.262 2003-12-23 21:07:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.263 2003-12-24 01:21:02 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -241,7 +241,7 @@ These work as expected, leaving value packed:
 ncks -O -C -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo.nc
 Arithmetic operator gives garbage answers:
 ncwa -O -C -a lat,lon,time -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo.nc
-
+290. CPP Macro to spit out "Yes"/"No" in nco_scm.c
 ************************************************************************
 End NCO Wish list
 ************************************************************************

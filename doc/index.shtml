@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.182 2003-12-21 19:32:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.183 2003-12-24 01:21:02 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -199,11 +199,11 @@ Tarballs and RPMs are only rarely uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.8.5</b>: (<i>In progress</i>) Solaris <tt>make install</tt> works, <tt>ncap</tt> changes attribute values correctly, <a href="#bug_DODS">support only DODS 3.4+</a>
+<li><b>NCO 2.8.5</b>: (<i>In progress</i>) Solaris <tt>make install</tt> works, <tt>ncap</tt> changes attribute values correctly, <a href="#bug_DODS">Support DODS 3.4+, deprecate 3.3-</a>
 <li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (<a href="#bug_idx_hyp">broke in 2.7.3</a>, <b><i>upgrade highly recommended</i></b>), <tt>ncap</tt> peak memory usage reduced still more, support for AMD Opteron x86-64 architecture
 <li><b>NCO 2.8.3</b>: Fix big <tt>ncap</tt> memory leak, fix regressions, remove scary packing warnings</li>
 <li><b>NCO 2.8.2</b>: <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly, improve error diagnostics</li>
-<li><b>NCO 2.8.1</b>: <a href="./nco.html#wildcarding">&ldquo;Variable wildcarding&rdquo;</a>&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators</li>
+<li><b>NCO 2.8.1</b>: <a href="./nco.html#rx">&ldquo;Variable wildcarding&rdquo;</a>&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators</li>
 <li><b>NCO 2.8.0</b>: New &ldquo;binary&rdquo; operator <a href="./nco.html#ncbo"><tt>ncbo</tt></a>, obsoletes <tt>ncdiff</tt>, Debian integration</li>
 <li><b>NCO 2.7.4</b>: Autotools build support for AIX, fix UDUnits confusion with floating point hyperslab specifications</li>
 <li><b>NCO 2.7.3</b>: Support <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (and some <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html">CF</a>) conventions, e.g., <tt>ncks -d wvl "1 picometer","1 furlong" -d time,"2001-03-19 06:00:0.0","2001-03-19 18:00:0.0"</tt></li>
