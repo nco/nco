@@ -9,7 +9,7 @@
 /* FreeBSD OS */
 #undef FREEBSD
 
-/* Autoconf-generated architecture "triplet" */
+/* Autoconf-generated architecture \"triplet\" */
 #undef GNU_TRP
 
 /* Define to 1 if you have the `acosf' function. */
@@ -66,8 +66,14 @@
 /* Define to 1 if you have the `gethostname' function. */
 #undef HAVE_GETHOSTNAME
 
+/* Define to 1 if you have the `getopt' function. */
+#undef HAVE_GETOPT
+
 /* Define to 1 if you have the <getopt.h> header file. */
 #undef HAVE_GETOPT_H
+
+/* Define to 1 if you have the `getopt_long' function. */
+#undef HAVE_GETOPT_LONG
 
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
@@ -132,8 +138,8 @@
 /* Define to 1 if you have the `logf' function. */
 #undef HAVE_LOGF
 
-/* Define to 1 if your system has a working `malloc' function, and to 0
-   otherwise. */
+/* Define to 1 if your system has a GNU libc compatible `malloc' function, and
+   to 0 otherwise. */
 #undef HAVE_MALLOC
 
 /* Define to 1 if you have the `memchr' function. */

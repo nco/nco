@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.48 2002-12-13 19:48:56 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.49 2002-12-13 23:31:48 rorik Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -146,8 +146,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.48 2002-12-13 19:48:56 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.48 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.49 2002-12-13 23:31:48 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.49 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -176,7 +176,8 @@ main(int argc,char **argv)
       {"local", no_argument, 0, 'l'},
       {"overwrite", no_argument, 0, 'O'},
       {"path", required_argument, 0, 'p'},
-      {"remove", no_argument, 0, 'R'},
+      {"keep", no_argument, 0, 'R'},
+      {"version", no_argument, 0, 'r'},
       {"help", no_argument, 0, '?'},
       {0, 0, 0, 0}
     };

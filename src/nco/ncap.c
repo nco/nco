@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.97 2002-09-20 05:34:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.98 2002-12-13 23:31:48 rorik Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -90,8 +90,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.97 2002-09-20 05:34:37 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.97 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.98 2002-12-13 23:31:48 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.98 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -185,6 +185,34 @@ main(int argc,char **argv)
   
   prs_sct prs_arg; /* [sct] Global information required in parser routines */
   
+#ifdef HAVE_GETOPT_LONG
+  static struct option long_options[] =
+    {
+      {"append",  no_argument,  0,  'A'},
+      {"coords", no_argument, 0, 'c'},
+      {"nocoords", no_argument, 0, 'C'},
+      {"debug", required_argument, 0, 'D'},
+      {"dimension", required_argument, 0, 'd'},
+      {"fortran", no_argument, 0, 'F'},
+      {"history", no_argument, 0, 'h'},
+      {"local", no_argument, 0, 'l'},
+      {"nintap", required_argument, 0, 'n'},
+      {"overwrite", no_argument, 0, 'O'},
+      {"path", required_argument, 0, 'p'},
+      {"keep", no_argument, 0, 'R'},
+      {"revision", no_argument, 0, 'r'},
+      {"script", required_argument, 0, 's'},
+      {"file", required_argument, 0, 'S'},
+      {"units", no_argument, 0, 'u'},
+      {"variable", no_argument, 0, 'v'},
+      {"version", no_argument, 0, 'r'},
+      {"exclude", no_argument, 0, 'x'},
+      {"help", no_argument, 0, '?'},
+      {0, 0, 0, 0}
+    };
+  int option_index = 0;  /* getopt_long stores the option index here. */
+#endif  /* HAVE_GETOPT_LONG */
+
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
@@ -194,8 +222,13 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="ACcD:d:Fhl:n:Op:Rrs:S:vx";
-  while((opt=getopt(argc,argv,opt_sng)) != EOF){
+  opt_sng="ACcD:d:Fhl:n:Op:Rrs:S:vx-:";
+#ifdef HAVE_GETOPT_LONG
+  while((opt = getopt_long(argc,argv,opt_sng,long_options,&option_index))
+            != EOF) {
+#else  /* DO NOT HAVE GETOPT_LONG */
+  while((opt = getopt(argc,argv,opt_sng)) != EOF){
+#endif /* HAVE_GETOPT_LONG */
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
@@ -261,6 +294,15 @@ main(int argc,char **argv)
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       (void)fprintf(stderr,"%s: ERROR %s does not currently implement -x option\n",prg_nm_get(),prg_nm_get());
+      nco_exit(EXIT_FAILURE);
+      break;
+    case '?': /* Print proper usage */
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+      break;
+    case '-': /* notify that long options are not allowed */
+      (void)printf("long options are not available in this build.\n");
+      (void)printf("use single-letter options instead.\n");
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */

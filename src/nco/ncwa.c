@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.90 2002-12-13 19:48:58 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.91 2002-12-13 23:31:49 rorik Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.90 2002-12-13 19:48:58 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.90 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.91 2002-12-13 23:31:49 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.91 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -184,15 +184,16 @@ main(int argc,char **argv)
       {"here", no_argument, 0, 'H'},
       {"midpoint", no_argument, 0, 'I'},
       {"local", no_argument, 0, 'l'},
-      {"meta", no_argument, 0, 'm'},
-      {"Meta", no_argument, 0, 'M'},
+      {"mask-variable", no_argument, 0, 'm'},
+      {"Mask-value", no_argument, 0, 'M'},
       {"nintap", required_argument, 0, 'n'},
       {"numerator", no_argument, 0, 'N'},
       {"overwrite", no_argument, 0, 'O'},
       {"path", required_argument, 0, 'p'},
-      {"remove", no_argument, 0, 'R'},
+      {"keep", no_argument, 0, 'R'},
       {"revision", no_argument, 0, 'r'},
       {"variable", required_argument, 0, 'v'},
+      {"version", no_argument, 0, 'r'},
       {"normalize-by-tally", no_argument, 0, 'W',},
       {"exclude", no_argument, 0, 'x'},
       {"math", required_argument, 0, 'y'},
