@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.62 2004-03-01 09:03:51 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.63 2004-03-04 16:29:14 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.0 are ready. 
 
@@ -7,9 +7,7 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 
 This release fixes a recently discovered ncwa bug.
 This bug caused ncwa to produce garbage when processing packed NC_FLOAT data. 
-This problem may have affected other arithemetic operators (ncdiff,
-ncra, ncea, and ncecat, but not ncap) as well. We're not sure. 
-Upgrade to 2.9.1 if you process packed data with NCO. 
+Upgrade to 2.9.1 if you process packed data with ncwa.
 
 This problem may have been noticed most by DODS users since many
 netCDF climate dataset served by DODS are packed NC_FLOAT data. 
@@ -23,9 +21,9 @@ Solaris users are urged to upgrade their OS.
 The NSF proposal I am writing to fund improving distributed data
 processing with NCO is at 
 
-http://dust.ess.uci.edu/prp
+http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf
 
-and plans for future proposals are mentioned in the NUG at 
+Plans for future proposals are mentioned in the NUG at 
 
 http://nco.sf.net/nco.html#prp
 

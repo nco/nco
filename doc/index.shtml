@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.199 2004-03-01 09:03:51 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.200 2004-03-04 16:29:14 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -460,17 +460,11 @@ Users at NCAR should try the <i>supported</i> executables in
 <a name="bug_pck_ncwa"></a>
 <li><b>Packing problems:</b>
 NCO versions ???&mdash;2.9.0 have a bug that causes <tt>ncwa</tt>
-and, possibly, <tt>ncdiff</tt>, <tt>ncra</tt>, <tt>ncea</tt>, and
-  <tt>ncflint</tt> (but not <tt>ncap</tt>) to fail (produce garbage
-  answers) when processing packed <tt>NC_FLOAT</tt> data.
-  Version 2.9.1 fixes this problem.
+to fail (produce garbage answers) when processing packed
+<tt>NC_FLOAT</tt> data.  Version 2.9.1 fixes this problem.
 This problem may have been noticed most by DODS users since many
 netCDF climate datasets served by DODS are packed <tt>NC_FLOAT</tt>s.
-The same bug <i>may</i> have affected <tt>ncdiff</tt>, <tt>ncra</tt>, 
-  <tt>ncea</tt>, and <tt>ncflint</tt> as well.
-We're not sure and do not have the resources to confirm this.
-Given the uncertainty about the extent of the bug, everyone who uses
-NCO on packed data should upgrade to 2.9.1.   
+Upgrade to 2.9.1 if you use <tt>ncwa</tt> on packed data.
 </li>
 
 <a name="bug_pck"></a>

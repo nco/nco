@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.212 2004-03-02 07:54:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.213 2004-03-04 16:29:14 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -3173,9 +3173,9 @@ $\mssflg_{\idx} = \mskflg_{\idx} = \wgt_{\idx} = 1$, the
 generic averaging expression above reduces to a simple arithmetic
 average.  
 Furthermore, $\mskflg_{\idx} = \wgt_{\idx} = 1$ for all operators
-besides @command{ncwa}, but these variables are included in the
-discussion below for completeness and for possible future use in other 
-operators. 
+except @command{ncwa}.
+These variables are included in the discussion below for completeness,
+and for possible future use in other operators. 
 
 The size $\outnbr$ of the output hyperslab for a given variable is the
 product of all the dimensions of the input variable which are not
@@ -3195,7 +3195,7 @@ $\xxx_{\jjj}$ except in two conditions:
 (@pxref{Masking condition}) is false.
 @end enumerate
 Points $\xxx_{\idx}$ in either of these two categories do not contribute 
-to $\xxx_{\jjj}$, they are ignored.
+to $\xxx_{\jjj}$---they are ignored.
 We now define these criteria more rigorously.
 
 Each~$\xxx_{\idx}$ has an associated Boolean weight~$\mssflg_{\idx}$
