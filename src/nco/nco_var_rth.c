@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.26 2004-07-19 07:35:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.27 2004-07-19 21:01:45 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -9,16 +9,15 @@
 #include "nco_var_rth.h" /* Variable arithmetic */
 
 void
-nco_var_abs(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1)
-/* const nc_type type: I netCDF type of operands
-   const long sz: I size (in elements) of operands
-   const int has_mss_val: I flag for missing values
-   ptr_unn mss_val: I value of missing value
-   ptr_unn op1: I values of first operand */
+nco_var_abs /* [fnc] Replace op1 values by their absolute values */
+(const nc_type type, /* I [enm] netCDF type of operand */
+ const long sz, /* I [nbr] Size (in elements) of operand */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [val] Value of missing value */
+ ptr_unn op1) /* I [val] Values of first operand */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* Purpose: Find the absolute value of all numbers in op1
-     Store result in first operand */    
+  /* Purpose: Replace op1 values by their absolute values */
   
   /* Absolute value is currently defined as op1:=abs(op1) */  
   
@@ -170,7 +169,7 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
  const long sz, /* I [nbr] Size (in elements) of operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
  ptr_unn mss_val, /* I [flg] Value of missing value */
- long *tally, /* I/O [nbr] Counter space */
+ long * const tally, /* I/O [nbr] Counter space */
  ptr_unn op1, /* I [val] Values of first operand */
  ptr_unn op2) /* I/O [val] Values of second operand on input, values of sum on output */
 {
@@ -363,7 +362,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
  const long sz, /* I [nbr] Size (in elements) of operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
  ptr_unn mss_val, /* I [flg] Value of missing value */
- long *tally, /* I/O [nbr] Counter space */
+ long * const tally, /* I/O [nbr] Counter space */
  ptr_unn op1, /* I [val] Values of first operand */
  ptr_unn op2) /* I/O [val] Values of second operand (running sum) on input, values of new sum on output */
 {
@@ -896,19 +895,19 @@ nco_var_mod /* [fnc] Remainder (modulo) operation of two variables */
 } /* end nco_var_mod() */
 
 void
-nco_var_msk(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,const double op1,const int op_typ_rlt,ptr_unn op2,ptr_unn op3)
-/* const nc_type type: I netCDF type of operand op3
-  const long sz: I size (in elements) of operand op3
-  const int has_mss_val: I flag for missing values (basically assumed to be true)
-  ptr_unn mss_val: I value of missing value
-  const double op1: I Target value against which mask field will be compared (i.e., argument of -M)
-  const int op_typ_rlt: I type of relationship to test for between op2 and op1
-  ptr_unn op2: I Value of mask field
-  ptr_unn op3: I/O values of second operand on input, masked values on output */
+nco_var_msk /* [fnc] Mask third operand where first and second operands fail comparison */
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of operand op3 */
+ const int has_mss_val, /* I [flg] Flag for missing values (basically assumed to be true) */
+ ptr_unn mss_val, /* I [val] Value of missing value */
+ const double op1, /* I [val] Target value to compare against mask field (i.e., argument of -M) */
+ const int op_typ_rlt, /* I [enm] Comparison type test for op2 and op1 */
+ ptr_unn op2, /* I [val] Value of mask field */
+ ptr_unn op3) /* I/O [val] Values of second operand on input, masked values on output */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* Purpose: Mask third operand by second operand
-     Set third operand to missing value wherever second operand does not equal first operand */
+  /* Purpose: Mask third operand where first and second operands fail comparison
+     Set third operand to missing value wherever second operand fails comparison with first operand */
 
   /* Masking is currently defined as: if(op2 !op_typ_rlt op1) then op3:=mss_val */  
 
@@ -1013,19 +1012,16 @@ nco_var_msk(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
 } /* end nco_var_msk() */
 
 void
-nco_var_nrm(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
-/* 
-  const nc_type type: I netCDF type of operand
-  const long sz: I size (in elements) of operand
-  const int has_mss_val: I flag for missing values
-  ptr_unn mss_val: I value of missing value
-  long *tally: I counter space
-  ptr_unn op1: I/O values of first operand on input, normalized result on output
-*/
+nco_var_nrm /* [fnc] Normalize value of first operand by count in tally array */
+(const nc_type type, /* I [enm] netCDF type of operand */
+ const long sz, /* I [nbr] Size (in elements) of operand */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [val] Value of missing value */
+ const long * const tally, /* I [nbr] Counter to normalize by */
+ ptr_unn op1) /* I/O [val] Values of first operand on input, normalized result on output */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
-  /* Purpose: Normalize value of first operand by count in tally array 
-     and store result in first operand. */
+  /* Purpose: Normalize value of first operand by count in tally array */
 
   /* Normalization is currently defined as op1:=op1/tally */  
 
@@ -1081,6 +1077,74 @@ nco_var_nrm(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
      because we have only operated on local copies of them. */
 
 } /* end nco_var_nrm() */
+
+void
+nco_var_nrm_sdn /* [fnc] Normalize value of first operand by count-1 in tally array */
+(const nc_type type, /* I [enm] netCDF type of operand */
+ const long sz, /* I [nbr] Size (in elements) of operand */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [val] Value of missing value */
+ const long * const tally, /* I [nbr] Counter to normalize by */
+ ptr_unn op1) /* I/O [val] Values of first operand on input, normalized result on output */
+{
+  /* Purpose: Normalize value of first operand by count-1 in tally array */
+
+  /* Normalization is currently defined as op1:=op1/(--tally) */  
+
+  /* nco_var_nrm_sdn() is based on nco_var_nrm() and algorithms should be kept consistent with eachother */
+
+  long idx;
+
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+
+  switch(type){
+  case NC_FLOAT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.fp[idx]/=(tally[idx]-1);
+    }else{
+      const float mss_val_flt=*mss_val.fp;
+      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.fp[idx]/=(tally[idx]-1); else op1.fp[idx]=mss_val_flt;
+    } /* end else */
+    break;
+  case NC_DOUBLE:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]/=(tally[idx]-1);
+    }else{
+      const double mss_val_dbl=*mss_val.dp;
+      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.dp[idx]/=(tally[idx]-1); else op1.dp[idx]=mss_val_dbl;
+    } /* end else */
+    break;
+  case NC_INT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.lp[idx]/=(tally[idx]-1);
+    }else{
+      const long mss_val_lng=*mss_val.lp;
+      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.lp[idx]/=(tally[idx]-1); else op1.lp[idx]=mss_val_lng;
+    } /* end else */
+    break;
+  case NC_SHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.sp[idx]/=(tally[idx]-1);
+    }else{
+      const short mss_val_sht=*mss_val.sp;
+      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.sp[idx]/=(tally[idx]-1); else op1.sp[idx]=mss_val_sht;
+    } /* end else */
+    break;
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+
+} /* end of nco_var_nrm_sdn */
 
 void
 nco_var_pwr /* [fnc] Raise first operand to power of second operand */
@@ -1145,77 +1209,6 @@ nco_var_pwr /* [fnc] Raise first operand to power of second operand */
      because we have only operated on local copies of them. */
   
 } /* end nco_var_pwr */
-
-void
-nco_var_nrm_sdn(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
-/* 
-  const nc_type type: I netCDF type of operand
-  const long sz: I size (in elements) of operand
-  const int has_mss_val: I flag for missing values
-  ptr_unn mss_val: I value of missing value
-  long *tally: I counter space
-  ptr_unn op1: I/O values of first operand on input, normalized result on output
-*/
-{
-  /* Purpose: Normalize value of first operand by count-1 in tally array 
-     and store result in first operand. */
-
-  /* Normalization is currently defined as op1:=op1/(--tally) */  
-
-  /* nco_var_nrm_sdn() is based on nco_var_nrm() and algorithms should be kept consistent with eachother */
-
-  long idx;
-
-  /* Typecast pointer to values before access */
-  (void)cast_void_nctype(type,&op1);
-  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
-
-  switch(type){
-  case NC_FLOAT:
-    if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.fp[idx]/=(tally[idx]-1);
-    }else{
-      const float mss_val_flt=*mss_val.fp;
-      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.fp[idx]/=(tally[idx]-1); else op1.fp[idx]=mss_val_flt;
-    } /* end else */
-    break;
-  case NC_DOUBLE:
-    if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.dp[idx]/=(tally[idx]-1);
-    }else{
-      const double mss_val_dbl=*mss_val.dp;
-      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.dp[idx]/=(tally[idx]-1); else op1.dp[idx]=mss_val_dbl;
-    } /* end else */
-    break;
-  case NC_INT:
-    if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.lp[idx]/=(tally[idx]-1);
-    }else{
-      const long mss_val_lng=*mss_val.lp;
-      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.lp[idx]/=(tally[idx]-1); else op1.lp[idx]=mss_val_lng;
-    } /* end else */
-    break;
-  case NC_SHORT:
-    if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.sp[idx]/=(tally[idx]-1);
-    }else{
-      const short mss_val_sht=*mss_val.sp;
-      for(idx=0;idx<sz;idx++) if((tally[idx]-1) != 0L) op1.sp[idx]/=(tally[idx]-1); else op1.sp[idx]=mss_val_sht;
-    } /* end else */
-    break;
-  case NC_CHAR:
-    /* Do nothing */
-    break;
-  case NC_BYTE:
-    /* Do nothing */
-    break;
-  default: nco_dfl_case_nc_type_err(); break;
-  } /* end switch */
-
-  /* NB: it is not neccessary to un-typecast pointers to values after access 
-     because we have only operated on local copies of them. */
-
-} /* end of nco_var_nrm_sdn */
 
 void
 nco_var_sbt /* [fnc] Subtract first operand from second operand */
@@ -1295,16 +1288,14 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
 } /* end nco_var_sbt() */
 
 void
-nco_var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
-/* 
-  const nc_type type: I netCDF type of operands
-  const long sz: I size (in elements) of operands
-  const int has_mss_val: I flag for missing values
-  ptr_unn mss_val: I value of missing value
-  long *tally: I/O counter space
-  ptr_unn op1: I values of first operand
-  ptr_unn op2: O squareroot of first operand
- */
+nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second operand */
+(const nc_type type, /* I [enm] netCDF type of operand */
+ const long sz, /* I [nbr] Size (in elements) of operand */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [val] Value of missing value */
+ long * const tally, /* I/O [nbr] Counter space */
+ ptr_unn op1, /* I [val] Values of first operand */
+ ptr_unn op2) /* O [val] Squareroot of first operand */
 {
   /* Purpose: Place squareroot of first operand in value of second operand 
      Assume operands conform, are same type, and are in memory */
@@ -1400,14 +1391,12 @@ nco_var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
 } /* end nco_var_sqrt() */
 
 void
-nco_var_zero(const nc_type type,const long sz,ptr_unn op1)
-/* 
-  const nc_type type: I netCDF type of operand
-  const long sz: I size (in elements) of operand
-  ptr_unn op1: I values of first operand
- */
+nco_var_zero /* [fnc] Zero value of first operand */
+(const nc_type type, /* I [enm] netCDF type of operand */
+ const long sz, /* I [nbr] Size (in elements) of operand */
+ ptr_unn op1) /* O [val] Values of first operand zeroed on output */
 {
-  /* Purpose: Zero value of first operand and store result in second operand. */
+  /* Purpose: Zero value of first operand */
 
   long idx;
 

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.239 2004-07-19 07:35:54 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.240 2004-07-19 21:01:44 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -279,9 +279,15 @@ Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> 
 <dt><a name="Download"></a><a name="dwn"></a></dt>
 <h2>Download/CVS NCO Software</h2>
 
+<a name="src"></a>
+<h3>NCO Source Code</h3>
 The best way to acquire NCO sources is with <a href="http://www.cvshome.org">CVS</a>.
-The second best way is to download the compressed tarfile 
-<a href="nco.tar.gz">here</a>.
+The second best way is to download the source and documentation as a compressed tarfile:
+<ul>
+<li>
+<a href="nco.tar.gz">nco.tar.gz</a> (<!--#fsize file="nco.tar.gz"--> compressed tar-file)</li>
+</ul>
+
 <p>The 
 <a href="http://sf.net/cvs/?group_id=3331">NCO CVS Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay
@@ -314,28 +320,28 @@ version.
 Once the autotools builds are working more robustly, the confusion
 over versions should largely disappear.
 
-<p>Tarballs and pre-built binaries: NCO development is too shorthanded
-to upload tarballs to SourceForge (a PITA), or to provide prebuilt
-binary executables of any format. 
-Volunteers or organizations interested in porting and providing NCO 
-binaries on a variety of platforms (using, e.g.,  
-<a href="http://sf.net/docman/display_doc.php?docid=762&group_id=1">Compile Farm</a> or 
-<a href="http://www.testdrive.compaq.com">HP Testdrive</a> sites)
-would be very welcome to join the NCO team.
-Tarballs are always up-to-date, as are binaries for x86
-<a href="http://www.debian.org">Debian</a>-compatible systems (i.e., .debs).
-Fedora/RedHat-compatible RPMs may lag a bit more.
-<ul>
-<li>Source and documentation in tarball format: 
-<a href="nco.tar.gz">nco.tar.gz</a> (<!--#fsize file="nco.tar.gz"--> compressed tar-file)</li>
-</ul>
+<a name="bnr"></a>
+<h3>NCO Binaries and OS-specific Packages</h3>
+<p>NCO development is too shorthanded to provide prebuilt binary
+executables.
+The source tarballs are always up-to-date, as are binaries for our
+development systems, <a href="http://www.debian.org">Debian Sid GNU/Linux</a>
+for x86.
+To keep users up-to-date, we provide links to binaries and packages 
+created by volunteers and organizations who port NCO to other platforms.
+The NCO team is looking for a volunteer to perform regular regression
+testing and porting of NCO on the 
+<a href="http://sf.net/docman/display_doc.php?docid=762&group_id=1">SourceForge Compile Farm</a> and 
+<a href="http://www.testdrive.compaq.com">HP Testdrive</a> sites.
 
+<a name="debian"></a><a name="dbn"></a>
+<h3><a href="http://www.debian.org">Debian GNU/Linux</a></h3>
 <ul>
 <!--
 <li><a href="http://www.debian.org">Debian</a> GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.9.7</a></li>
 -->
-<a name="dbn"></a>
-<a href="http://www.debian.org">Debian GNU/Linux</a>-compatible systems: 
+<a href="http://packages.debian.org/unstable/math/nco.html">Debian GNU/Linux homepage for NCO</a>.
+<a href="http://www.debian.org">debs</a> by Rorik Peterson and Charlie Zender:
 <li><a href="src/nco_2.9.7-1_i386.deb">nco_2.9.7-1_i386.deb</a> (<!--#fsize file="src/nco_2.9.7-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
 <li><a href="src/nco_2.9.7-1.dsc">nco_2.9.7-1.dsc</a> (<!--#fsize file="src/nco_2.9.7-1.dsc"-->): Description</li>
 <li><a href="src/nco_2.9.7-1.tar.gz">nco_2.9.7-1.tar.gz</a> (<!--#fsize file="src/nco_2.9.7-1.tar.gz"-->): Gzipped Source Tarball</li>
@@ -343,16 +349,25 @@ Fedora/RedHat-compatible RPMs may lag a bit more.
 href="src/nco_2.9.7-1_i386.changes">nco_2.9.7-1_i386.changes</a> (<!--#fsize file="src/nco_2.9.7-1.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
 </ul>
 
-<ul>
 <a name="redhat"></a>
 <a name="fedora"></a>
 <a name="fdr"></a>
 <a name="rhl"></a>
-<a href="http://fedora.redhat.com">Fedora GNU/Linux</a>
-and <a href="www.redhat.com">Redhat GNU/Linux</a>-compatible
-<a href="http://www.rpm.org">RPMs</a> (courtesy of Ed Hill):
+<h3><a href="http://fedora.redhat.com">Fedora GNU/Linux</a></h3>
+<ul>
+<a href="http://mitgcm.org/eh3/NetCDF">Fedora GNU/Linux-specific homepage for NCO</a>.
+<a href="http://www.rpm.org">RPMs</a> by Ed Hill:
 <li><a href="http://mitgcm.org/eh3/NetCDF/nco-2.9.7-0.fdr.1.i386.rpm">nco-2.9.7-0.fdr.1.i386.rpm</a>: Fedora Core&nbsp;1, i386 Binary RPM</li>
 <li><a href="http://mitgcm.org/eh3/NetCDF/nco-2.9.7-0.fdr.1.src.rpm">nco-2.9.7-0.fdr.1.src.rpm</a>: Fedora Core&nbsp;1, Source RPM</li>
+</ul>
+
+<a name="gentoo"></a>
+<a name="gnt"></a>
+<h3><a href="http://www.gentoo.org">Gentoo GNU/Linux</a></h3>
+<ul>
+<a href="http://packages.gentoo.org/packages/?category=app-sci;name=nco">Gentoo GNU/Linux homepage for NCO</a>.
+<a href="http://www.gentoo.org/doc/en/portage-manual.xml">Portage packages</a> by George Shapavalov and Patrick Kursawe:
+<li><a href="http://cpan.cybercomm.nl/pub/gentoo-portage/app-sci/nco/nco-2.9.1.ebuild">nco-2.9.1.ebuild</a>: Gentoo&nbsp;1, i386 package</li>
 </ul>
 <hr></p>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.18 2004-07-09 16:36:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.19 2004-07-19 21:01:46 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -9,13 +9,13 @@
 #include "nco_var_scv.h" /* Arithmetic between variables and scalar values */
 
 void
-var_scv_add(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
-     /*	const nc_type type: I netCDF type of operands
-	const long sz: I size (in elements) of operands
-	const int has_mss_val: I flag for missing values
-	ptr_unn mss_val: I value of missing value
-	ptr_unn op1: I values of first operand
-        scv_sct scv: I pointer to scalar value (second operand) */
+var_scv_add /* [fnc] Add scalar to variable */
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const long sz,/* I [nbr] Size (in elements) of array operand */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [val] Value of missing value */
+ ptr_unn op1, /* I/O [val] Values of first operand */
+ scv_sct *scv) /* I [val] Pointer to scalar value (second operand) */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Add scv to all values in op1
@@ -93,13 +93,13 @@ var_scv_add(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
 } /* end var_scv_add() */
 
 void
-var_scv_sub(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
-     /*	const nc_type type: I netCDF type of operands
-	const long sz: I size (in elements) of operands
-	const int has_mss_val: I flag for missing values
-	ptr_unn mss_val: I value of missing value
-	ptr_unn op1: I values of first operand
-        scv_sct scv: I pointer to scalar value (second operand) */
+var_scv_sub /* [fnc] Subtract scalar from variable */
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of array operand */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [val] Value of missing value */
+ ptr_unn op1, /* I/O [val] Values of first operand */
+ scv_sct *scv) /* I [val] Pointer to scalar value (second operand) */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Subtract scv from all values in op1
@@ -177,14 +177,13 @@ var_scv_sub(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
 } /* end var_scv_sub() */
 
 void
-var_scv_mlt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
-     /* 
-	const nc_type type: I netCDF type of operands
-	const long sz: I size (in elements) of operands
-	const int has_mss_val: I flag for missing values
-	ptr_unn mss_val: I value of missing value
-	ptr_unn op1: I values of first operand
-        scv_sct scv: I pointer to scalar value (second operand) */
+var_scv_mlt /* [fnc] Multiply variable by scalar */
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of array operand */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [val] Value of missing value */
+ ptr_unn op1, /* I/O [val] Values of first operand */
+ scv_sct *scv) /* I [val] Pointer to scalar value (second operand) */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Multiply all values in op1 by scv

@@ -1,3 +1,10 @@
+2004-07-19  Charlie Zender  <zender@uci.edu>
+
+	* const'ify arithmetic counters used only for normalization
+
+	* Standardized arithmetic prototypes in preparation for implementing
+	restricted pointers
+
 2004-07-08  Charlie Zender  <zender@uci.edu>
 
 	* nco.texi: Correct mix-up of -T and -t options in documentation
