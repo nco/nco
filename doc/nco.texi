@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.245 2004-07-01 21:01:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.246 2004-07-07 05:50:01 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -99,8 +99,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 2.9.7
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 18 June 2004
-@set update-month June 2004
+@set update-date 6 July 2004
+@set update-month July 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -892,9 +892,12 @@ Once you have read the manual, if you are still unable to get
 @acronym{NCO} to perform a documented function, write help request.
 Follow the same procedure as described below for reporting bugs
 (after all, it might be a bug).
+@cindex debugging
+@cindex @code{-r}
+@cindex @code{-D}
 That is, describe what you are trying to do, and include the complete
-commands (with @samp{-r -D 5}), error messages, and version of
-@acronym{NCO}. 
+commands (run with @samp{-D 5}), error messages, and version of
+@acronym{NCO} (with @samp{-r}).  
 Post your help request to the 
 @uref{http://sf.net/forum/forum.php?forum_id=9830, NCO Help forum}.
 
@@ -924,14 +927,39 @@ two small dimensions ought to suffice.
 @cindex @code{--dbg_lvl @var{debug-level}}
 @cindex @var{debug-level}
 @cindex @var{dbg_lvl}
-Run the operator with @samp{-r -D 5} to print the compile time
-information and to increase the verbosity of the debugging output.
-It is very important that your report contain the exact error messages
-and compile-time environment printed by @samp{-r -D 5}.
+Run the operator with @samp{-r} and then run the command with 
+@samp{-D 5} to increase the verbosity of the debugging output.
+It is very important that your report contain the exact error messages 
+and compile-time environment.
 Include a copy of your sample input file, or place one on a 
 publically accessible location, of the file(s).
 Post the full bug report to the 
 @uref{http://sf.net/bugs/?group_id=3331, NCO Project buglist}.
+
+@cindex installation
+@cindex @command{autoconf}
+@cindex @file{nco.configure.$@{GNU_TRP@}.foo}
+@cindex @file{nco.config.log.$@{GNU_TRP@}.foo}
+@cindex @file{nco.make.$@{GNU_TRP@}.foo}
+@cindex @file{config.guess}
+@cindex @file{configure.eg}
+Build failures count as bugs.
+Our limited machine access means we cannot fix all build failures.
+The information we need to diagnose, and often fix, build failures
+are the three files output by @acronym{GNU} build tools,  
+@file{nco.config.log.$@{GNU_TRP@}.foo},
+@file{nco.configure.$@{GNU_TRP@}.foo}, 
+and @file{nco.make.$@{GNU_TRP@}.foo}.
+The file @file{configure.eg} shows how to produce these files.
+Here @code{$@{GNU_TRP@}} is the "@acronym{GNU} architecture triplet",
+the @var{chip-vendor-OS} string returned by @file{config.guess}.
+Please send us your improvements to the examples supplied in
+@file{configure.eg}.
+@cindex regressions archive
+The regressions archive at @url{http://dust.ess.uci.edu/nco/rgr}
+contains the build output from our standard test systems.
+You may find you can solve the build problem yourself by examining the
+differences between these files and your own.
 
 @html
 <a name="str"></a> <!-- http://nco.sf.net/nco.html#str -->
