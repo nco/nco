@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.68 2001-05-08 01:36:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.69 2001-05-28 23:48:12 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -67,7 +67,7 @@
    routines should be broken into separate files, like csz.h... */
 #include <netcdf.h> /* netCDF definitions */
 #include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
-#include "nc.h" /* netCDF operator universal def'ns */
+#include "nc.h" /* netCDF operator definitions */
 
 #ifndef bool
 #define bool int
@@ -565,11 +565,11 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
   /* The file was not found locally, try to fetch it from the remote file system */
   if(rcd == -1){
 
-    typedef struct{
-      char *fmt;
-      int nbr_fmt_char;
-      int transfer_mode;
-      int file_order;
+    typedef struct{ /* [enm] Remote fetch command structure */
+      char *fmt; /* [] Format */
+      int nbr_fmt_char; /* [nbr] Number of formatting characters */
+      int transfer_mode; /* [enm] Transfer mode */
+      int file_order; /* [enm] File order */
     } rmt_fch_cmd_sct;
 
     char *cmd_sys;
@@ -580,15 +580,15 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     char cmd_mkdir[]="mkdir -m 777 -p";
 #else
     char cmd_mkdir[]="mkdir -p";
-#endif
+#endif /* SUN4 */
 
-    enum {
-      synchronous, /* 0 */
-      asynchronous}; /* 1 */
+    enum{ /* [enm] Transfer mode */
+      synchronous, /* Syncronous transfer */
+      asynchronous}; /* Asynchronous transfer */
 
-    enum {
-      lcl_rmt, /* 0 */
-      rmt_lcl}; /* 1 */
+    enum{ /* [enm] File order */
+      lcl_rmt, /* Local file argument before remote file argument */
+      rmt_lcl}; /* Remote file argument before local file argument */
 
     int fl_pth_lcl_len;
     

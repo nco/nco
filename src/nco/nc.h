@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.58 2001-05-08 01:36:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.59 2001-05-28 23:48:12 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -40,8 +40,7 @@
 #ifndef NC_H /* Contents have not yet been inserted in current source file */
 #define NC_H
 
-/* fxm: Get rid of all nco_long references before releasing NCO 1.4 
-   NCO uses native type nco_long to store variables of type NC_INT */
+/* NCO uses native type nco_long to store variables of type NC_INT */
 typedef long nco_long;
 
 #ifndef bool
@@ -72,14 +71,14 @@ typedef long nco_long;
 
 /* Global variables and variables with scope limited to main.c allocated here */
 
-int prg; // [enm] Program ID
-int prg_get(void){return prg;} // [enm] Program ID
+int prg; /* [enm] Program ID */
+int prg_get(void){return prg;} /* [enm] Program ID */
 
-char *prg_nm; // [sng] Program name
-char *prg_nm_get(void){return prg_nm;} // [sng] Program name
+char *prg_nm; /* [sng] Program name */
+char *prg_nm_get(void){return prg_nm;} /* [sng] Program name */
 
-unsigned short dbg_lvl=0; // [enm] Debugging level
-unsigned short dbg_lvl_get(void){return dbg_lvl;} // [enm] Debugging level
+unsigned short dbg_lvl=0; /* [enm] Debugging level */
+unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
 
 #else /* MAIN_PROGRAM_FILE is NOT defined, i.e., current file does not contain main() */
 
@@ -88,8 +87,7 @@ unsigned short dbg_lvl_get(void){return dbg_lvl;} // [enm] Debugging level
 
 #endif /* MAIN_PROGRAM_FILE is NOT defined, i.e., the current file does not contain main() */
 
-/* Enumerate key values for all netCDF operators */
-enum prg{
+enum prg{ /* [enm] Key value for all netCDF operators */
   ncap,
   ncatted,
   ncdiff,
@@ -103,7 +101,7 @@ enum prg{
   ncwa
 }; /* end prg enum */
 
-enum{
+enum{ /* [enm] Attribute editor mode */
   aed_append,
   aed_create,
   aed_delete,
@@ -111,21 +109,21 @@ enum{
   aed_overwrite
 }; /* end enum */
 
-enum{
-  nco_op_eq,
-  nco_op_ne,
+enum{ /* [enm] Relational operator for masking */
+  nco_op_eq, /* Equality */
+  nco_op_ne, 
   nco_op_lt,
   nco_op_gt,
   nco_op_le,
   nco_op_ge
 }; /* end enum */
 
-enum lmt_typ{
-  lmt_crd_val, /* 0 */
-  lmt_dmn_idx /* 1 */
+enum lmt_typ{ /* [enm] Limit type */
+  lmt_crd_val, /* 0, Coordinate value limit */
+  lmt_dmn_idx /* 1, Dimension index limit */
 }; /* end lmt_typ enum */
 
-enum nco_pck_typ{
+enum nco_pck_typ{ /* [enm] Packing type */
   nco_pck_all_xst_att, /* 0, Pack all variables, keeping existing packing attributes if any */
   nco_pck_all_new_att, /* 1, Pack all variables, always generating new packing attributes */
   nco_pck_xst_xst_att, /* 2, Pack existing packed variables, keeping existing packing attributes if any */
@@ -134,12 +132,17 @@ enum nco_pck_typ{
   nco_pck_nil /* 5, Do not think about packing */
 }; /* end nco_pck_typ enum */
 
-enum nco_op_typ{
-  nco_op_avg,
-  nco_op_min,
-  nco_op_max,
-  nco_op_ttl,
-  nco_op_sqravg,
+enum nco_fl_typ{ /* [enm] File type */
+  nco_fl_typ_nc, /* 0, netCDF file */
+  nco_fl_typ_hd5 /* 1, HDF5 file */
+}; /* end nco_fl_typ enum */
+
+enum nco_op_typ{ /* [enm] Operation type */
+  nco_op_avg, /* Average */
+  nco_op_min, /* Minimum value */
+  nco_op_max, /* Maximum value */
+  nco_op_ttl, /* Linear sum */
+  nco_op_sqravg, /*  */
   nco_op_avgsqr,
   nco_op_sqrt,
   nco_op_rms,

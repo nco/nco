@@ -1,3 +1,8 @@
+2001-05-28  Charlie Zender  <zender@uci.edu>
+
+	* Added HDF5 interface to nco_create(), using HDF5 preprocessor
+	token to isolate native HDF code currently
+
 2001-05-07  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_0_0
