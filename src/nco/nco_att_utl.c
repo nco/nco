@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.24 2003-11-07 04:12:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.25 2003-12-03 17:06:11 hmb Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -125,7 +125,8 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     /* Get new and old missing values in same type as variable */
     mss_val_crr.vp=(void *)nco_malloc(att_sz*nco_typ_lng(var->type));
     mss_val_new.vp=(void *)nco_malloc(aed.sz*nco_typ_lng(var->type));
-    (void)val_cnf_typ(att_typ,var->mss_val,var->type,mss_val_crr);
+
+    (void)val_cnf_typ(var->type,var->mss_val,var->type,mss_val_crr); 
     (void)val_cnf_typ(aed.type,aed.val,var->type,mss_val_new);
 
     /* Typecast pointer to values before access */
