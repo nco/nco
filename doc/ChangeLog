@@ -3,6 +3,8 @@
 	* cvs tag -c nco-2_8_1
 	Changes since nco-2_8_0: variable wildcarding
 
+	* Quote backslash character with backslash in nco_var_lst.c
+
 	* Add skeleton ncap.1 man page to satisfy autotools 'make install'
 
 	* Bring bld/Makefile up-to-date with wildcarding, getopt changes
