@@ -1,5 +1,7 @@
 2002-09-06  Charlie Zender  <zender@uci.edu>
 
+	* Clean up ncap section of nco.texi, polish documentation builds
+
 	* Fixed nco.texi problems, generating docs at compile farm
 
 2002-09-03  unknown  <zender@uci.edu>

@@ -1,11 +1,11 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.115 2002-09-07 01:39:41 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.116 2002-09-07 05:41:55 zender Exp $
 Purpose: NCO homepage
 
 Usage:
 http://www.ess.uci.edu/~zender/nco/index.shtml
 file:/home/zender/nco/doc/index.shtml
 
-scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs/index.shtml
+/usr/bin/scp ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs/index.shtml
 scp -p ~/nco/doc/index.shtml www.ess.uci.edu:/home/zender/public_html/nco/index.shtml
 -->
 
@@ -284,18 +284,21 @@ many months, if not years:
 <dt><a name="RTFM"></a></dt>
 <h2>User's Guide</h2> 
 <p>View the NCO User's Guide in any of the following formats.
-<tt>nco.texi</tt> is the most up-to-date, and <tt>nco.html</tt>
-is reasonably up-to-date.
-The files <tt>nco.dvi</tt>, <tt>nco.ps</tt>, and <tt>nco.pdf</tt> are
-out-of-date due to problems with RedHat <tt>dvi2ps</tt>.
+<tt>nco.texi</tt> is the most up-to-date.
+<tt>nco.html</tt>, <tt>nco.info</tt>, <tt>nco.txt</tt>, and
+<tt>nco.xml</tt> are reasonably up-to-date. 
+Files <tt>nco.dvi</tt>, <tt>nco.ps</tt>, and <tt>nco.pdf</tt> are
+out-of-date due to configuration problems with my <tt>texinfo</tt>
+utilities (but you can generate them yourself from <tt>nco.texi</tt>!)
 <ul>
 <li><a href="./nco.dvi">DVI</a> Device Independent (<tt>xdvi</tt>)</li>
-<li><a href="./nco.html">HTML</a> Hypertext (<tt>netscape</tt>)</li>
-<li><a href="./nco.info">Info</a> GNU Info (<tt>M-x Info</tt> in <tt>emacs</tt>)</li>
-<li><a href="./nco.pdf">PDF</a> Portable Document Format
-(<tt>ghostview</tt> or <tt>acroread</tt>)</li>
+<li><a href="./nco.html">HTML</a> Hypertext (any browser)</li>
+<li><a href="./nco.info">Info</a> GNU Info (<tt>M-x Info</tt>, <tt>emacs</tt>)</li>
+<li><a href="./nco.pdf">PDF</a> Portable Document Format (<tt>ghostview</tt>, <tt>acroread</tt>, <tt>xpdf</tt>)</li>
 <li><a href="./nco.ps">Postscript</a> Printing (<tt>ghostview</tt>)</li>
 <li><a href="./nco.texi">TeXInfo</a> Documentation Source code (<tt>emacs</tt>)</h2> </li>
+<li><a href="./nco.txt">Text</a> Plain text (<tt>more</tt>)</h2> </li>
+<li><a href="./nco.xml">XML</a> Extensible Markup Language (<tt>mozilla</tt>)</h2> </li>
 </ul>
 <hr></p>
 

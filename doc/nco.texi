@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.117 2002-09-07 01:39:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.118 2002-09-07 05:41:55 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -18,19 +18,19 @@ Multiple files:
 M-x texinfo-multiple-files-update
 
 Usage: 
-cd ~/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi
+cd ~/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
 texi2html -monolithic -verbose nco.texi
-texi2dvi nco.texi 
-texi2dvi --pdf nco.texi
-makeinfo nco.texi 
-texi2html -monolithic -verbose nco.texi 
+texi2dvi --output=nco.dvi nco.texi 
+texi2dvi --pdf --output=nco.pdf nco.texi
 dvips -o nco.ps nco.dvi 
+makeinfo --no-split --output=nco.info nco.texi 
+makeinfo --no-headers --output=nco.txt nco.texi
+makeinfo --xml --output=nco.xml nco.texi
 ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
-cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf nco.texi nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
-cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf nco.texi www.ess.uci.edu:/home/zender/public_html/nco;cd -
-scp nco.sf.net:/home/groups/n/nc/nco/nco/doc/nco.dvi ~/nco/doc
-scp nco.sf.net:/home/groups/n/nc/nco/nco/doc/nco.pdf ~/nco/doc
-scp /home/groups/n/nc/nco/nco/doc/nco.dvi dust.ps.uci.edu:nco/doc
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
+cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml www.ess.uci.edu:/home/zender/public_html/nco;cd -
+/usr/bin/scp nco.sf.net:/home/groups/n/nc/nco/nco/doc/nco.dvi ~/nco/doc
+/usr/bin/scp /home/groups/n/nc/nco/nco/doc/nco.dvi dust.ps.uci.edu:nco/doc
 
 Resources:
 Octave TeXInfo manual is a good example of clean TeXInfo structure
@@ -99,7 +99,7 @@ END-INFO-DIR-ENTRY
 This file documents @acronym{NCO}, a collection of utilities to manipulate and 
 analyze netCDF files.
 
-Copyright @copyright{} @value{copyright_years} Charlie Zender
+Copyright @copyright{} @value{copyright-years} Charlie Zender
 
 This is the first edition of the @cite{NCO User's Guide},@*
 and is consistent with version 2 of @file{texinfo.tex}.
@@ -178,7 +178,7 @@ Texts. The license is available online at
 @c Cover art by Robynn Rudel
 @end titlepage
 @node  Top, Foreword, (dir), (dir)
-@comment node-name, next,     previous, up
+@c node format: node-name, next, previous, up
 
 @menu
 * Foreword::                    
@@ -2535,12 +2535,12 @@ The internal version number varies between operators, and indicates the
 most recent change to a particular operator's source code.
 This is useful in making sure you are working with the most recent
 operators.
-The version of @acronym{NCO} you are using might be, e.g., 1.2.
+The version of @acronym{NCO} you are using might be, e.g., @code{1.2}.
 However using @samp{-r} on, say, @command{ncks}, will produce something
 like @samp{NCO netCDF Operators version 1.2
 Copyright (C) 1995--2000 Charlie Zender
 ncks version 1.30 (2000/07/31) "Bolivia"}.
-This tells you @command{ncks} contains all patches up to version 1.30,
+This tells you @command{ncks} contains all patches up to version @code{1.30},
 which dates from July 31, 2000.
 
 @node Operators, Contributing, Common features, Top
@@ -2758,10 +2758,11 @@ $$
 $$
 @end tex
 @ifnottex
-@var{scale_factor} = (@var{max}-@var{min})/@var{ndrv}
-@var{add_offset} = 0.5*(@var{min}+@var{max})
-@var{pck} = (@var{upk}-@var{add_offset})/@var{scale_factor} = 
-(@var{upk}-0.5*(@var{min}+@var{max}))*@var{ndrv}/(@var{max}-@var{min})
+@sp 1
+@var{scale_factor} = (@var{max}-@var{min})/@var{ndrv}@*
+@var{add_offset} = 0.5*(@var{min}+@var{max})@*
+@var{pck} = (@var{upk}-@var{add_offset})/@var{scale_factor} = (@var{upk}-0.5*(@var{min}+@var{max}))*@var{ndrv}/(@var{max}-@var{min})@* 
+@sp 1
 @end ifnottex
 where @var{ndrv} is the number of discrete representable values for
 given type of packed variable.
@@ -2798,7 +2799,9 @@ $$
 $$
 @end tex
 @ifnottex
-@var{upk} = @var{scale_factor}*@var{pck} + @var{add_offset} = (@var{max}-@var{min})*@var{pck}/@var{ndrv} + 0.5*(@var{min}+@var{max}) 
+@sp 1
+@var{upk} = @var{scale_factor}*@var{pck} + @var{add_offset} = (@var{max}-@var{min})*@var{pck}/@var{ndrv} + 0.5*(@var{min}+@var{max})@*
+@sp 1
 @end ifnottex
 When @code{scale_factor} and @code{add_offset} are used for packing, the
 associated variable (containing the packed data) is typically of type
@@ -4054,8 +4057,8 @@ String format for text output. Accepts C language escape sequences and
 @cindex @code{-u}
 @cindex @code{units}
 @item -u 
-Accompany the printing of a variable's values with its units attribute,
-if it exists.  
+Accompany the printing of a variable's values with its @code{units}
+attribute, if any.
 
 @end table
 
@@ -4164,14 +4167,14 @@ Print (with @code{-H}) the hyperslabs to the screen for good measure.
 The specified hyperslab is: the fifth value in dimension @code{time}; the
 half-open range @math{@var{lat} > 0.} in coordinate @code{lat}; the
 half-open range @math{@var{lon} < 330.} in coordinate @code{lon}; the
-closed interval @math{.3 < @var{band} < .5} in coordinate @code{band}; and
+closed interval @math{0.3 < @var{band} < 0.5} in coordinate @code{band}; and
 cross-section closest to 1000. in coordinate @code{lev}.  
 Note that limits applied to coordinate values are specified with a
 decimal point, and limits applied to dimension indices do not have a
 decimal point @xref{Hyperslabs}.
 @example
-ncks -H -d time,5 -d lat,,0. -d lon,330., -d band,.3,.5 
--d lev,1000. in.nc out.nc 
+ncks -H -d time,5 -d lat,,0.0 -d lon,330.0, -d band,0.3,0.5 
+-d lev,1000.0 in.nc out.nc 
 @end example
 
 @cindex wrapped coordinates
@@ -4182,7 +4185,7 @@ Here, @code{lon} is an example of a wrapped coordinate.
 meridian simply by specifying the westernmost longitude as @var{min} and
 the easternmost longitude as @var{max}, as follows:
 @example
-ncks -d lon,260.,45. in.nc out.nc
+ncks -d lon,260.0,45.0 in.nc out.nc
 @end example
 For more details @xref{Wrapped coordinates}.
 
