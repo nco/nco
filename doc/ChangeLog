@@ -1,3 +1,7 @@
+2001-02-11  Charlie Zender  <zender@uci.edu>
+
+	* Tagged and released nco-1_2_2
+
 2001-01-02  Charlie Zender  <zender@uci.edu>
 
 	* Clean up some function prototypes, removed crud from nc.h,
