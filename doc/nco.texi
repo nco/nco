@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.208 2004-02-13 06:33:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.209 2004-02-14 08:54:44 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -906,14 +906,22 @@ offending files and re-run the command until it no longer breaks.
 Then back up one step and report the problem.
 Usually the file(s) will be very small, i.e., one variable with one or
 two small dimensions ought to suffice.
-Include in the report your run-time environment, the exact error
-messages.
-Run the operator with @samp{-r -D 5}
- to print the version
-and compile time inforincrease the
-verbosity of the debugging output), and a copy, or the publically
-accessible location, of the file(s).
-Post the bug report to the 
+@cindex @code{-r}
+@cindex @code{--revision}
+@cindex @code{--version}
+@cindex @code{--vrs}
+@cindex @code{-D @var{debug-level}}
+@cindex @code{--debug-level @var{debug-level}}
+@cindex @code{--dbg_lvl @var{debug-level}}
+@cindex @var{debug-level}
+@cindex @var{dbg_lvl}
+Run the operator with @samp{-r -D 5} to print the compile time
+information and to increase the verbosity of the debugging output.
+It is very important that your report contain the exact error messages
+and compile-time environment printed by @samp{-r -D 5}.
+Include a copy of your sample input file, or place one on a 
+publically accessible location, of the file(s).
+Post the full bug report to the 
 @uref{http://sourceforge.net/bugs/?group_id=3331, NCO Project buglist}.
 
 @html
