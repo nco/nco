@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.436 2004-10-25 17:00:31 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.437 2004-11-01 16:00:41 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -277,7 +277,9 @@ nco470. implement netcdf-3.6 flags in nc_create()? When, how to transition?
 nco472. Iff 64-bit offsets are not backwards compatible, then 
 nco473. Ask Unidata to debianize UDUnits, DODS
 nco474. Incorporate alternative "chunking" for ncrcat when data are one-dimensional, to avoid high disk/network access incurred by retrieving one float at a time
-nco475. 
+nco475. NEC SX should use S_IFLNK not S_ISLNK in nco_fl_utl.c
+nco476. NEC SX should use test -f not test -e in configure script
+nco477. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
