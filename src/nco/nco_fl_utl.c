@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.27 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.28 2004-01-20 07:01:07 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -119,7 +119,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
     } /* end if */
-    fl_lst_in=(char **)nco_malloc(sizeof(char *));
+    fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
     fl_lst_in[(*nbr_fl)++]=(char *)strdup(argv[arg_crr++]);
     if(arg_crr == argc-1) *fl_out=(char *)strdup(argv[arg_crr]); else *fl_out=NULL;
     return fl_lst_in;

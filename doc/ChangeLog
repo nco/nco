@@ -1,3 +1,8 @@
+2004-01-19  Charlie Zender  <zender@uci.edu>
+
+	* Use valgrind 2.1 to identify and fix small leaks: 
+	Free prg_nm in nco_exit_gracefully()
+
 2004-01-16  Charlie Zender  <zender@uci.edu>
 
 	* nco_netcdf.c: Do not initialize rcd unless not doing so might	cause CEWI

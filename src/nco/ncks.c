@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.98 2004-01-17 01:19:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.99 2004-01-20 07:01:06 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.98 2004-01-17 01:19:46 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.98 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.99 2004-01-20 07:01:06 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.99 $";
   const char * const opt_sng="aABb:CcD:d:FHhl:MmOp:qrRs:uv:x-:";
 
   extern char *optarg;
@@ -472,7 +472,6 @@ main(int argc,char **argv)
   
   /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)nco_fl_rm(fl_in);
-
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

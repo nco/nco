@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.36 2004-01-16 01:42:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.37 2004-01-20 07:01:07 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -13,11 +13,12 @@ nco_exit /* [fnc] Wrapper for exit() */
 (int rcd) /* I [enm] Return code */
 {
   /* Purpose: Wrapper for exit() */
+
   exit(rcd);
 } /* nco_exit() */
 
 void 
-nco_exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, then exit */
+nco_exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, memory, then exit */
 {
   char *time_bfr_end;
   time_t time_crr_time_t;
@@ -25,7 +26,7 @@ nco_exit_gracefully(void) /* [fnc] Clean up timers, file descriptors, then exit 
   /* End clock */ 
   time_crr_time_t=time((time_t *)NULL);
   time_bfr_end=ctime(&time_crr_time_t); time_bfr_end=time_bfr_end; /* Avoid compiler warning until variable is used for something */
-/*  (void)fprintf(stderr,"\tend = %s\n",time_bfr_end);*/
+  /*  (void)fprintf(stderr,"\tend = %s\n",time_bfr_end);*/
 
   (void)fclose(stderr);
   (void)fclose(stdin);
@@ -153,7 +154,9 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
 
   char *nm_out;
 
-  /* Get program name (use strrchr() first in case nm_in contains a path) */
+  /* Get program name (use strrchr() first in case nm_in contains a path)
+     fxm: Put initial nm_out pointer in list of malloc()'s to be freed
+     Then free this memory in nco_exit() */
   nm_out=(char *)strdup(nm_in);
   if(strrchr(nm_out,'/') != NULL) nm_out=strrchr(nm_out,'/')+1;
 
