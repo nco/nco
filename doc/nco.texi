@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.47 2000-07-09 00:07:40 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.48 2000-07-27 12:58:23 hmb Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -222,6 +222,7 @@ Features common to most operators
 * History attribute::           
 * NCAR CSM Conventions::        
 * ARM Conventions::             
+* Averaging Types::
 
 Reference manual for all operators
 
@@ -1064,6 +1065,7 @@ feature is automatic and cannot be controlled by the user.
 * History attribute::           
 * NCAR CSM Conventions::        
 * ARM Conventions::             
+* Averaging Types::
 @end menu
 
 @node Specifying input files, Remote storage, Common features, Common features
@@ -1899,7 +1901,7 @@ file 99% of the time.
 If you decide you would like any of the above CSM fields processed, you
 must use @code{ncrename} to rename them first.
 
-@node ARM Conventions,  , NCAR CSM Conventions, Common features
+@node ARM Conventions,Averaging Types, NCAR CSM Conventions, Common features
 @section ARM Conventions
 @cindex ARM conventions
 @cindex @code{time_offset}
@@ -1942,6 +1944,86 @@ variable, it will also contain the @code{time} coordinate.
 @cindex attributes, global
 A short message is added to the @code{history} global attribute whenever
 these ARM-specific procedures are executed.
+
+
+@node Averaging Types, ,ARM Conventions, Common features  
+@section Averaging Types
+@cindex Averaging Types
+@cindex @code{time_offset}
+@cindex @code{base_time}
+@cindex @code{time}
+@cartouche
+@noindent
+Availability: @code{ncra},@code{ncea},@code{ncwa} @*
+Key switches: @samp{-y}@*
+@end cartouche
+@noindent
+In addition to the standard averaging, the following functions are
+avaiable:
+
+@example
+-y min       Find minimium field value.
+-y max       Find maximium field value.
+-y ttl       Sum of the field values
+-y avgsqr    Square of the average.
+-y avgsumsqr Average of the sum of the Squares
+-y rms       The root-mean-square value.
+-y rmssdn    Returns the root-mean square where square sum has been averaged
+             over (N-1). 
+-y sqrt      Returns the square root of the average.
+@end example
+@noindent
+If a function is not specified then ncra, ncea and ncwa all default to the standard 
+average. Please note that with ncwa the weighted averages option ( -w) should not be
+used at the same time as this option.
+
+
+@noindent
+EXAMPLES
+
+Given the file t1.nc
+
+@example
+netcdf  t1.nc @{
+dimensions:
+       time = 10 ;
+       lat = 3 ;
+       lon = 4 ;
+variables:
+        float time(time) ;
+        float lat(lat)   ;
+        float lon(lon)   ;         
+        float two_dmn_var(time,lon) ;
+        float three_dmn_var(time,lat,lon) ;
+@}
+@end example
+
+@noindent
+Find the minimium value of two_dim_var over all dimensions.
+@example
+ncwa -y min -v two_dmn_var t1.nc foo.nc 
+@end example
+
+@noindent
+Find the max value of lon at each time interval.
+@example
+ncwa -y max -v two_dmn_var -a lon t1.nc foo.nc
+@end example
+
+@noindent
+Find the rms value of three_dmn_var over time.
+@example
+ncra -y rms -v three_dmn_var t1.nc foo.nc
+@end example
+
+@noindent
+Can also use these averaging types across files. If the variable 
+float temperature(lat,lon) is in the three files jan.nc feb.nc march.nc.
+We can now find the maximium temperature at each spot over the three months.
+
+@example
+ncea -y max -v temperature jan.nc feb.nc march.nc out.nc
+@end example
 
 @node Operators, Contributing, Common features, Top
 @chapter Reference manual for all operators
