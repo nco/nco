@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.5 1999-10-04 05:16:27 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.6 2000-04-03 22:58:13 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -26,8 +26,6 @@ nco/data/ncap.in	Text input for ncap (not yet used)
 
 Documentation directory:
 nco/doc/ANNOUNCE	Announcement to accompany release notifications
-nco/doc/FAQ		Frequently Asked Questions about NCO
-nco/doc/INSTALL		Installation instructions
 nco/doc/LICENSE		License and legal information
 nco/doc/MANIFEST	This file. Describes all files in distribution
 nco/doc/README		Description of NCO

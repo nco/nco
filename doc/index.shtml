@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.39 2000-03-09 00:04:34 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.40 2000-04-03 22:58:13 zender Exp $
 
 Purpose: NCO homepage
 
@@ -56,21 +56,23 @@ scp -p ~/nc/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/inde
 <DT><A NAME="Definition"></A></DT>
 <H2>What is NCO?</H2>
 
-<P>The netCDF Operators, or NCO, are a suite of programs known as <B>operators</B>.
+<P>The <a
+href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
+Operators, or NCO, are a suite of programs known as <B>operators</B>. 
 Each operator is a standalone, command line program which is executed at
 the UNIX (or NT) shell-level like, e.g., <TT>ls</TT> or <TT>mkdir</TT>.
-The operators take netCDF or HDF files as input, then perform an
-operation (e.g., averaging, hyperslabbing, or metadata manipulation)
-and produce a netCDF file as output. 
-The operators are primarily designed to aid manipulation and analysis of
-gridded scientific data, and the 
-<A HREF="./nco.html">NCO User's
-Guide</A> 
+The operators take <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
+or <a href="http://hdf.ncsa.uiuc.edu">HDF</a> files as input, then
+perform an operation (e.g., averaging, hyperslabbing, or metadata
+manipulation) and produce a 
+<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> file
+as output. The operators are primarily designed to aid manipulation and analysis of
+gridded scientific data, and the <A HREF="./nco.html">NCO User's Guide</A> 
 illustrates their use with examples from the field of climate modeling
 and analysis.</P> 
 
-<P>The operators are as general as netCDF itself: there are no restrictions
-on the contents of the netCDF file(s) used as input.
+<P>The operators are as general as <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> itself: there are no restrictions
+on the contents of the <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> file(s) used as input.
 The internal routines of NCO are completely dynamic which means that
 NCO imposes no limit on the number of dimensions, sizes of variables,
 files etc. 
@@ -324,6 +326,13 @@ T90 to avoid C-Fortran interface problems; otherwise incorrect answers
 may result. 
 As of NCO 1.1.38, this is the default.
 </P>
+
+<P>20000321: <tt>ncdiff</tt> has a bug which may be triggered when a
+variable subtracts a conforming subset of itself. 
+This bug is sensitive to the order of declaration of dimensions in the
+file.
+The problem is being investigated.</P>
+
 <HR></P>
 
 <TABLE WIDTH="100%" >
