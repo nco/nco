@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.98 2002-05-23 18:28:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.99 2002-05-23 18:30:50 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -63,11 +63,11 @@ END-INFO-DIR-ENTRY
 @clear smallbook
 
 @c Define edition, date, ...
-@set nco-edition 2.4.1
-@set doc-edition 2.4.1
+@set nco-edition 2.4.2
+@set doc-edition 2.4.2
 @set copyright-years 1995--2002
 @set update-year 2002
-@set update-date 1 May 2002
+@set update-date 23 May 2002
 @set update-month May 2002
 
 @c Experiment with smaller amounts of whitespace between chapters and sections
