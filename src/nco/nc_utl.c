@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.130 2002-03-28 02:38:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.131 2002-03-29 02:00:13 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -2604,7 +2604,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
   
   /* Simple error-checking and diagnostics */
   if(dbg_lvl_get() > 2){
-    (void)fprintf(stderr,"%s: DEBUG Promoting variable %s from type %s to type %s\n",prg_nm_get(),var_in->nm,nco_typ_sng(var_in_type),nco_typ_sng(var_out_type));
+    (void)fprintf(stderr,"%s: DEBUG %s variable %s from type %s to type %s\n",prg_nm_get(),var_out_type > var_in_type ? "Promoting" : "Demoting",var_in->nm,nco_typ_sng(var_in_type),nco_typ_sng(var_out_type));
   } /* end if */
   
   /* Move the current var values to swap location */

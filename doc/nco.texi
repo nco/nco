@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.92 2002-03-01 07:50:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.93 2002-03-29 02:00:13 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -4643,6 +4643,18 @@ Compute the global annual mean over the maritime tropical Pacific:
 ncwa -m ORO -M 0.5 -o lt -w gw -a lat,lon,time 
 -d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
 @end example
+
+Determine the total area of the maritime tropical Pacific, assuming
+the variable @var{area} contains the area of each gridcell
+@example
+ncwa -N -v area -m ORO -M 0.5 -o lt -a lat,lon
+-d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
+@end example
+Weighting @var{area} (e.g., by @var{gw}) is not appropriate because
+@var{area} is @emph{already} area-weighted by definition.
+Thus the @samp{-N} switch, or, equivalently, the @samp{-y ttl} switch, 
+are all that are needed to correctly integrate the cell areas into
+a total regional area.
 
 @node Contributing, General Index, Operators, Top
 @chapter Contributing
