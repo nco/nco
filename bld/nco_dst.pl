@@ -1,17 +1,19 @@
 #!/contrib/bin/perl
 				
-my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.9 1999-04-20 20:55:00 zender Exp $';
+my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.10 1999-04-20 22:02:55 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
 # Usage:
 # Export tagged, public versions
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln nco1_1_25
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_25
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_25
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_prs nco1_1_25
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_25
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_25
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln nco1_1_26
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_26
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_26
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --wnt_prs nco1_1_26
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_26
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_26
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_26
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_26
 
 # Export daily snapshot
 # /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 
@@ -49,9 +51,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $RCS_Date='$Date: 1999-04-20 20:55:00 $';
-my $RCS_Id='$Id: nco_dst.pl,v 1.9 1999-04-20 20:55:00 zender Exp $';
-my $RCS_Revision='$Revision: 1.9 $';
+my $RCS_Date='$Date: 1999-04-20 22:02:55 $';
+my $RCS_Id='$Id: nco_dst.pl,v 1.10 1999-04-20 22:02:55 zender Exp $';
+my $RCS_Revision='$Revision: 1.10 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -59,6 +61,8 @@ my $dst_pth='/data/zender'; # Where the distribution will be exported and built
 my $main_trunk_tag='nco';
 my $nco_sng='nco';
 my $nst_all=$False; # Option nst_all; Whether to install version on all machines
+my $acd_cnt=$False; # Option acd_cnt; Whether to install version on acd contrib
+my $acd_prs=$False; # Option acd_prs; Whether to install version on acd personal
 my $wnt_cnt=$False; # Option wnt_cnt; Whether to install version on winterpark contrib
 my $wnt_prs=$False; # Option wnt_prs; Whether to install version on winterpark personal
 my $cgd_cnt=$False; # Option cgd; Whether to install version on CGD contrib
@@ -94,6 +98,8 @@ $rcd=GetOptions(
 		'nst_all!' => \$nst_all,
 		'cgd_prs!' => \$cgd_prs,
 		'cgd_cnt!' => \$cgd_cnt,
+		'acd_prs!' => \$acd_prs,
+		'acd_cnt!' => \$acd_cnt,
 		'wnt_prs!' => \$wnt_prs,
 		'wnt_cnt!' => \$wnt_cnt,
 		'cray_prs!' => \$cray_prs,
@@ -106,6 +112,8 @@ elsif($#ARGV == 0){$vrs_tag=$ARGV[0];} # Version name is first positional argume
 if($nst_all){
     $cgd_prs=$True;
     $cgd_cnt=$True;
+    $acd_prs=$True;
+    $acd_cnt=$True;
     $wnt_prs=$True;
     $wnt_cnt=$True;
     $cray_prs=$True;
@@ -122,6 +130,8 @@ if($dbg_lvl >= 2){print ("$prg_nm: \$mk_cmd = $mk_cmd\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$tar_cmd = $tar_cmd\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$cgd_prs = $cgd_prs\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$cgd_cnt = $cgd_cnt\n");} # endif dbg
+if($dbg_lvl >= 2){print ("$prg_nm: \$acd_prs = $acd_prs\n");} # endif dbg
+if($dbg_lvl >= 2){print ("$prg_nm: \$acd_cnt = $acd_cnt\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$wnt_prs = $wnt_prs\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$wnt_cnt = $wnt_cnt\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$cray_prs = $cray_prs\n");} # endif dbg
@@ -199,6 +209,16 @@ if($dst_cln){&cmd_prc("/bin/rm -r $dst_pth/$dst_vrs");} # Remove local distribut
 
 # Sanity check
 &cmd_prc("rsh ftp.cgd.ucar.edu ls -l /ftp/pub/zender/nco");
+
+if($acd_prs){
+    $rmt_mch='garcia.acd.ucar.edu';
+    print STDOUT "\n$prg_nm: Updating private NCO on $rmt_mch...\n";
+    &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco;/local/bin/cvs update\"");
+    &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco/bld;/local/bin/gmake\"");
+# Unfortunately, sudo does not work at all with rsh
+#    &cmd_prc("rsh $rmt_mch \"sudo cp /a1/zender/bin/ALPHA/nc* /usr/local/bin\"");
+    print STDOUT "$prg_nm: Done updating private NCO binaries on $rmt_mch\n\n";
+} # endif acd_prs
 
 if($cgd_cnt){
     $rmt_mch='sanitas.cgd.ucar.edu';
