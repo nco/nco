@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.1 2002-01-11 23:20:29 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.2 2002-02-07 06:08:23 zender Exp $ 
 
 // Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -324,6 +324,18 @@ nco_put_var // [fnc] Write variable to netCDF file
   return rcd;
 } // end nco_put_var<long *>()
 
+int // O [enm] Return success code
+nco_put_var // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const short * const &var_val) // I [frc] Variable value
+{
+  // Purpose: Wrapper for nc_put_var_short()
+  int rcd=nc_put_var_short(nc_id,var_id,var_val);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<short *>");
+  return rcd;
+} // end nco_put_var<short *>()
+
 // Overload 3: Write scalar given ID
 int // O [enm] Return success code
 nco_put_var // [fnc] Write variable to netCDF file
@@ -388,6 +400,19 @@ nco_put_var // [fnc] Write variable to netCDF file
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<long>");
   return rcd;
 } // end nco_put_var<long>()
+
+int // O [enm] Return success code
+nco_put_var // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const short &var_val) // I [frc] Variable value
+{
+  // Purpose: Wrapper for nc_put_var1_short()
+  std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
+  int rcd=nc_put_var1_short(nc_id,var_id,&srt[0],&(const_cast<short &>(var_val)));
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<short>");
+  return rcd;
+} // end nco_put_var<short>()
 
 // End nco_put_var() overloads
 // Begin nco_get_var() overloads

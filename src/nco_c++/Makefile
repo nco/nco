@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile,v 1.4 2002-01-30 08:24:11 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile,v 1.5 2002-02-07 06:08:23 zender Exp $
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -335,12 +335,11 @@ endif
 # endif CRAY
 
 # Works on LINUX and LINUXALPHA and FREEBSD
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXFREEBSD))
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
 ifndef ${CXX}
  C++ := g++
 endif 
 ifndef ${CC}
-# fxm: 19980517 As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
  CC := gcc
 endif 
 CPP := ${C++}

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.1 2002-01-11 23:20:29 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.2 2002-02-07 06:08:23 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF variable routines
 
@@ -209,6 +209,13 @@ nco_put_var // [fnc] Write variable to netCDF file
  const long * const &var_val); // I [frc] Variable value
 // end nco_put_var<long *>() prototype
 
+int // O [enm] Return success code
+nco_put_var // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const short * const &var_val); // I [frc] Variable value
+// end nco_put_var<short *>() prototype
+
 template<typename typ_ntr>
 int // O [enm] Return success code
 nco_put_var // [fnc] Write variable to netCDF file
@@ -281,6 +288,13 @@ nco_put_var // [fnc] Write variable to netCDF file
  const int &var_id, // I [id] Variable ID
  const long &var_val); // I [frc] Variable value
 // end nco_put_var<long>() prototype
+
+int // O [enm] Return success code
+nco_put_var // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const short &var_val); // I [frc] Variable value
+// end nco_put_var<short>() prototype
 
 // Overload 4: Write scalar given name
 // Overload 4: int nco_put_var(const int &nc_id,const int &var_id,const <T> &var_val)

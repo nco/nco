@@ -1,3 +1,9 @@
+2002-02-05  Charlie Zender  <zender@uci.edu>
+
+	* nco_var.hh (file): Added <short> and <short *> types to
+	nco_put_var() based on entirely <long> and <int> functions.
+	zfm, which uses shorts, now compiles.
+
 2002-01-26  Charlie Zender  <zender@uci.edu>
 
 	* Built and tested with Linux icc
