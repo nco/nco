@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.24 2004-01-10 04:30:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.25 2004-03-11 07:18:13 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -849,7 +849,12 @@ nco_lmt_udu_cnv /* [fnc] convert from Unidata units to coordinate value */
   char* usr_unt_sng; /* User-specified unit string */
   long att_sz; /* "units" attribute size */
   nc_type att_typ; /* atttribute type, probably is NC_CHAR */
+#ifdef HAVE_UDUNITS_H
   utUnit udu_sct_in, udu_sct_out; /* Unidata units structure */
+#else /* !HAVE_UDUNITS_H */
+  (void)fprintf(stdout,"UDUnits header file <udunits.h> is not available.\n");
+  return 1;
+#endif /* !HAVE_UDUNITS_H */
   
 #ifndef UDUNITS_DAT
   /* When empty, utInit() uses environment variable UDUNITS_PATH, if any
