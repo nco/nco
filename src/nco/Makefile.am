@@ -56,7 +56,7 @@ nco_bnr.h nco_dbg.h nco_msa.h nco_mss_val.h nco_scl_utl.h nco_var_utl.h \
 nco_cln_utl.h nco_dmn_utl.h nco_netcdf.h nco_scm.h nco_getopt.h
 
 lib_LTLIBRARIES = libnco.la
-libnco_la_SOURCES = nco_malloc.c nco_att_utl.c nco_bnr.c nco_cln_utl.c nco_cnf_dmn.c \
+libnco_la_SOURCES = nco_att_utl.c nco_bnr.c nco_cln_utl.c nco_cnf_dmn.c \
 nco_cnf_typ.c nco_cnv_arm.c nco_rth_flt.c ${NCO_GETOPT} \
 nco_cnv_csm.c nco_ctl.c nco_dbg.c nco_dmn_utl.c nco_fl_utl.c nco_lmt.c \
 nco_lst_utl.c nco_mmr.c nco_msa.c nco_mss_val.c nco_netcdf.c nco_omp.c nco_pck.c \
