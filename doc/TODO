@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.212 2003-03-27 18:47:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.213 2003-04-23 00:58:09 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -78,6 +78,7 @@ Highest priority NCO-wide items that You can help with:
 179. add netCDF to required packages list in RPM build
 191. Create short man page for ncap which points user to info pages or online manual
 212. Ensure structures are always passed by reference (default is pass by value)
+257. Create PayPal account to fund NCO development
 
 Remaining items of lesser priority:
 28. Use var.nc_id as file ID from now on and rewrite old routines to do so
