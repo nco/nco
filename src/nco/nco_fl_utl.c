@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.34 2004-06-19 22:14:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.35 2004-06-19 22:16:10 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -640,7 +640,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* For local files, perform optional file diagnostics */
     if(dbg_lvl_get() > 0){
       rcd=stat(fl_nm_lcl,&stat_sct);
-      if(S_ISLNK(stat_sct.st_mode) (void)fprintf(stderr,"%s: INFO Local file %s is symbolic link to ",prg_nm_get(),fl_nm_lcl);
+      if(S_ISLNK(stat_sct.st_mode)) (void)fprintf(stderr,"%s: INFO Local file %s is symbolic link to ",prg_nm_get(),fl_nm_lcl);
     } /* endif */
 
   } /* end if really a local file */
