@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.121 2002-09-09 04:14:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.122 2002-09-09 04:52:42 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -81,6 +81,8 @@ END-INFO-DIR-ENTRY
 
 @c Experiment with smaller amounts of whitespace between chapters and sections
 @tex
+% fxm: Try to get thumbnails working with texinfo --pdf -generated PDF files
+% \input thumbpdf.sty
 \global\chapheadingskip = 15pt plus 4pt minus 2pt 
 \global\secheadingskip = 12pt plus 3pt minus 2pt
 \global\subsecheadingskip = 9pt plus 2pt minus 2pt
