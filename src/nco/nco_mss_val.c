@@ -1,12 +1,19 @@
-ptr_unn
-mss_val_mk(nc_type type)
-/* 
-  nc_type type: I netCDF type of operand
-  ptr_unn mss_val_mk(): O ptr_unn containing default missing value for type type
- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.2 2002-05-05 03:48:18 zender Exp $ */
+
+/* Purpose: Missing value utilities */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_mss_val.h" /* Missing value utilities */
+
+ptr_unn /* O [sct] Default missing value for type type */
+mss_val_mk /* [fnc] Return default missing value for type type */
+(const nc_type type) /* I [enm] netCDF type of operand */
 {
   /* Threads: Routine is thread safe and makes no unsafe routines */
-  /* Routine to return a pointer union containing default missing value for type type */
+  /* Purpose: Return pointer union containing default missing value for type type */
 
   ptr_unn mss_val;
 
@@ -33,12 +40,9 @@ mss_val_mk(nc_type type)
 } /* end mss_val_mk() */
   
 void
-mss_val_cp(var_sct *var1,var_sct *var2)
-/* 
-  var_sct *var1: I variable structure with template missing value to copy
-  var_sct *var2: I/O variable structure with missing value to fill in/overwrite
-  mss_val_cp(): 
- */
+mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
+(const var_sct * const var1, /* I [sct] Variable with template missing value to copy */
+ var_sct * const var2) /* I/O [sct] Variable with missing value to fill in/overwrite */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Copy missing value from var1 to var2
@@ -59,13 +63,10 @@ mss_val_cp(var_sct *var1,var_sct *var2)
 
 } /* end mss_val_cp() */
   
-int
-mss_val_get(int nc_id,var_sct *var)
-/* 
-   int nc_id: I netCDF input-file ID
-   var_sct *var: I/O variable structure
-   int mss_val_get(): O flag whether variable has missing value on output or not
- */
+int /* O [flg] Variable has missing value on output */
+mss_val_get /* [fnc] Update number of attributes, missing_value of variable */
+(const int nc_id, /* I [id] netCDF input-file ID */
+ var_sct * const var) /* I/O [sct] Variable with missing_value to update */
 {
   /* Purpose: Update number of attributes and missing_value attribute of variable
      No matter what type of missing_value is as stored on disk, this routine
