@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.82 2005-02-14 02:14:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.83 2005-02-25 05:21:15 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -330,7 +330,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-i var,val] [-l path] [-n ...] [-O] [-o out.nc] [-p path] [-R] [-r] [-v ...] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc [out.nc]\n");
     break;
   case ncks:
-    opt_sng=(char *)strdup("[-A] [-a] [-B] [-b fl_bnr] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-M] [-O] [-o out.nc] [-p path] [-Q] [-q] [-R] [-r] [-s format] [-u] [-v ...] [-x] [-Z] in.nc [[out.nc]]\n");
+    opt_sng=(char *)strdup("[-A] [-a] [-B] [-b fl_bnr] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-M] [-O] [-o out.nc] [-P] [-p path] [-Q] [-q] [-R] [-r] [-s format] [-u] [-v ...] [-x] [-Z] in.nc [[out.nc]]\n");
     break;
   case ncpdq:
     opt_sng=(char *)strdup("[-A] [-a ...] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-M pck_map][-O] [-o out.nc] [-P pck_plc] [-p path] [-R] [-r] [-t] [-v ...] [-U] [-x] [-Z] in.nc [out.nc]\n");
@@ -378,7 +378,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-F")) (void)fprintf(stdout,"-F, --ftn, --fortran\tFortran indexing conventions (1-based) for I/O\n");
   if(strstr(opt_sng,"-f")) (void)fprintf(stdout,"-f, --fnc_tbl, --prn_fnc_tbl\tPrint function table\n");
   if(strstr(opt_sng,"-H")){
-    if(prg_lcl == ncks) (void)fprintf(stdout,"-H, --prn, --print\tToggle printing data\n");
+    if(prg_lcl == ncks) (void)fprintf(stdout,"-H, --huh, --hmm\tToggle printing data\n");
     if(nco_is_mlt_fl_opr(prg_lcl)) (void)fprintf(stdout,"-H, --fl_lst_in, --file_list\tDo not create \"input_file_list\" global attribute\n");
   } /* end if -H */
   if(strstr(opt_sng,"-h")) (void)fprintf(stdout,"-h, --hst, --history\tDo not append to \"history\" global attribute\n");
@@ -398,9 +398,13 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-n")){
     /*    if(prg_lcl == ncwa) (void)fprintf(stdout,"-n\t\tNormalize by tally but not weight\n");*/
     if(prg_lcl != ncwa) (void)fprintf(stdout,"-n, --nintap nbr_files,[nbr_numeric_chars[,increment]] NINTAP-style abbreviation of file list\n");
-  } /* end if */
+  } /* end if -n */
   if(strstr(opt_sng,"-o")) (void)fprintf(stdout,"-o, --output, --fl_out fl_out\tOutput file name (or use last positional argument)\n");
   if(strstr(opt_sng,"-O")) (void)fprintf(stdout,"-O, --ovr, --overwrite\tOverwrite existing output file, if any\n");
+  if(strstr(opt_sng,"-P")){
+    if(prg_lcl == ncks) (void)fprintf(stdout,"-P, --prn, --print\tPrint data, metadata, and units. Abbreviation for -C -H -M -m -u.\n");
+    if(prg_lcl == ncpdq) (void)fprintf(stdout,"-P, --pck_plc, --pack_policy pck_plc\tPacking policy [all_new,all_xst,xst_new,upk]\n");
+  } /* end if -P */
   if(strstr(opt_sng,"-P")) (void)fprintf(stdout,"-P, --pck_plc, --pack_policy pck_plc\tPacking policy [all_new,all_xst,xst_new,upk]\n");
   if(strstr(opt_sng,"-p")) (void)fprintf(stdout,"-p, --pth, --path path\tPath prefix for all input filenames\n");
   if(strstr(opt_sng,"-Q")) (void)fprintf(stdout,"-Q, \t\t\tToggle printing of dimension indices and coordinate values\n");
@@ -414,7 +418,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-S")) (void)fprintf(stdout,"-S, --fl_spt, --script-file fl.nco\tScript file containing multiple algebraic commands\n");
   if(strstr(opt_sng,"-T")) (void)fprintf(stdout,"-T, --truth_condition, --msk_cmp_typ, --op_rlt condition\tTruth condition for masking: eq,ne,ge,le,gt,lt\n");
   if(strstr(opt_sng,"-t")) (void)fprintf(stdout,"-t, --thr_nbr, --threads, --omp_num_threads thr_nbr\tThread number for OpenMP\n");
-  if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u, --units\t\tUnits of variables, if any, will not be printed\n");
+  if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u, --units\t\tToggle printing units of variables, if any\n");
   if(strstr(opt_sng,"-U")) (void)fprintf(stdout,"-U, --upk, --unpack\t\tUnpack input file\n");
   if(strstr(opt_sng,"-v")){
     if(prg_lcl == ncrename) (void)fprintf(stdout,"-v, --variable old_var,new_var Variable's old and new names\n");

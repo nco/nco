@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.289 2005-02-06 04:44:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.290 2005-02-25 05:21:11 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6567,16 +6567,17 @@ Add @dfn{stride} argument to hyperslabber.
 For a complete description of the @var{stride} argument, @xref{Stride}.
 
 @cindex @code{-H}
-@cindex @code{--print}
-@cindex @code{--prn}
+@cindex @code{--hieronymus}
 @item -H 
 Print data to screen.
 Also activated using @samp{--print} or @samp{--prn}.
-The @command{ncks} default behavior is to print data to screen if
+By default @command{ncks} prints all metadata and data to screen if
 no netCDF output file is specified.
-Use @samp{-H} to print data to screen if a netCDF output is specified.
+Use @samp{-H} to print data to screen if a netCDF output is specified,
+or to restrict printing to data (no metadata) when no netCDF output is 
+specified.
 Unless otherwise specified (with @code{-s}), each element of the data
-hyperslab is printed on a separate line containing the names, indices,
+hyperslab prints on a separate line containing the names, indices,
 and, values, if any, of all of the variables dimensions.
 The dimension and variable indices refer to the location of the
 corresponding data element with respect to the variable as stored on
@@ -6628,8 +6629,8 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 Print to screen the global metadata describing the file.
 This includes file summary information and global attributes.
 Also @samp{--Mtd} and @samp{--Metadata}.
-The default behavior is to global metadata to screen if no netCDF output
-file and no variable extraction list is specified (with @samp{-v}). 
+By default @command{ncks} prints global metadata to screen if no netCDF
+output file and no variable extraction list is specified (with @samp{-v}).  
 Use @samp{-M} to print global metadata to screen if a netCDF output is 
 specified, or if a variable extraction list is specified (with @samp{-v}). 
 
@@ -6647,6 +6648,16 @@ The @command{ncks} default behavior is to print variable metadata to
 screen if no netCDF output file is specified.
 Use @samp{-m} to print variable metadata to screen if a netCDF output is 
 specified. 
+
+@cindex @code{-P}
+@cindex @code{--print}
+@cindex @code{--prn}
+@item -P 
+Print data, metadata, and units to screen.
+The @samp{-P} switch is a convenience abbreviation for 
+@samp{-C -H -M -m -u}.
+Also activated using @samp{--print} or @samp{--prn}.
+This set of switches is useful for exploring file contents.
 
 @cindex @code{-Q}
 @item -Q 

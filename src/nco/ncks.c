@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.117 2005-02-14 02:14:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.118 2005-02-25 05:21:15 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -88,7 +88,9 @@ main(int argc,char **argv)
   bool PRN_VAR_DATA_TGL=False; /* [flg] Toggle print variable data Option H */
   bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
   bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
-  bool PRN_DMN_UNITS=True; /* [flg] Print dimensional units Option u */
+  bool PRN_VRB=False; /* [flg] Print data and metadata by default */
+  bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
+  bool PRN_DMN_UNITS_TGL=False; /* [flg] Toggle print dimensional units Option u */
   bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option Q */
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -108,9 +110,9 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.117 2005-02-14 02:14:26 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.117 $";
-  const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:p:qQrRs:uv:xZ-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.118 2005-02-25 05:21:15 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.118 $";
+  const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:Pp:qQrRs:uv:xZ-:";
 
   char *opt_crr; /* [sng] String representation of current long-option name */
   extern char *optarg;
@@ -170,8 +172,7 @@ main(int argc,char **argv)
       {"ftn",no_argument,0,'F'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
-      {"print",no_argument,0,'H'},
-      {"prn",no_argument,0,'H'},
+      {"hieronymus",no_argument,0,'H'}, /* fxm: need better mnemonic for -H */
       {"local",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
       {"lcl",required_argument,0,'l'},
@@ -183,6 +184,8 @@ main(int argc,char **argv)
       {"ovr",no_argument,0,'O'},
       {"output",required_argument,0,'o'},
       {"fl_out",required_argument,0,'o'},
+      {"print",required_argument,0,'P'},
+      {"prn",required_argument,0,'P'},
       {"path",required_argument,0,'p'},
       {"quiet",no_argument,0,'q'},
       {"retain",no_argument,0,'R'},
@@ -223,6 +226,8 @@ main(int argc,char **argv)
 
     /* Process long options without short option counterparts */
     if(opt == 0){
+      /* NB: This is the sole long-option-without-short-counterpart in NCO 
+	 Let this serve as a template for more such options */
       if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
 	(void)fprintf(stdout,"%s\n",nco_cmp_get());
 	nco_exit(EXIT_SUCCESS);
@@ -245,7 +250,7 @@ main(int argc,char **argv)
       fl_bnr=(char *)strdup(optarg);
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
-      PROCESS_ASSOCIATED_COORDINATES=False;
+      PROCESS_ASSOCIATED_COORDINATES=!PROCESS_ASSOCIATED_COORDINATES;
       break;
     case 'c': /* Add all coordinates to extraction list? */
       PROCESS_ALL_COORDINATES=True;
@@ -281,6 +286,10 @@ main(int argc,char **argv)
     case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_IDX_CNV=!FORTRAN_IDX_CNV;
       break;
+    case 'P': /* Print data to screen, maximal verbosity */
+      PRN_VRB=True;
+      PROCESS_ASSOCIATED_COORDINATES=!PROCESS_ASSOCIATED_COORDINATES;
+      break;
     case 'p': /* Common file path */
       fl_pth=optarg;
       break;
@@ -302,8 +311,8 @@ main(int argc,char **argv)
     case 's': /* User specified delimiter string for printed output */
       dlm_sng=optarg;
       break;
-    case 'u': /* Turn on the printing of dimensional units. */
-      PRN_DMN_UNITS=!PRN_DMN_UNITS;
+    case 'u': /* Toggle printing dimensional units */
+      PRN_DMN_UNITS_TGL=True;
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */
@@ -424,17 +433,20 @@ main(int argc,char **argv)
     /* if(lmt_lst[idx].lmt_dmn_nbr > 1) (void)nco_msa_prn_idx(&lmt_lst[idx]); */
   } /* end loop over dimensions */
   
-  if(fl_out == NULL){
-    /* Default is to print data and metadata to screen if output file is not specified 
-       Default is not to print data and metadata to screen if output file is specified */
+  if(PRN_VRB || (fl_out == NULL && !PRN_VAR_DATA_TGL)){
+    /* Verbose printing simply means assume user wants the deluxe frills by default */
+    if(PRN_DMN_UNITS_TGL) PRN_DMN_UNITS=False; else PRN_DMN_UNITS=True;
     if(PRN_VAR_DATA_TGL) PRN_VAR_DATA=False; else PRN_VAR_DATA=True;
     if(PRN_VAR_METADATA_TGL) PRN_VAR_METADATA=False; else PRN_VAR_METADATA=True;
+    /* Assume user wants to see global metadata unless variable extraction is invoked */
     if(var_lst_in == NULL) PRN_GLB_METADATA=True;
     if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=!PRN_GLB_METADATA;
-  }else{
+  }else{ /* end if PRN_VRB */
+    /* Default is to print data and metadata to screen if output file is not specified */
+    if(PRN_DMN_UNITS_TGL) PRN_DMN_UNITS=True; else PRN_DMN_UNITS=False;
     if(PRN_VAR_DATA_TGL) PRN_VAR_DATA=True; else PRN_VAR_DATA=False;
     if(PRN_VAR_METADATA_TGL) PRN_VAR_METADATA=True; else PRN_VAR_METADATA=False;
-    if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=!PRN_VAR_METADATA;
+    if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=True; else PRN_GLB_METADATA=False;
   } /* endelse */
 
   /* PRN_QUIET is catch-all which turns off all printing to screen */

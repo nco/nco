@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.274 2005-02-20 21:44:21 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.275 2005-02-25 05:21:11 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -302,7 +302,7 @@ Instead, retrieve all recently tagged versions
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO/SDO 3.1.x</b>: (<i>Future plans</i>) MPI-Grid
-<li><b>NCO 3.0.0</b>: (<i>In progress</i>) <tt>ncks</tt> prints by default, <tt>ncpdq</tt> and <tt>ncap</tt> packing improve <tt>missing_value</tt> handling, <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt>, assume netCDF&nbsp;3.6, <tt>-Z</tt> option supports 64-bit offsets, NEC&nbsp;SX build improvements, support GCC&ncsp;3.4.X
+<li><b>NCO 3.0.0</b>: (<i>In progress</i>) New <tt>ncks -P</tt> print switch, <tt>ncpdq</tt> and <tt>ncap</tt> packing improve <tt>missing_value</tt> handling, <tt>nco_put_vara()</tt> overloads in <tt>libnco_c++</tt>, assume netCDF&nbsp;3.6, <tt>-Z</tt> option supports 64-bit offsets, NEC&nbsp;SX build improvements, support GCC&ncsp;3.4.X
 <li><b>NCO 2.9.9</b>: <tt>ncpdq</tt> packs/unpacks entire files, <tt>ncbo</tt> is threaded
 <li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released, <tt>ncwa --msk_sng</tt> consolidated mask switch, C99 compiler required
 <li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>nco_input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS), write <tt>nco_openmp_thread_number</tt> attribute

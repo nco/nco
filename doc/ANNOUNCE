@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.133 2005-01-13 04:32:29 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.134 2005-02-25 05:21:11 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.9 are ready. 
 
@@ -30,6 +30,7 @@ Charlie
 Feature changes:
 1. libnco_c++ incorporates nco_put_vara() overloads
 2. Support 64-bit-offset mode of netCDF 3.6
+3. ncks printing defaults change slightly: -P switch = -C -H -M -m -u
 
 Bug-fixes:
 1. None
