@@ -1,5 +1,9 @@
 2000-09-19  Charlie Zender  <zender@uci.edu>
 
+	* Multi-threaded version of ncwa averages variables in T42 file
+	correctly sometimes, but also incorrectly. Currently unpredictable 
+	what causes discrepancy.
+
 	* Removed arg_cnt from ncwa.c. ncwa.c now uses standard
 	fl_mk_lst() to diagnose incorrect argument counts
 

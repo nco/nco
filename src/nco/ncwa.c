@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.56 2000-09-19 21:22:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.57 2000-09-19 22:47:01 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.56 2000-09-19 21:22:18 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.56 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.57 2000-09-19 22:47:01 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.57 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -471,7 +471,7 @@ main(int argc,char **argv)
   /* Define variables in output file, and copy their attributes */
   (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out);
 
-  /* New missing values must be added to the output file in define mode */
+  /* New missing values must be added to output file while in define mode */
   if(msk_nm != NULL){
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Define for var_prc_out because mss_val for var_prc will be overwritten in var_refresh */
@@ -500,7 +500,7 @@ main(int argc,char **argv)
   /* Close first input netCDF file */
   ncclose(in_id);
   
-  /* Loop over input files */
+  /* Loop over input files (not currently used, nbr_fl == 1) */
   for(idx_fl=0;idx_fl<nbr_fl;idx_fl++){
     /* Parse filename */
     if(idx_fl != 0) fl_in=fl_nm_prs(fl_in,idx_fl,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
@@ -557,6 +557,7 @@ main(int argc,char **argv)
      cd ~/nco/data;ncwa -D 1 -O in.nc foo.nc 2>&1 | m;cd -
 
      cd ~/nco/data
+     ncks -O -v one,two,three,four in.nc omp.nc
      ncks -O -v one one.nc omp.nc
 
      ncks -O -v one one.nc two.nc
@@ -580,7 +581,7 @@ main(int argc,char **argv)
   */
 #ifdef OMP /* OpenMP */
 /* Adding a default(none) clause causes a weird error: "Error: Variable __iob used without scope declaration in a parallel region with DEFAULT(NONE) scope". This appears to be a compiler bug. */
-#pragma omp parallel for private(idx,msk_out,msk,DO_CONFORM_MSK,wgt_out,wgt,DO_CONFORM_WGT) shared(nbr_var_prc,dbg_lvl,var_prc,var_prc_out,in_id,nco_op_typ,msk_nm,WGT_MSK_CRD_VAR,MUST_CONFORM,msk_val,op_typ_rlt,wgt_nm,dmn_avg,nbr_dmn_avg,NRM_BY_DNM,wgt_avg,out_id)
+#pragma omp parallel for firstprivate(msk,msk_out,wgt,wgt_out,wgt_avg) private(idx,DO_CONFORM_MSK,DO_CONFORM_WGT) shared(nbr_var_prc,dbg_lvl,var_prc,var_prc_out,in_id,nco_op_typ,msk_nm,WGT_MSK_CRD_VAR,MUST_CONFORM,msk_val,op_typ_rlt,wgt_nm,dmn_avg,nbr_dmn_avg,NRM_BY_DNM,out_id)
 #endif /* not OpenMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       if(dbg_lvl > 0){
@@ -656,28 +657,24 @@ main(int argc,char **argv)
       (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nctypelen(var_prc_out[idx]->type));
       /* Reduce variable over specified dimensions (tally array is set here) */
       var_prc_out[idx]=var_avg(var_prc_out[idx],dmn_avg,nbr_dmn_avg,nco_op_typ);
-      /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide 
-	 Denominator is also tricky due to sundry normalization options 
+      /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
+	 Denominator is also tricky due to sundry normalization options
 	 These logical switches are VERY tricky---be careful modifying them */
       if(NRM_BY_DNM && wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	/* Duplicate wgt_out as wgt_avg so that wgt_out is not contaminated by any
 	   averaging operation and may be reused on next variable.
-	   Be sure to free wgt_avg after each use */
+	   Free wgt_avg after each use but continue to reuse wgt_out */
 	wgt_avg=var_dpl(wgt_out);
 	
 	if(var_prc[idx]->has_mss_val){
 	  double mss_val_dbl=double_CEWI;
-	  /* The denominator must be set to the missing value at all locations 
-	     where the variable is the missing value.
-	     If this is accomplished by setting the weight to the missing value 
-	     wherever the variable is the missing value, then the weight must not
-	     be reused by the next variable (which might conform but have 
-	     missing values in different locations). 
-	     This is one of the reasons to copy wgt_out into the disposable wgt_avg 
-	     for each new variable. */
-	  /* First make sure wgt_avg has the same missing value as the variable */
+	  /* Set denominator to missing value at all locations where variable is missing value
+	     If this is accomplished by setting weight to missing value wherever variable is missing value
+	     then weight must not be reused by next variable (which might conform but have missing values in different locations)
+	     This is one good reason to copy wgt_out into disposable wgt_avg for each new variable */
+	  /* First make sure wgt_avg has same missing value as variable */
 	  (void)mss_val_cp(var_prc[idx],wgt_avg);
-	  /* Copy the missing value into a double precision variable */
+	  /* Copy missing value into double precision variable */
 	  switch(wgt_avg->type){
 	  case NC_FLOAT: mss_val_dbl=wgt_avg->mss_val.fp[0]; break; 
 	  case NC_DOUBLE: mss_val_dbl=wgt_avg->mss_val.dp[0]; break; 
@@ -686,7 +683,7 @@ main(int argc,char **argv)
 	  case NC_CHAR: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
 	  case NC_BYTE: mss_val_dbl=wgt_avg->mss_val.bp[0]; break;
 	  } /* end switch */
-	  /* Second mask wgt_avg where the variable is the missing value */
+	  /* Second mask wgt_avg where variable is missing value */
 	  (void)var_mask(wgt_avg->type,wgt_avg->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,mss_val_dbl,nco_op_ne,var_prc[idx]->val,wgt_avg->val);
 	} /* endif weight must be checked for missing values */
 	
@@ -702,7 +699,7 @@ main(int argc,char **argv)
 	  (void)var_mask(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,msk_val,op_typ_rlt,msk_out->val,wgt_avg->val);
 	} /* endif weight must be masked */
 	
-	/* fxm: temporary kludge to make sure weight has tally space.
+	/* fxm: temporary kludge to make sure weight has tally space
 	   wgt_avg may occasionally lack a valid tally array in ncwa because
 	   it is created, sometimes, before the tally array for var_prc_out[idx] is 
 	   created, and thus the var_dpl() call in var_conform_dim() does not copy
@@ -716,13 +713,13 @@ main(int argc,char **argv)
 	if(MULTIPLY_BY_TALLY){
 	  /* Currently this is not implemented */
 	  /* Multiply numerator (weighted sum of variable) by tally 
-	     We deviously accomplish this by dividing the denominator by tally */
+	     We deviously accomplish this by dividing denominator by tally */
 	  (void)var_normalize(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,wgt_avg->tally,wgt_avg->val);
 	} /* endif */
 	/* Divide numerator by denominator */
-	/* Diagnose problem #116 before it core dumps */
+	/* Diagnose common PEBCAK before it occurs core dumps */
 	if(var_prc_out[idx]->sz == 1 && var_prc_out[idx]->type == NC_LONG && var_prc_out[idx]->val.lp[0] == 0){
-	  (void)fprintf(stdout,"%s: ERROR Denominator weight = 0. Problem described in TODO #116\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
+	  (void)fprintf(stdout,"%s: ERROR Weight in denominator weight = 0.0, will cause SIGFPE\n%s: HINT Sum of masked, averaged weights must be non-zero\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
 	} /* end if */
 	/* Divide numerator by masked, averaged, weights */
 	switch(nco_op_typ){
@@ -801,7 +798,7 @@ main(int argc,char **argv)
       (void)free(var_prc_out[idx]->val.vp);
       var_prc_out[idx]->val.vp=NULL;
       
-    } /* end loop over idx */
+    } /* end (multi-threaded) loop over idx */
     
     /* Free weights and masks */
     if(wgt != NULL) wgt=var_free(wgt);

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.72 2000-09-19 15:52:55 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.73 2000-09-19 22:46:32 zender Exp $ 
 
 *************
 NCO Wish list
@@ -135,7 +135,7 @@ sudo root screws up permissions in obj/bin directories of user
 181. Split up nc_utl.c into smaller files
 182. Add -L switch to print license terms
 183. Figure out why makeinfo nco.texi fails
-184. ncwa in.nc foo.nc prints usage and exits (because arg_cnt == 0?)
+184. Make wgt and msk in ncwa thread-safe
 ************************************************************************
 End NCO Wish list
 ************************************************************************
