@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.157 2002-08-19 07:27:21 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.158 2002-08-20 05:28:01 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -962,23 +962,23 @@ bld_cln:
 rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.5.1 rpm
 	cd ${DATA}/tmp; \
 	/bin/rm -fr ${DATA}/tmp/nco*; \
-	cp -r ${HOME}/nco nco-$(NCO_VRS); \
-	tar cvzf nco-$(NCO_VRS).tar.gz ./nco-$(NCO_VRS); \
-	mv ${DATA}/tmp/nco-$(NCO_VRS).tar.gz /usr/src/redhat/SOURCES; \
-	/bin/rm -f /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
-	ln -s ${HOME}/nco/bld/nco.spec /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
+	cp -r ${HOME}/nco nco-${NCO_VRS}; \
+	tar cvzf nco-${NCO_VRS}.tar.gz ./nco-${NCO_VRS}; \
+	mv ${DATA}/tmp/nco-${NCO_VRS}.tar.gz /usr/src/redhat/SOURCES; \
+	/bin/rm -f /usr/src/redhat/SPECS/nco-${NCO_VRS}.spec; \
+	ln -s ${HOME}/nco/bld/nco.spec /usr/src/redhat/SPECS/nco-${NCO_VRS}.spec; \
 	cd /usr/src/redhat/SPECS; \
-	rpm -ba nco-$(NCO_VRS).spec;
+	rpm -ba nco-${NCO_VRS}.spec;
 rpmnet:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.5.1 rpmnet
-	- if test -f /usr/src/redhat/SOURCES/nco-$(NCO_VRS).tar.gz; then printf "Using existing nco-$(NCO_VRS).tar.gz\n" ; else ${MY_BIN_DIR}/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-$(NCO_VRS).tar.gz; fi
-	/bin/rm -f /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
+	- if test -f /usr/src/redhat/SOURCES/nco-${NCO_VRS}.tar.gz; then printf "Using existing nco-${NCO_VRS}.tar.gz\n" ; else ${MY_BIN_DIR}/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-${NCO_VRS}.tar.gz; fi
+	/bin/rm -f /usr/src/redhat/SPECS/nco-${NCO_VRS}.spec; \
 	cd /usr/src/redhat/SOURCES; \
-	tar xvzf nco-$(NCO_VRS).tar.gz ./nco-$(NCO_VRS)/bld/nco.spec; \
-	mv ./nco-$(NCO_VRS)/bld/nco.spec /usr/src/redhat/SPECS/nco.spec; \
+	tar xvzf nco-${NCO_VRS}.tar.gz ./nco-${NCO_VRS}/bld/nco.spec; \
+	mv ./nco-${NCO_VRS}/bld/nco.spec /usr/src/redhat/SPECS/nco.spec; \
 	cd /usr/src/redhat/SPECS; \
 	rpm -ba nco.spec; \
-	scp /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm zender@ftp.cgd.ucar.edu:/ftp/pub/zender/nco
-	scp /usr/src/redhat/SRPMS/nco-$(NCO_VRS)-*.src.rpm /usr/src/redhat/RPMS/i386/nco-$(NCO_VRS)-*.i386.rpm zender@nco.sourceforge.net:/home/groups/ftp/pub/nco
+	scp /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm zender@ftp.cgd.ucar.edu:/ftp/pub/zender/nco
+	scp /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm zender@nco.sourceforge.net:/home/groups/ftp/pub/nco
 	ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.5.1-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.5.1-*.i386.rpm /usr/src/redhat/SOURCES/nco-2.5.1.tar.gz
 rpm_cln:
 	rpm --erase $(MDL_RPM_NST_NM)
@@ -1108,7 +1108,7 @@ dbg:
 	@printf "MDL_PTH = ${MDL_PTH}\n"
 	@printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
 	@printf "MDL_SRC = ${MDL_SRC}\n"
-	@printf "NCO_VRS = $(NCO_VRS)\n"
+	@printf "NCO_VRS = ${NCO_VRS}\n"
 	@printf "NETCDF_INC = ${NETCDF_INC}\n"
 	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
 	@printf "OMP = ${OMP}\n"
