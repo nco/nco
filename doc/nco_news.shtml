@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.9 2000-12-30 02:23:03 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.10 2001-02-11 20:57:33 zender Exp $
 
 Purpose: NCO news archive
 
@@ -25,8 +25,8 @@ scp -p ~/nco/doc/nco_news.shtml nco.sourceforge.net:/home/groups/nco/htdocs/nco_
 <dt><a name="News"></a></dt>
 <h2>NCO News</h2>
 
-<a name="20001231"></a>
-<p>2000/12/31: 
+<a name="20010211"></a>
+<p>2001/02/11: 
 NCO version 1.2.2 is released.
 Differences with version 1.2.1 include three new features and one bugfix:
 Weights are allowed with <tt>ncwa</tt> in min/max/ttl operations.

@@ -1,29 +1,17 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.3 2000-08-29 20:57:42 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.4 2001-02-11 20:57:33 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 1.2.1 are ready. 
-Differences with version 1.2 include one new feature and one bugfix.
+The netCDF operators NCO version 1.2.2 are ready. 
+User-visible improvements to version 1.2.1 include a few new 
+features for ncks, ncrename, and ncwa and one bugfix.
 Get the new version and read the user's guide on
 
 http://nco.sourceforge.net
 
 Summary of changes:
 
-1. Operators now perform automatic type conversion of integers to
-   doubles before arithmetic. This feature allows ncwa, ncra, and ncea
-   to handle averaging of longs, shorts, bytes, and chars in a more 
-   satisfactory manner. One immediate benefit is that ncwa no longer
-   complains when users try to apply weights (e.g., gaussian weights) 
-   all less than one to the averaging of an integer (e.g., nlons).
-   Formerly ncwa would issue a warning, a workaround, and then dump
-   core (because weights converted to integers were all zeros). 
-   Now that arithmetic is performed in double precision (rather than 
-   in the precision of the variable), ncwa handles this situation
-   correctly.
-
-2. A bug introduced in NCO 1.2 which broke the -x switch has been fixed
-
-3. Thanks to Henry Butowsky for implementing the type conversion feature
-   Thanks to Ethan Davis for improving the build procedure
+1. ncrename handles specific variables rather than whole file (Butowsky)
+2. Weights work with <tt>ncwa</tt> in min/max/ttl operations (Zender)
+3. make HDF4=Y simplifies building HDF-enabled NCO 
 
 Enjoy,
 Charlie
