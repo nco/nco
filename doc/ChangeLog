@@ -1,5 +1,7 @@
 2001-05-07  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_0_0
+
 	* This netcdf3 branch is now merged into the main trunk.
 	The netcdf2 branch is now in maintenance mode.
 
