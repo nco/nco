@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.60 2002-05-20 06:11:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.61 2002-05-21 03:53:29 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -506,17 +506,16 @@ var_lst_copy(nm_id_sct *xtr_lst,int n)
 } /* end var_lst_copy */
 
 nm_id_sct *
-var_lst_free(nm_id_sct *xtr_lst,int n)
+var_lst_free(nm_id_sct *xtr_lst,int lst_nbr)
 {
   /* Purpose: free xtr_lst and return null pointer */
   int idx;
 
-  for(idx = 0 ; idx<n ; idx++)
-    nco_free(xtr_lst[idx].nm);
+  for(idx=0;idx<lst_nbr;idx++) nco_free(xtr_lst[idx].nm);
   nco_free(xtr_lst);
 
   return NULL;
-}
+} /* end var_lst_free() */
 
 nm_id_sct *
 var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst_b)
@@ -531,17 +530,17 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
 
   nm_id_sct *xtr_new_lst=NULL;
   
-  if(*nbr_xtr == 0 ) return xtr_lst;
+  if(*nbr_xtr == 0) return xtr_lst;
   
   xtr_new_lst=(nm_id_sct*)nco_malloc((*nbr_xtr)*sizeof(nm_id_sct));  
-  for(idx =0 ; idx < *nbr_xtr ; idx++){
+  for(idx=0;idx<*nbr_xtr;idx++){
     match=False;
-    for(j=0; j < nbr_lst_b ; j++)
-      if(!strcmp(xtr_lst[idx].nm,xtr_lst_b[j].nm)){ match=True ; break; }
+    for(j=0;j<nbr_lst_b;j++)
+      if(!strcmp(xtr_lst[idx].nm,xtr_lst_b[j].nm)){match=True;break;}
     if(match) continue;
     xtr_new_lst[n].nm=strdup(xtr_lst[idx].nm);
     xtr_new_lst[n++].id=xtr_lst[idx].id;
-  }
+  } /* end loop over idx */
   *nbr_xtr=n;
   return xtr_new_lst;      
 }/* end var_lst_sub */

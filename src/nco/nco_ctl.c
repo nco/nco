@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.7 2002-05-12 06:12:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.8 2002-05-21 03:53:54 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -13,7 +13,7 @@ nco_exit /* [fnc] Wrapper for exit() */
 (int rcd) /* I [enm] Return code */
 {
   /* Purpose: Wrapper for exit() */
-  exit(EXIT_FAILURE);
+  exit(rcd);
 } /* nco_exit() */
 
 void 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.4 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.5 2002-05-21 03:53:54 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -7,6 +7,87 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_var_rth.h" /* Variable arithmetic */
+
+void
+var_abs(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
+     /* 
+	nc_type type: I netCDF type of operands
+	const long sz: I size (in elements) of operands
+	int has_mss_val: I flag for missing values
+	ptr_unn mss_val: I value of missing value
+	ptr_unn op1: I values of first operand
+     */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Find the absolute value of all numbers in op1
+     Store result in first operand */    
+  
+  /* Absolute value is currently defined as op1:=abs(op1) */  
+  
+#ifndef __GNUG__
+  float fabsf(float); /* Sun math.h does not include fabsf() prototype */
+#endif /* __GNUG__ */
+  
+  long idx;
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  switch(type){
+  case NC_FLOAT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.fp[idx]=fabsf(op1.fp[idx]);
+    }else{
+      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=fabsf(op1.fp[idx]); 
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_DOUBLE:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.dp[idx]=fabs(op1.dp[idx]);
+    }else{
+      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=fabs(op1.dp[idx]);
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_INT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op1.lp[idx]=abs(op1.lp[idx]);
+    }else{
+      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]=abs(op1.lp[idx]); 
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_SHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) if(op1.sp[idx] < 0 ) op1.sp[idx]=-op1.sp[idx] ;
+    }else{
+      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if(op1.sp[idx] != mss_val_sht && op1.sp[idx] < 0 ) op1.sp[idx]=-op1.sp[idx];
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+  
+} /* end var_abs() */
 
 void
 var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)

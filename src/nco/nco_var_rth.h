@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.3 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.4 2002-05-21 03:53:54 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -29,6 +29,7 @@
 extern "C" {
 #endif /* __cplusplus */
 
+  void var_abs(nc_type,const long,int,ptr_unn,ptr_unn);
   void var_add(nc_type,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
   void var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2);
   void var_divide(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
@@ -38,7 +39,6 @@ extern "C" {
   void var_multiply(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
   void var_normalize(nc_type,long,int,ptr_unn,long *,ptr_unn);
   void var_normalize_sdn(nc_type,long,int,ptr_unn,long *,ptr_unn);
-  void var_abs(nc_type,const long,int,ptr_unn,ptr_unn);
   void var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2);
   void var_subtract(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
   void var_zero(nc_type,long,ptr_unn);
