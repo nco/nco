@@ -213,7 +213,7 @@ if test "$enable_hdf5" != "no"; then
      AC_DEFINE(HDF5, 1, have HDF5 support)
      AC_MSG_NOTICE([HDF5 support enabled ** EXPERIMENTAL **])
      LIBS="-lmfhdf -lhdf5 $LIBS"
-dnl  add AC_DEFINE()'s here if you wnat individual HAVE_LIBxxx in config.h
+dnl  add AC_DEFINE()'s here if you want individual HAVE_LIBxxx in config.h
 dnl  they were not included by default
   fi
 fi
@@ -230,20 +230,23 @@ if test "$enable_dods" != "no"; then
   fi 
   # these must all be present for DODS to work.  If all present, enable_dods=yes
   # nc-dods requires dap++ to link with success
-  AC_CHECK_LIB([stdc++], [cerr],,enable_dods=no)
-#  AC_CHECK_LIB([z], [main],,enable_dods=no)
-  AC_CHECK_LIB([www], [HTLibInit],,enable_dods=no)
-  AC_CHECK_LIB([rx], [main],,enable_dods=no)
-  AC_CHECK_LIB([dap++],[main],,enable_dods=no)
-  AC_CHECK_LIB([nc-dods],[main],,enable_dods=no,[-ldap++])
+  AC_CHECK_LIB([stdc++], [cerr],nco_have_stdcxx=yes,enable_dods=no)
+  AC_CHECK_LIB([z], [inflate],nco_have_zlib=yes,enable_dods=no)
+  AC_CHECK_LIB([www], [HTLibInit],nco_have_www=yes,enable_dods=no)
+  AC_CHECK_LIB([rx], [main],nco_have_rx=yes,enable_dods=no)
+  AC_CHECK_LIB([dap++],[main],nco_have_dapxx=yes,enable_dods=no)
+  AC_CHECK_LIB([nc-dods],[main],nco_have_ncdods=yes,enable_dods=no,[-ldap++])
   # this is called again to resolve nc-dods <-> dap++ interdependancy
-  AC_CHECK_LIB([dap++],[main],,enable_dods=no)
+#  AC_CHECK_LIB([dap++],[main],nco_have_dapxx=yes,enable_dods=no)
 
   if test "$enable_dods" = "no"; then
     AC_MSG_WARN([DODS support disabled (missing libraries)])
-  else
+  elif test "$enable_dods" = "yes"; then
     AC_DEFINE(ENABLE_DODS, 1, have DODS support)
     AC_MSG_NOTICE([DODS support enabled])
+    LIBS="-lnc-dods -ldap++ -lrx -lwww -lz -lstdc++ $LIBS"
+dnl  add AC_DEFINE()'s here if you want individual HAVE_LIBxxx in config.h
+dnl  they were not included by default
   fi
 fi
 #############################################
