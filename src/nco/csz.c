@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.30 1999-12-06 18:09:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.31 1999-12-06 18:55:48 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -1083,6 +1083,10 @@ fl_cp(char *fl_src,char *fl_dst)
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Copying %s to %s...",fl_src,fl_dst);
   (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
   rcd=system(cp_cmd);
+  if(rcd == -1){
+    (void)fprintf(stdout,"%s: ERROR fl_cp() is unable to execute cp command \"%s\"\n",prg_nm_get(),cp_cmd);
+    exit(EXIT_FAILURE); 
+  } /* end if */ 
   (void)free(cp_cmd);
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
   

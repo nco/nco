@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.17 1999-12-06 18:10:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.18 1999-12-06 18:55:49 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -80,8 +80,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.17 1999-12-06 18:10:01 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.17 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.18 1999-12-06 18:55:49 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.18 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -351,6 +351,7 @@ main(int argc,char **argv)
       (void)ncvarinq(in_id_2,var_id,(char *)NULL,&var_type,(int *)NULL,(int *)NULL,(int *)NULL);
 #else /* not NETCDF2_ONLY */
       rcd=nc_inq_vartype(in_id_2,ncvarid(in_id_2,var_prc_out[idx]->nm),&var_type);
+      if(rcd != NC_NOERR) (void)fprintf(stderr,"%s: ERROR nc_inq_vartype() returns %d in main()\n",prg_nm_get(),rcd);
 #endif /* not NETCDF2_ONLY */
       var_prc_out[idx]->type=var_type;
 

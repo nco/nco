@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.45 1999-11-02 22:50:18 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.46 1999-12-06 18:55:47 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -575,8 +575,8 @@ obj_dir:
 ncra:	$(MY_OBJ_DIR)/ncra.o $(libnco).a
 	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS)
 	chmod 755 $(MY_BIN_DIR)/ncra
-	cd $(MY_BIN_DIR); rm -f ncea; ln -s ncra ncea
-	cd $(MY_BIN_DIR); rm -f ncrcat; ln -s ncra ncrcat
+	cd $(MY_BIN_DIR); rm -f ncea; ln -f -s ncra ncea
+	cd $(MY_BIN_DIR); rm -f ncrcat; ln -f -s ncra ncrcat
 ncatted:	$(MY_OBJ_DIR)/ncatted.o $(libnco).a
 	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
 	chmod 755 $(MY_BIN_DIR)/$@
@@ -609,7 +609,7 @@ bld_cln:
 # Targets in dat
 data:	dat
 dat:	$(MY_DAT_DIR)/in.nc 
-	-for fl in $(MDL_DAT_STB); do cd $(MY_DAT_DIR); ln -s in.nc $$fl; done
+	-for fl in $(MDL_DAT_STB); do cd $(MY_DAT_DIR); ln -f -s in.nc $$fl; done
 $(MY_DAT_DIR)/in.nc: $(MY_DAT_DIR)/in.cdl
 	cd $(MY_DAT_DIR); ncgen -b -o in.nc in.cdl
 test:	tst

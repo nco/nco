@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.39 1999-12-06 18:10:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.40 1999-12-06 18:55:48 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -20,6 +20,23 @@
 /* #include <errno.h> */             /* errno */
 /* #include <malloc.h>    */         /* malloc() stuff */
 #include <assert.h>             /* assert() debugging macro */ 
+
+void 
+nc_err_exit(int rcd,char *msg)
+/*  
+    int rcd: I netCDF error code
+    char *msg: I supplemental error message
+*/ 
+{
+  /* Purpose: Print netCDF error message, routine name, and exit */
+  if(rcd != NC_NOERR){
+#ifdef NETCDF2_ONLY
+    (void)fprintf(stderr,"%s: ERROR %s\n",prg_nm_get(),msg);
+#else /* not NETCDF2_ONLY */
+    (void)fprintf(stderr,"%s: ERROR %s\n%s\n",prg_nm_get(),msg,nc_strerror(rcd));
+#endif /* not NETCDF2_ONLY */
+  } /* endif error */ 
+} /* end nc_err_exit() */
 
 char *
 nc_type_nm(nc_type type)

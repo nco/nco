@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.13 1999-12-06 18:10:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.14 1999-12-06 18:55:49 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -103,8 +103,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.13 1999-12-06 18:10:00 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.13 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.14 1999-12-06 18:55:49 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.14 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -408,7 +408,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 	/* Number of elements which must be concatenated into single string value */
 	long lmn_nbr;
 	lmn_nbr=arg_nbr-idx_att_val_arg; 
-	(void)fprintf(stdout,"%s: WARNING NC_CHAR (string) attribute is embedded with %li literal element delimiters (\"%s\"), reassembling...\n",prg_nm_get(),lmn_nbr-1L,dlm_sng);
+	if(dbg_lvl >= 2) (void)fprintf(stdout,"%s: WARNING NC_CHAR (string) attribute is embedded with %li literal element delimiters (\"%s\"), reassembling...\n",prg_nm_get(),lmn_nbr-1L,dlm_sng);
 	/* Rewrite list, splicing in original delimiter string */
 	arg_lst[idx_att_val_arg]=sng_lst_prs(arg_lst+idx_att_val_arg,lmn_nbr,dlm_sng);
 	/* Keep bookkeeping straight, just in case */

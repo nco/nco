@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.19 1999-12-06 18:09:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.20 1999-12-06 18:55:48 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -384,6 +384,7 @@ extern void indexx(int,int *,int *);
 extern void lmt_evl(int,lmt_sct *,long,bool);
 extern void mss_val_cp(var_sct *,var_sct *);
 extern void nc_lib_vrs_prn(void);
+extern void nc_err_exit(int,char *);
 extern void ncar_csm_date(int,var_sct **,int);
 extern void rec_crd_chk(var_sct *,char *,char *,long,long);
 extern void usg_prn(void);
