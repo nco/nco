@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.95 2001-09-06 16:12:08 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.96 2001-09-12 17:16:43 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -173,6 +173,22 @@ to accomplish this.
 ncwa -D 5 -O -a time,lat,lon -w gw $DATA/dstccm34/dstccm34_1990.nc $DATA/dstccm34/dstccm34_1990_xy.nc
 This is a subtle memory bug which disappears when -w gw removed,
 or variable list is made more specific, or MALLOC_CHECK_=1 is used
+208. Write improved C++ interface library based on netCDF3
 ************************************************************************
 End NCO Wish list
 ************************************************************************
+
+Fuller descriptions of some TODO items:
+208. We are writing a tool called ncap which can manipulate variables
+in files with generic algebraic expressions (it has a lexer/parser).
+It is my feeling that ncap should take advantage of C++ features.
+The netCDF library is written in C, and only has a very poor C++ 
+interface available. What we really need for ncap is a high quality
+C++ interface that overloads the netCDF I/O functions so that we
+can rid the NCO operators of type-specific calls. Take a look at 
+the netCDF C++ interface (which is based on version 2 of the netCDF
+C library, which is not type-safe and has lots of void *),
+and see if you think you could write a better interface based on version
+3 of the netCDF C library (which is very type-safe and has no void *).
+This would be a large task (couple of months?). But something very
+worthwhile and well-suited to C++ expert. This is now TODO #208
