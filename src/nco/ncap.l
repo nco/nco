@@ -1,5 +1,5 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.11 2001-11-16 12:27:54 hmb Exp $ -*-C-*- */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.12 2001-11-29 16:04:53 hmb Exp $ -*-C-*- */
 
   /* Purpose: Token generator for ncap parser */
 
@@ -60,11 +60,24 @@
 #include "ncap.h"               /* symbol table definition */
 #include "ncap.tab.h"           /* symbol definitions from parser */
 
+#define INT_MIN (-2147483647-1)  /* Min alue for a 4 byte integer -2^32 */
+#define INT_MAX 2147483647       /* Max value for 4 byte integer  2^32 -1 */
 
+/* When we have an error in yylex we want to skip the current line          */
+/* Rather than stope execution. We can do this by provoking an error        */
+/* in the parser by returning an unrecognized token                         */
+/* This causes the parser to read up the next ';'                           */
+/* To avoid having two error messages we prefix the error message to        */
+/* yyerror with a '#' symbol this causes yyerror to print the current error */
+/* and then skip the next one.  Its really a hack but I see no other way    */ 
+
+
+extern long int line_number;
 
 /* Reprototype yylex() to accept reentrant arguments (flex man p. 12, bison man p. 60) */
 #define YY_DECL int yylex(YYSTYPE *lvalp,prs_sct *prs_arg)
- 
+
+char errstr[200]; 
 
 /* Simple hack to tell wheather we are on the left or right hand side of */
 /* of an equals sign. On LHS should only be a variable or attribute     */
@@ -77,7 +90,10 @@ static bool RHS;
    Each rule is regular expression followed by C-code for action
    If token matches regular expression then C-code is executed */
 %%
-\n          { /* Ignore new lines */ }
+\n          {
+             /* Ignore new lines */
+             line_number++;
+             }
 
 [ \t]+      { /* eat up spaces and tabs */  }
 
@@ -117,26 +133,88 @@ static bool RHS;
 
               
 
-
-(([0-9]+\.[0-9]*)|([0-9]*\.[0-9]+))((e[+-]?[0-9]+)?) {
+[0-9]*\.[0-9]*([eE][+-]?[0-9]+)?[LlDd]?|[0-9]*([eE][+-]?[0-9]+)[LlDd]? {
            if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a double %s\n",yytext); 
+           
            lvalp->attribute.val.d = strtod(yytext,(char **)NULL );
            lvalp->attribute.type = NC_DOUBLE;
            
            return (ATTRIBUTE);
+           
+         }
+
+
+[0-9]*\.[0-9]*([eE][+-]?[0-9]+)?[Ff]|[0-9]*([eE][+-]?[0-9]+)[Ff] {
+          float fi;
+          if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a float %s\n",yytext); 
+          if (sscanf((char*)yytext, "%e", &fi) != 1) {
+	    sprintf(errstr,"#Bad float : %s",yytext);
+	    yyerror(errstr);
+            return (EPROVOKE);
+	  }
+          lvalp->attribute.val.f = fi;
+          lvalp->attribute.type = NC_FLOAT;
+	  return (ATTRIBUTE);    
+          }
+
+
+[0-9]+[lL]? {
+    	 double fi;
+
+         if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing an integer %s\n",yytext); 
+	 fi = strtod((char*)yytext, (char**)(NULL));
+
+         if ( fi  < INT_MIN || fi > INT_MAX){
+            lvalp->attribute.val.d = fi;
+            lvalp->attribute.type = NC_DOUBLE;
+            return (ATTRIBUTE);
+           }else{
+            lvalp->attribute.val.l=  (nco_long) fi;
+            lvalp->attribute.type = NC_INT;
+            return (ATTRIBUTE);
+           }/* end else */
+        }
+
+
+[0-9]+[sS] {
+	    short is;
+           if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a short %s\n",yytext); 	
+            if (sscanf((char*)yytext, "%hd", &is) != 1) {
+		    sprintf(errstr,"bad short constant: %s",(char*)yytext);
+		    yyerror(errstr);
+	    }
+	    
+            lvalp->attribute.val.s = is;
+            lvalp->attribute.type = NC_SHORT;
+	    return (ATTRIBUTE);    
+	   }
+
+
+
+
+[0-9]+[Bb]  {
+                int i;
+                if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a byte %s\n",yytext); 
+		if (sscanf((char*)yytext, "%d", &i) != 1) {
+		    sprintf(errstr,"#Bad byte : %s",yytext);
+		    yyerror(errstr);
+                    return (EPROVOKE);
+		}
+                if ( i < -128 || i >127){
+                  lvalp->attribute.val.l = i;
+                  lvalp->attribute.type = NC_INT;
+		  return (ATTRIBUTE);    
+		
+		}else{ 
+                  lvalp->attribute.val.b = i;
+                  lvalp->attribute.type = NC_BYTE;
+		  return (ATTRIBUTE);                    
+		
+                }/* end else */
            }
 
-[0-9]+   { 
-        /* ------------------ */
-        /* recognize integers */
-        /* ------------------ */
-        
-        if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing integer %s\n",yytext);
 
-          lvalp->attribute.val.l =atoi(yytext);
-          lvalp->attribute.type= NC_INT;
-          return (ATTRIBUTE); 
-        }
+
 
          /* Now define the double mathematical functions */
 
@@ -164,7 +242,7 @@ pow       { return POWER; }
 
 abs       { return ABS; }
 
-itostr    { return ITOSTR; }
+atostr    { return ATOSTR; }
 
 [A-Za-z_][A-Za-z0-9_]*:[A-Za-z_][A-Za-z0-9_]*   { 
         int var_id;
@@ -200,6 +278,17 @@ itostr    { return ITOSTR; }
             /* We are on the RHS of the = sign so we need to return to the parser the value */
             /* of the attribue (if its available)                                           */
        
+       /* on an inital scan just return attributes on the right hand side    */
+       if(prs_arg->inital_scan){
+          if( !RHS ){
+            lvalp->att.att_nm = strdup(att_nm);
+            lvalp->att.var_nm = strdup(var_nm);
+            return (OUT_ATT);
+          }else{
+            return (IGNORE);
+         }
+       }    
+
        if (RHS) {
             
             /* first check to see if attribute is already been saved in symbol table */
@@ -230,7 +319,8 @@ itostr    { return ITOSTR; }
             if ( rcd == NC_NOERR ) {  
               rcd = nco_inq_att_flg(prs_arg->in_id,var_id,att_nm,&type,&att_sz);
               if (rcd == NC_ENOTATT) {
-              (void)fprintf(stderr,"WARNING: Unable to locate attribute %s in %s. Returning a 0 byte.\n",yytext,prs_arg->fl_in);
+              (void)sprintf(errstr,"Warning: Unable to locate attribute %s in %s. Returning a 0 byte.",yytext,prs_arg->fl_in);
+              (void)yyerror(errstr);
               lvalp->attribute.val.b = 0;
               lvalp->attribute.type = NC_BYTE;
               return (ATTRIBUTE);
@@ -255,11 +345,18 @@ itostr    { return ITOSTR; }
                   } /* end else */ 
          
                 } /* end if */
-              } /* end if */
+              } else {
+                 /* Attribute is not in table or on disk so return a 0 byte  */
+                (void)sprintf(errstr,"Warning: Unable to locate attribute %s. Returning a 0 byte.",yytext);
+                (void)yyerror(errstr);
+                lvalp->attribute.val.b = 0;
+                lvalp->attribute.type = NC_BYTE;
+                return (ATTRIBUTE);
+             } 
        }/* end if RHS */
         
-        /* we are on the LHS of the = sign so we simply save the attribute information for    */
-        /* later processing by the parser -- Atrribute is valid if its associated variable is  */
+        /* we are on the LHS of the = sign so we simply save the attribute information for   */
+        /* later processing by the parser -- Atrribute is valid if its associated variable is*/
         /* in input or output file */
 
         if(!RHS) {
@@ -270,7 +367,9 @@ itostr    { return ITOSTR; }
             return (OUT_ATT);
 
             }else{
-            (void)fprintf(stderr,"WARNING: unable to locate variable %s. So cannot create attribute %s\n",var_nm,yytext);
+            (void)sprintf(errstr,"#Warning: unable to locate variable %s. So cannot create attribute %s",var_nm,yytext);
+            (void)yyerror(errstr);
+            return (EPROVOKE); 
            } /* end else */
         } /* end if */
 
@@ -290,7 +389,6 @@ itostr    { return ITOSTR; }
           return (VAR);
           }else{ 
             lvalp->output_var = strdup(yytext);
-            //  lvalp->output_var = (char *)nco_malloc(strlen(yytext)+1); strcpy(lvalp->output_var,yytext);
             return (OUT_VAR);
          } /* end else */
 
