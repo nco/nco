@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.19 2005-03-23 03:02:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.20 2005-03-23 07:09:30 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -302,19 +302,29 @@ nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
   int sz_pg; /* [B] Page size in Bytes */
   struct rusage usg;
 
-  sz_pg=getpagesize(); /* [B] Page size in Bytes */
-  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports: page size = %d B\n",prg_nm_get(),sz_pg);
+  /* Get page size */
+  sz_pg=getpagesize();
 
   /* fxm: use input argument instead or RUSAGE_SELF */
   rcd=getrusage(RUSAGE_SELF,&usg);
   
+#ifdef AIX
+  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is AIX so rusage uses kilobytes [kB] for size and seconds [s] for time. Page size is %d B.\n",prg_nm_get(),sz_pg);
+#endif /* !AIX */
+#ifdef LINUX
+  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is LINUX so rusage does not implement ru_maxrss, ru_ixrss, ru_idrss, and ru_idrss. Page size is %d B.\n",prg_nm_get(),sz_pg);
+#endif /* !LINUX */
+#ifdef SUNMP
+  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports system type is SUNMP so rusage uses pages [pg] for size and ticks [tck] for time. Page size is %d B.\n",prg_nm_get(),sz_pg);
+#endif /* !SUNMP */
+
   /* rusage reports size and time in OS-dependent units:
-     AIX uses kilobytes [kB] for size and seconds [s] for time:
+     AIX uses kilobytes [kB] for size [sz] and seconds [s] for time [tm]:
      ru_maxrss [kB], ru_ixrss [kB s], ru_idrss [kB], ru_idrss [kB]
      http://publib.boulder.ibm.com/infocenter/pseries/index.jsp?topic=/com.ibm.aix.doc/libs/basetrf1/getrusage_64.htm
 
      Linux does not implement these fields yet
-     ru_maxrss [], ru_ixrss [], ru_idrss [], ru_idrss []
+     ru_maxrss, ru_ixrss, ru_idrss, ru_idrss
 
      Solaris uses pages [pg] for size and ticks [tck] for time: 
      ru_maxrss [pg], ru_ixrss [pg tck], ru_idrss [pg], ru_idrss [pg]
