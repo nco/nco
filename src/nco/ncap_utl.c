@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.54 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.55 2002-05-06 03:31:01 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -413,58 +413,6 @@ ncap_var_scv_power(var_sct *var_in,scv_sct scv)
   if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
   return var;
 } /* end ncap_var_scv_power */
-
-int 
-ncap_var_retype(var_sct *var_1, var_sct *var_2)
-{
-  /* Purpose: Convert variable, if necessary, so variables are of same type */
-  if(var_1->type == var_2->type) return var_1->type;
-  if(var_1->type > var_2->type){
-    var_2=var_conform_type(var_1->type,var_2);
-    return var_1->type;
-  }else{
-    var_1=var_conform_type(var_2->type,var_1);
-    return var_2->type;
-  } /* endif */
-} /* end ncap_var_retype */
-
-nc_type
-ncap_scv_scv_cnf_typ_hgh_prc(scv_sct *a,scv_sct *b)
-{
-  /* Purpose: Promote scalar values to higher of two precisions, if necessary */
-  if(a->type == b->type){
-    return a->type;
-  }else if(a->type > b->type){
-    (void)scv_conform_type(a->type,b);
-    return a->type;
-  }else{
-    (void)scv_conform_type(b->type,a);
-    return b->type;
-  } /* endif */
-} /* end ncap_scv_scv_cnf_typ_hgh_prc */
-
-nc_type /* [enm] Highest precision of arguments */
-ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if necessary */
-(var_sct **var, /* I/O Pointer to pointer to variable structure */
- scv_sct *scv) /* I/O Pointer to scalar value */
-{
-  /* Purpose: If types of variable and scalar value differ, convert argument with 
-     lower precision to type of argument with higher precision.
-     Otherwise do nothing. 
-     fxm: Assumes nc_type increases monotonically with precision */
-
-  /* Do nothing if types match */
-  if((*var)->type == scv->type){
-    return (*var)->type;
-  }else if((*var)->type > scv->type){
-    (void)scv_conform_type((*var)->type,scv); 
-    return (*var)->type;
-  }else{
-    *var=var_conform_type(scv->type,*var);
-    return scv->type;
-  } /* endif */
-
-} /* end ncap_var_scv_cnf_typ_hgh_prc() */
 
 scv_sct  
 ncap_scv_calc(scv_sct a, char op, scv_sct b)

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.2 2002-05-02 06:44:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.3 2002-05-06 03:31:01 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -385,3 +385,61 @@ scv_conform_type /* [fnc] Convert scalar attribute to typ_new using C implicit c
   *scv_old=scv_new;
   return 1;      
 } /* end scv_conform_type */
+
+nc_type /* O [enm] Highest precision of input variables */
+ncap_var_retype /* [fnc] Promote variable to higher common precision */
+(var_sct * const var_1, /* I/O [sct] Variable */
+ var_sct * const var_2) /* I/O [sct] Variable */
+{
+  /* Purpose: Convert variable, if necessary, so variables are of same type */
+  if(var_1->type == var_2->type) return var_1->type;
+  if(var_1->type > var_2->type){
+    var_2=var_conform_type(var_1->type,var_2);
+    return var_1->type;
+  }else{
+    var_1=var_conform_type(var_2->type,var_1);
+    return var_2->type;
+  } /* endif */
+} /* end ncap_var_retype */
+
+nc_type /* O [enm] Highest precision of arguments */
+ncap_scv_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if necessary */
+(scv_sct * const scv_1, /* I/O [sct] Scalar value */
+ scv_sct * const scv_2) /* I/O [sct] Scalar value */
+{
+  /* Purpose: Promote scalar values to higher of two precisions, if necessary */
+  if(scv_1->type == scv_2->type){
+    return scv_1->type;
+  }else if(scv_1->type > scv_2->type){
+    (void)scv_conform_type(scv_1->type,scv_2);
+    return scv_1->type;
+  }else{
+    (void)scv_conform_type(scv_2->type,scv_1);
+    return scv_2->type;
+  } /* endif */
+} /* end ncap_scv_scv_cnf_typ_hgh_prc */
+
+nc_type /* O [enm] Highest precision of arguments */
+ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if necessary */
+(var_sct ** const var, /* I/O [sct] Variable */
+ scv_sct * const scv) /* I/O [sct] Scalar value */
+{
+  /* Purpose: If types of variable and scalar value differ, convert argument with 
+     lower precision to type of argument with higher precision.
+     Otherwise do nothing. 
+     fxm: Assumes nc_type increases monotonically with precision */
+
+  /* Do nothing if types match */
+  if((*var)->type == scv->type){
+    return (*var)->type;
+  }else if((*var)->type > scv->type){
+    (void)scv_conform_type((*var)->type,scv); 
+    return (*var)->type;
+  }else{
+    *var=var_conform_type(scv->type,*var);
+    return scv->type;
+  } /* endif */
+
+} /* end ncap_var_scv_cnf_typ_hgh_prc() */
+
+

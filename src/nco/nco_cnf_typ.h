@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.2 2002-05-02 06:44:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.3 2002-05-06 03:31:01 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -61,6 +61,21 @@ int /* O [enm] Dummy return */
 scv_conform_type /* [fnc] Convert scalar attribute to typ_new using C implicit coercion */
 (const nc_type typ_new, /* I [enm] Type to convert scv_old to */
  scv_sct const *scv_old); /* I/O [sct] Scalar value to convert */
+
+nc_type /* O [enm] Highest precision of input variables */
+ncap_var_retype /* [fnc] Promote variable to higher common precision */
+(var_sct * const var_1, /* I/O [sct] Variable */
+ var_sct * const var_2); /* I/O [sct] Variable */
+
+nc_type /* O [enm] Highest precision of arguments */
+ncap_scv_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if necessary */
+(scv_sct * const scv_1, /* I/O [sct] Scalar value */
+ scv_sct * const scv_2) /* I/O [sct] Scalar value */
+
+nc_type /* O [enm] Highest precision of arguments */
+ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if necessary */
+(var_sct ** const var, /* I/O [sct] Variable */
+ scv_sct * const scv) /* I/O [sct] Scalar value */
 
 #ifdef __cplusplus
 } /* end extern "C" */
