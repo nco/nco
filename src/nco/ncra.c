@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.45 2000-09-20 18:03:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.46 2000-09-21 16:36:15 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -56,7 +56,6 @@
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
-#include <netcdf.h>             /* netCDF definitions */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
 #include <stdlib.h>             /* atof, atoi, malloc, getopt */
 #include <string.h>             /* strcmp. . . */
@@ -67,6 +66,13 @@
 /* #include <errno.h> */           /* errno */
 /* #include <malloc.h>    */       /* malloc() stuff */
 
+/* 3rd party vendors */
+#include <netcdf.h>             /* netCDF definitions */
+#ifdef OMP /* OpenMP */
+#include <omp.h> /* OpenMP pragmas */
+#endif /* not OMP */
+
+/* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
 #include "nc.h"                 /* NCO definitions */
@@ -98,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.45 2000-09-20 18:03:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.45 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.46 2000-09-21 16:36:15 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.46 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -396,9 +402,9 @@ main(int argc,char **argv)
       for(idx_rec=lmt_rec.srt;idx_rec<=lmt_rec.end;idx_rec+=lmt_rec.srd){
 	/* Process all variables in current record */
 	if(dbg_lvl > 1) (void)fprintf(stderr,"Record %ld of %s is input record %ld\n",idx_rec,fl_in,idx_rec_out);
-#ifdef OMP /* OpenMP */
+#ifdef _OPENMP
 #pragma omp parallel for private(idx) shared(nbr_var_prc,dbg_lvl,var_prc,idx_rec,in_id,prg,nco_op_typ,var_prc_out,idx_rec_out,rcd,ARM_FORMAT,out_id,fl_in,fl_out)
-#endif /* not OpenMP */
+#endif /* not _OPENMP */
 	for(idx=0;idx<nbr_var_prc;idx++){
 	  if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	  if(dbg_lvl > 0) (void)fflush(stderr);
@@ -407,7 +413,7 @@ main(int argc,char **argv)
 	  var_prc[idx]->end[0]=idx_rec;
 	  var_prc[idx]->cnt[0]=1L;
 	  /* Retrieve variable from disk into memory */
-	  (void)var_get(in_id,var_prc[idx]);
+	  (void)var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 	  
 	  if(prg == ncra){
 	    /* Convert char, short, long, int types to doubles before arithmetic */
@@ -426,6 +432,9 @@ main(int argc,char **argv)
 	    var_prc_out[idx]->cnt[0]=1L;
 	    /* Replace this time_offset value with time_offset from initial file base_time */
 	    if(ARM_FORMAT && !strcmp(var_prc[idx]->nm,"time_offset")) var_prc[idx]->val.dp[0]+=(base_time_crr-base_time_srt);
+#ifdef _OPENMP
+#pragma omp critical
+#endif /* _OPENMP */
 	    if(var_prc_out[idx]->sz_rec > 1) (void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp); else (void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc[idx]->val.vp);
 	  } /* end if ncrcat */
 
@@ -433,7 +442,7 @@ main(int argc,char **argv)
 	  if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,idx_rec_out);
 	  /* Free current input buffer */
 	  (void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
-	} /* end (multithreaded) loop over variables */
+	} /* end (OpenMP parallel for) loop over variables */
 	idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
 	if(dbg_lvl > 2) (void)fprintf(stderr,"\n");
       } /* end loop over idx_rec */
@@ -450,14 +459,14 @@ main(int argc,char **argv)
       } /* end if */
       /* End of ncra, ncrcat section */
     }else{ /* ncea */
-#ifdef OMP /* OpenMP */
+#ifdef _OPENMP
 #pragma omp parallel for private(idx) shared(nbr_var_prc,dbg_lvl,var_prc,in_id,nco_op_typ,var_prc_out,idx_fl,rcd)
-#endif /* not OpenMP */
+#endif /* not _OPENMP */
       for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
 	if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	if(dbg_lvl > 0) (void)fflush(stderr);
 	/* Retrieve variable from disk into memory */
-	(void)var_get(in_id,var_prc[idx]);
+	(void)var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
 	
 	/* Convert char, short, long, int types to doubles before arithmetic */
 	var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
@@ -470,7 +479,7 @@ main(int argc,char **argv)
 	
 	/* Free current input buffer */
 	(void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
-      } /* end (multithreaded) loop over idx */
+      } /* end (OpenMP parallel for) loop over idx */
     } /* end else */
 
     if(dbg_lvl > 1) (void)fprintf(stderr,"\n");
@@ -485,6 +494,9 @@ main(int argc,char **argv)
   
   /* Normalize, multiply, etc where necessary */
   if(prg == ncra || prg == ncea){
+#ifdef _OPENMP
+#pragma omp parallel for default(none) private(idx) shared(nbr_var_prc,nco_op_typ,var_prc_out,var_prc)
+#endif /* not _OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){
       switch(nco_op_typ) {
       case nco_op_avg: /* Normalize sum by tally to create mean */
@@ -517,7 +529,7 @@ main(int argc,char **argv)
 	break;
       } /* end switch */
       (void)free(var_prc[idx]->tally); var_prc[idx]->tally=NULL;
-    } /* end loop over idx */
+    } /* end (OpenMP parallel for) loop over variables */
   } /* end if */
   
   /* Manually fix YYMMDD date which was mangled by averaging */

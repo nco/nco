@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.60 2000-09-20 18:03:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.61 2000-09-21 16:36:15 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -52,7 +52,6 @@
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
-#include <netcdf.h>             /* netCDF definitions */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
 #include <stdlib.h>             /* atof, atoi, malloc, getopt */
 #include <string.h>             /* strcmp. . . */
@@ -64,10 +63,12 @@
 /* #include <malloc.h>    */        /* malloc() stuff */
 
 /* 3rd party vendors */
+#include <netcdf.h>             /* netCDF definitions */
 #ifdef OMP /* OpenMP */
 #include <omp.h> /* OpenMP pragmas */
-#endif /* not OpenMP */
+#endif /* not OMP */
 
+/* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
 #include "nc.h"                 /* NCO definitions */
@@ -111,8 +112,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.60 2000-09-20 18:03:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.60 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.61 2000-09-21 16:36:15 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.61 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -522,7 +523,7 @@ main(int argc,char **argv)
       wgt=var_fll(in_id,wgt_id,wgt_nm,dim,nbr_dmn_fl);
       
       /* Retrieve weighting variable */
-      (void)var_get(in_id,wgt);
+      (void)var_get(in_id,wgt); /* Routine contains OpenMP critical regions */
       /* fxm: Perhaps should allocate default tally array for wgt here
        That way, when wgt conforms to the first var_prc_out and it therefore
        does not get a tally array copied by var_dpl() in var_conform_dim(), 
@@ -538,7 +539,7 @@ main(int argc,char **argv)
       msk=var_fll(in_id,msk_id,msk_nm,dim,nbr_dmn_fl);
       
       /* Retrieve mask variable */
-      (void)var_get(in_id,msk);
+      (void)var_get(in_id,msk); /* Routine contains OpenMP critical regions */
     } /* end if */
 
     /* Print introductory thread information */
@@ -571,14 +572,14 @@ main(int argc,char **argv)
      ncwa -D 1 -O omp.nc foo.nc 2>&1 | m
      ncks -H -C -v one,two,three,four foo.nc | m
   */
-#ifdef OMP /* OpenMP */
+#ifdef _OPENMP
 /* Adding a default(none) clause causes a weird error: "Error: Variable __iob used without scope declaration in a parallel region with DEFAULT(NONE) scope". This appears to be a compiler bug. */
   /* OpenMP notes:
      firstprivate(): msk_out and wgt_out must be NULL on first call to var_conform_dim()
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-#pragma omp parallel for firstprivate(msk_out,wgt_out) private(idx,DO_CONFORM_MSK,DO_CONFORM_WGT,wgt_avg) shared(nbr_var_prc,dbg_lvl,var_prc,var_prc_out,in_id,nco_op_typ,msk_nm,WGT_MSK_CRD_VAR,MUST_CONFORM,msk_val,op_typ_rlt,wgt_nm,dmn_avg,nbr_dmn_avg,NRM_BY_DNM,out_id,wgt,msk,MULTIPLY_BY_TALLY,prg_nm rcd)
-#endif /* not OpenMP */
+#pragma omp parallel for default(none) firstprivate(msk_out,wgt_out) private(idx,DO_CONFORM_MSK,DO_CONFORM_WGT,wgt_avg) shared(nbr_var_prc,dbg_lvl,var_prc,var_prc_out,in_id,nco_op_typ,msk_nm,WGT_MSK_CRD_VAR,MUST_CONFORM,msk_val,op_typ_rlt,wgt_nm,dmn_avg,nbr_dmn_avg,NRM_BY_DNM,out_id,wgt,msk,MULTIPLY_BY_TALLY,prg_nm rcd)
+#endif /* not _OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
@@ -596,9 +597,9 @@ main(int argc,char **argv)
       } /* end if */
       (void)var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
       
-      (void)var_refresh(in_id,var_prc[idx]);
+      (void)var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
       /* Retrieve variable from disk into memory */
-      (void)var_get(in_id,var_prc[idx]);
+      (void)var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
       
       /* Convert char, short, long, int types to doubles before arithmetic */
       var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
@@ -775,15 +776,21 @@ main(int argc,char **argv)
       
       /* Free current input buffer: Do not check if == NULL so will SIGSEGV on bugs */
       (void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;	
-      /* Copy average to output file and free averaging buffer */
-      if(var_prc_out[idx]->nbr_dim == 0){
-	(void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp);
-      }else{ /* end if variable is scalar */
-	(void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp);
-      } /* end if variable is array */
+
+#ifdef _OPENMP
+#pragma omp critical
+#endif /* _OPENMP */
+      { /* begin OpenMP critical */
+	/* Copy average to output file and free averaging buffer */
+	if(var_prc_out[idx]->nbr_dim == 0){
+	  (void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp);
+	}else{ /* end if variable is scalar */
+	  (void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp);
+	} /* end if variable is array */
+      } /* end OpenMP critical */
       (void)free(var_prc_out[idx]->val.vp); var_prc_out[idx]->val.vp=NULL;
       
-    } /* end (multi-threaded) loop over idx */
+    } /* end (OpenMP parallel for) loop over idx */
     
     /* Free weights and masks */
     if(wgt != NULL) wgt=var_free(wgt);

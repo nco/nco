@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.10 2000-09-20 16:13:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.11 2000-09-21 16:36:15 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -142,6 +142,7 @@ var_sct * /* O [sct] Unpacked variable */
 var_upk /* [fnc] Unpack variable in memory */
 (var_sct *var) /* I/O [sct] Variable to be unpacked */
 {
+  /* Threads: Routine is thread-unsafe */
   /* Purpose: Unpack variable
      Routine is inverse of var_pck(): var_upk(var_pck(var))=var */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.96 2000-09-20 17:55:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.97 2000-09-21 16:36:15 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -51,6 +51,9 @@
 
 /* 3rd party vendors */
 #include <netcdf.h>             /* netCDF definitions */
+#ifdef OMP /* OpenMP */
+#include <omp.h> /* OpenMP pragmas */
+#endif /* not OMP */
 
 /* Personal headers */
 #include "nc.h"                 /* netCDF operator universal def'ns */
@@ -1052,6 +1055,7 @@ var_refresh(int nc_id,var_sct *var)
    var_sct *var: I/O variable structure
  */
 {
+  /* Threads: Routine contains thread-unsafe calls protected by critical regions */
   /* Purpose: Update variable ID, number of dimensions, and missing_value attribute for given variable
      var_refresh() is called in file loop in multi-file operators because each new file may have 
      different variable ID and missing_value for same variable.
@@ -1067,14 +1071,20 @@ var_refresh(int nc_id,var_sct *var)
 
   /* Refresh variable ID */
   var->nc_id=nc_id;
-  var->id=ncvarid_or_die(var->nc_id,var->nm);
 
-  /* fxm: Not sure if/why it is necessary refresh the number of dimensions...but it should not hurt */
-  /* Refresh number of dimensions in variable */
-  (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,&var->nbr_dim,(int *)NULL,(int *)NULL);
-
-  /* Refresh number of attributes and missing value attribute, if any */
-  var->has_mss_val=mss_val_get(var->nc_id,var);
+#ifdef _OPENMP
+#pragma omp critical
+#endif /* _OPENMP */
+  { /* begin OpenMP critical */
+    var->id=ncvarid_or_die(var->nc_id,var->nm);
+    
+    /* fxm: Not sure if/why it is necessary refresh the number of dimensions...but it should not hurt */
+    /* Refresh number of dimensions in variable */
+    (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,&var->nbr_dim,(int *)NULL,(int *)NULL);
+    
+    /* Refresh number of attributes and missing value attribute, if any */
+    var->has_mss_val=mss_val_get(var->nc_id,var);
+  } /* end OpenMP critical */
 
 } /* end var_refresh() */
 
@@ -2216,6 +2226,7 @@ var_dpl(var_sct *var)
    var_sct *var_dpl(): O copy of input variable structure
  */
 {
+  /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: nco_malloc() and return duplicate of input var_sct */
 
   var_sct *var_dpl;
@@ -2306,6 +2317,7 @@ var_get(int nc_id,var_sct *var)
    var_sct *var: I pointer to variable structure
  */
 {
+  /* Threads: Routine contains thread-unsafe calls protected by critical regions */
   /* Purpose: Allocate and retrieve given variable hyperslab from disk into memory
      If variable is packed on disk then inquire about scale_factor and add_offset */
 
@@ -2313,11 +2325,17 @@ var_get(int nc_id,var_sct *var)
     (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes in var_get()\n",prg_nm_get(),var->sz,nctypelen(var->type));
     exit(EXIT_FAILURE); 
   } /* end if */
-  if(var->sz > 1){
-    (void)ncvarget(nc_id,var->id,var->srt,var->cnt,var->val.vp);
-  }else{
-    (void)ncvarget1(nc_id,var->id,var->srt,var->val.vp);
-  } /* end else */
+
+#ifdef _OPENMP
+#pragma omp critical
+#endif /* _OPENMP */
+  { /* begin OpenMP critical */
+    if(var->sz > 1){
+      (void)ncvarget(nc_id,var->id,var->srt,var->cnt,var->val.vp);
+    }else{
+      (void)ncvarget1(nc_id,var->id,var->srt,var->val.vp);
+    } /* end else */
+  } /* end OpenMP critical */
 
   /* Type in memory is now same as type on disk */
   var->type=var->typ_dsk; /* Type of variable in RAM */
@@ -2325,6 +2343,9 @@ var_get(int nc_id,var_sct *var)
   if(dbg_lvl_get() == 3){
     if(prg_get() == ncra || prg_get() == ncea){
       /* Packing/Unpacking */
+#ifdef _OPENMP
+#pragma omp critical
+#endif /* _OPENMP */
       if(var->pck_dsk) var=var_upk(var);
     } /* endif arithemetic operator with packing capability */
   } /* endif debug */
@@ -2343,6 +2364,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
    wgt_out var_sct *var_conform_dim(): O [sct] Pointer to conforming variable structure
 */
 {
+  /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Stretch second variable to match dimensions of first variable
      Dimensions in var which are not in wgt will be present in wgt_out, with values
      replicated from existing dimensions in wgt.
@@ -2679,6 +2701,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
    var_sct *var_conform_type(): O pointer to variable structure of type var_out_type
 */
 {
+  /* Threads: Routine is thread safe and makes no unsafe routines */
   /* Purpose: Return copy of input variable typecast to a desired type */
 
   long idx;
@@ -2808,6 +2831,7 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
    ptr_unn val_out: I pointer to output value
 */
 {
+  /* Threads: Routine is thread safe and makes no unsafe routines */
   /* Purpose: Fill val_out with a copy of val_in that has been typecast from type_in to type_out
      Last-referenced state of both value pointers is assumed to be .vp, and the val_out union is returned in that state */
 
@@ -2891,6 +2915,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
    nco_op_typ : average,min,max,ttl operation to perform, default is average
 */
 {
+  /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Routine to reduce given variable over specified dimensions. 
      "Reduce" means to reduce the rank of the variable by performing an arithmetic operation
      The default operation is to average, but nco_op_typ can also be min, max, etc.
@@ -3156,7 +3181,8 @@ var_free(var_sct *var)
    var_sct *var: I pointer to variable structure
 */
 {
-  /* Routine to free all the space associated with a dynamically allocated variable structure */
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Free all memory associated with a dynamically allocated variable structure */
   
   /* NB: var->nm is not freed because I decided to let names be static memory, and refer to
      the optarg list if available. This assumption needs to be changed before freeing 
@@ -3335,9 +3361,9 @@ var_min_bnr(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr
   ptr_unn op2: I/O values of second operand on input, values of maximium on output
 */
 {
-  /* Purpose: Find minimium value(s) of two operands and store result in second operand. 
-     Operands are assumed to have conforming dimensions, and to both be of the specified type. 
-     Operands' values are assumed to be in memory already. */
+  /* Purpose: Find minimium value(s) of two operands and store result in second operand 
+     Operands are assumed to have conforming dimensions, and to both be of the specified type
+     Operands' values are assumed to be in memory already */
   long idx;
   
   /* Typecast pointer to values before access */
@@ -3426,7 +3452,8 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
 	ptr_unn op2: I/O values of second operand on input, values of product on output
      */
 {
-  /* Routine to multiply value of first operand by value of second operand 
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: multiply value of first operand by value of second operand 
      and store result in second operand. Operands are assumed to have conforming
      dimensions, and to both be of the specified type. Operands' values are 
      assumed to be in memory already. */
@@ -3513,7 +3540,8 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
   ptr_unn op2: I/O values of second operand on input, values of ratio on output
  */
 {
-  /* Routine to divide value of first operand by value of second operand 
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Divide value of first operand by value of second operand 
      and store result in second operand. Operands are assumed to have conforming
      dimensions, and to both be of specified type. Operands' values are 
      assumed to be in memory already. */
@@ -3825,6 +3853,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   ptr_unn op2: O values resulting from averaging each block of input operand
  */
 {
+  /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Perform arithmetic operation on values in each contiguous block of first operand and place
      result in corresponding element in second operand. 
      Currently the arithmetic operation performed is a simple summation of the elements in op1
@@ -4711,6 +4740,7 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
   ptr_unn op1: I/O values of first operand on input, normalized result on output
 */
 {
+  /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Normalize value of first operand by count in tally array 
      and store result in first operand. */
 
@@ -4853,6 +4883,7 @@ mss_val_mk(nc_type type)
   ptr_unn mss_val_mk(): O ptr_unn containing default missing value for type type
  */
 {
+  /* Threads: Routine is thread safe and makes no unsafe routines */
   /* Routine to return a pointer union containing default missing value for type type */
 
   ptr_unn mss_val;
@@ -4886,7 +4917,8 @@ mss_val_cp(var_sct *var1,var_sct *var2)
   mss_val_cp(): 
  */
 {
-  /* Routine to copy missing value from var1 to var2
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Copy missing value from var1 to var2
      On exit, var2 contains has_mss_val, and mss_val identical to var1
      Type of mss_val in var2 will agree with type of var2
      This maintains assumed consistency between type of variable and
@@ -4917,6 +4949,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
   ptr_unn op3: I/O values of second operand on input, masked values on output
  */
 {
+  /* Threads: Routine is thread safe and makes no unsafe routines */
   /* Routine to mask third operand by second operand. Wherever second operand does not 
      equal first operand the third operand will be set to its missing value. */
 
@@ -5647,7 +5680,8 @@ rec_crd_chk(var_sct *var,char *fl_in,char *fl_out,long idx_rec,long idx_rec_out)
    int idx_rec_out: I current index or record coordinate in output file
  */
 {
-  /* Routine to check for monotonicity of coordinate values */
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Check for monotonicity of coordinate values */
 
   enum monotonic_direction{
     decreasing, /* 0 */
@@ -6166,6 +6200,7 @@ nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before
 (var_sct *var, /* I/O [var] Variable to be considered for conversion */
  int nco_op_typ) /* I [enm] Operation type */
 {
+  /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Convert char, short, long, int types to doubles for arithmetic
      Conversions are performed unless arithmetic operation type is min or max
      Floats (and doubles, of course) are not converted for performance reason 

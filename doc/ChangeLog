@@ -1,7 +1,12 @@
 2000-09-20  Charlie Zender  <zender@uci.edu>
 
-	* Finally removed 1995-1996-era SGI enum workarounds from nc.h
-	SGI compiler on dataproc seems 
+	* Added OpenMP critical regions to var_get() and var_refresh()
+
+	* Added OpenMP critical regions around thread-unsafe netCDF
+	write calls in ncwa and ncra/ncea. 
+
+	* Finally removed 1995--1996-era SGI enum workarounds from nc.h
+	SGI compiler on dataproc seems to behave sanely now
 
 	* Jim Rosinski and Stacy Walters have both pointed out that netCDF
 	is not thread-safe. Therefore the OpenMP implementation is bound
