@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.12 2004-07-29 23:14:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.13 2004-08-03 17:06:46 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -31,10 +31,10 @@
 
 /* Usage:
    ncpdq -O ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-   ncpdq -O -D 3 -z lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-   ncpdq -O -D 3 -z lon,lev,lat -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-   ncpdq -O -D 3 -z lat,lev,lon -v PS ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-   ncpdq -O -D 3 -z lon,lev,lat -v PS ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+   ncpdq -O -D 3 -a lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+   ncpdq -O -D 3 -a lon,lev,lat -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+   ncpdq -O -D 3 -a lat,lev,lon -v PS ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+   ncpdq -O -D 3 -a lon,lev,lat -v PS ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
 */
 
 #ifdef HAVE_CONFIG_H
@@ -79,7 +79,10 @@ main(int argc,char **argv)
   bool REDEFINED_RECORD_DIMENSION=False; /* [flg] Re-defined record dimension */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
 
-  char **dmn_rdr_lst_in=NULL_CEWI; /* Option z */
+  bool **dmn_rvr_in=NULL; /* [flg] Reverse dimension */
+  bool *dmn_rvr_rdr=NULL; /* [flg] Reverse dimension */
+
+  char **dmn_rdr_lst_in=NULL_CEWI; /* Option a */
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in=NULL_CEWI;
   char **var_lst_in=NULL_CEWI;
@@ -95,9 +98,9 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.12 2004-07-29 23:14:40 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.12 $";
-  const char * const opt_sng="ACcD:d:Fhl:Oo:p:Rrt:v:xz:-:";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.13 2004-08-03 17:06:46 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.13 $";
+  const char * const opt_sng="Aa:CcD:d:Fhl:Oo:p:Rrt:v:x-:";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -156,6 +159,10 @@ main(int argc,char **argv)
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
       {"append",no_argument,0,'A'},
+      {"arrange",no_argument,0,'a'},
+      {"permute",no_argument,0,'a'},
+      {"reorder",no_argument,0,'a'},
+      {"rdr",no_argument,0,'a'},
       {"no-coords",no_argument,0,'C'},
       {"no-crd",no_argument,0,'C'},
       {"coords",no_argument,0,'c'},
@@ -186,7 +193,6 @@ main(int argc,char **argv)
       {"variable",required_argument,0,'v'},
       {"exclude",no_argument,0,'x'},
       {"xcl",no_argument,0,'x'},
-      {"reorder",no_argument,0,'z'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -207,6 +213,9 @@ main(int argc,char **argv)
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
+      break;
+    case 'a': /* Re-order dimensions */
+      dmn_rdr_lst_in=lst_prs(optarg,",",&dmn_rdr_nbr);
       break;
     case 'C': /* Extract all coordinates associated with extracted variables? */
       PROCESS_ASSOCIATED_COORDINATES=False;
@@ -257,9 +266,6 @@ main(int argc,char **argv)
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
-      break;
-    case 'z': /* Dimension re-ordering */
-      dmn_rdr_lst_in=lst_prs(optarg,",",&dmn_rdr_nbr);
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
@@ -376,6 +382,18 @@ main(int argc,char **argv)
     /* Create structured list of re-ordering dimension names and IDs */
     dmn_rdr_lst=nco_dmn_lst_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr);
 
+    /* Create reversed dimension list */
+    dmn_rvr_rdr=(bool *)nco_malloc(dmn_rdr_nbr*sizeof(bool));
+    for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
+      if(dmn_rdr_lst[idx_rdr].nm[0] == '-'){
+	dmn_rvr_rdr[idx_rdr]=True;
+	/* Move name pointer one past negative sign (lose one byte) */
+	dmn_rdr_lst[idx_rdr].nm++;
+      }else{
+	dmn_rvr_rdr[idx_rdr]=False;
+      } /* end else */
+    } /* end loop over idx_rdr */
+
     /* Form list of re-ordering dimensions from extracted input dimensions */
     dmn_rdr=(dmn_sct **)nco_malloc(dmn_rdr_nbr*sizeof(dmn_sct *));
     /* Loop over original number of re-order dimensions */
@@ -426,10 +444,12 @@ main(int argc,char **argv)
   
   /* Determine and set new dimensionality in metadata of each re-ordered variable */
   dmn_idx_out_in=(int **)nco_malloc(nbr_var_prc*sizeof(int *));
+  dmn_rvr_in=(bool **)nco_malloc(nbr_var_prc*sizeof(bool *));
   for(idx=0;idx<nbr_var_prc;idx++){
-    dmn_idx_out_in[idx]=(int *)nco_malloc(nbr_var_prc*sizeof(int));
+    dmn_idx_out_in[idx]=(int *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(int));
+    dmn_rvr_in[idx]=(bool *)nco_malloc(var_prc[idx]->nbr_dim*sizeof(bool));
     /* nco_var_dmn_rdr_mtd() does re-order heavy lifting */
-    rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx]);
+    rec_dmn_nm_out_crr=nco_var_dmn_rdr_mtd(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,dmn_idx_out_in[idx],dmn_rvr_rdr,dmn_rvr_in[idx]);
     /* If record dimension required by re-order of current variable... */
     if(rec_dmn_nm_out_crr){
       /* ...differs from current output record dimension... */
@@ -489,7 +509,7 @@ main(int argc,char **argv)
      firstprivate(): 
      shared(): 
      private(): */
-#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,dmn_idx_out_in,fp_stderr,fp_stdout,in_id,nbr_var_prc,out_id,prg_nm,rcd,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(idx) shared(dbg_lvl,dmn_idx_out_in,dmn_rvr_in,fp_stderr,fp_stdout,in_id,nbr_var_prc,out_id,prg_nm,rcd,var_prc,var_prc_out)
 #endif /* not _OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
       if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
@@ -510,7 +530,7 @@ main(int argc,char **argv)
       } /* endif */
 
       /* Change dimension ordering of values */
-      rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx]);
+      rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx],dmn_rvr_in[idx]);
 
       /* Free current input buffer */
       var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
@@ -530,6 +550,7 @@ main(int argc,char **argv)
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
       /* Free current dimension correspondence */
       dmn_idx_out_in[idx]=nco_free(dmn_idx_out_in[idx]);
+      dmn_rvr_in[idx]=nco_free(dmn_rvr_in[idx]);
       
     } /* end (OpenMP parallel for) loop over idx */
     

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.27 2004-07-30 01:28:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.28 2004-08-03 17:06:45 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -80,7 +80,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
     if(var->nbr_dim == wgt_crr->nbr_dim){
       /* Test whether all wgt and var dimensions match in sequence */
       for(idx=0;idx<var->nbr_dim;idx++){
-	if(!strstr(wgt_crr->dim[idx]->nm,var->dim[idx]->nm)) break;
+	if(strcmp(wgt_crr->dim[idx]->nm,var->dim[idx]->nm)) break;
       } /* end loop over dimensions */
       if(idx == var->nbr_dim) *DO_CONFORM=True;
     } /* end if */
@@ -99,7 +99,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
       for(idx=0;idx<wgt->nbr_dim;idx++){
         for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
 	  /* Compare names, not dimension IDs */
-	  if(strstr(wgt->dim[idx]->nm,var->dim[idx_dmn]->nm)){
+	  if(!strcmp(wgt->dim[idx]->nm,var->dim[idx_dmn]->nm)){
 	    wgt_var_dmn_shr_nbr++; /* wgt and var share this dimension */
 	    break;
 	  } /* endif */
@@ -152,7 +152,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
 	  /* var and wgt conform and are same rank */
 	  /* Test whether all wgt and var dimensions match in sequence */
 	  for(idx=0;idx<var->nbr_dim;idx++){
-	    if(!strstr(wgt->dim[idx]->nm,var->dim[idx]->nm)) break;
+	    if(strcmp(wgt->dim[idx]->nm,var->dim[idx]->nm)) break;
 	       /*	    if(wgt->dmn_id[idx] != var->dmn_id[idx]) break;*/
 	  } /* end loop over dimensions */
 	  /* If so, take shortcut and copy wgt to wgt_out */
@@ -237,7 +237,7 @@ nco_var_cnf_dmn /* [fnc] Stretch second variable to match dimensions of first va
       for(idx=0;idx<wgt->nbr_dim;idx++){
 	for(idx_dmn=0;idx_dmn<var->nbr_dim;idx_dmn++){
 	  /* Compare names, not dimension IDs */
-	  if(strstr(var->dim[idx_dmn]->nm,wgt->dim[idx]->nm)){
+	  if(!strcmp(var->dim[idx_dmn]->nm,wgt->dim[idx]->nm)){
 	    idx_wgt_var[idx]=idx_dmn;
 	    /*	    idx_var_wgt[idx_dmn]=idx;*/
 	    break;
@@ -361,7 +361,9 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
  var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be re-ordered */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_rdr), /* I [sct] List of dimension structures in new order */
  const int dmn_rdr_nbr, /* I [nbr] Number of dimension structures in structure list */
- int * const dmn_idx_out_in) /* O [idx] Dimension correspondence, output->input */
+ int * const dmn_idx_out_in, /* O [idx] Dimension correspondence, output->input */
+ const bool * const dmn_rvr_rdr, /* I [idx] Reverse dimension */
+ bool * const dmn_rvr_in) /* O [idx] Reverse dimension */
 {
   /* Purpose: Re-order dimensions in a given variable
      dmn_rdr contains is the new order for dimensions
@@ -429,6 +431,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   dmn_sct **dmn_in=NULL; /* [sct] List of dimension structures in input order */
   dmn_sct **dmn_out; /* [sct] List of dimension structures in output order */
   
+  int dmn_idx_in_shr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->share */
   int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
   int dmn_idx_in_rdr[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->re-order */
   int dmn_idx_rdr_in[NC_MAX_DIMS]; /* [idx] Dimension correspondence, re-order->input */
@@ -452,7 +455,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   dmn_in_nbr=var_in->nbr_dim;
   dmn_out_nbr=var_out->nbr_dim;
 
-  /* Initialize default correspondence and return value in case early return desired */
+  /* Initialize default correspondence and record dimension in case early return desired */
   for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
     dmn_idx_out_in[dmn_in_idx]=dmn_in_idx;
   if(var_out->is_rec_var) rec_dmn_nm_out=var_in->dim[0]->nm;
@@ -464,13 +467,16 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
      1. var_out duplicates var_in */
   
   /* Initialize dimension maps to missing_value to aid debugging */
-  for(dmn_in_idx=0;dmn_in_idx<NC_MAX_DIMS;dmn_in_idx++){
-    dmn_idx_in_out[dmn_in_idx]=idx_err;
-    dmn_idx_in_rdr[dmn_in_idx]=idx_err;
-    dmn_idx_rdr_in[dmn_in_idx]=idx_err;
-    dmn_idx_shr_rdr[dmn_in_idx]=idx_err;
-    dmn_idx_shr_in[dmn_in_idx]=idx_err;
-  } /* end loop over dmn_in */
+  if(dbg_lvl_get() > 0){
+    for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
+      dmn_idx_out_in[dmn_in_idx]=idx_err;
+      dmn_idx_in_rdr[dmn_in_idx]=idx_err;
+      dmn_idx_in_shr[dmn_in_idx]=idx_err;
+      dmn_idx_rdr_in[dmn_in_idx]=idx_err;
+      dmn_idx_shr_rdr[dmn_in_idx]=idx_err;
+      dmn_idx_shr_in[dmn_in_idx]=idx_err;
+    } /* end loop over dmn_in */
+  } /* end if dbg */
   
   /* Create complete 1-to-1 ordered list of dimensions in new output variable */
   /* For each dimension in re-ordered dimension list... */
@@ -478,18 +484,29 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     /* ...see if re-order dimension exists in dmn_in dimension list... */
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
       /* ...by comparing names, not dimension IDs... */
-      if(!strstr(var_in->dim[dmn_in_idx]->nm,dmn_rdr[dmn_rdr_idx]->nm)){
+      if(!strcmp(var_in->dim[dmn_in_idx]->nm,dmn_rdr[dmn_rdr_idx]->nm)){
 	dmn_idx_in_rdr[dmn_in_idx]=dmn_rdr_idx; /* [idx] Dimension correspondence, input->re-order */	  
 	dmn_idx_rdr_in[dmn_rdr_idx]=dmn_in_idx; /* [idx] Dimension correspondence, re-order->input */	  
 	dmn_idx_shr_rdr[dmn_shr_nbr]=dmn_rdr_idx; /* [idx] Dimension correspondence, share->re-order */	  
 	dmn_idx_shr_in[dmn_shr_nbr]=dmn_in_idx; /* [idx] Dimension correspondence, share->input */	  
+	dmn_idx_in_shr[dmn_in_idx]=dmn_shr_nbr; /* [idx] Dimension correspondence, input->share */	  
 	dmn_shr_nbr++; /* dmn_in and dmn_rdr share this dimension */
 	break;
       } /* endif */
     } /* end loop over dmn_in */
   } /* end loop over dmn_rdr */
   
-  if(dbg_lvl_get() > 3) (void)fprintf(stdout,"%s: DEBUG %s variable %s shares %d dimensions with re-order list\n",prg_nm_get(),fnc_nm,var_in->nm,dmn_shr_nbr);
+  if(dbg_lvl_get() > 3){
+    (void)fprintf(stdout,"%s: DEBUG %s variable %s shares %d of its %d dimensions with the %d dimensions in the re-order list\n",prg_nm_get(),fnc_nm,var_in->nm,dmn_shr_nbr,var_in->nbr_dim,dmn_rdr_nbr);
+    (void)fprintf(stdout,"shr_idx\tshr_in\tshr_rdr\n");
+    for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++){
+      (void)fprintf(stdout,"%d\t%d\t%d\n",dmn_shr_idx,dmn_idx_shr_in[dmn_shr_idx],dmn_idx_shr_rdr[dmn_shr_idx]);
+    } /* end loop over dmn_in */
+    (void)fprintf(stdout,"in_idx\tin_shr\tin_rdr\n");
+    for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
+      (void)fprintf(stdout,"%d\t%d\t%d\n",dmn_in_idx,dmn_idx_in_shr[dmn_in_idx],dmn_idx_in_rdr[dmn_in_idx]);
+    } /* end loop over dmn_in */
+  } /* end if dbg */
 
   /* No re-ordering is necessary if dmn_in and dmn_rdr share fewer than two dimensions
      fxm: However, this will change to one dimension when reversing is implemented
@@ -497,14 +514,17 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
      metadata re-order per se is done */
   if(dmn_shr_nbr < 2) return rec_dmn_nm_out;
   
+  /* Initialize final map to no re-ordering */
+  for(dmn_in_idx=0;dmn_in_idx<NC_MAX_DIMS;dmn_in_idx++) dmn_idx_in_out[dmn_in_idx]=dmn_in_idx;
+
   /* For each dimension in shared dimension list... */
   for(dmn_shr_idx=0;dmn_shr_idx<dmn_shr_nbr;dmn_shr_idx++){
-    /* ...the current group of un-assigned, un-ordered dimensions starts at... */
+    /* ...current group of un-assigned, un-ordered dimensions starts at... */
     if(dmn_shr_idx == 0){
       /* ...zero if this is the first shared dimension... */
       dmn_in_idx_srt=0;
     }else{
-      /* ...one beyond the previous splice point for subsequent shared dimensions... */
+      /* ...one beyond previous splice point for subsequent shared dimensions... */
       dmn_in_idx_srt=dmn_idx_shr_in[dmn_shr_idx-1]+1;
     } /* dmn_rdr_idx != 0 */
     /* Assign preceding un-assigned, un-ordered input dimensions to output list */
@@ -514,7 +534,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
       
     /* Splice current shared dimension in after previous group of non-shared dimensions */
     dmn_idx_in_out[dmn_idx_shr_in[dmn_shr_idx]]=dmn_nbr_ass_crr++;
-  } /* end loop over dmn_rdr */
+  } /* end loop over dmn_shr */
   
   /* Sanity check */
   if(dmn_nbr_ass_crr != dmn_out_nbr){
@@ -602,7 +622,8 @@ int /* O [enm] Return success code */
 nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
 (const var_sct * const var_in, /* I [ptr] Variable with metadata and data in original order */
  var_sct * const var_out, /* I/O [ptr] Variable whose data will be re-ordered */
- const int * const dmn_idx_out_in) /* I [idx] Dimension correspondence, output->input */
+ const int * const dmn_idx_out_in, /* I [idx] Dimension correspondence, output->input */
+ const bool * const dmn_rvr_in) /* I [idx] Reverse dimension */
 {
   /* Purpose: Re-order values in given variable according to supplied dimension map
      Description of re-ordering concepts is in nco_var_dmn_rdr_mtd()
@@ -630,7 +651,7 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   
   long dmn_in_map[NC_MAX_DIMS]; /* [idx] Map for each dimension of input variable */
   long dmn_out_map[NC_MAX_DIMS]; /* [idx] Map for each dimension of output variable */
-  long dmn_in_ss[NC_MAX_DIMS]; /* [idx] Dimension subscripts into N-D input array */
+  long dmn_in_sbs[NC_MAX_DIMS]; /* [idx] Dimension subscripts into N-D input array */
   long var_in_lmn; /* [idx] Offset into 1-D input array */
   long var_out_lmn; /* [idx] Offset into 1-D output array */
   long *var_in_cnt; /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
@@ -705,7 +726,6 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++) dmn_out_map[dmn_out_idx]=1L;
   for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr-1;dmn_out_idx++)
     for(dmn_idx=dmn_out_idx+1;dmn_idx<dmn_out_nbr;dmn_idx++)
-      /* fxm: make sure var_out->cnt exists already */
       dmn_out_map[dmn_out_idx]*=var_out->cnt[dmn_idx];
   
   /* There is more than one method to re-order dimensions
@@ -727,16 +747,24 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
   /* var_in_lmn is offset into 1-D array */
   for(var_in_lmn=0;var_in_lmn<var_sz;var_in_lmn++){
 
-    /* dmn_in_ss are corresponding indices (subscripts) into N-D array */
-    dmn_in_ss[dmn_in_nbr_m1]=var_in_lmn%var_in_cnt[dmn_in_nbr_m1];
+    /* dmn_in_sbs are corresponding indices (subscripts) into N-D array */
+    dmn_in_sbs[dmn_in_nbr_m1]=var_in_lmn%var_in_cnt[dmn_in_nbr_m1];
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr_m1;dmn_in_idx++){
-      dmn_in_ss[dmn_in_idx]=(long)(var_in_lmn/dmn_in_map[dmn_in_idx]);
-      dmn_in_ss[dmn_in_idx]%=var_in_cnt[dmn_in_idx];
+      dmn_in_sbs[dmn_in_idx]=(long)(var_in_lmn/dmn_in_map[dmn_in_idx]);
+      dmn_in_sbs[dmn_in_idx]%=var_in_cnt[dmn_in_idx];
     } /* end loop over dimensions */
+
+    /* Dimension reversal:
+       Reversing a dimension changes subscripts along that dimension
+       Consider dimension of size N indexed by [0,1,2,...k-1,k,k+1,...,N-2,N-1] 
+       Reversal maps element k to element N-1-k=N-k-1 
+       Enhance speed by using that all elements along dimension share reversal */
+    for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
+      if(dmn_rvr_in[dmn_in_idx]) dmn_in_sbs[dmn_in_idx]=var_in_cnt[dmn_in_idx]-dmn_in_sbs[dmn_in_idx]-1;
 
     /* Map variable's N-D array indices to get 1-D index into output data */
     var_out_lmn=0L;
-    for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++) var_out_lmn+=dmn_in_ss[dmn_idx_out_in[dmn_out_idx]]*dmn_out_map[dmn_out_idx];
+    for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++) var_out_lmn+=dmn_in_sbs[dmn_idx_out_in[dmn_out_idx]]*dmn_out_map[dmn_out_idx];
 
     /* Copy current input element into its slot in output array */
     (void)memcpy(val_out_cp+var_out_lmn*typ_sz,val_in_cp+var_in_lmn*typ_sz,(size_t)typ_sz);

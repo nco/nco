@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.100 2004-07-24 01:00:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.101 2004-08-03 17:06:45 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -821,7 +821,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
       for(idx=0;idx<var_lsr->nbr_dim;idx++){
         for(idx_dmn=0;idx_dmn<var_gtr->nbr_dim;idx_dmn++){
 	  /* Compare names, not dimension IDs */
-	  if(strstr(var_lsr->dim[idx]->nm,var_gtr->dim[idx_dmn]->nm)){
+	  if(!strcmp(var_lsr->dim[idx]->nm,var_gtr->dim[idx_dmn]->nm)){
 	    var_lsr_var_gtr_dmn_shr_nbr++; /* var_lsr and var_gtr share this dimension */
 	    break;
 	  } /* endif */
@@ -858,7 +858,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	  /* var_gtr and var_lsr conform and are same rank */
 	  /* Test whether all var_lsr and var_gtr dimensions match in sequence */
 	  for(idx=0;idx<var_gtr->nbr_dim;idx++){
-	    if(!strstr(var_lsr->dim[idx]->nm,var_gtr->dim[idx]->nm)) break;
+	    if(strcmp(var_lsr->dim[idx]->nm,var_gtr->dim[idx]->nm)) break;
 	  } /* end loop over dimensions */
 	  /* If so, take shortcut and copy var_lsr to var_lsr_out */
 	  if(idx == var_gtr->nbr_dim) DO_CONFORM=True;
@@ -959,7 +959,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
       for(idx=0;idx<var_lsr->nbr_dim;idx++){
 	for(idx_dmn=0;idx_dmn<var_gtr->nbr_dim;idx_dmn++){
 	  /* Compare names, not dimension IDs */
-	  if(strstr(var_gtr->dim[idx_dmn]->nm,var_lsr->dim[idx]->nm)){
+	  if(!strcmp(var_gtr->dim[idx_dmn]->nm,var_lsr->dim[idx]->nm)){
 	    idx_var_lsr_var_gtr[idx]=idx_dmn;
 	    /*	    idx_var_gtr_var_lsr[idx_dmn]=idx;*/
 	    break;

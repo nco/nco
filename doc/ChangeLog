@@ -1,3 +1,24 @@
+2004-08-02  Charlie Zender  <zender@uci.edu>
+
+	* Implemented dimension reversal with negative signs in ncpdq
+
+	* Changed dimension re-order switch from -z to -a like ncwa
+
+	* Fixed NCO-wide bug where I used strstr(sng1,sng2) as boolean
+	instead of !strcmp(sng1,sng2) 
+	This bug occurred in:
+	nco_var_cnf_dmn() three times
+	nco_var_stretch() three times
+	ncbo.c() once time
+	When used as a boolean strstr(sng1,sng2) is approximately
+	interchangeable with !strcmp(sng1,sng2). 
+	Exceptions occur where sng1 is a substring of sng2, in which case
+	the dimensions would be different but strstr() would return a match.
+	In all locations, the bug appears to have caused extra work, or to
+	have incorrectly allowed the above exception where one dimension
+	is a substring of another, but in no location does the bug appear
+	to have caused wrong answers.
+
 2004-07-29  Charlie Zender  <zender@uci.edu>
 
 	* Eliminate ostensibly wrong memmove() in ncwa/ncpdq avg/rdr list processing

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.37 2004-07-06 18:35:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.38 2004-08-03 17:06:45 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -555,11 +555,11 @@ nco_prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure lis
     /* fxm: Change these switches to string comparisons someday */
     /* Set mode of current aed structure */
     /* Convert single letter code to mode enum */
-    /*    if(!strstr("append",arg_lst[2])){aed_lst[idx].mode=aed_append;
-    }else if(!strstr("create",arg_lst[2])){aed_lst[idx].mode=aed_create;
-    }else if(!strstr("delete",arg_lst[2])){aed_lst[idx].mode=aed_delete;
-    }else if(!strstr("modify",arg_lst[2])){aed_lst[idx].mode=aed_modify;
-    }else if(!strstr("overwrite",arg_lst[2])){aed_lst[idx].mode=aed_overwrite;} */
+    /*    if(!strcmp("append",arg_lst[2])){aed_lst[idx].mode=aed_append;
+    }else if(!strcmp("create",arg_lst[2])){aed_lst[idx].mode=aed_create;
+    }else if(!strcmp("delete",arg_lst[2])){aed_lst[idx].mode=aed_delete;
+    }else if(!strcmp("modify",arg_lst[2])){aed_lst[idx].mode=aed_modify;
+    }else if(!strcmp("overwrite",arg_lst[2])){aed_lst[idx].mode=aed_overwrite;} */
     switch(*(arg_lst[2])){
     case 'a': aed_lst[idx].mode=aed_append; break;
     case 'c': aed_lst[idx].mode=aed_create; break;

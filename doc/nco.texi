@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.248 2004-07-22 00:02:17 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.249 2004-08-03 17:06:43 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2657,13 +2657,25 @@ Short options: @samp{-F}@*
 Long options: @samp{--fortran}@*
 @end cartouche
 @cindex I/O
+The @samp{-F} switch changes @acronym{NCO} to read and write with
+Fortran index conventions. 
 By default, @acronym{NCO} uses C-style (0-based) indices for all I/O. 
-The @samp{-F} switch tells @acronym{NCO} to switch to reading and
-writing with Fortran index conventions.
-In Fortran, indices begin counting @w{from 1} (rather @w{than 0}), and
-dimensions are ordered from fastest varying to slowest varying.
-Consider a file @file{85.nc} containing 12 months of data in the record 
-dimension @code{time}.
+@w{In C}, indices count @w{from 0} (rather @w{than 1}), and
+dimensions are ordered from slowest (inner-most) to fastest
+(outer-most) varying.
+In Fortran, indices count @w{from 1} (rather @w{than 0}), and
+dimensions are ordered from fastest (inner-most) to slowest 
+(outer-most) varying.  
+@cindex transpose
+Hence @w{C and} Fortran data storage conventions represent transposes 
+of eachother.
+@cindex record variable
+Note that record variables, if any, in a netCDF file, contain the
+record dimension as the most slowly varying dimension. 
+
+@cindex record dimension
+Consider a file @file{85.nc} containing @w{12 months} of data in the
+record dimension @code{time}.
 The following hyperslab operations produce identical results, a
 June-July-August average of the data:
 @example
@@ -4138,6 +4150,7 @@ described in any detail in the sections below.
 * ncecat netCDF Ensemble Concatenator::  
 * ncflint netCDF File Interpolator::  
 * ncks netCDF Kitchen Sink::    
+* ncpdq netCDF pack re-dimension query::  
 * ncra netCDF Record Averager::  
 * ncrcat netCDF Record Concatenator::  
 * ncrename netCDF Renamer::     
@@ -6029,7 +6042,7 @@ ncatted -O -a units,prs_sfc,o,c,millibar out.nc
 @html
 <a name="ncks"></a> <!-- http://nco.sf.net/nco.html#ncks -->
 @end html
-@node ncks netCDF Kitchen Sink, ncra netCDF Record Averager, ncflint netCDF File Interpolator, Operator Reference Manual
+@node ncks netCDF Kitchen Sink, ncpdq netCDF pack re-dimension query, ncflint netCDF File Interpolator, Operator Reference Manual
 @section @command{ncks} netCDF Kitchen Sink
 @cindex kitchen sink
 @cindex printing files contents
@@ -6442,9 +6455,87 @@ For more details @xref{Wrapped coordinates}.
 
 @page
 @html
+<a name="ncpdq"></a> <!-- http://nco.sf.net/nco.html#ncpdq -->
+@end html
+@node ncpdq netCDF pack re-dimension query, ncra netCDF Record Averager, ncks netCDF Kitchen Sink, Operator Reference Manual
+@section @command{ncpdq} netCDF Pack, Re-dimension, Query
+@cindex reshape
+@cindex re-dimension
+@findex ncpdq
+
+@noindent
+SYNTAX
+@example
+ncpdq [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
+[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
+[-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-t thr_nbr] 
+[-v @var{var}[,@dots{}]] [-x] [-z @var{dim}[,@dots{}]] 
+@var{input-file} [@var{output-file}]
+@end example
+
+@noindent
+DESCRIPTION
+
+@command{ncpdq} re-shapes variables in @var{input-file} by re-ordering
+their dimensions as specified in the dimension re-order list.
+The record dimension is re-ordered like any other dimension.
+To re-order variable by a subset of their dimensions, specify
+these dimensions in a comma-separated list following @samp{-a}, e.g.,
+@samp{-a lon,lat}. 
+
+
+
+@cindex record dimension
+Users may specify any permutation of dimensions, including
+permutations which change the record dimension identity.
+@cindex record variable
+The record dimension is always the most slowly varying dimension in a
+record variable (@pxref{Fortran indexing}).
+The specified re-ordering will fail if it requires creating more than
+one record dimension amongst all the output variables
+@footnote{This limitation, imposed by the netCDF storage layer,
+may be relaxed in the future with netCDF4.}.
+
+@noindent
+EXAMPLES
+
+Reorder file @file{in.nc} so that the dimension @code{lon} always
+precedes the dimension @code{lat} and store the results in
+@file{out.nc}:  
+@example
+ncpdq -O -z lon,lat in.nc out.nc
+ncpdq -O -v three_dmn_var -z lon,lat in.nc out.nc
+@end example
+The second command extracts and re-orders only the variable
+@code{three_dmn_var}. 
+
+Suppose the dimension @code{lat} represents latitude and monotonically
+increases increases from south to north. 
+Reversing the @code{lat} dimension means re-ordering the data so that
+latitude values decrease monotonically from north to south.
+Accomplish this with
+@example
+ncpdq -O -a "-lat" in.nc out.nc
+ncpdq -O -a -lat in.nc out.nc # Wrong!
+ncpdq -O --rdr=-lat in.nc out.nc # OK, no whitespace before "-"
+ncpdq -O  in.nc out.nc # OK, no whitespace before "-"
+@end example
+Quotes are required in the first command.
+Quotes protect the @code{-lat} argument from being interpreted as a
+new command line switch by the shell.
+Quotes are requried whenever whitespace immediately precedes the
+negative sign.
+
+Re-ordering and reversal may be performed simultaneously, e.g.,
+@example
+ncpdq -O -a lon,-lat,time,-lev in.nc out.nc
+@end example
+
+@page
+@html
 <a name="ncra"></a> <!-- http://nco.sf.net/nco.html#ncra -->
 @end html
-@node ncra netCDF Record Averager, ncrcat netCDF Record Concatenator, ncks netCDF Kitchen Sink, Operator Reference Manual
+@node ncra netCDF Record Averager, ncrcat netCDF Record Concatenator, ncpdq netCDF pack re-dimension query, Operator Reference Manual
 @section @command{ncra} netCDF Record Averager
 @cindex averaging data
 @cindex record average

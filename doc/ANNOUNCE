@@ -1,25 +1,51 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.110 2004-07-19 21:01:44 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.111 2004-08-03 17:06:43 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.7 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-First, AIX NCO installations should upgrade to this version to get the 
+ncpdq is a new operator which re-shapes variables and files.
+ncpdq behaves like ncwa in most respects, except ncpdq re-arranges
+values in variables rather than averages them.  
+For example,
+
+ncpdq -a lon,lat in.nc out.nc
+
+writes out.nc after permuting dimensions, where necessary, to ensure
+that lat follows lon in all variables. 
+ncpdq alters the identity of the record dimension, where necessary.
+
+ncpdq also reverses dimensions if asked, e.g.,
+
+ncpdq -a -lat in.nc out.nc
+
+The meaning of "pdq" in ncpdq is not settled.
+The "p" may mean permute or pack, the "d" may mean dimension, and
+the "q" allows later expansion of whatever it is :)
+None of the existing operators was well suited for modification to
+handle re-shaping all the variables in a file, so I designed ncpdq
+to provide a good structure for operations (such as re-shaping,
+reversal) which do not alter variable rank. 
+Placing packing/unpacking functions (already in ncap) in ncpdq, so
+that all the variables in a file can be packed with one commend,
+should now be straightforward and is now on the wish list.
+
+fxm First, AIX NCO installations should upgrade to this version to get the 
 AIX-specific ncap bug-fix. 
 
 Enjoy,
 Charlie
 
 Feature changes:
-1. None
+1. New ncpdq operator
 
 Bug-fixes:
 1. AIX use NCO-supplied float-valued functions (e.g., cosf()) on AIX
 2. 
 
 Build changes:
-1. None
+1. RPM builder updated for FC2 i386 and x86_64 by Ed Hill
 
 Other user-visible changes:
 1. None

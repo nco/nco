@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.242 2004-07-27 19:47:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.243 2004-08-03 17:06:43 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -137,6 +137,7 @@ e.g., total, minimum, maximum, RMS:
 <li><a href="./nco.html#ncecat"><b>ncecat</b></a> netCDF Ensemble Concatenator</li>
 <li><a href="./nco.html#ncflint"><b>ncflint</b></a> netCDF File Interpolator</li>
 <li><a href="./nco.html#ncks"><b>ncks</b></a> netCDF Kitchen Sink</li>
+<li><a href="./nco.html#ncpdq"><b>ncpdq</b></a> netCDF pack, re-dimension, query</li>
 <li><a href="./nco.html#ncra"><b>ncra</b></a> netCDF Record Averager</li>
 <li><a href="./nco.html#ncrcat"><b>ncrcat</b></a> netCDF Record Concatenator</li>
 <li><a href="./nco.html#ncrename"><b>ncrename</b></a> netCDF Renamer</li>
@@ -200,6 +201,9 @@ The information in your endorsement will be used to create supplementary documen
 </ul>
 <hr></p>
 
+<tt>ncpdq</tt> released&mdash;performs arbitrary dimension re-ordering and
+  reversal
+
 <dt><a name="Version"></a></dt>
 <h2>Version Summary</h2>
 New releases receive unique CVS tags and their tarballs and stored  
@@ -208,7 +212,7 @@ Tarballs and RPMs are no long uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.9.8</b>: (<i>In progress</i>) Float functions will work in AIX <tt>ncap</tt> (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users), require C99 compiler
+<li><b>NCO 2.9.8</b>: (<i>In progress</i>) <tt>ncpdq</tt> released, <tt>ncap</tt> float functions work in AIX (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users), C99 compiler required
 <li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>nco_input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS), write <tt>nco_openmp_thread_number</tt> attribute
 <li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax, 64-bit ABI for x86_64, <a href="http://www.debian.org">Debian</a> builds libnco_c++
 <li><b>NCO 2.9.5</b>: <tt>ncflint</tt> handles <tt>missing_value</tt> data better, is commutative when weights are equal
@@ -356,11 +360,12 @@ href="src/nco_2.9.7-1_i386.changes">nco_2.9.7-1_i386.changes</a> (<!--#fsize fil
 <a name="fdr"></a>
 <a name="rhl"></a>
 <h3><a href="http://fedora.redhat.com">Fedora GNU/Linux</a></h3>
-<ul>
-<a href="http://mitgcm.org/eh3/NetCDF">Fedora GNU/Linux-specific homepage for NCO</a>.
+<ul>http://mitgcm.org/eh3/packages/
+<a href="http://mitgcm.org/eh3/packages">Fedora GNU/Linux-specific homepage for NCO</a>.
 <a href="http://www.rpm.org">RPMs</a> by Ed Hill:
-<li><a href="http://mitgcm.org/eh3/NetCDF/nco-2.9.7-0.fdr.1.i386.rpm">nco-2.9.7-0.fdr.1.i386.rpm</a>: Fedora Core&nbsp;1, i386 Binary RPM</li>
-<li><a href="http://mitgcm.org/eh3/NetCDF/nco-2.9.7-0.fdr.1.src.rpm">nco-2.9.7-0.fdr.1.src.rpm</a>: Fedora Core&nbsp;1, Source RPM</li>
+<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.7-0.fdr.2.i386.rpm</a>: Fedora Core&nbsp;2, i386 Binary RPM</li>
+<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.7-0.fdr.2.x86_64.rpm</a>: Fedora Core&nbsp;2, x86_64 Binary RPM</li>
+<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.7-0.fdr.2.src.rpm</a>: Fedora Core&nbsp;1, Source RPM</li>
 </ul>
 
 <a name="gentoo"></a>
@@ -676,7 +681,7 @@ Version 2.8.7 fixes this problem.
 <ul><b>Platform-specific Run-time Problems:</b>
 <a name="bug_ncap_flt_fnc_aix"></a>
 <li><i>Float-valued intrinsic arithmetic functions in <tt>ncap</tt> on AIX:</i>
-NCO versions through 2.9.7 have a bug that cause all float-valued
+<tt>ncap</tt> versions through 2.9.7 have a bug that cause all float-valued
 intrinsic math functions to fail under AIX.
 Float-valued math functions are the ISO&nbsp;C99 functions, e.g.,
 <tt>cosf()</tt>, <tt>fabsf()</tt>, <tt>logf()</tt>.
