@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.235 2003-09-16 21:55:33 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.236 2003-09-18 16:48:53 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -232,7 +232,7 @@ Permission denied
 266. ncbo: Finish ncbo.1 manpage
 268. ncbo: use ncap var_cnf_dmn() technique so fl_1 fl_2 broadcast interchangeably
 270. Automate uploading of tagged .deb builds to ftp://ftp.debian.org
-271. ncea -O -y ttl -D 3 ~/testcase.nc ~/testcase.nc ~/testsum.nc
+272. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************
