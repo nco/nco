@@ -112,6 +112,13 @@ $expected= 1;
 &go();
 ####################
 
+$test[0]='ncks -O -C -d time,0,1 -v time in.nc foo.nc';
+$test[1]='ncks -H -s "%g" -C -d time,2, foo.nc';
+$description="ncks 14: Offset past end of file";
+$expected='ncks: ERROR User-specified dimension index range 2 <= time <=  does not fall within valid dimension index range 0 <= time <= 1';
+&go();
+####################
+
 ####################
 #### ncwa tests ####
 ####################

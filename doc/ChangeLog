@@ -1,3 +1,7 @@
+2003-11-24  Charlie Zender  <zender@uci.edu>
+
+	* Add ncks test 14 to check for hyperslabbing problems
+
 2003-11-23  Charlie Zender  <zender@uci.edu>
 
 	* Change cerf to erfc in documentation. Dyslexia strikes again.

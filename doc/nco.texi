@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.188 2003-11-24 17:30:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.189 2003-11-25 06:58:12 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -4610,13 +4610,16 @@ variables in the file.
 The values of @var{att_type} and @var{att_val} were left blank because
 they are superfluous in @dfn{Delete} mode. 
 
+@cindex global attributes
 Delete all attributes associated with the @code{tpt} variable:
 @example
 ncatted -O -a ,tpt,d,, in.nc
 @end example
 @noindent
 The value of @var{att_nm} was left blank in order to select all
-attributes associate with the variable.
+attributes associated with the variable.
+To delete all global attributes, simply replace @code{tpt} with
+@code{global} in the above.
 
 @cindex @code{units}
 Modify all existing @code{units} attributes to "meter second-1"
