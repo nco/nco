@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.169 2002-08-21 11:47:41 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.170 2002-08-21 12:38:04 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -231,23 +231,8 @@ Command executes but in.hdf is full of screwy values
 226. See if xrf in nco_var_cnf_dmn() is really necessary, if not, remove it and make wgt arg const var_sct * const
 228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
 230. Keep track of type of missing_value field in variable structure for reasons described in nco_cnf_var_typ()/nco_cnv_mss_val_typ()
-231. Get packing working in ncra:
-ncap -C -O -v -s "rec_var_dbl_mss_val_dbl_pck=pack(rec_var_dbl_mss_val_dbl_upk);rec_var_dbl_mss_val_dbl_upk=rec_var_dbl_mss_val_dbl_upk;" ~/nco/data/in.nc ~/foo.nc
-ncks -C -m -H ~/foo.nc
-ncap -C -O -v -s "rec_var_dbl_mss_val_dbl_upk=unpack(rec_var_dbl_mss_val_dbl_pck);rec_var_dbl_mss_val_dbl_pck=rec_var_dbl_mss_val_dbl_pck;" ~/foo.nc ~/foo2.nc
-ncks -C -m -H ~/foo2.nc
-ncra -O ~/foo.nc ~/foo3.nc
-ncks -C -m -H ~/foo3.nc
-Remaining problems:
-During first record, variable is unpacked and then pck_ram is set false.
-On second record, var_upk() is called by nco_var_get() because pck_dsk is
-still true.
-However, var_upk() automatically returns when pck_ram is false.
-Thus second record is never unpacked.
-Therefore need to modify var_refresh() to set packing information?
-Or set pck_ram to true in nco_var_get() when second record is grabbed?
-Yes, that's better....
 232. Warn when arithmetic operators encounter packed variables
+233. Makefile.old rule for make tst appears broken for long ftp rule
 ************************************************************************
 End NCO Wish list
 ************************************************************************
