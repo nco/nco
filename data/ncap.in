@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.10 2002-01-17 08:45:35 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.11 2002-01-19 20:05:56 hmb Exp $
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 // Format of a valid ncap script:
 // C++ comment syntax
@@ -7,8 +7,77 @@
 // ncap -O -d lat,0 -d lon,0 -d lev,0 -D 1 -s "a9=three_dmn_var;" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
 // ncap -O -D 1 -s "a8[lat,lon,lev] = 1;" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
 // ncap -O -D 1 -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-// ncks -H -v a5 -m ${HOME}/nco/data/foo.nc | m
-
+// ncks -H -v -m ${HOME}/nco/data/foo.nc | m
+//
+//
+// Can use ncap as an attribute editor 
+// ----------------------------------
+//
+// Examples of using the -s switch 
+//
+// Define a new attribute 
+// ncap -s "one@new = 2*att_var@double_att" in.nc foo.nc
+//
+// Re-define an attribute to be the square of itself 
+// ncap -s "att_var@double_att = att_var@double_att^2.0" in.nc foo.nc
+//
+// Can have mixed types in RHS expression- Final result is converted to "highest type"
+// ncap -s "one@new = att_var@short_att * att_var@double_att - att_var@double_att" in.nc foo.nc 
+//
+// Can use maths functions ( in this case the result is of type double)
+// ncap -s "one@new = cos(1E-4) - 1" in.nc foo.nc
+//
+// Result is now of type float
+// ncap -s "one@new = cos(1E-4f)^2 + sin(1E-4f)^2" in.nc foo.nc
+//
+// Can assign strings to attributes( Have to use \" to escape the quote from the shell) 
+// ncap -s "one@new=\"hello world\"" in.nc foo.nc
+//
+// Can also add strings - and use escape chars e.g
+// ncap -s "one@new=\"Hello\t\" + \"World\n\"" in.nc foo.nc
+//
+// Can let an attribute equal a 0-Dimensional variable
+// ncap -s "one@new=one" in.c foo.nc
+//
+// Can let an attribute equal a 1-Dimensional variable
+// ncap -s "one@new=mss_val" in.nc foo.nc 
+//
+// Variables
+// ---------
+//
+// Multiply a co-ordinate variable by 20 
+// ncap -s "lat=20*lat" in.nc foo.nc
+//
+// Do an "ensemble average" of variables of mixed types - result is of type double 
+// ncap -s "average=(three_dmn_rec_var+three_dmn_var_dbl+three_dmn_var_int)/3" in.nc foo.nc
+//
+// Take the log(to base e) of the absolute value of a variable
+// ncap -s "abslog=log(abs(three_dmn_var_dbl))" in.nc foo.nc
+//
+//The available maths functions are:  
+// acos(); asin(); atan(); cos(); exp(); gamma(); log(); log10(); sin(); sqrt(); tan();
+// If variable or attribute  is "less" than type float then the result is type float
+// If variable or attribute is type double then result is double
+// This also applies to the pow() function 
+// Usage e.g pow(var1,3.5) or var1^3.5 
+// e.g
+// ncap -v -s "modulus=pow(sin(three_dmn_rec_var),2) + cos(three_dmn_rec_var)^2 - 1" in.nc foo.nc
+//
+// The modulus operator % can also be used with attributes and variable.
+// In an operation involving an attribute and a variable the
+// attribute is converted to the variable's type prior to the operation
+// mod is of type int
+// ncap -v -s "mod = three_dmn_rec_var % 4.0" in.nc foo.nc
+//
+// In this case mod is of type float
+// ncap -v -s "testa = three_dmn_var_int - 1.0f" in.nc foo.nc
+//
+// Can also use UNARY +/- with an attribute or variable e.g.
+// ncap -v -s "sign = -three_dmn_rec_var" in.nc foo.nc
+//
+//
+//
+//
 // Charlie's Tests:
 // p=hyam*PO + hybm*PS
 a1 = hyam;
@@ -18,7 +87,6 @@ a4 = PS;
 a5 = hyam*P0;
 //a6 = hybm*PS;
 a7 = (1*(three_dmn_var-three_dmn_var+1)-1)^1;
-a8[lat,lon,lev] = 1;
 a1@a1 = global@history;
 a1@julian_day = global@julian_day;
 //prs_mdp = P0*hyam + hybm*PS; // Fails because prs_mdp gets wrong rank
@@ -70,3 +138,12 @@ twenty@four = "Hello"+"\t World\n";
 twenty@five= fl_nm;
 twenty@six = mss_val;
 twenty@seven=one;
+// can use a UNARY -/+ and brackets
+three= (-two_dmn_var + 5)^3;
+testa= pow(sin( four_dmn_rec_var), 2) + cos(four_dmn_rec_var )^ 2 ;
+
+
+
+
+
+
