@@ -1,11 +1,12 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.77 2004-05-10 15:29:23 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.78 2004-05-20 14:16:28 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release fixes fxm
+This release fixes a bug where ncecat would segfaul when trying to
+concatenate files with only scalar variables.
 
 Enjoy,
 Charlie
@@ -14,7 +15,8 @@ Feature changes:
 1. None
 
 Bug-fixes:
-1. None
+1. ncecat works on when catenated files have no dimensions (all scalar
+   variables) fxm
 
 Build changes:
 1. None

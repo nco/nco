@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.68 2004-05-06 04:45:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.69 2004-05-20 14:16:29 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.68 2004-05-06 04:45:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.68 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.69 2004-05-20 14:16:29 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.69 $";
   const char * const opt_sng="ACcD:d:Fhl:n:Op:rRv:x-:";
 
   dmn_sct *rec_dmn;
@@ -248,7 +248,6 @@ main(int argc,char **argv)
 
   /* Make uniform list of user-specified dimension limits */
   lmt=nco_lmt_prs(lmt_nbr,lmt_arg);
-  
     
   /* Parse filename */
   fl_in=nco_fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,abb_arg_nbr,fl_lst_abb,fl_pth);
@@ -327,21 +326,21 @@ main(int argc,char **argv)
 
   /* ncecat-specific operations */
   if(True){
-    /* Define new record dimension */
-    rec_dmn=nco_dmn_dpl(dim[0]);
 
+    /* Always construct new "record" dimension from scratch */
+    rec_dmn=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
     rec_dmn->nm=(char *)strdup("record");
     rec_dmn->id=-1;
     rec_dmn->nc_id=-1;
     rec_dmn->xrf=NULL;
     rec_dmn->val.vp=NULL;
     rec_dmn->is_crd_dmn=False;
-    rec_dmn->is_crd_dmn=True;
+    rec_dmn->is_rec_dmn=True;
     rec_dmn->sz=0L;
     rec_dmn->cnt=0L;
     rec_dmn->srt=0L;
     rec_dmn->end=rec_dmn->sz-1L;
-    
+      
     /* Change existing record dimension, if any, to regular dimension */
     for(idx=0;idx<nbr_dmn_xtr;idx++){
       /* Is any input dimension a record dimension? */

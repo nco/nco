@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.10 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.11 2004-05-20 14:16:29 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -61,7 +61,7 @@ nco_dmn_dpl /* [fnc] Duplicate input dimension structure */
 
 dmn_sct * /* O [sct] Output dimension structure */
 nco_dmn_fll /* [fnc] Create and return completed dmn_sct */
-(const int nc_id, /* I [id] netCDF input file ID*/
+(const int nc_id, /* I [id] netCDF input file ID */
  const int dmn_id, /* I [id] Dimension ID */
  const char * const dmn_nm) /* I [sng] Dimension name */
 {
@@ -83,7 +83,7 @@ nco_dmn_fll /* [fnc] Create and return completed dmn_sct */
   dmn->is_crd_dmn=False;
   (void)nco_inq_dimlen(dmn->nc_id,dmn_id,&dmn->sz);
   
-  /* Get the record dimension ID */
+  /* Get record dimension ID */
   (void)nco_inq(dmn->nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
   if(dmn->id == rec_dmn_id){
     dmn->is_rec_dmn=True;

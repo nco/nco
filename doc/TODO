@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.300 2004-05-13 18:04:17 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.301 2004-05-20 14:16:28 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -195,6 +195,12 @@ nco327. Consolidate/coordinate letters of support for prp_nco
 nco328. Ability to reverse specified dimensions (use negative stride?)
 nco329. Ability to rearrange dimensions
 nco330. ncbo -c seems to extract _only_ coordinates
+nco301. ncecat does not catenate files withonly scalar variables reported by Tim Hume
+ncks -O -v one ~/nco/data/in.nc ~/foo_one.nc
+ncks -O -v two ~/nco/data/in.nc ~/foo_two.nc
+ncecat -O ~/foo_one.nc ~/foo_two.nc ~/foo_onetwo.nc
+pointer error feferencing undefined dim_lst?
+nco302. Add ncecat tests to test suite
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
