@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.121 2002-10-28 07:08:15 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.122 2002-11-13 07:39:18 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -327,8 +327,8 @@ fixes we currently have in mind for NCO.</li>
 <p>Users at UC Irvine and NCAR <i>may</i> find pre-built,
 <i>almost</i> up-to-date NCO executables in the following locations:
 <ul>
-<li>ESS <tt>dust.ps.uci.edu</tt> (Linux 2.4.7): <tt>/home/zender/bin/LINUX</tt></li>
-<li>ESS <tt>ess1.ps.uci.edu</tt> (Linux 2.2.15): <tt>/home/zender/bin/LINUXALPHA</tt></li>
+<li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.4.7): <tt>/home/zender/bin/LINUX</tt></li>
+<li>ESS <tt>ess1.ess.uci.edu</tt> (Linux 2.2.15): <tt>/home/zender/bin/LINUXALPHA</tt></li>
 <li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
 <li>CGD network (Solaris 2.6): <tt>/contrib/bin</tt>, <tt>/home/zender/bin/SUNMP</tt></li>
 <li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5):
