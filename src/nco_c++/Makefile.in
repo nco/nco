@@ -54,8 +54,10 @@ am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(includedir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(lib_LTLIBRARIES)
 libnco_c___la_LIBADD =
-am_libnco_c___la_OBJECTS = nco_att.lo nco_dmn.lo nco_fl.lo nco_hgh.lo \
-	nco_utl.lo nco_var.lo
+am_libnco_c___la_OBJECTS = libnco_c___la-nco_att.lo \
+	libnco_c___la-nco_dmn.lo libnco_c___la-nco_fl.lo \
+	libnco_c___la-nco_hgh.lo libnco_c___la-nco_utl.lo \
+	libnco_c___la-nco_var.lo
 libnco_c___la_OBJECTS = $(am_libnco_c___la_OBJECTS)
 am_tst_OBJECTS = tst.$(OBJEXT)
 tst_OBJECTS = $(am_tst_OBJECTS)
@@ -63,10 +65,13 @@ tst_DEPENDENCIES =
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/autobld/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/nco_att.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/nco_dmn.Plo ./$(DEPDIR)/nco_fl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/nco_hgh.Plo ./$(DEPDIR)/nco_utl.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/nco_var.Plo ./$(DEPDIR)/tst.Po
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/libnco_c___la-nco_att.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libnco_c___la-nco_dmn.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libnco_c___la-nco_fl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libnco_c___la-nco_hgh.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libnco_c___la-nco_utl.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/libnco_c___la-nco_var.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/tst.Po
 CXXCOMPILE = $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) \
 	$(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS)
 LTCXXCOMPILE = $(LIBTOOL) --mode=compile $(CXX) $(DEFS) \
@@ -207,6 +212,7 @@ include_HEADERS = libnco_c++.hh nco_dmn.hh nco_hgh.hh nco_var.hh \
 nco_att.hh nco_fl.hh nco_utl.hh
 
 libnco_c___la_SOURCES = nco_att.cc nco_dmn.cc nco_fl.cc nco_hgh.cc nco_utl.cc nco_var.cc
+libnco_c___la_CPPFLAGS = -DABORT_ON_ERROR
 libnco_c___la_LDFLAGS = -release @VERSION@
 tst_SOURCES = tst.cc
 tst_LDADD = -lnco_c++
@@ -290,12 +296,12 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_att.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_dmn.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_fl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_hgh.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_utl.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_var.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnco_c___la-nco_att.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnco_c___la-nco_dmn.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnco_c___la-nco_fl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnco_c___la-nco_hgh.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnco_c___la-nco_utl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libnco_c___la-nco_var.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/tst.Po@am__quote@
 
 .cc.o:
@@ -321,6 +327,150 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LTCXXCOMPILE) -c -o $@ $<
+
+libnco_c___la-nco_att.o: nco_att.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_att.o -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_att.Tpo" -c -o libnco_c___la-nco_att.o `test -f 'nco_att.cc' || echo '$(srcdir)/'`nco_att.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_att.Tpo" "$(DEPDIR)/libnco_c___la-nco_att.Po"; else rm -f "$(DEPDIR)/libnco_c___la-nco_att.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_att.cc' object='libnco_c___la-nco_att.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_att.Po' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_att.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_att.o `test -f 'nco_att.cc' || echo '$(srcdir)/'`nco_att.cc
+
+libnco_c___la-nco_att.obj: nco_att.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_att.obj -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_att.Tpo" -c -o libnco_c___la-nco_att.obj `if test -f 'nco_att.cc'; then $(CYGPATH_W) 'nco_att.cc'; else $(CYGPATH_W) '$(srcdir)/nco_att.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_att.Tpo" "$(DEPDIR)/libnco_c___la-nco_att.Po"; else rm -f "$(DEPDIR)/libnco_c___la-nco_att.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_att.cc' object='libnco_c___la-nco_att.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_att.Po' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_att.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_att.obj `if test -f 'nco_att.cc'; then $(CYGPATH_W) 'nco_att.cc'; else $(CYGPATH_W) '$(srcdir)/nco_att.cc'; fi`
+
+libnco_c___la-nco_att.lo: nco_att.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_att.lo -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_att.Tpo" -c -o libnco_c___la-nco_att.lo `test -f 'nco_att.cc' || echo '$(srcdir)/'`nco_att.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_att.Tpo" "$(DEPDIR)/libnco_c___la-nco_att.Plo"; else rm -f "$(DEPDIR)/libnco_c___la-nco_att.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_att.cc' object='libnco_c___la-nco_att.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_att.Plo' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_att.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_att.lo `test -f 'nco_att.cc' || echo '$(srcdir)/'`nco_att.cc
+
+libnco_c___la-nco_dmn.o: nco_dmn.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_dmn.o -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_dmn.Tpo" -c -o libnco_c___la-nco_dmn.o `test -f 'nco_dmn.cc' || echo '$(srcdir)/'`nco_dmn.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_dmn.Tpo" "$(DEPDIR)/libnco_c___la-nco_dmn.Po"; else rm -f "$(DEPDIR)/libnco_c___la-nco_dmn.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_dmn.cc' object='libnco_c___la-nco_dmn.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_dmn.Po' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_dmn.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_dmn.o `test -f 'nco_dmn.cc' || echo '$(srcdir)/'`nco_dmn.cc
+
+libnco_c___la-nco_dmn.obj: nco_dmn.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_dmn.obj -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_dmn.Tpo" -c -o libnco_c___la-nco_dmn.obj `if test -f 'nco_dmn.cc'; then $(CYGPATH_W) 'nco_dmn.cc'; else $(CYGPATH_W) '$(srcdir)/nco_dmn.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_dmn.Tpo" "$(DEPDIR)/libnco_c___la-nco_dmn.Po"; else rm -f "$(DEPDIR)/libnco_c___la-nco_dmn.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_dmn.cc' object='libnco_c___la-nco_dmn.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_dmn.Po' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_dmn.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_dmn.obj `if test -f 'nco_dmn.cc'; then $(CYGPATH_W) 'nco_dmn.cc'; else $(CYGPATH_W) '$(srcdir)/nco_dmn.cc'; fi`
+
+libnco_c___la-nco_dmn.lo: nco_dmn.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_dmn.lo -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_dmn.Tpo" -c -o libnco_c___la-nco_dmn.lo `test -f 'nco_dmn.cc' || echo '$(srcdir)/'`nco_dmn.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_dmn.Tpo" "$(DEPDIR)/libnco_c___la-nco_dmn.Plo"; else rm -f "$(DEPDIR)/libnco_c___la-nco_dmn.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_dmn.cc' object='libnco_c___la-nco_dmn.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_dmn.Plo' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_dmn.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_dmn.lo `test -f 'nco_dmn.cc' || echo '$(srcdir)/'`nco_dmn.cc
+
+libnco_c___la-nco_fl.o: nco_fl.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_fl.o -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_fl.Tpo" -c -o libnco_c___la-nco_fl.o `test -f 'nco_fl.cc' || echo '$(srcdir)/'`nco_fl.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_fl.Tpo" "$(DEPDIR)/libnco_c___la-nco_fl.Po"; else rm -f "$(DEPDIR)/libnco_c___la-nco_fl.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_fl.cc' object='libnco_c___la-nco_fl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_fl.Po' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_fl.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_fl.o `test -f 'nco_fl.cc' || echo '$(srcdir)/'`nco_fl.cc
+
+libnco_c___la-nco_fl.obj: nco_fl.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_fl.obj -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_fl.Tpo" -c -o libnco_c___la-nco_fl.obj `if test -f 'nco_fl.cc'; then $(CYGPATH_W) 'nco_fl.cc'; else $(CYGPATH_W) '$(srcdir)/nco_fl.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_fl.Tpo" "$(DEPDIR)/libnco_c___la-nco_fl.Po"; else rm -f "$(DEPDIR)/libnco_c___la-nco_fl.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_fl.cc' object='libnco_c___la-nco_fl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_fl.Po' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_fl.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_fl.obj `if test -f 'nco_fl.cc'; then $(CYGPATH_W) 'nco_fl.cc'; else $(CYGPATH_W) '$(srcdir)/nco_fl.cc'; fi`
+
+libnco_c___la-nco_fl.lo: nco_fl.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_fl.lo -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_fl.Tpo" -c -o libnco_c___la-nco_fl.lo `test -f 'nco_fl.cc' || echo '$(srcdir)/'`nco_fl.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_fl.Tpo" "$(DEPDIR)/libnco_c___la-nco_fl.Plo"; else rm -f "$(DEPDIR)/libnco_c___la-nco_fl.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_fl.cc' object='libnco_c___la-nco_fl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_fl.Plo' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_fl.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_fl.lo `test -f 'nco_fl.cc' || echo '$(srcdir)/'`nco_fl.cc
+
+libnco_c___la-nco_hgh.o: nco_hgh.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_hgh.o -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_hgh.Tpo" -c -o libnco_c___la-nco_hgh.o `test -f 'nco_hgh.cc' || echo '$(srcdir)/'`nco_hgh.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_hgh.Tpo" "$(DEPDIR)/libnco_c___la-nco_hgh.Po"; else rm -f "$(DEPDIR)/libnco_c___la-nco_hgh.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_hgh.cc' object='libnco_c___la-nco_hgh.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_hgh.Po' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_hgh.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_hgh.o `test -f 'nco_hgh.cc' || echo '$(srcdir)/'`nco_hgh.cc
+
+libnco_c___la-nco_hgh.obj: nco_hgh.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_hgh.obj -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_hgh.Tpo" -c -o libnco_c___la-nco_hgh.obj `if test -f 'nco_hgh.cc'; then $(CYGPATH_W) 'nco_hgh.cc'; else $(CYGPATH_W) '$(srcdir)/nco_hgh.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_hgh.Tpo" "$(DEPDIR)/libnco_c___la-nco_hgh.Po"; else rm -f "$(DEPDIR)/libnco_c___la-nco_hgh.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_hgh.cc' object='libnco_c___la-nco_hgh.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_hgh.Po' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_hgh.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_hgh.obj `if test -f 'nco_hgh.cc'; then $(CYGPATH_W) 'nco_hgh.cc'; else $(CYGPATH_W) '$(srcdir)/nco_hgh.cc'; fi`
+
+libnco_c___la-nco_hgh.lo: nco_hgh.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_hgh.lo -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_hgh.Tpo" -c -o libnco_c___la-nco_hgh.lo `test -f 'nco_hgh.cc' || echo '$(srcdir)/'`nco_hgh.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_hgh.Tpo" "$(DEPDIR)/libnco_c___la-nco_hgh.Plo"; else rm -f "$(DEPDIR)/libnco_c___la-nco_hgh.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_hgh.cc' object='libnco_c___la-nco_hgh.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_hgh.Plo' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_hgh.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_hgh.lo `test -f 'nco_hgh.cc' || echo '$(srcdir)/'`nco_hgh.cc
+
+libnco_c___la-nco_utl.o: nco_utl.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_utl.o -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_utl.Tpo" -c -o libnco_c___la-nco_utl.o `test -f 'nco_utl.cc' || echo '$(srcdir)/'`nco_utl.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_utl.Tpo" "$(DEPDIR)/libnco_c___la-nco_utl.Po"; else rm -f "$(DEPDIR)/libnco_c___la-nco_utl.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_utl.cc' object='libnco_c___la-nco_utl.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_utl.Po' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_utl.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_utl.o `test -f 'nco_utl.cc' || echo '$(srcdir)/'`nco_utl.cc
+
+libnco_c___la-nco_utl.obj: nco_utl.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_utl.obj -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_utl.Tpo" -c -o libnco_c___la-nco_utl.obj `if test -f 'nco_utl.cc'; then $(CYGPATH_W) 'nco_utl.cc'; else $(CYGPATH_W) '$(srcdir)/nco_utl.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_utl.Tpo" "$(DEPDIR)/libnco_c___la-nco_utl.Po"; else rm -f "$(DEPDIR)/libnco_c___la-nco_utl.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_utl.cc' object='libnco_c___la-nco_utl.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_utl.Po' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_utl.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_utl.obj `if test -f 'nco_utl.cc'; then $(CYGPATH_W) 'nco_utl.cc'; else $(CYGPATH_W) '$(srcdir)/nco_utl.cc'; fi`
+
+libnco_c___la-nco_utl.lo: nco_utl.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_utl.lo -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_utl.Tpo" -c -o libnco_c___la-nco_utl.lo `test -f 'nco_utl.cc' || echo '$(srcdir)/'`nco_utl.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_utl.Tpo" "$(DEPDIR)/libnco_c___la-nco_utl.Plo"; else rm -f "$(DEPDIR)/libnco_c___la-nco_utl.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_utl.cc' object='libnco_c___la-nco_utl.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_utl.Plo' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_utl.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_utl.lo `test -f 'nco_utl.cc' || echo '$(srcdir)/'`nco_utl.cc
+
+libnco_c___la-nco_var.o: nco_var.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_var.o -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_var.Tpo" -c -o libnco_c___la-nco_var.o `test -f 'nco_var.cc' || echo '$(srcdir)/'`nco_var.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_var.Tpo" "$(DEPDIR)/libnco_c___la-nco_var.Po"; else rm -f "$(DEPDIR)/libnco_c___la-nco_var.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_var.cc' object='libnco_c___la-nco_var.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_var.Po' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_var.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_var.o `test -f 'nco_var.cc' || echo '$(srcdir)/'`nco_var.cc
+
+libnco_c___la-nco_var.obj: nco_var.cc
+@am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_var.obj -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_var.Tpo" -c -o libnco_c___la-nco_var.obj `if test -f 'nco_var.cc'; then $(CYGPATH_W) 'nco_var.cc'; else $(CYGPATH_W) '$(srcdir)/nco_var.cc'; fi`; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_var.Tpo" "$(DEPDIR)/libnco_c___la-nco_var.Po"; else rm -f "$(DEPDIR)/libnco_c___la-nco_var.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_var.cc' object='libnco_c___la-nco_var.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_var.Po' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_var.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_var.obj `if test -f 'nco_var.cc'; then $(CYGPATH_W) 'nco_var.cc'; else $(CYGPATH_W) '$(srcdir)/nco_var.cc'; fi`
+
+libnco_c___la-nco_var.lo: nco_var.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT libnco_c___la-nco_var.lo -MD -MP -MF "$(DEPDIR)/libnco_c___la-nco_var.Tpo" -c -o libnco_c___la-nco_var.lo `test -f 'nco_var.cc' || echo '$(srcdir)/'`nco_var.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/libnco_c___la-nco_var.Tpo" "$(DEPDIR)/libnco_c___la-nco_var.Plo"; else rm -f "$(DEPDIR)/libnco_c___la-nco_var.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='nco_var.cc' object='libnco_c___la-nco_var.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	depfile='$(DEPDIR)/libnco_c___la-nco_var.Plo' tmpdepfile='$(DEPDIR)/libnco_c___la-nco_var.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	$(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(libnco_c___la_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o libnco_c___la-nco_var.lo `test -f 'nco_var.cc' || echo '$(srcdir)/'`nco_var.cc
 
 mostlyclean-libtool:
 	-rm -f *.lo

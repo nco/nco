@@ -5,6 +5,8 @@ nco_att.hh nco_fl.hh nco_utl.hh
 
 libnco_c___la_SOURCES = nco_att.cc nco_dmn.cc nco_fl.cc nco_hgh.cc nco_utl.cc nco_var.cc
 
+libnco_c___la_CPPFLAGS = -DABORT_ON_ERROR
+
 libnco_c___la_LDFLAGS = -release @VERSION@
 check_PROGRAMS = tst
 
