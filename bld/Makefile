@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.162 2002-09-02 21:45:37 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.163 2002-09-02 22:02:01 zender Exp $ -*-makefile-*-
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -427,14 +427,14 @@ endif
 
 # Works on LINUX, LINUXALPHA, and FREEBSD
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
-C++ := como
-#C++ := g++
+#C++ := como
+C++ := g++
 #C++ := icc
 #C++ := insure
 # fxm: 19980517: As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
-CC := como --c99
+#CC := como --c99
 #CC := g++
-#CC := gcc
+CC := gcc
 #CC := icc
 #CC := insure
 CPP := ${CC}
