@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.41 2000-04-05 21:41:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.42 2000-04-10 07:16:11 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
 
@@ -244,20 +244,25 @@ sng_lst_prs(char **sng_lst,const long lmn_nbr, const char *dlm_sng)
 char **
 lst_prs(char *sng_in,const char *dlm_sng,int *nbr_lst)
 /* 
-   char *sng_in: I/O delimited argument list (delimiters are changed to NULL on output)
-   const char *dlm_sng: I delimiter string
-   int *nbr_lst: O number of elements in list
-   char **lst_prs: O array of list elements
+   char *sng_in: I/O [sng] delimited argument list (delimiters are changed to NULL on output)
+   const char *dlm_sng: I [sng] delimiter string
+   int *nbr_lst: O [nbr] Number of elements in list
+   char **lst_prs: O [sng] array of list elements
  */ 
 {
-  /* Routine creates a list of strings from a given string and an arbitrary delimiter */ 
+  /* Purpose: Create list of strings from given string and arbitrary delimiter
+     This routine is often called with system memory, e.g., with strings from
+     command line arguments whose memory was allocated by the shell or getopt().
+     A conservative policy would be, therefore, to never modify the input string
+     However, we are safe if any modifications do not extend the input string
+     Thus this routine is allowed to replace delimiter strings by NULLs */ 
 
   /* Number of list members is always one more than number of delimiters, e.g.,
      foo,,3, has 4 arguments: "foo", "", "3" and "".
-     A delimiter without an argument is valid syntax to indicate the default argument
-     Therefore a storage convention is necessary to indicate the default argument was selected
-     Either NULL or '\0' can be used without requiring the use of an additional flag
-     NULL can not be printed, but is useful as a logical flag since it's value is False
+     A delimiter without an argument is valid syntax to indicate default argument
+     Therefore a storage convention is necessary to indicate default argument was selected
+     Either NULL or '\0' can be used without requiring additional flag
+     NULL is not printable, but is useful as a logical flag since its value is False
      On the other hand, '\0', the empty string, can be printed but is not as useful as a flag
      Currently, NCO implements the former convention, where default selections are set to NULL
    */
@@ -289,15 +294,15 @@ lst_prs(char *sng_in,const char *dlm_sng,int *nbr_lst)
   lst[0]=sng_in;
   idx=0;
   while((sng_in_ptr=strstr(sng_in_ptr,dlm_sng))){
-    /* NULL terminate previous arg */ 
+    /* NUL-terminate previous arg */ 
     *sng_in_ptr='\0';
     sng_in_ptr+=dlm_len;
     lst[++idx]=sng_in_ptr;
   } /* end while */ 
 
-  /* A default list member is assumed whenever two delimiters are adjacent to eachother, such that
-     the length of the string between them is 0. If the list ends with a delimiter, then the last
-     element of the list is also assumed to be a default list member. */ 
+  /* Default list member is assumed when two delimiters are adjacent to eachother, 
+     i.e., when length of string between delimiters is 0. 
+     If list ends with delimiter, then last element of list is also assumed to be default list member. */ 
   /* This loop sets default list members to NULL */
   for(idx=0;idx<*nbr_lst;idx++)
     if(strlen(lst[idx]) == 0) lst[idx]=NULL;
@@ -316,7 +321,7 @@ lst_prs(char *sng_in,const char *dlm_sng,int *nbr_lst)
 char *
 fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,char **fl_lst_abb,char *fl_pth)
 /* 
-   char *fl_nm: I current filename, if any
+   const char *fl_nm: I/O [sng] Current filename, if any
    int fl_nbr: I ordinal index of file in input file list
    int *nbr_fl: I/O number of files to be processed
    char **fl_lst_in: I user-specified filenames

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.24 2000-04-05 21:41:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.25 2000-04-10 07:16:12 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -260,8 +260,8 @@ typedef struct var_sct_tag{
   long *tally; /* number of valid operations performed so far */ 
   struct var_sct_tag *xrf; /* cross-reference to associated variable structure (usually the structure for the variable on output) */ 
   int is_pck; /* Variable is packed on disk (scale_factor, add_offset, or both attributes exist) */ 
-  int has_scl_fct; /* scale_factor attribute exists */ 
-  int has_add_fst; /* add_offset attribute exists */ 
+  int has_scl_fct; /* Valid scale_factor attribute exists */ 
+  int has_add_fst; /* Valid add_offset attribute exists */ 
   ptr_unn scl_fct; /* value of scale_factor attribute, if any (scl_fct stored in this structure must be same type as unpacked variable) */ 
   ptr_unn add_fst; /* value of add_offset attribute, if any (add_fst stored in this structure must be same type as unpacked variable) */ 
   nc_type type_pck; /* type of variable when packed (on disk) */ 
