@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.31 2004-08-05 00:01:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.32 2004-08-05 00:13:54 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -455,7 +455,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
   dmn_out_nbr=var_out->nbr_dim;
 
   /* Initialize dimension maps to missing_value to aid debugging */
-  if(dbg_lvl_get() == 6){
+  if(dbg_lvl_get() > 3){
     for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
       dmn_idx_out_in[dmn_out_idx]=idx_err;
     for(dmn_rdr_idx=0;dmn_rdr_idx<dmn_rdr_nbr;dmn_rdr_idx++)

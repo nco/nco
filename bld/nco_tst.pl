@@ -238,6 +238,23 @@ $expected='ncks: ERROR User-specified dimension index range 2 <= time <=  does n
 &go();
 
 ####################
+#### ncpdq tests ####
+####################
+$operator="ncpdq";
+####################
+$test[0]='ncpdq -O -a -lat,-lev,-lon -v three_dmn_var in.nc foo.nc';
+$test[1]='ncks -C -H -s "%f" -v three_dmn_var -d lat,0 -d lev,0 -d lon,0 foo.nc';
+$description=" reverse three dimensional variable";
+$expected= 23 ; 
+&go();
+
+$test[0]='ncpdq -O -a lon,lat -v three_dmn_var in.nc foo.nc';
+$test[1]='ncks -C -H -s "%f" -v three_dmn_var -d lat,0 -d lev,2 -d lon,3 foo.nc';
+$description=" re-order three dimensional variable";
+$expected= 11 ; 
+&go();
+
+####################
 #### ncra tests ####
 ####################
 $operator="ncra";

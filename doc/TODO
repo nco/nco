@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.361 2004-08-05 00:01:48 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.362 2004-08-05 00:13:54 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -231,16 +231,11 @@ nco359. Allow spaces in between variables names in -v var_lst arguments
 nco360. AX_CFLAGS_GCC_OPTION(-std=c99) adds -std=c99 to xlc_r not just gcc
 nco361. Create new operator or rewrite ncks to use new style
 nco362. reduce memory during run by free()'ing var_fix[idx],var_fix_out[idx],var_prc[idx],var_prc_out[idx] after writes
-nco363. Document ncpdq in nco.texi
-nco364. Handle record dimension correctly in ncpdq
-nco365. Add ncpdq tests to nco_tst.pl
+nco363. Finish documenting ncpdq in nco.texi
 nco366. ncpdq: Use ncwa technique to put non-dmn_rdr variables in var_fix rather than var_prc?
 nco367. fix ncwa list collapse errors once bug found in pcpdq. Unfortunately ncwa uses dim_avg_lst after it is collapsed
 nco369. make sure strcmp is used for comparison, rather than strstr
-nco371. fix broken ncwa---due to nco_avg "fixes" made in last four days?
 nco372. Update man pages for -o, -t, stdin features
-nco373. ncwa segfault in printf() in nco_var_dfn() with 
-ncwa -D 3 -N -O -v three_dmn_var -C -a lat,lon -w gw in.nc foo.nc
 nco374. ncwa: re-write ncwa so, like ncpdq, ncwa re-arranges output metadata prior to calling nco_var_dfn()
 nco375. Do something consistent with: nco_exit(EXIT_FAILURE)
 nco376. 
