@@ -1,7 +1,8 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.135 2002-05-14 00:17:26 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.136 2002-05-14 21:30:23 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
+# scp ~/nco/bld/Makefile goldhill.cgd.ucar.edu:nco/bld
 
 # Usage: 
 # make
@@ -162,7 +163,7 @@ VPATH := $(subst ${space},:,${MDL_PTH})
 CPP_PTH := $(foreach dir,${MDL_PTH},-I${dir})
 
 # Variables having to do with binary executables created by module
-MDL_BIN_TRG := ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted # NCO binary targets
+MDL_BIN_TRG := ncap ncks ncrename ncra ncdiff ncwa ncecat ncflint ncatted # NCO binary targets
 MDL_BIN_SYM_LNK := ncea ncrcat # Symbolic links
 MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
 MDL_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_BIN_STB}) # distclean removes these files
@@ -255,15 +256,15 @@ ifeq (${OMP},Y)
  FC := xlf95_r
  OMP_FLG := -qsmp=noauto 
 else
- CC := cc
-# CC := xlc # 20020513 xlc dies on char ** prototypes
+ CC := xlc
  CPP_DFN += -U_OPENMP
  FC := xlf95
 endif # endif OMP
 C++ := xlC
 # -qmaxmem=num Limit amount of memory used by space intensive optimizations to <num> kilobytes
-CFLAGS := -qmaxmem=8192
-CPP := cc -c
+# -qlanglvl=extended: Allow C++ constructs in C, keeps xlc from dying on type ** prototypes
+CFLAGS := -qmaxmem=8192 -qlanglvl=extended
+CPP := xlc -c -qlanglvl=extended
 CPPFLAGS := ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC}
 FFLAGS := ${OMP_FLG} -qmaxmem=-1 -qarch=auto -qspillsize=2500
 FIXEDFLAGS := -qsuffix=f=f:cpp=F -qfixed=132
