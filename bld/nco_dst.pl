@@ -6,30 +6,30 @@
 # Usage:
 # Export tagged, public versions
 
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_48
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_48
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_48
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_48
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_48
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_48
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco1_1_48
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco1_1_48
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_48
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_48
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_49
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_49
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_49
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_49
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_49
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_49
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco1_1_49
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco1_1_49
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_49
+# $HOME/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_49
 
 # Export daily snapshot
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=1 --cln --nst
+# $HOME/nco/bld/nco_dst.pl --dbg=2 
+# $HOME/nco/bld/nco_dst.pl --dbg=1 --cln --nst
 
 # Machines requiring interactive builds
-# cd $HOME/nc/nco;cvs update;cd bld;make;make tst
-# scp $HOME/nc/nco/bld/nco_dst.pl goldhill.cgd.ucar.edu:/home/zender/nc/nco/bld/nco_dst.pl
+# cd $HOME/nco;cvs update;cd bld;make;make tst
+# scp $HOME/nco/bld/nco_dst.pl goldhill.cgd.ucar.edu:/home/zender/nco/bld/nco_dst.pl
 
 BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.59 2000-05-19 17:10:05 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.60 2000-06-06 05:49:21 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -65,10 +65,10 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-05-19 17:10:05 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.59 2000-05-19 17:10:05 zender Exp $';
-my $CVS_Revision='$Revision: 1.59 $';
-my $CVSROOT='$CVSROOT'; # CVS repository
+my $CVS_Date='$Date: 2000-06-06 05:49:21 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.60 2000-06-06 05:49:21 zender Exp $';
+my $CVS_Revision='$Revision: 1.60 $';
+my $CVSROOT=':pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
@@ -123,13 +123,14 @@ if($data_nm eq ''){$data_nm='/data/'.$usr_nm;}
 my $dst_pth_pfx=$data_nm; # Parent of build directory
 if($dst_pth_pfx eq $HOME){die "$prg_nm: ERROR \$dst_pth_pfx eq $dst_pth_pfx";} # This could be disastrous
 if($rm_cmd =~ m/( -r)|( -R)|( --recursive)/){die "$prg_nm: ERROR Dangerous setting \$rm_cmd eq $rm_cmd";} # This would be disastrous
-if($HOST =~ m/cgd\.ucar\.edu/ || $HOST =~ m/sanitas/ || $HOST =~ m/goldhill/ || $HOST =~ m/dataproc/){
-# CVS 1.10 has a bug where 'cvs -d :ext:user@host:repositorypath export -kkv -r revision_tag module' fails
-# Workaround: Export from a machine cross-mounted to /fs/cgd so that :ext:user@host is not necessary
-    $CVSROOT='/home/zender/cvs'; # CVS repository
-}else{
-    $CVSROOT=':ext:'.$usr_nm.'@goldhill.cgd.ucar.edu:/home/zender/cvs'; # CVS repository
-} # endif CVSROOT
+#  if($HOST =~ m/cgd\.ucar\.edu/ || $HOST =~ m/sanitas/ || $HOST =~ m/goldhill/ || $HOST =~ m/dataproc/){
+#  # CVS 1.10 has a bug where 'cvs -d :ext:user@host:repositorypath export -kkv -r revision_tag module' fails
+#  # Workaround: Export from a machine cross-mounted to /fs/cgd so that :ext:user@host is not necessary
+#      $CVSROOT='/home/zender/cvs'; # CVS repository
+#  }else{
+#      $CVSROOT=':ext:'.$usr_nm.'@goldhill.cgd.ucar.edu:/home/zender/cvs'; # CVS repository
+#      $CVSROOT=':pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
+#  } # endif CVSROOT
 
 $prg_dsc='NCO distribution maker'; # Program description
 ($prg_nm,$prg_vrs)=$CVS_Id =~ /: (.+).pl,v ([\d.]+)/; # Program name and version
@@ -235,7 +236,7 @@ if($bld){
 	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -r $vrs_tag -d $dst_pth_bld nco"); # Export
     } # endelse
     cmd_prc("printf $dst_vrs > $dst_pth_bld/doc/VERSION"); # Stamp version in VERSION file in exported files
-    cmd_prc("printf $dst_vrs > $HOME/nc/nco/doc/VERSION"); # Stamp version in VERSION file in development directory
+    cmd_prc("printf $dst_vrs > $HOME/nco/doc/VERSION"); # Stamp version in VERSION file in development directory
 #    cmd_prc("ln -s $dst_pth_bld/bld/nco.spec $dst_pth_bld/bld/nco-$dst_vrs.spec"); # Stamp version in VERSION file
     
 # Make sure documentation files are up to date
@@ -291,8 +292,8 @@ if($bld){
 if($acd_prs){
      $rmt_mch='dust.acd.ucar.edu';
      print STDOUT "\n$prg_nm: Updating private NCO on $rmt_mch...\n";
-     cmd_prc("$rsh_cmd $rmt_mch \"cd ~/nc/nco;$cvs_cmd update\"");
-     cmd_prc("$rsh_cmd $rmt_mch \"cd ~/nc/nco/bld;make cln all tst\"");
+     cmd_prc("$rsh_cmd $rmt_mch \"cd ~/nco;$cvs_cmd update\"");
+     cmd_prc("$rsh_cmd $rmt_mch \"cd ~/nco/bld;make cln all tst\"");
 # Unfortunately, sudo does not work at all with rsh
 #    cmd_prc("$rsh_cmd $rmt_mch \"sudo cp /gs/zender/bin/LINUX/nc* /usr/local/bin\"");
      print STDOUT "$prg_nm: Done updating private NCO binaries on $rmt_mch\n\n";
@@ -301,8 +302,8 @@ if($acd_prs){
 if($acd_cnt){
     $rmt_mch='garcia.acd.ucar.edu';
     print STDOUT "\n$prg_nm: Updating private NCO on $rmt_mch...\n";
-    cmd_prc("$rsh_cmd $rmt_mch \"cd ~/nc/nco;/local/bin/$cvs_cmd update\"");
-    cmd_prc("$rsh_cmd $rmt_mch \"cd ~/nc/nco/bld;/local/bin/gmake cln all tst\"");
+    cmd_prc("$rsh_cmd $rmt_mch \"cd ~/nco;/local/bin/$cvs_cmd update\"");
+    cmd_prc("$rsh_cmd $rmt_mch \"cd ~/nco/bld;/local/bin/gmake cln all tst\"");
 # Unfortunately, sudo does not work at all with rsh
 #    cmd_prc("$rsh_cmd $rmt_mch \"sudo cp /a1/zender/bin/ALPHA/nc* /usr/local/bin\"");
     print STDOUT "$prg_nm: Done updating private NCO binaries on $rmt_mch\n\n";
