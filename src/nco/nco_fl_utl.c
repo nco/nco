@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.23 2003-08-02 16:25:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.24 2003-08-02 23:12:51 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -124,7 +124,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
     if(arg_crr == argc-1) *fl_out=(char *)strdup(argv[arg_crr]); else *fl_out=NULL;
     return fl_lst_in;
     /*    break;*//* NB: putting break after return in case statement causes warning on SGI cc */
-  case ncbnr:
+  case ncbo:
   case ncdiff:
   case ncflint:
     if(argc-arg_crr != 3){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbnr.c,v 1.4 2003-08-02 23:12:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.1 2003-08-02 23:12:51 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *opt_sng;
   char *time_bfr_srt;
-  char CVS_Id[]="$Id: ncbnr.c,v 1.4 2003-08-02 23:12:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.4 $";
+  char CVS_Id[]="$Id: ncbo.c,v 1.1 2003-08-02 23:12:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.1 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

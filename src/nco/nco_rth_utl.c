@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.11 2003-08-02 16:25:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.12 2003-08-02 23:12:51 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -93,7 +93,7 @@ nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
 
   (void)fprintf(stderr,"%s: ERROR nco_op_typ_get() reports unknown user-specified operation type %s\n",prg_nm,nco_op_sng);
   (void)fprintf(stderr,"%s: HINT Valid operation type (op_typ) choices:\n",prg_nm);
-  if(prg_id == ncbnr) (void)fprintf(stderr,"addition: add,+,addition\nsubtration: sbt,-,dff,diff,sub,subtract,subtraction\nmultiplication: mlt,*,mult,multiply,multiplication\ndivision: dvd,/,divide,division\n"); else (void)fprintf(stderr,"min,max,ttl,total,sqrt,sqravg,avgsqr,rms,rmssdn");
+  if(prg_id == ncbo) (void)fprintf(stderr,"addition: add,+,addition\nsubtration: sbt,-,dff,diff,sub,subtract,subtraction\nmultiplication: mlt,*,mult,multiply,multiplication\ndivision: dvd,/,divide,division\n"); else (void)fprintf(stderr,"min,max,ttl,total,sqrt,sqravg,avgsqr,rms,rmssdn");
   nco_exit(EXIT_FAILURE);
   return False; /* Statement should not be reached */
 } /* end nco_op_typ_get() */

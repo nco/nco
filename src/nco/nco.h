@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.52 2003-07-30 21:58:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.53 2003-08-02 23:12:51 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -100,7 +100,7 @@ extern "C" {
 
   enum prg{ /* [enm] Key value for all netCDF operators */
     ncap,
-    ncbnr,
+    ncbo,
     ncatted,
     ncdiff,
     ncea,
@@ -131,7 +131,7 @@ extern "C" {
   }; /* end enum */
   
   enum nco_op_typ{ /* [enm] Operation type */
-    /* Types used in ncbnr(): */
+    /* Types used in ncbo(): */
     nco_op_add, /* [enm] Add file_1 to file_2 */
     nco_op_dvd, /* [enm] Divide file_1 by file_2 */
     nco_op_mlt, /* [enm] Multiply file_1 by file_2 */

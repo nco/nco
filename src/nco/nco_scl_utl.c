@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.8 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.9 2003-08-02 23:12:51 zender Exp $ */
 
 /* Purpose: Scalar utilities */
 
@@ -119,7 +119,7 @@ ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar dou
   
   /* Valid memory address exists */
   ptr_unn_scl_dbl.vp=(void *)nco_malloc(nco_typ_lng(NC_DOUBLE)); /* [unn] Pointer union to double precision value of first element */
-  (void)val_conform_type(type,val,NC_DOUBLE,ptr_unn_scl_dbl);
+  (void)val_cnf_typ(type,val,NC_DOUBLE,ptr_unn_scl_dbl);
   scl_dbl=ptr_unn_scl_dbl.dp[0];
   ptr_unn_scl_dbl.vp=nco_free(ptr_unn_scl_dbl.vp);
 

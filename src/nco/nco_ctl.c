@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.26 2003-07-30 21:58:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.27 2003-08-02 23:12:51 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -42,7 +42,7 @@ is_rth_opr /* [fnc] Query whether program does arithmetic */
   /* Purpose: Does operator do arithmetic? */
   switch(prg_id){
   case ncap: 
-  case ncbnr:
+  case ncbo:
   case ncdiff:
   case ncea:
   case ncflint:
@@ -119,16 +119,16 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   if(!strcmp(nm_out,"ncra")){*prg=ncra;}
   else if(!strcmp(nm_out,"ncap")){*prg=ncap;}
   else if(!strcmp(nm_out,"ncea")){*prg=ncea;}
-  else if(!strcmp(nm_out,"ncbnr")){*prg=ncbnr;}
-  /* Synonyms for ncbnr */
-  else if(!strcmp(nm_out,"ncadd")){*prg=ncbnr;}
-  else if(!strcmp(nm_out,"ncdiff")){*prg=ncbnr;}
-  else if(!strcmp(nm_out,"ncsub")){*prg=ncbnr;}
-  else if(!strcmp(nm_out,"ncsubtract")){*prg=ncbnr;}
-  else if(!strcmp(nm_out,"ncmult")){*prg=ncbnr;}
-  else if(!strcmp(nm_out,"ncmultiply")){*prg=ncbnr;}
-  else if(!strcmp(nm_out,"ncdivide")){*prg=ncbnr;}
-  /* End synonyms for ncbnr */
+  else if(!strcmp(nm_out,"ncbo")){*prg=ncbo;}
+  /* Synonyms for ncbo */
+  else if(!strcmp(nm_out,"ncadd")){*prg=ncbo;}
+  else if(!strcmp(nm_out,"ncdiff")){*prg=ncbo;}
+  else if(!strcmp(nm_out,"ncsub")){*prg=ncbo;}
+  else if(!strcmp(nm_out,"ncsubtract")){*prg=ncbo;}
+  else if(!strcmp(nm_out,"ncmult")){*prg=ncbo;}
+  else if(!strcmp(nm_out,"ncmultiply")){*prg=ncbo;}
+  else if(!strcmp(nm_out,"ncdivide")){*prg=ncbo;}
+  /* End synonyms for ncbo */
   else if(!strcmp(nm_out,"ncflint")){*prg=ncflint;}
   else if(!strcmp(nm_out,"ncwa")){*prg=ncwa;}
   else if(!strcmp(nm_out,"ncrcat")){*prg=ncrcat;}
@@ -165,7 +165,7 @@ nco_usg_prn(void)
   case ncecat:
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-n ...] [-O] [-p path] [-R] [-r] [-v ...] [-x] in.nc [...] out.nc\n");
     break;
-  case ncbnr:
+  case ncbo:
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-n ...] [-O] [-p path] [-R] [-r] [-v ...] [-x] [-y op_typ] in_1.nc in_2.nc out.nc\n");
     break;
   case ncdiff:
@@ -260,7 +260,7 @@ nco_usg_prn(void)
   } /* end if */
   if(strstr(opt_sng,"-x")) (void)fprintf(stdout,"-x, --xcl, --exclude\tExtract all variables EXCEPT those specified with -v\n");
   if(strstr(opt_sng,"-y")){
-    if(prg == ncbnr)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tBinary arithmetic operation: add,sbt,mlt,dvd (+,-,*,/)\n");
+    if(prg == ncbo)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tBinary arithmetic operation: add,sbt,mlt,dvd (+,-,*,/)\n");
     if(prg == ncra || prg == ncea || prg == ncwa)(void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tArithmetic operation: avg,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n");
   }
   if(strstr(opt_sng,"in.nc")) (void)fprintf(stdout,"in.nc\t\t\tInput file name(s)\n");

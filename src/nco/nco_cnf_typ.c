@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.13 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.14 2003-08-02 23:12:51 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -139,7 +139,7 @@ nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to typ_upk */
   /* Sequence of following commands is important (copy before overwriting!) */
   mss_val_in=var->mss_val;
   mss_val_out.vp=(void *)nco_malloc(nco_typ_lng(mss_val_out_typ));
-  (void)val_conform_type(var_in_typ,mss_val_in,mss_val_out_typ,mss_val_out);
+  (void)val_cnf_typ(var_in_typ,mss_val_in,mss_val_out_typ,mss_val_out);
   var->mss_val=mss_val_out;
   /* Free original */
   mss_val_in.vp=nco_free(mss_val_in.vp);
@@ -199,7 +199,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     /* Sequence of following commands is important (copy before overwriting!) */
     var_in_mss_val=var_out->mss_val;
     var_out->mss_val.vp=(void *)nco_malloc(nco_typ_lng(var_out->type));
-    (void)val_conform_type(var_in_typ,var_in_mss_val,var_out_typ,var_out->mss_val);
+    (void)val_cnf_typ(var_in_typ,var_in_mss_val,var_out_typ,var_out->mss_val);
     /* Free original */
     var_in_mss_val.vp=nco_free(var_in_mss_val.vp);
   } /* end if */
@@ -285,7 +285,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
 } /* end nco_var_cnf_typ() */
 
 void
-val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
+val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
 (const nc_type typ_in, /* I [enm] Type of input value */
  ptr_unn val_in, /* I [ptr] Pointer to input value */
  const nc_type typ_out, /* I [enm] Type of output value */
@@ -372,7 +372,7 @@ val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
      value and are thus purely local to this routine. The only thing changed by this
      routine is the contents of the location pointed to by the pointer to the output value. */
   
-} /* end val_conform_type */
+} /* end val_cnf_typ */
 
 int /* O [enm] Dummy return */
 scv_conform_type /* [fnc] Convert scalar attribute to typ_new using C implicit coercion */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.13 2003-07-30 21:58:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.14 2003-08-02 23:12:51 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -253,7 +253,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     case ncea:
       if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_typ[idx]=fix;
       break;
-    case ncbnr:
+    case ncbo:
     case ncdiff:
       if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_typ[idx]=fix;
       break;
@@ -284,7 +284,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     
     if(NCAR_CSM_FORMAT){
       if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ[idx]=fix;
-      if((prg == ncbnr || prg == ncdiff) && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec"))) var_op_typ[idx]=fix;
+      if((prg == ncbo || prg == ncdiff) && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec"))) var_op_typ[idx]=fix;
     } /* end if NCAR_CSM_FORMAT */
 
   } /* end loop over var */
@@ -324,7 +324,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     case ncea:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables that are not NC_CHAR or NC_BYTE in order to perform an ensemble average\n",prg_nm_get());
       break;
-    case ncbnr:
+    case ncbo:
     case ncdiff:
       (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables that are not NC_CHAR or NC_BYTE in order to perform a binary operation (e.g., subtraction)\n",prg_nm_get());
       break;

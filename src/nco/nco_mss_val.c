@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.9 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.10 2003-08-02 23:12:51 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -55,7 +55,7 @@ nco_mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
     if(var2->mss_val.vp != NULL) free(var2->mss_val.vp);
   }else{ /* endif no mss_val in var1 */
     var2->mss_val.vp=(void *)nco_realloc(var2->mss_val.vp,nco_typ_lng(var2->type));
-    (void)val_conform_type(var1->type,var1->mss_val,var2->type,var2->mss_val);
+    (void)val_cnf_typ(var1->type,var1->mss_val,var2->type,var2->mss_val);
     var2->has_mss_val=True;
   } /* endif var1 has mss_val */
 
@@ -119,7 +119,7 @@ nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable 
     
     /* Ensure mss_val in memory is stored as same type as variable */
     var->mss_val.vp=(void *)nco_malloc(nco_typ_lng(var->type));
-    (void)val_conform_type(att_typ,mss_tmp,var->type,var->mss_val);
+    (void)val_cnf_typ(att_typ,mss_tmp,var->type,var->mss_val);
 
     /* Release temporary memory */
     mss_tmp.vp=nco_free(mss_tmp.vp);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.22 2003-06-16 16:37:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.23 2003-08-02 23:12:51 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -125,8 +125,8 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
     /* Get new and old missing values in same type as variable */
     mss_val_crr.vp=(void *)nco_malloc(att_sz*nco_typ_lng(var->type));
     mss_val_new.vp=(void *)nco_malloc(aed.sz*nco_typ_lng(var->type));
-    (void)val_conform_type(att_typ,var->mss_val,var->type,mss_val_crr);
-    (void)val_conform_type(aed.type,aed.val,var->type,mss_val_new);
+    (void)val_cnf_typ(att_typ,var->mss_val,var->type,mss_val_crr);
+    (void)val_cnf_typ(aed.type,aed.val,var->type,mss_val_new);
 
     /* Typecast pointer to values before access */
     (void)cast_void_nctype(var->type,&var_val);
@@ -302,7 +302,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
       att_lng_in=att_sz*nco_typ_lng(att_typ_in);
       mss_tmp.vp=(void *)nco_malloc(att_lng_in);
       (void)nco_get_att(in_id,var_in_id,att_nm,mss_tmp.vp,att_typ_in);
-      (void)val_conform_type(att_typ_in,mss_tmp,att_typ_out,aed.val);
+      (void)val_cnf_typ(att_typ_in,mss_tmp,att_typ_out,aed.val);
       aed.mode=aed_overwrite; /* Action to perform with attribute */
       (void)nco_aed_prc(out_id,var_out_id,aed); 
       /* Release temporary memory */
