@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.17 1999-01-29 19:24:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.18 1999-02-24 01:44:13 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -201,11 +201,11 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
 
   lim_sct lim;
 
-  int idx;
   int min_lim_type;
   int max_lim_type;
   int monotonic_direction;
   
+  long idx;
   long dim_sz;
 
   lim=*lim_ptr;
@@ -299,7 +299,7 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
     if(dim.type == NC_BYTE || dim.type == NC_CHAR) (void)fprintf(stderr,"\nWARNING: Coordinate %s is type %s. Dimension truncation is unpredictable.\n",lim.nm,nc_type_nm(dim.type));
     
     /* Allocate enough space to hold coordinate */ 
-    dim.val.vp=malloc(dim_sz*nctypelen(dim.type));
+    dim.val.vp=(void *)malloc(dim_sz*nctypelen(dim.type));
     
     /* Retrieve coordinate */ 
     ncvarget(nc_id,dim.cid,&dim_srt,&dim_sz,dim.val.vp);
@@ -309,7 +309,7 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
       ptr_unn old_val;
 
       old_val=dim.val;
-      dim.val.vp=malloc(dim_sz*nctypelen(NC_DOUBLE));
+      dim.val.vp=(void *)malloc(dim_sz*nctypelen(NC_DOUBLE));
       /* Typecast old coordinate pointer union to correct type before access */ 
       (void)cast_void_nctype(dim.type,&old_val);
 
@@ -799,7 +799,7 @@ mss_val_get(int nc_id,var_sct *var)
       /* NULL-terminate the missing value string */
       if(mss_tmp.cp[att_len-1] != '\0'){
 	att_len++;
-	mss_tmp.vp=realloc(mss_tmp.vp,att_len);
+	mss_tmp.vp=(void *)realloc(mss_tmp.vp,att_len);
 	mss_tmp.cp[att_len-1]='\0';
 	/* Un-typecast the pointer to the values after access */
 	(void)cast_nctype_void(att_type,&mss_tmp);
