@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.40 2004-07-29 00:40:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.41 2004-07-29 20:37:59 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -46,9 +46,18 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
      is contained in the netCDF-defined error message.
      Use msg to print, e.g., the name of variable which caused the error */
   const char fnc_nm[]="nco_err_exit()";
+#ifdef NCO_ABORT_ON_ERROR
+  const char exit_nm[]="abort()";
+#else /* !NCO_ABORT_ON_ERROR */
+  const char exit_nm[]="exit(EXIT_FAILURE)";
+#endif /* !NCO_ABORT_ON_ERROR */
+
   switch(rcd){
   case NC_ERANGE: (void)fprintf(stdout,"ERROR Result not representable in output file\nHINT: This may occur when an arithmetic operation results in a value not representible by the output variable type and NCO attempts to write that variable to an output file, with, e.g., nc_put_var*(). For more details, see\nhttp://nco.sf.net/nco.html#typ_cnv\n\nPossible workaround: Permanently promote the variable before attempting the arithmetic operation. For example,\nncap -O -s \'foo=double(foo);\' in.nc in.nc\n"); break;
   } /* end switch */
+
+  (void)fprintf(stdout,"ERROR: program exiting through %s which will now call %s\n",fnc_nm,exit_nm);
+
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"%s: ERROR %s\n%s\n",fnc_nm,msg,nc_strerror(rcd));
 #ifdef NCO_ABORT_ON_ERROR

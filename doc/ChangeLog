@@ -1,3 +1,8 @@
+2004-07-29  Charlie Zender  <zender@uci.edu>
+
+	* Rewrote appropriate ncpdq routines to handles record dimension
+	re-definitions correctly 
+
 2004-07-28  Charlie Zender  <zender@uci.edu>
 
 	* Broke nco_var_dmn_rdr() into two sequential functions

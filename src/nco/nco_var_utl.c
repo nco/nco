@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.43 2004-07-29 19:38:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.44 2004-07-29 20:37:59 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -844,7 +844,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       (void)nco_def_var(out_id,var[idx]->nm,typ_out,dmn_nbr,dmn_id_vec,&var[idx]->id);
       
       if(dbg_lvl_get() == 3){
-	(void)fprintf(stdout,"%s: DEBUG %s defining variable %s with %d dimensions%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr > 0) ? " (ordinal,ID): " : "");
+	(void)fprintf(stdout,"%s: DEBUG %s defining variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,ID): " : "");
 	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
 	  (void)fprintf(stdout,"%s (%d,%d)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,dmn_id_vec[dmn_idx],(dmn_idx < dmn_nbr-1) ? ", " : "");
 	} /* end loop over dmn */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.8 2004-07-29 19:38:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.9 2004-07-29 20:38:00 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -30,9 +30,11 @@
    Irvine, CA 92697-3100 */
 
 /* Usage:
-   ncpdq -O ~/nco/data/in.nc ~/foo.nc
+   ncpdq -O ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
    ncpdq -O -D 3 -z lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
    ncpdq -O -D 3 -z lon,lev,lat -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+   ncpdq -O -D 3 -z lat,lev,lon -v PS ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+   ncpdq -O -D 3 -z lon,lev,lat -v PS ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
 */
 
 #ifdef HAVE_CONFIG_H
@@ -93,8 +95,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.8 2004-07-29 19:38:50 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.8 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.9 2004-07-29 20:38:00 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.9 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:Rrt:v:xz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -378,7 +380,7 @@ main(int argc,char **argv)
     /* Create structured list of re-ordering dimension names and IDs */
     dmn_rdr_lst=nco_dmn_lst_mk(in_id,dmn_rdr_lst_in,dmn_rdr_nbr);
 
-    /* Form list of reducing dimensions from extracted input dimensions */
+    /* Form list of re-ordering dimensions from extracted input dimensions */
     dmn_rdr=(dmn_sct **)nco_malloc(dmn_rdr_nbr*sizeof(dmn_sct *));
     for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
       for(idx=0;idx<nbr_dmn_xtr;idx++){
@@ -389,7 +391,6 @@ main(int argc,char **argv)
       }else{
 	(void)fprintf(stderr,"%s: WARNING re-ordering dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_rdr_lst[idx_rdr].nm);
 	/* Collapse dimension re-order list by omitting irrelevent dimensions */
-	(void)memmove(dmn_rdr_lst,dmn_rdr_lst,idx_rdr*sizeof(nm_id_sct));
 	(void)memmove(dmn_rdr_lst+idx_rdr*sizeof(nm_id_sct),dmn_rdr_lst+(idx_rdr+1)*sizeof(nm_id_sct),(dmn_rdr_nbr-idx_rdr+1)*sizeof(nm_id_sct));
 	--dmn_rdr_nbr;
 	dmn_rdr_lst=(nm_id_sct *)nco_realloc(dmn_rdr_lst,dmn_rdr_nbr*sizeof(nm_id_sct));
@@ -410,9 +411,9 @@ main(int argc,char **argv)
 
   } /* dmn_rdr_nbr <= 0 */
 
-  /* In files with record dimension */
+  /* In files with record dimension... */
   if(rec_dmn_id_in != NCO_REC_DMN_UNDEFINED){
-    /* Which, if any, output dimension structure currently holds record dimension? */
+    /* ...which, if any, output dimension structure currently holds record dimension? */
     for(dmn_out_idx=0;dmn_out_idx<nbr_dmn_out;dmn_out_idx++)
       if(dmn_out[dmn_out_idx]->is_rec_dmn) break;
     if(dmn_out_idx != nbr_dmn_out){
@@ -433,7 +434,7 @@ main(int argc,char **argv)
     /* If record dimension required by re-order of current variable... */
     if(rec_dmn_nm_out_crr){
       /* ...differs from current output record dimension... */
-      if(strstr(rec_dmn_nm_out_crr,rec_dmn_nm_out){
+      if(strstr(rec_dmn_nm_out_crr,rec_dmn_nm_out)){
 	/* ...and current output record dimension already differs from input record dimension... */
 	if(REDEFINED_RECORD_DIMENSION){
 	  /* ...then requested re-order requires multiple record dimensions... */

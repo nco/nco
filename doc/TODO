@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.350 2004-07-29 01:52:32 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.351 2004-07-29 20:37:57 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -235,7 +235,8 @@ nco362. reduce memory during run by free()'ing var_fix[idx],var_fix_out[idx],var
 nco363. Document ncpdq in nco.texi
 nco364. Handle record dimension correctly in ncpdq
 nco365. Add ncpdq tests to nco_tst.pl
-nco366. 
+nco366. ncpdq: Use ncwa technique to put non-dmn_rdr variables in var_fix rather than var_prc?
+nco367. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
