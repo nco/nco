@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.11 2003-09-04 22:45:46 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.12 2003-09-08 15:46:43 rorik Exp $ -*-text-*-
 
 # Purpose: NCO README file
 
@@ -65,7 +65,8 @@ Please read the NCO manual before you submit a bug report!
 It is supplied in many formats: Postscript (nco.ps), Texinfo
 (nco.texi), Info (nco.info), HTML (nco.html), and DVI (nco.dvi).
 If you got NCO from a CVS snapshot, you must generate these formats
-yourself with 'make nco.html', 'make nco.pdf', 'make nco.ps', etc.
+yourself with 'make nco.html', 'make nco.pdf', 'make nco.ps', etc. from within
+the doc/ directory.
 Sending me questions whose answers aren't in the manual is the best
 way to motivate me to write more documentation.  
 Let me also accentuate the contrapositive of that suggestion.
