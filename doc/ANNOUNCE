@@ -1,11 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.76 2004-05-05 19:38:16 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.77 2004-05-10 15:29:23 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release fixes 
+This release fixes fxm
 
 Enjoy,
 Charlie
@@ -20,7 +20,7 @@ Build changes:
 1. None
 
 Other user-visible changes:
-1. None
+1. -r reports correct version again
 
 User-invisible changes:
 1. Change cvs.nco.sourceforge.net to cvs.sf.net in accord

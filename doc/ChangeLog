@@ -1,3 +1,7 @@
+2004-05-05  Charlie Zender  <zender@uci.edu>
+
+	* Implement AMD64 pgcc/pgCC support in build mechanism
+
 2004-05-04  Charlie Zender  <zender@uci.edu>
 
 	* Change cvs.nco.sourceforge.net to cvs.sf.net in accord
