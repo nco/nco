@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.14 1999-04-27 17:04:55 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.15 1999-05-07 23:06:23 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
@@ -278,6 +278,25 @@ As a result, NCO operators, especially <TT>ncwa</TT>, may core dump unless you u
 NCAR's Winterpark has been upgraded to netCDF3.4.
 All users of NCO on SGI64 machines at other institutions are urged to upgrade to netCDF3.4.x which is available from URL <A HREF="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z</A>.</P>
 
+<H1>NCO on the Cray T90</H1>
+<P>NCO should be compiled with the <TT>-DC_ONLY</TT> flag on the Cray
+T90; otherwise incorrect answers may result.
+It appears that NCO assumes the wrong equivalence for the default
+sizes of either floating point or integer types on the T90, and that
+passing data between the Fortran and C halves of NCO is therefore
+causing problems.
+Without access to a T90, I cannot verify exactly what is happening,
+but avoiding the C-Fortran interface problems by compiling with
+<TT>-DC_ONLY</TT> appears to fix the problem. 
+Compiling with <TT>-DC_ONLY</TT> replaces all Fortran code with C
+code. 
+The only downside to using <TT>-DC_ONLY</TT> is that averaging
+performance may decrease somewhat since the C averaging code may need
+to perform more pointer arithmetic than the Fortran code (depending on
+the compiler).
+Due to problems such as this, 100% C code will probably be the default 
+in future versions of NCO.
+</P>
 <!--  <P>Intermittent problems with NCO on IRIX have reappeared on NCAR's Winterpark since about May 8, 1998.   -->
 <!--  Because these problems do not occur on any architecture besides IRIX, I feel it is likely that this is a symptom of a bug with IRIX, not with netCDF or NCO. -->
 <!--  These problems are known to occur with NCO (based on netCDF 2.x) as well as other, independent, netCDF 3.x applications (at least since July 28, 1998). -->

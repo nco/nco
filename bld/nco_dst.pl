@@ -1,12 +1,12 @@
 #!/contrib/bin/perl
 				
-my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.13 1999-04-27 17:04:53 zender Exp $';
+my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.14 1999-05-07 23:06:22 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
 # Usage:
 # Export tagged, public versions
-# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln nco1_1_28
+# /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_28
 # /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_28
 # /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_28
 # /home/zender/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_28
@@ -52,9 +52,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $RCS_Date='$Date: 1999-04-27 17:04:53 $';
-my $RCS_Id='$Id: nco_dst.pl,v 1.13 1999-04-27 17:04:53 zender Exp $';
-my $RCS_Revision='$Revision: 1.13 $';
+my $RCS_Date='$Date: 1999-05-07 23:06:22 $';
+my $RCS_Id='$Id: nco_dst.pl,v 1.14 1999-05-07 23:06:22 zender Exp $';
+my $RCS_Revision='$Revision: 1.14 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -273,7 +273,7 @@ if($dat_cnt){
     &cmd_prc("rsh $rmt_mch \"/bin/rm -r -f /usr/tmp/zender/nco*\"");
     &cmd_prc("rcp -p ftp.cgd.ucar.edu:/ftp/pub/zender/nco/nco.tar.gz $rmt_mch:/usr/tmp/zender");
     &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender;tar -xvzf nco.tar.gz;rm -f nco.tar.gz;mv -f nco-* nco\"");
-    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/nco/bld; setenv MY_BIN_DIR /contrib/nco-1.1/bin; setenv MY_LIB_DIR /contrib/nco-1.1/lib; setenv MY_OBJ_DIR /usr/tmp/zender/nco/obj; make libclean binclean objclean; make\"");
+    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/nco/bld; setenv MY_BIN_DIR /contrib/nco-1.1/bin; setenv MY_LIB_DIR /contrib/nco-1.1/lib; setenv MY_OBJ_DIR /usr/tmp/zender/nco/obj; gmake libclean binclean objclean; gmake\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
 } # endif dat_cnt
 

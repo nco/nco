@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.21 1999-04-20 20:55:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.22 1999-05-07 23:06:23 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -491,6 +491,12 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
       exit(EXIT_FAILURE);
     } /* end if */
     
+    /* 19990507:
+       Allow for possibility that limit pertains to record dimension of a multi file operator 
+       In this case, the user-specified maximum index may be larger than the number of records in this particular file
+       Thus lim.srt does not necessarily equal lim.min_idx, 
+       and lim.end does not necessarily equal lim.max_idx, 
+     */ 
     lim.srt=lim.min_idx;
     lim.end=lim.max_idx;
 
@@ -1090,7 +1096,7 @@ lim_dim_mk(int nc_id,int dim_id,lim_sct *lim,int nbr_lim,bool FORTRAN_STYLE)
     long cnt;
     int max_sng_sz;
     
-    /* Fill in the limits with the default parsing info. */ 
+    /* Fill in limits with default parsing information */ 
     ncopts=0; 
     rcd=ncdiminq(nc_id,dim_id,dim_nm,&cnt);
     ncopts=NC_VERBOSE | NC_FATAL; 
@@ -1131,7 +1137,7 @@ lim_dim_mk(int nc_id,int dim_id,lim_sct *lim,int nbr_lim,bool FORTRAN_STYLE)
     }else{
       lim_dim.min_sng=(char *)strdup("0");
     } /* end else */
-  } /* end if */
+  } /* end if user did not explicity specify limits for this dimension */
   
   return lim_dim;
   

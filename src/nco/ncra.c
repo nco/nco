@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.5 1999-04-05 00:37:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.6 1999-05-07 23:06:24 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -66,8 +66,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncra.c,v 1.5 1999-04-05 00:37:36 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.5 $";
+  char rcs_Id[]="$Id: ncra.c,v 1.6 1999-05-07 23:06:24 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.6 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -345,7 +345,7 @@ main(int argc,char **argv)
       /* Loop over each record in the current file */ 
       for(idx_rec=lim_rec.srt;idx_rec<=lim_rec.end;idx_rec++){
 	/* Process all variables in the current record */ 
-	if(dbg_lvl > 1) (void)fprintf(stderr,"record %ld\n",idx_rec);
+	if(dbg_lvl > 1) (void)fprintf(stderr,"Reading record %ld in this file...\n",idx_rec);
 	for(idx=0;idx<nbr_var_prc;idx++){
 	  if(dbg_lvl > 2) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
 	  if(dbg_lvl > 0) (void)fflush(stderr);
