@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.8 2003-11-20 01:52:17 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.9 2003-12-23 18:39:20 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -36,6 +36,8 @@ nco/doc/TAG		CVS tag for this version
 nco/doc/TODO		List of tasks for future releases
 nco/doc/VERSION		NCO version 
 nco/doc/ChangeLog	Chronological log of NCO changes
+nco/doc/debian.txt	Creating and updating Debian NCO .deb packages
+nco/doc/dods.sh		Installs DODS first so NCO builds as DODS clients
 nco/doc/dir		Example Info file to load nco.info
 nco/doc/index.shtml	NCO website homepage
 nco/doc/nco_news.shtml	NCO news archive
