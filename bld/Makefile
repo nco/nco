@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.89 2001-02-13 04:43:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.90 2001-03-26 06:28:11 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -414,45 +414,73 @@ $(MY_OBJ_DIR)/%.o : %.f
 endif
 # endif RS6K
 
+# SGI6, SGI64, SGIMP64
 ifneq (,$(findstring SGI,$(PVM_ARCH)))
-C++ := c++
+C++ := CC -LANG:std
 CC := cc
 CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 # SGIs like dataproc keep omp.h in special location determined by module MIPSpro
 ifdef $(MIPSPRO_SGI)
  CPPFLAGS := -I$(MIPSPRO_SGI)/usr/include $(CPPFLAGS)
 endif
-FC := f77
+FC := f90 -cpp
 LD := ld
-LDFLAGS += -64 -mp -mips4 $(TMP_LDFLAGS) $(TMP_LIBS) -lm
-ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
- LDFLAGS +=
-endif
 LEX := flex
 LINT := lint
 YACC := bison
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS +=
+endif
+ifeq ($(PVM_ARCH),SGI6)
+# SGI6
+GCC_ABI_FLG := -mabi=32
+GCC_LDFLAGS_SZ_SPC := $(GCC_ABI_FLG) -mips3 
+SGI_ABI_FLG := -n32 -mips3
+# endif SGI6
+else
+# SGI64, SGIMP64
+GCC_ABI_FLG := -mabi=64
+GCC_LDFLAGS_SZ_SPC := $(GCC_ABI_FLG) -mips4 -L/usr/local/lib/mabi=64
+SGI_ABI_FLG := -64 -mips4
+SGI_OMP_FLG := -mp -mpio
+# endif SGI64, SGIMP64
+endif
+ifeq ($(CC),cc)
+ LDFLAGS += $(SGI_ABI_FLG) $(SGI_OMP_FLG) $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(OPTS),O)
- CFLAGS += -64 -mips4 -O2 -mp -mpio
- FFLAGS := -64 -mips4 -O2 -extend_source
+ CFLAGS += $(SGI_ABI_FLG) $(SGI_OMP_FLG) -O2
 endif
 ifeq ($(OPTS),R)
- CFLAGS += -64 -mips4 -mp -mpio
- FFLAGS := -64 -mips4 -extend_source
+ CFLAGS += $(SGI_ABI_FLG) $(SGI_OMP_FLG)
 endif
 ifeq ($(OPTS),D)
- CFLAGS += -64 -mips4 -g -mp -mpio
- FFLAGS := -64 -mips4 -g -extend_source
+ CFLAGS += $(SGI_ABI_FLG) $(SGI_OMP_FLG) -g
 endif
 ifeq ($(OPTS),X)
- CFLAGS += -64 -mips4 -g -trapuv -mp -mpio
- FFLAGS := -64 -mips4 -g -extend_source -check_bounds -trapuv
-# 1998/08/20: Using range checking results in unresolved symbol errors unless linking to this library
+ CFLAGS += $(SGI_ABI_FLG) $(SGI_OMP_FLG) -g -trapuv
+endif
+endif
+# endif CC=cc
+# Fortran flags
+ifeq ($(OPTS),O)
+ FFLAGS := $(SGI_ABI_FLG) $(SGI_OMP_FLG) -O2 -extend_source
+endif
+ifeq ($(OPTS),R)
+ FFLAGS := $(SGI_ABI_FLG) $(SGI_OMP_FLG) -extend_source
+endif
+ifeq ($(OPTS),D)
+ FFLAGS := $(SGI_ABI_FLG) $(SGI_OMP_FLG) -g -extend_source
+endif
+ifeq ($(OPTS),X)
+ FFLAGS := $(SGI_ABI_FLG) $(SGI_OMP_FLG) -g -extend_source -check_bounds -trapuv
+# 1998/08/20: Fortran range-checking results in unresolved symbol errors unless linking to this library
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -L/usr/lib64 -lftn
 endif
 endif
+# end fortran flags
 endif
-# endif SGI5, SGI64, SGIMP64
+# endif SGI6, SGI64, SGIMP64
 
 ifeq ($(PVM_ARCH),SUN4)
 C++ := g++

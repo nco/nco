@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.56 2001-01-03 01:58:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.57 2001-03-26 06:28:11 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -68,14 +68,14 @@
 
 /* Global variables and variables with scope limited to main.c allocated here */
 
-int prg; // [enm] Program ID
-int prg_get(void){return prg;} // [enm] Program ID
+int prg; /* [enm] Program ID */
+int prg_get(void){return prg;} /* [enm] Program ID */
 
-char *prg_nm; // [sng] Program name
-char *prg_nm_get(void){return prg_nm;} // [sng] Program name
+char *prg_nm; /* [sng] Program name */
+char *prg_nm_get(void){return prg_nm;} /* [sng] Program name */
 
-unsigned short dbg_lvl=0; // [enm] Debugging level
-unsigned short dbg_lvl_get(void){return dbg_lvl;} // [enm] Debugging level
+unsigned short dbg_lvl=0; /* [enm] Debugging level */
+unsigned short dbg_lvl_get(void){return dbg_lvl;} /* [enm] Debugging level */
 
 #else /* MAIN_PROGRAM_FILE is NOT defined, i.e., current file does not contain main() */
 
