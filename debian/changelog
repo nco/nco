@@ -1,3 +1,10 @@
+nco (2.7.2-1) unstable; urgency=low
+
+  * updated sources, changed control to build using 'configure', made nco-doc
+    package for documentation
+
+ -- Rorik Peterson <rorik@chabuku.iarc.uaf.edu>  Sat, 29 Mar 2003 21:09:48 -0900
+
 nco (2.2.0-3) unstable; urgency=low
 
   * Eliminated building of dvi, postscript, and pdf documentation due to
