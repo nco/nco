@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.3 2002-12-28 07:07:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.4 2002-12-28 16:15:16 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -27,7 +27,7 @@ nco_msa_rec_clc /* [fnc] Multi slab algorithm (recursive routine, returns a sing
   nbr_slb=lmt_lst[dpt_crr]->lmt_dmn_nbr;
   
   if(nbr_slb == 1){
-    /* Check if imension is wrapped */
+    /* Check if dimension is wrapped */
     if(lmt_lst[dpt_crr]->lmt_dmn[0]->srt > lmt_lst[dpt_crr]->lmt_dmn[0]->end) goto wrap_lbl;
     
     lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[0];
@@ -42,61 +42,60 @@ nco_msa_rec_clc /* [fnc] Multi slab algorithm (recursive routine, returns a sing
 
     long var_sz=1L;
     long lcnt;
-    long *vp_sz;
+    long *cp_sz;
     long *indices;
     
     ptrdiff_t slb_sz;
     ptrdiff_t slb_stp;
-    ptrdiff_t vp_inc;
-    ptrdiff_t vp_max;
-    ptrdiff_t vp_fst;
+    ptrdiff_t cp_inc;
+    ptrdiff_t cp_max;
+    ptrdiff_t cp_fst;
     
-    void **vp_wrp;
-    void *vp_stp;
-    void *slb;
-    
+    char **cp_wrp;
+    char *cp_stp;
+    char *slb; 
     lmt_sct lmt_ret;
     
-    vp_sz=(long *)nco_malloc(nbr_slb*sizeof(long));
+    cp_sz=(long *)nco_malloc(nbr_slb*sizeof(long));
     indices=(long *)nco_malloc(nbr_slb*sizeof(long));
-    vp_wrp=(void **)nco_malloc(nbr_slb*sizeof(void *));
+    cp_wrp=(char **)nco_malloc(nbr_slb*sizeof(void *));
     
     for(idx=0;idx < nbr_slb;idx++){
       lmt[dpt_crr]=lmt_lst[dpt_crr]->lmt_dmn[idx];
-      vp_wrp[idx]=nco_msa_rec_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
-      vp_sz[idx]=vara->sz;
+      cp_wrp[idx]=(char *)nco_msa_rec_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
+      cp_sz[idx]=vara->sz;
     } /* end loop over idx */
     
     for(idx=0;idx < dpt_crr_max;idx++) var_sz*=(idx < dpt_crr ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt);
     
-    vp=nco_calloc(var_sz,nco_typ_lng(vara->type));
+    vp=(void *)nco_calloc(var_sz,nco_typ_lng(vara->type));
     
     lcnt=nco_typ_lng(vara->type);
     for(idx=(dpt_crr+1);idx < dpt_crr_max;idx++) lcnt*=lmt_lst[idx]->dmn_cnt;
     
-    vp_inc=(ptrdiff_t)(lcnt*lmt_lst[dpt_crr]->dmn_cnt);
+    cp_inc=(ptrdiff_t)(lcnt*lmt_lst[dpt_crr]->dmn_cnt);
     
-    vp_max=(ptrdiff_t)(var_sz*nco_typ_lng(vara->type));
+    cp_max=(ptrdiff_t)(var_sz*nco_typ_lng(vara->type));
     
     for(idx=0;idx < nbr_slb;idx++) indices[idx]=lmt_lst[dpt_crr]->lmt_dmn[idx]->srt;
     
-    vp_fst=0L;
+    cp_fst=0L;
     while(nco_msa_clc_idx(True,lmt_lst[dpt_crr],&indices[0],&lmt_ret,&slb_idx)){
-      vp_stp=vp+vp_fst;
-      slb=vp_wrp[slb_idx]+(ptrdiff_t)(lmt_ret.srt*lcnt);
+      cp_stp = (char*)vp+cp_fst;
+      slb=cp_wrp[slb_idx]+(ptrdiff_t)(lmt_ret.srt*lcnt);
       slb_stp=(ptrdiff_t)(lcnt*(lmt_lst[dpt_crr]->lmt_dmn[slb_idx]->cnt));
       
       slb_sz=(ptrdiff_t)(lmt_ret.cnt*lcnt);
       
-      while(vp_stp-vp < vp_max){
-	(void)memcpy(vp_stp,slb,slb_sz);
+      while(cp_stp - (char*)vp < cp_max){
+	(void)memcpy(cp_stp,slb,slb_sz);
 	slb+=slb_stp;
-	vp_stp+=vp_inc;
+	cp_stp+=cp_inc;
       } /* end while */
-      vp_fst+=slb_sz;
+      cp_fst+=slb_sz;
     } /* end while */
     
-    for(idx=0;idx < nbr_slb;idx++) (void)nco_free(vp_wrp[idx]);
+    for(idx=0;idx < nbr_slb;idx++) (void)nco_free(cp_wrp[idx]);
     
     vara->sz=var_sz;
     return vp;
@@ -113,12 +112,12 @@ nco_msa_rec_clc /* [fnc] Multi slab algorithm (recursive routine, returns a sing
     long end;
     long cnt;
     long srd;
-    long vp_sz[2];
+    long cp_sz[2];
     long lcnt;
     
-    void *vp_stp;
-    void *vp_tmp[2];
-    void *vp_wrp[2];
+    char *cp_stp;
+    char *cp_tmp[2];
+    char *cp_wrp[2];
     
     ptrdiff_t post_map[2];
     lmt_sct lmt_wrp[2];
@@ -161,14 +160,14 @@ nco_msa_rec_clc /* [fnc] Multi slab algorithm (recursive routine, returns a sing
     /* Get hyperslabs for each element */
     for(idx=0;idx < 2;idx++){
       lmt[dpt_crr]=&lmt_wrp[idx];
-      vp_wrp[idx]=(void *)nco_msa_rec_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
-      vp_sz[idx]=vara->sz;
+      cp_wrp[idx]=(char *)nco_msa_rec_clc(dpt_crr+1,dpt_crr_max,lmt,lmt_lst,vara);
+      cp_sz[idx]=vara->sz;
     } /* end loop over idx */
     
     for(idx=0;idx < dpt_crr_max;idx++) var_sz*=idx < dpt_crr ? lmt[idx]->cnt : lmt_lst[idx]->dmn_cnt;
     
     /* Sanity check */ 
-    if(var_sz != vp_sz[0]+vp_sz[1]){
+    if(var_sz != cp_sz[0]+cp_sz[1]){
       fprintf(stderr,"Memory Allocation error in wrap part of nco_msa_rec_clc()\n");
       nco_exit(EXIT_FAILURE);
     } /* end if */
@@ -184,24 +183,24 @@ nco_msa_rec_clc /* [fnc] Multi slab algorithm (recursive routine, returns a sing
     post_map[0]=(ptrdiff_t)(lcnt*lmt_wrp[0].cnt);
     post_map[1]=(ptrdiff_t)(lcnt*lmt_wrp[1].cnt);
     
-    vp_tmp[0]=vp_wrp[0];/* we move through hyperslabs in these increments */
-    vp_tmp[1]=vp_wrp[1];/* these blocks represent the slabs already processed */
+    cp_tmp[0]=cp_wrp[0];/* we move through hyperslabs in these increments */
+    cp_tmp[1]=cp_wrp[1];/* these blocks represent the slabs already processed */
     
-    vp_stp=vp;
+    cp_stp=(char*)vp;
     
     lcnt=var_sz*nco_typ_lng(vara->type);
     
-    while(vp_stp-vp < (ptrdiff_t)lcnt){
-      (void)memcpy(vp_stp,vp_tmp[0],post_map[0]);
-      (void)memcpy(vp_stp+post_map[0],vp_tmp[1],post_map[1]);
+    while(cp_stp-(char*)vp < (ptrdiff_t)lcnt){
+      (void)memcpy(cp_stp,cp_tmp[0],post_map[0]);
+      (void)memcpy(cp_stp+post_map[0],cp_tmp[1],post_map[1]);
       
-      vp_tmp[0]+=post_map[0];
-      vp_tmp[1]+=post_map[1];
-      vp_stp+=(post_map[0]+post_map[1]);
+      cp_tmp[0]+=post_map[0];
+      cp_tmp[1]+=post_map[1];
+      cp_stp+=(post_map[0]+post_map[1]);
     } /* end while */
     
-    (void*)nco_free(vp_wrp[0]);
-    (void*)nco_free(vp_wrp[1]);
+    (void*)nco_free(cp_wrp[0]);
+    (void*)nco_free(cp_wrp[1]);
     
     vara->sz=var_sz;
     return vp;
@@ -262,7 +261,7 @@ nco_msa_prn_idx(lmt_all *lmt_i)
     printf("slb_nbr=%d srt=%ld end=%ld cnt=%ld srd=%ld\n",slb_nbr,lmt.srt,lmt.end,lmt.cnt,lmt.srd);
 } /* end nco_msa_prn_idx() */
 
-bool /* if false then this is the last limit out */
+bool /* if false then there are no more limits */
 nco_msa_clc_idx
 (bool NORMALIZE,
  lmt_all *lmt_a, /* I list of lmts for each dimension  */
