@@ -1,3 +1,9 @@
+2003-12-01  Charlie Zender  <zender@uci.edu>
+
+	* Document hyperslab bug in 2.7.3--2.8.3 on homepage
+	
+	* Document NCAR SCD TCG support on homepage
+
 2003-11-26  Charlie Zender  <zender@uci.edu>
 
 	* Rorik fixed install to remove links before install. Fixes

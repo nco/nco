@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.178 2003-11-26 23:16:02 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.179 2003-12-02 02:10:22 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -378,24 +378,30 @@ fixes we currently have in mind for NCO.</li>
 But they are more predictable:
 <ul>
 <li><i>Where can I find prebuilt NCO executables?</i>
-If you have an account at UCI, NCAR, or SDSC, try the locations listed below.
+Users of Debian and RedHat Linux should <a href="#Download">download</a>
+prebuilt .debs and/or RPMs as described above.
+If you have an account at UCI or SDSC, try the locations in my
+personal home directories listed below. 
+At NCAR, first try <tt>/usr/local/bin</tt>.
 Otherwise, you are on your own.</li>
-<li><i>The executables at NCAR are out of date, where can I get the
-latest, greatest version?</i>
-You must build them from source yourself. See next question.</li>
-<li><i>I thought NCAR developed NCO, so why doesn't NCAR support it?</i>
-I wrote NCO for fun&mdash;not at NCAR's request&mdash;while I was at NCAR. 
-The primary reason NCAR does not support NCO may be because I actively
-maintained NCO there, inadvertently creating the impression that NCO
-was officially maintained. 
-NCAR system administrators have recently (2003) begun to support NCO
-like other community software packages such as <tt>lapack</tt>.
-If you notice problems with the NCO installation on NCAR machines
-please send a message to the relevant system administrators, e.g.,
+<li><i>Does NCAR support NCO?</i>
+The NCAR SCD Technical Consulting Group (TCG) support NCO like other
+community software packages such as <tt>lapack</tt>. 
+No other NCAR division that I am aware of has coordinated NCO support.
+The NCAR SCD-suported executables are in <tt>/usr/local/bin</tt>.
+If you notice problems with the NCO installation on SCD machines,
+or if you would benefit from a more recent release or patch, then
+inform the relevant system administrators, e.g.,
 <a href="mailto:consult1@ncar.ucar.edu">NCAR User Support</a>.
+If you have a comment, suggestion, or bug report, then contact the
+developers as described below. 
 </li>
 <li><i>Is there an easy way to keep up with new NCO releases?</i>
-Subscribe to the <a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a> mailing list (this list is for NCO-related announcements, not for questions) </li>
+Subscribe to the 
+<a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a>
+mailing list. 
+This list is for NCO-related announcements, not for questions.
+<tt>nco-announce</tt> is very low volume, averaging one message every few months.</li>
 <li><i>Where should I ask my questions on how to use NCO?</i>
 On the <a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help</a> site.
 </li>
@@ -418,7 +424,9 @@ slightly differently.
 (They are built from the main trunk, not a tagged version, and
 currently it is impossible to tell exactly what version they are). 
 Moreover they may be compiled with debugging enabled and thus may be
-<i>slower</i> than custom built, optimized executables. 
+<i>slower</i> than executables optimized for production use. 
+Users at NCAR should try the <i>supported</i> executables in
+<tt>/usr/local/bin</tt> first. 
 <ul>
 <li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.4.7): <tt>/home/zender/bin/LINUX</tt></li>
 <li>ESS <tt>ess1.ess.uci.edu</tt> (Linux 2.2.15): <tt>/home/zender/bin/LINUXALPHA</tt></li>
@@ -439,27 +447,24 @@ Moreover they may be compiled with debugging enabled and thus may be
 <h2>Known Problems with NCO and/or netCDF:</h2>
 
 <ul>
+<li><b>Index-based hyperslab problems:</b>
+NCO versions 2.7.3&mdash;2.8.3 have a nasty bug that cause
+index-based hyperslabs, e.g., <tt>-d lat,1,</tt> to 
+behave like value-based hyperslabs, e.g., <tt>-d lat,1.0</tt> under
+some conditions.
+Unfortunately, the incorrect answers generated may be hard to notice!
+This problem was most often enountered by users trying to assemble
+monthly averages using the stride feature of <tt>ncrcat</tt>.
+One common symptom is that the time-offset of the output file is
+incorrect. 
+<i>Versions 2.7.3--2.8.3 are buggy and should be upgraded ASAP</i>.
+Re-do any data-processing that used index-based hyperslabbing with
+these versions of NCO.
+</li>
+
 <li><b>Generic NCO build problems:</b>
 NCO requires netCDF version >=&nbsp;3.5.0 for support of <tt>nc_type NC_NAT</tt> in NCO source code.
 NCO requires GNU <tt>make</tt> version >=&nbsp;3.78.1 for support of target-specific variable values in <tt>bld/Makefile</tt>.
-</li>
-
-<li><b>Platform-dependent problems with <tt>./configure</tt>
-(Autotools) build mechanism:</b>
-The file <tt>configure.eg</tt> contains a table which describes the 
-success you can expect building NCO with the new <tt>./configure</tt>
-mechanism. 
-In summary, only Linux platforms can expect trouble-free behavior.
-All platforms work continue to work fine with the
-<tt>bld/Makefile</tt> method. 
-However, this method does not support shared libraries and other nice
-features that come automagically with Autotools.
-So please send in the patches required to get the <tt>./configure</tt> 
-mechanism working properly for NCO, <tt>nco_c++</tt>, and
-<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> on your
-platform.  
-The gory details of the failed (and successful) builds are in the
-<a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>.
 </li>
 
 <li><b><tt>ncap</tt> build problems:</b>
@@ -471,11 +476,21 @@ and does not parse <tt>ncap_yacc.y</tt> correctly; previous and later
 versions of <tt>bison</tt> work correctly.
 </li>
 
-<li><b><tt>ncrcat</tt> time offset problems:</b>
-A recent version of <tt>ncrcat</tt> (2.8.1) appears to handle time
-offsets incorrectly.
-If this is true, it represents a serious (i.e., answer-changing) bug.
-We are working on diagnosing and fixing the problem.
+<li><b>Platform-dependent problems with <tt>./configure</tt> build mechanism:</b>
+The file <tt>configure.eg</tt> contains a table which describes the 
+success you can expect building NCO with the <tt>./configure</tt>
+mechanism. 
+Trouble-free installation with <tt>./configure;make;make check;make install</tt> is
+less common than we would like. 
+All platforms work continue to work fine with the <tt>bld/Makefile</tt> method. 
+However, this method does not support shared libraries and other nice
+features that come automagically with Autotools.
+So please send in the patches required to get the <tt>./configure</tt> 
+mechanism working properly for NCO, <tt>nco_c++</tt>, and
+<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> on your
+platform.  
+The gory details of the failed (and successful) builds are in the
+<a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>.
 </li>
 
 <li><b>Build problems with DODS:</b>
