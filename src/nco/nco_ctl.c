@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.55 2004-07-27 06:16:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.56 2004-07-28 17:53:25 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -53,6 +53,8 @@ nco_is_mlt_fl_opr /* [fnc] Query whether program is multi-file operator */
   case ncflint: 
   case ncks: 
   case ncpdq: 
+  case ncrename: 
+  case ncwa: 
     return False;
     break;
   default: nco_dfl_case_prg_id_err(); break;
@@ -82,6 +84,7 @@ nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
   case ncks: 
   case ncpdq: 
   case ncrcat: 
+  case ncrename: 
     return False;
     break;
   default: nco_dfl_case_prg_id_err(); break;
