@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.2 2002-05-02 06:56:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.3 2002-05-05 02:55:31 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -8,17 +8,85 @@
 
 #include "nco_fl_utl.h" /* File manipulation */
 
-char *
-fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,char **fl_lst_abb,char *fl_pth)
-/* 
-   const char *fl_nm: I/O [sng] Current filename, if any
-   int fl_nbr: I ordinal index of file in input file list
-   int *nbr_fl: I/O number of files to be processed
-   char **fl_lst_in: I user-specified filenames
-   char **fl_lst_abb: I NINTAP-style arguments, if any
-   char *fl_pth: I path prefix for files in fl_lst_in
-   char *fl_nm_prs: O name of file to retrieve
- */
+void
+fl_cp /* [fnc] Copy first file to second */
+(const char * const fl_src, /* I [sng] Name of source file to copy */
+ const char * const fl_dst) /* I [sng] Name of destination file */
+{
+  /* Purpose: Copy first file to second */
+  char *cp_cmd;
+  char cp_cmd_fmt[]="cp %s %s";
+
+  int rcd;
+  int nbr_fmt_char=4;
+  
+  /* Construct and execute copy command */
+  cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Copying %s to %s...",fl_src,fl_dst);
+  (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
+  rcd=system(cp_cmd);
+  if(rcd == -1){
+    (void)fprintf(stdout,"%s: ERROR fl_cp() is unable to execute cp command \"%s\"\n",prg_nm_get(),cp_cmd);
+    exit(EXIT_FAILURE); 
+  } /* end if */
+  cp_cmd=nco_free(cp_cmd);
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
+} /* end fl_cp() */
+
+void
+fl_mv /* [fnc] Move first file to second */
+(const char * const fl_src, /* I [sng] Name of source file to move */
+ const char * const fl_dst) /* I [sng] Name of destination file */
+{
+  /* Purpose: Move first file to second */
+  char *mv_cmd;
+  char mv_cmd_fmt[]="mv -f %s %s";
+
+  int rcd;
+  int nbr_fmt_char=4;
+  
+  /* Construct and execute the copy command */
+  mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Moving %s to %s...",fl_src,fl_dst);
+  (void)sprintf(mv_cmd,mv_cmd_fmt,fl_src,fl_dst);
+  rcd=system(mv_cmd);
+  if(rcd == -1){
+    (void)fprintf(stdout,"%s: ERROR fl_mv() is unable to execute mv command \"%s\"\n",prg_nm_get(),mv_cmd);
+    exit(EXIT_FAILURE); 
+  } /* end if */
+  mv_cmd=nco_free(mv_cmd);
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
+} /* end fl_mv() */
+
+void 
+fl_rm /* [fnc] Remove file */
+(char *fl_nm) /* I [sng] File to be removed */
+{
+  /* Purpose: Remove specified file from local system */
+  int rcd;
+  char rm_cmd_sys_dep[]="rm -f";
+  char *rm_cmd;
+  
+  /* Remember to add one for the space and one for the terminating NUL character */
+  rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1+strlen(fl_nm)+1)*sizeof(char));
+  (void)sprintf(rm_cmd,"%s %s",rm_cmd_sys_dep,fl_nm);
+
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: Removing %s with %s\n",prg_nm_get(),fl_nm,rm_cmd);
+  rcd=system(rm_cmd);
+  if(rcd == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",prg_nm_get(),fl_nm);
+
+  rm_cmd=nco_free(rm_cmd);
+} /* end fl_rm() */
+
+char * /* O [sng] Name of file to retrieve */
+fl_nm_prs /* [fnc] Construct file name from input arguments */
+(char *fl_nm, /* I/O [sng] Current filename, if any */
+ const int fl_nbr, /* I [nbr] Ordinal index of file in input file list */
+ int * const nbr_fl, /* I/O [nbr] number of files to be processed */
+ const char ** const fl_lst_in, /* I [sng] User-specified filenames */
+ const int nbr_abb_arg, /* I [nbr] Number of abbreviation arguments */
+ const char ** const fl_lst_abb, /* I [sng] NINTAP-style arguments, if any */
+ const char * const fl_pth) /* I [sng] Path prefix for files in fl_lst_in */
 {
   /* Purpose: Construct file name from various input arguments and switches.
      Routine implements NINTAP-style specification by using static
@@ -42,7 +110,7 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
   /* Construct filename from NINTAP-style arguments and input name */
   if(fl_lst_abb != NULL){
     if(FIRST_INVOCATION){
-      int fl_nm_sfx_len=0;
+      int fl_nm_sfx_lng=0;
       
       /* Parse abbreviation list analogously to CCM Processor ICP "NINTAP" */
       if(nbr_fl != NULL) *nbr_fl=(int)strtol(fl_lst_abb[0],(char **)NULL,10);
@@ -73,16 +141,16 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
       
       /* Is there a .nc, .cdf, .hdf, or .hd5 suffix? */
       if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-3,".nc",3) == 0) 
-	fl_nm_sfx_len=3;
+	fl_nm_sfx_lng=3;
       else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".cdf",4) == 0)
-	fl_nm_sfx_len=4;
+	fl_nm_sfx_lng=4;
       else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".hdf",4) == 0)
-	fl_nm_sfx_len=4;
+	fl_nm_sfx_lng=4;
       else if(strncmp(fl_lst_in[0]+strlen(fl_lst_in[0])-4,".hd5",4) == 0)
-	fl_nm_sfx_len=4;
+	fl_nm_sfx_lng=4;
       
       /* Initialize static information useful for future invocations */
-      fl_nm_1st_dgt=fl_lst_in[0]+strlen(fl_lst_in[0])-fl_nm_nbr_dgt-fl_nm_sfx_len;
+      fl_nm_1st_dgt=fl_lst_in[0]+strlen(fl_lst_in[0])-fl_nm_nbr_dgt-fl_nm_sfx_lng;
       fl_nm_nbr_sng=(char *)nco_malloc((fl_nm_nbr_dgt+1)*sizeof(char));
       fl_nm_nbr_sng=strncpy(fl_nm_nbr_sng,fl_nm_1st_dgt,fl_nm_nbr_dgt);
       fl_nm_nbr_sng[fl_nm_nbr_dgt]='\0';
@@ -129,16 +197,13 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
   return(fl_nm);
 } /* end fl_nm_prs() */
 
-char *
-fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
-/* 
-   char *fl_nm: I/O current filename, if any (destroyed)
-   char *fl_pth_lcl: I local storage area for files retrieved from remote locations, if any
-   int *FILE_RETRIEVED_FROM_REMOTE_LOCATION: O flag set if file had to be retrieved from remote system
-   char *fl_mk_lcl(): O filename locally available file
-*/
+char * /* O [sng] Filename of locally available file */
+fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
+(char *fl_nm, /* I/O [sng] Current filename, if any (destroyed) */
+ const char * const fl_pth_lcl, /* I [sng] Local storage area for files retrieved from remote locations */
+ int * const FILE_RETRIEVED_FROM_REMOTE_LOCATION) /* O [flg] File was retrieved from remote location */
 {
-  /* Routine to locate input file, retrieve it from a remote storage system if necessary, 
+  /* Purpose: Locate input file, retrieve it from remote storage system if necessary, 
      create local storage directory if neccessary, check file for read-access,
      return name of file on local system */
 
@@ -268,7 +333,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       lcl_rmt, /* Local file argument before remote file argument */
       rmt_lcl}; /* Remote file argument before local file argument */
 
-    int fl_pth_lcl_len;
+    int fl_pth_lcl_lng;
     
     rmt_fch_cmd_sct *rmt_cmd=NULL;
     rmt_fch_cmd_sct msread={"msread -R %s %s",4,synchronous,lcl_rmt};
@@ -391,11 +456,11 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     /* Find the path for storing the local file */
     fl_nm_stub=strrchr(fl_nm_lcl,'/')+1;
     /* Construct the local storage filepath name */
-    fl_pth_lcl_len=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1;
+    fl_pth_lcl_lng=strlen(fl_nm_lcl)-strlen(fl_nm_stub)-1;
     /* Allocate enough room for the terminating NUL */
-    fl_pth_lcl_tmp=(char *)nco_malloc((fl_pth_lcl_len+1)*sizeof(char));
-    (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_len);
-    fl_pth_lcl_tmp[fl_pth_lcl_len]='\0';
+    fl_pth_lcl_tmp=(char *)nco_malloc((fl_pth_lcl_lng+1)*sizeof(char));
+    (void)strncpy(fl_pth_lcl_tmp,fl_nm_lcl,fl_pth_lcl_lng);
+    fl_pth_lcl_tmp[fl_pth_lcl_lng]='\0';
     
     /* Warn user when local filepath was machine-derived from remote name */
     if(fl_pth_lcl == NULL) (void)fprintf(stderr,"%s: WARNING deriving local filepath from remote filename, using %s\n",prg_nm_get(),fl_pth_lcl_tmp);
@@ -405,7 +470,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     /* If not, then create the local filepath */
     if(rcd != 0){
       /* Allocate enough room for joining space ' ' and terminating NUL */
-      cmd_sys=(char *)nco_malloc((strlen(cmd_mkdir)+fl_pth_lcl_len+2)*sizeof(char));
+      cmd_sys=(char *)nco_malloc((strlen(cmd_mkdir)+fl_pth_lcl_lng+2)*sizeof(char));
       (void)strcpy(cmd_sys,cmd_mkdir);
       (void)strcat(cmd_sys," ");
       (void)strcat(cmd_sys,fl_pth_lcl_tmp);
@@ -515,18 +580,15 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 
 } /* end fl_mk_lcl() */
 
-char **
-fl_lst_mk(char **argv,int argc,int arg_crr,int *nbr_fl,char **fl_out)
-/* 
-   char **argv: I argument list
-   int argc: I argument count
-   int arg_crr: I index of current argument
-   int *nbr_fl: O number of files in input file list
-   char **fl_out: O name of output file
-   char **fl_lst_mk(): O list of user-specified filenames
- */
+char ** /* O [sng] List of user-specified filenames */
+fl_lst_mk /* [fnc] Create file list from command line positional arguments */
+(const char ** const argv, /* I [sng] Argument list */
+ const int argc, /* I [nbr] Argument count */
+ const int arg_crr, /* I [idx] Index of current argument */
+ int * const nbr_fl, /* O [nbr] Number of files in input file list */
+ char ** const fl_out) /* O [sng] Name of output file */
 {
-  /* Routine to parse the positional arguments on the command line
+  /* Purpose: Parse positional arguments on command line
      Name of calling program plays a role in this */
 
   /* Command-line switches are expected to have been digested already (e.g., by getopt()),
@@ -608,17 +670,14 @@ fl_lst_mk(char **argv,int argc,int arg_crr,int *nbr_fl,char **fl_out)
 
 } /* end fl_lst_mk() */
 
-char *
-fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
-/* 
-   char *fl_out: I Name of file to open
-   bool FORCE_APPEND: I Flag for appending to existing file, if any
-   bool FORCE_OVERWRITE: I Flag for overwriting existing file, if any
-   int *out_id: O File ID
-   char *fl_out_open(): O Name of temporary file actually opened
- */
+char * /* O [sng] Name of temporary file actually opened */
+fl_out_open /* [fnc] Open output file subject to availability and user input */
+(const char * const fl_out, /* I [sng] Name of file to open */
+ const bool FORCE_APPEND, /* I [flg] Append to existing file, if any */
+ const bool FORCE_OVERWRITE, /* I [flg] Overwrite existing file, if any */
+ int * const out_id) /* O [id] File ID */
 {
-  /* Open output file subject to availability and user input 
+  /* Purpose: Open output file subject to availability and user input 
      In accord with netCDF philosophy a temporary file (based on fl_out and process ID)
      is actually opened, so that errors can not infect intended output file */
 
@@ -770,14 +829,12 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
 } /* end fl_out_open() */
 
 void
-fl_out_cls(char *fl_out,char *fl_out_tmp,int nc_id)
-/* 
-   char *fl_out: I name of permanent output file
-   char *fl_out_tmp: I name of temporary output file to close and move to permanent output file
-   int nc_id: I file ID of fl_out_tmp
- */
+fl_out_cls /* [fnc] Close temporary output file, move it to permanent output file */
+(const char * const fl_out, /* I [sng] Name of permanent output file */
+ const char * const fl_out_tmp, /* I [sng] Name of temporary output file to close and move to permanent output file */
+ const int nc_id) /* I [id] file ID of fl_out_tmp */
 {
-  /* Routine to close the temporary output file and move it to the permanent output file */
+  /* Purpose: Close temporary output file, move it to permanent output file */
   int rcd; /* [rcd] Return code */
 
   rcd=nco_close(nc_id);
@@ -791,80 +848,8 @@ fl_out_cls(char *fl_out,char *fl_out_tmp,int nc_id)
 } /* end fl_out_cls() */
 
 void
-fl_cmp_err_chk()
-/* 
-   fl_cmp_err_chk():
-*/
+fl_cmp_err_chk(void) /* [fnc] Perform error checking on file */
 {
   /* Purpose: Perform error checking on file */
 } /* end fl_cmp_err_chk() */
 
-void
-fl_cp(char *fl_src,char *fl_dst)
-/* char *fl_src: I [sng] Name of source file to copy
-   char *fl_dst: I [sng] Name of destination file */
-{
-  /* Purpose: Copy first file to second */
-  char *cp_cmd;
-  char cp_cmd_fmt[]="cp %s %s";
-
-  int rcd;
-  int nbr_fmt_char=4;
-  
-  /* Construct and execute copy command */
-  cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Copying %s to %s...",fl_src,fl_dst);
-  (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
-  rcd=system(cp_cmd);
-  if(rcd == -1){
-    (void)fprintf(stdout,"%s: ERROR fl_cp() is unable to execute cp command \"%s\"\n",prg_nm_get(),cp_cmd);
-    exit(EXIT_FAILURE); 
-  } /* end if */
-  cp_cmd=nco_free(cp_cmd);
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
-} /* end fl_cp() */
-
-void
-fl_mv(char *fl_src,char *fl_dst)
-/* char *fl_src: I name of file to move
-   char *fl_dst: I name of destination file */
-{
-  /* Purpose: Move first file to second */
-  char *mv_cmd;
-  char mv_cmd_fmt[]="mv -f %s %s";
-
-  int rcd;
-  int nbr_fmt_char=4;
-  
-  /* Construct and execute the copy command */
-  mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Moving %s to %s...",fl_src,fl_dst);
-  (void)sprintf(mv_cmd,mv_cmd_fmt,fl_src,fl_dst);
-  rcd=system(mv_cmd);
-  if(rcd == -1){
-    (void)fprintf(stdout,"%s: ERROR fl_mv() is unable to execute mv command \"%s\"\n",prg_nm_get(),mv_cmd);
-    exit(EXIT_FAILURE); 
-  } /* end if */
-  mv_cmd=nco_free(mv_cmd);
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
-} /* end fl_mv() */
-
-void 
-fl_rm(char *fl_nm)
-/* char *fl_nm: I file to be removed */
-{
-  /* Purpose: Remove specified file from local system */
-  int rcd;
-  char rm_cmd_sys_dep[]="rm -f";
-  char *rm_cmd;
-  
-  /* Remember to add one for the space and one for the terminating NUL character */
-  rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1+strlen(fl_nm)+1)*sizeof(char));
-  (void)sprintf(rm_cmd,"%s %s",rm_cmd_sys_dep,fl_nm);
-
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: Removing %s with %s\n",prg_nm_get(),fl_nm,rm_cmd);
-  rcd=system(rm_cmd);
-  if(rcd == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",prg_nm_get(),fl_nm);
-
-  rm_cmd=nco_free(rm_cmd);
-} /* end fl_rm() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.19 2002-05-05 01:27:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.20 2002-05-05 02:55:31 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -339,13 +339,9 @@ extern "C" {
      fxm: TODO 210 Break into sourcefile specific headers, e.g., csz.h, pck.h... */
   
   extern bool ncar_csm_inq(int);
-  extern char **fl_lst_mk(char **,int,int,int *,char **);
   extern char **lst_prs(char *,const char *,int *);
   extern char *cmd_ln_sng(int,char **);
   extern char *cvs_vrs_prs();
-  extern char *fl_mk_lcl(char *,char *,int *);
-  extern char *fl_nm_prs(char *,int,int *,char **,int,char **,char *);
-  extern char *fl_out_open(char *,bool,bool,int *);
   extern char *nmn_get(void);
   extern char *prg_nm_get(void);
   extern char *sng_lst_prs(char **,const long, const char *);
@@ -387,11 +383,6 @@ extern "C" {
   extern void cast_nctype_void(nc_type,ptr_unn *);
   extern void cast_void_nctype(nc_type,ptr_unn *);
   extern void copyright_prn(char *,char *);
-  extern void fl_cmp_err_chk(void);
-  extern void fl_cp(char *,char *);
-  extern void fl_mv(char *,char *);
-  extern void fl_out_cls(char *,char *,int);
-  extern void fl_rm(char *);
   extern void hst_att_cat(int,char *);
   extern void index_alpha(int,char **,int *);
   extern void indexx(int,int *,int *);

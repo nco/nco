@@ -1,13 +1,20 @@
-lmt_sct
-lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
-/* 
-   int nc_id: I [idx] netCDF file ID
-   int dmn_id: I [idx] ID of dimension for which to create a limit structure
-   lmt_sct *lmt: I [sct] Array of limits structures from lmt_evl()
-   int lmt_nbr: I [nbr] Number of limit structures in limit structure array
-   bool FORTRAN_STYLE: I [flg] switch to determine syntactical interpretation of dimensional indices
-   lmt_sct lmt_sct_mk(): O [sct] Limit structure for dimension
- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.2 2002-05-05 02:55:31 zender Exp $ */
+
+/* Purpose: Hyperslab limits */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_lmt.h" /* Hyperslab limits */
+
+lmt_sct /* [sct] Limit structure for dimension */
+lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
+(const int nc_id, /* I [idx] netCDF file ID */
+ const int dmn_id, /* I [idx] ID of dimension for this limit structure */
+ const lmt_sct * const lmt, /* I [sct] Array of limit structures from lmt_evl() */
+ int lmt_nbr, /* I [nbr] Number of limit structures */
+ const bool FORTRAN_STYLE) /* I [flg] Hyperslab indices obey Fortran convention */
 {
   /* Purpose: Create stand-alone limit structure just for given dimension 
      lmt_sct_mk() is called by ncra() to generate limit structure for record dimension */
@@ -102,14 +109,12 @@ lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
   
 } /* end lmt_sct_mk() */
 
-void 
-lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
-/* 
-   int nc_id: I [idx] netCDF file ID
-   lmt_sct *lmt_ptr: I/O [sct] Structure from lmt_prs() or from lmt_sct_mk() to hold dimension limit information
-   long cnt_crr: I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators)
-   bool FORTRAN_STYLE: I [flg] Switch to determine syntactical interpretation of dimensional indices
- */
+void
+lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
+(int nc_id, /* I [idx] netCDF file ID */
+ lmt_sct *lmt_ptr, /* I/O [sct] Structure from lmt_prs() or from lmt_sct_mk() to hold dimension limit information */
+ long cnt_crr, /* I [nbr] Number of valid records already processed (only used for record dimensions in multi-file operators) */
+ bool FORTRAN_STYLE) /* I [flg] Hyperslab indices obey Fortran convention */
 {
   /* Threads: Routine is thread-unsafe */
   /* Purpose: Take a parsed list of dimension names, minima, and
@@ -751,13 +756,10 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 
 } /* end lmt_evl() */
 
-lmt_sct *
-lmt_prs(int lmt_nbr,char **lmt_arg)
-/* 
-   int lmt_nbr: I number of dimensions with limits
-   char **lmt_arg: I list of user-specified dimension limits
-   lmt_sct *lmt_prs(): O structure holding user-specified strings for min and max limits
- */
+lmt_sct * /* O [sct] Structure with user-specified strings for min and max limits */
+lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */
+(const int lmt_nbr, /* I [nbr] number of dimensions with limits */
+ const char ** const lmt_arg) /* I [sng] list of user-specified dimension limits */
 {
   /* Purpose: Set name, min_sng, max_sng elements of 
      a comma separated list of names and ranges. This routine
