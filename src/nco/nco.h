@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.28 2002-05-05 19:52:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.29 2002-05-05 20:42:23 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -272,14 +272,10 @@ extern "C" {
   extern char *prg_nm_get(void);
   extern int prg_get(void);
   extern nm_id_sct *var_lst_add_crd(int,int,int,nm_id_sct *,int *);
-  extern nm_id_sct *var_lst_ass_crd_add(int,nm_id_sct *,int *);
-  extern nm_id_sct *var_lst_crd_xcl(int,int,nm_id_sct *,int *);
   extern nm_id_sct *var_lst_mk(int,int,char **,bool,int *);
   extern nm_id_sct *var_lst_xcl(int,int,nm_id_sct *,int *);
   extern unsigned short dbg_lvl_get(void);
   extern var_sct *var_avg(var_sct *,dmn_sct **,int,int);
-  extern var_sct *var_dpl(var_sct *);
-  extern var_sct *var_fll(int,int,char *,dmn_sct **,int);
   extern void cast_nctype_void(nc_type,ptr_unn *);
   extern void cast_void_nctype(nc_type,ptr_unn *);
   extern void val_conform_type(nc_type,ptr_unn,nc_type,ptr_unn);
@@ -288,11 +284,7 @@ extern "C" {
   extern void var_avg_reduce_ttl(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
   extern void var_avg_reduce_min(nc_type,long,long,int,ptr_unn,ptr_unn,ptr_unn);
   extern void var_avg_reduce_max(nc_type,long,long,int,ptr_unn,ptr_unn,ptr_unn);
-  extern void var_copy(nc_type,long,ptr_unn,ptr_unn);
-  extern void var_dfn(int,char *,int,var_sct **,int,dmn_sct **,int);
-  extern void var_dmn_xrf(var_sct *);
   extern void var_divide(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
-  extern void var_get(int,var_sct *);
   extern void var_lst_convert(int,nm_id_sct *,int,dmn_sct **,int,var_sct ***,var_sct ***);
   extern void var_lst_divide(var_sct **,var_sct **,int,bool,dmn_sct **,int,var_sct ***,var_sct ***,int *,var_sct ***,var_sct ***,int *);
   extern void var_mask(nc_type,long,int,ptr_unn,double,int,ptr_unn,ptr_unn);
@@ -301,7 +293,6 @@ extern "C" {
   extern void var_multiply(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
   extern void var_normalize(nc_type,long,int,ptr_unn,long *,ptr_unn);
   extern void var_normalize_sdn(nc_type,long,int,ptr_unn,long *,ptr_unn);
-  extern void var_refresh(int,var_sct *);
   extern void var_abs(nc_type,const long,int,ptr_unn,ptr_unn);
   extern void var_scv_add(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
   extern void var_scv_sub(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
@@ -309,10 +300,7 @@ extern "C" {
   extern void var_scv_modulus(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
   extern void var_scv_multiply(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
   extern void var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2);
-  extern void var_srt_zero(var_sct **,int);
   extern void var_subtract(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
-  extern void var_val_cpy(int,int,var_sct **,int);
-  extern void var_xrf(var_sct *,var_sct *);
   extern void var_zero(nc_type,long,ptr_unn);
   
   extern int ncvarid_or_die /* O [enm] Variable ID */
@@ -322,10 +310,6 @@ extern "C" {
   extern int ncdimid_or_die /* O [enm] Dimension ID */
   (int nc_id, /* I [enm] File ID */
    char *dmn_nm); /* I [sng] Dimension name */
-  
-  extern int /* O [enm] Return code */
-  var_dfl_set /* [fnc] Set defaults for each member of variable structure */
-  (var_sct *var); /* [sct] Pointer to variable strucutre to initialize to defaults */
   
 #ifdef __cplusplus
 } /* end extern "C" */

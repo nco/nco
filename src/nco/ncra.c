@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.62 2002-05-02 06:08:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.63 2002-05-05 20:42:23 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -82,8 +82,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.62 2002-05-02 06:08:19 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.62 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.63 2002-05-05 20:42:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.63 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -302,8 +302,8 @@ main(int argc,char **argv)
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dpl(var[idx]);
-    (void)var_xrf(var[idx],var_out[idx]);
-    (void)var_dmn_xrf(var_out[idx]);
+    (void)nco_xrf_var(var[idx],var_out[idx]);
+    (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */

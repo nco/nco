@@ -50,7 +50,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
 
   /* Copy basic attributes of input variable into output (averaged) variable */
   fix=var_dpl(var);
-  (void)var_xrf(fix,var->xrf);
+  (void)nco_xrf_var(fix,var->xrf);
 
   /* Create lists of averaging and fixed dimensions (in order of their appearance 
      in the variable). We do not know a priori how many dimensions remain in the 

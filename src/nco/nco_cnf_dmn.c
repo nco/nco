@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.2 2002-05-05 20:42:23 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -167,7 +167,7 @@ var_conform_dim /* [fnc] Stretch second variable to match dimensions of first va
     } /* end else */
     if(CONFORMABLE && *DO_CONFORM){
       wgt_out=var_dpl(wgt);
-      (void)var_xrf(wgt,wgt_out);
+      (void)nco_xrf_var(wgt,wgt_out);
     } /* end if */
   } /* end if */
 
@@ -192,7 +192,7 @@ var_conform_dim /* [fnc] Stretch second variable to match dimensions of first va
 
     /* Copy main attributes of variable into current weight */
     wgt_out=var_dpl(var);
-    (void)var_xrf(wgt,wgt_out);
+    (void)nco_xrf_var(wgt,wgt_out);
 
     /* Modify a few elements of weight array */
     wgt_out->nm=wgt->nm;

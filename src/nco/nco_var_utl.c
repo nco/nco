@@ -1,27 +1,16 @@
-void
-var_srt_zero(var_sct **var,int nbr_var)
-/* 
-   var_sct **var: I list of pointers to variable structures whose srt elements will be zeroed
-   int nbr_var: I number of structures in variable structure list
- */
-{
-  /* Purpose: Point srt element of variable structure to array of zeroes */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.2 2002-05-05 20:42:23 zender Exp $ */
 
-  int idx;
-  int idx_dmn;
+/* Purpose: Variable utilities */
 
-  for(idx=0;idx<nbr_var;idx++)
-    for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++)
-      var[idx]->srt[idx_dmn]=0L;
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
-} /* end var_srt_zero() */
+#include "nco_var_utl.h" /* Variable utilities */
 
-var_sct *
-var_dpl(var_sct *var)
-/* 
-   var_sct *var: I variable structure to duplicate
-   var_sct *var_dpl(): O copy of input variable structure
- */
+var_sct * /* O [sct] Copy of input variable */
+var_dpl /* [fnc] Duplicate input variable */
+(const var_sct * const var) /* I [sct] Variable to duplicate */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: nco_malloc() and return duplicate of input var_sct
@@ -91,11 +80,9 @@ var_dpl(var_sct *var)
 } /* end var_dpl() */
 
 void
-var_get(int nc_id,var_sct *var)
-/* 
-   int nc_id: I netCDF file ID
-   var_sct *var: I pointer to variable structure
- */
+var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
+(const int nc_id, /* I [id] netCDF file ID */
+ var_sct * const var) /* I [sct] Variable to get */
 {
   /* Threads: Routine contains thread-unsafe calls protected by critical regions */
   /* Purpose: Allocate and retrieve given variable hyperslab from disk into memory
@@ -136,10 +123,8 @@ var_get(int nc_id,var_sct *var)
 } /* end var_get() */
 
 void
-var_dmn_xrf(var_sct *var)
-/*  
-   var_sct *var: I pointer to variable structure
-*/
+nco_xrf_dmn /* [fnc] Switch pointers to dimension structures so var->dim points to var->dim->xrf */
+(var_sct * const var) /* I [sct] Variable to manipulate */
 {
   /* Purpose: Switch pointers to dimension structures so var->dim points to var->dim->xrf.
      Routine makes dim element of variable structure from var_dpl() refer to counterparts
@@ -149,34 +134,29 @@ var_dmn_xrf(var_sct *var)
   
   for(idx=0;idx<var->nbr_dim;idx++) var->dim[idx]=var->dim[idx]->xrf;
   
-} /* end var_dmn_xrf() */
+} /* end nco_xrf_dmn() */
 
 void
-var_xrf(var_sct *var,var_sct *var_dpl)
-/*  
-   var_sct *var: I/O pointer to variable structure
-   var_sct *var_dpl: I/O pointer to variable structure
-*/
+nco_xrf_var /* [fnc] Make xrf elements of variable structures point to eachother */
+(var_sct * const var, /* I/O [sct] Variable */
+ var_sct * const var_dpl) /* I/O [sct] Related variable */
 {
-  /* Make xrf elements of variable structures point to eachother */
+  /* Purpose: Make xrf elements of variable structures point to eachother */
 
   var->xrf=var_dpl;
   var_dpl->xrf=var;
 
-} /* end var_xrf() */
+} /* end nco_xrf_var() */
 
-var_sct *
-var_free(var_sct *var)
-/*  
-   var_sct *var: I pointer to variable structure
-*/
+var_sct * /* O [sct] Pointer to free'd variable */
+var_free /* [fnc] Free all memory associated with variable structure */
+(var_sct *var) /* I [sct] Variable to free */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Free all memory associated with a dynamically allocated variable structure */
   
-  /* NB: var->nm is not freed because I decided to let names be static memory, and refer to
-     the optarg list if available. This assumption needs to be changed before freeing 
-     the name pointer. */
+  /* fxm: var->nm is not freed because names may be owned by optarg list (system)
+     This assumption needs to be changed before freeing name pointer */
   
   var->val.vp=nco_free(var->val.vp);
   var->mss_val.vp=nco_free(var->mss_val.vp);
@@ -190,18 +170,19 @@ var_free(var_sct *var)
   var->scl_fct.vp=nco_free(var->scl_fct.vp);
   var->add_fst.vp=nco_free(var->add_fst.vp);
 
-  /* Free structure pointer only after all dynamic elements of structure have been freed */
+  /* Free structure pointer last */
   var=nco_free(var);
 
   return NULL;
 
 } /* end var_free */
 
-int /* [enm] Return code */
+int /* O [enm] Return code */
 var_dfl_set /* [fnc] Set defaults for each member of variable structure */
-(var_sct *var){ /* [sct] Pointer to variable strucutre to initialize to defaults */
+(var_sct * const var) /* I [sct] Variable strucutre to initialize to defaults */
+{
   /* Purpose: Set defaults for each member of variable structure
-     var_dfl_set() should be called by any routine that creates a variable structure */
+     var_dfl_set() should be called by all routines that create variables */
 
   int rcd=0; /* [enm] Return code */
 
@@ -245,7 +226,11 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
 } /* end var_dfl_set() */
 
 void 
-var_copy(nc_type var_typ,long sz,ptr_unn op1,ptr_unn op2)
+var_copy /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2 */
+(const nc_type var_typ, /* I [enm] netCDF type */
+ const long sz, /* I [nbr] Number of elements to copy */
+ const ptr_unn op1, /* I [sct] Values to copy */
+ ptr_unn op2) /* O [sct] Destination to copy values to */
 {
   /* Purpose: Copy hyperslab variables of type var_typ from op1 to op2
      Assumes memory area in op2 has already been malloc()'d */
@@ -253,23 +238,21 @@ var_copy(nc_type var_typ,long sz,ptr_unn op1,ptr_unn op2)
 } /* end var_copy() */
 
 void
-var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dmn_ncl,int nbr_dmn_ncl)
-/* 
-   int in_id: I netCDF input-file ID
-   char *fl_out: I name of output file
-   int out_id: I netCDF output-file ID
-   var_sct **var: I list of pointers to variable structures to be defined in output file
-   int nbr_var: I number of variable structures in structure list
-   dmn_sct **dmn_ncl: I list of pointers to dimension structures allowed in output file
-   int nbr_dmn_ncl: I number of dimension structures in structure list
-*/
+var_dfn /* [fnc] Define variables and write their attributes to output file */
+(const int in_id, /* I [enm] netCDF input-file ID */
+ const char * const fl_out, /* I [sng] Name of output file */
+ const int out_id, /* I [enm] netCDF output-file ID */
+ const var_sct ** const var, /* I [sct] Variables to be defined in output file */
+ const int nbr_var, /* I [nbr] Number of variables to be defined */
+ const dmn_sct ** const dmn_ncl, /* I [sct] Dimensions included in output file */
+ const int nbr_dmn_ncl) /* I [nbr] Number of dimensions in list */
 {
-  /* Define variables in output file, and copy their attributes */
+  /* Purpose: Define variables in output file, and copy their attributes */
 
   /* This function is unusual (for me) in that dimension arguments are only intended
-     to be used by certain programs, those that alter the rank of input variables. If a
-     program does not alter the rank (dimensionality) of input variables then it should
-     call this function with a NULL dimension list. Otherwise, this routine attempts
+     to be used by certain programs, those that alter the rank of input variables. 
+     If program does not alter rank (dimensionality) of input variables then it should
+     call this function with NULL dimension list. Otherwise, this routine attempts
      to define variable correctly in output file (allowing variable to be
      defined with only those dimensions that are in dimension inclusion list) 
      without altering variable structures. 
@@ -374,16 +357,13 @@ var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
 } /* end var_dfn() */
 
 void
-var_val_cpy(int in_id,int out_id,var_sct **var,int nbr_var)
-/* 
-   int in_id: I netCDF file ID
-   int out_id: I netCDF output-file ID
-   var_sct **var: I list of pointers to variable structures
-   int nbr_var: I number of structures in variable structure list
-   var_val_cpy():
-*/
+var_val_cpy /* [fnc] Copy data of variables in list from input to output file */
+(const int in_id, /* I [enm] netCDF file ID */
+ const int out_id, /* I [enm] netCDF output-file ID */
+ var_sct ** const var, /* I [sct] list of pointers to variable structures */
+ const int nbr_var) /* I [nbr] number of structures in variable structure list */
 {
-  /* Copy variable data for every variable in the input variable structure list
+  /* Purpose: Copy variable data for every variable in input variable structure list
      from input file to output file */
 
   int idx;
@@ -402,18 +382,14 @@ var_val_cpy(int in_id,int out_id,var_sct **var,int nbr_var)
 
 } /* end var_val_cpy() */
 
-nm_id_sct *
-var_lst_crd_xcl(int nc_id,int dmn_id,nm_id_sct *xtr_lst,int *nbr_xtr)
-/* 
-   int nc_id: I netCDF file ID
-   int dmn_id: I dimension ID of the coordinate to eliminate from extraction list
-   nm_id_sct *xtr_lst: current extraction list (destroyed)
-   int *nbr_xtr: I/O number of variables in current extraction list
-   nm_id_sct var_lst_crd_xcl(): O extraction list
- */
+nm_id_sct * /* O [sct] List with coordinate excluded */
+var_lst_crd_xcl /* [fnc] Exclude given coordinates from extraction list */
+(const int nc_id, /* I [id] netCDF file ID */
+ const int dmn_id, /* I [id] Dimension ID of coordinate to remove from extraction list */
+ nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
+ int * const nbr_xtr) /* I/O [nbr] Number of variables in extraction list */
 {
-  /* The following code modifies extraction list to exclude the coordinate, 
-     if any, associated with the given dimension ID */
+  /* Purpose: Modify extraction list to exclude coordinate, if any, associated with given dimension ID */
   
   char crd_nm[NC_MAX_NAME];
 
@@ -452,18 +428,14 @@ var_lst_crd_xcl(int nc_id,int dmn_id,nm_id_sct *xtr_lst,int *nbr_xtr)
   
 } /* end var_lst_crd_xcl() */
 
-nm_id_sct *
-var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
-/* 
-   int nc_id: I netCDF file ID
-   nm_id_sct *xtr_lst: I/O current extraction list (destroyed)
-   int *nbr_xtr: I/O number of variables in current extraction list
-   nm_id_sct var_lst_ass_crd_add(): O extraction list
- */
+nm_id_sct * /* O [sct] Extraction list */
+var_lst_ass_crd_add /* [fnc] Add coordinates associated extracted variables to extraction list */
+(const int nc_id, /* I netCDF file ID */
+ nm_id_sct *xtr_lst, /* I/O current extraction list (destroyed) */
+ int * const nbr_xtr) /* I/O number of variables in current extraction list */
 {
-  /* Makes sure all coordinates associated with each of variables
-     to be extracted is also on the list. This helps with making concise
-     nco_malloc() calls down the road. */
+  /* Purpose: Add coordinates associated extracted variables to extraction list
+     This helps with making concise nco_malloc() calls down road */
 
   char dmn_nm[NC_MAX_NAME];
 
@@ -515,16 +487,13 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
   
 } /* end var_lst_ass_crd_add() */
 
-var_sct *
-var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
-/* 
-   int nc_id: I netCDF file ID
-   int var_id: I variable ID
-   char *var_nm: I variable name
-   dmn_sct **dim: I list of pointers to dimension structures
-   int nbr_dim: I number of dimensions in list
-   var_sct *var_fll(): O variable structure
- */
+var_sct * /* O [sct] Variable structure */
+var_fll /* [fnc] Allocate variable structure and fill with metadata */
+(const int nc_id, /* I [id] netCDF file ID */
+ const int var_id, /* I [id] variable ID */
+ const char * const var_nm, /* I [sng] Variable name */
+ const dmn_sct ** const dim, /* I [sct] Dimensions available to variable */
+ const int nbr_dim) /* I [nbr] Number of dimensions in list */
 {
   /* Purpose: nco_malloc() and return a completed var_sct */
   char dmn_nm[NC_MAX_NAME];
@@ -583,9 +552,9 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
     } /* end if */
 
     /* fxm: hmb, what is this for? */
-    /* re-define dim_id so that if dim is the dimension list from the output file
-       then we get the correct dim_id. Should not affect normal running of the
-       routine as most the time, dim is the dimension from the input file */
+    /* Re-define dim_id so that if dim is dimension list from output file
+       then we get correct dim_id. Should not affect normal running of 
+       routine as usually dim is dimension list from input file */
     var->dmn_id[idx]=dim[dmn_idx]->id;
 
     var->dim[idx]=dim[dmn_idx];
@@ -613,11 +582,9 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
 } /* end var_fll() */
 
 void
-var_refresh(int nc_id,var_sct *var)
-/* 
-   int nc_id: I netCDF input-file ID
-   var_sct *var: I/O variable structure
- */
+var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
+(const int nc_id, /* I [id] netCDF input-file ID */
+ var_sct * const var) /* I/O [sct] Variable to update */
 {
   /* Threads: Routine contains thread-unsafe calls protected by critical regions */
   /* Purpose: Update variable ID, number of dimensions, and missing_value attribute for given variable
@@ -652,3 +619,18 @@ var_refresh(int nc_id,var_sct *var)
 
 } /* end var_refresh() */
 
+void
+var_srt_zero /* [fnc] Zero srt array of variable structure */
+(var_sct ** const var, /* I [sct] Variables whose srt arrays will be zeroed */
+ const int nbr_var) /* I [nbr] Number of structures in variable structure list */
+{
+  /* Purpose: Zero srt array of variable structure */
+
+  int idx;
+  int idx_dmn;
+
+  for(idx=0;idx<nbr_var;idx++)
+    for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++)
+      var[idx]->srt[idx_dmn]=0L;
+
+} /* end var_srt_zero() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.35 2002-01-22 08:54:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.36 2002-05-05 20:42:23 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.35 2002-01-22 08:54:46 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.35 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.36 2002-05-05 20:42:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.36 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -321,8 +321,8 @@ main(int argc,char **argv)
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dpl(var[idx]);
-    (void)var_xrf(var[idx],var_out[idx]);
-    (void)var_dmn_xrf(var_out[idx]);
+    (void)nco_xrf_var(var[idx],var_out[idx]);
+    (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */

@@ -179,8 +179,8 @@ var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dmn_sct **dim,int nbr_d
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(nc_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dpl(var[idx]);
-    (void)var_xrf(var[idx],var_out[idx]);
-    (void)var_dmn_xrf(var_out[idx]);
+    (void)nco_xrf_var(var[idx],var_out[idx]);
+    (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
   
   *var_ptr=var;

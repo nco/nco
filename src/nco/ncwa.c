@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.74 2002-04-19 05:55:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.75 2002-05-05 20:42:23 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.74 2002-04-19 05:55:25 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.74 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.75 2002-05-05 20:42:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.75 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -418,8 +418,8 @@ main(int argc,char **argv)
   for(idx=0;idx<nbr_xtr;idx++){
     var[idx]=var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dim,nbr_dmn_xtr);
     var_out[idx]=var_dpl(var[idx]);
-    (void)var_xrf(var[idx],var_out[idx]);
-    (void)var_dmn_xrf(var_out[idx]);
+    (void)nco_xrf_var(var[idx],var_out[idx]);
+    (void)nco_xrf_dmn(var_out[idx]);
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.52 2002-05-02 06:08:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.53 2002-05-05 20:42:22 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -974,7 +974,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
     } /* end else */
     if(CONFORMABLE && DO_CONFORM){
       var_lsr_out=var_dpl(var_lsr);
-      (void)var_xrf(var_lsr,var_lsr_out);
+      (void)nco_xrf_var(var_lsr,var_lsr_out);
     } /* end if */
   } /* end if */
 
@@ -1016,7 +1016,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
 
     /* Copy main attributes of greater variable into lesser variable */
     var_lsr_out=var_dpl(var_gtr);
-    (void)var_xrf(var_lsr,var_lsr_out);
+    (void)nco_xrf_var(var_lsr,var_lsr_out);
 
     /* Modify a few elements of lesser variable array */
     var_lsr_out->nm=var_lsr->nm;
