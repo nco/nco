@@ -667,9 +667,8 @@ $expected= 0;
 ####################
 sub initialize
 {
-  @all_operators = qw(ncap ncbo ncflint ncea ncecat ncks ncra ncrename ncwa);
-#if (scalar @ARGV > 0) 
-if ($#ARGV > 0) 
+  @all_operators = qw(ncap ncbo ncflint ncea ncecat ncks ncra ncrcat ncrename ncwa);
+if (scalar @ARGV > 0) 
 {
   @operators=@ARGV;
 } else {
