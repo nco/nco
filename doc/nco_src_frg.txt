@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.24 2001-05-09 05:57:05 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.25 2001-09-11 05:37:11 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -81,4 +81,56 @@ http://lists.sourceforge.net/mailman/options/nco-announce/zender@uci.edu
 List administration:
 http://lists.sourceforge.net/mailman/admin/nco-announce
 
+Contributors with active projects:
+Name, E-mail, Sourceforge name, Project
+Henry Butowsky <thin@thin.screaming.net> butowksy ncap
+James Watson <jwatson@csee.uq.edu.au> autoconf
+gautam <gautamdhar@hotmail.com> getopt?
+Jason Dale Robey <jrobey@users.sourceforge.net> getopt? (Bad email,
+never contacted)
+S. Srinivasan <s.srinivasan@ematic.com>
+Gian Luca Bignardi <pac77@libero.it> GTK+ GUI wrapper?
+Jeff Turner <jturner@alum.rpi.edu> getopt, _FillValue?
 
+How to help develop NCO:
+
+The best way to start contributing is to checkout the software from 
+sourceforge using CVS repository. If you have never used CVS before,
+you may just want to download the tar.gz or the RPM file, whichever
+method you prefer. Eventually, however, you must learn to use CVS so
+that you can make serious code changes and keep up with the
+development branch. NCO-specific instructions on how to check out the
+code are posted to the Developer's forum on Sourceforge 
+http://sourceforge.net/forum/forum.php?forum_id=9831 
+in the message dated June 21, 2000.
+
+Once you have NCO, build it! If you must make non-trivial
+modifications to the Makefile in order to build on your platform,
+then please submit those modifications as your first patch.
+Once you have built NCO, peruse the user's guide and try a few
+examples. 
+
+Read the contents of the Developer's forum! Subscribe to all the NCO
+forums so that you are automatically CC'd when new messages arrive.
+Post your questions and progress and ideas to the developer's forum
+(frequently!) so that others may learn about your work. The
+Developer's forum will help prevent duplication of effort and is
+the key communication point for everyone involved in the project.
+
+Once you have done all this, you are ready to choose an item on the
+TODO list to tackle. For C hackers, I suggest you dive right in to the
+source code. Yes, the source code in nc_utl.c and csz.c should be
+better organized and split into smaller files. If hacking 5000 line 
+files which contains 50 C functions each is to intimidating, then
+consider re-organizing the files themselves. This is TODO item #181.
+In an open source project, YOU decide what needs to be done.
+
+There are also plenty of non-C ways to contribute, if
+that's more your bag (HTML, Make, RPM). The important thing is to
+start learning NCO so you can decide for yourself how best
+you can contribute. Then, as mentioned above, post your questions
+and progress to the developer's forum where different implementation
+strategies and technical details are to be discussed. 
+
+Thanks,
+Charlie
