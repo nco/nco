@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.8 2002-05-12 06:12:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.9 2002-06-05 22:39:27 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -524,19 +524,19 @@ fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
   /* Make sure we have read permission on local file */
   if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
-    /* Attempt ncopen() on HTTP protocol files. Success means DODS can find file. */
+    /* Attempt nc_open() on HTTP protocol files. Success means DODS found file. */
     int in_id; /* [id] Temporary input file ID */
     
-    (void)nco_open(fl_nm_lcl,NC_NOWRITE,&in_id);
+    rcd=nco_open(fl_nm_lcl,NC_NOWRITE,&in_id);
     
-    if(rcd < 0){ /* fxm: Should compare to NC_NOERR but that would mean needing to #include netcdf.h which I want to avoid */
+    if(rcd != NC_NOERR){
       (void)fprintf(stderr,"%s: ERROR Attempted HTTP access protocol failed: DODS server is not responding, %s does not exist, or user does not have read permission for it\n",prg_nm_get(),fl_nm_lcl);
       nco_exit(EXIT_FAILURE);
     } /* end if err */
 
    }else{
      if((fp_in=fopen(fl_nm_lcl,"r")) == NULL){
-       (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s\n",prg_nm_get(),fl_nm_lcl);
+       (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s, or file does not exist\n",prg_nm_get(),fl_nm_lcl);
        nco_exit(EXIT_FAILURE);
      }else{
        (void)fclose(fp_in);

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.145 2002-06-05 19:06:32 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.146 2002-06-05 22:39:26 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -221,6 +221,7 @@ ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 227. Document binary write ability and -B switch for ncks
 228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
 229. Fix AIX -qwarn64 messages from converting long to size_t, etc.
+230. Create Make argument to specify 32/64 bit mode
 ************************************************************************
 End NCO Wish list
 ************************************************************************
