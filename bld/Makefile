@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.23 1999-04-27 16:24:27 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.24 1999-04-27 16:30:11 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -312,8 +312,8 @@ NETCDF_INC := /usr/local/include
 NETCDF_LIB := /usr/local/lib64/r4i4
 C++ := c++
 CC := cc
-# spoof SGI64
-CPPFLAGS := -DSGI64 $(MY_INC_DIR) -I$(NETCDF_INC)
+# spoof SGI64, force C_ONLY
+CPPFLAGS := -DSGI64 -DC_ONLY $(MY_INC_DIR) -I$(NETCDF_INC)
 FC := f77
 LD := ld
 LDFLAGS := -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
