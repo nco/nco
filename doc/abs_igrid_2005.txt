@@ -36,7 +36,9 @@ distributed netCDF data in a network-transparent fashion.
 Using grid services in conjunction with the high-bandwidth OptIPuter,
 we will demonstrate SDO operations which dramatically reduce barriers
 to analyzing distributed geophysical data.
-Intercomparison of two future climate simulations stored in different
+In particular, we will demonstrate rapid and flexible intercomparison
+and analysis of two future climate simulations stored on
+geographically disparate clusters connected by the OptIPuter.
 
       b.  URL for further project documentation.
 
@@ -45,15 +47,21 @@ http://nco.sf.net#prp_sei
       c.  A graphical image (not logo) of your application (JPEG or
       TIFF) is encouraged. 
 
-/data/zender/fgr/esmf/ipcc_ccsm_ddra.pdf
-/data/zender/fgr/esmf/ipcc_ccsm_flow.pdf
+http://dust.ess.uci.edu/esmf/ipcc_ccsm_ddra.pdf
 
       d.  How does your project utilize advanced networking? Why is
       this important? 
 
 The Scientific Data Operator (SDO) project currently utilizes advanced 
 networking primarily by transferring large amounts of data from remote
-servers to local clients for analysis.
+servers to local clients for analysis. 
+Without high-bandwidth networks, data distributed at geographically
+disparate locations are never intercompared and so expensive numerical 
+experiments (e.g., climate change simulations) are usually not fully
+exploited, or worse, are re-run multiple times so that the data can be
+analyzed locally.
+SDO reduces distributed data analysis barriers, data storage
+redundancy, and time-to-discovery.
 
 5.  Hardware/Software requirements: Do you need to place any special
 hardware (e.g., disk stores or clusters) at GLIF sites? 
@@ -65,7 +73,7 @@ you need on these machines?
 
 While the project could pre-store and access data at GLIF sites in
 other countries, the combined software/hardware/account requirements
-for new remote machines would overwhelm our group. Next year maybe.
+for new remote machines would overwhelm our group this year. 
 We would prefer to demonstrate the project using data stored on
 reliable networks and locations, such as UCI/UCSD, ESG, and NCAR. 
 All required accounts and software exist at these locations.
@@ -81,7 +89,10 @@ Earth System Grid, UCSD<->UCI OptIPuter, NCAR
 
 7.  Network usage: How much bandwidth does your application use?
  
-fxm good question
+The application utilizes high bandwidth between the computational
+clusters. However, the demonstration will like just show a text-based 
+metric of the remote application progress and so the bandwidth needed
+to the conference hall is minimal. 
 
 (B) SYMPOSIUM PRESENTATIONS (Organizer: Tom DeFanti)
  
