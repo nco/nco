@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.88 2004-06-14 21:31:30 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.89 2004-06-15 15:59:47 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.5 are ready. 
 
@@ -8,19 +8,19 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 This release implements a new way to specify output files to NCO.
 Output files may now be specified with -o (or --fl_out or --output),
 or as last positional argument (the traditional behavior). 
-This facilitate processing of large numbers of files by multi-file
-operators (ncra, ncrcat, ncecat) by using the xargs command.
+This facilitates processing large numbers of files with multi-file
+operators (ncra, ncrcat, ncecat) using the xargs command.
 Using xargs or perl to handle these situations is now documented in
 
 http://nco.sf.net/nco.html#lrg
 
-This new -o fl_out behavior supercedes works on all operators.
-ncwa was the only operator that used -o for anything previsously.
+The new -o fl_out behavior works on all operators.
+ncwa was the only operator that previously used -o for anything.
 ncwa used -o switch for passing relational operator types for masking.
-There single-letter option with the best mnemonic is -t for "truth condition".
-The preferred switches are now --truth_condition or --msk_cmp_typ for
-"mask comparison type". 
-The old long options synonyms --cmp, --compare, and --op_cmp were
+The new ncwa single-letter option for this is -t for "truth condition".
+The preferred ncwa switches are now --truth_condition or --msk_cmp_typ
+for "mask comparison type". 
+The old ncwa long options synonyms --cmp, --compare, and --op_cmp were
 removed to reduce the burgeoning number of synonyms.
 The other ncwa -o long-option synonym, --op_rlt, works as usual.
 Please modify ncwa scripts accordingly.
