@@ -1,5 +1,7 @@
 Wed Jan  6 17:55:26 1999  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
+	* Tagged and released this as nco1_1_18
+
 	* Added kludge to ncwa to workaround bug in var_conform_dim()
 	where var_conform_dim() sometimes allows the returned weight 
 	not to have same size tally array as the template variable. This
