@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.15 2000-04-05 21:41:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.16 2000-04-24 06:37:44 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.15 2000-04-05 21:41:58 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.15 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.16 2000-04-24 06:37:44 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.16 $";
   
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dmn_rnm_lst=NULL_CEWI;
@@ -98,8 +98,8 @@ main(int argc,char **argv)
   int nc_id;  
   int nbr_abb_arg=0;
   int nbr_var_rnm=0; /* Option v. NB: nbr_var_rnm gets incremented */
-  int nbr_att_rnm=0; /* Option a. NB: nbr_var_rnm gets incremented */
-  int nbr_dmn_rnm=0; /* Option d. NB: nbr_var_rnm gets incremented */
+  int nbr_att_rnm=0; /* Option a. NB: nbr_att_rnm gets incremented */
+  int nbr_dmn_rnm=0; /* Option d. NB: nbr_dmn_rnm gets incremented */
   int nbr_fl=0;
   int opt;
   
