@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.27 2004-09-03 20:25:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.28 2004-09-03 20:56:31 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -377,12 +377,13 @@ nco_var_pck /* [fnc] Pack variable in memory */
       /* Contents of max_var_dpl are actually scale_factor */
       (void)val_cnf_typ((nc_type)NC_DOUBLE,max_var_dpl->val,var->type,var->scl_fct);
     }else{
-      /* Variable is a constant */
+      /* Variable is constant, i.e., equal values everywhere */
       zero_var=scl_mk_var(zero_unn,var->type); /* [sct] NCO variable for value 0.0 */
       /* Set scale_factor to 0.0 */
       (void)memcpy(var->scl_fct.vp,zero_var->val.vp,nco_typ_lng(var->type));
       if(zero_var != NULL) zero_var=nco_var_free(zero_var);
-      /* Set add_offset to variable value */
+      /* Set add_offset to first variable value 
+	 Variable is constant everywhere so particular value copied is unimportant */
       (void)memcpy(var->add_fst.vp,var->val.vp,nco_typ_lng(var->type));
     } /* end else */
 
@@ -403,6 +404,11 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
     if(scl_fct_dbl != 0.0 && scl_fct_dbl != 1.0) var->has_scl_fct=True; /* [flg] Valid scale_factor attribute exists */
     if(add_fst_dbl != 0.0) var->has_add_fst=True; /* [flg] Valid add_offset attribute exists */
+
+    /* However, must create either scale_factor or add_offset
+       Otherwise, routine fails to pack field uniformly equal to zero (0.0)
+       In zero corner case, create add_offset (avoids division by zero problems) */
+    if(scl_fct_dbl == 0.0 && add_fst_dbl == 0.0) var->has_add_fst=True; 
 
   } /* endif True */
 
