@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.51 2003-03-03 02:29:52 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.52 2003-03-10 04:34:23 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -175,10 +175,12 @@ tar cvzf ./nco/nco.tar.gz ./nco/*
 cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-2.7.3
 /bin/rm nco.tar.gz;tar cvzf nco-2.7.3.tar.gz ./nco-2.7.3/*
 cd ~/nco/nco-2.7.3
-dh_make -e zender@uci.edu -f ../nco-2.7.3.tar.gz # Debian package
+dh_make -e zender@uci.edu -f ../nco-2.7.3.tar.gz # Create Debian package template
 ... # Edit files in /nco/debian
-# Create Debian tree from nco_2.2.0-3.dsc nco_2.2.0-3.orig.tar.gz, nco_2.2.0-3.diff.gz 
 
+dpkg-buildpackage -rfakeroot # Build .deb package
+
+# Create Debian tree from nco_2.2.0-3.dsc nco_2.2.0-3.orig.tar.gz, nco_2.2.0-3.diff.gz 
 dpkg-source -x nco_2.2.0-3.dsc
 # Previous dpkg-source command is functionally equivalent to following
 # Apply Debian diff to original source to produce Debian source

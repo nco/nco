@@ -2,6 +2,7 @@
 # -*- makefile -*-
 # debian/rules file - for nco
 # Copyright 1999-2002 by Brian Mays
+# Copyright 2003 by Charlie Zender
 # Patterned after the hello package by Ian Jackson.
 
 package = nco
@@ -76,7 +77,7 @@ endif
 	dpkg --build debian/tmp ..
 
 define checkdir
-	test -f src/nco/nc.h -a -f debian/rules
+	test -f src/nco/nco.h -a -f debian/rules
 endef
 
 # Below here is fairly generic really

@@ -1,11 +1,13 @@
 This is the Debian GNU/Linux prepackaged version of netCDF Operators
 (NCO).
 
-This package was put together by Brian Mays <brian@debian.org> from
-sources obtained from:
+This package was originally put together by Brian Mays <brian@debian.org>
+from software obtained from
  ftp://ftp.cgd.ucar.edu/pub/zender/nco/
+Beginning March, 2003, Charlie Zender attempted to merge Debian changes
+into upstream source in SourceForge CVS repository
 More information can be found at:
- http://www.cgd.ucar.edu/cms/nco
+ http://nco.sourceforge.net
 Modifications of NCO package for Debian GNU/Linux Copyright (C)
 1999-2002 Brian Mays and are released under the GPL (on Debian systems
 see "/usr/share/common-licenses/GPL").

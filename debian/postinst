@@ -3,7 +3,7 @@
 if [ "$1" = configure ]; then
     install-info --quiet \
       --section "netCDF" "netCDF" \
-      --description="NetCDF Operator suite." \
+      --description="netCDF Operator suite." \
       /usr/share/info/nco.info
     pkg=nco
     if test -d /usr/doc -a ! -e /usr/doc/$pkg -a -d /usr/share/doc/$pkg; then

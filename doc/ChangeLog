@@ -1,3 +1,7 @@
+2003-03-09  Charlie Zender  <zender@uci.edu>
+
+	* Modifying debian/* files to build with 2.7.x as zender
+
 2003-03-07  Charlie Zender  <zender@uci.edu>
 
 	* Remove -ansi flag from gcc builds because it is (apparently)
