@@ -1,5 +1,7 @@
 2000-05-10  Charlie Zender  <zender@uci.edu>
 
+	* Tagged and released this as nco1_1_47
+
 	* Finished testing of feature allowing skipping of initial files
 	when lmt_typ = dim_idx. Seems to work. Now dim_idx and crd_val
 	hyperslabs may have arbitrary numbers of superfluous files at 

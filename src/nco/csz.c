@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.43 2000-05-10 07:15:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.44 2000-05-10 17:16:37 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
 
@@ -90,7 +90,7 @@ char *
 nmn_get()
 { 
   /* Purpose: Return mnemonic that describes current NCO version */
-  return "Sinatra";
+  return "Whistler";
 } /* end nmn_get() */
 
 char *
