@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.230 2003-08-14 04:01:47 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.231 2003-08-16 00:55:28 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -202,7 +202,7 @@ Command executes but in.hdf is full of screwy values
 222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
 224. Copy var_nm from command line so program, not system, owns memory. Then modify nco_var_free() to release var_nm structure member, and nco_var_dpl() to copy it. Same for dimension names and nco_dmn_dpl()
 225. Pass aed by reference in nco_aed_prc()
-226. See if xrf in nco_var_cnf_dmn() is really necessary, if not, remove it and make wgt arg const var_sct * const
+226. Is xrf in nco_var_cnf_dmn() is really necessary? If not, remove it and make wgt arg const var_sct * const
 228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
 230. Keep track of type of missing_value field in variable structure for reasons described in nco_cnf_var_typ()/nco_cnv_mss_val_typ()
 232. Warn when arithmetic operators encounter packed variables?
@@ -214,11 +214,9 @@ Command executes but in.hdf is full of screwy values
 244. Get builds working on testdrive.hp.com
 245. Eliminate all instances of passing naked constants
 246. Deprecate USE_FORTRAN_ARITHMETIC from Makefile
-247. Automate .deb builds
 250. ncks -s should refuse to print strings formatted with %s unless they contain NUL-terminator. This will avoid segfaults like
 ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 251. Does ncks -B correctly write packed variables in binary format?
-253. Sift through numerous files in ~/nco/nco-2.7.3/debian, edit important ones
 255. Desktop icon for NCO
 256. Turn udunits into .deb
 257. Put hybrid_sigma_pressure etc. definitions into in.cdl
@@ -230,10 +228,11 @@ ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 ncap: WARNING not searching for /in.nc on remote filesystem, using local file n.nc instead
 nco_err_exit(): ERROR nco_create
 Permission denied
-265. Promote before operations using nco_typ_cnv_rth() in ncbo
-266. Finish ncbo.1 manpage
-268. Have ncbo use ncap var_cnf_dmn() technique so fl_1 fl_2 broadcast interchangeably
+265. ncbo: Promote before operations using nco_typ_cnv_rth() in ncbo
+266. ncbo: Finish ncbo.1 manpage
+268. ncbo: use ncap var_cnf_dmn() technique so fl_1 fl_2 broadcast interchangeably
 269. SGI autotools ncap build fails because HAVE_GETOPT_H gets passed even though getopt_long struct tokens not defined
+270. Automate uploading of tagged .deb builds to ftp://ftp.debian.org
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.170 2003-08-04 16:57:30 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.171 2003-08-16 00:55:28 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -79,11 +79,11 @@ Octave TeXInfo manual is a good example of clean TeXInfo structure
 @setfilename nco.info
 
 @c Define edition, date, ...
-@set nco-edition 2.8.0
-@set doc-edition 2.8.0
+@set nco-edition 2.8.1
+@set doc-edition 2.8.1
 @set copyright-years 1995--2003
 @set update-year 2003
-@set update-date 3 August 2003
+@set update-date 15 August 2003
 @set update-month August 2003
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -1474,6 +1474,7 @@ name that most suits their taste.
 @section Specifying input files
 @cindex globbing
 @cindex regular expressions
+@cindex wildcards
 @cindex @code{NINTAP}
 @cindex Processor, @acronym{CCM}
 @cindex @acronym{CCM} Processor
@@ -1827,20 +1828,55 @@ option, e.g., @samp{-v time,lat,lon}.
 Not using the @samp{-v} option is equivalent to specifying all
 variables.  
 The @samp{-x} option causes the list of variables specified with
-@samp{-v} to be excluded rather than extracted.
+@samp{-v} to be @emph{excluded} rather than @emph{extracted}.
 Thus @samp{-x} saves typing when you only want to extract fewer than
 half of the variables in a file.
 @cindex memory requirements
-Remember, if you are stretching the limits of your system's memory by
-averaging or concatenating large files, then the easiest solution is
-often to use the @samp{-v} option to retain only the variables you
+Remember, if averaging or concatenating large files stresses your
+systems memory or disk resources, then the easiest solution is often to
+use the @samp{-v} option to retain only the variables you 
 really need (@pxref{Memory usage}).
 Note that, due to its special capabilities, @code{ncap} interprets
-these switches differently
+the @samp{-v} switch differently
 (@pxref{ncap netCDF Arithmetic Processor}).
 For @code{ncap}, the @samp{-v} switch takes no arguments and indicates
 that @emph{only} user-defined variables should be output.
-@code{ncap} does not accept or understand the @var{-x} switch.
+@code{ncap} neither accepts nor understands the @var{-x} switch.
+
+@cindex regular expressions
+@cindex regex
+@cindex wildcards
+As of @acronym{NCO} 2.8.1 (August, 2003), variable name arguments
+of the @samp{-v} switch may contain standard regular expressions.
+For example, @samp{-v 'DSTQ??'} selects all six-letter variables 
+whose first four letters are @code{DSTQ}.
+This capability is called @dfn{wildcarding}, and is very useful at
+sub-setting large data files.
+Because of its wide availability, @acronym{NCO} uses the @acronym{POSIX} 
+regular expression library @code{regex}.  
+Regular expressions of arbitary complexity may be used.
+Since netCDF variable names are relatively simple constructs, only a 
+few varieties of variable wildcards are likely to be useful.
+@example
+ncks -v 'Q*' in.nc out.nc # Select all variables starting with Q
+ncks -v 'Q??' in.nc out.nc # Select Q01--Q99, QAA--QZZ
+ncks -v 'Q[0-9][0-9]' in.nc out.nc # Select Q01--Q99
+@end example
+
+@cindex globbing
+@cindex shell
+@cindex quotes
+One must be careful to protect any special characters in the regular
+expression specification from being interpreted (globbed) by the shell.
+This is accomplish by enclosing special characters within single or
+double quotes
+@example
+ncra -v Q?? in.nc out.nc   # Error: Shell attempts to glob wildcards
+ncra -v 'Q??' in.nc out.nc # Correct: NCO interprets wildcards
+ncra -v 'Q??' in*.nc out.nc
+@end example
+The final example shows that commands may use a combination of variable
+wildcarding and shell filename expansion (globbing).
 
 @node Coordinate variables, Fortran indexing, Variable subsetting, Common features
 @section Including/Excluding coordinate variables

@@ -1,30 +1,18 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.24 2003-08-13 21:31:36 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.25 2003-08-16 00:55:28 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.8.0 are ready. 
+The netCDF operators NCO version 2.8.1 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-There are two notable changes since version 2.7.4:
+There one notable changes since version 2.8.0:
 
-1. The new netCDF Binary Operator (ncbo) does file addition,
-subtraction, multiplication, and division. ncbo obsoletes ncdiff.
-ncdiff is now installed by default as a symobolic link to the ncbo 
-executable (in the same way that ncea and ncrcat are links to ncra). 
-User's who continue to use ncdiff should notice no difference.
-'ncdiff' is identical to 'ncbo --op_typ=sub'.
-Please read the User's guide for a full explanation and a description
-of the shortcuts available to mimic the old behavior (e.g., using
-'ncadd' instead of 'ncbo --op_typ=add').
-
-2. Debian integration: Thanks to Rorik Peterson, NCO is now fully
-Debianized. This means that Debian packages may be built from the
-plain NCO source tree. The homepage contains links to these .deb
-packages for 2.8.0. In the near future, we will upload each new tagged 
-version directly into the Debian Sid (unstable) distribution at
-ftp://ftp.debian.org/debian. At that time, Sid user's will have
-a current NCO after each "apt-get dist-upgrade". These packages
-will eventually migrate into Sarge and Woody in a more timely manner.
+1. Henry Butowsky implemented the capability of specifying variable
+   names to all operators using regular expressions. For example,
+   ncks -v 'DSTQ??' selects all six-letter variables whose first four
+   letters are DSTQ. We call this capability wildcarding, and it is
+   very useful for sub-setting large data files such as those produced
+   by chemical transport models.
 
 Enjoy,
 Charlie
