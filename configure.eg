@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.48 2003-02-24 06:13:35 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.49 2003-05-27 17:18:15 jedwards Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -8,7 +8,7 @@ NCO successfully builds (e.g., with bld/Makefile) and runs on virtually all OSs.
 This table tracks how well NCO _autobuilds_ (./configure's) on various OSs.
 GNU Autotools seem to require a lot of hand tuning on non-LINUX platforms...
 Architecture	ABI32	ABI64	DODS	I18N	OpenMP	nco_c++	check
-AIX		Y	N(2)				N(5)	
+AIX		Y	Y                               Y
 ALPHA
 CRAY
 FREEBSD		N(10)
@@ -30,9 +30,7 @@ WIN32
 Key: Y: feature works, N feature broken, N/A not-applicable, blank: not tested (send us your results!)
 -----------------------------------------------------------------------
 Table footnotes:
-02. After much manual environment variable passing, programs link but core dump
 03. Does not link tst.o because missing valarray= symbol
-05. xlC fails valarray test, but xlC does support valarray. Hmm.
 06. CC unable to link tst.o because -LANG:std flag not passed to crucial link CC
 07. Error making ncap_yacc.c
 08. I can't remember
@@ -49,69 +47,12 @@ Recommended/current custom ./configure invocation, alphabetized by pvmgetarch:
 
 ************************************************************************
 Start AIX
-Status: Link problems for ABI64, libtool breaks.
-Builds after many -X 64 tweaks to environment, but executables all core dump.
-Try using --no_shared_libs...
+status: Appears to work
 ************************************************************************
-zender@bb0001en:/fs/cgd/home0/zender/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
-AIX
-AIX bb0001en 3 4 000117924C00
-
-For ABI=64:
-Notes: Setting CC='xlc -q64' and CFLAGS='-q64' is redundant except for
-shared object link command which uses $CC not $CC $LDFLAGS or $CC $CFLAGS.
-Also, AR='ar -X 64' and NM='nm -B -X 64' are necessary.
-export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-AR='ar -X 64' CC='xlc -q64' CFLAGS='-q64' CXX='xlC' CXXFLAGS='-q64' LDFLAGS='-q64' NM='nm -B -X 64' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log config.log.${GNU_TRP}.foo
-make clean;make > make.${GNU_TRP}.foo 2>&1
-scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/ftp/pub/zender/nco/rgr
-
-# Blue Horizon
-export GNU_TRP=`~/nco/autobld/config.guess`
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-AR='ar -X 64' CC='xlc -q64' CFLAGS='-q64' CXX='xlC' CXXFLAGS='-q64' LDFLAGS='-q64' NM='nm -B -X 64' NETCDF_INC='/usr/local/apps/netcdf-3.5.0/include' NETCDF_LIB='/usr/local/apps/netcdf-3.5.0/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log config.log.${GNU_TRP}.foo
-make clean;make > make.${GNU_TRP}.foo 2>&1
-scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo zender@dust.ess.uci.edu:/var/ftp/pub/zender/nco/rgr
-
-For ABI=32:
-cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='xlc' CXX='xlC' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
-/bin/cp -f config.log config.log.${GNU_TRP}.foo
-make clean;make > make.${GNU_TRP}.foo 2>&1
-scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/ftp/pub/zender/nco/rgr
-
-Old build examples:
-For ABI=32:
-xlc  -DAIX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='bb0001en' -DUSER='zender' -I./ -I../src/nco -I/usr/local/include -U_OPENMP -qmaxmem=8192 -qlanglvl=extended -O -c ../src/nco/nco_att_utl.c -o /home/babyblue/zender/obj/AIX/nco_att_utl.o
-For ABI=64:
-xlc  -DAIX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='bb0001en' -DUSER='zender' -I./ -I../src/nco -I/usr/local/include -U_OPENMP -qmaxmem=8192 -qlanglvl=extended -O -q64 -c ../src/nco/nco_att_utl.c -o /home/babyblue/zender/obj/AIX/nco_att_utl.o
-ar -X 64 rv /home/babyblue/zender/lib/AIX/libnco.a /home/babyblue/zender/obj/AIX/nco_var_lst.o
-xlc -o /home/babyblue/zender/bin/AIX/ncflint /home/babyblue/zender/obj/AIX/ncflint.o -L/home/babyblue/zender/lib/AIX -L/usr/local/lib64/r4i4 -lnco -lnetcdf -lm -lC -q64
-
-Status:
-When ABI=64, nm utility requires "-X 64" argument, e.g., nm -X 64
-libtool now breaks because nm -B command produces all errors, which
-are piped into nothing but another pipe and then sed. The emptiness
-after the first pipe is the value of \$global_symbol_pipe
-
-generating symbol list for `libnco.la'
-/bin/nm -B  nco_att_utl.o nco_bnr.o nco_cln_utl.o nco_cnf_dmn.o nco_cnf_typ.o nc
-o_cnv_arm.o nco_cnv_csm.o nco_ctl.o nco_dbg.o nco_dmn_utl.o nco_fl_utl.o nco_lmt
-.o nco_lst_utl.o nco_mmr.o nco_mss_val.o nco_netcdf.o nco_omp.o nco_pck.o nco_pr
-n.o nco_rec_var.o nco_rth_utl.o nco_scl_utl.o nco_scm.o nco_sng_utl.o nco_var_av
-g.o nco_var_lst.o nco_var_rth.o nco_var_scv.o nco_var_utl.o   |  | sed 's/.* //'
- | sort | uniq > .libs/libnco.exp
-../../libtool[3162]: syntax error at line 1 : `|' unexpected
-make[3]: *** [libnco.la] Error 2
-make[3]: Leaving directory `/fs/cgd/home0/zender/nco/src/nco'
-make[2]: *** [all-recursive] Error 1
-make[2]: Leaving directory `/fs/cgd/home0/zender/nco/src'
-make[1]: *** [all-recursive] Error 1
-make[1]: Leaving directory `/fs/cgd/home0/zender/nco'
-make: *** [all-recursive-am] Error 2
+Updated 5/27/2003   Jim Edwards   
+AIX 5.1.03,  xlc 6.0, xlC_r 6.0 
+Set LDFLAGS=-brtl before running configure.  Use the environment variable 
+OBJECT_MODE=64 to build ABI64.  Compiler warnings about incorrect file suffix and duplicate symbols may be safely ignored.
 ************************************************************************
 End AIX
 ************************************************************************
