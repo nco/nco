@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.112 2002-01-27 06:29:00 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.113 2002-01-27 06:38:15 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -556,7 +556,7 @@ ifeq (${PVM_ARCH},SGI6)
 # SGI6
 GCC_ABI_FLG := -mabi=32
 GCC_LDFLAGS_SZ_SPC := ${GCC_ABI_FLG} -mips3 
-SGI_ABI_FLG := -n32 -mips3
+SGI_ABI_FLG := -n32 -mips3 ${OMP_FLG}
 # endif SGI6
 else
 # SGI64, SGIMP64
