@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.106 2005-02-11 02:33:03 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.107 2005-02-25 22:14:46 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -120,6 +120,7 @@ AC_CXX_HAVE_VALARRAY
 # Arrange for large file support (LFS)
 AC_SYS_LARGEFILE
 
+
 # Begin Mandatory Link Test with libnetcdf.a
 # Make precious variables for ./configure --help
 AC_ARG_VAR(NETCDF_INC,Location of netCDF headers (compile-time))
@@ -221,7 +222,7 @@ AC_CHECK_LIB([resolv],[res_init])
 AC_CHECK_LIB([socket],[main])
 AC_CHECK_LIB([thread],[main])
 #AC_CHECK_LIB([nsl],[main])
-AC_CHECK_LIB([nco],[nco_open])
+AC_CHECK_LIB([nco],[nco_open],LIBS="-lcurl  ${LIBS}")
 # End Library checks
 
 # Begin DODS support
@@ -244,8 +245,14 @@ if test "${enable_dods}" != 'no'; then
     AC_CHECK_LIB([z],[inflate],,enable_dods=no)
     AC_CHECK_LIB([dl],[dlopen],,enable_dods=no)
     AC_CHECK_LIB([pthread],[pthread_once],,enable_dods=no)
-    AC_CHECK_LIB([curl],[curl_easy_init],,enable_dods=no)
+    AC_CHECK_LIB(curl,curl_easy_init,,enable_dods=no)
     AC_CHECK_LIB([xml2],[xmlParseDocument],,enable_dods=no)
+# PUSH & POP to allow nc-dods to resolve libdap++ symbols    
+    AC_LANG_PUSH([C++])
+    LIBS="-ldap++ -lnc-dods -ldap++ ${LIBS}"
+    AC_CHECK_LIB([nc-dods],[nc_open],,enable_dods=no)
+    AC_LANG_POP
+
 # If all libraries were present, enable_dods=yes
 # If not, restore LIBS to previous value
     nco_old_LIBS="${LIBS}"
@@ -254,7 +261,7 @@ if test "${enable_dods}" != 'no'; then
     LIBS="-lstdc++ ${LIBS}"
 # Duplicate library links required to resolve dependencies when -lnc-dods is used
     LIBS="-ldap++ -lnc-dods -ldap++ ${LIBS}"
-    AC_CHECK_LIB([nc-dods],[nc_open],,enable_dods=no)
+#    AC_CHECK_LIB([nc-dods],[nc_open],,enable_dods=no)
     if test "${enable_dods}" = 'no'; then
 	AC_MSG_WARN([DODS support disabled (missing libraries)])
 	LIBS="${nco_old_LIBS}"
