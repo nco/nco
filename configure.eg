@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.57 2003-08-06 22:44:50 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.58 2003-08-13 20:09:53 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -183,12 +183,24 @@ zender@dust:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUX
 Linux dust.ess.uci.edu 2.4.19-pre8 #1 SMP Wed May 8 10:16:29 PDT 2002 i686 unknown
 
-gcc/g++:
+gcc/g++ Developers use this to verify auto-tools work correctly:
+(requires complete, up-to-date, GNU development toolchain):
+export GNU_TRP=`~/nco/autobld/config.guess`
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+autoconf
+automake --foreign
+./configure --enable-maintainer-mode --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+/bin/cp -f libtool libtool.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
+
+gcc/g++ Regular users, sysadmins use this to install:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ./configure  --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
-# Comment out maintainer mode until it works reliably
-# ./configure --enable-maintainer-mode --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
@@ -197,7 +209,6 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo ma
 gcc/g++ DODS:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-
 LDFLAGS=-L/usr/local/DODS/lib NETCDF_INC=/usr/local/DODS/include NETCDF_LIB=/usr/local/DODS/lib ./configure --enable-dods --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1

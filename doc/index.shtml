@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.145 2003-08-12 20:28:48 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.146 2003-08-13 20:09:54 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -311,16 +311,29 @@ Tarballs are usually up-to-date, but the binaries (e.g., RPM, .deb)
 tend to lag the current distribution by many months, if not years: 
 <ul>
 <li>Source and documentation in tarball format: 
-<a href="http://dust.ess.uci.edu/nco/nco.tar.gz">nco.tar.gz</a> (675 KB compressed tar-file)</li>
+<a href="http://dust.ess.uci.edu/nco/nco.tar.gz">nco.tar.gz</a> (<!--#fsize file="nco.tar.gz"--> compressed tar-file)</li>
 <!-- 
 <a href="http://prdownloads.sourceforge.net/nco/nco-2.2.0.tar.gz">nco-2.2.0.tar.gz</a> (901 Kb compressed tar-file)</li>
 -->
-<li>Source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="http://prdownloads.sourceforge.net/nco/nco-2.0.0-1.src.rpm">nco-2.0.0-1.src.rpm</a> (1029 Kb SRPM)</li>
 </ul>
 
 <ul>
-<li>GNU/Linux Redhat 7.0-compatible Intel systems, prebuilt binary executable <a href="http://www.rpm.org">RPM</a>: <a href="http://prdownloads.sourceforge.net/nco/nco-2.0.0-1.i386.rpm">nco-2.0.0-1.i386.rpm</a> (588 Kb RPM)</li>
-<li>GNU/Linux Debian-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-1.2.2</a></li>
+<!--
+<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.8.0</a></li>
+-->
+<a href="http://www.debian.org">Debian GNU/Linux</a>-compatible Intel systems: 
+<li><a href="http://dust.ess.uci.edu/nco/src/nco_2.8.0-1.deb">nco_2.8.0-1.deb</a> (<!--#fsize file="src/nco_2.8.0-1.deb"-->): Pre-built executables and libraries, no documentation (install with <tt>apt-get install nco</tt>)</li>
+<li><a href="http://dust.ess.uci.edu/nco/src/nco-doc_2.8.0-1.deb">nco-doc_2.8.0-1_all.deb</a> (<!--#fsize file="src/nco-doc_2.8.0-1_all.deb"-->): Pre-built documentation (install with <tt>apt-get install nco-doc</tt>)</li>
+<li><a href="http://dust.ess.uci.edu/nco/src/nco_2.8.0-1.dsc">nco_2.8.0-1.dsc</a> (<!--#fsize file="src/nco_2.8.0-1.dsc"-->): Description</li>
+<li><a href="http://dust.ess.uci.edu/nco/src/nco_2.8.0-1.tar.gz">nco_2.8.0-1.tar.gz</a> (<!--#fsize file="src/nco_2.8.0-1.tar.gz"-->): Gzipped Source Tarball</li>
+<li><a href="http://dust.ess.uci.edu/nco/src/nco_2.8.0-1.changes">nco_2.8.0-1.changes</a> (<!--#fsize file="src/nco_2.8.0-1.changes"-->): Changes</li>
+</ul>
+
+<ul>
+<a href="www.redhat.com">Redhat 7.0 GNU/Linux</a>-compatible Intel
+systems <a href="http://www.rpm.org">RPMs</a>:
+<li><a href="http://prdownloads.sourceforge.net/nco/nco-2.0.0-1.i386.rpm">nco-2.0.0-1.i386.rpm</a>: Pre-built executable RPM (install with <tt>rpm -i nco</tt>)</li>
+<li><a href="http://prdownloads.sourceforge.net/nco/nco-2.0.0-1.src.rpm">nco-2.0.0-1.src.rpm</a>: Source RPM</li>
 </ul>
 <hr></p>
 

@@ -1,7 +1,15 @@
-2003-08-03  Charlie Zender  <zender@uci.edu>
+2003-08-13  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_8_0
-	Changes since nco-2_7_4: ncbo
+	Changes since nco-2_7_4: ncbo, Debian integration
+
+	* Add Debian package uploads to nco_dst.pl
+
+	* Add Debian packages homepage
+
+	* Add developer autoconf-automake-configure-make example to configure.eg
+
+2003-08-03  Charlie Zender  <zender@uci.edu>
 
 	* Finish first cut at ncbo documentation in nco.texi
 
@@ -13,9 +21,9 @@
 
 	* Correct nco_tst.sh procedure for ncap. 
 
-	* Restore nco_op_avg inadvertently removed from nco_op_typ_get()href="http://www.ess.uci.edu/~CGECR/research2.html"
+	* Restore nco_op_avg inadvertently removed from nco_op_typ_get()
 
-2003-08-01  Charlie Zender  <zender@uci.edu>href="http://www.ess.uci.edu/~CGECR/research2.html"
+2003-08-01  Charlie Zender  <zender@uci.edu>
 
 	* Fix ncbnr case statement and verifiy ncbnr works for +-*/
 
