@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.16 2004-07-26 17:45:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.17 2004-07-27 19:47:31 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -341,13 +341,16 @@ nco_prs_rdr_lst /* [fnc] Convert re-order string list into dimension structure l
  char **dmn_rdr_lst, /* I [sng] Names of dimensions to be re-ordered */
  const int dmn_rdr_nbr) /* I [nbr] Number of dimension structures in re-order list */
 {
-  /* Purpose: Convert re-order string list into dimension structure list */
+  /* Purpose: Convert re-order string list into dimension structure list
+     Check validity of requested dimension and print warnings/errors as necessary */
+
   dmn_sct **dmn_rdr; /* [sct] Dimension structures to be re-ordered */
   int foo;
   /* fxm: TODO nco329 */
   dmn_rdr=dmn_in;
   dmn_rdr_lst=dmn_rdr_lst;
   foo=dmn_rdr_nbr;
+
   return dmn_rdr;
 } /* end nco_prs_rdr_lst() */
 
@@ -355,7 +358,10 @@ var_sct * /* O [sct] Pointer to variable with re-ordered dimensions */
 nco_var_dmn_rdr /* [fnc] Change dimension ordering */
 (var_sct * const var_in, /* I [ptr] Variable whose dimensions to re-order */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_rdr), /* I [sct] List of dimension structures in new order */
- const int dmn_rdr_nbr) /* I [nbr] Number of dimension structures in structure list */
+ const int dmn_rdr_nbr, /* I [nbr] Number of dimension structures in structure list */
+ bool DO_DIMENSIONALITY_ONLY, /* I [flg] Determine and set new dimensionality then return */
+ bool DO_REORDER_ONLY, /* I [flg] Re-order data (dimensionality already set) */
+ bool DO_WHOLE_SHEBANG) /* I [flg] Determine and set new dimensionality then re-order data */
 {
   /* Purpose: Re-order dimensions in a given variable
      dmn_rdr contains is the new order for dimensions
@@ -396,6 +402,7 @@ nco_var_dmn_rdr /* [fnc] Change dimension ordering */
   const char fnc_nm[]="nco_var_dmn_rdr()"; /* [sng] Function name */
   const int dmn_rdr_nil=-1; /* [enm] Input dimension is not in re-order list */
   
+  dmn_sct **dmn_in=NULL; /* [sct] List of dimension structures in input order */
   dmn_sct **dmn_out; /* [sct] List of dimension structures in output order */
   
   int *dmn_id_out; /* [id] Contiguous vector of dimension IDs */
@@ -425,6 +432,10 @@ nco_var_dmn_rdr /* [fnc] Change dimension ordering */
   
   var_sct *var_out=NULL; /* O [sct] Pointer to variable with re-ordered dimensions */
   
+  DO_DIMENSIONALITY_ONLY=DO_DIMENSIONALITY_ONLY; /* [flg] CEWI */
+  DO_REORDER_ONLY=DO_REORDER_ONLY; /* [flg] CEWI */
+  DO_WHOLE_SHEBANG=DO_WHOLE_SHEBANG; /* [flg] CEWI */
+
   /* Initialize variables to reduce indirection */
   /* Number of input and output dimensions are equal for any re-ordering */
   dmn_out_nbr=dmn_in_nbr=var_in->nbr_dim; /* [nbr] Number of dimensions in input variable */
@@ -452,9 +463,6 @@ nco_var_dmn_rdr /* [fnc] Change dimension ordering */
   /* fxm: this will change to 1 dimension when reversing is implemented */
   if(dmn_in_dmn_rdr_shr_nbr <= 1) return var_in;
   
-  /* Create full dmn_out list */
-  dmn_out=(dmn_sct **)nco_malloc(dmn_out_nbr*sizeof(dmn_sct *));
-
   /* Initialize output order to input order */
   for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
     dmn_idx_in_out[dmn_in_idx]=dmn_in_idx;
@@ -475,6 +483,13 @@ nco_var_dmn_rdr /* [fnc] Change dimension ordering */
   for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
     dmn_idx_out_in[dmn_idx_in_out[dmn_in_idx]]=dmn_in_idx;
 
+  /* Create full dmn_out list */
+  dmn_out=(dmn_sct **)nco_malloc(dmn_out_nbr*sizeof(dmn_sct *));
+
+  /* Assign dimension structures to new dimension list in correct order */
+  for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
+    dmn_out[dmn_in_idx]=dmn_in[dmn_idx_in_out[dmn_in_idx]];
+
   if(dbg_lvl_get() == 3){
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
       (void)fprintf(stdout,"%s: DEBUG %s maps dimension %s from %d to %d\n",prg_nm_get(),fnc_nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,dmn_idx_in_out[dmn_in_idx]);
@@ -484,6 +499,11 @@ nco_var_dmn_rdr /* [fnc] Change dimension ordering */
   /* Create output variable structure */
   var_out=nco_var_dpl(var_in); /* O [sct] Pointer to variable with re-ordered dimensions */
   var_sz=var_out->sz;
+
+  /* Replace old with new dimension list then free old list */
+  dmn_in=var_in->dim;
+  var_out->dim=dmn_out;
+  dmn_in=(dmn_sct **)nco_free(dmn_in);
 
   /* Initialize value and tally arrays */
   (void)nco_zero_long(var_sz,var_out->tally);

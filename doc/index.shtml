@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.241 2004-07-19 21:36:17 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.242 2004-07-27 19:47:28 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -529,9 +529,9 @@ and (2)&nbsp;<tt>--enable-optimize-*</tt> is specified to
 <tt>ncap</tt> requires <tt>flex</tt> to build correctly.
 AT&T <tt>lex</tt> will not work because it does not understand
 <tt>EOF</tt> rules that <tt>ncap_lex.l</tt> uses.
-<tt>bison</tt> version 1.29 (the default version on Mac OS X) is buggy
-and does not parse <tt>ncap_yacc.y</tt> correctly; previous and later
-versions of <tt>bison</tt> work correctly.
+<tt>bison</tt> version 1.29 (the default version on Mac OS&nbsp;X) is
+buggy and does not parse <tt>ncap_yacc.y</tt> correctly; previous and
+later versions of <tt>bison</tt> work correctly.
 <tt>bison</tt> version 1.25 will not build <tt>ncap</tt> on Solaris.
 Please upgrade <tt>bison</tt> to the latest version (e.g., 1.875+)
 before reporting <tt>ncap</tt> build problems.
@@ -556,6 +556,15 @@ No other version combination is supported.
 NCO versions 2.8.7+ do not build with autotools under AIX when
 <tt>--enable-optimize-*</tt> is selected.
 The workaround is to not use <tt>--enable-optimize-*</tt>.
+</li>
+
+<a name="bld_osx"></a>
+<li><i>Mac OS&nbsp;X build problems:</i>
+Mac OS&nbsp;X users report success building NCO without patches so
+long as they (1)&nbsp;Install the latest version of <tt>bison</tt>,
+(2)&nbsp;Diable shared libraries and (3)&nbsp;Diable extended regular
+expressions. This is done with 
+<tt>./configure --disable-regex --disable-shared</tt>
 </li>
 
 <a name="bld_slr"></a>

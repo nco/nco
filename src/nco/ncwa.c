@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.132 2004-07-27 06:16:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.133 2004-07-27 19:47:31 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,12 +115,12 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char *msk_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val, op_typ_rlt */
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.132 2004-07-27 06:16:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.132 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.133 2004-07-27 19:47:31 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.133 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
-  dmn_sct **dmn_out;
+  dmn_sct **dmn_out=NULL_CEWI;
   dmn_sct **dmn_avg=NULL_CEWI;
   
   double msk_val=1.0; /* Option M */
@@ -143,7 +143,7 @@ main(int argc,char **argv)
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_dmn_avg=0;
   int nbr_dmn_fl;
-  int nbr_dmn_out;
+  int nbr_dmn_out=0;
   int nbr_dmn_xtr;
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_fl;
@@ -458,13 +458,13 @@ main(int argc,char **argv)
   } /* end if nbr_dmn_avg == 0 */
 
   if(nbr_dmn_avg > 0){
-    /* Form list of reducing dimensions */
-    dmn_avg_lst=nco_dmn_lst_mk(in_id,dmn_avg_lst_in,nbr_dmn_avg);
-
     if(nbr_dmn_avg > nbr_dmn_xtr){
       (void)fprintf(fp_stdout,"%s: ERROR More reducing dimensions than extracted dimensions\n",prg_nm);
       nco_exit(EXIT_FAILURE);
     } /* end if */
+
+    /* Create structured list of reducing dimension names and IDs */
+    dmn_avg_lst=nco_dmn_lst_mk(in_id,dmn_avg_lst_in,nbr_dmn_avg);
 
     /* Form list of reducing dimensions from extracted input dimensions */
     dmn_avg=(dmn_sct **)nco_malloc(nbr_dmn_avg*sizeof(dmn_sct *));
@@ -515,17 +515,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
     } /* end if */
     
-  }else{ /* nbr_dmn_avg == 0 */
-
-    /* Duplicate input dimension structures for output dimension structures */
-    nbr_dmn_out=nbr_dmn_xtr;
-    dmn_out=(dmn_sct **)nco_malloc(nbr_dmn_out*sizeof(dmn_sct *));
-    for(idx=0;idx<nbr_dmn_out;idx++){
-      dmn_out[idx]=nco_dmn_dpl(dim[idx]);
-      (void)nco_dmn_xrf(dim[idx],dmn_out[idx]);
-    } /* end loop over idx */
-
-  } /* end if */
+  } /* nbr_dmn_avg <= 0 */
 
   /* Is this an NCAR CCSM-format history tape? */
   NCAR_CCSM_FORMAT=nco_ncar_csm_inq(in_id);

@@ -1,6 +1,12 @@
+2004-07-27  Charlie Zender  <zender@uci.edu>
+
+	* Merge ncwa dmn_avg list handling into ncpdq for dmn_rdr
+
+	* Removed un-used dimension nbr_dmn_avg == 0 branch from ncwa
+
 2004-07-26  Charlie Zender  <zender@uci.edu>
 
-	* ncpdq is now copying files perfectly, just like ncks
+	* ncpdq now copies files perfectly, just like ncks
 	No re-order routines have been turned on---that is next
 	Tagged this ncpdq version (1.1) with
 	ncpdq_perfect_do_nothing_template

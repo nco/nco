@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.13 2004-07-26 17:45:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.c,v 1.14 2004-07-27 19:47:31 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -203,7 +203,6 @@ nco_dmn_lst_ass_var /* [fnc] Create list of all dimensions associated with input
   dmn=(nm_id_sct *)nco_realloc((void *)dmn,*nbr_dmn*sizeof(nm_id_sct));
   
   return dmn;
-
 } /* end nco_dmn_lst_ass_var() */
 
 nm_id_sct * /* O [sct] Dimension list */
@@ -212,7 +211,7 @@ nco_dmn_lst_mk /* [fnc] Attach dimension IDs to dimension list */
  CST_X_PTR_CST_PTR_CST_Y(char,dmn_lst_in), /* I [sng] User-specified list of dimension names */
  const int nbr_dmn) /* I [nbr] Total number of dimensions in list */
 {
-  /* Purpose:  */
+  /* Purpose: Create list of dimension name-id structures from list of dimension name strings */
   int idx;
 
   nm_id_sct *dmn_lst;
@@ -233,9 +232,7 @@ nco_dmn_xrf  /* [fnc] Crossreference xrf elements of dimension structures */
  dmn_sct * const dmn_2) /* I/O [sct] Dimension structure */
 {
   /* Purpose: Make xrf elements of dimension structures point to eachother */
-
   dmn_1->xrf=dmn_2;
   dmn_2->xrf=dmn_1;
-
 } /* end nco_dmn_xrf() */
 
