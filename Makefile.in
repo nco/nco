@@ -106,11 +106,11 @@ RECURSIVE_TARGETS = info-recursive dvi-recursive install-info-recursive \
 	uninstall-info-recursive all-recursive install-data-recursive \
 	install-exec-recursive installdirs-recursive install-recursive \
 	uninstall-recursive check-recursive installcheck-recursive
-DIST_COMMON = Makefile.am Makefile.in acinclude.m4 aclocal.m4 \
-	autobld/config.guess autobld/config.sub autobld/depcomp \
-	autobld/install-sh autobld/ltmain.sh autobld/missing \
-	autobld/mkinstalldirs autobld/texinfo.tex config.h.in configure \
-	configure.in
+DIST_COMMON = COPYING INSTALL Makefile.am Makefile.in acinclude.m4 \
+	aclocal.m4 autobld/config.guess autobld/config.sub \
+	autobld/depcomp autobld/install-sh autobld/ltmain.sh \
+	autobld/missing autobld/mkinstalldirs autobld/texinfo.tex \
+	config.h.in configure configure.in
 DIST_SUBDIRS = $(SUBDIRS)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
