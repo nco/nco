@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.89 2004-07-22 00:02:16 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.90 2004-10-25 03:22:36 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -14,7 +14,7 @@ CRAY
 FREEBSD		N(10)
 HPPA
 LINUX como	N(11)	
-LINUX gcc/g++	Y	N/A	N(12)			Y	Y
+LINUX gcc/g++	Y	N/A	Y			Y	Y
 LINUX icc	Y	N/A				Y	Y
 LINUXALPHA	Y					Y	Y
 LINUXAMD64		Y				Y	Y
@@ -36,7 +36,6 @@ Table footnotes:
 09. tst fails to find in.nc
 10. Major problems with configure script and permissions on installed files
 11. Comeau (correctly) insists strdup(), strcasecmp() are not ANSI standard (this should now be fixed, retry)
-12. C++ version problems in linking DODS libraries
 13. gcc 3.2.1 problem with /usr/include/sys/stat.h in nco_fl_utl.h
 14. g++ 2.95 (Darwin 5.5) does not have <valarray>, so the c++ library will not be built; g++ version 3.1 (Darwin 6.8) does. That is all we have tested.
 17. 
