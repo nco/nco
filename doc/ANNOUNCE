@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.15 2002-02-05 07:49:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.16 2002-04-19 06:22:26 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.2.0 are ready. 
+The netCDF operators NCO version 2.2.2 are ready. 
 Changes since version 2.0.0 include bugfixes and a 
 working (and powerful!) ncap implementation.
 ncap is the netCDF arithmetic processor, an operator
