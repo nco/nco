@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.29 2005-01-09 00:14:12 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.30 2005-01-10 07:36:59 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 # Requires GNU Make. AT&T Make will not process this file.
@@ -94,10 +94,8 @@ endif
 ifndef NETCDF_LIB
  NETCDF_LIB := /usr/local/lib
 endif
-ifdef OMP
- CPPFLAGS := -DOMP
- CFLAGS := -mp -mpio
- LDFLAGS := -mp
+ifndef ${OMP} # OpenMP
+ OMP := Y
 endif # endif OMP
 ifndef OPTS
  OPTS := O

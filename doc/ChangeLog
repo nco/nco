@@ -1,5 +1,10 @@
 2005-01-09  Charlie Zender  <zender@uci.edu>
 
+	* Make ncks -q switch a true quiet switch that stops all printing
+	to screen. Make new -Q switch handle old -q job. 
+	Make ncks -R automatically invoke -q so that remote files may
+	be downloaded without attempting to print them.
+
 	* Remove -Wmissing-prototypes from g++ options
 
 	* Fixed g++-3.4.2 prototype warnings with nco_c++
