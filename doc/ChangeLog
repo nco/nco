@@ -1,5 +1,7 @@
 2000-05-12  Charlie Zender  <zender@uci.edu>
 
+	* Tagged and released as nco1_1_47
+
 	* Fixed bug in -d dmn,,,srd case where lmt.end was incorrect
 
 2000-05-10  Charlie Zender  <zender@uci.edu>
