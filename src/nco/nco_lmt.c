@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.9 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.10 2003-02-06 07:36:53 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -241,7 +241,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     (void)nco_inq_vartype(nc_id,dim.cid,&dim.type);
     
     /* Warn when coordinate type is weird */
-    if(dim.type == NC_BYTE || dim.type == NC_CHAR) (void)fprintf(stderr,"\nWARNING: Coordinate %s is type %s. Dimension truncation is unpredictable.\n",lmt.nm,nco_typ_sng(dim.type));
+    if(dim.type == NC_BYTE || dim.type == NC_CHAR) (void)fprintf(stderr,"\n%s: WARNING Coordinate %s is type %s. Dimension truncation is unpredictable.\n",prg_nm_get(),lmt.nm,nco_typ_sng(dim.type));
     
     /* Allocate enough space to hold coordinate */
     dim.val.vp=(void *)nco_malloc(dmn_sz*nco_typ_lng(dim.type));
@@ -307,7 +307,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     if(lmt.max_sng == NULL) lmt.max_val=dmn_val_dp[max_idx]; else lmt.max_val=strtod(lmt.max_sng,(char **)NULL);
 
     /* Warn when min_val > max_val (i.e., wrapped coordinate)*/
-    if(lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: WARNING Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
+    if(dbg_lvl_get() > 0 && lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: INFO Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
     
     /* Fail when... */
     if(
@@ -445,8 +445,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
        Thus we must update min_idx and max_idx here for each file
        This causes min_idx and max_idx to be out of sync with min_sng and max_sng, 
        which are only set in nco_lmt_sct_mk() for the first file.
-       In hindsight, artificially generating min_sng and max_sng may be a bad idea
-    */
+       In hindsight, artificially generating min_sng and max_sng may be a bad idea */
     /* Following logic is messy, but hard to simplify */
     if(lmt.min_sng == NULL || !lmt.is_usr_spc_lmt){
       /* No user-specified value available--generate minimal dimension index */
@@ -456,7 +455,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
       lmt.min_idx=strtol(lmt.min_sng,(char **)NULL,10);
     } /* end if */
     if(lmt.max_sng == NULL || !lmt.is_usr_spc_lmt){
-      /* No user-specified value available--generate maximal dimension index */
+      /* No user-specified value available---generate maximal dimension index */
       if(FORTRAN_STYLE) lmt.max_idx=dmn_sz; else lmt.max_idx=dmn_sz-1L;
     }else{
       /* Use user-specified limit when available */
