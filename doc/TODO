@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.356 2004-08-03 18:22:14 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.357 2004-08-04 18:08:55 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -240,7 +240,8 @@ nco367. fix ncwa list collapse errors once bug found in pcpdq. Unfortunately ncw
 nco369. make sure strcmp is used for comparison, rather than strstr
 nco370. ncpdq man page for Debian
 nco371. fix broken ncwa---due to nco_avg "fixes" made in last four days?
-nco372. 
+nco372. Update man pages for -o, -t, stdin features
+nco373. Have man pages all get trailer from ~/nco/doc/man_end.txt
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

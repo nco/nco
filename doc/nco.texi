@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.249 2004-08-03 17:06:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.250 2004-08-04 18:08:55 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4150,7 +4150,7 @@ described in any detail in the sections below.
 * ncecat netCDF Ensemble Concatenator::  
 * ncflint netCDF File Interpolator::  
 * ncks netCDF Kitchen Sink::    
-* ncpdq netCDF pack re-dimension query::  
+* ncpdq netCDF Permute Dimensions Quickly::  
 * ncra netCDF Record Averager::  
 * ncrcat netCDF Record Concatenator::  
 * ncrename netCDF Renamer::     
@@ -4180,10 +4180,6 @@ ncap [-A] [-C] [-c] [-D @var{dbg}]
  
 @noindent
 DESCRIPTION
-
-Note: documentation for @command{ncap} is incomplete and evolving.
-The @command{ncap} parser tends to develop fitfully, and the best
-documentation for recent capabilities is the @file{ChangeLog} file.
 
 @command{ncap} arithmetically processes a netCDF file.
 @cindex script file
@@ -6042,7 +6038,7 @@ ncatted -O -a units,prs_sfc,o,c,millibar out.nc
 @html
 <a name="ncks"></a> <!-- http://nco.sf.net/nco.html#ncks -->
 @end html
-@node ncks netCDF Kitchen Sink, ncpdq netCDF pack re-dimension query, ncflint netCDF File Interpolator, Operator Reference Manual
+@node ncks netCDF Kitchen Sink, ncpdq netCDF Permute Dimensions Quickly, ncflint netCDF File Interpolator, Operator Reference Manual
 @section @command{ncks} netCDF Kitchen Sink
 @cindex kitchen sink
 @cindex printing files contents
@@ -6457,8 +6453,8 @@ For more details @xref{Wrapped coordinates}.
 @html
 <a name="ncpdq"></a> <!-- http://nco.sf.net/nco.html#ncpdq -->
 @end html
-@node ncpdq netCDF pack re-dimension query, ncra netCDF Record Averager, ncks netCDF Kitchen Sink, Operator Reference Manual
-@section @command{ncpdq} netCDF Pack, Re-dimension, Query
+@node ncpdq netCDF Permute Dimensions Quickly, ncra netCDF Record Averager, ncks netCDF Kitchen Sink, Operator Reference Manual
+@section @command{ncpdq} netCDF Permute Dimensions Quickly
 @cindex reshape
 @cindex re-dimension
 @findex ncpdq
@@ -6469,7 +6465,7 @@ SYNTAX
 ncpdq [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-t thr_nbr] 
-[-v @var{var}[,@dots{}]] [-x] [-z @var{dim}[,@dots{}]] 
+[-v @var{var}[,@dots{}]] [-x]
 @var{input-file} [@var{output-file}]
 @end example
 
@@ -6479,11 +6475,9 @@ DESCRIPTION
 @command{ncpdq} re-shapes variables in @var{input-file} by re-ordering
 their dimensions as specified in the dimension re-order list.
 The record dimension is re-ordered like any other dimension.
-To re-order variable by a subset of their dimensions, specify
+To re-order variables by a subset of their dimensions, specify
 these dimensions in a comma-separated list following @samp{-a}, e.g.,
 @samp{-a lon,lat}. 
-
-
 
 @cindex record dimension
 Users may specify any permutation of dimensions, including
@@ -6535,7 +6529,7 @@ ncpdq -O -a lon,-lat,time,-lev in.nc out.nc
 @html
 <a name="ncra"></a> <!-- http://nco.sf.net/nco.html#ncra -->
 @end html
-@node ncra netCDF Record Averager, ncrcat netCDF Record Concatenator, ncpdq netCDF pack re-dimension query, Operator Reference Manual
+@node ncra netCDF Record Averager, ncrcat netCDF Record Concatenator, ncpdq netCDF Permute Dimensions Quickly, Operator Reference Manual
 @section @command{ncra} netCDF Record Averager
 @cindex averaging data
 @cindex record average

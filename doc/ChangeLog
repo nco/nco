@@ -1,3 +1,12 @@
+2004-08-04  Charlie Zender  <zender@uci.edu>
+
+	* Improved/updated man_end.txt and catenated onto end of all man pages
+
+	* Wrote ncap man page ncap.1
+
+	* Added ncpdq.1 man page
+	View with nroff -man ~/nco/man/ncpdq.1
+
 2004-08-02  Charlie Zender  <zender@uci.edu>
 
 	* Implemented dimension reversal with negative signs in ncpdq

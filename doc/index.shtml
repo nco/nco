@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.244 2004-08-04 15:58:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.245 2004-08-04 18:08:55 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -360,21 +360,12 @@ href="src/nco_2.9.7-1_i386.changes">nco_2.9.7-1_i386.changes</a> (<!--#fsize fil
 <a name="fdr"></a>
 <a name="rhl"></a>
 <h3><a href="http://fedora.redhat.com">Fedora GNU/Linux</a></h3>
-<ul>http://mitgcm.org/eh3/packages/
+<ul>
 <a href="http://mitgcm.org/eh3/packages">Fedora GNU/Linux-specific homepage for NCO</a>.
 <a href="http://www.rpm.org">RPMs</a> by Ed Hill:
 <li><a href="http://mitgcm.org/eh3/packages">nco-2.9.7-0.fdr.2.i386.rpm</a>: Fedora Core&nbsp;2, i386 Binary RPM</li>
 <li><a href="http://mitgcm.org/eh3/packages">nco-2.9.7-0.fdr.2.x86_64.rpm</a>: Fedora Core&nbsp;2, x86_64 Binary RPM</li>
 <li><a href="http://mitgcm.org/eh3/packages">nco-2.9.7-0.fdr.2.src.rpm</a>: Fedora Core&nbsp;1, Source RPM</li>
-</ul>
-
-<a name="fink"></a>
-<a name="fnk"></a>
-<h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;X/Darwin</a></h3>
-<ul>
-<a href="http://fink.sf.net/pdb/package.php/nco"">Mac&nbsp;OS&nbsp;X/Darwin homepage for NCO</a>.
-<a href="http://fink.sf.net">Fink packages</a> by Takeshi Enomoto:
-<li><a href="http://fink.sf.net/pdb/package.php/nco">nco-2.9.6-darwin-powerpc.deb</a>: Mac&nbsp;OS&nbsp;X&nbsp;10.3, PowerPC package</li>
 </ul>
 
 <a name="gentoo"></a>
@@ -384,6 +375,17 @@ href="src/nco_2.9.7-1_i386.changes">nco_2.9.7-1_i386.changes</a> (<!--#fsize fil
 <a href="http://packages.gentoo.org/packages/?category=app-sci;name=nco">Gentoo GNU/Linux homepage for NCO</a>.
 <a href="http://www.gentoo.org/doc/en/portage-manual.xml">Portage packages</a> by George Shapavalov and Patrick Kursawe:
 <li><a href="http://cpan.cybercomm.nl/pub/gentoo-portage/app-sci/nco/nco-2.9.1.ebuild">nco-2.9.1.ebuild</a>: Gentoo&nbsp;1, i386 package</li>
+</ul>
+
+<a name="darwin"></a>
+<a name="drw"></a>
+<a name="macosx"></a>
+<a name="osx"></a>
+<h3><a href="http://www.apple.com/macosx/">Mac&nbsp;OS&nbsp;X/Darwin</a></h3>
+<ul>
+<a href="http://fink.sf.net/pdb/package.php/nco"">Mac&nbsp;OS&nbsp;X/Darwin homepage for NCO</a>.
+<a href="http://fink.sf.net">Fink packages</a> by Takeshi Enomoto:
+<li><a href="http://fink.sf.net/pdb/package.php/nco">nco-2.9.6-darwin-powerpc.deb</a>: Mac&nbsp;OS&nbsp;X&nbsp;10.3, PowerPC package</li>
 </ul>
 <hr></p>
 
@@ -437,12 +439,12 @@ fixes we currently have in mind for NCO.</li>
 But they are more predictable:
 <ul>
 <li><i>Where can I find prebuilt NCO executables?</i>
-Users of <a href="http://www.debian.org">Debian</a>-compatible and Fedora/RedHat-compatible GNU/Linux
-should <a href="#Download">download</a> prebuilt .debs and/or RPMs as
-described above. 
+Pre-built executables of some versions of NCO for the operating
+systems <a href="#Download">described above</a> (Debian GNU/Linux,
+Fedora/RedHat GNU/Linux, Gentoo GNU/Linux, and Mac&nbsp;OS&nbsp;X).
 If you have an account at UCI or SDSC, try the locations in my
-personal home directories listed below. 
-At NCAR, first try <tt>/usr/local/bin</tt>.
+personal home directories listed below (AIX, IRIX).
+At NCAR, first try <tt>/usr/local/bin</tt> (AIX, IRIX).
 Otherwise, you are on your own.</li>
 <li><i>Does NCAR support NCO?</i>
 The NCAR SCD Technical Consulting Group (TCG) support NCO like other
