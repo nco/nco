@@ -3,6 +3,7 @@
 // Usage:
 // ncgen -b -o in.nc in.cdl
 // ncgen -b -o ${HOME}/nco/data/in.nc ${HOME}/nco/data/in.cdl
+// scp ~/nco/data/in.cdl esmf.ess.uci.edu:nco/data
 // mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/in.nc
 // mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/h0001.nc
 // mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/h0002.nc
@@ -38,7 +39,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.48 2004-01-16 06:52:32 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.49 2004-06-07 01:16:33 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);

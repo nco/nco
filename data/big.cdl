@@ -3,17 +3,22 @@
 // Usage:
 // ncgen -b -o tst.nc big.cdl
 // ncgen -b -o ${DATA}/mie/big.nc ~/nco/data/big.cdl
-// ncks -H ${DATA}/mie/big.nc | m
+// scp ~/nco/data/big.cdl esmf.ess.uci.edu:nco/data
+// ncap -s "wvl[wvl]=1.0f" ${DATA}/mie/big.nc ${DATA}/mie/big.nc
 
-// One billion floats is 4*10^9 B, or 4 GB
+// ls -l ${DATA}/mie/big.nc
+// ncks -m -M -H ${DATA}/mie/big.nc | m
+
+
+// One billion floats are nco_typ_lng(NC_FLOAT)*10^9 = sizeof(float)*10^9 = 4*10^9 B = 4 GB
 // 32-bit machines are unable to create or work with files exceeding ~2 GB
 // ncks -H -d wvl,999999999 ${DATA}/mie/big.nc | m
 
 netcdf big {
 dimensions:
 	wvl=1000000000;
-variables:
-	float wvl(wvl);
+//variables:
+//	float wvl(wvl);
 //data:
 //	wvl=1;
 }
