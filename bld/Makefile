@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.101 2001-10-08 07:25:37 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.102 2001-10-16 00:36:39 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -18,6 +18,8 @@
 # HDF5 version of netCDF libraries:
 # cd ~/nco/bld;make cln bin_cln all HDF5=Y;cd -
 
+# Top-level tokens defining directory structure
+# These tokens may be over-ridden by environment variables or when invoking make, e.g. make DODS=Y
 MY_BLD_DIR := ../bld
 ifndef PVM_ARCH
  PVM_ARCH := $(shell ${MY_BLD_DIR}/pvmgetarch)
@@ -31,24 +33,33 @@ endif
 ifndef MY_OBJ_DIR
  MY_OBJ_DIR := ../obj
 endif
-ifndef PVM_ARCH
- PVM_ARCH := $(shell ${MY_BLD_DIR}/pvmgetarch)
-endif
 MY_DAT_DIR := ../data
 MY_DOC_DIR := ../doc
 MY_INC_DIR := 
 MY_DPN_DIR := ${MY_OBJ_DIR}
 MY_SRC_DIR := ../src/nco
+
+# Primary tokens which determine build options
+# Specify non-default when invoking make, e.g. make DODS=Y
+ifndef DODS
+ DODS := N
+endif
+ifndef HDF5
+ HDF5 := N
+endif # endif HDF5
+ifndef I18N
+ I18N := N
+endif
 ifndef NCO_VRS
 # Used for RPM building
  NCO_VRS := $(shell cat ${MY_DOC_DIR}/VERSION)
 endif
-ifeq (${PVM_ARCH},LINUX)
-# rpm command, and thus RPM variables, may only be assumed to be available in Linux
- MDL_RPM_NST_NM := $(shell rpm -qa | grep nco-) # Name of installed package
-# MDL_RPM_PRV_NM := $(shell rpm -qp foo) # Name of package provided by specified RPM
+ifndef NETCDF_INC
+ NETCDF_INC := /usr/local/include # Directory containing netcdf.h
 endif
-# endif LINUX
+ifndef NETCDF_LIB
+ NETCDF_LIB := /usr/local/lib # Directory containing libnetcdf.a
+endif
 ifndef OPTS
  OPTS := O
 endif
@@ -56,41 +67,19 @@ ifndef USE_FORTRAN_ARITHMETIC
 # Whether or not to use Fortran arithmetic routines
  USE_FORTRAN_ARITHMETIC := N
 endif
+ifndef USR_TKN
+ USR_TKN :=
+endif # endif USR_TKN
+ifndef VRS_SNG
+ VRS_SNG := $(shell date +%Y%m%d)
+endif # endif VRS_SNG
 
-ifndef NETCDF_INC
- NETCDF_INC := /usr/local/include # Directory containing netcdf.h
-endif
-ifndef NETCDF_LIB
- NETCDF_LIB := /usr/local/lib # Directory containing libnetcdf.a
-endif
+# Derived-tokens based on primary tokens
+# These tokens should not be altered by hand
 
-ifdef HDF5
- HDF5 := Y
-else
- HDF5 := N
-endif # endif HDF5
-ifeq ($(HDF5),Y)
-# Build NCO using HDF5 netCDF interface
- HDF5_ROOT := /usr/local/hdf5
- NETCDF_INC := $(HDF5_ROOT)/include # Directory containing HDF5 version of netcdf.h
- NETCDF_LIB := $(HDF5_ROOT)/lib -lmfhdf -ldf -ljpeg -lz # Directory containing HDF5 version of libnetcdf.a routines, order of library linkage is significant
-endif # endif HDF5
+# NB: CPP_TKN is recursively expanded variable, define only when components are ready
+CPP_TKN = ${USR_TKN} -D${PVM_ARCH} -DNO_NETCDF_2 -DVERSION='${VRS_SNG}' -DHOSTNAME='${HOST}' -DUSER='${USER}'
 
-# Internationalize NCO with i18n features
-ifndef I18N
- I18N := N
-endif
-ifeq ($(I18N),Y)
- MY_SHR_DIR := ${HOME}/share
- MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
- MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
-endif
-
-ifdef DODS
- DODS := Y
-else
- DODS := N
-endif
 ifeq ($(DODS),Y)
 # Build NCO as DODS-enabled clients
 ifndef DODS_ROOT
@@ -107,9 +96,31 @@ else
  NC_LDFLAGS := -L${NETCDF_LIB}
  NC_LIBS := -lnetcdf
 endif # end DODS
+
+ifeq ($(HDF5),Y)
+# Build NCO using HDF5 netCDF interface
+ HDF5_ROOT := /usr/local/hdf5
+ NETCDF_INC := $(HDF5_ROOT)/include # Directory containing HDF5 version of netcdf.h
+ NETCDF_LIB := $(HDF5_ROOT)/lib -lmfhdf -ldf -ljpeg -lz # Directory containing HDF5 version of libnetcdf.a routines, order of library linkage is significant
+endif # endif HDF5
+
+# Internationalize NCO with i18n features
+ifeq ($(I18N),Y)
+ MY_SHR_DIR := ${HOME}/share
+ MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
+ MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
+endif
+
+ifeq (${PVM_ARCH},LINUX)
+# rpm command, and thus RPM variables, may only be assumed to be available in Linux
+ MDL_RPM_NST_NM := $(shell rpm -qa | grep nco-) # Name of installed package
+# MDL_RPM_PRV_NM := $(shell rpm -qp foo) # Name of package provided by specified RPM
+endif
+# endif LINUX
+
+# TMP_* and NCO_* are required to play nicely with DODS flags
 NCO_LDFLAGS := -L${MY_LIB_DIR}
 NCO_LIBS := -lnco
-
 TMP_LDFLAGS := $(NCO_LDFLAGS) $(NC_LDFLAGS)
 TMP_LIBS := $(NCO_LIBS) $(NC_LIBS)
 
@@ -228,7 +239,7 @@ CC := cc
 # -qmaxmem=num Limit the amount of memory used by space intensive optimizations to <num> kilobytes
 CFLAGS := -qmaxmem=8192
 CPP := cc -c
-CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC}
 FC := xlf
 FFLAGS := -qfixed=132
 LD := ld
@@ -299,7 +310,7 @@ ifeq (${PVM_ARCH},CRAY)
 C++ := g++
 CC := cc
 CPP := cpp
-CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
 FC := f90
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -340,7 +351,7 @@ C++ := g++
 #CC := gcc -ansi
 CC := gcc
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -Di386 -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} -Di386 -I${NETCDF_INC}
 FC := g77
  LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -411,7 +422,7 @@ ifeq (${PVM_ARCH},RS6K)
 C++ := g++
 CC := gcc -ansi
 CPP := /lib/cpp -P
-CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
 FC := xlf
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -448,7 +459,7 @@ CC := cc
 # 20000302: -w suppresses warnings which will swamp linker
 #C++ := g++ -w
 #CC := gcc
-CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
 ifdef $(MIPSPRO_SGI)
 # SGIs like dataproc keep omp.h in special location determined by module MIPSpro
  CPPFLAGS := -I$(MIPSPRO_SGI)/usr/include ${CPPFLAGS}
@@ -528,7 +539,7 @@ endif
 ifeq (${PVM_ARCH},SUN4)
 C++ := g++
 CC := acc
-CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
 FC := f77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -553,7 +564,7 @@ endif
 ifeq (${PVM_ARCH},SUN4SOL2)
 C++ := g++
 CC := gcc -ansi
-CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
 FC := f77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsocket -lnsl -lm
@@ -587,7 +598,7 @@ ifeq (${PVM_ARCH},SUNMP)
 C++ := g++
 #CC := gcc -ansi -pedantic
 CC := gcc 
-CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} -I${NETCDF_INC}
 FC := f77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsunmath -lthread -lsocket -lnsl -lm
@@ -621,7 +632,7 @@ ifeq (${PVM_ARCH},WIN32)
 C++ := g++
 CC := gcc -ansi
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := -D${PVM_ARCH} -DNO_NETCDF_2 -Di386 -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} -Di386 -I${NETCDF_INC}
 FC := g77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -869,6 +880,7 @@ dbg:
 	@printf "CPP = ${CPP}\n"
 	@printf "CPPFLAGS = ${CPPFLAGS}\n"
 	@printf "CPP_PTH = ${CPP_PTH}\n"
+	@printf "CPP_TKN = ${CPP_TKN}\n"
 	@printf "DODS = $(DODS)\n"
 	@printf "DODS_ROOT = $(DODS_ROOT)\n"
 	@printf "FC = ${FC}\n"
@@ -889,6 +901,7 @@ dbg:
 	@printf "SRC_LST = $(SRC_LST)\n"
 	@printf "USE_FORTRAN_ARITHMETIC = $(USE_FORTRAN_ARITHMETIC)\n"
 	@printf "VPATH = ${VPATH}\n"
+	@printf "VRS_SNG = ${VRS_SNG}\n"
 	@printf "YACC = $(YACC)\n"
 distclean: dst_cln
 dst_cln: cln bin_cln doc_cln dat_cln

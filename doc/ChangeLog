@@ -1,3 +1,10 @@
+2001-10-15  Charlie Zender  <zender@uci.edu>
+
+	* Added VERSION infrastructure for recording build information in executable
+
+	* Check rcd before Exit_Gracefully() in main() routines so 
+	rcd does not generate "set but not used warnings"
+
 2001-10-07  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_0_2

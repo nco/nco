@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.38 2001-10-08 07:25:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.39 2001-10-16 00:36:39 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.38 2001-10-08 07:25:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.38 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.39 2001-10-16 00:36:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.39 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -459,6 +459,7 @@ main(int argc,char **argv)
   if(FILE_1_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in_1);
   if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in_2);
   
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   Exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

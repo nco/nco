@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.28 2001-10-08 07:25:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.29 2001-10-16 00:36:39 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.28 2001-10-08 07:25:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.28 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.29 2001-10-16 00:36:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.29 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -416,6 +416,7 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
   
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"main");
   Exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

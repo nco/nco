@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.73 2001-10-08 07:25:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.74 2001-10-16 00:36:39 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -947,13 +947,13 @@ cvs_vrs_prs()
 
   /* Is cvs_Name keyword expanded? */
   dlr_ptr=strstr(cvs_Name," $");
-  if(dlr_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports dlr_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",prg_nm_get(),prg_nm_get());
+  if(dlr_ptr == NULL && dbg_lvl_get() > 3)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports dlr_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",prg_nm_get(),prg_nm_get());
   cvs_nm_ptr=strstr(cvs_Name,"$Name: ");
-  if(cvs_nm_ptr == NULL)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports cvs_nm_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",prg_nm_get(),prg_nm_get());
+  if(cvs_nm_ptr == NULL && dbg_lvl_get() > 3)(void)fprintf(stderr,"%s: WARNING cvs_vrs_prs() reports cvs_nm_ptr == NULL\n%s: HINT Make sure CVS export uses -kkv\n",prg_nm_get(),prg_nm_get());
   cvs_nm_sng_len=(int)(dlr_ptr-cvs_nm_ptr-7); /* 7 is strlen("$Name: ") */
   if(cvs_nm_sng_len > 0) dly_snp=False; else dly_snp=True;
 
-  /* If not, this is a daily snapshot so use YYYYMMDD date for version string */
+  /* If not, this is daily snapshot so use YYYYMMDD date for version string */
   if(dly_snp){
     int mth;
     int day;
@@ -1046,49 +1046,64 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
    char *CVS_Revision: I [sng] CVS revision string
  */
 {
-  char *date_sng;
-  char *vrs_sng;
-  char *cvs_vrs_sng;
+  char *date_cvs; /* Date this file was last modified */
+  char *vrs_rcs; /* Version of this file, e.g., 1.213 */
+  char *vrs_cvs; /* Version according to CVS release tag */
 
-  int date_sng_len;
-  int vrs_sng_len;
+  int date_cvs_lng;
+  int vrs_cvs_lng;
   
+  /* C pre-processor macros for instantiating variable values with string tokens */
+#define XTKN2SNG(x) #x
+#define TKN2SNG(x) XTKN2SNG(x)
+  const char date_cpp[]=__DATE__; /* [sng] Date from C pre-processor */
+  const char time_cpp[]=__TIME__; /* [sng] Time from C pre-processor */
+  const char vrs_cpp[]=TKN2SNG(VERSION); /* [sng] Version from C pre-processor */
+  const char hst_cpp[]=TKN2SNG(HOSTNAME); /* [sng] Hostname from C pre-processor */
+  const char usr_cpp[]=TKN2SNG(USER); /* [sng] Hostname from C pre-processor */
+
   if(strlen(CVS_Id) > strlen("*Id*")){
     /* CVS_Id is defined */
-    date_sng_len=10;
-    date_sng=(char *)nco_malloc((date_sng_len+1)*sizeof(char));
-    (void)strncpy(date_sng,strchr(CVS_Id,'/')-4,date_sng_len);
-    date_sng[date_sng_len]='\0';
+    date_cvs_lng=10;
+    date_cvs=(char *)nco_malloc((date_cvs_lng+1)*sizeof(char));
+    (void)strncpy(date_cvs,strchr(CVS_Id,'/')-4,date_cvs_lng);
+    date_cvs[date_cvs_lng]='\0';
   }else{
     /* CVS_Id is undefined */
-    date_sng=(char *)strdup("Current");
+    date_cvs=(char *)strdup("Current");
   } /* endif */
 
   if(strlen(CVS_Revision) > strlen("*Revision*") || strlen(CVS_Revision) < strlen("*Revision*")){
     /* CVS_Revision is defined */
-    vrs_sng_len=strrchr(CVS_Revision,'$')-strchr(CVS_Revision,':')-3;
-    vrs_sng=(char *)nco_malloc((vrs_sng_len+1)*sizeof(char));
-    (void)strncpy(vrs_sng,strchr(CVS_Revision,':')+2,vrs_sng_len);
-    vrs_sng[vrs_sng_len]='\0';
+    vrs_cvs_lng=strrchr(CVS_Revision,'$')-strchr(CVS_Revision,':')-3;
+    vrs_rcs=(char *)nco_malloc((vrs_cvs_lng+1)*sizeof(char));
+    (void)strncpy(vrs_rcs,strchr(CVS_Revision,':')+2,vrs_cvs_lng);
+    vrs_rcs[vrs_cvs_lng]='\0';
   }else{
     /* CVS_Revision is undefined */
-    vrs_sng=(char *)strdup("Current");
+    vrs_rcs=(char *)strdup("Current");
   } /* endif */
 
-  cvs_vrs_sng=cvs_vrs_prs();
+  vrs_cvs=cvs_vrs_prs();
 
-  /*  (void)fprintf(stderr,"NCO netCDF Operators version %s by Charlie Zender\n",cvs_vrs_sng);
-  (void)fprintf(stderr,"%s version %s (%s) \"%s\"\n",prg_nm_get(),vrs_sng,date_sng,nmn_get());
+  if(strlen(CVS_Id) > strlen("*Id*")){
+    (void)fprintf(stderr,"%s version %s last modified %s built %s on %s by %s\n",prg_nm_get(),vrs_cvs,date_cvs,date_cpp,hst_cpp,usr_cpp);
+  }else{
+    (void)fprintf(stderr,"%s version %s built %s on %s by %s\n",prg_nm_get(),vrs_cpp,date_cpp,hst_cpp,usr_cpp);
+  } /* endif */
+
+  /*  (void)fprintf(stderr,"NCO netCDF Operators version %s by Charlie Zender\n",vrs_cvs);
+  (void)fprintf(stderr,"%s version %s (%s) \"%s\"\n",prg_nm_get(),vrs_rcs,date_cvs,nmn_get());
   (void)fprintf(stderr,"Copyright 1995--1999 University Corporation for Atmospheric Research\n");
   (void)fprintf(stderr,"Portions copyright 1999--2000 Regents of the University of California\n"); */
 
-  (void)fprintf(stderr,"NCO netCDF Operators version %s\n",cvs_vrs_sng);
+  (void)fprintf(stderr,"NCO netCDF Operators version %s\n",vrs_cvs);
   (void)fprintf(stderr,"Copyright (C) 1995--2001 Charlie Zender\n");
-  (void)fprintf(stderr,"%s version %s (%s) \"%s\"\n",prg_nm_get(),vrs_sng,date_sng,nmn_get());
+  (void)fprintf(stderr,"%s version %s (%s) \"%s\"\n",prg_nm_get(),vrs_rcs,date_cvs,nmn_get());
   (void)fprintf(stdout,"NCO is free software and comes with ABSOLUTELY NO WARRANTY\nNCO is distributed under the terms of the GNU General Public License\n");
 
-  (void)free(vrs_sng);
-  (void)free(cvs_vrs_sng);
+  (void)free(vrs_rcs);
+  (void)free(vrs_cvs);
 } /* end copyright_prn() */
 
 void
