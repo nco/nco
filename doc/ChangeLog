@@ -3,9 +3,9 @@
 	* Tagged and released this as nco1_1_15
 
 	* Disabled ncwa -n and -W normalization options until I think of
-	better way to implement them. Changed -N option to cause ncwa to
-	divide by the denominator or not. Disable corresponding tests in
-	nco_tst.sh (tests #2 and #3).
+	better way to implement them. -N option now causes ncwa not to
+	divide by the denominator. Disabled -n and -W tests in nco_tst.sh
+	(tests #2 and #3). 
 
 1998-12-02  Charlie Zender  <zender@z.ppp.ucar.edu>
 
@@ -18,7 +18,9 @@
 
 1998-12-01  Charlie Zender  <zender@z.ppp.ucar.edu>
 
-	* Made sure ncwa weights were being masked
+	* Made sure ncwa weights were being masked when normalization was
+	invoked. Formerly, they were not. This was a bug. The bug is now
+	fixed. 
 
 	* Rearranged normalization logic of ncwa
 

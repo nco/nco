@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.10 1998-12-04 04:56:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.11 1998-12-04 16:53:40 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -73,8 +73,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncwa.c,v 1.10 1998-12-04 04:56:41 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.10 $";
+  char rcs_Id[]="$Id: ncwa.c,v 1.11 1998-12-04 16:53:40 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.11 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -204,6 +204,8 @@ main(int argc,char **argv)
       break;
     case 'n':
       NORMALIZE_BY_WEIGHT=False;
+      (void)fprintf(stdout,"%s: ERROR This option has been disabled while I rethink its implementation\n",prg_nm);
+      exit(EXIT_FAILURE);
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -232,6 +234,8 @@ main(int argc,char **argv)
       break;
     case 'W':
       NORMALIZE_BY_TALLY=False;
+      (void)fprintf(stdout,"%s: ERROR This option has been disabled while I rethink its implementation\n",prg_nm);
+      exit(EXIT_FAILURE);
       break;
     case 'w':
       /* The name of the variable to use as a weight in the averaging.  Default is none */
