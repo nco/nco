@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.156 2003-04-01 03:35:02 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.157 2003-04-07 02:46:35 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -920,6 +920,12 @@ by approximately the time it takes to copy the @var{output-file}.
 Finally, note this feature allows the @var{output-file} to be the same 
 as the @var{input-file} without any danger of ``overlap''.
 
+@cindex @code{-A}
+@cindex @code{-O}
+@cindex @code{--apn}
+@cindex @code{--append}
+@cindex @code{--ovr}
+@cindex @code{--overwrite}
 @cindex overwriting files
 @cindex appending to files
 Other safeguards exist to protect the user from inadvertently
@@ -1451,20 +1457,23 @@ name that most suits their taste.
 @cindex @code{-n @var{loop}}
 @cindex @code{--nintap @var{loop}}
 @cindex @code{-p @var{input-path}}
+@cindex @code{--pth @var{input-path}}
 @cindex @code{--path @var{input-path}}
 @cindex @var{input-path}
 @cartouche
 @noindent
 Availability: All operators@*
 Short options: @samp{-n}, @samp{-p}@*
-Long options: @samp{--nintap}, @samp{--path}@*
+Long options: @samp{--nintap}, @samp{--pth}, @samp{--path}@*
 @end cartouche
 It is important that the user be able to specify multiple input files
 without tediously typing in each by its full name. 
 @cindex @acronym{UNIX}
 There are four different ways of specifying input files to @acronym{NCO}:
 explicitly typing each, using @acronym{UNIX} shell wildcards, and using
-the @acronym{NCO} @samp{-n} and @samp{-p} switches.
+the @acronym{NCO} @samp{-n} and @samp{-p} switches (or their long option
+equivalents, @samp{--nintap} or @samp{--pth} and @samp{--path},
+respectively). 
 To illustrate these methods, consider the simple problem of using
 @command{ncra} to average five input files, @file{85.nc}, @file{86.nc},
 @dots{} @file{89.nc}, and store the results in @file{8589.nc}.
@@ -1586,14 +1595,16 @@ automatically generate, in order, the filenames @file{85_12.nc},
 @cindex remote files
 @cindex synchronous file access
 @cindex asynchronous file access
+@cindex @code{--pth @var{input-path}}
 @cindex @code{--path @var{input-path}}
+@cindex @code{--lcl @var{output-path}}
 @cindex @code{--local @var{output-path}}
 @cindex @code{-l @var{output-path}}
 @cartouche
 @noindent
 Availability: All operators@*
 Short options: @samp{-p}, @samp{-l}@*
-Long options: @samp{--path}, @samp{--local}@*
+Long options: @samp{--pth}, @samp{--path}, @samp{--lcl}, @samp{--local}@*
 @end cartouche
 All @acronym{NCO} operators can retrieve files from remote sites as well 
 as from the local file system.
@@ -1634,7 +1645,7 @@ ncks -H -l ./ ftp://dust.ess.uci.edu/pub/zender/nco/in.nc
 ncks -H -l ./ dust.ess.uci.edu:/home/zender/nco/in.nc
 ncks -H -l ./ /ZENDER/nco/in.nc 
 ncks -H -l ./ mss:/ZENDER/nco/in.nc
-ncks -H -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/-
+ncks -H -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/\
 ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc
 @end example
 @noindent
@@ -1755,12 +1766,13 @@ the current directory.
 @cindex file removal
 @cindex file retention
 @cindex @code{-R}
+@cindex @code{--rtn}
 @cindex @code{--retain}
 @cartouche
 @noindent
 Availability: All operators@*
 Short options: @samp{-R}@*
-Long options: @samp{--retain}@*
+Long options: @samp{--rtn}, @samp{--retain}@*
 @end cartouche
 In order to conserve local file system space, files retrieved from
 remote locations are automatically deleted from the local file system 
@@ -1817,13 +1829,14 @@ that @emph{only} user-defined variables should be output.
 @cindex @code{-c}
 @cindex @code{--nocoords}
 @cindex @code{--coords}
+@cindex @code{--crd}
 @cartouche
 @noindent
 Availability: @command{ncap}, @command{ncdiff}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks},  @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
 Short options: @samp{-C}, @samp{-c}@*
-Long options: @samp{--nocoords}, @samp{--coords}@*
+Long options: @samp{--nocoords}, @samp{--crd}, @samp{--coords}@*
 @end cartouche
 By default, coordinates variables associated with any variable appearing
 in the @var{output-file} will also appear in the @var{output-file}, even
@@ -2605,6 +2618,8 @@ $$
 \bar \xxx_{\jjj} = \sum_{\idx=1}^{\idx=\lmnnbr} \mssflg_{\idx}
 \mskflg_{\idx} \wgt_{\idx} \xxx_{\idx}  
 $$
+@cindex @code{-N}
+@cindex @code{numerator}
 Note that the total is the same as the numerator of the mean
 of~$\xxx$, and may also be obtained in @command{ncwa} by using the
 @samp{-N} switch (@pxref{ncwa netCDF Weighted Averager}).
@@ -2938,12 +2953,14 @@ will have the value @var{n} when converted to an integer.
 @cindex @code{-O}
 @cindex @code{-A}
 @cindex @code{--overwrite}
+@cindex @code{--ovr}
+@cindex @code{--apn}
 @cindex @code{--append}
 @cartouche
 @noindent
 Availability: All operators@*
 Short options: @samp{-O}, @samp{-A}@*
-Long options: @samp{--overwrite}, @samp{--append}@*
+Long options: @samp{--ovr}, @samp{--overwrite}, @samp{--apn}, @samp{--append}@*
 @end cartouche
 If the @var{output-file} specified for a command is a pre-existing file,
 then the operator will prompt the user whether to overwrite (erase) the
@@ -2967,13 +2984,13 @@ interactive keyboard input.
 @cindex global attributes
 @cindex attributes, global
 @cindex @code{-h}
-@cindex @code{--history}
 @cindex @code{--hst}
+@cindex @code{--history}
 @cartouche
 @noindent
 Availability: All operators@*
 Short options: @samp{-h}@*
-Long options: @samp{--history}, @samp{--hst}@*
+Long options: @samp{--hst}, @samp{--history}@*
 @end cartouche
 All operators automatically append a @code{history} global attribute to
 any file they modify or create.
@@ -3204,11 +3221,16 @@ documentation for recent capabilities is the @file{ChangeLog} file.
 
 @command{ncap} arithmetically processes a netCDF file.
 @cindex script file
+@cindex @code{--script-file}
+@cindex @code{--fl_spt}
+@cindex @code{--script}
+@cindex @code{--spt}
 The processing instructions are contained either in the @acronym{NCO}
 script file @file{fl.nco} or in a sequence of command line arguments.
-The options @samp{-s} or @samp{--script} are used for in-line scripts
-and @samp{-S} or @samp{--file} are used to provide the filename
-where (usually multiple) scripting commands are pre-stored. 
+The options @samp{-s} (or long options @samp{--spt} or @samp{--script})
+are used for in-line scripts and @samp{-S} (or long options
+@samp{--fl_spt} or @samp{--script-file}) are used to provide the
+filename where (usually multiple) scripting commands are pre-stored.   
 @command{ncap} was written to perform arbitrary albebraic
 transformations of data and archive the results as easily as possible.
 @cindex derived fields
@@ -4401,9 +4423,10 @@ Thus it is possible to specify @math{@var{wgt1} = 2} and
 One can use this functionality to multiply all the values in a given
 file by a constant.
 
-The second method of using @command{ncflint} is specifying the
-interpolation option @w{with @samp{-i}.}
-This is really the inverse of the first method in the following sense.
+The second method of using @command{ncflint} is to specify the
+interpolation option @w{with @samp{-i}} (or with the @samp{--ntp} or 
+@samp{--interpolate} long options). 
+This is really the inverse of the first method in the following sense. 
 When the user specifies the weights directly, @command{ncflint} has no
 work to do besides multiplying the input values by their respective
 weights and adding the results together to produce the output values.  
@@ -4548,12 +4571,13 @@ like @command{ncdump}, but with these differences:
 @command{ncks} prints data in a tabular format intended to be easy to
 search for the data you want, one datum per screen line, with all
 dimension subscripts and coordinate values (if any) preceding the datum.
-Option @samp{-s} (or @samp{--string}, @samp{--format}, or @samp{--fmt})
-allows the user the format the data using C-style format strings.
+Option @samp{-s} (or lon options @samp{--sng}, @samp{--string},
+@samp{--fmt}, or @samp{--format}) allows the user the format the data
+using C-style format strings. 
 
-Options @samp{-a}, @samp{-F}, @samp{-H}, @samp{-M}, @samp{-m},
-@samp{-q}, @samp{-s}, and @samp{-u} control the formatted appearance of 
-the data.  
+Options @samp{-a} (or @samp{--alphabetize}), @samp{-F} , @samp{-H},
+@samp{-M}, @samp{-m}, @samp{-q}, @samp{-s}, and @samp{-u} control the
+formatted appearance of the data.
 
 @cindex global attributes
 @cindex attributes, global
@@ -4563,8 +4587,8 @@ comprised of) only selected variable from the input file, like
 coordinates may be specifically included or excluded---all global
 attributes and any attribute associated with an extracted variable will
 be copied to the screen and/or output netCDF file. 
-Options @samp{-c}, @samp{-C}, @samp{-v}, and @samp{-x} control which
-variables are extracted.
+Options @samp{-c}, @samp{-C}, @samp{-v}, and @samp{-x} (and their long 
+option synomyms) control which variables are extracted.
 
 @command{ncks} will extract hyperslabs from the specified variables.
 In fact @command{ncks} implements the nccut specification exactly.
@@ -4651,6 +4675,8 @@ Features common to many operators are described in
 @cindex alphabetize output
 @cindex sort alphabetically
 @cindex @code{-a}
+@cindex @code{--abc}
+@cindex @code{--alphabetize}
 @item -a
 Do not alphabetize extracted fields. 
 By default, the specified output variables are extracted, printed, and
@@ -4661,24 +4687,27 @@ Specifying @code{-a} results in the variables being extracted, printed,
 and written to disk in the order in which they were saved in the input
 file.
 Thus @code{-a} retains the original ordering of the variables.
-Also @samp{--alphabetize}.
+Also @samp{--abc} and @samp{--alphabetize}.
 
 @cindex binary format
 @cindex @code{-B}
+@cindex @code{--bnr}
+@cindex @code{--binary}
 @item -B @file{file}
 Activate native machine binary output writing to the default binary
 file, @file{ncks.bnr}. 
-The @code{-B} switch is redundant when the @code{-b} @file{file} 
+The @code{-B} switch is redundant when the @w{@code{-b} @file{file}}
 option is specified, and native binary output will be directed to the
 binary file @file{file}.
-Also @samp{--binary}.
+Also @samp{--bnr} and @samp{--binary}.
 Writing packed variables in binary format is not supported.
 
 @cindex @code{-b}
+@cindex @code{--fl_bnr}
 @item -b @file{file}
 Activate native machine binary output writing to binary file
 @file{file}.
-Also @samp{--binary}.
+Also @samp{--fl_bnr} and @samp{--binary-file}.
 Writing packed variables in binary format is not supported.
 
 @cindex stride
@@ -4738,12 +4767,17 @@ lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23
 @end example
 
 @cindex @code{-M}
+@cindex @code{--Metadata}
+@cindex metadata, global 
 @item -M
 Print to screen the global metadata describing the file.
 This includes file summary information and global attributes.
 Also @samp{--Meta}.
 
 @cindex @code{-m}
+@cindex @code{--mtd}
+@cindex @code{--metadata}
+@cindex metadata
 @item -m
 Print variable metadata to screen (similar to @code{ncdump -h}). 
 This displays all metadata pertaining to each variable, one variable
@@ -4751,6 +4785,8 @@ at a time.
 Also @samp{--meta}.
 
 @cindex @code{-q}
+@cindex @code{--quiet}
+@cindex quiet
 @item -q 
 Toggle printing of dimension indices and coordinate values when printing
 arrays. 
@@ -5456,11 +5492,15 @@ weight $\wgt_{\idx}=0.0$ as well).
 @node Normalization,  , Masking condition, ncwa netCDF Weighted Averager
 @subsection Normalization
 @cindex normalization
+@cindex @code{-N}
+@cindex @code{numerator}
 @command{ncwa} has one switch which controls the normalization of the
 averages appearing in the @var{output-file}.
-Option @samp{-N} prevents @command{ncwa} from dividing the weighted sum of
-the variable (the numerator in the averaging expression) by the weighted
-sum of the weights (the denominator in the averaging expression). 
+Short option @samp{-N} (or long options @samp{--nmr} or
+@samp{--numerator}) prevents @command{ncwa} from dividing the weighted
+sum of the variable (the numerator in the averaging expression) by the
+weighted sum of the weights (the denominator in the averaging
+expression).   
 Thus @samp{-N} tells @command{ncwa} to return just the numerator of the
 arithmetic expression defining the operation (@pxref{Operation Types}). 
 

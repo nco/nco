@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.100 2003-03-27 08:14:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.101 2003-04-07 02:46:41 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.100 2003-03-27 08:14:13 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.100 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.101 2003-04-07 02:46:41 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.101 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -178,6 +178,7 @@ main(int argc,char **argv)
       {"avg",required_argument,0,'a'},
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
+      {"crd",no_argument,0,'c'},
       {"nocoords",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
       {"dbg_lvl",required_argument,0,'D'},
@@ -189,6 +190,7 @@ main(int argc,char **argv)
       {"hst",no_argument,0,'h'},
       {"wgt_msk_crd_var",no_argument,0,'I'},
       {"local",required_argument,0,'l'},
+      {"lcl",required_argument,0,'l'},
       {"mask-variable",required_argument,0,'m'},
       {"mask_variable",required_argument,0,'m'},
       {"mask",required_argument,0,'m'},
@@ -198,14 +200,17 @@ main(int argc,char **argv)
       {"mask_value",required_argument,0,'M'},
       {"msk_val",required_argument,0,'M'},
       {"nintap",required_argument,0,'n'},
+      {"nmr",no_argument,0,'N'},
       {"numerator",no_argument,0,'N'},
       {"op_rlt",required_argument,0,'o'},
       {"cmp",required_argument,0,'o'},
       {"compare",required_argument,0,'o'},
       {"op_cmp",required_argument,0,'o'},
       {"overwrite",no_argument,0,'O'},
+      {"ovr",no_argument,0,'O'},
       {"path",required_argument,0,'p'},
       {"retain",no_argument,0,'R'},
+      {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
       {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},

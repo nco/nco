@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.111 2003-03-27 08:14:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.112 2003-04-07 02:46:39 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.111 2003-03-27 08:14:13 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.111 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.112 2003-04-07 02:46:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.112 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -186,6 +186,7 @@ main(int argc,char **argv)
     { /* Structure ordered by short option key if possible */
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
+      {"crd",no_argument,0,'c'},
       {"nocoords",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
       {"dbg_lvl",required_argument,0,'D'},
@@ -196,13 +197,19 @@ main(int argc,char **argv)
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
       {"local",required_argument,0,'l'},
+      {"lcl",required_argument,0,'l'},
       {"nintap",required_argument,0,'n'},
       {"overwrite",no_argument,0,'O'},
+      {"ovr",no_argument,0,'O'},
       {"path",required_argument,0,'p'},
       {"retain",no_argument,0,'R'},
+      {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
-      {"script",required_argument,0,'s'},
       {"file",required_argument,0,'S'},
+      {"script-file",required_argument,0,'S'},
+      {"fl_spt",required_argument,0,'S'},
+      {"spt",required_argument,0,'s'},
+      {"script",required_argument,0,'s'},
       {"units",no_argument,0,'u'},
       {"variable",no_argument,0,'v'},
       {"version",no_argument,0,'r'},

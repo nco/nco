@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.81 2003-03-27 08:14:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.82 2003-04-07 02:46:39 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.81 2003-03-27 08:14:13 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.81 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.82 2003-04-07 02:46:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.82 $";
   
   extern char *optarg;
   
@@ -152,11 +152,16 @@ main(int argc,char **argv)
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
+      {"abc",no_argument,0,'a'},
       {"alphabetize",no_argument,0,'a'},
       {"append",no_argument,0,'A'},
-      {"binary-file",required_argument,0,'b'},
+      {"apn",no_argument,0,'A'},
+      {"bnr",no_argument,0,'B'},
       {"binary",no_argument,0,'B'},
+      {"binary-file",required_argument,0,'b'},
+      {"fl_bnr",required_argument,0,'b'},
       {"coords",no_argument,0,'c'},
+      {"crd",no_argument,0,'c'},
       {"nocoords",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
       {"dbg_lvl",required_argument,0,'D'},
@@ -169,13 +174,19 @@ main(int argc,char **argv)
       {"print",no_argument,0,'H'},
       {"prn",no_argument,0,'H'},
       {"local",required_argument,0,'l'},
-      {"meta",no_argument,0,'m'},
-      {"Meta",no_argument,0,'M'},
+      {"lcl",required_argument,0,'l'},
+      {"lcl",required_argument,0,'l'},
+      {"metadata",no_argument,0,'m'},
+      {"mtd",no_argument,0,'m'},
+      {"Metadata",no_argument,0,'M'},
       {"overwrite",no_argument,0,'O'},
+      {"ovr",no_argument,0,'O'},
       {"path",required_argument,0,'p'},
       {"quiet",no_argument,0,'q'},
       {"retain",no_argument,0,'R'},
+      {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"sng",required_argument,0,'s'},
       {"string",required_argument,0,'s'},
       {"format",required_argument,0,'s'},
       {"fmt",required_argument,0,'s'},

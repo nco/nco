@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.89 2003-03-27 08:14:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.90 2003-04-07 02:46:40 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.89 2003-03-27 08:14:13 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.89 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.90 2003-04-07 02:46:40 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.90 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -147,6 +147,7 @@ main(int argc,char **argv)
     { /* Structure ordered by short option key if possible */
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
+      {"crd",no_argument,0,'c'},
       {"nocoords",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
       {"dbg_lvl",required_argument,0,'D'},
@@ -157,11 +158,14 @@ main(int argc,char **argv)
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
       {"local",required_argument,0,'l'},
+      {"lcl",required_argument,0,'l'},
       {"nintap",required_argument,0,'n'},
       {"overwrite",no_argument,0,'O'},
+      {"ovr",no_argument,0,'O'},
       {"path",required_argument,0,'p'},
       {"pack",required_argument,0,'P'},
       {"retain",no_argument,0,'R'},
+      {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
       {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},

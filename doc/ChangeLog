@@ -1,3 +1,8 @@
+2003-04-06  Charlie Zender  <zender@uci.edu>
+
+	* Added numerous long option synonyms in CSZ abbreviation format
+	documented in abb.sty
+
 2003-03-30  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_7_3
