@@ -1,6 +1,6 @@
 #!/contrib/bin/perl
 				
-my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.6 1999-04-05 00:41:02 zender Exp $';
+my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.7 1999-04-05 00:54:36 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
@@ -49,9 +49,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $RCS_Date='$Date: 1999-04-05 00:41:02 $';
-my $RCS_Id='$Id: nco_dst.pl,v 1.6 1999-04-05 00:41:02 zender Exp $';
-my $RCS_Revision='$Revision: 1.6 $';
+my $RCS_Date='$Date: 1999-04-05 00:54:36 $';
+my $RCS_Id='$Id: nco_dst.pl,v 1.7 1999-04-05 00:54:36 zender Exp $';
+my $RCS_Revision='$Revision: 1.7 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -201,7 +201,7 @@ if($dst_cln){&cmd_prc("/bin/rm -r $dst_pth/$dst_vrs");} # Remove local distribut
 &cmd_prc("rsh ftp.cgd.ucar.edu ls -l /ftp/pub/zender/nco");
 
 if($cgd_cnt){
-    $rmt_mch='bearmtn.cgd.ucar.edu';
+    $rmt_mch='sanitas.cgd.ucar.edu';
 #    rsh $rmt_mch 'printf $PVM_ARCH'
     print STDOUT "\n$prg_nm: Updating contrib NCO on $rmt_mch...\n";
     &cmd_prc("rsh $rmt_mch \"mkdir /usr/tmp/zender\"");
