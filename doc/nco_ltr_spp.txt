@@ -1,0 +1,58 @@
+$Header: /data/zender/nco_20150216/nco/doc/nco_ltr_spp.txt,v 1.1 2004-06-11 19:43:38 zender Exp $ -*-Text-*-
+
+
+************************************************************************
+
+Subject: NSF SEI(GEO) NCO/SDO Proposal Endorsement
+From: Maxwell Kelley <mkelley@lsce.saclay.cea.fr>
+Date: Fri, 30 Apr 2004 11:52:45 +0200 (CEST)
+To: zender@uci.edu
+
+I find the NCO operators to be indispensable in my work, and
+many of my colleagues would say the same.  Their usefulness
+is perhaps best captured by the surprise of some people to whom
+I have introduced NCO when they learned that it is a separate
+entity from the NETCDF library.
+
+The developers of NCO have always replied promptly to my help
+requests and have on occasion even added new functionality
+that I had requested.
+
+In my opinion, the advantages of NCO compared to mathematically more
+comprehensive packages reading NETCDF files are that it is fast, very
+concise, free of charge, runs on almost any platform, and can be
+easily integrated into shell or other kinds of scripts. And with
+the evolution of the ncap utility, the capabilities of NCO are
+becoming sufficient for tasks of greater numerical complexity.
+
+------------------------------------------------------------
+Dr. Maxwell Kelley
+Laboratoire des Sciences du Climat et de l'Environnement
+L'Orme des Merisiers CEA Saclay
+91191 Gif sur Yvette cedex        mkelley@lsce.saclay.cea.fr
+France                                +33 1 69 08 27 02
+------------------------------------------------------------
+
+
+************************************************************************
+
+Subject: NSF SEI(GEO) NCO/SDO Proposal Endorsement
+From: <hjyang@pku.edu.cn>
+Date: Fri, 11 Jun 2004 15:49:46 +0800
+To: zender@uci.edu
+
+The best netCDF processing software I have ever used. NCO is 
+indispensible in my work.
+Good luck!
+
+Haijun
+
+--------------------------------------------
+Haijun Yang, Associate Professor
+Department of Atmospheric Science
+School of Physics, Peking University
+209 Chengfu Road, Beijing, China 100871
+Tel: 86-10-62767436
+Fax: 86-10-62751094
+Email: hjyang@pku.edu.cn
+--------------------------------------------

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.309 2004-06-07 04:18:59 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.310 2004-06-11 19:43:38 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -191,7 +191,7 @@ nco322. Implement integer empowerment in var_scv_pwr() with, e.g., GSL
 nco323. Collect all past ANNOUNCE files and place in reverse chronological order in ANNOUNCE file
 nco324. Add release date to "Version Summary" section on homepage
 nco326. Add manual override of writing *tmp* file for intermediate results
-nco327. Consolidate/coordinate letters of support for prp_nco
+nco327. Consolidate/coordinate letters of support for prp_nco: Currently doc/nco_los.txt
 nco328. Ability to reverse specified dimensions (use negative stride?)
 nco329. Ability to rearrange dimensions
 nco333. Clean up preprocessor symbols with cd ~/nco/src/nco;ifnames *.c
