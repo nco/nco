@@ -74,7 +74,7 @@ AC_CHECK_FUNCS([gethostname memchr memmove pow setlocale sqrt strcasecmp strchr 
 
 # Checks for header files.
 AC_HEADER_STDC
-AC_CHECK_HEADERS([libintl.h limits.h locale.h netinet/in.h stdlib.h string.h unistd.h getopt.h netcdf.h])
+AC_CHECK_HEADERS([libintl.h limits.h locale.h netinet/in.h stdlib.h string.h unistd.h getopt.h])
 dnl headers needed for POSIX regex
 dnl AC_CHECK_HEADERS([regex.h sys/types.h])
 dnl NCO_CHECK_FUNCS([regexec])
@@ -150,6 +150,7 @@ else
     CPPFLAGS="-I/usr/local/include $CPPFLAGS"
   fi
 fi
+AC_CHECK_HEADERS([netcdf.h])
 # NCO does not support netCDF2
 AC_DEFINE(NO_NETCDF_2,1,No netCDF version 2)
 # First check for 'nc_open' using default compiler flags.  If it fails, add
