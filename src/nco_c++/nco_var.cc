@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.10 2004-03-11 08:19:48 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.11 2004-03-11 08:25:16 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -474,7 +474,7 @@ nco_get_var // [fnc] Ingest variable from netCDF file
   // Allocate space for variable: User is responsible for freeing space
   var_val=new float[var_sz]; // [frc] Variable value
   rcd=nc_get_var_float(nc_id,var_id,var_val);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var<float>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var<float> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_get_var<float>()
 
@@ -490,7 +490,7 @@ nco_get_var // [fnc] Ingest variable from netCDF file
   // Allocate space for variable: User is responsible for freeing space
   var_val=new double[var_sz]; // [frc] Variable value
   rcd=nc_get_var_double(nc_id,var_id,var_val);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var<double>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var<double> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_get_var<double>()
 
@@ -507,7 +507,7 @@ nco_get_var // [fnc] Ingest variable from netCDF file
   var_val=new long double[var_sz]; // [frc] Variable value
   double *var_val_dbl=new double[var_sz]; // [frc] Double precision values
   rcd=nc_get_var_double(nc_id,var_id,var_val_dbl);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var<long double>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var<long double> failed with variable "+nco_inq_varname(nc_id,var_id));
   for(size_t lmn_idx=0;lmn_idx<var_sz;lmn_idx++){
     var_val[lmn_idx]=var_val_dbl[lmn_idx];
   } // end loop over idx
@@ -527,7 +527,7 @@ nco_get_var // [fnc] Ingest variable from netCDF file
   // Allocate space for variable: User is responsible for freeing space
   var_val=new int[var_sz]; // [frc] Variable value
   rcd=nc_get_var_int(nc_id,var_id,var_val);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var<int>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var<int> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_get_var<int>()
 
@@ -543,7 +543,7 @@ nco_get_var // [fnc] Ingest variable from netCDF file
   // Allocate space for variable: User is responsible for freeing space
   var_val=new long[var_sz]; // [frc] Variable value
   rcd=nc_get_var_long(nc_id,var_id,var_val);
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var<long>");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var<long> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_get_var<long>()
 

@@ -1,3 +1,7 @@
+2004-03-11  Charlie Zender  <zender@uci.edu>
+
+	* Print variable names when writes and reads fail in nco_c++
+
 2004-03-10  Charlie Zender  <zender@uci.edu>
 
 	* Handle corner case in nco_lmt.c where HAVE_UDUNITS_LIB is

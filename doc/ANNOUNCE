@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.66 2004-03-11 07:44:39 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.67 2004-03-11 08:25:16 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.1 are ready. 
 
@@ -18,7 +18,7 @@ Bug-fixes:
 1. None
 
 Other user-visible changes:
-1. None
+1. Print variable names when writes and reads fail in nco_c++
 
 User-invisible changes:
 1. None
