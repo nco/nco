@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.7 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.8 2003-05-16 23:07:10 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -33,9 +33,9 @@
 
 enum nco_pck_typ{ /* [enm] Packing type */
   nco_pck_all_xst_att, /* 0 [enm] Pack all variables, keeping existing packing attributes if any */
-  nco_pck_all_new_att, /* 1 [enm] Pack all variables, always generating new packing attributes */
-  nco_pck_xst_xst_att, /* 2 [enm] Pack existing packed variables, keeping existing packing attributes if any */
-  nco_pck_xst_new_att, /* 3 [enm] Pack existing packed variables, always generating new packing attributes */
+  nco_pck_all_new_att, /* 1 [enm] Pack all variables, always generate new packing attributes */
+  nco_pck_xst_xst_att, /* 2 [enm] Pack existing packed variables, keep existing packing attributes if any */
+  nco_pck_xst_new_att, /* 3 [enm] Pack existing packed variables, always generat new packing attributes */
   nco_pck_upk, /* 4 [enm] Unpack all packed variables */
   nco_pck_nil /* 5 [enm] Do not think about packing */
 }; /* end nco_pck_typ enum */
@@ -53,21 +53,21 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 (const int nc_id, /* I [idx] netCDF file ID */
  var_sct *var); /* I/O [sct] Variable */
   
-  var_sct * /* O [sct] Packed variable */
-  nco_var_pck /* [fnc] Pack variable in memory */
-  (var_sct *var, /* I/O [sct] Variable to be packed */
-   const nc_type typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
-   const bool USE_EXISTING_PCK); /* I [flg] Use existing packing scale_factor and add_offset */
+var_sct * /* O [sct] Packed variable */
+nco_var_pck /* [fnc] Pack variable in memory */
+(var_sct *var, /* I/O [sct] Variable to be packed */
+ const nc_type typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+ const bool USE_EXISTING_PCK); /* I [flg] Use existing packing scale_factor and add_offset */
 
-  var_sct * /* O [sct] Unpacked variable */
-  nco_var_upk /* [fnc] Unpack variable in memory */
-  (var_sct * const var); /* I/O [sct] Variable to be unpacked */
+var_sct * /* O [sct] Unpacked variable */
+nco_var_upk /* [fnc] Unpack variable in memory */
+(var_sct * const var); /* I/O [sct] Variable to be unpacked */
 
-  var_sct * /* O [sct] Packed variable */
-  nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to disk */
-  (const int out_id, /* I [id] netCDF output file ID */
-   var_sct *var, /* I/O [sct] Variable to be packed */
-   const int nco_pck_typ); /* [enm] Packing operation type */
+var_sct * /* O [sct] Packed variable */
+nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to disk */
+(const int out_id, /* I [id] netCDF output file ID */
+ var_sct *var, /* I/O [sct] Variable to be packed */
+ const int nco_pck_typ); /* [enm] Packing operation type */
 
 #ifdef __cplusplus
 } /* end extern "C" */
