@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.2 2000-03-06 08:04:46 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.3 2000-03-06 08:36:40 zender Exp $
 # Purpose: RPM spec file for NCO
 # Usage: 
 # Before nco.spec is invoked (with 'rpm -ba nco.spec'), the source tarball 
@@ -36,7 +36,6 @@ tar xvzf $RPM_SOURCE_DIR/nco-1.1.46.tar.gz
 %build
 cd nco-1.1.46/bld
 /usr/bin/env MY_BIN_DIR=/usr/bin MY_DOC_DIR=/usr/doc/nco-1.1.46 make
-/usr/bin/env MY_BIN_DIR=/usr/bin MY_DOC_DIR=/usr/doc/nco-1.1.46 make rpmdoc
 
 # make data
 # Use make tst only when connected to the Internet
