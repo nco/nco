@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.50 2000-09-26 06:19:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.51 2000-10-23 22:57:34 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -48,11 +48,12 @@
    to prevent spurious "warning: `float foo' might be used uninitialized in 
    this function" warnings when, e.g., GCC -Wuninitialized is turned on. */
 #define NULL_CEWI NULL
-#define nclong_CEWI 0L
-#define int_CEWI 0
+#define char_CEWI '\0'
 #define double_CEWI 0.0
 #define float_CEWI 0.0
+#define int_CEWI 0
 #define long_CEWI 0L
+#define nclong_CEWI 0L
 #define short_CEWI 0
 
 /*const short True=1;*/

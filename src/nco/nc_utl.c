@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.101 2000-10-16 07:07:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.102 2000-10-23 22:57:34 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -5494,7 +5494,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
   /* Routine to divide the two input lists of variables into four separate output lists, 
      based on the program type */
 
-  char *var_nm;
+  char *var_nm=NULL_CEWI;
 
   int idx;
   int prg; /* Program key */
@@ -5508,7 +5508,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
   int idx_xcl;
   int var_op_typ[MAX_NC_VARS];
 
-  nc_type var_type;
+  nc_type var_type=int_CEWI;
 
   var_sct **var_fix;
   var_sct **var_fix_out;

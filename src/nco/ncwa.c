@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.65 2000-10-20 23:16:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.66 2000-10-23 22:57:34 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -95,23 +95,23 @@ main(int argc,char **argv)
   char **dmn_avg_lst_in=NULL_CEWI; /* Option a */
   char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option n */
-  char **fl_lst_in;
+  char **fl_lst_in=NULL_CEWI;
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[MAX_NC_DIMS];
   char *opt_sng;
   char *fl_out;
-  char *fl_out_tmp;
+  char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *msk_nm=NULL;
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.65 2000-10-20 23:16:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.65 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.66 2000-10-23 22:57:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.66 $";
   
-  dmn_sct **dim;
+  dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
   dmn_sct **dmn_avg=NULL_CEWI;
   
@@ -121,10 +121,10 @@ main(int argc,char **argv)
   extern int ncopts;
   extern int optind;
   
-  int idx;
+  int idx=int_CEWI;
   int idx_avg;
-  int idx_fl;
-  int in_id;  
+  int idx_fl=int_CEWI;
+  int in_id=int_CEWI;  
   int out_id;  
   int nbr_abb_arg=0;
   int nbr_dmn_fl;

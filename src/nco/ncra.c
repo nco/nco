@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.51 2000-10-20 23:16:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.52 2000-10-23 22:57:34 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool ARM_FORMAT;
-  bool NCAR_CSM_FORMAT;
+  bool ARM_FORMAT=int_CEWI;
+  bool NCAR_CSM_FORMAT=int_CEWI;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
@@ -100,12 +100,12 @@ main(int argc,char **argv)
   char *lmt_arg[MAX_NC_DIMS];
   char *opt_sng;
   char *fl_out;
-  char *fl_out_tmp;
+  char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.51 2000-10-20 23:16:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.51 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.52 2000-10-23 22:57:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.52 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -116,7 +116,7 @@ main(int argc,char **argv)
   extern int ncopts;
   extern int optind;
 
-  int idx;
+  int idx=int_CEWI;
   int idx_fl;
   int in_id;  
   int out_id;  
@@ -152,7 +152,7 @@ main(int argc,char **argv)
   var_sct **var;
   var_sct **var_fix;
   var_sct **var_fix_out;
-  var_sct **var_out;
+  var_sct **var_out=NULL_CEWI;
   var_sct **var_prc;
   var_sct **var_prc_out;
   

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.81 2000-09-26 01:32:01 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.82 2000-10-23 22:57:34 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires: GNU Make. AT&T Make will not understand this.
@@ -283,7 +283,8 @@ $(MY_OBJ_DIR)/%.o : %.f
 endif
 # endif CRAY
 
-ifeq ($(PVM_ARCH),LINUX)
+# Works on LINUX and LINUXALPHA
+ifneq (,$(findstring LINUX,$(PVM_ARCH)))
 C++ := g++
 # 19980517: As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
 #CC := gcc -ansi

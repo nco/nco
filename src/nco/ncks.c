@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.36 2000-10-20 23:16:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.37 2000-10-23 22:57:34 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.36 2000-10-20 23:16:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.36 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.37 2000-10-23 22:57:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.37 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -1336,21 +1336,21 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   if(var.nbr_dim > 0 && dlm_sng == NULL){ 
     /* Generate a nicely formatted output for multidimensional arrays */
 
-    char arr_lft_dlm;
-    char arr_rgt_dlm;
+    char arr_lft_dlm=char_CEWI;
+    char arr_rgt_dlm=char_CEWI;
     char dmn_sng[MAX_LEN_FMT_SNG];
 
-    int crd_idx_crr; /* Current coordinate index */
-    int dmn_idx;
+    int crd_idx_crr=int_CEWI; /* Current coordinate index */
+    int dmn_idx=int_CEWI;
     int dmn_idx_prn_srt; /* Index of first dimension to explicitly print */
-    int dmn_nbr_prn; /* Number of dimensions deconvolved */
+    int dmn_nbr_prn=int_CEWI; /* Number of dimensions deconvolved */
     int mod_idx;
 
-    long dmn_sbs_prn; /* Subscript adjusted for C-Fortran indexing convention */
+    long dmn_sbs_prn=long_CEWI; /* Subscript adjusted for C-Fortran indexing convention */
     long hyp_srt=0L;
     long idx_crr; /* Current index into equivalent 1-D array */
 
-    short ftn_idx_off;
+    short ftn_idx_off=short_CEWI;
 
     /* Variable is an array */
    

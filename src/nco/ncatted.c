@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.27 2000-10-20 23:16:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.28 2000-10-23 22:57:34 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -142,8 +142,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.27 2000-10-20 23:16:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.27 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.28 2000-10-23 22:57:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.28 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -471,7 +471,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
       if(aed_lst[idx].type == NC_CHAR){
 	aed_lst[idx].val.cp=(signed char *)arg_lst[idx_att_val_arg];
       }else{
-	double *val_arg_dbl;
+	double *val_arg_dbl=NULL_CEWI;
 	
 	long lmn;
 	
@@ -574,11 +574,11 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     long *dmn_sz;
     long *dmn_srt;
     long idx;
-    long var_sz;
+    long var_sz=long_CEWI;
     ptr_unn mss_val_crr;
     ptr_unn mss_val_new;
     ptr_unn var_val;
-    var_sct *var;
+    var_sct *var=NULL_CEWI;
 
     (void)fprintf(stdout,"%s: WARNING Replacing missing value data in variable %s\n",prg_nm,var_nm);
 
