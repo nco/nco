@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.69 2003-11-26 23:19:54 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.70 2003-12-03 16:47:14 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -9,7 +9,7 @@ This table tracks how well NCO _autobuilds_ (./configure's) on various OSs.
 GNU Autotools seem to require a lot of hand tuning on non-LINUX platforms...
 Architecture	ABI32	ABI64	DODS	I18N	OpenMP	nco_c++	check
 AIX		Y	Y                               Y	Y
-ALPHA
+ALPHA		Y					Y	Y
 CRAY
 FREEBSD		N(10)
 HPPA
