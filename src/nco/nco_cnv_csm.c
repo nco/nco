@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.2 2002-05-06 06:37:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.3 2002-05-12 01:01:36 zender Exp $ */
 
 /* Purpose: CSM conventions */
 
@@ -47,8 +47,8 @@ ncar_csm_inq /* O [fnc] Check if file obeys CSM conventions */
 void
 ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
 (const int nc_id, /* I [id] netCDF file ID */
- const var_sct **var, /* I [sct] List of pointers to variable structures */
- const int nbr_var) /* I [nbr] Number of structures in variable structure list */
+ var_sct const * const *var, /* I/O [sct] Variables in output file */
+ const int nbr_var) /* I [nbr] Number of variables in list */
 {
   /* Purpose: Fix date variable in averaged CSM files */
   char wrn_sng[1000];
@@ -66,7 +66,7 @@ ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
   
   (void)sprintf(wrn_sng,"Most, but not all, CSM files which are in CCM format contain the fields \"nbdate\", \"time\", and \"date\". When the \"date\" field is present but either \"nbdate\" or \"time\" is missing, then %s is unable to construct a meaningful average \"date\" to store in the output file. Therefore the \"date\" variable in your output file may be meaningless.\n",prg_nm_get());
 
-  /* Find the date variable (NC_INT: current date as 6 digit integer (YYMMDD)) */
+  /* Find date variable (NC_INT: current date as 6 digit integer (YYMMDD)) */
   for(idx=0;idx<nbr_var;idx++){
     if(!strcmp(var[idx]->nm,"date")) break;
   } /* end loop over idx */
@@ -94,10 +94,10 @@ ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
     time_idx=idx;
   } /* endif */
   
-  /* Assign the current day to the averaged day number */
+  /* Assign current day to averaged day number */
   day=(int)(var[time_idx]->val.dp[0]);
   
-  /* Recompute the date variable based on the new (averaged) day number */
+  /* Recompute date variable based on new (averaged) day number */
 #ifdef USE_FORTRAN_ARITHMETIC
   date=FORTRAN_newdate(&nbdate,&day);
 #else /* !USE_FORTRAN_ARITHMETIC */

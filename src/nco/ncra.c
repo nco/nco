@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.66 2002-05-12 00:24:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.67 2002-05-12 01:01:36 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -79,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.66 2002-05-12 00:24:16 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.66 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.67 2002-05-12 01:01:36 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.67 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -523,7 +523,7 @@ main(int argc,char **argv)
       /* Revert to original type if required */
       var_prc_out[idx]=nco_cnv_var_typ_dsk(var_prc_out[idx]);
       /* Packing/Unpacking */
-      if(nco_pck_typ == nco_pck_all_new_att) var_prc_out[idx]=nco_put_var_pck(var_prc_out[idx],nco_pck_typ);
+      if(nco_pck_typ == nco_pck_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_typ);
       if(var_prc_out[idx]->nbr_dim == 0){
 	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
       }else{ /* end if variable is a scalar */

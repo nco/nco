@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.76 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.77 2002-05-12 01:01:36 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -68,7 +68,7 @@
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
-#include "nco.h" /* NCO definitions */
+#include "libnco.h" /* netCDF operator library */
 
 int 
 main(int argc,char **argv)
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.76 2002-05-06 02:17:56 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.76 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.77 2002-05-12 01:01:36 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.77 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;

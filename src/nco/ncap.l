@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.44 2002-05-12 00:24:15 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.45 2002-05-12 01:01:36 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -598,17 +598,22 @@ ncap_initial_scan
  int *nbr_lst_d)
 {
   /* Purpose: Scan command script and return three lists
-     Routine used to be called from ncap_utl:ncap_initial_scan() 
-     but would only compile with gcc, not g++ */
-
      list a: RHS variables present in input file
      list b: LHS variables present in input file
      list c: Variables of attributes on LHS which are present in input file
      list d: */
   
-  /* Get YYSTYPE prior to calling scanner
-     20020510: g++ complains that since YYSTYPE is defined in ncap.tab.h,
-     it is an error to call an external function (yylex) that uses this type */
+  /* 20020510: ncap_initial_scan() was in ncap_utl() but g++ (not gcc) would barf
+     g++ complained that since YYSTYPE is defined in ncap.tab.h,
+     it is an error to call external function (yylex()) that uses this type
+     Placing routine in ncap.l ensures it has access to yylex() prototype,
+     and to YYSTYPE definition.
+     Since ncap_initial_scan() does call yylex() it is stylistically acceptable
+     to keep this routine in ncap.l
+     To move routine to other file, #define NCAP_INITIAL_SCAN_NOT_IN_NCAP_L */
+#undef NCAP_INITIAL_SCAN_NOT_IN_NCAP_L
+#ifdef NCAP_INITIAL_SCAN_NOT_IN_NCAP_L
+  /* Get YYSTYPE prior to calling scanner */
 #include "ncap.tab.h" /* ncap.tab.h is produced from ncap.y by parser generator */
 
   extern FILE *yyin; /* [fnc] File handle for script file */
@@ -618,6 +623,7 @@ ncap_initial_scan
    It is a condensation of the lexer declaration from lex.yy.c:
    YY_BUFFER_STATE yy_scan_string YY_PROTO(( yyconst char *yy_str )); */
   extern int yy_scan_string(const char *);
+#endif /* NCAP_INITIAL_SCAN_NOT_IN_NCAP_L */
 
   bool match;
   

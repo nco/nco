@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.46 2002-05-12 00:24:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.47 2002-05-12 01:01:36 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.46 2002-05-12 00:24:16 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.46 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.47 2002-05-12 01:01:36 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.47 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -312,7 +312,7 @@ main(int argc,char **argv)
   (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
   /* Define variables in output file, and copy their attributes */
-  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
+  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,NULL,0);
 
   /* Turn off default filling behavior to enhance efficiency */
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
