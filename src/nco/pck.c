@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.19 2002-04-26 23:20:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.20 2002-04-27 00:04:27 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -74,13 +74,11 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
-
   
   int rcd; /* [rcd] Return success code */
 
   long add_fst_lng; /* [idx] Number of elements in add_offset attribute */
   long scl_fct_lng; /* [idx] Number of elements in scale_factor attribute */
-
 
   nc_type add_fst_typ; /* [idx] Type of add_offset attribute */
   nc_type scl_fct_typ; /* [idx] Type of scale_factor attribute */
