@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.204 2004-03-11 06:07:46 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.205 2004-03-11 07:44:39 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -442,7 +442,7 @@ Users at NCAR should try the <i>supported</i> executables in
 <tt>/usr/local/bin</tt> first. 
 <ul>
 <li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.4.20): <tt>/home/zender/bin/LINUX</tt></li>
-<li>ESS <tt>esmf.ess.uci.edu</tt> (AIX 5.1.1.0): <tt>/home/zender/bin/LINUX</tt></li>
+<li>ESS <tt>esmf.ess.uci.edu</tt> (AIX 5.1.0.0): <tt>/home/zender/bin/AIX</tt></li>
 <li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
 <li>CGD network (Solaris 2.7): <tt>/home/zender/bin/SUNMP</tt></li>
 <li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5): <tt>/home/dataproc/zender/bin/SGIMP64</tt></li>
@@ -471,7 +471,7 @@ Upgrade to 2.9.1 if you use <tt>ncwa</tt> on packed data.
 </li>
 
 <a name="bug_pck"></a>
-<li><b>Packing problems <tt>ncap</tt>:</b>
+<li><b>Packing problems with <tt>ncap</tt>:</b>
 NCO versions 2.8.4&mdash;2.8.6 have a bug that causes the <tt>ncap</tt>
 intrinsic packing function <tt>pack()</tt> to fail.
 Version 2.8.7 fixes this problem.
@@ -505,6 +505,9 @@ AT&T <tt>lex</tt> will not work because it does not understand
 <tt>bison</tt> version 1.29 (the default version on Mac OS X) is buggy
 and does not parse <tt>ncap_yacc.y</tt> correctly; previous and later
 versions of <tt>bison</tt> work correctly.
+<tt>bison</tt> version 1.25 will not build <tt>ncap</tt> on Solaris.
+Please upgrade <tt>bison</tt> to the latest version (i.e., 1.875+)
+before reporting <tt>ncap</tt> build problems.
 </li>
 
 <li><b>Platform-dependent problems with <tt>./configure</tt> build mechanism:</b>
@@ -539,8 +542,15 @@ No other version combination is supported.
 <a name="bld_slr"></a>
 <li><b>Solaris build problems:</b>
 NCO versions 2.8.6+ do not build with autotools for Solaris 2.7 cc/CC.
-The do appear to build with autotools with Solaris 2.6 or 2.8 cc/CC.
+They do appear to build with autotools with Solaris 2.6 or 2.8 cc/CC.
 Solaris users are urged to solve this one themselves.
+</li>
+
+<a name="bld_aix"></a>
+<li><b>AIX build problems:</b>
+NCO versions 2.8.7+ do not build with autotools under AIX when
+<tt>--enable-optimize-*</tt> is selected.
+The workaround is to not use <tt>--enable-optimize-*</tt>.
 </li>
 
 </ul>

@@ -1,8 +1,12 @@
+2004-03-10  Charlie Zender  <zender@uci.edu>
+
+	* Handle corner case in nco_lmt.c where HAVE_UDUNITS_LIB is
+	defined but HAVE_UDUNITS_H is not
+
 2004-03-07  Charlie Zender  <zender@uci.edu>
 
 	* Tweaked DODS library logic in configure.in to support AIX
 	Link to -lC on AIX instead of -lstdc++ as on Linux
-	
 
 2004-03-04  Charlie Zender  <zender@uci.edu>
 
