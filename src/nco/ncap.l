@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.56 2002-06-09 01:11:14 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.57 2002-06-09 18:49:42 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -102,7 +102,7 @@ XPN [eE][+-]?[0-9]+
     (void)fprintf(stderr,"%s: ERROR File %s nesting depth of %zu is too deep",prg_nm_get(),yytext,ncl_dpt_crr);
     nco_exit(EXIT_FAILURE);
   } /* endif */
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO Will descend from file %s at nesting depth %zu to #include'd file %s at depth %zu\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,yytext,ncl_dpt_crr+1UL);
+  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO Will descend from file %s at nesting depth %zu to #include'd file %s at depth %zu\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,yytext,ncl_dpt_crr+(size_t)1UL);
   /* Put current input buffer on stack */
   ncl_stk[ncl_dpt_crr]=YY_CURRENT_BUFFER; 
   /* Increment nesting level */
@@ -133,7 +133,7 @@ XPN [eE][+-]?[0-9]+
   if(ncl_dpt_crr > 0UL){
     /* If we are exiting a #include'd script, delete its buffers */
     NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL=False; /* [flg] */
-    if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from file %s at nesting depth %zu to file %s at depth %zu\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,fl_spt_glb[ncl_dpt_crr-1],ncl_dpt_crr-1UL);
+    if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from file %s at nesting depth %zu to file %s at depth %zu\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,fl_spt_glb[ncl_dpt_crr-1],ncl_dpt_crr-(size_t)1UL);
     fl_spt_glb[ncl_dpt_crr]=(char *)nco_free(fl_spt_glb[ncl_dpt_crr]);
     /* Decrement depth of nesting */
     ncl_dpt_crr--; 
@@ -654,8 +654,42 @@ unpack/[ ]*\( {return UNPACK;}
   BEGIN INITIAL;
 } /* end RHS_SUBSCRIPT */
 
+"if" { /* If */
+  return IF;
+} /* end if */
+"&&" { /* And */
+  return AND;
+} /* end && */
+"||" { /* Or */
+  return OR;
+} /* end || */
+"==" { /* Comparison equals */
+  lval_ptr->nco_rlt_opr=nco_op_eq;
+  return COMPARISON;
+} /* end == */
+"!=" { /* Comparison not equals */
+  lval_ptr->nco_rlt_opr=nco_op_ne;
+  return COMPARISON;
+} /* end != */
+"<=" { /* Comparison less than or equal to */
+  lval_ptr->nco_rlt_opr=nco_op_le;
+  return COMPARISON;
+} /* end <= */
+">=" { /* Comparison greater than or equal to */
+  lval_ptr->nco_rlt_opr=nco_op_ge;
+  return COMPARISON;
+} /* end >= */
+"<" { /* Comparison less than */
+  lval_ptr->nco_rlt_opr=nco_op_lt;
+  return COMPARISON;
+} /* end < */
+">" { /* Comparison greater than */
+  lval_ptr->nco_rlt_opr=nco_op_gt;
+  return COMPARISON;
+} /* end > */
+
 = {
-  /* Equals */
+  /* Equals assignment */
   RHS=True; 
   return yytext[0];
 } /* end equals */

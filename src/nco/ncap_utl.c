@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.66 2002-06-07 06:27:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.67 2002-06-09 18:49:42 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -254,7 +254,7 @@ ncap_var_scv_add(var_sct *var,scv_sct scv)
   (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
   
   return var_nsw;
-} /* end ncap_var_scv_add */
+} /* end ncap_var_scv_add() */
 
 var_sct *
 ncap_var_scv_sub(var_sct *var,scv_sct scv)
@@ -267,7 +267,7 @@ ncap_var_scv_sub(var_sct *var,scv_sct scv)
   (void)var_scv_add(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
   
   return var_nsw;
-} /* end ncap_var_scv_sub */
+} /* end ncap_var_scv_sub() */
 
 var_sct *
 ncap_var_scv_multiply(var_sct *var,scv_sct scv)
@@ -485,9 +485,9 @@ ncap_scv_minus(scv_sct *scv)
     scv->val.d=-scv->val.d;
     break;
   default: nco_dfl_case_nctype_err(); break;   
-  }/* end switch */    
+  } /* end switch */    
   return scv->type;
-}
+} /* end ncap_scv_minus() */
 
 nm_id_sct *
 var_lst_copy(nm_id_sct *xtr_lst,int lst_nbr)
@@ -503,7 +503,7 @@ var_lst_copy(nm_id_sct *xtr_lst,int lst_nbr)
     xtr_new_lst[idx].id=xtr_lst[idx].id;
   } /* end loop over variable */
   return xtr_new_lst;            
-} /* end var_lst_copy */
+} /* end var_lst_copy() */
 
 nm_id_sct *
 var_lst_free(nm_id_sct *xtr_lst,int lst_nbr)
