@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.124 2002-09-15 01:18:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.125 2002-09-15 01:44:58 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -368,19 +368,33 @@ and any patches you required.
 @cindex @acronym{UNIX}
 The major prerequisite for installing @acronym{NCO} on a particular platform is
 the successful, prior installation of the netCDF libraries themselves.
-Unidata has shown a commitment to maintaining netCDF on all popular @acronym{UNIX}
-platforms, and is moving towards full support for the Microsoft Windows
-operating system (@acronym{OS}).
-Given this, the only difficulty in implementing @acronym{NCO} on a particular
-platform is standardization of various C and Fortran interface and
-system calls.
-The C-code has been tested for @acronym{ANSI} compliance by compiling with @acronym{GNU} 
-@code{gcc -ansi -pedantic}. 
+Unidata has shown a commitment to maintaining netCDF on all popular
+@acronym{UNIX} platforms, and is moving towards full support for the
+Microsoft Windows operating system (@acronym{OS}).
+Given this, the only difficulty in implementing @acronym{NCO} on a
+particular platform is standardization of various C and Fortran
+interface and system calls.
+The C-code has been tested for @acronym{ANSI} compliance by compiling
+with @acronym{GNU} @samp{gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE}
+(the @samp{_BSD_SOURCE} token is required on some Linux platforms where
+@command{gcc} dislikes the network header files like
+@file{netinet/in.h}). 
 @cindex @acronym{ANSI}
-Certain branches in the code were required to satisfy the native SGI and
-SunOS @command{cc} compilers, which are strictly @acronym{ANSI} compliant and do not
-allow variable-size arrays, a nice feature supported by @acronym{GNU},
-@acronym{UNICOS}, Solaris, and @acronym{AIX} compilers. 
+@cindex C99
+@cindex C89
+Until recently (and not even yet), @acronym{ANSI}-compliant has meant
+compliance with the 1989 ISO C-standard, usually called C89 (with
+minor revisions made in 1994 and 1995).
+C89 does not allow variable-size arrays nor use of the @samp{%z} format 
+for @code{printf}.
+These are nice features of the 1999 ISO C-standard called C99. 
+@acronym{NCO} is C99-compliant where possible and C89-compliant where
+necessary. 
+Certain branches in the code are required to satisfy the native
+@acronym{SGI} and SunOS C compilers, which are strictly @acronym{ANSI} 
+C89 compliant, and cannot benefit from the C99 features.
+However, the C99 features are supported and by the @acronym{GNU},
+@acronym{UNICOS}, Solaris, and @acronym{AIX} compilers.
 
 The most time-intensive portion of @acronym{NCO} execution is spent in
 arithmetic operations, e.g., multiplication, averaging, subtraction.
