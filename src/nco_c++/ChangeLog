@@ -1,3 +1,7 @@
+2002-02-11  Charlie Zender  <zender@uci.edu>
+
+	* Added GPL copyright statements to all files
+
 2002-02-05  Charlie Zender  <zender@uci.edu>
 
 	* nco_var.hh (file): Added <short> and <short *> types to

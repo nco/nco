@@ -1,39 +1,18 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.2 2002-01-11 23:48:19 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.3 2002-02-12 07:33:33 zender Exp $
 
-// Purpose:  Test for C++ programs using libnco_c++ API
+// Purpose: Test for C++ programs using libnco_c++ API
+
+/* Copyright (C) 2001--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Compilation
    make -W tst.cc OPTS=D tst
    make OPTS=D tst
    cd ${HOME}/nco/src/nco_c++;make -W OPTS=D tst.cc tst;cd -
-   cd ${HOME}/nco/src/nco_c++;make OPTS=D tst;cd -
- */
+   cd ${HOME}/nco/src/nco_c++;make OPTS=D tst;cd - */
 
 // etags ~/nco/src/nco_c++/*.cc ~/nco/src/nco_c++/*.hh ~/mie/*.cc ~/mie/*.hh ~/slr_spc/*.cc ~/slr_spc/*.hh ~/ck/htrn.c ~/c++/*.cc ~/c++/*.hh 
-
-/* I am trying to decide on a reasonable license for this software
-   Here is a first attempt, based on the BSD license of my_getopt: */
-/* Copyright (C) 1997--2001 Charlie Zender
-   
-   Permission is hereby granted, free of charge, to any person
-   obtaining a copy of this software and associated documentation
-   files (the "Software"), to deal in the Software without
-   restriction, including without limitation the rights to use, copy,
-   modify, merge, publish, distribute, sublicense, and/or sell copies
-   of the Software, and to permit persons to whom the Software is
-   furnished to do so, subject to the following conditions:
-   
-   The above copyright notice and this permission notice shall be
-   included in all copies or substantial portions of the Software.
-   
-   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-   NONINFRINGEMENT.  IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-   HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-   WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-   DEALINGS IN THE SOFTWARE. */
 
 // Standard C++ headers
 #include <iostream> // Standard C++ I/O streams cout, cin
@@ -66,10 +45,10 @@ int main(int argc,char **argv)
   long sz_nbr(1); // [nbr] Number of sizes
   register long idx; // [idx] Counting index
 
-  const std::string CVS_Date("$Date: 2002-01-11 23:48:19 $"); // [sng] CVS date string
-  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.2 2002-01-11 23:48:19 zender Exp $"); // [sng] CVS header string
-  const std::string CVS_Id("$Id: tst.cc,v 1.2 2002-01-11 23:48:19 zender Exp $"); // [sng] CVS identification string
-  const std::string CVS_Revision("$Revision: 1.2 $"); // [sng] CVS revision string
+  const std::string CVS_Date("$Date: 2002-02-12 07:33:33 $"); // [sng] CVS date string
+  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.3 2002-02-12 07:33:33 zender Exp $"); // [sng] CVS header string
+  const std::string CVS_Id("$Id: tst.cc,v 1.3 2002-02-12 07:33:33 zender Exp $"); // [sng] CVS identification string
+  const std::string CVS_Revision("$Revision: 1.3 $"); // [sng] CVS revision string
   const std::string date_cvs(CVS_Date.length() > 7 ? CVS_Date.substr(7,19) : "Unknown"); // [sng] Date from CVS
   const std::string sbr_nm("main"); // [sng] Subroutine name
   const std::string prg_nm("libnco_c++"); // [sng] Program name

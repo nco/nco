@@ -1,8 +1,10 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_hgh.cc,v 1.1 2002-01-11 23:20:29 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_hgh.cc,v 1.2 2002-02-12 07:33:33 zender Exp $ 
 
 // Implementation (declaration) of C++ interface to high-level NCO utilities
 
-/* */
+/* Copyright (C) 2001--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include <nco_hgh.hh> // High-level NCO utilities
 
