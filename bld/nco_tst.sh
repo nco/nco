@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.39 2002-07-08 08:16:32 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.40 2002-07-08 16:07:20 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -8,10 +8,11 @@
 
 function usage {
 #    echo >&2 "Usage: ${basename $0} ncra | ncea | ncwa | ncflint | ncdiff | net"
-    printf "Usage: ${basename ${0}} ncra | ncea | ncwa | ncflint | ncdiff | net\n"
+    printf "Usage: ${basename ${0}} ncra | ncea | ncwa | ncflint | ncdiff | ncap | net\n"
 } # end usage()
 
 START=0
+NCAP=0
 NCKS=0
 NCWA=0
 NCRA=0
@@ -22,6 +23,7 @@ NET=0
 
 if [ $# -eq 0 ]; then
     START=1
+    NCAP=1
     NCKS=1
     NCWA=1
     NCRA=1
@@ -32,6 +34,10 @@ if [ $# -eq 0 ]; then
 else 
     while [ $# -gt 0 ]; do
     case $1 in
+	ncap )
+	    NCAP=1
+	    shift
+	;;
 	ncks )
 	    NCKS=1
 	    shift
@@ -278,8 +284,6 @@ ncra -O -y rms -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
 echo "ncra 7: record rms of float with double missing values across two files: 5.385164807 =?= $avg"
 
-
-
 ncrcat -O -v rec_var_flt_mss_val_dbl in.nc in.nc foo1.nc 2>> foo.tst
 ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo2.nc 2>> foo.tst
 ncwa -O -a time foo2.nc foo2.nc 2>> foo.tst
@@ -327,7 +331,12 @@ ncrename -O -v one,foo in.nc foo2.nc 2>> foo.tst
 ncflint -O -i foo,0.5 -v two foo1.nc foo2.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v two foo.nc`
 echo "ncflint 2: identity interpolation: 2.0 =?= $avg" 
-fi #end ncflint
+fi # end ncflint
+
+# ncap testing
+if [ "$NCAP" = 1 ]; then
+ncap -O -D 1 -v -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+fi # end NCAP
 
 if [ "$NET" = 1 ]; then
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
@@ -358,5 +367,4 @@ ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets
 avg=`ncks -C -H -s "%e" -v lon foo.nc 2>> foo.tst`
 echo "nco 5: HTTP/DODS protocol: 0 =?= $avg (Will fail if not compiled on Linux with 'make DODS=Y')" 
 fi #end net
-
 
