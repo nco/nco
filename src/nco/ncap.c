@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.96 2002-09-15 01:50:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.97 2002-09-20 05:34:37 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -90,8 +90,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.96 2002-09-15 01:50:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.96 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.97 2002-09-20 05:34:37 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.97 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -313,15 +313,15 @@ main(int argc,char **argv)
   sym_tbl[sym_idx++]=ncap_sym_init("floor",floor,floorf); /* Round down to nearest integer */
 
   /* fxm: Change whole section to autotools format #if HAVE_ERF ... */
-#if (defined AIX) || (defined SGI6) || (defined SGI64) || (defined SGIMP64) || (defined WIN32)
-  /* 20020122 and 20020422: AIX, SGI*, WIN32 do not define erff(), erfcf(), gammaf() */
+#if (defined AIX) || (defined CRAY) || (defined SGI6) || (defined SGI64) || (defined SGIMP64) || (defined WIN32)
+  /* 20020122 and 20020422: AIX, CRAY, SGI*, WIN32 do not define erff(), erfcf(), gammaf() */
   sym_tbl_nbr-=3; /* Advanced math: erf, erfc, gamma */
   /* sym_tbl_nbr-=2; *//* Basic Rounding: ceil, floor */
   /* 20020703: AIX, MACOSX, SGI*, WIN32 do not define rintf */
   sym_tbl_nbr-=4; /* Advanced Rounding: nearbyint, rintf, round, trunc */
   /* 20020703: AIX, SGI*, WIN32 do not define acoshf, asinhf, atanhf */
   sym_tbl_nbr-=6; /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
-#else /* not AIX || SGI* || WIN32 */
+#else /* not AIX || CRAY || SGI* || WIN32 */
   /* LINUX*, MACOSX*, and SUN* provide these functions */
   /* Advanced math: erf, erfc, gamma */
   sym_tbl[sym_idx++]=ncap_sym_init("erf",erf,erff);
@@ -344,7 +344,7 @@ main(int argc,char **argv)
   /* sym_tbl[sym_idx++]=ncap_sym_init("round",round,roundf); *//* Round to nearest integer away from zero */
   /* sym_tbl[sym_idx++]=ncap_sym_init("trunc",trunc,truncf); *//* Round to nearest integer not larger in absolute value */
   /* sym_tbl[sym_idx++]=ncap_sym_init("rint",rint,rintf); *//* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
-#endif /* not AIX || SGI* || WIN32 */
+#endif /* not AIX || CRAY || SGI* || WIN32 */
   assert(sym_idx == sym_tbl_nbr);
 
 

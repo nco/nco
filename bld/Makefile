@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.184 2002-09-17 18:32:51 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.185 2002-09-20 05:34:37 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -402,7 +402,7 @@ endif
 # endif ALPHA
 
 ifeq (${PVM_ARCH},CRAY)
-C++ := g++
+C++ := CC
 CC := cc
 CPP := cpp
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
@@ -414,18 +414,18 @@ ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 endif
 LEX := lex
 LINT := lint
-YACC := yacc
+YACC := bison
 ifeq (${OPTS},O)
- CFLAGS += -O
- FFLAGS = -N 132
+ CFLAGS += -h rounddiv -h nofastmd -h nofastmodulus
+ FFLAGS = -O2 -N 132
 endif
 ifeq (${OPTS},D)
- CFLAGS += -g
- FFLAGS = -g -N 132
+ CFLAGS += -g -h indef -h rounddiv -h nofastmd -h nofastmodulus
+ FFLAGS = -g -N 132 -ei
 endif
 ifeq (${OPTS},X)
- CFLAGS += -g -N 132
- FFLAGS = -g -N 132 -e i
+ CFLAGS += -g -h rounddiv -h indef -h bounds -h nofastmd -h nofastmodulus
+ FFLAGS = -g -N 132 -ei -Rabc
 endif
 # 19971021 Added -P to suppress #line # directives on Fortran files
 ${MY_OBJ_DIR}/%.o : %.F
@@ -1010,7 +1010,8 @@ dat_cln:
 test:	tst
 tst:	dat
 	- if test -f ${MY_DAT_DIR}/nco_tst.nc; then printf "" ; else ${MY_BIN_DIR}/ncks -R -p ftp://dust.ps.uci.edu/pub/zender/nco -l ${MY_DAT_DIR} nco_tst.nc; if [ $? != 0 ]; then printf "WARNING: Unable to retrieve ftp://dust.ps.uci.edu/pub/zender/nco/nco_tst.nc required for self-test, possible problem with getting through your firewall? Manually download and install in directory ../data to continue self test...\n"; fi; fi
-	cd ${MY_BLD_DIR}; ./nco_tst.sh
+	cd ${MY_BLD_DIR}; \
+	env MY_BIN_DIR=${MY_BIN_DIR} MY_DAT_DIR=${MY_DAT_DIR} ./nco_tst.sh
 testclean: tst_cln
 tst_cln:
 	cd ${MY_DAT_DIR}; rm -f foo* nco_tst.nc

@@ -282,7 +282,7 @@ if test "$enable_debug" = "yes"; then
       CFLAGS="$CFLAGS -g -check_bounds -check -check_omp"
       ;;
     *-cray-unicos) 
-      CFLAGS="$CFLAGS -g"
+      CFLAGS="$CFLAGS -g -h indef -h rounddiv -h nofastmd -h nofastmodulus"
       ;;
     i[3456]86-*-linux-*)
       CFLAGS="$DFLAGS -g Wall"
@@ -299,7 +299,7 @@ if test "$enable_debug" = "yes"; then
     sparc-*-*)
       CFLAGS="$CFLAGS -g"
       ;;
-  *-cygwin*)
+    *-cygwin*)
       CFLAGS="$CFLAGS -g"
       ;;
   esac
@@ -318,7 +318,7 @@ if test "$enable_extreme" = "yes"; then
       CFLAGS="$CFLAGS -N 132" 
       ;;
     *-cray-unicos) 
-      CFLAGS="$CFLAGS -g -N 132"
+      CFLAGS="$CFLAGS -g -h rounddiv -h indef -h bounds -h nofastmd -h nofastmodulus"
       ;;
     i[3456]86-*-linux-*)
       CFLAGS="$CFLAGS -g -Wall"

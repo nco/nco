@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.46 2002-08-22 06:10:19 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.47 2002-09-20 05:34:37 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -112,7 +112,7 @@ avg=`${MY_BIN_DIR}/ncks -C -H -s "%c" -v fl_nm in.nc`
 echo "ncks 1: extract filename string: /home/zender/nco/data/in.cdl =?= $avg"
 
 ${MY_BIN_DIR}/ncks -O -v lev in.nc foo2.nc
-avg=`ncks -H -C -s "%f," -v lev foo2.nc`
+avg=`${MY_BIN_DIR}/ncks -H -C -s "%f," -v lev foo2.nc`
 echo "ncks 2: extract a dimension: 100.000000,500.000000,1000.000000 =?= $avg" 
 
 ${MY_BIN_DIR}/ncks -O -v three_dmn_var in.nc foo2.nc
@@ -365,7 +365,7 @@ fi # end ncflint
 
 # ncap testing
 if [ "${NCAP}" = 1 ]; then
-${MY_BIN_DIR}/ncap -O -D 1 -v -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
+${MY_BIN_DIR}/ncap -O -D 1 -v -S ${MY_DAT_DIR}/ncap.in ${MY_DAT_DIR}/in.nc ${MY_DAT_DIR}/foo.nc
 fi # end NCAP
 
 if [ "${NET}" = 1 ]; then

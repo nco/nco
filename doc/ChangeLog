@@ -1,3 +1,11 @@
+2002-09-19  Charlie Zender  <zender@uci.edu>
+
+	* Patches from Len Makin for CRAY
+	1. Cray patch for ncap symbol table
+	2. Makefile fixes for Cray
+	3. nco_tst.sh tweaks
+	Applied the Makefile flags to configure.in as well
+	
 2002-09-17  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_6_4

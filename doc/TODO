@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.190 2002-09-17 15:59:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.191 2002-09-20 05:34:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -16,7 +16,7 @@ Autoconf-build items:
 17. Fix CXX valarray to work on AIX
 19. Implement autotools processing of doc/nco.texi to generate standard documentation: nco.info, nco.dvi, nco.ps, nco.pdf
 20. DODS linkage appears broken on Linux
-21. Add nco_rth_flt.[ch] to autotools build mechanism
+22. Many compiler flags in configure.in should be compiler specific--not just OS specific, e.g., case $host in *-cray-unicos) case $CC in CC) CFLAGS= ....
 
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
