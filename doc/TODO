@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.454 2005-03-18 01:21:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.455 2005-03-22 02:57:21 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -282,7 +282,12 @@ nco483. Compiling with ABORT_ON_ERROR and calling without an option dumps core
         Fix so inputting 0 filenames merely prints usage, does not abort?
 nco485. Add md5sum hash functionality to ncks
 nco486. Make sure ncks -q/-Q behaves as intended
-nco487. 
+nco487. Add ncks option to suppress over-writing attributes in output file by attributes of source file#1
+nco488. ncatted: Deleting global attributes doesn't work unless 'global' specified
+        ncatted -O -a Conventions,,d,, ~/nco/data/in.nc ~/foo.nc (fails)
+        ncks ~/foo.nc | m
+        ncatted -a Conventions,global,d,, in.nc foo.nc (works)
+nco489. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
