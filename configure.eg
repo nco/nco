@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.1 2002-08-19 19:14:33 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.2 2002-08-19 21:03:23 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -6,19 +6,177 @@ Develop recommend ./configure invocations for each architecture
 
 Summary table: Y: feature works, N feature broken, blank: not yet tested
 Architecture	build?	ABI64	DODS	I18N	OpenMP	nco_c++	check
-LINUX		Y	N/A				Y
+LINUX		Y	N/A				Y	N
 LINUXALPHA	N					N(1)
 SGIMP64		N
 SUNMP		Y
-AIX		
+AIX		N(2)
 OSF1		
 -----------------------------------------------------------------------
 Footnotes to summary table:
 01. Try with CXX that supports valarray
-02. 
+02. Unable to find libnetcdf.a
 -----------------------------------------------------------------------
 
-Recommended ./configure invocation by architecture:
+Recommended/current ./configure invocation, alphabetized by pvmgetarch:
+
+************************************************************************
+Start AIX
+General comments on AIX: Unable to find netcdf installation
+************************************************************************
+zender@bb0001en:/fs/cgd/home0/zender/nco$ pvmgetarch;uname -a
+AIX
+AIX bb0001en 3 4 000117924C00
+zender@bb0001en:~/nco$ CC='xlc_r' CXX='xlC' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure
+checking target system type..powerpc-ibm-aix4.3.3.0
+
+Old build examples:
+For ABI=32:
+xlc  -DAIX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='bb0001en' -DUSER='zender' -I./ -I../src/nco -I/usr/local/include -U_OPENMP -qmaxmem=8192 -qlanglvl=extended -O -c ../src/nco/nco_att_utl.c -o /home/babyblue/zender/obj/AIX/nco_att_utl.o
+For ABI=64:
+xlc  -DAIX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='bb0001en' -DUSER='zender' -I./ -I../src/nco -I/usr/local/include -U_OPENMP -qmaxmem=8192 -qlanglvl=extended -O -q64 -c ../src/nco/nco_att_utl.c -o /home/babyblue/zender/obj/AIX/nco_att_utl.o
+New build example:
+zender@bb0001en:~/nco$ NETCDF_INC=/usr/local/include NETCDF_LIB=/usr/local/lib32/r4i4 ./configure
+checking build system type... powerpc-ibm-aix4.3.3.0
+checking host system type... powerpc-ibm-aix4.3.3.0
+checking target system type... powerpc-ibm-aix4.3.3.0
+checking for a BSD-compatible install... autobld/install-sh -c
+checking whether build environment is sane... yes
+checking whether make sets ${MAKE}... yes
+checking for working aclocal-1.4... missing
+checking for working autoconf... found
+checking for working automake-1.4... missing
+checking for working autoheader... found
+checking for working makeinfo... found
+checking for xlc_r... xlc_r
+checking for C compiler default output... a.out
+checking whether the C compiler works... yes
+checking whether we are cross compiling... no
+checking for suffix of executables... 
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... no
+checking whether xlc_r accepts -g... yes
+checking for g++... g++
+checking whether we are using the GNU C++ compiler... yes
+checking whether g++ accepts -g... yes
+checking how to run the C preprocessor... xlc_r -E
+checking how to run the C++ preprocessor... g++ -E
+checking for xlc_r option to accept ANSI C... none needed
+checking for flex... flex
+checking for flex... (cached) flex
+checking for yywrap in -lfl... no
+checking for yywrap in -ll... yes
+checking lex output file root... lex.yy
+checking whether yytext is a pointer... yes
+checking for bison... bison -y
+checking for a BSD-compatible install... autobld/install-sh -c
+checking whether ln -s works... yes
+checking for non-GNU ld... /bin/ld
+checking if the linker (/bin/ld) is GNU ld... no
+checking for /bin/ld option to reload object files... -r
+checking for BSD-compatible nm... /bin/nm -B
+checking for a sed that does not truncate output... /bin/sed
+checking how to recognise dependent libraries... pass_all
+checking command to parse /bin/nm -B output... ok
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... no
+checking for unistd.h... yes
+checking dlfcn.h usability... yes
+checking dlfcn.h presence... yes
+checking for dlfcn.h... yes
+checking for ranlib... ranlib
+checking for strip... strip
+checking for objdir... .libs
+checking for xlc_r option to produce PIC... none
+checking if xlc_r static flag -bnso -bI:/lib/syscalls.exp works... no
+checking if xlc_r supports -c -o file.o... no
+checking if we can lock with hard links... yes
+checking whether the linker (/bin/ld) supports shared libraries... yes
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... no
+checking dynamic linker characteristics... aix4.3.3.0 ld.so
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... yes
+checking whether to build static libraries... no
+creating libtool
+checking whether to enable maintainer-specific portions of Makefiles... no
+checking for stdlib.h... (cached) yes
+checking for working malloc... no
+checking for working memcmp... yes
+checking whether lstat dereferences a symlink specified with a trailing slash...
+ no
+checking whether stat accepts an empty string... no
+checking for working strtod... yes
+checking for gethostname... yes
+checking for memchr... yes
+checking for memmove... yes
+checking for pow... no
+checking for setlocale... yes
+checking for sqrt... no
+checking for strcasecmp... yes
+checking for strchr... yes
+checking for strdup... yes
+checking for strrchr... yes
+checking for strstr... yes
+checking for strtol... yes
+checking for ANSI C header files... (cached) yes
+checking libintl.h usability... no
+checking libintl.h presence... no
+checking for libintl.h... no
+checking limits.h usability... yes
+checking limits.h presence... yes
+checking for limits.h... yes
+checking locale.h usability... yes
+checking locale.h presence... yes
+checking for locale.h... yes
+checking netinet/in.h usability... yes
+checking netinet/in.h presence... yes
+checking for netinet/in.h... yes
+checking for stdlib.h... (cached) yes
+checking for string.h... (cached) yes
+checking for unistd.h... (cached) yes
+checking getopt.h usability... no
+checking getopt.h presence... no
+checking for getopt.h... no
+checking netcdf.h usability... no
+checking netcdf.h presence... no
+checking for netcdf.h... no
+checking for an ANSI C-conforming const... yes
+checking for inline... __inline
+checking for pid_t... yes
+checking for size_t... yes
+checking whether struct tm is in sys/time.h or time.h... time.h
+checking for uid_t in sys/types.h... yes
+checking for ptrdiff_t... yes
+checking for int*... yes
+checking size of int*... 4
+configure: checking default compiler flags
+checking for ncopen in -lnetcdf... no
+configure: initial linking failed.  Adding 64-bit flags (if known)
+checking for ncclose in -lnetcdf... no
+********************
+I cannot link with "libnetcdf.a" when LDFLAGS=LDFLAGS -q64. 
+Maybe adjust LDFLAGS, or perhaps you do not have libnetcdf, in
+which case it can be retrieved from http://www.unidata.ucar.edu.
+Otherwise, I found that CC="xlc_r" and CFLAGS="-g -qmaxmem=8192 -qlanglvl=extend
+ed -q64" still 
+fails.  You can override my choices by explicitly setting these as 
+environment variables and then using ./configure again.
+*********************
+configure: error: all netCDF linking failed.
+*
+
+************************************************************************
+End AIX
+************************************************************************
+
 ************************************************************************
 Start LINUX
 General comments on LINUX:
@@ -32,32 +190,186 @@ Old build example:
 gcc  -DLINUX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='dust.ps.uci.edu' -DUSER='zender' -Di386 -I/usr/local/include -U_OPENMP -Wall -O -c ../src/nco/nco_att_utl.c -o /home/zender/obj/LINUX/nco_att_utl.o
 New build example:
 gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I/usr/local/include -g -O2 -c nco_att_utl.c  -fPIC -DPIC -o .libs/nco_att_utl.lo
+
+gmake  check-TESTS
+gmake[3]: Entering directory `/home/zender/nco/src/nco_c++'
+libnco_c++ version VERSION built Aug 19 2002 on HOSTNAME by USER
+nco_err_exit(): ERROR netCDF library returned error code 2
+nco_err_exit(): ERROR nco_open
+No such file or directory
+nco_err_exit(): Failed to open in.nc
+FAIL: tst
+===================
+1 of 1 tests failed
+===================
+
 ************************************************************************
 End LINUX
 ************************************************************************
 
 ************************************************************************
-End SGIMP64
-General comments on SGIMP64:
-************************************************************************
-zender@krein:~/nco$ pvmgetarch;uname -a
-SGIMP64
-IRIX64 krein 6.5 10100655 IP27 mips
-CC='cc' ./configure 
-configure: error: all netCDF linking failed.
-************************************************************************
-End SGIMP64
-************************************************************************
-
-************************************************************************
 Start LINUXALPHA
-General comments on LINUXALPHA: 
+General comments on LINUXALPHA: Tested platform needs newer g++
 ************************************************************************
 zender@ess1:/usr/home/zender/nco$ pvmgetarch;uname -a
 LINUXALPHA
 Linux ess1.ps.uci.edu 2.2.15 #1 Thu May 18 17:22:29 EDT 2000 alpha unknown
+zender@dust:~/nco$ ./configure
+checking build system type... alphaev56-unknown-linux-gnu
+
+Old build example:
+New build example:
 ************************************************************************
 End LINUXALPHA
+************************************************************************
+
+************************************************************************
+Start SGIMP64
+General comments on SGIMP64: Found netcdf.h, unable to link to libnetcdf.a
+************************************************************************
+zender@krein:~/nco$ pvmgetarch;uname -a
+SGIMP64
+IRIX64 krein 6.5 10100655 IP27 mips
+zender@krein:~/nco$ CC='cc' CXX='CC -LANG:std' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure
+checking build system type... mips-sgi-irix6.5
+
+Old build example: (Default is ABI64 on this platform)
+cc  -DSGIMP64 -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='krein.math.uci.edu' -DUSER='zender' -I/usr/local/include -U_OPENMP -64 -mips4 -O2 -c ../src/nco/nco_att_utl.c -o /home/ess/zender/zender/obj/SGIMP64/nco_att_utl.o
+cc -o /home/ess/zender/zender/bin/SGIMP64/ncdiff /home/ess/zender/zender/obj/SGIMP64/ncdiff.o -64 -mips4 -L/home/ess/zender/zender/lib/SGIMP64 -L/usr/local/lib -lnco -lnetcdf -lm
+New build example:
+zender@krein:~/nco$ CC='cc' CXX='CC -LANG:std' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure
+checking build system type... mips-sgi-irix6.5
+checking host system type... mips-sgi-irix6.5
+checking target system type... mips-sgi-irix6.5
+checking for a BSD-compatible install... /usr/gnu/bin/install -c
+checking whether build environment is sane... yes
+checking whether make sets ${MAKE}... yes
+checking for working aclocal-1.4... missing
+checking for working autoconf... missing
+checking for working automake-1.4... missing
+checking for working autoheader... missing
+checking for working makeinfo... found
+checking for C compiler default output... a.out
+checking whether the C compiler works... yes
+checking whether we are cross compiling... no
+checking for suffix of executables... 
+checking for suffix of object files... o
+checking whether we are using the GNU C compiler... no
+checking whether cc accepts -g... yes
+checking whether we are using the GNU C++ compiler... no
+checking whether CC -LANG:std accepts -g... yes
+checking how to run the C preprocessor... cc -E
+checking how to run the C++ preprocessor... CC -LANG:std -E
+checking for cc option to accept ANSI C... none needed
+checking for flex... flex
+checking for flex... (cached) flex
+checking for yywrap in -lfl... yes
+checking lex output file root... lex.yy
+checking whether yytext is a pointer... yes
+checking for bison... bison -y
+checking for a BSD-compatible install... /usr/gnu/bin/install -c
+checking whether ln -s works... yes
+checking for non-GNU ld... /bin/ld
+checking if the linker (/bin/ld) is GNU ld... no
+checking for /bin/ld option to reload object files... -r
+checking for BSD-compatible nm... /bin/nm -B
+checking for a sed that does not truncate output... /usr/gnu/bin/sed
+checking how to recognise dependent libraries... pass_all
+checking command to parse /bin/nm -B output... ok
+checking for ANSI C header files... yes
+checking for sys/types.h... yes
+checking for sys/stat.h... yes
+checking for stdlib.h... yes
+checking for string.h... yes
+checking for memory.h... yes
+checking for strings.h... yes
+checking for inttypes.h... yes
+checking for stdint.h... no
+checking for unistd.h... yes
+checking dlfcn.h usability... yes
+checking dlfcn.h presence... yes
+checking for dlfcn.h... yes
+checking for ranlib... :
+checking for strip... strip
+checking for objdir... .libs
+checking for cc option to produce PIC... none
+checking if cc static flag -non_shared works... no
+checking if cc supports -c -o file.o... yes
+checking if cc supports -c -o file.lo... yes
+checking whether the linker (/bin/ld -n32) supports shared libraries... yes
+checking how to hardcode library paths into programs... immediate
+checking whether stripping libraries is possible... no
+checking dynamic linker characteristics... irix6.5 ld.so
+checking if libtool supports shared libraries... yes
+checking whether to build shared libraries... yes
+checking whether to build static libraries... yes
+creating libtool
+checking whether to enable maintainer-specific portions of Makefiles... no
+checking for stdlib.h... (cached) yes
+checking for working malloc... yes
+checking for working memcmp... yes
+checking whether lstat dereferences a symlink specified with a trailing slash... no
+checking whether stat accepts an empty string... no
+checking for working strtod... yes
+checking for gethostname... yes
+checking for memchr... yes
+checking for memmove... yes
+checking for pow... no
+checking for setlocale... yes
+checking for sqrt... no
+checking for strcasecmp... yes
+checking for strchr... yes
+checking for strdup... yes
+checking for strrchr... yes
+checking for strstr... yes
+checking for strtol... yes
+checking for ANSI C header files... (cached) yes
+checking libintl.h usability... no
+checking libintl.h presence... no
+checking for libintl.h... no
+checking limits.h usability... yes
+checking limits.h presence... yes
+checking for limits.h... yes
+checking locale.h usability... yes
+checking locale.h presence... yes
+checking for locale.h... yes
+checking netinet/in.h usability... yes
+checking netinet/in.h presence... yes
+checking for netinet/in.h... yes
+checking for stdlib.h... (cached) yes
+checking for string.h... (cached) yes
+checking for unistd.h... (cached) yes
+checking getopt.h usability... yes
+checking getopt.h presence... yes
+checking for getopt.h... yes
+checking netcdf.h usability... no
+checking netcdf.h presence... no
+checking for netcdf.h... no
+checking for an ANSI C-conforming const... yes
+checking for inline... __inline
+checking for pid_t... yes
+checking for size_t... yes
+checking whether struct tm is in sys/time.h or time.h... time.h
+checking for uid_t in sys/types.h... yes
+checking for ptrdiff_t... yes
+checking for int*... yes
+checking size of int*... 4
+configure: checking default compiler flags
+checking for ncopen in -lnetcdf... no
+configure: initial linking failed.  Adding 64-bit flags (if known)
+checking for ncclose in -lnetcdf... no
+*********************
+I cannot link with "libnetcdf.a" when LDFLAGS=-L/usr/local/lib . 
+Maybe adjust LDFLAGS, or perhaps you do not have libnetcdf, in
+which case it can be retrieved from http://www.unidata.ucar.edu.
+Otherwise, I found that CC="cc" and CFLAGS="-g" still 
+fails.  You can override my choices by explicitly setting these as 
+environment variables and then using ./configure again.
+*********************
+configure: error: all netCDF linking failed.
+
+************************************************************************
+End SGIMP64
 ************************************************************************
 
 Architecture-specific breakage:

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.160 2002-08-19 19:14:35 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.161 2002-08-19 21:03:25 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -11,7 +11,16 @@ NCO-wide items: 15 high priority items are shown first, then another ~100 items
 
 Autoconf-build items:
 01. Do not build nco_c++ (and thus fail) unless CXX supports valarray class
-02. 
+02. make check must do what old make tst did: build in.nc from in.cdl, and 
+then ftp nco_tst.nc from remote server
+03. Support environment variables NETCDF_INC, NETCDF_LIB to find netcdf.h, libnetcdf.a, respectively
+04. Rorik: improve/customize method of tracking autoconf build problems in configure.eg
+05. Important!!!: check for nc_open(),nc_close(), _not_ ncopen(),ncclose() in libnetcdf.a
+06. Use doc/VERSION for version number 
+07. Always pass -DNO_NETCDF_2. NB: Pass this in config.h or in CFLAGS, it's up to you. Same for the other -D tokens. 
+08. Always pass -DVERSION='${VRS_SNG}' (see bld/Makefile for handling default)
+09. Always pass -DHOSTNAME='${HOST}' (see bld/Makefile for handling default)
+10. Always pass -DUSER='${USER}' (see bld/Makefile for handling default)
 
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
