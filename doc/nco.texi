@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.79 2001-05-22 14:36:14 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.80 2001-05-31 08:32:51 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -23,6 +23,10 @@ dvips -o nco.ps nco.dvi
 ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
 cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
 cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
+
+Resources:
+Octave TeXInfo manual is a good example of clean TeXInfo structure
+
 
 Copyright (C) 1995--2001 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
