@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.67 2000-10-24 01:22:18 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.68 2000-10-28 01:26:41 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -157,13 +157,20 @@ specifications of input files</li>
 <a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay
 synchronized with NCO features.
+Being on the bleeding edge requires some familiarity with GNU build
+tools and with <a href="http://www.cvshome.org">CVS</a>. 
 
 <ul>
 <li>Source and documentation of latest released version in tarball format: <a href="ftp://nco.sourceforge.net/pub/nco/nco.tar.gz">nco.tar.gz</a> (901 Kb compressed tar-file)</li>
 <li>Source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="ftp://nco.sourceforge.net/pub/nco/nco-1.2.1-1.src.rpm">nco-1.2.1-1.src.rpm</a> (1029 Kb SRPM)</li>
 </ul>
 
-<p>Pre-built binary executable versions tend to lag the most current tarball by a few months:
+<p>Pre-built binaries: NCO development is too shorthanded to provide
+prebuilt binary executable versions on all platforms.
+However, we usually build and distribute binaries for our development
+platform (currently RedHat Linux), and we are happy to link to any
+user-contributed builds for other platforms.
+These binaries tend to lag the most current tarball by a few months: 
 <ul>
 <li>GNU/Linux Redhat 6.1-compatible Intel systems, prebuilt binary executable <a href="http://www.rpm.org">RPM</a>: <a href="ftp://nco.sourceforge.net/pub/nco/nco-1.2.1-1.i386.rpm">nco-1.2.1-1.i386.rpm</a> (588 Kb RPM)</li>
 <li>GNU/Linux Debian-compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://www.debian.org/packages/unstable/math/nco.html">nco-1.1.48-1</a></li>
@@ -199,8 +206,8 @@ fixes we currently have in mind for NCO.</li>
 
 <dt><a name="NCAR"></a></dt>
 <h2>Using NCO at UCI and NCAR</h2>
-<p>Users at UC Irvine and NCAR may find pre-built, almost up-to-date
-NCO executables in the following locations:
+<p>Users at UC Irvine and NCAR <it>may</it> find pre-built,
+<it>almost</it> up-to-date NCO executables in the following locations:
 <ul>
 <li>ACD <tt>acd.ucar.edu</tt> (Linux 2.2.14): <tt>/ur/zender/bin/LINUX</tt></li>
 <li>ACD <tt>garcia.acd.ucar.edu</tt> (Compaq tru64): <tt>/usr/local/bin</tt></li>

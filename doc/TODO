@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.81 2000-10-16 07:07:01 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.82 2000-10-28 01:26:41 zender Exp $ 
 
 *************
 NCO Wish list
@@ -76,13 +76,13 @@ relative to hyperslab to be consistent with all other data types.
 142. Implement some way of discriminating between NUL-terminated
 strings and non-NUL-terminated characters arrays in ncks printouts.
 Perhaps double quotes around former and single quotes around latter
-143. Add switch to turn off non-monotonic warning messages in ncra, ncrcat
+143. Add -W or -q switch to turn off squelch most warning messages in ncra, ncrcat (especially warnings about non-monotonicity)
 144. Add option(s) to select all N-D variables where N=0,1,2...
 145. Talk to Brian and implement latest netCDF conventions, e.g., time_op
 146. Allow proxies for coordinate variables so that, e.g., hyperslabs
 may be specified for "date" even though "time" is the coordinate. 
 Proxies must be one dimensional and monotonic, of course.
-147. Use builtin tempnam() or tmpnam() so file is built in fast
+147. Use builtin mkstemp() so file is built in fast
 directory rather than, say, NFS-mounted directory like /fs/cgd
 148. Put in more useful error diagnostics for Schweitzer's data holes
 These only appear in ncra/ncrcat because ncks treats same hyperslab as a wrap!
@@ -127,13 +127,13 @@ with nco_dst.pl
 sudo root screws up permissions in obj/bin directories of user
 178. Make _FillValue behave same as missing_value
 179. add netCDF to required packages list in RPM build
-181. Split up nc_utl.c into smaller files
+181. Split nc_utl.c into smaller files
 182. Add -L switch to print license terms
-183. Figure out why makeinfo nco.texi fails
 187. Are OpenMP critical regions sufficient for netCDF or must all other threads stop completely?
 188. Make binary RPMS build with DODS option
 189. Verify ncrcat multithreading works, produced "not a netCDF file error" once
 190. Make typ_pck et al. use nc_type enum or something sane for default
+191. Create short man pages for each operator which point user to info pages or online manual
 ************************************************************************
 End NCO Wish list
 ************************************************************************

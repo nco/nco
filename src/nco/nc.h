@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.52 2000-10-27 11:05:57 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.53 2000-10-28 01:26:41 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -46,7 +46,9 @@
 
 /* Variables marked CEWI "Compiler Error Warning Initialization" are initialized
    to prevent spurious "warning: `float foo' might be used uninitialized in 
-   this function" warnings when, e.g., GCC -Wuninitialized is turned on. */
+   this function" warnings when, e.g., GCC -Wuninitialized is turned on.
+   Note that these warning messages are compiler and OS dependent
+   GCC on Alpha, e.g., emits warnings which cannot be removed by this trick */
 #define NULL_CEWI NULL
 #define char_CEWI '\0'
 #define double_CEWI 0.0
@@ -140,13 +142,13 @@ enum nco_op_typ{
 }; /* end nco_op_typ enum */
 /* end enumeration section */
   
-#ifndef EXIT_SUCCESS
+#ifndef EXIT_SUCCESS /* Most likely this is a SUN4 machine */
 #define EXIT_SUCCESS 0
 #define EXIT_FAILURE 1
 #endif /* SUN4 */
 
-typedef struct {
-  char *nm;
+typedef struct { /* lmt_sct */
+  char *nm; /* [sng] Variable name */
   int lmt_typ; /* crd_val or dmn_idx */
   /* Following four flags are used only by multi-file operators ncra and ncrcat: */
   bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
@@ -169,18 +171,18 @@ typedef struct {
   long srd; /* Stride of hyperslab */
 } lmt_sct;
 
-typedef struct{
+typedef struct{ /* nm_id_sct */
   char *nm;
   int id;
 } nm_id_sct;
 
-typedef struct{
+typedef struct{ /* rnm_sct */
   char *old_nm;
   char *new_nm;
   int id;
 } rnm_sct;
 
-typedef union {
+typedef union{ /* ptr_unn */
   float *fp;
   double *dp;
   nclong *lp;
@@ -190,7 +192,7 @@ typedef union {
   void *vp;
 } ptr_unn;
 
-typedef union {
+typedef union{ /* val_unn */
   float f;
   double d;
   nclong l;
@@ -199,7 +201,7 @@ typedef union {
   signed char b;
 } val_unn;
 
-typedef struct{
+typedef struct{ /* aed_sct */
   char *att_nm; /* Name of attribute */
   char *var_nm; /* Name of variable, or NULL for global attribute */
   int id; /* Variable ID or NC_GLOBAL ( = -1) for global attribute */
@@ -209,7 +211,7 @@ typedef struct{
   short mode; /* action to perform with attribute */
 } aed_sct;
 
-typedef struct {
+typedef struct { /* att_sct */
   char *nm;
   nc_type type;
   int sz;
@@ -217,7 +219,7 @@ typedef struct {
   ptr_unn val;
 } att_sct;
 
-typedef struct dmn_sct_tag{
+typedef struct dmn_sct_tag{ /* dmn_sct */
   char *nm; /* Dimension name */
   int id; /* Dimension ID */
   int nc_id; /* File ID */
@@ -238,7 +240,7 @@ typedef struct dmn_sct_tag{
 /* Each member of var_sct structure should be initialized to default in var_dfl_set()
    Each pointer member of var_sct structure should be freed in var_free()
    Each pointer member of var_sct structure should be copied in var_dpl() */
-typedef struct var_sct_tag{
+typedef struct var_sct_tag{ /* var_sct */
   char *nm; /* Variable name */
   int id; /* Variable ID */
   int nc_id; /* File ID */
@@ -273,7 +275,7 @@ typedef struct var_sct_tag{
   nc_type typ_upk; /* Type of variable when unpacked (expanded) (in memory) */
 } var_sct;
 
-/* Note: Fortran functions are deprecated as of NCO 1.2, will be removed unless volunteer takes over their maintenance */
+/* Fortran functions are deprecated as of NCO 1.2, will be removed unless volunteer takes over their maintenance */
 #ifdef USE_FORTRAN_ARITHMETIC
 #ifdef CRAY
 #define FORTRAN_add_real ADD_REAL

@@ -1,3 +1,7 @@
+2000-10-26  Charlie Zender  <zender@uci.edu>
+
+	* Fixed makeinfo problem with nco.texi
+
 2000-10-15  Charlie Zender  <zender@uci.edu>
 
 	* Implemented Henry's ncrename and nco_tst patches: Former

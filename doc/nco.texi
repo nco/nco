@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.70 2000-10-20 23:16:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.71 2000-10-28 01:26:41 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2383,13 +2383,12 @@ precisions arithmetic as
 This result is converted to @code{NC_SHORT} and stored on disk as 
 @math{@code{floor(1.5d)} = @code{1s}}
 @footnote{
-@cindex{C}
+@cindex C
 The actual type conversions are handled by intrinsic C-language type
 conversion, so the @code{floor()} function is not explicitly called, but
 the results are the same as if it were.}.
 Thus no "rounding up" is performed. 
 The type conversion rules of C can be stated as follows:
-@c fxm: makeinfo reports misplaced {} near here
 If @var{n} is an integer then any floating point value @var{x}
 satisfying 
 @set flg
