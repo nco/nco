@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.100 2004-06-29 19:13:03 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.101 2004-07-01 01:14:09 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.6 are ready. 
 
@@ -25,8 +25,8 @@ multi-file operators, e.g.,
 This avoids all shell limitations.
 When the input file names are specified via stdin, NCO multi-file
 operators will store the number of input files in the
-"input_file_number" global attribute and the input file names in the  
-"input_file_list" global attribute (unless you pass it -H).
+"nco_input_file_number" global attribute and the input file names in the  
+"nco_input_file_list" global attribute (unless you pass it -H).
 
 This preserves the data processing "chain of evidence".
 
@@ -40,7 +40,7 @@ Charlie
 
 Feature changes:
 1. Multi-file operators accept input filenames from stdin
-2. Multi-file operators add input_file_list, input_file_number 
+2. Multi-file operators add nco_input_file_list, nco_input_file_number 
    global attributes by default if input file names are from stdin.
 3. ln works in ncap as natural logarithm (synonym for log())
 

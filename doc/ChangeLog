@@ -1,5 +1,10 @@
 2004-06-30  Charlie Zender  <zender@uci.edu>
 
+	* Add nco_openmp_thread_number global attribute to threaded
+	programs if HISTORY_APPEND is true
+
+	* nco_openmp_ini() is now mandatory for any program using OpenMP
+
 	* Fixed "variable "_iob" has undefined data scope"
 	compiler warnings by passing stdout/stderr filehandles as local
 	variables scoped shared in OpenMP parallel clauses

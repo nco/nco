@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.328 2004-06-30 05:24:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.329 2004-07-01 01:14:09 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -57,7 +57,7 @@ fails because fl_nm has dimension char_dmn_lng but gw has dimension lat
 call to nco_var_fll() for gw requires that lat be in dmn_lst
 nco113. Rethink normalization switch options in ncwa
 nco114. Fix nco_var_cnf_dmn() so that returned weight always has same size tally array as template variable
-nco115. When sum of denominator in ncwa (i.e., sum of weight) is zero, SIGFPE results 
+nco115. SIGFPE when sum of denominator in ncwa (i.e., sum of weight) is zero
 Users should not be doing weighted averages if denominator sums to zero, but...
 Desired fix here is a graceful exit instead of core dump
 nco123. Add HTTP protocol to fl_get() (independent of DODS)
@@ -201,6 +201,8 @@ cd ~/nco/data;echo "in.nc" | ncecat -D 3 -o foo.nc
 nco341. Add _FILE_OFFSET_BITS == 64 to all compiles? Otherwise stat() call in nco_fl_mk_lcl() may fail on large files on 32 bit systems
 nco342. Get canonicalize_file_name() working in nco_fl_info_get()
 nco344. Create sophisticated etags regular expressions for change version number in all documentation tags_doc.sh
+nco345. OpenMP implementation in ncwa core dumps: wgt_avg problem?
+nco346. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.241 2004-06-26 21:42:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.242 2004-07-01 01:14:09 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1349,12 +1349,12 @@ A drawback to this method is that the @code{history} attribute
 (@pxref{History attribute}) does not record the name of any input 
 files since the names were not passed on the command line.
 This makes determining the data provenance at a later date difficult.
-@cindex @code{input_file_number}
-@cindex @code{input_file_list}
+@cindex @code{nco_input_file_number}
+@cindex @code{nco_input_file_list}
 @cindex global attributes
 To remedy this situation, multi-file operators store the number of
-input files in the @code{input_file_number} global attribute and the
-input file list itself in the @code{input_file_list} global attribute
+input files in the @code{nco_input_file_number} global attribute and the
+input file list itself in the @code{nco_input_file_list} global attribute
 (@pxref{Input file list attributes}).
 Although this does not preserve the exact command used to generate the
 file, it does retains all the information required to reconstruct the
@@ -3826,7 +3826,7 @@ To avoid information overkill, all operators have an optional switch
 automatically appending the @code{history} attribute 
 (@pxref{ncatted netCDF Attribute Editor}).   
 Note that the @samp{-h} switch also turns off writing the
-@code{input_file_list} attribute for multi-file operators
+@code{nco_input_file_list} attribute for multi-file operators
 (@pxref{Input file list attributes}).
 
 @html
@@ -3834,8 +3834,8 @@ Note that the @samp{-h} switch also turns off writing the
 @end html
 @node Input file list attributes, NCAR CCSM Conventions, History attribute, Common features
 @section Input file list attributes
-@cindex @code{input_file_list} attribute
-@cindex @code{input_file_number} attribute
+@cindex @code{nco_input_file_list} attribute
+@cindex @code{nco_input_file_number} attribute
 @cindex @code{stdin}
 @cindex global attributes
 @cindex attributes, global
@@ -3861,12 +3861,12 @@ attributes.
 When the input file list to a multi-file operator is specified
 via @code{stdin}, the operator, by default, attaches two global
 attributes to any file they create or modify.
-The @code{input_file_number} global attribute contains the number of
-input files, and @code{input_file_list} contains the file names,
+The @code{nco_input_file_number} global attribute contains the number of
+input files, and @code{nco_input_file_list} contains the file names,
 specified as standard input to the multi-file operator. 
 This information helps to verify that all input files the user thinks
 were piped through @code{stdin} actually arrived.
-Without the @code{input_file_list} attribute, the information is lost
+Without the @code{nco_input_file_list} attribute, the information is lost
 forever and the ``chain of evidence'' would be broken.
 
 The @samp{-H} switch overrides (turns off) the default behavior of
