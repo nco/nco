@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.264 2004-01-01 20:41:43 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.265 2004-01-01 22:42:53 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -13,6 +13,7 @@ Autoconf-build items:
 14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
 22. Many compiler flags in configure.in should be compiler specific--not just OS specific, e.g., case $host in *-cray-unicos) case $CC in CC) CFLAGS= ....
 23. Implement ncra i18n support I18N with autotools: Add .po files, update doc/i18n.txt
+24. --enable-[debug/optimize]-custom dies on ncdiff re-link in 'make install'
 
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -237,13 +238,13 @@ These work as expected, leaving value packed:
 ncks -O -C -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo.nc
 Arithmetic operator gives garbage answers:
 ncwa -O -C -a lat,lon,time -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo.nc
-291. Get #define ENABLE_OPTIMIZE_CUSTOM etc. working in config.h nco_ctl.c
 292. nco_fl_utl.c: Use autoconf HAVE_NETWORK instead of WIN32
 293. nco_fl_utl.c: Use autoconf HAVE_MKDIR_M instead of SUN4
 294. Globals in NCO operators are prg, prg_nm, dbg_lvl. 
 If possible, modify so that shared-library (rather than main.c) holds
 and returns thread-specific values for each, set with, e.g., prg_set().
 295. Understand/maintain re-entrant behavior of shared library.
+296. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.15 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.16 2004-01-01 22:42:53 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -20,9 +20,10 @@ nco_cmp_int /* [fnc] Compare two integers */
 {
   /* Purpose: Compare two integers
      Function is suitable for argument to ANSI C qsort() routine in stdlib.h
-     Code stolen from http://www.cplusplus.com/ref/cstdlib/qsort.html
-     Values pointed to by arguments are const though prototyping them as const triggers CEWI */
-  return *(int *)val_1-*(int *)val_2;
+     Code based on responses to my comp.lang.c thread 20040101 */
+  const int * const val_1_ip=val_1;
+  const int * const val_2_ip=val_2;
+  return (*val_1_ip > *val_2_ip) - (*val_1_ip < *val_2_ip);
 } /* end nco_cmp_int() */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
@@ -32,8 +33,10 @@ nco_cmp_chr /* [fnc] Compare two characters */
 {
   /* Purpose: Compare two characters
      Function is suitable for argument to ANSI C qsort() routine in stdlib.h
-     Code stolen from http://www.cplusplus.com/ref/cstdlib/qsort.html */
-  return *(char *)val_1-*(char *)val_2;
+     Code based on responses to my comp.lang.c thread 20040101 */
+  const char * const val_1_cp=val_1;
+  const char * const val_2_cp=val_2;
+  return (*val_1_cp > *val_2_cp) - (*val_1_cp < *val_2_cp);
 } /* end nco_cmp_chr() */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
@@ -58,7 +61,7 @@ nco_cmp_nm_id_nm /* [fnc] Compare two nm_id_sct's by name member */
  const void *val_2) /* I [sct] nm_id_sct to compare */
 {
   /* Purpose: Compare two nm_id_sct's by name structure member */
-  return strcmp((*(nm_id_sct *)val_1).nm,(*(nm_id_sct *)val_2).nm);
+  return strcmp((*(nm_id_sct const *)val_1).nm,(*(nm_id_sct const *)val_2).nm);
 } /* end nco_cmp_nm_id_nm() */
 
 int /* O [enm] Comparison result [<,=,>] 0 iff val_1 [<,==,>] val_2 */
@@ -66,8 +69,14 @@ nco_cmp_nm_id_id /* [fnc] Compare two nm_id_sct's by ID member */
 (const void *val_1, /* I [sct] nm_id_sct to compare */
  const void *val_2) /* I [sct] nm_id_sct to compare */
 {
-  /* Purpose: Compare two nm_id_sct's by ID structure member */
-  return (*(nm_id_sct *)val_1).id-(*(nm_id_sct *)val_2).id;
+  /* Purpose: Compare two nm_id_sct's by ID structure member
+     NB: This function uses a method which is, in general, unsafe
+     By performing casts and then subracting, we are subject to overflow
+     conditions should the integer values by close to INT_MAX or INT_MIN.
+     However, we know that nm_id_sct.id values are always small
+     Thus we use this slightly unsafe method in order to show that a 
+     comparison function may be written (albeit unsafely) in one line. */
+  return (*(nm_id_sct const *)val_1).id-(*(nm_id_sct const *)val_2).id;
 } /* end nco_cmp_nm_id_nm() */
 
 char * /* O [sng] Concatenated string formed by joining all input strings */

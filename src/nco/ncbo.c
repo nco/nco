@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.9 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.10 2004-01-01 22:42:53 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -109,10 +109,11 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
-  char *opt_sng;
   char *time_bfr_srt;
-  char CVS_Id[]="$Id: ncbo.c,v 1.9 2004-01-01 20:41:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.9 $";
+
+  const char * const CVS_Id="$Id: ncbo.c,v 1.10 2004-01-01 22:42:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.10 $";
+  const char * const opt_sng="ACcD:d:Fhl:Op:rRv:xy:-:";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -204,7 +205,6 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="ACcD:d:Fhl:Op:rRv:xy:-:";
   while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */

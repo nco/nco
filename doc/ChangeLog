@@ -1,3 +1,11 @@
+2004-01-01  Charlie Zender  <zender@uci.edu>
+
+	* Improve qsort() comparison functions nco_cmp_*() based on
+	responses to comp.lang.c thread 20040101:
+	1. Avoid overflow conditions by not performing subtraction
+	2. Preserve const-ness by using comparison rather than using 
+	casting and subtraction
+	
 2003-12-29  Charlie Zender  <zender@uci.edu>
 
 	* De-lint code with --enable-debug-custom

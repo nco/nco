@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.119 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.120 2004-01-01 22:42:53 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -108,19 +108,21 @@ main(int argc,char **argv)
 #define NCAP_SPT_NBR_MAX 100
   char *spt_arg[NCAP_SPT_NBR_MAX]; /* fxm: Arbitrary size, should be dynamic */
   char *spt_arg_cat=NULL; /* [sng] User-specified script */
-  char *opt_sng;
   char *fl_out;
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.119 2004-01-01 20:41:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.119 $";
-  
-  dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
-  dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
-  dmn_sct **dmn_new=NULL_CEWI; /* Temporary dim to reduce referencing */
-  int nbr_dmn_out=0;           /* Number of dims in list dmn_out */
+
+  const char * const CVS_Id="$Id: ncap.c,v 1.120 2004-01-01 22:42:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.120 $";
+  const char * const opt_sng="ACcD:d:Ffhl:n:Op:Rrs:S:vx-:"; /* [sng] Single letter command line options */
+
+  dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
+  dmn_sct **dmn_out=NULL_CEWI; /* [lst] Dimensions written to output file */
+  dmn_sct **dmn_new=NULL_CEWI; /* [lst] Temporary dimensions to reduce referencing */
+
+  int nbr_dmn_out=0; /* [nbr] Number of dimensions in list dmn_out */
   
   extern char *optarg;
   extern int optind;
@@ -256,7 +258,6 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
   
   /* Parse command line arguments */
-  opt_sng="ACcD:d:Ffhl:n:Op:Rrs:S:vx-:";
   while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.25 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.26 2004-01-01 22:42:53 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -180,7 +180,7 @@ nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
   regmatch_t *result;
   regex_t *r;
 
-  r=(regex_t *)malloc(sizeof(regex_t));
+  r=(regex_t *)nco_malloc(sizeof(regex_t));
 
   /* Choose RE_SYNTAX_POSIX_EXTENDED regular expression type */
   cflags=(REG_EXTENDED | REG_NEWLINE);
@@ -213,7 +213,7 @@ nco_var_meta_search /* [fnc] Search for pattern matches in var string list */
   no_sub=r->re_nsub+1; /* How many matches are there in a line? */
 
   /* Search string */
-  result=(regmatch_t *)malloc(sizeof(regmatch_t)*no_sub);
+  result=(regmatch_t *)nco_malloc(sizeof(regmatch_t)*no_sub);
 
   /* Search each var string for matches */
   for(idx=0;idx<nbr_var;idx++){  

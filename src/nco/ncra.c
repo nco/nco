@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.95 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.96 2004-01-01 22:42:53 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -87,17 +87,18 @@ main(int argc,char **argv)
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *opt_sng;
   char *fl_out;
   char *fl_out_tmp=NULL_CEWI;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.95 2004-01-01 20:41:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.95 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
+  const char * const CVS_Id="$Id: ncra.c,v 1.96 2004-01-01 22:42:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.96 $";
+  const char * const opt_sng="ACcD:d:Fhl:n:Op:P:rRv:xy:-:";
+
   dmn_sct **dim;
   dmn_sct **dmn_out;
   
@@ -197,7 +198,6 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="ACcD:d:Fhl:n:Op:P:rRv:xy:-:";
   while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */

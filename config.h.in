@@ -484,9 +484,13 @@
 #undef HOSTNAME
 
 /* 
-   Compatibility pvmgetarch token for HPUX on PA Risc
+   Compatibility pvmgetarch token for HPUX on PA RISC
    */
 #undef HPPA
+
+/* 
+   i18n support requested */
+#undef I18N
 
 /* 
    Compatibility pvmgetarch token for Linux on Intel x86

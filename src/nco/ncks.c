@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.94 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.95 2004-01-01 22:42:53 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -41,8 +41,7 @@
    ncks -H -d fl_dim,1 -d char_dim,6,12 -v fl_nm,fl_nm_arr ~/nco/data/in.nc
    ncks -H -m -v char_var_nul,char_var_space,char_var_multinul ~/nco/data/in.nc
    ncks -H -C -v three_dmn_rec_var -d time,,,2 in.nc
-   ncks -H -C -v lon -d lon,3,1 in.nc
-*/
+   ncks -H -C -v lon -d lon,3,1 in.nc */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -99,18 +98,18 @@ main(int argc,char **argv)
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
-  char *opt_sng;
   char *fl_bnr=NULL; /* [sng] Unformatted binary output file */
   char *fl_out;
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.94 2004-01-01 20:41:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.94 $";
+
+  const char * const CVS_Id="$Id: ncks.c,v 1.95 2004-01-01 22:42:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.95 $";
+  const char * const opt_sng="aABb:CcD:d:FHhl:MmOp:qrRs:uv:x-:";
 
   extern char *optarg;
-  
   extern int optind;
   
   FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
@@ -204,7 +203,6 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="aABb:CcD:d:FHhl:MmOp:qrRs:uv:x-:";
   while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
     switch(opt){
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.108 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.109 2004-01-01 22:42:53 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -103,11 +103,12 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *msk_nm=NULL;
   char *nco_op_typ_sng; /* Operation type */
-  char *opt_sng;
   char *time_bfr_srt;
   char *wgt_nm=NULL;
-  char CVS_Id[]="$Id: ncwa.c,v 1.108 2004-01-01 20:41:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.108 $";
+
+  const char * const CVS_Id="$Id: ncwa.c,v 1.109 2004-01-01 22:42:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.109 $";
+  const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -231,7 +232,6 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:Ww:xy:-:";
   while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */

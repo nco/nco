@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.63 2004-01-01 20:41:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.64 2004-01-01 22:42:53 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -123,6 +123,8 @@
 int 
 main(int argc,char **argv)
 {
+  aed_sct *aed_lst=NULL_CEWI;
+
   bool OUTPUT_TO_NEW_NETCDF_FILE=False;
   bool FORCE_APPEND=False; /* Option A */
   bool FORCE_OVERWRITE=False; /* Option O */
@@ -134,17 +136,16 @@ main(int argc,char **argv)
   char **fl_lst_in;
   char *fl_in=NULL;
   char *aed_arg[NC_MAX_ATTRS];
-  char *opt_sng;
   char *fl_out;
   char *fl_pth_lcl=NULL; /* Option l */
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.63 2004-01-01 20:41:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.63 $";
-  
-  aed_sct *aed_lst=NULL_CEWI;
 
+  const char * const CVS_Id="$Id: ncatted.c,v 1.64 2004-01-01 22:42:53 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.64 $";
+  const char * const opt_sng="Aa:D:hl:Op:Rr-:";
+  
   extern char *optarg;
   extern int optind;
   
@@ -191,7 +192,6 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="Aa:D:hl:Op:Rr-:";
   while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
