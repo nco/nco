@@ -1,6 +1,6 @@
 1999-05-12  Charlie Zender  <zender@z.ppp.ucar.edu>
 
-	* Tagged this as nco1_1_32
+	* Tagged this as nco1_1_33
 
 	* Using the new lmt_evl() dim_idx code for operators besides ncra
 	and ncrcat, e.g. ncks, causes problems with wrapped and wrapped

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.19 1999-05-13 03:08:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.20 1999-05-13 03:24:43 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -799,7 +799,7 @@ cvs_vrs_prs()
   char *dlr_ptr=NULL;
   char *nco_sng_ptr=NULL;
   char *usc_1_ptr=NULL;
-  char *usc_2_ptr=NULL
+  char *usc_2_ptr=NULL;
   char cvs_Name[]="$Name: not supported by cvs2svn $";
   char nco_sng[]="nco"; 
 
