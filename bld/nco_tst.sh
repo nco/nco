@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.52 2003-03-24 23:07:50 rorik Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.53 2003-03-25 17:06:54 rorik Exp $
 
 # Purpose: NCO test battery
 
@@ -147,6 +147,10 @@ echo "ncks 9: Hyperslab of a variable that has two identical dims 59.5 =?= ${avg
 ${MY_BIN_DIR}/ncks -O -C -d time_udunits,"1999-12-08 12:00:0.0","1999-12-09 00:00:0.0" in.nc foo2.nc
 avg=`${MY_BIN_DIR}/ncks -H -C -s "%6.0f" -d time_udunits,"1999-12-08 18:00:0.0","1999-12-09 12:00:0.0",2 -v time_udunits in.nc`
 echo "ncks 10: dimension slice using Unidata's udunits library: 876018 ?=? ${avg} (Will fail without udunits library support."
+
+${MY_BIN_DIR}/ncks -O -C -d wvl,"0.1 micron","1 micron" in.nc foo2.nc
+avg=`${MY_BIN_DIR}/ncks -H -C -d wvl,"0.6 micron","1 micron" -s "%3.1e" -v wvl in.nc`
+echo "ncks 11: dimension slice using UDunit conversion: 1.0e-06 ?=? ${avg} (Will fail without udunits library support."
 
 fi # end NCKS
 

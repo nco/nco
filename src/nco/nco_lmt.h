@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.7 2003-03-24 17:30:31 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.8 2003-03-25 17:05:09 rorik Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -67,7 +67,9 @@ int /* O [nbr] returns zero when conversion succeeds */
 nco_lmt_udu_cnv /* [fnc] convert "time since..." string into double values */ 
 (const int ncid, /* I [idx] netCDF file ID */
  const int dimid, /* I [idx] netCDF dimension ID */
- lmt_sct *lmt); /* I/O [sct] Structure with user-specified strings for min and max limits */
+ char* lmt_sng,
+ double *lmt_val);
+// lmt_sct *lmt); /* I/O [sct] Structure with user-specified strings for min and max limits */
 
 int /* 0 [enum] returns the limit type */
 nco_lmt_typ /* [fnc] determine limit type */
