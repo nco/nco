@@ -83,6 +83,7 @@ AC_STRUCT_TM
 AC_TYPE_UID_T
 AC_CHECK_TYPES([ptrdiff_t])
 AC_CHECK_SIZEOF(int*)
+AC_CXX_HAVE_VALARRAY
 
 #############################################
 # standard additions to compilers and preprocessors
@@ -380,7 +381,7 @@ fi
 #############################################
 
 AC_CONFIG_FILES([Makefile src/Makefile src/nco/Makefile  man/Makefile])
-if test "$CXX" ; then
+if  test "$ac_cv_cxx_have_valarray"; then
   AC_CONFIG_FILES(src/nco_c++/Makefile)
 fi
 AC_OUTPUT

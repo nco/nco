@@ -90,6 +90,9 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
+/* define if the compiler implements namespaces */
+#undef HAVE_NAMESPACES
+
 /* Define to 1 if you have the <netcdf.h> header file. */
 #undef HAVE_NETCDF_H
 
@@ -150,6 +153,9 @@
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
+
+/* define if the compiler has valarray<T> */
+#undef HAVE_VALARRAY
 
 /* have HDF5 support */
 #undef HDF5
