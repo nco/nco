@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.39 2002-09-14 18:23:26 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.40 2002-09-16 23:50:30 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -30,7 +30,7 @@ Footnotes to summary table:
 05. xlC fails valarray test, but I believe xlC does support valarray. Hmm.
 06. CC unable to link tst.o, unresolved text symbols (missing library?)
 07. Error making ncap_yacc.c
-08. Fails to build ncap because cannot find float math functions ncap TODO#18
+08. I can't remember
 09. tst fails to find in.nc
 10. Major problems with configure script and permissions on installed files
 11. Comeau (correctly) insists strdup(), strcasecmp() are not ANSI standard
@@ -48,7 +48,7 @@ Status: Link problems for ABI64, libtool breaks.
 Builds after many -X 64 tweaks to environment, but executables all core dump.
 Try using --no_shared_libs...
 ************************************************************************
-zender@bb0001en:/fs/cgd/home0/zender/nco$ pvmgetarch;uname -a
+zender@bb0001en:/fs/cgd/home0/zender/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 AIX
 AIX bb0001en 3 4 000117924C00
 
@@ -56,7 +56,7 @@ For ABI=64:
 Notes: Setting CC='xlc -q64' and CFLAGS='-q64' is redundant except for
 shared object link command which uses $CC not $CC $LDFLAGS or $CC $CFLAGS.
 Also, AR='ar -X 64' and NM='nm -B -X 64' are necessary.
-export GNU_TRP='powerpc-ibm-aix4.3.3.0'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 AR='ar -X 64' CC='xlc -q64' CFLAGS='-q64' CXX='xlC' CXXFLAGS='-q64' LDFLAGS='-q64' NM='nm -B -X 64' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -64,7 +64,7 @@ make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 # Blue Horizon
-export GNU_TRP='powerpc-ibm-aix5.1.0.0'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 AR='ar -X 64' CC='xlc -q64' CFLAGS='-q64' CXX='xlC' CXXFLAGS='-q64' LDFLAGS='-q64' NM='nm -B -X 64' NETCDF_INC='/usr/local/apps/netcdf-3.5.0/include' NETCDF_LIB='/usr/local/apps/netcdf-3.5.0/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -116,12 +116,12 @@ End AIX
 Start FREEBSD
 Status: 
 ************************************************************************
-bash-2.05a$ ./pvmgetarch;uname -a
+bash-2.05a$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
 FREEBSD
 FreeBSD usf-cf-x86-freebsd-1 4.6-STABLE FreeBSD 4.6-STABLE #9: Tue Aug 20 12:33:16 PDT 2002     root@usf-cf-x86-freebsd-1:/usr/obj/usr/src/sys/GENERIC  i386
 
 gcc/g++:
-export GNU_TRP='i386-unknown-freebsd4.7'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -138,12 +138,12 @@ End FREEBSD
 Start LINUX
 Status: Appears to work
 ************************************************************************
-zender@dust:~/nco$ pvmgetarch;uname -a
+zender@dust:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUX
 Linux dust.ps.uci.edu 2.4.19-pre8 #1 SMP Wed May 8 10:16:29 PDT 2002 i686 unknown
 
 gcc/g++:
-export GNU_TRP='i686-pc-linux-gnu'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 # Comment out maintainer mode until it works reliably
@@ -154,7 +154,7 @@ make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 gcc/g++ DODS:
-export GNU_TRP='i686-pc-linux-gnu'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 LDFLAGS=-L/usr/local/DODS/lib NETCDF_INC=/usr/local/DODS/include NETCDF_LIB=/usr/local/DODS/lib ./configure --enable-dods --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -162,7 +162,7 @@ make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 gcc/g++ cygwin:
-export GNU_TRP='i686-pc-cygwin'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 # Comment out maintainer mode until it works reliably
@@ -173,7 +173,7 @@ make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 como:
-export GNU_TRP='i686-pc-linux-gnu'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='como --c99' CXX='como' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -181,7 +181,7 @@ make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 icc:
-export GNU_TRP='i686-pc-linux-gnu'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='icc' CXX='icc' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -200,22 +200,22 @@ End LINUX
 Start LINUXALPHA
 Status: Appears to work (of course C++ compiler requires valarray)
 ************************************************************************
-zender@ess1:/usr/home/zender/nco$ pvmgetarch;uname -a
+zender@ess1:/usr/home/zender/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUXALPHA
 Linux ess1.ps.uci.edu 2.2.15 #1 Thu May 18 17:22:29 EDT 2000 alpha unknown
 
-export GNU_TRP='alphaev56-unknown-linux-gnu'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
-zender@usf-cf-alpha-linux-1:~/nco/bld$ ./pvmgetarch;uname -a
+zender@usf-cf-alpha-linux-1:~/nco/bld$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUXALPHA
 Linux usf-cf-alpha-linux-1 2.4.17 #1 SMP Fri Jan 4 13:37:30 PST 2002 alpha unknown
 
-export GNU_TRP='alphaev67-unknown-linux-gnu'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -231,12 +231,12 @@ End LINUXALPHA
 Start LINUXPPC
 Status: tst fails to find in.nc
 ************************************************************************
-zender@usf-cf-ppc-linux-1:~/nco/bld$ ./pvmgetarch;uname -a
+zender@usf-cf-ppc-linux-1:~/nco/bld$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
 UNKNOWN
 Linux usf-cf-ppc-linux-1 2.2.17-pre1 #2 SMP Fri Jun 16 12:39:25 MDT 2000 ppc unknown
 
 gcc/g++:
-export GNU_TRP='powerpc-unknown-linux-gnu'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -264,12 +264,12 @@ End LINUXPPC
 Start LINUXSPARC64
 Status: Appears to build correctly
 ************************************************************************
-zender@usf-cf-sparc-linux-1:~/nco/bld$ ./pvmgetarch;uname -a
+zender@usf-cf-sparc-linux-1:~/nco/bld$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
 UNKNOWN
 Linux usf-cf-sparc-linux-1 2.4.18 #2 Thu Apr 11 14:37:17 EDT 2002 sparc64 unknown
 
 gcc/g++:
-export GNU_TRP='sparc64-unknown-linux-gnu'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -288,12 +288,12 @@ Status: Fails to build ncap because configure is out of date
 Fails to build nco_c++ because g++ on MAC OS X is v 2.95.2
 ncap TODO#18
 ************************************************************************
-bash-2.05a$ ./pvmgetarch;uname -a
+bash-2.05a$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
 UNKNOWN
 Darwin usf-cf-ppc-macosx-1 5.5 Darwin Kernel Version 5.5: Thu May 30 14:51:26 PDT 2002; root:xnu/xnu-201.42.3.obj~1/RELEASE_PPC  Power Macintosh powerpc
 
 gcc/g++:
-export GNU_TRP='powerpc-apple-darwin5.5'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -311,12 +311,12 @@ End MACOSX
 Start SGIMP64
 Status: Problem with make check
 ************************************************************************
-zender@krein:~/nco$ pvmgetarch;uname -a
+zender@krein:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 SGIMP64
 IRIX64 krein 6.5 10100655 IP27 mips
 
 cc/CC ABI64:
-export GNU_TRP='mips-sgi-irix6.5'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='cc' CFLAGS='-64 -mips4' CXX='CC' CXXFLAGS='-64 -mips4 -LANG:std' NETCDF_INC='/usr/local/include' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -324,7 +324,7 @@ make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 cc/CC ABI32:
-export GNU_TRP='mips-sgi-irix6.5'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='cc' CXX='CC' CXXFLAGS='-LANG:std' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -332,7 +332,7 @@ make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 gcc/g++ ABI32:
-export GNU_TRP='mips-sgi-irix6.5'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CXX='g++' NETCDF_INC='/usr/local/include' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -381,17 +381,16 @@ Status:
 Does not like nco_var.hh:270, same as SGI, taking address of non-lvalue
 Problems with linking tst.o with both compilers
 ************************************************************************
-zender@flagstaff:~/nco$ pvmgetarch;uname -a
+zender@flagstaff:~/nco$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 SUNMP
 SunOS goldhill 5.6 Generic_105181-19 sun4u sparc SUNW,Ultra-2
-bash-2.03$ pvmgetarch;uname -a
+bash-2.03$ pvmgetarch;uname -a;~/nco/autobld/config.guess
 SUNMP
 SunOS usf-cf-sparc-solaris-2 5.8 Generic_108528-15 sun4u sparc SUNW,Ultra-60
 
 For ABI=32:
 cc/CC:
-export GNU_TRP='sparc-sun-solaris2.8'
-export GNU_TRP='sparc-sun-solaris2.6'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='/opt/SUNWspro/bin/cc' CXX='/opt/SUNWspro/bin/CC' LD='/usr/ccs/bin/ld -z muldefs' LDFLAGS='-z muldefs -L/opt/SUNWspro/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -400,7 +399,7 @@ scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.
 
 For ABI=64:
 cc/CC:
-export GNU_TRP='sparc-sun-solaris2.8'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='/opt/SUNWspro/bin/cc' CXX='/opt/SUNWspro/bin/CC' FC='/opt/SUNWspro/bin/f90' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
@@ -408,7 +407,7 @@ make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 gcc/g++:
-export GNU_TRP='sparc-sun-solaris2.6'
+export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CXX='g++' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo

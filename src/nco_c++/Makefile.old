@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.6 2002-09-14 18:09:59 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.7 2002-09-16 23:50:31 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -207,6 +207,13 @@ ${MY_DPN_DIR}/%.d : %.cc
 # The first LDFLAGS is for typical C programs with netCDF, math, and networking
 # The second LDFLAGS enables C/Fortran linking
 
+# Manually define autotools tokens normally defined in HAVE_CONFIG_H
+# Initialize OS-specific tokens to empty
+CPP_TKN_OS := 
+ifeq (${null},$(findstring SGI,${PVM_ARCH}))
+CPP_TKN_OS += -DHAVE_CSTDLIB
+endif # SGI
+
 # Works on AIX and AIX46K
 ifneq (,$(findstring AIX,${PVM_ARCH}))
 C++ := xlC
@@ -216,11 +223,11 @@ CC := xlc
 CFLAGS := -qmaxmem=8192
 CPP := xlc -c
 # Add /usr/local/include for libintl.h explicitly until netCDF is moved there
-CPPFLAGS := ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC} -I/usr/local/include
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I/usr/local/include
 FC := xlf90
 FFLAGS := -NS2000 -qfixed=132
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
 LDFLAGS += -lxlf90 # Required for linking Fortran objects
 LEX := lex
 LINT := lint
@@ -268,13 +275,13 @@ C++ := cxx -std strict_ansi
 CC := cc
 CFLAGS := ${OMP_FLG}
 # OSF1 is for CCM compatibility
-CPPFLAGS += ${CPP_TKN} -DOSF1 ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DOSF1 ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 FFLAGS := -c ${OMP_FLG} -automatic -fpe3
 FIXEDFLAGS := -extend_source
 FREEFLAGS := -DHIDE_SHR_MSG -free
 LD := ld
-LDFLAGS += ${OMP_FLG} -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += ${OMP_FLG} -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
 LEX := flex
 LINT := lint
 YACC := bison
@@ -305,10 +312,10 @@ ifeq (${PVM_ARCH},CRAY)
 C++ := g++
 CC := cc
 CPP := cpp
-CPPFLAGS += ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
 LDFLAGS += -L/lib -lf
 LEX := lex
 LINT := lint
@@ -349,7 +356,7 @@ CC := gcc -ansi
 #CC := insure
 CPP := ${C++}
 # HAVE_INLINE is GNU standard to activate inline functions (used by GSL)
-CPPFLAGS += ${CPP_TKN} -DHAVE_INLINE ${CPP_PTH} -I${NETCDF_INC} 
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -DHAVE_INLINE ${CPP_PTH} -I${NETCDF_INC} 
 ifeq (${PVM_ARCH},LINUX)
  FC := pgf90
 # FC := lf95
@@ -358,7 +365,7 @@ else # LINUXALPHA
  FC := g77
 endif
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
 LEX := flex
 LINT := lint
 YACC := bison
@@ -608,10 +615,10 @@ ifneq (,$(findstring SGI,${PVM_ARCH}))
 # 20000302: -w suppresses warnings which will swamp linker
 C++ := g++ -w
 CC := gcc
-CPPFLAGS += ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90 -cpp
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
 LEX := flex
 LINT := lint
 YACC := bison
@@ -687,12 +694,12 @@ C++ := g++
 CC := gcc
 CFLAGS := -Wall
 CPP := cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC} 
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} 
 FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
 LD := ld
-LDFLAGS := -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf -lsunmath -lsocket -lnsl
+LDFLAGS := -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf -lsunmath -lsocket -lnsl
 LDFLAGS += -lF77 -lM77 -lresolv
 LEX := lex
 LINT := lint
@@ -722,10 +729,10 @@ C++ := g++-2
 CC := gcc-2 -ansi
 CPP := cpp-2
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS += ${CPP_TKN} -Di386 ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS += ${CPP_TKN} ${CPP_TKN_OS} -Di386 ${CPP_PTH} -I${NETCDF_INC}
 FC := g77-2
 LD := ld
-LDFLAGS += -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf
+LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
 LDFLAGS += 
 LEX := flex
 LINT := lint
@@ -751,7 +758,7 @@ endif
 # endif LINUX
 
 # Define any remaining variables
-libnco_c++ := ${MY_LIB_DIR}/libnco_cxx
+libnco_c++ := ${MY_LIB_DIR}/libnco_c++
 
 # Default targets
 all: ${MDL_BIN_TRG} inc lib dat

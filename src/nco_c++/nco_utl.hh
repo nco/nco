@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.4 2002-09-02 06:51:47 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.hh,v 1.5 2002-09-16 23:50:31 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface utilities for netCDF routines
 
@@ -14,14 +14,18 @@
 
 #ifdef HAVE_CONFIG_H
 # include <config.h> // Autotools tokens
-#endif /* !HAVE_CONFIG_H */
+#endif // !HAVE_CONFIG_H
 
 // C++ headers
 #include <iostream> // Standard C++ I/O streams cout, cin
 #include <string> // Standard C++ string class
 
 // Standard C headers
+#ifdef HAVE_CSTDLIB
 #include <cstdlib> // abort, exit, getopt, malloc, strtod, strtol
+#else // The only C++ compiler known to lack <cstdlib> is SGI's CC
+#include <stdlib.h> // abort, exit, getopt, malloc, strtod, strtol
+#endif // !HAVE_CSTDLIB
 
 // 3rd party vendors
 #include <netcdf.h> // netCDF C interface
