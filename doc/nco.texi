@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.85 2001-12-29 05:52:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.86 2002-01-30 15:50:49 hmb Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -4465,8 +4465,7 @@ Excellent bug reports
 @node General Index,  , Contributing, Top
 @unnumbered General Index
 
-@printindex cp
-
+@printindex fn
 @c Print the tables of contents
 @contents
 
