@@ -78,6 +78,7 @@ RANLIB = @RANLIB@
 STRIP = @STRIP@
 VERSION = @VERSION@
 YACC = @YACC@
+path_to_ncgen = @path_to_ncgen@
 
 SUBDIRS = src man doc
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
