@@ -60,6 +60,8 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_LIBTOOL
 
+AM_CONDITIONAL(NOT_YACC,test "$YACC" != "yacc")
+
 # disable maintainer-only options in generated Makefiles unless the flag
 # --enable-maintainer-mode is given at configure time
 AM_MAINTAINER_MODE

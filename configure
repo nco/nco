@@ -8382,6 +8382,17 @@ LIBTOOL='$(SHELL) $(top_builddir)/libtool'
 
 
 
+
+
+if test "$YACC" != "yacc"; then
+  NOT_YACC_TRUE=
+  NOT_YACC_FALSE='#'
+else
+  NOT_YACC_TRUE='#'
+  NOT_YACC_FALSE=
+fi
+
+
 # disable maintainer-only options in generated Makefiles unless the flag
 # --enable-maintainer-mode is given at configure time
 echo "$as_me:$LINENO: checking whether to enable maintainer-specific portions of Makefiles" >&5
@@ -12020,6 +12031,13 @@ echo "$as_me: error: conditional \"AMDEP\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${NOT_YACC_TRUE}" && test -z "${NOT_YACC_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"NOT_YACC\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"NOT_YACC\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${MAINTAINER_MODE_TRUE}" && test -z "${MAINTAINER_MODE_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"MAINTAINER_MODE\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -12579,6 +12597,8 @@ s,@ECHO@,$ECHO,;t t
 s,@RANLIB@,$RANLIB,;t t
 s,@ac_ct_RANLIB@,$ac_ct_RANLIB,;t t
 s,@LIBTOOL@,$LIBTOOL,;t t
+s,@NOT_YACC_TRUE@,$NOT_YACC_TRUE,;t t
+s,@NOT_YACC_FALSE@,$NOT_YACC_FALSE,;t t
 s,@MAINTAINER_MODE_TRUE@,$MAINTAINER_MODE_TRUE,;t t
 s,@MAINTAINER_MODE_FALSE@,$MAINTAINER_MODE_FALSE,;t t
 s,@MAINT@,$MAINT,;t t

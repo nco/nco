@@ -1,5 +1,10 @@
+if NOT_YACC 
+  NCAP=ncap
+else
+  NCAP=
+endif 
 
-bin_PROGRAMS = ncap ncatted ncdiff ncecat ncflint ncks ncra ncrename ncwa
+bin_PROGRAMS = ${NCAP} ncatted ncdiff ncecat ncflint ncks ncra ncrename ncwa
 
 AM_YFLAGS = -d
 
