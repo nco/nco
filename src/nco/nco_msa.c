@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.6 2003-02-18 19:37:00 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.7 2003-02-18 20:13:15 hmb Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -681,7 +681,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
   
   if(dlm_sng != NULL){
     /* Print each element with user-supplied formatting code */
-
+    PRN_DMN_IDX_CRD_VAL =False;
     /* Replace C language '\X' escape codes with ASCII bytes */
     (void)sng_ascii_trn(dlm_sng);
 
@@ -826,7 +826,7 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
 	var_dsk+= dmn_sbs_dsk[idx]*mod_map_in[idx];
              
 
-
+      /* print the dims with indices along with values if they are co-ordinate vars */
       if(PRN_DMN_IDX_CRD_VAL){
         int dmn_idx;
         long dmn_sbs_prn; 
@@ -902,11 +902,12 @@ nco_msa_prn_var_val   /* [fnc] Print variable data */
     (void)nco_free(dmn_sbs_ram);
     (void)nco_free(dmn_sbs_dsk);
 
+    /* Additional newline between consecutive variables or final variable and prompt */
+    (void)fprintf(stdout,"\n");
+    (void)fflush(stdout);
   }
 
-  /* Additional newline between consecutive variables or final variable and prompt */
-  (void)fprintf(stdout,"\n");
-  (void)fflush(stdout);
+  
 
   var.val.vp = nco_free(var.val.vp);
   var.nm = (char *)nco_free(var.nm);
