@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.44 1999-11-02 22:25:50 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.45 1999-11-02 22:50:18 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -293,10 +293,9 @@ $(MY_OBJ_DIR)/%.o : %.f
 endif
 
 ifeq ($(PVM_ARCH),AIX)
-#C++ := g++
 C++ := xlC
-#CC := gcc
 CC := cc
+# Additional switch to fix compiler warnings on csz.c
 # -qmaxmem=num Limit the amount of memory used by space intensive optimizations to <num> kilobytes
 CFLAGS := -qmaxmem=8192
 CPP := cc -c
@@ -304,8 +303,6 @@ CPP := cc -c
 #CPPFLAGS := -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
 CPPFLAGS := -D$(PVM_ARCH) $(CPP_PTH) -I$(NETCDF_INC)
 FC := xlf
-#FC := g77
-#FFLAGS := -ffixed-line-length-132
 FFLAGS := -qfixed=132
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
@@ -317,25 +314,25 @@ LINT := lint
 YACC := yacc
 ifeq ($(OPTS),O)
  CFLAGS += -O
- CPP := $(CPP) $(CPPFLAGS)
- PREPROCESS.F := $(CPP) $(CPPFLAGS)
-# FFLAGS += -O
+# CPP := $(CPP) $(CPPFLAGS)
+# PREPROCESS.F := $(CPP) $(CPPFLAGS)
  FFLAGS += -O -NS2000 -qfixed=132
 endif
 ifeq ($(OPTS),D)
  CFLAGS += -g
- CPP := $(CPP) $(CPPFLAGS)
- PREPROCESS.F := $(CPP) $(CPPFLAGS)
-# FFLAGS += -g
+# CPP := $(CPP) $(CPPFLAGS)
+# PREPROCESS.F := $(CPP) $(CPPFLAGS)
  FFLAGS := -g -NS2000 -qfixed=132
 endif
 # Additional flags for AIX:
 # -M Generate information to be included in a "make" description file; output goes to .u file
 # -c Do not send object files to the linkage editor
 # -P Preprocess but do not compile; output goes to .i file
+# Using -P causes additional warning messages about lm 
+# Not using -P causes *.o files to be created twice
 $(MY_DPN_DIR)/%.d : %.c
-	$(CPP) -P -M $(CPPFLAGS) $< ;perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' $*.u > $@ ; \
-	rm -f $*.u  $*.i;
+	$(CPP) -M $(CPPFLAGS) $< ;perl -p -e 's/$*\.o/$(MY_OBJ_DIR_RX)\/$*.o $(MY_DPN_DIR_RX)\/$(notdir $@)/g;s/$(slash_rx)/\$(slash)/g' $*.u > $@ ; \
+	rm -f $*.i $*.o $*.u;
 endif
 # endif AIX
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.17 1999-10-18 05:07:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.18 1999-11-02 22:50:18 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -252,7 +252,7 @@ typedef struct var_sct_tag{
 #define FORTRAN_divide_real DIVIDE_REAL
 #define FORTRAN_divide_double_precision DIVIDE_DOUBLE_PRECISION
 #endif /* CRAY */ 
-#ifdef RS6K
+#if ( defined RS6K ) || ( defined AIX )
 #define FORTRAN_add_real add_real
 #define FORTRAN_add_double_precision add_double_precision
 #define FORTRAN_avg_reduce_real avg_reduce_real
@@ -266,7 +266,7 @@ typedef struct var_sct_tag{
 #define FORTRAN_multiply_double_precision multiply_double_precision
 #define FORTRAN_divide_real divide_real
 #define FORTRAN_divide_double_precision divide_double_precision
-#endif /* RS6K */ 
+#endif /* RS6K || AIX */ 
 /* 
    pgf90 subroutines have one underscore by default
    pgf90 underscore behavior is altered by -Mnosecond_underscore
