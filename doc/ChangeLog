@@ -1,7 +1,12 @@
-2003-08-15  Charlie Zender  <zender@uci.edu>
+2003-08-16  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_8_1
 	Changes since nco-2_8_0: variable wildcarding
+
+	* Straighten out getopt_long() preprocessor logic to work with
+	architectures with getopt.h but no getopt_long() (SGI, AIX)
+
+2003-08-15  Charlie Zender  <zender@uci.edu>
 
 	* Rorik synchronized shared library numbering with NCO version number
 

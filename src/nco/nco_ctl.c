@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.29 2003-08-16 00:55:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.30 2003-08-16 21:41:56 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -247,7 +247,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-v")){
     if(prg == ncrename) (void)fprintf(stdout,"-v, --variable old_var,new_var Variable's old and new names\n");
 	if(prg == ncap) (void)fprintf(stdout,"-v, --variable \t\tOutput file includes ONLY user-defined variables\n");
-    if(prg != ncrename && prg != ncap) (void)fprintf(stdout,"-v, --variable var1[,var2[...]] Variable(s) to process\n");
+    if(prg != ncrename && prg != ncap) (void)fprintf(stdout,"-v, --variable var1[,var2[...]] Variable(s) to process (regular expressions supported)\n");
   } /* end if */
   /*  if(strstr(opt_sng,"-W")) (void)fprintf(stdout,"-W\t\tNormalize by weight but not tally\n");*/
   if(strstr(opt_sng,"-w")){
