@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.92 2002-12-15 06:49:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.93 2002-12-16 01:59:51 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.92 2002-12-15 06:49:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.92 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.93 2002-12-16 01:59:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.93 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -174,18 +174,23 @@ main(int argc,char **argv)
   static struct option opt_lng[]=
     {
       {"average",required_argument,0,'a'},
+      {"avg",required_argument,0,'a'},
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
       {"nocoords",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
+      {"dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
+      {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
+      {"ftn",no_argument,0,'F'},
       {"history",no_argument,0,'h'},
+      {"hst",no_argument,0,'h'},
       {"here",no_argument,0,'H'},
-      {"midpoint",no_argument,0,'I'},
+      {"wgt_msk_crd_var",no_argument,0,'I'},
       {"local",no_argument,0,'l'},
-      {"mask-variable",no_argument,0,'m'},
-      {"Mask-value",no_argument,0,'M'},
+      {"mask-variable",required_argument,0,'m'},
+      {"Mask-value",required_argument,0,'M'},
       {"nintap",required_argument,0,'n'},
       {"numerator",no_argument,0,'N'},
       {"overwrite",no_argument,0,'O'},
@@ -203,14 +208,14 @@ main(int argc,char **argv)
   int opt_idx=0; /* Index of current long option into opt_lng array */
 #endif /* HAVE_GETOPT_LONG */
 
-  /* Start the clock and save the command line */ 
+  /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
 
-  time_bfr_srt=time_bfr_srt; /* Avert compiler warning that variable is set but never used */
-  NORMALIZE_BY_TALLY=NORMALIZE_BY_TALLY; /* Avert compiler warning that variable is set but never used */
-  NORMALIZE_BY_WEIGHT=NORMALIZE_BY_WEIGHT; /* Avert compiler warning that variable is set but never used */
+  time_bfr_srt=time_bfr_srt; /* CEWI: Avert compiler warning that variable is set but never used */
+  NORMALIZE_BY_TALLY=NORMALIZE_BY_TALLY; /* CEWI: Avert compiler warning that variable is set but never used */
+  NORMALIZE_BY_WEIGHT=NORMALIZE_BY_WEIGHT; /* CEWI: Avert compiler warning that variable is set but never used */
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
@@ -236,7 +241,7 @@ main(int argc,char **argv)
       dmn_avg_lst_in=lst_prs(optarg,",",&nbr_dmn_avg);
       opt_a_flg=True;
       break;
-    case 'C': /* Extraction list should include all coordinates associated with extracted variables? */
+    case 'C': /* Extract all coordinates associated with extracted variables? */
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':

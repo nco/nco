@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.79 2002-12-15 06:49:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.80 2002-12-16 01:59:51 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -86,8 +86,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.79 2002-12-15 06:49:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.79 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.80 2002-12-16 01:59:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.80 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -145,9 +145,13 @@ main(int argc,char **argv)
       {"coords",no_argument,0,'c'},
       {"nocoords",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
+      {"dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
+      {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
+      {"ftn",no_argument,0,'F'},
       {"history",no_argument,0,'h'},
+      {"hst",no_argument,0,'h'},
       {"local",no_argument,0,'l'},
       {"nintap",required_argument,0,'n'},
       {"overwrite",no_argument,0,'O'},
@@ -172,7 +176,7 @@ main(int argc,char **argv)
   textdomain("nco"); /* PACKAGE is name of program */
 #endif /* not _LIBINTL_H */
 
-  /* Start the clock and save the command line */
+  /* Start clock and save command line */
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
@@ -191,7 +195,7 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'C': /* Extraction list should include all coordinates associated with extracted variables? */
+    case 'C': /* Extract all coordinates associated with extracted variables? */
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':

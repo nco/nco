@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.48 2002-12-15 06:49:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.49 2002-12-16 01:59:51 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -107,8 +107,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.48 2002-12-15 06:49:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.48 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.49 2002-12-16 01:59:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.49 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -168,9 +168,13 @@ main(int argc,char **argv)
       {"coords",no_argument,0,'c'},
       {"nocoords",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
+      {"dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
+      {"dmn",required_argument,0,'d'},
       {"fortran",no_argument,0,'F'},
+      {"ftn",no_argument,0,'F'},
       {"history",no_argument,0,'h'},
+      {"hst",no_argument,0,'h'},
       {"interpolate",required_argument,0,'i'},
       {"local",no_argument,0,'l'},
       {"overwrite",no_argument,0,'O'},
@@ -186,7 +190,7 @@ main(int argc,char **argv)
   int opt_idx=0; /* Index of current long option into opt_lng array */
 #endif /* HAVE_GETOPT_LONG */
 
-  /* Start the clock and save the command line */ 
+  /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
@@ -205,7 +209,7 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'C': /* Extraction list should include all coordinates associated with extracted variables? */
+    case 'C': /* Extract all coordinates associated with extracted variables? */
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.16 2002-12-15 06:49:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.17 2002-12-16 01:59:51 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -184,10 +184,10 @@ nco_usg_prn(void)
   /* We now have command-specific command line option string */
   (void)fprintf(stdout,"%s %s\n",prg_nm_get(),opt_sng);
 
-  if(strstr(opt_sng,"-A")) (void)fprintf(stdout,"-A\t\tAppend to existing output file, if any\n[--append]\n");
+  if(strstr(opt_sng,"-A")) (void)fprintf(stdout,"-A,--append\tAppend to existing output file, if any\n[--append,--apn]\n");
   if(strstr(opt_sng,"-a")){
     if(prg == ncrename) (void)fprintf(stdout,"-a old_att,new_att Attribute's old and new names\n[--attribute]\n");
-    if(prg == ncwa) (void)fprintf(stdout,"-a avg_dim1[,avg_dim2[...]] Averaging dimensions\n[--average]\n");
+    if(prg == ncwa) (void)fprintf(stdout,"-a avg_dim1[,avg_dim2[...]] Averaging dimensions\n[--average,--avg]\n");
     if(prg == ncks) (void)fprintf(stdout,"-a\t\tDisable alphabetization of extracted variables\n[--alphabetize]\n");
     if(prg == ncatted) (void)fprintf(stdout,"-a att_nm,var_nm,mode,att_typ,att_val Attribute specification:\n\t\tmode = a,c,d,m,o and att_typ = f,d,l,s,c,b\n[--attribute]\n");
   } /* end if */
@@ -195,20 +195,18 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-b")) (void)fprintf(stdout,"-b fl_bnr\tUnformatted binary file to write\n[--binary-file]\n");
   if(strstr(opt_sng,"-c")) (void)fprintf(stdout,"-c\t\tCoordinate variables will all be processed\n[--coords]\n");
   if(strstr(opt_sng,"-C")) (void)fprintf(stdout,"-C\t\tAssociated coordinate variables should not be processed\n[--nocoords]\n");
-  if(strstr(opt_sng,"-D")) (void)fprintf(stdout,"-D dbg_lvl\tDebugging level\n[--debug]\n");
+  if(strstr(opt_sng,"-D")) (void)fprintf(stdout,"-D dbg_lvl\tDebugging level\n[--debug,--dbg_lvl]\n");
   if(strstr(opt_sng,"-d")){
-    if(prg == ncrename) (void)fprintf(stdout,"-d old_dim,new_dim Dimension's old and new names\n[--dimension]\n");
+    if(prg == ncrename) (void)fprintf(stdout,"-d old_dim,new_dim Dimension's old and new names\n[--dimension,--dmn]\n");
     else if(prg == ncks) (void)fprintf(stdout,"-d dim,[min][,[max]][,[stride]] Dimension's limits and stride in hyperslab\n[--dimension]\n");
     else if(prg == ncra || prg == ncrcat) (void)fprintf(stdout,"-d dim,[min][,[max]][,[stride]] Dimension's limits (any dimension) and stride (record dimension only) in hyperslab\n[--dimension]\n");
     else (void)fprintf(stdout,"-d dim,[min][,[max]] Dimension's limits in hyperslab\n[--dimension]\n");
   } /* end if -d */
-  if(strstr(opt_sng,"-F")) (void)fprintf(stdout,"-F\t\tFortran indexing conventions (1-based) for I/O\n[--fortran]\n");
+  if(strstr(opt_sng,"-F")) (void)fprintf(stdout,"-F\t\tFortran indexing conventions (1-based) for I/O\n[--fortran,--ftn]\n");
   if(strstr(opt_sng,"-H")) (void)fprintf(stdout,"-H\t\tPrint data\n[--here]\n");
-  if(strstr(opt_sng,"-h")){
-    if(prg == ncatted) (void)fprintf(stdout,"-h\t\tDo not append to \"history\" global attribute\n[--history]\n");
-  } /* end if */
+  if(strstr(opt_sng,"-h")) (void)fprintf(stdout,"-h\t\tDo not append to \"history\" global attribute\n[--history,--hst]\n");
   if(strstr(opt_sng,"-i")) (void)fprintf(stdout,"-i var,val\tInterpolant and value\n[--interpolate]\n");
-  if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I \t\tDo not weight or mask coordinate variables\n[--midpoint]\n");
+  if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I \t\tDo not weight or mask coordinate variables\n[--wgt_msk_crd_var]\n");
   if(strstr(opt_sng,"-l")) (void)fprintf(stdout,"-l path\t\tLocal storage path for remotely-retrieved files\n[--local]\n");
   if(strstr(opt_sng,"-M")){
     if(prg == ncwa) (void)fprintf(stdout,"-M val\t\tMasking value (default is 1.0)\n[--mask-value]\n");

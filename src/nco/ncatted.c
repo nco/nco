@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.50 2002-12-15 06:49:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.51 2002-12-16 01:59:51 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -146,8 +146,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.50 2002-12-15 06:49:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.50 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.51 2002-12-16 01:59:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.51 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -172,7 +172,9 @@ main(int argc,char **argv)
       {"append",no_argument,0,'A'},
       {"attribute",required_argument,0,'a'},
       {"debug",required_argument,0,'D'},
+      {"dbg_lvl",required_argument,0,'D'},
       {"history",no_argument,0,'h'},
+      {"hst",no_argument,0,'h'},
       {"local",no_argument,0,'l'},
       {"overwrite",no_argument,0,'O'},
       {"path",required_argument,0,'p'},
@@ -184,7 +186,7 @@ main(int argc,char **argv)
   int opt_idx=0; /* Index of current long option into opt_lng array */
 #endif /* HAVE_GETOPT_LONG */
 
-  /* Start the clock and save the command line */ 
+  /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.99 2002-12-15 06:49:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.100 2002-12-16 01:59:51 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -90,8 +90,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.99 2002-12-15 06:49:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.99 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.100 2002-12-16 01:59:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.100 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -192,9 +192,13 @@ main(int argc,char **argv)
       {"coords",no_argument,0,'c'},
       {"nocoords",no_argument,0,'C'},
       {"debug",required_argument,0,'D'},
+      {"dbg_lvl",required_argument,0,'D'},
       {"dimension",required_argument,0,'d'},
-      {"fortran",no_argument,0,'F'},
+      {"dmn",required_argument,0,'d'},
+      {"ftn",no_argument,0,'F'},
+      {"ftn",no_argument,0,'F'},
       {"history",no_argument,0,'h'},
+      {"hst",no_argument,0,'h'},
       {"local",no_argument,0,'l'},
       {"nintap",required_argument,0,'n'},
       {"overwrite",no_argument,0,'O'},
@@ -232,7 +236,7 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'C': /* Extraction list should include all coordinates associated with extracted variables? */
+    case 'C': /* Extract all coordinates associated with extracted variables? */
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
     case 'c':

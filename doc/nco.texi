@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.135 2002-12-15 06:49:43 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.136 2002-12-16 01:59:50 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2459,11 +2459,12 @@ interactive keyboard input.
 @cindex attributes, global
 @cindex @code{-h}
 @cindex @code{--history}
+@cindex @code{--hst}
 @cartouche
 @noindent
 Availability: All operators@*
 Key switches: @samp{-h}@*
-Long options: @samp{--history}@*
+Long options: @samp{--history}, @samp{--hst}@*
 @end cartouche
 All operators automatically append a @code{history} global attribute to
 any file they modify or create.
