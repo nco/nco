@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.4 2002-09-24 12:17:20 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.5 2002-12-28 07:07:21 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -314,24 +314,24 @@ scv_xpr: /* scv_xpr results from RHS action which involves only scv_xpr's
 	    One action exists for each binary and unary attribute-valid operator */
 scv_xpr '+' scv_xpr {
   (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3);
-  $$=ncap_scv_calc($1,'+',$3);                                
+  $$=ncap_scv_clc($1,'+',$3);                                
 }
 | scv_xpr '-' scv_xpr {
   (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3); 
-  $$=ncap_scv_calc($1,'-',$3);
+  $$=ncap_scv_clc($1,'-',$3);
 }
 | scv_xpr '*' scv_xpr {
   (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3);
-  $$=ncap_scv_calc($1,'*',$3);
+  $$=ncap_scv_clc($1,'*',$3);
 }
 | scv_xpr '/' scv_xpr {
   (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3); 
-  $$=ncap_scv_calc($1,'/',$3);  
+  $$=ncap_scv_clc($1,'/',$3);  
 }
 | scv_xpr '%' scv_xpr {
   (void)ncap_scv_scv_cnf_typ_hgh_prc(&$1,&$3);
   
-  $$=ncap_scv_calc($1,'%',$3);  
+  $$=ncap_scv_clc($1,'%',$3);  
 }
 | '-' scv_xpr %prec UMINUS {
   (void)ncap_scv_minus(&$2);

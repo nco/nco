@@ -1,5 +1,5 @@
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.79 2002-09-09 07:08:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.80 2002-12-28 07:07:21 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -429,7 +429,7 @@ ncap_var_scv_pwr(var_sct *var_in,scv_sct scv)
 } /* end ncap_var_scv_pwr */
 
 scv_sct  
-ncap_scv_calc(scv_sct scv_1, char op, scv_sct scv_2)
+ncap_scv_clc(scv_sct scv_1, char op, scv_sct scv_2)
 {
   /* Purpose: Calculate (scv_1 op scv_2) NB: Scalar values must be of same type */
 
@@ -486,7 +486,7 @@ ncap_scv_calc(scv_sct scv_1, char op, scv_sct scv_2)
   }/* end switch */    
   
   return scv_out;
-} /* end ncap_scv_calc_type */
+} /* end ncap_scv_clc_type */
 
 scv_sct
 ncap_scv_abs(scv_sct scv)

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.24 2002-12-19 20:48:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.25 2002-12-28 07:07:22 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -432,7 +432,7 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
 
 	      /* NB: Perform these operations with integer arithmatic or else! */
 	      dmn_cnt_1[dmn_idx]=1L+(dmn_sz[dmn_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd; 
-	      /* Wrapped dimensions with a stride may not start at idx 0 on second read */
+	      /* Wrapped dimensions with stride may not start at idx 0 on second read */
 	      greatest_srd_multiplier_1st_hyp_slb=(dmn_sz[dmn_idx]-lmt[lmt_idx].srt-1L)/lmt[lmt_idx].srd;
 	      last_good_idx_1st_hyp_slb=lmt[lmt_idx].srt+lmt[lmt_idx].srd*greatest_srd_multiplier_1st_hyp_slb;
 	      left_over_idx_1st_hyp_slb=dmn_sz[dmn_idx]-last_good_idx_1st_hyp_slb-1L;

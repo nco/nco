@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.75 2002-12-22 17:44:07 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.76 2002-12-28 07:07:21 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.75 2002-12-22 17:44:07 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.75 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.76 2002-12-28 07:07:21 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.76 $";
   
   extern char *optarg;
   
@@ -374,8 +374,8 @@ main(int argc,char **argv)
 
   /* Find and store the final size of each dimension */
   for(idx = 0 ; idx < nbr_dmn_fl ; idx++){
-    (void)nco_msa_calc_cnt( lmt_lst+idx );
-    /* if( lmt_lst[idx].lmt_dmn_nbr >1 ) (void)nco_msa_print_indices(&lmt_lst[idx]); */
+    (void)nco_msa_clc_cnt( lmt_lst+idx );
+    /* if( lmt_lst[idx].lmt_dmn_nbr >1 ) (void)nco_msa_prn_idx(&lmt_lst[idx]); */
   }
   
 	 
@@ -415,7 +415,7 @@ main(int argc,char **argv)
 
       /* if(lmt_nbr > 0) (void)nco_cpy_var_val_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt,lmt_nbr); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm); */
 
-      if(lmt_nbr > 0) (void)nco_cpy_var_val_multi_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
+      if(lmt_nbr > 0) (void)nco_cpy_var_val_mlt_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
     } /* end loop over idx */
     
 

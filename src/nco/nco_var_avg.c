@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.12 2002-12-20 17:59:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.13 2002-12-28 07:07:22 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -167,7 +167,7 @@ nco_var_avg /* [fnc] reduce given variable over specified dimensions */
     char *avg_cp;
     char *var_cp;
     
-    int type_sz;
+    int typ_sz;
     int nbr_dmn_var_m1;
 
     long *var_cnt;
@@ -182,7 +182,7 @@ nco_var_avg /* [fnc] reduce given variable over specified dimensions */
     ptr_unn avg_val;
 
     nbr_dmn_var_m1=nbr_dmn_var-1;
-    type_sz=nco_typ_lng(fix->type);
+    typ_sz=nco_typ_lng(fix->type);
     var_cnt=var->cnt;
     var_cp=(char *)var->val.vp;
     var_sz=var->sz;
@@ -236,7 +236,7 @@ nco_var_avg /* [fnc] reduce given variable over specified dimensions */
       for(idx=0;idx<nbr_dmn_avg;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
       
       /* Copy current element in input array into its slot in sorted avg_val */
-      (void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*type_sz,var_cp+var_lmn*type_sz,type_sz);
+      (void)memcpy(avg_cp+(fix_lmn*avg_sz+avg_lmn)*typ_sz,var_cp+var_lmn*typ_sz,typ_sz);
       
     } /* end loop over var_lmn */
     

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.2 2002-12-22 17:46:21 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.3 2002-12-28 07:07:22 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -35,48 +35,46 @@ extern "C" {
 #endif /* __cplusplus */
 
  void
-  nco_cpy_var_val_multi_lmt /* [fnc] Copy variable data from input to output file */
-  (const int in_id, /* I [id] netCDF input file ID */
-   const int out_id, /* I [id] netCDF output file ID */
-   FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
-   const bool NCO_BNR_WRT, /* I [flg] Write binary file */
-   char *var_nm, /* I [sng] Variable name */
-   lmt_all * const lmt_lst, /* I multi-hyperslab limits */
-   int nbr_dmn_fl); /* I [nbr] Number of multi-hyperslab limits */
-
+ nco_cpy_var_val_mlt_lmt /* [fnc] Copy variable data from input to output file */
+ (const int in_id, /* I [id] netCDF input file ID */
+  const int out_id, /* I [id] netCDF output file ID */
+  FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
+  const bool NCO_BNR_WRT, /* I [flg] Write binary file */
+  char *var_nm, /* I [sng] Variable name */
+  lmt_all * const lmt_lst, /* I multi-hyperslab limits */
+  int nbr_dmn_fl); /* I [nbr] Number of multi-hyperslab limits */
   
-  bool 
-  nco_msa_calc_indices(   /* if false then we are at the end of the slab */
-  bool NORMALIZE,         /* Return indices of slab within the slab */
-  lmt_all *lmt_a,         /* I list of lmts for each dimension  */
-  long *indices,          /* I/O so routine can keep track of where its at */
-  lmt_sct* lmt_out,      /* O  output hyperslab */
-  int *slb );             /* slab which the above limit refers to */ 
+  bool /* if false then we are at the end of the slab */
 
+  nco_msa_clc_idx
+  (bool NORMALIZE,         /* Return indices of slab within the slab */
+   lmt_all *lmt_a,         /* I list of lmts for each dimension  */
+   long *indices,          /* I/O so routine can keep track of where its at */
+   lmt_sct* lmt_out,      /* O  output hyperslab */
+   int *slb );             /* slab which the above limit refers to */ 
   
   void 
-  nco_msa_print_indices    /* Print multiple hyperslab indices  */
+  nco_msa_prn_idx    /* Print multiple hyperslab indices  */
   (lmt_all * lmt_lst); 
-
-
+  
   void 
-  nco_msa_calc_cnt    /* Calculate size of  multiple hyperslab */ 
+  nco_msa_clc_cnt    /* Calculate size of  multiple hyperslab */ 
   (lmt_all* lmt_lst); 
-
+  
   void *
-  nco_msa_rec_calc(  /* Multi slab algorithm (recursive routine, returns a single slab pointer */
-  int i,             /* current depth, we start at 0 */
-  int imax,          /* maximium depth (i.e the number of dims in variable (does not change)*/		 
-  lmt_sct **lmt,    /* limits of the current hyperslab these change as we recurse */
-  lmt_all **lmt_lst, /* list of limits in each dimension (this remains STATIC as we recurse */
-  var_sct *var1);    /* Infor for routine to read var (should not change */
-
+  nco_msa_rec_clc /* Multi slab algorithm (recursive routine, returns a single slab pointer */
+  (int i,             /* current depth, we start at 0 */
+   int imax,          /* maximium depth (i.e the number of dims in variable (does not change)*/		 
+   lmt_sct **lmt,    /* limits of the current hyperslab these change as we recurse */
+   lmt_all **lmt_lst, /* list of limits in each dimension (this remains STATIC as we recurse */
+   var_sct *var1);    /* Infor for routine to read var (should not change */
+  
   long
-  nco_msa_min_indices( /* find min values in current and return the min value*/
-  long *current,   /* current indices */
-  bool *min,       /* element true if a minimum */
-  int size);       /* size of current and min */
-
+  nco_msa_min_idx /* find min values in current and return the min value*/
+  (long *current,   /* current indices */
+   bool *min,       /* element true if a minimum */
+   int size);       /* size of current and min */
+  
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */

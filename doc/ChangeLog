@@ -1,3 +1,7 @@
+2002-12-27  Charlie Zender  <zender@uci.edu>
+
+	* Clean up nco_msa.[ch]. Still need to fix void * arithmetic.
+
 2002-12-19  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_6_7
@@ -7,8 +11,9 @@
 
 2002-12-19  Henry Butowsky  <henryb@ntlworld.com>
 
-	 * The first version of multi-hyperslabbing along a single dimension for ncks
-
+	 * First version of multi-hyperslabbing along a single dimension
+	 for ncks
+	
 2002-12-14  Charlie Zender  <zender@uci.edu>
 
 	* Took advantage of NEED_FNC to remove MACOSX kludge in nco_rth_flt.h
