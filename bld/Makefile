@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.188 2002-09-20 20:38:33 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.189 2002-09-20 20:39:17 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -317,7 +317,7 @@ FIXEDFLAGS := -qsuffix=f=f:cpp=F -qfixed=132
 FREEFLAGS := -qsuffix=f=f90:cpp=F90
 LD := ld
 # 20020422: -lC links to AIX C++ library which contains float intrinsics cosf()...
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm -lC
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm -lC
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 #LDFLAGS += -lxlf90 -lxlf
 endif
@@ -377,7 +377,7 @@ FFLAGS := -r8 -i4 -c ${OMP_FLG} -automatic
 FIXEDFLAGS := -extend_source ${OMP_FLG} -automatic
 FREEFLAGS := -DHIDE_SHR_MSG -free
 LD := ld
-LDFLAGS += ${OMP_FLG} $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${OMP_FLG} ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
 endif
@@ -411,7 +411,7 @@ CPP := cpp
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -L/lib -lf
 endif
@@ -461,7 +461,7 @@ CPP_TKN_OS += -Di386
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := g77
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
 endif
@@ -610,7 +610,7 @@ CPP := ${CC}
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 LEX := flex
 LINT := lint
 YACC := bison
@@ -648,7 +648,7 @@ CPP := c++ -E
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 # LDFLAGS += -L/lib -lf
 endif
@@ -682,7 +682,7 @@ CPP := /lib/cpp -P
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := xlf
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -lxlf90 -lxlf
 endif
@@ -743,7 +743,7 @@ SGI_ABI_FLG := -64 -mips4 ${OMP_FLG}
 # endif SGI64, SGIMP64
 endif
 ifeq (${CC},gcc)
- LDFLAGS += $(GCC_LDFLAGS_SZ_SPC) $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+ LDFLAGS += $(GCC_LDFLAGS_SZ_SPC) ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq (${OPTS},O)
 CFLAGS += ${GCC_ABI_FLG} -O2 -Wall
 endif
@@ -760,7 +760,7 @@ endif
 endif
 # endif CC=gcc
 ifeq (${CC},cc)
- LDFLAGS += ${SGI_ABI_FLG} $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+ LDFLAGS += ${SGI_ABI_FLG} ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq (${OPTS},O)
  CFLAGS += ${SGI_ABI_FLG} -O2
 endif
@@ -806,7 +806,7 @@ FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsunmath -lsocket -lnsl
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lsunmath -lsocket -lnsl
 LEX := lex
 LINT := lint
 YACC := yacc
@@ -838,7 +838,7 @@ CPP_TKN_OS += -Di386 -I/usr/include
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := g77
 LD := ld
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
 endif
