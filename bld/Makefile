@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.6 1998-08-19 17:23:16 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.7 1998-08-20 02:15:24 zender Exp $
 
 MY_BLD_DIR := ../bld
 MY_DAT_DIR := ../data
@@ -16,7 +16,9 @@ endif
 ifndef OPTS
  OPTS := O
 endif
-PVM_ARCH := $(shell $(MY_BLD_DIR)/pvmgetarch)
+ifndef PVM_ARCH
+ PVM_ARCH := $(shell $(MY_BLD_DIR)/pvmgetarch)
+endif
 ifndef C_ONLY
  C_ONLY := N
 endif
