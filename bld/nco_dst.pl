@@ -1,6 +1,6 @@
 #!/contrib/bin/perl
 				
-my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.15 1999-05-10 06:36:23 zender Exp $';
+my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.16 1999-05-10 06:57:04 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
@@ -52,9 +52,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $RCS_Date='$Date: 1999-05-10 06:36:23 $';
-my $RCS_Id='$Id: nco_dst.pl,v 1.15 1999-05-10 06:36:23 zender Exp $';
-my $RCS_Revision='$Revision: 1.15 $';
+my $RCS_Date='$Date: 1999-05-10 06:57:04 $';
+my $RCS_Id='$Id: nco_dst.pl,v 1.16 1999-05-10 06:57:04 zender Exp $';
+my $RCS_Revision='$Revision: 1.16 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -232,13 +232,13 @@ if($acd_prs){
 } # endif acd_prs
 
 if($acd_cnt){
-    $rmt_mch='gss1.acd.ucar.edu';
-    print STDOUT "\n$prg_nm: Updating private NCO on $rmt_mch...\n";
-    &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco;cvs update\"");
-    &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco/bld;make\"");
-# Unfortunately, sudo does not work at all with rsh
-#    &cmd_prc("rsh $rmt_mch \"sudo cp /l9/zender/bin/AIX/nc* /usr/local/bin\"");
-    print STDOUT "$prg_nm: Done updating private NCO binaries on $rmt_mch\n\n";
+#     $rmt_mch='gss1.acd.ucar.edu';
+#     print STDOUT "\n$prg_nm: Updating private NCO on $rmt_mch...\n";
+#     &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco;cvs update\"");
+#     &cmd_prc("rsh $rmt_mch \"cd ~/nc/nco/bld;make\"");
+# # Unfortunately, sudo does not work at all with rsh
+# #    &cmd_prc("rsh $rmt_mch \"sudo cp /l9/zender/bin/AIX/nc* /usr/local/bin\"");
+#     print STDOUT "$prg_nm: Done updating private NCO binaries on $rmt_mch\n\n";
 } # endif acd_cnt
 
 if($cgd_cnt){
@@ -277,17 +277,17 @@ if($dat_cnt){
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
 } # endif dat_cnt
 
-if($wnt_cnt){
-    $rmt_mch='winterpark.ucar.edu';
+if($ute_cnt){
+    $rmt_mch='ute.ucar.edu';
 #    rsh $rmt_mch 'printf $PVM_ARCH'
-    print STDOUT "\n$prg_nm: Updating contrib NCO on $rmt_mch...\n";
+    print STDOUT "\n$prg_nm: Updating personal NCO on $rmt_mch...\n";
     &cmd_prc("rsh $rmt_mch \"mkdir /usr/tmp/zender\"");
     &cmd_prc("rsh $rmt_mch \"/bin/rm -r -f /usr/tmp/zender/nco*\"");
     &cmd_prc("rcp -p ftp.cgd.ucar.edu:/ftp/pub/zender/nco/nco.tar.gz $rmt_mch:/usr/tmp/zender");
     &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender;tar -xvzf nco.tar.gz;rm -f nco.tar.gz;mv -f nco-* nco\"");
-    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/nco/bld; setenv MY_BIN_DIR /contrib/nco-1.1/bin; setenv MY_LIB_DIR /contrib/nco-1.1/lib; setenv MY_OBJ_DIR /usr/tmp/zender/nco/obj; make libclean binclean objclean; make\"");
+    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/nco/bld; setenv MY_BIN_DIR /home/ute/zender/bin/SGIMP64/bin; setenv MY_LIB_DIR /home/ute/zender/bin/SGIMP64/lib; setenv MY_OBJ_DIR /usr/tmp/zender/nco/obj; gmake libclean binclean objclean; gmake\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
-} # endif wnt_cnt
+} # endif ute_cnt
 
 if($wnt_prs){
     $rmt_mch='winterpark.ucar.edu';
