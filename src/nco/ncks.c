@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.74 2002-12-19 20:48:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.75 2002-12-22 17:44:07 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -78,6 +78,7 @@
 #include "nco.h" /* NCO definitions */
 #include "libnco.h" /* netCDF operator library */
 
+
 int 
 main(int argc,char **argv)
 {
@@ -112,8 +113,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.74 2002-12-19 20:48:24 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.74 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.75 2002-12-22 17:44:07 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.75 $";
   
   extern char *optarg;
   
@@ -138,7 +139,7 @@ main(int argc,char **argv)
   lmt_sct *lmt;
 
   lmt_all *lmt_lst;        /* Container for lmt */
-  lmt_all *lmt_j;         /* temporary pointer */
+  lmt_all *lmt_tmp;         /* temporary pointer */
 
   char dmn_nm[NC_MAX_NAME];
   long dmn_sz;
@@ -289,6 +290,7 @@ main(int argc,char **argv)
       break;
     } /* end switch */
   } /* end while loop */
+
   
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
@@ -328,21 +330,21 @@ main(int argc,char **argv)
 
    for(idx =0 ; idx <nbr_dmn_fl ; idx++){
     (void)nco_inq_dim(in_id,idx,dmn_nm,&dmn_sz);
-    lmt_j = &lmt_lst[idx];
-    lmt_j->lmt_dmn  = (lmt_sct **) nco_malloc(sizeof(lmt_sct *));
-    lmt_j->lmt_dmn[0] = (lmt_sct *) nco_malloc(sizeof(lmt_sct));
-    lmt_j->dmn_nm=strdup(dmn_nm);
-    lmt_j->lmt_dmn_nbr=1;
+    lmt_tmp = &lmt_lst[idx];
+    lmt_tmp->lmt_dmn  = (lmt_sct **) nco_malloc(sizeof(lmt_sct *));
+    lmt_tmp->lmt_dmn[0] = (lmt_sct *) nco_malloc(sizeof(lmt_sct));
+    lmt_tmp->dmn_nm=strdup(dmn_nm);
+    lmt_tmp->lmt_dmn_nbr=1;
     /* iniialize lmt struct */
-    lmt_j->lmt_dmn[0]->nm=lmt_j->dmn_nm;
-    lmt_j->lmt_dmn[0]->id = idx;
-    lmt_j->lmt_dmn[0]->is_rec_dmn = (idx == rec_dmn_id ? True : False);
-    lmt_j->lmt_dmn[0]->srt = 0L;
-    lmt_j->lmt_dmn[0]->end = dmn_sz -1L;
-    lmt_j->lmt_dmn[0]->cnt = dmn_sz;
-    lmt_j->lmt_dmn[0]->srd = 1L;
+    lmt_tmp->lmt_dmn[0]->nm=lmt_tmp->dmn_nm;
+    lmt_tmp->lmt_dmn[0]->id = idx;
+    lmt_tmp->lmt_dmn[0]->is_rec_dmn = (idx == rec_dmn_id ? True : False);
+    lmt_tmp->lmt_dmn[0]->srt = 0L;
+    lmt_tmp->lmt_dmn[0]->end = dmn_sz -1L;
+    lmt_tmp->lmt_dmn[0]->cnt = dmn_sz;
+    lmt_tmp->lmt_dmn[0]->srd = 1L;
     /* flag which shows that struct has been inialized here. A HACK */
-    lmt_j->lmt_dmn[0]->lmt_typ = -1;
+    lmt_tmp->lmt_dmn[0]->lmt_typ = -1;
   }     
 
   /* Now add user specified limits lmt_lst */
@@ -351,13 +353,13 @@ main(int argc,char **argv)
      (void)nco_lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
      for(jdx=0; jdx < nbr_dmn_fl ; jdx++) {
        if(!strcmp(lmt[idx].nm,lmt_lst[jdx].dmn_nm)){   
-         lmt_j = &lmt_lst[jdx];
-         if(lmt_j->lmt_dmn[0]->lmt_typ == -1) { 
-	   lmt_j->lmt_dmn[0]=lmt+idx; 
+         lmt_tmp = &lmt_lst[jdx];
+         if(lmt_tmp->lmt_dmn[0]->lmt_typ == -1) { 
+	   lmt_tmp->lmt_dmn[0]=lmt+idx; 
            }else{ 
            
-	   lmt_j->lmt_dmn  = (lmt_sct **) nco_realloc(lmt_j->lmt_dmn,((lmt_j->lmt_dmn_nbr) +1)*sizeof(lmt_sct *));
-           lmt_j->lmt_dmn[(lmt_j->lmt_dmn_nbr)++]=lmt+idx;
+	   lmt_tmp->lmt_dmn  = (lmt_sct **) nco_realloc(lmt_tmp->lmt_dmn,((lmt_tmp->lmt_dmn_nbr) +1)*sizeof(lmt_sct *));
+           lmt_tmp->lmt_dmn[(lmt_tmp->lmt_dmn_nbr)++]=lmt+idx;
 	 }
          break;
        } /* end if */
@@ -372,7 +374,7 @@ main(int argc,char **argv)
 
   /* Find and store the final size of each dimension */
   for(idx = 0 ; idx < nbr_dmn_fl ; idx++){
-    (void)nco_msa_calc_cnt(&lmt_lst[idx]);
+    (void)nco_msa_calc_cnt( lmt_lst+idx );
     /* if( lmt_lst[idx].lmt_dmn_nbr >1 ) (void)nco_msa_print_indices(&lmt_lst[idx]); */
   }
   
@@ -416,6 +418,7 @@ main(int argc,char **argv)
       if(lmt_nbr > 0) (void)nco_cpy_var_val_multi_lmt(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl); else (void)nco_cpy_var_val(in_id,out_id,fp_bnr,NCO_BNR_WRT,xtr_lst[idx].nm);
     } /* end loop over idx */
     
+
     /* [fnc] Close unformatted binary data file */
     if(NCO_BNR_WRT) (void)nco_bnr_close(fp_bnr,fl_bnr);
 
