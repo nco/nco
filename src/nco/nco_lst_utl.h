@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.4 2002-05-07 08:34:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.5 2002-05-13 19:40:32 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -28,6 +28,21 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+nco_cmp_int /* [fnc] Compare two integers */
+(const void *val_1, /* I [nbr] Number to compare */
+ const void *val_2); /* I [nbr] Number to compare */
+
+int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+nco_cmp_chr /* [fnc] Compare two characters */
+(const void *val_1, /* I [chr] Character to compare */
+ const void *val_2); /* I [chr] Character to compare */
+
+int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+nco_cmp_sng /* [fnc] Compare two strings */
+(const void *val_1, /* I [sng] String to compare */
+ const void *val_2); /* I [sng] String to compare */
 
 char * /* O [sng] Concatenated string formed by joining all input strings */
 sng_lst_prs /* [fnc] Join list of strings together into one string */

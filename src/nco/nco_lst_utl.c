@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.7 2002-05-12 06:12:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.8 2002-05-13 19:40:32 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -7,6 +7,44 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_lst_utl.h" /* List utilities */
+
+int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+nco_cmp_int /* [fnc] Compare two integers */
+(const void *val_1, /* I [nbr] Number to compare */
+ const void *val_2) /* I [nbr] Number to compare */
+{
+  /* Purpose: Compare two integers
+     Function is suitable for argument to ANSI C qsort() routine in stdlib.h
+     Code stolen from http://www.cplusplus.com/ref/cstdlib/qsort.html */
+  return (*(int *)val_1-*(int *)val_2);
+} /* end nco_cmp_int() */
+
+int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+nco_cmp_chr /* [fnc] Compare two characters */
+(const void *val_1, /* I [chr] Character to compare */
+ const void *val_2) /* I [chr] Character to compare */
+{
+  /* Purpose: Compare two characters
+     Function is suitable for argument to ANSI C qsort() routine in stdlib.h
+     Code stolen from http://www.cplusplus.com/ref/cstdlib/qsort.html */
+  return (*(char *)val_1-*(char *)val_2);
+} /* end nco_cmp_chr() */
+
+int /* O [enm] Comparison result [<,=,>]0 iff val_1 [<,==,>] val_2 */
+nco_cmp_sng /* [fnc] Compare two strings */
+(const void *val_1, /* I [sng] String to compare */
+ const void *val_2) /* I [sng] String to compare */
+{
+  /* Purpose: Compare two string
+     Function is suitable for argument to ANSI C qsort() routine in stdlib.h
+     http://www.eskimo.com/~scs/C-faq/q13.8.html describes sorting strings: 
+     Arguments to qsort()'s comparison function are pointers to objects being sorted,
+     i.e., pointers to pointers to char. 
+     strcmp(), however, accepts simple pointers to char
+     Therefore, strcmp() cannot be used directly as comparison function for qsort()
+     This wrapper casts input values to simple char pointers, calls strcmp(), and feeds results back to qsort() */
+  return strcmp(*(char * const *)val_1,*(char * const *)val_2);
+} /* end nco_cmp_sng() */
 
 char * /* O [sng] Concatenated string formed by joining all input strings */
 sng_lst_prs /* [fnc] Join list of strings together into one string */
@@ -222,7 +260,7 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
   lst_tmp=(nm_id_sct *)nco_malloc(nbr_lst*sizeof(nm_id_sct));
   (void)memcpy((void *)lst_tmp,(void *)lst,nbr_lst*sizeof(nm_id_sct));
   
-  /* indexx() and relative assume "one-based" arrays 
+  /* indexx() and relatives assume "one-based" arrays 
      Use pointer arithmetic to spoof zero-based arrays, i.e.,
      xtr_nm[0] in calling routine becomes xtr_nm[1] in sorting routine  */
   if(ALPHABETIZE_OUTPUT){
@@ -231,6 +269,7 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
     char **xtr_nm;
     xtr_nm=(char **)nco_malloc(nbr_lst*sizeof(char *));
     for(idx=0;idx<nbr_lst;idx++) xtr_nm[idx]=lst[idx].nm;
+    /* fxm: Replace with system qsort() */
     (void)index_alpha(nbr_lst,xtr_nm-1,srt_idx-1);
     xtr_nm=(char **)nco_free(xtr_nm);
   }else{
@@ -239,6 +278,7 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
     int *xtr_id;
     xtr_id=(int *)nco_malloc(nbr_lst*sizeof(int));
     for(idx=0;idx<nbr_lst;idx++) xtr_id[idx]=lst[idx].id;
+    /* fxm: Replace with system qsort() */
     (void)indexx(nbr_lst,xtr_id-1,srt_idx-1);
     xtr_id=(int *)nco_free(xtr_id);
   } /* end else */

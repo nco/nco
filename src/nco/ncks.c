@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.58 2002-05-08 20:35:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.59 2002-05-13 19:40:32 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -105,14 +105,14 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.58 2002-05-08 20:35:30 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.58 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.59 2002-05-13 19:40:32 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.59 $";
   
   extern char *optarg;
   
   extern int optind;
   
-  FILE *fp_bnr; /* [fl] Unformatted binary output file handle */
+  FILE *fp_bnr=NULL_CEWI; /* [fl] Unformatted binary output file handle */
 
   int fll_md_old; /* [enm] Old fill mode */
   int idx;
@@ -134,7 +134,7 @@ main(int argc,char **argv)
   time_t clock;
 
   /* Start the clock and save the command line */ 
-  cmd_ln=cmd_ln_sng(argc,argv);
+  cmd_ln=cmd_ln_sng(argc,(const char **)argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
   fl_bnr=(char *)strdup("ncks.bnr");
