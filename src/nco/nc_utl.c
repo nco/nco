@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.20 1999-04-20 19:12:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.21 1999-04-20 20:55:02 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -1116,7 +1116,13 @@ lim_dim_mk(int nc_id,int dim_id,lim_sct *lim,int nbr_lim,bool FORTRAN_STYLE)
     */ 
     /* Decrement cnt to C index value if necessary */
     if(!FORTRAN_STYLE) cnt--; 
-    max_sng_sz=(int)ceil(log10((double)cnt));
+    if(cnt < 0L){
+      (void)fprintf(stdout,"%s: cnt < 0 in lim_dim_mk()\n",prg_nm_get());
+      exit(EXIT_FAILURE);
+    } /* end if */
+    /* cnt < 10 cover negative numbers and SIGFPE from log10(cnt==0) 
+       Adding 1 is required for cnt=10,100,1000... */
+    if(cnt < 10L) max_sng_sz=1; else max_sng_sz=1+(int)ceil(log10((double)cnt));
     /* Add one for the NULL byte */
     lim_dim.max_sng=(char *)malloc(sizeof(char)*(max_sng_sz+1));
     (void)sprintf(lim_dim.max_sng,"%ld",cnt);
