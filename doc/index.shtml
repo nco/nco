@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.66 2000-10-16 07:07:01 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.67 2000-10-24 01:22:18 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -210,7 +210,8 @@ NCO executables in the following locations:
 <li>SCD <tt>blackforest.ucar.edu</tt> (AIX 4.0): <tt>/home/blackforest/zender/bin/AIX</tt></li>
 <li>SCD <tt>ouray.ucar.edu</tt> (UNICOS 10.0.0): <tt>/home/ouray0/zender/bin/CRAY</tt></li>
 <li>SCD <tt>ute.ucar.edu</tt> and <tt>utefe.ucar.edu</tt> (IRIX 6.5): <tt>/home/ute/zender/bin/SGIMP64</tt></li>
-<li>ESS <tt>dust.ps.uci.edu</tt> (Linux 2.2.12): <tt>/home/zender/bin/LINUX</tt></li>
+<li>ESS <tt>dust.ps.uci.edu</tt> (Linux 2.2.16): <tt>/home/zender/bin/LINUX</tt></li>
+<li>ESS <tt>ess1.ps.uci.edu</tt> (Linux 2.2.15): <tt>/home/zender/bin/LINUXALPHA</tt></li>
 <li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
 </ul>
 <hr></p>

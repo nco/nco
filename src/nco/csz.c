@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.63 2000-09-30 04:02:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.64 2000-10-24 01:22:18 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -37,36 +37,36 @@
    Irvine, CA 92697-3100
 */
 
-/* Standard header files */
-#include <math.h>               /* sin cos cos sin 3.14159 */
-#include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */
-#include <string.h>             /* strcmp. . . */
-#include <sys/stat.h>           /* stat() */
-#include <time.h>               /* machine time */
-#include <unistd.h>             /* POSIX stuff */
-/* #include <errno.h> */            /* errno */
-/* #include <malloc.h>    */        /* malloc() stuff */
-/* #include <assert.h> */           /* assert() debugging macro */
+/* Standard C headers */
+#include <math.h> /* sin cos cos sin 3.14159 */
+#include <stdio.h> /* stderr, FILE, NULL, etc. */
+#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <string.h> /* strcmp. . . */
+#include <sys/stat.h> /* stat() */
+#include <time.h> /* machine time */
+#include <unistd.h> /* all sorts of POSIX stuff */
+/* #include <assert.h> */ /* assert() debugging macro */
+/* #include <errno.h> */ /* errno */
+/* #include <malloc.h> */ /* malloc() stuff */
 
-#include <sys/types.h>          /* needed for _res */
-#include <netinet/in.h>         /* needed for _res */
-#include <pwd.h>                /* password structures for getpwuid() */
+#include <sys/types.h> /* needed for _res */
+#include <netinet/in.h> /* needed for _res */
+#include <pwd.h> /* password structures for getpwuid() */
 #ifndef WIN32
-#include <arpa/nameser.h>       /* needed for _res */
-#include <resolv.h>             /* Internet structures for _res */
+#include <arpa/nameser.h> /* needed for _res */
+#include <resolv.h> /* Internet structures for _res */
 #endif
 
 /* 3rd party vendors */
-#ifdef OMP /* OpenMP */
+#ifdef _OPENMP
 #include <omp.h> /* OpenMP pragmas */
-#endif /* not OpenMP */
+#endif /* not _OPENMP */
 
 /* I'm only keeping these netCDF include files around because I'm worried that 
    function prototypes in nc.h are needed here. Eventually prototypes for these
    routines should be broken into separate files, like csz.h... */
-#include <netcdf.h>             /* netCDF definitions */
-#include "nc.h"                 /* netCDF operator universal def'ns */
+#include <netcdf.h> /* netCDF definitions */
+#include "nc.h" /* netCDF operator universal def'ns */
 
 #ifndef bool
 #define bool int
