@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.112 2005-03-25 21:30:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.113 2005-03-25 21:57:10 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -720,7 +720,7 @@ nco_dmn_lst /* [fnc] Create list of all dimensions in file  */
   int idx;
   int nbr_dmn_in;
   char dmn_nm[NC_MAX_NAME];
-  nm_id_sct  *dmn;
+  nm_id_sct *dmn;
   /* Get number of dimensions */
   (void)nco_inq(nc_id,&nbr_dmn_in,(int *)NULL,(int *)NULL,(int *)NULL);
   

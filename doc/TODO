@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.456 2005-03-25 21:30:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.457 2005-03-25 21:57:08 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -287,7 +287,8 @@ nco488. ncatted: Deleting global attributes doesn't work unless 'global' specifi
         ncatted -O -a Conventions,,d,, ~/nco/data/in.nc ~/foo.nc (fails)
         ncks ~/foo.nc | m
         ncatted -a Conventions,global,d,, in.nc foo.nc (works)
-nco489. 
+nco489. mmr: memory leak in nco_fl_lst_mk() with fl_lst_in
+nco490.  
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -346,10 +347,10 @@ ncap61. Possible math parser error: and should be ~ 27000.0
 ncap62. Does LHS-casting still work? Following results in only three dimensions:
     ncap -O -v -s "x[time,lat,lev,lon]=three_dmn_var" ~/nco/data/in.nc ~/foo.nc
 ncap63. mmr: memory leak in ncap with var_nm_RHS
-ncap64. mmr: memory leak in ncap with xtr_lst
 ncap65. mmr: memory leak in ncap with var->nm
 ncap66. make ncap errors fatal, either in yyerror(), or call nco_error_exit()
-ncap67. 
+ncap67. mmr: memory leak in ncap with dmn_lst
+ncap68. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.146 2005-03-25 21:30:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.147 2005-03-25 21:57:10 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.146 2005-03-25 21:30:11 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.146 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.147 2005-03-25 21:57:10 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.147 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -193,7 +193,7 @@ main(int argc,char **argv)
   
   lmt_sct *lmt=NULL_CEWI;
   
-  nm_id_sct *dmn_lst=NULL;       
+  nm_id_sct *dmn_lst=NULL;
   nm_id_sct *xtr_lst=NULL; /* Non-processed variables to copy to OUTPUT */
   nm_id_sct *xtr_lst_a=NULL; /* Initialize to ALL variables in OUTPUT file */
   
@@ -462,7 +462,7 @@ main(int argc,char **argv)
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
-  /* Form list of all dimensions */  
+  /* Form list of all dimensions in file */  
   dmn_lst=nco_dmn_lst(in_id,&nbr_dmn_in);
   
   dmn_in=(dmn_sct **)nco_malloc(nbr_dmn_in*sizeof(dmn_sct *));
@@ -572,6 +572,9 @@ main(int argc,char **argv)
   /* Put file in define mode to allow metadata writing */
   (void)nco_redef(out_id);
   
+  /* Free current list of all dimensions in input file */
+  dmn_lst=(nm_id_sct *)nco_free(dmn_lst);
+
   /* Make list of dimensions of variables in xtr_lst */
   if(nbr_xtr > 0) dmn_lst=nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_ass);
   
@@ -675,6 +678,12 @@ main(int argc,char **argv)
   /* Close output file and move it from temporary to permanent location */
   (void)nco_fl_out_cls(fl_out,fl_out_tmp,out_id);
   
+  /* NCO-generic clean-up */
+  /* Free lists of strings */
+  if(fl_lst_in != NULL) fl_lst_in=(char **)nco_free(fl_lst_in);
+  /* Free lists of structures */
+  dmn_lst=(nm_id_sct *)nco_free(dmn_lst);
+
   nco_exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */

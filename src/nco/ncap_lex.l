@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.33 2005-03-25 21:30:11 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.34 2005-03-25 21:57:10 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -655,6 +655,7 @@ M_PI {return NAMED_CONSTANT;}
   /* Set defaults */
   (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
   /* Overwrite with LHS information */
+  /* fxm mmr: memory leak with var->nm */
   var->nm=(char *)strdup(tpl_nm);
   var->type=NC_DOUBLE;
   var->nbr_dim=dmn_nbr;
