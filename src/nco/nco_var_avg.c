@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.14 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.15 2003-11-14 22:32:58 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -187,12 +187,12 @@ nco_var_avg /* [fnc] reduce given variable over specified dimensions */
     var_cp=(char *)var->val.vp;
     var_sz=var->sz;
     
-    /* Reuse the existing value buffer (it is of size var_sz, created by nco_var_dpl())*/
+    /* Reuse existing value buffer (it is of size var_sz, created by nco_var_dpl()) */
     avg_val=fix->val;
     avg_cp=(char *)avg_val.vp;
-    /* Create a new value buffer for output (averaged) size */
+    /* Create new value buffer for output (averaged) size */
     fix->val.vp=(void *)nco_malloc(fix_sz*nco_typ_lng(fix->type));
-    /* Resize (or just plain allocate) the tally array */
+    /* Resize (or just plain allocate) tally array */
     fix->tally=(long *)nco_realloc(fix->tally,fix_sz*sizeof(long));
 
     /* Re-initialize value and tally arrays */
@@ -231,7 +231,7 @@ nco_var_avg /* [fnc] reduce given variable over specified dimensions */
       fix_lmn=0L;
       for(idx=0;idx<nbr_dmn_fix;idx++) fix_lmn+=dmn_ss[idx_fix_var[idx]]*dmn_fix_map[idx];
       
-      /* Map N-D array indices into a 1-D offset from offset of its group */
+      /* Map N-D array indices into 1-D offset from group offset */
       avg_lmn=0L;
       for(idx=0;idx<nbr_dmn_avg;idx++) avg_lmn+=dmn_ss[idx_avg_var[idx]]*dmn_avg_map[idx];
       
