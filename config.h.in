@@ -132,7 +132,8 @@
 /* Define to 1 if you have the `logf' function. */
 #undef HAVE_LOGF
 
-/* Define to 1 if your system has a working `malloc' function. */
+/* Define to 1 if your system has a working `malloc' function, and to 0
+   otherwise. */
 #undef HAVE_MALLOC
 
 /* Define to 1 if you have the `memchr' function. */
@@ -275,6 +276,87 @@
 /* NEC SuperX OS */
 #undef NECSX
 
+/* Define to 1 if you need the `acosf' function. */
+#undef NEED_ACOSF
+
+/* Define to 1 if you need the `acoshf' function. */
+#undef NEED_ACOSHF
+
+/* Define to 1 if you need the `asinf' function. */
+#undef NEED_ASINF
+
+/* Define to 1 if you need the `asinhf' function. */
+#undef NEED_ASINHF
+
+/* Define to 1 if you need the `atanf' function. */
+#undef NEED_ATANF
+
+/* Define to 1 if you need the `atanhf' function. */
+#undef NEED_ATANHF
+
+/* Define to 1 if you need the `ceilf' function. */
+#undef NEED_CEILF
+
+/* Define to 1 if you need the `cosf' function. */
+#undef NEED_COSF
+
+/* Define to 1 if you need the `coshf' function. */
+#undef NEED_COSHF
+
+/* Define to 1 if you need the `erfcf' function. */
+#undef NEED_ERFCF
+
+/* Define to 1 if you need the `erff' function. */
+#undef NEED_ERFF
+
+/* Define to 1 if you need the `expf' function. */
+#undef NEED_EXPF
+
+/* Define to 1 if you need the `floorf' function. */
+#undef NEED_FLOORF
+
+/* Define to 1 if you need the `fmodf' function. */
+#undef NEED_FMODF
+
+/* Define to 1 if you need the `gammaf' function. */
+#undef NEED_GAMMAF
+
+/* Define to 1 if you need the `log10f' function. */
+#undef NEED_LOG10F
+
+/* Define to 1 if you need the `logf' function. */
+#undef NEED_LOGF
+
+/* Define to 1 if you need the `nearbyintf' function. */
+#undef NEED_NEARBYINTF
+
+/* Define to 1 if you need the `powf' function. */
+#undef NEED_POWF
+
+/* Define to 1 if you need the `rintf' function. */
+#undef NEED_RINTF
+
+/* Define to 1 if you need the `roundf' function. */
+#undef NEED_ROUNDF
+
+/* Define to 1 if you need the `sinf' function. */
+#undef NEED_SINF
+
+/* Define to 1 if you need the `sinhf' function. */
+#undef NEED_SINHF
+
+/* Define to 1 if you need the `sqrtf' function. */
+#undef NEED_SQRTF
+
+/* Define to 1 if you need the `tanf' function. */
+#undef NEED_TANF
+
+/* Define to 1 if you need the `tanhf' function. */
+#undef NEED_TANHF
+
+/* Define to 1 if you need the `truncf' function. */
+#undef NEED_TRUNCF
+
 /* No netCDF version 2 */
 #undef NO_NETCDF_2
 
@@ -336,6 +418,9 @@
 /* Define as `__inline' if that's what the C compiler calls it, or to nothing
    if it is not supported. */
 #undef inline
+
+/* Define to rpl_malloc if the replacement function should be used. */
+#undef malloc
 
 /* Define to `int' if <sys/types.h> does not define. */
 #undef pid_t

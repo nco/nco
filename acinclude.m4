@@ -31,3 +31,18 @@ if test "$ac_cv_cxx_namespaces" = yes; then
 fi
 ])
 
+AC_DEFUN([NCO_CHECK_FUNCS],
+[AC_FOREACH([AC_Func], [$1],
+  [AH_TEMPLATE(AS_TR_CPP(HAVE_[]AC_Func),
+               [Define to 1 if you have the `]AC_Func[' function.])
+  AH_TEMPLATE(AS_TR_CPP(NEED_[]AC_Func),
+               [Define to 1 if you need the `]AC_Func[' function.])	       
+	       ])dnl
+for ac_func in $1
+do
+AC_CHECK_FUNC($ac_func,
+              [AC_DEFINE_UNQUOTED([AS_TR_CPP([HAVE_$ac_func])])],
+              [AC_DEFINE_UNQUOTED([AS_TR_CPP([NEED_$ac_func])])])dnl
+done
+])
+
