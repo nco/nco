@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.15 2004-07-06 05:40:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.16 2004-08-10 17:49:50 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -67,11 +67,33 @@ nco_openmp_ini /* [fnc] Initialize OpenMP threading environment */
     thr_nbr_rqs=thr_nbr_max; /* [nbr] Number of threads to request */
 
     /* Disable threading on per-program basis to play nicely with others */
-    /* ncrcat is extremely I/O intensive 
-       Maximum efficiency when one thread reads from input file while other writes to output file */
-    if(strstr(prg_nm_get(),"ncrcat")) thr_nbr_max_fsh=1;
-    /* fxm TODO nco345: ncwa threading has not been fully debugged */
-    if(strstr(prg_nm_get(),"ncwa")) thr_nbr_max_fsh=1;
+    switch(prg_get()){
+      /* Operators with pre-set thread limit */
+    case ncbo: 
+      thr_nbr_max_fsh=4;
+      break;
+    case ncrcat: 
+      /* ncrcat is extremely I/O intensive 
+	 Maximum efficiency when one thread reads from input file while other writes to output file */
+      thr_nbr_max_fsh=1;
+      break;
+    case ncwa: 
+      /* fxm TODO nco345: ncwa threading has not been fully debugged */
+      thr_nbr_max_fsh=1;
+      break;
+      /* Operators without pre-set thread limit (NB: not all of these are threaded!)*/
+    case ncap: 
+    case ncatted: 
+    case ncea:
+    case ncecat: 
+    case ncflint: 
+    case ncks: 
+    case ncpdq: 
+    case ncra:
+    case ncrename: 
+      break;
+    default: nco_dfl_case_prg_id_err(); break;
+    } /* end case */
     
     /* Play nice with others */
     (void)omp_set_dynamic(dyn_thr); /* [flg] Allow system to dynamically set number of threads */

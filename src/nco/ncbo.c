@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.23 2004-08-10 17:49:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.24 2004-08-10 17:52:39 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncbo.c,v 1.23 2004-08-10 17:49:49 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.23 $";
+  const char * const CVS_Id="$Id: ncbo.c,v 1.24 2004-08-10 17:52:39 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.24 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:rRt:v:xy:-:";
   
   dmn_sct **dim;
@@ -429,7 +429,7 @@ main(int argc,char **argv)
   /* OpenMP notes:
      shared(): msk and wgt are not altered within loop
      private(): wgt_avg does not need initialization */
-#pragma omp parallel for default(none) firstprivate(none) private(DO_CONFORM,MUST_CONFORM,idx) shared(dbg_lvl,fl_in_1,fl_in_2,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr,nbr_var_prc,nco_op_typ,out_id,prg_nm,var_prc,var_prc_out)
+#pragma omp parallel for default(none) private(DO_CONFORM,MUST_CONFORM,idx) shared(dbg_lvl,dim,fl_in_1,fl_in_2,fl_out,fp_stderr,in_id_1,in_id_2,nbr_dmn_xtr,nbr_var_prc,nco_op_typ,out_id,prg_nm,var_prc,var_prc_out)
 #endif /* not _OPENMP */
   for(idx=0;idx<nbr_var_prc;idx++){
     int var_id; /* [id] Variable ID */
