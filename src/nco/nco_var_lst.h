@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.9 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.10 2003-08-14 14:08:12 hmb Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -25,6 +25,8 @@
 #include <netcdf.h> /* netCDF definitions */
 #include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
 
+#include <regex.h> /* POSIX regular expressions library */
+
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
 #include "nco_ctl.h" /* Program flow control functions */
@@ -42,6 +44,24 @@ nco_var_lst_mk /* [fnc] Create variable extraction list */
  CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names */
  const bool PROCESS_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */
+
+
+nm_id_sct * /* O [sct] Variable extraction list */
+nco_var_lst_mk_meta /* [fnc] Create variable extraction list */
+(const int nc_id, /* I [enm] netCDF file ID */
+ const int nbr_var, /* I [nbr] Number of variables in input file */
+ CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names */
+ const bool PROCESS_ALL_COORDINATES, /* I [flg] Process all coordinates */
+ int * const nbr_xtr); /* I/O [nbr] Number of variables in current extraction list */
+
+
+int /* O number of matches found */
+nco_var_meta_search  /* search for pattern matches in the var string list */
+(int nbr_var,        /* I number of vars in srch_sng and size of in_bool */
+char *srch_sng,     /* I concatentaed list of vars */
+char *rexp,          /* I regular expression pattern */
+bool *in_bool);       /* O matched vars holder */
+
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
