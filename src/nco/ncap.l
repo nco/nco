@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.30 2002-01-27 06:21:50 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.31 2002-01-27 08:16:01 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -49,7 +49,7 @@
      NB: flex with -Cf or -Cf not -I if this scanner will not be interactive */
 
   /* Standard header files */
-#include <limits.h> /* INT_MIN, INT_MAX, ... */
+#include <limits.h> /* Integer representation, INT_MIN, INT_MAX... */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strdup */
