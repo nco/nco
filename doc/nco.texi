@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.269 2004-09-06 01:12:23 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.270 2004-09-06 04:53:01 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6657,6 +6657,10 @@ Alternate invocation: @code{ncpack}@*
 Definition: Pack unpacked variables, leave already packed variables alone@*
 Alternate invocation: none@*
 @var{pck_typ} key values: @samp{all_xst}, @samp{pck_all_xst_att}@*
+@item Re-Packing Variables
+Definition: Re-pack packed variables, leave unpacked variables alone@*
+Alternate invocation: none@*
+@var{pck_typ} key values: @samp{xst_new}, @samp{pck_xst_new_att}@*
 @item Unpacking
 Definition: Unpack all packed variables@*
 Alternate invocation: @code{ncunpack}@*
