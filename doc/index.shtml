@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.273 2005-01-10 02:33:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.274 2005-02-20 21:44:21 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -465,9 +465,9 @@ href="src/nco_2.9.9-1_i386.changes">nco_2.9.9-1_i386.changes</a> (<!--#fsize fil
 <a name="gnt"></a>
 <h3><a href="http://www.gentoo.org">Gentoo GNU/Linux</a></h3>
 <ul>
-<a href="http://packages.gentoo.org/packages/?category=app-sci;name=nco">Gentoo GNU/Linux homepage for NCO</a>.
+<a href="http://packages.gentoo.org/packages/?category=sci-misc;name=nco">Gentoo GNU/Linux homepage for NCO</a>.
 <a href="http://www.gentoo.org/doc/en/portage-manual.xml">Portage packages</a> by George Shapavalov and Patrick Kursawe:
-<li><a href="http://cpan.cybercomm.nl/pub/gentoo-portage/app-sci/nco/nco-2.9.1.ebuild">nco-2.9.1.ebuild</a>: Gentoo&nbsp;1, i386 package</li>
+<li><a href="http://cpan.cybercomm.nl/pub/gentoo-portage/sci-misc/nco/nco-2.9.1.ebuild">nco-2.9.1.ebuild</a>: Gentoo&nbsp;1, i386 package</li>
 </ul>
 
 <a name="darwin"></a>
