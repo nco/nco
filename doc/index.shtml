@@ -136,6 +136,11 @@ User's Guide</A>. </P>
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
 
+<P>99/04/04: By default, extracted variables appear in the same order
+in which they were written to the source netCDF file.
+Alphabetizing variables in now possible with <TT>`ncks'</TT>.
+Simply specify <TT>`-a'</TT> on the command line.
+
 <P>99/01/21: An optional token has been added to NCO which eliminates
 all netCDF 3.x calls and thus restores compatibility of NCO with HDF
 files. 
