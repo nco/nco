@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.14 2004-01-12 21:37:15 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.15 2004-01-13 19:52:57 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -17,19 +17,19 @@ apt-get install dh-make debhelper devscripts fakeroot gnupg debian-policy develo
 
 2. Debian build procedure recommends placing entire package source in
    subdirectory of main package. 
-   For starters, we wish to create .debs of tagged releases, e.g., nco-2.7.3
-   First we create a clean source distribution of nco and place it in nco-2.7.3
-   Once automated, we will use cvs co -rnco-2_7_3 to get the source
+   For starters, we wish to create .debs of tagged releases, e.g., nco-2.8.7
+   First we create a clean source distribution of nco and place it in nco-2.8.7
+   Once automated, we will use cvs co -rnco-2_8_7 to get the source
    Until we know what is necessary, however, we just copy a snapshot
    
    2.1 Clean all build files from development directory
 
 cd ~/nco;make distclean;cd bld;make clean;cd ~
 tar cvzf ./nco/nco.tar.gz ./nco/*
-cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-2.7.3
-/bin/rm nco.tar.gz;tar cvzf nco-2.7.3.tar.gz ./nco-2.7.3/*
-cd ~/nco/nco-2.7.3
-dh_make -e zender@uci.edu -f ../nco-2.7.3.tar.gz
+cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-2.8.7
+/bin/rm nco.tar.gz;tar cvzf nco-2.8.7.tar.gz ./nco-2.8.7/*
+cd ~/nco/nco-2.8.7
+dh_make -e zender@uci.edu -f ../nco-2.8.7.tar.gz
 
     2.2 The preceding steps created template debian files for a .deb,
     Those files now reside in ~/nco/debian.
@@ -44,7 +44,7 @@ dh_make -e zender@uci.edu -f ../nco-2.7.3.tar.gz
    from previous build
 
    cd ~/nco;/bin/rm *.gz
-   cd ~/nco/nco-2.7.3;
+   cd ~/nco/nco-2.8.7;
    dpkg-buildpackage -rfakeroot > foo 2>&1
 
 4. Find out which packages new package needs for building
@@ -69,14 +69,14 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
 
 6. To synchronize .debs with new releases, follow this procedure:
 # Install correct version numbers before updating Debian
-# tags-query replace 2_8_6 with X_Y_Z+1
-# tags-query replace 2.8.6 with X.Y.Z+1
+# tags-query replace 2_8_7 with X_Y_Z+1
+# tags-query replace 2.8.7 with X.Y.Z+1
    cd ~/nco/debian
-   dch -v 2.8.6-1
+   dch -v 2.8.7-1
    date -R
 # For unknown reason rules file may lose its executable bit
    chmod a+x ~/nco/debian/rules
    cd ~/nco;dpkg-buildpackage -rfakeroot > foo 2>&1
 # Tag CVS code after changing files in ~/nco/debian
-   cd ~/nco;cvc;cvs tag -c nco-2_8_6
-   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-2_8_6
+   cd ~/nco;cvc;cvs tag -c nco-2_8_7
+   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-2_8_7

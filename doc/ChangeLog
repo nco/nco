@@ -1,4 +1,22 @@
+2004-01-13  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_8_7
+	Changes since nco-2_8_6: Default GCC builds work again,
+ 	ncap packing works again
+
+	* Fix GCC compiles when enable-*-custom	is not specified. This
+	should fix reported Cygwin build problem. 
+
+	* nco_pck() uses tally-free arithmetic. Fixes ncap packing
+	bug introduced in 2.8.4.
+
 2004-01-12  Charlie Zender  <zender@uci.edu>
+
+	* Only manually prototype lexer function in ncap_lex.l if
+	enable-*-custom build option specified with GCC.
+	Fixes build problems with cygwin 
+
+	* Document make install-strip in doc/README as per Rorik
 
 	* cvs tag -c nco-2_8_6
 	Changes since nco-2_8_5: Add -Werror to GCC compiles, fix AIX and
@@ -12,13 +30,14 @@
 	* NCO compiles warning free again so add -Werror to GCC custom flags
 
 	* Add and elaborately comment on multiple yylex() prototypes
-	required to build ncap warning-free
+	required to build ncap warning-free with pedantic debugging flags.
 
 	* Use correct token, NCO_MSA_H, instead of NCO_VAR_UTL_H, in nco_msa.h
 	This fixes all remaining implicit function declaration warnings
 	Until now, no routines in nco_msa.c had prototypes known outside
 	of that file unit. Unlikely that this caused problems since no
-	known casts were employed in prototypes.
+	known casts were employed in prototypes. This demonstrates the
+	usefulness of -Werror. Without it, this bug would still be there.
 	
 2004-01-10  Charlie Zender  <zender@uci.edu>
 

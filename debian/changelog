@@ -1,3 +1,9 @@
+nco (2.8.7-1) unstable; urgency=low
+
+  * Default GCC builds work again, ncap packing works again
+
+ -- Charlie Zender <zender@uci.edu>  Tue, 13 Jan 2004 11:43:47 -0800
+
 nco (2.8.6-1) unstable; urgency=low
 
   * Add -Werror to GCC compiles, fix AIX and SGI builds

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.190 2004-01-12 20:16:36 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.191 2004-01-13 19:52:57 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -202,7 +202,9 @@ Tarballs and RPMs are only rarely uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.8.6</b>: (<i>In progress</i>) AIX and IRIX builds work again, custom GCC builds succeed with <tt>-Werror</tt>
+<li><b>NCO 2.8.8</b>: (<i>In progress</i>)
+<li><b>NCO 2.8.7</b>: <tt>ncap</tt> packing works again (<a href="#bug_pck">broke in 2.8.4</a>), Cygwin builds work again
+<li><b>NCO 2.8.6</b>: AIX and IRIX builds work again, custom GCC builds with <tt>-Werror</tt>
 <li><b>NCO 2.8.5</b>: Solaris <tt>make install</tt> works, <tt>ncap</tt> changes attribute values correctly, <a href="#bug_DODS">Support DODS 3.4+, deprecate 3.3-</a>, add <tt>--enable-[optimize/debug]-custom</tt> options to <tt>./configure</tt>
 <li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (<a href="#bug_idx_hyp">broke in 2.7.3</a>, <b><i>upgrade highly recommended</i></b>), <tt>ncap</tt> peak memory usage reduced still more, support for AMD Opteron x86-64 architecture
 <li><b>NCO 2.8.3</b>: Fix big <tt>ncap</tt> memory leak, fix regressions, remove scary packing warnings</li>
@@ -278,18 +280,18 @@ Simply hit return when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>2.8.6</tt> into a
-local directory named <tt>nco-2.8.6</tt>: 
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2.8.6 -d nco-2.8.6 nco</tt></p>
+This command retrieves and places NCO version <tt>2.8.7</tt> into a
+local directory named <tt>nco-2.8.7</tt>: 
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2.8.7 -d nco-2.8.7 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-2_8_6</tt>) and the development version is that the
+(e.g., <tt>nco-2_8_7</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>2.8.6</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>2.8.7</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -317,13 +319,14 @@ distribution by many months, if not years:
 
 <ul>
 <!--
-<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.8.6</a></li>
+<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.8.7</a></li>
 -->
 <a href="http://www.debian.org">Debian GNU/Linux</a>-compatible systems: 
-<li><a href="src/nco_2.8.6-1_i386.deb">nco_2.8.6-1_i386.deb</a> (<!--#fsize file="src/nco_2.8.6-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
-<li><a href="src/nco_2.8.6-1.dsc">nco_2.8.6-1.dsc</a> (<!--#fsize file="src/nco_2.8.6-1.dsc"-->): Description</li>
-<li><a href="src/nco_2.8.6-1.tar.gz">nco_2.8.6-1.tar.gz</a> (<!--#fsize file="src/nco_2.8.6-1.tar.gz"-->): Gzipped Source Tarball</li>
-<li><a href="src/nco_2.8.6-1_i386.changes">nco_2.8.6-1_i386.changes</a> (<!--#fsize file="src/nco_2.8.6-1.changes"-->): Changes</li>
+<li><a href="src/nco_2.8.7-1_i386.deb">nco_2.8.7-1_i386.deb</a> (<!--#fsize file="src/nco_2.8.7-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
+<li><a href="src/nco_2.8.7-1.dsc">nco_2.8.7-1.dsc</a> (<!--#fsize file="src/nco_2.8.7-1.dsc"-->): Description</li>
+<li><a href="src/nco_2.8.7-1.tar.gz">nco_2.8.7-1.tar.gz</a> (<!--#fsize file="src/nco_2.8.7-1.tar.gz"-->): Gzipped Source Tarball</li>
+<li><a
+href="src/nco_2.8.7-1_i386.changes">nco_2.8.7-1_i386.changes</a> (<!--#fsize file="src/nco_2.8.7-1.changes"-->): Changes</li> (I think an error here is expected since there are no changes between the official tarball and the Debian tarball. Anyone know?)
 </ul>
 
 <ul>
@@ -414,7 +417,7 @@ On the <a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help</a> s
 <li><i>Where should I post suggestions/comments on NCO features and usage?</i>
 On the <a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Discussion</a> site.
 </li>
-<li><i>Where is NCO development discussed?</i>
+<li><i>Where are NCO development and bug-squashing discussed?</i>
 At the <a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developer</a>
 site.</li>
 </ul>
@@ -452,7 +455,14 @@ Users at NCAR should try the <i>supported</i> executables in
 <h2>Known Problems with NCO and/or netCDF:</h2>
 
 <ul>
-<a name="bug_idx_hyp"></a>
+<a name="bug_pck"></a>
+<li><b>Packing problems:</b>
+NCO versions 2.8.4&mdash;2.8.6 have a bug that causes the <tt>ncap</tt>
+intrinsic packing function <tt>pack()</tt> to fail.
+Version 2.8.7 fixes this problem.
+</li>
+
+  <a name="bug_idx_hyp"></a>
 <li><b>Index-based hyperslab problems:</b>
 NCO versions 2.7.3&mdash;2.8.3 have a nasty bug that cause
 index-based hyperslabs, e.g., <tt>-d lat,1,</tt> to 

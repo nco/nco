@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.68 2004-01-12 20:16:34 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.69 2004-01-13 19:52:57 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -14,7 +14,7 @@
 
 # Process file with autoconf to produce configure script
 # (package name,version,bug-report-address,tarball name)
-#AC_INIT([NCO],[2.8.6],[help@nco.sf.net],[nco.tar])
+#AC_INIT([NCO],[2.8.7],[help@nco.sf.net],[nco.tar])
 AC_INIT(src/nco/ncks.c)
 
 # Print GNU copyright in configure script
@@ -391,10 +391,12 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
 # CFLAGS += -Werror -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -g -O4
-    GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE'
+    GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE'
     GCC_CFLAGS='-Werror -Wall -Wunused -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -g -O4'
     GCC_CXXFLAGS="${GCC_CFLAGS}"
 # Compilation flags recommended by GSL that I like and use:
+# -D_POSIX_SOURCE: Tells GCC that fileno is ANSI-compliant
+# -D_BSD_SOURCE: Tells GCC that nameser.h is ANSI-compliant
 # -pedantic: Disallow non-ISO constructs (including type long long) (sometimes useful)
 # -Werror: Consider warnings as errors
 # -W: Extra warnings, including missing return values, comparison of signed with unsigned
