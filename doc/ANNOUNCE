@@ -1,13 +1,13 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.57 2004-01-30 23:34:04 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.58 2004-01-30 23:40:16 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.8.7 are ready. 
+The netCDF operators NCO version 2.8.8 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-Rorik fixed a bug due to over-zealous use of GCC compile options.
-This bug has occurred since 2.86. whenever
---enable-[optimize/debug]-custom was invoked with gcc.
+Rorik fixed an autotools build problem caused by my over-zealous use
+of GCC compile options. This bug has occurred since 2.8.6 whenever
+--enable-[optimize/debug]-custom was invoked with GCC.
 
 Solaris cc/CC autotools builds have been broken since ~2.8.6, too.
 If anyone would care to send a patch that would be great!
