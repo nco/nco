@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.36 2004-08-06 20:56:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.37 2004-08-06 23:27:50 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -335,26 +335,6 @@ ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
   return DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
 } /* end ncap_var_cnf_dmn() */
 
-dmn_sct ** /* O [sct] Dimension structures to be re-ordered */
-nco_dmn_avg_rdr_prp /* [fnc] Process dimension string list into dimension structure list */
-(dmn_sct ** const dmn_in, /* I [sct] Dimension list for input file */
- char **dmn_rdr_lst, /* I [sng] Names of dimensions to be re-ordered */
- const int dmn_rdr_nbr) /* I [nbr] Number of dimension structures in re-order list */
-{
-  /* Purpose: Convert re-order string list into dimension structure list
-     Check validity of requested dimension and print warnings/errors as necessary 
-     fxm: Routine intended to perform common ncpdq/ncwa metadata pre-processing */
-
-  dmn_sct **dmn_rdr; /* [sct] Dimension structures to be re-ordered */
-  int foo;
-  /* fxm: TODO nco329 */
-  dmn_rdr=dmn_in;
-  dmn_rdr_lst=dmn_rdr_lst;
-  foo=dmn_rdr_nbr;
-
-  return dmn_rdr;
-} /* end nco_dmn_avg_rdr_prp() */
-
 char * /* [sng] Name of record dimension, if any, required by re-order */
 nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
 (const var_sct * const var_in, /* I [ptr] Variable with metadata and data in original order */
@@ -681,6 +661,13 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
     var_out->srd[dmn_out_idx]=dmn_out[dmn_out_idx]->srd;
   } /* end loop over dmn_out */
   
+  if(dbg_lvl_get() > 5){
+    (void)fprintf(stdout,"%s: fxm dbg DEBUG %s Complete information on variable %s:\n",prg_nm_get(),fnc_nm,var_in->nm);
+    for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
+      (void)fprintf(stdout,"fxm dbg dmn_idx_out_in[%d]=%d\n",dmn_out_idx,dmn_idx_out_in[dmn_out_idx]);
+    } /* end loop over dmn_out */
+  } /* endif dbg */
+
   /* Report full metadata re-order, if requested */
   if(dbg_lvl_get() > 3){
     int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
@@ -688,7 +675,7 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
     for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
       dmn_idx_in_out[dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;
   
-    for(dmn_in_idx=0;dmn_in_idx<dmn_out_nbr;dmn_in_idx++)
+    for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
       (void)fprintf(stdout,"%s: DEBUG %s variable %s re-order maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,%d)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
   } /* endif dbg */
   
@@ -697,10 +684,12 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
     if(dmn_out_idx != dmn_idx_out_in[dmn_out_idx]) break;
   if(dmn_out_idx == dmn_out_nbr) IDENTITY_REORDER=True;
 
-  /* Any dimension reversal breaks identity re-ordering */
-  if(IDENTITY_REORDER)
+  /* Dimension reversal breaks identity re-ordering */
+  if(IDENTITY_REORDER){
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
-      if(dmn_rvr_in[dmn_in_idx]) IDENTITY_REORDER=False;
+      if(dmn_rvr_in[dmn_in_idx]) break;
+    if(dmn_in_idx != dmn_in_nbr) IDENTITY_REORDER=False;
+  } /* !IDENTITY_REORDER */
 
   if(IDENTITY_REORDER){
     if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: INFO %s reports re-order is identity transformation for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.367 2004-08-06 20:56:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.368 2004-08-06 23:27:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -238,14 +238,9 @@ nco374. ncwa: re-write ncwa so, like ncpdq, ncwa re-arranges output metadata pri
 nco375. Do something consistent with: nco_exit(EXIT_FAILURE)
 nco378. Make \dfr, \me, \mi upright characters in nco.texi
 nco379. ncpdq: Add packing/unpacking capabilities
-nco380. ncpdq breaks when re-order changes non-record to record variables:
-ncpdq -D 4 -C -O -v PS,three_dmn_var -a lon,time ~/nco/data/in.nc ~/foo.nc
-This prevents using ncwa-like efficiency in directly copying large numbers of var->fix variables.
-nco381. ncpdq -D 5 -C -O -x -v three_double_dmn -a lon,time ~/nco/data/in.nc ~/foo.nc
-nco382. ncpdq: Fails with double dimensions
-ncpdq -D 5 -C -O -v three_double_dmn -a lon,time ~/nco/data/in.nc ~/foo.nc
-nco383. Develop uniform method to deal with double dimension: place flag in var structure then check flag and fail when operation would be ambiguous/too hard
-nco384.
+nco384. ncpdq fails tries to re-map variable weight dimension lat which is not a re-order dimension:
+ncpdq -D 5 -C -O -x -v three_double_dmn -a lon,time ~/nco/data/in.nc ~/foo.nc
+nco385. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
