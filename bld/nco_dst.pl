@@ -11,6 +11,7 @@
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_45
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_45
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_45
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco1_1_45
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco1_1_45
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_45
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_45
@@ -26,7 +27,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.46 2000-01-28 02:06:36 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.47 2000-01-28 02:09:59 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -62,9 +63,9 @@ my $False=0;
 my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
-my $CVS_Date='$Date: 2000-01-28 02:06:36 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.46 2000-01-28 02:06:36 zender Exp $';
-my $CVS_Revision='$Revision: 1.46 $';
+my $CVS_Date='$Date: 2000-01-28 02:09:59 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.47 2000-01-28 02:09:59 zender Exp $';
+my $CVS_Revision='$Revision: 1.47 $';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
 my $bld=$False; # Option bld; Whether to rebuild netCDF distribution
 my $data_nm=$ENV{'DATA'};
@@ -82,6 +83,7 @@ my $dst_cln=$False; # GNU standard Makefile option `distclean'
 my $nst_all=$False; # Option nst_all; Install version on all machines
 my $acd_cnt=$False; # Option acd_cnt; Install version in acd contrib
 my $acd_prs=$False; # Option acd_prs; Install version in acd personal
+my $bbl_cnt=$False; # Option bbl_cnt; Install version in babyblue contrib
 my $blk_cnt=$False; # Option blk_cnt; Install version in blackforest contrib
 my $dat_cnt=$False; # Option dat_cnt; Install version in dataproc contrib
 my $ute_prs=$False; # Option ute_prs; Install version in ute personal
@@ -113,6 +115,7 @@ $rcd=GetOptions( # man Getopt::GetoptLong
 		'acd_cnt!' => \$acd_cnt,
 		'acd_prs!' => \$acd_prs,
 		'bld!' => \$bld,
+		'bbl_cnt!' => \$bbl_cnt,
 		'blk_cnt!' => \$blk_cnt,
 		'cgd_cnt!' => \$cgd_cnt,
 		'cgd_prs!' => \$cgd_prs,
@@ -138,6 +141,7 @@ if($nst_all){
     $acd_prs=$True;
     $acd_cnt=$True;
     $ute_prs=$True;
+    $bbl_cnt=$True;
     $blk_cnt=$True;
     $dat_cnt=$True;
     $cray_prs=$True;
@@ -158,6 +162,7 @@ if($dbg_lvl >= 2){print ("$prg_nm: \$acd_prs = $acd_prs\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$cgd_cnt = $cgd_cnt\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$cgd_prs = $cgd_prs\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$cray_prs = $cray_prs\n");} # endif dbg
+if($dbg_lvl >= 2){print ("$prg_nm: \$bbl_cnt = $bbl_cnt\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$blk_cnt = $blk_cnt\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$dat_cnt = $dat_cnt\n");} # endif dbg
 if($dbg_lvl >= 2){print ("$prg_nm: \$ute_prs = $ute_prs\n");} # endif dbg
@@ -282,6 +287,18 @@ if($dat_cnt){
     &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/$dst_vrs/bld; setenv MY_BIN_DIR /contrib/nco-1.1/bin; setenv MY_LIB_DIR /contrib/nco-1.1/lib; setenv MY_OBJ_DIR /usr/tmp/zender/$dst_vrs/obj; gmake cln all tst\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
 } # endif dat_cnt
+
+if($bbl_cnt){
+    $rmt_mch='babyblue.ucar.edu';
+#    rsh $rmt_mch 'printf $PVM_ARCH'
+    print STDOUT "\n$prg_nm: Updating contrib NCO on $rmt_mch...\n";
+    &cmd_prc("rsh $rmt_mch \"/bin/rm -r -f /usr/tmp/zender/nco*\"");
+    &cmd_prc("rsh $rmt_mch \"mkdir -p /usr/tmp/zender/$dst_vrs/obj\"");
+    &cmd_prc("rcp -p ftp.cgd.ucar.edu:/ftp/pub/zender/nco/nco.tar.gz $rmt_mch:/usr/tmp/zender");
+    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender;gunzip nco.tar.gz;tar -xvf nco.tar;rm -f nco.tar\"");
+    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/$dst_vrs/bld; setenv MY_BIN_DIR /home/blackforest/zender/bin/AIX; setenv MY_LIB_DIR /home/blackforest/zender/lib/AIX; setenv MY_OBJ_DIR /home/blackforest/zender/obj/AIX; setenv NETCDF_INC /usr/local/include; setenv NETCDF_LIB /usr/local/lib32/r4i4; gmake cln all tst\"");
+    print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
+} # endif bbl_cnt
 
 if($blk_cnt){
     $rmt_mch='blackforest.ucar.edu';
