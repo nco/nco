@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.82 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.83 2003-01-20 17:46:02 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -33,7 +33,7 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
   }else{
     /* Check input file for ID */
     rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
-    if(rcd != NC_NOERR ){
+    if(rcd != NC_NOERR){
       /* return null if var not in input or output file */
       (void)fprintf(stderr,"WARNING unable to find %s in %s or %s\n",var_nm,prs_arg->fl_in,prs_arg->fl_out);    
       return (var_sct *)NULL;
@@ -45,16 +45,16 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
     fl_id=prs_arg->in_id;
     
     (void)nco_inq_varndims(fl_id,var_id,&nbr_dmn_var);
-    if( nbr_dmn_var >0 ) {
+    if(nbr_dmn_var>0){
       dim_id=(int *)nco_malloc(nbr_dmn_var*sizeof(int));
       
       (void)nco_inq_vardimid(fl_id,var_id,dim_id);
-      for(i=0;i < nbr_dmn_var;i++) 
-	for(j=0;j < prs_arg->nbr_dmn_in;j++){
+      for(i=0;i<nbr_dmn_var;i++) 
+	for(j=0;j<prs_arg->nbr_dmn_in;j++){
 	  
-	  /* de-referenece */
+	  /* de-reference */
 	  dmn_in=prs_arg->dmn_in[j];
-	  if( dim_id[i] != dmn_in->id || dmn_in->xrf ) continue;
+	  if(dim_id[i] != dmn_in->id || dmn_in->xrf) continue;
 	  
 	  /* define dimension  in (prs_arg->dmn_out) */ 
 	  dim_new=nco_dmn_out_grow(prs_arg);
@@ -96,7 +96,7 @@ nco_dmn_out_grow
   
   *(prs_arg->dmn_out)=(dmn_sct **)nco_realloc(*(prs_arg->dmn_out),(++*size)*sizeof(dmn_sct *));
   
-  return (*(prs_arg->dmn_out) + (*size -1));
+  return (*(prs_arg->dmn_out)+(*size-1));
 } /* end nco_dmn_out_grow() */
 
 int 
@@ -171,7 +171,7 @@ ncap_scv_2_ptr_unn
   return val;
 } /* end ncap_scv_2_ptr_unn() */
 
-var_sct * /* O [] Sum of input variables */
+var_sct * /* O [sct] Sum of input variables (var_1+var_2) */
 ncap_var_var_add /* [fnc] Add two variables */
 (var_sct *var_1, /* I [sct] Input variable structure containing first operand */
  var_sct *var_2) /* I [sct] Input variable structure containing second operand */
@@ -184,22 +184,17 @@ ncap_var_var_add /* [fnc] Add two variables */
   (void)ncap_var_cnf_dmn(&var_1,&var_nsw);
   /* fxm: bug in nco_var_add. missing_value is not carried over to var_nsw in result when var_1->has_mss_val is true */
   if(var_1->has_mss_val){
-    /*    (void)nco_var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_nsw->val);*/
     (void)nco_var_add_no_tally(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
   }else{
-    /*    (void)nco_var_add(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->tally,var_1->val,var_nsw->val);*/
     (void)nco_var_add_no_tally(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
   } /* end if */
   return var_nsw;
 } /* end ncap_var_var_add() */
 
-var_sct *
-ncap_var_var_sub
-(var_sct *var_2,
- var_sct *var_1)
-     /* var_sct *var_1: input variable structure containing first operand
-	var_sct *var_2: input variable structure containing second operand
-	var_sct *ncap_var_var_sub(): output var_2 - var_1 of input variables */
+var_sct * /* O [frc] Remainder of input variables (var_2-var_1) */
+ncap_var_var_sub /* [fnc] Subtract two variables (var_2-var_1) */ 
+(var_sct *var_2, /* I [sct] Variable structure containing second operand */ /* fxm TODO: 19 non-standard argument order */
+ var_sct *var_1) /* I [sct] Variable structure containing first operand */
 {
   /* Purpose: Subtract a variable from another variable */
   var_sct *var_nsw;
@@ -215,24 +210,41 @@ ncap_var_var_sub
   return var_nsw;
 } /* end ncap_var_var_sub() */
 
-var_sct *
-ncap_var_var_mlt(var_sct *var_1,var_sct *var_2)
-     /* var_sct *var_1: input variable structure containing first operand
-	var_sct *var_2: input variable structure containing second operand
-	var_sct *ncap_var_var_mlt(): output multiplication of individual elements */
+var_sct * /* O [sct] Product of input variables (var_1*var_2) */
+ncap_var_var_mlt /* [fnc] Multiply two variables */ 
+(var_sct *var_1, /* I [sct] Variable structure containing first operand */
+ var_sct *var_2) /* I [sct] Variable structure containing second operand */
 {
-  /* Purpose: Multiplication of variables */
+  /* Purpose: Multiply two variables variables (var_1*var_2) */
   var_sct *var_nsw;
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=nco_var_dpl(var_2);
   (void)ncap_var_cnf_dmn(&var_1,&var_nsw);
-  if(var_1->has_mss_val) {
+  if(var_1->has_mss_val){
     (void)nco_var_mlt(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
   }else{
     (void)nco_var_mlt(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
   }
-  return var_nsw;
+   return var_nsw;
 } /* end ncap_var_var_mlt() */
+
+var_sct * /* O [sct] Quotient of input variables (var_2/var_1) */
+ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */ 
+(var_sct *var_1, /* I [sct] Variable structure containing first operand */
+ var_sct *var_2) /* I [sct] Variable structure containing second operand */
+{
+  /* Purpose: Divide two variables (var_2/var_1) */
+  var_sct *var_nsw;
+  (void)ncap_var_retype(var_1,var_2);
+  var_nsw=nco_var_dpl(var_2);
+  (void)ncap_var_cnf_dmn(&var_1,&var_nsw);
+  if(var_1->has_mss_val){
+    (void)nco_var_dvd(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
+  }else{
+    (void)nco_var_dvd(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
+  } /* end else */ 
+  return var_nsw;
+} /* end ncap_var_var_dvd() */
 
 var_sct *
 ncap_var_fnc(var_sct *var_in,sym_sct *app)
@@ -282,25 +294,6 @@ ncap_var_fnc(var_sct *var_in,sym_sct *app)
   if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
   return var;
 } /* end ncap_var_fnc() */
-
-var_sct *
-ncap_var_var_dvd(var_sct *var_1,var_sct *var_2)
-     /* var_sct *var_1: input variable structure containing first operand
-	var_sct *var_2: input variable structure containing second operand
-	var_sct *ncap_var_dvd(): output quotient of individual elements */
-{
-  /* Routine called by parser */
-  var_sct *var_nsw;
-  (void)ncap_var_retype(var_1,var_2);
-  var_nsw=nco_var_dpl(var_2);
-  (void)ncap_var_cnf_dmn(&var_1,&var_nsw);
-  if(var_1->has_mss_val) {
-    (void)nco_var_dvd(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
-  }else{
-    (void)nco_var_dvd(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
-  } /* end else */ 
-  return var_nsw;
-} /* end ncap_var_var_dvd() */
 
 var_sct *
 ncap_var_scv_add(var_sct *var,scv_sct scv)
@@ -673,7 +666,7 @@ nco_var_lst_crd_make
     if(rcd == NC_NOERR){
       /* Is this coordinate already on extraction list? */
       for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
-	if(!strcmp(dmn_nm,xtr_lst[idx_var].nm)) {
+	if(!strcmp(dmn_nm,xtr_lst[idx_var].nm)){
 	  if(nbr_new_lst == 0) new_lst=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	  else new_lst=(nm_id_sct *)nco_realloc((void *)new_lst,(size_t)(nbr_new_lst+1)*sizeof(nm_id_sct));
 	  new_lst[nbr_new_lst].nm=(char *)strdup(dmn_nm);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.26 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.27 2003-01-20 17:46:03 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -800,28 +800,43 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
   /* This function is unusual (for me) in that dimension arguments are only intended
      to be used by certain programs, those that alter the rank of input variables. 
      If program does not alter input variable rank (dimensionality) then it should
-     call this function with NULL dimension list. Otherwise, this routine attempts
-     to define variable correctly in output file (allowing variable to be
-     defined with only those dimensions that are in dimension inclusion list) 
+     call this function with NULL dimension list and nbr_dmn_ncl=0. 
+     Otherwise, this routine attempts to define variable correctly in output file 
+     (allowing variable to be defined with only those dimensions that are in dimension inclusion list) 
      without altering variable structures. 
 
      Moreover, this function is intended to be called with var_prc_out, not var_prc
      So local variable var usually refers to var_prc_out in calling function 
-     Hence names may look reversed in this function, and xrf is frequently used */
+     Hence names may look reversed in this function, and xrf is frequently used
+
+     FIXED_KEEP_PACKED was added specifically for ncap where it calls nco_var_dfn() to define the fixed vars
+     We do not want to un-necessarily unpack variables that are fixed, not processed */
 
   bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
-  int idx_dmn;
   int dmn_id_vec[NC_MAX_DIMS];
   int idx;
+  int idx_dmn;
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   nc_type typ_out; /* [enm] Type in output file */
   
   for(idx=0;idx<nbr_var;idx++){
 
-    /* Assume arithmetic operators store values as unpacked pck_dbg */
-    if(is_rth_opr(prg_get())) typ_out=var[idx]->typ_upk; else typ_out=var[idx]->type;
+    /* Assume arithmetic operators store values as unpacked pck_dbg
+       Problem here is that ncap is not unpacking "fixed" variables
+       Why change the type of "fixed" variables?
+       ncra does not average them, ncdiff does not subtract them, etc.,
+       so it should be safe to leave them packed 
+       Thus checking only is_rth_opr is too simplistic
+       The most important thing is to be consistent---
+       1. If all variables handled by arithmetic operators are to be unpacked then ensure this is done on reading
+       2. If "fixed variables" are to remain fixed, then nco_var_dfn() needs more information 
+       3. Complicating this, some "fixed" variables in ncap are on the RHS and thus are separately unpacked for operations involving LHS variables
+       4. Tentative solution 20030119: 
+       If other operators ever require this capability, we can change the ncap-specific
+       condition to a generic FIXED_KEEP_PACKED flag passed into nco_var_dfn() */
+    if(is_rth_opr(prg_get()) && prg_get() != ncap) typ_out=var[idx]->typ_upk; else typ_out=var[idx]->type;
 
     /* Is requested variable already in output file? */
     rcd=nco_inq_varid_flg(out_id,var[idx]->nm,&var[idx]->id);
@@ -850,7 +865,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	(void)nco_def_var(out_id,var[idx]->nm,typ_out,var[idx]->nbr_dim,dmn_id_vec,&var[idx]->id);
       } /* end else */
       
-      /* endif if variable has not yet been defined in output file */
+      /* endif variable has not yet been defined in output file */
     }else{
       /* Variable is already in output file---use existing definition
 	 This branch is executed, e.g., by operators in append mode */
@@ -872,8 +887,10 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 
     /* var refers to output variable structure, var->xrf refers to input variable structure */
     /* Do not copy packing attributes "scale_factor" and "add_offset" 
-       if variable is packed in input file but unpacked in output file */
-    PCK_ATT_CPY=(is_rth_opr(prg_get()) && var[idx]->xrf->pck_dsk) ? False : True;
+       if variable is packed in input file but unpacked in output file 
+       However, arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
+       Currently ncap only calls nco_var_dfn() for fixed variables, so handle exception with ncap-specific condition */
+    PCK_ATT_CPY=(is_rth_opr(prg_get()) && prg_get() != ncap && var[idx]->xrf->pck_dsk) ? False : True;
     (void)nco_att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id,PCK_ATT_CPY);
 
 #undef FALSE

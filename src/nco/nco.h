@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.47 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.48 2003-01-20 17:46:03 zender Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -22,7 +22,7 @@
 
 /* Encapsulate C++ const usage in C99-safe macro 
    C++ compilers will use type-safe version
-   C89 and C99 compilers will use version as type-safe as possible without */
+   C89 and C99 compilers use less type-safe version that is standards-compliant */
 /* fxm: This is incomplete and needs to be extended and applied to all source */
 #ifdef __cplusplus
 #define CST_X_PTR_CST_PTR_CST_Y(x,y) const x * const * const y
@@ -251,21 +251,21 @@ typedef struct {
   
   /* Dimension structure */
   typedef struct dmn_sct_tag{ /* dmn_sct */
-    char *nm; /* Dimension name */
-    int id; /* Dimension ID */
-    int nc_id; /* File ID */
-    long sz; /* Full size of dimension in file (NOT the hyperslabbed size) */
-    short is_rec_dmn; /* Is this the record dimension? */
-    short is_crd_dmn; /* Is this a coordinate dimension? */
-    int cid; /* Variable ID of the associated coordinate, if any */
-    nc_type type; /* Type of coordinate, if applicable */
-    char fmt[5]; /* Hint for printf()-style formatting */
-    long srt; /* Index to start of hyperslab */
-    long end; /* Index to end of hyperslab */
-    long cnt; /* Number of valid elements in this dimension (including effects of stride and wrapping) */
-    long srd; /* Stride of hyperslab */
-    ptr_unn val; /* Buffer to hold hyperslab */
-    struct dmn_sct_tag *xrf; /* Cross-reference to associated dimension structure (usually the structure for dimension on output) */
+    char *nm; /* [sng] Dimension name */
+    int id; /* [id] Dimension ID */
+    int nc_id; /* [id] File ID */
+    long sz; /* [nbr] Full size of dimension in file (NOT the hyperslabbed size) */
+    short is_rec_dmn; /* [flg] Is this the record dimension? */
+    short is_crd_dmn; /* [flg] Is this a coordinate dimension? */
+    int cid; /* [id] Variable ID of associated coordinate, if any */
+    nc_type type; /* [enm] Type of coordinate, if applicable */
+    char fmt[5]; /* [sng] Hint for printf()-style formatting */
+    long srt; /* [idx] Index to start of hyperslab */
+    long end; /* [idx] Index to end of hyperslab */
+    long cnt; /* [nbr] Number of valid elements in this dimension (including effects of stride and wrapping) */
+    long srd; /* [nbr] Stride of hyperslab */
+    ptr_unn val; /* [sct] Buffer to hold hyperslab */
+    struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
   } dmn_sct; /* end dmn_sct_tag */
   
   /* Each member of var_sct structure should be initialized to default in var_dfl_set()

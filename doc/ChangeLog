@@ -1,11 +1,18 @@
-2003-01-14  Charlie Zender  <zender@uci.edu>
+2003-01-19  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_7_1
-	Changes since nco-2_7_0: long options on all platforms, including
-	non-glibc. 
+	Changes since nco-2_7_0: long options on all platforms, including non-glibc 
 
-	* Updated nco_c++ build instructions and documentation to refer to
-	Makefile.old
+	* Fix inconsistent storing of fixed variables that are packed in ncap
+	Packed values were being saved in unpacked type without packing attributes	
+
+2003-01-18  Charlie Zender  <zender@uci.edu>
+
+	* Clean up some ncap_utl prototypes
+
+2003-01-14  Charlie Zender  <zender@uci.edu>
+
+	* Updated nco_c++ build instructions and documentation to refer to Makefile.old
 
 	* Changed copyright end year to 2003
 

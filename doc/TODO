@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.200 2003-01-17 10:22:01 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.201 2003-01-20 17:46:02 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -45,7 +45,6 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 15. Link to GSL functions, especially gsl_sf_* (special functions)
 16. Get ncap build working with pure_parser turned off so lex/yacc builds work
 17. Start in console mode if no script and no output file specified, e.g., nco> 
-18. Do not presume math float functions (e.g., tanf) exist. Use HAVE_COSF from autoconf to search for each float function. Use double functions when float functions are unavailable.
 19. Make all binary operators handle ordering of operands consistently, e.g., divide(1,2)=1/2 not 2/1
 20. Print out contents of each non-comment statement when dbg_lvl==1
 21. Add two-argument functions like fmodf to ncap_sym_init() (using va_args?)
@@ -63,7 +62,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 37. Implement float function definitions in nco_rth_flt as inline to improve speed for MACOSX builds (inline is OK in C99 but will it break C89?)
 38. Finish dimension-reducing operations (min/max/avg)
 39. Document procedure for computing covariance of two variables using http://jisao.washington.edu/data/nco/ as template
-40. Bug: https://sourceforge.net/tracker/?func=detail&atid=103331&aid=668675&group_id=3331
+41. Make ncap function prototypes consistent with rest of NCO
 
 Highest priority NCO-wide items that You can help with:
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
@@ -78,7 +77,7 @@ Highest priority NCO-wide items that You can help with:
 177. Make RPM production allowable by non-root, since building RPMs as sudo root screws up permissions in obj/bin directories of user
 178. Make _FillValue behave same as missing_value
 179. add netCDF to required packages list in RPM build
-191. Create short man pages for each operator which point user to info pages or online manual
+191. Create short man page for ncap which points user to info pages or online manual
 212. Ensure structures are always passed by reference (default is pass by value)
 
 Remaining items of lesser priority:
@@ -150,7 +149,7 @@ strings and non-NUL-terminated characters arrays in ncks printouts.
 Perhaps double quotes around former and single quotes around latter
 143. Add -W or -q switch to turn off squelch most warning messages in ncra, ncrcat (especially warnings about non-monotonicity)
 144. Add option(s) to select all N-D variables where N=0,1,2...
-145. Talk to Brian and implement latest netCDF conventions, e.g., time_op
+145. Talk to Brian and implement latest netCDF and CF conventions, e.g., time_op
 146. Allow proxies for coordinate variables so that, e.g., hyperslabs
 may be specified for "date" even though "time" is the coordinate. 
 Proxies must be one dimensional and monotonic, of course.
@@ -211,9 +210,7 @@ Command executes but in.hdf is full of screwy values
 209. Add rules to make MANIFEST and automagically update Sourceforge download area
 214. Disable threads > 1 on SGI temporarily because thread #0 is doing all the work, why?
 215. nco_var_cnf_dmn() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
-218. Fix all leaks etc. enumerated in insure.txt
 222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
-223. texi2dvi nco.texi works on old RHL not on RHL 7.2
 224. Copy var_nm from command line so program, not system, owns memory. Then modify nco_var_free() to release var_nm structure member, and nco_var_dpl() to copy it. Same for dimension names and nco_dmn_dpl()
 225. Pass aed by reference in nco_aed_prc()
 226. See if xrf in nco_var_cnf_dmn() is really necessary, if not, remove it and make wgt arg const var_sct * const
@@ -224,12 +221,9 @@ Command executes but in.hdf is full of screwy values
 237. Break down nco.texi into bite-size chunks, e.g., one file per section
 238. Replace y=(typ *)malloc(nbr*sizeof(typ)) with y=(typ *)malloc(nbr*sizeof(*y))?
 239. Create one global compatibility file (nco_xpf.[ch]?) activated by HAVE_ or NEED_ actions so do not have multiple platform dependent #includes as is case now with HAVE_STRCASECMP, HAVE_STRDUP requiring nco_sng_utl.h
-240. Weird bug in ncrename. Following bug shows up on command line but disappears in debugger:
-ncrename -a julian_day,julian in.nc out.nc
-nco_err_exit(): ERROR nco_inq_attid
-Attribute not found
 241. Add run-time switch which requests that output be missing_value where ANY of the input fields are missing_value. 
 244. Get builds working on testdrive.hp.com
+245. Eliminate all instances of passing naked constants
 ************************************************************************
 End NCO Wish list
 ************************************************************************

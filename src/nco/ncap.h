@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.54 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.55 2003-01-20 17:46:02 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -127,6 +127,27 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
  int * const nbr_lst_c, /* O [nbr] Number of attribute parent variables in input file */
  nm_id_sct** const xtr_lst_d, /* O [sct] LHS dimensions in input file */
  int * const nbr_lst_d); /* O [nbr] Number of LHS dimensions in input file */
+ /* end ncap_ntl_scn() prototype */
+
+var_sct * /* O [sct] Sum of input variables (var_1+var_2) */
+ncap_var_var_add /* [fnc] Add two variables (var_1+var_2) */
+(var_sct *var_1, /* I [sct] Input variable structure containing first operand */
+ var_sct *var_2); /* I [sct] Input variable structure containing second operand */
+
+var_sct * /* O [frc] Remainder of input variables (var_2-var_1) */
+ncap_var_var_sub /* [fnc] Subtract two variables (var_2-var_1) */ 
+(var_sct *var_2, /* I [sct] Variable structure containing second operand */ /* fxm TODO: 19 non-standard argument order */
+ var_sct *var_1); /* I [sct] Variable structure containing first operand */
+
+var_sct * /* O [sct] Product of input variables (var_1*var_2) */
+ncap_var_var_mlt /* [fnc] Multiply two variables (var_1*var_2) */ 
+(var_sct *var_1, /* I [sct] Variable structure containing first operand */
+ var_sct *var_2); /* I [sct] Variable structure containing second operand */
+
+var_sct * /* O [sct] Quotient of input variables (var_2/var_1) */
+ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */ 
+(var_sct *var_1, /* I [sct] Variable structure containing first operand */
+ var_sct *var_2); /* I [sct] Variable structure containing second operand */
 
 bool ncap_var_stretch(var_sct **,var_sct **);
 int ncap_scv_minus(scv_sct *);
@@ -154,10 +175,7 @@ var_sct *ncap_var_scv_mod(var_sct *,scv_sct);
 var_sct *ncap_var_scv_mlt(var_sct *,scv_sct);
 var_sct *ncap_var_scv_pwr(var_sct *,scv_sct);
 var_sct *ncap_var_scv_sub(var_sct *,scv_sct);
-var_sct *ncap_var_var_add(var_sct *var_1,var_sct *var_2);
-var_sct *ncap_var_var_dvd(var_sct *var_1,var_sct *var_2);
-var_sct *ncap_var_var_mlt(var_sct *var_1,var_sct *var_2);
-var_sct *ncap_var_var_sub(var_sct *var_1,var_sct *var_2);
+
 void ncap_fnc_add(char *nm, double (*fnc_dbl)());
 void nco_lib_vrs_prn();
 void nco_var_free_wrp(var_sct **);
