@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.106 2005-03-21 04:56:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.107 2005-03-22 05:48:06 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -114,8 +114,11 @@ ncap_var_write
   const char mss_val_sng[]="missing_value"; /* [sng] Unidata standard string for missing value */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+  int fll_md_old; /* [enm] Old fill mode */
+  int rcd; /* [rcd] Return code */
   int var_out_id;
   
+  /* Put file in define mode to allow metadata writing */
   (void)nco_redef(prs_arg->out_id);
   
   /* Define variable */   
@@ -128,6 +131,11 @@ ncap_var_write
     if(var->has_scl_fct) (void)nco_put_att(prs_arg->out_id,var_out_id,scl_fct_sng,var->typ_upk,1,var->scl_fct.vp);
     if(var->has_add_fst) (void)nco_put_att(prs_arg->out_id,var_out_id,add_fst_sng,var->typ_upk,1,var->add_fst.vp);
   } /* endif pck_ram */
+
+  /* Turn off default filling behavior to enhance efficiency */
+  rcd=nco_set_fill(prs_arg->out_id,NC_NOFILL,&fll_md_old);
+
+  /* Take output file out of define mode */
   (void)nco_enddef(prs_arg->out_id);
   
   /* Write variable */ 
@@ -137,7 +145,7 @@ ncap_var_write
     (void)nco_put_vara(prs_arg->out_id,var_out_id,var->srt,var->cnt,var->val.vp,var->type);
   } /* end else */
   
-  return 1;
+  return rcd;
 } /* end ncap_var_write() */
 
 sym_sct *

@@ -1,5 +1,7 @@
 2005-03-21  charlie  <zender@uci.edu>
 
+	* Set NC_NOFILL in ncap_var_write()
+
 	* The call to nco_aed_prc() (a metadata writing call) was 
 	un-necessarily late in ncap.c. I moved it to just after
 	nco_var_dfn(). This takes advantage of the netCDF feature that
