@@ -1,5 +1,8 @@
 2004-01-13  Charlie Zender  <zender@uci.edu>
 
+	* Change AIX xlC enable-optimized-debug from -O5 to -O3 so shared
+	libraries work again
+
 	* cvs tag -c nco-2_8_7
 	Changes since nco-2_8_6: Default GCC builds work again,
  	ncap packing works again

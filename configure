@@ -25216,10 +25216,12 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
 # CFLAGS += -Werror -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -g -O4
-    GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE'
+    GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE'
     GCC_CFLAGS='-Werror -Wall -Wunused -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -g -O4'
     GCC_CXXFLAGS="${GCC_CFLAGS}"
 # Compilation flags recommended by GSL that I like and use:
+# -D_POSIX_SOURCE: Tells GCC that fileno is ANSI-compliant
+# -D_BSD_SOURCE: Tells GCC that nameser.h is ANSI-compliant
 # -pedantic: Disallow non-ISO constructs (including type long long) (sometimes useful)
 # -Werror: Consider warnings as errors
 # -W: Extra warnings, including missing return values, comparison of signed with unsigned
@@ -25523,7 +25525,7 @@ _ACEOF
 	    case ${CC} in
 # -qstrict: Ensure that -O3 optimizations do not alter program semantics
 # -Q : Inline all appropriate subprograms
-		xlc* ) CFLAGS="${CFLAGS} -O5 -qstrict -Q"
+		xlc* ) CFLAGS="${CFLAGS} -O3 -qstrict -Q"
 		    case ${CXX} in
 			xlC* ) CXXFLAGS="${CFLAGS}"
 		    esac
