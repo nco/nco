@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.126 2002-02-24 18:49:34 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.127 2002-02-24 21:29:22 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -34,6 +34,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 16. Get ncap build working with pure_parser turned off so lex/yacc builds work
 17. Start in console mode if no script and no output file specified, e.g., nco> 
 18. Do not presume math float functions (e.g., tanf) exist, use double functions when they do not
+19. Make all binary operators handle ordering of operands consistently, e.g., divide(1,2)=1/2 not 2/1
 
 Highest priority NCO-wide items that You can help with:
 41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)

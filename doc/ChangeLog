@@ -1,5 +1,7 @@
 2002-02-24  Charlie Zender  <zender@uci.edu>
 
+	* ncap variable division had numerator and denominator swapped!
+
 	* Removed ncap_lex.c ncap.tab.c ncap.tab.h because they are not
 	portable across platforms so it is best to let these be generated
 	on user's machine until portable x-platform versions can be 
