@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.99 2003-01-09 00:27:37 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.100 2003-03-27 08:14:13 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.99 2003-01-09 00:27:37 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.99 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.100 2003-03-27 08:14:13 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.100 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -173,7 +173,7 @@ main(int argc,char **argv)
   var_sct *wgt_out=NULL;
   
   static struct option opt_lng[]=
-    {
+    { /* Structure ordered by short option key if possible */
       {"average",required_argument,0,'a'},
       {"avg",required_argument,0,'a'},
       {"append",no_argument,0,'A'},
@@ -199,6 +199,10 @@ main(int argc,char **argv)
       {"msk_val",required_argument,0,'M'},
       {"nintap",required_argument,0,'n'},
       {"numerator",no_argument,0,'N'},
+      {"op_rlt",required_argument,0,'o'},
+      {"cmp",required_argument,0,'o'},
+      {"compare",required_argument,0,'o'},
+      {"op_cmp",required_argument,0,'o'},
       {"overwrite",no_argument,0,'O'},
       {"path",required_argument,0,'p'},
       {"retain",no_argument,0,'R'},

@@ -1,3 +1,12 @@
+2003-03-25  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_7_3
+	Changes since nco-2_7_2: UDUnits support for "units" attributes
+
+	* Made --op_rlt, --cmp, --op_cmp, --compare synonymous with -o for ncwa 
+
+	* Re-arrange output from --usage, --help options
+
 2003-03-24  Charlie Zender  <zender@uci.edu>
 
 	* Put UDUnits stuff on homepage
@@ -8,7 +17,7 @@
 
 2003-03-19  Charlie Zender  <zender@uci.edu>
 
-	* Remove TODOs 138, 139, 140, 141, 142, all solved or made
+	* Remove TODOs 138, 139, 140, 141, 142---all solved or made
 	obsolete by Henry's MSA printing algorithm.
 
 2003-03-18  Charlie Zender  <zender@uci.edu>

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.52 2003-01-10 18:05:14 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.53 2003-03-27 08:14:13 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.52 2003-01-10 18:05:14 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.52 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.53 2003-03-27 08:14:13 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.53 $";
   
   extern char *optarg;
   
@@ -116,7 +116,7 @@ main(int argc,char **argv)
   time_t clock;
 
   static struct option opt_lng[] =
-    {
+    { /* Structure ordered by short option key if possible */
       {"attribute",required_argument,0,'a'},
       {"debug",required_argument,0,'D'},
       {"dbg_lvl",required_argument,0,'D'},

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.56 2003-01-20 17:46:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.57 2003-03-27 08:14:13 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.56 2003-01-20 17:46:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.56 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.57 2003-03-27 08:14:13 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.57 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -164,7 +164,7 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
   
   static struct option opt_lng[]=
-    {
+    { /* Structure ordered by short option key if possible */
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
       {"nocoords",no_argument,0,'C'},

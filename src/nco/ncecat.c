@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.54 2003-01-20 17:46:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.55 2003-03-27 08:14:13 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.54 2003-01-20 17:46:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.54 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.55 2003-03-27 08:14:13 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.55 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -136,7 +136,7 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
   
   static struct option opt_lng[]=
-    {
+    { /* Structure ordered by short option key if possible */
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
       {"nocoords",no_argument,0,'C'},

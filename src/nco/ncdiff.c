@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.64 2003-01-20 17:46:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.65 2003-03-27 08:14:13 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -119,8 +119,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.64 2003-01-20 17:46:02 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.64 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.65 2003-03-27 08:14:13 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.65 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -168,7 +168,7 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
   
  static struct option opt_lng[]=
-    {
+    { /* Structure ordered by short option key if possible */
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
       {"nocoords",no_argument,0,'C'},

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.57 2003-01-09 00:27:37 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.58 2003-03-27 08:14:13 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.57 2003-01-09 00:27:37 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.57 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.58 2003-03-27 08:14:13 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.58 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -170,7 +170,7 @@ main(int argc,char **argv)
   time_t clock;
 
   static struct option opt_lng[]=
-    {
+    { /* Structure ordered by short option key if possible */
       {"append",no_argument,0,'A'},
       {"attribute",required_argument,0,'a'},
       {"debug",required_argument,0,'D'},

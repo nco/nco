@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.80 2003-02-18 19:41:15 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.81 2003-03-27 08:14:13 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.80 2003-02-18 19:41:15 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.80 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.81 2003-03-27 08:14:13 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.81 $";
   
   extern char *optarg;
   
@@ -151,7 +151,7 @@ main(int argc,char **argv)
   time_t clock;
 
   static struct option opt_lng[]=
-    {
+    { /* Structure ordered by short option key if possible */
       {"alphabetize",no_argument,0,'a'},
       {"append",no_argument,0,'A'},
       {"binary-file",required_argument,0,'b'},

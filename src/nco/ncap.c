@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.110 2003-02-25 22:11:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.111 2003-03-27 08:14:13 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -91,8 +91,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.110 2003-02-25 22:11:59 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.110 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.111 2003-03-27 08:14:13 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.111 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -183,7 +183,7 @@ main(int argc,char **argv)
   prs_sct prs_arg; /* [sct] Global information required in parser routines */
   
   static struct option opt_lng[]=
-    {
+    { /* Structure ordered by short option key if possible */
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
       {"nocoords",no_argument,0,'C'},

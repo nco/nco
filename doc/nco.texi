@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.152 2003-03-21 16:26:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.153 2003-03-27 08:14:12 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -5216,9 +5216,10 @@ The masking condition has the syntax @math{@var{mask_var}}
 Here @var{mask_var} is the name of the masking variable (specified with 
 @samp{-m}, @samp{--mask-variable}, @samp{--mask_variable},
 @samp{--msk_nm}, or @samp{--msk_var}).  
-The @var{condition} argument to @samp{-o} may be any one of the six
-arithmetic comparatives: @kbd{eq}, @kbd{ne}, @kbd{gt}, @kbd{lt},
-@kbd{ge}, @kbd{le}. 
+The truth @var{condition} argument (specified with @samp{-o},
+@samp{--op_rlt}, @samp{--cmp}, @samp{--compare}, or @samp{--op_cmp} may
+be any one of the six arithmetic comparatives: @kbd{eq}, @kbd{ne},
+@kbd{gt}, @kbd{lt}, @kbd{ge}, @kbd{le}. 
 @set flg
 @tex
 These are the Fortran-style character abbreviations for the logical 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.19 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.20 2003-03-27 08:14:13 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -184,69 +184,69 @@ nco_usg_prn(void)
   /* We now have command-specific command line option string */
   (void)fprintf(stdout,"%s %s\n",prg_nm_get(),opt_sng);
 
-  if(strstr(opt_sng,"-A")) (void)fprintf(stdout,"-A,--append\tAppend to existing output file, if any\n[--append,--apn]\n");
+  if(strstr(opt_sng,"-A")) (void)fprintf(stdout,"-A, --apn, --append\tAppend to existing output file, if any\n");
   if(strstr(opt_sng,"-a")){
-    if(prg == ncrename) (void)fprintf(stdout,"-a old_att,new_att Attribute's old and new names\n[--attribute]\n");
-    if(prg == ncwa) (void)fprintf(stdout,"-a avg_dim1[,avg_dim2[...]] Averaging dimensions\n[--average,--avg]\n");
-    if(prg == ncks) (void)fprintf(stdout,"-a\t\tDisable alphabetization of extracted variables\n[--alphabetize]\n");
-    if(prg == ncatted) (void)fprintf(stdout,"-a att_nm,var_nm,mode,att_typ,att_val Attribute specification:\n\t\tmode = a,c,d,m,o and att_typ = f,d,l,s,c,b\n[--attribute]\n");
+    if(prg == ncrename) (void)fprintf(stdout,"-a, --attribute old_att,new_att Attribute's old and new names\n");
+    if(prg == ncwa) (void)fprintf(stdout,"-a, --avg, --average avg_dim1[,avg_dim2[...]] Averaging dimensions\n");
+    if(prg == ncks) (void)fprintf(stdout,"-a, --alphabetize\tDisable alphabetization of extracted variables\n");
+    if(prg == ncatted) (void)fprintf(stdout,"-a, --attribute att_nm,var_nm,mode,att_typ,att_val Attribute specification:\n\t\t\tmode = a,c,d,m,o and att_typ = f,d,l,s,c,b\n");
   } /* end if */
-  if(strstr(opt_sng,"-B")) (void)fprintf(stdout,"-B\t\tWrite data to unformatted binary file\n[--binary]\n");
-  if(strstr(opt_sng,"-b")) (void)fprintf(stdout,"-b fl_bnr\tUnformatted binary file to write\n[--binary-file]\n");
-  if(strstr(opt_sng,"-c")) (void)fprintf(stdout,"-c\t\tCoordinate variables will all be processed\n[--coords]\n");
-  if(strstr(opt_sng,"-C")) (void)fprintf(stdout,"-C\t\tAssociated coordinate variables should not be processed\n[--nocoords]\n");
-  if(strstr(opt_sng,"-D")) (void)fprintf(stdout,"-D dbg_lvl\tDebugging level\n[--debug-level,--dbg_lvl]\n");
+  if(strstr(opt_sng,"-B")) (void)fprintf(stdout,"-B, --binary\t\tWrite data to unformatted binary file\n");
+  if(strstr(opt_sng,"-b")) (void)fprintf(stdout,"-b, --binary-file fl_bnr\tUnformatted binary file to write\n");
+  if(strstr(opt_sng,"-c")) (void)fprintf(stdout,"-c, --coords\t\tCoordinate variables will all be processed\n");
+  if(strstr(opt_sng,"-C")) (void)fprintf(stdout,"-C, --nocoords\t\tAssociated coordinate variables should not be processed\n");
+  if(strstr(opt_sng,"-D")) (void)fprintf(stdout,"-D, --dbg_lvl, --debug-level dbg_lvl\tDebugging level\n");
   if(strstr(opt_sng,"-d")){
-    if(prg == ncrename) (void)fprintf(stdout,"-d old_dim,new_dim Dimension's old and new names\n[--dimension,--dmn]\n");
-    else if(prg == ncks) (void)fprintf(stdout,"-d dim,[min][,[max]][,[stride]] Dimension's limits and stride in hyperslab\n[--dimension]\n");
-    else if(prg == ncra || prg == ncrcat) (void)fprintf(stdout,"-d dim,[min][,[max]][,[stride]] Dimension's limits (any dimension) and stride (record dimension only) in hyperslab\n[--dimension]\n");
-    else (void)fprintf(stdout,"-d dim,[min][,[max]] Dimension's limits in hyperslab\n[--dimension]\n");
+    if(prg == ncrename) (void)fprintf(stdout,"-d, --dmn, --dimension old_dim,new_dim Dimension's old and new names\n");
+    else if(prg == ncks) (void)fprintf(stdout,"-d, --dimension dim,[min][,[max]][,[stride]] Dimension's limits and stride in hyperslab\n");
+    else if(prg == ncra || prg == ncrcat) (void)fprintf(stdout,"-d, --dimension dim,[min][,[max]][,[stride]] Dimension's limits (any dimension) and stride (record dimension only) in hyperslab\n");
+    else (void)fprintf(stdout,"-d, --dimension dim,[min][,[max]] Dimension's limits in hyperslab\n");
   } /* end if -d */
-  if(strstr(opt_sng,"-F")) (void)fprintf(stdout,"-F\t\tFortran indexing conventions (1-based) for I/O\n[--fortran,--ftn]\n");
-  if(strstr(opt_sng,"-H")) (void)fprintf(stdout,"-H\t\tPrint data\n[--print]\n");
-  if(strstr(opt_sng,"-h")) (void)fprintf(stdout,"-h\t\tDo not append to \"history\" global attribute\n[--history,--hst]\n");
-  if(strstr(opt_sng,"-i")) (void)fprintf(stdout,"-i var,val\tInterpolant and value\n[--interpolate]\n");
-  if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I \t\tDo not weight or mask coordinate variables\n[--wgt_msk_crd_var]\n");
-  if(strstr(opt_sng,"-l")) (void)fprintf(stdout,"-l path\t\tLocal storage path for remotely-retrieved files\n[--local]\n");
+  if(strstr(opt_sng,"-F")) (void)fprintf(stdout,"-F, --ftn, --fortran\tFortran indexing conventions (1-based) for I/O\n");
+  if(strstr(opt_sng,"-H")) (void)fprintf(stdout,"-H, --print\t\tPrint data\n");
+  if(strstr(opt_sng,"-h")) (void)fprintf(stdout,"-h, --hst, --history\tDo not append to \"history\" global attribute\n");
+  if(strstr(opt_sng,"-i")) (void)fprintf(stdout,"-i, --interpolate var,val\tInterpolant and value\n");
+  if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I, --wgt_msk_crd_var \tDo not weight or mask coordinate variables\n");
+  if(strstr(opt_sng,"-l")) (void)fprintf(stdout,"-l, --local path\tLocal storage path for remotely-retrieved files\n");
   if(strstr(opt_sng,"-M")){
-    if(prg == ncwa) (void)fprintf(stdout,"-M mask_val\t\tMasking value (default is 1.0)\n[--mask-value,--mask_value,--msk_val]\n");
-    if(prg == ncks) (void)fprintf(stdout,"-M\t\tPrint global metadata\n[--Meta]\n");
+    if(prg == ncwa) (void)fprintf(stdout,"-M, --msk_val, --mask-value, --mask_value mask_val\tMasking value (default is 1.0)\n");
+    if(prg == ncks) (void)fprintf(stdout,"-M, --Meta\t\tPrint global metadata\n");
   } /* end if */
   if(strstr(opt_sng,"-m")){
-    if(prg == ncwa) (void)fprintf(stdout,"-m mask_var\t\tMasking variable name\n[--mask-variable,--mask_variable,--msk_nm,--msk_var]\n");
-    if(prg == ncks) (void)fprintf(stdout,"-m\t\tPrint variable metadata\n[--meta]\n");
+    if(prg == ncwa) (void)fprintf(stdout,"-m, --msk_nm, --msk_var, --mask-variable, --mask_variable mask_var\tMasking variable name\n");
+    if(prg == ncks) (void)fprintf(stdout,"-m, --print\t\tPrint variable metadata\n");
   } /* end if */
-  if(strstr(opt_sng,"-N")) (void)fprintf(stdout,"-N\t\tNo normalization\n[--numerator]\n");
+  if(strstr(opt_sng,"-N")) (void)fprintf(stdout,"-N, --numerator\t\tNo normalization\n");
   if(strstr(opt_sng,"-n")){
     /*    if(prg == ncwa) (void)fprintf(stdout,"-n\t\tNormalize by tally but not weight\n");*/
-    if(prg != ncwa) (void)fprintf(stdout,"-n nbr_files,[nbr_numeric_chars[,increment]] NINTAP-style abbreviation of file list\n[--nintap]\n");
+    if(prg != ncwa) (void)fprintf(stdout,"-n, --nintap nbr_files,[nbr_numeric_chars[,increment]] NINTAP-style abbreviation of file list\n");
   } /* end if */
-  if(strstr(opt_sng,"-o")) (void)fprintf(stdout,"-o op_typ\tRelational operator for masking: eq,ne,ge,le,gt,lt\n");
-  if(strstr(opt_sng,"-O")) (void)fprintf(stdout,"-O\t\tOverwrite existing output file, if any\n[--overwrite]\n");
-  if(strstr(opt_sng,"-p")) (void)fprintf(stdout,"-p path\t\tPath prefix for all input filenames\n[--path]\n");
-  if(strstr(opt_sng,"-q")) (void)fprintf(stdout,"-q\t\tToggle printing of dimension indices and coordinate values\n[--quiet]\n");
-  if(strstr(opt_sng,"-R")) (void)fprintf(stdout,"-R\t\tRetain remotely-retrieved files after use\n[--retain]\n");
-  if(strstr(opt_sng,"-r")) (void)fprintf(stdout,"-r\t\tProgram version and copyright notice\n[--revision,--version,--vrs]\n");
+  if(strstr(opt_sng,"-o")) (void)fprintf(stdout,"-o op_typ\t\tRelational operator for masking: eq,ne,ge,le,gt,lt\n");
+  if(strstr(opt_sng,"-O")) (void)fprintf(stdout,"-O, --overwrite\t\tOverwrite existing output file, if any\n");
+  if(strstr(opt_sng,"-p")) (void)fprintf(stdout,"-p, --path path\t\tPath prefix for all input filenames\n");
+  if(strstr(opt_sng,"-q")) (void)fprintf(stdout,"-q, --quiet\t\tToggle printing of dimension indices and coordinate values\n");
+  if(strstr(opt_sng,"-R")) (void)fprintf(stdout,"-R, --retain\t\tRetain remotely-retrieved files after use\n");
+  if(strstr(opt_sng,"-r")) (void)fprintf(stdout,"-r, --revision, --vrs, --version\tProgram version and copyright notice\n");
   if(strstr(opt_sng,"-s")){
-    if(prg != ncap) (void)fprintf(stdout,"-s format\tString format for text output\n[--string,--format,--fmt]\n");
-    if(prg == ncap) (void)fprintf(stdout,"-s algebra\tAlgebraic command defining single output variable\n[--script]\n");
+    if(prg != ncap) (void)fprintf(stdout,"-s, --string, --fmt, --format format\tString format for text output\n");
+    if(prg == ncap) (void)fprintf(stdout,"-s, --script algebra\tAlgebraic command defining single output variable\n");
   } /* end if */
-  if(strstr(opt_sng,"-S")) (void)fprintf(stdout,"-S fl.nco\tScript file containing multiple algebraic commands\n[--file]\n");
-  if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u\t\tUnits of variables, if any, will be printed\n[--units]\n");
+  if(strstr(opt_sng,"-S")) (void)fprintf(stdout,"-S, --file fl.nco\tScript file containing multiple algebraic commands\n");
+  if(strstr(opt_sng,"-u")) (void)fprintf(stdout,"-u, --units\t\tUnits of variables, if any, will be printed\n");
   if(strstr(opt_sng,"-v")){
-    if(prg == ncrename) (void)fprintf(stdout,"-v old_var,new_var Variable's old and new names\n[--variable]\n");
-	if(prg == ncap) (void)fprintf(stdout,"-v\t\tOutput file includes ONLY user-defined variables\n[--variable]\n");
-    if(prg != ncrename && prg != ncap) (void)fprintf(stdout,"-v var1[,var2[...]] Variables to process\n[--variable]\n");
+    if(prg == ncrename) (void)fprintf(stdout,"-v, --variable old_var,new_var Variable's old and new names\n");
+	if(prg == ncap) (void)fprintf(stdout,"-v, --variable \t\tOutput file includes ONLY user-defined variables\n");
+    if(prg != ncrename && prg != ncap) (void)fprintf(stdout,"-v, --variable var1[,var2[...]] Variables to process\n");
   } /* end if */
   /*  if(strstr(opt_sng,"-W")) (void)fprintf(stdout,"-W\t\tNormalize by weight but not tally\n");*/
   if(strstr(opt_sng,"-w")){
-    if(prg == ncwa) (void)fprintf(stdout,"-w wgt\t\tWeighting variable name\n[--weight,--wgt_var]\n");
-    if(prg == ncflint) (void)fprintf(stdout,"-w wgt_1[,wgt_2] Weight(s) of file(s)\n[--weight,--wgt_var]\n");
+    if(prg == ncwa) (void)fprintf(stdout,"-w, --wgt_var, --weight wgt\tWeighting variable name\n");
+    if(prg == ncflint) (void)fprintf(stdout,"-w, --wgt_var, --weight wgt_1[,wgt_2] Weight(s) of file(s)\n");
   } /* end if */
-  if(strstr(opt_sng,"-x")) (void)fprintf(stdout,"-x\t\tExtract all variables EXCEPT those specified with -v\n[--exclude,--xcl]\n");
-  if(strstr(opt_sng,"-y")) (void)fprintf(stdout,"-y op_typ\tArithmetic operation: avg,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n[--operation,--op_typ]\n");
-  if(strstr(opt_sng,"in.nc")) (void)fprintf(stdout,"in.nc\t\tInput file name(s)\n");
-  if(strstr(opt_sng,"out.nc")) (void)fprintf(stdout,"out.nc\t\tOutput file name\n");
+  if(strstr(opt_sng,"-x")) (void)fprintf(stdout,"-x, --xcl, --exclude\tExtract all variables EXCEPT those specified with -v\n");
+  if(strstr(opt_sng,"-y")) (void)fprintf(stdout,"-y, --op_typ, --operation op_typ\tArithmetic operation: avg,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n");
+  if(strstr(opt_sng,"in.nc")) (void)fprintf(stdout,"in.nc\t\t\tInput file name(s)\n");
+  if(strstr(opt_sng,"out.nc")) (void)fprintf(stdout,"out.nc\t\t\tOutput file name\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/
 
   /* Free the space holding the string */
