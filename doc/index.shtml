@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.232 2004-06-29 19:13:03 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.233 2004-06-29 19:45:16 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -647,18 +647,24 @@ Version 2.8.7 fixes this problem.
 
 <ul><b>Platform-specific Run-time Problems:</b>
 <a name="bug_ncap_flt_fnc_aix"></a>
-<li><i>Float-valued intrinsic arithmetic function in <tt>ncap</tt> on AIX:</i>
+<li><i>Float-valued intrinsic arithmetic functions in <tt>ncap</tt> on AIX:</i>
 NCO versions through 2.9.6 have a bug that cause all float-valued
 intrinsic math functions to fail under AIX.
   <tt>ncap</tt>
-Float-valued math functions are the optional ISO&nbsp;C functions
-  <tt>absf()</tt>, <tt>cosf()</tt>, <tt>logf()</tt>&ldots;
-The user does not invoke these functions directly&mdash;NCO
-  automatically calls these functions when the generic function argument
-  is a native float.
-  Double precision arguments invoke the standard form of these functions
-(<tt>abs()</tt>, <tt>cos()</tt>, <tt>logf()</tt>&ldots;).  
-  Version 2.9.7 fixes this problem.
+Float-valued math functions are the optional ISO&nbsp;C functions, e.g.,
+  <tt>cosf()</tt>, <tt>fabsf()</tt>, <tt>logf()</tt>.
+The user does not invoke these functions directly&mdash;
+the user always specifies the <i>generic function name</i>, e.g.,
+<tt>cos()</tt>, <tt>abs()</tt>, <tt>log()</tt>.
+NCO automatically calls the native single precision (i.e.,
+float-valued) math functions when the generic function argument 
+is a native float (e.g., naked constants like <tt>1.0f</tt> or
+variables stored as <tt>NC_FLOAT</tt>).
+Double precision arguments cause NCO to invoke the standard
+(double-valued) form of the generic function, e.g., <tt>cos()</tt>,
+<tt>fabs()</tt>, <tt>log()</tt>. 
+Version 2.9.7 fixes this problem by using its own float-valued
+functions instead of the native AIX functions. 
 </li>
 </ul>
 <p><hr></p>
