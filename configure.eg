@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.17 2002-08-23 19:00:08 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.18 2002-08-23 19:34:57 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -143,7 +143,7 @@ IRIX64 krein 6.5 10100655 IP27 mips
 
 export GNU_TRP='mips-sgi-irix6.5'
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='cc' CXX='CC -LANG:std' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='cc' CXX='CC -LANG:std' LD='/bin/ld -64' LDFLAGS='-64' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
