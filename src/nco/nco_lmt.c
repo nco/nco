@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.16 2003-03-25 22:37:44 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.17 2003-03-26 00:55:59 rorik Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -960,7 +960,7 @@ nco_lmt_udu_cnv /* [fnc] convert from unidata units to coordinate value */
   
     /* quick return if specified and supplied units are the same */
     if (strcmp(usr_unt_str,fl_unt_str) == 0) {
-      *lmt_val=strtod(lmt_sng,(char **)NULL); /* convert to double */
+      *lmt_val=strtod(lmt_sng,&usr_unt_str); /* convert to double */
       (void)utTerm();
       return 0; /* success */
       }
@@ -982,7 +982,7 @@ nco_lmt_udu_cnv /* [fnc] convert from unidata units to coordinate value */
       }
 	
     /* do conversion */
-    cur_val = strtod(lmt_sng,(char **)NULL);
+    cur_val = strtod(lmt_sng,&usr_unt_str);
     cur_val = slp*cur_val+incpt;
     *lmt_val = cur_val;
  
