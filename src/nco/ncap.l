@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.49 2002-05-18 19:59:30 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.50 2002-05-19 16:06:12 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -68,9 +68,10 @@
    NB: State names may not contain hyphens
    CCOMMENT: Handle C comments LMB92 p. 172, p. 43
    INCLUDE: Read in #include file (from example in flex manpage)
+   DMN_LST: Dimension list
    LHS_SUBSCRIPT: Left Hand Side subscripts (currently LHS casting)
    RHS_SUBSCRIPT: Right Hand Side subscripts (currently not used) */
-%x CCOMMENT INCLUDE LHS_SUBSCRIPT RHS_SUBSCRIPT
+%x CCOMMENT DMN_LST INCLUDE LHS_SUBSCRIPT RHS_SUBSCRIPT
 
 /* Following sections after %% are lexer rules
    Each rule is regular expression followed by C-code for action
@@ -143,6 +144,34 @@
   /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */
   BEGIN INITIAL;
 } /* end CCOMMENT start state rules */
+
+"(/" {
+  /* Dimension list */
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Entering DMN_LST with %s\n",yytext);
+
+  BEGIN DMN_LST;
+
+  return IGNORE; 
+} /* End dimension list */
+<DMN_LST>[ \t\n]* /* Eat whitespace */
+<DMN_LST>"/)" {
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Exiting DMN_LST with %s\n",yytext);
+
+  /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
+  BEGIN INITIAL;
+} /* End dimension list */
+<DMN_LST>[^\]\n]*[\]\n]/"/)" {
+/*<DMN_LST>[A-Za-z_][A-Za-z0-9_]*[ \t\n]*[,]?[ \t\n]* {*/
+  /* Recognize dimension lists */
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Lexing dimension list %s\n",yytext);
+
+  /* Valid subscripts must contain alphanumeric string */
+  if(yyleng < 3) goto end_dmn_lst;
+     
+ end_dmn_lst: /* Errors encountered during LHS processing jump to here */
+  /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
+  BEGIN INITIAL;
+} /* end dimension list */
 
 \n { 
   /* NB: Remaining rules are default state, also known as INITIAL state, or 0 state */
@@ -251,7 +280,23 @@
 } /* end byte */
 
 foo/[ ]*\( {return ABS;} /* TOKEN whitespace (: Token followed any amount of whitespace followed by opening parenthesis signifies function name, not variable name.
-This disambiguates variable and functional namespaces. */
+This disambiguates variable and functional namespaces.
+
+Dimension reducing functions (min,max,avg,ttl) need thought
+Each function should allow specification of optional dimension list, e.g., 
+foo=avg(var,(/lat,lon/)); should return mean T over lat,lon dimensions
+
+Certain functions, however, have binary versions, e.g., 
+foo=min(var_1,var_2); should return point-wise minimum values
+
+Dimension lists require syntax like (/.../) to disambiguate meanings like
+foo=min(lat,lat)
+
+End result:
+foo=min(lat) Returns minimum value of lat
+foo=min(lat,(/lat/)) Returns minimum value of lat
+foo=min(lat,lat) Returns copy of lat (i.e., pointwise minimum of lat and lat)
+foo=min(var,(/dmn_1,dmn_2)) Returns minimum of variable over dmn_1, dmn_2 dimensions */
 abs/[ ]*\( {return ABS;}
 atostr/[ ]*\( {return ATOSTR;}
 avg/[ ]*\( {prs_arg->nco_op_typ=nco_op_avg;return RDC;}
@@ -273,7 +318,7 @@ unpack/[ ]*\( {return UNPACK;}
         lval_ptr->sym=prs_arg->sym_tbl[idx];
         return FUNCTION;
      } /* endif */
-   (void)sprintf(err_sng,"Warning: Unable to locate function %s. Is this really a variable ?",yytext);
+   (void)sprintf(err_sng,"Warning: Unable to locate function %s. Perhaps %s is a variable?",yytext,yytext);
    (void)yyerror(err_sng);       
    return EPROVOKE;             
 } /* end functions */
@@ -414,6 +459,8 @@ unpack/[ ]*\( {return UNPACK;}
 } /* end variables without subscripts */
 
 <LHS_SUBSCRIPT>\[[^\]\n]*[\]\n] {
+  /* */
+  /* fxm: allow whitespace in dimension list */
   /* Recognize subscripted (hyperslabbed) variables
      Hyperslabbed variables for now indicated with square brackets
      Using square brackets so development does not break functions
@@ -444,6 +491,7 @@ unpack/[ ]*\( {return UNPACK;}
   dmn_sct **dmn; /* [dmn] Dimension structure list */
   
   /* Valid subscripts must contain alphanumeric string */
+  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"Interpreting %s as LHS_SUBSCRIPT\n",yytext);
   if(yyleng < 3) goto end_LHS_sbs;
   
   /* Copy token into user memory and turn into list of dimension names */
