@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.65 2000-07-31 00:29:18 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.66 2000-07-31 05:36:26 zender Exp $ 
 
 *************
 NCO Wish list
@@ -133,9 +133,7 @@ with nco_dst.pl
 171. Add DODS options to all NCAR architectures (buja?)
 172. Create NCO announce list
 173. Add switch to ncra which allows user to remove degenerate time dimension from result
-174. Setup ncra,ncea,ncwa to do standard deviations sdn
-175. Perform arithmetic before reduction, weighting, (perhaps masking) in ncwa.
-This will allow ncwa to work correctly with all averages (avg,avgsqr,rms)
+174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
 176. Replace Bison, Flex components of ncap with smaller C++ parser
 ************************************************************************
 End NCO Wish list

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.42 2000-07-31 00:29:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.43 2000-07-31 05:36:26 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.42 2000-07-31 00:29:18 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.42 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.43 2000-07-31 05:36:26 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.43 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -137,7 +137,7 @@ main(int argc,char **argv)
   int nbr_fl=0;
   int nco_op_typ=nco_op_avg; /* Flag for average,min,max,ttl operations */
   int opt;
-  int op_type=0; /* Option o */ 
+  int op_typ_rlt=0; /* Option o */ 
   int rec_dmn_id=-1;
   
   lmt_sct *lmt;
@@ -239,7 +239,7 @@ main(int argc,char **argv)
       break;
     case 'o':
       /* The relational operator type.  Default is 0, eq, equality */
-      op_type=op_prs(optarg);
+      op_typ_rlt=op_prs_rlt(optarg);
       break;
     case 'p':
       /* Common file path */
@@ -284,11 +284,10 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
 
-  /* Be it known weighted averages do not work with non-linear arithmetic */
-  if(wgt_nm != NULL && (nco_op_typ != nco_op_avg) && (nco_op_typ != nco_op_min) && (nco_op_typ != nco_op_max) && (nco_op_typ != nco_op_ttl)){
-    (void)fprintf(stdout,"%s: ERROR Weighting (-w) does not yet work with non-linear arithmetic (-y)\n",prg_nm);
+  if(wgt_nm != NULL && (nco_op_typ == nco_op_min || nco_op_typ == nco_op_max || nco_op_typ == nco_op_ttl)){
+    (void)fprintf(stdout,"%s: ERROR Weighting (-w) is not allowed with minimum, maximum, and total operations\n",prg_nm);
     exit(EXIT_FAILURE);
-  } /* endif */
+  } /* endif */ 
 
   /* If called without arguments, print usage and exit successfully */ 
   if(arg_cnt == 0){
@@ -577,9 +576,19 @@ main(int argc,char **argv)
 	  } /* end if */
 	  
 	  /* Mask by changing variable to missing value where condition is false */ 
-	  (void)var_mask(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,msk_val,op_type,msk_out->val,var_prc[idx]->val);
+	  (void)var_mask(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,msk_val,op_typ_rlt,msk_out->val,var_prc[idx]->val);
 	} /* end if */
       } /* end if */
+      /* Perform non-linear transformations before weighting */
+      switch(nco_op_typ){
+      case nco_op_avgsumsqr: /* Square variable before weighting */
+      case nco_op_rms: /* Square variable before weighting */
+      case nco_op_rmssdn: /* Square variable before weighting */
+	(void)var_multiply(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val,var_prc[idx]->val);
+	break;
+      default: /* All other operations are linear, do nothing to them yet */
+	break;
+      } /* end case */
       if(wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	/* fxm: var_conform_dim() has a bug where it does not allocate a tally array
 	 for weights that do already conform to var_prc. TODO #114. */ 
@@ -640,7 +649,7 @@ main(int argc,char **argv)
 	    wgt_avg->mss_val=mss_val_mk(wgt_avg->type);
 	  } /* end if */
 	  /* Mask by changing weight to missing value where condition is false */ 
-	  (void)var_mask(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,msk_val,op_type,msk_out->val,wgt_avg->val);
+	  (void)var_mask(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,msk_val,op_typ_rlt,msk_out->val,wgt_avg->val);
 	} /* endif weight must be masked */
 
 	/* fxm: temporary kludge to make sure weight has tally space.
@@ -665,12 +674,33 @@ main(int argc,char **argv)
 	if(var_prc_out[idx]->sz == 1 && var_prc_out[idx]->type == NC_LONG && var_prc_out[idx]->val.lp[0] == 0){
 	  (void)fprintf(stdout,"%s: ERROR Denominator weight = 0. Problem described in TODO #116\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
 	} /* end if */ 
-	/* This constructs default weighted average */ 
-	(void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
+	/* Divide numerator by masked, averaged, weights */ 
+	switch(nco_op_typ){
+	case nco_op_avg: /* Normalize sum by weighted tally to create mean */
+	case nco_op_avgsqr: /* Normalize sum by weighted tally to create mean */ 
+	case nco_op_avgsumsqr: /* Normalize sum of squares by weighted tally to create mean square */
+	case nco_op_rms: /* Normalize sum of squares by weighted tally to create mean square */
+	case nco_op_sqrt: /* Normalize sum by weighted tally to create mean */
+	  (void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
+	  break;
+	case nco_op_rmssdn: /* Normalize sum of squares by weighted tally-1 to create mean square for sdn */
+	  /* fxm: subtract one before dividing? */
+	  (void)fprintf(stdout,"%s: WARNING rmssdn with -w wgt normalization is ill-defined\n",prg_nm);
+	  (void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
+	  break;
+	case nco_op_min: /* Minimum is already in buffer, do nothing */
+	case nco_op_max: /* Maximum is already in buffer, do nothing */	
+	case nco_op_ttl: /* Total is already in buffer, do nothing */	
+	default:
+	  (void)fprintf(stdout,"%s: ERROR Illegal nco_op_typ in weighted normalization\n",prg_nm);
+	  break;
+	} /* end switch */
 	/* Free wgt_avg, but keep wgt_out, after each use */
 	if(wgt_avg != NULL) wgt_avg=var_free(wgt_avg);
+	/* End of branch for normalization when weights were specified */
       }else if(NRM_BY_DNM){
-	/* Normalize, multiply, etc where necessary */
+	/* Branch for normalization when no weights were specified
+	   Normalization is just due to tally */
 	switch(nco_op_typ){
 	case nco_op_avg: /* Normalize sum by tally to create mean */
 	case nco_op_avgsqr: /* Normalize sum by tally to create mean */ 
@@ -688,19 +718,6 @@ main(int argc,char **argv)
 	default:
 	  break;
 	} /* end switch */
-	/* Some operations require additional processing */
-	switch(nco_op_typ){
-	case nco_op_avgsqr: /* Square mean to create square of the mean (for sdn) */
-	  (void)var_multiply(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
-	  break;
-	case nco_op_sqrt: /* Take root of mean to create root mean */
-	case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
-	case nco_op_rmssdn: /* Take root of sdn mean of sum of squares to create root mean square for sdn */
-	  (void)var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);  
-	  break;
-	default:
-	  break;
-	} /* end switch */
       }else if(!NRM_BY_DNM){
 	/* No normalization required, we are done */ 
 	;
@@ -708,6 +725,19 @@ main(int argc,char **argv)
 	(void)fprintf(stdout,"%s: ERROR Unforeseen logical branch in main()\n",prg_nm);
 	exit(EXIT_FAILURE);
       } /* end if */
+      /* Some non-linear operations require additional processing */
+      switch(nco_op_typ){
+      case nco_op_avgsqr: /* Square mean to create square of the mean (for sdn) */
+	(void)var_multiply(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
+	break;
+      case nco_op_sqrt: /* Take root of mean to create root mean */
+      case nco_op_rms: /* Take root of mean of sum of squares to create root mean square */
+      case nco_op_rmssdn: /* Take root of sdn mean of sum of squares to create root mean square for sdn */
+	(void)var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);  
+	break;
+      default:
+	break;
+      } /* end switch */
       /* Free tallying buffer */
       (void)free(var_prc_out[idx]->tally); var_prc_out[idx]->tally=NULL;
       /* Free current input buffer */

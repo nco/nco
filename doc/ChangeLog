@@ -1,3 +1,11 @@
+2000-07-31  Charlie Zender  <zender@uci.edu>
+
+	* Added mathematical definitions of all new operations to manual
+
+	* Rearranged order of operations in ncwa so that non-linear
+	operations may employ weighting correctly. Weighting is not
+	well-defined for some operations (rmssdn) but I did my best.
+
 2000-07-28  Charlie Zender  <zender@uci.edu>
 
 	* Applied final min/max/ttl patch so min/max/ttl capabilities

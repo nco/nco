@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.81 2000-07-31 00:29:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.82 2000-07-31 05:36:26 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -3029,23 +3029,18 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
        variable and averaging over inner dimension. 
        This is where tally array is actually set */ 
     switch(nco_op_typ){
-    case nco_op_min:
-      (void)var_avg_reduce_min(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
-      break;
     case nco_op_max:
       (void)var_avg_reduce_max(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
       break;
-    case nco_op_avgsumsqr:
-    case nco_op_rms:
-    case nco_op_rmssdn:
-      /* Square values first */
-      (void)var_multiply(fix->type,var_sz,fix->has_mss_val,fix->mss_val,avg_val,avg_val);
-      /* Now sum the squares */
-      (void)var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  			  
+    case nco_op_min:
+      (void)var_avg_reduce_min(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
       break;
-    case nco_op_avg: 
-    case nco_op_ttl:
-    case nco_op_avgsqr:
+    case nco_op_avg: /* Operations: Previous=none, Current=sum, Next=normalize and root */
+    case nco_op_avgsqr: /* Operations: Previous=none, Current=sum, Next=normalize and square */
+    case nco_op_avgsumsqr: /* Operations: Previous=square, Current=sum, Next=normalize */
+    case nco_op_rms: /* Operations: Previous=square, Current=sum, Next=normalize and root */
+    case nco_op_rmssdn: /* Operations: Previous=square, Current=sum, Next=normalize and root */
+    case nco_op_ttl: /* Operations: Previous=none, Current=sum, Next=none */
     default:
       (void)var_avg_reduce_ttl(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);	  		
       break;
@@ -4593,8 +4588,8 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 void 
 nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
 {
-  /* Purpose: Perform appropriate ncra operation (avg, min, max...) on operands 
-     nco_opr_drv() is called within the record loop of ncra, and within the file loop of ncea 
+  /* Purpose: Perform appropriate ncra/ncea operation (avg, min, max...) on operands
+     nco_opr_drv() is called within the record loop of ncra, and within the file loop of ncea
      These operations perform part, but not all, of the necessary operations for each procedure
      Most arithmetic operations require additional procedures such as normalization be performed after all files/records have been procesed */
   
@@ -4836,14 +4831,14 @@ mss_val_cp(var_sct *var1,var_sct *var2)
 } /* end mss_val_cp() */ 
   
 void
-var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_typ,ptr_unn op2,ptr_unn op3)
+var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_typ_rlt,ptr_unn op2,ptr_unn op3)
 /* 
   nc_type type: I netCDF type of operand op3
   long sz: I size (in elements) of operand op3
   int has_mss_val: I flag for missing values (basically assumed to be true)
   ptr_unn mss_val: I value of missing value
   double op1: I Target value against which mask field will be compared (i.e., argument of -M)
-  int op_typ: I type of relationship to test for between op2 and op1
+  int op_typ_rlt: I type of relationship to test for between op2 and op1
   ptr_unn op2: I Value of mask field
   ptr_unn op3: I/O values of second operand on input, masked values on output
  */ 
@@ -4851,7 +4846,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
   /* Routine to mask third operand by second operand. Wherever second operand does not 
      equal first operand the third operand will be set to its missing value. */
 
-  /* Masking is currently defined as if(op2 !op_typ op1) then op3:=mss_val */   
+  /* Masking is currently defined as if(op2 !op_typ_rlt op1) then op3:=mss_val */   
 
   long idx;
 
@@ -4868,7 +4863,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
   /* NB: Explicit coercion when comparing op2 to op1 is necessary */ 
   switch(type){
   case NC_FLOAT:
-    switch(op_typ){
+    switch(op_typ_rlt){
     case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.fp[idx] != (float)op1) op3.fp[idx]=*mss_val.fp; break;
     case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.fp[idx] == (float)op1) op3.fp[idx]=*mss_val.fp; break;
     case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.fp[idx] >= (float)op1) op3.fp[idx]=*mss_val.fp; break;
@@ -4878,7 +4873,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     } /* end switch */ 
     break;
   case NC_DOUBLE:
-    switch(op_typ){
+    switch(op_typ_rlt){
     case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.dp[idx] != (double)op1) op3.dp[idx]=*mss_val.dp; break;
     case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.dp[idx] == (double)op1) op3.dp[idx]=*mss_val.dp; break;
     case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.dp[idx] >= (double)op1) op3.dp[idx]=*mss_val.dp; break;
@@ -4888,7 +4883,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     } /* end switch */ 
     break;
   case NC_LONG:
-    switch(op_typ){
+    switch(op_typ_rlt){
     case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.lp[idx] != (long)op1) op3.lp[idx]=*mss_val.lp; break;
     case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.lp[idx] == (long)op1) op3.lp[idx]=*mss_val.lp; break;
     case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.lp[idx] >= (long)op1) op3.lp[idx]=*mss_val.lp; break;
@@ -4898,7 +4893,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     } /* end switch */ 
     break;
   case NC_SHORT:
-    switch(op_typ){
+    switch(op_typ_rlt){
     case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.sp[idx] != (short)op1) op3.sp[idx]=*mss_val.sp; break;
     case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.sp[idx] == (short)op1) op3.sp[idx]=*mss_val.sp; break;
     case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.sp[idx] >= (short)op1) op3.sp[idx]=*mss_val.sp; break;
@@ -4908,7 +4903,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     } /* end switch */ 
     break;
   case NC_CHAR:
-    switch(op_typ){
+    switch(op_typ_rlt){
     case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
     case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
     case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
@@ -4918,7 +4913,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     } /* end switch */ 
     break;
   case NC_BYTE:
-    switch(op_typ){
+    switch(op_typ_rlt){
     case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.bp[idx] != (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
     case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.bp[idx] == (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
     case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >= (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
@@ -5894,7 +5889,7 @@ nco_op_typ_get(char *nco_op_sng)
 } /* end nco_op_typ_get() */
 
 int
-op_prs(char *op_sng)
+op_prs_rlt(char *op_sng)
 /* 
    char *op_sng: I string containing Fortran representation of a reltional operator ("eq","lt"...)
  */ 
@@ -5916,13 +5911,13 @@ op_prs(char *op_sng)
   }else if(!strcmp(op_sng,"ge")){
     return nc_op_ge;
   }else{
-    (void)fprintf(stdout,"%s: ERROR %s not registered in op_prs()\n",prg_nm_get(),op_sng);
+    (void)fprintf(stdout,"%s: ERROR %s not registered in op_prs_rlt()\n",prg_nm_get(),op_sng);
     exit(EXIT_FAILURE);
   } /* end else */
 
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */ 
   return 1;
-} /* end op_prs() */ 
+} /* end op_prs_rlt() */ 
 
 int nd2endm(int mth,int day)
 {

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.24 2000-07-28 23:54:23 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.25 2000-07-31 05:36:26 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -137,7 +137,7 @@ avg=`cut -d, -f 33 foo$$`
 echo "ncwa 29: Dimension reduction on type short, max switch variable: 69 =?= $avg"
 
 ncwa -O -y rms -w lat_wgt -v lat in.nc foo.nc 2>>foo.tst
-avg=`ncks -C -H -s "%d" -v lat foo.nc`
+avg=`ncks -C -H -s "%f" -v lat foo.nc`
 echo "ncwa 30: rms with weights: 90 =?= $avg" 
 
 ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc 2>> foo.tst
@@ -197,9 +197,9 @@ avg=`ncks -C -H -s "%f" -v no_mss_val foo.nc`
 echo "ncdiff 2: difference without missing value attribute: 0 =?= $avg" 
 
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
-ncks -O -v one -p ftp://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
+ncks -O -v one -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
-echo "nco 1: FTP protocol: 1 =?= $avg (Will fail if unable to anonymous FTP to dust.ps.uci.edu)" 
+echo "nco 1: FTP protocol: 1 =?= $avg (Will fail if unable to anonymous FTP to ftp.cgd.ucar.edu)" 
 mv in_tmp.nc in.nc
 
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.51 2000-07-31 00:29:18 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.52 2000-07-31 05:36:26 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -240,7 +240,7 @@ Reference manual for all operators
 * ncra netCDF Record Averager::  
 * ncrcat netCDF Record Concatenator::  
 * ncrename netCDF Renamer::     
-* ncwa netCDF Weighted Averager  ::  
+* ncwa netCDF Weighted Averager::  
 
 @code{ncwa} netCDF Weighted Averager
 
@@ -2027,11 +2027,14 @@ these ARM-specific procedures are executed.
 @section Operation Types
 @cindex operation types
 @cindex @code{avg}
+@cindex @code{avgsqr}
+@cindex @code{avgsumsqr}
 @cindex @code{min}
 @cindex @code{max}
 @cindex @code{rmssdn}
 @cindex @code{rms}
 @cindex @code{ttl}
+@cindex @code{sqrt}
 @cindex average
 @cindex mean
 @cindex total
@@ -2046,8 +2049,8 @@ Availability: @code{ncra},@code{ncea},@code{ncwa} @*
 Key switches: @samp{-y}@*
 @end cartouche
 @noindent
-The @samp{-y @var{op_typ}} switch allows operations besides averaging
-(the default) to be invoked.
+The @samp{-y @var{op_typ}} switch allows specification of many different
+types of operations 
 Set @var{op_typ} to the abbreviated key for the corresponding operation:
 @table @code
 @item avg
@@ -2070,13 +2073,127 @@ Square root of the mean
 Sum of values
 @end table
 @noindent
-
-If an operations type is not specified with @samp{-y} then the operator
+If an operation type is not specified with @samp{-y} then the operator
 will perform an arithmetic average by default.
+The mathematical definition of each operation is given below. 
+@xref{ncwa netCDF Weighted Averager}, for additional information on
+masks and normalization.
+Averaging is the default, and will be described first so the
+terminology for the other operations will be familiar.
+
+@ifhtml
+Note for HTML user's: 
+The definition of mathematical operations involving rank reduction
+(e.g., averaging) relies heavily on mathematical expressions which
+cannot be easily represented in HTML.  
+See the printed manual for complete documentation.
+@end ifhtml
+@ifinfo
+Note for Info user's: 
+The definition of mathematical operations involving rank reduction
+(e.g., averaging) relies heavily on mathematical expressions which
+cannot be easily represented in Info.
+See the printed manual for complete documentation.
+@end ifinfo
+
+@tex
+NCO defines the masked, weighted average of a variable $x$ to be
+$$
+\bar x_j = {\sum_{i = 1}^{i = N} \mu_i m_i w_i x_i \over \sum_{i =
+1}^{i = N} \mu_i m_i w_i} 
+$$
+where $\bar x_j$ is the $j$'th element of the output hyperslab, $x_i$ is
+the $i$'th element of the input hyperslab, $\mu_i$ is 1 unless $x_i$
+equals the missing value, $m_i$ is 1 unless $x_i$ is masked, and $w_i$
+is the weight.  
+This formiddable looking formula represents a simple weighted average
+whose bells and whistles are all explained below. 
+It is not early to note, however, that when $\mu_i = m_i = w_i = 1$, the
+generic averaging expression above reduces to a simple arithmetic
+average. 
+Furthermore, $m_i = w_i = 1$ for all operators besides @code{ncwa}, but
+these variables are included in the discussion below for completeness
+and for possible future use in other operators.
+
+The size $J$ of the output hyperslab for a given variable is the product
+of all the dimensions of the input variable which are not averaged over.
+The size $N$ of the input hyperslab contributing to each $\bar x_j$ is
+simply the product of the sizes of all dimensions which are averaged
+over (i.e., dimensions specified with @samp{-a}). 
+Thus $N$ is the number of input elements which @emph{potentially}
+contribute to each output element.
+An input element $x_i$ contributes to the output element $x_j$ except
+in two conditions:  
+@cindex missing values
+@enumerate
+@item $x_i$ equals the @var{missing value} (@pxref{Missing values}) for the
+variable. 
+@item $x_i$ is located at a point where the masking condition
+(@pxref{Masking condition}) is false.
+@end enumerate
+Points $x_i$ in either of these two categories do not contribute to
+$x_j$, they are ignored.
+We now define these criteria more rigorously.
+
+Each $x_i$ has an associated Boolean weight $\mu_i$ whose value is 0 or
+1 (false or true).
+The value of $\mu_i$ is 1 (true) unless $x_i$ equals the @var{missing
+value} (@pxref{Missing values}) for the variable.
+Thus, for a variable with no @code{missing_value} attribute, $\mu_i$ is
+always 1.
+All NCO arithmetic operators (@code{ncdiff}, @code{ncra},
+@code{ncea}, @code{ncflint}, @code{ncwa}) treat missing values
+analogously. 
+
+Besides (weighted) averaging, @code{ncwa}, @code{ncra}, and @code{ncea}
+also compute some common non-linear operations which may be specified
+with the @samp{-y} switch (@pxref{Operation Types}).
+The other rank-reducing operations are simple variations of the generic
+weighted mean described above.
+The minimum value of $x$ (@code{-y min}) is 
+$$
+\bar x_j = \min [ \mu_1 m_1 x_1, \mu_2 m_2 x_2, \ldots, \mu_N m_N x_N ] 
+$$
+The maximum value of $x$ (@code{-y max}) is 
+$$
+\bar x_j = \max [ \mu_1 m_1 x_1, \mu_2 m_2 x_2, \ldots, \mu_N m_N x_N ] 
+$$
+The total value of $x$ (@code{-y ttl}) is 
+$$
+\bar x_j = \sum_{i = 1}^{i = N} \mu_i m_i x_i 
+$$
+The square of the mean value of $x$ (@code{-y avgsqr}) is 
+$$
+\bar x_j = \left( {\sum_{i = 1}^{i = N} \mu_i m_i w_i x_i \over \sum_{i =
+1}^{i = N} \mu_i m_i w_i} \right)^2
+$$
+The mean of the sum of squares of $x$ (@code{-y avgsumsqr}) is 
+$$
+\bar x_j = {\sum_{i = 1}^{i = N} \mu_i m_i w_i x^2_i \over \sum_{i =
+1}^{i = N} \mu_i m_i w_i}
+$$
+The root mean square of $x$ (@code{-y rms}) is 
+$$
+\bar x_j = \sqrt{ {\sum_{i = 1}^{i = N} \mu_i m_i w_i x^2_i \over \sum_{i =
+1}^{i = N} \mu_i m_i w_i} }
+$$
+The root mean square of $x$ with standard-deviation-like normalization
+(@code{-y rmssdn}) is 
+$$
+\bar x_j = \sqrt{ {\sum_{i = 1}^{i = N} \mu_i m_i w_i x^2_i \over -1 + \sum_{i =
+1}^{i = N} \mu_i m_i w_i} }
+$$
+The square root of the mean of $x$ (@code{-y sqrt}) is 
+$$
+\bar x_j = \sqrt{ {\sum_{i = 1}^{i = N} \mu_i m_i w_i x_i \over \sum_{i =
+1}^{i = N} \mu_i m_i w_i} }
+$$
+@end tex
+
 At this time the weighted average option @samp{-w} does not work with
-the non-linear arithemtic operations (@code{rms}, @code{sqrt}, @dots{})  
-and @code{ncwa} will simply exit with an error if this is attempted.
-@comment fxm: why not?
+the arithemtic operations @code{ttl}, @code{min}, and @code{max}.
+@code{ncwa} will simply exit with an error if this combination is
+attempted. 
 
 @noindent
 EXAMPLES
@@ -2192,7 +2309,7 @@ described in any detail in the sections below.
 * ncra netCDF Record Averager::  
 * ncrcat netCDF Record Concatenator::  
 * ncrename netCDF Renamer::     
-* ncwa netCDF Weighted Averager  ::  
+* ncwa netCDF Weighted Averager::  
 @end menu
 
 @page
@@ -3501,7 +3618,7 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @end example
 
 @page
-@node ncrename netCDF Renamer, ncwa netCDF Weighted Averager  , ncrcat netCDF Record Concatenator, Operators
+@node ncrename netCDF Renamer, ncwa netCDF Weighted Averager, ncrcat netCDF Record Concatenator, Operators
 @section @code{ncrename} netCDF Renamer
 @cindex renaming variables
 @cindex renaming dimensions
@@ -3618,7 +3735,7 @@ ncrename -a _FillValue,missing_value -a Zaire,Congo in.nc out.nc
 @end example
 
 @page
-@node ncwa netCDF Weighted Averager  ,  , ncrename netCDF Renamer, Operators
+@node ncwa netCDF Weighted Averager,  , ncrename netCDF Renamer, Operators
 @section @code{ncwa} netCDF Weighted Averager
 @cindex averaging data
 @cindex weighted average
@@ -3716,72 +3833,15 @@ degrees.}.
 Note that the default behavior of (@samp{-I}) changed on
 1998/12/01---before this date the default was not to weight or mask
 coordinate variables.
-
-@ifhtml
-Note for HTML user's: The documentation for <CODE>ncwa</CODE> relies
-heavily on mathematical expressions which cannot be easily represented
-in HTML.
-The printed manual contains much better documentation on
-<CODE>ncwa</CODE>. 
-@end ifhtml
-@ifinfo
-Note for Info user's: The documentation for @code{ncwa} relies heavily
-on mathematical expressions which cannot be easily represented in
-Info. 
-The printed manual contains much better documentation on @code{ncwa}.
-@end ifinfo
-
-@tex
-@code{ncwa} defines the generic average of the variable $x$ to be
-$$
-\bar x_j = {\sum_{i = 1}^{i = N} \mu_i m_i w_i x_i \over \sum_{i =
-1}^{i = N} \mu_i m_i w_i} 
-$$
-where $\bar x_j$ is the $j$'th element of the output hyperslab, $x_i$ is
-the $i$'th element of the input hyperslab, $\mu_i$ is 1 unless $x_i$
-equals the missing value, $m_i$ is 1 unless $x_i$ is masked, and $w_i$
-is the weight.  
-This formiddable looking formula represents a simple weighted average
-whose bells and whistles are all explained below. 
-It is not early to note, however, that when $\mu_i = m_i = w_i = 1$, the
-generic averaging expression above reduces to a simple arithmetic
-average. 
-The size $J$ of the output hyperslab for a given variable is the product
-of all the dimensions of the input variable which are not averaged over.
-The size $N$ of the input hyperslab contributing to each $\bar x_j$ is
-simply the product of the sizes of all dimensions which are averaged
-over (i.e., dimensions specified with @samp{-a}). 
-Thus $N$ is the number of input elements which @emph{potentially}
-contribute to each output element.
-An input element $x_i$ contributes to the output element $x_j$ except
-in two conditions:  
-@cindex missing values
-@enumerate
-@item $x_i$ equals the @var{missing value} (@pxref{Missing values}) for the
-variable. 
-@item $x_i$ is located at a point where the masking condition
-(@pxref{Masking condition}) is false.
-@end enumerate
-Points $x_i$ in either of these two categories do not contribute to
-$x_j$, they are ignored.
-We now define these criteria more rigorously.
-
-Each $x_i$ has an associated Boolean weight $\mu_i$ whose value is 0 or
-1 (false or true).
-The value of $\mu_i$ is 1 (true) unless $x_i$ equals the @var{missing
-value} (@pxref{Missing values}) for the variable.
-Thus, for a variable with no @code{missing_value} attribute, $\mu_i$ is
-always 1.
-All other NCO arithmetic operators (@code{ncdiff}, @code{ncra},
-@code{ncea}, @code{ncflint}) treat missing values analogously.
-@end tex
+The mathematical definition of operations involving rank reduction 
+is given above (@pxref{Operation Types}).
 
 @menu
 * Masking condition::           
 * Normalization::               
 @end menu
 
-@node Masking condition, Normalization, ncwa netCDF Weighted Averager  , ncwa netCDF Weighted Averager
+@node Masking condition, Normalization, ncwa netCDF Weighted Averager, ncwa netCDF Weighted Averager
 @unnumberedsubsec Masking condition
 @cindex masking condition
 @tex
@@ -3915,7 +3975,7 @@ ncwa in.nc out.nc
 @end example
 @noindent
 Every variable in @file{in.nc} is reduced to a scalar in @file{out.nc}
-because averaging was performed over all dimensions were averaged over. 
+because, by default, averaging is performed over all dimensions.
 
 Store the zonal (longitudinal) average of @file{in.nc} in @file{out.nc}:
 @example
