@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.7 2003-05-21 22:45:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.8 2003-08-14 04:01:48 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -76,7 +76,7 @@ nco_malloc_flg /* [fnc] Wrapper for malloc(), but more forgiving */
      diagnostics unavailable to malloc(), e.g., variable and function name.
      nco_malloc() should be used in most cases, with nco_malloc_flg() for special uses
      Routine prints error and exits when malloc() returns a NULL pointer, except that
-     Control is handed back to calling routine for further processing when error is ENOMEM
+     control is handed back to calling routine for further processing when error is ENOMEM
      Routine does not call malloc() when sz == 0 */
   extern int errno; /* [enm] Error code in errno.h */
 
@@ -92,7 +92,7 @@ nco_malloc_flg /* [fnc] Wrapper for malloc(), but more forgiving */
   if(ptr == NULL){
     (void)fprintf(stdout,"%s: WARNING nco_malloc_flg() unable to allocate %li bytes\n",prg_nm_get(),(long)sz);
     (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",prg_nm_get(),strerror(errno));
-    if(errno == ENOMEM) return; /* Unlike nco_malloc(), allow simple OOM errors */
+    if(errno == ENOMEM) return NULL; /* Unlike nco_malloc(), allow simple OOM errors */
     else (void)fprintf(stdout,"%s: ERROR is not ENOMEM, exiting...\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
   } /* endif */

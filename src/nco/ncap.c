@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.114 2003-07-20 21:59:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.115 2003-08-14 04:01:48 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -53,7 +53,7 @@
    AT&T getopt() is in unistd.h or stdlib.h on AIX, CRAY, NECSX, SUNMP, SUN4SOL2
    fxm: I'm not sure what ALPHA and SGI do */
 #include <getopt.h> /* getopt_long() */
-#else
+#else /* !HAVE_GETOPT_H */
 #include "nco_getopt.h"
 #endif /* !HAVE_GETOPT_H */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.114 2003-07-20 21:59:17 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.114 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.115 2003-08-14 04:01:48 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.115 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.87 2003-07-30 21:58:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.88 2003-08-14 04:01:48 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -57,7 +57,7 @@
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>  /* getopt_long() */
-#else 
+#else /* !HAVE_GETOPT_H */
 #include "nco_getopt.h"
 #endif /* !HAVE_GETOPT_H */
 
@@ -69,7 +69,6 @@
 #define MAIN_PROGRAM_FILE
 #include "nco.h" /* NCO definitions */
 #include "libnco.h" /* netCDF operator library */
-
 
 int 
 main(int argc,char **argv)
@@ -105,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.87 2003-07-30 21:58:30 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.87 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.88 2003-08-14 04:01:48 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.88 $";
   
   extern char *optarg;
   

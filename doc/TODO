@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.229 2003-08-03 00:42:21 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.230 2003-08-14 04:01:47 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -232,7 +232,8 @@ nco_err_exit(): ERROR nco_create
 Permission denied
 265. Promote before operations using nco_typ_cnv_rth() in ncbo
 266. Finish ncbo.1 manpage
-267. Document ncbo in nco.texi
+268. Have ncbo use ncap var_cnf_dmn() technique so fl_1 fl_2 broadcast interchangeably
+269. SGI autotools ncap build fails because HAVE_GETOPT_H gets passed even though getopt_long struct tokens not defined
 ************************************************************************
 End NCO Wish list
 ************************************************************************

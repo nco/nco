@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.2 2003-08-03 00:42:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.3 2003-08-14 04:01:48 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -65,7 +65,7 @@
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>  /* getopt_long() */
-#else
+#else /* HAVE_GETOPT_H */
 #include "nco_getopt.h"
 #endif /* !HAVE_GETOPT_H */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *opt_sng;
   char *time_bfr_srt;
-  char CVS_Id[]="$Id: ncbo.c,v 1.2 2003-08-03 00:42:21 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.2 $";
+  char CVS_Id[]="$Id: ncbo.c,v 1.3 2003-08-14 04:01:48 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.3 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.56 2003-06-16 16:37:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.57 2003-08-14 04:01:48 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -48,7 +48,7 @@
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>  /* getopt_long() */
-#else
+#else /* HAVE_GETOPT_H */
 #include "nco_getopt.h"
 #endif /* HAVE_GETOPT_H */
 
@@ -82,8 +82,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.56 2003-06-16 16:37:27 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.56 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.57 2003-08-14 04:01:48 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.57 $";
   
   extern char *optarg;
   

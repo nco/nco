@@ -194,7 +194,7 @@ NCO_CHECK_FUNCS([ceilf floorf])
 NCO_CHECK_FUNCS([nearbyintf rintf roundf truncf])
 AC_CHECK_LIB([intl], [gettext])
 AC_CHECK_LIB([resolv], [res_init])
-AC_CHECK_LIB([socket], [main])
+AC_CHECK_LIB([socket], [main])> 
 AC_CHECK_LIB([thread], [main])
 #AC_CHECK_LIB([nsl], [main])
 AC_CHECK_LIB([nco], [nco_open])
