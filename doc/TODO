@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.99 2001-10-08 07:25:38 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.100 2001-10-08 22:53:18 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -177,6 +177,8 @@ or variable list is made more specific, or MALLOC_CHECK_=1 is used
 209. Add rules to make MANIFEST and automaticlally update Sourceforge download area
 210. Break nco.h into system-specific headers, csz.h, pck.h...
 211. Replace -1 by NC_GLOBAL where appropriate, especially in ncatted.c
+212. Ensure structures are always passed by reference (default is pass by value)
+213. Pass const values as const (may improve speed)
 ************************************************************************
 End NCO Wish list
 ************************************************************************
