@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.104 2004-12-01 00:25:42 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.105 2005-01-10 02:22:44 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -453,8 +453,9 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
 # CFLAGS += -Werror -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4
     GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE'
-    GCC_CFLAGS='-Werror -Wall -Wunused -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4'
-    GCC_CXXFLAGS="${GCC_CFLAGS}"
+    GCC_BASE_FLAGS='-Werror -Wall -Wunused -W -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fno-common -g -O4'
+    GCC_CFLAGS="${GCC_BASE_FLAGS} -Wmissing-prototypes"
+    GCC_CXXFLAGS="${GCC_BASE_FLAGS}"
 # Compilation flags recommended by GSL that I like and use:
 # -D_BSD_SOURCE: Support 4.3 BSD Unix extensions to ANSI C (prevents nameser.h warnings)
 # -D_POSIX_SOURCE: Support POSIX.1 standard additions to ANSI C (prevents fileno warnings)
@@ -462,7 +463,7 @@ if test "x${GCC_OR_GXX}" = 'xyes' ; then
 # -Werror: Consider warnings as errors
 # -W: Extra warnings, including missing return values, comparison of signed with unsigned
 # -Wall: Warn about common programming problems
-# -Wmissing-prototypes: Warn if missing prototypes
+# -Wmissing-prototypes: Warn if missing prototypes (C only, not C++)
 # -Wshadow: Warn if local variable has same name as other local variable
 # -Wpointer-arith: Warn if pointer arithmetic on types without size, e.g., void
 # -Wcast-qual: Warn if const qualifier removed from pointer

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.43 2005-01-09 00:14:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.44 2005-01-10 02:22:47 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -464,6 +464,7 @@ nco_hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
   history_crr=(char *)nco_free(history_crr);
   history_new=(char *)nco_free(history_new);
 
+  return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_hst_att_cat() */
 
 aed_sct * /* O [sct] List of attribute edit structures */

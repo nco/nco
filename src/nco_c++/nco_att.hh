@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.hh,v 1.9 2005-01-07 23:54:59 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.hh,v 1.10 2005-01-10 02:22:47 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF attribute routines
 
@@ -320,6 +320,27 @@ nco_get_att // [fnc] Get attribute value
  const std::string &att_nm, // I [sng] Attribute name
  typ_ntr &att_val) // O [frc] Attribute value
 {
+  /* 20050109 Unless nco_inq_varid() prototype appears here, g++ 3.4 produces
+     "./nco_att.hh:369: error: there are no arguments to `nco_inq_varid' that depend on a template parameter, so a declaration of `nco_inq_varid' must be available
+     ./nco_att.hh:369: error: (if you use `-fpermissive', G++ will accept your code, but allowing the use of an undeclared name is deprecated)"
+     when compiling nco_var.cc
+     Unclear why this nco_inq_varid() template must be here and in nco_var.hh 
+     Probably g++ 3.4 is finicky and does not allow circular prototype references
+     Eliminating this additional nco_inq_varid() reference may require adding 
+     .hh files to eliminate circular references.
+     Hence must weigh complexity of multiple (three) nco_inq_varid() prototypes
+     (master prototype in nco_var.hh and two local prototypes in overloaded 
+     nco_get_att() functions in nco_att.hh) against complexity of finer-grained
+     (more) .hh files. 
+     On balance, I prefer fewer files
+     There are currently only two redundant nco_inq_varid() prototypes
+     If this number grows appreciably then we should re-visit this decision */ 
+
+  int // O [id] Variable ID
+    nco_inq_varid // [fnc] Inquire variable ID
+    (const int &nc_id, // I [enm] netCDF file ID
+     const std::string &var_nm); // I [sng] Variable name
+  
   // Purpose: Wrapper for nc_get_att()
   int rcd=nco_get_att(nc_id,nco_inq_varid(nc_id,var_nm),att_nm,att_val);
   return rcd;
@@ -360,6 +381,13 @@ nco_get_att // [fnc] Get attribute value
  const std::string &att_nm) // I [sng] Attribute name
 {
   // Purpose: Wrapper for nco_get_att()
+
+  // 20050109 Prototype nco_inq_varid() to satisfy g++ 3.4 finickiness described above
+  int // O [id] Variable ID
+    nco_inq_varid // [fnc] Inquire variable ID
+    (const int &nc_id, // I [enm] netCDF file ID
+     const std::string &var_nm); // I [sng] Variable name
+
   typ_ntr att_val; // O [frc] Attribute value
   int rcd=nco_get_att(nc_id,nco_inq_varid(nc_id,var_nm),att_nm,att_val);
   return att_val;

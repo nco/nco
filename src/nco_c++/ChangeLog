@@ -1,3 +1,15 @@
+2005-01-09  Charlie Zender  <zender@uci.edu>
+
+	* Added redundant prototypes of nco_inq_varid() to two overloaded
+	nco_get_att() functions in nco_att.hh in order to satisfy new,
+	more finicky g++-3.4 complaints about declarations of
+	non-templated functions. 
+
+	This appears to do no harm but is worrisome because I do not like
+	proliferation of redundant function prototypes, yet can see no
+	other solution except for increasing number of .hh headers to 
+	eliminate circular references. TODO #14 and #15.
+
 2004-09-20  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco_c++-0_1_7 mie c++ nco/src/nco_c++

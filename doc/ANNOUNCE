@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.131 2004-12-08 04:54:09 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.132 2005-01-10 02:22:46 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.9 are ready. 
 
@@ -8,7 +8,7 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 There are fxm significant feature improvements in version 3.0.0.
 These changes are mainly oriented toward stabilization.
 
-1. libnco_c++ incorporates nco_put_vara() overloads
+1. libnco_c++ incorporates nco_put_vara() overloads, works with g++ 3.4.
 
 2. fxm ncpdq packing and unpacking handles missing_value attributes better
    See http://nco.sf.net/nco.html#ncpdq for details.
@@ -44,4 +44,4 @@ Other user-visible changes:
 3. Add help error message when ncks -b specified without -o file
 
 User-invisible changes:
-1. None
+1. libnco_c++ builds with g++-3.4

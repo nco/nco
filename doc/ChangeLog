@@ -1,3 +1,10 @@
+2005-01-09  Charlie Zender  <zender@uci.edu>
+
+	* Fixed g++-3.4.2 prototype warnings with nco_c++
+
+	* Added return to about five void functions to squelch erroneous
+	gcc-3.4.2 warnings (and hopefully allow enable-custom-* to work) 
+
 2004-11-30  Charlie Zender  <zender@uci.edu>
 
 	* Updated config.guess to timestamp 20040611

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.446 2005-01-09 00:14:11 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.447 2005-01-10 02:22:46 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -278,7 +278,8 @@ nco477. Make default to copy but not to print associated coordinate variables
 nco479. netCDF/L  from Loci: http://loci.cs.utk.edu/modules.php?name=News&file=article&sid=40
 nco480. Add boxcar averaging option (average in groups of n records) to ncra
 nco481. Fix nco_c++ on GCC 3.4 nco_att.hh problem. Use -fpermissive? Break into finer grain files?
-nco482. 
+nco482. Remove return's from void functions dated 20050109 once gcc-3.4.2 behavior fixed or gcc upgraded on i386 platforms
+nco483. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

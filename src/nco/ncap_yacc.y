@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.24 2005-01-07 23:54:56 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.25 2005-01-10 02:22:47 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -742,6 +742,8 @@ freeNode /* [fnc] Free syntax tree node Nie02 freeNode() */
   } /* endif */
   /* Free node itself */
   nod=(nodeType *)nco_free(nod);
+
+  return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end freeNode() */
 
 /* End User Functions section */

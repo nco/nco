@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.24 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.25 2005-01-10 02:22:47 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -366,6 +366,8 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
     cnt++;
   } /* end while */
   lmt_lst->dmn_cnt=cnt;
+
+  return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_msa_clc_cnt() */
 
 void

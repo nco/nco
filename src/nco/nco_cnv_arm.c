@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.7 2005-01-07 23:54:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_arm.c,v 1.8 2005-01-10 02:22:47 zender Exp $ */
 
 /* Purpose: ARM conventions */
 
@@ -140,6 +140,8 @@ nco_arm_time_install /* [fnc] Add time variable to concatenated ARM files */
 
   /* Free time_offset buffer */
   time_offset=(double *)nco_free(time_offset);
+
+  return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_arm_time_install */
 
 nco_long /* O [s] Value of base_time variable */

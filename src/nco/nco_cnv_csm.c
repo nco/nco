@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.15 2005-01-07 23:54:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.16 2005-01-10 02:22:47 zender Exp $ */
 
 /* Purpose: CCSM conventions */
 
@@ -109,5 +109,6 @@ nco_ncar_csm_date /* [fnc] Fix date variable in averaged CCSM files */
 #endif /* !USE_FORTRAN_ARITHMETIC */
   if(var[date_idx]->val.lp != NULL) return; else var[date_idx]->val.lp[0]=date;
   
+  return; /* 20050109: fxm added return to void function to squelch erroneous gcc-3.4.2 warning */ 
 } /* end nco_ncar_csm_date */
 
