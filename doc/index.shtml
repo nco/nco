@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.132 2003-03-18 01:59:08 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.133 2003-03-24 20:30:56 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -50,6 +50,7 @@ Try to disable Spammers' machines:
 <td align="right" valign="top">
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a>] 
+[<a href="http://www.unidata.ucar.edu/packages/udunits">UDUNITS</a>] 
 [<a href="http://www.cgd.ucar.edu/csm/support">CCSM Support Network</a>]
 </td></tr></table>
 
@@ -174,6 +175,7 @@ capable of performing arbitrary arithmetic operations</li>
 <li>Many releases since 2.0.0 are not packaged (i.e., no tarballs or RPMs).
 Retrieve these versions <a name="#Download">using CVS</a> or from 
 <a href="ftp://dust.ess.uci.edu/pub/zender/nco">this anonymous FTP site</a>.
+<li><b>NCO 2.7.3</b>, Support for (some) <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (and <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html">CF</a>) time conventions, e.g., <tt>ncks -d time,"2001-03-19 06:00:0.0","2001-03-19 18:00:0.0"</tt> 
 <li><b>NCO 2.7.2</b>, Printing (<tt>ncks -H</tt>) plays well with multi-slabbing
 <li><b>NCO 2.7.1</b>, Fallback to B. Sittler's <tt>getopt</tt> for
 long option support. Store fixed, packed variables correctly with <tt>ncap</tt>.
@@ -443,6 +445,7 @@ versions of <tt>bison</tt> work correctly.
 <td align="right" valign="top">
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a>] 
+[<a href="http://www.unidata.ucar.edu/packages/udunits">UDUNITS</a>] 
 [<a href="http://www.cgd.ucar.edu/csm/support">CCSM Support Network</a>]
 </td></tr></table>
 

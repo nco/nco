@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.12 2003-03-24 19:33:09 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.13 2003-03-24 20:30:57 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -11,8 +11,8 @@
 #endif /* !HAVE_CONFIG_H */
 #include "nco_lmt.h" /* Hyperslab limits */
 #ifdef HAVE_UDUNITS_H
-#include <udunits.h> /* unidata units library */
-#endif /* HAVE_UDUNITS_H */
+#include <udunits.h> /* Unidata units library */
+#endif /* !HAVE_UDUNITS_H */
 
 lmt_sct /* [sct] Limit structure for dimension */
 nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */

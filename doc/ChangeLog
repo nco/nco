@@ -1,3 +1,11 @@
+2003-03-24  Charlie Zender  <zender@uci.edu>
+
+	* Put UDUnits stuff on homepage
+
+	* Added bld/Makefile support for UDUnits when UDUNITS=Y
+
+	* Rorik committed UDUnits support for time coordinate limits in hyperslabs
+
 2003-03-19  Charlie Zender  <zender@uci.edu>
 
 	* Remove TODOs 138, 139, 140, 141, 142, all solved or made

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.205 2003-03-08 00:50:32 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.206 2003-03-24 20:30:54 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -18,6 +18,8 @@
 # cd ~/nco/bld;make DODS=Y;cd -
 # HDF5 version of netCDF libraries:
 # cd ~/nco/bld;make cln bin_cln all HDF5=Y;cd -
+# UDUNITS support:
+# cd ~/nco/bld;make UDUNITS=Y;cd -
 # 64-bit ABI on NCAR AIX and IRIX systems:
 # cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 make --jobs=1 lib_cln cln all ABI=64;cd -
 
@@ -84,6 +86,10 @@ endif # endif OMP
 ifndef OPTS
  OPTS := O
 endif
+ifndef UDUNITS
+# Use UDUNITS functionality
+ UDUNITS := N
+endif
 ifndef UNAMES
  UNAMES := $(shell uname -s)
 endif
@@ -122,7 +128,7 @@ else
  NC_LIBS := -lnetcdf
 endif # end DODS
 
-ifeq ($(HDF5),Y)
+ifeq (${HDF5},Y)
 # Build NCO using HDF5 netCDF interface
  HDF5_ROOT := /usr/local/hdf5
  NETCDF_INC := $(HDF5_ROOT)/include # Directory containing HDF5 version of netcdf.h
@@ -130,7 +136,7 @@ ifeq ($(HDF5),Y)
 endif # endif HDF5
 
 # Internationalize NCO with i18n features
-ifeq ($(I18N),Y)
+ifeq (${I18N},Y)
  MY_SHR_DIR := ${HOME}/share
  MY_ES_DIR := ${MY_SHR_DIR}/locale/es/LC_MESSAGES
  MY_FR_DIR := ${MY_SHR_DIR}/locale/fr/LC_MESSAGES
@@ -148,11 +154,25 @@ else
  BNR_SFX := ${null}
 endif 
 
+ifeq (${UDUNITS},Y)
+# Build NCO as UDUNITS-enabled clients
+# Place UDUNITS block after DODS block for both to work together
+ UDUNITS_INC := /usr/local/include
+ UDUNITS_LIB := /usr/local/lib
+ifneq (${UDUNITS_INC},${NETCDF_INC})
+ NETCDF_INC += -I${UDUNITS_INC}
+endif # end 
+ifneq (${UDUNITS_LIB},${NETCDF_LIB})
+ NC_LDFLAGS += -L${UDUNITS_LIB}
+endif # end 
+ NC_LIBS += -ludunits
+endif # end if UDUNITS
+
 # TMP_* and NCO_* are required to play nicely with DODS flags
 NCO_LDFLAGS := -L${MY_LIB_DIR}
 NCO_LIBS := -lnco
-TMP_LDFLAGS := $(NCO_LDFLAGS) $(NC_LDFLAGS)
-TMP_LIBS := $(NCO_LIBS) $(NC_LIBS)
+TMP_LDFLAGS := ${NCO_LDFLAGS} ${NC_LDFLAGS}
+TMP_LIBS := ${NCO_LIBS} ${NC_LIBS}
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=
@@ -284,10 +304,14 @@ ${MY_DPN_DIR}/%.d : %.cc
 CPP_TKN_OS := 
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32))
  CPP_TKN_OS += -DHAVE_GETOPT_H
+# UDUNITS_DAT OK to be empty for now
 endif # !LINUX
 ifneq (${PVM_ARCH},CRAY)
-CPP_TKN_OS += -DHAVE_MKSTEMP
+ CPP_TKN_OS += -DHAVE_MKSTEMP
 endif # CRAY
+ifeq (${UDUNITS},Y)
+ CPP_TKN_OS += -DHAVE_LIBUDUNITS -DHAVE_UDUNITS_H
+endif # UDUNITS
 # Assume strcasecmp() and strdup() routines are present (Comeau is exception)
 CPP_TKN_OS += -DHAVE_STRCASECMP -DHAVE_STRDUP
 # fxm: Define HAVE_LIBINTL, HAVE_LOCALE_H, HAVE_GETTEXT, HAVE_OMP_H
@@ -906,7 +930,7 @@ endif
 # endif DODS
 
 # Internationalize NCO with i18n features
-ifeq ($(I18N),Y)
+ifeq (${I18N},Y)
  CPPFLAGS += -DI18N
 ifneq (${null},$(findstring SGI,${PVM_ARCH}))
  LDFLAGS += -lintl
@@ -914,7 +938,7 @@ endif
 endif
 # endif I18N
 
-ifeq ($(HDF5),Y)
+ifeq (${HDF5},Y)
  CPPFLAGS += -DHDF5
 # No need to link to libnetcdf.a since libmfhdf.a has all netCDF3 calls
  LDFLAGS := $(filter-out -lnetcdf,${LDFLAGS})
@@ -1168,7 +1192,7 @@ dbg:
 	@printf "DODS_ROOT = ${DODS_ROOT}\n"
 	@printf "FC = ${FC}\n"
 	@printf "FFLAGS = ${FFLAGS}\n"
-	@printf "HDF5 = $(HDF5)\n"
+	@printf "HDF5 = ${HDF5}\n"
 	@printf "LDFLAGS = ${LDFLAGS}\n"
 	@printf "LEX = $(LEX)\n"
 	@printf "MDL_DPN = ${MDL_DPN}\n"
@@ -1177,11 +1201,18 @@ dbg:
 	@printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
 	@printf "MDL_SRC = ${MDL_SRC}\n"
 	@printf "NCO_VRS = ${NCO_VRS}\n"
+	@printf "NC_LDFLAGS = $(NC_LDFLAGS)\n"
+	@printf "NC_LIBS = $(NC_LIBS)\n"
 	@printf "NETCDF_INC = ${NETCDF_INC}\n"
 	@printf "NETCDF_LIB = ${NETCDF_LIB}\n"
 	@printf "OMP = ${OMP}\n"
 	@printf "PVM_ARCH = ${PVM_ARCH}\n"
 	@printf "SRC_LST = $(SRC_LST)\n"
+	@printf "TMP_LDFLAGS = $(TMP_LDFLAGS)\n"
+	@printf "TMP_LIBS = $(TMP_LIBS)\n"
+	@printf "UDUNITS = $(UDUNITS)\n"
+	@printf "UDUNITS_INC = $(UDUNITS_INC)\n"
+	@printf "UDUNITS_LIB = $(UDUNITS_LIB)\n"
 	@printf "USE_FORTRAN_ARITHMETIC = $(USE_FORTRAN_ARITHMETIC)\n"
 	@printf "VPATH = ${VPATH}\n"
 	@printf "VRS_SNG = ${VRS_SNG}\n"
