@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.92 2000-09-05 20:40:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.93 2000-09-18 16:33:21 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -5515,10 +5515,10 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
       if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_typ[idx]=fix;
       break;
     case ncflint:
-      if((var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_typ[idx]=fix;
+      if((var_type == NC_CHAR) || (var_type == NC_BYTE) || (var[idx]->is_crd_var && !var[idx]->is_rec_var)) var_op_typ[idx]=fix;
       break;
     case ncwa:
-      /* Every variable containing an excluded (averaged) dimension must be processed */
+      /* Process every variable containing an excluded (averaged) dimension */
       for(idx_dim=0;idx_dim<var[idx]->nbr_dim;idx_dim++){
 	for(idx_xcl=0;idx_xcl<nbr_dmn_xcl;idx_xcl++){
 	  if(var[idx]->dim[idx_dim]->id == dmn_xcl[idx_xcl]->id) break;
@@ -5528,7 +5528,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
 	  break;
 	} /* end if */
       } /* end loop over idx_dim */
-      /* If the variable does not contain an excluded (averaged) dimension, it must be fixed */
+      /* Variables which do not contain an excluded (averaged) dimension must be fixed */
       if(idx_dim == var[idx]->nbr_dim) var_op_typ[idx]=fix;
       break;
     case ncrcat:
@@ -5546,7 +5546,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
 
   } /* end loop over var */
 
-  /* Assign the list pointers based on the operation type for the variable */
+  /* Assign list pointers based on operation type for each variable */
   *nbr_var_prc=*nbr_var_fix=0;
   for(idx=0;idx<nbr_var;idx++){
     if(var_op_typ[idx] == fix){
@@ -5573,7 +5573,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
     exit(EXIT_FAILURE);
   } /* end if */
 
-  /* DBG XXX: remove the ncap exception when we finish the ncap list processing */
+  /* fxm: Remove ncap exception when finished with ncap list processing */
   if(*nbr_var_prc==0 && prg != ncap){
     (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing\n",prg_nm_get());
     switch(prg_get()){
@@ -5604,7 +5604,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
     exit(EXIT_FAILURE);
   } /* end if */
 
-  /* Free unused space and save the pointers in the output variables */
+  /* Free unused space and save pointers in output variables */
   if(*nbr_var_fix > 0) *var_fix_ptr=(var_sct **)nco_realloc(var_fix,*nbr_var_fix*sizeof(var_sct *)); else *var_fix_ptr=NULL;
   if(*nbr_var_fix > 0) *var_fix_out_ptr=(var_sct **)nco_realloc(var_fix_out,*nbr_var_fix*sizeof(var_sct *)); else *var_fix_out_ptr=NULL;
   if(*nbr_var_prc > 0) *var_prc_ptr=(var_sct **)nco_realloc(var_prc,*nbr_var_prc*sizeof(var_sct *)); else *var_prc_ptr=NULL;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.46 2000-09-05 20:40:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.47 2000-09-18 16:33:21 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -46,7 +46,7 @@
 
 /* Variables marked CEWI "Compiler Error Warning Initialization" are initialized
    to prevent spurious "warning: `float foo' might be used uninitialized in 
-   this function" warnings when -Wunitialized is turned on. */
+   this function" warnings when, e.g., GCC -Wuninitialized is turned on. */
 #define NULL_CEWI NULL
 #define nclong_CEWI 0L
 #define int_CEWI 0
@@ -60,9 +60,9 @@
 /*extern const short True=1;*/
 /*extern const short False=0;*/
 
-#ifdef MAIN_PROGRAM_FILE /* The current file contains main() */
+#ifdef MAIN_PROGRAM_FILE /* Current file contains main() */
 
-/* Global variables and variables with scope limited to the main.c file allocated here */
+/* Global variables and variables with scope limited to main.c allocated here */
 
 int prg;
 int prg_get(void){return prg;}
@@ -73,14 +73,14 @@ char *prg_nm_get(void){return prg_nm;}
 unsigned short dbg_lvl=0; /* Option D */
 unsigned short dbg_lvl_get(void){return dbg_lvl;}
 
-#else /* MAIN_PROGRAM_FILE is NOT defined, i.e., the current file does not contain main() */
+#else /* MAIN_PROGRAM_FILE is NOT defined, i.e., current file does not contain main() */
 
-/* External references to global variables are declared as extern here.
-   Variables with local file scope in all files except the main.c file are allocated here. */
+/* External references to global variables are declared as extern here
+   Variables with local file scope in all files except the main.c file are allocated here */
 
 #endif /* MAIN_PROGRAM_FILE is NOT defined, i.e., the current file does not contain main() */
 
-/* Enumerate the key values for all the netCDF filters */
+/* Enumerate key values for all netCDF operators */
 #if ( ! defined SGI5 ) && ( ! defined SGI64 ) && ( ! defined SGIMP64 )
 enum prg{
   ncap,
@@ -140,8 +140,8 @@ enum nco_op_typ{
   
 #else /* SGI */
 /* SGI compilers do not grok enums same as other compilers 
-   This section does the enums by hand
-   This section should be removed once SGI compilers begin to work */
+   Do enums by hand instead
+   Remove this section once SGI compilers begin to work sanely */
 
 #define ncap 0
 #define ncatted 1
@@ -386,7 +386,8 @@ typedef struct var_sct_tag{
 #endif /* SUN-style */
 #endif /* USE_FORTRAN_ARITHMETIC */
 
-/* Function prototypes */
+/* Function prototypes 
+   Those without descriptive variable names were written before ANSI C compilers were widely available */
 extern bool arm_inq(int);
 extern bool ncar_csm_inq(int);
 extern char **fl_lst_mk(char **,int,int,int *,char **);
