@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.16 2003-08-14 14:07:00 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.17 2003-08-20 14:43:50 hmb Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -9,7 +9,7 @@
 #include "nco_var_lst.h" /* Variable list utilities */
 
 nm_id_sct * /* O [sct] Variable extraction list */
-nco_var_lst_mk /* [fnc] Create variable extraction list */
+nco_var_lst_mk_old /* [fnc] Create variable extraction list */
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names */
@@ -61,7 +61,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list */
 
 
 nm_id_sct * /* O [sct] Variable extraction list */
-nco_var_lst_mk_meta /* [fnc] Create variable extraction list using regular expressions*/
+nco_var_lst_mk /* [fnc] Create variable extraction list using regular expressions*/
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
  CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names */
@@ -72,7 +72,6 @@ nco_var_lst_mk_meta /* [fnc] Create variable extraction list using regular expre
 
   int idx;
   int jdx;
-  int rcd=NC_NOERR; /* [rcd] Return code */
   int sng_lng;
   int srch_sng_lng=0; /* size of srch sng */
   int nbr_tmp=0;
@@ -109,8 +108,10 @@ nco_var_lst_mk_meta /* [fnc] Create variable extraction list using regular expre
   in_bool=(bool *)nco_calloc(nbr_var,sizeof(bool));
   
   
+
   
   /* create search string from list */
+  /* string is of form "var1/n/0/var2/n/0/var3/n/0"  */
   for(idx=0;idx<nbr_var;idx++){
     sng_lng=strlen(in_lst[idx].nm);
     srch_sng=(char*)nco_realloc(srch_sng,(srch_sng_lng+sng_lng+2)*sizeof(char));
@@ -128,12 +129,22 @@ nco_var_lst_mk_meta /* [fnc] Create variable extraction list using regular expre
      var_sng=var_lst_in[idx];
      /* if var_sng is  a regular expressiom */
      if ( strpbrk(var_sng,".*^$\[]()<>+?|")  ) {
+       
+       /* Regular expression library present */
+     #ifdef HAVE_REGEX_H
+      
        nbr_match=nco_var_meta_search(nbr_var,srch_sng,var_sng,in_bool);
        if( nbr_match==0)  
         	(void)fprintf(stdout,"%s: WARNING: regular expression \"%s\" doesn't match any variables\n",prg_nm_get(),var_sng); 
        continue;
-     }   
+    #else
 
+      (void)fprintf(stdout,"%s: ERROR: \"%s\" Regular expressions on variables are not available in this build.\n",prg_nm_get(),var_sng); 
+       nco_exit(EXIT_FAILURE);
+    #endif
+       
+     }  
+      
     
     /* normal variable -- search through var array */
      for(jdx=0; jdx<nbr_var; jdx++)
@@ -160,7 +171,7 @@ nco_var_lst_mk_meta /* [fnc] Create variable extraction list using regular expre
 
     /* copy var to output array */
     if(in_bool[idx]) {
-      xtr_lst[nbr_tmp].nm=strdup(in_lst[idx].nm);
+      xtr_lst[nbr_tmp].nm=(char *)strdup(in_lst[idx].nm);
       xtr_lst[nbr_tmp].id =in_lst[idx].id;
       nbr_tmp++; 
     } 
@@ -179,6 +190,9 @@ nco_var_lst_mk_meta /* [fnc] Create variable extraction list using regular expre
 
 } /* end nco_var_lst_mk_meta() */
 
+
+/* compile only if the library is present */
+#ifdef HAVE_REGEX_H
 
 int /* O number of matches found */
 nco_var_meta_search  /* search for pattern matches in the var string list */
@@ -209,6 +223,7 @@ bool *in_bool)       /* O matched vars holder */
 
   /* compile regular expression */
   
+
   if((err_no=regcomp(r,rexp ,cflags))!=0) /* Compile the regex */
     {
       char *err_sng;  
@@ -222,7 +237,7 @@ bool *in_bool)       /* O matched vars holder */
       case REG_ESUBREG:	    err_sng="Invalid back reference."; break ;
       case REG_EBRACK:	    err_sng="Unmatched left bracket."; break ;
       case REG_EPAREN:	    err_sng=" Parenthesis imbalance."; break ;
-      case REG_EBRACE:	    err_sng=" Unmatched \{.  "; break ;
+      case REG_EBRACE:	    err_sng=" Unmatched {.  "; break ;
       case REG_BADBR:	    err_sng=" Invalid contents of { }."; break ;
       case REG_ERANGE:	    err_sng=" Invalid range end."; break ;
       case REG_ESPACE:	    err_sng=" Ran out of memory."; break ;
@@ -258,6 +273,8 @@ bool *in_bool)       /* O matched vars holder */
    return nbr_mtch;
    
 }
+
+#endif
 
 nm_id_sct * /* O [sct] Extraction list */
 nco_var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
