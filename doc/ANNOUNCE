@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.28 2003-09-16 21:55:33 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.29 2003-11-06 07:15:06 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.2 are ready. 
 
@@ -8,6 +8,9 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 There is one notable feature improvement since version 2.8.1:
 
 1. Improve error messages and hints for out of range problems
+
+There are a few minor packaging fixes:
+1. Do not distribute ncap_lex.c, ncap_yacc.[ch] in tarball
 
 Enjoy,
 Charlie

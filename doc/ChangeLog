@@ -1,3 +1,11 @@
+2003-11-05  Charlie Zender  <zender@uci.edu>
+
+	* Remove ncap_lex.c, ncap_yacc.[ch] from .tar.gz file created by nco_dst.pl
+
+2003-11-04  Charlie Zender  <zender@uci.edu>
+
+	* Moved DODS problem note to homepage
+
 2003-10-11  Charlie Zender  <zender@uci.edu>
 
 	* Add section on union of two files
