@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.120 2004-09-03 06:28:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.121 2004-09-07 01:25:19 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type Option P */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.120 2004-09-03 06:28:10 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.120 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.121 2004-09-07 01:25:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.121 $";
   const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;
@@ -431,7 +431,7 @@ main(int argc,char **argv)
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
   /* Define variables in output file, copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_nil);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_nil,nco_pck_map_nil);
 
   /* Turn off default filling behavior to enhance efficiency */
   (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);

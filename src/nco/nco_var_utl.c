@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.62 2004-09-06 22:48:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.63 2004-09-07 01:25:19 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -774,6 +774,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
  const int nbr_var, /* I [nbr] Number of variables to be defined */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_ncl), /* I [sct] Dimensions included in output file */
  const int nbr_dmn_ncl, /* I [nbr] Number of dimensions in list */
+ const int nco_pck_map, /* I [enm] Packing map */
  const int nco_pck_typ) /* I [enm] Packing type */
 {
   /* Purpose: Define variables in output file, copy their attributes */
@@ -944,8 +945,9 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        Recall ncap calls ncap_var_write() to define newly packed LHS variables 
        If operator will attempt to pack some variables... */
     if(nco_pck_typ != nco_pck_nil && nco_pck_typ != nco_pck_upk){ 
+      bool nco_pck_plc_alw; /* O [flg] Packing policy allows packing nc_typ_in */
       /* ...and expanded variable is pack-able... */
-      if(nco_is_packable(var[idx]->typ_upk)){
+      if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL))){
 	/* ...and operator will pack this particular variable... */
 	if(
 	   /* ...either because operator newly packs all variables... */
@@ -973,7 +975,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	  (void)nco_put_att(out_id,var[idx]->id,add_fst_sng,typ_out,1,zero_var->val.vp);
 	  zero_var=(var_sct *)nco_var_free(zero_var);
 	} /* endif this variable will be packed or re-packed */
-      } /* endif nco_is_packable() */
+      } /* endif nco_pck_plc_alw */
     } /* endif nco_pck_typ involves packing */
   } /* end loop over idx variables to define */
 } /* end nco_var_dfn() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.27 2004-09-07 00:03:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.28 2004-09-07 01:25:19 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -68,10 +68,11 @@ bool /* O [flg] NCO will attempt to pack variable */
 nco_is_packable /* [fnc] Will NCO attempt to pack variable? */
 (const nc_type nc_typ_in); /* I [enm] Type of input variable */
 
-nc_type /* O [enm] Type to pack variable to */
-nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */
-(const nc_type nc_typ_in, /* I [enm] Type of input variable */
- const int nco_pck_map); /* I [enm] Packing map */
+bool /* O [flg] Packing policy allows packing nc_typ_in */
+nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
+(const int nco_pck_map,  /* I [enm] Packing map */
+ const nc_type nc_typ_in, /* I [enm] Type of input variable */
+ nc_type *nc_typ_pck_out); /* O [enm] Type to pack variable to */
 
 void
 nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
@@ -84,6 +85,7 @@ void
 nco_pck_val /* [fnc] Pack variable according to packing specification */
 (var_sct * const var_in, /* I [ptr] Variable in original disk state */
  var_sct * var_out, /* I/O [ptr] Variable after packing/unpacking operation */
+ const int nco_pck_map,  /* I [enm] Packing map */
  const int nco_pck_typ, /* I [enm] Packing type */
  aed_sct * const aed_lst_add_fst, /* O [enm] Attribute edit structure, add_offset */
  aed_sct * const aed_lst_scl_fct); /* O [enm] Attribute edit structure, scale_factor */

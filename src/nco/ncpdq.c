@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.50 2004-09-06 22:48:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.51 2004-09-07 01:25:19 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.50 2004-09-06 22:48:48 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.50 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.51 2004-09-07 01:25:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.51 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -643,7 +643,7 @@ main(int argc,char **argv)
   } /* nco_pck_typ == nco_pck_nil */
   
   /* Define variables in output file, copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_typ);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_map,nco_pck_typ);
   
   /* Turn off default filling behavior to enhance efficiency */
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -704,7 +704,7 @@ main(int argc,char **argv)
 	/* fxm: this is dangerous and leads to double free()'ing variable buffer */
 	var_prc_out[idx]->val=var_prc[idx]->val;
 	/* (Un-)Pack variable according to packing specification */
-	nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_typ,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
+	nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_map,nco_pck_typ,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
       } /* endif dmn_rdr_nbr > 0 */
 
 #ifdef _OPENMP
@@ -728,13 +728,14 @@ main(int argc,char **argv)
     /* Write/overwrite packing attributes for newly packed and re-packed variables 
        Logic here should nearly mimic logic in nco_var_dfn() */
     if(nco_pck_typ != nco_pck_nil && nco_pck_typ != nco_pck_upk){
+      bool nco_pck_plc_alw; /* [flg] Packing policy allows packing nc_typ_in */
       /* ...put file in define mode to allow metadata writing... */
       (void)nco_redef(out_id);
       /* ...loop through all variables that may have been packed... */
       for(idx=0;idx<nbr_var_prc;idx++){
 	/* nco_var_dfn() pre-defined dummy packing attributes in output file 
 	   only for input variables considered "packable" */
-	if(nco_is_packable(var_prc[idx]->typ_upk)){
+	if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var_prc[idx]->typ_upk,(nc_type *)NULL))){
 	  /* Verify input variable was newly packed by this operator
 	     Writing pre-existing (non-re-packed) attributes here would fail because
 	     nco_pck_dsk_inq() never fills in var->scl_fct.vp and var->add_fst.vp
@@ -753,7 +754,7 @@ main(int argc,char **argv)
 	    (void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);
 	    (void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);
 	  } /* endif variable is newly packed by this operator */
-	} /* endif nco_is_packable() */
+	} /* endif nco_pck_plc_alw */
       } /* end loop over var_prc */
       (void)nco_enddef(out_id);
     } /* nco_pck_typ == nco_pck_nil || nco_pck_typ == nco_pck_upk */

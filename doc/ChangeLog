@@ -3,6 +3,9 @@
 	* cvs tag -c nco-2_9_9
 	Changes since nco-2_9_8: 1. ncbo threading 2. ncpdq -P packing
 
+	* Deprecated nco_is_packable() in favor of more flexible
+	nco_pck_plc_typ_get() which accounts for policy desired by nco_pck_map
+
 	* Eliminated all memory problems in ncpdq 
 	Verified no excess large blocks remain at program end
 	Valgrind rules!
