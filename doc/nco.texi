@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.280 2004-09-27 07:15:45 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.281 2004-10-16 04:34:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1927,6 +1927,23 @@ Long options: All@*
 @end cartouche
 @acronym{NCO} support for large files is in place and works but is not
 well documented yet. 
+The netCDF large file support FAQ at
+@uref{http://my.unidata.ucar.edu/content/software/netcdf/faq-lfs.html}
+describes the various file size limitations imposed by different
+versions of the netCDF standard.
+To discover whether a netCDF file is a classic (32-bit offset) format
+or newer 64-bit offset file format file, examine it with the 
+(octal dump) command.
+@cindex @command{od} 
+@cindex octal dump
+@cindex classic files format
+@cindex 32-bit offset file format
+@cindex 64-bit offset file format
+@example
+od -An -c -N4 foo.nc
+@end example
+Values of @samp{C D F 001} and @samp{C D F 002} indicate 32-bit
+(classic) and 64-bit formats, respectively.
 
 @html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->

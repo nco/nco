@@ -1,3 +1,9 @@
+2004-10-13  Charlie Zender  <zender@uci.edu>
+
+	* Put in commented version of netCDF 64-bit file format support
+
+	* Added 32-bit/64-bit distinction discussion to LFS support
+
 2004-09-23  Charlie Zender  <zender@uci.edu>
 
 	* Remove extra carriage returns from ncks global metadata printing

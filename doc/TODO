@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.431 2004-10-05 01:39:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.432 2004-10-16 04:34:58 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -214,13 +214,13 @@ cd ~/nco/data;echo "in.nc" | ncecat -D 3 -o foo.nc
 nco342. Get canonicalize_file_name() working in nco_fl_info_get()
 nco344. Create sophisticated etags regular expressions for change version number in all documentation tags_doc.sh
 ************** Important ***************************
-nco345. OpenMP implementation in ncwa core dumps on ESMF: wgt_avg problem?
+nco345. OpenMP implementation in ncwa core dumps on AIX ESMF: wgt_avg problem?
 ncwa -D 5 -O -C -a wvl -v ss_co_alb ${DATA_MIE}/mie/mie_1.nc ${DATA_MIE}/mie/foo_avg_1.nc    
 nco346. Add LFS documentation to nco.texi
 nco351. Ask Jim Edwards to fix make test rtld errors on AIX with OpenMP
 nco352. Probably related to 351: OpenMP directive must appear in main() or ldd will not associate /usr/lib/libxlsmp.a(smprt_64.o) with executable so rtld errors occur on AIX
 ************** Important ***************************
-nco354. ncwa dumps core on ESMF on large files regardless of OpenMP (related to nco334, nco345): 
+nco354. ncwa dumps core on AIX ESMF on large files regardless of OpenMP (related to nco334, nco345): 
 ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA_MIE}/mie/mie_1000000.nc ${DATA_MIE}/mie/foo_avg_1000000.nc (works)
 ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA_MIE}/mie/mie_10000000.nc ${DATA_MIE}/mie/foo_avg_10000000.nc (fails)
 fails with 
@@ -273,7 +273,8 @@ nco464. ncpdq: convert missing_value to packed type
 nco467. Keep track of CDO "Climate Data Operators" http://www.mpimet.mpg.de/~cdo/
 nco468. Make -H toggle variable printing so ncks -M only prints metadata 
 nco469. Use default _FillValue e.g., NC_FILL_FLOAT, or values from <limits.h>, <float.h>?
-nco470. 
+nco470. implement netcdf-3.6 flags in nc_create()? When, how to transition?
+nco471. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -325,7 +326,8 @@ ncap -D 1 -O -v -s "foo=sin(e_dbl)^1" ~/nco/data/in.nc ~/foo.nc
 ncap58. Implement ncap test script in nco_tst.pl format so that errors are flagged at build-time.
 ncap59. ncap always gives points in first quadrant for
 ncap -O -v -s 'water_dir=(180/4*atan(1))*(atan(water_v/water_u) + 4 * atan(1) * ((water_u-abs(water_u))/(-2*water_u)))'
-ncap60. 
+ncap60. Add capability to create character string variables that contain any string, given only a pre-existing dimension size capable of holding the string
+ncap61. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
