@@ -1,9 +1,9 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.118 2002-09-14 18:09:59 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.119 2002-09-14 18:23:26 zender Exp $
 Purpose: NCO homepage
 
 Usage:
 http://www.ess.uci.edu/~zender/nco/index.shtml
-file:/home/zender/nco/doc/index.shtml
+file:///home/zender/nco/doc/index.shtml
 
 /usr/bin/scp ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs/index.shtml
 scp -p ~/nco/doc/index.shtml www.ess.uci.edu:/home/zender/public_html/nco/index.shtml
@@ -374,39 +374,19 @@ site.
 <h2>Known Problems with NCO and/or netCDF:</h2>
 
 <ul>
-<li><b>NCO problems on SGI machines?</b>:
-<ul>
-<li>The netCDF 3.3.x distribution suffers from unpredictable behavior
-on SGI machines (possibly related to NFS-mounted partitions). 
-As a result, NCO operators, especially <b>ncwa</b>, may core dump
-unless you upgrade to the new netCDF3.4.x distribution. 
-NCAR machines have all been upgraded to netCDF3.4+.
-All users of NCO on SGI machines at other institutions are urged to
-upgrade to netCDF3.4.x which is available from URL 
-<a href="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z</a>.</li>
-<li>NCO may not build correctly on SGI machines unless the latest
-version of GNU make (version 3.78.1) is installed.</li>
-<li>20000810: NCO, netCDF, or IRIX are causing filesystem-dependent
-crashes of some NCO operations on <tt>dataproc.ucar.edu</tt>.
-Crashes seem to occur when files are created in <tt>/usr/tmp</tt>, 
-but same commands work fine in <tt>/home/dataproc</tt>.
-Can anyone repeat this behavior?
+<li><b>NCO build problems:</b>
+NCO requires recent versions of netCDF (version >= 3.5.0).
+NCO requires recent versions of GNU <tt>make</tt> (version >= 3.78.1).
 </li>
-</ul>
 
-<li><b>Various <tt>ncap</tt> build problems:</b>
+<li><b><tt>ncap</tt> build problems:</b>
 <tt>ncap</tt> requires <tt>flex</tt> to build correctly.
 AT&T <tt>lex</tt> will not work because it does not understand
 <tt>EOF</tt> rules that <tt>ncap_lex.l</tt> uses.
 <tt>bison</tt> version 1.29 (the default version on Mac OS X) is buggy
 and does not parse <tt>ncap_yacc.y</tt> correctly; previous and later
 versions of <tt>bison</tt> work correctly.
-
-<li><b>NCO on the Cray T90</b>
-NCO should be compiled with the <tt>-DC_ONLY</tt> flag on the Cray
-T90 to avoid C-Fortran interface problems; otherwise incorrect answers
-may result. 
-As of NCO 1.1.38, this is the default.</li>
+</li>
 </ul>
 <p><hr></p>
 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.38 2002-09-14 18:09:58 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.39 2002-09-14 18:23:26 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -285,6 +285,7 @@ End LINUXSPARC64
 ************************************************************************
 Start MACOSX
 Status: Fails to build ncap because configure is out of date
+Fails to build nco_c++ because g++ on MAC OS X is v 2.95.2
 ncap TODO#18
 ************************************************************************
 bash-2.05a$ ./pvmgetarch;uname -a
