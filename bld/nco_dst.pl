@@ -23,7 +23,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.39 1999-12-15 00:26:29 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.40 1999-12-15 00:28:09 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -60,9 +60,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $CVS_Date='$Date: 1999-12-15 00:26:29 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.39 1999-12-15 00:26:29 zender Exp $';
-my $CVS_Revision='$Revision: 1.39 $';
+my $CVS_Date='$Date: 1999-12-15 00:28:09 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.40 1999-12-15 00:28:09 zender Exp $';
+my $CVS_Revision='$Revision: 1.40 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -72,7 +72,7 @@ my $nco_sng='nco';
 my $bld=$False; # Option bld; Whether to rebuild netCDF distribution
 my $nst_all=$False; # Option nst_all; Install version on all machines
 my $acd_cnt=$False; # Option acd_cnt; Install version in acd contrib
-my $acd_prs=$True; # Option acd_prs; Install version in acd personal
+my $acd_prs=$False; # Option acd_prs; Install version in acd personal
 my $blk_cnt=$False; # Option blk_cnt; Install version in blackforest contrib
 my $dat_cnt=$False; # Option dat_cnt; Install version in dataproc contrib
 my $ute_prs=$False; # Option ute_prs; Install version in ute personal
