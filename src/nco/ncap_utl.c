@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.4 1998-11-26 04:51:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.5 1998-12-04 22:23:01 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -31,15 +31,18 @@ ncap_var_add(var_sct *var_1,var_sct *var_2)
    var_sct *ncap_var_add(): output sum of input variables
  */ 
 {
-  /* Routine called by parser */ 
-   var_sct *var_sum;
+  bool MUST_CONFORM=False; /* Must var_conform_dim() find truly conforming variables? */ 
+  bool DO_CONFORM; /* Did var_conform_dim() find truly conforming variables? */ 
 
-   var_sum=var_dup(var_2);
-   var_sum=var_conform_dim(var_1,var_2,var_sum,True);
-   var_sum=var_conform_type(var_1->type,var_sum);
-   (void)var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_sum->val);
+  /* Routine called by parser */ 
+  var_sct *var_sum;
+
+  var_sum=var_dup(var_2);
+  var_sum=var_conform_dim(var_1,var_2,var_sum,MUST_CONFORM,&DO_CONFORM);
+  var_sum=var_conform_type(var_1->type,var_sum);
+  (void)var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_sum->val);
    
-   return var_sum;
+  return var_sum;
 } /* end ncap_var_add() */ 
 
 int

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.9 1998-12-04 04:56:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.10 1998-12-04 22:22:58 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -177,70 +177,6 @@ by the Free Software Foundation.
 
 Introduction
 
-* Availability::                
-* Compatability::               
-* Libraries::                   
-* netCDF 2.x vs. 3.x::          
-* Reporting bugs::              
-
-Operating systems compatible with NCO
-
-* Windows NT::                  
-
-Operator Strategies
-
-* Philosophy::                  
-* Climate model paradigm::      
-* Output files::                
-* Appending::                   
-* Averaging vs. Concatenating::  
-* Large numbers of input files::  
-* Large files and Memory::      
-* Memory usage::                
-* Operator limitations::        
-
-Differences between averagers and concatenators
-
-* Concatenation::               
-* Averaging::                   
-
-Features common to most operators
-
-* Specifying input files::      
-* Remote storage::              
-* File retention::              
-* Variable subsetting::         
-* Coordinate variables::        
-* Fortran indexing::            
-* Hyperslabs::                  
-* Wrapped coordinates::         
-* Stride::                      
-* Missing values::              
-* Suppressing interactive prompts::  
-* Operator version::            
-* History attribute::           
-* NCAR CSM Conventions::        
-* ARM Conventions::             
-
-Reference manual for all operators
-
-* ncatted netCDF Attribute Editor::  
-* ncdiff netCDF Differencer::   
-* ncea netCDF Ensemble Averager::  
-* ncecat netCDF Ensemble Concatenator::  
-* ncflint netCDF File Interpolator::  
-* ncks netCDF Kitchen Sink::    
-* ncra netCDF Record Averager::  
-* ncrcat netCDF Record Concatenator::  
-* ncrename netCDF Renamer::     
-* ncwa netCDF Weighted Averager  ::  
-
-@code{ncwa} netCDF Weighted Averager
-
-* Masking condition::           
-* Normalization::               
-
-@end detailmenu
 @end menu
 
 @node Foreword, Summary, Top, Top
@@ -2056,9 +1992,9 @@ This functionality allows the user to compute anomalies from the mean.
 Note that variables in @var{file_1} are @emph{not} broadcast to conform
 to the dimensions in @var{file_2}. 
 @cindex rank
-Thus the number of dimensions, or @dfn{rank}, of any processed variable
-in @var{file_1} must be greater than or equal to the rank of the same
-variable in @var{file_2}. 
+Thus, @code{ncdiff}, the number of dimensions, or @dfn{rank}, of any
+processed variable in @var{file_1} must be greater than or equal to the
+rank of the same variable in @var{file_2}. 
 Furthermore, the size of all dimensions common to both @var{file_1} and
 @var{file_2} must be equal. 
 
@@ -2070,9 +2006,9 @@ In these cases, creating @var{file_2} with @code{ncra} rather than
 For concreteness say the record dimension in @code{file_1} is
 @code{time}.  
 If @var{file_2} were created by averaging @var{file_1} over the
-@code{time} dimension with @code{ncra} operator rather than @code{ncwa},
-then @var{file_2} will have a @code{time} dimension of size 1 rather
-than having no @code{time} dimension at all 
+@code{time} dimension with the @code{ncra} operator rather than with the
+@code{ncwa} operator, then @var{file_2} will have a @code{time}
+dimension of size 1 rather than having no @code{time} dimension at all 
 @cindex degenerate dimensions
 @footnote{This is because @code{ncra} collapses the record dimension
 to a size of 1 (making it a @dfn{degenerate} dimension), but does not
@@ -3030,8 +2966,19 @@ are averaged over.
 Thus arrays which are one dimensional in the @var{input-file} and are
 averaged by @code{ncwa} appear in the @var{output-file} as scalars.
 This allows the user to infer which dimensions may have been averaged.
-Non-coordinate variables are always masked and weighted if specified.
+Note that that it is impossible for @code{ncwa} to make make a
+@var{weight} or @var{mask} of rank @var{W} conform to a @var{var} of
+rank @var{V} if @var{W > V}.
+This situation often arises when coordinate variables (which, by
+definition, are one dimensional) are are weighted and averaged.
+@code{ncwa} assumes you know this is impossible and so @code{ncwa} does
+not attempt to broadcast @var{weight} or @var{mask} to conform to
+@var{var} in this case, nor will does @code{ncwa} print a warning
+message telling you this, because it is so common. 
+Specifying @var{dbg > 2} does cause @code{ncwa} to emit warnings in
+these situations, however.
 
+Non-coordinate variables are always masked and weighted if specified.
 Coordinate variables, however, may be treated specially.
 By default, an averaged coordinate variable, e.g., @code{latitude},
 appears in @var{output-file} averaged the same way as any other variable

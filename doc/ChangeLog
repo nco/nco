@@ -1,3 +1,11 @@
+Fri Dec  4 15:06:23 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
+
+	* Tagged and released this as nco1_1_16
+
+	* Added new logic switch DO_CONFORM to var_conform_dim() to allow
+	ncwa to tell when to mask variables. Reran test cases, everything
+	seems to be working. Documentation seems up-to-date.
+
 1998-12-03  Charlie Zender  <zender@z.ppp.ucar.edu>
 
 	* Tagged and released this as nco1_1_15

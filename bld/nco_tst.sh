@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.4 1998-12-04 04:56:40 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.5 1998-12-04 22:22:57 zender Exp $
 
 # Purpose: NCO test battery
 # This script currently only works at NCAR
@@ -20,7 +20,7 @@ ncrename -O -v negative_one,zero foo.nc 2>> foo.tst
 # Average test field
 ncwa -O -a lat,lon -w gw foo.nc foo2.nc
 avg=`ncks -C -H -s "%f" -v one foo2.nc`
-echo "ncwa 1: normalize by tally and weight: 1.0 =?= $avg" 
+echo "ncwa 1: normalize by denominator: 1.0 =?= $avg" 
 
 #ncwa -n -O -a lat,lon -w gw foo.nc foo2.nc
 #avg=`ncks -C -H -s "%f" -v one foo2.nc`
@@ -32,7 +32,7 @@ echo "ncwa 1: normalize by tally and weight: 1.0 =?= $avg"
 
 ncwa -N -O -a lat,lon -w gw foo.nc foo2.nc
 avg=`ncks -C -H -s "%f" -v one foo2.nc`
-echo "ncwa 4: no normalization by denominator: 256 =?= $avg" 
+echo "ncwa 4: do not normalize by denominator: 256 =?= $avg" 
 
 ncwa -O -a lon -v mss_val in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%f" -v mss_val foo.nc`

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.11 1998-12-04 16:53:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.12 1998-12-04 22:23:02 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -47,7 +47,9 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */ 
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool MUST_CONFORM=False;
+  bool MUST_CONFORM=False; /* Must var_conform_dim() find truly conforming variables? */ 
+  bool DO_CONFORM_MSK; /* Did var_conform_dim() find truly conforming variables? */ 
+  bool DO_CONFORM_WGT; /* Did var_conform_dim() find truly conforming variables? */ 
   bool NCAR_CSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -73,8 +75,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncwa.c,v 1.11 1998-12-04 16:53:40 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.11 $";
+  char rcs_Id[]="$Id: ncwa.c,v 1.12 1998-12-04 22:23:02 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.12 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -504,20 +506,23 @@ main(int argc,char **argv)
       /* Retrieve the variable from disk into memory */ 
       (void)var_get(in_id,var_prc[idx]);
       if(msk_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
-	msk_out=var_conform_dim(var_prc[idx],msk,msk_out,MUST_CONFORM);
-	msk_out=var_conform_type(var_prc[idx]->type,msk_out);
-
-	/* mss_val for var_prc has been overwritten in var_refresh() */ 
-	if(!var_prc[idx]->has_mss_val){
-	  var_prc[idx]->has_mss_val=True;
-	  var_prc[idx]->mss_val=mss_val_mk(var_prc[idx]->type);
+	msk_out=var_conform_dim(var_prc[idx],msk,msk_out,MUST_CONFORM,&DO_CONFORM_MSK);
+	/* If msk and var did not conform then do not mask var! */ 
+	if(DO_CONFORM_MSK){
+	  msk_out=var_conform_type(var_prc[idx]->type,msk_out);
+	  
+	  /* mss_val for var_prc has been overwritten in var_refresh() */ 
+	  if(!var_prc[idx]->has_mss_val){
+	    var_prc[idx]->has_mss_val=True;
+	    var_prc[idx]->mss_val=mss_val_mk(var_prc[idx]->type);
+	  } /* end if */
+	  
+	  /* Mask by changing variable to missing value where condition is false */ 
+	  (void)var_mask(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,msk_val,op_type,msk_out->val,var_prc[idx]->val);
 	} /* end if */
-
-	/* Mask by changing variable to missing value where condition is false */ 
-	(void)var_mask(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,msk_val,op_type,msk_out->val,var_prc[idx]->val);
       } /* end if */
       if(wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
-	wgt_out=var_conform_dim(var_prc[idx],wgt,wgt_out,MUST_CONFORM);
+	wgt_out=var_conform_dim(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
 	wgt_out=var_conform_type(var_prc[idx]->type,wgt_out);
 	/* Weight variable by taking product of weight and variable */ 
 	(void)var_multiply(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,wgt_out->val,var_prc[idx]->val);
@@ -530,8 +535,9 @@ main(int argc,char **argv)
 	 Denominator is also tricky due to sundry normalization options 
 	 These logical switches are VERY tricky---be careful modifying them */
       if(NRM_BY_DNM && wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
-	if(msk_nm != NULL){
+	if(msk_nm != NULL && DO_CONFORM_MSK){
 	  /* Must mask weight in same fashion as variable was masked */ 
+	  /* If msk and var did not conform then do not mask wgt */ 
 	  /* Ensure wgt_out has a missing value */ 
 	  if(!wgt_out->has_mss_val){
 	    wgt_out->has_mss_val=True;

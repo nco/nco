@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.5 1998-11-26 04:51:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.6 1998-12-04 22:23:01 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -59,7 +59,8 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */ 
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool MUST_CONFORM=True;
+  bool MUST_CONFORM=True; /* Must var_conform_dim() find truly conforming variables? */
+  bool DO_CONFORM; /* Did var_conform_dim() find truly conforming variables? */ 
   bool NCAR_CSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -79,8 +80,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncdiff.c,v 1.5 1998-11-26 04:51:39 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.5 $";
+  char rcs_Id[]="$Id: ncdiff.c,v 1.6 1998-12-04 22:23:01 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.6 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -400,7 +401,7 @@ main(int argc,char **argv)
       } /* endif False */ 
       
       /* Pass a dummy pointer so we do not lose track of original */ 
-      var_tmp=var_conform_dim(var_prc[idx],var_prc_out[idx],var_tmp,MUST_CONFORM);
+      var_tmp=var_conform_dim(var_prc[idx],var_prc_out[idx],var_tmp,MUST_CONFORM,&DO_CONFORM);
       var_prc_out[idx]=var_free(var_prc_out[idx]);
       var_prc_out[idx]=var_tmp;
     } /* end else */

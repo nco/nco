@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.11 1998-12-04 04:56:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.12 1998-12-04 22:23:00 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -313,7 +313,13 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
   lim.max_val=0.0;
 
   /* Get dimension ID */ 
+  ncopts=0; 
   lim.id=ncdimid(nc_id,lim.nm);
+  ncopts=NC_VERBOSE | NC_FATAL; 
+  if(lim.id == -1){
+    (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",prg_nm_get(),lim.nm);
+    exit(EXIT_FAILURE);
+  } /* endif */ 
   
   /* Get dimension size */ 
   (void)ncdiminq(nc_id,lim.id,(char *)NULL,&dim.sz);
@@ -1896,12 +1902,13 @@ var_get(int nc_id,var_sct *var)
 } /* end var_get() */ 
 
 var_sct *
-var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM)
+var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,bool *DO_CONFORM)
 /*  
    var_sct *var: input pointer to variable structure to serve as template
    var_sct *wgt: input pointer to variable structure to make conform to var
    var_sct *wgt_crr: input/output pointer to existing conforming variable structure (if any) (may be destroyed)
-   bool MUST_CONFORM; input Whether wgt and var must conform
+   bool MUST_CONFORM; input Must wgt and var must conform?
+   bool *DO_CONFORM; output Did wgt and var conform?
    var_sct *var_conform_dim(): output pointer to conforming variable structure
 */
 {
@@ -1909,10 +1916,11 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM)
      to match the dimensions of the first variable. 
      Dimensions in var which are not in wgt will be present in the wgt_out, with the values
      replicated from existing dimensions in wgt.
-     By default, wgt's dimensions must be a subset of var's dimensions (MUST_CONFORM=true).
-     If it is permissible for wgt not to conform to var then set (MUST_CONFORM=false).
-     In this case when wgt and var share no dimensions (wgt and var dimensions are mutually exclusive)
-     then var_conform_dim returns a copy of var with all values set to 1.0. */
+     By default, wgt's dimensions must be a subset of var's dimensions (MUST_CONFORM=true)
+     If it is permissible for wgt not to conform to var then set MUST_CONFORM=false before calling this routine
+     In this case when wgt and var do not conform then then var_conform_dim sets *DO_CONFORM=False and returns a copy of var with all values set to 1.0
+     The calling procedure can then decide what to do with the output
+     */ 
 
   /* There are many inelegant ways to accomplish this (without using C++): */   
 
@@ -1950,7 +1958,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM)
      weight may (and often will) have fewer dimensions than the variable. */
 
   bool CONFORMABLE=False; /* Whether wgt can be made to conform to var */ 
-  bool CONFORMAL=False; /* Whether wgt or wgt_crr already conforms to var */ 
+  bool USE_DUMMY_WGT=False; /* Whether to fool NCO into thinking wgt conforms to var */ 
 
   int idx;
   int idx_dim;
@@ -1958,6 +1966,9 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM)
 
   var_sct *wgt_out=NULL;
 
+  /* Initialize flag to false to be overwritten by true */
+  *DO_CONFORM=False;
+  
   /* Does the current weight (wgt_crr) conform to the variable's dimensions? */ 
   if(wgt_crr != NULL){
     /* Test rank first because wgt_crr because of 96/02/18 bug (invalid dim_id in old wgt_crr leads to match) */
@@ -1967,9 +1978,9 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM)
 	/*	if(wgt_crr->dim_id[idx] != var->dim_id[idx]) break;*/
 	if(!strstr(wgt_crr->dim[idx]->nm,var->dim[idx]->nm)) break;
       } /* end loop over dimensions */
-      if(idx == var->nbr_dim) CONFORMAL=True;
+      if(idx == var->nbr_dim) *DO_CONFORM=True;
     } /* end if */ 
-    if(CONFORMAL){
+    if(*DO_CONFORM){
       wgt_out=wgt_crr;
     }else{
       wgt_crr=var_free(wgt_crr);
@@ -1998,17 +2009,40 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM)
 	/* Dimensions in wgt and var are mutually exclusive */ 
 	CONFORMABLE=False;
 	if(MUST_CONFORM){
-	  (void)fprintf(stdout,"%s: ERROR dimensions of %s are not a subset of those in %s\n",prg_nm_get(),wgt->nm,var->nm);
+	  (void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),wgt->nm,var->nm);
 	  exit(EXIT_FAILURE);
 	}else{
-	  wgt_out=var_dup(var);
-	  (void)vec_set(wgt_out->type,wgt_out->sz,wgt_out->val,1.0);
+	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %s and template %s share no dimensions: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,var->nm,wgt->nm,var->nm);
+	  USE_DUMMY_WGT=True;
+	} /* endif */ 
+      }else if(wgt->nbr_dim > var->nbr_dim){
+	/* wgt is larger rank than var---no possibility of conforming */ 
+	CONFORMABLE=False;
+	if(MUST_CONFORM){
+	  (void)fprintf(stdout,"%s: ERROR %s is rank %d but template %s is rank %d: Impossible to broadcast\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim);
+	  exit(EXIT_FAILURE);
+	}else{
+	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %s is rank %d but template %s is rank %d: Not broadcasting %s to %s\n",prg_nm_get(),wgt->nm,wgt->nbr_dim,var->nm,var->nbr_dim,wgt->nm,var->nm);
+	  USE_DUMMY_WGT=True;
 	} /* endif */ 
       }else if(wgt_var_dim_shr_nbr > 0 && wgt_var_dim_shr_nbr < wgt->nbr_dim){
 	/* Some, but not all, of wgt dimensions are in var */ 
-	(void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to %s but %d do not\n",prg_nm_get(),wgt_var_dim_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dim_shr_nbr);
-	exit(EXIT_FAILURE);
+	CONFORMABLE=False;
+	if(MUST_CONFORM){
+	  (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),wgt_var_dim_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dim_shr_nbr);
+	  exit(EXIT_FAILURE);
+	}else{
+	  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s\n",prg_nm_get(),wgt_var_dim_shr_nbr,wgt->nm,var->nm,wgt->nbr_dim-wgt_var_dim_shr_nbr,wgt->nm,var->nm);
+	  USE_DUMMY_WGT=True;
+	} /* endif */ 
       } /* end if */
+      if(USE_DUMMY_WGT){
+	/* Variables do not truly conform, but this might be OK, depending on the application, soset the conform flag to false and ... */ 
+	*DO_CONFORM=False;
+	/* ... return a dummy weight of 1.0, which allows program logic to pretend variable is weighted, but does not change answers */  
+	wgt_out=var_dup(var);
+	(void)vec_set(wgt_out->type,wgt_out->sz,wgt_out->val,1.0);
+      } /* endif */
       if(CONFORMABLE){
 	if(var->nbr_dim == wgt->nbr_dim){
 	  /* var and wgt conform and are same rank */
@@ -2018,17 +2052,17 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM)
 	       /*	    if(wgt->dim_id[idx] != var->dim_id[idx]) break;*/
 	  } /* end loop over dimensions */
 	  /* If so, take shortcut and copy wgt to wgt_out */ 
-	  if(idx == var->nbr_dim) CONFORMAL=True;
+	  if(idx == var->nbr_dim) *DO_CONFORM=True;
 	}else{
 	  /* var and wgt conform but are not same rank, set flag to proceed to generic conform routine */
-	  CONFORMAL=False;
+	  *DO_CONFORM=False;
 	} /* end else */ 
       } /* endif CONFORMABLE */ 
     }else{
       /* var is scalar, if wgt is too then set flag to copy wgt to wgt_out else proceed to generic conform routine */ 
-      if(wgt->nbr_dim == 0) CONFORMAL=True; else CONFORMAL=False;
+      if(wgt->nbr_dim == 0) *DO_CONFORM=True; else *DO_CONFORM=False;
     } /* end else */
-    if(CONFORMABLE && CONFORMAL){
+    if(CONFORMABLE && *DO_CONFORM){
       wgt_out=var_dup(wgt);
       (void)var_xrf(wgt,wgt_out);
     } /* end if */ 
@@ -2036,7 +2070,6 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM)
 
   if(wgt_out == NULL){
     /* We need to extend the original weight (wgt) to match the size of the current variable */ 
-
     char *wgt_cp;
     char *wgt_out_cp;
 
@@ -2146,7 +2179,13 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM)
       
     } /* end if the variable (and weight) are arrays, not scalars */
     
+    *DO_CONFORM=True;
   } /* end if we had to stretch the weight to fit the variable */
+  
+  if(*DO_CONFORM == -1){
+    (void)fprintf(stdout,"%s: ERROR *DO_CONFORM == -1 on exit from var_conform_dim()\n",prg_nm_get());
+    exit(EXIT_FAILURE);
+  } // end if
   
   /* The current weight (wgt_out) now conforms to the current variable */ 
   return wgt_out;
