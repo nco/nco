@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.144 2002-06-06 00:03:38 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.145 2002-06-06 00:08:09 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -42,6 +42,14 @@ MY_INC_DIR := ${MY_SRC_DIR}
 
 # Primary tokens which determine build options
 # Specify non-default when invoking make, e.g. make DODS=Y
+ifndef ${ABI}
+# 32 vs. 64 bit ABI: 32=32 bit mode, 64=64 bit mode if available (default)
+ ABI := 64
+endif # endif ABI
+ifndef ${DBG}
+# Debugging token N=No (default) Y=Yes
+ DBG := N
+endif # endif DBG
 ifndef DODS
  DODS := N
 endif
@@ -298,11 +306,11 @@ ifeq (${OPTS},X)
 endif
 # -q64: Select 64-bit compiler mode (required for accessing large files)
 # -qwarn64: Warn on possible long-to-integer or pointer-to-integer truncation
-ifeq (${ADR},64)
+ifeq (${ABI},64)
  AR := ar -X 64
  CFLAGS += -q64
  LDFLAGS += -q64 
-endif # endif ADR
+endif # endif ABI
 # Additional flags for AIX:
 # -M Generate information to be included in a "make" description file; output goes to .u file
 # -c Do not send object files to the linkage editor
@@ -1009,6 +1017,7 @@ cln: lib_cln dpn_cln obj_cln tst_cln
 	cd ${MY_DOC_DIR}; rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
 debug: dbg
 dbg:
+	@printf "ABI = ${ABI}\n"
 	@printf "AR = ${AR}\n"
 	@printf "C++ = ${C++}\n"
 	@printf "C++FLAGS = ${C++FLAGS}\n"
@@ -1018,6 +1027,7 @@ dbg:
 	@printf "CPPFLAGS = ${CPPFLAGS}\n"
 	@printf "CPP_PTH = ${CPP_PTH}\n"
 	@printf "CPP_TKN = ${CPP_TKN}\n"
+	@printf "DBG = ${DBG}\n"
 	@printf "DODS = $(DODS)\n"
 	@printf "DODS_ROOT = $(DODS_ROOT)\n"
 	@printf "FC = ${FC}\n"
