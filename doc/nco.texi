@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.286 2005-01-10 06:11:03 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.287 2005-01-11 15:19:38 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -934,7 +934,7 @@ The first thing to do is to make sure you are running the latest
 publicly released version of @acronym{NCO}.  
 
 Once you have read the manual, if you are still unable to get
-@acronym{NCO} to perform a documented function, write help request.
+@acronym{NCO} to perform a documented function, submit a help request.
 Follow the same procedure as described below for reporting bugs
 (after all, it might be a bug).
 @cindex debugging
@@ -946,14 +946,14 @@ commands (run with @samp{-D 5}), error messages, and version of
 Post your help request to the 
 @uref{http://sf.net/forum/forum.php?forum_id=9830, NCO Help forum}.
 
-If you think you are using the right command, but @acronym{NCO} is
-misbehaving, then you might have found a bug. 
+If you think you used the right command when @acronym{NCO} misbehaves,
+then you might have found a bug.  
 Incorrect numerical answers are the highest priority.
 We usually fix those within one or two days.
 Core dumps and sementation violations receive lower priority.
-They are always fixed. 
+They are always fixed, eventually. 
 
-How do you simplify a problem that may be revealing a bug?
+How do you simplify a problem that reveal a bug?
 Cut out extraneous variables, dimensions, and metadata from the
 offending files and re-run the command until it no longer breaks.  
 Then back up one step and report the problem.
