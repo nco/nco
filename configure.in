@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.95 2004-07-20 22:43:51 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.96 2004-07-20 23:38:15 rorik Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -172,7 +172,7 @@ AC_CHECK_LIB([netcdf],[nc_open],[
 		    cc ) CFLAGS="${CFLAGS} -xarch=v9" ; LDFLAGS="${LDFLAGS} -xarch=v9" ; ;;
 		esac
 		;;
-	    x86_64-*-linux* )
+	    x86_64-unknown-linux-gnu )
 		case ${CC} in
 		    gcc ) CFLAGS="${CFLAGS} -m64" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
 # fxm: Add pgcc switches
@@ -422,13 +422,6 @@ case ${host} in
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
 	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ; ;;
 	esac
-	;;
-	x86_64-*-linux* )
-	case ${CC} in
-	    cc ) CFLAGS="${CFLAGS} -std=c99" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
-	    gcc ) CFLAGS="${CFLAGS} -std=c99" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
-	esac
-	;;
 esac
 # End Default OS-specific Compiler Arguments
 
@@ -646,7 +639,7 @@ case ${host} in
 	;;  
     sx*-nec-superux* ) AC_DEFINE(NECSX,1,Compatibility pvmgetarch token for SuperUX on NEC SX)
 	;;   
-    x86_64-*-linux* ) AC_DEFINE(LINUXAMD64,1,Compatibility pvmgetarch token for Linux on AMD x86_64)
+    x86_64-pc-linux* ) AC_DEFINE(LINUXAMD64,1,Compatibility pvmgetarch token for Linux on AMD x86_64)
 	;;
 esac
 # End pvmgetarch Compatibility
@@ -674,6 +667,9 @@ else
     echo "Do this manually in data/ subdirectory before running \"make check\""
 fi
 # End netCDF test data
+
+# make sure we use 99 standards
+AX_CFLAGS_GCC_OPTION(-std=c99)
 
 # Begin config
 AC_CONFIG_FILES([Makefile data/Makefile src/Makefile src/nco/Makefile man/Makefile doc/Makefile])
