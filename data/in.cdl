@@ -33,12 +33,12 @@
 
 netcdf in {
 dimensions:
-	band=2,lat=2,lev=3,rlev=3,lon=4,char_dmn_lng=80,char_dmn_sml=4,fl_dim=3,lsmlev=6,time=unlimited;
+	band=2,lat=2,lev=3,rlev=3,lon=4,char_dmn_lng=80,char_dmn_sml=4,fl_dim=3,lsmlev=6,wvl=2,time=unlimited;
 variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.29 2001-05-08 01:36:03 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.30 2001-06-20 05:35:16 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -53,6 +53,9 @@ variables:
 	lsmlev:purpose = "Homebrew level coordinate for LSM";
 	lsmlev:long_name = "Soil depth";
 	lsmlev:units = "meter";
+	float wvl(wvl);
+	wvl:long_name = "Wavelength";
+	wvl:units = "meter";
 
 	char fl_dim(fl_dim);
 	fl_dim:long_name = "Character coordinate";
@@ -386,6 +389,7 @@ data:
 	val_one_one_int=1,1;
 	weight=10.,10.;
 	wgt_one=1.,1.;
+	wvl=0.5e-6,1.0e-6;
 	z=17000,5000,0;
 	zero=0.;
  	date=640312,640313,640314,640315,640316,640317,640318,640319,640320,640321;
