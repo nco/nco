@@ -1,18 +1,15 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.3 1998-10-30 03:39:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.4 1998-11-26 04:51:39 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
-/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
-   National Center for Atmospheric Research/
-   Climate and Global Dynamics Division
-
-   The file LICENSE contains the full copyright notice, or 
-   you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
+/* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
+   The file LICENSE contains the full copyright notice 
+   Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
 
 /* Purpose: Extract (subsets of) variables from a netCDF file. Print them to screen,
    or copy them to a new file, or both. */
 
-/* Example Usage (place mouse-able command lines here):
+/* Usage:
    ncks in.nc 
    ncks -v var1 in.nc 
    ncks in.nc foo.nc
@@ -76,8 +73,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncks.c,v 1.3 1998-10-30 03:39:51 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.3 $";
+  char rcs_Id[]="$Id: ncks.c,v 1.4 1998-11-26 04:51:39 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.4 $";
   
   extern char *optarg;
   extern int ncopts;

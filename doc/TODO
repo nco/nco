@@ -4,19 +4,17 @@ NCO Wish list (or, improvements I could make while on airplanes if only I had a 
 06. Add error checking to catch file1=(lon,lat) vs. file2=(lat,lon) errors
 28. Use var.nc_id as file ID from now on and rewrite old routines to do so
 32. scale_factor and add_offset
-41. Use GNU getopt_long(). 'nuff said.
+41. Use GNU getopt_long()
 50. Allow user-specified scalar weights to ncwa
 51. Make getopt() a shared subroutine
 52. Setup ncra,ncea,ncwa to do min,max,ttl,sd,sdn as well as averages
 53. Add -t wall clock timer option? (then again, users can always use, e.g., timex())
-54. ncwa needs better fix/prc list processing, and testing.
 55. var_conform_dim() should be able to expand a (x,64,128) array into an (nx,64,128) array (maybe)
-56. var_conform_dim() should maybe check dimension names which are fixed, rather than IDs, which can change
 58. Add -o fl_out switch to supercede positional argument (GNU style)
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
 60. Make something that can mask a field without having to average over a dimension
 66. Make history attribute get appended, rather than overwritten, when in append mode
-67. Build robust test suite nc_tst.sh
+67. Make test suite nco_tst.sh more robust
 68. ncwa -a lat -a lon should produce an error msg (should be ncwa -a lat,lon)
 69. ncks option for file/field summary: var name list,var min,max,avg,mss_val,# mss_val,
 70. ncxx with no options should do a usg_prn() without an error msg
@@ -27,19 +25,18 @@ NCO Wish list (or, improvements I could make while on airplanes if only I had a 
 81. Make all averagers convert to double precision before arithmetic, then convert back after arithmetic. this is the only way to sensibly handle byte data.
 82. Make libnco namespace-safe by prefixing all possibly dynamically loaded subroutines with, e.g., nco_
 83. Always build operators to link dynamically to libnco.so
-84. Check malloc() and realloc() for failure instead of mysteriously dumping core later.
-86. Extend stride/wraparound capability to all operators possible.
+84. Check malloc() and realloc() for failure instead of mysteriously dumping core later
+86. Extend stride/wraparound capability to all operators possible
 88. ncks is slow on large files on Crays: ncks -H -v time,date,datesec /tmp/eaton/pcw101/h0009.nc will this be fixed when move beyond netcdf2.4.2 cray libs?
-90. -d wvl,200e-6 is interpreted as dim_idx, not as -d wvl,200.e-6
 92. ncrcat -O -v base_time,time_offset arm.cdf arm.cdf foo.nc;ncks -H -C -h foo.nc | m gives bad time_offset on LINUX not SUNMP (problem with LINUX adding record coordinate to open file?)
 93. ncrename -v one,uno foo.nc dumps core on LINUX not SUNMP (w. 92, does this signify problem w/ my LINUX netcdf?)
 94. ~/bin/sh/texi2html -monolithic nco.texi has started dumping core. adding -verbose switch fixes problem, though I've no idea why.
-95. Can udunits accomplish CCM "time since..." conversions for ncrcat.
+95. Can udunits accomplish CCM "time since..." conversions for ncrcat?
 97. Add x_op=average... attributes to averagers for ncar_csm
 99. Allow ncatted to print out a file in ncatted format
 100. Write replacement for BEE's date() functions that works with C_ONLY flag
 101. Change tokens so g77 will work with OSs besides LINUX, e.g., SUNMP
-103. Implement trapezoidal rule option in ncra, ncea.
+103. Implement trapezoidal rule option in ncra, ncea
 104. Investigate/Document reliability of -A operator when appending from large rank variables to small rank files. Add error message when variables are same size but one has a degenerate dimension.
 In general, adding large rank variable to small rank file does work, e.g.,
 ncks -C -O -v one_dim_rec_var in.nc foo.nc
@@ -60,6 +57,7 @@ valid workaround.
 111. Investigate whether using ncwa to average files where variables of type 
 NC_CHAR have a record dimension is causing core dumps or other problems.
 i.e., LSM variable timecom caused subtle ncra problems for a while.
+112. Use strtol and strtod instead of atol and atof
 ************************************************************************
 End NCO Wish list
 ************************************************************************

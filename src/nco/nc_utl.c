@@ -1,11 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.8 1998-11-24 00:30:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.9 1998-11-26 04:51:39 zender Exp $ */
 
-/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
-   National Center for Atmospheric Research/
-   Climate and Global Dynamics Division
-
-   The file LICENSE contains the full copyright notice, or 
-   you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
+/* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
+   The file LICENSE contains the full copyright notice 
+   Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
 
 /* Utilities for netCDF operators */ 
 
@@ -331,29 +328,28 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
   } /* end if */
   
   if(lim.srd_sng != NULL){
-    lim.srd=atol(lim.srd_sng);
-    if(strchr(lim.srd_sng,'.')){
+    if(strchr(lim.srd_sng,'.') || strchr(lim.srd_sng,'e') || strchr(lim.srd_sng,'E') || strchr(lim.srd_sng,'d') || strchr(lim.srd_sng,'D')){
       (void)fprintf(stdout,"%s: ERROR Requested stride for \"%s\", %s, must be integer\n",prg_nm_get(),lim.nm,lim.srd_sng);
       exit(EXIT_FAILURE);
     } /* end if */
+    lim.srd=atol(lim.srd_sng);
     if(lim.srd < 1){
       (void)fprintf(stdout,"%s: ERROR Stride for \"%s\" is %li\n",prg_nm_get(),lim.nm,lim.srd);
       exit(EXIT_FAILURE);
     } /* end if */
   } /* end if */
 
-  /* According to the netCDF document "NetCDF Operators and Utilities", 
-     if there is a decimal point in the limit string, then the limit should be interpreted as a coordinate value.
-     Otherwise the limit is interpreted as a zero-based dimension offset. */ 
-  
   /* If min_sng and max_sng are both NULL then set type to dim_idx */
   if(lim.min_sng == NULL && lim.max_sng == NULL){
     /* Limiting indices will be set to default extrema later on */
     min_lim_type=max_lim_type=dim_idx;
   }else{
-    /* Assume min_sng and max_sng are not both NULL */ 
-    if(lim.min_sng != NULL) min_lim_type=(strchr(lim.min_sng,'.') == NULL) ? dim_idx : crd_val;
-    if(lim.max_sng != NULL) max_lim_type=(strchr(lim.max_sng,'.') == NULL) ? dim_idx : crd_val;
+    /* min_sng and max_sng are not both NULL */ 
+    /* The limit is a coordinate value if the string contains a decimal point or is in exponential format 
+     Otherwise the limit is interpreted as a zero-based dimension offset */ 
+  
+    if(lim.min_sng != NULL) min_lim_type=(strchr(lim.min_sng,'.') || strchr(lim.min_sng,'e') || strchr(lim.min_sng,'E') || strchr(lim.min_sng,'d') || strchr(lim.min_sng,'D')) ? crd_val : dim_idx;
+    if(lim.max_sng != NULL) max_lim_type=(strchr(lim.max_sng,'.') || strchr(lim.max_sng,'e') || strchr(lim.max_sng,'E') || strchr(lim.max_sng,'d') || strchr(lim.max_sng,'D')) ? crd_val : dim_idx;
     
     /* Copy lim_type from defined limit to undefined */ 
     if(lim.min_sng == NULL) min_lim_type=max_lim_type;
@@ -1966,8 +1962,10 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM)
   if(wgt_crr != NULL){
     /* Test rank first because wgt_crr because of 96/02/18 bug (invalid dim_id in old wgt_crr leads to match) */
     if(var->nbr_dim == wgt_crr->nbr_dim){
+      /* Test whether all wgt and var dimensions match in sequence */ 
       for(idx=0;idx<var->nbr_dim;idx++){
-	if(wgt_crr->dim_id[idx] != var->dim_id[idx]) break;
+	/*	if(wgt_crr->dim_id[idx] != var->dim_id[idx]) break;*/
+	if(!strstr(wgt_crr->dim[idx]->nm,var->dim[idx]->nm)) break;
       } /* end loop over dimensions */
       if(idx == var->nbr_dim) CONFORMAL=True;
     } /* end if */ 
@@ -1982,10 +1980,11 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM)
   /* Does original weight (wgt) conform to variable's dimensions? */ 
   if(wgt_out == NULL){
     if(var->nbr_dim > 0){
-      /* First make sure all dimensions in wgt appear in var */ 
+      /* Test that all dimensions in wgt appear in var */ 
       for(idx=0;idx<wgt->nbr_dim;idx++){
         for(idx_dim=0;idx_dim<var->nbr_dim;idx_dim++){
-          if(wgt->dim_id[idx] == var->dim_id[idx_dim]){
+	  if(strstr(wgt->dim[idx]->nm,var->dim[idx_dim]->nm)){
+	    /*          if(wgt->dim_id[idx] == var->dim_id[idx_dim]){*/
 	    wgt_var_dim_shr_nbr++; /* wgt and var share this dimension */ 
 	    break;
 	  } /* endif */ 
@@ -2012,9 +2011,11 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM)
       } /* end if */
       if(CONFORMABLE){
 	if(var->nbr_dim == wgt->nbr_dim){
-	  /* var and wgt conform and are same rank, but do all dim IDs match sequentially? */
+	  /* var and wgt conform and are same rank */
+	  /* Test whether all wgt and var dimensions match in sequence */ 
 	  for(idx=0;idx<var->nbr_dim;idx++){
-	    if(wgt->dim_id[idx] != var->dim_id[idx]) break;
+	    if(!strstr(wgt->dim[idx]->nm,var->dim[idx]->nm)) break;
+	       /*	    if(wgt->dim_id[idx] != var->dim_id[idx]) break;*/
 	  } /* end loop over dimensions */
 	  /* If so, take shortcut and copy wgt to wgt_out */ 
 	  if(idx == var->nbr_dim) CONFORMAL=True;
@@ -4331,7 +4332,7 @@ usg_prn(void)
   } /* end switch */
   
   /* Public service announcement */ 
-  (void)fprintf(stdout,"Visit NCO's homepage at http://www.cgd.ucar.edu/cms/nco for the complete online User's Guide\n");
+  (void)fprintf(stdout,"NCO homepage at http://www.cgd.ucar.edu/cms/nco has complete online User's Guide\n");
 
   /* We now have the command-specific command line option string */ 
   (void)fprintf(stdout,"%s %s\n",prg_nm_get(),opt_sng);
@@ -4356,10 +4357,10 @@ usg_prn(void)
     if(prg == ncatted) (void)fprintf(stdout,"-h\t\tDo not append to \"history\" global attribute\n");
   } /* end if */
   if(strstr(opt_sng,"-i")) (void)fprintf(stdout,"-i var,val\tInterpolant and value\n");
-  if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I \tWeight and mask coordinate variables\n");
+  if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I \t\tWeight and mask coordinate variables\n");
   if(strstr(opt_sng,"-l")) (void)fprintf(stdout,"-l path\t\tLocal storage path for remotely-retrieved files\n");
   if(strstr(opt_sng,"-M")){
-    if(prg == ncwa) (void)fprintf(stdout,"-M val\tMasking value (default is 1.)\n");
+    if(prg == ncwa) (void)fprintf(stdout,"-M val\t\tMasking value (default is 1.)\n");
     if(prg == ncks) (void)fprintf(stdout,"-M\t\tPrint global metadata\n");
   } /* end if */ 
   if(strstr(opt_sng,"-m")){
@@ -4384,7 +4385,7 @@ usg_prn(void)
   } /* end if */
   if(strstr(opt_sng,"-W")) (void)fprintf(stdout,"-W\t\tNormalize by weight but not tally\n");
   if(strstr(opt_sng,"-w")){
-    if(prg == ncwa) (void)fprintf(stdout,"-w wgt\tWeighting variable name\n");
+    if(prg == ncwa) (void)fprintf(stdout,"-w wgt\t\tWeighting variable name\n");
     if(prg == ncflint) (void)fprintf(stdout,"-w wgt_1[,wgt_2] Weight(s) of file(s)\n");
   } /* end if */
   if(strstr(opt_sng,"-x")) (void)fprintf(stdout,"-x\t\tExtract all variables EXCEPT those specified with -v\n");

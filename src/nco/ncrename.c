@@ -1,17 +1,14 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.2 1998-08-19 04:27:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.3 1998-11-26 04:51:39 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
-/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
-   National Center for Atmospheric Research/
-   Climate and Global Dynamics Division
-
-   The file LICENSE contains the full copyright notice, or 
-   you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
+/* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
+   The file LICENSE contains the full copyright notice 
+   Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
 
 /* Purpose: Rename dimensions, variables, and attributes from a netCDF file. */
 
-/* Example Usage (place mouse-able command lines here):
+/* Usage:
    ncrename -d old_dim1,new_dim1 -v old_var1,new_var1 -v old_var2,new_var2 -a old_att1,new_att1 in.nc foo.nc
    ncrename -d lon,new_lon -v scalar_var,new_scalar_var -a long_name,new_long_name in.nc foo.nc
    */ 
@@ -61,8 +58,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncrename.c,v 1.2 1998-08-19 04:27:27 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.2 $";
+  char rcs_Id[]="$Id: ncrename.c,v 1.3 1998-11-26 04:51:39 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.3 $";
   
   rnm_sct *var_rnm_lst;
   rnm_sct *dim_rnm_lst;

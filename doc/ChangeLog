@@ -1,3 +1,10 @@
+1998-11-25  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Allow hyperslab coordinate specification in exponential format
+	even when decimal point is missing, e.g., "-d lon,36e1" is valid
+
+	* var_conform_dim() now checks dimension names rather than IDs 
+
 Mon Nov 23 17:29:02 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
 	* Added -I switch to ncwa to enable weighting and masking of

@@ -1,11 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.3 1998-11-24 00:30:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.4 1998-11-26 04:51:39 zender Exp $ */
 
-/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
-   National Center for Atmospheric Research/
-   Climate and Global Dynamics Division
-
-   The file LICENSE contains the full copyright notice, or 
-   you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
+/* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
+   The file LICENSE contains the full copyright notice 
+   Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
 
 /* Purpose: Utilities for ncap operator */ 
 

@@ -1,18 +1,15 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.3 1998-10-30 07:16:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.4 1998-11-26 04:51:39 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
-/* (c) Copyright 1995--1998 University Corporation for Atmospheric Research/
-   National Center for Atmospheric Research/
-   Climate and Global Dynamics Division
-
-   The file LICENSE contains the full copyright notice, or 
-   you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
+/* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
+   The file LICENSE contains the full copyright notice 
+   Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
 
 /* Purpose: Compute averages of specified hyperslabs of specfied variables
    of multiple input netCDF files and output them to a single file. */
 
-/* Example Usage (place mouse-able command lines here):
+/* Usage:
    ncra -a 3,4,1 -p /data/zender/tmp h0001.nc foo.nc
    ncra -a 3,4,1 -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
    ncra -a 3,4,1 -p /ZENDER/tmp -l /data/zender/tmp h0001.nc foo.nc
@@ -69,8 +66,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncra.c,v 1.3 1998-10-30 07:16:39 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.3 $";
+  char rcs_Id[]="$Id: ncra.c,v 1.4 1998-11-26 04:51:39 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.4 $";
   
   dim_sct **dim;
   dim_sct **dim_out;

@@ -1,17 +1,14 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.2 1998-08-19 04:27:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.3 1998-11-26 04:51:39 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
-/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
-   National Center for Atmospheric Research/
-   Climate and Global Dynamics Division
-
-   The file LICENSE contains the full copyright notice, or 
-   you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
+/* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
+   The file LICENSE contains the full copyright notice 
+   Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
 
 /* Purpose: Compute user-defined derived fields using forward algebraic notation applied to netCDF files */
 
-/* Example usage:
+/* Usage:
    ncap -O -D 1 -S ncap.in in.nc foo.nc
    ncap -O -D 1 -s a=b+c -s "b=c-d/2." -S ncap.in in.nc foo.nc
    ncap -O -D 1 -S ncap.in in.nc foo.nc
@@ -82,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncap.c,v 1.2 1998-08-19 04:27:26 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.2 $";
+  char rcs_Id[]="$Id: ncap.c,v 1.3 1998-11-26 04:51:39 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.3 $";
   
   dim_sct **dim;
   dim_sct **dim_out;

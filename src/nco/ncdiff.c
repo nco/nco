@@ -1,18 +1,15 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.4 1998-11-24 00:30:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.5 1998-11-26 04:51:39 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
-/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
-   National Center for Atmospheric Research/
-   Climate and Global Dynamics Division
-
-   The file LICENSE contains the full copyright notice, or 
-   you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
+/* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
+   The file LICENSE contains the full copyright notice 
+   Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
 
 /* Purpose: Compute differences of specified hyperslabs of specfied variables
    from two input netCDF files and output them to a single file. */
 
-/* Example Usage (place mouse-able command lines here):
+/* Usage:
    ncdiff -O in.nc in.nc foo.nc
    ncdiff -O -v mss_val in.nc in.nc foo.nc
    ncdiff -p /data/zender/tmp h0001.nc foo.nc
@@ -20,14 +17,19 @@
    ncdiff -p /ZENDER/tmp -l /data/zender/tmp/rmt h0001.nc h0002.nc foo.nc
    ncdiff -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc h0002.nc foo.nc
 
-   Following commands test type conversion:
-   ncks -O -C -v float_rec_var in.nc foo1.nc
-   ncrename -v float_rec_var,double_rec_var foo1.nc
-   ncks -O -C -v double_rec_var in.nc foo2.nc
-   ncdiff -O -C -v double_rec_var foo1.nc foo2.nc foo3.nc
+   Test type conversion:
+   ncks -O -C -v float_var in.nc foo1.nc
+   ncrename -v float_var,double_var foo1.nc
+   ncks -O -C -v double_var in.nc foo2.nc
+   ncdiff -O -C -v double_var foo1.nc foo2.nc foo3.nc
+   ncdiff -O -C -v double_var foo2.nc foo1.nc foo4.nc
    ncks -H -m foo1.nc
    ncks -H -m foo2.nc
    ncks -H -m foo3.nc
+   ncks -H -m foo4.nc
+
+   Test var_conform_dim:
+   ncks -O -v scalar_var in.nc foo.nc ; ncrename -v scalar_var,four_dim_rec_var foo.nc ; ncdiff -O -v four_dim_rec_var in.nc foo.nc foo2.nc
  */ 
 
 /* Standard header files */
@@ -77,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncdiff.c,v 1.4 1998-11-24 00:30:54 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.4 $";
+  char rcs_Id[]="$Id: ncdiff.c,v 1.5 1998-11-26 04:51:39 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.5 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -334,14 +336,14 @@ main(int argc,char **argv)
     if(dbg_lvl > 0) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
     if(dbg_lvl > 0) (void)fflush(stderr);
 
-    /* Initialize the mss_val flag */ 
+    /* Initialize mss_val flag */ 
     has_mss_val=False;
 
     (void)var_refresh(in_id_1,var_prc[idx]);
     has_mss_val=has_mss_val || var_prc[idx]->has_mss_val; 
     (void)var_get(in_id_1,var_prc[idx]);
     
-    /* Save the output variable ID from being overwritten in the refresh call */ 
+    /* Save output variable ID from being overwritten in refresh call */ 
     var_prc[idx]->id=var_prc_out[idx]->id;
     (void)var_refresh(in_id_2,var_prc_out[idx]);
 
@@ -354,19 +356,22 @@ main(int argc,char **argv)
       rcd=nc_inq_vartype(in_id_2,ncvarid(in_id_2,var_prc_out[idx]->nm),&var_type);
       var_prc_out[idx]->type=var_type;
 
-      /* Assume dimensions are in same order, ensure sizes are equal */ 
+      /* Test whether all dimensions match in sequence */ 
       for(idx_dim=0;idx_dim<var_prc[idx]->nbr_dim;idx_dim++){
-	if(var_prc_out[idx]->dim[idx_dim]->cnt != var_prc[idx]->dim[idx_dim]->cnt){
-	  (void)fprintf(stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s dimension %s has size %li and count %li\nFile %s variable %s dimension %s has size %li and count %li\n",prg_nm,fl_in_1,var_prc[idx]->nm,var_prc[idx]->dim[idx_dim]->nm,var_prc[idx]->dim[idx_dim]->sz,var_prc[idx]->dim[idx_dim]->cnt,fl_in_2,var_prc_out[idx]->nm,var_prc_out[idx]->dim[idx_dim]->nm,var_prc_out[idx]->dim[idx_dim]->sz,var_prc_out[idx]->dim[idx_dim]->cnt);
+	if(
+	   !strstr(var_prc_out[idx]->dim[idx_dim]->nm,var_prc[idx]->dim[idx_dim]->nm) || /* Dimension names do not match */
+	   (var_prc_out[idx]->dim[idx_dim]->cnt != var_prc[idx]->dim[idx_dim]->cnt) || /* Dimension sizes do not match */ 
+	   False){
+	  (void)fprintf(stdout,"%s: ERROR Variables do not conform:\nFile %s variable %s dimension %d is %s with size %li and count %li\nFile %s variable %s dimension %d is %s with size %li and count %li\n",prg_nm,fl_in_1,var_prc[idx]->nm,idx_dim,var_prc[idx]->dim[idx_dim]->nm,var_prc[idx]->dim[idx_dim]->sz,var_prc[idx]->dim[idx_dim]->cnt,fl_in_2,var_prc_out[idx]->nm,idx_dim,var_prc_out[idx]->dim[idx_dim]->nm,var_prc_out[idx]->dim[idx_dim]->sz,var_prc_out[idx]->dim[idx_dim]->cnt);
 	  exit(EXIT_FAILURE);
-	} /* endif error */ 
+	} /* endif */ 
       } /* end loop over idx_dim */ 
-      
-      /* Temporarily set the srt vector to account for hyperslabs while reading */ 
+
+      /* Temporarily set srt vector to account for hyperslabs while reading */ 
       lp=var_prc_out[idx]->srt;
       var_prc_out[idx]->srt=var_prc[idx]->srt;
       (void)var_get(in_id_2,var_prc_out[idx]);
-      /* Reset the srt vector to zeros for eventual output */ 
+      /* Reset srt vector to zeros for eventual output */ 
       var_prc_out[idx]->srt=lp;
     }else{
       int idx_var_dim;
@@ -378,20 +383,23 @@ main(int argc,char **argv)
       var_prc_out[idx]=var_fll(in_id_2,ncvarid(in_id_2,var_prc[idx]->nm),var_prc[idx]->nm,dim,nbr_dim_xtr);
       (void)var_get(in_id_2,var_prc_out[idx]);
       
-      /* Now that we have the second variable, reset the dimension ID's to match those of the 
+      /* Now that we have the second variable, reset its dimension IDs to match those of the 
 	 corresponding dimensions in the first variable, because the var_conform_dim() routine
 	 makes the (usually true) assumption that if the dimension IDs are equal, then the
-	 dimensions conform, i.e., var_conform_dim() is assuming that both the "conformee" and the
+	 dimensions conform, i.e., var_conform_dim() assumes that both the "conformee" and the
 	 "conformand" are from the same file. */ 
       
-      for(idx_var_dim=0;idx_var_dim<var_prc_out[idx]->nbr_dim;idx_var_dim++){
-	for(idx_dim=0;idx_dim<var_prc[idx]->nbr_dim;idx_dim++){
-	  if(var_prc_out[idx]->dim[idx_var_dim]->id == var_prc[idx]->dim[idx_dim]->id) break;
-	} /* end loop over idx_var_dim */ 
-        var_prc_out[idx]->dim_id[idx_var_dim]=var_prc[idx]->dim[idx_dim]->id;
-      } /* end loop over idx_dim */ 
+      /* This 8 line block should not be necessary when dimension names are used rather than dim IDs */
+      if(False){
+	for(idx_var_dim=0;idx_var_dim<var_prc_out[idx]->nbr_dim;idx_var_dim++){
+	  for(idx_dim=0;idx_dim<var_prc[idx]->nbr_dim;idx_dim++){
+	    if(var_prc_out[idx]->dim[idx_var_dim]->id == var_prc[idx]->dim[idx_dim]->id) break;
+	  } /* end loop over idx_var_dim */ 
+	  var_prc_out[idx]->dim_id[idx_var_dim]=var_prc[idx]->dim[idx_dim]->id;
+	} /* end loop over idx_dim */ 
+      } /* endif False */ 
       
-      /* Pass in a dummy pointer so we do not lose track of the original */ 
+      /* Pass a dummy pointer so we do not lose track of original */ 
       var_tmp=var_conform_dim(var_prc[idx],var_prc_out[idx],var_tmp,MUST_CONFORM);
       var_prc_out[idx]=var_free(var_prc_out[idx]);
       var_prc_out[idx]=var_tmp;

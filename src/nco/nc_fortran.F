@@ -1,13 +1,10 @@
-c     $Header: /data/zender/nco_20150216/nco/src/nco/nc_fortran.F,v 1.3 1998-10-30 03:39:51 zender Exp $
+c     $Header: /data/zender/nco_20150216/nco/src/nco/nc_fortran.F,v 1.4 1998-11-26 04:51:38 zender Exp $
 
 c     Fortran arithmetic utilities for netCDF operators
 
-c     (c) Copyright 1995--1998University Corporation for Atmospheric Research/
-c     National Center for Atmospheric Research/
-c     Climate and Global Dynamics Division
-c
-c     The file LICENSE contains the full copyright notice, or 
-c     you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance.
+c     (c) Copyright 1995--1999 University Corporation for Atmospheric Research
+c     The file LICENSE contains the full copyright notice 
+c     Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance
 
 c     Define the Fortran specification required to obtain the same type of 
 c     integer as a C "long int" on this platform.

@@ -1,13 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.2 1998-08-19 04:27:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.3 1998-11-26 04:51:39 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */ 
 
-/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
-   National Center for Atmospheric Research/
-   Climate and Global Dynamics Division
-
-   The file LICENSE contains the full copyright notice, or 
-   you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
+/* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
+   The file LICENSE contains the full copyright notice 
+   Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
 
 #ifndef NCAP_H /* This include file has not yet been defined in the current source file */ 
 

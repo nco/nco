@@ -1,23 +1,19 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.6 1998-11-24 00:30:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.7 1998-11-26 04:51:39 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
-/* (c) Copyright 1995--1998 University Corporation for Atmospheric Research/
-   National Center for Atmospheric Research/
-   Climate and Global Dynamics Division
-
-   The file LICENSE contains the full copyright notice, or 
-   you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
+/* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
+   The file LICENSE contains the full copyright notice 
+   Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
 
 /* Purpose: Compute averages of specified hyperslabs of specfied variables
-   of multiple input netCDF files and output them to a single file. */
+   in a single input netCDF file and output them to a single file. */
 
-/* Example Usage (place mouse-able command lines here):
-   ncwa -a 3,4,1 -p /data/zender/tmp h0001.nc foo.nc
-   ncwa -a 3,4,1 -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
-   ncwa -a 3,4,1 -p /ZENDER/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
-   ncwa -a 3,4,1 -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc foo.nc
-   ncwa -D 1 -w gw -d lev,17 -v T -p /data2/zender/ccm SEP1.nc foo.nc
+/* Usage:
+   ncwa -O -a lon /home/zender/nc/nco/data/in.nc foo.nc
+   ncwa -O -R -p /ZENDER/tmp -l /home/zender/nc/nco/data in.nc foo.nc
+   ncwa -O -a lat -w gw -d lev,17 -v T -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc
+   ncwa -O -C -a lat,lon,time -w gw -v PS -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc;ncks -H foo.nc
  */ 
 
 /* Standard header files */
@@ -72,8 +68,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncwa.c,v 1.6 1998-11-24 00:30:55 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.6 $";
+  char rcs_Id[]="$Id: ncwa.c,v 1.7 1998-11-26 04:51:39 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.7 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -438,11 +434,6 @@ main(int argc,char **argv)
   /* Close the first input netCDF file */ 
   ncclose(in_id);
   
-  /* Allocate and, if necesssary, initialize the accumulation space for all processed variables */ 
-  /*  for(idx=0;idx<nbr_var_prc;idx++){*/
-  /* allocation section that is now inside file loop was here */ 
-  /*  } *//* end loop over idx */
-  
   /* Loop over the input files */ 
   for(idx_fl=0;idx_fl<nbr_fl;idx_fl++){
     /* Parse the filename */ 
@@ -561,11 +552,6 @@ main(int argc,char **argv)
     if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
 
   } /* end loop over idx_fl */
-  
-  /* Copy the averages to the output file and free the averaging buffers */ 
-  /*  for(idx=0;idx<nbr_var_prc;idx++){*/
-    /* output block that is now inside file loop was here */ 
-    /*  } */ /* end loop over idx */
   
   /* Close the output file and move it from the temporary to the permanent location */ 
   (void)fl_out_close(fl_out,fl_out_tmp,out_id);

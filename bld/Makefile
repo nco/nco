@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.12 1998-08-26 22:33:12 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.13 1998-11-26 04:51:38 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -453,13 +453,10 @@ docclean:
 	cd $(MY_DOC_DIR); rm -f nco.info* nco.dvi nco.html* nco.ps *~
 
 # Targets in bld
-Srcfiles: 
-	rm -f $(MY_BLD_DIR)/Srcfiles
-	printf "$(SRC_STB_FL)" > $(MY_BLD_DIR)/Srcfiles
-Depends: Filepath Srcfiles 
-	rm -f $(MY_BLD_DIR)/Depends
-	cd $(MY_BLD_DIR); makdep -t $(MY_OBJ_DIR) Filepath Srcfiles > Depends
-debug:
+bld_cln :
+	cd $(MY_BLD_DIR); rm -f TAGS
+debug: dbg
+dbg:
 	printf "VPATH = $(VPATH)\n"
 	printf "SRC_LST = $(SRC_LST)\n"
 	printf "SRC_STB_LST = $(SRC_STB_LST)\n"
@@ -470,7 +467,14 @@ distclean: clean docclean dataclean binclean libclean
 	cd $(MY_DAT_DIR); rm -f in.nc *~
 clean: objclean testclean
 	cd $(MY_DOC_DIR); rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
-
+tags : 
+	cd ../src/nco; etags *.cc *.c *.com *.F *.hh *.h Makefile
+Srcfiles: 
+	rm -f $(MY_BLD_DIR)/Srcfiles
+	printf "$(SRC_STB_FL)" > $(MY_BLD_DIR)/Srcfiles
+Depends: Filepath Srcfiles 
+	rm -f $(MY_BLD_DIR)/Depends
+	cd $(MY_BLD_DIR); makdep -t $(MY_OBJ_DIR) Filepath Srcfiles > Depends
 # Reset internal YACC and LEX patterns
 %.c : %.y
 %.c : %.l

@@ -1,23 +1,20 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.3 1998-11-24 00:30:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.4 1998-11-26 04:51:39 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
-/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
-   National Center for Atmospheric Research/
-   Climate and Global Dynamics Division
-
-   The file LICENSE contains the full copyright notice, or 
-   you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
+/* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
+   The file LICENSE contains the full copyright notice 
+   Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
 
 /* Purpose: Linearly interpolate a third netCDF file from two input files */
 
-/* Example Usage (place mouse-able command lines here):
+/* Usage:
    ncflint -O -D 2 in.nc in.nc foo.nc
-   ncflint -O -i lcl_time_hr,9. -v lcl_time_hr /data2/zender/arese/crm/951030_0800_arese_crm.nc /data2/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
-   ncflint -O -w .66666,.33333 -v lcl_time_hr /data2/zender/arese/crm/951030_0800_arese_crm.nc /data2/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
-   ncflint -O -w .66666 -v lcl_time_hr /data2/zender/arese/crm/951030_0800_arese_crm.nc /data2/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
+   ncflint -O -i lcl_time_hr,9. -v lcl_time_hr /data/zender/arese/crm/951030_0800_arese_crm.nc /data/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
+   ncflint -O -w .66666,.33333 -v lcl_time_hr /data/zender/arese/crm/951030_0800_arese_crm.nc /data/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
+   ncflint -O -w .66666 -v lcl_time_hr /data/zender/arese/crm/951030_0800_arese_crm.nc /data/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
 
-   ncdiff -O foo.nc /data2/zender/arese/crm/951030_0900_arese_crm.nc foo2.nc;ncks -H foo2.nc | m
+   ncdiff -O foo.nc /data/zender/arese/crm/951030_0900_arese_crm.nc foo2.nc;ncks -H foo2.nc | m
  */ 
 
 /* Standard header files */
@@ -73,8 +70,8 @@ main(int argc,char **argv)
   char *time_buf_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */ 
-  char rcs_Id[]="$Id: ncflint.c,v 1.3 1998-11-24 00:30:55 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.3 $";
+  char rcs_Id[]="$Id: ncflint.c,v 1.4 1998-11-26 04:51:39 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.4 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
