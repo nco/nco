@@ -1,3 +1,11 @@
+1998-08-18  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Added nco_vrs_prs() to parse NCO versions. NCO version is now
+	always printed with -r option.
+
+	* Fixed bug where -n NINTAP list did not recognize `.cdf'
+	suffixes. 
+
 Mon Aug 10 21:53:34 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
 	* Split ncks -m option into -m and -M so now global metadata can
