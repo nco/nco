@@ -1,6 +1,6 @@
 #!/contrib/bin/perl
 				
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.26 1999-08-30 07:07:20 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.27 1999-08-31 22:25:55 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
@@ -53,9 +53,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $CVS_Date='$Date: 1999-08-30 07:07:20 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.26 1999-08-30 07:07:20 zender Exp $';
-my $CVS_Revision='$Revision: 1.26 $';
+my $CVS_Date='$Date: 1999-08-31 22:25:55 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.27 1999-08-31 22:25:55 zender Exp $';
+my $CVS_Revision='$Revision: 1.27 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -206,6 +206,7 @@ if($bld){
 	&cmd_prc("rsh ftp.cgd.ucar.edu /bin/rm -f /ftp/pub/zender/nco/nco.tar.gz");
 	&cmd_prc("rsh ftp.cgd.ucar.edu \"cd /ftp/pub/zender/nco; ln -s $dst_fl nco.tar.gz\"");
 	&cmd_prc("/bin/cp -f $dst_pth/$dst_vrs/doc/index.shtml $www_drc/index.shtml");
+	&cmd_prc("/bin/cp -f $dst_pth/$dst_vrs/doc/nco_news.shtml $www_drc/nco_news.shtml");
 	&cmd_prc("/bin/cp -f $dst_pth/$dst_vrs/doc/nco.ps $www_drc/nco.ps");
 	&cmd_prc("gzip --force $www_drc/nco.ps");
 	&cmd_prc("/bin/cp -f $dst_pth/$dst_vrs/doc/README $www_drc/README");

@@ -2,12 +2,17 @@
 
 // Usage:
 // ncgen -b -o in.nc in.cdl
-// ncgen -b -o /home/zender/nc/nco/data/in.nc /home/zender/nc/nco/data/in.cdl
+// ncgen -b -o $HOME/nc/nco/data/in.nc $HOME/nc/nco/data/in.cdl
 // mswrite -t 365 in.nc /ZENDER/tmp/in.nc
 // mswrite -t 365 in.nc /ZENDER/tmp/h0001.nc
 // mswrite -t 365 in.nc /ZENDER/tmp/h0002.nc
 // mswrite -t 365 in.nc /ZENDER/tmp/h0003.nc
 // mswrite -t 365 in.nc /ZENDER/tmp/h0004.nc
+// msrcp -period 365 in.nc mss:/ZENDER/tmp/in.nc
+// msrcp -period 365 in.nc mss:/ZENDER/tmp/h0001.nc
+// msrcp -period 365 in.nc mss:/ZENDER/tmp/h0002.nc
+// msrcp -period 365 in.nc mss:/ZENDER/tmp/h0003.nc
+// msrcp -period 365 in.nc mss:/ZENDER/tmp/h0004.nc
 
 // NB: Changing the values of the variables below, especially the coordinate 
 // variables, may affect the outcome of the test script nco_tst.sh.
@@ -24,7 +29,7 @@ variables:
 	:convention = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.7 1999-05-11 08:01:06 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.8 1999-08-31 22:25:55 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -42,11 +47,15 @@ variables:
 	date:long_name = "current date as 6 or 8 digit integer (YYMMDD or YYYYMMDD)";
 
 	float mss_val(lon);
-	mss_val:long_name = "missing value example";
+	mss_val:long_name = "partial missing value example";
 	mss_val:missing_value = 1.0e36f;
 
 	float no_mss_val(lon);
 	no_mss_val:long_name = "no missing value";
+
+	float mss_val_all(lon);
+	mss_val_all:long_name = "all missing values example";
+	mss_val_all:missing_value = 1.0e36f;
 
 	float scalar_var;
 	scalar_var:long_name = "scalar variable";
@@ -181,6 +190,7 @@ data:
 	lon=0,90,180,270;
 	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 	mss_val=73,1.0e36,73,1.0e36;
+	mss_val_all=1.0e36,1.0e36,1.0e36,1.0e36;
 	no_mss_val=73,1.0e36,73,1.0e36;
 	scalar_var=10.;
 	att_var=10.;

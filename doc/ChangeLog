@@ -1,3 +1,21 @@
+1999-08-31  Charlie Zender  <zender@dust.acd.ucar.edu>
+
+	* ncwa now averages over all dimensions when none are specified
+	with -a
+
+	* Patched avg_reduce...() to fix set averages equal to zero when
+	tally is zero. This fixes Keith's problem.
+
+	* Added ncwa test #12 to nco_tst.sh. This tests for a bug
+	reported by Keith Lindsay where ncwa averaged a variable which is
+	completely missing_value to a value of 0.0 rather than
+	missing_value. 
+
+	* Removed C_ONLY token and made builds completely C-based by
+	default. Introduced new token USE_FORTRAN_ARITHMETIC to build
+	old style NCO with fortran arithmetic routines. Seems to work
+	fine. 
+
 1999-08-04  Charlie Zender  <zender@dust.acd.ucar.edu>
 
 	* Tagged this as nco1_1_37
