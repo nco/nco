@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.214 2004-03-05 00:58:32 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.215 2004-03-05 20:38:54 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6846,13 +6846,43 @@ Excellent bug reports.
 @cindex proposals
 @cindex @acronym{NSF}
 @cindex server-side processing
-We are writing an @acronym{NSF}
-@uref{http://dust.ess.uci.edu/prp, proposal} for funding to help
-implement more server-side processing of data on @acronym{DODS}
-servers, as this would dramatically reduce bandwidth usage for
-distributed data analysis.  
-Please contact us if you are interested in helping on this proposal. 
-Comments on the proposal and letters of support are very welcome.
+We have written an @acronym{NSF}
+@uref{http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf, proposal} to 
+improve Distributed Data Reduction & Analysis (DDRA) with NCO.
+The two main components of this proposal are NCO parallelism (OpenMP,
+MPI) and Server-Side DDRA (SSDDRA) implemented through extensions
+to DODS/OPeNDAP and netCDF4.
+This would dramatically reduce bandwidth usage for DDRA.
+With the first NCO proposal out the door, the content of the next two
+NCO proposals is clear.
+
+The second NCO proposal will be re-written and improved from the first.
+The certain changes amount to a
+more comvinincing description of why CCSM IPCC data reduction
+exemplifies a computational, storage, and network-constrained problem
+common to many domains besides geophysics,   
+articulating the plausible SSDRA extensions to OPeNDAP and netCDF4, 
+and deeper involvement (and funding) for distributed computing experts
+(e.g., UCSD/OptIPuter) on the parallelization and SSDRA issues.
+These and other, less certain changes are outlined on the second page of
+the @uref{http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf, proposal}.
+Unfortunately, the NSF SEIII program has relatively limited funding.
+The average three-year award size is $500,000.
+Our budget is already $600,000 and I want to grow the UCSD component.
+Unfortunately, the NSF SEIII program has relatively limited funding.
+There most ideas for significant expansion of the proposal should be
+sent to a different government program (e.g., NASA).
+
+Extensions under consideration include a bioinformatics component 
+(led by Harry Mangalam, TACGI), and arithmetic speed-ups on
+multi-processor single-core nodes, led by Steve Jenks, UCI.
+We will re-submit this re-write to the next NSF SEIII round, due
+20041215, if we are not funded this round.
+
+The third NCO proposal will be 
+
+Please contact us if you wish to be involved with any future proposals.  
+Comments on the proposals and letters of support are very welcome.
 
 @cindex @acronym{NASA}
 @cindex @acronym{NRA}
