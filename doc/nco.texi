@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.130 2002-10-28 07:08:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.131 2002-10-28 07:49:16 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -80,12 +80,12 @@ http://www.gnu.ai.mit.edu/copyleft/fdl.html
 @clear smallbook
 
 @c Define edition, date, ...
-@set nco-edition 2.6.4
-@set doc-edition 2.6.4
+@set nco-edition 2.6.6
+@set doc-edition 2.6.6
 @set copyright-years 1995--2002
 @set update-year 2002
-@set update-date 14 September 2002
-@set update-month September 2002
+@set update-date 27 October 2002
+@set update-month October 2002
 
 @c Experiment with smaller amounts of whitespace between chapters and sections
 @tex
@@ -2875,6 +2875,35 @@ be of type @code{float} or @code{double}.
 An attribute's @code{scale_factor} and @code{add_offset} should both be
 of the type intended for the unpacked data, e.g., @code{float} or
 @code{double}. 
+@end table
+@unnumberedsubsec Type Conversion Functions
+@cindex type conversion
+@cindex promotion
+@cindex @code{byte(x)}
+@cindex @code{char(x)}
+@cindex @code{double(x)}
+@cindex @code{float(x)}
+@cindex @code{int(x)}
+@cindex @code{short(x)}
+@table @code
+@item byte(x)
+@dfn{Convert to @code{NC_BYTE}}
+Converts @var{x} to external type @code{NC_BYTE}, a C-type @code{signed char}.
+@item char(x)
+@dfn{Convert to @code{NC_CHAR}}
+Converts @var{x} to external type @code{NC_CHAR}, a C-type @code{unsigned char}.
+@item double(x)
+@dfn{Convert to @code{NC_DOUBLE}}
+Converts @var{x} to external type @code{NC_DOUBLE}, a C-type @code{double}.
+@item float(x)
+@dfn{Convert to @code{NC_FLOAT}}
+Converts @var{x} to external type @code{NC_FLOAT}, a C-type @code{float}.
+@item int(x)
+@dfn{Convert to @code{NC_INT}}
+Converts @var{x} to external type @code{NC_INT}, a C-type @code{int}.
+@item short(x)
+@dfn{Convert to @code{NC_SHORT}}
+Converts @var{x} to external type @code{NC_SHORT}, a C-type @code{short}.
 @end table
 
 @node Intrinsic mathematical functions,  , Intrinsic functions, ncap netCDF Arithmetic Processor
