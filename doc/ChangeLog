@@ -1,5 +1,8 @@
 1999-04-20  Charlie Zender  <zender@flagstaff.cgd.ucar.edu>
 
+	* New version requires -lm for log() and ceil() functions
+	Added -lm to Makefile for some architecture which were missing it
+	
 	* Tagged and released this as nco1_1_24
 
 	* Fixed bug where ncrcat and ncra omitted the last slice of the
@@ -13,7 +16,7 @@
 
 	* Tagged and released this as nco1_1_22
 
-	* Added -a swicht to ncks for alphabetizing the output list.
+	* Added -a switch to ncks for alphabetizing the output list.
 	Added index_alpha() and changed lst_heapsort() to accept an
 	boolean switch argument to accomplish this.
 

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.20 1999-04-05 00:32:12 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.21 1999-04-20 19:37:49 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -215,7 +215,7 @@ FC := g77
 FFLAGS := -ffixed-line-length-132
 #FFLAGS := -qfixed=132
 LD := ld
-LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf
+LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 #LDFLAGS += -lxlf90 -lxlf
 LEX := lex
 LINT := lint
@@ -276,7 +276,7 @@ CC := cc
 CPPFLAGS := -D$(PVM_ARCH) $(MY_INC_DIR) -I$(NETCDF_INC)
 FC := f77
 LD := ld
-LDFLAGS := -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf
+LDFLAGS := -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 LEX := flex
 LINT := lint
 YACC := bison
