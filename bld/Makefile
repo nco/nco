@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.55 2000-03-06 08:04:45 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.56 2000-03-06 08:13:49 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -590,6 +590,16 @@ rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges
 	ln -s $(HOME)/nc/nco/bld/nco.spec /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SPECS; \
 	rpm -ba nco-$(NCO_VRS).spec;
+
+rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges
+	- if test -f /usr/src/redhat/SOURCES/nco-$(NCO_VRS).tar.gz; then printf "" ; else $(MY_BIN_DIR)/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-$(NCO_VRS).tar.gz; fi
+	/bin/rm -f /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
+	cd /usr/src/redhat/SOURCES; \
+	tar xvzf nco-$(NCO_VRS).tar.gz ./nco-$(NCO_VRS)/bld/nco-$(NCO_VRS).spec; \
+	mv ./nco-$(NCO_VRS)/bld/nco-$(NCO_VRS).spec /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
+	cd /usr/src/redhat/SPECS; \
+	rpm -ba nco-$(NCO_VRS).spec;
+
 # Targets in dat
 data:	dat
 dat:	$(MY_DAT_DIR)/in.nc 
