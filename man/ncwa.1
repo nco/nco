@@ -1,8 +1,8 @@
-.TH NCPDQ 1
+.TH NCWA 1
 .SH NAME
-ncpdq \- netCDF Permute Dimensions Quickly
+ncwa \- netCDF Weighted Averager
 .SH SYNTAX
-ncpdq [-A] [-a 
+ncwa [-A] [-a 
 .IR dim [,...]]
 [-C] [-c] [-D 
 .IR dbg ]
@@ -11,38 +11,167 @@ ncpdq [-A] [-a
 .IR "min" ][,[
 .IR max ]]]
 [-F]
-[-h] [-l 
+[-h] [-I] [-l 
 .IR path ]
-[-O] [-o 
-.IR output-file ]
+[-M 
+.IR val ]
+[-m 
+.IR mask ]
+[-N] [-n] [-O] [-o 
+.IR condition ]
 [-p 
 .IR path ]
-[-R] [-r] 
-[-t 
-.IR thr_nbr ] [-v 
+[-R] [-r] [-v 
 .IR var [,...]]
-[-x] 
-.I input-file [
-.I output-file ]
+[-W] [-w 
+.IR weight ]
+[-x] [-y 
+.IR op_typ ]
+.I input-file
+.I output-file
 .SH DESCRIPTION
 .PP
-.B ncpdq
-
-.B ncpdq
-re-shapes variables in 
-.I input-file
-by re-ordering
-their dimensions as specified in the dimension re-order list.
-The record dimension is re-ordered like any other dimension.
-To re-order variable by a subset of their dimensions, specify
-these dimensions in a comma-separated list following
+.B ncwa
+averages variables in a single file over arbitrary
+dimensions, with options to specify weights, masks, and normalization.   
+The default behavior of 
+.B ncwa
+is to arithmetically average every
+numerical variable over all dimensions and produce a scalar result.
+To average variables over only a subset of their dimensions, specify
+these dimensions in a comma-separated list following 
 .BR -a ,
 e.g.,
-.BR "-a lon,lat".
-
-Users may specify any permutation of dimensions, including
-permutations which change the record dimension identity.
-The record dimension is always the most slowly varying dimension in a
-record variable.
-The specified re-ordering will fail if it requires creating more than
-one record dimension amongst all the output variables.
+.BR "-a time,lat,lon" .
+As with all arithmetic operators, the operation may be restricted to
+an arbitrary hypserslab by employing the 
+.B -d
+option
+.B ncwa
+also handles values matching the variable's
+.B missing_value
+attribute correctly. 
+Moreover, 
+.B ncwa
+understands how to manipulate user-specified
+weights, masks, and normalization options.
+With these options, 
+.B ncwa
+can compute sophisticated averages (and
+integrals) from the command line. 
+.PP
+.I mask
+and 
+.IR weight ,
+if specified, are broadcast to conform to
+the variables being averaged. 
+The rank of variables is reduced by the number of dimensions which they
+are averaged over.  
+Thus arrays which are one dimensional in the 
+.I input-file
+and are
+averaged by 
+.B ncwa
+appear in the 
+.I output-file
+as scalars.
+This allows the user to infer which dimensions may have been averaged.
+Note that that it is impossible for 
+.B ncwa
+to make make a
+.I weight
+or 
+.I mask
+of rank 
+.I W
+conform to a 
+.I var
+of
+rank 
+.I V
+if 
+.IR "W > V" .
+This situation often arises when coordinate variables (which, by
+definition, are one dimensional) are weighted and averaged.
+.B ncwa
+assumes you know this is impossible and so 
+.B ncwa
+does
+not attempt to broadcast 
+.I weight
+or 
+.I mask
+to conform to
+.I var
+in this case, nor does 
+.B ncwa
+print a warning message
+telling you this, because it is so common.  
+Specifying 
+.I "dbg > 2"
+does cause 
+.B ncwa
+to emit warnings in
+these situations, however.
+.PP
+Non-coordinate variables are always masked and weighted if specified.
+Coordinate variables, however, may be treated specially.
+By default, an averaged coordinate variable, e.g., 
+.BR latitude ,
+appears in 
+.I output-file
+averaged the same way as any other variable
+containing an averaged dimension.
+In other words, by default 
+.B ncwa
+weights and masks
+coordinate variables like all other variables.  
+This design decision was intended to be helpful but for some
+applications it may be preferable not to weight or mask coordinate
+variables just like all other variables.   
+Consider the following arguments to 
+.BR ncwa :
+\(lq-a latitude -w
+lat_wgt -d latitude,0.,90.\(rq where 
+.B lat_wgt
+is a weight in the
+.B latitude
+dimension.
+Since, by default 
+.B ncwa
+weights coordinate variables, the
+value of 
+.B latitude
+in the 
+.I output-file
+depends on the weights 
+in 
+.I lat_wgt
+and is not likely to be 45.---the midpoint latitude of
+the hyperslab.
+Option 
+.B -I
+overrides this default behavior and causes 
+.B ncwa
+not to weight or mask coordinate variables.
+In the above case, this causes the value of 
+.B latitude
+in the
+.I output-file
+to be 45.---which is a somewhat appealing result.
+Thus, 
+.B -I
+specifies simple arithmetic averages for the coordinate
+variables. 
+In the case of latitude, 
+.B -I
+specifies that you prefer to archive
+the central latitude of the hyperslab over which variables were averaged 
+rather than the area weighted centroid of the hyperslab.
+Note that the default behavior of (
+.BR -I )
+changed on
+1998/12/01---before this date the default was not to weight or mask
+coordinate variables.
+The mathematical definition of operations involving rank reduction 
+is given above.
