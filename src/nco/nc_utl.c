@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.66 2000-06-03 01:07:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.67 2000-06-21 00:42:41 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -1228,13 +1228,12 @@ var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,
   nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
 
   if(*nbr_xtr > 0){
-    /* If the user named variables with the -v option then we
-       need to check the validity of the user's list and find the IDs */ 
+    /* If user named variables with -v option then check validity of user's list and find IDs */ 
     xtr_lst=(nm_id_sct *)malloc(*nbr_xtr*sizeof(nm_id_sct));
     ncopts=0; 
     for(idx=0;idx<*nbr_xtr;idx++){
       xtr_lst[idx].nm=var_lst_in[idx];
-      xtr_lst[idx].id=ncvarid(nc_id,xtr_lst[idx].nm);
+      xtr_lst[idx].id=ncvarid_or_die(nc_id,xtr_lst[idx].nm);
       if(xtr_lst[idx].id == -1){
 	(void)fprintf(stdout,"%s: ERROR var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),xtr_lst[idx].nm);
 	err_flg=True;
@@ -1635,11 +1634,11 @@ lst_heapsort(nm_id_sct *lst,int nbr_lst,bool ALPHABETIZE_OUTPUT)
 char *
 fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
 /* 
-   char *fl_out: I name of the file to open
-   bool FORCE_APPEND: I flag for appending to existing file, if any
-   bool FORCE_OVERWRITE: I flag for overwriting existing file, if any
-   int *nc_id: O file ID
-   char *fl_out_open(): O name of the temporary file actually opened
+   char *fl_out: I Name of file to open
+   bool FORCE_APPEND: I Flag for appending to existing file, if any
+   bool FORCE_OVERWRITE: I Flag for overwriting existing file, if any
+   int *nc_id: O File ID
+   char *fl_out_open(): O Name of temporary file actually opened
  */ 
 {
   /* Open output file subject to availability and user input 
@@ -4961,4 +4960,26 @@ nclong newdate(nclong date,int day_srt)
 
   return newdate_YYMMDD;
 } /* end newdate() */
+
+int ncvarid_or_die /* O [enm] Variable ID */
+(int nc_id, /* I [enm] File ID */ 
+ char *var_nm) /* I [sng] Variable name */ 
+{
+  /* Purpose: Return variable ID of specified variable 
+     Be quiety on success but return meaningful diagnostics on failure */
+  
+  int var_id; /* O variable ID */
+
+  /* See if requested variable is in file */
+  ncopts=0; 
+  var_id=ncvarid(nc_id,var_nm);
+  ncopts=NC_VERBOSE | NC_FATAL; 
+  
+  if(var_id == -1){
+    (void)fprintf(stdout,"%s: ERROR ncvarid_or_die() reports requested variable \"%s\" is not in input file\n",prg_nm_get(),var_nm);
+    exit(EXIT_FAILURE);
+  } /* endif */
+
+  return var_id;
+} /* ncvarid_or_die */
 

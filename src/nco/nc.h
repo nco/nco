@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.28 2000-05-12 07:03:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.29 2000-06-21 00:42:41 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -442,6 +442,10 @@ extern void var_xrf(var_sct *,var_sct *);
 extern void var_zero(nc_type,long,ptr_unn);
 extern void vec_set(nc_type,long,ptr_unn,double);
 extern void zero_long(long,long *op1);
+
+extern int ncvarid_or_die /* O [enm] Variable ID */
+(int nc_id, /* I [enm] File ID */ 
+ char *var_nm); /* I [sng] Variable name */ 
 
 #endif /* NC_H */ 
 

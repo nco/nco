@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.34 2000-06-06 05:49:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.35 2000-06-21 00:42:41 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.34 2000-06-06 05:49:22 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.34 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.35 2000-06-21 00:42:41 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.35 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -504,7 +504,7 @@ main(int argc,char **argv)
     if(wgt_nm != NULL){
       int wgt_id;
       
-      wgt_id=ncvarid(in_id,wgt_nm);
+      wgt_id=ncvarid_or_die(in_id,wgt_nm);
       wgt=var_fll(in_id,wgt_id,wgt_nm,dim,nbr_dmn_fl);
       
       /* Retrieve weighting variable */ 
@@ -520,7 +520,7 @@ main(int argc,char **argv)
     if(msk_nm != NULL){
       int msk_id;
       
-      msk_id=ncvarid(in_id,msk_nm);
+      msk_id=ncvarid_or_die(in_id,msk_nm);
       msk=var_fll(in_id,msk_id,msk_nm,dim,nbr_dmn_fl);
       
       /* Retrieve mask variable */ 

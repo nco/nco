@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.25 2000-06-06 05:49:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.26 2000-06-21 00:42:41 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.25 2000-06-06 05:49:22 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.25 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.26 2000-06-21 00:42:41 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.26 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -678,7 +678,7 @@ cpy_var_val(int in_id,int out_id,char *var_nm)
 
   void *void_ptr;
 
-  /* Get the var_id for the requested variable from both files. */
+  /* Get var_id for requested variable from both files */
   var_in_id=ncvarid(in_id,var_nm);
   var_out_id=ncvarid(out_id,var_nm);
   

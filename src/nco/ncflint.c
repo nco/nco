@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.19 2000-04-05 21:41:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.20 2000-06-21 00:42:41 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -96,8 +96,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */ 
-  char CVS_Id[]="$Id: ncflint.c,v 1.19 2000-04-05 21:41:57 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.19 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.20 2000-06-21 00:42:41 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.20 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -384,8 +384,8 @@ main(int argc,char **argv)
     /* Turn arrival point into pseudo-variable */
     ntp_var_out=scl_dbl_mk_var(ntp_val_out);
 
-    ntp_id_1=ncvarid(in_id_1,ntp_nm);
-    ntp_id_2=ncvarid(in_id_2,ntp_nm);
+    ntp_id_1=ncvarid_or_die(in_id_1,ntp_nm);
+    ntp_id_2=ncvarid_or_die(in_id_2,ntp_nm);
 
     ntp_1=var_fll(in_id_1,ntp_id_1,ntp_nm,dim,nbr_dmn_xtr);
     ntp_2=var_fll(in_id_2,ntp_id_2,ntp_nm,dim,nbr_dmn_xtr);
