@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.22 2003-04-20 22:29:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.23 2003-04-26 00:47:07 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -90,7 +90,8 @@ nco_lib_vrs_prn(void) /* [fnc] Print netCDF library version */
   nst_sng[nst_sng_lng]='\0';
 
   (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",vrs_sng,nst_sng);
-  (void)fprintf(stdout,"NCO homepage URL is http://nco.sourceforge.net\n");
+  (void)fprintf(stdout,"NCO homepage URL is http://nco.sf.net\n");
+  (void)fprintf(stdout,"NCO User's Guide in HTML is at http://nco.sf.net/nco.html\n");
 
   vrs_sng=(char *)nco_free(vrs_sng);
   lib_sng=(char *)nco_free(lib_sng);
@@ -178,8 +179,8 @@ nco_usg_prn(void)
   } /* end switch */
   
   /* Public service announcements */
-  (void)fprintf(stdout,"NCO homepage at http://nco.sourceforge.net has complete online User's Guide\n");
-  (void)fprintf(stdout,"Post questions, suggestions, patches at http://sourceforge.net/projects/nco\n");
+  (void)fprintf(stdout,"NCO homepage at http://nco.sf.net has complete online User's Guide\n");
+  (void)fprintf(stdout,"Post questions, suggestions, patches at http://sf.net/projects/nco\n");
 
   /* We now have command-specific command line option string */
   (void)fprintf(stdout,"%s %s\n",prg_nm_get(),opt_sng);

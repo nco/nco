@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.84 2003-04-04 19:46:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.85 2003-04-26 00:47:07 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -757,7 +757,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
      If variables conform, then ncap_var_stretch() will broadcast
      If variables share no dimensions, then ncap_var_stretch() will convolve
      
-     Terminology: 
+     Terminology--- 
      Broadcast: Inflate smaller conforming variable to larger variable
      Conform: Dimensions of one variable are subset of other variable
      Convolve: Construct array which is product of ranks of two variables
@@ -780,8 +780,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
      var_lsr_out plays role of wgt_out
      var_lsr_out=var_lsr only if variables already conform
      var_gtr_out is required since both variables may change
-     var_gtr_out=var_gtr unless convolution is required
-  */
+     var_gtr_out=var_gtr unless convolution is required */
   
   bool CONFORMABLE=False; /* Whether var_lsr can be made to conform to var_gtr */
   bool CONVOLVE=False; /* [flg] var_1 and var_2 had to be convolved */
@@ -881,6 +880,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
     if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: WARNING Convolution not yet implemented, results of operation between %s and %s are unpredictable\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
     /* Dimensions in convolution are union of dimensions in variables */
     dmn_nbr=var_lsr->nbr_dim+var_gtr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr; /* Number of dimensions in convolution */
+    dmn_nbr=dmn_nbr; /* CEWI: Avert compiler warning that variable is set but never used */
     /* fxm: these should go away soon */
     var_lsr_out=nco_var_dpl(var_lsr);
     var_gtr_out=nco_var_dpl(var_gtr);

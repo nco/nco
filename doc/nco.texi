@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.157 2003-04-07 02:46:35 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.158 2003-04-26 00:46:57 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -38,7 +38,7 @@ makeinfo --xml --no-split --output=nco.xml nco.texi
 makeinfo --docbook --no-split --output=nco.xml nco.texi
 ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
 cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
-cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml www.ess.uci.edu:/home/zender/public_html/nco;cd -
+cd ~/nco/doc;      scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.dvi nco.html nco.info* nco.pdf nco.ps nco.texi nco.txt nco.xml www.ess.uci.edu:/home/zender/public_html/nco;cd -
 /usr/bin/scp nco.sf.net:/home/groups/n/nc/nco/nco/doc/nco.dvi ~/nco/doc
 /usr/bin/scp /home/groups/n/nc/nco/nco/doc/nco.dvi dust.ess.uci.edu:nco/doc
 
@@ -1040,13 +1040,13 @@ Joining independent files together along a record coordinate is called
 @dfn{concatenation}.    
 @command{ncrcat} is designed for concatenating record variables, while
 @command{ncecat} is designed for concatenating fixed length variables.
-Consider five files, @file{85.nc}, @file{86.nc}, @dots{}
-@file{89.nc} each containing a year's worth of data. 
+Consider five files, @file{85.nc}, @file{86.nc}, 
+@w{@dots{} @file{89.nc}} each containing a year's worth of data.  
 Say you wish to create from them a single file, @file{8589.nc}
 containing all the data, i.e., spanning all five years.
 If the annual files make use of the same record variable, then
-@command{ncrcat} will do the job nicely with, e.g., @code{ncrcat 8?.nc
-8589.nc}. 
+@command{ncrcat} will do the job nicely with, e.g., 
+@code{ncrcat 8?.nc 8589.nc}. 
 The number of records in the input files is arbitrary and can vary from
 file to file. 
 @xref{ncrcat netCDF Record Concatenator}, for a complete description of
@@ -1065,8 +1065,9 @@ single ensemble file.
 If @command{ncecat} is used on files which contain an existing record
 dimension, that record dimension will be converted into a fixed length
 dimension of the same name and a new record dimension will be created. 
-Consider five realizations, @file{85a.nc}, @file{85b.nc}, @dots{}
-@file{85e.nc} of 1985 predictions from the same climate model.
+Consider five realizations, @file{85a.nc}, @file{85b.nc}, 
+@w{@dots{} @file{85e.nc}} of 1985 predictions from the same climate
+model. 
 Then @code{ncecat 85?.nc 85_ens.nc} glues the individual realizations
 together into the single file, @file{85_ens.nc}. 
 If an input variable was dimensioned [@code{lat},@code{lon}], it will
@@ -1141,7 +1142,7 @@ to distribute netCDF files conveniently named in a format the @samp{-n
 @var{loop}} switch (which automatically generates arbitrary numbers of
 input filenames) understands. 
 If there is not a simple, arithmetic pattern to the input filenames
-(e.g., @file{h00001.nc}, @file{h00002.nc}, @dots{} @file{h90210.nc}) 
+(e.g., @file{h00001.nc}, @file{h00002.nc}, @w{@dots{} @file{h90210.nc}})  
 then the @samp{-n @var{loop}} switch is useless.
 Moreover, when the input files are so numerous that the input filenames 
 are too lengthy (when strung together as a single argument) to be passed 
@@ -1476,7 +1477,7 @@ equivalents, @samp{--nintap} or @samp{--pth} and @samp{--path},
 respectively). 
 To illustrate these methods, consider the simple problem of using
 @command{ncra} to average five input files, @file{85.nc}, @file{86.nc},
-@dots{} @file{89.nc}, and store the results in @file{8589.nc}.
+@w{@dots{} @file{89.nc}}, and store the results in @file{8589.nc}.
 Here are the four methods in order.
 They produce identical answers.
 @example
@@ -1801,8 +1802,8 @@ Availability: (@command{ncap}), @command{ncdiff}, @command{ncea},
 Short options: @samp{-v}, @samp{-x}@*
 Long options: @samp{--variable}, @samp{--exclude} or @samp{--xcl}@*
 @end cartouche
-Variable subsetting is implemented with the @samp{-v @var{var}[,@dots{}]} and
-@samp{-x} options. 
+Variable subsetting is implemented with the @samp{-v
+@var{var}[,@dots{}]} and @samp{-x} options. 
 A list of variables to extract is specified following the @samp{-v}
 option, e.g., @samp{-v time,lat,lon}.
 Not using the @samp{-v} option is equivalent to specifying all
@@ -2332,8 +2333,9 @@ C-style, 0-based indexes) @w{element 0} or element @samp{stride-1}.
 as the first element of the hyperslab when @var{min} is not specified.
 Thus @samp{-d time,,,@var{stride}} is syntactically equivalent to
 @samp{-d time,0,,@var{stride}}.
-This means, for example, that specifying the operation @samp{-d
-time,,,2} on the array @samp{1,2,3,4,5} selects the hyperslab @samp{1,3,5}.
+This means, for example, that specifying the operation 
+@samp{-d time,,,2} on the array @samp{1,2,3,4,5} selects the hyperslab
+@samp{1,3,5}. 
 To obtain the hyperslab @samp{2,4} instead, simply explicitly specify
 the starting index @w{as 1,} i.e., @samp{-d time,1,,2}. 
 
@@ -2341,14 +2343,19 @@ For example, consider a file @file{8501_8912.nc} which contains 60
 consecutive months of data. 
 Say you wish to obtain just the March data from this file.
 Using 0-based subscripts (@pxref{Fortran indexing}) these
-data are stored in records 2, 14, @dots{} 50 so the desired @var{stride}
-@w{is 12.}
+data are stored in records @w{2, 14, @dots{} 50} so the desired
+@var{stride} @w{is 12.}
 Without the @var{stride} option, the procedure is very awkward.
-One could use @command{ncks} five times and then use @command{ncrcat} to
+One could use @command{ncks} five times and then use @command{ncrcat} to 
 concatenate the resulting files together:
+@cindex Bourne Shell
+@cindex C Shell
 @example
-foreach idx (02 14 26 38 50) 
-ncks -d time,$idx 8501_8912.nc foo.$idx
+for idx in 02 14 26 38 50; do # Bourne Shell
+ncks -d time,$@{idx@} 8501_8912.nc foo.$@{idx@}
+done
+foreach idx (02 14 26 38 50) # C Shell
+ncks -d time,$@{idx@} 8501_8912.nc foo.$@{idx@}
 end
 ncrcat foo.?? 8589_03.nc
 rm foo.??
@@ -2360,8 +2367,8 @@ ncks -d time,2,,12 8501_8912.nc 8589_03.nc
 @end example
 @xref{ncks netCDF Kitchen Sink}, for more information on @command{ncks}.
 
-The @var{stride} option is supported by @command{ncra} and @command{ncrcat}
-for the record dimension only.
+The @var{stride} option is supported by @command{ncra} and
+@command{ncrcat} for the record dimension only.
 This makes it possible, for instance, to average or concatenate regular
 intervals across multi-file input data sets.
 @example
@@ -3643,6 +3650,7 @@ variables.
 Let the variables @var{@wndznl{}} and @var{@wndmrd{}} be the horizontal 
 wind components. 
 @cindex covariance
+@c fxm 20030423: texi2html 1.64 has problems with this legal syntax but makeinfo --html does not
 The @dfn{covariance} of @var{@wndznl{}} and @var{@wndmrd{}} is defined
 as the time mean product of the deviations of @var{@wndznl{}} and
 @var{@wndmrd{}} from their respective time means.
@@ -4182,17 +4190,23 @@ file, and use @command{ncra} to create the average anomaly for all five
 Januarys. 
 These commands are embedded in a shell loop so they are repeated for all
 twelve months:
+@cindex Bourne Shell
+@cindex C Shell
 @example
-foreach idx (01 02 03 04 05 06 07 08 09 10 11 12) 
-ncks -F -d time,$idx,,12 t_anm_8501_8912.nc foo.$idx
-ncra foo.$idx t_anm_8589_$idx.nc
+for idx in 01 02 03 04 05 06 07 08 09 10 11 12; do # Bourne Shell
+ncks -F -d time,$@{idx@},,12 t_anm_8501_8912.nc foo.$@{idx@}
+ncra foo.$@{idx@} t_anm_8589_$@{idx@}.nc
+done
+foreach idx (01 02 03 04 05 06 07 08 09 10 11 12) # C Shell
+ncks -F -d time,$@{idx@},,12 t_anm_8501_8912.nc foo.$@{idx@}
+ncra foo.$@{idx@} t_anm_8589_$@{idx@}.nc
 end
 @end example
 @noindent
 Note that @command{ncra} understands the @code{stride} argument so the two
 commands inside the loop may be combined into the single command 
 @example
-ncra -F -d time,$idx,,12 t_anm_8501_8912.nc foo.$idx
+ncra -F -d time,$@{idx@},,12 t_anm_8501_8912.nc foo.$@{idx@}
 @end example
 @noindent
 Finally, use @command{ncrcat} to concatenate the 12 average monthly anomaly
@@ -4323,8 +4337,9 @@ files.
 distinctions between the various averagers and concatenators. 
 
 @cindex climate model
-Consider five realizations, @file{85a.nc}, @file{85b.nc}, @dots{}
-@file{85e.nc} of 1985 predictions from the same climate model.
+Consider five realizations, @file{85a.nc}, @file{85b.nc}, 
+@w{@dots{} @file{85e.nc}} of 1985 predictions from the same climate
+model. 
 Then @code{ncecat 85?.nc 85_ens.nc} glues the individual realizations
 together into the single file, @file{85_ens.nc}. 
 If an input variable was dimensioned [@code{lat},@code{lon}], it will have
@@ -4990,7 +5005,7 @@ to be a true time average.
 @noindent
 EXAMPLES
 
-Average files @file{85.nc}, @file{86.nc}, @dots{} @file{89.nc}
+Average files @file{85.nc}, @file{86.nc}, @w{@dots{} @file{89.nc}}
 along the record dimension, and store the results in @file{8589.nc}: 
 @cindex globbing
 @cindex @code{NINTAP}
@@ -5006,7 +5021,7 @@ These three methods produce identical answers.
 between these methods.
 
 @cindex fortran
-Assume the files @file{85.nc}, @file{86.nc}, @dots{} @file{89.nc} each
+Assume the files @file{85.nc}, @file{86.nc}, @w{@dots{} @file{89.nc}} each
 contain a record coordinate @var{time} of length 12 defined such that
 the third record in @file{86.nc} contains data from March 1986, etc.
 @acronym{NCO} knows how to hyperslab the record dimension across files.
@@ -5079,7 +5094,7 @@ See @ref{ARM Conventions} for a complete description.
 @noindent
 EXAMPLES
 
-Concatenate files @file{85.nc}, @file{86.nc}, @dots{} @file{89.nc}
+Concatenate files @file{85.nc}, @file{86.nc}, @w{@dots{} @file{89.nc}}
 along the record dimension, and store the results in @file{8589.nc}: 
 @cindex globbing
 @cindex @code{NINTAP}
@@ -5096,7 +5111,7 @@ These three methods produce identical answers.
 between these methods.
 
 @cindex fortran
-Assume the files @file{85.nc}, @file{86.nc}, @dots{} @file{89.nc} each
+Assume the files @file{85.nc}, @file{86.nc}, @w{@dots{} @file{89.nc}} each
 contain a record coordinate @var{time} of length 12 defined such that
 the third record in @file{86.nc} contains data from March 1986, etc.
 @acronym{NCO} knows how to hyperslab the record dimension across files.
