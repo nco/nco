@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.111 2004-07-01 01:11:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.112 2004-07-01 18:00:59 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -115,9 +115,9 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.111 2004-07-01 01:11:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.111 $";
-  const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRv:xy:-:";
+  const char * const CVS_Id="$Id: ncra.c,v 1.112 2004-07-01 18:00:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.112 $";
+  const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xy:-:";
 
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -148,7 +148,7 @@ main(int argc,char **argv)
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
-  int thr_nbr=0; /* [nbr] Thread number */
+  int thr_nbr=0; /* [nbr] Thread number Option t */
   
   lmt_sct *lmt=NULL_CEWI;
   lmt_sct lmt_rec;
@@ -200,6 +200,9 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
+      {"thr_nbr",required_argument,0,'t'},
+      {"threads",required_argument,0,'t'},
+      {"omp_num_threads",required_argument,0,'t'},
       {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
@@ -285,6 +288,9 @@ main(int argc,char **argv)
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lbr_vrs_prn();
       nco_exit(EXIT_SUCCESS);
+      break;
+    case 'o': /* Thread number */
+      thr_nbr=(int)strtol(optarg,(char **)NULL,10);
       break;
     case 'v': /* Variables to extract/exclude */
       /* Replace commas with hashes when within braces (convert back later) */

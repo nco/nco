@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.121 2004-07-01 01:11:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.122 2004-07-01 18:00:59 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -108,9 +108,9 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.121 2004-07-01 01:11:21 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.121 $";
-  const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRt:v:Ww:xy:-:";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.122 2004-07-01 18:00:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.122 $";
+  const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -209,9 +209,12 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"rtn",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
-      {"truth_condition",required_argument,0,'t'},
-      {"msk_cmp_typ",required_argument,0,'t'},
-      {"op_rlt",required_argument,0,'t'},
+      {"truth_condition",required_argument,0,'T'},
+      {"msk_cmp_typ",required_argument,0,'T'},
+      {"op_rlt",required_argument,0,'T'},
+      {"thr_nbr",required_argument,0,'t'},
+      {"threads",required_argument,0,'t'},
+      {"omp_num_threads",required_argument,0,'t'},
       {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
       {"vrs",no_argument,0,'r'},
@@ -314,7 +317,7 @@ main(int argc,char **argv)
       (void)nco_lbr_vrs_prn();
        nco_exit(EXIT_SUCCESS);
       break;
-    case 't': /* Relational operator type. Default is 0, eq, equality */
+    case 'T': /* Relational operator type. Default is 0, eq, equality */
       op_typ_rlt=nco_op_prs_rlt(optarg);
       break;
     case 'v': /* Variables to extract/exclude */

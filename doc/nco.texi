@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.243 2004-07-01 17:34:32 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.244 2004-07-01 18:00:50 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1729,17 +1729,28 @@ We hope to produce foreign language string catalogues in 2004.
 @cindex threads
 @cindex shared memory machines
 @cindex @code{nco_openmp_thread_number} attribute
+@cindex @code{--thr_nbr @var{thr_nbr}}
+@cindex @code{--threads @var{thr_nbr}}
+@cindex @code{--omp_num_threads @var{thr_nbr}}
+@cindex @code{-T @var{thr_nbr}}
 @cartouche
 Availability: @command{ncea}, @command{ncra}, @command{ncrcat}, @command{ncwa}@*
-Short options: All@*
-Long options: All@*
+Short options: @samp{-T}@*
+Long options: @samp{--thr_nbr}, @samp{--threads}, @samp{--omp_num_threads}@*
 @end cartouche
 @acronym{NCO} support for shared memory machines using the OpenMP
 standard is nascent.
 We hope to implement robust threading in 2004.
 
+Users may request a specific number of threads with the @samp{-T}
+switch (or its long option equivalents, @samp{--thr_nbr},
+@samp{--threads}, @samp{--omp_num_threads}).
+If not user-specified, @acronym{NCO} obtains @var{thr_nbr} from the
+environment or the @acronym{OS} and modifies it according to some
+internal settings.  
+
 Operators with thread support by default, attaches one global
-attributet to any file they create or modify.
+attribute to any file they create or modify.
 The @code{nco_openmp_thread_number} global attribute contains the
 number of threads the operator used to process the input files.
 This information helps to verify that the answers with threaded and
@@ -5552,7 +5563,7 @@ SYNTAX
 ncea [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
+[-T thr_nbr] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -6401,7 +6412,7 @@ SYNTAX
 ncra [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
-[-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
+[-T thr_nbr] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -6770,8 +6781,8 @@ SYNTAX
 ncwa [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-I] [-l @var{path}] 
 [-M @var{mask_val}] [-m @var{mask_var}] [-N] [-n] [-O] 
-[-o @var{output-file}] [-p @var{path}] [-R] [-r] [-t @var{condition}]
-[-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}] 
+[-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{condition}]
+[-T thr_nbr] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}] 
 @var{input-file} [@var{output-file}]
 @end example
 
@@ -6901,7 +6912,7 @@ The mask condition has the syntax @math{@var{mask_var}}
 Here @var{mask_var} is the name of the masking variable (specified with 
 @samp{-m}, @samp{--mask-variable}, @samp{--mask_variable},
 @samp{--msk_nm}, or @samp{--msk_var}).  
-The truth @var{condition} argument (specified with @samp{-t},
+The truth @var{condition} argument (specified with @samp{-T},
 @samp{--truth_condition}, @samp{--msk_cmp_typ}, or @samp{--op_rlt} may 
 be any one of the six arithmetic comparatives: @kbd{eq}, @kbd{ne},
 @kbd{gt}, @kbd{lt}, @kbd{ge}, @kbd{le}. 
@@ -7101,7 +7112,7 @@ climate model.
 @math{@var{ORO} < 0.5} selects the gridpoints which are covered by
 ocean.}: 
 @example
-ncwa -m ORO -M 0.5 -t lt -w gw -a lat,lon in.nc out.nc
+ncwa -m ORO -M 0.5 -T lt -w gw -a lat,lon in.nc out.nc
 @end example
 @noindent
 Assuming 70% of the gridpoints are maritime, then here the tally is
@@ -7117,14 +7128,14 @@ $0.70 \times 8192 \approx 5734$.
 
 Compute the global annual mean over the maritime tropical Pacific:
 @example
-ncwa -m ORO -M 0.5 -t lt -w gw -a lat,lon,time 
+ncwa -m ORO -M 0.5 -T lt -w gw -a lat,lon,time 
 -d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
 @end example
 
 Determine the total area of the maritime tropical Pacific, assuming
 the variable @var{area} contains the area of each gridcell
 @example
-ncwa -N -v area -m ORO -M 0.5 -t lt -a lat,lon
+ncwa -N -v area -m ORO -M 0.5 -T lt -a lat,lon
 -d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
 @end example
 Weighting @var{area} (e.g., by @var{gw}) is not appropriate because
