@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.53 2003-03-11 02:22:28 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.54 2003-03-15 06:17:49 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -23,8 +23,6 @@ CVS:		    Anonymous check out:
 		    cvs -z3 -dzender@cvs.nco.sourceforge.net:/cvsroot/nco co -kk -r netcdf3 -d nco-1_3 nco 
 		    Checkouts inside sourceforge firewall:
 		    cvs -dzender@cvs1:/cvsroot/nco co -kk nco
-Debian:		    http://packages.debian.org/unstable/math/nco.html
-Gentoo:		    http://gentoo-stable.iq-computing.de/browse?type=version&category=app-sci&package=nco&version=2.2.0
 Daily tarballs of entire CVS tree for mirroring:
 		    http://cvs.sourceforge.net/cvstarballs/nco-cvsroot.tar.gz
 Compile Farm:       ssh cf.sourceforge.net cf.sf.net
@@ -168,28 +166,6 @@ John Parish <gerbil at planetquake dot com> http? C++ interface?
 Mohan Thiyagarajah <mthiyagarajah at yahoo dot com> C++ interface? namespace/nc_utl?
 Brian Mays <brian at debian dot org> Debian packaging
 George Shapovalov <george at gentoo dot org> Gentoo 
-Jordan Dawe <freedryk at hotmail dot com> Gentoo packaging
-
-Debian notes:
-apt-get install dh-make debhelper devscripts fakeroot gnupg debian-policy developers-reference
-cd ~/nco;make distclean;cd bld;make clean;cd ~
-tar cvzf ./nco/nco.tar.gz ./nco/*
-cd ~/nco;tar xvzf nco.tar.gz;mv nco nco-2.7.3
-/bin/rm nco.tar.gz;tar cvzf nco-2.7.3.tar.gz ./nco-2.7.3/*
-cd ~/nco/nco-2.7.3
-dh_make -e zender@uci.edu -f ../nco-2.7.3.tar.gz # Create Debian package template
-... # Edit files in /nco/debian
-
-dpkg-buildpackage -rfakeroot # Build .deb package
-
-# Create Debian tree from nco_2.2.0-3.dsc nco_2.2.0-3.orig.tar.gz, nco_2.2.0-3.diff.gz 
-dpkg-source -x nco_2.2.0-3.dsc
-# Previous dpkg-source command is functionally equivalent to following
-# Apply Debian diff to original source to produce Debian source
-cd /data/zender;/bin/rm -r nco-2.2.0.orig nco-2.2.0 
-tar xvzf nco_2.2.0.orig.tar.gz # Untar original source
-cp -r nco-2.2.0.orig nco-2.2.0 # Create destination for patches
-patch -p0 < nco_2.2.0-3.diff # Patch destination with Debian diff
 
 How to help develop NCO:
 
