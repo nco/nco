@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.137 2002-04-27 06:08:33 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.138 2002-04-27 06:23:54 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -63,7 +63,7 @@ sudo root screws up permissions in obj/bin directories of user
 179. add netCDF to required packages list in RPM build
 191. Create short man pages for each operator which point user to info pages or online manual
 212. Ensure structures are always passed by reference (default is pass by value)
-213. Implement "const" in all applicable prototypes (may improve speed)
+213. Implement "const" in all applicable prototypes (will improve speed)
 
 Remaining items of lesser priority:
 28. Use var.nc_id as file ID from now on and rewrite old routines to do so

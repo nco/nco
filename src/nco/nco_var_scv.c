@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.4 2002-04-27 06:16:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.5 2002-04-27 06:23:54 zender Exp $ */
 
 /* Purpose: NCO utilities for arithmetic involving var and scv types */
 
@@ -49,9 +49,9 @@
 #include "nco.h" /* netCDF operator universal def'ns */
 
 void
-var_scv_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
+var_scv_add(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
      /*	nc_type type: I netCDF type of operands
-	long sz: I size (in elements) of operands
+	const long sz: I size (in elements) of operands
 	int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
@@ -75,7 +75,7 @@ var_scv_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]+=scv_flt;
     }else{
-      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]+=scv_flt; 
       } /* end for */
@@ -87,7 +87,7 @@ var_scv_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]+=scv_dpl;
     }else{
-      double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]+=scv_dpl;  
       } /* end for */
@@ -99,7 +99,7 @@ var_scv_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]+=scv_lng;
     }else{
-      long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]+=scv_lng; 
       } /* end for */
@@ -111,7 +111,7 @@ var_scv_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]+=scv_sht;
     }else{
-      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.sp[idx] != mss_val_sht) op1.sp[idx]+=scv_sht;
       } /* end for */
@@ -133,9 +133,9 @@ var_scv_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
 } /* end var_scv_add() */
 
 void
-var_scv_sub(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
+var_scv_sub(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
      /*	nc_type type: I netCDF type of operands
-	long sz: I size (in elements) of operands
+	const long sz: I size (in elements) of operands
 	int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
@@ -159,7 +159,7 @@ var_scv_sub(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]-=scv_flt;
     }else{
-      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]-=scv_flt; 
       } /* end for */
@@ -171,7 +171,7 @@ var_scv_sub(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]-=scv_dpl;
     }else{
-      double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]-=scv_dpl;  
       } /* end for */
@@ -183,7 +183,7 @@ var_scv_sub(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]-=scv_lng;
     }else{
-      long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]-=scv_lng; 
       } /* end for */
@@ -195,7 +195,7 @@ var_scv_sub(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]-=scv_sht;
     }else{
-      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.sp[idx] != mss_val_sht) op1.sp[idx]-=scv_sht;
       } /* end for */
@@ -217,10 +217,10 @@ var_scv_sub(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv
 } /* end var_scv_sub() */
 
 void
-var_scv_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
+var_scv_multiply(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
      /* 
 	nc_type type: I netCDF type of operands
-	long sz: I size (in elements) of operands
+	const long sz: I size (in elements) of operands
 	int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
@@ -244,7 +244,7 @@ var_scv_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]*=scv_flt;
     }else{
-      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]*=scv_flt; 
       } /* end for */
@@ -256,7 +256,7 @@ var_scv_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]*=scv_dpl;
     }else{
-      double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]*=scv_dpl;  
       } /* end for */
@@ -268,7 +268,7 @@ var_scv_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]*=scv_lng;
     }else{
-      long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]*=scv_lng; 
       } /* end for */
@@ -280,7 +280,7 @@ var_scv_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]*=scv_sht;
     }else{
-      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.sp[idx] != mss_val_sht) op1.sp[idx]*=scv_sht;
       } /* end for */
@@ -302,10 +302,10 @@ var_scv_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op
 } /* end var_scv_multiply() */
 
 void
-var_scv_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
+var_scv_divide(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
      /* 
 	nc_type type: I netCDF type of operands
-	long sz: I size (in elements) of operands
+	const long sz: I size (in elements) of operands
 	int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
@@ -329,7 +329,7 @@ var_scv_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]/=scv_flt;
     }else{
-      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]/=scv_flt; 
       } /* end for */
@@ -341,7 +341,7 @@ var_scv_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]/=scv_dpl;
     }else{
-      double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]/=scv_dpl;  
       } /* end for */
@@ -353,7 +353,7 @@ var_scv_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]/=scv_lng;
     }else{
-      long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]/=scv_lng; 
       } /* end for */
@@ -365,7 +365,7 @@ var_scv_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]/=scv_sht;
     }else{
-      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.sp[idx] != mss_val_sht) op1.sp[idx]/=scv_sht;
       } /* end for */
@@ -387,10 +387,10 @@ var_scv_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,
 } /* end var_scv_divide() */
 
 void 
-var_scv_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
+var_scv_modulus(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
      /* 
 	nc_type type: I netCDF type of operands
-	long sz: I size (in elements) of operands
+	const long sz: I size (in elements) of operands
 	int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
@@ -417,7 +417,7 @@ var_scv_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]=fmodf(op1.fp[idx],scv_flt);
     }else{
-      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=fmodf(op1.fp[idx],scv_flt);
       } /* end for */
@@ -429,7 +429,7 @@ var_scv_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]=fmod(op1.dp[idx],scv_dpl);
     }else{
-      double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=fmod(op1.dp[idx],scv_dpl);  
       } /* end for */
@@ -442,7 +442,7 @@ var_scv_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]%=scv_lng;
     }else{
-      long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]%=scv_lng; 
       } /* end for */
@@ -454,7 +454,7 @@ var_scv_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.sp[idx]%=scv_sht;
     }else{
-      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.sp[idx] != mss_val_sht) op1.sp[idx]%=scv_sht;
       } /* end for */
@@ -473,10 +473,10 @@ var_scv_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1
 } /* end var_scv_modulus */
 
 void
-var_abs(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
+var_abs(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
      /* 
 	nc_type type: I netCDF type of operands
-	long sz: I size (in elements) of operands
+	const long sz: I size (in elements) of operands
 	int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
@@ -499,50 +499,46 @@ var_abs(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
   if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
   
   switch(type){
-  case NC_FLOAT:{
+  case NC_FLOAT:
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.fp[idx]=fabsf(op1.fp[idx]);
     }else{
-      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=fabsf(op1.fp[idx]); 
       } /* end for */
     } /* end else */
     break;
-  }
-  case NC_DOUBLE:{
+  case NC_DOUBLE:
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.dp[idx]=fabs(op1.dp[idx]);
     }else{
-      double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
+      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=fabs(op1.dp[idx]);
       } /* end for */
     } /* end else */
     break;
-  }
-  case NC_INT:{
+  case NC_INT:
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) op1.lp[idx]=abs(op1.lp[idx]);
     }else{
-      long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
+      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.lp[idx] != mss_val_lng) op1.lp[idx]=abs(op1.lp[idx]); 
       } /* end for */
     } /* end else */
     break;
-  }
-  case NC_SHORT:{
+  case NC_SHORT:
     if(!has_mss_val){
       for(idx=0;idx<sz;idx++) if(op1.sp[idx] < 0 ) op1.sp[idx]=-op1.sp[idx] ;
     }else{
-      short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
 	if(op1.sp[idx] != mss_val_sht && op1.sp[idx] < 0 ) op1.sp[idx]=-op1.sp[idx];
       } /* end for */
     } /* end else */
     break;
-  }
   case NC_CHAR:
     /* Do nothing */
     break;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.16 2002-04-27 06:16:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.17 2002-04-27 06:23:54 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -486,12 +486,12 @@ extern "C" {
   extern void var_normalize(nc_type,long,int,ptr_unn,long *,ptr_unn);
   extern void var_normalize_sdn(nc_type,long,int,ptr_unn,long *,ptr_unn);
   extern void var_refresh(int,var_sct *);
-  extern void var_abs(nc_type,long,int,ptr_unn,ptr_unn);
-  extern void var_scv_add(nc_type,long,int,ptr_unn,ptr_unn,scv_sct *);
-  extern void var_scv_sub(nc_type,long,int,ptr_unn,ptr_unn,scv_sct *);
-  extern void var_scv_divide(nc_type,long,int,ptr_unn,ptr_unn,scv_sct *);
-  extern void var_scv_modulus(nc_type,long,int,ptr_unn,ptr_unn,scv_sct *);
-  extern void var_scv_multiply(nc_type,long,int,ptr_unn,ptr_unn,scv_sct *);
+  extern void var_abs(nc_type,const long,int,ptr_unn,ptr_unn);
+  extern void var_scv_add(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
+  extern void var_scv_sub(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
+  extern void var_scv_divide(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
+  extern void var_scv_modulus(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
+  extern void var_scv_multiply(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
   extern void var_sqrt(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2);
   extern void var_srt_zero(var_sct **,int);
   extern void var_subtract(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
