@@ -1,5 +1,9 @@
 2002-01-26  Charlie Zender  <zender@uci.edu>
 
+	* Use <limits.h> to get INT_MIN, INT_MAX
+
+	* Changed from gcc to icc on Intel, seems to work fine
+
 	* Cast char to unsigned char and visa versa where necessary to
 	prevent icc warnings. This solved all icc warnings on ncap, and
 	solved all IRIX cc warnings for ncap too. Since unsigned char

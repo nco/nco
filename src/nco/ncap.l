@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.29 2002-01-27 06:14:05 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.30 2002-01-27 06:21:50 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -49,6 +49,7 @@
      NB: flex with -Cf or -Cf not -I if this scanner will not be interactive */
 
   /* Standard header files */
+#include <limits.h> /* INT_MIN, INT_MAX, ... */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strdup */
@@ -61,9 +62,6 @@
 #include "nco_netcdf.h" /* netCDF3 wrapper functions */
 #include "ncap.h" /* Symbol table definition */
 #include "ncap.tab.h" /* Symbol definitions from parser */
-
-#define INT_MIN (-2147483647-1) /* Minimum value of 4 byte integer -2^32 */
-#define INT_MAX 2147483647 /* Maximum value of 4 byte integer  2^32 -1 */
 
   /* We want yylex() errors to skip current line rather than stop execution
      We do this by provoking error in parser by returning unrecognized token
