@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.26 2004-03-12 00:34:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.27 2004-04-20 07:20:19 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -835,8 +835,8 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
  char *lmt_sng, /* I [ptr] Limit string */
  double *lmt_val) /* O [val] Limit coordinate value */ 
 {
-#ifdef ENABLE_UDUNITS
   int rcd; /* Return code */
+#ifdef ENABLE_UDUNITS
   static const char* att_nm="units";
   char *fl_unt_sng=NULL;  /* [sng] Unit string in file */
   char *usr_unt_sng; /* [sng] User-specified unit string */
@@ -847,11 +847,11 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
 #ifdef UDUNITS_DAT
   /* UDUNITS_DAT macro expands to where autoconf found database file */
   rcd=utInit(UDUNITS_DAT);
-#else
+#else /* !UDUNITS_DAT */
   /* When empty, utInit() uses environment variable UDUNITS_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
   rcd=utInit("");
-#endif /* UDUNITS_DAT */
+#endif /* !UDUNITS_DAT */
   if(rcd != 0){
     (void)fprintf(stdout,"Failed to initialize UDUnits library\n");
     return 1;
@@ -968,9 +968,10 @@ nco_lmt_udu_cnv /* [fnc] Convert from Unidata units to coordinate value */
   (void)utTerm(); /* Free memory taken by UDUnits library */
   return 0; /* Successful conversion */
 #else /* !ENABLE_UDUNITS */
+  rcd=1+0*nc_id+0*dmn_id+0*(*lmt_val); /* CEWI removes unused parameter warnings */
   (void)fprintf(stdout,"UDUnits limit detected in \"%s\" but UDUnits library is unavailable to perform conversion.\nHINT: Re-compile and re-install NCO with UDUnits enabled. http://nco.sf.net/nco.html#udunits",lmt_sng);
   nco_exit(EXIT_FAILURE);
-  return 1; /* Successful conversion */
+  return 1; /* Conversion failed */
 #endif /* !ENABLE_UDUNITS */
 }  /* end nco_lmt_udu_cnv() */
 

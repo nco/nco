@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.81 2004-03-12 01:02:17 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.82 2004-04-20 07:21:47 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -17,7 +17,7 @@ LINUX como	N(11)
 LINUX gcc/g++	Y	N/A	N(12)			Y	Y
 LINUX icc	Y	N/A				Y	Y
 LINUXALPHA	Y					Y	Y
-LINUXAMD64		Y					N(16)	
+LINUXAMD64		Y				Y	Y
 LINUXPPC	Y					Y	N(9)
 LINUXSPARC64	Y					Y	Y
 MACOSX		Y					Y(14)	Y(14)
@@ -39,7 +39,7 @@ Table footnotes:
 12. C++ version problems in linking DODS libraries
 13. gcc 3.2.1 problem with /usr/include/sys/stat.h in nco_fl_utl.h
 14. g++ 2.95 (Darwin 5.5) does not have <valarray>, so the c++ library will not be built; g++ version 3.1 (Darwin 6.8) does. That is all we have tested.
-16. ERROR User does not have read permission for ../../data/nco_tst.nc, or file does not exist
+17. 
 -----------------------------------------------------------------------
 
 There are three basic ways to build/install NCO with the GNU autotools:
@@ -287,37 +287,26 @@ End LINUX
 ************************************************************************
 
 ************************************************************************
-Start LINUXAMD
+Start LINUXAMD64
 Status: Appears to work. Make sure to compile netCDF with CFLAGS+='-fPIC'
 ************************************************************************
-zender@amd64-linux1:~/nco/bld$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
+zender@sand:~/nco/bld$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
 LINUXAMD64
-Linux amd64-linux1 2.4.19-SMP #1 SMP Wed Aug 20 15:58:51 UTC 2003 x86_64 unknown
+Linux sand 2.4.21-201-smp #1 SMP Wed Feb 18 19:17:53 UTC 2004 x86_64 x86_64 x86_64 GNU/Linux
 x86_64-unknown-linux-gnu
 
 gcc/g++ Regular users, sysadmins use this to install/update NCO:
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --enable-optimize-custom --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 make check >> make.${GNU_TRP}.foo 2>&1
 make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
-
-Old build example:
-make UDUNITS=N
-gcc  -DLINUX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='dust.ess.uci.edu' -DUSER='zender' -Di386 -I/usr/local/include -U_OPENMP -Wall -O -c ../src/nco/nco_att_utl.c -o /home/zender/obj/LINUX/nco_att_utl.o
-New build example:
-gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I/usr/local/include -g -O2 -c nco_att_utl.c  -fPIC -DPIC -o .libs/nco_att_utl.lo
-
-cc -shared  .libs/nco_att_utl.o .libs/nco_bnr.o .libs/nco_cln_utl.o .libs/nco_cnf_dmn.o .libs/nco_cnf_typ.o .libs/nco_cnv_arm.o .libs/nco_rth_flt.o .libs/nco_cnv_csm.o .libs/nco_ctl.o .libs/nco_dbg.o .libs/nco_dmn_utl.o .libs/nco_fl_utl.o .libs/nco_lmt.o .libs/nco_lst_utl.o .libs/nco_mmr.o .libs/nco_msa.o .libs/nco_mss_val.o .libs/nco_netcdf.o .libs/nco_omp.o .libs/nco_pck.o .libs/nco_prn.o .libs/nco_rec_var.o .libs/nco_rth_utl.o .libs/nco_scl_utl.o .libs/nco_scm.o .libs/nco_sng_utl.o .libs/nco_var_avg.o .libs/nco_var_lst.o .libs/nco_var_rth.o .libs/nco_var_scv.o .libs/nco_var_utl.o  -L/home/users/z/ze/zender/lib/x86_64-unknown-linux-gnu -lm -lnetcdf  -Wl,-soname -Wl,libnco-2.8.3.so -o .libs/libnco-2.8.3.so
-/usr/lib64/gcc-lib/x86_64-suse-linux/3.2.2/../../../../x86_64-suse-linux/bin/ld: /home/users/z/ze/zender/lib/x86_64-unknown-linux-gnu/libnetcdf.a(attr.o): relocation R_X86_64_32S can not be used when making a shared object; recompile with -fPIC
-/home/users/z/ze/zender/lib/x86_64-unknown-linux-gnu/libnetcdf.a: could not read symbols: Bad value
-collect2: ld returned 1 exit status
 ************************************************************************
-End LINUXAMD
+End LINUXAMD64
 ************************************************************************
 
 ************************************************************************

@@ -1,22 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.73 2004-04-14 00:11:51 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.74 2004-04-20 07:21:47 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.3 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release corrects a corner-case problem with arithmetic
-performed by ncra and ncea that causes record and ensemble averages to 
-fail (in an obvious way) when the missing_value equals zero.
-The record and ensemble averages would also fail (in a non-obvious)
-way whenever an intermediate sum equalled the missing value.
-The chances of the latter event ever happening are exceedingly
-remote. The new code is faster and fixes both problems. 
-Full details are at 
-
-http://nco.sf.net/index.shtml#bug_mss_val_zro_ncra
-
-Thanks to Remik Ziemlinski for noticing this.
+This release ...
 
 Enjoy,
 Charlie
@@ -29,7 +18,7 @@ Bug-fixes:
    intermediate sum. 
 
 Build changes:
-1. None
+1. Builds with GCC and --enable-*-custom when UDUnits not installed
 
 Other user-visible changes:
 1. None
