@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.103 2003-07-04 20:28:27 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.104 2003-07-04 20:33:40 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -66,9 +66,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2003-07-04 20:28:27 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.103 2003-07-04 20:28:27 zender Exp $';
-my $CVS_Revision='$Revision: 1.103 $';
+my $CVS_Date='$Date: 2003-07-04 20:33:40 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.104 2003-07-04 20:33:40 zender Exp $';
+my $CVS_Revision='$Revision: 1.104 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -247,6 +247,7 @@ if($bld){
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/TODO $www_mch:$www_drc");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/VERSION $www_mch:$www_drc");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/ChangeLog $www_mch:$www_drc");
+	cmd_prc("$rcp_cmd $dst_pth_pfx/$dst_fl $www_mch:$www_drc");
     } # endif 
     
 # Update SourceForge mirror
@@ -254,7 +255,7 @@ if($bld){
 # Usually scp_cmd includes -p switch to preserve permissions and times, but sourceforge server does not allow this
 # Hence it generates warnings when used with -p, and is not properly updated
     if($True){
-	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_bld/doc/index.shtml $dst_pth_bld/doc/nco_news.shtml $dst_pth_bld/doc/README $dst_pth_bld/doc/TODO $dst_pth_bld/doc/VERSION $dst_pth_bld/doc/ChangeLog $www_mch_mrr:$www_drc_mrr");
+	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_pfx/$dst_fl $dst_pth_bld/doc/index.shtml $dst_pth_bld/doc/nco_news.shtml $dst_pth_bld/doc/README $dst_pth_bld/doc/TODO $dst_pth_bld/doc/VERSION $dst_pth_bld/doc/ChangeLog $www_mch_mrr:$www_drc_mrr");
 	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_bld/doc/nco.html $dst_pth_bld/doc/nco.info* $dst_pth_bld/doc/nco.dvi $dst_pth_bld/doc/nco.pdf $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.texi $www_mch_mrr:$www_drc_mrr");
     } # endif SourceForge
 
