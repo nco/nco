@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.63 2000-08-28 17:23:08 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.64 2000-08-29 20:57:42 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1101,10 +1101,10 @@ This is because the record operators are designed to operate on a single
 record of a file at a time, while the ensemble operators must retrieve
 an entire variable at a time into memory.
 Let @math{MS} be the peak sustained memory demand of an operator,
-@math{FT} be the memory required to store the entire contents of the
+@math{FT} be the memory required to store the entire contents of all the 
 variables to be processed in an input file,
 @math{FR} be the memory required to store the entire contents of a
-single record of the variables to be processed in an input file, 
+single record of each of the variables to be processed in an input file, 
 @math{VR} be the memory required to store a single record of the
 largest record variable to be processed in an input file, 
 @math{VT} be the memory required to store the largest variable 
@@ -1123,6 +1123,8 @@ The operators have the following memory requirements:
 @code{ncecat} requires @math{MS <= VT}. 
 @code{ncra} requires @math{MS = 2FR + VR}. 
 @code{ncea} requires @math{MS = 2FT + VT}. 
+@code{ncdiff} requires @math{MS <= 2VT}.
+@code{ncflint} requires @math{MS <= 2VT}.
 Note that only variables which are processed, i.e., averaged or
 concatenated, contribute to @math{MS}.
 Memory is never allocated to hold variables which do not appear in the
@@ -2259,7 +2261,7 @@ required by the @code{ncdiff} operation in the fourth step.
 @cindex type conversion
 @cartouche
 @noindent
-Availability: @code{ncdiff}, @code{ncea}, @code{ncflint}, @code{ncra}, @code{ncwa}@*
+Availability: @code{ncea}, @code{ncra}, @code{ncwa}@*
 Key switches: None@*
 @end cartouche
 Type conversion refers to the casting of one fundamental data type 
@@ -2314,8 +2316,7 @@ in NCO version 1.2, August, 2000.
 Previous version never performed unnecessary type conversion for
 arithmetic.}: 
 @enumerate
-@item The operator is @code{ncea}, @code{ncflint}, @code{ncra}, or
-@code{ncwa}. 
+@item The operator is @code{ncea}, @code{ncra}, or @code{ncwa}. 
 @code{ncdiff} is not included because subtraction does not benefit from 
 type conversion.
 @item The arithmetic operation could benefit from type conversion.
@@ -3346,9 +3347,9 @@ i.e., of size one.
 If neither @samp{-i} nor @samp{-w} is specified on the command line,
 @code{ncflint} defaults to weighting each input file equally in the
 output file.
-This is equivalent to specifying @samp{-w .5} or @samp{-w .5,.5}.
-Note that attempting to specify both methods with @samp{-i} and
-@samp{-w} will result in an error.
+This is equivalent to specifying @samp{-w 0.5} or @samp{-w 0.5,0.5}.
+Attempting to specify both @samp{-i} and @samp{-w} methods in the same
+command is an error. 
 
 @code{ncflint} is programmed not to interpolate variables of type
 @code{NC_CHAR} and @code{NC_BYTE}.
@@ -3377,8 +3378,8 @@ the existing data as follows.
 Combine @file{85_01.nc} and @file{85_04.nc} in a 2:1 ratio to make
 @file{85_02.nc}:  
 @example
-ncflint -w .667 85_01.nc 85_04.nc 85_02.nc
-ncflint -w .667,.333 85_01.nc 85_04.nc 85_02.nc
+ncflint -w 0.667 85_01.nc 85_04.nc 85_02.nc
+ncflint -w 0.667,0.333 85_01.nc 85_04.nc 85_02.nc
 @end example
 
 Multiply @file{85.nc} by 3 and by @minus{}2 and add them together to
@@ -3658,10 +3659,23 @@ Next print @code{three_dmn_var} as an un-annotated text column.
 Then print @code{three_dmn_var} signed with very high precision.
 Finally, print @code{three_dmn_var} as a comma-separated list.
 @example
-ncks -H -C -v three_dmn_var in.nc
-ncks -s "%f\n" -H -C -v three_dmn_var in.nc
-ncks -s "%+16.10f\n" -H -C -v three_dmn_var in.nc
-ncks -s "%f, " -H -C -v three_dmn_var in.nc
+% ncks -H -C -v three_dmn_var in.nc
+lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
+lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
+...
+lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
+% ncks -s "%f\n" -H -C -v three_dmn_var in.nc
+0.000000
+1.000000
+...
+23.000000
+% ncks -s "%+16.10f\n" -H -C -v three_dmn_var in.nc
+   +0.0000000000
+   +1.0000000000
+...
+  +23.0000000000
+% ncks -s "%f, " -H -C -v three_dmn_var in.nc
+0.000000, 1.000000, ..., 23.000000,
 @end example
 @noindent
 The second and third options are useful when pasting data into text
@@ -3961,8 +3975,9 @@ temporary copy of an output file is constructed during the operation.
 If only @var{input-file} is specified, then @code{ncrename} will change
 the names of the @var{input-file} in place without prompting and without
 creating a temporary copy of @code{input-file}.
-This is because the renaming operation is considered reversible, i.e.,
-the @var{new_name} can easily be changed back to @var{old_name} by using
+This is because the renaming operation is considered reversible if the
+user makes a mistake.
+The @var{new_name} can easily be changed back to @var{old_name} by using 
 @code{ncrename} one more time.
 
 Note that renaming a dimension to the name of a dependent variable can
@@ -3992,6 +4007,11 @@ The old and new names of the attribute are specified by the associated
 @cindex attributes, global
 Global attributes are treated no differently than variable attributes.
 This option may be specified more than once.
+You cannot change the attribute name for one particular variable (unless
+it is uniquely named); all occurrences of the attribute of a given name
+will be renamed. 
+This is considered an oversight and will be addressed in a future
+version of NCO.
 
 @item -d @var{old_name},@var{new_name}
 Dimension renaming. 
@@ -4023,6 +4043,16 @@ abort), but the presence of @code{t} is optional:
 ncrename -v p,pressure -v .t,temperature in.nc
 @end example
  
+@cindex coordinate variables
+@code{ncrename} does not automatically attach dimensions to variables of
+the same name.
+If you want to rename a coordinate variable so that it remains a
+coordinate variable, you must separately rename both the dimension and
+the variable: 
+@example
+ncrename -d lon,longitude -v lon,longitude in.nc
+@end example
+
 @cindex global attributes
 @cindex attributes, global
 @cindex @code{_FillValue} attribute

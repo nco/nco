@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.29 2000-08-28 17:22:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.30 2000-08-29 20:57:50 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.29 2000-08-28 17:22:13 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.29 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.30 2000-08-29 20:57:50 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.30 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -280,7 +280,7 @@ main(int argc,char **argv)
     (void)dmn_xrf(dim[idx],dmn_out[idx]); 
   } /* end loop over idx */
 
-  if(dbg_lvl > 0){
+  if(dbg_lvl > 3){
     for(idx=0;idx<nbr_xtr;idx++) (void)fprintf(stderr,"xtr_lst[%d].nm = %s, .id= %d\n",idx,xtr_lst[idx].nm,xtr_lst[idx].id);
   } /* end if */
   
@@ -310,10 +310,10 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
 
   /* Define dimensions in output file */
-  (void)dmn_def(fl_out,out_id,dmn_out,nbr_dmn_xtr);
+  (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
   /* Define variables in output file, and copy their attributes */
-  (void)var_def(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
+  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
 
   /* Turn off default filling behavior to enhance efficiency */
 #if ( ! defined SUN4 ) && ( ! defined SUN4SOL2 ) && ( ! defined SUNMP )

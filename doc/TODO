@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.69 2000-08-25 16:45:14 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.70 2000-08-29 20:57:42 zender Exp $ 
 
 *************
 NCO Wish list
@@ -131,6 +131,7 @@ with nco_dst.pl
 sudo root screws up permissions in obj/bin directories of user
 178. Make _FillValue behave same as missing_value
 179. add netCDF to required packages list in RPM build
+180. Allow ncrename to rename attribute of single variable only
 ************************************************************************
 End NCO Wish list
 ************************************************************************

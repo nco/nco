@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.5 2000-08-28 17:22:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.6 2000-08-29 20:57:51 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -67,6 +67,9 @@ is_var_pck /* [fnc] Check whether variable is packed */
   nc_type add_fst_typ; /* [idx] Type of add_offset attribute */
   size_t add_fst_lng; /* [idx] Number of elements in add_offset attribute */
   
+  var_sct *scl_fct; /* [sct] Variable structure for scale_factor */
+  var_sct *add_fst; /* [sct] Variable structure for add_offset */
+
   /* Initialize flags */
   /* fxm: initialize these in var_fll()?, scl_dbl_mk_var()? */
   var->has_scl_fct=False; /* [flg] Valid scale_factor attribute exists */
@@ -87,11 +90,6 @@ is_var_pck /* [fnc] Check whether variable is packed */
     var->has_scl_fct=True; /* [flg] Valid scale_factor attribute exists */
   } /* endif */
 
-  if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
-    var->scl_fct.vp=(void *)nco_malloc(scl_fct_lng*nctypelen(scl_fct_typ));
-    (void)ncattget(var->nc_id,var->id,"scale_factor",var->scl_fct.vp);
-  } /* endif */
-
   /* Vet add_offset */
   rcd=nc_inq_att(nc_id,var->id,"add_offset",&add_fst_typ,&add_fst_lng);
   if(rcd == NC_NOERR){
@@ -104,11 +102,6 @@ is_var_pck /* [fnc] Check whether variable is packed */
       return False;
     } /* endif */
     var->has_add_fst=True; /* [flg] Valid add_offset attribute exists */
-  } /* endif */
-
-  if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
-    var->add_fst.vp=(void *)nco_malloc(add_fst_lng*nctypelen(add_fst_typ));
-    (void)ncattget(var->nc_id,var->id,"add_offset",var->add_fst.vp);
   } /* endif */
 
   if(var->has_scl_fct && var->has_add_fst){
@@ -124,6 +117,30 @@ is_var_pck /* [fnc] Check whether variable is packed */
     var->typ_xpn=scl_fct_typ; /* Type of variable when unpacked (expanded) (in memory) */
     if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: PACKING Variable %s is type %s packed into type %s\n",prg_nm_get(),var->nm,nco_typ_sng(var->typ_xpn),nco_typ_sng(var->typ_dsk));
     if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: PACKING Packing and unpacking are not yet implemented\n",prg_nm_get());
+  } /* endif */
+
+  if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
+    var->scl_fct.vp=(void *)nco_malloc(scl_fct_lng*nctypelen(scl_fct_typ));
+    (void)ncattget(var->nc_id,var->id,"scale_factor",var->scl_fct.vp);
+    scl_fct=scl_ptr_mk_var(var->scl_fct.vp,scl_fct_typ); /* [sct] Variable structure for scale_factor */
+    /* Convert var to type of scale_factor for expansion */
+    var=var_conform_type(scl_fct->type,var);
+    /* Multiply var by scale_factor */
+    (void)var_multiply(scl_fct->type,var->sz,var->has_mss_val,var->mss_val,scl_fct->val,var->val);
+  } /* endif */
+
+  if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
+    var->add_fst.vp=(void *)nco_malloc(add_fst_lng*nctypelen(add_fst_typ));
+    (void)ncattget(var->nc_id,var->id,"add_offset",var->add_fst.vp);
+    add_fst=scl_ptr_mk_var(var->add_fst.vp,add_fst_typ); /* [sct] Variable structure for add_offset */
+    /* Convert var to type of add_offset for expansion */
+    var=var_conform_type(add_fst->type,var);
+    /* Add add_offset to var */
+    (void)var_add(add_fst->type,var->sz,var->has_mss_val,var->mss_val,var->tally,add_fst->val,var->val);
+  } /* endif */
+
+  if(var->has_scl_fct || var->has_add_fst){
+    (void)fprintf(stdout,"%s: DEBUG var->val.dp[0]=%g\n",prg_nm_get(),var->val.dp[0]);
   } /* endif */
 
   return var->is_pck;
@@ -154,5 +171,3 @@ var_upk /* [fnc] Unpack variable */
   return var;
   
 } /* end var_upk */
-
-

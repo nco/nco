@@ -1,11 +1,12 @@
-# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.10 2000-08-28 20:19:58 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.11 2000-08-29 20:56:01 zender Exp $
 # Purpose: RPM spec file for NCO
 # Usage: 
 # Before nco.spec is invoked (with 'rpm -ba nco.spec'), the source tarball 
 # nco-1.2.1 must be in the directory /usr/src/redhat/SOURCES
 # After RPMs are built, upload them to RedHat's contrib area
-# ncftpput incoming.redhat.com /libc6 /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm 
-# ncftpput dust.ps.uci.edu /pub/zender/nco /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm 
+# ncftpput incoming.redhat.com /libc6 /usr/src/redhat/SRPMS/nco-1.2.1-1.src.rpm /usr/src/redhat/RPMS/i386/nco-1.2.1-1.i386.rpm 
+# ncftpput download.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-1.2.1-1.src.rpm /usr/src/redhat/RPMS/i386/nco-1.2.1-1.i386.rpm 
+# ncftpput dust.ps.uci.edu /pub/zender/nco /usr/src/redhat/SRPMS/nco-1.2.1-1.src.rpm /usr/src/redhat/RPMS/i386/nco-1.2.1-1.i386.rpm 
 
 Summary: Arithmetic and metadata operators for netCDF and HDF4 files
 Name: nco

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.53 2000-08-28 17:22:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.54 2000-08-29 20:57:50 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -592,7 +592,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     rmt_fch_cmd_sct msread={"msread -R %s %s",4,synchronous,lcl_rmt};
     rmt_fch_cmd_sct msrcp={"msrcp mss:%s %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct nrnet={"nrnet msget %s r flnm=%s l mail=FAIL",4,asynchronous,lcl_rmt};
-    rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};
+    /*    rmt_fch_cmd_sct rcp={"rcp -p %s %s",4,synchronous,rmt_lcl};*/
     rmt_fch_cmd_sct scp={"scp -p %s %s",4,synchronous,rmt_lcl};
     rmt_fch_cmd_sct ftp={"",4,synchronous,rmt_lcl};
 

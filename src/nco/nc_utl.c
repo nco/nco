@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.89 2000-08-28 17:22:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.90 2000-08-29 20:57:50 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -967,10 +967,14 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
 
   var_sct *var;
 
-  /* Get the record dimension ID */
+  /* Get record dimension ID */
   (void)ncinquire(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
   
+  /* Allocate space for variable structure */
   var=(var_sct *)nco_malloc(sizeof(var_sct));
+  (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
+
+  /* Fill in known fields */
   var->nm=var_nm;
   var->id=var_id;
   var->nc_id=nc_id;
@@ -989,21 +993,10 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
   /* Get dimension IDs from input file */
   (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,var->dmn_id,(int *)NULL);
   
-  /* Set defaults */
   /* Type in memory begins as same type as on disk */
   var->type=var->typ_dsk; /* Type of variable in RAM */
-  var->is_rec_var=False;
-  var->is_crd_var=False;
-  var->sz=1L;
-  var->sz_rec=1L;
-  var->cid=-1;
-  var->has_mss_val=False;
-  var->mss_val.vp=NULL;
-  var->val.vp=NULL;
-  var->tally=NULL;
-  var->xrf=NULL;
 
-  /* Refresh the number of attributes and the missing value attribute, if any */
+  /* Refresh number of attributes and missing value attribute, if any */
   var->has_mss_val=mss_val_get(var->nc_id,var);
 
   for(idx=0;idx<var->nbr_dim;idx++){
@@ -1870,7 +1863,7 @@ var_val_cpy(int in_id,int out_id,var_sct **var,int nbr_var)
 } /* end var_val_cpy() */
 
 void
-dmn_def(char *fl_nm,int nc_id,dmn_sct **dim,int nbr_dim)
+dmn_dfn(char *fl_nm,int nc_id,dmn_sct **dim,int nbr_dim)
 /* 
    char *fl_nm: I name of the output file
    int nc_id: I netCDF output-file ID
@@ -1899,7 +1892,7 @@ dmn_def(char *fl_nm,int nc_id,dmn_sct **dim,int nbr_dim)
     } /* end if */
   } /* end loop over idx */
   
-} /* end dmn_def() */
+} /* end dmn_dfn() */
 
 void 
 var_copy(nc_type var_typ,long sz,ptr_unn op1,ptr_unn op2)
@@ -1910,7 +1903,7 @@ var_copy(nc_type var_typ,long sz,ptr_unn op1,ptr_unn op2)
 } /* end var_copy() */
 
 void
-var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dmn_ncl,int nbr_dmn_ncl)
+var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dmn_ncl,int nbr_dmn_ncl)
 /* 
    int in_id: I netCDF input-file ID
    char *fl_out: I name of the output file
@@ -1945,7 +1938,7 @@ var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
     /* If the variable has not been defined, define it */
     if(var[idx]->id == -1){
       
-      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of ouput dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_def() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in the output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
+      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of ouput dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_dfn() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in the output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
       if(dmn_ncl != NULL || prg_get() == ncwa){
 	int nbr_var_dim=0;
 	int idx_ncl;
@@ -1975,7 +1968,7 @@ var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
     (void)att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id);
   } /* end loop over idx */
   
-} /* end var_def() */
+} /* end var_dfn() */
 
 void 
 hst_att_cat(int out_id,char *hst_sng)
@@ -6049,7 +6042,7 @@ int ncvarid_or_die /* O [enm] Variable ID */
  char *var_nm) /* I [sng] Variable name */
 {
   /* Purpose: Return variable ID of specified variable 
-     Be quiety on success but return meaningful diagnostics on failure */
+     Be quiet on success but return meaningful diagnostics on failure */
   
   int var_id; /* O variable ID */
 
@@ -6065,6 +6058,29 @@ int ncvarid_or_die /* O [enm] Variable ID */
 
   return var_id;
 } /* ncvarid_or_die() */
+
+int ncdimid_or_die /* O [enm] Dimension ID */
+(int nc_id, /* I [enm] File ID */
+ char *dmn_nm) /* I [sng] Dimension name */
+{
+  /* Purpose: Return dimension ID of specified dimension 
+     Be quiet on success but return meaningful diagnostics on failure
+     Routine is copy of ncvarid_or_die() with appropriate substitutions */
+  
+  int dmn_id; /* O dimension ID */
+
+  /* See if requested dimension is in file */
+  ncopts=0; 
+  dmn_id=ncdimid(nc_id,dmn_nm);
+  ncopts=NC_VERBOSE | NC_FATAL; 
+  
+  if(dmn_id == -1){
+    (void)fprintf(stdout,"%s: ERROR ncdimid_or_die() reports requested dimension \"%s\" is not in input file\n",prg_nm_get(),dmn_nm);
+    exit(EXIT_FAILURE);
+  } /* endif */
+
+  return dmn_id;
+} /* ncdimid_or_die() */
 
 var_sct * /* O [var] Variable after (possible) conversion */
 nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
@@ -6087,8 +6103,132 @@ nco_cnv_var_typ_dsk  /* [fnc] Revert variable to on-disk type */
 (var_sct *var) /* I [sct] Variable to be reverted */
 {
   /* Purpose: Revert variable to on-disk type */
-
+  
   if(var->type != var->typ_dsk) var=var_conform_type(var->typ_dsk,var);
-
+  
   return var;
 } /* nco_cnv_var_typ_dsk() */
+
+int /* [enm] Return code */
+var_dfl_set /* [fnc] Set defaults for each member of variable structure */
+(var_sct *var){ /* [sct] Pointer to variable strucutre to initialize to defaults */
+  /* Purpose: Set defaults for each member of variable structure
+     var_dfl_set() should be called by any routine that creates a variable structure */
+
+  int rcd=0; /* [enm] Return code */
+
+  /* Set defaults to be overridden by available information */
+  var->nm=NULL;
+  var->id=-1;
+  var->nc_id=-1;
+  var->type=-1; /* Type of variable in RAM */
+  var->typ_dsk=-1; /* Type of variable on disk */
+  var->is_rec_var=False;
+  var->is_crd_var=False;
+  var->sz=1L;
+  var->sz_rec=1L;
+  var->cid=-1;
+  var->has_mss_val=False;
+  var->mss_val.vp=NULL;
+  var->val.vp=NULL;
+  var->tally=NULL;
+  var->xrf=NULL;
+  var->nbr_dim=-1;
+  var->nbr_att=-1;
+  var->dim=(dmn_sct **)NULL;
+  var->dmn_id=(int *)NULL;
+  var->cnt=(long *)NULL;
+  var->srt=(long *)NULL;
+  var->end=(long *)NULL;
+  var->srd=(long *)NULL;
+
+  return rcd; /* [enm] Return code */
+} /* end var_dfl_set() */
+
+var_sct *
+scl_dbl_mk_var(double val)
+/* 
+   double val: input double precision value to turn into netCDF variable
+   scl_dbl_mk_var: output netCDF variable structure representing val
+ */
+{
+  /* Purpose: Turn a scalar double into a netCDF variable
+     Routine duplicates most functions of var_fll() 
+     Both functions should share as much initialization code as possible */
+
+  static char *var_nm="Internally generated variable";
+
+  var_sct *var;
+
+  var=(var_sct *)nco_malloc(sizeof(var_sct));
+
+  /* Set defaults */
+  (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
+
+  /* Overwrite defaults with values appropriate for artificial variable */
+  var->nm=(char *)strdup(var_nm);
+  var->nbr_dim=0;
+  var->type=NC_DOUBLE;
+  var->val.vp=(void *)nco_malloc(nctypelen(var->type));
+  (void)memcpy((void *)var->val.vp,(void *)(&val),nctypelen(var->type));
+
+  return var;
+} /* end scl_dbl_mk_var() */
+
+var_sct * /* [sct] Output netCDF variable structure representing val */
+scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
+(val_unn val, /* I [frc] Scalar value to turn into netCDF variable */
+ nc_type val_typ) /* I [enm] netCDF type of value */
+{
+  /* Purpose: Turn scalar value of any type into NCO variable
+     Routine is just a wrapper for scl_ptr_mk_var()
+     This routine creates the void * argument needed for scl_ptr_mk_var(),
+     calls, scl_ptr_mk_var(), then passes back the result */
+
+  var_sct *var;
+  void *val_ptr=NULL; /* [ptr] void pointer to value */
+  
+  switch(val_typ){
+  case NC_FLOAT: val_ptr=(void *)(&val.f); break; 
+  case NC_DOUBLE: val_ptr=(void *)(&val.d); break; 
+  case NC_LONG: val_ptr=(void *)(&val.l); break;
+  case NC_SHORT: val_ptr=(void *)(&val.s); break;
+  case NC_CHAR: val_ptr=(void *)(&val.c); break;
+  case NC_BYTE: val_ptr=(void *)(&val.b); break;
+  } /* end switch */
+
+  var=scl_ptr_mk_var(val_ptr,val_typ);
+
+  return var;
+} /* end scl_mk_var() */
+
+var_sct * /* [sct] Output netCDF variable structure representing value */
+scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO variable */
+(void *val_ptr, /* I [frc] Pointer to scalar value to turn into netCDF variable */
+ nc_type val_typ) /* I [enm] netCDF type of pointer/value */
+{
+  /* Purpose: Convert void pointer to scalar of any type into NCO variable
+     Routine duplicates many functions of var_fll() 
+     Both functions should share as much initialization code as possible */
+
+  static char *var_nm="Internally generated variable";
+
+  var_sct *var;
+  
+  var=(var_sct *)nco_malloc(sizeof(var_sct));
+  
+  /* Set defaults */
+  (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
+  
+  /* Overwrite defaults with values appropriate for artificial variable */
+  var->nm=(char *)strdup(var_nm);
+  var->nbr_dim=0;
+  var->type=val_typ;
+  /* fxm: Really necessary to allocate new space here? Why not just use val_ptr? */
+  var->val.vp=(void *)nco_malloc(nctypelen(var->type));
+
+  /* Copy value into variable structure */
+  (void)memcpy((void *)var->val.vp,val_ptr,nctypelen(var->type)); 
+
+  return var;
+} /* end scl_ptr_mk_var() */

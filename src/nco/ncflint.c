@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.24 2000-08-28 17:22:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.25 2000-08-29 20:57:51 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -41,9 +41,9 @@
 
 /* Usage:
    ncflint -O -D 2 in.nc in.nc foo.nc
-   ncflint -O -i lcl_time_hr,9. -v lcl_time_hr /data/zender/arese/crm/951030_0800_arese_crm.nc /data/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
-   ncflint -O -w .66666,.33333 -v lcl_time_hr /data/zender/arese/crm/951030_0800_arese_crm.nc /data/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
-   ncflint -O -w .66666 -v lcl_time_hr /data/zender/arese/crm/951030_0800_arese_crm.nc /data/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
+   ncflint -O -i lcl_time_hr,9.0 -v lcl_time_hr /data/zender/arese/crm/951030_0800_arese_crm.nc /data/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
+   ncflint -O -w 0.66666,0.33333 -v lcl_time_hr /data/zender/arese/crm/951030_0800_arese_crm.nc /data/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
+   ncflint -O -w 0.66666 -v lcl_time_hr /data/zender/arese/crm/951030_0800_arese_crm.nc /data/zender/arese/crm/951030_1100_arese_crm.nc foo.nc; ncks -H foo.nc
 
    ncdiff -O foo.nc /data/zender/arese/crm/951030_0900_arese_crm.nc foo2.nc;ncks -H foo2.nc | m
  */
@@ -68,8 +68,6 @@
 int 
 main(int argc,char **argv)
 {
-  extern var_sct *scl_dbl_mk_var(double);
-
   bool CMD_LN_NTP_VAR=False; /* Option i */
   bool CMD_LN_NTP_WGT=True; /* Option w */
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
@@ -102,8 +100,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.24 2000-08-28 17:22:13 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.24 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.25 2000-08-29 20:57:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.25 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -141,6 +139,8 @@ main(int argc,char **argv)
   
   time_t clock;
   
+  val_unn val_gnr_unn; /* Generic container for arrival point or weight */
+
   var_sct *wgt_1=NULL_CEWI;
   var_sct *wgt_2=NULL_CEWI;
   var_sct *wgt_out_1=NULL;
@@ -188,7 +188,7 @@ main(int argc,char **argv)
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
     case 'i':
-      /* The name of the variable to guide interpolation. Default is none */
+      /* Name of variable to guide interpolation. Default is none */
       ntp_lst_in=lst_prs(optarg,",",&nbr_ntp);
       if(nbr_ntp > 2){
 	(void)fprintf(stdout,"%s: ERROR too many arguments to -i\n",prg_nm_get());
@@ -312,10 +312,6 @@ main(int argc,char **argv)
     (void)dmn_xrf(dim[idx],dmn_out[idx]); 
   } /* end loop over idx */
 
-  if(dbg_lvl > 0){
-    for(idx=0;idx<nbr_xtr;idx++) (void)fprintf(stderr,"xtr_lst[%d].nm = %s, .id= %d\n",idx,xtr_lst[idx].nm,xtr_lst[idx].id);
-  } /* end if */
-  
   /* Is this an NCAR CSM-format history tape? */
   NCAR_CSM_FORMAT=ncar_csm_inq(in_id);
 
@@ -342,10 +338,10 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
 
   /* Define dimensions in output file */
-  (void)dmn_def(fl_out,out_id,dmn_out,nbr_dmn_xtr);
+  (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
   /* Define variables in output file, and copy their attributes */
-  (void)var_def(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
+  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
 
   /* Turn off default filling behavior to enhance efficiency */
 #if ( ! defined SUN4 ) && ( ! defined SUN4SOL2 ) && ( ! defined SUNMP )
@@ -388,7 +384,8 @@ main(int argc,char **argv)
     var_sct *ntp_var_out;
 
     /* Turn arrival point into pseudo-variable */
-    ntp_var_out=scl_dbl_mk_var(ntp_val_out);
+    val_gnr_unn.d=ntp_val_out; /* Generic container for arrival point or weight */
+    ntp_var_out=scl_mk_var(val_gnr_unn,NC_DOUBLE);
 
     ntp_id_1=ncvarid_or_die(in_id_1,ntp_nm);
     ntp_id_2=ncvarid_or_die(in_id_2,ntp_nm);
@@ -412,6 +409,7 @@ main(int argc,char **argv)
 
     /* Check for degenerate case */
     if(ntp_1->val.dp[0] == ntp_2->val.dp[0]){
+      /* fxm: This is an error because weights ... */
       (void)fprintf(stdout,"%s: ERROR %s is identical (%g) in input files\n",prg_nm_get(),ntp_nm,ntp_1->val.dp[0]);
       exit(EXIT_FAILURE);
     } /* end if */
@@ -435,13 +433,15 @@ main(int argc,char **argv)
   } /* end if CMD_LN_NTP_VAR */
 
   if(CMD_LN_NTP_WGT){
-    wgt_1=scl_dbl_mk_var(wgt_val_1);
-    wgt_2=scl_dbl_mk_var(wgt_val_2);
+    val_gnr_unn.d=wgt_val_1; /* Generic container for arrival point or weight */
+    wgt_1=scl_mk_var(val_gnr_unn,NC_DOUBLE);
+    val_gnr_unn.d=wgt_val_2; /* Generic container for arrival point or weight */
+    wgt_2=scl_mk_var(val_gnr_unn,NC_DOUBLE);
   } /* end if CMD_LN_NTP_WGT */
 
   if(dbg_lvl > 1) (void)fprintf(stderr,"wgt_1 = %g, wgt_2 = %g\n",wgt_1->val.dp[0],wgt_2->val.dp[0]);
 
-    /* Create a structure list for the second file */
+  /* Create structure list for second file */
   var_prc_2=(var_sct **)nco_malloc(nbr_var_prc*sizeof(var_sct *));
 
   /* Loop over each interpolated variable */
@@ -468,7 +468,7 @@ main(int argc,char **argv)
     var_prc_out[idx]->tally=(long *)nco_malloc(var_prc_out[idx]->sz*sizeof(long));
     (void)zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
   
-    /* Weight the variable by taking the product of the weight and the variable */
+    /* Weight variable by taking product of weight with variable */
     (void)var_multiply(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,wgt_out_1->val,var_prc_1[idx]->val);
     (void)var_multiply(var_prc_2[idx]->type,var_prc_2[idx]->sz,var_prc_2[idx]->has_mss_val,var_prc_2[idx]->mss_val,wgt_out_2->val,var_prc_2[idx]->val);
     (void)var_add(var_prc_1[idx]->type,var_prc_1[idx]->sz,var_prc_1[idx]->has_mss_val,var_prc_1[idx]->mss_val,var_prc_out[idx]->tally,var_prc_1[idx]->val,var_prc_2[idx]->val);
@@ -505,54 +505,3 @@ main(int argc,char **argv)
   Exit_gracefully();
   return EXIT_SUCCESS;
 } /* end main() */
-
-var_sct *
-scl_dbl_mk_var(double val)
-/* 
-   double val: input double precision value to turn into netCDF variable
-   scl_dbl_mk_var: output netCDF variable structure representing val
- */
-{
-  /* Purpose: Turn a scalar double into a netCDF variable
-     Routine duplicates most functions of var_fll() 
-     Ideally both functions would share much of same initialization code */
-
-  static char *var_nm="Internally generated variable";
-
-  var_sct *var;
-
-  var=(var_sct *)nco_malloc(sizeof(var_sct));
-
-  var->id=-1;
-  var->nc_id=-1;
-  var->nbr_dim=0;
-  var->nbr_att=-1;
-
-  var->type=NC_DOUBLE;
-  var->val.vp=(void *)nco_malloc(nctypelen(var->type));
-  (void)memcpy((void *)var->val.vp,(void *)(&val),nctypelen(var->type));
-
-  /* Set defaults */
-  var->is_rec_var=False;
-  var->is_crd_var=False;
-  var->sz=1L;
-  var->sz_rec=1L;
-  var->cid=-1;
-  var->has_mss_val=False;
-  /* Artificial variables have no disk representation (yet) */
-  var->typ_dsk=-1;
-
-  /* Fill in pointer values */
-  var->nm=(char *)strdup(var_nm);
-  var->mss_val.vp=NULL;
-  var->tally=NULL;
-  var->dmn_id=NULL;
-  var->dim=NULL;
-  var->srt=NULL;
-  var->end=NULL;
-  var->cnt=NULL;
-  var->xrf=NULL;
-
-  return var;
-} /* end scl_dbl_mk_var */
-

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.20 2000-08-28 17:22:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.21 2000-08-29 20:57:51 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -89,8 +89,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.20 2000-08-28 17:22:13 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.20 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.21 2000-08-29 20:57:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.21 $";
   
   rnm_sct *var_rnm_lst=NULL_CEWI;
   rnm_sct *dmn_rnm_lst=NULL_CEWI;
@@ -261,7 +261,7 @@ main(int argc,char **argv)
       } /* end if */
       ncopts=NC_VERBOSE | NC_FATAL; 
     }else{
-      var_rnm_lst[idx].id=ncvarid(nc_id,var_rnm_lst[idx].old_nm);
+      var_rnm_lst[idx].id=ncvarid_or_die(nc_id,var_rnm_lst[idx].old_nm);
       (void)ncvarrename(nc_id,var_rnm_lst[idx].id,var_rnm_lst[idx].new_nm);
       if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed variable \"%s\" to \"%s\"\n",var_rnm_lst[idx].old_nm,var_rnm_lst[idx].new_nm);
     } /* end else */
@@ -279,7 +279,7 @@ main(int argc,char **argv)
       } /* end if */
       ncopts=NC_VERBOSE | NC_FATAL; 
     }else{
-      dmn_rnm_lst[idx].id=ncdimid(nc_id,dmn_rnm_lst[idx].old_nm);
+      dmn_rnm_lst[idx].id=ncdimid_or_die(nc_id,dmn_rnm_lst[idx].old_nm);
       (void)ncdimrename(nc_id,dmn_rnm_lst[idx].id,dmn_rnm_lst[idx].new_nm);
       if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed dimension \"%s\" to \"%s\"\n",dmn_rnm_lst[idx].old_nm,dmn_rnm_lst[idx].new_nm);
     } /* end else */
@@ -335,7 +335,7 @@ main(int argc,char **argv)
 	} /* end else */
       } /* end loop over var_id */
 
-      /* See to it that any mandatory renaming was performed, else abort. */
+      /* See to it that any mandatory renaming was performed, else abort */
       if(nbr_rnm == 0){
 	if(att_rnm_lst[idx].old_nm[0] == '.'){
 	  (void)fprintf(stderr,"%s: WARNING Attribute \"%s\" not present in %s, skipping it.\n",prg_nm,att_rnm_lst[idx].old_nm+1,fl_in);

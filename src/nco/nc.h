@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.43 2000-08-28 17:22:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.44 2000-08-29 20:57:50 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -229,7 +229,8 @@ typedef union {
   double d;
   nclong l;
   short s;
-  char c;
+  signed char c;
+  unsigned char b;
 } val_unn;
 
 typedef struct{
@@ -268,6 +269,7 @@ typedef struct dmn_sct_tag{
   struct dmn_sct_tag *xrf; /* Cross-reference to associated dimension structure (usually the structure for the dimension on output) */
 } dmn_sct;
 
+/* NB: Each member of var_sct structure should be initialized to default in var_dfl_set() */
 typedef struct var_sct_tag{
   char *nm; /* Variable name */
   int id; /* Variable ID */
@@ -301,6 +303,7 @@ typedef struct var_sct_tag{
   nc_type typ_pck; /* Type of variable when packed (on disk) */
   nc_type typ_xpn; /* Type of variable when unpacked (expanded) (in memory) */
 } var_sct;
+
 /* Note: Fortran functions are deprecated as of NCO 1.2, will be removed unless volunteer takes over their maintenance */
 #ifdef USE_FORTRAN_ARITHMETIC
 #ifdef CRAY
@@ -438,7 +441,7 @@ extern void att_cpy(int,int,int,int);
 extern void cast_nctype_void(nc_type,ptr_unn *);
 extern void cast_void_nctype(nc_type,ptr_unn *);
 extern void copyright_prn(char *,char *);
-extern void dmn_def(char *,int,dmn_sct **,int);
+extern void dmn_dfn(char *,int,dmn_sct **,int);
 extern void dmn_lmt_mrg(dmn_sct **,int,lmt_sct *,int);
 extern void dmn_xrf(dmn_sct *,dmn_sct *);
 extern void fl_cmp_err_chk(void);
@@ -464,7 +467,7 @@ extern void var_avg_reduce_ttl(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_
 extern void var_avg_reduce_min(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
 extern void var_avg_reduce_max(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
 extern void var_copy(nc_type,long,ptr_unn,ptr_unn);
-extern void var_def(int,char *,int,var_sct **,int,dmn_sct **,int);
+extern void var_dfn(int,char *,int,var_sct **,int,dmn_sct **,int);
 extern void var_dmn_xrf(var_sct *);
 extern void var_divide(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
 extern void var_get(int,var_sct *);
@@ -496,6 +499,10 @@ extern int ncvarid_or_die /* O [enm] Variable ID */
 (int nc_id, /* I [enm] File ID */
  char *var_nm); /* I [sng] Variable name */
  
+extern int ncdimid_or_die /* O [enm] Dimension ID */
+(int nc_id, /* I [enm] File ID */
+ char *dmn_nm); /* I [sng] Dimension name */
+
 extern var_sct * /* O [sct] Variable reverted to previous type */
 nco_cnv_var_typ_dsk  /* [fnc] Revert variable to previous type */
 (var_sct *var); /* I [sct] Variable to be reverted */
@@ -508,6 +515,20 @@ is_var_pck /* [fnc] Check whether variable is packed */
 extern var_sct * /* O [sct] Unpacked variable */
 var_upk /* [fnc] Unpack variable */
 (var_sct *var); /* I/O [sct] Variable to be unpacked */
+
+extern int /* [enm] Return code */
+var_dfl_set /* [fnc] Set defaults for each member of variable structure */
+(var_sct *var); /* [sct] Pointer to variable strucutre to initialize to defaults */
+
+extern var_sct * /* [sct] Output netCDF variable structure representing val */
+scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
+(val_unn val, /* I [frc] Scalar value to turn into netCDF variable */
+ nc_type val_typ); /* I [enm] netCDF type of value */
+
+extern var_sct * /* [sct] Output netCDF variable structure representing value */
+scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO variable */
+(void *vp, /* I [frc] Pointer to scalar value to turn into netCDF variable */
+ nc_type val_typ); /* I [enm] netCDF type of pointer/value */
 
 #endif /* NC_H */
 

@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.69 2000-08-28 17:22:13 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.70 2000-08-29 20:56:01 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -66,9 +66,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-08-28 17:22:13 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.69 2000-08-28 17:22:13 zender Exp $';
-my $CVS_Revision='$Revision: 1.69 $';
+my $CVS_Date='$Date: 2000-08-29 20:56:01 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.70 2000-08-29 20:56:01 zender Exp $';
+my $CVS_Revision='$Revision: 1.70 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -290,7 +290,7 @@ if($bld){
 } # endif bld
 
 if($acd_prs){
-     $rmt_mch='dust.acd.ucar.edu';
+     $rmt_mch='acd.ucar.edu';
      print STDOUT "\n$prg_nm: Updating private NCO on $rmt_mch...\n";
      cmd_prc("$rsh_cmd $rmt_mch \"cd ~/nco;$cvs_cmd update\"");
      cmd_prc("$rsh_cmd $rmt_mch \"cd ~/nco/bld;make cln all tst\"");

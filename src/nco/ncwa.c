@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.49 2000-08-28 17:22:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.50 2000-08-29 20:57:51 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.49 2000-08-28 17:22:13 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.49 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.50 2000-08-29 20:57:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.50 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -470,10 +470,10 @@ main(int argc,char **argv)
   if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
 
   /* Define dimensions in output file */
-  (void)dmn_def(fl_out,out_id,dmn_out,nbr_dmn_out);
+  (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_out);
 
   /* Define variables in output file, and copy their attributes */
-  (void)var_def(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out);
+  (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out);
 
   /* New missing values must be added to the output file in define mode */
   if(msk_nm != NULL){

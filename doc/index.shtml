@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.58 2000-08-28 20:16:31 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.59 2000-08-29 20:57:42 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -263,7 +263,7 @@ fixes we currently have in mind for NCO.</li>
 <p>Users at UC Irvine and NCAR will find pre-built, up-to-date NCO
 executables in the following locations:
 <ul>
-<li>ACD <tt>dust.acd.ucar.edu</tt> (Linux 2.2.5): <tt>/gs/zender/bin/LINUX</tt></li>
+<li>ACD <tt>acd.ucar.edu</tt> (Linux 2.2.14): <tt>/ur/zender/bin/LINUX</tt></li>
 <li>ACD <tt>garcia.acd.ucar.edu</tt> (Compaq tru64): <tt>/usr/local/bin</tt></li>
 <li>CGD network (Solaris 2.6): <tt>/contrib/bin</tt></li>
 <li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5): <tt>/contrib/bin</tt></li>

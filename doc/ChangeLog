@@ -1,3 +1,11 @@
+2000-08-29  Charlie Zender  <zender@uci.edu>
+
+	* Added some clarifications to memory handling in the manual, and
+	additional examples provoked by John Sheldon's GFDL netCDF
+	website. 
+
+	* Integrated ncvarid_or_die() and ncdimid_or_die() into ncrename
+
 2000-08-28  Charlie Zender  <zender@uci.edu>
 
 	* Tagged nco-1_2_1

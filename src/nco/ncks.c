@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.32 2000-08-28 17:22:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.33 2000-08-29 20:57:51 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -74,12 +74,12 @@
 int 
 main(int argc,char **argv)
 {
-  int cpy_var_def(int,int,int,char *);
-  int cpy_var_def_lmt(int,int,int,char *,lmt_sct *,int);
+  int cpy_var_dfn(int,int,int,char *);
+  int cpy_var_dfn_lmt(int,int,int,char *,lmt_sct *,int);
   void cpy_var_val(int,int,char *);
   void cpy_var_val_lmt(int,int,char *,lmt_sct *,int);
   void prn_att(int,int);
-  void prn_var_def(int,char *);
+  void prn_var_dfn(int,char *);
   void prn_var_val_lmt(int,char *,lmt_sct *,int,char *,bool,bool);
    
   bool ALPHABETIZE_OUTPUT=True; /* Option a */
@@ -110,8 +110,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.32 2000-08-28 17:22:13 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.32 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.33 2000-08-29 20:57:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.33 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -272,7 +272,7 @@ main(int argc,char **argv)
       int var_out_id;
       
       /* Define the variable in the output file */
-      if(lmt_nbr > 0) var_out_id=cpy_var_def_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt,lmt_nbr); else var_out_id=cpy_var_def(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);
+      if(lmt_nbr > 0) var_out_id=cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt,lmt_nbr); else var_out_id=cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);
       /* Copy the variable's attributes */
       (void)att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id);
     } /* end loop over idx */
@@ -316,7 +316,7 @@ main(int argc,char **argv)
   if(OUTPUT_VARIABLE_METADATA){
     for(idx=0;idx<nbr_xtr;idx++){
       /* Print the variable's definition */
-      (void)prn_var_def(in_id,xtr_lst[idx].nm);
+      (void)prn_var_dfn(in_id,xtr_lst[idx].nm);
       /* Print the variable's attributes */
       (void)prn_att(in_id,xtr_lst[idx].id);
     } /* end loop over idx */
@@ -483,13 +483,13 @@ prn_att(int in_id,int var_id)
 } /* end prn_att() */
 
 int 
-cpy_var_def(int in_id,int out_id,int rec_dmn_id,char *var_nm)
+cpy_var_dfn(int in_id,int out_id,int rec_dmn_id,char *var_nm)
 /* 
    int in_id: input netCDF input-file ID
    int out_id: input netCDF output-file ID
    int rec_dmn_id: input input-file record dimension ID
    char *var_nm: input variable name
-   int cpy_var_def(): output output-file variable ID
+   int cpy_var_dfn(): output output-file variable ID
  */
 {
   /* Routine to copy the variable metadata from an input netCDF file
@@ -560,10 +560,10 @@ cpy_var_def(int in_id,int out_id,int rec_dmn_id,char *var_nm)
   (void)free(dmn_out_id);
   
   return var_out_id;
-} /* end cpy_var_def() */
+} /* end cpy_var_dfn() */
 
 int 
-cpy_var_def_lmt(int in_id,int out_id,int rec_dmn_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
+cpy_var_dfn_lmt(int in_id,int out_id,int rec_dmn_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
 /* 
    int in_id: input netCDF input-file ID
    int out_id: input netCDF output-file ID
@@ -571,7 +571,7 @@ cpy_var_def_lmt(int in_id,int out_id,int rec_dmn_id,char *var_nm,lmt_sct *lmt,in
    char *var_nm: input variable name
    lmt_sct *lmt: input structure from lmt_evl() holding dimension limit info.
    int lmt_nbr: input number of dimensions with user-specified limits
-   int cpy_var_def_lmt(): output output-file variable ID
+   int cpy_var_dfn_lmt(): output output-file variable ID
  */
 {
   /* Routine to copy the variable metadata from an input netCDF file
@@ -653,7 +653,7 @@ cpy_var_def_lmt(int in_id,int out_id,int rec_dmn_id,char *var_nm,lmt_sct *lmt,in
   (void)free(dmn_out_id);
   
   return var_out_id;
-} /* end cpy_var_def_lmt() */
+} /* end cpy_var_dfn_lmt() */
 
 void 
 cpy_var_val(int in_id,int out_id,char *var_nm)
@@ -1019,7 +1019,7 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
 } /* end cpy_var_val_lmt() */
 
 void
-prn_var_def(int in_id,char *var_nm)
+prn_var_dfn(int in_id,char *var_nm)
 /* 
    int in_id: input netCDF input-file ID
    char *var_nm: input variable name
@@ -1115,7 +1115,7 @@ prn_var_def(int in_id,char *var_nm)
     (void)free(dmn_id);
   } /* end if nbr_dim > 0*/
 
-} /* end prn_var_def() */
+} /* end prn_var_dfn() */
 
 void 
 prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bool FORTRAN_STYLE,bool PRINT_DIMENSIONAL_UNITS)
