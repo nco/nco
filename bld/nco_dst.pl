@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.136 2005-03-24 20:48:47 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.137 2005-03-24 20:54:48 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -67,9 +67,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2005-03-24 20:48:47 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.136 2005-03-24 20:48:47 zender Exp $';
-my $CVS_Revision='$Revision: 1.136 $';
+my $CVS_Date='$Date: 2005-03-24 20:54:48 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.137 2005-03-24 20:54:48 zender Exp $';
+my $CVS_Revision='$Revision: 1.137 $';
 my $CVSROOT='zender@cvs.sf.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -203,7 +203,7 @@ if($dly_snp){
     $nco_vrs=substr($tag_sng,length($mdl_sng)+1,length($tag_sng)-length($mdl_sng)-1); # The +/- 1 accounts for the dash '-'
     ($nco_vrs_mjr,$nco_vrs_mnr,$nco_vrs_pch)=split(/\./,$nco_vrs);
     $dst_vrs=$mdl_sng.'-'.$nco_vrs;
-    if($nco_vrs_mjr < 1 || $nco_vrs_mjr > 2){die "$prg_nm: ERROR $nco_vrs_mjr < 1 || $nco_vrs_mjr > 2"};
+    if($nco_vrs_mjr < 1 || $nco_vrs_mjr > 3){die "$prg_nm: ERROR $nco_vrs_mjr < 1 || $nco_vrs_mjr > 3"};
 } # endelse
 $dst_fl=$dst_vrs.'.tar.gz'; # Standard tarball distribution
 $dst_fl_chg=$mdl_sng.'_'.$nco_vrs.'-1_i386.changes'; # Debian changes

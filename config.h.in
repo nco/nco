@@ -126,11 +126,11 @@
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
 
-/* Define to 1 if you have the `nco' library (-lnco). */
-#undef HAVE_LIBNCO
-
 /* Define to 1 if you have the `nc-dods' library (-lnc-dods). */
 #undef HAVE_LIBNC_DODS
+
+/* Define to 1 if you have the `nsl' library (-lnsl). */
+#undef HAVE_LIBNSL
 
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #undef HAVE_LIBPTHREAD
