@@ -28,7 +28,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.55 2000-03-09 00:22:53 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.56 2000-03-09 00:46:51 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -64,16 +64,16 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-03-09 00:22:53 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.55 2000-03-09 00:22:53 zender Exp $';
-my $CVS_Revision='$Revision: 1.55 $';
+my $CVS_Date='$Date: 2000-03-09 00:46:51 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.56 2000-03-09 00:46:51 zender Exp $';
+my $CVS_Revision='$Revision: 1.56 $';
 my $CVSROOT='$CVSROOT'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
 my $bld=$False; # Option bld; Whether to rebuild netCDF distribution
 my $cp_cmd='cp -p -f'; # Command that behaves like cp
-my $cvs_cmd='cvs -t'; # Command that behaves like cvs
+my $cvs_cmd='cvs'; # Command that behaves like cvs (Use cvs -t for verbose output)
 my $data_nm=$ENV{'DATA'};
 my $ftp_drc='/ftp/pub/zender/nco'; # Directory on FTP machine where repository resides
 my $ftp_drc_mrr='/home/groups/ftp/pub/nco'; # Directory on FTP mirror machine where repository resides
@@ -231,8 +231,7 @@ if($bld){
     if($dly_snp){
 	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -D \"1 second ago\" -d $dst_pth_bld nco"); # Export
     }else{
-	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv $vrs_tag -d $dst_pth_bld nco"); # Export
-#	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -r $vrs_tag -d $dst_pth_bld nco"); # Export
+	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -r $vrs_tag -d $dst_pth_bld nco"); # Export
     } # endelse
     cmd_prc("printf $dst_vrs > $dst_pth_bld/doc/VERSION"); # Stamp version in VERSION file in exported files
     cmd_prc("printf $dst_vrs > $usr_nm/nc/nco/doc/VERSION"); # Stamp version in VERSION file in development directory
