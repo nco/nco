@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.14 2002-09-09 04:14:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.15 2002-12-19 15:51:24 hmb Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -20,6 +20,7 @@
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp. . . */
+#include <limits.h> /* need LONG_MAX */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -53,8 +54,8 @@ extern "C" {
    const int out_id, /* I [id] netCDF output file ID */
    const int rec_dmn_id, /* I [id] Input file record dimension ID  */
    const char * const var_nm, /* I [sng] Input variable name */
-   const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
-   const int lmt_nbr); /* I [nbr] Number of hyperslab limits */
+   const lmt_all * const lmt_lst, /* I [sct] Hyperslab limits */
+   const int lmt_lst_nbr); /* I [nbr] Number of hyperslab limits */
 
   void
   nco_cpy_var_val /* [fnc] Copy variable data from input to output file */
@@ -73,6 +74,7 @@ extern "C" {
    char *var_nm, /* I [sng] Variable name */
    const lmt_sct * const lmt, /* I [sct] Hyperslab limits */
    const int lmt_nbr); /* I [nbr] Number of hyperslab limits */
+ 
 
   void 
   var_copy /* [fnc] Copy hyperslab variables of type var_typ from op1 to op2 */
@@ -154,7 +156,61 @@ extern "C" {
   nco_xrf_var /* [fnc] Make xrf elements of variable structures point to eachother */
   (var_sct * const var_1, /* I/O [sct] Variable */
    var_sct * const var_2); /* I/O [sct] Related variable */
+
+
+ void
+  nco_cpy_var_val_multi_lmt /* [fnc] Copy variable data from input to output file */
+  (const int in_id, /* I [id] netCDF input file ID */
+   const int out_id, /* I [id] netCDF output file ID */
+   FILE * const fp_bnr, /* I [fl] Unformatted binary output file handle */
+   const bool NCO_BNR_WRT, /* I [flg] Write binary file */
+   char *var_nm, /* I [sng] Variable name */
+   const lmt_all * const lmt_lst, /* I multi-hyperslab limits */
+   const int nbr_dmn_fl); /* I [nbr] Number of multi-hyperslab limits */
+
+
+  void *
+  nco_msa_merge_slabs(
+  int i,               /* current depth, we start at 0 */
+  int imax,            /* maximium depth (i.e the number of dims in variable (does not change)*/	
+  lmt_all **lmt_lst,   /* list of limits in each dimension (this remains STATIC as we recurse) */
+  void **vp_wrap,     /* pointers to hyperslabs */ 
+  long *vp_size,      /* size of each hyperslab */
+  long *var_sz,       /* Var size of merged hyperslab */ 
+  var_sct *vara);      /* hold data about current variable */
+
   
+  bool 
+  nco_msa_calc_indices(   /* if false then this is the last limit out */
+  bool NORMALIZE,         /* Return indices of slab within the slab */
+  lmt_all *lmt_a,         /* I list of lmts for each dimension  */
+  long *indices,          /* I/O so routine can keep track of where its at */
+  lmt_sct  *lmt_out,      /* O  output hyperslab */
+  int *slb );             /* slab which the above limit refers to */ 
+
+  
+  void 
+  nco_msa_print_indices    /* Calculate indices for multiple hyperslabbing */
+  (lmt_all * lmt_lst); 
+
+  void 
+  nco_msa_calc_cnt    /* Calculate indices for multiple hyperslabbing */
+  (lmt_all * lmt_lst); 
+
+  void *
+  nco_msa_rec_calc(  /* Multi slab algorithm (recursive routine, returns a single slab pointer */
+  int i,             /* current depth, we start at 0 */
+  int imax,          /* maximium depth (i.e the number of dims in variable (does not change)*/		 
+  lmt_sct **lmt,    /* limits of the current hyperslab these change as we recurse */
+  lmt_all **lmt_lst, /* list of limits in each dimension (this remains STATIC as we recurse */
+  var_sct *var1);    /* Infor for routine to read var (should not change */
+
+  long
+  nco_msa_min_indices( /* find min values in current and return the min value*/
+  long *current,   /* current indices */
+  bool *min,       /* element true if a minimum */
+  int size);       /* size of current and min */
+
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
