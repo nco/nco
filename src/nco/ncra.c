@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.30 2000-07-13 18:33:06 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.31 2000-07-27 12:52:28 hmb Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.30 2000-07-13 18:33:06 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.30 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.31 2000-07-27 12:52:28 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.31 $";
   char *nco_op_typ_sng=NULL_CEWI; /*  for average,  for minimium,  for maximium,  for total */
   
   dmn_sct **dim;
@@ -462,6 +462,11 @@ main(int argc,char **argv)
       case nco_op_avgsumsqr: /* Normalize sum of squares by tally to create mean square */
 	(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
 	break;
+	  
+	  case nco_op_rmssdn: /* Normalize sum of squares by tally-1 to create mean square */
+     (void)var_normalize_sdn(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	break;
+
       case nco_op_min: /* Minimum is already in buffer, do nothing */
       case nco_op_max: /* Maximum is already in buffer, do nothing */
       case nco_op_ttl: /* Total is already in buffer, do nothing */
@@ -471,6 +476,7 @@ main(int argc,char **argv)
       /* Some operations require another stage of processing */
       switch(nco_op_typ) {
       case nco_op_rms: /* Take root of sum of squares to create root mean square */
+      case nco_op_rmssdn: /* rmssdn = sqrt(sum of square / N-1 ) */
       case nco_op_sqrt: /* Take root of mean to create root mean */
 	(void)var_sqrt(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val,var_prc_out[idx]->val);
 	break;
