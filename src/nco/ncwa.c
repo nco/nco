@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.78 2002-05-14 00:57:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.79 2002-06-02 02:24:23 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.78 2002-05-14 00:57:45 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.78 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.79 2002-06-02 02:24:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.79 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -336,7 +336,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_dmn_avg;idx++){
       dmn_avg_lst_in[idx]=(char *)strdup(dmn_lst[idx].nm);
     } /* end loop over idx */
-    (void)fprintf(stderr,"%s: WARNING No dimensions specified with -a, therefore reducing (averaging, taking minimum, etc.) over all dimensions\n",prg_nm);
+    (void)fprintf(stderr,"%s: INFO No dimensions specified with -a, therefore reducing (averaging, taking minimum, etc.) over all dimensions\n",prg_nm);
   } /* end if nbr_dmn_avg == 0 */
 
   if (nbr_dmn_avg > 0){

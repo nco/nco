@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.5 2002-05-31 21:18:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.6 2002-06-02 02:24:23 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -255,9 +255,10 @@ hst_att_cat /* [fnc] Add command line, date stamp to history attribute */
 (const int out_id, /* I [id] netCDF output-file ID */
  const char * const hst_sng) /* I [sng] String to add to history attribute */
 {
-/* Purpose: Add command line and date stamp to existing history attribute, if any,
+  /* Purpose: Add command line and date stamp to existing history attribute, if any,
    and write them to specified output file */
 
+  /* Length of string + NUL required to old output of ctime() */
 #define TIME_STAMP_SNG_LNG 25 
 
   char att_nm[NC_MAX_NAME];
