@@ -1,5 +1,7 @@
 1999-10-03  Charlie Zender  <zender@dust.ps.uci.edu>
 
+	* Tagged this as nco1_1_39
+
 	* Added test target in bld/Makefile. Now `make test' automatically
 	downloads a small (66 kb) file on which it performs a small
 	battery of tests (bld/nco_tst.sh). 
