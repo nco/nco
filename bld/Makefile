@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.187 2002-09-20 20:34:24 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.188 2002-09-20 20:38:33 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -806,8 +806,7 @@ FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
 LD := ld
-LDFLAGS := -L${MY_LIB_DIR} -lnco_cxx -L${NETCDF_LIB} -lnetcdf -lsunmath -lsocket -lnsl
-LDFLAGS += -lF77 -lM77 -lresolv
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsunmath -lsocket -lnsl
 LEX := lex
 LINT := lint
 YACC := yacc
