@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.219 2003-06-16 16:37:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.220 2003-06-23 01:25:23 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -220,13 +220,20 @@ Command executes but in.hdf is full of screwy values
 ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 251. Does ncks -B correctly write packed variables in binary format?
 253. Sift through numerous files in ~/nco/nco-2.7.3/debian, edit important ones
-254. Use ncap to create T42 fields in nco_tst.nc, removing dependence of make tst on FTP
+254. Use ncap to create T42 fields in nco_tst.nc, remove dependence of make tst on FTP
 255. Desktop icon for NCO
 256. Turn udunits into .deb
 257. Put hybrid_sigma_pressure etc. definitions into in.cdl
 258. Develop syntax/procedure for specifying lists of hyperslabs for single pass, low memory consumption MSA jobs like Martin Schultz's in Discussion forum on 20030506
-259. Variadic function extension to nco_malloc() to support printing debuggin messages
+259. Variadic function extension to nco_malloc() to support printing debugging messages?
 260. Warn (but work) when coordinate variable has more than two dimensions
+261. UDUnits problem:
+ncks -H -d lon,0.63e-6 ~/nco/data/in.nc
+var_id: 5, att_nm: units
+nco_err_exit(): ERROR nco_inq_att
+Attribute not found
+ncks -H -d wvl,"0.63 microns" -v idx_rfr_img_wgt,idx_rfr_rl_wgt ${DATA}/aca/aer_saharan_dust.nc
+Segmentation fault
 ************************************************************************
 End NCO Wish list
 ************************************************************************
