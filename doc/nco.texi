@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.151 2003-03-19 07:27:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.152 2003-03-21 16:26:58 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -45,6 +45,7 @@ texi2dvi --pdf --output=nco.pdf nco.texi
 pdfthumb nco.pdf nco.pdf2;/bin/mv nco.pdf2 nco.pdf
 dvips -o nco.ps nco.dvi 
 dvips -Ppdf -G0 -o nco.ps nco.dvi 
+makeinfo --html --no-split --output=nco.html nco.texi
 makeinfo --no-split --output=nco.info nco.texi 
 makeinfo --no-headers --no-split --output=nco.txt nco.texi
 makeinfo --xml --no-split --output=nco.xml nco.texi
@@ -66,9 +67,18 @@ or any later version published by the Free Software Foundation;
 with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
 Texts. The license is available online at 
 http://www.gnu.ai.mit.edu/copyleft/fdl.html
-
 @end ignore
 
+@c Start of header
+@setfilename nco.info
+@settitle @acronym{NCO} @value{nco-edition} User's Guide
+@c Uncomment following line to produce guide in smallbook format
+@c @smallbook
+@c Merge function index into concept index
+@syncodeindex fn cp
+@c end of header
+
+@c TeXInfo macros may not appear before TeXInfo @setfilename header
 @c [idx] Index
 @macro idx {}
 i
@@ -84,6 +94,7 @@ u
 @macro xxx {}
 x
 @end macro
+@c TeX macros may appear anywhere after line 1
 @tex
 % Define TeX macros to roughly correspond to LaTeX style files
 % Use \gdef instead of \def to make definition persistent across TeX blocks
@@ -108,15 +119,6 @@ x
 \gdef\xxx{x} % [ltr] x
 \gdef\yyy{y} % [ltr] y
 @end tex
-
-@c Start of header
-@setfilename nco.info
-@settitle @acronym{NCO} @value{nco-edition} User's Guide
-@c Uncomment following line to produce guide in smallbook format
-@c @smallbook
-@c Merge function index into concept index
-@syncodeindex fn cp
-@c end of header
 
 @direntry
 * NCO::        User's Guide for the netCDF Operator suite
