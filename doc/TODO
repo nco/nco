@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.387 2004-09-03 06:28:09 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.388 2004-09-03 20:25:30 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -260,7 +260,6 @@ nco409. ncpdq: Handle packing of NC_CHAR,NC_BYTE...
         ncpdq -O -D 3 -C -P all_new -v char_var ~/nco/data/in.nc ~/foo.nc
 nco410. ncpdq: Handle packing of NC_SHORT...
         ncpdq -O -D 3 -C -P all_new -v short_var ~/nco/data/in.nc ~/foo.nc
-nco411. ncpdq: handle nco_pck_upk() correctly in nco_var_dfn()
 nco412. ncbo:
 zender@elnino:~/nco/bld$ ncbo ~/foo_upk.nc ~/nco/data/in.nc ~/foo_diff.nc
 ncbo: ERROR nco_op_typ_get() reports empty user-specified operation string in conjunction with unknown or ambiguous executable name ncbo
@@ -271,7 +270,10 @@ nco_dfl_case_nc_type_err(): ERROR switch(nctype) statement fell through to defau
 Not handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype definition is braindead in netCDF2.x). Exiting...
 ERROR: program exiting through nco_err_exit() which will now call abort()
 Aborted
-nco414. 
+nco414. ncpdq: valgrind lint
+nco415. ncpdq: use nco_is_packable()
+nco416. ncpdq -D 3 -O -C -P all_new -v zero ~/nco/data/in.nc ~/foo.nc
+nco417. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

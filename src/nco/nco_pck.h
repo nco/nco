@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.19 2004-09-03 06:28:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.20 2004-09-03 20:25:32 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -47,6 +47,10 @@ extern "C" {
 void 
 nco_dfl_case_pck_typ_err /* [fnc] Print error and exit for illegal switch(nco_pck_typ) case */
 (void);
+
+bool /* O [flg] NCO will attempt to pack variable */
+nco_is_packable /* [fnc] Will NCO attempt to pack variable? */
+(const nc_type nc_typ_in); /* I [enm] Type of input variable */
 
 nc_type /* O [enm] Type to pack variable to */
 nco_typ_pck_get /* [fnc] Determine best type to pack input variable to */

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.254 2004-09-03 06:28:09 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.255 2004-09-03 20:25:30 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -223,12 +223,13 @@ full-time on specific areas of SDO, alongside our current and future
 volunteers.
 We seek a
 <a href="http://dust.ess.uci.edu/hire/prg_anl_03_adv.pdf">full-time programmer</a> 
-to help design, implement, and release major code changes, and a 
+to help design, implement, and release major code changes.
+We seek a
 <a href="http://dust.ess.uci.edu/hire/sdn_grd_02_adv.pdf">graduate student researcher</a> 
-to analyze, design, and implement advanced methods for distributed
-data analysis and reduction (DDRA) of geophysical data, and to
-demonstrate their efficacy with novel analyses of climate prediction datasets.  
-These advanced methods will be &ldquo;grid-enabled&rdquo;.
+to analyze, design, and implement novel advanced methods for distributed
+data analysis and reduction (DDRA) of geophysical data.
+These powerful methods will be &ldquo;grid-enabled&rdquo;, and we will
+demonstrate their efficacy with analyses of distributed climate prediction datasets.  
 Contact us if you are seriously interested in tackling these
 problems on a full-time, part-time, or pay-per-feature basis.  
 We will soon implement a better mechanism to update users on our plans and progress towards the proposal's objectives.

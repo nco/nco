@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.57 2004-09-03 06:28:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.58 2004-09-03 20:25:32 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -928,20 +928,21 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 
     /* Do not copy packing attributres when unpacking variables 
        ncpdq is currently only operator that passes values other than nco_pck_nil */
-    if(prg_id == ncpdq && /* ...operator is ncpdq... */
-       nco_pck_typ == nco_pck_upk) /* ...and variable will be _unpacked_ ... */
+    if(nco_pck_typ == nco_pck_upk) /* ...and variable will be _unpacked_ ... */
       PCK_ATT_CPY=False;
 
     /* Recall that:
        var      refers to output variable structure
-       var->xrf refers to input variable structure */ 
+       var->xrf refers to input variable structure 
+       ncpdq may pre-define packing attributes below regardless of PCK_ATT_CPY */ 
     (void)nco_att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id,PCK_ATT_CPY);
 
     /* Create dummy packing attributes for ncpdq if necessary 
-       Recall ncap calls ncap_var_write() to define newly packed LHS variables */
-    if(prg_id == ncpdq){
-      /* If ncpdq will pack variable... */
-      if(typ_out != var[idx]->typ_dsk){
+       Recall ncap calls ncap_var_write() to define newly packed LHS variables 
+       If operator will attempt to pack some variables... */
+    if(nco_pck_typ != nco_pck_nil && nco_pck_typ != nco_pck_upk){ 
+      /* ...and operator will pack this particular variable... */
+      if(nco_is_packable(var[idx]->type)){
 	/* ...then add/overwrite dummy scale_factor and add_offset attributes
 	   Overwrite these with correct values once known
 	   Adding dummy attributes now reduces likelihood that netCDF layer
@@ -955,8 +956,8 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	(void)nco_put_att(out_id,var[idx]->id,scl_fct_sng,typ_out,1,zero_var->val.vp);
 	(void)nco_put_att(out_id,var[idx]->id,add_fst_sng,typ_out,1,zero_var->val.vp);
 	zero_var=(var_sct *)nco_var_free(zero_var);
-      } /* endif variable is newly packed */
-    } /* endif ncpdq */
+      } /* endif nco_is_packable() */
+    } /* endif attempting to pack */
 
   } /* end loop over idx variables to define */
   

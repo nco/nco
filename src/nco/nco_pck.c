@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.26 2004-09-03 06:28:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.27 2004-09-03 20:25:32 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -18,7 +18,7 @@
    From netCDF User's Guide:
    scale_factor: If present for a variable, the data are to be multiplied by this factor after the data are read by the application that accesses the data
    add_offset: If present for a variable, this number is added to the data after the data are read by the application. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. 
-   When scale_factor and add_offset are used for packing, the associated variable (containing the packed data) is typically of type byte or short, whereas the unpacked values are intended to be of type float or double. Attribute's scale_factor and add_offset should both be of type intended for the unpacked data, e.g., float or double. */     
+   When scale_factor and add_offset are used for packing, the associated variable (containing the packed data) is typically of type byte or short, whereas the unpacked values are intended to be of type float or double. Attribute's scale_factor and add_offset should both be of type intended for the unpacked data, e.g., float or double. */
 
 void 
 nco_dfl_case_pck_typ_err(void) /* [fnc] Print error and exit for illegal switch(pck_typ) case */
@@ -32,6 +32,33 @@ nco_dfl_case_pck_typ_err(void) /* [fnc] Print error and exit for illegal switch(
   (void)fprintf(stdout,"%s: ERROR switch(pck_typ) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(pck_typ) statements are fully enumerated. Exiting...\n",fnc_nm);
   nco_err_exit(0,fnc_nm);
 } /* end nco_dfl_case_pck_typ_err() */
+
+bool /* O [flg] NCO will attempt to pack variable */
+nco_is_packable /* [fnc] Will NCO attempt to pack variable? */
+(const nc_type nc_typ_in) /* I [enm] Type of input variable */
+{
+  /* Purpose: Determine whether NCO should attempt to pack input variable
+     Packing certain variable types is not recommended, e.g., packing NC_CHAR
+     and NC_BYTE makes no sense, because precision would needlessly be lost.
+     Whether to attempt to pack NC_SHORT is arguable and may change in future
+     This routine decides whether NCO will attempt to pack a given type */
+  switch(nc_typ_in){ 
+  case NC_FLOAT: 
+  case NC_DOUBLE: 
+  case NC_INT: 
+    return True;
+    break;
+  case NC_SHORT: 
+  case NC_CHAR: 
+  case NC_BYTE: 
+    return False;
+    break;
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */ 
+
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return False;
+} /* end nco_is_packable() */
 
 int /* O [enm] Packing type */
 nco_pck_typ_get /* [fnc] Convert user-specified packing type to key */
@@ -236,6 +263,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
      In other words, output structure may be neglected as all changes are made 
      to input structure */
 
+  const char fnc_nm[]="nco_var_pck()"; /* [sng] Function name */
   double scl_fct_dbl=double_CEWI; /* [sct] Double precision value of scale_factor */
   double add_fst_dbl=double_CEWI; /* [sct] Double precision value of add_offset */
 
@@ -243,13 +271,20 @@ nco_var_pck /* [fnc] Pack variable in memory */
   if(var->pck_ram) return var;
 
   /* Routine should be called with variable already in memory */
-  if(var->val.vp == NULL) (void)fprintf(stdout,"%s: ERROR nco_var_pck() called with empty var->val.vp\n",prg_nm_get());
+  if(var->val.vp == NULL) (void)fprintf(stdout,"%s: ERROR %s called with empty var->val.vp\n",prg_nm_get(),fnc_nm);
   
   /* Packed type must be NC_CHAR or NC_SHORT */
-  if(nc_typ_pck != NC_CHAR && nc_typ_pck != NC_SHORT) (void)fprintf(stdout,"%s: ERROR nco_var_pck() called with invalid packed type nc_typ_pck = %s, \n",prg_nm_get(),nco_typ_sng(nc_typ_pck));
+  /* fxm: Allow packing NC_DOUBLE to NC_INT */
+  if(nc_typ_pck != NC_CHAR && nc_typ_pck != NC_SHORT){
+    (void)fprintf(stdout,"%s: ERROR %s called with invalid packed type nc_typ_pck = %s\n",prg_nm_get(),fnc_nm,nco_typ_sng(nc_typ_pck));
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
 
-  /* Source type must be NC_INT, NC_FLOAT, or NC_DOUBLE */
-  if(var->type == NC_SHORT || var->type == NC_CHAR || var->type == NC_BYTE) (void)fprintf(stdout,"%s: ERROR nco_var_pck() called with invalid source type var->type = %s, \n",prg_nm_get(),nco_typ_sng(var->type));
+  /* Variable must be packable (e.g., NC_INT, NC_FLOAT, or NC_DOUBLE) */
+  if(!nco_is_packable(var->type)){
+    (void)fprintf(stdout,"%s: ERROR %s is asked to pack variable %s of type %s\n",prg_nm_get(),fnc_nm,var->nm,nco_typ_sng(var->type));
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
 
   if(True){
     /* Compute packing parameters to apply to var
@@ -374,7 +409,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
   /* Create double precision value of scale_factor for diagnostics */
   if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
     scl_fct_dbl=ptr_unn_2_scl_dbl(var->scl_fct,var->type); 
-    if(scl_fct_dbl == 0.0) (void)fprintf(stdout,"%s: WARNING nco_var_pck() reports scl_fct_dbl = 0.0\n",prg_nm_get());
+    if(scl_fct_dbl == 0.0) (void)fprintf(stdout,"%s: WARNING %s reports scl_fct_dbl = 0.0\n",prg_nm_get(),fnc_nm);
   } /* endif */
   
   /* Create double precision value of add_offset for diagnostics */
@@ -382,9 +417,9 @@ nco_var_pck /* [fnc] Pack variable in memory */
     add_fst_dbl=ptr_unn_2_scl_dbl(var->add_fst,var->type);
   } /* endif */
   
-  if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: %s: scl_fct_dbl = %g, add_fst_dbl = %g\n",prg_nm_get(),var->nm,scl_fct_dbl,add_fst_dbl);
+  if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: %s reports variable %s has scl_fct_dbl = %g, add_fst_dbl = %g\n",prg_nm_get(),fnc_nm,var->nm,scl_fct_dbl,add_fst_dbl);
   
-  /* Packing factors now exist and are same type as variable in memory */
+  /* Packing attributes now exist and are same type as variable in memory */
 
   /* Apply scale_factor and add_offset to reduce variable size
      add_offset and scale_factor are always scalars so use var_scv_* functions
@@ -409,7 +444,15 @@ nco_var_pck /* [fnc] Pack variable in memory */
     if(scl_fct_dbl != 0.0) (void)var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
   } /* endif */
 
-  /* Tell the world */
+  if(!var->has_scl_fct && !var->has_add_fst){
+    (void)fprintf(stderr,"%s: ERROR Reached end of %s without packing variable\n",prg_nm_get(),fnc_nm);
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+
+  /* Tell the world we have packed the variable
+     This is true if input variable satisfied nco_is_packable() criteria
+     Variables that fail nco_is_packable() (e.g., type == NC_CHAR) are not packed 
+     and should not have their packing attributes set */
   var->pck_ram=True; /* [flg] Variable is packed in memory */
   var->typ_pck=nc_typ_pck; /* [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
   var->typ_upk=var->type; /* [enm] Type of variable when unpacked (expanded) (in memory) */
