@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.9 2000-08-28 20:18:41 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.10 2000-08-28 20:19:58 zender Exp $
 # Purpose: RPM spec file for NCO
 # Usage: 
 # Before nco.spec is invoked (with 'rpm -ba nco.spec'), the source tarball 
@@ -9,7 +9,8 @@
 
 Summary: Arithmetic and metadata operators for netCDF and HDF4 files
 Name: nco
-Version: 1.2
+Version: 1.2.1
+# Release: refers to release of nco.spec for this version of NCO
 Release: 1
 Copyright: GPL
 Group: Applications/Scientific
