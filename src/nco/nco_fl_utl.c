@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.38 2004-06-20 20:09:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.39 2004-06-21 17:08:44 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -166,6 +166,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	char chr_foo;
 	int cnv_nbr; /* [nbr] Number of scanf conversions performed this scan */
 	long fl_lst_in_lng; /* [nbr] Number of characters in input file name list */
+	char fmt_sng[10];
 	size_t fl_nm_lng; /* [nbr] Filename length */
 	
 	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG nco_fl_lst_mk() reports input files not specified as positional arguments. Attempting to read from stdin instead...\n",prg_nm_get());
@@ -186,13 +187,14 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 #define FL_NM_IN_MAX_LNG 256 /* [nbr] Maximum length of input file name */
 #define FL_LST_IN_MAX_LNG 1000000 /* [nbr] Maximum length of input file list */
 	bfr_in=(char *)nco_malloc((FL_NM_IN_MAX_LNG+1L)*sizeof(char));
+	fmt_sng=sprintf(fmt_sng,"%%%ds\n",FL_NM_IN_MAX_LNG);
 	
 	/* Assume filenames are whitespace-separated
 	   Format string "%256s\n" tells scanf() to:
 	   1. Skip any initial whitespace
 	   2. Read first block of non-whitespace characters (up to 256 of them) into buffer 
 	   3. The \n allows the entries to be separated by carriage returns */
-	while(((cnv_nbr=fscanf(fp_in,"%256s\n",bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){
+	while(((cnv_nbr=fscanf(fp_in,fmt_sng,bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){
 	  if(cnv_nbr == 0){
 	    (void)fprintf(stdout,"%s: ERROR stdin input not convertable to filename. HINT: Maximum length for input filenames is %d characters. HINT: Separate filenames with whitespace. Carriage returns are automatically stripped out.\n",prg_nm_get(),FL_NM_IN_MAX_LNG);
 	    nco_exit(EXIT_FAILURE);
