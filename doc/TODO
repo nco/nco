@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.340 2004-07-19 07:42:27 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.341 2004-07-19 23:25:31 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -25,6 +25,12 @@ nco212. Ensure structures are always passed by reference (default is pass by val
 nco312. Make TODO list more legible (change to, e.g., Emacs list/outline mode, LaTeX, Wiki?) 
 nco313. Redo TODO subject categorization by discriminating based on skills required to tackle. Initial cateogorization might be e.g., autotools, bison, C, C++, Debian, flex, HTML, Perl, RPM, www, TeXInfo
 nco355. Adopt restricted pointers for all numerical arrays?
+nco356. big.nc "restrict" test with yields incorrect answers with xlc and gcc, why?
+zender@esmf04m:~/nco/bld$ date;ncwa -O -a wvl_1e8 -v wvl_1e8 ${DATA}/mie/big.nc ${DATA}/mie/foo.nc;date
+Mon Jul 19 15:57:30 PDT 2004
+Mon Jul 19 15:57:52 PDT 2004
+zender@esmf04m:~/nco/bld$ ncks -H ${DATA}/mie/foo.nc
+wvl_1e8 = 0.167772
 
 NCO-wide items of lesser priority:
 nco28. Use var.nc_id as file ID from now on and rewrite old routines to do so

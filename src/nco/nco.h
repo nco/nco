@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.59 2004-07-19 21:03:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.60 2004-07-19 23:25:31 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -40,6 +40,20 @@ extern "C" {
 /* NCO uses native type nco_long to store variables of type NC_INT */
   typedef long nco_long;
   
+/* Uncommenting next line removes C99 restrict type qualifier from all source */
+#define restrict 
+
+/* Replace restrict by __restrict in g++ compiler
+   Substitute whitespace for __restrict in all other C++ compilers */
+#ifdef __cplusplus
+#ifdef __GNUG__
+#define restrict __restrict
+#else /* !__GNUG__ */
+#define restrict
+#endif /* !__GNUG__ */
+#endif /* !__cplusplus */
+
+/* Boolean values */
 #ifndef bool
 #define bool int
 #endif /* bool */

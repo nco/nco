@@ -1,5 +1,9 @@
 2004-07-19  Charlie Zender  <zender@uci.edu>
 
+	* Implement preprocessor method  in nco.h to disable restrict
+
+	* big.nc "restrict" test with yields incorrect answers with AIX xlc
+	
 	* Implement restrict in nco_var_cnf_dmn()
 
 	* Change default xlc from -qlanglvl=extended to -qlanglvl=extc99
