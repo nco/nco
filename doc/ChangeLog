@@ -1,3 +1,10 @@
+2000-03-06  Charlie Zender  <zender@uci.edu>
+
+	* Added target rpmnet to Makefile. Usage is
+	sudo make NCO_VRS=1.1.46 rpmnet
+	This downloads specified NCO version, builds RPMs from it, and
+	uploads the RPMs back to NCO FTP site
+
 2000-03-01  Charlie Zender  <zender@uci.edu>
 
 	* Added nco.spec to bld directory

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.36 2000-02-03 16:56:21 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.37 2000-03-06 09:07:45 zender Exp $
 
 Purpose: NCO homepage
 
@@ -220,14 +220,19 @@ See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> for 
 <HR></P>
 
 <DT><A NAME="Download"></A></DT>
-<H2>Download the complete <A HREF="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz">NCO
-software</A> source distribution.</H2>
+<H2>Download complete NCO distributions</H2>
 
-<P>The distribution includes the complete NCO documentation (<I>User's
+<p>Source distributions: 
+<p>Tarball format <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz">nco.tar.gz</a> (430 Kb compressed tar-file)
+<p>Source <a href="http://www.rpm.org">RPM</a> <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco--.src.rpm">nco--.src.rpm</a> (492 Kb)
+<p>Prebuilt binary distributions:
+<a href="http://www.rpm.org">RPM</a> for Redhat Linux 6.1 on Intel <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco--.i386.rpm">nco--.i386.rpm</a> (526 Kb)
+
+<P>Source distributions include complete NCO documentation (<I>User's
 Guide</I>) in Postscript, HTML, DVI, TeXinfo, and Info formats. These formats
 are included in the source distribution in the files <TT>`nco.ps'</TT>,
 <TT>`nco.html'</TT>, <TT>`nco.dvi'</TT>, <TT>`nco.texi'</TT>, and <TT>`nco.info*'</TT>,
-respectively. (430 Kb compressed tar-file) 
+respectively. 
 <HR></P>
 
 <DT><A NAME="RTFM"></A></DT>
