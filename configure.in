@@ -181,10 +181,10 @@ AC_MSG_ERROR([all netCDF linking failed.]) ] ) ]
 # Checks for libraries,they are added to the link path if found
 AC_CHECK_LIB([C], [cosf])
 AC_CHECK_LIB([m], [sin])
+AC_CHECK_LIB([sunmath], [sinf])
 AC_CHECK_FUNCS([fmodf powf acosf asinf atanf ceilf cosf expf floorf log10f logf sinf sqrtf tanf])
 AC_CHECK_LIB([intl], [gettext])
 AC_CHECK_LIB([resolv], [res_init])
-AC_CHECK_LIB([sunmath], [sinf])
 AC_CHECK_LIB([socket], [main])
 AC_CHECK_LIB([thread], [main])
 #AC_CHECK_LIB([nsl], [main])
