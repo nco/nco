@@ -1,3 +1,10 @@
+2002-09-24  Henry Butowsky <henryb@ntlworld.com>
+
+	* Added type conversion functions 
+	  for attributes and variables
+	  byte, char,short,int, float and double
+
+
 2002-09-22  Charlie Zender  <zender@uci.edu>
 
 	* info-friendly changes to nco.texi
