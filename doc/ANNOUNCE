@@ -1,0 +1,40 @@
+The netCDF operators NCO version 1.2 are ready. 
+There are two new features and a bunch of administrative changes, 
+described in lurid detail on the new NCO homepage at 
+
+http://nco.sourceforge.net
+
+The new features are largely the result of contributions from the Open
+Source community. If you are interested in contributing, please visit
+the homepage to learn how.  NCO announcements will no longer be sent
+to the CCM mailing list.  There is a new, low volume, NCO announce
+mailing list, containing new release announcements only, which you can
+sign up to receive instead at
+
+http://lists.sourceforge.net/mailman/listinfo/nco-announce
+
+Future NCO releases will be announced there and on the netCDF list. 
+
+A short excerpt describing the new features:
+
+1. The names of three of the operators have been made somewhat obsolete
+because they are no longer just arithmetic averagers. ncra, ncea,
+and ncwa have all been given brain transplants so that the type of
+operation they perform may be specified on the command line. The
+following operations are now supported by the new -y switch: average
+(default), total, minimum, maximum, root-mean-square, square of the
+mean, mean of the squares, square root. For example,
+
+    ncra -O -y rms -n 12,4,1 h0001.nc 2000_rms.nc # Root-mean-square
+    ncea -O -y min -n 12,4,1 h0001.nc 2000_min.nc # Minimum
+    ncwa -O -y max -a lon,lat h0001.nc 200001_max_x.nc # Maxima
+
+2. All operators may now be DODS clients. DODS enables network
+transparent data access to any DODS server. Thus DODS-enabled NCO can
+operate on remote files accessible through any DODS server without
+transferring the files. Only the required data (e.g., the variable or
+hyperslab specified) are transferred. See the User's Guide for
+complete details.
+
+Enjoy,
+Charlie
