@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.409 2004-09-07 00:03:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.410 2004-09-07 01:27:25 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -255,14 +255,12 @@ nco421. ncpdq: Make packing offer to move missing value to inside range
 nco425. ncpdq: Make unpacking offer to unpack missing value to preserve its usefulness
 nco426. ncpdq: Make packing offer to pack missing value to the packed type to preserve its usefulness
 nco427. ncpdq, ncra: Fix pck_dbg problems in nco_var_get() which automatically down-convert missing value to typ_dsk.
-nco431. Implement ncpdq -P optional options
 nco439. Verify packing NC_INT->NC_SHORT
 nco440. Verify packing NC_DOUBLE->NC_INT
 nco441. Verify packing NC_DOUBLE->NC_CHAR
 nco442. Verify packing NC_INT->NC_CHAR
 nco443. Verify packing NC_SHORT->NC_CHAR
 nco444. ncpdq: Split var_prc from var_fix in nco_var_lst_dvd()
-nco449. Incorporate pck_map into nco_is_packable()
 nco450. Run ncra on two multiple record files with packed variables and look for pck_dbg memory problems with valgrind
 nco453. Re-think handling of dangling pointers in nco_pck_val()?
 nco454. 
