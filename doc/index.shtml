@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.42 2000-05-10 07:15:36 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.43 2000-05-15 07:02:42 zender Exp $
 
 Purpose: NCO homepage
 
@@ -174,8 +174,10 @@ of certain record coordinates or indices is not known a priori, or is
 tedious to compute. 
 Users may now operate on specific segments of a timeseries 
 (e.g., February values) without knowing which files contain February. 
-Simply input the entire timeseries of files to the operators will
+Simply input the entire timeseries of files to the operators 
 and they will automagically find and operate on only the February values! 
+<p><tt>ncra -O -d time,2.0,3.0 -n 1000,4,1 h0001.nc feb.nc</tt>
+<p><tt>ncrcat -O -F -d time,2,,12 -n 1000,4,1 h0037.nc feb.nc</tt>
 
 Sylvia Murphy of the NCAR 
 <a href="http://www.cgd.ucar.edu/csm/cmps/cmps_home.html">Community 
@@ -183,14 +185,7 @@ Climate System Model Support Network</a> organized a workshop in
 February, 2000 which devoted some time to NCO. 
 Here are links to the very useful 
 <a href="http://www.cgd.ucar.edu/csm/cmps/Workshop/nco/nco.pdf">pamphlet</a>
-and
-<a href="http://www.cgd.ucar.edu/csm/cmps/Workshop/nco">slide presentation</a> 
-she developed to introduce and to summarize the NCO operators. 
-If you are new to NCO I highly recommend reading the pamphlet before
-resorting to the more detailed <A HREF="./nco.html">User's Guide</A>. 
-
-<P>2000/03/05: 
-Source and prebuilt binary executable <a href="http://www.rpm.org">RPM</a>s for NCO are now available for  
+urce and prebuilt binary executable <a href="http://www.rpm.org">RPM</a>s for NCO are now available for  
 <A HREF="#Download">download</A>. 
 
 <P>2000/01/26: 
