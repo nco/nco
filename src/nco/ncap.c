@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.46 2002-01-14 18:40:50 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.47 2002-01-16 15:33:20 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -64,7 +64,7 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
-/* #include <assert.h> */ /* assert() debugging macro */
+#include <assert.h>  /* assert() debugging macro */
 /* #include <errno.h> */ /* errno */
 /* #include <malloc.h> */ /* malloc() stuff */
 
@@ -149,8 +149,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.46 2002-01-14 18:40:50 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.46 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.47 2002-01-16 15:33:20 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.47 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -185,8 +185,9 @@ main(int argc,char **argv)
   
   const int att_lst_max=500;
   
-  sym_sct **sym_tbl;   /* function table for float and double functions*/
-  int sym_tbl_nbr;     /* size of sym_tbl */
+  sym_sct **sym_tbl; /* [fnc] Function table for float and double functions */
+  int sym_tbl_nbr; /* [nbr] Size of symbol table */
+  int sym_idx=0; /* [idx] Counter for symbols */
   
   lmt_sct *lmt=NULL_CEWI;
   
@@ -310,22 +311,21 @@ main(int argc,char **argv)
   } /* end if */    
 
   /* Create function table */
-  sym_tbl_nbr = 11;
-  sym_tbl = (sym_sct **)nco_malloc(sizeof(sym_sct *)*sym_tbl_nbr);
-  
-  sym_tbl[0] = ncap_sym_init("cos",cos,cosf);  
-  sym_tbl[1] = ncap_sym_init("sin",sin,sinf);
-  sym_tbl[2] = ncap_sym_init("tan",tan,tanf);
-  sym_tbl[3] = ncap_sym_init("acos",acos,acosf);  
-  sym_tbl[4] = ncap_sym_init("asin",asin,asinf);
-  sym_tbl[5] = ncap_sym_init("atan",atan,atanf);
-  sym_tbl[6] = ncap_sym_init("exp",exp,expf);
-  sym_tbl[7] = ncap_sym_init("log",log,logf);
-  sym_tbl[8] = ncap_sym_init("log10",log10,log10f);
-  sym_tbl[9] = ncap_sym_init("sqrt",sqrt,sqrtf);
-  sym_tbl[10] = ncap_sym_init("gamma",gamma,gammaf);
+  sym_tbl_nbr=11;
+  sym_tbl=(sym_sct **)nco_malloc(sizeof(sym_sct *)*sym_tbl_nbr);
+  sym_tbl[sym_idx++]=ncap_sym_init("cos",cos,cosf);  
+  sym_tbl[sym_idx++]=ncap_sym_init("sin",sin,sinf);
+  sym_tbl[sym_idx++]=ncap_sym_init("tan",tan,tanf);
+  sym_tbl[sym_idx++]=ncap_sym_init("acos",acos,acosf);  
+  sym_tbl[sym_idx++]=ncap_sym_init("asin",asin,asinf);
+  sym_tbl[sym_idx++]=ncap_sym_init("atan",atan,atanf);
+  sym_tbl[sym_idx++]=ncap_sym_init("exp",exp,expf);
+  sym_tbl[sym_idx++]=ncap_sym_init("log",log,logf);
+  sym_tbl[sym_idx++]=ncap_sym_init("log10",log10,log10f);
+  sym_tbl[sym_idx++]=ncap_sym_init("sqrt",sqrt,sqrtf);
+  sym_tbl[sym_idx++]=ncap_sym_init("gamma",gamma,gammaf);
+  assert(sym_idx == sym_tbl_nbr);
  
-
   /* Process positional arguments and fill in filenames */
   fl_lst_in=fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   

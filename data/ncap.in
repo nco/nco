@@ -1,9 +1,10 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.8 2002-01-14 08:58:58 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.9 2002-01-16 15:33:19 zender Exp $
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 // Format of a valid ncap script:
 // C++ comment syntax
 // Statements end with semi-colons
 // Usage:
+// ncap -O -D 1 -s "a8[lat,lon,lev] = 1;" ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
 // ncap -O -D 1 -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
 // ncks -H -v a5 -m ${HOME}/nco/data/foo.nc | m
 
@@ -16,7 +17,7 @@ a4 = PS;
 a5 = hyam*P0;
 //a6 = hybm*PS;
 a7 = (1*(three_dmn_var-three_dmn_var+1)-1)^1;
-a8(moe,larry,curly) = 1;
+a8[lat,lon,lev] = 1;
 a1@a1 = global@history;
 a1@julian_day = global@julian_day;
 //prs_mdp = P0*hyam + hybm*PS; // Fails because prs_mdp gets wrong rank

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.32 2002-01-14 18:04:39 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.33 2002-01-16 15:33:20 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -1209,7 +1209,7 @@ ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
    int nc_id: I netCDF file ID
    nm_id_sct *xtr_lst: I/O current extraction list 
    int *nbr_xtr: I/O number of variables in current extraction list: Overwritten by new list 
-   nm_id_sct ncap_var_lst_crd_make: list of co-orinate dimensions 
+   nm_id_sct ncap_var_lst_crd_make: list of coordinate dimensions 
  */
 {
   /* Make a list of just the co-ordinate dimensions from a list containing */

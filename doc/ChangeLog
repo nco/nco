@@ -1,3 +1,9 @@
+2002-01-16  Charlie Zender  <zender@uci.edu>
+
+	* Began implementation of lexer for subscripted variables
+	with x[dmn1,dmn2,...dmnN] syntax. Currently creates list of 
+	dimension structures but does nothing with it.
+
 2002-01-13  Charlie Zender  <zender@uci.edu>
 
 	* Verified ncap script gives same answers as odxc.ncl script

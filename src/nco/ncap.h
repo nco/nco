@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.17 2002-01-13 09:23:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.18 2002-01-16 15:33:20 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -45,21 +45,18 @@
    Symbol type may, therefore, safely be determined by testing for non-NULL members
    This technique is frequently used in Pigeon book */
 
-
-typedef struct {
+typedef struct { /* sym_sct */
   char *nm;
   double (*fnc)(double);
   float  (*fncf)(float);
 } sym_sct;
 
-
-
-typedef struct {
+typedef struct { /* parse_sct */
   val_unn val;
   nc_type type;
 } parse_sct;      
 
-typedef struct{
+typedef struct{ /* prs_sct */
     char *fl_in;
     int in_id;  
     char *fl_out;

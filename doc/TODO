@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.108 2002-01-13 21:22:45 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.109 2002-01-16 15:33:20 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -38,6 +38,7 @@ cc-1515 cc: WARNING File = ../src/nco/ncap.y, Line = 279
 after replacing it with ncap_var_stretch()	
 5. Implement convolution of non-conforming expressions in ncap_var_stretch()
 6. Handle C comments /*...*/, especially across multiple lines, in ncap scripts
+7. Replace calloc() with nco_calloc()
 
 Top priority items You can help with:
 41. Use GNU getopt_long()

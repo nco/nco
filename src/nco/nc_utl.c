@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.121 2002-01-14 18:42:46 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.122 2002-01-16 15:33:20 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -2081,7 +2081,7 @@ dmn_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
 	    dim[*nbr_dim].id=idx_dmn_in;
 	    dim[*nbr_dim].nm=(char *)strdup(dmn_nm);
 	    (*nbr_dim)++;
-	  } /* end if dimension was not found in current output dimension list*/
+	  } /* end if dimension was not found in current output dimension list */
 	  /* ...call off the dogs for this input dimension... */
 	  dmn_has_been_placed_on_list=True;
 	} /* end if input dimension belongs to this output variable */

@@ -1,5 +1,5 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.22 2002-01-14 18:06:20 hmb Exp $ -*-C-*- */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.23 2002-01-16 15:33:20 zender Exp $ -*-C-*- */
 
   /* Purpose: Token generator for ncap parser */
 
@@ -51,6 +51,7 @@
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strdup */
+#include <assert.h>  /* assert() debugging macro */
   /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
 
@@ -323,6 +324,74 @@ pow/[ ]*\(     {return POWER;}
   } /* end if */
   
 } /* End attributes. Phew! */
+
+[A-Za-z_][A-Za-z0-9_]*\[([A-Za-z_][A-Za-z0-9_]*,?)*\] {
+  /* Recognize subscripted (hyperslabbed) variables
+     Hyperslabbed variables for now indicated with square brackets
+     Using square brackets so development does not break functions
+     
+     Subscript syntax is taken from Fortran9X specification:
+     x[dmn1,dmn2,...,dmnN]
+     x[a:b,c:,:d,e] */
+  const char *sbs_LHS="["; /* [sng] LHS subscript bracket */
+  const char *sbs_RHS="]"; /* [sng] RHS subscript bracket */
+  const char *sbs_dlm=","; /* [sng] Subscript delimiter */
+  const char *sbs_rng=":";  /* [sng] Subscript range token */
+
+  char *sbs_LHS_ptr; /* [ptr] Location of sbs_LHS */
+  char *sbs_RHS_ptr; /* [ptr] Location of sbs_RHS */
+  char *sbs_rng_ptr; /* [ptr] Location of sbs_rng */
+  char **sbs_lst; /* [sng] Array of dimension subscripts */
+  char *var_nm; /* [sng] Variable name */
+
+  int dmn_nbr; /* [nbr] Number of dimensions */
+  int dmn_idx; /* [idx] Counter for dimensions */
+  int dmn_id; /* [id] Dimension ID */
+
+  nm_id_sct *dmn_lst; /* [sng] Dimension name-ID list */
+  dmn_sct **dmn; /* [dmn] Dimension structure list */
+
+  var_nm=strdup(yytext); /* [sng] Variable name */
+  (void)sprintf(err_sng,"Warning: Token %s may contain subscript, hyperslab, or convolution information. This information is not yet correctly handled and results will be unpredictable",var_nm);
+  (void)yyerror(err_sng);       
+  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing subscripted variable %s\n",var_nm);
+
+  /* Locate subscript brackets */
+  sbs_LHS_ptr=strstr(var_nm,sbs_LHS); /* [ptr] Location of sbs_LHS */
+  assert(sbs_LHS_ptr != NULL);
+  sbs_RHS_ptr=strstr(var_nm,sbs_RHS); /* [ptr] Location of sbs_RHS */
+  assert(sbs_RHS_ptr != NULL);
+  sbs_rng_ptr=strstr(sbs_LHS_ptr,sbs_rng); /* [ptr] Location of sbs_rng */
+  if(sbs_rng_ptr != NULL) (void)fprintf(stderr,"Warning: Subscript ranges not yet implemented, results unpredictable\n");
+
+  /* Brackets no longer needed, NUL-terminate variable name portion of string */
+  *sbs_LHS_ptr='\0'; /* Now string var_nm contains variable name only */
+  /* Brackets no longer needed, NUL-terminate at location of final bracket */
+  *sbs_RHS_ptr='\0'; /* Now string sbs_LHS_ptr+1 contains subscript list only */
+  /* Obtain list of subscripts for each specified dimension */
+  sbs_lst=lst_prs(sbs_LHS_ptr+1,sbs_dlm,&dmn_nbr);
+  /* Translate dimension names into dimension structure list variables */
+  dmn_lst=(nm_id_sct *)nco_malloc(dmn_nbr*sizeof(nm_id_sct));
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
+    (void)nco_inq_dimid(prs_arg->in_id,sbs_lst[dmn_idx],&dmn_id);
+    dmn_lst[dmn_idx].nm=sbs_lst[dmn_idx];
+    dmn_lst[dmn_idx].id=dmn_id;
+  } /* end loop over dimensions */
+  /* Fill in dimension structure for all extracted dimensions */
+  dmn=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
+  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) dmn[dmn_idx]=dmn_fll(prs_arg->in_id,dmn_lst[dmn_idx].id,dmn_lst[dmn_idx].nm);
+
+  if(RHS){
+    lvalp->vara=var_nm;
+    return(VAR);
+  }else{ 
+    lvalp->output_var=var_nm;
+    return(OUT_VAR);
+  } /* end else */
+
+  /* Do not attempt arithmetic yet, just return error */
+  return EPROVOKE;             
+} /* end subscripted variables */
 
 [A-Za-z_][A-Za-z0-9_]* {
   /* Recognize variables */
