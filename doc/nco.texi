@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.192 2003-12-10 18:47:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.193 2003-12-23 18:39:20 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1928,25 +1928,52 @@ recommended as it is syntactically more clear.
 @node DODS,  , Remote storage, Remote storage
 @subsection @acronym{DODS}
 @cindex @acronym{DODS}
-@cindex HTTP protocol
+@cindex @acronym{HTTP} protocol
 @cindex @env{DODS_ROOT}
 @cindex Distributed Oceanographic Data System
 The Distributed Oceanographic Data System (@acronym{DODS}) provides
 replacements for common data interface libraries like netCDF.
 The @acronym{DODS} versions of these libraries implement network
-transparent access to data using the HTTP protocol.
+transparent access to data using the @acronym{HTTP} protocol.
 @acronym{NCO} may be @acronym{DODS}-enabled by linking @acronym{NCO} to
 the @acronym{DODS} libraries. 
 @cindex @file{Makefile}
-Examples of how to do this are given in the @acronym{DODS} documentation
-and in the @file{Makefile} distributed with @acronym{NCO}.
-Building @acronym{NCO} with @code{make DODS=Y} adds the (non-intuitive)
-commands to link to the @acronym{DODS} libraries installed in the
-@env{$DODS_ROOT} directory. 
-You will probably need to visit the 
+This is described in the @acronym{DODS} documentation and implemented in 
+@acronym{NCO} build mechanisms
+@footnote{
+Automagic support for @acronym{DODS} version 3.2.x was deprecated in 
+December, 2003 with @acronym{NCO} 2.8.4.
+@acronym{NCO} now supports @acronym{DODS} version 3.4.x.}.
+The @file{./configure} mechanism automatically enables @acronym{NCO} as
+@acronym{DODS} clients if it can find the required @acronym{DODS}
+libraries
+@footnote{
+The minimal set of libraries required to build @acronym{NCO} as
+@acronym{DODS} clients are 
+@file{DODS-dap-3.4.x}, @file{DODS-nc3-dods-3.4.5}, and 
+@file{DODS-packages-3.4.x}.}.
+ in the usual locations.
+The @env{$DODS_ROOT} environment variable may be used to override the 
+default @acronym{DODS} library location at @acronym{NCO} compile time.
+Building @acronym{NCO} with @file{bld/Makefile} and the command
+@code{make DODS=Y} adds the (non-intuitive) commands to link to the
+@acronym{DODS} libraries installed in the @env{$DODS_ROOT} directory. 
+The file @file{doc/dods.sh} contains a generic script intended to help
+users install @acronym{DODS} before building @acronym{NCO}.
+The documentation at the 
 @uref{http://www.unidata.ucar.edu/packages/dods, DODS Homepage}
-to learn which libraries to obtain and link to for the
-@acronym{DODS}-enabled @acronym{NCO} executables.
+is voluminous.
+Check there and on the
+@uref{http://www.unidata.ucar.edu/packages/dods/home/mailLists/, DODS mail lists}.
+to learn more about the extensive capabilities of @acronym{DODS}
+@footnote{
+We are most familiar with the @acronym{DODS} ability to enable
+network-transparent data access.
+@acronym{DODS} has many other features, including sophisticated
+hyperslabbing.
+If you know more about this, please consider writing a section
+on "@acronym{DODS} Capabilities of Interest to @acronym{NCO} Users"
+for incorporation in the @cite{NCO User's Guide}.}.
 
 Once @acronym{NCO} is @acronym{DODS}-enabled the operators are
 @acronym{DODS} clients.  
@@ -1954,7 +1981,7 @@ All @acronym{DODS} clients have network transparent access to any files
 controlled by a @acronym{DODS} server. 
 Simply specify the path to the file in @acronym{URL} notation
 @example
-ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/
+ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/\
 Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc
 @end example
 @noindent
