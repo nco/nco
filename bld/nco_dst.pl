@@ -1,6 +1,6 @@
 #!/contrib/bin/perl
 				
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.31 1999-10-18 01:33:45 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.32 1999-10-18 01:43:05 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
@@ -52,9 +52,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $CVS_Date='$Date: 1999-10-18 01:33:45 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.31 1999-10-18 01:33:45 zender Exp $';
-my $CVS_Revision='$Revision: 1.31 $';
+my $CVS_Date='$Date: 1999-10-18 01:43:05 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.32 1999-10-18 01:43:05 zender Exp $';
+my $CVS_Revision='$Revision: 1.32 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -242,11 +242,11 @@ if($cgd_cnt){
     $rmt_mch='sanitas.cgd.ucar.edu';
 #    rsh $rmt_mch 'printf $PVM_ARCH'
     print STDOUT "\n$prg_nm: Updating contrib NCO on $rmt_mch...\n";
-    &cmd_prc("rsh $rmt_mch \"mkdir -p /usr/tmp/zender/nco/obj\"");
     &cmd_prc("rsh $rmt_mch \"/bin/rm -r -f /usr/tmp/zender/nco*\"");
+    &cmd_prc("rsh $rmt_mch \"mkdir -p /usr/tmp/zender/$dst_vrs/obj\"");
     &cmd_prc("rcp -p ftp.cgd.ucar.edu:/ftp/pub/zender/nco/nco.tar.gz $rmt_mch:/usr/tmp/zender");
-    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender;gtar -xvzf nco.tar.gz;rm -f nco.tar.gz;mv -f nco-* nco\"");
-    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/nco/bld; setenv MY_BIN_DIR /contrib/nco-1.1/bin; setenv MY_LIB_DIR /contrib/nco-1.1/lib; setenv MY_OBJ_DIR /usr/tmp/zender/nco/obj; gmake libclean binclean objclean; gmake\"");
+    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender;gtar -xvzf nco.tar.gz;rm -f nco.tar.gz\"");
+    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/$nco_vrs/bld; setenv MY_BIN_DIR /contrib/nco-1.1/bin; setenv MY_LIB_DIR /contrib/nco-1.1/lib; setenv MY_OBJ_DIR /usr/tmp/zender/$nco_vrs/obj; gmake libclean binclean objclean; gmake\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
 } # endif cgd_cnt
 
@@ -255,10 +255,10 @@ if($dat_cnt){
 #    rsh $rmt_mch 'printf $PVM_ARCH'
     print STDOUT "\n$prg_nm: Updating contrib NCO on $rmt_mch...\n";
     &cmd_prc("rsh $rmt_mch \"/bin/rm -r -f /usr/tmp/zender/nco*\"");
-    &cmd_prc("rsh $rmt_mch \"mkdir -p /usr/tmp/zender/nco/obj\"");
+    &cmd_prc("rsh $rmt_mch \"mkdir -p /usr/tmp/zender/$dst_vrs/obj\"");
     &cmd_prc("rcp -p ftp.cgd.ucar.edu:/ftp/pub/zender/nco/nco.tar.gz $rmt_mch:/usr/tmp/zender");
-    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender;tar -xvzf nco.tar.gz;rm -f nco.tar.gz;mv -f nco-* nco\"");
-    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/nco/bld; setenv MY_BIN_DIR /contrib/nco-1.1/bin; setenv MY_LIB_DIR /contrib/nco-1.1/lib; setenv MY_OBJ_DIR /usr/tmp/zender/nco/obj; gmake dpn_cln lib_cln bin_cln obj_cln; gmake\"");
+    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender;gtar -xvzf nco.tar.gz;rm -f nco.tar.gz\"");
+    &cmd_prc("rsh $rmt_mch \"cd /usr/tmp/zender/$nco_vrs/bld; setenv MY_BIN_DIR /contrib/nco-1.1/bin; setenv MY_LIB_DIR /contrib/nco-1.1/lib; setenv MY_OBJ_DIR /usr/tmp/zender/$nco_vrs/obj; gmake libclean binclean objclean; gmake\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
 } # endif dat_cnt
 
