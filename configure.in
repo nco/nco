@@ -186,6 +186,8 @@ AC_CHECK_LIB([C], [cosf])
 AC_CHECK_LIB([m], [sin])
 AC_CHECK_LIB([sunmath], [sinf])
 AC_CHECK_FUNCS([getopt getopt_long])
+AC_CHECK_FUNC(getopt_long, , [nco_need_getopt_long="yes"] )
+AM_CONDITIONAL(NCO_NEED_GETOPT_LONG, test "$nco_need_getopt_long" = "yes")
 # NCO_CHECK_FUNC also defines NEED_xxxx when xxxx function is not found
 NCO_CHECK_FUNCS([fmodf powf acosf asinf atanf cosf expf log10f logf sinf sqrtf tanf])
 NCO_CHECK_FUNCS([erff erfcf gammaf])

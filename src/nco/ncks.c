@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.78 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.79 2003-01-09 00:27:37 rorik Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -67,6 +67,8 @@
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>  /* getopt_long() */
+#else 
+#include "nco_getopt.h"
 #endif /* !HAVE_GETOPT_H */
 
 /* 3rd party vendors */
@@ -113,8 +115,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.78 2002-12-30 02:56:14 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.78 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.79 2003-01-09 00:27:37 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.79 $";
   
   extern char *optarg;
   
@@ -148,7 +150,6 @@ main(int argc,char **argv)
 
   time_t clock;
 
-#ifdef HAVE_GETOPT_LONG
   static struct option opt_lng[]=
     {
       {"alphabetize",no_argument,0,'a'},
@@ -188,7 +189,6 @@ main(int argc,char **argv)
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
-#endif /* !HAVE_GETOPT_LONG */
 
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
@@ -201,11 +201,7 @@ main(int argc,char **argv)
 
   /* Parse command line arguments */
   opt_sng="aABb:CcD:d:FHhl:MmOp:qrRs:uv:x-:";
-#ifdef HAVE_GETOPT_LONG
   while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
-#else  /* DO NOT HAVE GETOPT_LONG */
-  while((opt = getopt(argc,argv,opt_sng)) != EOF){
-#endif /* !HAVE_GETOPT_LONG */
     switch(opt){
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */
       ALPHABETIZE_OUTPUT=!ALPHABETIZE_OUTPUT;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.62 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.63 2003-01-09 00:27:37 rorik Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -76,6 +76,8 @@
 #include <unistd.h> /* all sorts of POSIX stuff */
 #ifdef HAVE_GETOPT_H
 #include <getopt.h>  /* getopt_long() */
+#else
+#include "nco_getopt.h"
 #endif /* !HAVE_GETOPT_H */
 
 /* 3rd party vendors */
@@ -117,8 +119,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.62 2002-12-30 02:56:14 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.62 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.63 2003-01-09 00:27:37 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.63 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -165,8 +167,7 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   
-#ifdef HAVE_GETOPT_LONG
-  static struct option opt_lng[]=
+ static struct option opt_lng[]=
     {
       {"append",no_argument,0,'A'},
       {"coords",no_argument,0,'c'},
@@ -193,7 +194,6 @@ main(int argc,char **argv)
       {0,0,0,0}
     }; /* end opt_lng */
   int opt_idx=0; /* Index of current long option into opt_lng array */
-#endif /* !HAVE_GETOPT_LONG */
 
   /* Start clock and save command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
@@ -205,11 +205,7 @@ main(int argc,char **argv)
 
   /* Parse command line arguments */
   opt_sng="ACcD:d:Fhl:Op:rRv:x-:";
-#ifdef HAVE_GETOPT_LONG
   while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
-#else  /* DO NOT HAVE GETOPT_LONG */
-  while((opt = getopt(argc,argv,opt_sng)) != EOF){
-#endif /* !HAVE_GETOPT_LONG */
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

@@ -470,7 +470,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE CPP CXXCPP LEX LEXLIB LEX_OUTPUT_ROOT YACC LN_S ECHO RANLIB ac_ct_RANLIB EGREP LIBTOOL BUILD_NCAP_TRUE BUILD_NCAP_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBOBJS POW_LIB NETCDF_LIB NETCDF_INC HDF5_ROOT DODS_ROOT TEST_DODS_TRUE TEST_DODS_FALSE path_to_ncgen NCO_CXX LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE CPP CXXCPP LEX LEXLIB LEX_OUTPUT_ROOT YACC LN_S ECHO RANLIB ac_ct_RANLIB EGREP LIBTOOL BUILD_NCAP_TRUE BUILD_NCAP_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBOBJS POW_LIB NETCDF_LIB NETCDF_INC NCO_NEED_GETOPT_LONG_TRUE NCO_NEED_GETOPT_LONG_FALSE HDF5_ROOT DODS_ROOT TEST_DODS_TRUE TEST_DODS_FALSE path_to_ncgen NCO_CXX LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -11291,6 +11291,94 @@ _ACEOF
 fi
 done
 
+echo "$as_me:$LINENO: checking for getopt_long" >&5
+echo $ECHO_N "checking for getopt_long... $ECHO_C" >&6
+if test "${ac_cv_func_getopt_long+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char getopt_long (); below.
+    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+    <limits.h> exists even on freestanding compilers.  */
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char getopt_long ();
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_getopt_long) || defined (__stub___getopt_long)
+choke me
+#else
+char (*f) () = getopt_long;
+#endif
+#ifdef __cplusplus
+}
+#endif
+
+int
+main ()
+{
+return f != getopt_long;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_func_getopt_long=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_func_getopt_long=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $ac_cv_func_getopt_long" >&5
+echo "${ECHO_T}$ac_cv_func_getopt_long" >&6
+if test $ac_cv_func_getopt_long = yes; then
+  :
+else
+  nco_need_getopt_long="yes"
+fi
+
+
+
+if test "$nco_need_getopt_long" = "yes"; then
+  NCO_NEED_GETOPT_LONG_TRUE=
+  NCO_NEED_GETOPT_LONG_FALSE='#'
+else
+  NCO_NEED_GETOPT_LONG_TRUE='#'
+  NCO_NEED_GETOPT_LONG_FALSE=
+fi
+
 # NCO_CHECK_FUNC also defines NEED_xxxx when xxxx function is not found
 
 
@@ -13213,6 +13301,13 @@ echo "$as_me: error: conditional \"MAINTAINER_MODE\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${NCO_NEED_GETOPT_LONG_TRUE}" && test -z "${NCO_NEED_GETOPT_LONG_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"NCO_NEED_GETOPT_LONG\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"NCO_NEED_GETOPT_LONG\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 if test -z "${TEST_DODS_TRUE}" && test -z "${TEST_DODS_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"TEST_DODS\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -13824,6 +13919,8 @@ s,@LIBOBJS@,$LIBOBJS,;t t
 s,@POW_LIB@,$POW_LIB,;t t
 s,@NETCDF_LIB@,$NETCDF_LIB,;t t
 s,@NETCDF_INC@,$NETCDF_INC,;t t
+s,@NCO_NEED_GETOPT_LONG_TRUE@,$NCO_NEED_GETOPT_LONG_TRUE,;t t
+s,@NCO_NEED_GETOPT_LONG_FALSE@,$NCO_NEED_GETOPT_LONG_FALSE,;t t
 s,@HDF5_ROOT@,$HDF5_ROOT,;t t
 s,@DODS_ROOT@,$DODS_ROOT,;t t
 s,@TEST_DODS_TRUE@,$TEST_DODS_TRUE,;t t
