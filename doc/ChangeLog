@@ -1,3 +1,5 @@
+2003-08-14  Henry Butowsky  <henryb@ntlworld.com>
+	* Added wildcarding of variables to ncks 
 2003-08-13  Charlie Zender  <zender@uci.edu>
 
 	* Make nco_malloc_flg() return NULL when malloc() returns ENOMEM
