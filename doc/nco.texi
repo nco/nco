@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.158 2003-04-26 00:46:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.159 2003-04-30 01:15:22 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -364,7 +364,7 @@ The complete @acronym{NCO} source distribution is currently distributed
 as a @dfn{compressed tarfile} from
 @uref{http://sourceforge.net/projects/nco}
 and from
-@uref{ftp://dust.ess.uci.edu/pub/zender/nco/nco.tar.gz}.
+@uref{http://dust.ess.uci.edu/nco/nco.tar.gz}.
 The compressed tarfile must be uncompressed and untarred before building
 @acronym{NCO}.
 Uncompress the file with @samp{gunzip nco.tar.gz}. 
