@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.89 2003-11-21 16:51:29 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.90 2003-11-25 19:22:58 rorik Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -76,8 +76,8 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
   
   if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: parser VAR action called ncap_var_init() to retrieve %s from disk\n",prg_nm_get(),var_nm);
   var=nco_var_fll(fl_id,var_id,var_nm,*(prs_arg->dmn_out),*(prs_arg->nbr_dmn_out));
-  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
-  (void)strcpy(var->nm,var_nm);
+/*  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
+  (void)strcpy(var->nm,var_nm);*/
   var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
   (void)nco_zero_long(var->sz,var->tally);
   /* Retrieve variable values from disk into memory */
