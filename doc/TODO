@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.418 2004-09-07 06:09:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.419 2004-09-07 16:49:19 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -270,7 +270,6 @@ nco459. ncpdq: Down-conversion usually erroneously triggers warning message that
         ncpdq -D 5 -O -C -P all_new -M flt_byt -v three_dmn_var_dbl ~/nco/data/in.nc ~/foo.nc
         WARNING nco_var_pck() reports variable three_dmn_var_dbl is completely missing_value = 1, i.e., there are no valid values
 nco460. 
-
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
