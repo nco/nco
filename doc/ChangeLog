@@ -1,8 +1,10 @@
 2000-01-27  Charlie Zender  <zender@uci.edu>
 
+	* Tagged this as nco-1_1_45
+
 	* Fix to PID length bug in fl_out_open() on SGIs
 	Now use dynamically allocated string to hold PID 
-	Kudos to Juliana Rew for this patch
+	Kudos to Juliana Rew for finding this bug
 	
 2000-01-16  Charlie Zender  <zender@uci.edu>
 

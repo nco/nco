@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.42 2000-01-27 22:53:22 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.43 2000-01-28 01:15:04 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -72,15 +72,6 @@ to be checking whether tally == 0 before checking whether op2 == mss_val
 126. Fix nco_dst.pl install for Babyblue/Blackforest
 127. Make mss: signal retrieval from NCAR mass store
 128. Ensure target 'dir' is made before *.d dependency files 
-129. ncwa -D 5 -O -a lon -v one foo.nc foo2.nc dumps core on ute in
-nco_tst.sh. Appears to be hitting a malloc error deep in netCDF
-library ncclose() when called in nc_utl:fl_out_cls() at end of
-program. 
-132. ncrcat core dumps in malloc deep in nccreate call at 
-nc_utl.c:fl_out_open() line 1635 on ute.ucar.edu with command 
-ncrcat -O in.nc ho.F1.vegAS.moni01.nc
-This must be an IRIX error or a file name length malloc error
-133. nco_tst.sh sometimes fails when ftp'ing nco_tst.nc to blackforest but not babyblue, why?
 134. Problem on CRAY with ncra test #2, averaging float whose
 missing value is double:
 ncra -O -C -v rec_var_flt_mss_val_dbl in.nc foo.nc;ncks -H foo.nc
@@ -109,7 +100,7 @@ Perhaps double quotes around former and single quotes around latter
 146. Allow proxies for coordinate variables so that, e.g., hyperslabs
 may be specified for "date" even though "time" is the coordinate. 
 Proxies must be one dimensional and monotonic, of course.
-147. Use builtin tmpnam() or tmpname() so file is built in fast
+147. Use builtin tempnam() or tmpnam() so file is built in fast
 directory rather than, say, an NFS-mounted directory like /fs/cgd
 ************************************************************************
 End NCO Wish list

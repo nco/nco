@@ -5,15 +5,15 @@
 # Usage:
 # Export tagged, public versions
 
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_44
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_44
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_44
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_44
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_44
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_44
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco1_1_44
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_44
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_44
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_45
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_45
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_45
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_45
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_45
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_45
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco1_1_45
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_45
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_45
 
 # Export daily snapshot
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 
@@ -26,7 +26,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.43 1999-12-27 03:39:50 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.44 2000-01-28 01:15:03 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -62,9 +62,9 @@ my $False=0;
 my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
-my $CVS_Date='$Date: 1999-12-27 03:39:50 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.43 1999-12-27 03:39:50 zender Exp $';
-my $CVS_Revision='$Revision: 1.43 $';
+my $CVS_Date='$Date: 2000-01-28 01:15:03 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.44 2000-01-28 01:15:03 zender Exp $';
+my $CVS_Revision='$Revision: 1.44 $';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
 my $bld=$False; # Option bld; Whether to rebuild netCDF distribution
 my $data_nm=$ENV{'DATA'};

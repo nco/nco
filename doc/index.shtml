@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.32 1999-12-27 03:39:51 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.33 2000-01-28 01:15:04 zender Exp $
 
 Purpose: NCO homepage
 
@@ -153,8 +153,15 @@ User's Guide</A>. </P>
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
 
+<P>2000/01/26: 
+Fixed longstanding NCO bug which caused infrequent but unpredictable
+core dumps on machines with PIDs longer than 6 digits, e.g., all
+recent SGI machines. 
+Kudos to Juliana Rew and Brian Eaton for identifying this bug.
+NCO is now distributed under the GNU GPL license.
+
 <P>1999/12/26: 
-Added support for printing all character arrays as strings in <TT>ncks</TT>.
+Added support for printing character arrays as strings in <TT>ncks</TT>.
 Added documentation and examples of stride capability to <TT>ncks</TT>,
 <TT>ncra</TT>, and <TT>ncrcat</TT> portions of User's Guide.
 
@@ -202,46 +209,6 @@ dimensions, it averages over all dimensions.
 Thus the behavior of <TT>-a</TT> is now analogous to that of
 <TT>-d</TT> and of <TT>-v</TT>.
 See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> for details.
-
-<P>1999/08/29: 
-NCO now builds completely with pure C source files by default.
-In the past, NCO used Fortran routines to perform floating point
-arithmetic and pure C builds could be manually enabled by specifying
--DC_ONLY in the build environment. 
-The interface between Fortran and C, however, was very difficult to
-maintain on the wide variety of platforms supported by NCO.
-Now pure C builds are the default and Fortran arithmetic must be
-manually enabled by specifying -DUSE_FORTRAN_ARITHMETIC in the build
-environment. 
-See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> for details.
-The Fortran code is no longer supported and will probably be
-deprecated in future releases.
-
-<P>1999/08/05: 
-NCAR users will be pleased to know that NCO now takes advantage
-of the local <TT>msrcp</TT> command, if it exists in a standard
-location on the local network.
-This allows all operators to retrieve files from the NCAR mass storage
-unit when <TT>msrcp</TT> is available on the local system.
-This change is transparent to the user, so that commands should still
-specify the paths to the files on the mass store with, e.g.,
-<TT>ncks -O -R -l ./ /ZENDER/nc/in.nc foo.nc</TT>.
-See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> for more details.
-
-<P>1999/07/03: 
-<TT>ncatted</TT> now replaces missing values of variables whose
-<IT>missing_value</IT> attribute is changed.
-The feature was added in response to problems users were having of
-comparing files produced on different machines.
-When the internal floating point representation of a missing value, 
-e.g., 1.0e36, differs between machines then netCDF files produced
-on those machines will have incompatible missing values.
-<TT>ncatted</TT> now changes the <IT>missing_value</IT> attribute
-and the missing data self-consistently.
-This allows the user to change the missing values in files from
-different machines to a single value so that the files may then be 
-concatenated together, e.g., by <TT>ncrcat</TT>, without losing
-any information.  
 
 <P>
 <A HREF="http://www.cgd.ucar.edu/cms/nco/nco_news.shtml"> Older NCO news</A>  
