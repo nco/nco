@@ -6,16 +6,16 @@
 # Usage:
 # Export tagged, public versions
 
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_45
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_45
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_45
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_45
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_45
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_45
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco1_1_45
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco1_1_45
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_45
-# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_45
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco1_1_46
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_46
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_cnt nco1_1_46
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --acd_prs nco1_1_46
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_46
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_46
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --bbl_cnt nco1_1_46
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --blk_cnt nco1_1_46
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --dat_cnt nco1_1_46
+# $HOME/nc/nco/bld/nco_dst.pl --dbg=2 --cln --ute_prs nco1_1_46
 
 # Export daily snapshot
 # $HOME/nc/nco/bld/nco_dst.pl --dbg=2 
@@ -28,7 +28,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.49 2000-03-06 04:04:39 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.50 2000-03-06 08:04:46 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -64,9 +64,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-03-06 04:04:39 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.49 2000-03-06 04:04:39 zender Exp $';
-my $CVS_Revision='$Revision: 1.49 $';
+my $CVS_Date='$Date: 2000-03-06 08:04:46 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.50 2000-03-06 08:04:46 zender Exp $';
+my $CVS_Revision='$Revision: 1.50 $';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
 my $bld=$False; # Option bld; Whether to rebuild netCDF distribution
 my $cp_cmd='cp -p -f'; # Command that behaves like cp
@@ -214,13 +214,13 @@ if($dbg_lvl >= 1){
 # Build distribution from scratch
 if($bld){
     cmd_prc("$rm_cmd -r $dst_pth_bld"); # Remove contents of current directory, if any
-# NB: NCO code currently assumes -kkv and -r will fail otherwise
     if($dly_snp){
 	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -D \"1 second ago\" -d $dst_pth_bld nco"); # Export
     }else{
 	cmd_prc("$cvs_cmd -d $CVSROOT export -kkv -r $vrs_tag -d $dst_pth_bld nco"); # Export
     } # endelse
     cmd_prc("printf $dst_vrs > $dst_pth_bld/doc/VERSION"); # Stamp version in VERSION file
+#    cmd_prc("ln -s $dst_pth_bld/bld/nco.spec $dst_pth_bld/bld/nco-$dst_vrs.spec"); # Stamp version in VERSION file
     
 # Make sure documentation files are up to date
     my $bld_pth=$dst_pth_pfx.'/'."$dst_vrs".'/bld';

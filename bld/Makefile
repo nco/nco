@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.54 2000-03-06 04:04:38 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.55 2000-03-06 08:04:45 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -25,6 +25,9 @@ MY_DOC_DIR := ../doc
 MY_INC_DIR := 
 MY_DPN_DIR := $(MY_OBJ_DIR)
 MY_SRC_DIR := ../src/nco
+ifndef NCO_VRS
+ NCO_VRS := $(shell cat $(MY_DOC_DIR)/VERSION) # Used for RPM building
+endif
 ifndef OPTS
  OPTS := O
 endif
@@ -538,16 +541,9 @@ obj_dir:
 	-install -d $(MY_BIN_DIR)
 	-mkdir -p $(MY_OBJ_DIR)
 
-rpm:
-	cd /data/zender/tmp; \
-	/bin/rm -fr $(DATA)/tmp/nco*; \
-	cp -r $(HOME)/nc/nco nco-1.1.46; \
-	tar cvzf nco-1.1.46.tar.gz ./nco-1.1.46; \
-	mv $(DATA)/tmp/nco-1.1.46.tar.gz /usr/src/redhat/SOURCES; \
-	/bin/rm -f /usr/src/redhat/SPECS/nco-1.1.46.spec; \
-	ln -s $(HOME)/nc/nco/bld/nco.spec /usr/src/redhat/SPECS/nco-1.1.46.spec; \
-	cd /usr/src/redhat/SPECS; \
-	rpm -ba nco-1.1.46.spec;
+tst:	
+	- if test -f $(MY_DAT_DIR)/nco_tst.nc; then printf "" ; else $(MY_BIN_DIR)/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l $(MY_DAT_DIR) nco_tst.nc; fi
+	cd $(MY_BLD_DIR); nco_tst.sh
 
 # Targets in bin
 ncra:	$(MY_OBJ_DIR)/ncra.o $(libnco).a
@@ -584,6 +580,16 @@ bin_cln:
 buildclean: bld_cln
 bld_cln:
 	cd $(MY_BLD_DIR); rm -f TAGS
+rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges
+	cd $(DATA)/tmp; \
+	/bin/rm -fr $(DATA)/tmp/nco*; \
+	cp -r $(HOME)/nc/nco nco-$(NCO_VRS); \
+	tar cvzf nco-$(NCO_VRS).tar.gz ./nco-$(NCO_VRS); \
+	mv $(DATA)/tmp/nco-$(NCO_VRS).tar.gz /usr/src/redhat/SOURCES; \
+	/bin/rm -f /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
+	ln -s $(HOME)/nc/nco/bld/nco.spec /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
+	cd /usr/src/redhat/SPECS; \
+	rpm -ba nco-$(NCO_VRS).spec;
 # Targets in dat
 data:	dat
 dat:	$(MY_DAT_DIR)/in.nc 
@@ -668,6 +674,7 @@ dbg:
 	printf "YACC = $(YACC)\n"
 	printf "LEX = $(LEX)\n"
 	printf "USE_FORTRAN_ARITHMETIC = $(USE_FORTRAN_ARITHMETIC)\n"
+	printf "NCO_VRS = $(NCO_VRS)\n"
 distclean: dst_cln
 dst_cln: cln bin_cln doc_cln lib_cln
 	cd $(MY_BLD_DIR); rm -f *~
