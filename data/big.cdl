@@ -39,17 +39,21 @@ netcdf big {
 dimensions:
 // CDL file only used to supply dimension size = one billion to ncap 
 // Create actual variable with ncap LHS-casting
-	wvl_1e9=1000000000;
-	wvl_1e8=100000000;
-	wvl_1e7=10000000;
-	wvl_1e6=1000000;
-	wvl_1e5=100000;
-	wvl_1e4=10000;
-	wvl_1e3=1000;
-	wvl_1e2=100;
-	wvl_1e1=10;
-	wvl_1e0=1;
-//variables:
+	wvl_1e9=1000000000,
+	wvl_1e8=100000000,
+	wvl_1e7=10000000,
+	wvl_1e6=1000000,
+	wvl_1e5=100000,
+	wvl_1e4=10000,
+	wvl_1e3=1000,
+	wvl_1e2=100,
+	wvl_1e1=10,
+	wvl_1e0=1,
+	lev=32,
+	lat=128,
+	lon=256,
+	time=unlimited;
+ variables:
 //	float wvl_1e9(wvl_1e9);
 //	float wvl_1e8(wvl_1e8);
 //	float wvl_1e7(wvl_1e7);
@@ -60,7 +64,9 @@ dimensions:
 //	float wvl_1e2(wvl_1e2);
 //	float wvl_1e1(wvl_1e1);
 //	float wvl_1e0(wvl_1e0);
-//data:
+	double time(time);
+	time:long_name = "Time coordinate record variable";
+data:
 //	wvl_1e9=1;
 //	wvl_1e8=1;
 //	wvl_1e7=1;
@@ -71,4 +77,5 @@ dimensions:
 //	wvl_1e2=1;
 //	wvl_1e1=1;
 //	wvl_1e0=1;
+	time=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;
 }
