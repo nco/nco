@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.125 2004-09-18 05:21:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.126 2004-09-19 00:24:38 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.9 are ready. 
 
@@ -8,15 +8,15 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 There are fxm significant feature improvements in version 3.0.0.
 These changes are mainly oriented toward stabilization.
 
-1. libnco_c++ now incorporates nco_put_vara() overloads
+1. libnco_c++ incorporates nco_put_vara() overloads
 
 2. fxm ncpdq packing and unpacking handles missing_value attributes better
 
-3. ncks prints data to screen by default when only one filename specified
+3. ncks prints data to screen by default if only one filename specified
 Formerly, three ncks switches (-H -m -M) were required to print all
-file data to screen. 
-Now ncks automatically prints input data to screen when no output file
-is specified. Scripts that rely on the old behavior should be changed.
+file data and metadata to screen. 
+Now ncks automatically prints data to screen when no output file
+is specified. Change scripts that rely on the old behavior.
 See http://nco.sf.net/nco.html#ncks for details.
 
 Enjoy,
@@ -32,7 +32,7 @@ Build changes:
 1. None
 
 Other user-visible changes:
-1. ncks prints data to screen by default when only one filename specified
+1. ncks prints data to screen by default if only one filename specified
 
 User-invisible changes:
 1. None
