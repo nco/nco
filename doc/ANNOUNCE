@@ -1,12 +1,13 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.18 2003-05-30 20:04:29 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.19 2003-05-30 21:02:57 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.7.4 are ready. 
 
-http://nco.sourceforge.net
-ftp://dust.ess.uci.edu/pub/zender/nco/nco.tar.gz
+http://nco.sf.net (Homepage)
+http://dust.ess.uci.edu/nco/nco.tar.gz (note new location)
 
-The only change since version 2.7.3 is the addition of 
-autotools support for AIX, courtesy of Jim Edwards of NCAR.
+The only change since version 2.7.3 is the improvements to
+AIX support, especially autotools support contributed by
+Jim Edwards of NCAR. Thanks, Jim!
 
 Enjoy,
 Charlie
