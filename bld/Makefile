@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.201 2003-01-09 04:27:40 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.202 2003-01-20 23:39:53 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -444,6 +444,34 @@ ${MY_OBJ_DIR}/%.o : %.f
 endif
 # endif CRAY
 
+ifeq (${PVM_ARCH},HPPA)
+C++ := g++
+CC := gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
+FC := f77
+LD := ld
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lnsl -lm
+ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
+ LDFLAGS += -lF77 -lM77
+endif
+LDFLAGS += 
+LEX := flex
+LINT := lint
+YACC := bison
+ifeq (${OPTS},O)
+ CFLAGS += -O2
+ FFLAGS := -fast -eendif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+ FFLAGS := -g -e
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g 
+ FFLAGS := -g -e
+endif
+endif
+# endif HPPA
+
 # Works on LINUX, LINUXALPHA, and FREEBSD
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
 #C++ := como
@@ -679,7 +707,7 @@ endif
 
 ifeq (${PVM_ARCH},RS6K)
 C++ := g++
-CC := gcc -ansi
+CC := gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE
 CPP := /lib/cpp -P
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := xlf
@@ -720,7 +748,7 @@ C++ := CC -LANG:std
 CC := cc
 # 20000302: -w suppresses warnings which will swamp linker
 #C++ := g++ -w
-#CC := gcc
+#CC := gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 ifdef $(MIPSPRO_SGI)
 # SGIs like dataproc keep omp.h in special location determined by module MIPSpro
@@ -800,7 +828,7 @@ endif
 
 ifeq (${UNAMES},SunOS) 
 C++ := g++
-CC := gcc
+CC := gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE
 CFLAGS := -Wall
 CPP := cpp
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
@@ -834,7 +862,7 @@ endif
 
 ifeq (${PVM_ARCH},WIN32)
 C++ := g++
-CC := gcc -ansi
+CC := gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
 CPP_TKN_OS += -Di386 -I/usr/include
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}

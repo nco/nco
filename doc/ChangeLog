@@ -1,7 +1,12 @@
-2003-01-19  Charlie Zender  <zender@uci.edu>
+2003-01-20  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_7_1
-	Changes since nco-2_7_0: long options on all platforms, including non-glibc 
+	Changes since nco-2_7_0: long options on all platforms, packing
+	fix for ncap
+
+	* Initiate HPPA support in bld/Makefile
+
+2003-01-19  Charlie Zender  <zender@uci.edu>
 
 	* Fix inconsistent storing of fixed variables that are packed in ncap
 	Packed values were being saved in unpacked type without packing attributes	
