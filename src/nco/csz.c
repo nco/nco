@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.14 1999-04-05 00:37:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.15 1999-05-10 06:36:23 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -64,9 +64,9 @@ Exit_gracefully(void)
 char *
 cmd_ln_sng(int argc,char **argv)
 /* 
-   int argc: input argument count
-   char **argv: input argument list
-   char *cmd_ln_sng(): output command line
+   int argc: I argument count
+   char **argv: I argument list
+   char *cmd_ln_sng(): O command line
 */ 
 {
   char *cmd_ln;
@@ -95,9 +95,9 @@ cmd_ln_sng(int argc,char **argv)
 lim_sct *
 lim_prs(int nbr_lim,char **lim_arg)
 /* 
-   int nbr_lim: input number of dimensions with limits
-   char **lim_arg: input list of user-specified dimension limits
-   lim_sct *lim_prs(): output structure holding user-specified strings for min and max limits
+   int nbr_lim: I number of dimensions with limits
+   char **lim_arg: I list of user-specified dimension limits
+   lim_sct *lim_prs(): O structure holding user-specified strings for min and max limits
  */ 
 {
   /* Routine to set name, min_sng, max_sng elements of 
@@ -123,13 +123,13 @@ lim_prs(int nbr_lim,char **lim_arg)
 
   for(idx=0;idx<nbr_lim;idx++){
 
-    /* Hyperslab specifications are processed as a normal text list. */ 
+    /* Hyperslab specifications are processed as a normal text list */ 
     arg_lst=lst_prs(lim_arg[idx],dlm,&arg_nbr);
 
     /* Check syntax */ 
     if(
        arg_nbr < 2 || /* Need more than just dimension name */ 
-       arg_nbr > 4 || /* Too much info */ 
+       arg_nbr > 4 || /* Too much information */ 
        arg_lst[0] == NULL || /* Dimension name not specified */ 
        (arg_nbr == 3 && arg_lst[1] == NULL && arg_lst[2] == NULL) || /* No min or max when stride not specified */ 
        (arg_nbr == 4 && arg_lst[3] == NULL) || /* Stride should be specified */ 
@@ -146,6 +146,7 @@ lim_prs(int nbr_lim,char **lim_arg)
        as the branch for which no hyperslab along that dimension was set.
      */ 
     lim[idx].nm=NULL;
+    lim[idx].is_usr_spc_lmt=True; /* True if user-specified limit, else False (automatically generated limit) */
     lim[idx].min_sng=NULL;
     lim[idx].max_sng=NULL;
     lim[idx].srd_sng=NULL;
@@ -165,10 +166,10 @@ lim_prs(int nbr_lim,char **lim_arg)
 char **
 lst_prs(char *sng_in,const char *dlm,int *nbr_lst)
 /* 
-   char *sng_in: input/output delimited argument list (delimiters are changed to NULL on output)
-   const char *dlm: input delimiter
-   int *nbr_lst: output number of elements in list
-   char **lst_prs: output array of list elements
+   char *sng_in: I/O delimited argument list (delimiters are changed to NULL on output)
+   const char *dlm: I delimiter
+   int *nbr_lst: O number of elements in list
+   char **lst_prs: O array of list elements
  */ 
 {
   /* Routine creates a list of strings from a given string and an arbitrary delimiter */ 
@@ -184,8 +185,6 @@ lst_prs(char *sng_in,const char *dlm,int *nbr_lst)
    */
     
   char **lst;
-  char **lst_ptr;
-  char *tok_ptr;
   char *sng_in_ptr;
 
   int dlm_len;
@@ -200,7 +199,7 @@ lst_prs(char *sng_in,const char *dlm,int *nbr_lst)
   *nbr_lst=1;
 
   /* Count list members */ 
-  while(sng_in_ptr=strstr(sng_in_ptr,dlm)){
+  while((sng_in_ptr=strstr(sng_in_ptr,dlm))){
     sng_in_ptr+=dlm_len;
     (*nbr_lst)++;
   } /* end while */ 
@@ -210,7 +209,7 @@ lst_prs(char *sng_in,const char *dlm,int *nbr_lst)
   sng_in_ptr=sng_in; 
   lst[0]=sng_in;
   idx=0;
-  while(sng_in_ptr=strstr(sng_in_ptr,dlm)){
+  while((sng_in_ptr=strstr(sng_in_ptr,dlm))){
     /* NULL terminate previous arg */ 
     *sng_in_ptr='\0';
     sng_in_ptr+=dlm_len;
@@ -238,13 +237,13 @@ lst_prs(char *sng_in,const char *dlm,int *nbr_lst)
 char *
 fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,char **fl_lst_abb,char *fl_pth)
 /* 
-   char *fl_nm: input current filename, if any
-   int fl_nbr: input ordinal index of file in input file list
-   int *nbr_fl: input/output number of files to be processed
-   char **fl_lst_in: input user-specified filenames
-   char **fl_lst_abb: input NINTAP-style arguments, if any
-   char *fl_pth: input path prefix for files in fl_lst_in
-   char *fl_nm_prs: output name of file to retrieve
+   char *fl_nm: I current filename, if any
+   int fl_nbr: I ordinal index of file in input file list
+   int *nbr_fl: I/O number of files to be processed
+   char **fl_lst_in: I user-specified filenames
+   char **fl_lst_abb: I NINTAP-style arguments, if any
+   char *fl_pth: I path prefix for files in fl_lst_in
+   char *fl_nm_prs: O name of file to retrieve
  */ 
 {
   /* Routine to construct a file name from various input arguments and switches.
@@ -269,7 +268,6 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
   /* Construct the filename from NINTAP-style arguments and the input name  */ 
   if(fl_lst_abb != NULL){
     if(FIRST_INVOCATION){
-      char *fl_nm_nc_psn=NULL;
       int fl_nm_sfx_len=0;
       
       /* Parse the abbreviation list analogously to CCM Processor ICP "NINTAP" */ 
@@ -360,10 +358,10 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
 char *
 fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 /* 
-   char *fl_nm: input/output current filename, if any (destroyed)
-   char *fl_pth_lcl: input local storage area for files retrieved from remote locations, if any
-   int *FILE_RETRIEVED_FROM_REMOTE_LOCATION: output flag set if file had to be retrieved from remote system
-   char *fl_mk_lcl(): output filename locally available file
+   char *fl_nm: I/O current filename, if any (destroyed)
+   char *fl_pth_lcl: I local storage area for files retrieved from remote locations, if any
+   int *FILE_RETRIEVED_FROM_REMOTE_LOCATION: O flag set if file had to be retrieved from remote system
+   char *fl_mk_lcl(): O filename locally available file
 */ 
 {
   /* Routine to locate the input file, retrieve it from a remote storage system if necessary, 
@@ -944,8 +942,8 @@ nc_lib_vrs_prn()
 void
 copyright_prn(char *rcs_Id,char *rcs_Revision)
 /* 
-   char *rcs_Id: input RCS identification string
-   char *rcs_Revision: input RCS revision string
+   char *rcs_Id: I RCS identification string
+   char *rcs_Revision: I RCS revision string
  */ 
 {
   char *date_sng;
@@ -976,8 +974,8 @@ copyright_prn(char *rcs_Id,char *rcs_Revision)
 void
 fl_cp(char *fl_src,char *fl_dst)
 /* 
-   char *fl_src: input name of the source file to copy
-   char *fl_dst: input name of the destination file
+   char *fl_src: I name of the source file to copy
+   char *fl_dst: I name of the destination file
  */ 
 {
   /* Routine to copy the first file to the second */ 
@@ -1001,8 +999,8 @@ fl_cp(char *fl_src,char *fl_dst)
 void
 fl_mv(char *fl_src,char *fl_dst)
 /* 
-   char *fl_src: input name of the file to move
-   char *fl_dst: input name of the destination file
+   char *fl_src: I name of the file to move
+   char *fl_dst: I name of the destination file
  */ 
 {
   /* Routine to move the first file to the second */ 
@@ -1030,7 +1028,7 @@ fl_mv(char *fl_src,char *fl_dst)
 void 
 fl_rm(char *fl_nm)
 /* 
-   char *fl_nm: input file to be removed
+   char *fl_nm: I file to be removed
  */ 
 {
   /* Routine to remove the specified file from the local system */ 

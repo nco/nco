@@ -1,3 +1,27 @@
+1999-05-10  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Cleaned up files for a clean compile with gcc -Wall
+
+1999-05-09  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Toggled behavior of `ncks -a' so that default is now to
+	alphabetize output
+
+	* Fixed error (missing comma) in stride documentation in User's Guide
+
+	* Implemented stride for the record dimension in ncra and ncrcat,
+	e.g., ncra -d time,1,100,12 in1.nc in2.nc ... out.nc should now
+	work correctly across files. Currently stride only works on the 
+	record dimension of ncra and ncrcat, however, not the rest of
+	the dimensions.
+
+	* Implemented index-based hyperslabbing across files in the record
+	dimension in the multi-file operators ncra and ncrcat, e.g., 
+	ncra -d time,1,100 in1.nc in2.nc ... out.nc. The User's Guide said
+	this feature had already been implemented, but that, apparently,
+	was not true. The symptom was an "index out of range error" from
+	netCDF. 
+
 1999-04-27  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
 	* Tagged and released this as nco1_1_28

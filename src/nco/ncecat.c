@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.4 1999-04-05 00:37:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.5 1999-05-10 06:36:24 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -51,8 +51,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncecat.c,v 1.4 1999-04-05 00:37:36 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.4 $";
+  char rcs_Id[]="$Id: ncecat.c,v 1.5 1999-05-10 06:36:24 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.5 $";
   
   dim_sct *rdim;
   dim_sct **dim;
@@ -79,9 +79,7 @@ main(int argc,char **argv)
   int rec_dim_id=-1;
   
   lim_sct *lim;
-  lim_sct lim_rec;
   
-  long idx_rec;
   long idx_rec_out=0L; /* idx_rec_out gets incremented */ 
   
   nm_id_sct *dim_lst;
@@ -208,7 +206,7 @@ main(int argc,char **argv)
   /* We now have the final list of variables to extract. Phew. */
   
   /* Find the coordinate/dimension values associated with the limits */ 
-  for(idx=0;idx<nbr_lim;idx++) (void)lim_evl(in_id,lim+idx,FORTRAN_STYLE);
+  for(idx=0;idx<nbr_lim;idx++) (void)lim_evl(in_id,lim+idx,0L,FORTRAN_STYLE);
   
   /* Find all the dimensions associated with all variables to be extracted */ 
   dim_lst=dim_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dim_xtr);
@@ -388,4 +386,5 @@ main(int argc,char **argv)
   (void)fl_out_close(fl_out,fl_out_tmp,out_id);
   
   Exit_gracefully();
+  return EXIT_SUCCESS;
 } /* end main() */

@@ -1,9 +1,10 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.15 1999-05-07 23:06:23 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.16 1999-05-10 06:36:23 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
 <! Usage: >
 <! http://www.cgd.ucar.edu/cms/nco/index.shtml >
+<! file:/home/zender/nc/nco/doc/index.shtml >
 <! /bin/cp -f ~/nc/nco/doc/index.shtml /web/web-data/cms/nco/index.shtml >
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
@@ -143,6 +144,31 @@ User's Guide</A>. </P>
 
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
+
+<P>99/05/09: 
+<TT>ncks</TT> now alphabetizes output by default.
+To turn off alphabetization and return to the previous behavior
+(variables reported in the order they were written to disk) simply
+specify <TT>`-a'</TT> on the command line. 
+Yes, that means the behavior of <TT>`-a'</TT> has been toggled.
+
+<P>
+<TT>ncrcat</TT> and <TT>ncra</TT> now support a <IT>stride</IT> in the
+record dimension (and only the record dimension!), e.g., 
+<TT>ncra -d time,1,100,12 in1.nc in2.nc ... out.nc</TT>
+should now work correctly. 
+Strides in any dimension remain available with <TT>ncks</TT>, of
+course. 
+
+<P>
+<TT>ncrcat</TT> and <TT>ncra</TT> now support index-based
+hyperslabbing in the record dimension across files, e.g.,  
+<TT>ncra -d time,1,100 in1.nc in2.nc ... out.nc</TT>
+The User's Guide claimed this feature had already been implemented,
+but, due to an oversight, that was not true.
+Attempting to use this new feature in older versions of NCO resulted
+in an "index out of range" error.
+Thanks to John Truesdale <jet@ncar.ucar.edu> for pointing this out. 
 
 <P>99/04/20: 
 Fixed bug where <TT>ncrcat</TT> and <TT>ncra</TT> omitted the last slice of the

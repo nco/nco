@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.23 1999-05-07 23:16:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.24 1999-05-10 06:36:23 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -24,8 +24,8 @@
 char *
 nc_type_nm(nc_type type)
 /*  
-   nc_type type: input netCDF type
-   char *nc_type_nm(): output string describing type
+   nc_type type: I netCDF type
+   char *nc_type_nm(): O string describing type
 */ 
 {
   switch(type){
@@ -54,8 +54,8 @@ nc_type_nm(nc_type type)
 char *
 c_type_nm(nc_type type)
 /*  
-   nc_type type: input netCDF type
-   char *c_type_nm(): output string describing type
+   nc_type type: I netCDF type
+   char *c_type_nm(): O string describing type
 */ 
 {
   switch(type){
@@ -84,8 +84,8 @@ c_type_nm(nc_type type)
 char *
 fortran_type_nm(nc_type type)
 /*  
-   nc_type type: input netCDF type
-   char *fortran_type_nm(): output string describing type
+   nc_type type: I netCDF type
+   char *fortran_type_nm(): O string describing type
 */ 
 {
   switch(type){
@@ -114,8 +114,8 @@ fortran_type_nm(nc_type type)
 void
 cast_void_nctype(nc_type type,ptr_unn *ptr)
 /*  
-   nc_type type: input netCDF type to cast void pointer to
-   ptr_unn *ptr: input/output pointer to pointer union whose vp element will be cast to type type
+   nc_type type: I netCDF type to cast void pointer to
+   ptr_unn *ptr: I/O pointer to pointer union whose vp element will be cast to type type
 */ 
 {
   /* Routine to cast the generic pointer in the ptr_unn structure from type void
@@ -146,8 +146,8 @@ cast_void_nctype(nc_type type,ptr_unn *ptr)
 void
 cast_nctype_void(nc_type type,ptr_unn *ptr)
 /*  
-   nc_type type: input netCDF type of pointer
-   ptr_unn *ptr: input/output pointer to pointer union which to cast from type type to type void
+   nc_type type: I netCDF type of pointer
+   ptr_unn *ptr: I/O pointer to pointer union which to cast from type type to type void
 */ 
 {
   /* Routine to cast the generic pointer in the ptr_unn structure from type type to type void */ 
@@ -176,11 +176,12 @@ cast_nctype_void(nc_type type,ptr_unn *ptr)
 } /* end cast_nctype_void() */ 
 
 void 
-lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
+lim_evl(int nc_id,lim_sct *lim_ptr,long cnt_crr,bool FORTRAN_STYLE)
 /* 
-   int nc_id: input netCDF file ID
-   lim_sct *lim_ptr: input/output structure from lim_prs() to hold dimension limit info.
-   bool FORTRAN_STYLE: input switch to determine syntactical interpretation of dimensional indices
+   int nc_id: I netCDF file ID
+   lim_sct *lim_ptr: I/O structure from lim_prs() or from lim_dim_mk() to hold dimension limit information
+   long cnt_crr: I number of records already processed (only used for record dimensions in multi-file operators)
+   bool FORTRAN_STYLE: I switch to determine syntactical interpretation of dimensional indices
  */ 
 {
   /* Routine to take a parsed list of dimension names, minima, and
@@ -188,8 +189,6 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
      dimensions for the correct formulation of dimension start and
      count vectors, or fail trying. */ 
 
-  char *cp;
-  
   dim_sct dim;
 
   enum lim_type{
@@ -207,6 +206,9 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
   
   long idx;
   long dim_sz;
+  long cnt_rmn_crr; /* Records to extract from current file */
+  long cnt_rmn_ttl; /* Total records remaining to be read from this and all remaining files */
+  long srt_srd_off_prv; /* Starting offset applied to this file (diagnostic only) */
 
   lim=*lim_ptr;
 
@@ -265,7 +267,7 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
     if(lim.max_sng == NULL) max_lim_type=min_lim_type;
   } /* end else */ 
   
-  /* Both min_lim_type and max_lim_type are now defined.
+  /* Both min_lim_type and max_lim_type are now defined
      Continue only if both limits are of the same type. */
   if(min_lim_type != max_lim_type){
     (void)fprintf(stdout,"%s: ERROR -d %s,%s,%s\n",prg_nm_get(),lim.nm,lim.min_sng,lim.max_sng);
@@ -363,7 +365,7 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
     /* Warn when min_val > max_val (i.e., wrapped coordinate)*/ 
     if(lim.min_val > lim.max_val) (void)fprintf(stderr,"%s: WARNING Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lim.nm,lim.max_val,lim.nm,lim.min_val);
     
-    /* Exit when... */ 
+    /* Fail when... */ 
     if(
        /* User did not specify single level, coordinate is not wrapped, and either extrema falls outside valid crd range */
        ((lim.min_val < lim.max_val) && ((lim.min_val > dim_max) || (lim.max_val < dim_min))) ||
@@ -398,13 +400,13 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
     }else{ /* min_val != max_val */
       
       /* Find brackets to specified extrema */ 
-      /* Should no coordinate values match the given criteria, flag that index with a -1L.
-	 We defined the valid syntax such that a single half range with -1L is not an error.
+      /* Should no coordinate values match the given criteria, flag that index with a -1L
+	 We defined the valid syntax such that a single half range with -1L is not an error
 	 This causes "-d lon,100.,-100." to select [-180.] when lon=[-180.,-90.,0.,90.] because one
 	 of the specified half-ranges is valid (there are coordinates < -100.).
 	 However, "-d lon,100.,-200." should fail when lon=[-180.,-90.,0.,90.] because both 
 	 of the specified half-ranges are invalid (no coordinate is > 100. or < -200.).
-	 The -1L flags are replaced with the correct indices (0L or dim_sz-1L) following the search loop block.
+	 The -1L flags are replaced with the correct indices (0L or dim_sz-1L) following the search loop block
 	 Overwriting the -1L flags with 0L or dim_sz-1L later is more heuristic than setting them = 0L here,
 	 since 0L is a valid search result.
        */ 
@@ -437,9 +439,9 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
 	} /* end if */
       } /* end else monotonic_direction == decreasing */
 
-      /* The case where both min_idx and max_idx = -1 was flagged as an error above.
-	 In the case of a wrapped coordinate, either, but not both, of min_idx or max_idx be flagged with -1.
-	 See explanation above. */ 
+      /* The case where both min_idx and max_idx = -1 was flagged as an error above
+	 In the case of a wrapped coordinate, either, but not both, of min_idx or max_idx be flagged with -1
+	 See explanation above */ 
       if(lim.min_idx == -1L && (lim.min_val > lim.max_val)) lim.min_idx=0L;
       if(lim.max_idx == -1L && (lim.min_val > lim.max_val)) lim.max_idx=dim_sz-1L;
     
@@ -447,15 +449,6 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
     
     /* We now have user-specified ranges bracketed */ 
     
-    /* Original tweaking */ 
-    /*      if(monotonic_direction == increasing){
-	lim.srt=lim.min_idx;
-	lim.end=lim.max_idx;
-      }else{
-	lim.srt=lim.max_idx;
-	lim.end=lim.min_idx;
-      } */ /* end else */
-
     /* Convert indices of minima and maxima to srt and end indices */ 
     if(monotonic_direction == increasing){
       lim.srt=lim.min_idx;
@@ -471,12 +464,23 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
     /* Free space allocated for dimension */
     (void)free(dim.val.vp);
     
-  }else{ /* end if limit arguments were coord. values */ 
-    
+  }else{ /* end if limit arguments were coordinate values */ 
     /* Convert limit strings to zero-based indicial offsets */
-    if(lim.min_sng == NULL) lim.min_idx=0L; else lim.min_idx=atol(lim.min_sng);
-    if(lim.max_sng == NULL) lim.max_idx=dim_sz-1L; else lim.max_idx=atol(lim.max_sng);
     
+    int rec_dim_id;
+
+    /* Specifying stride, but not min or max is legal */
+    if(lim.min_sng == NULL){
+      if(FORTRAN_STYLE) lim.min_idx=1L; else lim.min_idx=0L;
+    }else{
+      lim.min_idx=atol(lim.min_sng);
+    } /* end if */
+    if(lim.max_sng == NULL){
+      if(FORTRAN_STYLE) lim.max_idx=dim_sz; else lim.max_idx=dim_sz-1L;
+    }else{
+      lim.max_idx=atol(lim.max_sng);
+    } /* end if */
+
     /* Adjust indices if FORTRAN style input was specified */ 
     if(FORTRAN_STYLE){
       lim.min_idx--;
@@ -484,29 +488,90 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
     } /* end if */
     
     /* Exit if requested indices are not in valid range */ 
-    if(lim.min_idx < 0 || lim.min_idx >= dim_sz || 
-       lim.max_idx < 0 || lim.min_idx >= dim_sz){
+    if(lim.min_idx < 0 || lim.min_idx >= dim_sz || lim.max_idx < 0){
       (void)fprintf(stdout,"%s: ERROR User-specified range %li <= %s <= %li does not fall within valid range 0 <= %s <= %li\n",prg_nm_get(),lim.min_idx,lim.nm,lim.max_idx,lim.nm,dim_sz-1L);
       (void)fprintf(stdout,"\n");
       exit(EXIT_FAILURE);
     } /* end if */
     
-    /* 19990507: TODO #117
-       Allow for possibility that limit pertains to record dimension of a multi file operator 
-       In this case, the user-specified maximum index may be larger than the number of records in this particular file
-       Thus lim.srt does not necessarily equal lim.min_idx, 
-       and lim.end does not necessarily equal lim.max_idx, 
-     */ 
-    lim.srt=lim.min_idx;
-    lim.end=lim.max_idx;
+    /* Might this be the record dimension in a multi-file operation? */ 
+    (void)ncinquire(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dim_id);
+    if(lim.id == rec_dim_id) lim.is_rec_dmn=True; else lim.is_rec_dmn=False;
 
+    if(!lim.is_rec_dmn || !lim.is_usr_spc_lmt){
+      /* For non-record dimensions and for record dimensions where the limit 
+	 was automatically generated (to include the whole file), the starting
+	 and ending indices are simply the minimum and maximum indices already 
+	 in the structure */
+      lim.srt=lim.min_idx;
+      lim.end=lim.max_idx;
+    }else{
+      /* For record dimensions where the user specified a limit, we must
+	 allow for possibility that limit pertains to record dimension of 
+	 a multi-file operator, e.g., ncra.
+	 In this case, the user-specified maximum index may be larger than 
+	 the number of records in this particular file.
+	 Thus lim.srt does not necessarily equal lim.min_idx and lim.end 
+	 does not necessarily equal lim.max_idx 
+      */ 
+      /* The following contains some infrastructure required to implement stride
+	 argument in multi-file operators.
+	 Note, however, that this implementation is recent and possibly incomplete
+	 Stride is not officially supported on any operator besides ncks */
+      if(lim.srd != 1L && prg_get() != ncks) (void)fprintf(stderr,"%s: WARNING Stride argument is not supported in any operator except ncks, use at your own risk...\n",prg_nm_get());
+	/* Total number of records remaining to be read depends on the stride */
+      if(lim.srd == 1L){
+	cnt_rmn_ttl=lim.max_idx-lim.min_idx+1L-cnt_crr;
+      }else{
+	cnt_rmn_ttl=-cnt_crr+1L+(lim.max_idx-lim.min_idx)/lim.srd;
+      } /* end else */
+      if(cnt_crr == 0L){
+	/* No records have been read from previous files */
+	/* Initialize srt_srd_off to 0L on first call to lim_evl() 
+	   This is necessary due to the intrinsic hysterisis srt_srd_off */
+	lim.srt_srd_off=0L;
+	/* Start index is min_idx for first file */
+	lim.srt=lim.min_idx;
+	if(lim.srd == 1L){
+	  /* With unity stride, the end index is lesser of number of remaining records to read and number of records in this file */
+	  lim.end=(lim.max_idx < dim_sz) ? lim.max_idx : dim_sz-1L;
+	}else{
+	  cnt_rmn_crr=1L+(dim_sz-1L-lim.srt)/lim.srd;
+	  cnt_rmn_crr=(cnt_rmn_ttl < cnt_rmn_crr) ? cnt_rmn_ttl : cnt_rmn_crr;
+	  lim.end=lim.srt+lim.srd*(cnt_rmn_crr-1L);
+	} /* end else */
+      }else{
+	/* Records have been read from previous file(s) */
+	if(lim.srd == 1L){
+	  /* Start index is zero since continguous records are requested */
+	  lim.srt=0L;
+	  /* End index is lesser of number of records to read from all remaining files (including this one) and number of records in this file */
+	  lim.end=(cnt_rmn_ttl < dim_sz) ? cnt_rmn_ttl-1L : dim_sz-1L;
+	}else{
+	  /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
+	  lim.srt=lim.srt_srd_off;
+	  cnt_rmn_crr=1L+(dim_sz-1L-lim.srt)/lim.srd;
+	  cnt_rmn_crr=(cnt_rmn_ttl < cnt_rmn_crr) ? cnt_rmn_ttl : cnt_rmn_crr;
+	  lim.end=lim.srt+lim.srd*(cnt_rmn_crr-1L);
+	} /* end else */
+      } /* endif user-specified records have already been read */
+      /* Save current srt_srd_off for diagnostics */
+      srt_srd_off_prv=lim.srt_srd_off;
+      /* srt_srd_off for next file is the stride minus the number of unused records
+	 at end of this file (dim_sz-1L-lim.end) minus one */
+      lim.srt_srd_off=lim.srd-(dim_sz-1L-lim.end)-1L;
+    } /* endif user-specified limits to record dimension */
+    
   } /* end else limit arguments are hyperslab indices */
   
-  /* Compute cnt from srt, end, and srd */ 
-  if(lim.srd != 1L){
-    if(lim.srt <= lim.end) lim.cnt=1L+(lim.end-lim.srt)/lim.srd; else lim.cnt=1L+((dim_sz-lim.srt)+lim.end)/lim.srd;
-  }else{
+  /* Compute cnt from srt, end, and srd 
+     This is fine for multi-file record dimensions since those operators read in one
+     record at a time and thus never actually use lim.cnt for the record dimension
+   */ 
+  if(lim.srd == 1L){
     if(lim.srt <= lim.end) lim.cnt=lim.end-lim.srt+1L; else lim.cnt=dim_sz-lim.srt+lim.end+1L;
+  }else{
+    if(lim.srt <= lim.end) lim.cnt=1L+(lim.end-lim.srt)/lim.srd; else lim.cnt=1L+((dim_sz-lim.srt)+lim.end)/lim.srd;
   } /* end else */
 
   /* NB: Degenerate cases of WRP && SRD exist for which dim_cnt_2 == 0
@@ -514,9 +579,9 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
      such that no values are selected in the second read. 
      e.g., "-d lon,60,0,10" if sz(lon)=128 has dim_cnt_2 == 0
      Since netCDF library reports an error reading and writing cnt=0 dimensions, a kludge is necessary.
-     Syntax ensures it is always the second read, not the first, which is obviated.
-     Therefore we convert these degenerate cases into non-wrapped coordinates to be processed by a single read. 
-     For these degenerate cases only, [srt,end] are not a permutation of [min_idx,max_idx].
+     Syntax ensures it is always the second read, not the first, which is obviated
+     Therefore we convert these degenerate cases into non-wrapped coordinates to be processed by a single read 
+     For these degenerate cases only, [srt,end] are not a permutation of [min_idx,max_idx]
      */
   if(
      (lim.srd != 1L) && /* SRD */ 
@@ -550,7 +615,14 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
   
   if(dbg_lvl_get() == 5){
     (void)fprintf(stderr,"Dimension hyperslabber lim_evl() diagnostics:\n");
-    (void)fprintf(stderr,"name = %s\n",lim.nm);
+    (void)fprintf(stderr,"Dimension name = %s\n",lim.nm);
+    (void)fprintf(stderr,"Limit %s user-specified\n",(lim.is_usr_spc_lmt) ? "is" : "is not ");
+    (void)fprintf(stderr,"Limit %s record dimension\n",(lim.is_rec_dmn) ? "is" : "is not ");
+    if(lim.is_rec_dmn) (void)fprintf(stderr,"Records read from previous files = %li\n",cnt_crr);
+    if(lim.is_rec_dmn && lim.is_usr_spc_lmt) (void)fprintf(stderr,"Total records to be read from this and all following files = %li\n",cnt_rmn_ttl);
+    if(lim.is_rec_dmn && lim.is_usr_spc_lmt) (void)fprintf(stderr,"Records to be read from this file = %li\n",cnt_rmn_crr);
+    if(lim.is_rec_dmn && lim.is_usr_spc_lmt) (void)fprintf(stderr,"srt_srd_off (this file) = %li \n",srt_srd_off_prv);
+    if(lim.is_rec_dmn && lim.is_usr_spc_lmt) (void)fprintf(stderr,"srt_srd_off (next file, if any) = %li \n",lim.srt_srd_off);
     (void)fprintf(stderr,"min_sng = %s\n",lim.min_sng == NULL ? "NULL" : lim.min_sng);
     (void)fprintf(stderr,"max_sng = %s\n",lim.max_sng == NULL ? "NULL" : lim.max_sng);
     (void)fprintf(stderr,"srd_sng = %s\n",lim.srd_sng == NULL ? "NULL" : lim.srd_sng);
@@ -569,8 +641,8 @@ lim_evl(int nc_id,lim_sct *lim_ptr,bool FORTRAN_STYLE)
 void
 rec_var_dbg(int nc_id,char *dbg_sng)
 /* 
-   int nc_id: input netCDF file ID
-   char *dbg_sng: input debugging message to print
+   int nc_id: I netCDF file ID
+   char *dbg_sng: I debugging message to print
 */ 
 {
   /* Purpose: Aid in debugging problems with record dimension */ 
@@ -594,10 +666,10 @@ rec_var_dbg(int nc_id,char *dbg_sng)
 void 
 att_cpy(int in_id,int out_id,int var_in_id,int var_out_id)
 /* 
-   int in_id: input netCDF input-file ID
-   int out_id: input netCDF output-file ID
-   int var_in_id: input netCDF input-variable ID
-   int var_out_id: input netCDF output-variable ID
+   int in_id: I netCDF input-file ID
+   int out_id: I netCDF output-file ID
+   int var_in_id: I netCDF input-variable ID
+   int var_out_id: I netCDF output-variable ID
 */ 
 {
   /* Routine to copy all the attributes from the input netCDF
@@ -644,12 +716,12 @@ att_cpy(int in_id,int out_id,int var_in_id,int var_out_id)
 var_sct *
 var_fll(int nc_id,int var_id,char *var_nm,dim_sct **dim,int nbr_dim)
 /* 
-   int nc_id: input netCDF file ID
-   int var_id: input variable ID
-   char *var_nm: input variable name
-   dim_sct **dim: input list of pointers to dimension structures
-   int nbr_dim: input number of dimensions in list
-   var_sct *var_fll(): output variable structure
+   int nc_id: I netCDF file ID
+   int var_id: I variable ID
+   char *var_nm: I variable name
+   dim_sct **dim: I list of pointers to dimension structures
+   int nbr_dim: I number of dimensions in list
+   var_sct *var_fll(): O variable structure
  */ 
 {
   /* Routine to malloc() and return a completed var_sct */ 
@@ -736,8 +808,8 @@ var_fll(int nc_id,int var_id,char *var_nm,dim_sct **dim,int nbr_dim)
 void
 var_refresh(int nc_id,var_sct *var)
 /* 
-   int nc_id: input netCDF input-file ID
-   var_sct *var: input/output variable structure
+   int nc_id: I netCDF input-file ID
+   var_sct *var: I/O variable structure
  */ 
 {
   /* Routine to update the ID, number of dimensions, and missing_value attribute for the given variable */
@@ -757,9 +829,9 @@ var_refresh(int nc_id,var_sct *var)
 int
 mss_val_get(int nc_id,var_sct *var)
 /* 
-   int nc_id: input netCDF input-file ID
-   var_sct *var: input/output variable structure
-   int mss_val_get(): output flag whether variable has missing value on output or not
+   int nc_id: I netCDF input-file ID
+   var_sct *var: I/O variable structure
+   int mss_val_get(): O flag whether variable has missing value on output or not
  */ 
 {
   /* Routine to update the number of attributes and the missing_value attribute for the variable */
@@ -829,9 +901,9 @@ mss_val_get(int nc_id,var_sct *var)
 dim_sct *
 dim_fll(int nc_id,int dim_id,char *dim_nm)
 /* 
-   int nc_id: input netCDF input-file ID
-   int dim_id: input dimension ID
-   char *dim_nm: input dimension name
+   int nc_id: I netCDF input-file ID
+   int dim_id: I dimension ID
+   char *dim_nm: I dimension name
    dim_sct *dim_fll(): pointer to output dimension structure
  */ 
 {
@@ -881,10 +953,10 @@ dim_fll(int nc_id,int dim_id,char *dim_nm)
 void
 dim_lim_merge(dim_sct **dim,int nbr_dim,lim_sct *lim,int nbr_lim)
 /* 
-   dim_sct **dim: input list of pointers to dimension structures
-   int nbr_dim: input number of dimension structures in structure list
-   lim_sct *lim: input structure from lim_evl() holding dimension limit info.
-   int nbr_lim: input number of dimensions with user-specified limits
+   dim_sct **dim: I list of pointers to dimension structures
+   int nbr_dim: I number of dimension structures in structure list
+   lim_sct *lim: I structure from lim_evl() holding dimension limit info.
+   int nbr_lim: I number of dimensions with user-specified limits
  */ 
 {
   /* Routine to merge the limit structure information into the dimension structures */ 
@@ -910,12 +982,12 @@ dim_lim_merge(dim_sct **dim,int nbr_dim,lim_sct *lim,int nbr_lim)
 nm_id_sct *
 var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,int *nbr_xtr)
 /* 
-   int nc_id: input netCDF file ID
-   int nbr_var: input total number of variables in input file
+   int nc_id: I netCDF file ID
+   int nbr_var: I total number of variables in input file
    char **var_lst_in: user specified list of variable names
-   bool PROCESS_ALL_COORDINATES: input whether to process all coordinates
-   int *nbr_xtr: input/output number of variables in current extraction list
-   nm_id_sct var_lst_mk(): output extraction list
+   bool PROCESS_ALL_COORDINATES: I whether to process all coordinates
+   int *nbr_xtr: I/O number of variables in current extraction list
+   nm_id_sct var_lst_mk(): O extraction list
  */ 
 {
   bool err_flg=False;
@@ -963,11 +1035,11 @@ var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,
 nm_id_sct *
 var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
 /* 
-   int nc_id: input netCDF file ID
-   int nbr_var: input total number of variables in input file
-   nm_id_sct *xtr_lst: input/output current extraction list (destroyed)
-   int *nbr_xtr: input/output number of variables in current extraction list
-   nm_id_sct var_lst_xcl(): output extraction list
+   int nc_id: I netCDF file ID
+   int nbr_var: I total number of variables in input file
+   nm_id_sct *xtr_lst: I/O current extraction list (destroyed)
+   int *nbr_xtr: I/O number of variables in current extraction list
+   nm_id_sct var_lst_xcl(): O extraction list
  */ 
 {
   /* The user wants to extract all the variables except the ones
@@ -1017,12 +1089,12 @@ var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
 nm_id_sct *
 var_lst_add_crd(int nc_id,int nbr_var,int nbr_dim,nm_id_sct *xtr_lst,int *nbr_xtr)
 /* 
-   int nc_id: input netCDF file ID
-   int nbr_var: input total number of variables in input file
-   int nbr_dim: input total number of dimensions in input file
+   int nc_id: I netCDF file ID
+   int nbr_var: I total number of variables in input file
+   int nbr_dim: I total number of dimensions in input file
    nm_id_sct *xtr_lst: current extraction list (destroyed)
-   int *nbr_xtr: input/output number of variables in current extraction list
-   nm_id_sct var_lst_add_crd(): output extraction list
+   int *nbr_xtr: I/O number of variables in current extraction list
+   nm_id_sct var_lst_add_crd(): O extraction list
  */ 
 {
   /* Find all coordinates (dimensions which are also variables) and
@@ -1066,12 +1138,12 @@ var_lst_add_crd(int nc_id,int nbr_var,int nbr_dim,nm_id_sct *xtr_lst,int *nbr_xt
 lim_sct
 lim_dim_mk(int nc_id,int dim_id,lim_sct *lim,int nbr_lim,bool FORTRAN_STYLE)
 /* 
-   int nc_id: input netCDF file ID
-   int dim_id: input ID of the dimension for which to create a limit structure
-   lim_sct *lim: input array of limits structures from lim_evl()
-   int nbr_lim: input number of limit structures in limit structure array
-   bool FORTRAN_STYLE: input switch to determine syntactical interpretation of dimensional indices
-   lim_sct lim_dim_mk(): output limit structure for dimension
+   int nc_id: I netCDF file ID
+   int dim_id: I ID of the dimension for which to create a limit structure
+   lim_sct *lim: I array of limits structures from lim_evl()
+   int nbr_lim: I number of limit structures in limit structure array
+   bool FORTRAN_STYLE: I switch to determine syntactical interpretation of dimensional indices
+   lim_sct lim_dim_mk(): O limit structure for dimension
  */ 
 {
   /* Create a stand-alone limit structure just for the given dimension */ 
@@ -1081,9 +1153,10 @@ lim_dim_mk(int nc_id,int dim_id,lim_sct *lim,int nbr_lim,bool FORTRAN_STYLE)
   
   lim_sct lim_dim;
 
-  /* Decide whether the dimension has any user-specified limits */ 
   for(idx=0;idx<nbr_lim;idx++){
+    /* Copy user-specified limits, if any */ 
     if(lim[idx].id == dim_id){
+      lim_dim.is_usr_spc_lmt=True; /* Flag needed by multi-file operators */
       if(lim[idx].max_sng != NULL) lim_dim.max_sng=(char *)strdup(lim[idx].max_sng); else lim_dim.max_sng=NULL;
       if(lim[idx].min_sng != NULL) lim_dim.min_sng=(char *)strdup(lim[idx].min_sng); else lim_dim.min_sng=NULL;
       if(lim[idx].srd_sng != NULL) lim_dim.srd_sng=(char *)strdup(lim[idx].srd_sng); else lim_dim.srd_sng=NULL;
@@ -1091,7 +1164,9 @@ lim_dim_mk(int nc_id,int dim_id,lim_sct *lim,int nbr_lim,bool FORTRAN_STYLE)
       break;
     } /* end if */
   } /* end loop over idx */
+
   if(idx == nbr_lim){
+    /* Create default limits to look as though user-specified them */
     char dim_nm[MAX_NC_NAME];
     long cnt;
     int max_sng_sz;
@@ -1107,14 +1182,19 @@ lim_dim_mk(int nc_id,int dim_id,lim_sct *lim,int nbr_lim,bool FORTRAN_STYLE)
     } /* end if */ 
 
     lim_dim.nm=(char *)strdup(dim_nm);
+    lim_dim.is_usr_spc_lmt=False; /* True if user-specified limit, else False (automatically generated limit) */
     lim_dim.srd_sng=NULL;
-    /* Automatically generate min and max strings to look as if the user
-       had specified them.
+    /* Generate min and max strings to look as if the user had specified them
        Adjust accordingly if FORTRAN_STYLE was requested for other dimensions
        These sizes will later be decremented in lim_evl() where all information
        is converted internally to C based indexing representation.
        Ultimately this problem arises because I want lim_evl() to think the
        user always did specify this dimension's hyperslab.
+       Otherwise, problems arise when FORTRAN_STYLE is specified by the user 
+       along with explicit hypersalbs for some dimensions excluding the record
+       dimension.
+       Then, when lim_dim_mk() creates the record dimension structure, it must
+       be created consistently with the FORTRAN_STYLE flag for the other dimensions.
        In order to do that, I must fill in the max_sng, min_sng, and srd_sng
        arguments with strings as if they had been read from the keyboard.
        Another solution would be to add a flag to lim_sct indicating whether this
@@ -1126,7 +1206,7 @@ lim_dim_mk(int nc_id,int dim_id,lim_sct *lim,int nbr_lim,bool FORTRAN_STYLE)
       (void)fprintf(stdout,"%s: cnt < 0 in lim_dim_mk()\n",prg_nm_get());
       exit(EXIT_FAILURE);
     } /* end if */
-    /* cnt < 10 cover negative numbers and SIGFPE from log10(cnt==0) 
+    /* cnt < 10 covers negative numbers and SIGFPE from log10(cnt==0) 
        Adding 1 is required for cnt=10,100,1000... */
     if(cnt < 10L) max_sng_sz=1; else max_sng_sz=1+(int)ceil(log10((double)cnt));
     /* Add one for the NULL byte */
@@ -1146,11 +1226,11 @@ lim_dim_mk(int nc_id,int dim_id,lim_sct *lim,int nbr_lim,bool FORTRAN_STYLE)
 nm_id_sct *
 var_lst_crd_xcl(int nc_id,int dim_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 /* 
-   int nc_id: input netCDF file ID
-   int dim_id: input dimension ID of the coordinate to eliminate from the extraction list
+   int nc_id: I netCDF file ID
+   int dim_id: I dimension ID of the coordinate to eliminate from the extraction list
    nm_id_sct *xtr_lst: current extraction list (destroyed)
-   int *nbr_xtr: input/output number of variables in current extraction list
-   nm_id_sct var_lst_crd_xcl(): output extraction list
+   int *nbr_xtr: I/O number of variables in current extraction list
+   nm_id_sct var_lst_crd_xcl(): O extraction list
  */ 
 {
   /* The following code modifies the extraction list to exclude the coordinate, 
@@ -1197,10 +1277,10 @@ var_lst_crd_xcl(int nc_id,int dim_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 nm_id_sct *
 var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 /* 
-   int nc_id: input netCDF file ID
-   nm_id_sct *xtr_lst: input/output current extraction list (destroyed)
-   int *nbr_xtr: input/output number of variables in current extraction list
-   nm_id_sct var_lst_ass_crd_add(): output extraction list
+   int nc_id: I netCDF file ID
+   nm_id_sct *xtr_lst: I/O current extraction list (destroyed)
+   int *nbr_xtr: I/O number of variables in current extraction list
+   nm_id_sct var_lst_ass_crd_add(): O extraction list
  */ 
 {
   /* Makes sure all coordinates associated with each of the variables
@@ -1261,9 +1341,9 @@ nm_id_sct *
 lst_heapsort(nm_id_sct *lst,int nbr_lst,bool ALPHABETIZE_OUTPUT)
      /* 
 	nm_id_sct *lst: current list (destroyed)
-	int nbr_lst: input number of members in list
+	int nbr_lst: I number of members in list
 	bool ALPHABETIZE_OUTPUT): whether to alphabetize extraction list
-	nm_id_sct lst_heapsort(): output list
+	nm_id_sct lst_heapsort(): O list
      */ 
 {
   int *srt_idx; /* List to store sorted key map */
@@ -1306,11 +1386,11 @@ lst_heapsort(nm_id_sct *lst,int nbr_lst,bool ALPHABETIZE_OUTPUT)
 char *
 fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
 /* 
-   char *fl_out: input name of the file to open
-   bool FORCE_APPEND: input flag for appending to existing file, if any
-   bool FORCE_OVERWRITE: input flag for overwriting existing file, if any
-   int *nc_id: output file ID
-   char *fl_out_open(): output name of the temporary file actually opened
+   char *fl_out: I name of the file to open
+   bool FORCE_APPEND: I flag for appending to existing file, if any
+   bool FORCE_OVERWRITE: I flag for overwriting existing file, if any
+   int *nc_id: O file ID
+   char *fl_out_open(): O name of the temporary file actually opened
  */ 
 {
   /* Open the output file subject to availability and user input. 
@@ -1413,9 +1493,9 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
 void
 fl_out_close(char *fl_out,char *fl_out_tmp,int nc_id)
 /* 
-   char *fl_out: input name of the permanent output file
-   char *fl_out_tmp: input name of the temporary output file to close and move to permanent output file
-   int nc_id: input file ID of fl_out_tmp
+   char *fl_out: I name of the permanent output file
+   char *fl_out_tmp: I name of the temporary output file to close and move to permanent output file
+   int nc_id: I file ID of fl_out_tmp
  */ 
 {
   /* Routine to close the temporary output file and move it to the permanent output file */ 
@@ -1448,10 +1528,10 @@ fl_cmp_err_chk()
 void
 var_val_cpy(int in_id,int out_id,var_sct **var,int nbr_var)
 /* 
-   int in_id: input netCDF file ID
-   int out_id: input netCDF output-file ID
-   var_sct **var: input list of pointers to variable structures
-   int nbr_var: input number of structures in variable structure list
+   int in_id: I netCDF file ID
+   int out_id: I netCDF output-file ID
+   var_sct **var: I list of pointers to variable structures
+   int nbr_var: I number of structures in variable structure list
    var_val_cpy():
 */
 {
@@ -1477,10 +1557,10 @@ var_val_cpy(int in_id,int out_id,var_sct **var,int nbr_var)
 void
 dim_def(char *fl_nm,int nc_id,dim_sct **dim,int nbr_dim)
 /* 
-   char *fl_nm: input name of the output file
-   int nc_id: input netCDF output-file ID
-   dim_sct **dim: input list of pointers to dimension structures to be defined in the output file
-   int nbr_dim: input number of dimension structures in structure list
+   char *fl_nm: I name of the output file
+   int nc_id: I netCDF output-file ID
+   dim_sct **dim: I list of pointers to dimension structures to be defined in the output file
+   int nbr_dim: I number of dimension structures in structure list
 */
 {
   int idx;
@@ -1509,13 +1589,13 @@ dim_def(char *fl_nm,int nc_id,dim_sct **dim,int nbr_dim)
 void
 var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dim_sct **dim_ncl,int nbr_dim_ncl)
 /* 
-   int in_id: input netCDF input-file ID
-   char *fl_out: input name of the output file
-   int out_id: input netCDF output-file ID
-   var_sct **var: input list of pointers to variable structures to be defined in the output file
-   int nbr_var: input number of variable structures in structure list
-   dim_sct **dim_ncl: input list of pointers to dimension structures allowed in the output file
-   int nbr_dim_ncl: input number of dimension structures in structure list
+   int in_id: I netCDF input-file ID
+   char *fl_out: I name of the output file
+   int out_id: I netCDF output-file ID
+   var_sct **var: I list of pointers to variable structures to be defined in the output file
+   int nbr_var: I number of variable structures in structure list
+   dim_sct **dim_ncl: I list of pointers to dimension structures allowed in the output file
+   int nbr_dim_ncl: I number of dimension structures in structure list
 */
 {
   /* Define the variables in the output file, and copy their attributes */ 
@@ -1577,8 +1657,8 @@ var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dim_sct **di
 void 
 hst_att_cat(int out_id,char *hst_sng)
 /* 
-   int out_id: input netCDF output-file ID
-   char *hst_sng: input string to add to history attribute
+   int out_id: I netCDF output-file ID
+   char *hst_sng: I string to add to history attribute
 */ 
 {
 
@@ -1649,11 +1729,11 @@ hst_att_cat(int out_id,char *hst_sng)
 nm_id_sct *
 dim_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
 /* 
-   int nc_id: input netCDF input-file ID
-   nm_id_sct *var: input variable list
-   int nbr_var: input number of variables in list
-   int *nbr_dim: output number of dimensions associated with input variable list
-   nm_id_sct *dim_lst_ass_var(): output list of dimensions associated with input variable list
+   int nc_id: I netCDF input-file ID
+   nm_id_sct *var: I variable list
+   int nbr_var: I number of variables in list
+   int *nbr_dim: O number of dimensions associated with input variable list
+   nm_id_sct *dim_lst_ass_var(): O list of dimensions associated with input variable list
  */
 {
   /* Routine to create a list of all the dimensions associated with the input variable list */ 
@@ -1663,7 +1743,6 @@ dim_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
   char dim_nm[MAX_NC_NAME];
 
   int dim_id[MAX_NC_DIMS];
-  int idx;
   int idx_dim_in;
   int idx_var;
   int idx_var_dim;
@@ -1726,8 +1805,8 @@ dim_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
 void
 var_srt_zero(var_sct **var,int nbr_var)
 /* 
-   var_sct **var: input list of pointers to variable structures whose srt elements will be zeroed
-   int nbr_var: input number of structures in variable structure list
+   var_sct **var: I list of pointers to variable structures whose srt elements will be zeroed
+   int nbr_var: I number of structures in variable structure list
  */ 
 {
   /* Routine to point the srt element of the variable structure to an array of zeroes */ 
@@ -1744,13 +1823,11 @@ var_srt_zero(var_sct **var,int nbr_var)
 var_sct *
 var_dup(var_sct *var)
 /* 
-   var_sct *var: input variable structure to duplicate
-   var_sct *var_dup(): output copy of input variable structure
+   var_sct *var: I variable structure to duplicate
+   var_sct *var_dup(): O copy of input variable structure
  */ 
 {
   /* Routine to malloc() and return a duplicate of the input var_sct */ 
-
-  int idx;
 
   var_sct *var_dup;
 
@@ -1805,8 +1882,8 @@ var_dup(var_sct *var)
 dim_sct *
 dim_dup(dim_sct *dim)
 /* 
-   dim_sct *dim: input dimension structure to duplicate
-   dim_sct *dim_dup(): output copy of input dimension structure
+   dim_sct *dim: I dimension structure to duplicate
+   dim_sct *dim_dup(): O copy of input dimension structure
  */ 
 {
   /* Routine to malloc() and return a duplicate of the input dim_sct */ 
@@ -1824,8 +1901,8 @@ dim_dup(dim_sct *dim)
 void
 var_get(int nc_id,var_sct *var)
 /* 
-   int nc_id: input netCDF file ID
-   var_sct *var: input pointer to variable structure
+   int nc_id: I netCDF file ID
+   var_sct *var: I pointer to variable structure
  */ 
 {
   /* Routine to allocate and retrieve the given variable hyperslab from disk memory */ 
@@ -1849,12 +1926,12 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
      /* DBG XXX:  TODO #114. Fix var_conform_dim() so that the returned weight always has the same size tally array as the template variable */ 
 
 /*  
-   var_sct *var: input pointer to variable structure to serve as template
-   var_sct *wgt: input pointer to variable structure to make conform to var
-   var_sct *wgt_crr: input/output pointer to existing conforming variable structure (if any) (may be destroyed)
+   var_sct *var: I pointer to variable structure to serve as template
+   var_sct *wgt: I pointer to variable structure to make conform to var
+   var_sct *wgt_crr: I/O pointer to existing conforming variable structure (if any) (may be destroyed)
    bool MUST_CONFORM; input Must wgt and var must conform?
    bool *DO_CONFORM; output Did wgt and var conform?
-   var_sct *var_conform_dim(): output pointer to conforming variable structure
+   var_sct *var_conform_dim(): O pointer to conforming variable structure
 */
 {
   /* Routine to return a copy of the second variable which has been stretched and
@@ -2140,7 +2217,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 void
 var_dim_xrf(var_sct *var)
 /*  
-   var_sct *var: input pointer to variable structure
+   var_sct *var: I pointer to variable structure
 */
 {
   /* Switch the pointers to the dimension structures so that var->dim points to var->dim->xrf.
@@ -2156,8 +2233,8 @@ var_dim_xrf(var_sct *var)
 void
 dim_xrf(dim_sct *dim,dim_sct *dim_dup)
 /*  
-   dim_sct *dim: input/output pointer to dimension structure
-   dim_sct *dim: input/output pointer to dimension structure
+   dim_sct *dim: I/O pointer to dimension structure
+   dim_sct *dim: I/O pointer to dimension structure
 */
 {
   /* Make the xrf elements of the dimension structures point to eachother.  */ 
@@ -2170,8 +2247,8 @@ dim_xrf(dim_sct *dim,dim_sct *dim_dup)
 void
 var_xrf(var_sct *var,var_sct *var_dup)
 /*  
-   var_sct *var: input/output pointer to variable structure
-   var_sct *var: input/output pointer to variable structure
+   var_sct *var: I/O pointer to variable structure
+   var_sct *var: I/O pointer to variable structure
 */
 {
   /* Make the xrf elements of the variable structures point to eachother. */ 
@@ -2184,9 +2261,9 @@ var_xrf(var_sct *var,var_sct *var_dup)
 var_sct *
 var_conform_type(nc_type var_out_type,var_sct *var_in)
 /*  
-   nc_type *var_out_type: input type to convert variable structure to
-   var_sct *var_in: input/output pointer to variable structure (may be destroyed)
-   var_sct *var_conform_type(): output point to variable structure of type var_out_type
+   nc_type *var_out_type: I type to convert variable structure to
+   var_sct *var_in: I/O pointer to variable structure (may be destroyed)
+   var_sct *var_conform_type(): O point to variable structure of type var_out_type
 */
 {
   /* Routine to typecast and copy the values of the variable to the desired type */ 
@@ -2312,10 +2389,10 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
 void
 val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out)
 /*  
-   nc_type type_in: input type of the input value
-   ptr_unn val_in: input pointer to the input value
-   nc_type type_out: input type of the output value
-   ptr_unn val_out: input pointer to the output value
+   nc_type type_in: I type of the input value
+   ptr_unn val_in: I pointer to the input value
+   nc_type type_out: I type of the output value
+   ptr_unn val_out: I pointer to the output value
 */
 {
   /* Routine to fill val_out with a copy of val_in that has been typecast from 
@@ -2393,10 +2470,10 @@ val_conform_type(nc_type type_in,ptr_unn val_in,nc_type type_out,ptr_unn val_out
 var_sct *
 var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
 /*  
-   var_sct *var: input/output pointer to variable structure (destroyed)
-   dim_sct **dim: input pointer to list of dimension structures
-   int nbr_dim: input number of structures in list
-   var_sct *var_avg(): output pointer to PARTIALLY (non-normalized) averaged variable
+   var_sct *var: I/O pointer to variable structure (destroyed)
+   dim_sct **dim: I pointer to list of dimension structures
+   int nbr_dim: I number of structures in list
+   var_sct *var_avg(): O pointer to PARTIALLY (non-normalized) averaged variable
 */
 {
   /* Routine to average given variable over given dimensions. The input variable 
@@ -2550,7 +2627,6 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
     int nbr_dim_var_m1;
 
     long *var_cnt;
-    long avg_off;
     long avg_lmn;
     long fix_lmn;
     long var_lmn;
@@ -2650,7 +2726,7 @@ var_avg(var_sct *var,dim_sct **dim,int nbr_dim)
 var_sct *
 var_free(var_sct *var)
 /*  
-   var_sct *var: input pointer to variable structure
+   var_sct *var: I pointer to variable structure
 */
 {
   /* Routine to free all the space associated with a dynamically allocated variable structure */ 
@@ -2677,8 +2753,8 @@ var_free(var_sct *var)
 bool
 arm_inq(int nc_id)
 /*  
-   int nc_id: input netCDF file ID
-   bool arm_inq(): output whether the file is an ARM data file
+   int nc_id: I netCDF file ID
+   bool arm_inq(): O whether the file is an ARM data file
 */
 {
   /* Routine to check whether the file adheres to ARM time format */
@@ -2708,8 +2784,8 @@ arm_inq(int nc_id)
 nclong
 arm_base_time_get(int nc_id)
 /*  
-   int nc_id: input netCDF file ID
-   nclong arm_base_time_get: output value of base_time variable
+   int nc_id: I netCDF file ID
+   nclong arm_base_time_get: O value of base_time variable
 */
 {
   /* Routine to check whether the file adheres to ARM time format */
@@ -2727,12 +2803,12 @@ arm_base_time_get(int nc_id)
 void
 var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: input netCDF type of the operands
-  long sz: input size (in elements) of the operands
-  int has_mss_val: input flag for missing values
-  ptr_unn mss_val: input value of missing value
-  ptr_unn op1: input values of first operand
-  ptr_unn op2: input/output values of second operand on input, values of product on output
+  nc_type type: I netCDF type of the operands
+  long sz: I size (in elements) of the operands
+  int has_mss_val: I flag for missing values
+  ptr_unn mss_val: I value of missing value
+  ptr_unn op1: I values of first operand
+  ptr_unn op2: I/O values of second operand on input, values of product on output
  */ 
 {
   /* Routine to multiply the value of the first operand by the value of the second operand 
@@ -2810,12 +2886,12 @@ var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
 void
 var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: input netCDF type of the operands
-  long sz: input size (in elements) of the operands
-  int has_mss_val: input flag for missing values
-  ptr_unn mss_val: input value of missing value
-  ptr_unn op1: input values of first operand
-  ptr_unn op2: input/outpue values of second operand on input, values of ratio on output
+  nc_type type: I netCDF type of the operands
+  long sz: I size (in elements) of the operands
+  int has_mss_val: I flag for missing values
+  ptr_unn mss_val: I value of missing value
+  ptr_unn op1: I values of first operand
+  ptr_unn op2: I/O values of second operand on input, values of ratio on output
  */ 
 {
   /* Routine to divide the value of the first operand by the value of the second operand 
@@ -2893,13 +2969,13 @@ var_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_
 void
 var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: input netCDF type of the operands
-  long sz: input size (in elements) of the operands
-  int has_mss_val: input flag for missing values
-  ptr_unn mss_val: input value of missing value
-  long *tally: input/output counter space
-  ptr_unn op1: input values of first operand
-  ptr_unn op2: input/outpue values of second operand on input, values of sum on output
+  nc_type type: I netCDF type of the operands
+  long sz: I size (in elements) of the operands
+  int has_mss_val: I flag for missing values
+  ptr_unn mss_val: I value of missing value
+  long *tally: I/O counter space
+  ptr_unn op1: I values of first operand
+  ptr_unn op2: I/O values of second operand on input, values of sum on output
  */ 
 {
   /* Routine to add the value of the first operand to the value of the second operand 
@@ -3001,14 +3077,14 @@ var_add(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn
 void
 var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: input netCDF type of the operands
-  long sz_op1: input size (in elements) of op1
-  long sz_op2: input size (in elements) of op2
-  int has_mss_val: input flag for missing values
-  ptr_unn mss_val: input value of missing value
-  long *tally: input/output counter space
-  ptr_unn op1: input values of first operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2))
-  ptr_unn op2: output values resulting from averaging each block of input operand
+  nc_type type: I netCDF type of the operands
+  long sz_op1: I size (in elements) of op1
+  long sz_op2: I size (in elements) of op2
+  int has_mss_val: I flag for missing values
+  ptr_unn mss_val: I value of missing value
+  long *tally: I/O counter space
+  ptr_unn op1: I values of first operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2))
+  ptr_unn op2: O values resulting from averaging each block of input operand
  */ 
 {
   /* Routine to average the value of each contiguous block of the first operand and place the
@@ -3031,7 +3107,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 #ifndef C_ONLY
     (void)FORTRAN_avg_reduce_real(&sz_blk,&sz_op2,&has_mss_val,mss_val.fp,tally,op1.fp,op2.fp);
 #else
-#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 )
+#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 ) || ( defined SGIMP64 )
     /* NB: ANSI compliant branch */ 
     if(True){
       long blk_off;
@@ -3086,7 +3162,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 #ifndef C_ONLY
     (void)FORTRAN_avg_reduce_double_precision(&sz_blk,&sz_op2,&has_mss_val,mss_val.dp,tally,op1.dp,op2.dp);
 #else
-#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 )
+#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 ) || ( defined SGIMP64 )
     /* NB: ANSI compliant branch */ 
     if(True){
       long blk_off;
@@ -3138,7 +3214,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 #endif /* !F77 */
     break;
   case NC_LONG:
-#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 )
+#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 ) || ( defined SGIMP64 )
     /* NB: ANSI compliant branch */ 
     if(True){
       long blk_off;
@@ -3189,7 +3265,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 #endif /* !SUN4 */ 
     break;
   case NC_SHORT:
-#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 )
+#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 ) || ( defined SGIMP64 )
     /* NB: ANSI compliant branch */ 
     if(True){
       long blk_off;
@@ -3255,12 +3331,12 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 void
 var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
 /* 
-  nc_type type: input netCDF type of the operand
-  long sz: input size (in elements) of the operand
-  int has_mss_val: input flag for missing values
-  ptr_unn mss_val: input value of missing value
-  long *tally: input counter space
-  ptr_unn op1: input/output values of first operand on input, the normalized result on output
+  nc_type type: I netCDF type of the operand
+  long sz: I size (in elements) of the operand
+  int has_mss_val: I flag for missing values
+  ptr_unn mss_val: I value of missing value
+  long *tally: I counter space
+  ptr_unn op1: I/O values of first operand on input, the normalized result on output
  */ 
 {
   /* Routine to normalize the value of the first operand by the count in the tally array 
@@ -3335,8 +3411,8 @@ var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,p
 ptr_unn
 mss_val_mk(nc_type type)
 /* 
-  nc_type type: input netCDF type of the operand
-  ptr_unn mss_val_mk(): output ptr_unn containing the default missing value for type type
+  nc_type type: I netCDF type of the operand
+  ptr_unn mss_val_mk(): O ptr_unn containing the default missing value for type type
  */ 
 {
   /* Routine to return a pointer union containing the default missing value for type type */
@@ -3367,14 +3443,14 @@ mss_val_mk(nc_type type)
 void
 var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_type,ptr_unn op2,ptr_unn op3)
 /* 
-  nc_type type: input netCDF type of the operand
-  long sz: input size (in elements) of the operand
-  int has_mss_val: input flag for missing values
-  ptr_unn mss_val: input value of missing value
-  double op1: input value of the mask field corresponding to input to be processed
-  int op_type: input type of relationship to test for between op2 and op1
-  ptr_unn op2: input values of the mask field
-  ptr_unn op3: input/output values of second operand on input, the masked values on output
+  nc_type type: I netCDF type of the operand
+  long sz: I size (in elements) of the operand
+  int has_mss_val: I flag for missing values
+  ptr_unn mss_val: I value of missing value
+  double op1: I value of the mask field corresponding to input to be processed
+  int op_type: I type of relationship to test for between op2 and op1
+  ptr_unn op2: I values of the mask field
+  ptr_unn op3: I/O values of second operand on input, the masked values on output
  */ 
 {
   /* Routine to mask the third operand by the second operand. Wherever the second operand does not 
@@ -3461,9 +3537,9 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
 void
 var_zero(nc_type type,long sz,ptr_unn op1)
 /* 
-  nc_type type: input netCDF type of the operand
-  long sz: input size (in elements) of the operand
-  ptr_unn op1: input values of first operand
+  nc_type type: I netCDF type of the operand
+  long sz: I size (in elements) of the operand
+  ptr_unn op1: I values of first operand
  */ 
 {
   /* Routine to zero the value of the first operand and store the result in the second operand. */
@@ -3502,10 +3578,10 @@ var_zero(nc_type type,long sz,ptr_unn op1)
 void
 vec_set(nc_type type,long sz,ptr_unn op1,double op2)
 /* 
-  nc_type type: input netCDF type of the operand
-  long sz: input size (in elements) of the operand
-  ptr_unn op1: input values of first operand
-  double op2: input value to fill vector with
+  nc_type type: I netCDF type of the operand
+  long sz: I size (in elements) of the operand
+  ptr_unn op1: I values of first operand
+  double op2: I value to fill vector with
  */ 
 {
   /* Routine to fill every value of the first operand with the value of the second operand */
@@ -3544,8 +3620,8 @@ vec_set(nc_type type,long sz,ptr_unn op1,double op2)
 void
 zero_long(long sz,long *op1)
 /* 
-  long sz: input size (in elements) of the operand
-  long *op1: input values of first operand
+  long sz: I size (in elements) of the operand
+  long *op1: I values of first operand
  */ 
 {
   /* Routine to zero the value of the first operand and store the result in the first operand. */
@@ -3559,12 +3635,12 @@ zero_long(long sz,long *op1)
 void
 var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
-  nc_type type: input netCDF type of the operands
-  long sz: input size (in elements) of the operands
-  int has_mss_val: input flag for missing values
-  ptr_unn mss_val: input value of missing value
-  ptr_unn op1: input values of first operand
-  ptr_unn op2: input/outpue values of second operand on input, values of difference on output
+  nc_type type: I netCDF type of the operands
+  long sz: I size (in elements) of the operands
+  int has_mss_val: I flag for missing values
+  ptr_unn mss_val: I value of missing value
+  ptr_unn op1: I values of first operand
+  ptr_unn op2: I/O values of second operand on input, values of difference on output
  */ 
 {
   /* Routine to difference the value of the first operand from the value of the second operand 
@@ -3642,8 +3718,8 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
 bool
 ncar_csm_inq(int nc_id)
 /*  
-   int nc_id: input netCDF file ID
-   bool ncar_csm_inq(): output whether the file is an NCAR CSM history tape
+   int nc_id: I netCDF file ID
+   bool ncar_csm_inq(): O whether the file is an NCAR CSM history tape
 */
 {
   /* Routine to check whether the file adheres to NCAR CSM history tape format */
@@ -3677,9 +3753,9 @@ ncar_csm_inq(int nc_id)
 void
 ncar_csm_date(int nc_id,var_sct **var,int nbr_var)
      /*  
-	int nc_id: input netCDF file ID
-	var_sct **var: input list of pointers to variable structures
-	int nbr_var: input number of structures in variable structure list
+	int nc_id: I netCDF file ID
+	var_sct **var: I list of pointers to variable structures
+	int nbr_var: I number of structures in variable structure list
 	*/
 {
   /* Routine to fix the date variable in averaged CSM files */ 
@@ -3744,9 +3820,9 @@ ncar_csm_date(int nc_id,var_sct **var,int nbr_var)
 double
 arm_time_mk(int nc_id,double time_offset)
      /*  
-	int nc_id: input netCDF file ID
-	double time_offset: input current
-	double arm_time_mk: output base_time + current time_offset
+	int nc_id: I netCDF file ID
+	double time_offset: I current
+	double arm_time_mk: O base_time + current time_offset
 	*/
 {
   /* Routine to return the time corresponding to the current time offset */ 
@@ -3773,8 +3849,8 @@ arm_time_mk(int nc_id,double time_offset)
 void
 arm_time_install(int nc_id,nclong base_time_srt)
      /*  
-	 int nc_id: input netCDF file ID
-	 nclong base_time_srt: input base_time of first input file
+	 int nc_id: I netCDF file ID
+	 nclong base_time_srt: I base_time of first input file
 	 */
 {
   /* Routine to add time variable to concatenated ARM files */ 
@@ -3784,7 +3860,6 @@ arm_time_install(int nc_id,nclong base_time_srt)
 
   double *time_offset;
 
-  int rcd;
   int time_id;
   int time_dim_id;
   int time_offset_id;
@@ -3792,7 +3867,6 @@ arm_time_install(int nc_id,nclong base_time_srt)
   long idx;
   long srt=0L;
   long cnt;
-  long time_sz;
 
   /* Synchronize output file */ 
   (void)ncsync(nc_id);
@@ -3856,13 +3930,13 @@ void
 var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dim_sct **dim,int nbr_dim_xtr,
 	   var_sct ***var_ptr,var_sct ***var_out_ptr)
 /*  
-   int nc_id: input netCDF file ID
-   nm_id_sct *xtr_lst: input current extraction list (destroyed)
-   int nbr_xtr: input total number of variables in input file
-   dim_sct **dim: input list of pointers to dimension structures associated with input variable list
-   int nbr_dim_xtr: input number of dimensions structures in list
-   var_sct ***var_ptr: output pointer to list of pointers to variable structures
-   var_sct ***var_out_ptr: output pointer to list of pointers to duplicates of variable structures
+   int nc_id: I netCDF file ID
+   nm_id_sct *xtr_lst: I current extraction list (destroyed)
+   int nbr_xtr: I total number of variables in input file
+   dim_sct **dim: I list of pointers to dimension structures associated with input variable list
+   int nbr_dim_xtr: I number of dimensions structures in list
+   var_sct ***var_ptr: O pointer to list of pointers to variable structures
+   var_sct ***var_out_ptr: O pointer to list of pointers to duplicates of variable structures
 */
 {
   /* Routine to make a var_sct list from a nm_id list. The var_sct lst is duplicated 
@@ -3895,18 +3969,18 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
 	       var_sct ***var_fix_ptr,var_sct ***var_fix_out_ptr,int *nbr_var_fix,
 	       var_sct ***var_prc_ptr,var_sct ***var_prc_out_ptr,int *nbr_var_prc)
 /*  
-   var_sct **var: input list of pointers to variable structures
-   var_sct **var_out: input list of pointers to duplicates of variable structures
-   int nbr_var: input number of variable structures in list
-   dim_sct **dim_xcl: input list of pointers to dimensions not allowed in fixed variables
-   int nbr_dim_xcl: input number of dimension structures in list
-   bool NCAR_CSM_FORMAT: input whether the file is an NCAR CSM history tape
-   var_sct ***var_fix_ptr: output pointer to list of pointers to fixed-variable structures
-   var_sct ***var_fix_out_ptr: output pointer to list of pointers to duplicates of fixed-variable structures
-   int *nbr_var_fix: output number of variable structures in list of fixed variables
-   var_sct ***var_prc_ptr: output pointer to list of pointers to processed-variable structures
-   var_sct ***var_prc_out_ptr: output pointer to list of pointers to duplicates of processed-variable structures
-   int *nbr_var_prc: output number of variable structures in list of processed variables
+   var_sct **var: I list of pointers to variable structures
+   var_sct **var_out: I list of pointers to duplicates of variable structures
+   int nbr_var: I number of variable structures in list
+   dim_sct **dim_xcl: I list of pointers to dimensions not allowed in fixed variables
+   int nbr_dim_xcl: I number of dimension structures in list
+   bool NCAR_CSM_FORMAT: I whether the file is an NCAR CSM history tape
+   var_sct ***var_fix_ptr: O pointer to list of pointers to fixed-variable structures
+   var_sct ***var_fix_out_ptr: O pointer to list of pointers to duplicates of fixed-variable structures
+   int *nbr_var_fix: O number of variable structures in list of fixed variables
+   var_sct ***var_prc_ptr: O pointer to list of pointers to processed-variable structures
+   var_sct ***var_prc_out_ptr: O pointer to list of pointers to duplicates of processed-variable structures
+   int *nbr_var_prc: O number of variable structures in list of processed variables
 */
 {
   /* Routine to divide the two input lists of variables into four separate output lists, 
@@ -4010,7 +4084,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
 	(void)fprintf(stderr,"%s: WARNING variable \"%s\" will be coerced from %s to NC_FLOAT\n",prg_nm_get(),var[idx]->nm,nc_type_nm(var[idx]->type));
 	var_out[idx]->type=NC_FLOAT;
       } */ /* end if */ 
-      if(var[idx]->type == NC_CHAR || var[idx]->type == NC_BYTE && prg != ncrcat && prg != ncecat){
+      if(((var[idx]->type == NC_CHAR) || (var[idx]->type == NC_BYTE)) && ((prg != ncrcat) && (prg != ncecat))){
 	(void)fprintf(stderr,"%s: WARNING Variable %s is of type %s, for which processing (i.e., averaging, differencing) is ill-defined\n",prg_nm_get(),var[idx]->nm,nc_type_nm(var[idx]->type));
       } /* end if */ 
     } /* end else */ 
@@ -4064,10 +4138,10 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
 nm_id_sct *
 dim_lst_mk(int nc_id,char **dim_lst_in,int nbr_dim)
 /* 
-   int nc_id: input netCDF file ID
+   int nc_id: I netCDF file ID
    char **dim_lst_in: user specified list of dimension names
-   int nbr_dim: input total number of dimensions in lst
-   nm_id_sct dim_lst_mk(): output dimension list
+   int nbr_dim: I total number of dimensions in lst
+   nm_id_sct dim_lst_mk(): O dimension list
  */ 
 {
   int idx;
@@ -4088,11 +4162,11 @@ dim_lst_mk(int nc_id,char **dim_lst_in,int nbr_dim)
 void
 rec_crd_chk(var_sct *var,char *fl_in,char *fl_out,long idx_rec,long idx_rec_out)
 /* 
-   var_sct *var: input variable structure of coordinate to check for monotinicity
-   char *fl_in: input current input filename
-   char *fl_out: input current output filename
-   int idx_rec: input current index or record coordinate in input file
-   int idx_rec_out: input current index or record coordinate in output file
+   var_sct *var: I variable structure of coordinate to check for monotinicity
+   char *fl_in: I current input filename
+   char *fl_out: I current output filename
+   int idx_rec: I current index or record coordinate in input file
+   int idx_rec_out: I current index or record coordinate in output file
  */ 
 {
   /* Routine to check for monotonicity of coordinate values */ 
@@ -4119,7 +4193,7 @@ rec_crd_chk(var_sct *var,char *fl_in,char *fl_out,long idx_rec,long idx_rec_out)
   if(idx_rec_out > 1){
     if(((rec_crd_val_crr > rec_crd_val_lst) && monotonic_direction == decreasing) ||
        ((rec_crd_val_crr < rec_crd_val_lst) && monotonic_direction == increasing))
-      (void)fprintf(stderr,"%s: WARNING Record coordinate \"%s\" does not monotonically %s between (input file %s record indices: %ld, %ld) (output file %s record indices %ld, %ld) record coordinate values %lg, %lg\n",prg_nm_get(),var->nm,(monotonic_direction == decreasing ? "decrease" : "increase"),fl_in,idx_rec-1,idx_rec,fl_out,idx_rec_out-1,idx_rec_out,rec_crd_val_lst,rec_crd_val_crr);
+      (void)fprintf(stderr,"%s: WARNING Record coordinate \"%s\" does not monotonically %s between (input file %s record indices: %ld, %ld) (output file %s record indices %ld, %ld) record coordinate values %f, %f\n",prg_nm_get(),var->nm,(monotonic_direction == decreasing ? "decrease" : "increase"),fl_in,idx_rec-1,idx_rec,fl_out,idx_rec_out-1,idx_rec_out,rec_crd_val_lst,rec_crd_val_crr);
   }else if(idx_rec_out == 1){
     if(rec_crd_val_crr > rec_crd_val_lst) monotonic_direction=increasing; else monotonic_direction=decreasing;
   } /* end if */ 
@@ -4131,12 +4205,12 @@ rec_crd_chk(var_sct *var,char *fl_in,char *fl_out,long idx_rec,long idx_rec_out)
 char **
 fl_lst_mk(char **argv,int argc,int arg_crr,int *nbr_fl,char **fl_out)
 /* 
-   char **argv: input argument list
-   int argc: input argument count
-   int arg_crr: input index of current argument
-   int *nbr_fl: output number of files in input file list
-   char **fl_out: output name of the output file
-   char **fl_lst_mk(): output list of user-specified filenames
+   char **argv: I argument list
+   int argc: I argument count
+   int arg_crr: I index of current argument
+   int *nbr_fl: O number of files in input file list
+   char **fl_out: O name of the output file
+   char **fl_lst_mk(): O list of user-specified filenames
  */ 
 {
   /* Routine to parse the positional arguments on the command line.
@@ -4224,9 +4298,9 @@ fl_lst_mk(char **argv,int argc,int arg_crr,int *nbr_fl,char **fl_out)
 char *
 prg_prs(char *nm_in,int *prg)
 /* 
-   char *nm_in: input name of program to categorize, e.g., argv[0] (might include a path prefix)
-   int *prg: output enumeration number corresponding to nm_in
-   char *prg_prs(): output nm_in stripped of any path (i.e., program name stub)
+   char *nm_in: I name of program to categorize, e.g., argv[0] (might include a path prefix)
+   int *prg: O enumeration number corresponding to nm_in
+   char *prg_prs(): O nm_in stripped of any path (i.e., program name stub)
  */ 
 {
   /* Routine to set program name and enum */
@@ -4260,7 +4334,7 @@ prg_prs(char *nm_in,int *prg)
 void
 err_prn(char *err_msg)
 /* 
-   char *err_msg: input the formatted error message to print
+   char *err_msg: I the formatted error message to print
  */ 
 {
   /* Routine to print an error message (currently only to stdout) approximately in GNU style,
@@ -4390,7 +4464,7 @@ usg_prn(void)
 int
 op_prs(char *op_sng)
 /* 
-   char *op_sng: input string containing Fortran representation of a reltional operator ("eq","lt"...)
+   char *op_sng: I string containing Fortran representation of a reltional operator ("eq","lt"...)
  */ 
 {
   /* Routine to parse the Fortran abbreviation for a relational operator into a unique numeric value

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.5 1999-04-05 00:37:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.6 1999-05-10 06:36:24 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -46,7 +46,7 @@ main(int argc,char **argv)
   void prn_var_def(int,char *);
   void prn_var_val_lim(int,char *,lim_sct *,int,char *,bool,bool);
    
-  bool ALPHABETIZE_OUTPUT=False; /* Option a */ 
+  bool ALPHABETIZE_OUTPUT=True; /* Option a */ 
   bool EXCLUDE_INPUT_LIST=False; /* Option c */ 
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FORCE_APPEND=False; /* Option A */ 
@@ -74,8 +74,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncks.c,v 1.5 1999-04-05 00:37:36 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.5 $";
+  char rcs_Id[]="$Id: ncks.c,v 1.6 1999-05-10 06:36:24 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.6 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -227,10 +227,9 @@ main(int argc,char **argv)
   /* We now have the final list of variables to extract. Phew. */
   
   /* Find the coordinate/dimension values associated with the limits */ 
-  for(idx=0;idx<nbr_lim;idx++) (void)lim_evl(in_id,lim+idx,FORTRAN_STYLE);
+  for(idx=0;idx<nbr_lim;idx++) (void)lim_evl(in_id,lim+idx,0L,FORTRAN_STYLE);
   
   if(fl_out != NULL){
-    int nbr_out_dim;
     int out_id;  
 
     /* Open the output file */ 
@@ -307,6 +306,7 @@ main(int argc,char **argv)
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
 
   Exit_gracefully();
+  return EXIT_SUCCESS;
 } /* end main() */
 
 char *

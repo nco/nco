@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.24 1999-04-27 16:30:11 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.25 1999-05-10 06:36:23 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -163,7 +163,10 @@ ifeq ($(OPTS),O)
  CFLAGS := -O
 endif
 ifeq ($(OPTS),D)
- CFLAGS := -g
+ CFLAGS := -g -Wall
+endif
+ifeq ($(OPTS),X)
+ CFLAGS := -g -O -Wall
 endif
 $(MY_OBJ_DIR)/%.o : %.F
 	$(FC) -c $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<

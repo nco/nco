@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.8 1999-04-05 00:37:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.9 1999-05-10 06:36:23 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -39,7 +39,7 @@ unsigned short dbg_lvl_get(void){return dbg_lvl;}
 #endif /* MAIN_PROGRAM_FILE is NOT defined, i.e., the current file does not contain main() */
 
 /* Enumerate the key values for all the netCDF filters */ 
-#if ( ! defined SGI5 ) && ( ! defined SGI64 )
+#if ( ! defined SGI5 ) && ( ! defined SGI64 ) && ( ! defined SGIMP64 )
 enum prg{
   ncap,
   ncatted,
@@ -105,6 +105,9 @@ enum{
 
 typedef struct {
   char *nm;
+  bool is_usr_spc_lmt; /* True if user-specified limit, else False (automatically generated limit) */
+  bool is_rec_dmn; /* True if record dimension, else False */
+  long srt_srd_off; /* Offset of starting index due to non-unity stride (multi-file record dimension only) */
   char *min_sng; /* user-specified string for dimension minimum */ 
   char *max_sng; /* user-specified string for dimension maximum */ 
   char *srd_sng; /* user-specified string for dimension stride */ 
@@ -258,7 +261,7 @@ typedef struct var_sct_tag{
 #define FORTRAN_divide_double_precision divide_double_precision__
 #define FORTRAN_foo foo__
 #endif /* LINUX */ 
-#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SUN4SOL2 ) || ( defined SUNMP ) || ( defined SGI5 ) || ( defined SGI64 )
+#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SUN4SOL2 ) || ( defined SUNMP ) || ( defined SGI5 ) || ( defined SGI64 ) || ( defined SGIMP64 )
 #define FORTRAN_add_real add_real_
 #define FORTRAN_add_double_precision add_double_precision_
 #define FORTRAN_avg_reduce_real avg_reduce_real_
@@ -299,6 +302,7 @@ extern int prg_get(void);
 extern lim_sct *lim_prs(int,char **);
 extern lim_sct lim_dim_mk(int,int,lim_sct *,int,bool);
 extern nclong arm_base_time_get(int);
+extern nclong FORTRAN_newdate(nclong *,int *);
 extern nm_id_sct *dim_lst_ass_var(int,nm_id_sct *,int,int *);
 extern nm_id_sct *dim_lst_mk(int,char **,int);
 extern nm_id_sct *lst_heapsort(nm_id_sct *,int,bool);
@@ -337,14 +341,16 @@ extern void copyright_prn(char *,char *);
 extern void dim_def(char *,int,dim_sct **,int);
 extern void dim_lim_merge(dim_sct **,int,lim_sct *,int);
 extern void dim_xrf(dim_sct *,dim_sct *);
-extern void fl_cmp_err_chk();
+extern void fl_cmp_err_chk(void);
 extern void fl_cp(char *,char *);
 extern void fl_mv(char *,char *);
 extern void fl_out_close(char *,char *,int);
 extern void fl_rm(char *);
 extern void hst_att_cat(int,char *);
 extern void indexx(int,int *,int *);
-extern void lim_evl(int,lim_sct *,bool);
+extern void index_alpha(int,char **,int *);
+extern void lim_evl(int,lim_sct *,long,bool);
+extern void nc_lib_vrs_prn(void);
 extern void ncar_csm_date(int,var_sct **,int);
 extern void rec_crd_chk(var_sct *,char *,char *,long,long);
 extern void usg_prn(void);
@@ -370,3 +376,4 @@ extern void vec_set(nc_type,long,ptr_unn,double);
 extern void zero_long(long,long *op1);
 
 #endif /* NC_H */ 
+

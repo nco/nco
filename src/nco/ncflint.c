@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.6 1999-04-05 00:37:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.7 1999-05-10 06:36:24 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -71,8 +71,8 @@ main(int argc,char **argv)
   char *time_buf_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */ 
-  char rcs_Id[]="$Id: ncflint.c,v 1.6 1999-04-05 00:37:36 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.6 $";
+  char rcs_Id[]="$Id: ncflint.c,v 1.7 1999-05-10 06:36:24 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.7 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -85,7 +85,6 @@ main(int argc,char **argv)
   extern int ncopts;
   extern int optind;
   
-  int has_mss_val=False;
   int idx;
   int idx_fl;
   int in_id;  
@@ -272,7 +271,7 @@ main(int argc,char **argv)
   /* We now have the final list of variables to extract. Phew. */
   
   /* Find the coordinate/dimension values associated with the limits */ 
-  for(idx=0;idx<nbr_lim;idx++) (void)lim_evl(in_id,lim+idx,FORTRAN_STYLE);
+  for(idx=0;idx<nbr_lim;idx++) (void)lim_evl(in_id,lim+idx,0L,FORTRAN_STYLE);
   
   /* Find all the dimensions associated with all variables to be extracted */ 
   dim_lst=dim_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dim_xtr);
@@ -482,6 +481,7 @@ main(int argc,char **argv)
   if(FILE_2_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in_2);
   
   Exit_gracefully();
+  return EXIT_SUCCESS;
 } /* end main() */
 
 var_sct *

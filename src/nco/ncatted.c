@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.3 1998-11-26 04:51:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.4 1999-05-10 06:36:24 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -96,8 +96,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncatted.c,v 1.3 1998-11-26 04:51:39 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.3 $";
+  char rcs_Id[]="$Id: ncatted.c,v 1.4 1999-05-10 06:36:24 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.4 $";
   
   aed_sct *aed_lst;
 
@@ -113,7 +113,6 @@ main(int argc,char **argv)
   int nbr_aed=0; /* Option a. NB: nbr_var_aed gets incremented */
   int nbr_fl=0;
   int opt;
-  int rcd;
 
   time_t clock;
 
@@ -269,6 +268,7 @@ main(int argc,char **argv)
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
 
   Exit_gracefully();
+  return EXIT_SUCCESS;
 } /* end main() */
 
 aed_sct *

@@ -1,3 +1,11 @@
+c     Define the Fortran specification required to obtain the same type of 
+c     integer as a C "long int" on this platform.
+#if ( defined SGI64 ) || ( defined SGIMP64 )
+#define FORTRAN_EQUIV_C_LONG_INT integer*8
+#else /* not SGI64 */
+#define FORTRAN_EQUIV_C_LONG_INT integer
+#endif /* not SGI64 */
+
       real function diffdat( dat1, sec1, dat2, sec2 )
 
 c Compute the difference: (dat2,sec2) - (dat1,sec1)  in days.

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.6 1999-05-07 23:06:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.7 1999-05-10 06:36:24 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -66,8 +66,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncra.c,v 1.6 1999-05-07 23:06:24 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.6 $";
+  char rcs_Id[]="$Id: ncra.c,v 1.7 1999-05-10 06:36:24 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.7 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -225,7 +225,7 @@ main(int argc,char **argv)
   /* We now have the final list of variables to extract. Phew. */
   
   /* Find the coordinate/dimension values associated with the limits */ 
-  for(idx=0;idx<nbr_lim;idx++) (void)lim_evl(in_id,lim+idx,FORTRAN_STYLE);
+  for(idx=0;idx<nbr_lim;idx++) (void)lim_evl(in_id,lim+idx,0L,FORTRAN_STYLE);
   
   /* Find all the dimensions associated with all variables to be extracted */ 
   dim_lst=dim_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dim_xtr);
@@ -333,7 +333,7 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++) (void)var_refresh(in_id,var_prc[idx]);
 
     /* Each file can have a different number of records to process */ 
-    if(prg == ncra || prg == ncrcat) (void)lim_evl(in_id,&lim_rec,FORTRAN_STYLE);
+    if(prg == ncra || prg == ncrcat) (void)lim_evl(in_id,&lim_rec,idx_rec_out,FORTRAN_STYLE);
     
     /* Is this an ARM-format data file? */
     if(ARM_FORMAT) base_time_crr=arm_base_time_get(in_id);
@@ -343,9 +343,9 @@ main(int argc,char **argv)
 
     if(prg == ncra || prg == ncrcat){
       /* Loop over each record in the current file */ 
-      for(idx_rec=lim_rec.srt;idx_rec<=lim_rec.end;idx_rec++){
+      for(idx_rec=lim_rec.srt;idx_rec<=lim_rec.end;idx_rec+=lim_rec.srd){
 	/* Process all variables in the current record */ 
-	if(dbg_lvl > 1) (void)fprintf(stderr,"Reading record %ld in this file...\n",idx_rec);
+	if(dbg_lvl > 1) (void)fprintf(stderr,"Record %ld of %s is input record %ld\n",idx_rec,fl_in,idx_rec_out);
 	for(idx=0;idx<nbr_var_prc;idx++){
 	  if(dbg_lvl > 2) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
 	  if(dbg_lvl > 0) (void)fflush(stderr);
@@ -435,6 +435,7 @@ main(int argc,char **argv)
   (void)fl_out_close(fl_out,fl_out_tmp,out_id);
   
   Exit_gracefully();
+  return EXIT_SUCCESS;
 } /* end main() */
 
 

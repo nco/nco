@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.5 1999-04-05 00:37:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.6 1999-05-10 06:36:24 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -79,8 +79,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncap.c,v 1.5 1999-04-05 00:37:36 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.5 $";
+  char rcs_Id[]="$Id: ncap.c,v 1.6 1999-05-10 06:36:24 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.6 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -298,7 +298,7 @@ main(int argc,char **argv)
   /* Not! */ 
 
   /* Find the coordinate/dimension values associated with the limits */ 
-  for(idx=0;idx<nbr_lim;idx++) (void)lim_evl(in_id,lim+idx,FORTRAN_STYLE);
+  for(idx=0;idx<nbr_lim;idx++) (void)lim_evl(in_id,lim+idx,0L,FORTRAN_STYLE);
   
   /* Find all the dimensions associated with all variables to be extracted */ 
   dim_lst=dim_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dim_xtr);
