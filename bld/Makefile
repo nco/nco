@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.250 2004-07-01 17:31:03 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.251 2004-07-01 19:32:53 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -422,8 +422,8 @@ ifeq (${OPTS},O)
 # -O : -O3 is safe, -O5 is dangerous
 # -qstrict: Ensure that -O3 optimizations do not alter program semantics
 # -Q : Inline all appropriate subprograms
- CFLAGS := -O3 -qstrict -Q
- FFLAGS += -O3 -qstrict -Q
+ CFLAGS := -O3 -g -qstrict -Q
+ FFLAGS += -O3 -g -qstrict -Q
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
@@ -462,7 +462,7 @@ endif # endif AIX VA Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
  CFLAGS := -Wall -Wunused
 ifeq (${OPTS},O)
- CFLAGS += -O
+ CFLAGS += -O -g
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
@@ -514,8 +514,8 @@ LEX := flex
 LINT := lint
 YACC := bison
 ifeq (${OPTS},O)
- CFLAGS += -O2 -ansi_alias
- FFLAGS += -O3 -inline speed
+ CFLAGS += -O2 -g -ansi_alias
+ FFLAGS += -O3 -g -inline speed
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g -check_bounds -check -check_omp
@@ -552,7 +552,7 @@ LINT := lint
 YACC := bison
 ifeq (${OPTS},O)
  CFLAGS += -h rounddiv -h nofastmd -h nofastmodulus
- FFLAGS += -O2
+ FFLAGS += -O2 -g
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g -h indef -h rounddiv -h nofastmd -h nofastmodulus
@@ -589,7 +589,7 @@ LEX := flex
 LINT := lint
 YACC := bison
 ifeq (${OPTS},O)
- CFLAGS += -O2
+ CFLAGS += -O2 -g
  FFLAGS := -fast -eendif
 endif
 ifeq (${OPTS},D)
@@ -627,7 +627,7 @@ ifeq (${C++},como)
  CPPFLAGS += -DNEED_STRDUP
  LDFLAGS := ${COMOROOT}/libcomo/libcomo.a ${LDFLAGS}
 ifeq (${OPTS},O)
- CFLAGS += -O
+ CFLAGS += -O -g
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
@@ -673,7 +673,7 @@ ifneq (${null},$(findstring gcc,${CC}))
 # -Dinline=: inline is not an ANSI keyword, must undefine inline to work with -ansi
 # -fshort-enums: Make enums as short as possible, ususally non-int. Do not ever invoke this! This breaks ABI and causes subtle problems
 ifeq (${OPTS},O)
- CFLAGS += -O
+ CFLAGS += -O -g
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
@@ -699,7 +699,7 @@ ifeq (${CC},icc)
  CFLAGS := 
  OMP_FLG := -openmp
 ifeq (${OPTS},O)
- CFLAGS += -O
+ CFLAGS += -O -g
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
@@ -726,7 +726,7 @@ else
  FFLAGS += -i4
 endif
 ifeq (${OPTS},O)
- FFLAGS += -O2
+ FFLAGS += -O2 -g
 endif
 ifeq (${OPTS},D)
  FFLAGS += -g
@@ -782,7 +782,7 @@ endif # endif Portland Group Fortran Compiler
 ifeq (${FC},g77)
  FFLAGS := -ffixed-line-length-132 -fno-second-underscore
 ifeq (${OPTS},O)
- FFLAGS += -O
+ FFLAGS += -O -g
 endif
 ifeq (${OPTS},D)
  FFLAGS += -g -fdebug-kludge
@@ -893,7 +893,7 @@ ifeq (${OPTS},O)
  CFLAGS += -O2
  CPP := ${CPP} ${CPPFLAGS}
  PREPROCESS.F := ${CPP} ${CPPFLAGS}
- FFLAGS := -O -NS2000 -qfixed=132
+ FFLAGS := -O -g -NS2000 -qfixed=132
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g
@@ -945,7 +945,7 @@ endif
 ifeq (${CC},gcc)
  LDFLAGS += $(GCC_LDFLAGS_SZ_SPC) ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq (${OPTS},O)
-CFLAGS += ${GCC_ABI_FLG} -O2 -Wall
+CFLAGS += ${GCC_ABI_FLG} -O2 -g -Wall
 endif
 ifeq (${OPTS},R)
  CFLAGS += ${GCC_ABI_FLG} -Wall
@@ -962,7 +962,7 @@ endif
 ifeq (${CC},cc)
  LDFLAGS += ${SGI_ABI_FLG} ${TMP_LDFLAGS} ${TMP_LIBS} -lm
 ifeq (${OPTS},O)
- CFLAGS += ${SGI_ABI_FLG} -O2
+ CFLAGS += ${SGI_ABI_FLG} -O2 -g
 endif
 ifeq (${OPTS},R)
  CFLAGS += ${SGI_ABI_FLG}
@@ -977,7 +977,7 @@ endif
 # endif CC=cc
 # Fortran flags
 ifeq (${OPTS},O)
- FFLAGS := ${SGI_ABI_FLG} -O2 -extend_source
+ FFLAGS := ${SGI_ABI_FLG} -O2 -g -extend_source
 endif
 ifeq (${OPTS},R)
  FFLAGS := ${SGI_ABI_FLG} -extend_source
@@ -1011,7 +1011,7 @@ LEX := flex
 LINT := lint
 YACC := bison
 ifeq (${OPTS},O)
- CFLAGS += -O2
+ CFLAGS += -O2 -g
  FFLAGS += -fast
 endif
 ifeq (${OPTS},D)
@@ -1046,7 +1046,7 @@ LEX := flex
 LINT := lint
 YACC := bison
 ifeq (${OPTS},O)
- CFLAGS += -O
+ CFLAGS += -O -g
 endif
 ifeq (${OPTS},D)
  CFLAGS += -g

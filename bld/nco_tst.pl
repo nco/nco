@@ -412,28 +412,28 @@ $expected= 5.0e35 ;
 &go();
 ####################
 
-$test[0]='ncwa -O -v lat -m lat -M 90.0 -o eq -a lat in.nc foo.nc'; 
+$test[0]='ncwa -O -v lat -m lat -M 90.0 -T eq -a lat in.nc foo.nc'; 
 $test[1]='ncks -C -H -s "%e" -v lat foo.nc';
 $description=" average masked coordinate";
 $expected= 90.0 ; 
 &go();
 ####################
 
-$test[0]='ncwa -O -v lat_var -m lat -M 90.0 -o eq -a lat in.nc foo.nc'; 
+$test[0]='ncwa -O -v lat_var -m lat -M 90.0 -T eq -a lat in.nc foo.nc'; 
 $test[1]='ncks -C -H -s "%e" -v lat_var foo.nc';
 $description=" average masked variable";
 $expected= 2.0 ; 
 &go();
 ####################
 
-$test[0]='ncwa -O -v lev -m lev -M 100.0 -o eq -a lev -w lev_wgt in.nc foo.nc'; 
+$test[0]='ncwa -O -v lev -m lev -M 100.0 -T eq -a lev -w lev_wgt in.nc foo.nc'; 
 $test[1]='ncks -C -H -s "%e" -v lev foo.nc';
 $description=" average masked, weighted coordinate";
 $expected= 100.0 ; 
 &go();
 ####################
 
-$test[0]='ncwa -O -v lev_var -m lev -M 100.0 -o gt -a lev -w lev_wgt in.nc foo.nc';
+$test[0]='ncwa -O -v lev_var -m lev -M 100.0 -T gt -a lev -w lev_wgt in.nc foo.nc';
 $test[1]='ncks -C -H -s "%e" -v lev_var foo.nc';
 $description=" average masked, weighted variable";
 $expected= 666.6667 ; 
@@ -461,7 +461,7 @@ $expected= 1.0 ;
 &go();
 ####################
 
-$test[0]='ncwa -O -v msk_prt_mss_prt -m msk_prt_mss_prt -M 1.0 -o lt -a lon in.nc foo.nc'; 
+$test[0]='ncwa -O -v msk_prt_mss_prt -m msk_prt_mss_prt -M 1.0 -T lt -a lon in.nc foo.nc'; 
 $test[1]='ncks -C -H -s "%e" -v msk_prt_mss_prt foo.nc';
 $description=" average masked variable with some missing values";
 $expected= 0.5 ; 
@@ -685,15 +685,15 @@ if (scalar @ARGV > 0)
       chomp $MY_BIN_DIR;
     }
   }
-  # die if this path still doesn't work
+  # Die if this path still does not work
   die "$MY_BIN_DIR/$operators[0] doesn't exist\n" unless (-e "$MY_BIN_DIR/$operators[0]");
   
-  # go to the data directory where all the test are actually run
+  # Go to data directory where tests are actually run
   my $data_dir = "../data";
   
   chdir $data_dir or die "$!\n";
   
-  # make sure in.nc exists, make it if possible, or die
+  # Make sure in.nc exists, make it if possible, or die
   unless (-e "in.nc") {
     system("ncgen -o in.nc in.cdl") if (`which ncgen` and -e "in.cdl");
     }
@@ -701,7 +701,7 @@ if (scalar @ARGV > 0)
   die "The netCDF file \"in.nc\" is necessary for testing NCO, however, it could not be found in \"$data_dir\".  Also, it could not be generated because \"ncgen\" could not be found in your path and/or the file \"$data_dir/in.cdl\" does not exist.\n"
   unless (-e "in.nc");
   
-  # initialize some hashes for each operator that will be tested
+  # Initialize some hashes for each operator that will be tested
   foreach(@operators) 
   {
     $testnum{$_}=0;
@@ -713,7 +713,7 @@ if (scalar @ARGV > 0)
 
 ####################
 sub go {
-  # only perform tests of requested operator; default is all
+  # Only perform tests of requested operator; default is all
   if (!defined $testnum{$operator}) { 
     #clear test array
     @test=();
