@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.28 2004-09-03 20:56:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.29 2004-09-03 21:50:59 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -261,7 +261,9 @@ nco_var_pck /* [fnc] Pack variable in memory */
      Routine is inverse of nco_var_upk(): nco_var_pck[nco_var_upk(var)]=var 
      Currently routine outputs same variable structure as given on input
      In other words, output structure may be neglected as all changes are made 
-     to input structure */
+     to input structure.
+     NB: Value buffer var->val.vp is usually free()'d here
+     Variables in calling routine which point to var->val.vp will be left dangling */
 
   const char fnc_nm[]="nco_var_pck()"; /* [sng] Function name */
   double scl_fct_dbl=double_CEWI; /* [sct] Double precision value of scale_factor */
