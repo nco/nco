@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.7 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.8 2003-01-01 02:42:48 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -203,6 +203,6 @@ char * /* O [sng] Mnemonic that describes current NCO version */
 nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic that describes current NCO version */
-  return "MacProcessor";
+  return "The ocean view from Diedrich's Coffee House in Laguna Beach is rippling with pre-storm activity";
 } /* end nmn_get() */
 
