@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.19 2002-05-06 06:37:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.20 2002-05-06 06:51:27 zender Exp $ */
 
 /* Purpose: Prototypes, typedefs, and global variables for libcsm_c++ */
 
@@ -15,8 +15,8 @@
 #define LIBNCO_H
 
 /* Core headers */
-#include "nco.h" /* netCDF operator definitions */
 #include "nco_netcdf.h" /* Wrappers for netCDF 3.X C-library */
+#include "nco.h" /* netCDF operator definitions */
 
 /* Library headers */
 #include "nco_att_utl.h" /* Attribute utilities */

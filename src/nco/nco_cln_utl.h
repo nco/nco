@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.2 2002-05-06 06:51:27 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -19,6 +19,7 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_ctl.h" /* Program flow control functions */
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.127 2002-05-06 05:14:48 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.128 2002-05-06 06:51:27 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -821,37 +821,37 @@ obj_dir:
 # Targets in bin
 .PHONY:  ncra ncatted ncks ncwa ncecat ncdiff ncflint ncrename
 ncra:   ${MY_BIN_DIR}/ncra
-${MY_BIN_DIR}/ncra:	${libnco}.a ${MY_OBJ_DIR}/ncra.o
+${MY_BIN_DIR}/ncra:	lib ${MY_OBJ_DIR}/ncra.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 	cd ${MY_BIN_DIR}; rm -f ncea; ln -f -s ncra ncea
 	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -f -s ncra ncrcat
 ncatted:   ${MY_BIN_DIR}/ncatted
-${MY_BIN_DIR}/ncatted:	${libnco}.a ${MY_OBJ_DIR}/ncatted.o
+${MY_BIN_DIR}/ncatted:	lib ${MY_OBJ_DIR}/ncatted.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncks:   ${MY_BIN_DIR}/ncks
-${MY_BIN_DIR}/ncks:	${libnco}.a ${MY_OBJ_DIR}/ncks.o
+${MY_BIN_DIR}/ncks:	lib ${MY_OBJ_DIR}/ncks.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncwa:   ${MY_BIN_DIR}/ncwa
-${MY_BIN_DIR}/ncwa:	${libnco}.a ${MY_OBJ_DIR}/ncwa.o
+${MY_BIN_DIR}/ncwa:	lib ${MY_OBJ_DIR}/ncwa.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncecat:   ${MY_BIN_DIR}/ncecat
-${MY_BIN_DIR}/ncecat:	${libnco}.a ${MY_OBJ_DIR}/ncecat.o
+${MY_BIN_DIR}/ncecat:	lib ${MY_OBJ_DIR}/ncecat.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncdiff:   ${MY_BIN_DIR}/ncdiff
-${MY_BIN_DIR}/ncdiff:	${libnco}.a ${MY_OBJ_DIR}/ncdiff.o
+${MY_BIN_DIR}/ncdiff:	lib ${MY_OBJ_DIR}/ncdiff.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncflint:   ${MY_BIN_DIR}/ncflint
-${MY_BIN_DIR}/ncflint:	${libnco}.a ${MY_OBJ_DIR}/ncflint.o
+${MY_BIN_DIR}/ncflint:	lib ${MY_OBJ_DIR}/ncflint.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncrename:   ${MY_BIN_DIR}/ncrename
-${MY_BIN_DIR}/ncrename:	${libnco}.a ${MY_OBJ_DIR}/ncrename.o
+${MY_BIN_DIR}/ncrename:	lib ${MY_OBJ_DIR}/ncrename.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 bin: ${MDL_BIN_TRG}
@@ -932,36 +932,36 @@ inc_cln:
 # Targets in lib
 library: lib
 lib : inc ${libnco}.a
-${libnco}.a: $(libnco.a(${MY_OBJ_DIR}/nco_att_utl.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_cln_utl.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_cnf_dmn.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_cnf_typ.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_cnv_arm.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_cnv_csm.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_csz.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_dmn_utl.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_fl_utl.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_lmt.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_lst_utl.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_mss_val.c) \
-	$(libnco.a(${MY_OBJ_DIR}/ncap_utl.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_ctl.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_mmr.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_netcdf.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_var_scv.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_omp.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_pck.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_rec_var.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_rth_utl.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_scl_utl.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_scm.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_dbg.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_scv_utl.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_sng_utl.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_var_avg.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_var_lst.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_var_rth.c) \
-	$(libnco.a(${MY_OBJ_DIR}/nco_var_utl.c)
+${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/ncap_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_att_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_cln_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_cnf_dmn.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_cnf_typ.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_cnv_arm.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_cnv_csm.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_ctl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_dbg.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_dmn_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_fl_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_lmt.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_lst_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_mmr.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_mss_val.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_netcdf.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_omp.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_pck.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_prn.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_rec_var.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_rth_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_scl_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_scm.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_scv_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_sng_utl.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_var_avg.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_var_lst.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_var_rth.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_var_scv.o) \
+	${libnco}.a(${MY_OBJ_DIR}/nco_var_utl.o)
 libclean: lib_cln
 lib_cln:
 	rm -f ${libnco}.a

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.h,v 1.2 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.h,v 1.3 2002-05-06 06:51:27 zender Exp $ */
 
 /* Purpose: Conform dimensions */
 
@@ -22,6 +22,8 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_mmr.h" /* Memory management */
+#include "nco_var_utl.h" /* Variable utilities */
 
 #ifdef __cplusplus
 extern "C" {

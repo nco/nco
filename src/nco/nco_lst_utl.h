@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.1 2002-05-05 03:09:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.2 2002-05-06 06:51:27 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -22,6 +22,8 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_ctl.h" /* Program flow control functions */
+#include "nco_mmr.h" /* Memory management */
 
 #ifdef __cplusplus
 extern "C" {

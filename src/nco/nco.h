@@ -1,10 +1,13 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.34 2002-05-06 06:37:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.35 2002-05-06 06:51:27 zender Exp $ */
 
-/* Purpose: Typedefs and global variables for NCO netCDF operators */
+/* Purpose: netCDF operator definitions */
 
 /* Copyright (C) 1995--2002 Charlie Zender
    This software is distributed under the terms of the GNU General Public License
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+/* Usage:
+   #include "nco.h" *//* netCDF operator definitions */
 
 #ifndef NCO_H /* Contents have not yet been inserted in current source file */
 #define NCO_H
@@ -272,11 +275,7 @@ extern "C" {
     nc_type typ_upk; /* Type of variable when unpacked (expanded) (in memory) */
   } var_sct; /* end var_sct_tag */
   
-  /* Function prototypes 
-     Prototypes without descriptive variable names were written before ANSI C compilers were widely available and should be migrated to include arguments names and comments
-     Specifying extern is redundant (functions are extern by default) but Emacs highlights them in a nice shade of lavender :-)
-     fxm: TODO 210 Break into sourcefile specific headers, e.g., csz.h, pck.h... */
-  
+  /* Function prototypes */
   char *prg_nm_get(void);
   int prg_get(void);
   unsigned short dbg_lvl_get(void);

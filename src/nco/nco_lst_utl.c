@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.3 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.4 2002-05-06 06:51:27 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -169,7 +169,7 @@ void
 index_alpha /* [fnc] Sort array of strings */
 (const int n, /* I [nbr] Number of elements */
  const char ** const arrin, /* I [sng] Strings to sort */
- int * const indx); /* O [idx] Indices to sorted array */
+ int * const indx) /* O [idx] Indices to sorted array */
 {
 /* Purpose: Sort input array alphanumerically
    This is indexx() from Numerical recipes hacked to alphabetize a list of strings */
