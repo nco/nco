@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.70 2000-06-30 22:22:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.71 2000-07-01 01:13:38 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -1882,6 +1882,16 @@ dmn_def(char *fl_nm,int nc_id,dmn_sct **dim,int nbr_dim)
   
 } /* end dmn_def() */ 
 
+void 
+var_copy(nc_type type,long sz,ptr_unn op1,ptr_unn op2)
+{
+
+/* Routine to copy hyperslab variables of type from op1 to op2 */
+/* Assumes memory area in op2 has already been malloced       */
+	  
+  (void)memcpy((void *)(op2.vp),(void *)(op1.vp),sz*nctypelen(type) );
+
+}
 void
 var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dmn_ncl,int nbr_dmn_ncl)
 /* 
@@ -3111,6 +3121,176 @@ arm_base_time_get(int nc_id)
 } /* end arm_base_time_get */ 
 
 void
+var_max(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+/* 
+  nc_type type: I netCDF type of operands
+  long sz: I size (in elements) of operands
+  int has_mss_val: I flag for missing values
+  ptr_unn mss_val: I value of missing value
+  ptr_unn op1: I values of first operand
+  ptr_unn op2: I/O values of second operand on input, values of maximium on output
+ */ 
+{/* Routine to find maximium value(s) of the two operands
+     and store result in second operand. Operands are assumed to have conforming
+     dimensions, and to both be of the specified type. Operands' values are 
+     assumed to be in memory already. */
+      
+  long idx;
+  
+  /* Typecast pointer to values before access */ 
+  /* It is not necessary to untype-cast pointer types after using them as we have 
+	  operated on local copies of them */
+  (void)cast_void_nctype(type,&op1);
+  (void)cast_void_nctype(type,&op2);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  switch(type){
+  case NC_FLOAT:
+
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+		  if(op2.fp[idx] < op1.fp[idx] ) op2.fp[idx] = op1.fp[idx];
+    }else{
+      for(idx=0;idx<sz;idx++){
+	if((op2.fp[idx] != *mss_val.fp) && (op1.fp[idx] != *mss_val.fp) && (op2.fp[idx] < op1.fp[idx]) )
+		op2.fp[idx] = op1.fp[idx];	 
+      } /* end for */ 
+    } /* end else */
+    break;
+  case NC_DOUBLE:
+
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+		  if(op2.dp[idx] < op1.dp[idx] ) op2.dp[idx] = op1.dp[idx];
+		  
+    }else{
+      for(idx=0;idx<sz;idx++){
+  		  
+      	if((op2.dp[idx] != *mss_val.dp) && (op1.dp[idx] != *mss_val.dp) && (op2.dp[idx] < op1.dp[idx]) )
+			 op2.dp[idx] = op1.dp[idx]; 
+		 
+      } /* end for */ 
+    } /* end else */
+    break;
+  case NC_LONG:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+		  if( op2.lp[idx] < op1.lp[idx] ) 
+			  op2.lp[idx]=op1.lp[idx];
+    }else{
+      for(idx=0;idx<sz;idx++){
+	if((op2.lp[idx] != *mss_val.lp) && (op1.lp[idx] != *mss_val.lp) && (op2.lp[idx] < op1.lp[idx]) ) 
+		op2.lp[idx]=op1.lp[idx]; 
+      } /* end for */ 
+    } /* end else */
+    break;
+  case NC_SHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+      if( op2.sp[idx] < op1.sp[idx] )
+		  op2.sp[idx] = op1.sp[idx];
+    }else{
+      for(idx=0;idx<sz;idx++){
+	if((op2.sp[idx] != *mss_val.sp) && (op1.sp[idx] != *mss_val.sp) && (op2.sp[idx] < op1.sp[idx])) 
+		op2.sp[idx] = op1.sp[idx];		
+      } /* end for */ 
+    } /* end else */
+    break;
+  case NC_CHAR:
+    /* Do nothing */ 
+    break;
+  case NC_BYTE:
+    /* Do nothing */ 
+    break;
+  } /* end switch */ 
+
+}
+void
+var_min(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+/* 
+  nc_type type: I netCDF type of operands
+  long sz: I size (in elements) of operands
+  int has_mss_val: I flag for missing values
+  ptr_unn mss_val: I value of missing value
+  ptr_unn op1: I values of first operand
+  ptr_unn op2: I/O values of second operand on input, values of maximium on output
+ */ 
+{/* Routine to find minimium value(s) of the two operands
+     and store result in second operand. Operands are assumed to have conforming
+     dimensions, and to both be of the specified type. Operands' values are 
+     assumed to be in memory already. */ 
+  long idx;
+  
+  /* Typecast pointer to values before access */
+  /* It is not necessary to uncast pointer types after using them as we have 
+	  operated on local copies of them */
+	   
+  (void)cast_void_nctype(type,&op1);
+  (void)cast_void_nctype(type,&op2);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  switch(type){
+  case NC_FLOAT:
+
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+		  if(op2.fp[idx] > op1.fp[idx] ) op2.fp[idx] = op1.fp[idx];
+    }else{
+      for(idx=0;idx<sz;idx++){
+	if((op2.fp[idx] != *mss_val.fp) && (op1.fp[idx] != *mss_val.fp) && (op2.fp[idx] > op1.fp[idx]) )
+		op2.fp[idx] = op1.fp[idx];	 
+      } /* end for */ 
+    } /* end else */
+    break;
+  case NC_DOUBLE:
+
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+		  if(op2.dp[idx] > op1.dp[idx] ) op2.dp[idx] = op1.dp[idx];
+		  
+    }else{
+      for(idx=0;idx<sz;idx++){
+  		  
+      	if((op2.dp[idx] != *mss_val.dp) && (op1.dp[idx] != *mss_val.dp) && (op2.dp[idx] > op1.dp[idx]) )
+			 op2.dp[idx] = op1.dp[idx]; 
+		 
+      } /* end for */ 
+    } /* end else */
+    break;
+  case NC_LONG:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+		  if( op2.lp[idx] > op1.lp[idx] ) 
+			  op2.lp[idx]=op1.lp[idx];
+    }else{
+      for(idx=0;idx<sz;idx++){
+	if((op2.lp[idx] != *mss_val.lp) && (op1.lp[idx] != *mss_val.lp) && (op2.lp[idx] > op1.lp[idx]) ) 
+		op2.lp[idx]=op1.lp[idx]; 
+      } /* end for */ 
+    } /* end else */
+    break;
+  case NC_SHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) 
+      if( op2.sp[idx] > op1.sp[idx] )  op2.sp[idx]=op1.sp[idx];
+    }else{
+      for(idx=0;idx<sz;idx++){
+	if((op2.sp[idx] != *mss_val.sp) && (op1.sp[idx] != *mss_val.sp) && (op2.sp[idx] > op1.sp[idx])) 
+		op2.sp[idx] = op1.sp[idx];		
+      } /* end for */ 
+    } /* end else */
+    break;
+  case NC_CHAR:
+    /* Do nothing */ 
+    break;
+  case NC_BYTE:
+    /* Do nothing */ 
+    break;
+  } /* end switch */ 
+
+}
+
+void
 var_multiply(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
 /* 
   nc_type type: I netCDF type of operands
@@ -3651,12 +3831,52 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 
 } /* end var_avg_reduce() */ 
 
+void 
+var_nco_typ(int start,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc )
+{
+  /* Purpose: Perform appropriate operations avg,min,max,etc */
+  
+  switch (nco_op_typ){
+    
+  case nco_op_avg: /* averages */
+    (void)var_add(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    break;
+    
+  case nco_op_min: /* minimum */
+    /* on the first loop simply copy variables from var_prc to var_prc_out */
+    if (start == 0 ) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else	  
+      (void)var_min(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
+    break;
+    
+  case nco_op_max: /*maximium */
+    /* on the first loop simply copy variables from var_prc to var_prc_out */
+    if (start == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else
+      (void)var_max(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
+    break;	
+    
+  case nco_op_ttl: /* total */
+    (void)var_add(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    
+  case nco_op_avgsqr:
+    (void)var_add(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    break;
+    
+  case nco_op_avgsumsqr:
+    /* Square the values in var_prc first */
+    var_multiply(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc->val);
+    /* now sum the sqares */
+    (void)var_add(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
+    break;
+  } /* end switch */
+
+} /* end var_nco_typ() */
+
 void
 var_normalize(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1)
-/* 
-  nc_type type: I netCDF type of operand
-  long sz: I size (in elements) of operand
-  int has_mss_val: I flag for missing values
+     /* 
+	nc_type type: I netCDF type of operand
+	long sz: I size (in elements) of operand
+	int has_mss_val: I flag for missing values
   ptr_unn mss_val: I value of missing value
   long *tally: I counter space
   ptr_unn op1: I/O values of first operand on input, normalized result on output
@@ -4822,6 +5042,18 @@ usg_prn(void)
   (void)free(opt_sng);
 
 } /* end usg_prn() */
+
+int
+nco_op_typ_get(char *str_nco_op)
+{
+  /* Purpose: process 'y' cmd line option */
+  if ( !strcmp(str_nco_op,"min") ) return nco_op_min;
+  if ( !strcmp(str_nco_op,"max") ) return  nco_op_max;
+  if ( !strcmp(str_nco_op,"total") || !strcmp(str_nco_op,"ttl") ) return nco_op_ttl;
+  if( !strcmp(str_nco_op,"avgsqr") ) return nco_op_avgsqr;
+  if( !strcmp(str_nco_op,"avgsumsqr")) return nco_op_avgsumsqr;  
+  return nco_op_avg;
+} /* end nco_op_typ_get() */
 
 int
 op_prs(char *op_sng)

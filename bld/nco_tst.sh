@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.19 2000-06-30 22:15:11 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.20 2000-07-01 01:13:38 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -113,13 +113,13 @@ echo "ncea 2: ensemble mean with missing values across two files: 1.0e36 =?= $av
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
 ncks -O -v one -p ftp://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
-echo "nco 1: FTP protocol: 1 =?= $avg" 
+echo "nco 1: FTP protocol: 1 =?= $avg (Will fail if unable to anonymous FTP to dust.ps.uci.edu)" 
 mv in_tmp.nc in.nc
 
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
 ncks -O -v one -p goldhill.cgd.ucar.edu:/home/zender/nco/data -l ./ in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
-echo "nco 2: scp/rcp protocol: 1 =?= $avg (Will fail if no remote access to goldhill.cgd.ucar.edu)" 
+echo "nco 2: scp/rcp protocol: 1 =?= $avg (Will fail if no SSH/RSH access to goldhill.cgd.ucar.edu)" 
 mv in_tmp.nc in.nc
 
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
@@ -131,7 +131,7 @@ mv in_tmp.nc in.nc
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
 ncks -O -v one -p http://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
-echo "nco 4: HTTP protocol: 1 =?= $avg (Will fail until HTTP implemented)" 
+echo "nco 4: HTTP protocol: 1 =?= $avg (Will always fail until HTTP implemented in NCO)" 
 mv in_tmp.nc in.nc
 
 ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc 2>> foo.tst

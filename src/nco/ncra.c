@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.26 2000-06-25 19:31:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.27 2000-07-01 01:13:38 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -92,8 +92,9 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.26 2000-06-25 19:31:47 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.26 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.27 2000-07-01 01:13:38 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.27 $";
+  char *nco_op_typ_sng=NULL_CEWI; /*  for average,  for minimium,  for maximium,  for total */
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -117,6 +118,7 @@ main(int argc,char **argv)
   int nbr_fl=0;
   int opt;
   int rec_dmn_id=-1;
+  int nco_op_typ=nco_op_avg; /* Default operation is averaging */
   
   lmt_sct *lmt=NULL_CEWI;
   lmt_sct lmt_rec;
@@ -148,7 +150,7 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="ACcD:d:Fhl:n:Op:rRv:x";
+  opt_sng="ACcD:d:Fhl:n:Op:rRv:x:y:";
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
@@ -204,6 +206,10 @@ main(int argc,char **argv)
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
+    case 'y': /* Option minmax,average */
+      nco_op_typ_sng=(char *)strdup(optarg);
+      if(prg == ncra || prg == ncea ) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
+      break;
     default: /* Print proper usage */
       (void)usg_prn();
       exit(EXIT_FAILURE);
@@ -218,8 +224,8 @@ main(int argc,char **argv)
   if(lmt_nbr > 0) lmt=lmt_prs(lmt_nbr,lmt_arg);
   
   /* Make netCDF errors fatal and print the diagnostic */   
-  ncopts=NC_VERBOSE | NC_FATAL; 
-  
+  ncopts=NC_VERBOSE | NC_FATAL;
+    
   /* Parse filename */ 
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */ 
@@ -247,7 +253,7 @@ main(int argc,char **argv)
 
   /* Finally, heapsort the extraction list by variable ID for fastest I/O */ 
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
-    
+  
   /* We now have final list of variables to extract. Phew. */
   
   /* Find coordinate/dimension values associated with user-specified limits */ 
@@ -383,9 +389,13 @@ main(int argc,char **argv)
 	  var_prc[idx]->cnt[0]=1L;
 	  /* Retrieve the variable values from disk into memory */ 
 	  (void)var_get(in_id,var_prc[idx]);
-	  /* Tally variable by summing current value with running total */ 
-	  if(prg == ncra) var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
-	  if(prg == ncra) (void)var_add(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc[idx]->val,var_prc_out[idx]->val);
+	  
+	  /* Perform y option min, max, total, or average */ 
+	  if(prg == ncra){
+	    var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
+	    var_nco_typ(idx_fl+idx,nco_op_typ,var_prc_out[idx],var_prc[idx]);
+	  } /* end if ncra */
+	  	  	  
 	  /* Append current record to output file */ 
 	  if(prg == ncrcat){
 	    var_prc_out[idx]->srt[0]=var_prc_out[idx]->end[0]=idx_rec_out;
@@ -420,9 +430,11 @@ main(int argc,char **argv)
 	if(dbg_lvl > 0) (void)fflush(stderr);
 	/* Retrieve variable from disk into memory */ 
 	(void)var_get(in_id,var_prc[idx]);
-	/* Tally variable by summing current value with running total */ 
+	
+	/* Perform min max or add operations */ 
 	var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
-	(void)var_add(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc[idx]->val,var_prc_out[idx]->val);
+	var_nco_typ(idx_fl,nco_op_typ,var_prc_out[idx],var_prc[idx]);
+	
 	/* Free current input buffer */
 	(void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
       } /* end loop over idx */
@@ -441,7 +453,39 @@ main(int argc,char **argv)
   /* Normalize the averages by the tallys */ 
   if(prg == ncra || prg == ncea){
     for(idx=0;idx<nbr_var_prc;idx++){
+    
+    /* perform nomalization etc where necessary */
+    switch(nco_op_typ) {
+    
+	  case nco_op_avg:
+	   (void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	  break;
+	  
+	  case nco_op_min:
+	  break;
+	  
+	  case nco_op_max:
+	  break;
+	  
+      case nco_op_avgsqr:
+      
       (void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+	  /* now square the averages */
+	  (void)var_multiply(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
+		
+	  break;		
+	  
+	  case nco_op_avgsumsqr:
+	  
+	  /* normalize the sum of squares */
+      (void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
+      break;
+      
+      default:
+      break;
+      
+      } /* end switch */
+      
       /* Free the tallying buffer */ 
       (void)free(var_prc[idx]->tally); var_prc[idx]->tally=NULL;
     } /* end loop over idx */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.30 2000-06-25 19:31:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.31 2000-07-01 01:13:38 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -112,6 +112,15 @@ enum lmt_typ{
   lmt_dmn_idx /* 1 */ 
 }; /* end enum */
 
+enum nco_op_typ{
+  nco_op_avg,
+  nco_op_min,
+  nco_op_max,
+  nco_op_ttl,
+  nco_op_avgsqr,
+  nco_op_avgsumsqr
+};
+  
 #else /* SGI */
 #define ncap 0
 #define ncatted 1
@@ -363,6 +372,7 @@ extern double arm_time_mk(int,double);
 extern int mss_val_get(int,var_sct *);
 extern int nd2endm(int,int);
 extern int op_prs(char *);
+extern int op_get_nco_typ(char *);
 extern int prg_get(void);
 extern lmt_sct *lmt_prs(int,char **);
 extern lmt_sct lmt_sct_mk(int,int,lmt_sct *,int,bool);
@@ -427,6 +437,7 @@ extern void usg_prn(void);
 extern void val_conform_type(nc_type,ptr_unn,nc_type,ptr_unn);
 extern void var_add(nc_type,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
 extern void var_avg_reduce(nc_type,long,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
+extern void var_copy(nc_type,long,ptr_unn,ptr_unn);
 extern void var_def(int,char *,int,var_sct **,int,dmn_sct **,int);
 extern void var_dmn_xrf(var_sct *);
 extern void var_divide(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
@@ -434,7 +445,10 @@ extern void var_get(int,var_sct *);
 extern void var_lst_convert(int,nm_id_sct *,int,dmn_sct **,int,var_sct ***,var_sct ***);
 extern void var_lst_divide(var_sct **,var_sct **,int,bool,dmn_sct **,int,var_sct ***,var_sct ***,int *,var_sct ***,var_sct ***,int *);
 extern void var_mask(nc_type,long,int,ptr_unn,double,int,ptr_unn,ptr_unn);
+extern void var_max(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
+extern void var_min(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
 extern void var_multiply(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
+extern void var_nco_typ(int,int,var_sct *, var_sct * );
 extern void var_normalize(nc_type,long,int,ptr_unn,long *,ptr_unn);
 extern void var_refresh(int,var_sct *);
 extern void var_srt_zero(var_sct **,int);

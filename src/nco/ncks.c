@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.28 2000-06-30 22:22:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.29 2000-07-01 01:13:38 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.28 2000-06-30 22:22:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.28 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.29 2000-07-01 01:13:38 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.29 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -1319,7 +1319,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
     case NC_LONG: (void)fprintf(stdout,var_sng,var_nm,var.val.lp[lmn],unit_sng); break;
     case NC_CHAR:
       (void)sprintf(var_sng,"%%s='%s' %%s\n",type_fmt_sng(var.type));
-      (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng); break;
+      (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
       break;
     case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,var.val.bp[lmn],unit_sng); break;
     } /* end switch */ 
