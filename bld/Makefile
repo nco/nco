@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.252 2004-07-02 22:59:54 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.253 2004-07-06 19:36:13 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -390,7 +390,7 @@ ifneq (${null},$(findstring xl,${CC}))
  CPP_TKN_OS += -I/usr/include -I/usr/vacpp/include
 endif # xlC compilers
 # Add /usr/local/include for libintl.h explicitly until netCDF is moved there
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I/usr/local/include
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC} -I/usr/local/include -DNEED_LOGF
 FC := xlf95_r
 LD := ld
 # 20020422: -lC links to AIX C++ library which contains float intrinsics cosf()...
@@ -1406,6 +1406,14 @@ endif
 	$(LEX) $<
 	mv lex.yy.c $(basename $<).c
 
+# ncap, and only ncap, requires AIX system C++ library
+ifneq (${null},$(findstring AIX,${PVM_ARCH}))
+ifneq (${null},$(findstring xl,${CC}))
+# Target-specific variable values syntax TARGET ... : VARIABLE-ASSIGNMENT
+# Remember to use tabs not spaces as this is a rule
+ncap:	LDFLAGS += -lC
+endif # endif AIX VA Compiler Collection
+endif # endif AIX
 # For some reason, ncap_lex.c is not remade when I expect it to be, so I explicitly remove the object file every time
 ncap:	${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o  ncap_yacc.h ${MY_OBJ_DIR}/ncap.o ${MY_OBJ_DIR}/ncap_utl.o ${libnco}.a
 #        ${YACC} --name-prefix=nco_

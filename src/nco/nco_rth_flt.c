@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.10 2004-06-29 19:13:11 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_flt.c,v 1.11 2004-07-06 19:36:24 zender Exp $ */
 
 /* Purpose: Float-precision arithmetic */
 
@@ -7,6 +7,9 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_rth_flt.h" /* Float-precision arithmetic */
+
+/* fxm TODO ncap57 */
+#include <stdio.h> /* stderr, FILE, NULL, etc. */
 
 /* In ANSI C, <math.h> provides standard math intrinsics in double precision 
    On most architectures, single precision ("float") versions are also supplied 
@@ -70,7 +73,10 @@ float gammaf(float x){return (float)(gamma((double)x));}
 float log10f(float x){return (float)(log10((double)x));}
 #endif /* !NEED_LOG10F */ 
 #ifdef NEED_LOGF
-float logf(float x){return (float)(log((double)x));}
+float logf(float x){
+  /* fxm TODO ncap57: Eventually remove this debugging statement and the include stdio that it requires */
+  /* (void)fprintf(stderr,"%s: DEBUG Using NCO-supplied function logf() from nco_rth_flt.c\n",prg_nm_get()); */
+  return (float)(log((double)x));}
 #endif /* !NEED_LOGF */ 
 #ifdef NEED_SINF
 float sinf(float x){return (float)(sin((double)x));}
