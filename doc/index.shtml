@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.180 2003-12-04 02:32:42 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.181 2003-12-04 21:03:45 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -197,7 +197,7 @@ Tarballs and RPMs are only rarely uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.8.5</b>: (<i>In progress</i>) Solaris <tt>make install</tt> works, <tt>ncap</tt> changes attribute values correctly
+<li><b>NCO 2.8.5</b>: (<i>In progress</i>) Solaris <tt>make install</tt> works, <tt>ncap</tt> changes attribute values correctly, <a href="#bug_DODS">support only DODS 3.4+</a>
 <li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (<a href="#bug_idx_hyp">broke in 2.7.3</a>, <b><i>upgrade highly recommended</i></b>), <tt>ncap</tt> peak memory usage reduced still more, support for AMD Opteron x86-64 architecture
 <li><b>NCO 2.8.3</b>: Fix big <tt>ncap</tt> memory leak, fix regressions, remove scary packing warnings</li>
 <li><b>NCO 2.8.2</b>: <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly, improve error diagnostics</li>
@@ -496,13 +496,14 @@ The gory details of the failed (and successful) builds are in the
 
 <a name="bug_DODS"></a>
 <li><b>Build problems with DODS:</b>
-NCO links with the
+NCO versions prior to 2.8.5 link with the
 <a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> netCDF
 library when compiled with GCC&nbsp;2.95 (on Linux).
-NCO does not link to DODS when compiled with versions greater than
-GCC&nbsp;3.0.
-If you let us know that this feature is important to you, then we (or, 
-knock on wood, those clever, good-looking DODS folks) may fix it.
+NCO prior to 2.8.5 does not link to DODS when compiled with versions
+greater than GCC&nbsp;3.1+.
+NCO versions 2.8.5 and greater support automatic building and linking
+for DODS versions 3.4+ and GCC versions 3.3+.
+No other version combination is supported.
 </li>
 
 </ul>
