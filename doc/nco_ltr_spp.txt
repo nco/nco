@@ -1,8 +1,9 @@
-$Header: /data/zender/nco_20150216/nco/doc/nco_ltr_spp.txt,v 1.1 2004-06-11 19:43:38 zender Exp $ -*-Text-*-
+$Header: /data/zender/nco_20150216/nco/doc/nco_ltr_spp.txt,v 1.2 2004-08-05 22:37:51 zender Exp $ -*-Text-*-
 
+# Purpose: Collection of endorsements for institutional NCO funding
 
 ************************************************************************
-
+************************************************************************
 Subject: NSF SEI(GEO) NCO/SDO Proposal Endorsement
 From: Maxwell Kelley <mkelley@lsce.saclay.cea.fr>
 Date: Fri, 30 Apr 2004 11:52:45 +0200 (CEST)
@@ -32,10 +33,8 @@ L'Orme des Merisiers CEA Saclay
 91191 Gif sur Yvette cedex        mkelley@lsce.saclay.cea.fr
 France                                +33 1 69 08 27 02
 ------------------------------------------------------------
-
-
 ************************************************************************
-
+************************************************************************
 Subject: NSF SEI(GEO) NCO/SDO Proposal Endorsement
 From: <hjyang@pku.edu.cn>
 Date: Fri, 11 Jun 2004 15:49:46 +0800
@@ -56,3 +55,20 @@ Tel: 86-10-62767436
 Fax: 86-10-62751094
 Email: hjyang@pku.edu.cn
 --------------------------------------------
+************************************************************************
+************************************************************************
+Subject: NSF SEI(GEO) NCO/SDO Proposal Endorsement
+From: "Remik Ziemlinski" <Remik.Ziemlinski@noaa.gov>
+Date: Thu, 05 Aug 2004 17:33:45 -0400
+To: zender@uci.edu
+
+Remik Ziemlinski
+Software Engineer
+NOAA/GFDL
+-- 
+Remik Ziemlinski                        Raytheon Company
+NOAA/Geophysical Fluid Dynamics Lab.    Remik.Ziemlinski at noaa d0t gov
+P.O. Box 308                            1.609.452.6500 ext. 6977
+Princeton, NJ 08542 USA                 1.609.987.5063 fax
+************************************************************************
+************************************************************************

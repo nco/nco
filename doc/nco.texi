@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.252 2004-08-05 08:18:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.253 2004-08-05 22:37:51 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -99,8 +99,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 2.9.7
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 6 July 2004
-@set update-month July 2004
+@set update-date 7 August 2004
+@set update-month August 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -130,16 +130,19 @@ x
 % Define TeX macros to roughly correspond to LaTeX style files
 % Use \gdef instead of \def to make definition persistent across TeX blocks
 % These should be consistent with any TeXInfo macros
-\gdef\dfr{d} % [frc] Math differential
+\gdef\dmn{D} % [frc] Dimension
+\gdef\dmnnbr{N} % [nbr] Dimension number
+\gdef\dfr{d} % [frc] Math differential fxm: upright
 \gdef\idx{i} % [idx] Index
 \gdef\iii{i} % [idx] i
 \gdef\jjj{j} % [idx] j
+\gdef\kkk{k} % [idx] k
 \gdef\lmnidx{i} % [idx] Element index
 \gdef\outnbr{J} % [nbr] Number of elements in output hyperslab
 \gdef\lmnnbr{N} % [nbr] Number of elements in input hyperslab
 \gdef\tllnbr{M} % [nbr] Tally (number of valid elements in input hyperslab)
-\gdef\me{e} % [frc] Math e
-\gdef\mi{i} % [frc] Math i
+\gdef\me{e} % [frc] Math e fxm: upright
+\gdef\mi{i} % [frc] Math i fxm: upright
 \gdef\mpi{\pi} % [frc] Math pi
 \gdef\mskflg{m} % [flg] Mask flag
 \gdef\mssflg{\mu} % [flg] Missing value flag
@@ -573,10 +576,10 @@ more details and exact settings.
 Until recently (and not even yet), @acronym{ANSI}-compliant has meant
 compliance with the 1989 @acronym{ISO} C-standard, usually called C89 (with
 minor revisions made in 1994 and 1995).
-C89 does not allow variable-size arrays nor the @samp{%z} format for
-@code{printf}. 
+C89 lacks variable-size arrays, restricted pointers, and some useful
+@code{printf} formats.   
 @cindex C99
-These are valuable features of the 1999 @acronym{ISO} C-standard called C99. 
+These are valuable features of C99, the 1999 @acronym{ISO} C-standard. 
 @acronym{NCO} is C99-compliant where possible and C89-compliant where
 necessary. 
 Certain branches in the code are required to satisfy the native
@@ -585,6 +588,8 @@ C89 compliant, and cannot benefit from C99 features.
 However, C99 features are fully supported by modern @acronym{AIX},
 @acronym{GNU}, Intel, @acronym{NEC}, Solaris, and @acronym{UNICOS}
 compilers. 
+@acronym{NCO} requires a C99-compliant compiler as of @acronym{NCO}
+@w{version 2.9.8}, released in August, 2004.
 
 The most time-intensive portion of @acronym{NCO} execution is spent in
 arithmetic operations, e.g., multiplication, averaging, subtraction.
@@ -834,8 +839,7 @@ website.
 Now that @acronym{NCO} uses only @w{netCDF 3.x} system calls we are
 eager for HDF5 to add complete @w{netCDF 3.x} support.
 This is scheduled to occur sometime in 2005, with the release of netCDF 
-@w{version 4}, being written as a collaboration between Unidata and
-@acronym{NCSA}.
+@w{version 4}, a collaboration between Unidata and @acronym{NCSA}.
 
 @html
 <a name="hlp"></a> <!-- http://nco.sf.net/nco.html#hlp -->
@@ -884,7 +888,7 @@ Sending questions whose answers are not in the manual is the best
 way to motivate us to write more documentation.  
 We would also like to accentuate the contrapositive of this statement.  
 If you think you have found a real bug @emph{the most helpful thing you 
-can do is simplify the problem to a manageable size and report it}.
+can do is simplify the problem to a manageable size and then report it}.
 The first thing to do is to make sure you are running the latest
 publicly released version of @acronym{NCO}.  
 
@@ -975,7 +979,7 @@ differences between these files and your own.
 * Addition Subtraction Division Multiplication and Interpolation::  
 * Averaging vs. Concatenating::  
 * Large numbers of input files::  
-* Large files and Memory::      
+* Large Datasets and Memory::   
 * Memory usage::                
 * Operator limitations::        
 @end menu
@@ -1328,7 +1332,7 @@ units.
 @html
 <a name="lrg"></a> <!-- http://nco.sf.net/nco.html#lrg -->
 @end html
-@node Large numbers of input files, Large files and Memory, Averaging vs. Concatenating, Strategies
+@node Large numbers of input files, Large Datasets and Memory, Averaging vs. Concatenating, Strategies
 @section Working with large numbers of input files
 @cindex files, numerous input
 @cindex @code{-n @var{loop}}
@@ -1474,11 +1478,13 @@ One drawback to this method is that the @code{history} attribute
 links, rather than the data files themselves. 
 This makes it difficult to determine the data provenance at a later date.
 
-@node Large files and Memory, Memory usage, Large numbers of input files, Strategies
-@section Working with large files
-@cindex large files
+@node Large Datasets and Memory, Memory usage, Large numbers of input files, Strategies
+@section Working with large datasets
+@cindex large datasets
+@cindex LFS
+@cindex Large File Support
 
-@dfn{Large files} are those files that are comparable in size to the
+@dfn{Large datasets} are those files that are comparable in size to the
 amount of random access memory (@acronym{RAM}) in your computer.
 Many users of @acronym{NCO} work with files larger than @w{100 MB}.
 Files this large not only push the current edge of storage technology, 
@@ -1491,6 +1497,10 @@ disk) and @acronym{NCO} will work slowly, or even fail.
 There is no easy solution for this.
 The best strategy is to work on a machine with sufficient amounts of
 memory and swap space. 
+Since about 2004, many users have begun to produce or analyze files
+exceeding @w{2 GB} in size. 
+These users should familiarize themselves with @acronym{NCO}'s Large
+File Support (@acronym{LFS}) capabilities (@pxref{Large File Support}).
 The next section will increase your familiarity with @acronym{NCO}'s
 memory requirements.
 With this knowledge you may re-design your data reduction approach to
@@ -1540,7 +1550,7 @@ multi-file @acronym{NCO} operators consume is given in
 @html
 <a name="mmr"></a> <!-- http://nco.sf.net/nco.html#mmr -->
 @end html
-@node Memory usage, Operator limitations, Large files and Memory, Strategies
+@node Memory usage, Operator limitations, Large Datasets and Memory, Strategies
 @section Approximate @acronym{NCO} memory requirements
 @cindex memory requirements
 @cindex memory available
@@ -1808,7 +1818,8 @@ Availability: All operators@*
 Short options: All@*
 Long options: All@*
 @end cartouche
-@acronym{NCO} support for large files is not well documented yet.
+@acronym{NCO} support for large files is in place and works but is not
+well documented yet. 
 
 @html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
@@ -3421,7 +3432,7 @@ value, $\mskflg_{\idx}$ is~1 unless $\xxx_{\idx}$ is masked, and
 $\wgt_{\idx}$ is the weight.  
 This formiddable looking formula represents a simple weighted average
 whose bells and whistles are all explained below. 
-It is not early to note, however, that when 
+It is not too early to note, however, that when 
 $\mssflg_{\idx} = \mskflg_{\idx} = \wgt_{\idx} = 1$, the 
 generic averaging expression above reduces to a simple arithmetic
 average.  
@@ -3570,6 +3581,11 @@ defined in @acronym{NCO} please contact the @acronym{NCO} project
 @noindent
 EXAMPLES
 
+@html
+<a name="min"></a> <!-- http://nco.sf.net/nco.html#min -->
+<a name="max"></a> <!-- http://nco.sf.net/nco.html#max -->
+<a name="rms"></a> <!-- http://nco.sf.net/nco.html#rms -->
+@end html
 @noindent
 Suppose you wish to examine the variable @code{prs_sfc(time,lat,lon)} 
 which contains a time series of the surface pressure as a function of
@@ -3609,6 +3625,9 @@ We can now find the three month maximium surface pressure at every point.
 ncea -y max -v prs_sfc jan.nc feb.nc march.nc out.nc
 @end example
 
+@html
+<a name="stddvn"></a> <!-- http://nco.sf.net/nco.html#stddvn -->
+@end html
 @noindent
 It is possible to use a combination of these operations to compute
 the variance and standard deviation of a field stored in a single file
@@ -4837,7 +4856,7 @@ The variable @code{ORO_flg} in @file{out.nc}
 # Add degenerate "record" dimension to ORO for averaging
 ncecat -O -v ORO in.nc foo.nc
 # Average degenerate "record" dimension using ORO as mask
-ncwa -a record -O -m ORO -M 1.0 -o gt foo.nc foo.nc
+ncwa -a record -O -m ORO -T gt -M 1.0 foo.nc foo.nc
 # ORO is either 0.0 or > 1.0 everywhere
 # Create ORO_frc in [0.0,1.0) then add 0.99 and convert to int 
 ncap -O -s "ORO_frc=ORO-int(ORO)" -s "ORO_flg=int(ORO_frc+0.99)" foo.nc out.nc
@@ -6474,9 +6493,9 @@ DESCRIPTION
 
 @command{ncpdq} re-shapes variables in @var{input-file} by re-ordering
 and/or reversing dimensions specified in the dimension list.
-The dimension list is a comma separated list of dimension names,
-optionally prefixed by negative signs, that follow the @samp{-a}
-switch. 
+The dimension list is a whitespace-free, comma separated list of
+dimension names, optionally prefixed by negative signs, that follows the 
+@samp{-a} switch. 
 To re-order variables by a subset of their dimensions, specify
 these dimensions in a comma-separated list following @samp{-a}, e.g., 
 @samp{-a lon,lat}. 
@@ -6497,15 +6516,26 @@ one record dimension amongst all the output variables
 @footnote{This limitation, imposed by the netCDF storage layer,
 may be relaxed in the future with netCDF4.}.
 
+@tex
+The dimensionality of a variable $\xxx$ of rank $\dmnnbr$ can be
+represented as  
+$$
+\xxx = [ \dmn_{1}, \dmn_{2}, \dmn_{3}, \ldots, 
+\dmn_{\kkk-1}, \dmn_{\kkk}, \dmn_{\kkk+1}, 
+\ldots, \dmn_{\dmnnbr-2}, \dmn_{\dmnnbr-1}, \dmn_{\dmnnbr} ] 
+$$
+where 
+@end tex
+
 @noindent
 EXAMPLES
 
-Reorder file @file{in.nc} so that the dimension @code{lon} always
+Re-order file @file{in.nc} so that the dimension @code{lon} always
 precedes the dimension @code{lat} and store the results in
 @file{out.nc}:  
 @example
-ncpdq -O -a lon,lat in.nc out.nc
-ncpdq -O -v three_dmn_var -a lon,lat in.nc out.nc
+ncpdq -a lon,lat in.nc out.nc
+ncpdq -v three_dmn_var -a lon,lat in.nc out.nc
 @end example
 The first command re-orders every variable in the input file.
 The second command extracts and re-orders only the variable
@@ -6517,19 +6547,19 @@ Reversing the @code{lat} dimension means re-ordering the data so that
 latitude values decrease monotonically from north to south.
 Accomplish this with
 @example
-ncpdq -O -a "-lat" in.nc out.nc
-ncpdq -O -a -lat in.nc out.nc # Dangerous
-ncpdq -O --rdr=-lat in.nc out.nc # OK, no whitespace before "-"
-ncpdq -O -a lon,-lat in.nc out.nc # OK, no whitespace before "-"
+ncpdq -a -lat in.nc out.nc # Dangerous, whitespace before "-lat"
+ncpdq -a "-lat" in.nc out.nc # OK, negative sign protected by quotes
+ncpdq -a lon,-lat in.nc out.nc # OK, no whitespace before "-"
+ncpdq --rdr=-lat in.nc out.nc # Preferred, uses "=" not whitespace
 @end example
 Quotes can help protect negative signs that should indicate dimension
-reversal from being interpreted as new command line switches by the shell. 
+reversal from being interpreted by the shell as dashes that indicate
+new command line switches.
 Quotes are recommended when whitespace immediately precedes the
 negative sign.
-
 Re-ordering and reversal may be performed simultaneously, e.g.,
 @example
-ncpdq -O -a lon,-lat,time,-lev in.nc out.nc
+ncpdq -a lon,-lat,time,-lev in.nc out.nc
 @end example
 
 @page

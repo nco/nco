@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.246 2004-08-05 06:05:28 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.247 2004-08-05 22:37:50 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -178,14 +178,14 @@ pay-per-feature basis.
 </form>
 These homepage donation counters track the influence of your monetary
 donations on NCO development: 
-<dt>Donations received between 20030624 and 20040513: US$0.00.
+<dt>Donations received between 20030624 and 20040807: US$10.00.
 <dt>NCO features "incentivized" by these donations: None.
 <hr></p>
 
 <dt><a name="News"></a></dt>
 <h2>NCO News & Announcements</h2>
 <ul>
-<li>August&nbsp;7, 2004: <tt>ncpdq</tt> released&mdash;performs arbitrary dimension re-ordering and reversal
+<li>August&nbsp;7, 2004: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released&mdash;performs arbitrary dimension re-ordering and reversal
 </li>
 
 <li>March&nbsp;4, 2004: Read the first 
@@ -213,7 +213,7 @@ Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> 
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO 2.9.9</b>: (<i>In progress</i>) <tt>ncap</tt> float functions work in AIX (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users)
-<li><b>NCO 2.9.8</b>: <tt>ncpdq</tt> released, C99 compiler required
+<li><b>NCO 2.9.8</b>: <a href="./nco.html#ncpdq"><tt>ncpdq</tt></a> released, <tt>ncwa -z</tt> consolidated mask switch, C99 compiler required
 <li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>nco_input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS), write <tt>nco_openmp_thread_number</tt> attribute
 <li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax, 64-bit ABI for x86_64, <a href="http://www.debian.org">Debian</a> builds libnco_c++
 <li><b>NCO 2.9.5</b>: <tt>ncflint</tt> handles <tt>missing_value</tt> data better, is commutative when weights are equal

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.142 2004-08-05 08:18:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.143 2004-08-05 22:37:54 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char *msk_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val, op_typ_rlt */
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.142 2004-08-05 08:18:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.142 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.143 2004-08-05 22:37:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.143 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -354,7 +354,7 @@ main(int argc,char **argv)
       nco_op_typ_sng=(char *)strdup(optarg);
       nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
-    case 'z': /* mask string to be parsed */
+    case 'z': /* Mask string to be parsed */
       msk_sng=optarg;
       break;
     case '?': /* Print proper usage */
