@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.38 2002-01-29 08:55:35 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.39 2002-02-02 17:28:57 hmb Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -78,6 +78,7 @@ extern long ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
 extern char *fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
 extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) */
 
+
 /* End C declarations section */
 %}
 /* Begin parser declaration section */
@@ -103,6 +104,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
   sym_sct *sym;
   parse_sct attribute;
   var_sct *var;
+  nm_lst_sct *sbs_lst;
 } /* end YYSTYPE union (type of yylval value) */
 
 /* Tell parser which kind of values each token takes
@@ -114,6 +116,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 %token <output_var> OUT_VAR
 %token <att> OUT_ATT
 %token <sym> FUNCTION
+%token <sbs_lst> LHS_SBS
 %token POWER ABS ATOSTR IGNORE EPROVOKE
 
 /* "type" declaration sets type for non-terminal symbols which otherwise need no declaration
@@ -143,21 +146,14 @@ program: statement_list
 statement_list: 
 statement_list statement ';' {
   /* Purpose: Actions to be performed at end-of-statement go here */
-  if(((prs_sct *)prs_arg)->var_LHS != NULL){
-    /* Clean up from and exit LHS_cst mode
-       Perform cleanup after semi-colon ending statement is parsed
-       var_free() intentionally does not free dimension structures because,
-       in most of NCO, dimension structures are shared.
-       Thus ncap must free dimension structures manually */
-    int idx; /* [idx] Counter for dimensions */
-    if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Freeing var_LHS\n",prg_nm_get());
-    for(idx=0;idx<((prs_sct *)prs_arg)->var_LHS->nbr_dim;idx++) ((prs_sct *)prs_arg)->var_LHS->dim[idx]=nco_free(((prs_sct *)prs_arg)->var_LHS->dim[idx]);
-    ((prs_sct *)prs_arg)->var_LHS=var_free(((prs_sct *)prs_arg)->var_LHS);
-  } /* end LHS_cst */
+  /* Clean up from and exit LHS_cst mode */
+                            (void)quick_free(&((prs_sct *)prs_arg)->var_LHS);
+ 
 } /* end statement ';' */
-| statement_list error ';'
-| statement ';'
-| error ';' /* Catch most errors then read up to next semi-colon */
+| statement_list error ';'{ (void)quick_free(&((prs_sct *)prs_arg)->var_LHS); }
+| statement ';'           { (void)quick_free(&((prs_sct *)prs_arg)->var_LHS); }
+| error ';'               { (void)quick_free(&((prs_sct *)prs_arg)->var_LHS); }
+          /* Catch most errors then read up to next semi-colon */
 ; /* end statement_list */
 
 statement: /* statement is definition of out_att_exp or out_var_exp (LHS tokens)
@@ -529,6 +525,7 @@ var_exp '+' var_exp {
 }
 | VAR { 
   $$=ncap_var_init($1,(prs_sct *)prs_arg);
+  if ($$==(var_sct *)NULL) YYERROR;
 
   if((((prs_sct *)prs_arg)->var_LHS) != NULL){
     /* User intends LHS to cast RHS to same dimensionality
@@ -584,3 +581,11 @@ yyerror(char *err_sng)
   eprovoke_skip=eprovoke_skip; /* Do nothing except avoid compiler warnings */
   return 0;
 } /* end yyerror() */
+
+void quick_free(var_sct **var)
+{
+  if(*var !=NULL) *var = var_free(*var);
+}
+
+
+
