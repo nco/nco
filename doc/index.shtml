@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.140 2003-06-24 22:47:37 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.141 2003-08-02 05:02:53 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -55,7 +55,19 @@ Try to disable Spammers' machines:
 </td></tr></table>
 
 <p><hr width="100%"></p>
-<p><h1 align=CENTER>Welcome to the netCDF Operator (NCO) Homepage</h1>
+<p><h1 align="center">Welcome to the netCDF Operator (NCO) Homepage</h1>
+
+<center><form action="https://www.paypal.com/cgi-bin/webscr" method="post">
+<input type="hidden" name="cmd" value="_xclick">
+<input type="hidden" name="business" value="zender@uci.edu">
+<input type="hidden" name="item_name" value="NCO development">
+<input type="hidden" name="item_number" value="nco_dnt_dvl">
+<input type="hidden" name="no_note" value="1">
+<input type="hidden" name="currency_code" value="USD">
+<input type="hidden" name="tax" value="0">
+<input type="image" src="https://www.paypal.com/images/x-click-but04.gif" border="0" name="submit" alt="Donate to NCO with PayPal - it's fast, free and secure!">
+</form></center>
+
 <p><h2>Current version is <!--#include virtual="VERSION"--> released on <!--#flastmod file="VERSION"--> </h2>
 
 <p><ul>
