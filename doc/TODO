@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.162 2002-08-19 21:08:15 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.163 2002-08-19 21:12:16 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -17,10 +17,12 @@ then ftp nco_tst.nc from remote server
 04. Rorik: improve/customize method of tracking autoconf build problems in configure.eg
 05. Important!!!: check for nc_open(),nc_close(), _not_ ncopen(),ncclose() in libnetcdf.a
 06. Use doc/VERSION for version number 
-07. Pass -DNO_NETCDF_2. NB: For these -D tokens, it's up to you whether to pass them in config.h or in CFLAGS.
+07. Pass -DNO_NETCDF_2. NB: For these -D tokens, it's up to you whether to pass them in config.h or in CFLAGS. 
 08. Pass -DVERSION='${VRS_SNG}' (see bld/Makefile for handling default)
 09. Pass -DHOSTNAME='${HOST}' (see bld/Makefile for handling default)
 10. Pass -DUSER='${USER}' (see bld/Makefile for handling default)
+11. Use autoconf standard, if any, for VERSION, HOSTNAME, USER
+12. Pass the GNU architecture-OS "triplet", e.g., alphaev56-unknown-linux-gnu, as, e.g., -DGNU_TRP='${GNU_TRP}' so the executable can print $GNU_TRP as a diagnostic
 
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
