@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.h,v 1.1 2002-05-05 17:53:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.h,v 1.2 2002-05-05 19:41:52 zender Exp $ */
 
 /* Purpose: Scalar utilities */
 
@@ -46,6 +46,11 @@ double /* O [frc] Double precision representation of var->val.?p[0] */
 ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar double */
 (const ptr_unn val, /* I [sct] Pointer union to convert to scalar double */
  const nc_type type); /* I [enm] Type of values pointed to by pointer union */
+
+scv_sct  /* O [sct] Scalar value structure representing val */
+ptr_unn_2_scv /* [fnc] Convert ptr_unn to scalar value structure */
+(const nc_type type, /* I [enm] netCDF type of value */
+ const ptr_unn val); /* I [sct] Value to convert to scalar value structure */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.2 2002-05-05 17:53:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.3 2002-05-05 19:41:52 zender Exp $ */
 
 /* Purpose: Scalar utilities */
 
@@ -127,3 +127,29 @@ ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar dou
 
 } /* end ptr_unn_2_scl_dbl() */
 
+scv_sct  /* O [sct] Scalar value structure representing val */
+ptr_unn_2_scv /* [fnc] Convert ptr_unn to scalar value structure */
+(const nc_type type, /* I [enm] netCDF type of value */
+ const ptr_unn val) /* I [sct] Value to convert to scalar value structure */
+{
+  /* Purpose: Convert ptr_unn to scalar value structure
+     Assumes that val is initially cast to void
+     Note does not convert cp (strings) as these are not handled by scv_sct
+     NB: netCDF attributes may contain multiple values
+     Only FIRST value in memory block is converted */
+  
+  scv_sct scv;
+  (void)cast_void_nctype(type,&val);
+  switch(type){
+  case NC_FLOAT: scv.val.f=*val.fp; break;
+  case NC_DOUBLE: scv.val.d =*val.dp; break;
+  case NC_INT: scv.val.l =*val.lp; break;
+  case NC_SHORT: scv.val.s=*val.sp; break;
+  case NC_BYTE: scv.val.b =*val.bp; break;
+  case NC_CHAR: break; /* Do nothing */
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+  scv.type=type;
+  /* Do not uncast pointer as we are working with a copy */
+  return scv;
+} /* end ptr_unn_2_scv */
