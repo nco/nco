@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.292 2005-03-24 20:48:48 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.293 2005-03-27 17:50:33 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -8124,6 +8124,10 @@ Long command-line options.
 UDUnits support.
 Debianization.
 Numerous bug-fixes.
+@cindex Harry Mangalam
+@item Harry Mangalam
+Benchmarking.
+OPeNDAP configuration.
 @cindex Brian Mays
 @item Brian Mays
 Packaging for Debian GNU/Linux, @command{nroff} man pages.
