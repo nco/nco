@@ -1,0 +1,38 @@
+Dear NCO user,
+
+This form letter response is being sent for one or more of the
+following reasons. Please read it, decide which apply, and respond
+accordingly:
+
+1. You have mailed me a question or a bug report rather than posted it to
+
+http://sourceforge.net/projects/nco 
+
+NCO is administered at this location.
+By posting your question/bug here you will simplify life for me, and
+make it possible for others to learn from your experience.
+You must be a registered SourceForge user to post here.
+To register, goto http://sourceforge.net/account/register.php
+SourceForge is not commercial--they are not trying to sell you anything.
+To get a response to your NCO question, post to the NCO Help Forum at
+
+http://sourceforge.net/forum/forum.php?forum_id=9830
+
+or post your bug report to the NCO bug tracker at
+
+http://sourceforge.net/bugs/?group_id=3331
+
+2. You have mailed me a question which shows that you are probably
+using an older version of NCO. Read the News and ChangeLog section on
+the homepage http://nco.sourceforge.net and you will find the feature
+you need exists in the latest version of NCO. Announcements of new
+versions and features are made on the very low volume mailing list
+nco-announce, which you can register for at
+
+http://lists.sourceforge.net/mailman/listinfo/nco-announce
+
+3. You have not read and understood the manual. After reading the
+manual you should post your question to the Help Forum listed above.
+
+Thanks,
+Charlie
