@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.252 2004-08-29 00:36:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.253 2004-08-30 15:32:52 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -177,8 +177,6 @@ These homepage donation counters track the influence of your monetary
 donations on NCO development: 
 <dt>Donations received between 20030624 and 20040807: US$10.00.</dt>
 <dt>NCO features "incentivized" by these donations: None.</dt>
-NCO development was completely voluntary and never benefitted from
-institutional support until Sep.&nbsp;1, 2004. 
 <hr></p>
 
 <dt><a name="News"></a></dt>
@@ -195,6 +193,10 @@ institutional support until Sep.&nbsp;1, 2004.
   <a href="http://www.cise.nsf.gov/div/index.cfm?div=sci">Shared Cyberinfrastructure (SC)</a>
   in the 
   <a href="http://www.nsf.gov/home/cise">Directorate for Computer and Information Science and Engineering (CISE)</a>.
+  NCO development was completely voluntary and without institutional
+  support from its inception until September 2004.
+  This new NSF support will dramatically change the scale and pace of
+  NCO/SDO development&mdash;stay tuned.
 
   With three-years of funding likely, we are now recruiting talent to work on SDO.
   We seek a

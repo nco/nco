@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.383 2004-08-29 00:36:11 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.384 2004-08-30 15:32:51 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -252,7 +252,8 @@ nco403. ncpdq: Do not pack already packed variables
 nco404. Does Ersoy's XML stylesheet nco.css work?
 nco405. Add ANTS, parallel netCDF, ..., to homepage? No point, will soon be out of date
 nco406. Add advantages/disadvantages of NCO (compared to e.g., ANTS) description
-nco407. Investigate collab.net for tasks
+nco408. How to get new SDO tasks done? How to advertise pay-per-feature requests? How to evaluate responses? GNOME has something similar
+nco409. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
