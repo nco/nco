@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.173 2002-09-10 05:24:54 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.174 2002-09-10 06:27:57 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -1155,13 +1155,13 @@ objclean: obj_cln
 obj_cln:
 	rm -f ${MDL_OBJ}
 # Targets in src
-src: $(MDL_NCAP)
+src: ${MDL_NCAP}
 src_cln:
-	rm -f $(MDL_NCAP)
+	rm -f ${MDL_NCAP}
 
 # Housekeeping
 clean: cln
-cln: lib_cln dpn_cln obj_cln tst_cln
+cln: lib_cln dpn_cln obj_cln src_cln tst_cln
 	cd ${MY_DOC_DIR}; rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
 debug: dbg
 dbg:
@@ -1242,7 +1242,7 @@ else
 	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@_yacc.o ${MY_OBJ_DIR}/$@_lex.o -ll -ly ${LDFLAGS}
 endif
 	chmod 755 ${MY_BIN_DIR}/$@${BNR_SFX}
-#	/bin/rm -f $(MDL_NCAP) ${MY_OBJ_DIR}/$@_lex.o ${MY_OBJ_DIR}/ncap_yacc.h ${MY_OBJ_DIR}/ncap_yacc.c
+#	/bin/rm -f ${MDL_NCAP} ${MY_OBJ_DIR}/$@_lex.o ${MY_OBJ_DIR}/ncap_yacc.h ${MY_OBJ_DIR}/ncap_yacc.c
 
 # Create dependency files only if they will not be immediately deleted
 INCLUDE_DPN := TRUE
