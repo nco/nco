@@ -1,3 +1,17 @@
+
+2005-03-24  Harry Mangalam  <hjm@tacgi.com>
+
+	* added bm dir for benchmarking; initial files are:
+        gne_exp.cdl       template -> ~54MB file of gene expression data
+        ipcc_dly_T85.cdl  template -> ~1GB file with 4D,3D,2D,1D,scalar variables
+        ipcc_dly_T85.sh   shell file that creates & populates the above file
+        nco_bm.pl         the perl benchmarking script (derived from bld/nco_tst.pl)
+        sml_fls.sh        script to generate both small files: gne_exp.cdl & sml_stl.cdl
+        sml_stl.cdl       template for a small sat data file
+        stl_5km.cdl       template for ~300MB sat data file
+        stl_5km.sh        script to generate and ncap the above file
+
+    
 2005-03-24  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-3_0_0
