@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.21 1999-04-20 19:37:49 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.22 1999-04-27 16:11:25 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -274,6 +274,43 @@ NETCDF_LIB := /fs/local/lib64
 C++ := c++
 CC := cc
 CPPFLAGS := -D$(PVM_ARCH) $(MY_INC_DIR) -I$(NETCDF_INC)
+FC := f77
+LD := ld
+LDFLAGS := -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LEX := flex
+LINT := lint
+YACC := bison
+ifeq ($(OPTS),O)
+ CFLAGS := -64 -mips4 -O2
+ FFLAGS := -64 -mips4 -O2 -extend_source
+endif
+ifeq ($(OPTS),R)
+ CFLAGS := -64 -mips4
+ FFLAGS := -64 -mips4 -extend_source
+endif
+ifeq ($(OPTS),D)
+ CFLAGS := -64 -mips4 -g
+ FFLAGS := -64 -mips4 -g -extend_source
+endif
+ifeq ($(OPTS),X)
+ CFLAGS := -64 -mips4 -g -trapuv
+ FFLAGS := -64 -mips4 -g -extend_source -check_bounds -trapuv
+# 98/08/20: Using range checking results in unresolved symbol errors unless linking to this library
+ LDFLAGS += -L/usr/lib64 -lftn
+endif
+$(MY_OBJ_DIR)/%.o : %.F
+	$(FC) -c $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
+$(MY_OBJ_DIR)/%.o : %.f
+	$(FC) -c $(FFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
+endif
+
+ifeq ($(PVM_ARCH),SGIMP64)
+NETCDF_INC := /usr/local/include
+NETCDF_LIB := /usr/local/lib64/r4i4
+C++ := c++
+CC := cc
+# spoof SGI64
+CPPFLAGS := -DSGI64 $(MY_INC_DIR) -I$(NETCDF_INC)
 FC := f77
 LD := ld
 LDFLAGS := -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
