@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.86 2002-01-30 15:50:49 hmb Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.87 2002-02-18 19:08:20 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -63,12 +63,12 @@ END-INFO-DIR-ENTRY
 @clear smallbook
 
 @c Define edition, date, ...
-@set nco-edition 2.0.0
-@set doc-edition 2.0.0
+@set nco-edition 2.2.0
+@set doc-edition 2.2.0
 @set copyright-years 1995--2002
-@set update-year 2001
-@set update-date 1 April 2001
-@set update-month April 2001
+@set update-year 2002
+@set update-date 1 March 2002
+@set update-month March 2002
 
 @c Experiment with smaller amounts of whitespace between chapters and sections
 @tex
@@ -241,6 +241,7 @@ Accessing files stored remotely
 
 Reference manual for all operators
 
+* ncap netCDF Arithmetic Processor::  
 * ncatted netCDF Attribute Editor::  
 * ncdiff netCDF Differencer::   
 * ncea netCDF Ensemble Averager::  
@@ -1479,8 +1480,8 @@ Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc
 @acronym{NCO} operates on these remote files without having to transfer the
 files to the local disk.  
 @acronym{DODS} causes all the I/O to appear to @acronym{NCO} as if the files were local.
-The advantage to this is that only the required data (e.g., the variable
-or hyperslab specified) are transferred over the network.
+Only the required data (e.g., the variable or hyperslab specified) are
+transferred over the network. 
 The advantages of this are obvious if you are examining small parts of
 large files stored at remote locations.
 
@@ -1496,8 +1497,8 @@ ncks -p ftp://weather.edu/pub/pix/jpeg -l ./ storm.jpg
 @noindent
 In this example, @command{ncks} automatically performs an anonymous @acronym{FTP}
 login to the remote machine and retrieves the specified file.
-When @command{ncks} attempts to read the local copy of @file{storm.nc}
-as a netCDF file, it fails and exits, leaving  @file{storm.nc} in
+When @command{ncks} attempts to read the local copy of @file{storm.jpg}
+as a netCDF file, it fails and exits, leaving  @file{storm.jpg} in
 the current directory.
 
 @node File retention, Variable subsetting, Remote storage, Common features
@@ -2595,6 +2596,7 @@ Only options specific to, or most useful with, a particular operator are
 described in any detail in the sections below.  
 
 @menu
+* ncap netCDF Arithmetic Processor::  
 * ncatted netCDF Attribute Editor::  
 * ncdiff netCDF Differencer::   
 * ncea netCDF Ensemble Averager::  
@@ -2608,7 +2610,142 @@ described in any detail in the sections below.
 @end menu
 
 @page
-@node ncatted netCDF Attribute Editor, ncdiff netCDF Differencer, Operators, Operators
+@node ncap netCDF Arithmetic Processor, ncatted netCDF Attribute Editor, Operators, Operators
+@section @command{ncap} netCDF Arithmetic Processor
+@cindex parser
+@cindex lexer
+@cindex arithmetic processor
+@findex ncap
+
+@noindent
+SYNTAX
+@example
+ncap [-A] [-C] [-c] [-D @var{dbg}] 
+[-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] 
+[-l @var{path}] [-O] [-p @var{path}] [-R] [-r] 
+[-s @var{algebra}] [-S @var{fl.nco}] [-v]
+@var{input-file} [@var{output-file}]  
+@end example
+ 
+@noindent
+DESCRIPTION
+
+@command{ncap} arithmetically processes a netCDF file.
+@cindex script file
+The processing instructions are contained either in the NCO script file 
+@file{fl.nco} or in a sequence of command line arguments.
+@command{ncap} was written to perform arbitrary albebraic
+transformations of data and archive the results as easily as possible.
+@cindex derived fields
+The results of the algebraic manipulations are called @dfn{derived fields}.
+
+@cindex statement
+@cindex syntax
+@cindex semi-colon
+@cindex @code{;}
+@cindex @code{/*...*/}
+@cindex @code{//}
+Mastering @command{ncap} is relatively simple.
+Each valid statement @var{statement} consists of standard forward
+algebraic expression. 
+The @file{fl.nco}, if present, is simply a list of such statements,
+whitespace, and comments.
+@cindex C language
+The syntax of statements is most like the computer language C.
+The following characteristics of C are preserved:
+Arrays are 0-based;
+Arrays elements are placed within @code{[]} characters;
+Last dimension is most rapidly varying;
+Statements end with a semi-colon;
+Multi-line comments are enclosed within @code{/* */} characters;
+Single line comments are preceded by @code{//} characters;
+
+@cindex @code{@@} (attribute)
+@cindex attribute syntax
+The at-sign @code{@@} is used to delineate an attribute name from a
+variable name.
+
+@cindex mathematical functions
+@cindex @var{asin(x)}
+@cindex @var{atan(x)}
+@cindex @var{cos(x)}
+@cindex @var{exp(x)}
+@cindex @var{gamma(x)}
+@cindex @var{log(x)}
+@cindex @var{log10(x)}
+@cindex @var{sin(x)}
+@cindex @var{sqrt(x)}
+@cindex @var{tan(x)}
+@cindex @var{abs(x)}
+@cindex @var{acos(x)}
+@cindex arcsine function
+@cindex arctangent function
+@cindex cosine function
+@cindex exponentiation function
+@cindex gamma function
+@cindex logarithm, natural
+@cindex logarithm, base 10
+@cindex sine function
+@cindex square root function
+@cindex tangent
+@cindex absolute value
+@cindex arccosine function
+The available elementary mathematical functions are: 
+@table @code
+@c fxm finish me
+@item acos(x)
+@dfn{Arc-cosine}
+Returns the arc-cosine of @var{x} between 
+asin(x); atan(x); cos(x); exp(x); gamma(x); log(x); log10(x); sin(x); sqrt(x); tan(x);
+@end table
+@noindent
+@cindex addition
+@cindex subtraction
+@cindex multiplication
+@cindex division
+@cindex exponentiation
+@cindex modulus
+@cindex @code{+} (addition)
+@cindex @code{-} (subtraction)
+@cindex @code{*} (multiplication)
+@cindex @code{/} (division)
+@cindex @code{^} (exponentiation)
+@cindex @code{%} (modulus)
+Standard calculator notation is used for addition @kbd{+}, subtraction
+@kbd{-}, multiplication @kbd{*}, division @kbd{/}, exponentiation
+@kbd{^}, and modulus @kbd{%}.
+
+@noindent
+EXAMPLES
+
+@cindex hybrid coordinate system 
+Construct a four-dimensional pressure @code{prs_mdp} given the
+required hybrid coordinate system parameters:
+@example
+ncap -O -s "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm" in.nc out.nc
+@end example
+
+Define new attribute @var{new} for existing variable @var{one}
+as twice the existing attribute @var{double_att} of variable @var{att_var}:
+@example
+ncap -O -s "one@@new=2*att_var@@double_att" in.nc out.nc
+@end example
+
+Average variables of mixed types (result is of type double):
+@example
+ncap -O -s "average=(three_dmn_rec_var+three_dmn_var_dbl+three_dmn_var_int)/3" in.nc out.nc 
+@end example
+
+@example
+ncap -O -s "" in.nc out.nc
+@end example
+
+@example
+ncap -O -s "" in.nc out.nc
+@end example
+
+@page
+@node ncatted netCDF Attribute Editor, ncdiff netCDF Differencer, ncap netCDF Arithmetic Processor, Operators
 @section @command{ncatted} netCDF Attribute Editor
 @cindex attributes
 @cindex attribute names
@@ -2618,8 +2755,8 @@ described in any detail in the sections below.
 @noindent
 SYNTAX
 @example
-ncatted [-a @var{att_dsc}] [-a @dots{}] [-D] [-h]
-[-l path] [-O] [-p path] [-R] [-r] 
+ncatted [-a @var{att_dsc}] [-a @dots{}] [-D @var{dbg}] [-h]
+[-l @var{path}] [-O] [-p @var{path}] [-R] [-r] 
 @var{input-file} [@var{output-file}]  
 @end example
  
@@ -2866,6 +3003,7 @@ Backslashes which precede any other character (e.g., @code{3}, @code{m},
 @cindex strings
 @cindex NUL-termination
 @cindex NUL
+@cindex C language
 @cindex @code{0} (NUL)
 Note that the NUL character @code{\0} which terminates C language
 strings is assumed and need not be explicitly specified.
@@ -3445,7 +3583,7 @@ ncatted -O -a units,prs_sfc,o,c,millibar out.nc
 @noindent
 SYNTAX
 @example
-ncks [-A] [-a] [-C] [-c] [-D] 
+ncks [-A] [-a] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]]
 [-F] [-H] [-h] [-l @var{path}] [-M] [-m] [-O] [-p @var{path}] [-q]
 [-R] [-r] [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-x]
@@ -3654,6 +3792,7 @@ The mnemonic for this option is "quiet".
 
 @cindex @code{-s}
 @cindex @code{printf()}
+@cindex C language
 @item -s @var{format}
 String format for text output. Accepts C language escape sequences and
 @code{printf()} formats. 
@@ -3990,8 +4129,8 @@ ncrcat -d time,6.,54. ??.nc 8506_8906.nc
 @noindent
 SYNTAX
 @example
-ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D] 
-[-d @var{old_name},@var{new_name}] [-d @dots{}] [-h] [-l path] [-O] [-p path]
+ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}] 
+[-d @var{old_name},@var{new_name}] [-d @dots{}] [-h] [-l @var{path}] [-O] [-p @var{path}]
 [-R] [-r] [-v @var{old_name},@var{new_name}] [-v @dots{}]
 @var{input-file} [@var{output-file}]  
 @end example
@@ -4353,7 +4492,7 @@ ncwa in.nc out.nc
 Every variable in @file{in.nc} is reduced to a scalar in @file{out.nc}
 because, by default, averaging is performed over all dimensions.
 
-Store the zonal (longitudinal) average of @file{in.nc} in @file{out.nc}:
+Store the zonal (longitudinal) mean of @file{in.nc} in @file{out.nc}:
 @example
 ncwa -a lon in.nc out.nc
 @end example
@@ -4362,7 +4501,7 @@ Here the tally is simply the size of @code{lon}, or 128.
 
 @cindex @code{gw}
 @cindex Gaussian weights
-Compute the meridional (latitudinal) average, with values weighted by
+Compute the meridional (latitudinal) mean, with values weighted by
 the corresponding element of @var{gw}
 @footnote{@code{gw} stands for @dfn{Gaussian weight} in the NCAR climate
 model.}: 
@@ -4373,7 +4512,7 @@ ncwa -w gw -a lat in.nc out.nc
 Here the tally is simply the size of @code{lat}, or 64.
 The sum of the Gaussian weights is 2.0.
 
-Compute the area average over the tropical Pacific:
+Compute the area mean over the tropical Pacific:
 @example
 ncwa -w gw -a lat,lon -d lat,-20.,20. -d lon,120.,270. 
 in.nc out.nc
@@ -4391,7 +4530,7 @@ $64 \times 128 = 8192$.
 @end ifset
 
 @cindex @code{ORO}
-Compute the area average over the globe, but include only points for
+Compute the area mean over the globe, but include only points for
 which 
 @set flg
 @tex
@@ -4419,7 +4558,7 @@ $0.70 \times 8192 \approx 5734$.
 @clear flg
 @end ifset
 
-Compute the global annual average over the maritime tropical Pacific:
+Compute the global annual mean over the maritime tropical Pacific:
 @example
 ncwa -m ORO -M 0.5 -o lt -w gw -a lat,lon,time 
 -d lat,-20.0,20.0 -d lon,120.0,270.0 in.nc out.nc
@@ -4435,12 +4574,14 @@ The @acronym{NCO} project homepage at
 contains more information on how to contribute. 
 @table @asis
 @item Charlie Zender
-Concept, design and implementation of @acronym{NCO} from 1995--2000
+Concept, design and implementation of @acronym{NCO} from 1995--2000.
+@code{ncap} variable stretching.
 @item Henry Butowsky
-Min, max, total, and non-linear operations. 
+Min, max, total, and non-linear operations in @code{ncra} and @code{ncwa}. 
 Type conversion for arithmetic.
-Various hacks.
 Migration to netCDF3 API.
+@code{ncap} parser, lexer, and I/O.
+Various hacks.
 @item Bill Kocik
 Memory management
 @item Juliana Rew

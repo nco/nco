@@ -1,3 +1,7 @@
+2002-02-18  Charlie Zender  <zender@uci.edu>
+
+	* Began documenting ncap in nco.texi
+
 2002-02-11  Charlie Zender  <zender@uci.edu>
 
 	* Remove ncap dependency on getopt.o, getopt1.o since
