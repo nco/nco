@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.127 2004-07-20 16:41:11 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.128 2004-07-20 22:43:51 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -114,10 +114,10 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *time_bfr_srt;
   char *wgt_nm=NULL;
-  char *msk_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val,op_typ_rlt */
+  char *msk_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val, op_typ_rlt */
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.127 2004-07-20 16:41:11 hmb Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.127 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.128 2004-07-20 22:43:51 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.128 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -236,6 +236,7 @@ main(int argc,char **argv)
       {"wgt_var",no_argument,0,'w'},
       {"operation",required_argument,0,'y'},
       {"mask_string",required_argument,0,'z'},
+      {"msk_sng",required_argument,0,'z'},
       {"op_typ",required_argument,0,'y'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
@@ -295,7 +296,7 @@ main(int argc,char **argv)
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
-    case 'm': /* Name of variable to use as mask in reducing.  Default is none */
+    case 'm': /* Name of variable to use as mask in reducing. Default is none */
       msk_nm=optarg;
       break;
     case 'M': /* Good data defined by relation to mask value. Default is 1. */
@@ -372,10 +373,8 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
 
-
-  /* Parse the mask string */
-  if(msk_sng) {
-  
+  /* Parse mask string */
+  if(msk_sng){
     int zero=0;
     /* Set arguments for scan */
     prs_arg.fl_in=NULL; /* [sng] Input data file */
@@ -386,7 +385,7 @@ main(int argc,char **argv)
     prs_arg.nbr_att=&zero; /* [nbr] Number of attributes in script */
     prs_arg.dmn_in=NULL; /* [dmn_in] List of all dimensions in input */
     prs_arg.nbr_dmn_in=0; /* [nbr] Number of  dimensions in input */
-    prs_arg.dmn_out=NULL;     /* pointer to list of dims in output */
+    prs_arg.dmn_out=NULL; /* pointer to list of dims in output */
     prs_arg.nbr_dmn_out=&zero; /* number of dims in above list */
     prs_arg.sym_tbl=NULL; /* [fnc] Symbol table for functions */
     prs_arg.sym_tbl_nbr=0; /* [nbr] Number of functions in table */
@@ -397,11 +396,8 @@ main(int argc,char **argv)
     /* Initialize line counter */
     ncap_ln_nbr_crr=(size_t *)nco_realloc(ncap_ln_nbr_crr,ncap_ncl_dpt_crr+1UL); 
     ncap_ln_nbr_crr[ncap_ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap.l */
-
-    if( ncap_ncwa_scn(&prs_arg,msk_sng,&msk_nm,&msk_val,&op_typ_rlt) == 0 ) nco_exit(EXIT_FAILURE); 
-
-  }
-
+    if(ncap_ncwa_scn(&prs_arg,msk_sng,&msk_nm,&msk_val,&op_typ_rlt) == 0) nco_exit(EXIT_FAILURE); 
+  } /* endif msk_sng */
 
   /* Ensure we do not attempt to normalize by non-existent weight */
   if(wgt_nm == NULL) NORMALIZE_BY_WEIGHT=False;

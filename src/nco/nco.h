@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.63 2004-07-20 00:18:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.64 2004-07-20 22:43:51 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -249,7 +249,7 @@ extern "C" {
   /* Scalar value structure */
   typedef struct{ /* scv_sct */
     val_unn val; /* [sct] Value */
-    nc_type type; /* [enm] netCDF typ */
+    nc_type type; /* [enm] netCDF type */
     nod_typ_enm nod_typ; /* [enm] Node type */
   } scv_sct;      
 

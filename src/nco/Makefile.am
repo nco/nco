@@ -44,7 +44,7 @@ ncra_LDADD = libnco.la
 ncrename_SOURCES = ncrename.c
 ncrename_LDADD = libnco.la
 
-ncwa_SOURCES = ncwa.c
+ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.y
 ncwa_LDADD = libnco.la
 
 HEADER_SRC = libnco.h nco_cnf_dmn.h nco_fl_utl.h nco_omp.h nco_sng_utl.h \
@@ -57,7 +57,7 @@ nco_cln_utl.h nco_dmn_utl.h nco_netcdf.h nco_scm.h nco_getopt.h
 
 lib_LTLIBRARIES = libnco.la
 
-# this will create the shared-library called libnco-2.9.4.so, for example
+# This creates version-stamped shared-library, e.g., libnco-2.9.4.so
 libnco_la_LDFLAGS = -release @VERSION@
 
 libnco_la_SOURCES = nco_att_utl.c nco_bnr.c nco_cln_utl.c nco_cnf_dmn.c \

@@ -22114,7 +22114,7 @@ echo "$as_me: Bad news: Simple program does not compile and link to libnetcdf.a 
 		    cc ) CFLAGS="${CFLAGS} -xarch=v9" ; LDFLAGS="${LDFLAGS} -xarch=v9" ; ;;
 		esac
 		;;
-	    x86_64-unknown-linux-gnu )
+	    x86_64-*-linux* )
 		case ${CC} in
 		    gcc ) CFLAGS="${CFLAGS} -m64" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
 # fxm: Add pgcc switches
@@ -25723,6 +25723,13 @@ case ${host} in
 # -bh:5 suppresses annoying messages from xlC linker WARNING: Duplicate symbol: ...
 	    xlC* ) LDFLAGS="${LDFLAGS} -bh:5" ; ;;
 	esac
+	;;
+	x86_64-*-linux* )
+	case ${CC} in
+	    cc ) CFLAGS="${CFLAGS} -std=c99" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
+	    gcc ) CFLAGS="${CFLAGS} -std=c99" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
+	esac
+	;;
 esac
 # End Default OS-specific Compiler Arguments
 
@@ -26164,7 +26171,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 	;;
-    x86_64-pc-linux* )
+    x86_64-*-linux* )
 cat >>confdefs.h <<\_ACEOF
 #define LINUXAMD64 1
 _ACEOF
