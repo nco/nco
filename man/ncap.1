@@ -1,0 +1,54 @@
+.TH NCAP 1
+.SH NAME
+ncap \- netCDF Arithmetic Processor
+.SH SYNTAX
+ncap [-A] [-C] [-c] [-D 
+.IR dbg ]
+[-d 
+.IR dim ,[
+.IR "min" ][,[
+.IR "max" ]]]
+[-F]
+[-h] [-l 
+.IR path ]
+[-O] [-p 
+.IR path ]
+[-R] [-r] [-v 
+.IR var [,...]]
+[-x] 
+.I file_1
+.I file_2
+.I "file_3"
+.SH DESCRIPTION
+.PP
+.B ncap does not have a man page
+.PP
+.SH EXAMPLES
+.PP
+Compute the square of 
+.RS
+ncap -s "T2=T*T" in.nc out.nc
+.RE
+.SH AUTHOR
+Written by Charlie Zender and Henry Butowsky
+
+.SH "REPORTING BUGS"
+Report bugs to <@sf.net>.
+
+.SH COPYRIGHT
+Copyright \(co 1995-2002 Charlie Zender
+.br
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+.SH "SEE ALSO"
+The full documentation for
+.B nco
+is maintained as a Texinfo manual.  If the
+.B info
+and
+.B nco
+programs are properly installed at your site, the command
+.IP
+.B info nco
+.PP
+should give you access to the complete manual.
