@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.92 2004-07-09 16:36:07 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.93 2004-07-19 21:36:17 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -414,7 +414,8 @@ case ${host} in
 	    gcc ) CFLAGS="${CFLAGS} -maix64" ; ;;
 # -qmaxmem=num Limit memory used by space intensive optimizations to <num> kilobytes
 # -qspill=size Size in B of register allocation spill area, mie needs > 1040 B
-	    xlc* ) CFLAGS="${CFLAGS} -qlanglvl=extended -qmaxmem=8192 -qspill=2048" ; ;;
+# -qlanglvl=extc99: Include orthogonal extensions to C99 standard
+	    xlc* ) CFLAGS="${CFLAGS} -qlanglvl=extc99 -qmaxmem=8192 -qspill=2048" ; ;;
 #    CPPFLAGS="${CPPFLAGS} -qlanglvl=extended" 
 	esac
 	case ${CXX} in 

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.240 2004-07-19 21:01:44 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.241 2004-07-19 21:36:17 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -208,7 +208,7 @@ Tarballs and RPMs are no long uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.9.8</b>: (<i>In progress</i>) Float functions will work in AIX <tt>ncap</tt> (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users)
+<li><b>NCO 2.9.8</b>: (<i>In progress</i>) Float functions will work in AIX <tt>ncap</tt> (<a href="#bug_ncap_flt_fnc_aix">long-time bug</a>, upgrade will be required for AIX ncap users), require C99 compiler
 <li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>nco_input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++, large file support (LFS), write <tt>nco_openmp_thread_number</tt> attribute
 <li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax, 64-bit ABI for x86_64, <a href="http://www.debian.org">Debian</a> builds libnco_c++
 <li><b>NCO 2.9.5</b>: <tt>ncflint</tt> handles <tt>missing_value</tt> data better, is commutative when weights are equal
@@ -324,9 +324,11 @@ over versions should largely disappear.
 <h3>NCO Binaries and OS-specific Packages</h3>
 <p>NCO development is too shorthanded to provide prebuilt binary
 executables.
-The source tarballs are always up-to-date, as are binaries for our
-development systems, <a href="http://www.debian.org">Debian Sid GNU/Linux</a>
-for x86.
+The source tarballs are always up-to-date, and known to work on
+our development systems
+(<a href="http://www.debian.org">Debian Sid GNU/Linux</a> for x86)
+and our high-end scientific computing environment
+(<a href="http://www-1.ibm.com/servers/aix">AIX 5L</a> for Power4).
 To keep users up-to-date, we provide links to binaries and packages 
 created by volunteers and organizations who port NCO to other platforms.
 The NCO team is looking for a volunteer to perform regular regression
