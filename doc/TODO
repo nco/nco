@@ -1,11 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.56 2000-06-06 05:49:21 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.57 2000-06-16 03:16:56 zender Exp $ -*-text-*-
 
-************************************************************************
-NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
-************************************************************************
+*************
+NCO Wish list
+*************
 06. Add error checking to catch file1=(lon,lat) vs. file2=(lat,lon) errors
 28. Use var.nc_id as file ID from now on and rewrite old routines to do so
-32. scale_factor and add_offset
+32. Implement scale_factor and add_offset
 41. Use GNU getopt_long()
 50. Allow user-specified scalar weights to ncwa
 51. Make getopt() a shared subroutine
@@ -71,7 +71,8 @@ ncra -O -C -v rec_var_flt_mss_val_dbl in.nc foo.nc;ncks -H foo.nc
 ncra -O -C -d time,0,1 -v rec_var_flt_mss_val_dbl in.nc foo.nc ; ncks -H foo.nc
 Not too worried about this since it is Cray specific, 
 Maybe 1.0e36d does not convert to 1.0e36f on Crays?
-135. Implement OpenMP support around variable loops in ncwa
+135. Implement OpenMP (threaded) support around variable loops in
+ncwa. Requires C compiler with OpenMP (e.g., SGI, Portland Group)
 138. If fastest varying dimension of NC_CHAR variable is of size one,
 then should not expect it to be NUL-terminated.
 139. ncks does not correctly print coordinate indices in hyperslabs with wrapping
@@ -106,7 +107,6 @@ ncrcat -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 151. Figure out how to dynamically modify web pages so files with
 changing version numbers can be directly linked
 152. Change make or nco_dst.pl to add docs to /usr/doc in RPM
-153. Change CVS repository to sourceforge, enable anonymous access
 154. Add mirror capability to web pages
 156. Builds with Electric Fence crash all over the place with nco_tst.sh 
 Appears to be related to NCO assumption that NULL=malloc(0)
@@ -124,6 +124,14 @@ is non-unity.
 160. Add documentation of ncra, ncrcat superfluous file capabilities to nco.texi
 161. Make development installation not depend on old ~/nc/nco paths
 162. Add GiNaC (Computer Algebra System) support to ncap www.ginac.de
+163. Figure out way to make doc/TAG and doc/VERSION change
+automagically. Currently must be updated manually unless distribute
+with nco_dst.pl
+164. Spiff up NCO homepage web page (Logo?)
+165. Create Makefile dependency to do 'make dir' if lib, obj, bin directories do not exist
+166. Document 'make test' so people know it exists and use it
+167. Improve/redesign test suite so it is more comprehensive and easier to add to
+168. Implement autoconf/automake build environment?
 ************************************************************************
 End NCO Wish list
 ************************************************************************
