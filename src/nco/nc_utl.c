@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.94 2000-09-20 16:13:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.95 2000-09-20 17:21:28 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -3890,7 +3890,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     (void)FORTRAN_avg_reduce_real(&sz_blk,&sz_op2,&has_mss_val,mss_val.fp,tally,op1.fp,op2.fp);
 #else /* !USE_FORTRAN_ARITHMETIC */
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */
+    /* ANSI compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -3911,7 +3911,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
       
@@ -3942,7 +3942,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     (void)FORTRAN_avg_reduce_double_precision(&sz_blk,&sz_op2,&has_mss_val,mss_val.dp,tally,op1.dp,op2.dp);
 #else /* !USE_FORTRAN_ARITHMETIC */
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */
+    /* ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -3950,7 +3950,6 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
-      float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
@@ -3964,7 +3963,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
       
@@ -3976,7 +3975,6 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	  tally[idx_op2]=sz_blk;
 	} /* end loop over idx_op2 */
       }else{
-	float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	    if(op1_2D[idx_op2][idx_blk] != mss_val_dbl){
@@ -3993,7 +3991,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     break;
   case NC_LONG:
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */
+    /* ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4001,7 +3999,6 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
-      float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
@@ -4015,7 +4012,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
       
@@ -4027,7 +4024,6 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	  tally[idx_op2]=sz_blk;
 	} /* end loop over idx_op2 */
       }else{
-	float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	    if(op1_2D[idx_op2][idx_blk] != mss_val_lng){
@@ -4043,7 +4039,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     break;
   case NC_SHORT:
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */
+    /* ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4051,7 +4047,6 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	tally[idx_op2]=sz_blk;
       } /* end loop over idx_op2 */
     }else{
-      float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
 	for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
@@ -4065,7 +4060,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       short op1_2D[sz_op2][sz_blk];
       
@@ -4077,7 +4072,6 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	  tally[idx_op2]=sz_blk;
 	} /* end loop over idx_op2 */
       }else{
-	float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
 	    if(op1_2D[idx_op2][idx_blk] != mss_val_shrt){
@@ -4135,11 +4129,10 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
-  signed char mss_val_chr;
-  unsigned char mss_val_byt;
-  
   nclong mss_val_lng=long_CEWI;
   short mss_val_shrt=short_CEWI;
+  signed char mss_val_chr;
+  unsigned char mss_val_byt;
   
   bool flg_mss=False;
   
@@ -4165,7 +4158,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   case NC_FLOAT:
     
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */
+    /* ANSI compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4188,7 +4181,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
       
@@ -4219,7 +4212,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   case NC_DOUBLE:
     
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */
+    /* ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4228,7 +4221,6 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	  if(op2.dp[idx_op2] > op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
-      float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
 	flg_mss=False;
@@ -4243,7 +4235,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
       
@@ -4256,7 +4248,6 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	    if(op2.dp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk] ;
 	} /* end loop over idx_op2 */
       }else{
-	float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
@@ -4273,7 +4264,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     break;
   case NC_LONG:
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */
+    /* ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4282,7 +4273,6 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	  if(op2.lp[idx_op2] > op1.lp[blk_off+idx_blk]) op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
-      float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
 	flg_mss=False;
@@ -4297,7 +4287,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
       
@@ -4310,7 +4300,6 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	    if(op2.lp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];
 	} /* end loop over idx_op2 */
       }else{
-	float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
@@ -4327,7 +4316,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     break;
   case NC_SHORT:
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */
+    /* ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4336,7 +4325,6 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	  if(op2.sp[idx_op2] > op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
-      float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
 	flg_mss=False;
@@ -4351,7 +4339,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       short op1_2D[sz_op2][sz_blk];
       
@@ -4364,7 +4352,6 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	    if(op2.sp[idx_op2] > op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
 	} /* end loop over idx_op2 */
       }else{
-	float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
@@ -4424,11 +4411,10 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   
   double mss_val_dbl=double_CEWI;
   float mss_val_flt=float_CEWI;
-  signed char mss_val_chr;
-  unsigned char mss_val_byt;
-  
   nclong mss_val_lng=long_CEWI;
   short mss_val_shrt=short_CEWI;
+  signed char mss_val_chr;
+  unsigned char mss_val_byt;
   
   bool flg_mss=False;
   
@@ -4454,7 +4440,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   case NC_FLOAT:
     
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */
+    /* ANSI compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4477,7 +4463,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
       
@@ -4508,7 +4494,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   case NC_DOUBLE:
     
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */
+    /* ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4517,7 +4503,6 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	  if(op2.dp[idx_op2] < op1.dp[blk_off+idx_blk]) op2.dp[idx_op2]=op1.dp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
-      float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
 	flg_mss=False;
@@ -4532,7 +4517,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
       
@@ -4545,7 +4530,6 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	    if(op2.dp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.dp[idx_op2]=op1_2D[idx_op2][idx_blk] ;
 	} /* end loop over idx_op2 */
       }else{
-	float mss_val_dbl=*mss_val.dp; /* Temporary variable reduces dereferencing */
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
@@ -4562,7 +4546,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     break;
   case NC_LONG:
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */
+    /* ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4571,7 +4555,6 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	  if(op2.lp[idx_op2] < op1.lp[blk_off+idx_blk]) op2.lp[idx_op2]=op1.lp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
-      float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
 	flg_mss=False;
@@ -4586,7 +4569,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
       
@@ -4599,7 +4582,6 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	    if(op2.lp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.lp[idx_op2]=op1_2D[idx_op2][idx_blk];
 	} /* end loop over idx_op2 */
       }else{
-	float mss_val_lng=*mss_val.lp; /* Temporary variable reduces dereferencing */
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
@@ -4616,7 +4598,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     break;
   case NC_SHORT:
 #ifndef __GNUC__
-    /* NB: ANSI compliant branch */
+    /* ANSI compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4625,7 +4607,6 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	  if(op2.sp[idx_op2] < op1.sp[blk_off+idx_blk]) op2.sp[idx_op2]=op1.sp[blk_off+idx_blk];
       } /* end loop over idx_op2 */
     }else{
-      float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
 	flg_mss=False;
@@ -4640,7 +4621,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* NB: Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
     if(True){
       short op1_2D[sz_op2][sz_blk];
       
@@ -4653,7 +4634,6 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
 	    if(op2.sp[idx_op2] < op1_2D[idx_op2][idx_blk]) op2.sp[idx_op2]=op1_2D[idx_op2][idx_blk];
 	} /* end loop over idx_op2 */
       }else{
-	float mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
 	for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	  flg_mss=False;
 	  for(idx_blk=0;idx_blk<sz_blk;idx_blk++){
