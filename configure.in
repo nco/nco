@@ -185,7 +185,7 @@ AC_CHECK_LIB([nco], [nco_open])
 #############################################
 # HDF5 support
 AC_ARG_VAR([HDF5_ROOT],location of HDF5 libraries)
-AC_ARG_ENABLE(hdf5,AC_HELP_STRING([--enable-hdf5],[use hdf5 support (default is YES)]),enable_hdf5=$enableval, enable_hdf5=yes)
+AC_ARG_ENABLE(hdf5,AC_HELP_STRING([--enable-hdf5],[use hdf5 support (default is NO)]),enable_hdf5=$enableval, enable_hdf5=no)
 
 # check for HDF5 libraries unless told not to
 if test "$enable_hdf5" != "no"; then
@@ -194,11 +194,11 @@ if test "$enable_hdf5" != "no"; then
     LDFLAGS="$LDFLAGS -L$HDF5_ROOT"
   fi 
   # these must all be present for HDF5 to work.  If all present, enable_hdf5=yes
-   AC_CHECK_LIB([mfhdf],[main],,enable_hdf5=no)
+   AC_CHECK_LIB([mfhdf],[main],nco_have_mfhdf=yes,enable_hdf5=no)
 #  AC_CHECK_LIB([df],[main],,enable_hdf5=no)
 #  AC_CHECK_LIB([jpeg],[main],,enable_hdf5=no)
 #  AC_CHECK_LIB([z],[main],,enable_hdf5=no)
-  AC_CHECK_LIB([hdf5], [H5Fcreate],,enable_hdf5=no)
+  AC_CHECK_LIB([hdf5], [H5Fcreate],nco_have_hdf5=yes,enable_hdf5=no)
 #  AC_CHECK_LIB([f],[main],,enable_hdf5=no)
 #  AC_CHECK_LIB([ftn],[main],,enable_hdf5=no)
 
@@ -206,7 +206,10 @@ if test "$enable_hdf5" != "no"; then
     AC_MSG_WARN([HDF5 support disabled (missing libraries)])
   elif test "$enable_hdf5" = "yes"; then
      AC_DEFINE(HDF5, 1, have HDF5 support)
-     AC_MSG_NOTICE([HDF5 support enabled])
+     AC_MSG_NOTICE([HDF5 support enabled ** EXPERIMENTAL **])
+     LIBS="-lmfhdf -lhdf5 $LIBS"
+dnl  add AC_DEFINE()'s here if you wnat individual HAVE_LIBxxx in config.h
+dnl  they were not included by default
   fi
 fi
 #############################################

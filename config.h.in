@@ -1,6 +1,6 @@
 /* config.h.in.  Generated from configure.in by autoheader.  */
 
-/* OS type */
+/* AIX OS */
 #undef AIX
 
 /* have DODS support */
@@ -30,9 +30,6 @@
 /* Define to 1 if you have the `dl' library (-ldl). */
 #undef HAVE_LIBDL
 
-/* Define to 1 if you have the `hdf5' library (-lhdf5). */
-#undef HAVE_LIBHDF5
-
 /* Define to 1 if you have the `intl' library (-lintl). */
 #undef HAVE_LIBINTL
 
@@ -41,9 +38,6 @@
 
 /* Define to 1 if you have the `m' library (-lm). */
 #undef HAVE_LIBM
-
-/* Define to 1 if you have the `mfhdf' library (-lmfhdf). */
-#undef HAVE_LIBMFHDF
 
 /* Define to 1 if you have the `nco' library (-lnco). */
 #undef HAVE_LIBNCO
@@ -173,7 +167,10 @@
    slash. */
 #undef LSTAT_FOLLOWS_SLASHED_SYMLINK
 
-/* no netcdf version 2 */
+/* NEC SuperX OS */
+#undef NECSX
+
+/* No netCDF version 2 */
 #undef NO_NETCDF_2
 
 /* Name of package */
@@ -193,6 +190,9 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* IRIX OS */
+#undef SGIMP64
 
 /* The size of a `int*', as computed by sizeof. */
 #undef SIZEOF_INTP

@@ -1028,7 +1028,7 @@ Optional Features:
   --disable-libtool-lock  avoid locking (might break parallel builds)
   --enable-maintainer-mode enable make rules and dependencies not useful
                           (and sometimes confusing) to the casual installer
-  --enable-hdf5           use hdf5 support (default is YES)
+  --enable-hdf5           use hdf5 support (default is NO)
   --enable-dods           use DODS (default is YES)
   --enable-fortran        use fortran arithmetic (default is NO)
   --enable-debug          more debugging info (default is NO)
@@ -1052,8 +1052,8 @@ Some influential environment variables:
   CXXFLAGS    C++ compiler flags
   CPP         C preprocessor
   CXXCPP      C++ preprocessor
-  NETCDF_LIB  location of netcdf library
-  NETCDF_INC  location of netcdf header files
+  NETCDF_LIB  location of netCDF library
+  NETCDF_INC  location of netCDF header files
   HDF5_ROOT   location of HDF5 libraries
   DODS_ROOT   root of DODS stuff
 
@@ -1834,7 +1834,7 @@ ac_config_headers="$ac_config_headers config.h"
 ac_config_commands="$ac_config_commands default-1"
 
 
-## Checks for programs.  CC has a preferred list
+## Checks for programs. CC has a preferred list
 ac_ext=c
 ac_cpp='$CPP $CPPFLAGS'
 ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
@@ -10041,14 +10041,14 @@ else
     CPPFLAGS="-I/usr/local/include $CPPFLAGS"
   fi
 fi
-# NCO does not support netcdf2
+# NCO does not support netCDF2
 
 cat >>confdefs.h <<\_ACEOF
 #define NO_NETCDF_2 1
 _ACEOF
 
-# First check for 'ncopen' using default compiler flags.  If it fails, add
-# 64-bit flags if we know them and check for 'ncclose' (ncopen is cached,
+# First check for 'nc_open' using default compiler flags.  If it fails, add
+# 64-bit flags if we know them and check for 'ncclose' (nc_open is cached,
 # so checking for it again will not work)
 { echo "$as_me:$LINENO: checking default compiler flags" >&5
 echo "$as_me: checking default compiler flags" >&6;}
@@ -10110,8 +10110,8 @@ echo "${ECHO_T}$ac_cv_lib_netcdf_nc_open" >&6
 if test $ac_cv_lib_netcdf_nc_open = yes; then
 
 LIBS="-lnetcdf $LIBS"
-{ echo "$as_me:$LINENO: libnetCDF links with default compiler flags" >&5
-echo "$as_me: libnetCDF links with default compiler flags" >&6;}
+{ echo "$as_me:$LINENO: libnetcdf links with default compiler flags" >&5
+echo "$as_me: libnetcdf links with default compiler flags" >&6;}
 else
 
 # linking failed, so add 64-bit compiler flags and try again
@@ -10730,7 +10730,7 @@ if test "${enable_hdf5+set}" = set; then
   enableval="$enable_hdf5"
   enable_hdf5=$enableval
 else
-  enable_hdf5=yes
+  enable_hdf5=no
 fi;
 
 # check for HDF5 libraries unless told not to
@@ -10740,8 +10740,7 @@ if test "$enable_hdf5" != "no"; then
     LDFLAGS="$LDFLAGS -L$HDF5_ROOT"
   fi
   # these must all be present for HDF5 to work.  If all present, enable_hdf5=yes
-
-echo "$as_me:$LINENO: checking for main in -lmfhdf" >&5
+   echo "$as_me:$LINENO: checking for main in -lmfhdf" >&5
 echo $ECHO_N "checking for main in -lmfhdf... $ECHO_C" >&6
 if test "${ac_cv_lib_mfhdf_main+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -10791,12 +10790,7 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_mfhdf_main" >&5
 echo "${ECHO_T}$ac_cv_lib_mfhdf_main" >&6
 if test $ac_cv_lib_mfhdf_main = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBMFHDF 1
-_ACEOF
-
-  LIBS="-lmfhdf $LIBS"
-
+  nco_have_mfhdf=yes
 else
   enable_hdf5=no
 fi
@@ -10804,8 +10798,7 @@ fi
 #  AC_CHECK_LIB([df],[main],,enable_hdf5=no)
 #  AC_CHECK_LIB([jpeg],[main],,enable_hdf5=no)
 #  AC_CHECK_LIB([z],[main],,enable_hdf5=no)
-
-echo "$as_me:$LINENO: checking for H5Fcreate in -lhdf5" >&5
+  echo "$as_me:$LINENO: checking for H5Fcreate in -lhdf5" >&5
 echo $ECHO_N "checking for H5Fcreate in -lhdf5... $ECHO_C" >&6
 if test "${ac_cv_lib_hdf5_H5Fcreate+set}" = set; then
   echo $ECHO_N "(cached) $ECHO_C" >&6
@@ -10861,12 +10854,7 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_hdf5_H5Fcreate" >&5
 echo "${ECHO_T}$ac_cv_lib_hdf5_H5Fcreate" >&6
 if test $ac_cv_lib_hdf5_H5Fcreate = yes; then
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBHDF5 1
-_ACEOF
-
-  LIBS="-lhdf5 $LIBS"
-
+  nco_have_hdf5=yes
 else
   enable_hdf5=no
 fi
@@ -10883,8 +10871,9 @@ cat >>confdefs.h <<\_ACEOF
 #define HDF5 1
 _ACEOF
 
-     { echo "$as_me:$LINENO: HDF5 support enabled" >&5
-echo "$as_me: HDF5 support enabled" >&6;}
+     { echo "$as_me:$LINENO: HDF5 support enabled ** EXPERIMENTAL **" >&5
+echo "$as_me: HDF5 support enabled ** EXPERIMENTAL **" >&6;}
+     LIBS="-lmfhdf -lhdf5 $LIBS"
   fi
 fi
 #############################################
