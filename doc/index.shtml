@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.45 2000-06-06 05:49:21 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.46 2000-07-13 06:57:40 zender Exp $
 
 Purpose: NCO homepage
 
@@ -43,6 +43,7 @@ scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.s
 
 <DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#Definition">What is NCO?</A> </DD>
 <DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#News">NCO News</A> </DD>
+<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#Contribute">How to Contribute to NCO</A> </DD>
 <DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#Download">Download NCO software</A> </DD>
 <DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#RTFM">NCO User's Guide</A> </DD>
 <DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#README">README</A> </DD>
@@ -271,13 +272,36 @@ See the <A HREF="./nco.html">User's Guide</A> for details.
 <A HREF="./nco_news.shtml"> Older NCO news</A>  
 <HR></P>
 
+<DT><A NAME="Contribute"></A></DT>
+<H2>How to Contribute to NCO</H2>
+
+In March, 2000 NCO became an Open Source project hosted by
+SourceForge.net in order to facilitate collaboration and code
+contribution by a wide variety of people. 
+There is a TODO list over 100 items long! 
+No matter what your programming background there is a task you can
+help with. 
+From improving this terrible webpage, to adding documentation, 
+to helping design the new features and interfaces for future NCO
+capability, we need your help! 
+The <a href="http://sourceforge.net/projects/nco">NCO project
+homepage</a> contains mailing lists, discussion forums, and
+instructions for helping the NCO project.
+
+<HR></P>
+
 <DT><A NAME="Download"></A></DT>
 <H2>Download NCO distributions</H2>
 
 <p>Complete source and documentation in tarball format: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz">nco.tar.gz</a> (430 Kb compressed tar-file)
 <p>Complete source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco-1.1.46-1.src.rpm">nco-1.1.46-1.src.rpm</a> (492 Kb SRPM)
 
-<p>Those running Linux on Redhat 6.1-compatible Intel systems, should try the prebuilt binary executable <a href="http://www.rpm.org">RPM</a>: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco-1.1.46-1.i386.rpm">nco-1.1.46-1.i386.rpm</a> (526 Kb RPM)
+<p>Unfortunately the package versions tend to lag the most current
+tarball by a few months:
+
+<p>Those running GNU/Linux on Redhat 6.1-compatible Intel systems, should try the prebuilt binary executable <a href="http://www.rpm.org">RPM</a>: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco-1.1.46-1.i386.rpm">nco-1.1.46-1.i386.rpm</a> (526 Kb RPM)
+
+<p>Those running GNU/Linux on Debian compatible Intel systems, should try the prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://www.debian.org/Packages/unstable/math/nco.html">nco-1.1.48-1</a>
 
 <P>Source distributions include complete NCO documentation (<I>User's
 Guide</I>) in Postscript, HTML, DVI, TeXinfo, and Info formats. These formats
