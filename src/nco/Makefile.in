@@ -659,6 +659,8 @@ info-am:
 install-data-am:
 
 install-exec-am: install-binPROGRAMS install-libLTLIBRARIES
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) install-exec-hook
 
 install-info: install-info-am
 
@@ -677,6 +679,8 @@ mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 
 uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
 	uninstall-libLTLIBRARIES
+	@$(NORMAL_INSTALL)
+	$(MAKE) $(AM_MAKEFLAGS) uninstall-hook
 
 .PHONY: GTAGS all all-am check check-TESTS check-am clean \
 	clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
@@ -691,6 +695,14 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
 	tags uninstall uninstall-am uninstall-binPROGRAMS \
 	uninstall-info-am uninstall-libLTLIBRARIES
 
+
+install-exec-hook:
+	ln -s $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncea
+	ln -s $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncrcat
+
+uninstall-hook:
+	rm -f $(DESTDIR)$(bindir)/ncea
+	rm -f $(DESTDIR)$(bindir)/ncrcat
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

@@ -66,3 +66,12 @@ nco_var_avg.c nco_var_lst.c nco_var_rth.c nco_var_scv.c nco_var_utl.c $(HEADER_S
 TESTS = test1.sh ${DODS_TESTS}
 
 EXTRA_DIST = nco_getopt.c
+
+install-exec-hook:
+	ln -s $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncea
+	ln -s $(DESTDIR)$(bindir)/ncra $(DESTDIR)$(bindir)/ncrcat
+
+uninstall-hook:
+	rm -f $(DESTDIR)$(bindir)/ncea
+	rm -f $(DESTDIR)$(bindir)/ncrcat
+	
