@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.83 2000-11-27 18:33:32 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.84 2000-11-28 05:56:42 zender Exp $ 
 
 *************
 NCO Wish list
@@ -141,6 +141,7 @@ ncdiff -O foo1.nc foo2.nc foo3.nc
 This may make sense, e.g., for 1-D record variables of different lengths, but not for multidimensional variables
 Former case should print warning, latter case should exit with error
 193. Convert dimension sizes from type "long int" to type "size_t"?
+194. ncwa core dumped: ncwa -a lat,lon,time -w gw dstmch57_1998.nc dstmch57_1998_xy.nc
 ************************************************************************
 End NCO Wish list
 ************************************************************************
