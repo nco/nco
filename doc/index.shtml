@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.259 2004-09-08 16:55:54 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.260 2004-09-08 17:56:18 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -260,8 +260,10 @@ If you send an endorsement, remember to include (at least) your Name, Title, and
 <h2>Version Summary</h2>
 New releases receive unique CVS tags and their tarballs and stored  
 <a href="http://dust.ess.uci.edu/nco/src">here</a>. 
-Tarballs and RPMs are no long uploaded to SourceForge.
-Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
+Tarballs and RPMs are no longer debut on SourceForge 
+(because SF's upload mechanism is too time-consuming).
+Instead, retrieve all recently tagged versions 
+<a name="#Download">with CVS</a> or from    
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO/SDO 3.1.x</b>: (<i>Future plans</i>) MPI-Grid
@@ -418,9 +420,9 @@ href="src/nco_2.9.9-1_i386.changes">nco_2.9.9-1_i386.changes</a> (<!--#fsize fil
 <ul>
 <a href="http://mitgcm.org/eh3/packages">Fedora GNU/Linux-specific homepage for NCO</a>.
 <a href="http://www.rpm.org">RPMs</a> by Ed Hill:
-<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.8-0.fdr.0.i386.rpm</a>: Fedora Core&nbsp;2, i386 Binary RPM</li>
-<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.8-0.fdr.0.x86_64.rpm</a>: Fedora Core&nbsp;2, x86_64 Binary RPM</li>
-<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.8-0.fdr.0.src.rpm</a>: Fedora Core&nbsp;1, Source RPM</li>
+<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.9-0.fdr.0.i386.rpm</a>: Fedora Core&nbsp;2, i386 Binary RPM</li>
+<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.9-0.fdr.0.x86_64.rpm</a>: Fedora Core&nbsp;2, x86_64 Binary RPM</li>
+<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.9-0.fdr.0.src.rpm</a>: Fedora Core&nbsp;1, Source RPM</li>
 </ul>
 
 <a name="gentoo"></a>

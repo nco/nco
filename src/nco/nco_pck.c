@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.51 2004-09-08 00:42:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.52 2004-09-08 17:56:23 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -221,8 +221,9 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
   bool nco_pck_plc_alw; /* O [flg] Packing policy allows packing nc_typ_in */
   nc_type nc_typ_pck_out_tmp; /* O [enm] Type to pack variable to */
 
-  /* Initialize output type to NAT to help catch errors */
+  /* Initialize output type to NAT and pack allow to False to help catch errors */
   nc_typ_pck_out_tmp=NC_NAT;
+  nco_pck_plc_alw=False;
   switch(nco_pck_map){ 
   case nco_pck_map_nil:
     nc_typ_pck_out_tmp=nc_typ_in; nco_pck_plc_alw=False; break;

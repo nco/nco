@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.39 2004-09-07 04:50:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.40 2004-09-08 17:56:23 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -448,19 +448,27 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     case ncpdq:
     case ncwa:
       if(nco_pck_plc != nco_pck_plc_nil){
-	/* Variables are processed for packing/unpacking operator unless ... */
+	/* Packing operation requested
+	   Variables are processed for packing/unpacking operator unless ... */
 	if(
 	   /* ...unpacking requested for unpacked variable... */
 	   (nco_pck_plc == nco_pck_plc_upk && !var[idx]->pck_ram) ||
 	   /* ...or packing unpacked requested and variable is already packed... */
 	   (nco_pck_plc == nco_pck_plc_all_xst_att && var[idx]->pck_ram) ||
 	   /* ...or re-packing packed requested and variable is unpacked... */
-	   (nco_pck_plc == nco_pck_plc_xst_new_att && !var[idx]->pck_ram)
+	   (nco_pck_plc == nco_pck_plc_xst_new_att && !var[idx]->pck_ram) ||
+	   /* ...or... */
+	   (
+	    /* ...any type of packing requested... */
+	    (nco_pck_plc == nco_pck_plc_all_new_att || 
+	    nco_pck_plc == nco_pck_plc_all_xst_att || 
+	    nco_pck_plc == nco_pck_plc_xst_new_att) &&
+	    /* ...yet map does not allow (re-)packing... */
+	    !nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL)
+	    )
 	   )
 	  var_op_typ[idx]=fix;
-	/* fxm: ncpdq packing treats all variables as processed */
-	/*	var_op_typ[idx]=prc;*/
-      }else{
+      }else{ /* endif packing operation requested */
 	/* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
 	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
 	  for(idx_xcl=0;idx_xcl<nbr_dmn_xcl;idx_xcl++){

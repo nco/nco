@@ -1,7 +1,14 @@
-2004-09-07  Charlie Zender  <zender@uci.edu>
+2004-09-08  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_9_9
 	Changes since nco-2_9_8: 1. ncbo threading 2. ncpdq -P packing
+
+	* Fix problems with building --enable-*-custom
+
+	* Fully merge packing policy/map decisions into nco_var_lst_dvd()
+	This should mean that fix/prc distinction is fully integrated
+
+2004-09-07  Charlie Zender  <zender@uci.edu>
 
 	* Finish packing map documentation. Ready to release.
 
