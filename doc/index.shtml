@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.206 2004-03-13 01:38:44 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.207 2004-03-17 00:30:20 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -202,7 +202,8 @@ Tarballs and RPMs are only rarely uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.9.2</b>: (<i>In progress</i>)
+<li><b>NCO 2.9.2</b>: (<i>In progress</i>) <tt>ncap</tt> <tt>S/V</tt>,
+<tt>S%V</tt>, and <tt>S^V</tt> <a href="#bug_ncap_cmt">operations fixed</a>
 <li><b>NCO 2.9.1</b>: <tt>ncwa</tt> works again on packed <tt>NC_FLOAT</tt> data (<a href="#bug_pck_ncwa">broke when?</a>),
 <li><b>NCO 2.9.0</b>: Complete <tt>ncap</tt> modulo operator (<tt>A%B</tt>) and generic exponentiation (<tt>A^B</tt>), fix attribute divided by variable (<tt>A/B</tt>), workaround stack memory problem with GCC extensions, fix <tt>make check</tt>
 <li><b>NCO 2.8.8</b>: <tt>--enable-[optimize/debug]-custom</tt> options for GCC work again (broke in 2.8.6)
@@ -460,6 +461,26 @@ Users at NCAR should try the <i>supported</i> executables in
 <h2>Known Problems with NCO and/or netCDF:</h2>
 
 <ul>
+<a name="bug_ncap_cmt"></a>
+<li><b>Arithmetic problems with <tt>ncap</tt> division, modulo, and exponentiation:</b>
+<tt>ncap</tt> versions up to 2.9.1 incorrectly handles division,
+modulo, and exponentiation operations of the form <tt>S/V</tt>,
+<tt>S%V</tt>, and <tt>S^V</tt> where first operand (<tt>S</tt>) is 
+scalar (i.e., either typed directly in the <tt>ncap</tt> script or 
+converted from an attribute) and the second operand (<tt>V</tt>) is
+a full variable (i.e., stored in a file or computed by <tt>ncap</tt>).
+Instead of the requested quantity, <tt>ncap</tt> returned
+<tt>V/S</tt>, <tt>V%S</tt>, and <tt>V^S</tt>.
+In other words <tt>ncap</tt> treated some non-commutative operations
+as commutative. This is now fixed. 
+The 
+<tt>V/V</tt>, <tt>V%V</tt>, <tt>V^V</tt>, 
+<tt>V/S</tt>, <tt>V%S</tt>, <tt>V^S</tt>, 
+<tt>S/S</tt>, <tt>S%S</tt>, and <tt>S^S</tt> operations were never
+affected. 
+We recommend that all <tt>ncap</tt> users upgrade to version 2.9.2.
+</li>
+
 <a name="bug_pck_ncwa"></a>
 <li><b>Packing problems with <tt>ncwa</tt>:</b>
 NCO versions ???&mdash;2.9.0 have a bug that causes <tt>ncwa</tt>
@@ -496,8 +517,14 @@ these versions of NCO.
 <li><b>Generic NCO build problems:</b>
 NCO requires netCDF version >=&nbsp;3.5.0 for support of <tt>nc_type NC_NAT</tt> in NCO source code.
 NCO requires GNU <tt>make</tt> version >=&nbsp;3.78.1 for support of target-specific variable values in <tt>bld/Makefile</tt>.
+NCO often fails to build because <tt>ncap</tt> fails to build.
+The two most common reasons <tt>ncap</tt> fails to build are
+(1)&nbsp;GNU <tt>bison</tt> is out-of-date (upgrade <tt>bison</tt>)
+and (2)&nbsp;<tt>--enable-optimize-*</tt> is specified to 
+<tt>configure</tt> (do not specify it).
 </li>
 
+<a name="bld_ncap"></a>
 <li><b><tt>ncap</tt> build problems:</b>
 <tt>ncap</tt> requires <tt>flex</tt> to build correctly.
 AT&T <tt>lex</tt> will not work because it does not understand

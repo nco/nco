@@ -1,3 +1,7 @@
+2004-03-16  Charlie Zender  <zender@uci.edu>
+
+	* Correctly implement non-commutative ncap S/V division
+
 2004-03-12  Charlie Zender  <zender@uci.edu>
 
 	* Verify Solaris does autobuild correctly with up-to-date bison 
