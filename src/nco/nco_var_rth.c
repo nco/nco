@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.27 2004-07-19 21:01:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.28 2004-07-19 21:58:50 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -169,7 +169,7 @@ nco_var_add_tll_ncflint /* [fnc] Add first operand to second operand, increment 
  const long sz, /* I [nbr] Size (in elements) of operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
  ptr_unn mss_val, /* I [flg] Value of missing value */
- long * const tally, /* I/O [nbr] Counter space */
+ long * restrict const tally, /* I/O [nbr] Counter space */
  ptr_unn op1, /* I [val] Values of first operand */
  ptr_unn op2) /* I/O [val] Values of second operand on input, values of sum on output */
 {
@@ -362,7 +362,7 @@ nco_var_add_tll_ncra /* [fnc] Add first operand to second operand, increment tal
  const long sz, /* I [nbr] Size (in elements) of operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
  ptr_unn mss_val, /* I [flg] Value of missing value */
- long * const tally, /* I/O [nbr] Counter space */
+ long * restrict const tally, /* I/O [nbr] Counter space */
  ptr_unn op1, /* I [val] Values of first operand */
  ptr_unn op2) /* I/O [val] Values of second operand (running sum) on input, values of new sum on output */
 {
@@ -1293,7 +1293,7 @@ nco_var_sqrt /* [fnc] Place squareroot of first operand in value of second opera
  const long sz, /* I [nbr] Size (in elements) of operand */
  const int has_mss_val, /* I [flg] Flag for missing values */
  ptr_unn mss_val, /* I [val] Value of missing value */
- long * const tally, /* I/O [nbr] Counter space */
+ long * restrict const tally, /* I/O [nbr] Counter space */
  ptr_unn op1, /* I [val] Values of first operand */
  ptr_unn op2) /* O [val] Squareroot of first operand */
 {
