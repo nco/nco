@@ -23821,6 +23821,7 @@ _ACEOF
 
 fi
 
+
 echo "$as_me:$LINENO: checking for nco_open in -lnco" >&5
 echo $ECHO_N "checking for nco_open in -lnco... $ECHO_C" >&6
 if test "${ac_cv_lib_nco_nco_open+set}" = set; then
@@ -23885,7 +23886,12 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_lib_nco_nco_open" >&5
 echo "${ECHO_T}$ac_cv_lib_nco_nco_open" >&6
 if test $ac_cv_lib_nco_nco_open = yes; then
-  LIBS="-lcurl  ${LIBS}"
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBNCO 1
+_ACEOF
+
+  LIBS="-lnco $LIBS"
+
 fi
 
 # End Library checks
@@ -24370,7 +24376,7 @@ ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
 ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
 ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
 
-    LIBS=" -lrx -ldap++ -lnc-dods -ldap++ ${LIBS}"
+    LIBS=" -ldap++ -lnc-dods -ldap++ ${LIBS}"
 
 echo "$as_me:$LINENO: checking for nc_open in -lnc-dods" >&5
 echo $ECHO_N "checking for nc_open in -lnc-dods... $ECHO_C" >&6

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.112 2005-03-24 20:48:34 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.113 2005-03-31 01:02:07 mangalam Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -222,7 +222,7 @@ AC_CHECK_LIB([resolv],[res_init])
 AC_CHECK_LIB([socket],[main])
 AC_CHECK_LIB([thread],[main])
 AC_CHECK_LIB([nsl],[main])
-AC_CHECK_LIB([nco],[nco_open],LIBS="-lcurl  ${LIBS}")
+AC_CHECK_LIB([nco],[nco_open])
 # End Library checks
 
 # Begin DODS support
@@ -255,7 +255,7 @@ if test "${enable_dods}" != 'no'; then
 
 # use AC_LANG_PUSH & AC_LANG_POP to allow nc-dods to resolve libdap++ symbols    # This causes libstdc++ to be linked in for (only) this link
     AC_LANG_PUSH([C++])
-    LIBS=" -lrx -ldap++ -lnc-dods -ldap++ ${LIBS}"
+    LIBS=" -ldap++ -lnc-dods -ldap++ ${LIBS}"
     AC_CHECK_LIB([nc-dods],[nc_open],,enable_dods=no)
     AC_LANG_POP
 
