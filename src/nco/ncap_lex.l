@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.21 2004-01-16 01:09:33 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.22 2004-01-19 17:29:33 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -87,8 +87,8 @@
      We already assume lexer is flex since AT&T lex does not understand <EOF> rules
      Thus prototyping following flex-specific functions adds no additional assumptions
      See also 20040112 thread in comp.compilers */
-  /* Implicit declaration warnings: fileno warning may be avoided with -D_POSIX_SOURCE ? */
-  int fileno(FILE *); /* fixes: warning: implicit declaration of function `fileno' */
+  /* Implicit declaration warnings: -D_POSIX_SOURCE also avoids fileno warning */
+  int fileno(FILE *); /* fixes: warning: implicit declaration of function `fileno', -D_POSIX_SOURCE also avoids this warning */
   int yy_flex_realloc(void *,size_t); /* fixes: warning: implicit declaration of function `yy_flex_realloc'. Is this obsolete? Other versions of flex on Linux seem to want void * yyflex_realloc(void *,size_t), which actually makes more sense given that it is a realloc() function */
   /* Missing prototypes warnings: Triggered by -Wmissing-prototypes */
   FILE *yyget_in(void); /* fixes: warning: no previous prototype for `yyget_in' */

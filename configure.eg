@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.74 2004-01-19 17:27:15 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.75 2004-01-19 17:29:32 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -63,7 +63,7 @@ Method 3. Recommended/current custom ./configure invocation
    System administrators like to install multiple compilers, and 
    have libraries in weird places.
    Serious users of NCO are encouraged to try the configurations below.
-   The suggestions are alphabetized by pvmgetarch.
+   The suggestions are alphabetized by (pvmgetarch) machine type.
 
 ************************************************************************
 Start AIX
@@ -238,7 +238,7 @@ make check >> make.${GNU_TRP}.foo 2>&1
 sudo make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
-gcc/g++ Developers use this for debugging, auto-tools validation:
+gcc/g++ Developers use --enable-maintainer-mode to verify auto-tools work correctly, and to mandate rebuilding of "special files" (ncap_yacc.c, ncap_lex.c) correctly:
 (requires complete, up-to-date, GNU development toolchain):
 export GNU_TRP=`~/nco/autobld/config.guess`
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean

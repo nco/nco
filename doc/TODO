@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.279 2004-01-18 07:59:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.280 2004-01-19 17:29:33 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -234,6 +234,8 @@ ncks foo.nc prints all of foo.nc. People do not use ncks because its
 default action is non-intuitive.  
 306. Related to TODO 104. Following breaks appending from large to small file
 Rewrite nco_cpy_var_dfn*() to create new dimensions required, if any, in output file
+This works when NCO built with old Makefile! 
+Check if autotools builds break it (e.g., shared library problem?)
 ncwa -O -a time -v u,v in.nc foo.nc # Compute time mean of u,v
 ncrename -O -v u,uavg -v v,vavg foo.nc # Rename to avoid conflict
 ncks -A -C -v u,v in.nc foo.nc # Place originals with time means
@@ -241,7 +243,8 @@ ncks: ERROR attempt to write 1 dimensional input variable u to 0 dimensional spa
 ncap -O -s "uprmvprm=u*v-uavg*vavg" foo.nc foo.nc # Covariance
 ncra -O -v uprmvprm foo.nc out.nc # Time-mean covariance
 This breaks mie!
-307. 
+308. Add shared library flag to nco_ctl.c flags
+309. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************
