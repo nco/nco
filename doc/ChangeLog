@@ -1,3 +1,8 @@
+1999-01-13  Charlie Zender  <zender@garcia.acd.ucar.edu>
+
+	* Fixed bug in var_def() where wrong branch was executed when
+	called by ncwa for files with no output dimensions.
+
 Wed Jan  6 17:55:26 1999  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
 	* Tagged and released this as nco1_1_18

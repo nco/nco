@@ -59,6 +59,13 @@ i.e., LSM variable timecom caused subtle ncra problems for a while.
 112. Use strtol and strtod instead of atol and atof
 113. Rethink normalization switch options in ncwa
 114. Fix var_conform_dim() so that the returned weight always has the same size tally array as the template variable
+115. Core dump on Alpha:
+ncwa -O -a lat -v lat in.nc foo.nc
+116. Same command, different problem on AIX:
+gss1:/l9/zender/nc/nco/data> ncwa -O -a lat -v lat in.nc foo.nc
+ncwa: CONVENTION File convention is NCAR CSM
+ncvardef: ncid 4: Invalid dimension id or name
+Problem is that var_out["lat"]->nbr_dim is 1 when it should be 0 (since lat is averaged over)
 ************************************************************************
 End NCO Wish list
 ************************************************************************

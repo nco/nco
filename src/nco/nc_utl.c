@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.14 1999-01-07 00:59:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.15 1999-01-13 21:46:23 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -1600,7 +1600,8 @@ var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dim_sct **di
     /* If the variable has not been defined, define it */
     if(var[idx]->id == -1){
       
-      if(dim_ncl != NULL){
+      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicityly set to the actual number of ouput dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dim_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_def() was designed to call the simple branch when dim_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in the output file, nbr_dim_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */ 
+      if(dim_ncl != NULL || prg_get() == ncwa){
 	int nbr_var_dim=0;
 	int idx_ncl;
 

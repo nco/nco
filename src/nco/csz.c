@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.10 1998-11-26 04:51:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.11 1999-01-13 21:46:23 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -927,7 +927,7 @@ copyright_prn(char *rcs_Id,char *rcs_Revision)
 
   cvs_vrs_sng=cvs_vrs_prs();
 
-  (void)fprintf(stderr,"NCO version %s %s version %s (%s)\nCopyright 1995--1998 University Corporation for Atmospheric Research\n",cvs_vrs_sng,prg_nm_get(),ver_sng,date_sng);
+  (void)fprintf(stderr,"NCO version %s %s version %s (%s)\nCopyright 1995--1999 University Corporation for Atmospheric Research\n",cvs_vrs_sng,prg_nm_get(),ver_sng,date_sng);
   (void)free(ver_sng);
   (void)free(cvs_vrs_sng);
 } /* end copyright_prn() */
