@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.3 2002-08-11 05:46:34 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_utl.cc,v 1.4 2002-08-23 23:58:24 zender Exp $ 
 
 // Implementation (declaration) of C++ interface utilities for netCDF routines
 
@@ -223,7 +223,12 @@ nco_dfl_case_nctype_err(void) // [fnc] Handle illegal nc_type references
      of code since this function is used in many many switch() statements. */
   const std::string sbr_nm("nco_dfl_case_nctype_err()");
   std::cout << sbr_nm << ": ERROR switch(nctype) statement fell through to default case, which is illegal.\nNot handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype defintion is braindead in netCDF2). Exiting..." << std::endl;
-  std::exit(EXIT_FAILURE);
+#ifdef ABORT_ON_ERROR
+  std::abort(); // [fnc] Produce core dump
+#else
+  std::exit(EXIT_FAILURE); // [fnc] Exit nicely
+#endif // !ABORT_ON_ERROR
+
 } // end nco_dfl_case_nctype_err()
 
 // Begin nco_get_xtype() overloads
