@@ -1,5 +1,7 @@
 2004-08-06  Charlie Zender  <zender@uci.edu>
 
+	* Added duplicate dimension flag has_dpl_dmn to var_sct
+
 	* Handling situations where re-order list caused non-record
 	variables to become record variables was completely broken.
 	Inserted mucho logic which implements new policies:

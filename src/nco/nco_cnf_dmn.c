@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.35 2004-08-05 05:30:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.36 2004-08-06 20:56:39 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -703,11 +703,13 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
       if(dmn_rvr_in[dmn_in_idx]) IDENTITY_REORDER=False;
 
   if(IDENTITY_REORDER){
-    if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: INFO %s re-ordering is identity transformation for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
+    if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: INFO %s reports re-order is identity transformation for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
     /* Copy in one fell swoop then return */
     (void)memcpy((void *)(var_out->val.vp),(void *)(var_in->val.vp),var_out->sz*nco_typ_lng(var_out->type));
     return rcd;
   } /* !IDENTITY_REORDER */
+
+  if(var_in->has_dpl_dmn) (void)fprintf(stdout,"%s: WARNING %s reports non-identity re-order for variable with duplicate dimensions %s.\n%s does not support non-identity re-orders of variables with duplicate dimensions\n",prg_nm_get(),fnc_nm,var_in->nm,prg_nm_get());
 
   /* Compute map for each dimension of input variable */
   for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++) dmn_in_map[dmn_in_idx]=1L;

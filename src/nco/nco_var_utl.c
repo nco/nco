@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.49 2004-08-06 18:26:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.50 2004-08-06 20:56:39 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -205,7 +205,7 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
-    (void)fprintf(stderr,"%s: ERROR attempt to write %d dimensional input variable %s to %d dimensional space in output file. \nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. Read the manual to see how.\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
+    (void)fprintf(stdout,"%s: ERROR attempt to write %d dimensional input variable %s to %d dimensional space in output file. \nHINT: When using -A (append) option, all appended variables must be the same rank in the input file as in the output file. ncwa operator is useful at ridding variables of extraneous (size = 1) dimensions. Read the manual to see how.\n",prg_nm_get(),nbr_dmn_in,var_nm,nbr_dmn_out);
     nco_exit(EXIT_FAILURE);
   } /* endif */
   nbr_dim=nbr_dmn_out;
@@ -724,6 +724,7 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->sz=1L;
   var->sz_rec=1L;
   var->cid=-1;
+  var->has_dpl_dmn=False;
   var->has_mss_val=False;
   var->mss_val.vp=NULL;
   var->val.vp=NULL;
@@ -877,7 +878,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     }else{
       /* Variable is already in output file---use existing definition
 	 This branch is executed, e.g., by operators in append mode */
-      (void)fprintf(stderr,"%s: WARNING Using existing definition of variable \"%s\" in %s\n",prg_nm_get(),var[idx]->nm,fl_out);
+      (void)fprintf(stdout,"%s: WARNING Using existing definition of variable \"%s\" in %s\n",prg_nm_get(),var[idx]->nm,fl_out);
     } /* end if */
 
     /* Copy all attributes except in cases where packing/unpacking is involved
@@ -1124,14 +1125,29 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   /* Refresh number of attributes and missing value attribute, if any */
   var->has_mss_val=nco_mss_val_get(var->nc_id,var);
 
-  /* Size defaults to 1 in var_dfl_set(), but set to 1 here for safety */
+  /* Check variable for duplicate dimensions */
+  for(idx=0;idx<var->nbr_dim;idx++){
+    for(dmn_idx=0;dmn_idx<var->nbr_dim;dmn_idx++){
+      if(idx != dmn_idx){
+	if(var->dmn_id[idx] == var->dmn_id[dmn_idx]){
+	  /* Dimensions are duplicated when IDs for different ordinal dimensions are equal */
+	  var->has_dpl_dmn=True;
+	  break;
+	} /* endif IDs are equal */
+      } /* endif navel gazing */
+    } /* endif inner dimension */
+    /* Found a duplicate, so stop looking */
+    if(dmn_idx != var->nbr_dim) break;
+  } /* endif outer dimension */
+
+  /* Size defaults to 1 in var_dfl_set(), and set to 1 here for extra safety */
   var->sz=1L; 
   for(idx=0;idx<var->nbr_dim;idx++){
     (void)nco_inq_dimname(nc_id,var->dmn_id[idx],dmn_nm);
     /* Search input dimension list for matching name */
-    for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
+    for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++)
       if(!strcmp(dmn_nm,dim[dmn_idx]->nm)) break;
-    } /* end for */
+
     if(dmn_idx == nbr_dim){
       (void)fprintf(stdout,"%s: ERROR dimension %s is not in list of dimensions available to nco_var_fll()\n",prg_nm_get(),dmn_nm);
       (void)fprintf(stdout,"%s: HINT This could be the problem identified in TODO #111. Workaround is to make sure each dimension in the weighting and masking variable(s) appears in a variable to be processed.\n",prg_nm_get());
@@ -1139,8 +1155,8 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
     } /* end if */
 
     /* fxm: hmb, what is this for? */
-    /* Re-define dim_id so that if dim is dimension list from output file
-       then we get correct dim_id. Should not affect normal running of 
+    /* Re-define dmn_id so that if dim is dimension list from output file
+       then we get correct dmn_id. Should not affect normal running of 
        routine as usually dim is dimension list from input file */
     var->dmn_id[idx]=dim[dmn_idx]->id;
 
@@ -1209,7 +1225,7 @@ nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
   /* fxm: This should be un-necessary since multi-file packing ostensibly works */
 #if 0
   if(nco_is_rth_opr(prg_get()) && var->pck_dsk){
-    if(var->has_mss_val) (void)fprintf(stderr,"%s: WARNING Variable \"%s\" is packed and has valid \"missing_value\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...  \n",prg_nm_get(),var_nm);
+    if(var->has_mss_val) (void)fprintf(stdout,"%s: WARNING Variable \"%s\" is packed and has valid \"missing_value\" attribute in multi-file arithmetic operator. Arithmetic on this variable will only be correct if...  \n",prg_nm_get(),var_nm);
   } /* endif variable is packed */
 #endif /* endif False */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.66 2004-07-27 06:16:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.67 2004-08-06 20:56:39 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -293,9 +293,9 @@ extern "C" {
     struct dmn_sct_tag *xrf; /* [sct] Cross-reference to associated dimension structure (usually the structure for dimension on output) */
   } dmn_sct; /* end dmn_sct_tag */
   
-  /* Each member of var_sct structure should be initialized to default in var_dfl_set()
-     Each pointer member of var_sct structure should be free()'d in nco_var_free()
-     Each pointer member of var_sct structure should be copied in nco_var_dpl() */
+  /* Initialize default value of each member of var_sct structure in var_dfl_set()
+     free() each pointer member of var_sct structure in nco_var_free()
+     deep-copy each pointer member of var_sct structure in nco_var_dpl() */
   /* Variable structure */
   typedef struct var_sct_tag{ /* var_sct */
     char *nm; /* [sng] Variable name */
@@ -309,6 +309,7 @@ extern "C" {
     long sz; /* [nbr] Number of elements (NOT bytes) in hyperslab (NOT full size of variable in input file!) */
     long sz_rec; /* [nbr] Number of elements in one record of hyperslab */
     int nbr_att; /* [nbr] Number of attributes */
+    int has_dpl_dmn; /* [flg] Variable has duplicate copies of same dimension */
     int has_mss_val; /* [flg] Is there a missing_value attribute? */
     ptr_unn mss_val; /* [frc] Value of missing_value attribute, if any (mss_val stored in this structure must be same type as variable) */
     int cid; /* [id] Dimension ID of associated coordinate, if any */
