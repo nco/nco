@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.52 1999-12-15 01:42:53 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.53 1999-12-15 02:51:37 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -345,7 +345,7 @@ $(MY_OBJ_DIR)/%.o : %.f
 endif
 # endif RS6K
 
-ifneq ('',$(findstring SGI,$(PVM_ARCH)))
+ifneq (,$(findstring SGI,$(PVM_ARCH)))
 C++ := c++
 CC := cc
 # spoof SGI64
@@ -511,7 +511,7 @@ libnco := $(MY_LIB_DIR)/libnco
 # Default targets
 all: dir lib $(MDL_BIN_TRG) data
 # .PHONY tells make to remake the following non-file targets 
-.PHONY: all cln dst_cln dbg dir
+.PHONY: all cln dst_cln dbg 
 # Delete default suffixes---this should increase speed
 .SUFFIXES: 
 # Define suffixes which matter

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.32 1999-12-14 22:39:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.33 1999-12-15 02:51:38 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -1191,18 +1191,18 @@ sng_ascii_trn(char *sng)
     trn_flg=True;
     /* Replace backslash character by corresponding control code */ 
     switch(*(backslash_ptr+1)){ /* man ascii:Oct   Dec   Hex   Char \X  */
-    case 'a':	*backslash_ptr='\a'; break; /* 007   7     07    BEL '\a' Bell */
-    case 'b':	*backslash_ptr='\b'; break; /* 010   8     08    BS  '\b' Backspace */
-    case 'f':	*backslash_ptr='\f'; break; /* 014   12    0C    FF  '\f' Formfeed */
-    case 'n':	*backslash_ptr='\n'; break; /* 012   10    0A    LF  '\n' Linefeed */
-    case 'r':	*backslash_ptr='\r'; break; /* 015   13    0D    CR  '\r' Carriage return */
-    case 't':	*backslash_ptr='\t'; break; /* 011   9     09    HT  '\t' Horizontal tab */
-    case 'v':	*backslash_ptr='\v'; break; /* 013   11    0B    VT  '\v' Vertical tab */
+    case 'a': *backslash_ptr='\a'; break; /* 007   7     07    BEL '\a' Bell */
+    case 'b': *backslash_ptr='\b'; break; /* 010   8     08    BS  '\b' Backspace */
+    case 'f': *backslash_ptr='\f'; break; /* 014   12    0C    FF  '\f' Formfeed */
+    case 'n': *backslash_ptr='\n'; break; /* 012   10    0A    LF  '\n' Linefeed */
+    case 'r': *backslash_ptr='\r'; break; /* 015   13    0D    CR  '\r' Carriage return */
+    case 't': *backslash_ptr='\t'; break; /* 011   9     09    HT  '\t' Horizontal tab */
+    case 'v': *backslash_ptr='\v'; break; /* 013   11    0B    VT  '\v' Vertical tab */
     case '\\': *backslash_ptr='\\'; break; /* 134   92    5C    \   '\\' */
-    case '\?': *backslash_ptr='\?'; break; /*  */
-    case '\'': *backslash_ptr='\''; break; /*  */
-    case '\"': *backslash_ptr='\"'; break; /*  */
-      /* Do not translate \0 to NUL since this would erase the rest of the string */
+    case '\?': *backslash_ptr='\?'; break; /* I'm not sure why or if this one works! */
+    case '\'': *backslash_ptr='\''; break; /* I'm not sure why or if this one works! */
+    case '\"': *backslash_ptr='\"'; break; /* I'm not sure why or if this one works! */
+      /* Do not translate \0 to NUL since this would "erase" the rest of the string */
     case '0':	
       /* Do not translate \0 to NUL since this would make the rest of the string invisible to all string functions */
       /* *backslash_ptr='\0'; */ /* 000   0     00    NUL '\0' */

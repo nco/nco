@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.30 1999-12-15 00:04:45 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.31 1999-12-15 02:51:38 zender Exp $
 
 Purpose: NCO homepage
 
@@ -157,7 +157,9 @@ User's Guide</A>. </P>
 Added feature to <TT>ncatted</TT> so that C-language escape sequences
 may be used in editing character attributes. 
 Text formatting of attributes now supports <TT>\n</TT>, <TT>\t</TT>,
-and all other <TT>printf</TT>-style sequences.
+and most other <TT>printf</TT>-style sequences.
+See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's
+Guide</A> for details. 
 
 <P>1999/12/06: 
 Fixed bug in <TT>ncatted</TT> so that character-valued attributes

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.15 1999-12-14 22:39:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.16 1999-12-15 02:51:39 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -13,6 +13,8 @@
    Use C language escape sequences:
    ncatted -D 3 -h -a history,global,o,c,"String\tformatting\tfor\nDennis" in.nc ; ncks -M in.nc
    ncatted -D 3 -h -a history,global,o,c,'\a\b\f\n\r\t\v\\\?\0' in.nc ; ncks -M in.nc
+   ncatted -D 3 -h -a history,global,o,c,'Characters which require protection by backslash:\nDouble quote: \"\nTwo consecutive double quotes: \"\"\nSingle quote: Beyond my shell abilities!\nBackslash: \\\nTwo consecutive backslashes: \\\\\nQuestion mark: \?\n' in.nc ; ncks -M in.nc
+   ncatted -D 3 -h -a history,global,o,c,'Characters which do not require protection by backslash:\nSingle backquote: `\nDollarsign: $\nLeft brace: {\nRight brace: }\nPipe: |\nAmpersand: &\nAt sign: @\nPercent: %\n\n' in.nc ; ncks -M in.nc
 
    Append to existing string:
    ncatted -D 5 -O -a char_att,att_var,a,c,"and appended Sentence three." in.nc foo.nc
@@ -107,8 +109,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.15 1999-12-14 22:39:33 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.15 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.16 1999-12-15 02:51:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.16 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.36 1999-12-14 22:39:31 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.37 1999-12-15 02:51:38 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1992,8 +1992,7 @@ quickly and painlessly as possible.
 Furthermore, @code{ncatted} allows each editing operation to be applied
 to every variable in a file, thus saving you time when you want to
 change attribute conventions throughout a file.
-@code{ncatted} interprets character attributes as strings which is very
-useful, but can lead to unexpected results.
+@code{ncatted} interprets character attributes as strings.
 
 @cindex @code{history} attribute
 @cindex @code{-h}
@@ -2165,23 +2164,39 @@ shell, such as spaces, commas, and wildcard characters.
 
 @cindex Perl
 NCO processing of NC_CHAR attributes is a bit like Perl in that
-it attempts to do you want by default (but this can sometimes cause
-unexpected results).
+it attempts to do you want by default (but this sometimes causes
+unexpected results if you want unusual data storage).
 @cindex @code{printf()}
 @cindex @code{\n} (linefeed)
 @cindex @code{\t} (horizontal tab)
-If the @var{att_type} is NC_CHAR, e.g., then the argument
-is interpreted as a string and may contain C-language escape sequences
-for formatting.
-These escape sequences will be translated and stored in the appropriate
-ASCII equivalent code.
+If the @var{att_type} is NC_CHAR then the argument is interpreted as a
+string and it may contain C-language escape sequences, e.g., @code{\n},
+which NCO will interpret before writing anything to disk.
+NCO translates valid escape sequences and stores the appropriate ASCII
+code instead.
+Since two byte escape sequences, e.g., @code{\n}, represent one byte
+ASCII codes, e.g., ASCII 10 (decimal), the stored string attribute is
+one byte shorter than the input string length for each embedded escape
+sequence. 
 The most frequently used C-language escape sequences are @code{\n} (for
 linefeed) and @code{\t} (for horizontal tab).
-This feature allows editing of formatted text attributes.
+These sequences in particular allow convenient editing of formatted text
+attributes. 
+The other valid ASCII codes are @code{\a}, @code{\b}, @code{\f},
+@code{\r}, @code{\v}, and @code{\\}. 
+
+Analogous to @code{printf}, other special characters are also allowed by
+@code{ncatted} if they are "protected" by a backslash.
+The characters @code{"}, @code{'}, @code{?}, and @code{\} should be 
+input as @code{\"}, @code{\'}, @code{\?}, and @code{\\}, respectively,
+in order to be correctly stored in the file.
+Some characters which do not require protection by a backslash are
+@code{$}, @code{|}, @code{@{}, and @code{@}}.
+
 Note that the NUL character @code{\0} which terminates C language
 strings is assumed and need not be explicitly specified.
 If @code{\0} is input, it will not be translated (because it would
-terminate the string).
+terminate the string in an additional location).
 Because of these context-sensitive rules, if wish to use an attribute of
 type NC_CHAR to store data, rather than text strings, you should use
 @code{ncatted} with care.
