@@ -1,3 +1,7 @@
+2001-11-10  Charlie Zender  <zender@uci.edu>
+
+	* Added three_dim_var_crd to check COORDS storage convention ordering
+
 2001-10-30  Charlie Zender  <zender@uci.edu>
 
 	* Fixed getopt dependencies and included nco_netcdf.h nco.h in
