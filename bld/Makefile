@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.161 2002-09-02 06:51:46 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.162 2002-09-02 21:45:37 zender Exp $ -*-makefile-*-
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -452,9 +452,7 @@ YACC := bison
 # Comeau C Compiler
 ifeq (${C++},como)
  CFLAGS := 
- CPPFLAGS := ${CPP_TKN} -DHAVE_INLINE
- CPPFLAGS += -I${COMOROOT}/libcomo -I${COMOROOT}/libcomo/cnames ${CPP_PTH} -I${NETCDF_INC}
- LDFLAGS += ${COMOROOT}/libcomo/libcomo.a
+ LDFLAGS := ${COMOROOT}/libcomo/libcomo.a ${LDFLAGS}
 ifeq (${OPTS},O)
  CFLAGS += -O
 endif
