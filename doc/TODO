@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.79 2000-10-02 06:05:12 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.80 2000-10-09 17:03:29 zender Exp $ 
 
 *************
 NCO Wish list
@@ -18,7 +18,7 @@ NCO Wish list
 70. ncxx with no options should do usg_prn() without error msg (like ncwa does)
 75. Add warning to ncwa triggered by averaging over lat without weighting by gw with NCAR_CSM_FORMAT
 79. Allow ncrename .$var_nm syntax to work on all operators (so variables not present cause warning, not error)
-82. Make libnco namespace-safe by prefixing all possibly dynamically loaded subroutines with, e.g., nco_
+82. Make libnco namespace-safe by prefixing all library subroutines in nc_utl.c, pck.c with nco_, and those in csz.c with csz_
 83. Always build operators to link dynamically to libnco.so (autoconf/autotool?)
 86. Extend stride/wraparound capability to all operators possible
 88. ncks is slow on large files on Crays: ncks -H -v time,date,datesec /tmp/eaton/pcw101/h0009.nc will this be fixed when move beyond netcdf2.4.2 cray libs?
@@ -61,8 +61,6 @@ ncra -O -C -v rec_var_flt_mss_val_dbl in.nc foo.nc;ncks -H foo.nc
 ncra -O -C -d time,0,1 -v rec_var_flt_mss_val_dbl in.nc foo.nc ; ncks -H foo.nc
 Not too worried about this since it is Cray specific, 
 Maybe 1.0e36d does not convert to 1.0e36f on Crays?
-135. Implement OpenMP (threaded) support around variable loops in
-ncwa. Requires C compiler with OpenMP (e.g., SGI, Portland Group)
 138. If fastest varying dimension of NC_CHAR variable is of size one,
 then should not expect it to be NUL-terminated.
 139. ncks does not correctly print coordinate indices in hyperslabs with wrapping
@@ -93,13 +91,11 @@ cd ~/nco/data
 ncks -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 ncrcat -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 149. Add ncks hyperslab tests to nco_tst to catch inconsistencies like #148
-150. Fully automate RPM production
+150. Fully automate RPM production, e.g., 'make rpm' should build rpms and upload to redhat.com
 151. Figure out how to dynamically modify web pages so files with
 changing version numbers can be directly linked
 152. Change make or nco_dst.pl to add docs to /usr/doc in RPM
 154. Add mirror capability to web pages
-156. Builds with Electric Fence crash all over the place with nco_tst.sh 
-Appears to be related to NCO assumption that NULL=malloc(0)
 158. Add policy for hyperslabbing single level values to User's Guide. 
 Multi-file operators with record coordinate
 treat single point hyperslabs differently than single file operators 
