@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.233 2003-08-21 23:32:00 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.234 2003-09-02 16:12:16 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -231,7 +231,6 @@ Permission denied
 265. ncbo: Promote before operations using nco_typ_cnv_rth() in ncbo
 266. ncbo: Finish ncbo.1 manpage
 268. ncbo: use ncap var_cnf_dmn() technique so fl_1 fl_2 broadcast interchangeably
-269. SGI autotools ncap build fails because HAVE_GETOPT_H gets passed even though getopt_long struct tokens not defined
 270. Automate uploading of tagged .deb builds to ftp://ftp.debian.org
 ************************************************************************
 End NCO Wish list

@@ -1,5 +1,5 @@
 # Purpose: Rantings on ncap from 1995, when it was designed
-# Now obsolete, although subscripts still now implemented
+# Now obsolete, although subscripts still not implemented
 
 ncap functionality:
 

@@ -1,3 +1,13 @@
+2003-09-01  Charlie Zender  <zender@uci.edu>
+
+	* Clean up nco.texi
+
+	* Expand regex documentation
+
+2003-08-31  Charlie Zender  <zender@uci.edu>
+
+	* Correct some regex example errors in nco.texi
+
 2003-08-29  Charlie Zender  <zender@uci.edu>
 
 	* nco.texi: Added #sections in English to nco.html for easy direct
