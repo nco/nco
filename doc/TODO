@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.342 2004-07-20 00:18:25 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.343 2004-07-21 01:10:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -24,8 +24,8 @@ nco191. Create short man page for ncap which points user to info pages or online
 nco212. Ensure structures are always passed by reference (default is pass by value)
 nco312. Make TODO list more legible (change to, e.g., Emacs list/outline mode, LaTeX, Wiki?) 
 nco313. Redo TODO subject categorization by discriminating based on skills required to tackle. Initial cateogorization might be e.g., autotools, bison, C, C++, Debian, flex, HTML, Perl, RPM, www, TeXInfo
-nco355. Adopt restricted pointers for all numerical arrays?
 nco356. ncwa benchmark yields incorrect answers for arrays exceeding 10^7 elements with xlc and gcc, why?
+is this related to nco354?
 zender@esmf04m:~/nco/data$ date;ncwa -O ${DATA}/mie/big.nc ${DATA}/mie/foo.nc;date;ncks -H ${DATA}/mie/foo.nc
 Mon Jul 19 16:58:22 PDT 2004
 ncwa: INFO No dimensions specified with -a, therefore reducing (averaging, taking minimum, etc.) over all dimensions
@@ -219,23 +219,14 @@ nco344. Create sophisticated etags regular expressions for change version number
 nco345. OpenMP implementation in ncwa core dumps: wgt_avg problem?
 nco346. Add LFS documentation to nco.texi
 nco347. Add OpenMP documentation to nco.texi
-nco348. Create OpenMP robustness test
-cd ${DATA}/mie/mie15
-1. Create non-threaded answer:
-var_lst="abs_cff_mss"
-cd ${DATA_MIE}/mie/${CASEID}
-/bin/ls | grep aer_h2o_lqd_${SZ_SNG}_${CASEID}_'0[0-4]\.[0-9][0-9]00000_0[0-5]\.[0-9][0-9]00000.nc' | ncea -D 1 -O -v ${var_lst} -p ${DATA_MIE}/mie/${CASEID} -o ~/foo.nc
-ncks -H -C -v ${var_lst} ~/foo.nc > foo 2>&1
-2. Create threaded answer:
 nco351. Ask Jim Edwards to fix make test rtld errors on AIX with OpenMP
 nco352. Probably related to 351: OpenMP directive must appear in main() or ldd will not associate /usr/lib/libxlsmp.a(smprt_64.o) with executable so rtld errors occur on AIX
-nco353. Change all %z's to %lu with (unsigned long) casts
-nco354. ncwa coredumps with large files on ESMF: 
+nco354. ncwa dumps core with large files on ESMF: 
 ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA_MIE}/mie/mie_${wvl_nbr}.nc ${DATA_MIE}/mie/mie_avg_10000000.nc
 fails with 
 Segmentation fault (core dumped)
 ncwa -O -a wvl -w flx_slr_frc -v sca_cff_mss,ext_cff_mss,abs_cff_mss,ss_alb,ss_co_alb ${DATA_MIE}/mie/mie_${wvl_nbr}.nc ${DATA_MIE}/mie/mie_avg_${wvl_nbr}.nc
-nco356. 
+nco357. Add OpenMP robustness test to nco_bnch.sh
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -290,13 +281,14 @@ ncap59.
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
 bld23. Implement ncra i18n support I18N with autotools: Add .po files, update doc/i18n.txt
-bld29. RedHat 9 does not build with --enable-*-customize because of flex warnings
 bld30. Search for libstdc++ with AIX/DODS/GCC breaks NCO build
 bld32. Why have --enable-shared and --enable-static both default true? override one?
 bld33. Use PACKAGE_BUGREPORT, PACKAGE_NAME, PACKAGE_STRING, PACKAGE_TARNAME, PACKAGE_VERSION?
 bld35. Add pgcc, pgCC switches to configure.in 
 bld36. Improve precision/wording of nco_ctl.c tokens on shared/static libraries
-bld37. 
+bld37. Ensure C99 used by compilers with AX_CFLAGS_SUN_OPTION AX_CFLAGS_HPUX_OPTION AX_CFLAGS_AIX_OPTION AX_CFLAGS_IRIX_OPTION
+bld38. 
+
 
 ************************************************************************
 End NCO Wish list
