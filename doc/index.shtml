@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.27 1999-12-06 18:09:58 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.28 1999-12-06 18:14:09 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
@@ -150,6 +150,11 @@ User's Guide</A>. </P>
 
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
+
+<P>1999/12/06: 
+Fixed bug in <TT>ncatted</TT> so that character-valued attributes
+(strings) may contain commas, and be of zero length.
+Formerly <TT>ncatted</TT> would drop all text after the first comma.
 
 <P>1999/10/04: 
 The build configuration has been simplified and made more robust.
