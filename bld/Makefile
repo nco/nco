@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.141 2002-05-31 21:08:09 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.142 2002-06-04 16:40:32 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -275,14 +275,9 @@ LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm -lC
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 #LDFLAGS += -lxlf90 -lxlf
 endif
-ifneq (${null},$(findstring ux,${USER}))
-# 20020522: NPACI has GNU toolchain
+# 20020522: ncap.l now requires flex for <EOF> handling
 LEX := flex
 YACC := bison
-else
-LEX := lex
-YACC := yacc
-endif
 LINT := lint
 ifeq (${OPTS},O)
  CFLAGS += -O
