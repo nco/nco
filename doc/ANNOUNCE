@@ -1,11 +1,11 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.7 2001-12-03 06:43:14 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.8 2002-01-14 08:58:59 zender Exp $ -*-text-*-
 
-The netCDF operators NCO version 2.1.0 are ready. 
+The netCDF operators NCO version 2.2.0 are ready. 
 Changes since version 2.0.0 include bugfixes and a 
 rough but working (and powerful!) ncap implementation.
 ncap is the netCDF arithmetic processor, an operator
-which uses a built-in parser to perform arbitrary
-arithmetic commands on a netCDF file.
+which uses a built-in lexer/parser to perform arbitrary
+arithmetic commands on netCDF variables and attributes.
 ncap is completely undocumented but see
 nco/data/ncap.in for a sample run script. 
 NCO version >= 2.0.1 requires netCDF version >= 3.5.
@@ -13,13 +13,38 @@ Get the new version of NCO and read the user's guide on
 
 http://nco.sourceforge.net
 
-Summary of changes:
+A few notes on ncap: the capabilities of ncap are midway 
+between those of a regular NCO operator, and those of a
+full-featured high-level language such as IDL, Matlab, or
+NCL. There are undoubtedly small bugs remaining in the parsing 
+of expressions. We encourage you to stress the parser with complex
+expressions and send us any problems you find. Concurrently, we will
+steadily extend ncap functionality to include more powerful features.
 
-1. Fix ncks units printing bug introduced in 2.0 (Zender)
-2. Improved version information with, e.g., ncks -r (Zender)
-3. Use new NC_NAT token requires netCDF 3.5 (Zender)
-4. ncap: Major progress towards completion including I/O ability, 
-attribute handling, fuller lexer/parser, error diagnostics (Butowsky)
+Some of the next features slated for development include:
+1. Fortran-like hyperslab specification, e.g., y=u(:,2:4,:)^2+v(:,2:4,:)^2
+2. Pre-defined functions, e.g., type_convert(wind,"float"), 
+svp=saturation_vapor_pressure(temperature)
+3. filename::variable@attribute notation for using multiple files
+4. LHS-casting of ambiguous RHS expressions, e.g., 
+pressure_midpoint(lat,lev,lon)=hyam*PO+hybm*PS
+instead of awkward workarounds like 
+pressure_midpoint=hyam*PO*(T-T+1)+hybm*PS*(T-T+1)
+
+I would like to thank Henry Butowsky for picking up the
+dormant ncap project, and doing the lion's share of the
+work in completing it.
 
 Enjoy,
 Charlie
+
+Summary of changes:
+
+1. ncap: lexer/parser redefinition, I/O ability, wrappers for
+NCO arithmetic functions, attribute handling, type-specific intrinsic
+arithmetic functions, string handling, test script (Butowsky)
+2. Fix ncks units printing bug introduced in 2.0 (Zender)
+3. Improved version information with, e.g., ncks -r (Zender)
+4. Use new NC_NAT token requires netCDF 3.5 (Zender)
+5. ncap: cleanup, global attribute handling, stretching mixed rank
+variables (Zender) 

@@ -1,5 +1,5 @@
 %{
-  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.20 2002-01-11 23:25:00 hmb Exp $ -*-C-*- */
+  /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.21 2002-01-14 08:58:59 zender Exp $ -*-C-*- */
 
   /* Purpose: Token generator for ncap parser */
 
@@ -60,7 +60,7 @@
 #include "ncap.h" /* Symbol table definition */
 #include "ncap.tab.h" /* Symbol definitions from parser */
 
-#define INT_MIN (-2147483647-1) /* Mininimum value of 4 byte integer -2^32 */
+#define INT_MIN (-2147483647-1) /* Minimum value of 4 byte integer -2^32 */
 #define INT_MAX 2147483647 /* Maximum value of 4 byte integer  2^32 -1 */
 
 /* We want yylex errors to skip current line rather than stop execution
@@ -193,28 +193,27 @@ static bool RHS;
   }/* end else */
 }
 
-abs/[ ]*\(     { return ABS;    }
-atostr/[ ]*\(  { return ATOSTR; }
-pow/[ ]*\(     { return POWER;  }
-
+abs/[ ]*\(     {return ABS;}
+atostr/[ ]*\(  {return ATOSTR;}
+pow/[ ]*\(     {return POWER;}
 
 [A-Za-z_][A-Za-z0-9_]*/[ ]*\( {
-/* Compare input with mathematical function names in table and then return */
-/* a pointer which contains the name,double function,float function   */
+/* Compare input with mathematical function names in table and return
+   pointer to structure containing name, double function, float function */
    int i;
-   for( i = 0 ; i < prs_arg->sym_tbl_nbr ; i++)
-     if( !strcmp(yytext,(prs_arg->sym_tbl[i]->nm))) { 
+   for(i=0;i<prs_arg->sym_tbl_nbr;i++)
+     if(!strcmp(yytext,(prs_arg->sym_tbl[i]->nm))){ 
         lvalp->sym=prs_arg->sym_tbl[i];
         return FUNCTION;
-     }
-   (void)sprintf(err_sng,"Warning: Unable to locate the function %s.",yytext);
+     } /* endif */
+   (void)sprintf(err_sng,"Warning: Unable to locate function %s.",yytext);
    (void)yyerror(err_sng);       
    return EPROVOKE;             
 
-}/* end functions */
+} /* end functions */
 
 [A-Za-z_][A-Za-z0-9_]*@[A-Za-z_][A-Za-z0-9_]* { 
-  /* Recognize attributes e.g., var_nm@att_nm */
+  /* Recognize variable attributes, e.g., var_nm@att_nm */
   int var_id;
   int rcd=NC_NOERR; /* csz rcd may be used before it is defined */
   int rcd_out;
@@ -239,7 +238,6 @@ pow/[ ]*\(     { return POWER;  }
   
   /* Assume global attribute when variable name is "global" */
   if(!strcmp(var_nm,"global")) var_id=NC_GLOBAL; else rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
-
   
   /* We are on RHS so return value of attribute (if available) to parser
      For initial scan, just return attributes on RHS */
