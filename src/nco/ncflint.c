@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.61 2003-07-30 21:58:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.62 2003-08-16 21:29:23 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -50,11 +50,13 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
-#ifdef HAVE_GETOPT_H
-#include <getopt.h>  /* getopt_long() */
-#else
+#ifndef HAVE_GETOPT_LONG
 #include "nco_getopt.h"
-#endif /* !HAVE_GETOPT_H */
+#else /* !NEED_GETOPT_LONG */ 
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#endif /* !HAVE_GETOPT_H */ 
+#endif /* HAVE_GETOPT_LONG */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -99,8 +101,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.61 2003-07-30 21:58:30 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.61 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.62 2003-08-16 21:29:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.62 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.59 2003-08-16 00:55:26 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.60 2003-08-16 21:29:21 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -63,6 +63,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 # Blue Horizon
@@ -72,6 +74,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo zender@dust.ess.uci.edu:/var/ftp/pub/z
 ender/nco/rgr
 
@@ -82,6 +86,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='xlc_r' CPPFLAGS='-I/usr/vacpp/include' CXX='xlC_r' LDFLAGS='-brtl' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 ************************************************************************
@@ -112,6 +118,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 Old build example:
@@ -136,6 +144,8 @@ NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefi
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f config.status config.status.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo config.status.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 Old build example:
@@ -166,6 +176,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 Old build example:
@@ -207,6 +219,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 gcc/g++ DODS:
@@ -215,6 +229,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 LDFLAGS=-L/usr/local/DODS/lib NETCDF_INC=/usr/local/DODS/include NETCDF_LIB=/usr/local/DODS/lib ./configure --enable-dods --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 gcc/g++ cygwin:
@@ -226,6 +242,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 /bin/cp -f libtool libtool.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo libtool.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 como:
@@ -234,6 +252,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='como --c99' CXX='como' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 icc:
@@ -242,6 +262,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='icc' CXX='icc' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 Old build example:
@@ -265,6 +287,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 zender@usf-cf-alpha-linux-1:~/nco/bld$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
@@ -276,6 +300,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 Old build example:
@@ -297,6 +323,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 Old build example:
@@ -330,6 +358,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 Old build example:
@@ -354,6 +384,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 Old build example:
@@ -377,6 +409,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='cc' CFLAGS='-64 -mips4' CXX='CC -LANG:std' CXXFLAGS='-64 -mips4 -LANG:std' NETCDF_INC='/usr/local/include' LDFLAGS='-LANG:std' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 cc/CC ABI32:
@@ -385,6 +419,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='cc' CXX='CC' CXXFLAGS='-LANG:std' NETCDF_INC='/usr/local/include' LDFLAGS='-LANG:std' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 gcc/g++ ABI32:
@@ -393,6 +429,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CXX='g++' NETCDF_INC='/usr/local/include' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 Old build example: (Default is ABI64 on this platform)
@@ -440,6 +478,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='/opt/SUNWspro/bin/cc' CXX='/opt/SUNWspro/bin/CC' LD='/usr/ccs/bin/ld -z muldefs' LDFLAGS='-z muldefs -L/opt/SUNWspro/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 For ABI=64:
@@ -449,6 +489,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='/opt/SUNWspro/bin/cc' CXX='/opt/SUNWspro/bin/CC' FC='/opt/SUNWspro/bin/f90' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 gcc/g++:
@@ -457,6 +499,8 @@ cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
 CC='gcc' CXX='g++' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man --disable-hdf5 > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
+make check >> make.${GNU_TRP}.foo 2>&1
+make install >> make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ess.uci.edu:/var/www/html/nco/rgr
 
 Old build example:

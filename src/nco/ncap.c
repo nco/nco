@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.115 2003-08-14 04:01:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.116 2003-08-16 21:29:23 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -48,14 +48,16 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
-#ifdef HAVE_GETOPT_H 
 /* GNU getopt() is independent system header on FREEBSD, LINUX, LINUXALPHA, WIN32
    AT&T getopt() is in unistd.h or stdlib.h on AIX, CRAY, NECSX, SUNMP, SUN4SOL2
    fxm: I'm not sure what ALPHA and SGI do */
-#include <getopt.h> /* getopt_long() */
-#else /* !HAVE_GETOPT_H */
+#ifndef HAVE_GETOPT_LONG
 #include "nco_getopt.h"
-#endif /* !HAVE_GETOPT_H */
+#else /* !NEED_GETOPT_LONG */ 
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#endif /* !HAVE_GETOPT_H */ 
+#endif /* HAVE_GETOPT_LONG */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -112,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.115 2003-08-14 04:01:48 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.115 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.116 2003-08-16 21:29:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.116 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */

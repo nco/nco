@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.59 2003-07-30 21:58:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.60 2003-08-16 21:29:23 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -41,11 +41,13 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* POSIX stuff */
-#ifdef HAVE_GETOPT_H
-#include <getopt.h> /* getopt_long() */
-#else
+#ifndef HAVE_GETOPT_LONG
 #include "nco_getopt.h"
-#endif /* !HAVE_GETOPT_H */
+#else /* !NEED_GETOPT_LONG */ 
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#endif /* !HAVE_GETOPT_H */ 
+#endif /* HAVE_GETOPT_LONG */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -81,8 +83,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.59 2003-07-30 21:58:30 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.59 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.60 2003-08-16 21:29:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.60 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;

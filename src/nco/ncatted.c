@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.61 2003-06-16 16:37:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.62 2003-08-16 21:29:23 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -103,11 +103,13 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
-#ifdef HAVE_GETOPT_H
-#include <getopt.h>  /* getopt_long() */
-#else
+#ifndef HAVE_GETOPT_LONG
 #include "nco_getopt.h"
-#endif /* !HAVE_GETOPT_H */
+#else /* !NEED_GETOPT_LONG */ 
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>
+#endif /* !HAVE_GETOPT_H */ 
+#endif /* HAVE_GETOPT_LONG */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -139,8 +141,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.61 2003-06-16 16:37:27 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.61 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.62 2003-08-16 21:29:23 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.62 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
