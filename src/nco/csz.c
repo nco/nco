@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.5 1998-08-19 04:27:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.6 1998-08-19 05:04:35 zender Exp $ */
 
 /* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -785,16 +785,17 @@ cvs_vrs_prs()
     int mth;
     int day;
     int yr;
-    struct tm *lcl_tm;
+    struct tm *gmt_tm;
     time_t clock;
 
     clock=time((time_t *)NULL);
-    lcl_tm=localtime(&clock);
-    /*    lcl_tm=gmtime(&clock);*//* Use gmtime for YYYYMMDD in GMT */ 
+    gmt_tm=gmtime(&clock); 
+    /* localtime() gives YYYYMMDD in MDT, but this conflicts with RCS, which uses GMT */ 
+    /*    gmt_tm=localtime(&clock); */
 
-    mth=lcl_tm->tm_mon+1;
-    day=lcl_tm->tm_mday;
-    yr=lcl_tm->tm_year+1900;
+    mth=gmt_tm->tm_mon+1;
+    day=gmt_tm->tm_mday;
+    yr=gmt_tm->tm_year+1900;
 
     cvs_vrs_sng_len=4+2+2;
     cvs_vrs_sng=(char *)malloc(cvs_vrs_sng_len+1);
