@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.131 2002-04-18 23:43:34 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.132 2002-04-19 05:55:25 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -110,7 +110,7 @@ ncdump foo.nc
 NC_CHAR have a record dimension causes core dumps or other problems.
 i.e., LSM variable timecom caused subtle ncra problems for a while.
 113. Rethink normalization switch options in ncwa
-114. Fix var_conform_dim() so that returned weight always has same size tally array as the template variable
+114. Fix var_conform_dim() so that returned weight always has same size tally array as template variable
 115. When sum of denominator in ncwa (i.e., sum of weight) is zero, SIGFPE results 
 Users should not be doing weighted averages if denominator sums to zero, but...
 Desired fix here is a graceful exit instead of a core dump

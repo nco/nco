@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.37 2001-10-08 07:25:37 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.38 2002-04-19 05:55:25 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -330,9 +330,9 @@ fi #end ncflint
 
 if [ "$NET" = 1 ]; then
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
-ncks -O -v one -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
+ncks -O -v one -p ftp://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`
-echo "nco 1: FTP protocol: 1 =?= $avg (Will fail if unable to anonymous FTP to ftp.cgd.ucar.edu)" 
+echo "nco 1: FTP protocol: 1 =?= $avg (Will fail if unable to anonymous FTP to dust.ps.uci.edu)" 
 mv in_tmp.nc in.nc
 
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;

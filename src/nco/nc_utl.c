@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.132 2002-04-18 23:43:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.133 2002-04-19 05:55:25 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -2118,9 +2118,10 @@ var_dpl(var_sct *var)
 
   var_dpl=(var_sct *)nco_malloc(sizeof(var_sct));
 
+  /* Shallow copy structure */
   (void)memcpy((void *)var_dpl,(void *)var,sizeof(var_sct));
 
-  /* Copy all dyamically allocated arrays currently defined in original */
+  /* Deep copy dyamically allocated arrays currently defined in original */
   if(var->val.vp != NULL){
     if((var_dpl->val.vp=(void *)malloc(var_dpl->sz*nco_typ_lng(var_dpl->type))) == NULL){
       (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in var_dpl()\n",prg_nm_get(),var_dpl->sz,nco_typ_lng(var_dpl->type),var_dpl->nm);
@@ -2258,7 +2259,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
      In this case when wgt and var do not conform then then var_conform_dim sets *DO_CONFORM=False and returns a copy of var with all values set to 1.0
      The calling procedure can then decide what to do with the output
      MUST_CONFORM is True for ncdiff: Variables of like name to be differenced must be same rank
-     MUST_CONFORM is False false for ncap, ncflint, ncwa: Variables to be averaged may may be */
+     MUST_CONFORM is False false for ncap, ncflint, ncwa: Some variables to be averaged may not conform to the specified weight, e.g., lon will not conform to gw. This is fine and the returned wgt_out may not be used. */
 
   /* There are many inelegant ways to accomplish this (without using C++): */  
 
@@ -2544,7 +2545,7 @@ var_dmn_xrf(var_sct *var)
   
   for(idx=0;idx<var->nbr_dim;idx++) var->dim[idx]=var->dim[idx]->xrf;
   
-} /* end var_xrf() */
+} /* end var_dmn_xrf() */
 
 void
 dmn_xrf(dmn_sct *dim,dmn_sct *dmn_dpl)

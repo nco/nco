@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.73 2002-01-28 10:06:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.74 2002-04-19 05:55:25 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -79,9 +79,9 @@ main(int argc,char **argv)
   bool FORCE_OVERWRITE=False; /* Option O */
   bool FORTRAN_STYLE=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
-  bool MUST_CONFORM=False; /* Must var_conform_dim() find truly conforming variables? */
-  bool DO_CONFORM_MSK; /* Did var_conform_dim() find truly conforming variables? */
-  bool DO_CONFORM_WGT; /* Did var_conform_dim() find truly conforming variables? */
+  bool MUST_CONFORM=False; /* [flg] Must var_conform_dim() find truly conforming variables? */
+  bool DO_CONFORM_MSK; /* Did var_conform_dim() find truly conforming mask? */
+  bool DO_CONFORM_WGT=False; /* Did var_conform_dim() find truly conforming weight? */
   bool NCAR_CSM_FORMAT;
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
@@ -90,7 +90,7 @@ main(int argc,char **argv)
   bool MULTIPLY_BY_TALLY=False; /* Not currently implemented */
   bool NORMALIZE_BY_TALLY=True; /* Not currently implemented */
   bool NORMALIZE_BY_WEIGHT=True; /* Not currently implemented */
-  bool WGT_MSK_CRD_VAR=True; /* Option I */
+  bool WGT_MSK_CRD_VAR=True; /* [flg] Weight and/or mask coordinate variables */
   bool opt_a_flg=False; /* Option a */
 
   char **dmn_avg_lst_in=NULL_CEWI; /* Option a */
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.73 2002-01-28 10:06:54 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.73 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.74 2002-04-19 05:55:25 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.74 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -183,8 +183,7 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'a':
-      /* Dimensions over which to average hyperslab */
+    case 'a': /* Dimensions over which to average hyperslab */
       if(opt_a_flg){
 	(void)fprintf(stdout,"%s: ERROR Option -a appears more than once\n",prg_nm);
 	(void)fprintf(stdout,"%s: HINT Use -a dim1,dim2,... not -a dim1 -a dim2 ...\n",prg_nm);
@@ -200,35 +199,29 @@ main(int argc,char **argv)
     case 'c':
       PROCESS_ALL_COORDINATES=True;
       break;
-    case 'D':
-      /* Debugging level. Default is 0. */
+    case 'D': /* Debugging level. Default is 0. */
       dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
-    case 'd':
-      /* Copy argument for later processing */
+    case 'd': /* Copy argument for later processing */
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
       lmt_nbr++;
       break;
-    case 'F':
-      /* Toggle index convention. Default is 0-based arrays (C-style). */
+    case 'F': /* Toggle index convention. Default is 0-based arrays (C-style). */
       FORTRAN_STYLE=!FORTRAN_STYLE;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
       break;
-    case 'I':
+    case 'I': /* [flg] Weight and/or mask coordinate variables */
       WGT_MSK_CRD_VAR=!WGT_MSK_CRD_VAR;
       break;
-    case 'l':
-      /* Local path prefix for files retrieved from remote file system */
+    case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
-    case 'm':
-      /* Name of variable to use as mask in reducing.  Default is none */
+    case 'm': /* Name of variable to use as mask in reducing.  Default is none */
       msk_nm=optarg;
       break;
-    case 'M':
-      /* Good data defined by relation to mask value. Default is 1. */
+    case 'M': /* Good data defined by relation to mask value. Default is 1. */
       msk_val=strtod(optarg,(char **)NULL);
       break;
     case 'N':
@@ -244,26 +237,21 @@ main(int argc,char **argv)
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
       break;
-    case 'o':
-      /* The relational operator type.  Default is 0, eq, equality */
+    case 'o': /* Relational operator type.  Default is 0, eq, equality */
       op_typ_rlt=op_prs_rlt(optarg);
       break;
-    case 'p':
-      /* Common file path */
+    case 'p': /* Common file path */
       fl_pth=optarg;
       break;
-    case 'R':
-      /* Toggle removal of remotely-retrieved-files. Default is True. */
+    case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
       break;
-    case 'r':
-      /* Print CVS program information and copyright notice */
+    case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
        exit(EXIT_SUCCESS);
       break;
-    case 'v':
-      /* Variables to extract/exclude */
+    case 'v': /* Variables to extract/exclude */
       var_lst_in=lst_prs(optarg,",",&nbr_xtr);
       break;
     case 'W':
@@ -271,20 +259,17 @@ main(int argc,char **argv)
       (void)fprintf(stdout,"%s: ERROR This option has been disabled while I rethink its implementation\n",prg_nm);
       exit(EXIT_FAILURE);
       break;
-    case 'w':
-      /* Variable to use as weight in reducing.  Default is none */
+    case 'w': /* Variable to use as weight in reducing.  Default is none */
       wgt_nm=optarg;
       break;
-    case 'x':
-      /* Exclude rather than extract variables specified with -v */
+    case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
       break;
     case 'y': /* Operation type */
       nco_op_typ_sng=(char *)strdup(optarg);
       nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
-    case '?':
-      /* Print proper usage */
+    case '?': /* Print proper usage */
       (void)usg_prn();
       exit(EXIT_FAILURE);
       break;
@@ -620,14 +605,16 @@ main(int argc,char **argv)
 	break;
       } /* end case */
       if(wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
-	/* fxm: var_conform_dim() has a bug where it does not allocate a tally array
+	/* fxm: var_conform_dim() has bug where it does not allocate tally array
 	   for weights that do already conform to var_prc. TODO #114. */
 	wgt_out=var_conform_dim(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
-	wgt_out=var_conform_type(var_prc[idx]->type,wgt_out);
-	/* Weight after any initial non-linear operation so, e.g., variable is squared but not weights */
-	/* Weight variable by taking product of weight and variable */
-	(void)var_multiply(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,wgt_out->val,var_prc[idx]->val);
-      } /* end if */
+	if(DO_CONFORM_WGT){
+	  wgt_out=var_conform_type(var_prc[idx]->type,wgt_out);
+	  /* Weight after any initial non-linear operation so, e.g., variable is squared but not weights */
+	  /* Weight variable by taking product of weight and variable */
+	  (void)var_multiply(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,wgt_out->val,var_prc[idx]->val);
+	} /* end if weights conformed */
+      } /* end if weight was specified and then tested for conformance */
       /* Copy (masked) (weighted) values from var_prc to var_prc_out */
       (void)memcpy((void *)(var_prc_out[idx]->val.vp),(void *)(var_prc[idx]->val.vp),var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type));
       /* Reduce variable over specified dimensions (tally array is set here) */
@@ -635,7 +622,7 @@ main(int argc,char **argv)
       /* var_prc_out[idx]->val now holds numerator of averaging expression documented in NCO User's Guide
 	 Denominator is also tricky due to sundry normalization options
 	 These logical switches are VERY tricky---be careful modifying them */
-      if(NRM_BY_DNM && wgt_nm != NULL && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
+      if(NRM_BY_DNM && DO_CONFORM_WGT && (!var_prc[idx]->is_crd_var || WGT_MSK_CRD_VAR)){
 	/* Duplicate wgt_out as wgt_avg so that wgt_out is not contaminated by any
 	   averaging operation and may be reused on next variable.
 	   Free wgt_avg after each use but continue to reuse wgt_out */
@@ -693,7 +680,7 @@ main(int argc,char **argv)
 	  (void)var_normalize(wgt_avg->type,wgt_avg->sz,wgt_avg->has_mss_val,wgt_avg->mss_val,wgt_avg->tally,wgt_avg->val);
 	} /* endif */
 	/* Divide numerator by denominator */
-	/* Diagnose common PEBCAK before it occurs core dumps */
+	/* Diagnose common PEBCAK before it causes core dump */
 	if(var_prc_out[idx]->sz == 1L && var_prc_out[idx]->type == NC_INT && var_prc_out[idx]->val.lp[0] == 0){
 	  (void)fprintf(stdout,"%s: ERROR Weight in denominator weight = 0.0, will cause SIGFPE\n%s: HINT Sum of masked, averaged weights must be non-zero\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
 	} /* end if */

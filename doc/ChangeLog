@@ -1,3 +1,13 @@
+2002-04-18  Charlie Zender  <zender@uci.edu>
+
+	* make tst gets test file from dust.ps.uci.edu rather than CGD
+
+	* Avoid wgt portion of ncwa when DO_CONFORM_WGT = False
+	This section was superfluous in this situation anyway.
+	Avoiding it by testing for DO_CONFORM_WGT appears to fix
+	some hard to identify bug when lon was being averaged with gw as
+	weight. The two did not conform, but a problem occured anyway.
+
 2002-04-02  Charlie Zender  <zender@uci.edu>
 
 	* Switch back to using pure_parser to prevent Linux core dumps on 

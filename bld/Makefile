@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.121 2002-02-23 22:21:34 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.122 2002-04-19 05:55:24 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -887,7 +887,7 @@ dat_cln:
 	cd ${MY_DAT_DIR}; rm -f foo*
 test:	tst
 tst:	${MY_DAT_DIR}/in.nc
-	- if test -f ${MY_DAT_DIR}/nco_tst.nc; then printf "" ; else ${MY_BIN_DIR}/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l ${MY_DAT_DIR} nco_tst.nc; fi
+	- if test -f ${MY_DAT_DIR}/nco_tst.nc; then printf "" ; else ${MY_BIN_DIR}/ncks -R -p ftp://dust.ps.uci.edu/pub/zender/nco -l ${MY_DAT_DIR} nco_tst.nc; fi
 	cd ${MY_BLD_DIR}; nco_tst.sh
 testclean: tst_cln
 tst_cln:
