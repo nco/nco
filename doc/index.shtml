@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.150 2003-08-16 23:20:29 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.151 2003-08-18 06:38:43 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -438,7 +438,7 @@ Moreover they may be compiled with debugging enabled and thus may be
 <li>SCD <tt>blackforest.ucar.edu</tt> (AIX 5.1.0.35): <tt>/home/blackforest/zender/bin/AIX</tt></li>
 <li>SCD <tt>bluesky.ucar.edu</tt> (AIX 5.1.0.35): <tt>/home/bluesky/zender/bin/AIX</tt></li>
 <li>SCD <tt>dave.ucar.edu</tt> (AIX 5.1.0.35): <tt>/home/dave/zender/bin/AIX</tt></li>
-<li>SCD <tt>longs.ucar.edu</tt> (Linux 2.2.17): <tt>/fs/cgd/home0/zender/bin/LINUX</tt></li>
+<li>SCD <tt>longs.ucar.edu</tt> (Linux 2.4.18): <tt>/fs/cgd/home0/zender/bin/LINUX</tt></li>
 <li>SCD <tt>utefe.ucar.edu</tt> (IRIX 6.5): <tt>/home/ute/zender/bin/SGIMP64</tt></li>
 <li>SDSC <tt>horizon.npaci.edu</tt> (AIX 5.0): <tt>/paci/uci/ux453797/bin/AIX</tt></li>
 </ul>
