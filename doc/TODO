@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.315 2004-06-16 01:06:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.316 2004-06-17 01:41:56 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -195,7 +195,8 @@ nco329. Ability to rearrange dimensions
 nco333. Clean up preprocessor symbols with cd ~/nco/src/nco;ifnames *.c
 nco335. ncflint: implement interpolation/mss_val algorithms two and three as options?
 nco336. Allow input file lists to be specified in a text file and to supercede command line arguments. This will be useful on platforms with limited buffers for command line arguments and globbing expansions (e.g., AIX)
-nco339. 
+nco337. When input file is a symbolic link, print name of linked-to-file as debugging information
+nco338. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -242,7 +243,8 @@ bld30. Search for libstdc++ with AIX/DODS/GCC breaks NCO build
 bld32. Why have --enable-shared and --enable-static both default true? override one?
 bld33. Use PACKAGE_BUGREPORT, PACKAGE_NAME, PACKAGE_STRING, PACKAGE_TARNAME, PACKAGE_VERSION?
 bld35. Add pgcc, pgCC switches to configure.in 
-bld36. 
+bld36. Improve precision/wording of nco_ctl.c tokens on shared/static libraries
+bld37. 
 
 ************************************************************************
 End NCO Wish list

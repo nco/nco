@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.232 2004-06-15 16:47:22 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.233 2004-06-17 01:41:56 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -99,7 +99,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 2.9.6
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 14 June 2004
+@set update-date 16 June 2004
 @set update-month June 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -1325,47 +1325,71 @@ When this occurs, the @acronym{ANSI} C-standard @code{argc}-@code{argv}
 method of passing arguments from the calling shell to a C-program (i.e.,
 an @acronym{NCO} operator) breaks down.}. 
 
+@cindex globbing
+@cindex shell
+@cindex extended regular expressions
+@cindex regular expressions
+@cindex pattern matching
 There are (at least) two alternative methods of specifying the input
 filenames to @acronym{NCO} in environment-limited situations.
 @cindex @command{xargs}
 @cindex @acronym{UNIX}
 The simpler option is to use the @acronym{UNIX} @command{xargs} command.
-This simple example selects as input to @command{xargs} all the files
-in the current directory matching the @file{??.nc} pattern
-(@pxref{Variable subsetting}):
+This simple example selects as input to @command{xargs} all the
+filenames in the current directory that match a given pattern.
+For illustration, consider a user trying to average millions of 
+files which each have a six character filename. 
+If the shell buffer can not hold the results of the corresponding
+globbing operator, @file{??????.nc}, then the filename globbing
+technique will fail. 
+Instead we express the filename pattern as an extended regular 
+expression, @file{......\.nc} (@pxref{Variable subsetting}).
+We use @command{grep} to filter the directory listing for this pattern
+and to pipe the results to @command{xargs} which, in turn, passes the
+matching filenames to an @acronym{NCO} multi-file operator, e.g.,
+@command{ncecat}.
 @example
 # Alternative Method using xargs
-/bin/ls | grep ??.nc | xargs ncecat -o foo.nc
+/bin/ls | grep $@{CASEID@}_'......'.nc | xargs -x ncecat -o foo.nc
 @end example
 @cindex pipes
-The @command{xargs} command uses the @acronym{UNIX} pipe feature to
-append the suitably filtered input file list to the end of the
-@command{ncecat} command options. 
+The single quotes protect the only sensitive parts of the extended
+regular expression (the @command{grep} argument), and allow shell
+interpolation (the @code{$@{CASEID@}} variable substitution) to
+proceed unhindered on the rest of the command.
+@command{xargs} uses the @acronym{UNIX} pipe feature to append the
+suitably filtered input file list to the end of the @command{ncecat}
+command options.  
 @cindex output file
 @cindex input files
 @cindex @code{-o @var{fl_out}}
 The @code{-o foo.nc} switch ensures that the input files supplied by
 @command{xargs} are not confused with the output file name. 
+@command{xargs} does, unfortunately, have its own limit (usually about
+20,000 characters) on the size of command lines it can pass.
+Give @command{xargs} the @samp{-x} switch to ensure it dies if it
+reaches this internal limit.
 
 @cindex symbolic links
-The @command{xargs} technique may not work or be sophisticated enough
-to handle all situations.
+Even when its internal limits have not been reached, the
+@command{xargs} technique may not be sophisticated enough to handle
+all situations. 
 A full scripting language like Perl can handle any level of complexity
-of filtering input filenames.
+of filtering input filenames, and any number of filenames.
 The technique of last resort is write a script that creates symbolic
 links between the irregular input filenames and a set of regular,
 arithmetic filenames that @samp{-n @var{loop}} switch understands.
 @cindex Perl
 For example, the following Perl script a monotonically enumerated
 symbolic link to up to one million @file{.nc} files in a directory.
-If there are 480 netCDF files present, the links are named
-@file{000001.nc} to @file{000480.nc}: 
+If there are 999,999 netCDF files present, the links are named
+@file{000001.nc} to @file{999999.nc}: 
 @cindex @code{-n @var{loop}}
 @example
 # Create enumerated symbolic links
 /bin/ls | grep \.nc | perl -e \
 '$idx=1;while(<STDIN>)@{chop;symlink $_,sprintf("%06d.nc",$idx++);@}'
-ncecat -O -n 480,6,1 000001.nc foo.nc # Perform multi-file operation
+ncecat -O -n 999999,6,1 000001.nc foo.nc # Perform multi-file operation
 /bin/rm ??????.nc # Remove symbolic links when finished
 @end example
 The @samp{-n @var{loop}} option tells the @acronym{NCO} operator to

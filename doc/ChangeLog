@@ -1,3 +1,9 @@
+2004-06-16  Charlie Zender  <zender@uci.edu>
+
+	* Fixed numerous errors in xargs example
+
+	* Change nco_lib_tst.c to libnco_tst.c and add libnco_c++_tst.cc
+
 2004-06-15  Charlie Zender  <zender@uci.edu>
 
 	* Check for strdup() and strcasecmp() with NCO_CHECK_FUNCS rather
