@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.28 2001-05-08 01:36:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.29 2001-09-24 11:28:03 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -74,6 +74,7 @@ lex.yy.c:1060: warning: `yyunput' defined but not used
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
 #include "nc.h" /* NCO definitions */
+#include "nco_netcdf.h"			/* netcdf3.x wrappers */
 #include "ncap.h" /* ncap-specific definitions */
 
 #ifdef LINUX
@@ -127,7 +128,7 @@ main(int argc,char **argv)
   char *fl_spt=NULL; /* Option s */
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */
-  char *lmt_arg[MAX_NC_DIMS];
+  char *lmt_arg[NC_MAX_DIMS];
   char *spt_arg[73];
   char *opt_sng;
   char *fl_out;
@@ -135,8 +136,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.28 2001-05-08 01:36:03 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.28 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.29 2001-09-24 11:28:03 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.29 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -322,10 +323,10 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open the file for reading */
-  rcd=nc_open(fl_in,NC_NOWRITE,&in_id);
+  in_id=nco_open(fl_in,NC_NOWRITE);
 
   /* Get number of variables, dimensions, and record dimension ID of input file */
-  rcd=nc_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
+  rcd=nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
     
   /* Form initial extraction list from user input */
   xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
@@ -404,7 +405,7 @@ main(int argc,char **argv)
   rcd=nc_set_fill(out_id,NC_NOFILL,(int *)NULL);
   
   /* Take output file out of define mode */
-  rcd=nc_enddef(out_id);
+  rcd=nco_enddef(out_id);
   
   /* Zero start vectors for all output variables */
   (void)var_srt_zero(var_out,nbr_xtr);
@@ -457,7 +458,7 @@ main(int argc,char **argv)
   } /* end else */
   
   /* Close input netCDF file */
-  rcd=nc_close(in_id);
+  rcd=nco_close(in_id);
   
   /* Remove local copy of file */
   if(FILE_RETRIEVED_FROM_REMOTE_LOCATION && REMOVE_REMOTE_FILES_AFTER_PROCESSING) (void)fl_rm(fl_in);
