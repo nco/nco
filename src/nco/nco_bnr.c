@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_bnr.c,v 1.6 2002-06-07 06:27:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_bnr.c,v 1.7 2002-06-09 01:11:14 zender Exp $ */
 
 /* Purpose: Binary write utilities */
 
@@ -62,7 +62,7 @@ nco_bnr_wrt /* [fnc] Write unformatted binary data */
     (void)fprintf(stderr,"%s: ERROR only succeeded in writing %ld of %ld elements of variable %s\n",prg_nm_get(),wrt_nbr,var_sz,var_nm);
     nco_exit(EXIT_FAILURE);
   } /* end if */
-  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s (%s, %ld x %lu b), ",var_nm,c_typ_nm(var_typ),var_sz,nco_typ_lng(var_typ));
+  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s (%s, %ld x %zu b), ",var_nm,c_typ_nm(var_typ),var_sz,nco_typ_lng(var_typ));
   if(dbg_lvl_get() > 0) (void)fflush(stderr);
   return wrt_nbr; /* O [nbr] Number of elements successfully written */
 } /* end nco_bnr_wrt() */

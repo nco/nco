@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.61 2002-06-07 05:53:44 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.62 2002-06-09 01:11:14 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -99,6 +99,11 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 
 /* "left", "right", and "nonassoc" perform same function as "token" and,
    in addition, specify associativity and relative precedence of symbols */
+/* fxm: 20020608 AND, NOT, OR, COMPARISON not implemented in lexer yet */
+%left AND
+%left NOT
+%left OR
+%left COMPARISON /* = != < > <= >= */
 %left '+' '-'
 %left '*' '/' '%'
 %right '^'
@@ -110,22 +115,22 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
    Format is rule: action
    Comments OK in space between C code but must be indented */
 
-program: statement_list
-;
+program: stmt_lst
+; /* end program */
 
-statement_list: 
-statement_list statement ';' {
+stmt_lst: 
+stmt_lst stmt ';' {
   /* Purpose: Actions to be performed at end-of-statement go here */
   /* Clean up from and exit LHS_cst mode */
   (void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);
-} /* end statement ';' */
-| statement_list error ';' {(void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);}
-| statement ';' {(void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);}
+} /* end stmt ';' */
+| stmt_lst error ';' {(void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);}
+| stmt ';' {(void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);}
 | error ';' {(void)nco_var_free(&((prs_sct *)prs_arg)->var_LHS);}
 /* Catch most errors then read up to next semi-colon */
-; /* end statement_list */
+; /* end stmt_lst */
 
-statement: /* statement is definition of out_att_xpr or out_var_xpr (LHS tokens)
+stmt: /* statement is definition of out_att_xpr or out_var_xpr (LHS tokens)
 	      in terms of scv_xpr, var_xpr, and sng_xpr (RHS tokens). 
 	      All permutations are valid so this rule has 6 possible actions */
 out_att_xpr '=' scv_xpr { 
@@ -283,7 +288,7 @@ out_att_xpr '=' scv_xpr {
   $1=(char *)nco_free($1);
   $3=(char *)nco_free($3);
 } /* end out_var_xpr '=' sng_xpr */
-; /* end statement */
+; /* end stmt */
 
 scv_xpr: /* scv_xpr results from RHS action which involves only scv_xpr's
 	    One action exists for each binary and unary attribute-valid operator */
@@ -308,11 +313,11 @@ scv_xpr '+' scv_xpr {
   
   $$=ncap_scv_calc($1,'%',$3);  
 }
-| '-' scv_xpr  %prec UMINUS {
+| '-' scv_xpr %prec UMINUS {
   (void)ncap_scv_minus(&$2);
   $$=$2;
 }
-| '+' scv_xpr  %prec UMINUS {
+| '+' scv_xpr %prec UMINUS {
   $$=$2;
 }
 | scv_xpr '^' scv_xpr {
@@ -373,7 +378,7 @@ sng_xpr '+' sng_xpr {
   strcat($$,$3);
   $1=(char *)nco_free($1);
   $3=(char *)nco_free($3);
-} 
+} /* end sng_xpr '+' sng_xpr */
 | ATOSTR '(' scv_xpr ')' {
   char bfr[50];
   switch ($3.type){
@@ -385,7 +390,7 @@ sng_xpr '+' sng_xpr {
   default:  break;
   } /* end switch */
   $$=strdup(bfr);      
-}
+} /* end ATOSTR '(' scv_xpr ')' */
 | ATOSTR '(' scv_xpr ',' sng_xpr ')' {
   char bfr[150];
   /* Format string according to string expression */
@@ -400,8 +405,8 @@ sng_xpr '+' sng_xpr {
   } /* end switch */
   $5=(char *)nco_free($5);
   $$=strdup(bfr);      
-}
-| SNG {$$=$1;}
+} /* end ATOSTR '(' scv_xpr ',' sng_xpr ')' */
+| SNG {$$=$1;} /* Terminal symbol action */
 ; /* end sng_xpr */
 
 var_xpr: /* var_xpr results from RHS action which involves a var_xpr, i.e.,
@@ -507,7 +512,7 @@ var_xpr '+' var_xpr {
 | '(' var_xpr ')' {
   $$=$2;
 }
-| VAR { 
+| VAR { /* Terminal symbol action */
   $$=ncap_var_init($1,(prs_sct *)prs_arg);
 
   if((((prs_sct *)prs_arg)->var_LHS) != NULL){
@@ -522,7 +527,7 @@ var_xpr '+' var_xpr {
 
   /* Sanity check */
   if ($$==(var_sct *)NULL) YYERROR;
-}
+} /* end VAR terminal symbol */
 ; /* end var_xpr */
 
 /* End Rules section */

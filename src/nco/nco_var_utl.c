@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.12 2002-06-07 06:27:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.13 2002-06-09 01:11:14 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -563,7 +563,7 @@ var_dpl /* [fnc] Duplicate input variable */
   /* Deep copy dyamically allocated arrays currently defined in original */
   if(var->val.vp != NULL){
     if((var_cpy->val.vp=(void *)malloc(var_cpy->sz*nco_typ_lng(var_cpy->type))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in var_dpl()\n",prg_nm_get(),var_cpy->sz,nco_typ_lng(var_cpy->type),var_cpy->nm);
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes for value buffer for variable %s in var_dpl()\n",prg_nm_get(),var_cpy->sz,nco_typ_lng(var_cpy->type),var_cpy->nm);
       nco_exit(EXIT_FAILURE); 
     } /* end if */
     (void)memcpy((void *)(var_cpy->val.vp),(void *)(var->val.vp),var_cpy->sz*nco_typ_lng(var_cpy->type));
@@ -626,7 +626,7 @@ var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory */
      If variable is packed on disk then inquire about scale_factor and add_offset */
 
   if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->typ_dsk))) == NULL){
-    (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes in var_get()\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
+    (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes in var_get()\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
     nco_exit(EXIT_FAILURE); 
   } /* end if */
 
