@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.111 2002-08-19 08:15:38 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.112 2002-08-21 11:51:49 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -148,7 +148,7 @@ averages of low precision (<tt>int, char</tt>) data incorrectly if
 the data had a <tt>missing_value</tt>. 
 Under these conditions, this bug could result in incorrect values.
 Thanks to Martin Dix for pointing this out.
-User's of this feature should definitely upgrade to <tt>2.5.6</tt>.
+User's of this feature should definitely upgrade to <tt>2.5.6+</tt>.
 <li><tt>libnco_c++</tt> reads into and writes from type <tt>long double</tt></li>
 <li>Developer code has fully integrated <tt>autoconf</tt>/<tt>libtool</tt>
 build procedure</li>
@@ -173,6 +173,7 @@ tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>,
 fails on my development system (due to antiquated RedHat
 <tt>texinfo</tt> software, of all things!)
 Retrieve these versions <a name="#Download">using CVS</a>.
+<li><b>NCO 2.6.0</b>, Not packaged: All arithmetic operators (<tt>ncap</tt>, <tt>ncdiff</tt>, <tt>ncea</tt>, <tt>ncflint</tt>, <tt>ncra</tt>) support unpacking
 <li><b>NCO 2.5.6</b>, Not packaged: Handle <tt>missing_value</tt> 
 correctly for integer variables in <tt>ncra</tt>, merge
 <tt>autoconf</tt> build
