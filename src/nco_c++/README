@@ -1,6 +1,6 @@
-$Header: /data/zender/nco_20150216/nco/src/nco_c++/README,v 1.4 2003-01-16 09:26:55 zender Exp $
+$Header: /data/zender/nco_20150216/nco/src/nco_c++/README,v 1.5 2004-06-25 18:47:34 zender Exp $
 
-Purpose: Documentation of libnco_c++
+Purpose: Document libnco_c++
 
 libnco_c++ is a C++ interface to the netCDF 3.x library.
 It is in its own directory in the NCO repository on Sourceforge.
