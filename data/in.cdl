@@ -24,12 +24,12 @@
 
 netcdf in {
 dimensions:
-	band=2,lat=2,lev=3,rlev=3,lon=4,char_dim=80,fl_dim=3,time=unlimited;
+	band=2,lat=2,lev=3,rlev=3,lon=4,char_dim_lng=80,char_dim_sml=4,fl_dim=3,time=unlimited;
 variables:
 	:convention = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.13 2000-01-10 08:00:25 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.14 2000-01-27 23:08:48 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -100,18 +100,18 @@ variables:
 	char char_var_multinul(lev);
 	char_var_multinul:long_name = "Character variable containing multiple NULs";
 
-	char fl_nm(char_dim);
+	char fl_nm(char_dim_lng);
 	fl_nm:long_name = "Variable contains a file name";
 
-	char fl_nm_arr(fl_dim,char_dim);
+	char fl_nm_arr(fl_dim,char_dim_lng);
 	fl_nm_arr:long_name = "Variable that contains a short array of file names";
 	fl_nm_arr:units = "[sng]";
 
-	char non_nul_trm_char_one_dim(lon);
+	char non_nul_trm_char_one_dim(char_dim_sml);
 	non_nul_trm_char_one_dim:long_name = "Variable contains a one-dimensional array of characters that is not NUL-terminated";
 	non_nul_trm_char_one_dim:units = "[chr]";
 
-	char non_nul_trm_char_two_dim(fl_dim,lon);
+	char non_nul_trm_char_two_dim(fl_dim,char_dim_sml);
 	non_nul_trm_char_two_dim:long_name = "Variable contains a two-dimensional array of characters that are not NUL-terminated";
 	non_nul_trm_char_two_dim:units = "[chr]";
 
