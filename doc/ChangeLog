@@ -2,8 +2,10 @@
 
 	* Changed copyright to 2002
 
-	* Remove C++ comment characters from ncap_utl.c
-
+	* Remove C++ comment characters that crept into various routines
+	Using // comments causes default to compilation to break on many
+	architectures (Linux being an exception)
+	
 	* cvs tag -c nco-2_1_1
 	Changes since nco-2_1_0: ncap uses @ for attributes
 	Mixed rank handling improved but still broken
