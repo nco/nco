@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.20 2004-09-03 23:06:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.21 2004-09-03 23:59:09 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -305,7 +305,7 @@ nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
 {
   /* Threads: Routine is thread safe and makes no unsafe routines */
   /* Purpose: Fill val_out with copy of val_in that has been typecast from typ_in to typ_out
-     Last-referenced state of both value pointers is assumed to be .vp, and the val_out union is returned in that state */
+     Last-referenced state of both value pointers is assumed to be .vp, and val_out union is returned in that state */
 
   /* val_in and val_out should not be same pointer union since
      val_out must hold enough space (one element of type typ_out) to hold output

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.30 2004-09-03 23:06:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.31 2004-09-03 23:59:09 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -304,11 +304,13 @@ nco_var_pck /* [fnc] Pack variable in memory */
        ndrv = 256*256 iff var->typ_pck == NC_SHORT
        ndrv = 256*256*256*256 = 2^32 iff var->typ_pck == NC_INT */
 
+    const double max_mns_min_dbl_wrn=1.0e10; /* [frc] Threshold value for warning */
     double ndrv_dbl=double_CEWI; /* [frc] Double precision value of number of discrete representable values */
     double max_mns_min_dbl; /* [frc] Maximum value minus minimum value */
 
     ptr_unn ptr_unn_min; /* [ptr] Pointer union to minimum value of variable */
     ptr_unn ptr_unn_max; /* [ptr] Pointer union to maximum value of variable */
+    ptr_unn ptr_unn_mss_val_dbl; /* [ptr] Pointer union to missing value of variable */
     
     var_sct *min_var; /* [sct] Minimum value of variable */
     var_sct *max_var; /* [sct] Maximum value of variable */
@@ -333,6 +335,12 @@ nco_var_pck /* [fnc] Pack variable in memory */
     ptr_unn_min.vp=(void *)nco_malloc(nco_typ_lng(var->type));
     ptr_unn_max.vp=(void *)nco_malloc(nco_typ_lng(var->type));
 
+    /* Create double precision missing_value for use in min/max arithmetic */
+    if(var->has_mss_val){
+      ptr_unn_mss_val_dbl.vp=(void *)nco_malloc(nco_typ_lng((nc_type)NC_DOUBLE));
+      (void)nco_val_cnf_typ(var->type,var->mss_val,(nc_type)NC_DOUBLE,ptr_unn_mss_val_dbl);
+    } /* endif has_mss_val */
+
     /* Find minimum and maximum values in data */
     (void)nco_var_avg_reduce_max(var->type,var->sz,1L,var->has_mss_val,var->mss_val,var->val,ptr_unn_min);
     (void)nco_var_avg_reduce_min(var->type,var->sz,1L,var->has_mss_val,var->mss_val,var->val,ptr_unn_max);
@@ -350,9 +358,8 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
     /* add_offset is 0.5*(min+max) */
     /* max_var->val is overridden with add_offset answers, no longer valid as max_var */
-    /* fxm: Convert var->mss_val to NC_DOUBLE before using in nco_var_add,mlt */
-    (void)nco_var_add((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,min_var->val,max_var->val);
-    (void)nco_var_mlt((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,hlf_var->val,max_var->val);
+    (void)nco_var_add((nc_type)NC_DOUBLE,1L,var->has_mss_val,ptr_unn_mss_val_dbl,min_var->val,max_var->val);
+    (void)nco_var_mlt((nc_type)NC_DOUBLE,1L,var->has_mss_val,ptr_unn_mss_val_dbl,hlf_var->val,max_var->val);
     /* Contents of max_var are actually add_offset */
     (void)nco_val_cnf_typ((nc_type)NC_DOUBLE,max_var->val,var->type,var->add_fst);
 
@@ -372,12 +379,12 @@ nco_var_pck /* [fnc] Pack variable in memory */
        If max-min = 0 then variable is constant value so scale_factor=0.0 and add_offset=var
        If max-min > ndrv then precision is worse than 1.0
        If max-min < ndrv then precision is better than 1.0 */
-    (void)nco_var_sbt((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,min_var->val,max_var_dpl->val);
+    (void)nco_var_sbt((nc_type)NC_DOUBLE,1L,var->has_mss_val,ptr_unn_mss_val_dbl,min_var->val,max_var_dpl->val);
     /* max-min is currently stored in max_var_dpl */
     max_mns_min_dbl=ptr_unn_2_scl_dbl(max_var_dpl->val,max_var_dpl->type); 
 
     if(max_mns_min_dbl != 0.0){
-      (void)nco_var_dvd((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,ndrv_var->val,max_var_dpl->val);
+      (void)nco_var_dvd((nc_type)NC_DOUBLE,1L,var->has_mss_val,ptr_unn_mss_val_dbl,ndrv_var->val,max_var_dpl->val);
       /* Contents of max_var_dpl are actually scale_factor */
       (void)nco_val_cnf_typ((nc_type)NC_DOUBLE,max_var_dpl->val,var->type,var->scl_fct);
     }else{
@@ -391,9 +398,17 @@ nco_var_pck /* [fnc] Pack variable in memory */
       (void)memcpy(var->add_fst.vp,var->val.vp,nco_typ_lng(var->type));
     } /* end else */
 
+    if(max_mns_min_dbl > max_mns_min_dbl_wrn){
+      (void)fprintf(stdout,"%s: WARNING %s reports data range of variable %s is = %g. The linear data packing technique defined by netCDF's packing convention and implemented by NCO result in significant precision loss over such a great range.\n",prg_nm_get(),fnc_nm,var->nm,max_mns_min_dbl);
+      if(var->has_mss_val) (void)fprintf(stdout,"%s: HINT variable %s has missing_value = %g. Consider specifying new missing_value to reduce range of data needing packing. See http://nco.sf.net/nco.html#ncatted for examples of how to change the missing_value attribute.\n",prg_nm_get(),fnc_nm,ptr_unn_mss_val_dbl.dp[0]);
+    } /* endif large data range */
+
     /* Free minimum and maximum values */
     ptr_unn_min.vp=nco_free(ptr_unn_min.vp);
     ptr_unn_max.vp=nco_free(ptr_unn_max.vp);
+
+    /* Free temporary double missing_value */
+    if(var->has_mss_val) ptr_unn_mss_val_dbl.vp=nco_free(ptr_unn_mss_val_dbl.vp);
 
     /* Free variables */
     if(min_var != NULL) min_var=nco_var_free(min_var);

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.390 2004-09-03 23:06:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.391 2004-09-03 23:58:56 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -267,7 +267,7 @@ Not handling the default case causes gcc to emit warnings when compiling NCO wit
 ERROR: program exiting through nco_err_exit() which will now call abort()
 Aborted
 nco418. Make packing play nice with missing values outside range
-nco419. Convert missing_value to double before using in nco_pck()
+        ncpdq -D 3 -O -C -P all_new -v mss_val_scl ~/nco/data/in.nc ~/foo.nc
 nco420. 
 
 ncap-specific items:
