@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.4 2002-05-07 08:34:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.5 2002-06-07 02:15:20 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -44,23 +44,23 @@ nco_free /* [fnc] Wrapper for free() */
 
 void * /* O [ptr] Pointer to allocated memory */
 nco_malloc /* [fnc] Wrapper for malloc() */
-(const size_t size) /* I [nbr] Number of bytes to allocate */
+(const size_t sz) /* I [nbr] Number of bytes to allocate */
 {
   /* Purpose: Custom wrapper for malloc()
      Routine prints error when malloc() returns a NULL pointer 
-     Routine does not call malloc() when size == 0 */
+     Routine does not call malloc() when sz == 0 */
   
   void *ptr; /* [ptr] Pointer to new buffer */
   
   /* malloc(0) is ANSI-legal, albeit unnecessary
      NCO sometimes employs this degenerate case behavior of malloc() to simplify code
      Some debugging tools like Electric Fence consider any NULL returned by malloc() to be an error
-     So circumvent malloc() calls when size == 0 */
-  if(size == 0) return NULL;
+     So circumvent malloc() calls when sz == 0 */
+  if(sz == 0) return NULL;
   
-  ptr=malloc(size); /* [ptr] Pointer to new buffer */
+  ptr=malloc(sz); /* [ptr] Pointer to new buffer */
   if(ptr == NULL){
-    (void)fprintf(stdout,"%s: ERROR nco_malloc() unable to allocate %li bytes\n",prg_nm_get(),(long)size);
+    (void)fprintf(stdout,"%s: ERROR nco_malloc() unable to allocate %li bytes\n",prg_nm_get(),(long)sz);
     /* fxm: Should be exit(8) on ENOMEM errors? */
     nco_exit(EXIT_FAILURE);
   } /* endif */
@@ -70,31 +70,31 @@ nco_malloc /* [fnc] Wrapper for malloc() */
 void * /* O [ptr] Pointer to re-allocated memory */
 nco_realloc /* [fnc] Wrapper for realloc() */
 (void *ptr, /* I/O [ptr] Buffer to reallocate */
- const size_t size) /* I [nbr] Number of bytes required */
+ const size_t sz) /* I [nbr] Number of bytes required */
 {
   /* Purpose: Custom wrapper for realloc()
      Routine prints error when realloc() returns a NULL pointer
-     Routine does not call realloc() when size == 0 */
+     Routine does not call realloc() when sz == 0 */
   
   void *new_ptr; /* [ptr] Pointer to new buffer */
   
   /* This degenerate case sometimes occurs
      Performing realloc() call here would be ANSI-legal but would trigger Electric Fence */
-  if(ptr == NULL && size == 0) return ptr;
-  if(ptr != NULL && size == 0){
+  if(ptr == NULL && sz == 0) return ptr;
+  if(ptr != NULL && sz == 0){
     ptr=nco_free(ptr);
     ptr=NULL;
     return ptr;
   } /* endif */
   
   /* Passing NULL to realloc() is ANSI-legal, but may cause portability problems */
-  if(ptr == NULL && size != 0){
-    new_ptr=nco_malloc(size); /* [ptr] Pointer to new buffer */
+  if(ptr == NULL && sz != 0){
+    new_ptr=nco_malloc(sz); /* [ptr] Pointer to new buffer */
   }else{
-    new_ptr=realloc(ptr,size); /* [ptr] Pointer to new buffer */
+    new_ptr=realloc(ptr,sz); /* [ptr] Pointer to new buffer */
   } /* endif */
-  if(new_ptr == NULL && size != 0){
-    (void)fprintf(stdout,"%s: ERROR nco_realloc() unable to realloc() %li bytes\n",prg_nm_get(),(long)size); 
+  if(new_ptr == NULL && sz != 0){
+    (void)fprintf(stdout,"%s: ERROR nco_realloc() unable to realloc() %li bytes\n",prg_nm_get(),(long)sz); 
     /* fxm: Should be exit(8) on ENOMEM errors? */
     nco_exit(EXIT_FAILURE);
   } /* endif */

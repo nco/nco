@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.63 2002-06-07 01:39:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.64 2002-06-07 02:15:20 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -497,7 +497,7 @@ var_lst_copy(nm_id_sct *xtr_lst,int lst_nbr)
   nm_id_sct *xtr_new_lst;
   
   if(lst_nbr == 0) return NULL;
-  xtr_new_lst=(nm_id_sct *)nco_malloc((size_t)lst_nbr*sizeof(nm_id_sct));
+  xtr_new_lst=(nm_id_sct *)nco_malloc(lst_nbr*sizeof(nm_id_sct));
   for(idx=0;idx<lst_nbr;idx++){
     xtr_new_lst[idx].nm=strdup(xtr_lst[idx].nm);
     xtr_new_lst[idx].id=xtr_lst[idx].id;
@@ -522,8 +522,8 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
 {
   /* Purpose: Subtract from xtr_lst any elements from xtr_lst_b which are present and return new list */
   int idx;
-  int j;
-  int n=0;
+  int xtr_idx;
+  int xtr_nbr_new=0;
   
   bool match;
 
@@ -534,13 +534,13 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
   xtr_new_lst=(nm_id_sct*)nco_malloc((size_t)(*nbr_xtr)*sizeof(nm_id_sct));  
   for(idx=0;idx<*nbr_xtr;idx++){
     match=False;
-    for(j=0;j<nbr_lst_b;j++)
-      if(!strcmp(xtr_lst[idx].nm,xtr_lst_b[j].nm)){match=True;break;}
+    for(xtr_idx=0;xtr_idx<nbr_lst_b;xtr_idx++)
+      if(!strcmp(xtr_lst[idx].nm,xtr_lst_b[xtr_idx].nm)){match=True;break;}
     if(match) continue;
-    xtr_new_lst[n].nm=strdup(xtr_lst[idx].nm);
-    xtr_new_lst[n++].id=xtr_lst[idx].id;
+    xtr_new_lst[xtr_nbr_new].nm=strdup(xtr_lst[idx].nm);
+    xtr_new_lst[xtr_nbr_new++].id=xtr_lst[idx].id;
   } /* end loop over idx */
-  *nbr_xtr=n;
+  *nbr_xtr=xtr_nbr_new;
   return xtr_new_lst;      
 }/* end var_lst_sub */
 
@@ -549,17 +549,17 @@ var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int n
 {
   /* Purpose: Add to xtr_lst any elements from xtr_lst_a not already present and return new list */
   int idx;
-  int j;
-  int n;
+  int xtr_idx;
+  int nbr_xtr_crr;
   
   nm_id_sct *xtr_new_lst;
   
   bool match;
   
-  if(*nbr_xtr > 0){
+  nbr_xtr_crr=*nbr_xtr;
+  if(nbr_xtr_crr > 0){
     xtr_new_lst=(nm_id_sct*)nco_malloc((size_t)(*nbr_xtr)*sizeof(nm_id_sct));
-    n=*nbr_xtr;
-    for(idx=0;idx<*nbr_xtr;idx++){
+    for(idx=0;idx<nbr_xtr_crr;idx++){
       xtr_new_lst[idx].nm=strdup(xtr_lst[idx].nm);
       xtr_new_lst[idx].id=xtr_lst[idx].id;
     } /* end loop over variables */
@@ -570,14 +570,14 @@ var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int n
   
   for(idx=0;idx<nbr_lst_a;idx++){
     match=False;
-    for(j=0;j<*nbr_xtr;j++)
-      if(!strcmp(xtr_lst[j].nm,xtr_lst_a[idx].nm)){match=True;break;}
+    for(xtr_idx=0;xtr_idx<*nbr_xtr;xtr_idx++)
+      if(!strcmp(xtr_lst[xtr_idx].nm,xtr_lst_a[idx].nm)){match=True;break;}
     if(match) continue;
-    xtr_new_lst=(nm_id_sct *)nco_realloc(xtr_new_lst,(n+1)*sizeof(nm_id_sct));
-    xtr_new_lst[n].nm=strdup(xtr_lst_a[idx].nm);
-    xtr_new_lst[n++].id=xtr_lst_a[idx].id;
+    xtr_new_lst=(nm_id_sct *)nco_realloc(xtr_new_lst,(size_t)(nbr_xtr_crr+1)*sizeof(nm_id_sct));
+    xtr_new_lst[nbr_xtr_crr].nm=strdup(xtr_lst_a[idx].nm);
+    xtr_new_lst[nbr_xtr_crr++].id=xtr_lst_a[idx].id;
   } /* end for */
-  *nbr_xtr=n;
+  *nbr_xtr=nbr_xtr_crr;
   return xtr_new_lst;            
 } /* var_lst_add */
 
@@ -614,7 +614,7 @@ ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
       for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
 	if(!strcmp(dmn_nm,xtr_lst[idx_var].nm)) {
 	  if(nbr_new_lst == 0) new_lst=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
-	  else new_lst=(nm_id_sct *)nco_realloc((void *)new_lst,(nbr_new_lst+1)*sizeof(nm_id_sct));
+	  else new_lst=(nm_id_sct *)nco_realloc((void *)new_lst,(size_t)(nbr_new_lst+1)*sizeof(nm_id_sct));
 	  new_lst[nbr_new_lst].nm=(char *)strdup(dmn_nm);
 	  new_lst[nbr_new_lst++].id=crd_id;
 	  break;
@@ -782,7 +782,6 @@ ncap_var_stretch /* [fnc] Stretch variables */
 
     int idx_var_lsr_var_gtr[NC_MAX_DIMS];
     int var_lsr_nbr_dim;
-    int var_lsr_type_sz;
     int var_gtr_nbr_dmn_m1;
 
     long *var_gtr_cnt;
@@ -792,6 +791,8 @@ ncap_var_stretch /* [fnc] Stretch variables */
     long var_gtr_lmn;
     long var_lsr_lmn;
     long var_gtr_sz;
+
+    size_t var_lsr_type_sz;
 
     /* Copy main attributes of greater variable into lesser variable */
     var_lsr_out=var_dpl(var_gtr);
