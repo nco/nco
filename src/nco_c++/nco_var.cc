@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.4 2002-08-11 05:46:34 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.5 2002-08-11 06:09:51 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -388,6 +388,20 @@ int // O [enm] Return success code
 nco_put_var // [fnc] Write variable to netCDF file
 (const int &nc_id, // I [enm] netCDF file ID
  const int &var_id, // I [id] Variable ID
+ const long double &var_val) // I [frc] Variable value
+{
+  // Purpose: Wrapper for nc_put_var1_double()
+  const double var_val_dbl(var_val); // [frc] Double precision value
+  std::valarray<size_t> srt(static_cast<size_t>(0),static_cast<size_t>(nco_inq_varndims(nc_id,var_id)));
+  int rcd=nc_put_var1_double(nc_id,var_id,&srt[0],&(const_cast<double &>(var_val_dbl)));
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_var<long double>");
+  return rcd;
+} // end nco_put_var<long double>()
+
+int // O [enm] Return success code
+nco_put_var // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
  const int &var_val) // I [frc] Variable value
 {
   // Purpose: Wrapper for nc_put_var1_int()
@@ -469,6 +483,27 @@ nco_get_var // [fnc] Ingest variable from netCDF file
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var<double>");
   return rcd;
 } // end nco_get_var<double>()
+
+int // O [enm] Return success code
+nco_get_var // [fnc] Ingest variable from netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ long double *&var_val) // O [frc] Variable value
+{
+  // Purpose: Wrapper for nc_get_var()
+  size_t var_sz; // [nbr] Variable size
+  int rcd=nco_inq_varsz(nc_id,var_id,var_sz);
+  // Allocate space for variable: User is responsible for freeing space
+  var_val=new long double[var_sz]; // [frc] Variable value
+  double *var_val_dbl=new double[var_sz]; // [frc] Double precision values
+  rcd=nc_get_var_double(nc_id,var_id,var_val_dbl);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_get_var<long double>");
+  for(size_t lmn_idx=0;lmn_idx<var_sz;lmn_idx++){
+    var_val[lmn_idx]=var_val_dbl[lmn_idx];
+  } // end loop over idx
+  delete []var_val_dbl;
+  return rcd;
+} // end nco_get_var<long double>()
 
 int // O [enm] Return success code
 nco_get_var // [fnc] Ingest variable from netCDF file

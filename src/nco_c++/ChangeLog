@@ -1,3 +1,11 @@
+2002-08-10  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco_c++-0_1_4
+	Changes since nco_c++-0_1_3: Long double support in get/put routines
+	
+	* Added long double type to nco_get/put_var routines and to tst.
+	Appears to work
+
 2002-02-11  Charlie Zender  <zender@uci.edu>
 
 	* Added GPL copyright statements to all files

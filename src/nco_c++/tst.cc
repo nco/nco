@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.3 2002-02-12 07:33:33 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.4 2002-08-11 06:09:51 zender Exp $
 
 // Purpose: Test for C++ programs using libnco_c++ API
 
@@ -45,10 +45,10 @@ int main(int argc,char **argv)
   long sz_nbr(1); // [nbr] Number of sizes
   register long idx; // [idx] Counting index
 
-  const std::string CVS_Date("$Date: 2002-02-12 07:33:33 $"); // [sng] CVS date string
-  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.3 2002-02-12 07:33:33 zender Exp $"); // [sng] CVS header string
-  const std::string CVS_Id("$Id: tst.cc,v 1.3 2002-02-12 07:33:33 zender Exp $"); // [sng] CVS identification string
-  const std::string CVS_Revision("$Revision: 1.3 $"); // [sng] CVS revision string
+  const std::string CVS_Date("$Date: 2002-08-11 06:09:51 $"); // [sng] CVS date string
+  const std::string CVS_Header("$Header: /data/zender/nco_20150216/nco/src/nco_c++/tst.cc,v 1.4 2002-08-11 06:09:51 zender Exp $"); // [sng] CVS header string
+  const std::string CVS_Id("$Id: tst.cc,v 1.4 2002-08-11 06:09:51 zender Exp $"); // [sng] CVS identification string
+  const std::string CVS_Revision("$Revision: 1.4 $"); // [sng] CVS revision string
   const std::string date_cvs(CVS_Date.length() > 7 ? CVS_Date.substr(7,19) : "Unknown"); // [sng] Date from CVS
   const std::string sbr_nm("main"); // [sng] Subroutine name
   const std::string prg_nm("libnco_c++"); // [sng] Program name
@@ -79,10 +79,12 @@ int main(int argc,char **argv)
 
   // Allocate dynamic arrays
   prc_cmp *sz=new prc_cmp[sz_nbr]; // [m] Size at bin center
+  long double *sz_ldb=new long double[sz_nbr]; // [m] Size at bin center
 
   // Dummy data
   for(idx=0;idx<sz_nbr;idx++){
     sz[idx]=0.5e-6; // [m] Size at bin center
+    sz_ldb[idx]=sz[idx]; // [m] Size at bin center
   } // end loop over idx
 
   // Open output file
@@ -110,6 +112,7 @@ int main(int argc,char **argv)
     {0,"wvl",nco_xtyp,1,dmn_wvl,"long_name","Wavelength at band center","units","meter"},
     {0,"wvl_valarray",nco_xtyp,1,dmn_wvl,"long_name","valarray","units","meter"},
     {0,"sz",nco_xtyp,1,dmn_sz,"long_name","Size at bin center","units","meter"},
+    {0,"sz_ldb",nco_xtyp,1,dmn_sz,"long_name","Size at bin center","units","meter"},
     {0,"sz_nbr",NC_INT,0,dmn_scl,"long_name","Number of sizes","units","number"},
   }; // end var_mtd_sct var_mtd[]
   const int var_mtd_nbr(sizeof(var_mtd)/sizeof(var_mtd_sct));
@@ -146,6 +149,7 @@ int main(int argc,char **argv)
   rcd=nco_put_var(nc_out,static_cast<std::string>("wvl_valarray"),wvl_valarray);
   rcd=nco_put_var(nc_out,static_cast<std::string>("wvl"),wvl); delete []wvl;
   rcd=nco_put_var(nc_out,static_cast<std::string>("sz"),sz); delete []sz;
+  rcd=nco_put_var(nc_out,static_cast<std::string>("sz_ldb"),sz_ldb); delete []sz_ldb;
   rcd=nco_put_var(nc_out,static_cast<std::string>("sz_nbr"),sz_nbr);
 
   // Close output file
