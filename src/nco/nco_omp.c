@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.12 2004-07-02 05:08:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.c,v 1.13 2004-07-02 06:50:01 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -35,8 +35,8 @@ nco_openmp_ini /* [fnc] Set up OpenMP multi-threading environment */
   int prc_nbr_max; /* [nbr] Maximum number of processors available */
   int thr_nbr_rqs=int_CEWI; /* [nbr] Number of threads NCO requests to use */
 
-  if(thr_nbr <= 0){
-    (void)fprintf(fp_stderr,"%s: ERROR User-requested thread number = %d is less than one\n",prg_nm_get(),thr_nbr);
+  if(thr_nbr < 0){
+    (void)fprintf(fp_stderr,"%s: ERROR User-requested thread number = %d is less than zero\n",prg_nm_get(),thr_nbr);
     nco_exit(EXIT_FAILURE);
   } /* endif err */
 
@@ -53,6 +53,7 @@ nco_openmp_ini /* [fnc] Set up OpenMP multi-threading environment */
     /* Honor user-specified thread request... */
     thr_nbr_rqs=thr_nbr; /* [nbr] Number of threads NCO requests to use */
     /* ...if possible... */
+    if(dbg_lvl_get() > 2) (void)fprintf(fp_stderr,"%s: INFO User requested %d threads\n",prg_nm_get(),thr_nbr);
     if(thr_nbr > thr_nbr_max){
       (void)fprintf(fp_stderr,"%s: WARNING Reducing user-requested thread number = %d to maximum thread number allowed = %d\n",prg_nm_get(),thr_nbr,thr_nbr_max);
       thr_nbr_rqs=thr_nbr_max; /* [nbr] Number of threads NCO requests to use */
@@ -78,12 +79,12 @@ nco_openmp_ini /* [fnc] Set up OpenMP multi-threading environment */
   } /* endif */      
 
   /* Set thread number */
-  if((void)omp_in_parallel()){
-    (void)omp_set_num_threads(thr_nbr_rqs); 
-    if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO Requested %d threads\n",prg_nm_get(),thr_nbr_rqs);
-  }else{
-    (void)fprintf(fp_stderr,"%s: ERROR Attempted to set thread number from non-parallel region\n",prg_nm_get());
+  if(omp_in_parallel()){
+    (void)fprintf(fp_stderr,"%s: ERROR Attempted to set thread number from within parallel region\n",prg_nm_get());
     nco_exit(EXIT_FAILURE);
+  }else{
+    (void)omp_set_num_threads(thr_nbr_rqs); 
+    if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO %s requested system %d threads from system\n",prg_nm_get(),prg_nm_get(),thr_nbr_rqs);
   } /* end error */
 
   if(!USR_SPC_THR_RQS){
@@ -91,12 +92,12 @@ nco_openmp_ini /* [fnc] Set up OpenMP multi-threading environment */
     if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO Allowing OS to dynamically set threads\n",prg_nm_get());
   } /* USR_SPC_THR_RQS */
 
-#pragma omp parallel default(none) shared(fp_stderr,thr_nbr)
+#pragma omp parallel default(none) shared(fp_stderr,thr_nbr_act)
   { /* begin OpenMP parallel */
 #pragma omp single nowait
     { /* begin OpenMP single */
       thr_nbr_act=omp_get_num_threads(); /* [nbr] Number of threads NCO uses */
-      if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO OpenMP threading with %d threads\n",prg_nm_get(),thr_nbr);
+      if(dbg_lvl_get() > 0) (void)fprintf(fp_stderr,"%s: INFO %s using %d threads\n",prg_nm_get(),prg_nm_get(),thr_nbr_act);
     } /* end OpenMP single */
   } /* end OpenMP parallel */
 #else /* not _OPENMP */

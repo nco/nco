@@ -1,5 +1,19 @@
 2004-07-01  Charlie Zender  <zender@uci.edu>
 
+	* Changed configure.eg to enable OpenMP on AIX. 'make' and 'make
+	install' now work but 'make test' fails with zillions of linker errors: 
+
+        rtld: 0712-001 Symbol omp_get_num_threads was referenced
+        from module /u/zender/nco/src/nco/.libs/libnco.so(), but a runtime definition
+        of the symbol was not found.
+
+	* AIX xlc does not activate OpenMP unless -qsmp=omp argument used
+
+	* Fixed AIX xlc_r compiler pragma warnings by removing
+	/usr/vacpp/include from CPPPATH in configure.eg.
+	I think nco_c++ used to need this to find <valarray>, but that no
+	longer seems to be the case. Simpler is better.
+
 	* Improve LFS test in big.cdl. 
 	Created version that creates large files (> 4 GB) on small-RAM 
 	(< 4 GB) systems, and NCO seem OK to deal with resulting files. 

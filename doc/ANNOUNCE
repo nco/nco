@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.103 2004-07-01 21:01:00 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.104 2004-07-02 06:49:49 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.6 are ready. 
 
@@ -43,6 +43,7 @@ Feature changes:
 2. Multi-file operators add nco_input_file_list, nco_input_file_number 
    global attributes by default for input file names from stdin.
 3. Add nco_openmp_thread_number global attribute when threaded
+4. Add -t, --thr_nbr, --omp_num_threads switch to specify threads
 
 Bug-fixes:
 1. Use NCO-supplied float-valued functions (e.g., cosf()) on AIX
