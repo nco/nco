@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.202 2004-01-16 01:42:17 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.203 2004-01-16 06:52:33 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4384,6 +4384,9 @@ argument, although a trailing semi-colon @samp{;} is always allowed.
 However, semi-colons are required to separate individual assignment
 statements chained together as a single @samp{-s} argument. 
 
+@html
+<a name="flg"></a> <!-- http://nco.sf.net/nco.html#flg -->
+@end html
 @cindex flags
 Imagine you wish to create a binary flag based on the value of 
 an array.
@@ -4405,6 +4408,9 @@ ncap -O -s "ORO_frc=ORO-int(ORO)" -s "ORO_flg=int(ORO_frc+0.99)" foo.nc out.nc
 # ORO_flg now equals 0 or 1
 @end example
 
+@html
+<a name="cvr"></a> <!-- http://nco.sf.net/nco.html#cvr -->
+@end html
 This example uses @command{ncap} to compute the covariance of two
 variables. 
 Let the variables @var{@wndznl{}} and @var{@wndmrd{}} be the horizontal 
@@ -4445,7 +4451,7 @@ arises from the signal fluctuations versus the mean signals.
 Sometimes this is called the @dfn{eddy covariance}.
 We will store the covariance in the variable @code{uprmvprm}.
 @example
-ncwa -O -a time -v u,v in.nc foo.nc # Compute time mean of u,v
+ncwa -O -C -a time -v u,v in.nc foo.nc # Compute time mean of u,v
 ncrename -O -v u,uavg -v v,vavg foo.nc # Rename to avoid conflict
 ncks -A -v u,v in.nc foo.nc # Place originals with time means
 ncap -O -s "uprmvprm=u*v-uavg*vavg" foo.nc foo.nc # Covariance
@@ -4478,6 +4484,10 @@ and @code{vavg} to the size of the non-degenerate @var{time} dimension
 in the input file.
 Thus the append (@command{ncks -A}) command would be undefined (and
 should fail) in this case. 
+@cindex @code{-C}
+Equally important is the @samp{-C} argument (@pxref{Coordinate
+variables}) to @command{ncwa} to prevent any scalar @var{time} variable
+from being written to the output file.  
 Knowing when to use @command{ncwa -a time} rather than the default
 @command{ncra} for time-averaging takes, well, time.
 

@@ -38,7 +38,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.47 2003-11-20 01:52:17 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.48 2004-01-16 06:52:32 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -416,6 +416,13 @@ variables:
 	time_udunits:units = "hours since 1900-01-01 00:00:0.0";
 	time_udunits:delta_t = "0000-00-00 06:00:0.0";
 
+	float u(time);
+	u:long_name = "Zonal wind speed";
+	u:units = "meter second-1";
+
+	float v(time);
+	v:long_name = "Meridional wind speed";
+	v:units = "meter second-1";
 
 data:
 	ORO=1.,1.,1.,1.,1.,1.,1.,1.;
@@ -494,6 +501,8 @@ data:
 	tpt=273.1,273.2,273.3,273.4,273.5,273.6,273.7,273.8,273.9,273.10;
 	two=2.;
 	two_dmn_var=1.5,5.5,9.5,13.5,17.5,21.5;
+	u=1.,0.,1.,0.,1.,0.,1.,0.,1.,0.;
+	v=0.,1.,0.,1.,0.,1.,0.,1.,0.,1.;
 	val_half=0.5;
 	val_half_half=0.5,0.5;
 	val_max_max_sht=17000,17000;
