@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.412 2004-09-07 04:50:11 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.413 2004-09-07 04:57:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -256,6 +256,8 @@ nco425. ncpdq: Make unpacking offer to unpack missing value to preserve its usef
 nco426. ncpdq: Make packing offer to pack missing value to the packed type to preserve its usefulness
 nco427. ncpdq, ncra: Fix pck_dbg problems in nco_var_get() which automatically down-convert missing value to typ_dsk.
 nco439. Verify packing NC_INT->NC_SHORT
+valgrind --leak-check=yes --show-reachable=yes ncpdq -D 5 -O -C -P all_new -M hgh_sht -v three_dmn_var_int ~/nco/data/in.nc ~/foo.nc > ~/foo.valgrind 2>&1
+valgrind --leak-check=yes --show-reachable=yes ncpdq -D 5 -O -C -P all_new -M hgh_sht ~/nco/data/in.nc ~/foo.nc > ~/foo.valgrind 2>&1
 nco440. Verify packing NC_DOUBLE->NC_INT
 nco441. Verify packing NC_DOUBLE->NC_CHAR
 nco442. Verify packing NC_INT->NC_CHAR
