@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.29 2004-09-03 21:50:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.30 2004-09-03 23:06:47 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -301,7 +301,8 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
        ndrv = number of discrete representable values for given type of packed variable and
        ndrv = 256 iff var->typ_pck == NC_CHAR
-       ndrv = 256*256 iff var->typ_pck == NC_SHORT */
+       ndrv = 256*256 iff var->typ_pck == NC_SHORT
+       ndrv = 256*256*256*256 = 2^32 iff var->typ_pck == NC_INT */
 
     double ndrv_dbl=double_CEWI; /* [frc] Double precision value of number of discrete representable values */
     double max_mns_min_dbl; /* [frc] Maximum value minus minimum value */
@@ -349,10 +350,11 @@ nco_var_pck /* [fnc] Pack variable in memory */
 
     /* add_offset is 0.5*(min+max) */
     /* max_var->val is overridden with add_offset answers, no longer valid as max_var */
+    /* fxm: Convert var->mss_val to NC_DOUBLE before using in nco_var_add,mlt */
     (void)nco_var_add((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,min_var->val,max_var->val);
     (void)nco_var_mlt((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,hlf_var->val,max_var->val);
     /* Contents of max_var are actually add_offset */
-    (void)val_cnf_typ((nc_type)NC_DOUBLE,max_var->val,var->type,var->add_fst);
+    (void)nco_val_cnf_typ((nc_type)NC_DOUBLE,max_var->val,var->type,var->add_fst);
 
     /* ndrv is 2^{bits per packed value} where bppv = 8 for NC_CHAR and bppv = 16 for NC_SHORT
        Subtract one to leave slop for rounding errors */
@@ -377,7 +379,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     if(max_mns_min_dbl != 0.0){
       (void)nco_var_dvd((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,ndrv_var->val,max_var_dpl->val);
       /* Contents of max_var_dpl are actually scale_factor */
-      (void)val_cnf_typ((nc_type)NC_DOUBLE,max_var_dpl->val,var->type,var->scl_fct);
+      (void)nco_val_cnf_typ((nc_type)NC_DOUBLE,max_var_dpl->val,var->type,var->scl_fct);
     }else{
       /* Variable is constant, i.e., equal values everywhere */
       zero_var=scl_mk_var(zero_unn,var->type); /* [sct] NCO variable for value 0.0 */
@@ -439,7 +441,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     scv_sct add_fst_scv;
     add_fst_scv.type=NC_DOUBLE;
     add_fst_scv.val.d=add_fst_dbl;
-    (void)scv_conform_type(var->type,&add_fst_scv);
+    (void)nco_scv_cnf_typ(var->type,&add_fst_scv);
     (void)var_scv_sub(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&add_fst_scv);
   } /* endif */
 
@@ -448,7 +450,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     scv_sct scl_fct_scv;
     scl_fct_scv.type=NC_DOUBLE;
     scl_fct_scv.val.d=scl_fct_dbl;
-    (void)scv_conform_type(var->type,&scl_fct_scv);
+    (void)nco_scv_cnf_typ(var->type,&scl_fct_scv);
     if(scl_fct_dbl != 0.0) (void)var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scl_fct_scv);
   } /* endif */
 

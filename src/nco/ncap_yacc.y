@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.21 2004-08-15 07:08:52 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.22 2004-09-03 23:06:46 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -375,26 +375,26 @@ scv_xpr '+' scv_xpr {
 }
 | scv_xpr '^' scv_xpr {
   if($1.type <= NC_FLOAT && $3.type <= NC_FLOAT) {
-    (void)scv_conform_type((nc_type)NC_FLOAT,&$1);
-    (void)scv_conform_type((nc_type)NC_FLOAT,&$3);
+    (void)nco_scv_cnf_typ((nc_type)NC_FLOAT,&$1);
+    (void)nco_scv_cnf_typ((nc_type)NC_FLOAT,&$3);
     $$.val.f=powf($1.val.f,$3.val.f);
     $$.type=NC_FLOAT;
   }else{
-    (void)scv_conform_type((nc_type)NC_DOUBLE,&$1);
-    (void)scv_conform_type((nc_type)NC_DOUBLE,&$3);
+    (void)nco_scv_cnf_typ((nc_type)NC_DOUBLE,&$1);
+    (void)nco_scv_cnf_typ((nc_type)NC_DOUBLE,&$3);
     $$.val.d=pow($1.val.d,$3.val.d);
     $$.type=NC_DOUBLE; 
   } /* end else */
 } /* end scv_xpr '^' scv_xpr */
 | POWER '(' scv_xpr ',' scv_xpr ')' { /* fxm: ncap52 this is identical to previous clause except for argument numbering, should be functionalized to use common code */
   if($3.type <= NC_FLOAT && $5.type <= NC_FLOAT) {
-    (void)scv_conform_type((nc_type)NC_FLOAT,&$3);
-    (void)scv_conform_type((nc_type)NC_FLOAT,&$5);
+    (void)nco_scv_cnf_typ((nc_type)NC_FLOAT,&$3);
+    (void)nco_scv_cnf_typ((nc_type)NC_FLOAT,&$5);
     $$.val.f=powf($3.val.f,$5.val.f);
     $$.type=NC_FLOAT;
   }else{ 
-    (void)scv_conform_type((nc_type)NC_DOUBLE,&$3);
-    (void)scv_conform_type((nc_type)NC_DOUBLE,&$5);
+    (void)nco_scv_cnf_typ((nc_type)NC_DOUBLE,&$3);
+    (void)nco_scv_cnf_typ((nc_type)NC_DOUBLE,&$5);
     $$.val.d=pow($3.val.d,$5.val.d);
     $$.type=NC_DOUBLE; 
   } /* end else */
@@ -404,7 +404,7 @@ scv_xpr '+' scv_xpr {
 }
 | FUNCTION '(' scv_xpr ')' {
   if($3.type <= NC_FLOAT) {
-    (void)scv_conform_type((nc_type)NC_FLOAT,&$3);
+    (void)nco_scv_cnf_typ((nc_type)NC_FLOAT,&$3);
     $$.val.f=(*($1->fnc_flt))($3.val.f);
     $$.type=NC_FLOAT;
   }else{
@@ -413,7 +413,7 @@ scv_xpr '+' scv_xpr {
   } /* end else */
 } /* end FUNCTION '(' scv_xpr ')' */
 | CNV_TYPE '(' scv_xpr ')' {
-  (void)scv_conform_type( $1,&$3);
+  (void)nco_scv_cnf_typ( $1,&$3);
   $$=$3;
 }
 | '(' scv_xpr ')' {$$=$2;}
@@ -503,7 +503,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
   scv_sct minus;
   minus.val.b=-1;
   minus.type=NC_BYTE;
-  (void)scv_conform_type($3->type,&minus);
+  (void)nco_scv_cnf_typ($3->type,&minus);
   (void)ncap_var_scv_sub($3,$1);
   $$=ncap_var_scv_mlt($3,minus);
 } /* End Subtraction */

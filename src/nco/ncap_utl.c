@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.102 2004-08-15 07:08:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.103 2004-09-03 23:06:46 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -399,7 +399,7 @@ ncap_var_scv_pwr(var_sct *var,scv_sct scv)
   /* Promote scv and var to NC_FLOAT if necessary since C has no integer empowerment 
      This reduces type conversion warnings (it is not done to avoid overflow) */
   if(var->type < NC_FLOAT) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
-  (void)scv_conform_type(var->type,&scv);
+  (void)nco_scv_cnf_typ(var->type,&scv);
   (void)var_scv_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
 } /* end ncap_var_scv_pwr */
@@ -411,7 +411,7 @@ ncap_scv_var_pwr(scv_sct scv,var_sct *var)
   /* Promote scv and var to NC_FLOAT if necessary since C has no integer empowerment 
      This reduces type conversion warnings (it is not done to avoid overflow) */
   if(var->type < NC_FLOAT) var=nco_var_cnf_typ((nc_type)NC_FLOAT,var);
-  (void)scv_conform_type(var->type,&scv);
+  (void)nco_scv_cnf_typ(var->type,&scv);
   (void)scv_var_pwr(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
   return var;
 } /* end ncap_var_scv_pwr */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.19 2004-03-02 01:05:42 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.20 2004-09-03 23:06:47 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -151,7 +151,7 @@ nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to typ_upk */
   /* Sequence of following commands is important (copy before overwriting!) */
   mss_val_in=var->mss_val;
   mss_val_out.vp=(void *)nco_malloc(nco_typ_lng(mss_val_out_typ));
-  (void)val_cnf_typ(var_in_typ,mss_val_in,mss_val_out_typ,mss_val_out);
+  (void)nco_val_cnf_typ(var_in_typ,mss_val_in,mss_val_out_typ,mss_val_out);
   var->mss_val=mss_val_out;
   /* Free original */
   mss_val_in.vp=nco_free(mss_val_in.vp);
@@ -211,7 +211,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
     /* Sequence of following commands is important (copy before overwriting!) */
     var_in_mss_val=var_out->mss_val;
     var_out->mss_val.vp=(void *)nco_malloc(nco_typ_lng(var_out->type));
-    (void)val_cnf_typ(var_in_typ,var_in_mss_val,var_out_typ,var_out->mss_val);
+    (void)nco_val_cnf_typ(var_in_typ,var_in_mss_val,var_out_typ,var_out->mss_val);
     /* Free original */
     var_in_mss_val.vp=nco_free(var_in_mss_val.vp);
   } /* end if */
@@ -297,7 +297,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
 } /* end nco_var_cnf_typ() */
 
 void
-val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
+nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
 (const nc_type typ_in, /* I [enm] Type of input value */
  ptr_unn val_in, /* I [ptr] Pointer to input value */
  const nc_type typ_out, /* I [enm] Type of output value */
@@ -384,10 +384,10 @@ val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
      value and are thus purely local to this routine. The only thing changed by this
      routine is the contents of the location pointed to by the pointer to the output value. */
   
-} /* end val_cnf_typ */
+} /* end nco_val_cnf_typ */
 
 int /* O [enm] Dummy return */
-scv_conform_type /* [fnc] Convert scalar attribute to typ_new using C implicit coercion */
+nco_scv_cnf_typ /* [fnc] Convert scalar attribute to typ_new using C implicit coercion */
 (const nc_type typ_new, /* I [enm] Type to convert scv_old to */
  scv_sct * const scv_old) /* I/O [sct] Scalar value to convert */
 {
@@ -455,7 +455,7 @@ scv_conform_type /* [fnc] Convert scalar attribute to typ_new using C implicit c
   scv_new.type=typ_new;
   *scv_old=scv_new;
   return 1;      
-} /* end scv_conform_type */
+} /* end nco_scv_cnf_typ */
 
 nc_type /* O [enm] Highest precision of input variables */
 ncap_var_retype /* [fnc] Promote variable to higher common precision */
@@ -482,10 +482,10 @@ ncap_scv_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if n
   if(scv_1->type == scv_2->type){
     return scv_1->type;
   }else if(scv_1->type > scv_2->type){
-    (void)scv_conform_type(scv_1->type,scv_2);
+    (void)nco_scv_cnf_typ(scv_1->type,scv_2);
     return scv_1->type;
   }else{
-    (void)scv_conform_type(scv_2->type,scv_1);
+    (void)nco_scv_cnf_typ(scv_2->type,scv_1);
     return scv_2->type;
   } /* endif */
 } /* end ncap_scv_scv_cnf_typ_hgh_prc */
@@ -504,7 +504,7 @@ ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if n
   if((*var)->type == scv->type){
     return (*var)->type;
   }else if((*var)->type > scv->type){
-    (void)scv_conform_type((*var)->type,scv); 
+    (void)nco_scv_cnf_typ((*var)->type,scv); 
     return (*var)->type;
   }else{
     *var=nco_var_cnf_typ(scv->type,*var);

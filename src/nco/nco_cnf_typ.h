@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.17 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.18 2004-09-03 23:06:47 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -59,14 +59,14 @@ nco_cnv_mss_val_typ  /* [fnc] Convert missing_value, if any, to typ_upk */
  const nc_type mss_val_out_typ); /* I [enm] Type of mss_val on output */
 
 void
-val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
+nco_val_cnf_typ /* [fnc] Copy val_in and typecast from typ_in to typ_out */
 (const nc_type typ_in, /* I [enm] Type of input value */
  ptr_unn val_in, /* I [ptr] Pointer to input value */
  const nc_type typ_out, /* I [enm] Type of output value */
  ptr_unn val_out); /* I [ptr] Pointer to output value */
 
 int /* O [enm] Dummy return */
-scv_conform_type /* [fnc] Convert scalar attribute to typ_new using C implicit coercion */
+nco_scv_cnf_typ /* [fnc] Convert scalar attribute to typ_new using C implicit coercion */
 (const nc_type typ_new, /* I [enm] Type to convert scv_old to */
  scv_sct * const scv_old); /* I/O [sct] Scalar value to convert */
 

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.28 2004-07-24 01:00:50 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.29 2004-09-03 23:06:46 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -952,88 +952,89 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
   
 } /* end ncap_ntl_scn() */
 
-/* scan mask string for ncwa */
-int                          /* O sucess/failure */ 
-ncap_ncwa_scn                /* [fnc] Scan command script, construct I/O lists */
-(prs_sct * const prs_arg,    /* I/O [sct] Global information required in parser routines */
+int /* O [enm] Return code */ 
+ncap_ncwa_scn /* [fnc] Scan command script, construct I/O lists */
+(prs_sct * const prs_arg, /* I/O [sct] Global information required in parser routines */
  const char * const msk_sng, /* I [sng] User-specified script */
- char **msk_nm,               /* O masking variable */
- double *msk_val,            /* O masking value */ 
- int *op_typ_rlt)            /* O Relational operator type */ 
+ char **msk_nm, /* O [sng] Masking variable name */
+ double *msk_val, /* O [frc] Masking value */ 
+ int *op_typ_rlt) /* O [enm] Relational operator type */ 
 {   
   /* Get YYSTYPE prior to calling scanner */
   /*
-   #include "ncap_yacc.h" 
-   extern int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg); 
-   extern int yy_scan_string(const char *);
+    #include "ncap_yacc.h" 
+    extern int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg); 
+    extern int yy_scan_string(const char *);
   */
-
- bool scv_def=False;
- int op_typ=-1;
- int iret=1;
- char *fnl_sng;
- char *msk_nm_LHS=NULL;
- scv_sct scv_out;
   
- int tkn_crr=-1; /* [tkn] Current token, must initialize to non-zero value */
+  bool scv_def=False;
+  int op_typ=-1;
+  int rcd=1;
+  char *fnl_sng;
+  char *msk_nm_LHS=NULL;
+  scv_sct scv_out;
   
- YYSTYPE lval; /* [tkn] Token */
-
- fnl_sng =(char *)nco_malloc( (strlen(msk_sng)+3)*sizeof(char));
-
- 
- (void)strcpy(fnl_sng,msk_sng);
- (void)strcat(fnl_sng,";\n");
- 
- yy_scan_string(fnl_sng);
- 
+  int tkn_crr=-1; /* [tkn] Current token, must initialize to non-zero value */
+  
+  YYSTYPE lval; /* [tkn] Token */
+  
+  fnl_sng=(char *)nco_malloc((strlen(msk_sng)+3UL)*sizeof(char));
+  
+  (void)strcpy(fnl_sng,msk_sng);
+  (void)strcat(fnl_sng,";\n");
+  
+  yy_scan_string(fnl_sng);
+  
   /* While there are more tokens... */
   while(tkn_crr != 0){
     /* ...obtain next token from lexer... */
     tkn_crr=yylex(&lval,prs_arg);
-
+    
     /* ...determine which variables and attributes exist in input file... */
-    switch (tkn_crr){
-      case OUT_VAR:
-        msk_nm_LHS=strdup(lval.var_nm_LHS);
-    	break;
-      case COMPARISON:
-        op_typ=lval.nco_rlt_opr;
-	break;
-      case SCV:	
-	scv_out=lval.scv;
-        scv_def=True;
+    switch(tkn_crr){
+    case OUT_VAR:
+      msk_nm_LHS=strdup(lval.var_nm_LHS);
+      break;
+    case COMPARISON:
+      op_typ=lval.nco_rlt_opr;
+      break;
+    case SCV:	
+      scv_out=lval.scv;
+      scv_def=True;
       break;
     default: 
       /* Tokens that fall through are perfectly safe and normal
 	 Tokens values 1--256 are ASCII characters, values > 256 defined in yy.tab.h */
-      if(dbg_lvl_get() >= 5)(void)fprintf(stderr,"%s: DEBUG Token type %d not handled in ncap_ntl_scn()\n",prg_nm_get(),tkn_crr);
-      /* if a single '=' comes through and op_typ isn't defined then assume it means == */
-
-      if ( tkn_crr == '=' && op_typ==-1 ) op_typ=nco_op_eq;
+      if(dbg_lvl_get() >= 5) (void)fprintf(stderr,"%s: DEBUG Token type %d not handled in ncap_ntl_scn()\n",prg_nm_get(),tkn_crr);
+      
+      /* Assume single '=' means '==' if op_typ is not defined */
+      if(tkn_crr == '=' && op_typ == -1) op_typ=nco_op_eq;
       break;
     } /* end switch */
   } /* end while */
-
-  /* check all three items have been scanned in */
-
-  if( msk_nm_LHS==(char *)NULL ) {
-    fprintf(stderr,"%s: Mask string (%s) doesn't contain a valid variable name\n",prg_nm_get(),msk_sng);
-    iret=0;
-  } else { *msk_nm=msk_nm_LHS; }  
-  if( op_typ==-1 ) {
-    fprintf(stderr,"%s: Mask string (%s) doesn't contain a valid comparison operator\n",prg_nm_get(),msk_sng);
-    iret=0;
-  } else { *op_typ_rlt=op_typ;}  
-  if( scv_def==False ) {
-    fprintf(stderr,"%s: Mask string (%s) doesn't contain a valid number\n",prg_nm_get(),msk_sng);
-    iret=0;
-  } else { 
-   (void)scv_conform_type((nc_type)NC_DOUBLE,&scv_out);
-   *msk_val=scv_out.val.d;
-  }
-
-  return iret;
+  
+  /* Check all three items have been scanned in */
+  if(msk_nm_LHS == (char *)NULL){
+    (void)fprintf(stderr,"%s: Mask string (%s) does not contain valid variable name\n",prg_nm_get(),msk_sng);
+    rcd=0;
+  }else{
+    *msk_nm=msk_nm_LHS;
+  } /* endif */
+  if(op_typ == -1){
+    (void)fprintf(stderr,"%s: Mask string (%s) does not contain valid comparison operator\n",prg_nm_get(),msk_sng);
+    rcd=0;
+  }else{
+    *op_typ_rlt=op_typ;
+  } /* endif */
+  if(scv_def == False){
+    (void)fprintf(stderr,"%s: Mask string (%s) does not contain valid number\n",prg_nm_get(),msk_sng);
+    rcd=0;
+  }else{ 
+    (void)nco_scv_cnf_typ((nc_type)NC_DOUBLE,&scv_out);
+    *msk_val=scv_out.val.d;
+  } /* endif */
+  
+  return rcd;
   
 } /* end ncap_ncwa_scn() */
 
