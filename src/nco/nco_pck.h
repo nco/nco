@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.14 2004-08-12 05:00:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.15 2004-08-12 05:07:00 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -44,10 +44,22 @@ enum nco_pck_typ{ /* [enm] Packing type */
 extern "C" {
 #endif /* __cplusplus */
 
+void
+nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
+(const var_sct * const var_in, /* I [ptr] Variable in original disk state */
+ var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be altered */
+ int nco_pck_typ); /* I [enm] Packing type */
+  
+void
+nco_pck_val /* [fnc] Pack variable according to packing specification */
+(var_sct * const var_in, /* I [ptr] Variable in original disk state */
+ var_sct * var_out, /* I/O [ptr] Variable after packing/unpacking operation */
+ int nco_pck_typ); /* I [enm] Packing type */
+
 int /* O [enm] Packing type */
 nco_pck_typ_get /* [fnc] Convert user-specified packing type to key */
 (const char *nco_pck_sng); /* [sng] User-specified packing type */
-
+  
 bool /* O [flg] Variable is packed on disk */
 nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 (const int nc_id, /* I [idx] netCDF file ID */
