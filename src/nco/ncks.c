@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.88 2003-08-14 04:01:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.89 2003-08-14 14:04:52 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.88 2003-08-14 04:01:48 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.88 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.89 2003-08-14 14:04:52 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.89 $";
   
   extern char *optarg;
   
@@ -311,7 +311,9 @@ main(int argc,char **argv)
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&glb_att_nbr,&rec_dmn_id);
   
   /* Form initial extraction list from user input */
-  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
+  /*  xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr); */
+  /* Form initial extraction list from user input which may include meta characters*/
+  xtr_lst=nco_var_lst_mk_meta(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
 
   /* Change included variables to excluded variables */
   if(EXCLUDE_INPUT_LIST) xtr_lst=nco_var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
