@@ -1,3 +1,16 @@
+2000-09-21  Charlie Zender  <zender@uci.edu>
+
+	* Fixed one-line bug where ncwa min,max,ttl cases fell
+	through to error exit rather than doing nothing with weights
+
+	* Adding critical regions about netCDF library calls appeared to
+	work. ncwa and ncra/ncea now give repeatable, correct answers when
+	multithreaded. Speedups appear to be about ~30--40% on small
+	numbers of typical GCM files when using 4 threads. Performance
+	appears to level out by 4 threads, although more timing is
+	necessary. For example, ncwa is now spending about 50% on I/O and
+	50% on computation.
+
 2000-09-20  Charlie Zender  <zender@uci.edu>
 
 	* Added OpenMP critical regions to var_get() and var_refresh()

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.47 2000-09-21 21:48:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.48 2000-09-22 00:15:18 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.47 2000-09-21 21:48:49 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.47 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.48 2000-09-22 00:15:18 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.48 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -495,7 +495,7 @@ main(int argc,char **argv)
   /* Normalize, multiply, etc where necessary */
   if(prg == ncra || prg == ncea){
 #ifdef _OPENMP
-#pragma omp parallel for default(none) private(idx) shared(nbr_var_prc,nco_op_typ,var_prc_out,var_prc)
+#pragma omp parallel for private(idx) shared(nbr_var_prc,nco_op_typ,var_prc_out,var_prc)
 #endif /* not _OPENMP */
     for(idx=0;idx<nbr_var_prc;idx++){
       switch(nco_op_typ) {
