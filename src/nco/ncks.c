@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.57 2002-05-08 08:44:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.58 2002-05-08 20:35:30 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -99,14 +99,14 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
   char *opt_sng;
-  char fl_bnr[]="/home/zender/nco/data/foo.bnr"; /* [sng] Unformatted binary output file */
+  char *fl_bnr=NULL; /* [sng] Unformatted binary output file */
   char *fl_out;
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.57 2002-05-08 08:44:36 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.57 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.58 2002-05-08 20:35:30 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.58 $";
   
   extern char *optarg;
   
@@ -137,12 +137,13 @@ main(int argc,char **argv)
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
+  fl_bnr=(char *)strdup("ncks.bnr");
   
   /* Get program name and set program enum (e.g., prg=ncra) */
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="aABCcD:d:FHhl:MmOp:qrRs:uv:x";
+  opt_sng="aABb:CcD:d:FHhl:MmOp:qrRs:uv:x";
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
     switch(opt){
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */
@@ -151,8 +152,12 @@ main(int argc,char **argv)
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
       break;
-    case 'B': /* Toggle NCO_BNR_WRT */
-      NCO_BNR_WRT=!NCO_BNR_WRT;
+    case 'B': /* Set NCO_BNR_WRT */
+      NCO_BNR_WRT=True;
+      break;
+    case 'b': /* Set file for binary output */
+      NCO_BNR_WRT=True;
+      fl_bnr=(char *)strdup(optarg);
       break;
     case 'C': /* Extraction list should include all coordinates associated with extracted variables? */
       PROCESS_ASSOCIATED_COORDINATES=False;

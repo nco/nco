@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.10 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.11 2002-05-08 20:35:30 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -33,7 +33,7 @@ enum nco_fl_typ{ /* [enm] File type */
 /* Utility Routines */
 void nco_err_exit(int,char *);
 char *nco_typ_sng(nc_type);
-char *c_type_nm(nc_type);
+char *c_typ_nm(nc_type);
 char *fortran_type_nm(nc_type);
 void nco_dfl_case_nctype_err(void);
 int nco_typ_lng(nc_type);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.22 2002-05-08 08:00:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.23 2002-05-08 20:35:30 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -106,11 +106,11 @@ nco_typ_sng /* [fnc]   */
 } /* end nco_typ_sng() */
 
 char *
-c_type_nm /* [fnc]   */
+c_typ_nm /* [fnc]   */
 (nc_type type)
 /*  
    nc_type type: I netCDF type
-   char *c_type_nm(): O string describing type
+   char *c_typ_nm(): O string describing type
 */
 {
   /* Purpose: Divine internal (native) C type string from netCDF external type enum
@@ -121,9 +121,9 @@ c_type_nm /* [fnc]   */
   case NC_DOUBLE:
     return "double";
   case NC_INT:
-    return "long";
+    return "signed long int";
   case NC_SHORT:
-    return "short";
+    return "signed short int";
   case NC_CHAR:
     return "unsigned char";
   case NC_BYTE:
@@ -133,7 +133,7 @@ c_type_nm /* [fnc]   */
 
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
   return (char *)NULL;
-} /* end c_type_nm() */
+} /* end c_typ_nm() */
 
 char *
 fortran_type_nm /* [fnc]   */
