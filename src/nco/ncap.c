@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.33 2001-10-31 06:28:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.34 2001-11-16 12:27:14 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -70,7 +70,7 @@ lex.yy.c:1060: warning: `yyunput' defined but not used
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
-#include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
+#include "nco_netcdf.h"  /* neCDF wrapper functions */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
@@ -85,29 +85,14 @@ lex.yy.c:1060: warning: `yyunput' defined but not used
 #endif /* not AIX */
 #endif /* not LINUX */
 
+
+
+
 int 
 main(int argc,char **argv)
 {
   extern int yyparse (void *); /* Prototype here as in bison.simple to avoid compiler warning */
 
-  /* rank reducers: min max sdn */
-  /* binary math functions: pow atan2 mod */
-  /* relational operators: > >= < <= == != */
-  /* do not return floats: abs */
-  /* can not find on cray: expm1,lgamma,log1p */
-
-  /* Place function names and entry points in symbol table before processing input tokens */
-  extern double acos();
-  extern double asin();
-  extern double atan();
-  extern double cos();
-  extern double exp();
-  extern double gamma();
-  extern double log();
-  extern double log10();
-  extern double sin();
-  extern double sqrt();
-  extern double tan();
 
   extern FILE *yyin;
 
@@ -130,21 +115,23 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
   char *spt_arg[73];
+  char *spt_arg_cat;
   char *opt_sng;
   char *fl_out;
   char *fl_out_tmp;
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.33 2001-10-31 06:28:30 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.33 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.34 2001-11-16 12:27:14 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.34 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
   
   extern char *optarg;
   extern int optind;
-
+  
+  
   int idx;
   int in_id;  
   int int_foo;
@@ -162,7 +149,10 @@ main(int argc,char **argv)
   int opt;
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int rcd=NC_NOERR; /* [rcd] Return code */
-  
+  int slen;
+  int spt_arg_len;
+  int nbr_att=0;    /* Contains the size of att_lst */ 
+
   lmt_sct *lmt=NULL_CEWI;
   
   nm_id_sct *dmn_lst;
@@ -177,20 +167,13 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   
-  /* prs_sct must be consistent between ncap.y and ncap.c
-     fxm: Is there a way to define prs_sct in only one place? */
-  typedef struct{
-    char *fl_in;
-    int in_id;  
-    char *fl_out;
-    int out_id;  
-    char *sng;
-    dmn_sct **dim;
-    int nbr_dmn_xtr;
-  } prs_sct;
+  aed_sct *att_lst[500]; /* Structure filled out by yyparse , contains attributes to write to disk */
+                         /* Can be realloced in yyparse */
   prs_sct prs_arg;
 
-  /* Start the clock and save the command line */ 
+  
+ 
+    /* Start the clock and save the command line */ 
   cmd_ln=cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
   time_bfr_srt=ctime(&clock); time_bfr_srt=time_bfr_srt; /* Avoid compiler warning until variable is used for something */
@@ -285,7 +268,12 @@ main(int argc,char **argv)
       exit(EXIT_SUCCESS);
       break;
     case 's': /* Copy command script for later processing */
-      spt_arg[nbr_spt]=(char *)strdup(optarg);
+      
+      /* append a ';' char to the argument if it is not present */
+      slen = strlen(optarg);
+      spt_arg[nbr_spt] = malloc((slen +2)*sizeof(char));
+      strcpy(spt_arg[nbr_spt],optarg);
+      if( optarg[slen-1] != ';') strcat(spt_arg[nbr_spt],";");
       nbr_spt++;
       break;
     case 'S': /* Read command script from file rather than from command line */
@@ -394,10 +382,55 @@ main(int argc,char **argv)
   
   /* Catenate time-stamped command line to "history" global attribute */
   if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
+    (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
+    nco_enddef(out_id);
+
+  /* Set arguments to parser */
+  prs_arg.fl_in=fl_in;
+  prs_arg.in_id=in_id;
+  prs_arg.fl_out=fl_out;
+  prs_arg.out_id=out_id;
+  prs_arg.fl_spt = fl_spt;
+  prs_arg.att_lst = att_lst;
+  prs_arg.nbr_att =&nbr_att;
+  prs_arg.dim=dim;
+  prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
+
+  if(fl_spt == NULL){
+    if(nbr_spt == 0){
+      (void)fprintf(stderr,"%s: ERROR must supply derived field scripts\n",prg_nm_get());
+      exit(EXIT_FAILURE);
+    } /* end if */
+    for(idx=0;idx<nbr_spt;idx++){
+      if(dbg_lvl > 0) (void)fprintf(stderr,"spt_arg[%d]= %s\n",idx,spt_arg[idx]);
+      /*  Concatenate all the arguments into one string */
+      slen = strlen(spt_arg[idx]);
+      if (idx == 0) { 
+       spt_arg_cat = nco_malloc((slen+1)*sizeof(char));
+       strcpy(spt_arg_cat,spt_arg[idx]);
+       spt_arg_len=slen+1;
+       }else{
+	 spt_arg_len+=slen;
+	 spt_arg_cat = nco_realloc(spt_arg_cat,spt_arg_len*sizeof(char)); 
+	 strcat(spt_arg_cat,spt_arg[idx]); 
+       }
+       
+    } /* end for */
+    yy_scan_string(spt_arg_cat);
+    rcd=yyparse((void *)&prs_arg);
+  }else{
+    /* Open script file for reading */
+    if((yyin=fopen(fl_spt,"r")) == NULL){
+      (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt);
+      exit(EXIT_FAILURE);
+    } /* end if */
+    /* Invoke parser on script file */
+    rcd=yyparse((void *)&prs_arg);
+  } /* end else */
   /* Define dimensions in output file */
-  (void)dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
+  nco_redef(out_id);
   /* Define variables in output file, and copy their attributes */
   (void)var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,0);
 
@@ -412,50 +445,6 @@ main(int argc,char **argv)
 
   /* Copy variable data for non-processed variables */
   (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
-
-  (void)fnc_add("acos",acos);
-  (void)fnc_add("asin",asin);
-  (void)fnc_add("atan",atan);
-  (void)fnc_add("cos",cos);
-  (void)fnc_add("exp",exp);
-  (void)fnc_add("gamma",gamma);
-  (void)fnc_add("log",log);
-  (void)fnc_add("log10",log10);
-  (void)fnc_add("sin",sin);
-  (void)fnc_add("sqrt",sqrt);
-  (void)fnc_add("tan",tan);
-
-  /* Set arguments to parser */
-  prs_arg.fl_in=fl_in;
-  prs_arg.in_id=in_id;
-  prs_arg.fl_out=fl_out;
-  prs_arg.out_id=out_id;
-  prs_arg.sng=NULL;
-  prs_arg.dim=dim;
-  prs_arg.nbr_dmn_xtr=nbr_dmn_xtr;
-
-  if(fl_spt == NULL){
-    if(nbr_spt == 0){
-      (void)fprintf(stderr,"%s: ERROR must supply derived field scripts\n",prg_nm_get());
-      exit(EXIT_FAILURE);
-    } /* end if */
-    for(idx=0;idx<nbr_spt;idx++){
-      if(dbg_lvl > 0) (void)fprintf(stderr,"spt_arg[%d]= %s\n",idx,spt_arg[idx]);
-      /* Invoke parser on current script string */
-      prs_arg.sng=spt_arg[idx];
-      /* fxm: Compiling ncap.y with Bison currently may require commenting out prototype for yyparse() in bison.simple
-	 This probably indicates a flaw in my understanding of Bison */
-      rcd=yyparse((void *)&prs_arg);
-    } /* end for */
-  }else{
-    /* Open script file for reading */
-    if((yyin=fopen(fl_spt,"r")) == NULL){
-      (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt);
-      exit(EXIT_FAILURE);
-    } /* end if */
-    /* Invoke parser on script file */
-    rcd=yyparse((void *)&prs_arg);
-  } /* end else */
   
   /* Close input netCDF file */
   rcd=nco_close(in_id);
@@ -470,4 +459,8 @@ main(int argc,char **argv)
   return EXIT_SUCCESS;
 
 } /* end main() */
+
+
+
+
 
