@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.99 2004-07-23 12:51:00 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.100 2004-07-24 01:00:50 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -1025,41 +1025,3 @@ ncap_var_stretch /* [fnc] Stretch variables */
   /* Variables now conform */
   return DO_CONFORM;
 } /* end ncap_var_stretch() */
-
-
-aed_sct *  /* O [idx] Location of attribute in list */
-ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribute */
-(const char * const var_nm, /* I [sng] Variable name */
- const char * const att_nm, /* I [sng] Attribute name */
- prs_sct *  prs_arg,   /* contains attribute list */       
- const bool update) /* I [flg] Delete existing value or add new attribute to list */
-{
-  int idx;
-  int size;
-  aed_sct *ptr_aed;
-
-  size=*(prs_arg->nbr_att);
-
-  for(idx=0;idx<size;idx++){
-    ptr_aed=(*(prs_arg->att_lst))[idx];
-    
-    if(strcmp(ptr_aed->att_nm,att_nm) || strcmp(ptr_aed->var_nm,var_nm)) 
-       continue; 
-
-    if(update) ptr_aed->val.vp=nco_free(ptr_aed->val.vp);   
-    /* Return pointer to list element */
-    return ptr_aed;
-
-  } /* end for */
-   
-  if(!update) return (aed_sct *)NULL;
-
-  *(prs_arg->att_lst)=(aed_sct **)nco_realloc(*(prs_arg->att_lst),(size+1)*sizeof(aed_sct*));
-  ++*(prs_arg->nbr_att);
-  (*(prs_arg->att_lst))[size]=(aed_sct *)nco_malloc(sizeof(aed_sct));
-  (*(prs_arg->att_lst))[size]->var_nm=strdup(var_nm);
-  (*(prs_arg->att_lst))[size]->att_nm=strdup(att_nm);
-
-  return (*(prs_arg->att_lst))[size];
-} /* end ncap_aed_lookup() */
-
