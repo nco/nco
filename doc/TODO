@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.396 2004-09-05 20:13:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.397 2004-09-05 21:41:35 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -46,7 +46,7 @@ nco50. Allow user-specified scalar weights to ncwa
 nco51. Make getopt() a shared subroutine?
 nco53. Add -t wall clock timer option? (then again, users can always use, e.g., timex())
 nco55. nco_var_cnf_dmn() should be able to expand (x,64,128) array into (nx,64,128) array (maybe)
-nco60. Make something that can mask a field without having to average over a dimension
+nco60. Make something that can mask field without having to average over dimension
 nco66. Make history attribute get appended, rather than overwritten, when in append mode
 nco69. ncks option for file/field summary: var name list,var min,max,avg,mss_val,# mss_val,
 nco75. Add warning to ncwa triggered by averaging over lat without weighting by gw with NCAR_CSM_FORMAT
@@ -134,7 +134,7 @@ nco199. Internationalize (i18n) NCO with gettext()
 nco203. Perform benchmarking tests to quantify arithmetic performance improvements, I/O bottlenecks, etc.
 nco206. Add sample NCO script, such as dst.sh, to doc directory
 nco209. Add rules to automagically make MANIFEST and update Sourceforge download area
-nco214. Disable threads > 1 on SGI temporarily because thread #0 is doing all the work, why?
+nco214. Disable threads > 1 on SGI temporarily because thread #0 does all work, why?
 nco215. nco_var_cnf_dmn() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
 nco222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
 nco224. Copy var_nm from command line so program, not system, owns memory. Then modify nco_var_free() to release var_nm structure member, and nco_var_dpl() to copy it. Same for dimension names and nco_dmn_dpl()
@@ -252,27 +252,21 @@ nco404. Does Ersoy's XML stylesheet nco.css work?
 nco406. Add advantages/disadvantages of NCO (compared to e.g., ANTS) description
 nco408. How to get new SDO tasks done? How to advertise pay-per-feature requests? How to evaluate responses? GNOME has something similar
 nco418. ncpdq: Make packing play nice with missing values outside range
+        Currently, variables which are completely missing_value (1.e36) do get "packed" but resulting scale_factor, add_offset equal 1.0e36 rather than scale_factor == 0.0 val = 0.0 add_offset=1.0e36
         ncpdq -D 3 -O -C -P all_new -v mss_val_scl ~/nco/data/in.nc ~/foo.nc
 nco421. ncpdq: Make packing offer to move missing value to inside range
-nco422. ncpdq: packing missing values-ridden variables still leads to memory errors
-        ncpdq -D 3 -O -C -P all_new -v rec_var_dbl_mss_val_dbl_pck ~/nco/data/in.nc ~/foo.nc
+nco422. ncpdq: packing missing values-ridden variables still leads to
+   memory errors, why? Possibly because missing values outside range?
+        valgrind ncpdq -D 3 -O -C -P all_new -v rec_var_dbl_mss_val_dbl_pck ~/nco/data/in.nc ~/foo.nc > ~/foo.valgrind 2>&1
 nco423. ncpdq: test on AIX
 nco425. ncpdq: Make unpacking offer to unpack missing value to preserve its usefulness
 nco426. ncpdq: Make packing offer to pack missing value to the packed type to preserve its usefulness
-nco427. ncpdq: Search and fix all pck_dbg statements
-nco428. make test has serious problems on AIX (threading?)
-nco429. Implement ncunpack with nco_pck_typ_get()
-nco430. Implement ncpdq -U
+nco427. Search and fix all pck_dbg statements
 nco431. Implement ncpdq -P optional options
-nco433. ncpdq: Use gotos to reduce co-repeats in switch statements
-nco434. ncpdq: add packing tests to nco_tst.pl
-nco435. ncpdq: bug in unpacking variables with only add_offset
-ncpdq -O -P all_new -v upk ~/nco/data/in.nc ~/nco/data/foo.nc
-ncpdq -O -P upk -v upk ~/nco/data/foo.nc ~/nco/data/foo2.nc
-RROR: program exiting through nco_err_exit() which will now call abort()
-nco_err_exit(): ERROR nco_def_var
-Not a netCDF data type or _FillValue type mismatch
-nco436. 
+nco436. ncpdq: Make packing play nice with complete missing values
+        Currently, variables which are completely missing_value (1.e36) do get "packed" but resulting scale_factor, add_offset equal 1.0e36 rather than scale_factor == 0.0 val = 0.0 add_offset=1.0e36
+        ncpdq -D 3 -O -C -P all_new -v mss_val_scl ~/nco/data/in.nc ~/foo.nc
+nco437. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

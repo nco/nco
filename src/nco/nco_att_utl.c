@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.40 2004-09-03 23:06:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.41 2004-09-05 21:41:37 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -229,8 +229,8 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
  const bool PCK_ATT_CPY) /* I [flg] Copy attributes "scale_factor", "add_offset" */
 {
   /* Purpose: Copy attributes from input netCDF file to output netCDF file
-     If var_in_id == NC_GLOBAL, then global attributes are copied. 
-     Otherwise only indicated variable's attributes are copied
+     If var_in_id == NC_GLOBAL, then copy global attributes
+     Otherwise copy only indicated variable's attributes
      If PCK_ATT_CPY is false, then copy all attributes except "scale_factor", "add_offset" */
 
   char att_nm[NC_MAX_NAME];
@@ -251,10 +251,14 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     (void)nco_inq_attname(in_id,var_in_id,idx,att_nm);
     rcd=nco_inq_att_flg(out_id,var_out_id,att_nm,(nc_type *)NULL,(long *)NULL);
       
-    /* Do not copy attributes "scale_factor", "add_offset" */
-    if(!PCK_ATT_CPY && (!strcmp(att_nm,"scale_factor") || !strcmp(att_nm,"add_offset"))) continue;
+    /* If instructed not to copy packing attributes... */
+    if(!PCK_ATT_CPY)
+      /* ...verify attributed is "scale_factor" or "add_offset" ... */
+      if(!strcmp(att_nm,"scale_factor") || !strcmp(att_nm,"add_offset"))
+	/* ...then skip remainder of loop, thereby skipping attribute copy... */
+	continue;
     
-    /* Are we about to overwrite an existing attribute? */
+    /* Will copy overwrite an existing attribute? */
     if(rcd == NC_NOERR){
       if(var_out_id == NC_GLOBAL){
 	(void)fprintf(stderr,"%s: WARNING Overwriting global attribute %s\n",prg_nm_get(),att_nm);
@@ -265,10 +269,12 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
     } /* end if */
 
     if(PCK_ATT_CPY || strcmp(att_nm,"missing_value")){
-      /* Copy attribute using fast library routine */
+      /* Copy all attributes except missing_value with fast library routine */
       (void)nco_copy_att(in_id,var_in_id,att_nm,out_id,var_out_id);
     }else{
-      /* Convert "missing_value" attribute to unpacked type then copy pck_dbg */
+      /* Convert "missing_value" attribute to unpacked type then copy 
+	 This imposes NCO convention that missing_value is same type as variable,
+	 whether variable is packed or not */
       aed_sct aed;
       
       long att_sz;
@@ -286,8 +292,7 @@ nco_att_cpy  /* [fnc] Copy attributes from input netCDF file to output netCDF fi
 	nco_exit(EXIT_FAILURE); 
       } /* end if */
       
-      /* Convert "missing_value" to unpacked type before copying pck_dbg */
-      /* fxm: Conversion and storage routine not done yet---use nco_aed_prc() */
+      /* Convert "missing_value" to unpacked type before copying */
       aed.att_nm=att_nm; /* Name of attribute */
       if(var_out_id == NC_GLOBAL){
 	aed.var_nm=NULL;

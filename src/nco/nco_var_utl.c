@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.59 2004-09-04 05:22:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.60 2004-09-05 21:41:37 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -623,9 +623,9 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
      When this occurs, packing flags in variable structure will not match disk
      Thus it is important to refresh (some) packing attributes on each read */
 
-  /* Synchronize missing value type with (possibly) new disk type pck_dbg */
-  /* fxm: pck_dbg big bug on non-packed types in ncra here, double conversion
-     of missing_value occurs */
+  /* Synchronize missing value type with (possibly) new disk type */
+  /* fxm: pck_dbg potential big bug on non-packed types in ncra here,
+     due to potential double conversion of missing_value */
   if(var->pck_dsk) var=nco_cnv_mss_val_typ(var,var->typ_dsk);
 
   /* Type of variable and missing value in memory are now same as type on disk */
