@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.60 2000-09-26 06:24:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.61 2000-09-26 06:58:39 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -1364,16 +1364,22 @@ nco_openmp_ini() /* [fnc] Set up OpenMP multi-threading environment */
      Play nice: Set dynamic threading so that system can make efficiency decisions
      When dynamic threads are set, then system will never allocate more than thr_nbr_max_fsh
   */
-  const int thr_nbr_max_fsh=4; /* [nbr] Maximum number of threads program can use efficiently */
+  int thr_nbr_max_fsh=4; /* [nbr] Maximum number of threads program can use efficiently */
   const int dyn_thr=1; /* [flg] Allow system to dynamically set number of threads */
   int thr_nbr_max; /* [nbr] Maximum number of threads system/user allow program to use */
 
+  /* Disable threading on a per-program basis */
+  /* ncrcat is extremely I/O intensive 
+     Maximum efficiency when one thread reads from input file while other writes to output file */
+  if(strstr(prg_nm_get(),"ncrcat")) thr_nbr_max_fsh=2;
+
   thr_nbr_max=omp_get_max_threads(); /* [nbr] Maximum number of threads system/user allow program to use */
   if(thr_nbr_max > thr_nbr_max_fsh){
-    (void)fprintf(stderr,"%s: INFO Reducing number of threads from %d to %d since %s is I/O intensive and does not scale well above %d threads\n",prg_nm_get(),thr_nbr_max,thr_nbr_max_fsh,prg_nm_get(),thr_nbr_max_fsh);
+    (void)fprintf(stderr,"%s: INFO Reducing number of threads from %d to %d since %s hits I/O bottleneck above %d threads\n",prg_nm_get(),thr_nbr_max,thr_nbr_max_fsh,prg_nm_get(),thr_nbr_max_fsh);
     (void)omp_set_num_threads(thr_nbr_max_fsh); /* [nbr] Maximum number of threads system is allowed */
   } /* endif */      
   (void)omp_set_dynamic(dyn_thr); /* [flg] Allow system to dynamically set number of threads */
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Will allow dynamic threading if possible\n",prg_nm_get());
 #endif /* not _OPENMP */
 
   if(dbg_lvl_get() > 0){
