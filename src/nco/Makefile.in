@@ -198,7 +198,7 @@ ncrename_SOURCES = ncrename.c
 ncrename_LDADD = libnco.la
 
 # ncwa also requires ncap_yacc.y, but that should already be built with ncap
-ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.o
+ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
 ncwa_LDADD = libnco.la
 
 HEADER_SRC = libnco.h nco_cnf_dmn.h nco_fl_utl.h nco_omp.h nco_sng_utl.h \
@@ -314,7 +314,8 @@ am_ncrename_OBJECTS = ncrename.$(OBJEXT)
 ncrename_OBJECTS = $(am_ncrename_OBJECTS)
 ncrename_DEPENDENCIES = libnco.la
 ncrename_LDFLAGS =
-am_ncwa_OBJECTS = ncwa.$(OBJEXT) ncap_utl.$(OBJEXT) ncap_lex.$(OBJEXT)
+am_ncwa_OBJECTS = ncwa.$(OBJEXT) ncap_utl.$(OBJEXT) ncap_lex.$(OBJEXT) \
+	ncap_yacc.$(OBJEXT)
 ncwa_OBJECTS = $(am_ncwa_OBJECTS)
 ncwa_DEPENDENCIES = libnco.la
 ncwa_LDFLAGS =

@@ -53,7 +53,7 @@ ncrename_SOURCES = ncrename.c
 ncrename_LDADD = libnco.la
 
 # ncwa also requires ncap_yacc.y, but that should already be built with ncap
-ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.o
+ncwa_SOURCES = ncwa.c ncap_utl.c ncap_lex.l ncap_yacc.c
 ncwa_LDADD = libnco.la
 
 HEADER_SRC = libnco.h nco_cnf_dmn.h nco_fl_utl.h nco_omp.h nco_sng_utl.h \
