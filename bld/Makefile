@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.242 2004-05-21 18:02:41 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.243 2004-06-07 04:18:58 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -681,6 +681,13 @@ ifeq (${OPTS},X)
  CFLAGS += -g -O
  LDFLAGS += /usr/local/lib/ccmalloc-gcc.o -L/usr/local/lib -lccmalloc -ldl
 endif
+ifneq (${null},$(findstring AMD64,${PVM_ARCH}))
+ifeq (${ABI},64)
+ CFLAGS += -m64
+ FFLAGS += -m64
+ LDFLAGS += -m64
+endif # endif ABI
+endif # endif LINUXAMD64
  C++FLAGS := ${CFLAGS}
 endif # endif GNU Compiler Collection
 # Intel (Kai) C Compiler

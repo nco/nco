@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.16 2004-03-25 12:05:17 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.17 2004-06-07 04:18:59 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -174,9 +174,9 @@ stmt_lst stmt ';' {
 /* Catch most errors then read up to next semi-colon */
 ; /* end stmt_lst */
 
-stmt: /* statement is definition of out_att_xpr or out_var_xpr (LHS tokens)
+stmt: /* Statement is definition of out_att_xpr or out_var_xpr (LHS tokens)
 	 in terms of scv_xpr, var_xpr, and sng_xpr (RHS tokens). 
-	 All permutations are valid so this rule has 6 possible actions */
+	 All permutations are valid so this rule has six possible actions */
 IF '(' bln_xpr ')' stmt %prec LOWER_THAN_ELSE {
   /* LMB92 p. 234 */
   ;
@@ -242,7 +242,7 @@ PRINT '(' var_xpr ')' ';' {
   aed_sct *ptr_aed;
   
   if($3->nbr_dim < 2){
-     ptr_aed=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg),True);
+    ptr_aed=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg),True);
     ptr_aed->sz=$3->sz;
     ptr_aed->type=$3->type;
     ptr_aed->val.vp=(void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));

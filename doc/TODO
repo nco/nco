@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.308 2004-06-05 00:32:40 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.309 2004-06-07 04:18:59 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -195,7 +195,7 @@ nco327. Consolidate/coordinate letters of support for prp_nco
 nco328. Ability to reverse specified dimensions (use negative stride?)
 nco329. Ability to rearrange dimensions
 nco333. Clean up preprocessor symbols with cd ~/nco/src/nco;ifnames *.c
-nco335. ncflint: implement algorithms two and three as options?
+nco335. ncflint: implement interpolation/mss_val algorithms two and three as options?
 nco336. 
 
 ncap-specific items:
@@ -242,8 +242,8 @@ bld29. RedHat 9 does not build with --enable-*-customize because of flex warning
 bld30. Search for libstdc++ with AIX/DODS/GCC breaks NCO build
 bld32. Why have --enable-shared and --enable-static both default true? override one?
 bld33. Use PACKAGE_BUGREPORT, PACKAGE_NAME, PACKAGE_STRING, PACKAGE_TARNAME, PACKAGE_VERSION?
-bld34. Make sure make install installs nco_*.hh and libnco_c++.hh in include dir
-bld35. 
+bld35. Add pgcc, pgCC switches to configure.in 
+bld36. 
 
 ************************************************************************
 End NCO Wish list

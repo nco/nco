@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.82 2004-06-03 05:51:52 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.83 2004-06-07 04:18:58 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate NCO ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -168,6 +168,13 @@ AC_CHECK_LIB([netcdf],[nc_open],[
 	    sparc-sun-solaris2 ) 
 		case ${CC} in
 		    cc ) CFLAGS="${CFLAGS} -xarch=v9" ; LDFLAGS="${LDFLAGS} -xarch=v9" ; ;;
+		esac
+		;;
+	    x86_64-unknown-linux-gnu )
+		case ${CC} in
+		    gcc ) CFLAGS="${CFLAGS} -m64" ; LDFLAGS="${LDFLAGS} -m64" ; ;;
+# fxm: Add pgcc switches
+#		    pgcc ) CFLAGS="${CFLAGS} -64 -mips4" ; LDFLAGS="${LDFLAGS} -64" ; ;;
 		esac
 		;;
 	esac	     

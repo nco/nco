@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.84 2004-06-03 05:52:42 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.85 2004-06-07 04:18:59 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.5 are ready. 
 
@@ -29,13 +29,13 @@ Enjoy,
 Charlie
 
 Feature changes:
-1. none
+1. None
 
 Bug-fixes:
-1. ncflint is commutative when weights are equal
+1. None
 
 Build changes:
-1. Install nco_*.hh and libnco_c++.hh in include directory
+1. Implement -m64 option for ABI=64 with LINUXAMD64
 
 Other user-visible changes:
 1. None
