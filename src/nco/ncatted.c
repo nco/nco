@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.47 2002-08-21 11:47:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.48 2002-12-13 19:48:56 rorik Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -101,6 +101,10 @@
    Verify results:
    ncks -C -h foo.nc | m */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
+
 /* Standard C headers */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
@@ -109,7 +113,9 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
-
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>  /* getopt_long */
+#endif  /* HAVE_GETOPT_H
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
 #include "nco_netcdf.h" /* netCDF 3.0 wrapper functions */
@@ -118,7 +124,6 @@
 #define MAIN_PROGRAM_FILE
 #include "nco.h" /* NCO definitions */
 #include "libnco.h" /* netCDF operator library */
-
 int 
 main(int argc,char **argv)
 {
@@ -141,8 +146,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.47 2002-08-21 11:47:42 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.47 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.48 2002-12-13 19:48:56 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.48 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -161,6 +166,23 @@ main(int argc,char **argv)
 
   time_t clock;
 
+#ifdef HAVE_GETOPT_LONG
+  static struct option long_options[] =
+    {
+      {"append",  no_argument,  0,  'A'},
+      {"attribute", required_argument, 0, 'a'},
+      {"debug", required_argument, 0, 'D'},
+      {"history", no_argument, 0, 'h'},
+      {"local", no_argument, 0, 'l'},
+      {"overwrite", no_argument, 0, 'O'},
+      {"path", required_argument, 0, 'p'},
+      {"remove", no_argument, 0, 'R'},
+      {"help", no_argument, 0, '?'},
+      {0, 0, 0, 0}
+    };
+  int option_index = 0;  /* getopt_long stores the option index here. */
+#endif  /* HAVE_GETOPT_LONG */
+
   /* Start the clock and save the command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
@@ -170,8 +192,13 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="Aa:D:hl:Op:Rr";
+  opt_sng="Aa:D:hl:Op:Rr-:";
+#ifdef HAVE_GETOPT_LONG
+  while((opt = getopt_long(argc,argv,opt_sng,long_options,&option_index))
+            != EOF) {
+#else  /* DO NOT HAVE GETOPT_LONG */
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
+#endif /* HAVE_GETOPT_LONG */
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
@@ -202,6 +229,15 @@ main(int argc,char **argv)
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
       nco_exit(EXIT_SUCCESS);
+      break;
+    case '?': /* Print proper usage */
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+      break;
+    case '-': /* notify that long options are not allowed */
+      (void)printf("long options are not available in this build.\n");
+      (void)printf("use single-letter options instead.\n");
+      nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
       (void)nco_usg_prn();

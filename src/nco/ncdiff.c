@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.53 2002-09-03 01:19:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.54 2002-12-13 19:48:57 rorik Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -62,6 +62,9 @@
    Test nco_var_cnf_dmn:
    ncks -O -v scalar_var in.nc foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; ncdiff -O -v four_dmn_rec_var in.nc foo.nc foo2.nc
  */
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
 
 /* Standard C headers */
 #include <math.h> /* sin cos cos sin 3.14159 */
@@ -71,6 +74,9 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>  /* getopt_long */
+#endif  /* HAVE_GETOPT_H
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -111,8 +117,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.53 2002-09-03 01:19:54 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.53 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.54 2002-12-13 19:48:57 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.54 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -159,6 +165,29 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   
+#ifdef HAVE_GETOPT_LONG
+  static struct option long_options[] =
+    {
+      {"append",  no_argument,  0,  'A'},
+      {"coords", no_argument, 0, 'c'},
+      {"nocoords", no_argument, 0, 'C'},
+      {"debug", required_argument, 0, 'D'},
+      {"dimension", required_argument, 0, 'd'},
+      {"fortran", no_argument, 0, 'f'},
+      {"history", no_argument, 0, 'h'},
+      {"local", no_argument, 0, 'l'},
+      {"overwrite", no_argument, 0, 'O'},
+      {"path", required_argument, 0, 'p'},
+      {"remove", no_argument, 0, 'R'},
+      {"revision", no_argument, 0, 'r'},
+      {"variable", required_argument, 0, 'v'},
+      {"exclude", no_argument, 0, 'x'},
+      {"help", no_argument, 0, '?'},
+      {0, 0, 0, 0}
+    };
+  int option_index = 0;  /* getopt_long stores the option index here. */
+#endif  /* HAVE_GETOPT_LONG */
+
   /* Start the clock and save the command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
@@ -168,8 +197,13 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="ACcD:d:Fhl:Op:rRv:x";
+  opt_sng="ACcD:d:Fhl:Op:rRv:x-:";
+#ifdef HAVE_GETOPT_LONG
+  while((opt = getopt_long(argc,argv,opt_sng,long_options,&option_index))
+            != EOF) {
+#else  /* DO NOT HAVE GETOPT_LONG */
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
+#endif /* HAVE_GETOPT_LONG */
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
@@ -215,6 +249,15 @@ main(int argc,char **argv)
       break;
     case 'x': /* Exclude rather than extract variables specified with -v */
       EXCLUDE_INPUT_LIST=True;
+      break;
+    case '?': /* Print proper usage */
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+      break;
+    case '-': /* notify that long options are not allowed */
+      (void)printf("long options are not available in this build.\n");
+      (void)printf("use single-letter options instead.\n");
+      nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
       (void)nco_usg_prn();

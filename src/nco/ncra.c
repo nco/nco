@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.76 2002-09-03 01:19:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.77 2002-12-13 19:48:57 rorik Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -35,6 +35,9 @@
 #include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
 #include <unistd.h> /* all sorts of POSIX stuff */
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>  /* getopt_long */
+#endif  /* HAVE_GETOPT_H
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -83,8 +86,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.76 2002-09-03 01:19:54 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.76 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.77 2002-12-13 19:48:57 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.77 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -135,6 +138,32 @@ main(int argc,char **argv)
   var_sct **var_prc;
   var_sct **var_prc_out;
   
+#ifdef HAVE_GETOPT_LONG
+  static struct option long_options[] =
+    {
+      {"append",  no_argument,  0,  'A'},
+      {"coords", no_argument, 0, 'c'},
+      {"nocoords", no_argument, 0, 'C'},
+      {"debug", required_argument, 0, 'D'},
+      {"dimension", required_argument, 0, 'd'},
+      {"fortran", no_argument, 0, 'F'},
+      {"history", no_argument, 0, 'h'},
+      {"local", no_argument, 0, 'l'},
+      {"nintap", required_argument, 0, 'n'},
+      {"overwrite", no_argument, 0, 'O'},
+      {"path", required_argument, 0, 'p'},
+      {"pack", required_argument, 0, 'P'},
+      {"remove", no_argument, 0, 'R'},
+      {"revision", no_argument, 0, 'r'},
+      {"variable", required_argument, 0, 'v'},
+      {"exclude", no_argument, 0, 'x'},
+      {"math", required_argument, 0, 'y'},
+      {"help", no_argument, 0, '?'},
+      {0, 0, 0, 0}
+    };
+  int option_index = 0;  /* getopt_long stores the option index here. */
+#endif  /* HAVE_GETOPT_LONG */
+
 #ifdef _LIBINTL_H
   setlocale(LC_ALL,""); /* LC_ALL sets all localization tokens to same value */
   bindtextdomain("nco","/home/zender/share/locale"); /* ${LOCALEDIR} is e.g., /usr/share/locale */
@@ -151,8 +180,13 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="ACcD:d:Fhl:n:Op:P:rRv:xy:";
+  opt_sng="ACcD:d:Fhl:n:Op:P:rRv:xy:-:";
+#ifdef HAVE_GETOPT_LONG
+  while((opt = getopt_long(argc,argv,opt_sng,long_options,&option_index))
+            != EOF) {
+#else  /* DO NOT HAVE GETOPT_LONG */
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
+#endif /* HAVE_GETOPT_LONG */
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
@@ -214,6 +248,15 @@ main(int argc,char **argv)
     case 'y': /* Operation type */
       nco_op_typ_sng=(char *)strdup(optarg);
       if(prg == ncra || prg == ncea ) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
+      break;
+    case '?': /* Print proper usage */
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+      break;
+    case '-': /* notify that long options are not allowed */
+      (void)printf("long options are not available in this build.\n");
+      (void)printf("use single-letter options instead.\n");
+      nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
       (void)nco_usg_prn();

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.89 2002-09-03 01:19:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.90 2002-12-13 19:48:58 rorik Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -65,6 +65,9 @@
 /* #include <assert.h> */ /* assert() debugging macro */
 /* #include <errno.h> */ /* errno */
 /* #include <malloc.h> */ /* malloc() stuff */
+#ifdef HAVE_GETOPT_H
+#include <getopt.h>  /* getopt_long */
+#endif  /* HAVE_GETOPT_H
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -112,8 +115,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.89 2002-09-03 01:19:54 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.89 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.90 2002-12-13 19:48:58 rorik Exp $"; 
+  char CVS_Revision[]="$Revision: 1.90 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -167,6 +170,38 @@ main(int argc,char **argv)
   var_sct *wgt_avg=NULL;
   var_sct *wgt_out=NULL;
   
+#ifdef HAVE_GETOPT_LONG
+  static struct option long_options[] =
+    {
+      {"average", required_argument, 0, 'a'},
+      {"append",  no_argument,  0,  'A'},
+      {"coords", no_argument, 0, 'c'},
+      {"nocoords", no_argument, 0, 'C'},
+      {"debug", required_argument, 0, 'D'},
+      {"dimension", required_argument, 0, 'd'},
+      {"fortran", no_argument, 0, 'F'},
+      {"history", no_argument, 0, 'h'},
+      {"here", no_argument, 0, 'H'},
+      {"midpoint", no_argument, 0, 'I'},
+      {"local", no_argument, 0, 'l'},
+      {"meta", no_argument, 0, 'm'},
+      {"Meta", no_argument, 0, 'M'},
+      {"nintap", required_argument, 0, 'n'},
+      {"numerator", no_argument, 0, 'N'},
+      {"overwrite", no_argument, 0, 'O'},
+      {"path", required_argument, 0, 'p'},
+      {"remove", no_argument, 0, 'R'},
+      {"revision", no_argument, 0, 'r'},
+      {"variable", required_argument, 0, 'v'},
+      {"normalize-by-tally", no_argument, 0, 'W',},
+      {"exclude", no_argument, 0, 'x'},
+      {"math", required_argument, 0, 'y'},
+      {"help", no_argument, 0, '?'},
+      {0, 0, 0, 0}
+    };
+  int option_index = 0;  /* getopt_long stores the option index here. */
+#endif  /* HAVE_GETOPT_LONG */
+
   /* Start the clock and save the command line */ 
   cmd_ln=nco_cmd_ln_sng(argc,argv);
   clock=time((time_t *)NULL);
@@ -180,8 +215,13 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:xWw:y:";
+  opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:xWw:y:-:";
+#ifdef HAVE_GETOPT_LONG
+  while((opt = getopt_long(argc,argv,opt_sng,long_options,&option_index))
+            != EOF) {
+#else  /* DO NOT HAVE GETOPT_LONG */
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
+#endif /* HAVE_GETOPT_LONG */
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
@@ -273,6 +313,15 @@ main(int argc,char **argv)
       nco_op_typ=nco_op_typ_get(nco_op_typ_sng);
       break;
     case '?': /* Print proper usage */
+      (void)nco_usg_prn();
+      nco_exit(EXIT_FAILURE);
+      break;
+    case '-': /* notify that long options are not allowed */
+      (void)printf("long options are not available in this build.\n");
+      (void)printf("use single-letter options instead.\n");
+      nco_exit(EXIT_FAILURE);
+      break;
+    default: /* Print proper usage */
       (void)nco_usg_prn();
       nco_exit(EXIT_FAILURE);
       break;
