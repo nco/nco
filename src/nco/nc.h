@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.49 2000-09-20 17:55:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.50 2000-09-26 06:19:40 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -512,7 +512,7 @@ ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar dou
  nc_type type); /* I [enm] Type of values pointed to by pointer union */
 
 int /* O [enm] Return code */
-nco_omp_ini(); /* [fnc] Print introductory thread information */
+nco_openmp_ini(); /* [fnc] Set up OpenMP multi-threading environment */
 
 int /* O [enm] Return code */
 nco_var_prc_crr_prn /* [fnc] Print name of current variable */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.62 2000-09-21 21:48:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.63 2000-09-26 06:19:40 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -112,8 +112,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.62 2000-09-21 21:48:49 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.62 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.63 2000-09-26 06:19:40 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.63 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -542,8 +542,8 @@ main(int argc,char **argv)
       (void)var_get(in_id,msk); /* Routine contains OpenMP critical regions */
     } /* end if */
 
-    /* Print introductory thread information */
-    if(dbg_lvl > 0) rcd+=nco_omp_ini();
+    /* Set up OpenMP multi-threading environment */
+    rcd+=nco_openmp_ini();
 
   /* 
      cd ~/nco/bld;make OPTS=D;cd -

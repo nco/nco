@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.48 2000-09-22 00:15:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.49 2000-09-26 06:19:40 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.48 2000-09-22 00:15:18 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.48 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.49 2000-09-26 06:19:40 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.49 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -372,7 +372,7 @@ main(int argc,char **argv)
   } /* end loop over idx */
   
   /* Print introductory thread information */
-  if(dbg_lvl > 0) rcd+=nco_omp_ini();
+  if(dbg_lvl > 0) rcd+=nco_openmp_ini();
   
   /* Loop over input files */
   for(idx_fl=0;idx_fl<nbr_fl;idx_fl++){
