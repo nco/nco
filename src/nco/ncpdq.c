@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.16 2004-08-05 00:01:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.17 2004-08-05 05:12:56 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -98,8 +98,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.16 2004-08-05 00:01:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.16 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.17 2004-08-05 05:12:56 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.17 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:p:Rrt:v:x-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -453,7 +453,7 @@ main(int argc,char **argv)
     /* If record dimension required by re-order of current variable... */
     if(rec_dmn_nm_out_crr){
       /* ...differs from current output record dimension... */
-      if(strstr(rec_dmn_nm_out_crr,rec_dmn_nm_out)){
+      if(strcmp(rec_dmn_nm_out_crr,rec_dmn_nm_out)){
 	/* ...and current output record dimension already differs from input record dimension... */
 	if(REDEFINED_RECORD_DIMENSION){
 	  /* ...then requested re-order requires multiple record dimensions... */

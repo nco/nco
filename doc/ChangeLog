@@ -1,5 +1,8 @@
 2004-08-04  Charlie Zender  <zender@uci.edu>
 
+	* Fix ncpdq bug where record coordinate matching was done with
+	strstr() instead of strcmp()
+
 	* Fix ncpdq dimension reversal list processing
 
 	* Make all error exits go through nco_err_exit() so that error

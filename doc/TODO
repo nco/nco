@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.362 2004-08-05 00:13:54 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.363 2004-08-05 05:12:55 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -238,7 +238,8 @@ nco369. make sure strcmp is used for comparison, rather than strstr
 nco372. Update man pages for -o, -t, stdin features
 nco374. ncwa: re-write ncwa so, like ncpdq, ncwa re-arranges output metadata prior to calling nco_var_dfn()
 nco375. Do something consistent with: nco_exit(EXIT_FAILURE)
-nco376. 
+nco376. ncpdq: unable to find record dimension with
+ncpdq -D 5 -O -v PS,time -a lon,lat ~/nco/data/in.nc ~/foo.nc
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
