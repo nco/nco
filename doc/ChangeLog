@@ -1,5 +1,7 @@
 1999-04-20  Charlie Zender  <zender@flagstaff.cgd.ucar.edu>
 
+	* Tagged and released this as nco1_1_25
+
 	* New version requires -lm for log() and ceil() functions
 	Added -lm to Makefile for some architecture which were missing it
 	
