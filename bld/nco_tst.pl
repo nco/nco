@@ -242,6 +242,12 @@ $expected='ncks: ERROR User-specified dimension index range 2 <= time <=  does n
 ####################
 $operator="ncpdq";
 ####################
+$test[0]='ncpdq -O -a -lat -v lat in.nc foo.nc';
+$test[1]='ncks -C -H -s "%g" -v lat -d lat,0 foo.nc';
+$description=" reverse coordinate";
+$expected= 90 ; 
+&go();
+
 $test[0]='ncpdq -O -a -lat,-lev,-lon -v three_dmn_var in.nc foo.nc';
 $test[1]='ncks -C -H -s "%f" -v three_dmn_var -d lat,0 -d lev,0 -d lon,0 foo.nc';
 $description=" reverse three dimensional variable";

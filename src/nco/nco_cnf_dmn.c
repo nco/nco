@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.38 2004-08-06 23:56:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.39 2004-08-07 21:16:03 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -456,8 +456,8 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     dmn_rvr_in[dmn_in_idx]=False;
   } /* end if */
 
-  /* Scalars and 1-D variables are never altered by dimension re-ordering */
-  if(dmn_in_nbr <= 1) return rec_dmn_nm_out;
+  /* Scalars are never altered by dimension re-ordering or reversal */
+  if(dmn_in_nbr < 1) return rec_dmn_nm_out;
   
   /* On entry to this section of code, we assume:
      1. var_out duplicates var_in */

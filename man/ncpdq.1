@@ -1,4 +1,4 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.4 2004-08-05 06:05:30 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.5 2004-08-07 21:16:03 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncpdq 
 .\" Usage:
 .\" nroff -man ~/nco/man/ncpdq.1
@@ -47,9 +47,9 @@ e.g.,
 .BR "-a lon,lat".
 To reverse a dimension, prefix its name with a negative sign in the
 dimension list, e.g., 
-.BR -a -lat . 
+.BR "-a -lat". 
 Re-ordering and reversal may be performed simultaneously, e.g.,
-.BR -a lon,-lat,time,-lev . 
+.BR "-a lon,-lat,time,-lev". 
 
 Users may specify any permutation of dimensions, including
 permutations which change the record dimension identity.
@@ -60,7 +60,7 @@ The specified re-ordering will fail if it requires creating more than
 one record dimension amongst all the output variables.
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.4 2004-08-05 06:05:30 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.5 2004-08-07 21:16:03 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker

@@ -1,3 +1,15 @@
+2004-08-07  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_9_8
+	Changes since nco-2_9_7: 1. ncpdq, 2. ncwa --msk_sng consolidated
+	mask switch, and 3. C99 
+
+	* Fixed bug where nco_var_dmn_rdr_mtd() returned before reversal
+	flag list created for 1-D arrays. This cause reversal of 1-D
+	arrays to fail (do nothing).
+
+	* Made valiant stab at ncpdq documentation. Ran out of steam.
+
 2004-08-06  Charlie Zender  <zender@uci.edu>
 
 	* split ncpdq var list into var_fix and var_prc like in ncwa

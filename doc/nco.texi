@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.255 2004-08-07 06:15:12 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.256 2004-08-07 21:16:03 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -170,8 +170,8 @@ x
 \gdef\shrsubnnn{\shr_{\dmnidx}} % [dmn] Share dimension sub nnn
 \gdef\shrsubsss{\shr_{\shridx}} % [dmn] Share dimension sub sss
 \gdef\dmnsubnnnprm{\dmn_{\dmnidx}^{\prmsbs}} % [vct] Dimension prime sub nnn 
-\gdef\dmnvctprm{{\bf \dmn}^{\prmsbs}}} % [vct] Dimension vector prime
-\gdef\rdrvct{{\bf \rdr}} % [vct] Reorder vector
+\gdef\dmnvctprm{{\bf \dmn}^{\prmsbs}} % [vct] Dimension vector prime
+\gdef\rdrvct{{\bf \rdr}} % [vct] Re-order vector
 \gdef\shrvct{{\bf \shr}} % [vct] Share vector
 \gdef\xxxprm{\xxx^{\prmsbs}} % [ltr] x prime
 
@@ -1877,8 +1877,9 @@ More importantly, mnemonics for single letter options are often
 non-intuitive so that long options provide a more natural way of
 expressing intent.
 
-Extended options are implemented using the system-supplied
-@file{getopt.h} header file, if possible. 
+@cindex long options
+Extended options, also called long options, are implemented using the
+system-supplied @file{getopt.h} header file, if possible. 
 @cindex @code{BSD}
 @cindex @code{getopt}
 @cindex @code{getopt_long}
@@ -6499,7 +6500,10 @@ For more details @xref{Wrapped coordinates}.
 @end html
 @node ncpdq netCDF Permute Dimensions Quickly, ncra netCDF Record Averager, ncks netCDF Kitchen Sink, Operator Reference Manual
 @section @command{ncpdq} netCDF Permute Dimensions Quickly
-@cindex reshape
+@cindex reshape variables
+@cindex permute dimensions
+@cindex reverse dimensions
+@cindex re-order dimensions
 @cindex re-dimension
 @findex ncpdq
 
@@ -6520,7 +6524,8 @@ DESCRIPTION
 and/or reversing dimensions specified in the dimension list.
 The dimension list is a whitespace-free, comma separated list of
 dimension names, optionally prefixed by negative signs, that follows the 
-@samp{-a} switch. 
+@samp{-a} (or long options @samp{--arrange}, @samp{--permute},
+@samp{--re-order}, or @samp{--rdr}) switch.  
 To re-order variables by a subset of their dimensions, specify
 these dimensions in a comma-separated list following @samp{-a}, e.g., 
 @samp{-a lon,lat}. 
@@ -6542,6 +6547,9 @@ one record dimension amongst all the output variables
 may be relaxed in the future with netCDF4.}.
 
 @tex
+NB: fxm ncpdq documentation will evolve through Fall 2004.
+I am unfamiliar with the terminology needed to describe what ncpdq does.
+
 Let $\dmnvct(\xxx)$ represent the dimensionality of the variable $\xxx$. 
 Dimensionality describes the order and sizes of dimensions.
 If $\xxx$ has rank $\dmnnbr$, then we may write $\dmnvct(\xxx)$ as the
@@ -6631,19 +6639,32 @@ Reversing the @code{lat} dimension means re-ordering the data so that
 latitude values decrease monotonically from north to south.
 Accomplish this with
 @example
-ncpdq -a -lat in.nc out.nc # Dangerous, whitespace before "-lat"
-ncpdq -a "-lat" in.nc out.nc # OK, negative sign protected by quotes
-ncpdq -a lon,-lat in.nc out.nc # OK, no whitespace before "-"
-ncpdq --rdr=-lat in.nc out.nc # Preferred, uses "=" not whitespace
+% ncks -C -H -v lat in.nc
+lat[0]=-90
+lat[1]=90
+% ncpdq -a -lat in.nc out.nc # Dangerous, whitespace before "-lat"
+% ncks -C -H -v lat out.nc
+lat[0]=90
+lat[1]=-90
 @end example
-Quotes can help protect negative signs that should indicate dimension
-reversal from being interpreted by the shell as dashes that indicate
-new command line switches.
-Quotes are recommended when whitespace immediately precedes the
-negative sign.
+This operation reversed the latitude dimension of all variables.
 Re-ordering and reversal may be performed simultaneously, e.g.,
 @example
 ncpdq -a lon,-lat,time,-lev in.nc out.nc
+@end example
+
+Whitespace immediately preceding the negative sign that specifies
+dimension reversal may be dangerous.
+@cindex long options
+@cindex quotes
+Quotes and long options can help protect negative signs that should
+indicate dimension reversal from being interpreted by the shell as
+dashes that indicate new command line switches.
+@example
+ncpdq -a -lat in.nc out.nc # Dangerous? Whitespace before "-lat"
+ncpdq -a "-lat" in.nc out.nc # OK. Quotes protect "-" in "-lat"
+ncpdq -a lon,-lat in.nc out.nc # OK. No whitespace before "-"
+ncpdq --rdr=-lat in.nc out.nc # Preferred. Uses "=" not whitespace
 @end example
 
 @page

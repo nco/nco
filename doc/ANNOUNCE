@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.112 2004-08-05 22:37:50 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.113 2004-08-07 21:16:02 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.7 are ready. 
 
@@ -35,18 +35,17 @@ should now be straightforward and is now on the TODO list.
 
 ncwa used to require three switches to specify a masking operation.
 The new --msk_sng switch consolidates these into one switch:
+
 (Old version) ncwa -m ORO -T gt -M 1.0 in.nc out.nc
 (New version) ncwa --msk_sng="ORO > 1.0" in.nc out.nc
+
 We encourage user to use --msk_sng from now on.
 We plan to deprecate the old -m, -T, and -M usage soon.
 
-3. NCO now requires a C99 compiler to build it. 
+3. NCO now requires a C99 compiler to build.
 We could no longer resist the temptation to use C99 features.
 Building NCO with old (C89) compilers is now iffy and unsupported
 (C89 compilers may work if you add -Drestrict="" to CPPFLAGS).
-
-fxm First, AIX NCO installations should upgrade to this version to get the 
-AIX-specific ncap bug-fix. 
 
 Enjoy,
 Charlie
@@ -54,11 +53,10 @@ Charlie
 Feature changes:
 1. New ncpdq operator
 2. ncwa -z (or --msk_sng, or --mask_string) switch replaces -M -m -T
-   trio of switches (Butowsky) 
+   switch trio (Butowsky) 
 
 Bug-fixes:
-1. fxm: AIX uses NCO-supplied float-valued functions (e.g., cosf())
-2. 
+1. None
 
 Build changes:
 1. RPM builder updated for FC2 i386 and x86_64 (Ed Hill)
@@ -66,9 +64,11 @@ Build changes:
    Debian is switching to our packages now that Rorik Peterson is the
    official NCO maintainer for Debian.
 3. C99 compiler now required
+4. Homepage has better documentation of binary NCO distributions for 
+   Debian, Fedora, Gentoo, and Mac OS X.
 
 Other user-visible changes:
-1. None
+1. Improved man pages
 
 User-invisible changes:
 1. Improve arithmetic optimizations using C99 restricted pointers

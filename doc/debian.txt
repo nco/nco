@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.27 2004-07-06 22:38:56 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.28 2004-08-07 21:16:03 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -71,17 +71,17 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
    cd ~/nco/bld
    make tags
 # Install correct version numbers before updating Debian
-# tags-query replace 2_9_7 with X_Y_Z+1
-# tags-query replace 2.9.7 with X.Y.Z+1
+# tags-query replace 2_9_8 with X_Y_Z+1
+# tags-query replace 2.9.8 with X.Y.Z+1
 # If tags-query replace does not work, be sure to manually change
 # versions in configure.in, debian/files, doc/ANNOUNCE, doc/debian.txt,
 # doc/index.shtml, doc/nco.texi, doc/nco_dst.pl, doc/VERSION 
    cd ~/nco/debian
-   dch -v 2.9.7-1 # Update changelog
+   dch -v 2.9.8-1 # Update changelog
 # For unknown reason rules file may lose its executable bit
    chmod a+x ~/nco/debian/rules
    cd ~/nco;cvs commit -m "";dpkg-buildpackage -rfakeroot > foo 2>&1
 # Save all files in emacs before tagging
 # Tag CVS code after changing files in ~/nco/debian
-   cd ~/nco;cvs commit -m "";cvs tag -c nco-2_9_7
-   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-2_9_7
+   cd ~/nco;cvs commit -m "";cvs tag -c nco-2_9_8
+   ${HOME}/nco/bld/nco_dst.pl --dbg=2 --bld --cln nco-2_9_8
