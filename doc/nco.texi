@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.39 1999-12-27 03:39:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.40 1999-12-30 02:01:31 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -132,7 +132,7 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 <P>Search for keywords in the (hyper) index at the end of this page</P> 
 @end ifhtml
 
-@c Include the Distribution inside the titlepage so that headings are turned off. 
+@c Include Distribution inside titlepage so that headings are turned off
 @page
 @vskip 0pt plus 1filll
 Copyright @copyright{} @value{NCAR-copyright-years} University
@@ -165,7 +165,7 @@ into another language, under the above conditions for modified versions,
 except that this permission notice may be stated in a translation approved
 by the Free Software Foundation.
 @sp 2
-@c Cover art by Robynn Rudel.
+@c Cover art by Robynn Rudel
 @end titlepage
 
 @node  Top, Foreword, (dir), (dir)
@@ -1635,17 +1635,16 @@ extraction in one operation:
 @example
 ncks -d time,2,,12 8501_8912.nc 8589_03.nc
 @end example
-For more information on @code{ncks} @xref{ncks netCDF Kitchen Sink}.
+@xref{ncks netCDF Kitchen Sink}, for more information on @code{ncks}.
 
 The @var{stride} option is supported by @code{ncra} and @code{ncrcat}
 for the record dimension only.
 This makes it possible, for instance, to average or concatenate regular
 intervals across multi-file input data sets.
-
 @example
-ncks -d time,2,,12 8501_8912.nc 8589_03.nc
+ncra -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8589_03.nc
+ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @end example
-ncrcat -d time,1,100,12 in1.nc in2.nc ... out.nc
 
 @node Missing values, Suppressing interactive prompts, Stride, Common features
 @section Missing values
@@ -2021,7 +2020,7 @@ This allows @code{ncatted} to change the missing values in files from
 different machines to a single value so that the files may then be 
 concatenated together, e.g., by @code{ncrcat}, without losing any
 information.   
-For more information @xref{Missing values}. 
+@xref{Missing values}, for more information.
 
 The key to mastering @code{ncatted} is understanding the meaning of the
 structure describing the attribute modification, @var{att_dsc}.
@@ -2914,6 +2913,48 @@ For a complete description of the @var{stride} argument, @xref{Stride}.
 @cindex @code{-H}
 @item -H 
 Print data to screen.
+Unless otherwise specified (with @code{-s}), each element of the data
+hyperslab is printed on a separate line containing the names, indices,
+and, values, if any, of all of the variables dimensions.
+The dimension and variable indices refer to the location of the
+corresponding data element with respect to the variable as stored on
+disk (i.e., not the hyperslab).
+@example
+% ncks -H -C -v three_dim_var in.nc
+lat[0]=-90 lev[0]=100 lon[0]=0 three_dim_var[0]=0 
+lat[0]=-90 lev[0]=100 lon[1]=90 three_dim_var[1]=1 
+lat[0]=-90 lev[0]=100 lon[2]=180 three_dim_var[2]=2 
+...
+lat[1]=90 lev[2]=1000 lon[1]=90 three_dim_var[21]=21 
+lat[1]=90 lev[2]=1000 lon[2]=180 three_dim_var[22]=22 
+lat[1]=90 lev[2]=1000 lon[3]=270 three_dim_var[23]=23 
+@end example
+Printing the same variable with the @samp{-F} option shows the same
+variable indexed with Fortran conventions
+@example
+% ncks -F -H -C -v three_dim_var in.nc
+lon(1)=0 lev(1)=100 lat(1)=-90 three_dim_var(1)=0 
+lon(2)=90 lev(1)=100 lat(1)=-90 three_dim_var(2)=1 
+lon(3)=180 lev(1)=100 lat(1)=-90 three_dim_var(3)=2 
+...
+@end example
+Printing a hyperslab does not affect the variable or dimension indices
+since these indices are relative to the full variable (as stored in the
+input file), and the input file has not changed.
+However, if the hypserslab is saved to an output file and those values
+are printed, the indices will change:
+@example
+% ncks -H -d lat,90.0 -d lev,1000.0 -v three_dim_var in.nc out.nc
+lat[1]=90 lev[2]=1000 lon[0]=0 three_dim_var[20]=20 
+lat[1]=90 lev[2]=1000 lon[1]=90 three_dim_var[21]=21 
+lat[1]=90 lev[2]=1000 lon[2]=180 three_dim_var[22]=22 
+lat[1]=90 lev[2]=1000 lon[3]=270 three_dim_var[23]=23 
+% ncks -H out.nc
+lat[0]=90 lev[0]=1000 lon[0]=0 three_dim_var[0]=20 
+lat[0]=90 lev[0]=1000 lon[1]=90 three_dim_var[1]=21 
+lat[0]=90 lev[0]=1000 lon[2]=180 three_dim_var[2]=22 
+lat[0]=90 lev[0]=1000 lon[3]=270 three_dim_var[3]=23 
+@end example
 
 @cindex @code{-M}
 @item -M

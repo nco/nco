@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.39 1999-12-27 03:39:51 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.40 1999-12-30 02:01:31 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -61,6 +61,7 @@ Thus the best fix for #116 is to implement #81 ASAP
 120. Allow superfluous, but conforming, files at beginning of ncra, ncrcat,
 just like they are already allowed at end. 
 This means relaxing restriction that first requested record must be in first file.
+ncra -O -d time,11,12 in.nc in.nc foo.nc
 121. Problem reported when mss_val = 0.0 in averagers. C and Fortran 
 versions of var_add_real() etc. do not handle missing_value attributes in 
 exactly the same way. C versions test both operands agains mss_val,
@@ -77,9 +78,6 @@ to be checking whether tally == 0 before checking whether op2 == mss_val
 nco_tst.sh. Appears to be hitting a malloc error deep in netCDF
 library ncclose() when called in nc_utl:fl_out_cls() at end of
 program. 
-130. Cleanup build procedure on IBM SP clusters. Currently leaves
-compiler residue in bld directory
-131. Add some tests for ncra to nco_tst.sh
 132. ncrcat core dumps in malloc deep in nccreate call at 
 nc_utl.c:fl_out_open() line 1635 on ute.ucar.edu with command 
 ncrcat -O in.nc ho.F1.vegAS.moni01.nc
@@ -106,7 +104,10 @@ character ranges relative to disk. Change variable index-ranges to be
 relative to hyperslab to be consistent with all other data types.
 142. Implement some way of discriminating between NUL-terminated
 strings and non-NUL-terminated characters arrays in ncks printouts.
+Perhaps double quotes around former and single quotes around latter
 143. Add switch to turn off non-monotonic warning messages in ncra, ncrcat
+144. Add option(s) to select all N-D variables where N=0,1,2...
+145. Talk to Brian and implement latest netCDF conventions, e.g., time_op
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.6 1999-10-04 05:13:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.7 1999-12-30 02:01:32 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -58,7 +58,7 @@ ncap_write_var(int nc_id,var_sct *var)
   /* Define the variable */ 
   (void)fprintf(stderr,"ncap_write_var(): nm = %s\n",var->nm);
   var_id=ncvardef(nc_id,var->nm,var->type,var->nbr_dim,var->dim_id);
-  /* Take the output file out of define mode */ 
+  /* Take output file out of define mode */ 
   (void)ncendef(nc_id);
   /* Write out data */ 
   if(var->nbr_dim==0){

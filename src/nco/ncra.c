@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.17 1999-12-14 22:39:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.18 1999-12-30 02:01:34 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -67,8 +67,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.17 1999-12-14 22:39:34 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.17 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.18 1999-12-30 02:01:34 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.18 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -197,55 +197,55 @@ main(int argc,char **argv)
   
   /* Parse filename */ 
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
-  /* Make sure the file is on the local system and is readable or die trying */ 
+  /* Make sure file is on local system and is readable or die trying */ 
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open the file for reading */ 
   in_id=ncopen(fl_in,NC_NOWRITE);
   
-  /* Get the number of variables, dimensions, and the record dimension ID for the file */
+  /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)ncinquire(in_id,&nbr_dim_fl,&nbr_var_fl,(int *)NULL,&rec_dim_id);
   
-  /* Form the initial extraction list from the user input */
+  /* Form initial extraction list from user input */
   xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
 
-  /* Change the included variables to excluded variables */ 
+  /* Change included variables to excluded variables */ 
   if(EXCLUDE_INPUT_LIST) xtr_lst=var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
 
-  /* Add all the coordinate variables to the extraction list */ 
+  /* Add all coordinate variables to extraction list */ 
   if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dim_fl,xtr_lst,&nbr_xtr);
 
-  /* Make sure all coordinates associated with each of the variables to be extracted is also on the list */ 
+  /* Make sure coordinates associated extracted variables are also on extraction list */ 
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
-  /* Remove the record coordinate, if any, from the extraction list */ 
+  /* Remove record coordinate, if any, from extraction list */ 
   if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dim_id,xtr_lst,&nbr_xtr);
 
   /* Finally, heapsort the extraction list by variable ID for fastest I/O */ 
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
     
-  /* We now have the final list of variables to extract. Phew. */
+  /* We now have final list of variables to extract. Phew. */
   
-  /* Find the coordinate/dimension values associated with the limits */ 
+  /* Find coordinate/dimension values associated with user-specified limits */ 
   for(idx=0;idx<nbr_lmt;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
   
-  /* Find all the dimensions associated with all variables to be extracted */ 
+  /* Find dimensions associated with variables to be extracted */ 
   dim_lst=dim_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dim_xtr);
 
-  /* Fill in the dimension structure for all the extracted dimensions */ 
+  /* Fill in dimension structure for all extracted dimensions */ 
   dim=(dim_sct **)malloc(nbr_dim_xtr*sizeof(dim_sct *));
   for(idx=0;idx<nbr_dim_xtr;idx++) dim[idx]=dim_fll(in_id,dim_lst[idx].id,dim_lst[idx].nm);
   
-  /* Merge the hyperslab limit information into the dimension structures */ 
+  /* Merge hyperslab limit information into dimension structures */ 
   if(nbr_lmt > 0) (void)dim_lmt_merge(dim,nbr_dim_xtr,lmt,nbr_lmt);
 
-  /* Duplicate the input dimension structures for output dimension structures */ 
+  /* Duplicate input dimension structures for output dimension structures */ 
   dim_out=(dim_sct **)malloc(nbr_dim_xtr*sizeof(dim_sct *));
   for(idx=0;idx<nbr_dim_xtr;idx++){
     dim_out[idx]=dim_dup(dim[idx]);
     (void)dim_xrf(dim[idx],dim_out[idx]); 
   } /* end loop over idx */
 
-  /* Create a stand-alone limit structure just for the record dimension */ 
+  /* Create stand-alone limit structure just for record dimension */ 
   if(prg == ncra || prg == ncrcat){
     if(rec_dim_id == -1){
       (void)fprintf(stdout,"%s: ERROR input file %s lacks a record dimension\n",prg_nm_get(),fl_in);
@@ -271,42 +271,42 @@ main(int argc,char **argv)
     (void)var_dim_xrf(var_out[idx]);
   } /* end loop over idx */
 
-  /* Divide the variable lists into lists of fixed variables and variables to be processed */ 
+  /* Divide variable lists into lists of fixed variables and variables to be processed */ 
   (void)var_lst_divide(var,var_out,nbr_xtr,NCAR_CSM_FORMAT,(dim_sct **)NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
-  /* Open the output file */ 
+  /* Open output file */ 
   fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
 
-  /* Copy all the global attributes */ 
+  /* Copy global attributes */ 
   (void)att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
   
-  /* Catenate the time-stamped command line to the "history" global attribute */ 
+  /* Catenate time-stamped command line to "history" global attribute */ 
   if(HISTORY_APPEND) (void)hst_att_cat(out_id,cmd_ln);
 
-  /* Define the dimensions in the output file */ 
+  /* Define dimensions in output file */ 
   (void)dim_def(fl_out,out_id,dim_out,nbr_dim_xtr);
 
-  /* Define the variables in the output file, and copy their attributes */ 
+  /* Define variables in output file, and copy their attributes */ 
   (void)var_def(in_id,fl_out,out_id,var_out,nbr_xtr,(dim_sct **)NULL,0);
 
-  /* Turn off the default filling behavior to enhance efficiency */ 
+  /* Turn off default filling behavior to enhance efficiency */ 
 #if ( ! defined SUN4 ) && ( ! defined SUN4SOL2 ) && ( ! defined SUNMP )
   (void)ncsetfill(out_id,NC_NOFILL);
 #endif
   
-  /* Take the output file out of define mode */ 
+  /* Take output file out of define mode */ 
   (void)ncendef(out_id);
   
-  /* Zero the start vectors for all the output variables */ 
+  /* Zero start vectors for all output variables */ 
   (void)var_srt_zero(var_out,nbr_xtr);
 
-  /* Copy the variable data for the non-processed variables */ 
+  /* Copy variable data for non-processed variables */ 
   (void)var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
 
-  /* Close the first input netCDF file */ 
+  /* Close first input netCDF file */ 
   (void)ncclose(in_id);
   
-  /* Allocate and, if necesssary, initialize the accumulation space for all processed variables */ 
+  /* Allocate and, if necesssary, initialize accumulation space for processed variables */ 
   for(idx=0;idx<nbr_var_prc;idx++){
     if(prg == ncra || prg == ncrcat){
       /* Only allocate space for one record */ 
@@ -320,12 +320,12 @@ main(int argc,char **argv)
     } /* end if */
   } /* end loop over idx */
   
-  /* Loop over the input files */ 
+  /* Loop over input files */ 
   for(idx_fl=0;idx_fl<nbr_fl;idx_fl++){
     /* Parse filename */ 
     if(idx_fl != 0) fl_in=fl_nm_prs(fl_in,idx_fl,(int *)NULL,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
     if(dbg_lvl > 0) (void)fprintf(stderr,"\nInput file %d is %s; ",idx_fl,fl_in);
-    /* Make sure the file is on the local system and is readable or die trying */ 
+    /* Make sure file is on local system and is readable or die trying */ 
     if(idx_fl != 0) fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
     if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
     in_id=ncopen(fl_in,NC_NOWRITE);
@@ -339,7 +339,7 @@ main(int argc,char **argv)
     /* Is this an ARM-format data file? */
     if(ARM_FORMAT) base_time_crr=arm_base_time_get(in_id);
 
-    /* Perform error checking if there are any variables to be processed in this file */ 
+    /* Perform various error-checks on input file */ 
     if(False) (void)fl_cmp_err_chk();
 
     if(prg == ncra || prg == ncrcat){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.16 1999-12-15 02:51:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.17 1999-12-30 02:01:33 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.16 1999-12-15 02:51:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.16 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.17 1999-12-30 02:01:33 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.17 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -194,7 +194,7 @@ main(int argc,char **argv)
   
   /* Parse filename */ 
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
-  /* Make sure the file is on the local system and is readable or die trying */ 
+  /* Make sure file is on local system and is readable or die trying */ 
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
 
   if(OUTPUT_TO_NEW_NETCDF_FILE){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.42 1999-12-27 03:39:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.43 1999-12-30 02:01:32 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -201,7 +201,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
    bool FORTRAN_STYLE: I switch to determine syntactical interpretation of dimensional indices
  */ 
 {
-  /* Routine to take a parsed list of dimension names, minima, and
+  /* Purpose: Take a parsed list of dimension names, minima, and
      maxima strings and find the appropriate indices into the
      dimensions for the correct formulation of dimension start and
      count vectors, or fail trying. */ 
@@ -250,7 +250,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 
   /* Bomb if dim_sz < 1 */ 
   if(dim_sz < 1){
-    (void)fprintf(stdout,"%s: ERROR Dimension size for \"%s\" is %li but must be > 0 in order to apply limits.\n",prg_nm_get(),lmt.nm,dim_sz);
+    (void)fprintf(stdout,"%s: ERROR Size of dimension \"%s\" is %li in input file, but must be > 0 in order to apply limits.\n",prg_nm_get(),lmt.nm,dim_sz);
     exit(EXIT_FAILURE);
   } /* end if */
   
@@ -268,12 +268,12 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 
   /* If min_sng and max_sng are both NULL then set type to lmt_dim_idx */
   if(lmt.min_sng == NULL && lmt.max_sng == NULL){
-    /* Limiting indices will be set to default extrema later on */
+    /* Limiting indices will be set to default extrema a bit later */
     min_lmt_typ=max_lmt_typ=lmt_dim_idx;
   }else{
     /* min_sng and max_sng are not both NULL */ 
-    /* The limit is a coordinate value if the string contains a decimal point or is in exponential format 
-     Otherwise the limit is interpreted as a zero-based dimension offset */ 
+    /* Limit is coordinate value if string contains decimal point or is in exponential format 
+     Otherwise limit is interpreted as zero-based dimension offset */ 
   
     if(lmt.min_sng != NULL) min_lmt_typ=(strchr(lmt.min_sng,'.') || strchr(lmt.min_sng,'e') || strchr(lmt.min_sng,'E') || strchr(lmt.min_sng,'d') || strchr(lmt.min_sng,'D')) ? lmt_crd_val : lmt_dim_idx;
     if(lmt.max_sng != NULL) max_lmt_typ=(strchr(lmt.max_sng,'.') || strchr(lmt.max_sng,'e') || strchr(lmt.max_sng,'E') || strchr(lmt.max_sng,'d') || strchr(lmt.max_sng,'D')) ? lmt_crd_val : lmt_dim_idx;
@@ -356,7 +356,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     /* Shortcut to avoid indirection */ 
     dim_val_dp=dim.val.dp;
 
-    /* NB: Assuming coordinate is monotonic, then direction of monotonicity is determined by first two elements */ 
+    /* Assuming coordinate is monotonic, direction of monotonicity is determined by first two elements */ 
     if(dim_sz == 1){
       monotonic_direction=increasing;
     }else{
@@ -389,7 +389,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
        /* User did not specify single level, coordinate is wrapped, and both extrema fall outside valid crd range */
        ((lmt.min_val > lmt.max_val) && ((lmt.min_val > dim_max) && (lmt.max_val < dim_min))) ||
        False){
-      (void)fprintf(stdout,"%s: ERROR User-specified range %g <= %s <= %g does not fall within valid range %g <= %s <= %g\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val,dim_min,lmt.nm,dim_max);
+      (void)fprintf(stdout,"%s: ERROR User-specified coordinate value range %g <= %s <= %g does not fall within valid range %g <= %s <= %g\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val,dim_min,lmt.nm,dim_max);
       exit(EXIT_FAILURE);
     } /* end if */
     
@@ -399,7 +399,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     if(lmt.min_sng == NULL) lmt.min_idx=min_idx;
     if(lmt.max_sng == NULL) lmt.max_idx=max_idx;
     
-    /* A single slice requires finding the closest coordinate. */ 
+    /* Single slice requires finding the closest coordinate */ 
     if(lmt.min_val == lmt.max_val){
       double dst_new;
       double dst_old;
@@ -456,15 +456,15 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	} /* end if */
       } /* end else monotonic_direction == decreasing */
 
-      /* The case where both min_idx and max_idx = -1 was flagged as an error above
-	 In the case of a wrapped coordinate, either, but not both, of min_idx or max_idx be flagged with -1
+      /* Case where both min_idx and max_idx = -1 was flagged as an error above
+	 Case of a wrapped coordinate: Either, but not both, of min_idx or max_idx will be flagged with -1
 	 See explanation above */ 
       if(lmt.min_idx == -1L && (lmt.min_val > lmt.max_val)) lmt.min_idx=0L;
       if(lmt.max_idx == -1L && (lmt.min_val > lmt.max_val)) lmt.max_idx=dim_sz-1L;
     
     } /* end if min_val != max_val */
     
-    /* We now have user-specified ranges bracketed */ 
+    /* User-specified ranges are now bracketed */
     
     /* Convert indices of minima and maxima to srt and end indices */ 
     if(monotonic_direction == increasing){
@@ -526,7 +526,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     
     /* Exit if requested indices are not in valid range */ 
     if(lmt.min_idx < 0 || lmt.min_idx >= dim_sz || lmt.max_idx < 0){
-      (void)fprintf(stdout,"%s: ERROR User-specified range %li <= %s <= %li does not fall within valid range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dim_sz-1L);
+      (void)fprintf(stdout,"%s: ERROR User-specified dimension index range %li <= %s <= %li does not fall within valid dimension index range 0 <= %s <= %li\n",prg_nm_get(),lmt.min_idx,lmt.nm,lmt.max_idx,lmt.nm,dim_sz-1L);
       (void)fprintf(stdout,"\n");
       exit(EXIT_FAILURE);
     } /* end if */
@@ -536,26 +536,23 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     if(lmt.id == rec_dim_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
 
     if(!lmt.is_rec_dmn || !lmt.is_usr_spc_lmt || ((prg_get() != ncra) && (prg_get() != ncrcat))){
-      /* For non-record dimensions and for record dimensions where the limit 
-	 was automatically generated (to include the whole file), the starting
-	 and ending indices are simply the minimum and maximum indices already 
-	 in the structure */
+      /* For non-record dimensions and for record dimensions where limit 
+	 was automatically generated (to include whole file), starting
+	 and ending indices are simply minimum and maximum indices already 
+	 in structure */
       lmt.srt=lmt.min_idx;
       lmt.end=lmt.max_idx;
     }else{
-      /* For record dimensions where the user specified a limit, we must
+      /* For record dimensions with user-specified limit, we must
 	 allow for possibility that limit pertains to record dimension of 
 	 a multi-file operator, e.g., ncra.
-	 In this case, the user-specified maximum index may be larger than 
-	 the number of records in this particular file.
+	 In this case, user-specified maximum index may exceed
+	 number of records in this particular file.
 	 Thus lmt.srt does not necessarily equal lmt.min_idx and lmt.end 
-	 does not necessarily equal lmt.max_idx 
-      */ 
-      /* The following contains some infrastructure required to implement stride
-	 argument in multi-file operators.
-	 Note, however, that this implementation is recent and possibly incomplete
-	 Stride is not officially supported on any operator besides ncks */
-      if(lmt.srd != 1L && prg_get() != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument is not supported in any operator except ncks, use at your own risk...\n",prg_nm_get());
+	 does not necessarily equal lmt.max_idx */ 
+      /* Stride is officially supported for ncks (all dimensions), and 
+	 ncra, and ncrcat (record dimension only */
+      if(lmt.srd != 1L && prg_get() != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for a non-record dimension is only supported by ncks, use at your own risk...\n",prg_nm_get());
 
       /* No records were skipped in previous files */
       /* Initialize rec_skp to 0L on first call to lmt_evl() 
@@ -597,7 +594,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	} /* endif user-specified records have already been read */
       }else if(lmt.is_usr_spc_min){
 	/* If min was user specified but max was not, then we know which record to 
-	   start with and we read every file subsequent file */
+	   start with and we read every subsequent file */
 	if(cnt_crr == 0L){
 	  /* Start index is min_idx for first file */
 	  lmt.srt=lmt.min_idx;
@@ -739,7 +736,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     if(first_good_idx_2nd_hyp_slb > lmt.end) lmt.end=last_good_idx_1st_hyp_slb;
   } /* end if */ 
 
-  /* Exit when a valid bracketed range contains no coordinates */ 
+  /* Exit when valid bracketed range contains no coordinates */ 
   if(lmt.cnt == 0){
     if(lmt.lmt_typ == lmt_crd_val) (void)fprintf(stdout,"%s: ERROR Domain %g <= %s <= %g brackets no coordinate values.\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val); 
     if(lmt.lmt_typ == lmt_dim_idx) (void)fprintf(stdout,"%s: ERROR Empty domain for %s\n",prg_nm_get(),lmt.nm); 
@@ -748,11 +745,11 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     
   if(flg_no_data){
     /* This file is superfluous to the specified hyperslab
-       Set the output parameters to a well-defined state
+       Set output parameters to a well-defined state
        This state must not cause ncra or ncrcat to retrieve any data
        Since ncra and ncrcat use loops for the record dimension, this
        may be accomplished by returning loop control values that cause
-       the loop never to be entered, lmt_rec.srt > lmt_rec.end */
+       the loop always be skipped, never entered, lmt_rec.srt > lmt_rec.end */
     lmt.srt=-1;
     lmt.end=lmt.srt-1;
     lmt.cnt=-1;
@@ -1560,7 +1557,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
    char *fl_out_open(): O name of the temporary file actually opened
  */ 
 {
-  /* Open the output file subject to availability and user input. 
+  /* Open output file subject to availability and user input. 
      In accordance with netCDF philosophy a temporary file (based on fl_out and the process ID)
      is actually opened, so that a fatal error will not create the intended output file. */ 
 
@@ -1765,7 +1762,7 @@ var_def(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dim_sct **di
    int nbr_dim_ncl: I number of dimension structures in structure list
 */
 {
-  /* Define the variables in the output file, and copy their attributes */ 
+  /* Define variables in output file, and copy their attributes */ 
 
   /* This function is unusual (for me) in that the dimension arguments are only intended
      to be used by certain programs, those that alter the rank of input variables. If a

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.21 1999-12-14 22:39:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.22 1999-12-30 02:01:31 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -125,7 +125,7 @@ enum lmt_typ{
 typedef struct {
   char *nm;
   int lmt_typ; /* crd_val or dim_idx */
-  /* The following four flags are used only by the multi-file operators */
+  /* Following four flags are used only by multi-file operators ncra and ncrcat: */
   bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
   bool is_usr_spc_min; /* True if user-specified, else False */
   bool is_usr_spc_max; /* True if user-specified, else False */

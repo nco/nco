@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.17 1999-12-27 03:39:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.18 1999-12-30 02:01:33 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -78,8 +78,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.17 1999-12-27 03:39:53 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.17 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.18 1999-12-30 02:01:33 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.18 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -196,7 +196,7 @@ main(int argc,char **argv)
 
   /* Parse filename */ 
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
-  /* Make sure the file is on the local system and is readable or die trying */ 
+  /* Make sure file is on local system and is readable or die trying */ 
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
   /* Open the file for reading */ 
   in_id=ncopen(fl_in,NC_NOWRITE);
@@ -204,33 +204,33 @@ main(int argc,char **argv)
   /* Get the number of variables, dimensions, and global attributes in the file */
   (void)ncinquire(in_id,&nbr_dim_fl,&nbr_var_fl,&nbr_glb_att,&rec_dim_id);
   
-  /* Form the initial extraction list from the user input */ 
+  /* Form initial extraction list from user input */ 
   xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
 
-  /* Change the included variables to excluded variables */ 
+  /* Change included variables to excluded variables */ 
   if(EXCLUDE_INPUT_LIST) xtr_lst=var_lst_xcl(in_id,nbr_var_fl,xtr_lst,&nbr_xtr);
 
-  /* Add all the coordinate variables to the extraction list */ 
+  /* Add all coordinate variables to extraction list */ 
   if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dim_fl,xtr_lst,&nbr_xtr);
 
-  /* Make sure all coordinates associated with each of the variables to be extracted is also on the list */ 
+  /* Make sure coordinates associated extracted variables are also on extraction list */ 
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
   /* Heapsort extraction list alphabetically or by variable ID */ 
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,ALPHABETIZE_OUTPUT);
     
-  /* We now have the final list of variables to extract. Phew. */
+  /* We now have final list of variables to extract. Phew. */
   
-  /* Find the coordinate/dimension values associated with the limits */ 
+  /* Find coordinate/dimension values associated with user-specified limits */ 
   for(idx=0;idx<nbr_lmt;idx++) (void)lmt_evl(in_id,lmt+idx,0L,FORTRAN_STYLE);
   
   if(fl_out != NULL){
     int out_id;  
 
-    /* Open the output file */ 
+    /* Open output file */ 
     fl_out_tmp=fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
     
-    /* Copy all the global attributes */ 
+    /* Copy global attributes */ 
     (void)att_cpy(in_id,out_id,NC_GLOBAL,NC_GLOBAL);
     
     /* Catenate the timestamped command line to the "history" global attribute */ 
@@ -245,12 +245,12 @@ main(int argc,char **argv)
       (void)att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id);
     } /* end loop over idx */
 
-  /* Turn off the default filling behavior to enhance efficiency */ 
+  /* Turn off default filling behavior to enhance efficiency */ 
 #if ( ! defined SUN4 ) && ( ! defined SUN4SOL2 ) && ( ! defined SUNMP )
     (void)ncsetfill(out_id,NC_NOFILL);
 #endif
   
-    /* Take the output file out of define mode */ 
+    /* Take output file out of define mode */ 
     (void)ncendef(out_id);
     
     /* Copy the variable data */ 
