@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.87 2000-08-25 16:45:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.88 2000-08-25 22:48:00 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -1046,16 +1046,28 @@ var_refresh(int nc_id,var_sct *var)
    var_sct *var: I/O variable structure
  */ 
 {
-  /* Routine to update the ID, number of dimensions, and missing_value attribute for the given variable */
+  /* Purpose: Update variable ID, number of dimensions, and missing_value attribute for given variable
+     var_refresh() is called in file loop in multi-file operators because each new file may have 
+     different variable ID and missing_value for same variable.
+     This is necessary, for example, if a computer model runs for awhile on one machine, e.g., SGI,
+     and then the run is restarted on another, e.g., Cray. 
+     Since internal floating point representations differ betwee these architectures, the missing_value
+     representation may differ. 
+     Variable IDs may changes whenever someone fiddles with original model output in some files, 
+     but not others, and then processes all files in a batch.
+     NCO is one of the only tool I know of which makes all of this transparent to the user
+     Thus this capability is very important to maintain
+     Not sure why it is necessary refresh the number of dimensions...but it should not hurt
+   */
 
-  /* Refresh the ID for this variable */ 
+  /* Refresh variable ID */ 
   var->nc_id=nc_id;
   var->id=ncvarid_or_die(var->nc_id,var->nm);
 
-  /* Refresh the number of dimensions for the variable. */
+  /* Refresh number of dimensions in variable */
   (void)ncvarinq(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,&var->nbr_dim,(int *)NULL,(int *)NULL);
 
-  /* Refresh the number of attributes and the missing value attribute, if any */
+  /* Refresh number of attributes and missing value attribute, if any */
   var->has_mss_val=mss_val_get(var->nc_id,var);
 
 } /* end var_refresh() */ 
@@ -6095,8 +6107,6 @@ nco_cnv_dbl_var  /* [fnc] Revert variable to previous type */
 (var_sct *var) /* I [sct] Variable to be reverted */
 {
   /* Purpose: Revert variable to previous type */
-
-  int rcd=0; /* O [enm] netCDF error code */
 
   if(var->typ_prv != 0){ /* fxm: Hardcoded 0 is unsafe */
     var=var_conform_type(var->typ_prv,var);

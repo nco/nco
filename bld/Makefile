@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.72 2000-08-25 16:45:13 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.73 2000-08-25 22:47:51 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires: GNU Make. AT&T Make will not understand this.
@@ -51,6 +51,14 @@ ifndef USE_FORTRAN_ARITHMETIC
 # Whether or not to use Fortran arithmetic routines
  USE_FORTRAN_ARITHMETIC := N
 endif
+
+ifndef NETCDF_INC
+ NETCDF_INC := /usr/local/include # Directory containing netcdf.h
+endif
+ifndef NETCDF_LIB
+ NETCDF_LIB := /usr/local/lib # Directory containing libnetcdf.a
+endif
+
 ifdef DODS
  DODS := Y
 endif
@@ -59,13 +67,20 @@ ifndef DODS_ROOT
 # Directory containing libdap++.a, libnc-dods.a
  DODS_ROOT := /usr/local/DODS
 endif
-endif
-ifndef NETCDF_INC
- NETCDF_INC := /usr/local/include # Directory containing netcdf.h
-endif
-ifndef NETCDF_LIB
- NETCDF_LIB := /usr/local/lib # Directory containing libnetcdf.a
-endif
+ NC_LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib
+ NC_LIBS := -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -lz -lrx
+
+ NETCDF_INC=$(DODS_ROOT)/include
+ NETCDF_LIB=$(DODS_ROOT)/lib
+else
+ NC_LDFLAGS := -L$(NETCDF_LIB)
+ NC_LIBS := -lnetcdf
+endif # end DODS
+NCO_LDFLAGS := -L$(MY_LIB_DIR)
+NCO_LIBS := -lnco
+
+TMP_LDFLAGS := $(NCO_LDFLAGS) $(NC_LDFLAGS)
+TMP_LIBS := $(NCO_LIBS) $(NC_LIBS)
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
 null :=
@@ -179,7 +194,7 @@ CPPFLAGS := -D$(PVM_ARCH) $(CPP_PTH) -I$(NETCDF_INC)
 FC := xlf
 FFLAGS := -qfixed=132
 LD := ld
-LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 #LDFLAGS += -lxlf90 -lxlf
 endif
@@ -218,7 +233,7 @@ CPPFLAGS += -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
 FC := g77
 FFLAGS := -ffixed-line-length-132
 LD := ld
-LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 LDFLAGS += 
 LEX := flex
 LINT := lint
@@ -241,7 +256,7 @@ CPP := cpp
 CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f90
 LD := ld
-LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -L/lib -lf
 endif
@@ -281,7 +296,7 @@ CC := gcc
 CPPFLAGS += -D$(PVM_ARCH) -Di386 -I$(NETCDF_INC)
 FC := g77
 LD := ld
-LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
 endif
@@ -341,7 +356,7 @@ CPP := /lib/cpp -P
 CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := xlf
 LD := ld
-LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -lxlf90 -lxlf
 endif
@@ -375,7 +390,7 @@ CC := cc
 CPPFLAGS += -DSGI64 -I$(NETCDF_INC)
 FC := f77
 LD := ld
-LDFLAGS += -64 -mips4 -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += -64 -mips4 $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
 endif
@@ -411,7 +426,7 @@ CC := acc
 CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f77
 LD := ld
-LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -cg92 -L/opt/SUNWspro/SC3.0/lib/cg92 -lF77 -lM77
 endif
@@ -436,7 +451,7 @@ CC := gcc -ansi
 CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f77
 LD := ld
-LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lsunmath -lsocket -lnsl -lm
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsocket -lnsl -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -lF77 -lM77
 endif
@@ -470,7 +485,7 @@ CC := gcc
 CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 FC := f77
 LD := ld
-LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lsunmath -lthread -lsocket -lnsl -lm
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lsunmath -lthread -lsocket -lnsl -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS += -lF77 -lM77
 endif
@@ -504,7 +519,7 @@ CC := gcc -ansi
 CPPFLAGS += -D$(PVM_ARCH) -Di386 -I$(NETCDF_INC)
 FC := g77
 LD := ld
-LDFLAGS += -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  LDFLAGS +=
 endif
@@ -534,9 +549,9 @@ endif
 ifeq ($(DODS),Y)
 ifeq (CC,g++)
 # -lstdc++ automatically linked by g++
- LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -ltcl -lexpect5.28 -lz -lrx $(LDFLAGS)
+ LDFLAGS := $(LDFLAGS)
 else
- LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lstdc++ -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -ltcl -lexpect5.28 -lz -lrx $(LDFLAGS)
+ LDFLAGS := $(LDFLAGS) -lstdc++
 endif
 endif
 # endif DODS
@@ -574,32 +589,41 @@ obj_dir:
 	-install -d $(MY_BIN_DIR)
 	-mkdir -p $(MY_OBJ_DIR)
 # Targets in bin
-ncra:	$(MY_OBJ_DIR)/ncra.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS)
-	chmod 755 $(MY_BIN_DIR)/ncra
+.PHONY:  ncra ncatted ncks ncwa ncecat ncdiff ncflint ncrename
+ncra:   $(MY_BIN_DIR)/ncra
+$(MY_BIN_DIR)/ncra:	$(MY_OBJ_DIR)/ncra.o $(libnco).a
+	$(CC) -o $@ $< $(LDFLAGS)
+	chmod 755 $@
 	cd $(MY_BIN_DIR); rm -f ncea; ln -f -s ncra ncea
 	cd $(MY_BIN_DIR); rm -f ncrcat; ln -f -s ncra ncrcat
-ncatted:	$(MY_OBJ_DIR)/ncatted.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
-ncks:	$(MY_OBJ_DIR)/ncks.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
-ncwa:	$(MY_OBJ_DIR)/ncwa.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
-ncecat:	$(MY_OBJ_DIR)/ncecat.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
-ncdiff:	$(MY_OBJ_DIR)/ncdiff.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
-ncflint:	$(MY_OBJ_DIR)/ncflint.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
-ncrename:	$(MY_OBJ_DIR)/ncrename.o $(libnco).a
-	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS) 
-	chmod 755 $(MY_BIN_DIR)/$@
+ncatted:   $(MY_BIN_DIR)/ncatted
+$(MY_BIN_DIR)/ncatted:	$(MY_OBJ_DIR)/ncatted.o $(libnco).a
+	$(CC) -o $@ $< $(LDFLAGS)
+	chmod 755 $@
+ncks:   $(MY_BIN_DIR)/ncks
+$(MY_BIN_DIR)/ncks:	$(MY_OBJ_DIR)/ncks.o $(libnco).a
+	$(CC) -o $@ $< $(LDFLAGS)
+	chmod 755 $@
+ncwa:   $(MY_BIN_DIR)/ncwa
+$(MY_BIN_DIR)/ncwa:	$(MY_OBJ_DIR)/ncwa.o $(libnco).a
+	$(CC) -o $@ $< $(LDFLAGS)
+	chmod 755 $@
+ncecat:   $(MY_BIN_DIR)/ncecat
+$(MY_BIN_DIR)/ncecat:	$(MY_OBJ_DIR)/ncecat.o $(libnco).a
+	$(CC) -o $@ $< $(LDFLAGS)
+	chmod 755 $@
+ncdiff:   $(MY_BIN_DIR)/ncdiff
+$(MY_BIN_DIR)/ncdiff:	$(MY_OBJ_DIR)/ncdiff.o $(libnco).a
+	$(CC) -o $@ $< $(LDFLAGS)
+	chmod 755 $@
+ncflint:   $(MY_BIN_DIR)/ncflint
+$(MY_BIN_DIR)/ncflint:	$(MY_OBJ_DIR)/ncflint.o $(libnco).a
+	$(CC) -o $@ $< $(LDFLAGS)
+	chmod 755 $@
+ncrename:   $(MY_BIN_DIR)/ncrename
+$(MY_BIN_DIR)/ncrename:	$(MY_OBJ_DIR)/ncrename.o $(libnco).a
+	$(CC) -o $@ $< $(LDFLAGS)
+	chmod 755 $@
 bin: $(MDL_BIN_TRG)
 binclean: bin_cln
 bin_cln: 
@@ -608,7 +632,7 @@ bin_cln:
 buildclean: bld_cln
 bld_cln:
 	cd $(MY_BLD_DIR); rm -f TAGS
-rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=1.2 rpm
+rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=1.1.48 rpm
 	cd $(DATA)/tmp; \
 	/bin/rm -fr $(DATA)/tmp/nco*; \
 	cp -r $(HOME)/nco nco-$(NCO_VRS); \
@@ -618,7 +642,7 @@ rpm:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo 
 	ln -s $(HOME)/nco/bld/nco.spec /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SPECS; \
 	rpm -ba nco-$(NCO_VRS).spec;
-rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=1.2 rpmnet
+rpmnet:	$(MY_BLD_DIR)/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=1.1.48 rpmnet
 	- if test -f /usr/src/redhat/SOURCES/nco-$(NCO_VRS).tar.gz; then printf "Using existing nco-$(NCO_VRS).tar.gz\n" ; else $(MY_BIN_DIR)/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-$(NCO_VRS).tar.gz; fi
 	/bin/rm -f /usr/src/redhat/SPECS/nco-$(NCO_VRS).spec; \
 	cd /usr/src/redhat/SOURCES; \
@@ -707,6 +731,7 @@ debug: dbg
 dbg:
 	printf "PVM_ARCH = $(PVM_ARCH)\n"
 	printf "LDFLAGS = $(LDFLAGS)\n"
+	printf "CFLAGS = $(CFLAGS)\n"
 	printf "MDL_PTH = $(MDL_PTH)\n"
 	printf "VPATH = $(VPATH)\n"
 	printf "SRC_LST = $(SRC_LST)\n"

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.37 2000-08-25 16:45:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.38 2000-08-25 22:48:00 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -98,8 +98,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.37 2000-08-25 16:45:14 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.37 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.38 2000-08-25 22:48:00 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.38 $";
   char *nco_op_typ_sng=NULL_CEWI; /* Operation type */
   
   dmn_sct **dim;
@@ -400,6 +400,7 @@ main(int argc,char **argv)
 	    /* fxm: Is this var_conform_type() really necessary? */
 	    var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
 	    /* Convert char, short, long, int types to doubles before arithmetic */
+	    /* fxm: This is not working, possibly because typ_prv is reset each record? */
 	    /*	    (void)nco_cnv_var_dbl(var_prc+idx,var_prc_out+idx,nco_op_typ);*/
 	    /* Perform arithmetic operations: avg, min, max, ttl, ... */ 
 	    nco_opr_drv(idx_rec_out,nco_op_typ,var_prc_out[idx],var_prc[idx]);
@@ -444,7 +445,7 @@ main(int argc,char **argv)
 	/* fxm: Is this var_conform_type() really necessary? */
 	var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
 	/* Convert char, short, long, int types to doubles before arithmetic */
-	(void)nco_cnv_var_dbl(var_prc+idx,var_prc_out+idx,nco_op_typ);
+	/*	(void)nco_cnv_var_dbl(var_prc+idx,var_prc_out+idx,nco_op_typ);*/
 	/* Perform arithmetic operations: avg, min, max, ttl, ... */ 
 	nco_opr_drv(idx_fl,nco_op_typ,var_prc_out[idx],var_prc[idx]);
 	

@@ -1,3 +1,8 @@
+2000-08-25  Charlie Zender  <zender@uci.edu>
+
+	* Merged Makefile refinements by Ethan Davis to better support
+	DODS compilations and less redundant building
+
 2000-08-23  Charlie Zender  <zender@uci.edu>
 
 	* Functionalized type conversion routines nco_cnv_var_dbl() and
