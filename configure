@@ -465,7 +465,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CPP CXXCPP LEX LEXLIB LEX_OUTPUT_ROOT YACC LN_S EGREP ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB F77 FFLAGS ac_ct_F77 LIBTOOL BUILD_NCAP_TRUE BUILD_NCAP_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBOBJS POW_LIB NCO_HAVE_REGEX_FUNCTIONALITY_TRUE NCO_HAVE_REGEX_FUNCTIONALITY_FALSE NETCDF_LIB NETCDF_INC NCO_NEED_GETOPT_LONG_TRUE NCO_NEED_GETOPT_LONG_FALSE HDF5_ROOT DODS_ROOT TEST_DODS_TRUE TEST_DODS_FALSE path_to_ncgen NCO_CXX LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS build build_cpu build_vendor build_os host host_cpu host_vendor host_os target target_cpu target_vendor target_os INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CPP CXXCPP LEX LEXLIB LEX_OUTPUT_ROOT YACC LN_S EGREP ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB F77 FFLAGS ac_ct_F77 LIBTOOL BUILD_NCAP_TRUE BUILD_NCAP_FALSE MAINTAINER_MODE_TRUE MAINTAINER_MODE_FALSE MAINT LIBOBJS POW_LIB NETCDF_LIB NETCDF_INC NCO_NEED_GETOPT_LONG_TRUE NCO_NEED_GETOPT_LONG_FALSE HDF5_ROOT DODS_ROOT TEST_DODS_TRUE TEST_DODS_FALSE path_to_ncgen NCO_CXX LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -20701,8 +20701,9 @@ echo "${ECHO_T}$ac_cv_header_regex_h" >&6
 
 fi
 if test $ac_cv_header_regex_h = yes; then
-  cat >>confdefs.h <<\_ACEOF
-#define HAVE_REGEXEC_H 1
+
+cat >>confdefs.h <<\_ACEOF
+#define HAVE_REGEX_H 1
 _ACEOF
 
 else
@@ -20922,7 +20923,8 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_func_regexec" >&5
 echo "${ECHO_T}$ac_cv_func_regexec" >&6
 if test $ac_cv_func_regexec = yes; then
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define HAVE_REGEXEC 1
 _ACEOF
 
@@ -21003,7 +21005,8 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_func_regcomp" >&5
 echo "${ECHO_T}$ac_cv_func_regcomp" >&6
 if test $ac_cv_func_regcomp = yes; then
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define HAVE_REGCOMP 1
 _ACEOF
 
@@ -21084,7 +21087,8 @@ fi
 echo "$as_me:$LINENO: result: $ac_cv_func_regfree" >&5
 echo "${ECHO_T}$ac_cv_func_regfree" >&6
 if test $ac_cv_func_regfree = yes; then
-  cat >>confdefs.h <<\_ACEOF
+
+cat >>confdefs.h <<\_ACEOF
 #define HAVE_REGFREE 1
 _ACEOF
 
@@ -21093,16 +21097,13 @@ else
 fi
 
 fi
-
-
 if test x$nco_have_regex = xyes; then
-  NCO_HAVE_REGEX_FUNCTIONALITY_TRUE=
-  NCO_HAVE_REGEX_FUNCTIONALITY_FALSE='#'
-else
-  NCO_HAVE_REGEX_FUNCTIONALITY_TRUE='#'
-  NCO_HAVE_REGEX_FUNCTIONALITY_FALSE=
-fi
 
+cat >>confdefs.h <<\_ACEOF
+#define NCO_HAVE_REGEX_FUNCTIONALITY 1
+_ACEOF
+
+fi
 #############################################
 # standard additions to compilers and preprocessors
 # do this before testing anything
@@ -23976,13 +23977,6 @@ echo "$as_me: error: conditional \"MAINTAINER_MODE\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
-if test -z "${NCO_HAVE_REGEX_FUNCTIONALITY_TRUE}" && test -z "${NCO_HAVE_REGEX_FUNCTIONALITY_FALSE}"; then
-  { { echo "$as_me:$LINENO: error: conditional \"NCO_HAVE_REGEX_FUNCTIONALITY\" was never defined.
-Usually this means the macro was only invoked conditionally." >&5
-echo "$as_me: error: conditional \"NCO_HAVE_REGEX_FUNCTIONALITY\" was never defined.
-Usually this means the macro was only invoked conditionally." >&2;}
-   { (exit 1); exit 1; }; }
-fi
 if test -z "${NCO_NEED_GETOPT_LONG_TRUE}" && test -z "${NCO_NEED_GETOPT_LONG_FALSE}"; then
   { { echo "$as_me:$LINENO: error: conditional \"NCO_NEED_GETOPT_LONG\" was never defined.
 Usually this means the macro was only invoked conditionally." >&5
@@ -24610,8 +24604,6 @@ s,@MAINTAINER_MODE_FALSE@,$MAINTAINER_MODE_FALSE,;t t
 s,@MAINT@,$MAINT,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@POW_LIB@,$POW_LIB,;t t
-s,@NCO_HAVE_REGEX_FUNCTIONALITY_TRUE@,$NCO_HAVE_REGEX_FUNCTIONALITY_TRUE,;t t
-s,@NCO_HAVE_REGEX_FUNCTIONALITY_FALSE@,$NCO_HAVE_REGEX_FUNCTIONALITY_FALSE,;t t
 s,@NETCDF_LIB@,$NETCDF_LIB,;t t
 s,@NETCDF_INC@,$NETCDF_INC,;t t
 s,@NCO_NEED_GETOPT_LONG_TRUE@,$NCO_NEED_GETOPT_LONG_TRUE,;t t

@@ -174,11 +174,17 @@
 /* Define to 1 if the system has the type `ptrdiff_t'. */
 #undef HAVE_PTRDIFF_T
 
-/* Define to 1 if you have the `regexec' function. */
+/* define to 1 if you have the 'regcomp' function */
+#undef HAVE_REGCOMP
+
+/* define to 1 if you have the 'regexec' function */
 #undef HAVE_REGEXEC
 
-/* Define to 1 if you have the <regex.h> header file. */
+/* define to 1 if you have the <regex.h> header file */
 #undef HAVE_REGEX_H
+
+/* define to 1 if you have the 'regfree' function */
+#undef HAVE_REGFREE
 
 /* Define to 1 if you have the `rintf' function. */
 #undef HAVE_RINTF
@@ -287,6 +293,9 @@
 /* Apple OS X */
 #undef MACOSX
 
+/* POSIX regular expressions available */
+#undef NCO_HAVE_REGEX_FUNCTIONALITY
+
 /* NEC SuperX OS */
 #undef NECSX
 
@@ -352,9 +361,6 @@
 
 /* Define to 1 if you need the `powf' function. */
 #undef NEED_POWF
-
-/* Define to 1 if you need the `regexec' function. */
-#undef NEED_REGEXEC
 
 /* Define to 1 if you need the `rintf' function. */
 #undef NEED_RINTF
