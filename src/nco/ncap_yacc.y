@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.8 2003-09-16 21:55:36 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.9 2003-11-21 16:52:40 hmb Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -470,81 +470,66 @@ var_xpr: /* var_xpr results from RHS action which involves a var_xpr, i.e.,
 var_xpr '+' var_xpr { 
   $$=ncap_var_var_add($1,$3); 
   nco_var_free($1);
-  nco_var_free($3);
+
 }
 | var_xpr '+' scv_xpr {
   $$=ncap_var_scv_add($1,$3);
-  nco_var_free($1);
 }            
 | scv_xpr '+' var_xpr {
   $$=ncap_var_scv_add($3,$1);
-  nco_var_free($3);
 }            
 | var_xpr '-' var_xpr { 
   $$=ncap_var_var_sub($1,$3);
-  nco_var_free($1); 
   nco_var_free($3);
 }
 | scv_xpr '-' var_xpr { 
-  var_sct *var1;
   scv_sct minus;
   minus.val.b=-1;
   minus.type=NC_BYTE;
   (void)scv_conform_type($3->type,&minus);
-  var1=ncap_var_scv_sub($3,$1);
-  $$=ncap_var_scv_mlt(var1,minus);
-  nco_var_free(var1);
-  nco_var_free($3);
+  (void)ncap_var_scv_sub($3,$1);
+  $$=ncap_var_scv_mlt($3,minus);
 }
 | var_xpr '-' scv_xpr {
   $$=ncap_var_scv_sub($1,$3);
-  nco_var_free($1);
 }
 | var_xpr '*' var_xpr {
   $$=ncap_var_var_mlt($1,$3); 
-  nco_var_free($1); nco_var_free($3); 
+  nco_var_free($1); 
 }
 | var_xpr '*' scv_xpr {
   $$=ncap_var_scv_mlt($1,$3);
-  nco_var_free($1);
 }
 | var_xpr '%' scv_xpr {
   $$=ncap_var_scv_mod($1,$3);
-  nco_var_free($1);
 }
 | scv_xpr '*' var_xpr {
   $$=ncap_var_scv_mlt($3,$1);
-  nco_var_free($3);
 }
 | var_xpr '/' var_xpr {
   $$=ncap_var_var_dvd($3,$1); /* NB: Ordering is important */
-  nco_var_free($1); nco_var_free($3); 
+  nco_var_free($3); 
 }
 | var_xpr '/' scv_xpr {
   $$=ncap_var_scv_dvd($1,$3);
-  nco_var_free($1);
 }
 | var_xpr '^' scv_xpr {
   $$=ncap_var_scv_pwr($1,$3);
-  nco_var_free($1);
 }
 | POWER '(' var_xpr ',' scv_xpr ')' {
   $$=ncap_var_scv_pwr($3,$5);
-  nco_var_free($3);
 }
 | '-' var_xpr %prec UMINUS { 
   scv_sct minus;
   minus.val.b=-1;
   minus.type=NC_BYTE;
   $$=ncap_var_scv_mlt($2,minus);
-  nco_var_free($2);      
 }
 | '+' var_xpr %prec UMINUS {
   $$=$2;
 }
 | ABS '(' var_xpr ')' {
   $$=ncap_var_abs($3);
-  nco_var_free($3);
 } /* end ABS */
 | RDC '(' var_xpr ')' {
   $$=ncap_var_abs($3);
@@ -564,7 +549,6 @@ var_xpr '+' var_xpr {
 } /* end UNPACK */
 | FUNCTION '(' var_xpr ')' {
   $$=ncap_var_fnc($3,$1);
-  nco_var_free($3);
 }  
 | '(' var_xpr ')' {
   $$=$2;
