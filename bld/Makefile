@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.156 2002-08-14 19:44:58 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.157 2002-08-19 07:27:21 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -217,8 +217,8 @@ MDL_MAN := $(addprefix ${MY_MAN_DIR}/,${MDL_MAN}) # distclean removes these file
 MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,Makefile nco_dst.pl nco_tst.sh) # `make tags' includes these files
 
 # Variables having to do with ncap
-MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap.y ncap.l ncap.h) # `make tags' includes these files
-MDL_NCAP_TRG := ncap.tab.c ncap.tab.h ncap_lex.c # `make ncap' creates these files
+MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap_yacc.y ncap_lex.l ncap.h) # `make tags' includes these files
+MDL_NCAP_TRG := ncap_yacc.c ncap_yacc.h ncap_lex.c # `make ncap' creates these files
 MDL_NCAP := $(addprefix ${MY_SRC_DIR}/,$(MDL_NCAP_TRG)) # `make distclean' removes these files
 
 # Redefine default C and C++ pattern rules
@@ -304,7 +304,7 @@ LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm -lC
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 #LDFLAGS += -lxlf90 -lxlf
 endif
-# 20020522: ncap.l now requires flex for <EOF> handling
+# 20020522: ncap_lex.l now requires flex for <EOF> handling
 LEX := flex
 YACC := bison
 LINT := lint
@@ -1134,31 +1134,34 @@ tags:
 # NB: Bison has a problem when bison.simple declares yyparse() as int yyparse (void);
 # The solution is to comment out that definition in bison.simple
 ifeq (${YACC},bison)
-${MY_SRC_DIR}/%.tab.c ${MY_SRC_DIR}/%.tab.h : ${MY_SRC_DIR}/%.y
-	${YACC} -d $<
+${MY_SRC_DIR}/%_yacc.c ${MY_SRC_DIR}/%_yacc.h : ${MY_SRC_DIR}/%_yacc.y
+	${YACC} --output=$(basename $<).c -d $<
+#${MY_SRC_DIR}/%_yacc.c ${MY_SRC_DIR}/%_yacc.h : ${MY_SRC_DIR}/%_yacc.y
+#	${YACC} --file-prefix=$(notdir $($(basename $<))) -d $<
+#%_yacc.c %_yacc.h : %_yacc.y
+#	${YACC} --file-prefix=$(notdir $($(basename $<))) -d $<
 endif
 ifeq (${YACC},yacc)
 %.tab.c %.tab.h : %.y
 	${YACC} -d $<
-	mv y.tab.c $(basename $<).tab.c
-	mv y.tab.h $(basename $<).tab.h
+	mv y.tab.c $(basename $<).c
+	mv y.tab.h $(basename $<).h
 endif
 
-%_lex.c : %.l
+%_lex.c : %_lex.l
 	$(LEX) $<
-	mv lex.yy.c $(basename $<)_lex.c
+	mv lex.yy.c $(basename $<).c
 
 # For some reason, ncap_lex.c is not remade when I expect it to be, so I explicitly remove the object file every time
-ncap:	${MY_OBJ_DIR}/ncap.tab.o ncap.tab.h ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap.o ${MY_OBJ_DIR}/ncap_utl.o ${libnco}.a
+ncap:	${MY_OBJ_DIR}/ncap_yacc.o ${MY_OBJ_DIR}/ncap_lex.o  ncap_yacc.h ${MY_OBJ_DIR}/ncap.o ${MY_OBJ_DIR}/ncap_utl.o ${libnco}.a
 #        ${YACC} --name-prefix=nco_
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32))
-	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@.tab.o ${MY_OBJ_DIR}/$@_lex.o ${LDFLAGS}
+	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@_yacc.o ${MY_OBJ_DIR}/$@_lex.o ${LDFLAGS}
 else	
-#	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/getopt.o ${MY_OBJ_DIR}/getopt1.o ${MY_OBJ_DIR}/$@.tab.o ${MY_OBJ_DIR}/$@_lex.o -ll -ly ${LDFLAGS}
-	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@.tab.o ${MY_OBJ_DIR}/$@_lex.o -ll -ly ${LDFLAGS}
+	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@_yacc.o ${MY_OBJ_DIR}/$@_lex.o -ll -ly ${LDFLAGS}
 endif
 	chmod 755 ${MY_BIN_DIR}/$@${BNR_SFX}
-#	/bin/rm -f $(MDL_NCAP) ${MY_OBJ_DIR}/$@_lex.o ${MY_OBJ_DIR}/lex.yy.c ${MY_OBJ_DIR}/ncap.tab.h ${MY_OBJ_DIR}/ncap.tab.c
+#	/bin/rm -f $(MDL_NCAP) ${MY_OBJ_DIR}/$@_lex.o ${MY_OBJ_DIR}/ncap_yacc.h ${MY_OBJ_DIR}/ncap_yacc.c
 
 # Create dependency files only if they will not be immediately deleted
 INCLUDE_DPN := TRUE
