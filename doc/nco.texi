@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.227 2004-06-05 00:32:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.228 2004-06-14 07:22:50 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -99,7 +99,7 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 2.9.5
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 2 June 2004
+@set update-date 13 June 2004
 @set update-month June 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
@@ -1317,8 +1317,8 @@ limit for command line lengths varies from @acronym{OS} to @acronym{OS}
 and from shell to shell.  
 @acronym{GNU} @code{bash} may not have any arbitrary fixed limits to the
 size of command line arguments. 
-Many @acronym{OS}s cannot handle command line arguments longer than a
-few thousand characters.
+Many @acronym{OS}s cannot handle command line arguments (including
+results of file globbing) exceeding 4096 characters.
 When this occurs, the @acronym{ANSI} C-standard @code{argc}-@code{argv} 
 method of passing arguments from the calling shell to a C-program (i.e.,
 an @acronym{NCO} operator) breaks down.}, then the following strategy
@@ -1327,10 +1327,24 @@ has proven useful to specify the input filenames to @acronym{NCO}.
 Write a script that creates symbolic links between the irregular input
 filenames and a set of regular, arithmetic filenames that 
 @samp{-n @var{loop}} switch understands.
+
+The following script a monotonically enumerated symbolic link to every
+@file{.nc} file in a directory.
+If there are 480 netCDF files present, their links will be named
+@file{000001.nc} to @file{000480.nc}:
+@example
+# Create enumerated symbolic links
+/bin/ls | grep \.nc | perl -e \
+'$idx=1;while(<STDIN>)@{chop;symlink $_,sprintf("%06d.nc",$idx++);@}'
+# Perform multi-file operation
+ncecat -O -n 480,6,1 000001.nc foo.nc
+# Remove symbolic links when finished
+/bin/rm ??????.nc
+@end example
 The @acronym{NCO} operator will then succeed at automatically generating
-the filnames with the @samp{-n @var{loop}} option (which circumvents any 
-@acronym{OS} and shell limits on command line size).
-You can remove the symbolic links once the operator completes its task. 
+the filnames of the symbolic links with the @samp{-n @var{loop}} option.
+This circumvents any @acronym{OS} and shell limits on command line size.
+The symbolic links are easily removed once @acronym{NCO} is finished.
 
 @node Large files and Memory, Memory usage, Large numbers of input files, Strategies
 @section Working with large files

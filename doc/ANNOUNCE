@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.86 2004-06-09 16:46:57 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.87 2004-06-14 07:22:50 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.5 are ready. 
 
@@ -22,7 +22,8 @@ Build changes:
    version numbers now track libnco
 
 Other user-visible changes:
-1. None
+1. Added example of specifying large numbers of input files to 
+   http://nco.sf.net/nco.html#lrg
 
 User-invisible changes:
 1. None

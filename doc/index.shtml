@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.222 2004-06-09 16:46:57 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.223 2004-06-14 07:22:50 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -340,7 +340,7 @@ distribution by many months, if not years:
 <li><a href="src/nco_2.9.5-1.dsc">nco_2.9.5-1.dsc</a> (<!--#fsize file="src/nco_2.9.5-1.dsc"-->): Description</li>
 <li><a href="src/nco_2.9.5-1.tar.gz">nco_2.9.5-1.tar.gz</a> (<!--#fsize file="src/nco_2.9.5-1.tar.gz"-->): Gzipped Source Tarball</li>
 <li><a
-href="src/nco_2.9.5-1_i386.changes">nco_2.9.5-1_i386.changes</a> (<!--#fsize file="src/nco_2.9.5-1.changes"-->): Changes</li> (I think an error here is expected since there are no changes between the official tarball and the Debian tarball. Anyone know?)
+href="src/nco_2.9.5-1_i386.changes">nco_2.9.5-1_i386.changes</a> (<!--#fsize file="src/nco_2.9.5-1.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
 </ul>
 
 <ul>

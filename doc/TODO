@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.310 2004-06-11 19:43:38 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.311 2004-06-14 07:22:50 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -196,7 +196,8 @@ nco328. Ability to reverse specified dimensions (use negative stride?)
 nco329. Ability to rearrange dimensions
 nco333. Clean up preprocessor symbols with cd ~/nco/src/nco;ifnames *.c
 nco335. ncflint: implement interpolation/mss_val algorithms two and three as options?
-nco336. 
+nco336. Allow input file lists to be specified in a text file and to supercede command line arguments. This will be useful on platforms with limited buffers for command line arguments and globbing expansions (e.g., AIX)
+nco337. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

@@ -1,3 +1,8 @@
+2004-06-13  Charlie Zender  <zender@uci.edu>
+
+	* Added demonstration script to handle large numbers of input
+	files to nco.texi
+
 2004-06-06  Charlie Zender  <zender@uci.edu>
 
 	* Implement -m64 option for ABI=64 on LINUXAMD64
