@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.17 2004-01-10 04:30:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.h,v 1.18 2004-01-12 18:11:07 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -22,7 +22,7 @@
 #include <string.h> /* strcmp. . . */
 
 /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 #ifdef HAVE_REGEX_H
@@ -30,7 +30,7 @@
 #endif /* HAVE_REGEX_H */
 
 /* Personal headers */
-#include "nco.h" /* NCO definitions */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_var_utl.h" /* Variable utilities */

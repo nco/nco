@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.98 2004-01-10 04:30:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.99 2004-01-12 18:11:07 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -63,12 +63,6 @@
 #endif /* !HAVE_GETOPT_H */ 
 #endif /* HAVE_GETOPT_LONG */
 
-/* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
-#ifdef _OPENMP
-#include <omp.h> /* OpenMP pragmas */
-#endif /* not _OPENMP */
-
 /* Internationalization i18n, Linux Journal 200211 p. 57--59 */
 #ifdef I18N
 #include <libintl.h> /* Internationalization i18n */
@@ -80,6 +74,12 @@
 #ifndef _LIBINTL_H
 # define gettext(foo) foo
 #endif /* _LIBINTL_H */
+
+/* 3rd party vendors */
+#include <netcdf.h> /* netCDF definitions and C library */
+#ifdef _OPENMP
+#include <omp.h> /* OpenMP pragmas */
+#endif /* not _OPENMP */
 
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.98 2004-01-10 04:30:29 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.98 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.99 2004-01-12 18:11:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.99 $";
   const char * const opt_sng="ACcD:d:Fhl:n:Op:P:rRv:xy:-:";
 
   dmn_sct **dim;

@@ -1,13 +1,13 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.59 2004-01-10 04:30:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.60 2004-01-12 18:11:07 zender Exp $ */
 
-/* Purpose: netCDF arithmetic processor */
+/* Purpose: netCDF arithmetic processor definitions and function prototypes for ncap.c, ncap_utl.c, ncap_lex.l, and ncap_yacc.y */
 
 /* Copyright (C) 1995--2004 Charlie Zender
    This software may be modified and/or re-distributed under the terms of the GNU General Public License (GPL) Version 2
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
-   #include "ncap.h" *//* netCDF arithmetic processor */
+   #include "ncap.h" *//* netCDF arithmetic processor-specific definitions (symbol table, ...) */
 
 #ifndef NCAP_H /* Header file has not yet been defined in current source file */
 #define NCAP_H
@@ -25,7 +25,7 @@
 #include <unistd.h> /* POSIX stuff */
 
 /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for libnetcdf.a */
 
 /* Personal headers */
@@ -74,7 +74,7 @@ typedef struct{ /* nm_lst_sct */
    yylval is union of all possible data types for semantic values
    prs_sct is passed into lexer by calling routine (e.g., main())
    prs_sct elements are essentially global variables which can be modified in lexer
-   Calling routine (e.g., main()) and parser then have access prs_sct 
+   Calling routine (e.g., main()) and parser then have access to prs_sct 
    Two elements of prs_sct, var_LHS & nco_op_typ, are more local in that
    they may change line-to-line in input script. */
 typedef struct{ /* prs_sct */
@@ -95,25 +95,7 @@ typedef struct{ /* prs_sct */
   int nco_op_typ; /* [enm] Operation type */
 } prs_sct;
 
-/* These funtions are either in ncap.y or ncap_utl.c */
-
-nodeType * /* O [unn] Syntax tree node */
-opr_ctl /* [fnc] Operation controller function Nie02 opr() */
-(int opr_tkn, /* I [enm] Operator token */
- int arg_nbr, /* I [nbr] Number of arguments */
- ... /* I [llp] Ellipsis defined in stdarg.h */
- ); /* end opr_ctl() */
-
-void
-freeNode /* [fnc] Free syntax tree node Nie02 freeNode() */
-(nodeType *nod); /* I/O [sct] Syntax tree node to free */
-
-aed_sct *  /* O [idx] Pointer to attribute in list */
-ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribute */
-(const char * const var_nm, /* I [sng] Variable name */
- const char * const att_nm, /* I [sng] Attribute name */
- prs_sct * const prs_arg,  /* I/O [sct] contains attribute list  */
- const bool update); /* I [flg] Delete existing value or add new attribute to list */
+/* Begin funtions in ncap_lex.l */
 
 void 
 ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
@@ -128,6 +110,36 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
  nm_id_sct** const xtr_lst_d, /* O [sct] LHS dimensions in input file */
  int * const nbr_lst_d); /* O [nbr] Number of LHS dimensions in input file */
  /* end ncap_ntl_scn() prototype */
+
+/* End funtions in ncap_lex.l */
+
+/* Begin funtions in ncap_yacc.y */
+
+void
+freeNode /* [fnc] Free syntax tree node Nie02 freeNode() */
+(nodeType *nod); /* I/O [sct] Syntax tree node to free */
+
+aed_sct *  /* O [idx] Pointer to attribute in list */
+ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribute */
+(const char * const var_nm, /* I [sng] Variable name */
+ const char * const att_nm, /* I [sng] Attribute name */
+ prs_sct * const prs_arg,  /* I/O [sct] contains attribute list  */
+ const bool update); /* I [flg] Delete existing value or add new attribute to list */
+
+void nco_var_free_wrp(var_sct **);
+
+nodeType * /* O [unn] Syntax tree node */
+opr_ctl /* [fnc] Operation controller function Nie02 opr() */
+(int opr_tkn, /* I [enm] Operator token */
+ int arg_nbr, /* I [nbr] Number of arguments */
+ ... /* I [llp] Ellipsis defined in stdarg.h */
+ ); /* end opr_ctl() */
+
+int yyerror(const char * const sng);
+
+/* End funtions in ncap_yacc.y */
+
+/* Begin funtions in ncap_utl.c */
 
 var_sct * /* O [sct] Sum of input variables (var_1+var_2) */
 ncap_var_var_add /* [fnc] Add two variables (var_1+var_2) */
@@ -149,10 +161,11 @@ ncap_var_var_dvd /* [fnc] Divide two variables (var_2/var_1) */
 (var_sct *var_1, /* I [sct] Variable structure containing first operand */
  var_sct *var_2); /* I [sct] Variable structure containing second operand */
 
+  /* fxm: Following functions need editing, const'ifying, etc. */
 bool ncap_var_stretch(var_sct **,var_sct **);
+dmn_sct **nco_dmn_out_grow(prs_sct *);
 int ncap_scv_minus(scv_sct *);
 int ncap_var_write(var_sct *,prs_sct*);
-int yyerror(const char * const sng);
 nm_id_sct *nco_var_lst_crd_make(int,nm_id_sct *,int *);
 nm_id_sct *nco_var_lst_add(nm_id_sct *,int *,nm_id_sct *,int);
 nm_id_sct *nco_var_lst_copy(nm_id_sct *,int);
@@ -163,7 +176,7 @@ nm_id_sct *nco_att_lst_mk(int, int,aed_sct** ,int ,int *);
 ptr_unn ncap_scv_2_ptr_unn(scv_sct); 
 scv_sct ncap_scv_abs(scv_sct);
 scv_sct ncap_scv_clc(scv_sct,const char,scv_sct);
-sym_sct *ncap_sym_init(const char const *,double (*fnc_dbl)(double),float (*fnc_flt)(float));
+sym_sct *ncap_sym_init(const char * const sym_nm,double (*fnc_dbl)(double),float (*fnc_flt)(float));
 sym_sct *ncap_scl_mk_sym(double val);
 sym_sct *ncap_sym_look(char *sym_nm);
 var_sct *ncap_var_abs(var_sct *);
@@ -175,11 +188,11 @@ var_sct *ncap_var_scv_mod(var_sct *,scv_sct);
 var_sct *ncap_var_scv_mlt(var_sct *,scv_sct);
 var_sct *ncap_var_scv_pwr(var_sct *,scv_sct);
 var_sct *ncap_var_scv_sub(var_sct *,scv_sct);
-
 void ncap_fnc_add(char *nm, double (*fnc_dbl)());
 void nco_lbr_vrs_prn();
-void nco_var_free_wrp(var_sct **);
-dmn_sct **nco_dmn_out_grow(prs_sct *);
+
+/* End funtions in ncap_utl.c */
+
 /* Source code for following functions is generated by parser but parser
    does not do good job of making these prototypes known so routines that
    call these functions must either include their prototypes locally,

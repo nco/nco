@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.12 2004-01-10 04:30:28 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.13 2004-01-12 18:11:07 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -47,12 +47,23 @@
 #include <string.h> /* strcmp. . . */
 
 /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
+#include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* Personal headers */
-#include "nco.h" /* NCO definitions */
-#include "nco_netcdf.h" /* netCDF3 wrapper calls */
-#include "ncap.h" /* Symbol table definition */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "ncap.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
+
+/* Bison adds routines which reference YY*LEX token to ncap_yacc.c 
+   These routines generate warnings unless YY*LEX prototype appears above
+   YYLEX prototype generates error unless YYSTYPE token is defined
+   Thus must #include ncap_yacc.h solely to pre-define YY*STPE for YY*LEX prototype
+   There is no other reason for ncap_yacc.h to appear in ncap_yacc.y 
+   Yes, this is rather circular */
+/* Get YYSTYPE prior to prototyping scanner */
+#include "ncap_yacc.h" /* ncap_yacc.h (ncap.tab.h) is produced from ncap_yacc.y by parser generator */
+#define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
+  YY_DECL;
 
 /* Turn on parser debugging option (Bison manual p. 85) */
 #define YYDEBUG 1
@@ -582,7 +593,7 @@ var_xpr '+' var_xpr {
 
 /* End Rules section */
 %%
-/* Begin User Subroutines section */
+/* Begin User Functions section */
 
 aed_sct *  /* O [idx] Location of attribute in list */
 ncap_aed_lookup /* [fnc] Find location of existing attribute or add new attribute */
@@ -696,3 +707,5 @@ freeNode /* [fnc] Free syntax tree node Nie02 freeNode() */
   /* Free node itself */
   nod=(nodeType *)nco_free(nod);
 } /* end freeNode() */
+
+/* End User Functions section */

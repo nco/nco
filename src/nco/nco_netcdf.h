@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.20 2004-01-10 04:30:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.21 2004-01-12 18:11:07 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -17,7 +17,7 @@
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 
 /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.21 2004-01-10 04:30:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.22 2004-01-12 18:11:07 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -23,14 +23,14 @@
 #include <limits.h> /* need LONG_MAX */
 
 /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 #ifdef _OPENMP
 #include <omp.h> /* OpenMP pragmas */
 #endif /* not _OPENMP */
 
 /* Personal headers */
-#include "nco.h" /* NCO definitions */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_att_utl.h" /* Attribute utilities */
 #include "nco_bnr.h" /* Binary write utilities */
 #include "nco_ctl.h" /* Program flow control functions */

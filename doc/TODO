@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.273 2004-01-10 04:30:27 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.274 2004-01-12 18:11:06 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -12,8 +12,9 @@ NCO-wide items: 15 high priority items are shown first, then another ~100 items
 Autoconf-build items:
 14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
 23. Implement ncra i18n support I18N with autotools: Add .po files, update doc/i18n.txt
-26. NCO 2.8.5 builds break on SGI, AIX
-27. 
+26. NCO 2.8.5 builds break on SGI, AIX (fixed in 2.8.6?)
+27. Automatically strip executables unless --enable-debug-* specified?
+28.
 
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -43,37 +44,11 @@ ncap-specific items:
    improve speed for MACOSX builds (inline is OK in C99 but will it
    break C89?) using AC_C_INLINE
 38. Finish dimension-reducing operations (min/max/avg)
-41. Make ncap function prototypes consistent with rest of NCO
+41. Make ncap function prototypes consistent with rest of NCO (ncap.h mainly)
 42. Add switch allowing derived variable to take on all attributes of specified variable
-43. Alphabetize ncap function list
-44. Fix four (incorrect?) warnings with Linux/GCC build caused by passing pointer plus integer:
-../src/nco/ncks.c:392: warning: implicit declaration of function `nco_msa_wrp_splt'
-../src/nco/ncks.c:396: warning: implicit declaration of function `nco_msa_clc_cnt'
-../src/nco/ncks.c:436: warning: implicit declaration of function `nco_cpy_var_val_mlt_lmt'
-../src/nco/ncks.c:476: warning: implicit declaration of function `nco_msa_prn_var_val'
-45. Cure final few bothersome compilation warnings, mainly in bison.simple.
-Note that fixing these via hardcoded prototypes should allow for pure_parser
-to be turned off, since this apparently changes prototypes.
-ncap_yacc.c: In function `yyparse':
-ncap_yacc.c:1216: warning: implicit declaration of function `yylex'
-ncap_lex.c:1034: warning: no previous prototype for `yylex'
-ncap_lex.l: In function `yylex':
-ncap_lex.l:670: warning: implicit declaration of function `yy_flex_realloc'
-ncap_lex.c: In function `yy_init_buffer':
-ncap_lex.c:2595: warning: implicit declaration of function `fileno'
-ncap_lex.c: At top level:
-ncap_lex.c:2840: warning: no previous prototype for `yyget_lineno'
-ncap_lex.c:2849: warning: no previous prototype for `yyget_in'
-ncap_lex.c:2857: warning: no previous prototype for `yyget_out'
-ncap_lex.c:2865: warning: no previous prototype for `yyget_leng'
-ncap_lex.c:2874: warning: no previous prototype for `yyget_text'
-ncap_lex.c:2883: warning: no previous prototype for `yyset_lineno'
-ncap_lex.c:2895: warning: no previous prototype for `yyset_in'
-ncap_lex.c:2900: warning: no previous prototype for `yyset_out'
-ncap_lex.c:2905: warning: no previous prototype for `yyget_debug'
-ncap_lex.c:2910: warning: no previous prototype for `yyset_debug'
-ncap_lex.c:2916: warning: no previous prototype for `yylex_destroy'
-46. 
+43. Alphabetize ncap function list prior to printing it with -f
+46. Define YYMALLOC/FREE/REALLOC etc so lexer/parser use nco_malloc() etc.
+47. 
 
 Highest priority NCO-wide items that You can help with:
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
@@ -89,7 +64,6 @@ Highest priority NCO-wide items that You can help with:
 
 Remaining items of lesser priority:
 28. Use var.nc_id as file ID from now on and rewrite old routines to do so
-32. Implement packing with scale_factor and add_offset in all pertinent operators
 50. Allow user-specified scalar weights to ncwa
 51. Make getopt() a shared subroutine?
 53. Add -t wall clock timer option? (then again, users can always use, e.g., timex())
@@ -98,7 +72,6 @@ Remaining items of lesser priority:
 60. Make something that can mask a field without having to average over a dimension
 66. Make history attribute get appended, rather than overwritten, when in append mode
 69. ncks option for file/field summary: var name list,var min,max,avg,mss_val,# mss_val,
-70. ncxx with no options should do usg_prn() without error msg (like ncwa does)
 75. Add warning to ncwa triggered by averaging over lat without weighting by gw with NCAR_CSM_FORMAT
 79. Allow ncrename .$var_nm syntax to work on all operators (so variables not present cause warning, not error)
 82. Make libnco namespace-safe by prefixing all library subroutines with nco_
@@ -113,7 +86,6 @@ ncks -C -A -v three_dmn_rec_var in.nc foo.nc
 ncdump foo.nc
 105. Add easy-to-read tabular display option for file contents for ncks, i.e, allow ncks -s to print multiple variables in column format
 106. Add switch to keep degenerate dimensions with ncwa, remove them from ncra
-109. Change copyright printing so order is NCO vrs, netCDF vrs, URL, Copyright
 111. Investigate whether using ncwa to average files where variables of type 
 NC_CHAR have a record dimension causes core dumps or other problems.
 i.e., LSM variable timecom caused subtle ncra problems for a while.
@@ -132,7 +104,7 @@ exactly the same way. C versions test both operands agains mss_val,
 Fortran tests only op1. Since running averages are initialized to 0.0 before
 entry, problems arise in C version when missing_value = 0.0. Only fix seems
 to be checking whether tally == 0 before checking whether op2 == mss_val
-123. Add HTTP protocol to fl_get() (in addition to DODS)
+123. Add HTTP protocol to fl_get() (independent of DODS)
 127. Make mss: signal retrieval from NCAR mass store
 134. Problem on CRAY with ncra test #2, averaging float whose
 missing value is double:
@@ -154,11 +126,9 @@ cd ~/nco/data
 ncks -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 ncrcat -O -C -d lon,10.0,80.0 -v time_lon in.nc foo.nc;ncks -H foo.nc
 149. Add ncks hyperslab tests to nco_tst.pl to catch inconsistencies like #148
-150. Fully automate RPM production, e.g., 'make rpm' should build rpms and upload to redhat.com
-151. Figure out how to dynamically modify web pages so files with
-changing version numbers can be directly linked
+151. Dynamically modify web pages so files with changing version numbers can be directly linked
 154. Add mirror capability to web pages
-158. Add policy for hyperslabbing single level values to User's Guide. 
+158. Add policy for hyperslabbing single level values to User's Guide
 Multi-file operators with record coordinate
 treat single point hyperslabs differently than single file operators 
 or than any operators with single point cuts on non-record coordinates.
@@ -172,7 +142,6 @@ This is an issue only when stride is non-unity.
 Does multislabbing algorithm fix this?
 162. Add GiNaC (Computer Algebra System) support to ncap www.ginac.de (maybe?)
 166. Document 'make test' so people know it exists and use it
-167. Improve/redesign test suite so it is more comprehensive and easier to add to
 173. Add switch to ncra which allows user to remove degenerate time dimension from result
 174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
 176. Replace Bison, Flex components of ncap with smaller C++ parser?
@@ -234,8 +203,8 @@ ncbo -O -y add -D 3 -d date,0,100 /data/zender/tmp/convecPrecip00z.nc /data/zend
 ncap -O  -D3 -s 'cp=pack(cp)' /data/zender/tmp/sum.nc /data/zender/tmp/packed_sum.nc
 ncbo -O -y add -D 3 ${HOME}/debug/hundred.nc ${HOME}/debug/hundred.nc ${HOME}/debug/sum.nc
 ncap -O -D 3 -s 'cp=pack(cp)' ${HOME}/debug/sum.nc ${HOME}/debug/pack_sum.nc
-287. Fix debug OMP OpenMP implementation in ncra
-289. Unpacking problem with NOAA data? 20040104: Fixed with lib re-write?
+287. Fix/debug OMP OpenMP implementation in ncra
+289. pck Unpacking problem with NOAA data? 20040104: Fixed with lib re-write in 2.8.5?
 These work as expected, leaving value packed:
 ncks -O -C -d time,0 -d lon,0. -d lat,0. ~/1969.nc ~/foo.nc
 This is broken, gives incorrect result (262.5 instead of 100920):
@@ -259,6 +228,8 @@ Make prg, prg_nm, and dbg_lvl local to main(), not global to main.c
 299. Prefix prg,prg_nm,dbg_lvl globals with nco_ for namespace cleanliness
 300. Activate ccmalloc libdl into configure.in for enable-debug-custom
 301. Unable to use DDD on autotools NCO executable with --enable-debug-custom
+302. Add speedy GCC optimization flags to --enable-optimize-custom
+303. Make test suite more comprehensive
 ************************************************************************
 End NCO Wish list
 ************************************************************************

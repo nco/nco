@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.7 2004-01-10 04:30:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_omp.h,v 1.8 2004-01-12 18:11:07 zender Exp $ */
 
 /* Purpose: OpenMP utilities */
 
@@ -19,14 +19,14 @@
 #include <unistd.h> /* POSIX stuff */
 
 /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 #ifdef _OPENMP
 #include <omp.h> /* OpenMP pragmas */
 #endif /* not _OPENMP */
 
 /* Personal headers */
-#include "nco.h" /* NCO definitions */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
 
 #ifdef __cplusplus
 extern "C" {

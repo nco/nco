@@ -1,3 +1,24 @@
+2004-01-11  Charlie Zender  <zender@uci.edu>
+
+	* NCO compiles warning free again so add -Werror to GCC custom flags
+
+	* Add and elaborately comment on multiple yylex() prototypes
+	required to build ncap warning-free
+
+	* Use correct token, NCO_MSA_H, instead of NCO_VAR_UTL_H, in nco_msa.h
+	This fixes all remaining implicit function declaration warnings
+	Until now, no routines in nco_msa.c had prototypes known outside
+	of that file unit. Unlikely that this caused problems since no
+	known casts were employed in prototypes.
+	
+2004-01-10  Charlie Zender  <zender@uci.edu>
+
+	* Conjoin setting GCC flags in configure.in, avoid duplication
+
+	* Systematize header file names
+
+	* Improved dods.sh documentation
+
 2004-01-09  Charlie Zender  <zender@uci.edu>
 
 	* Unconditionally include nco_lst_utl.h and nco_sng_utl.h in

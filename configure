@@ -25201,29 +25201,24 @@ case ${host} in
 esac
 # End Default OS-specific Compiler Arguments
 
-# Begin enable_debug_custom
-# Custom debug: Activate all known, helpful compile-time and run-time debugging checks
-# Check whether --enable-debug-custom or --disable-debug-custom was given.
-if test "${enable_debug_custom+set}" = set; then
-  enableval="$enable_debug_custom"
-  enable_debug_custom=${enableval}
-else
-  enable_debug_custom=no
-fi;
+# Begin custom GCC switches
+# Perform elaborate "or" test since autoconf does not like [ -o ] syntax
+GCC_OR_GXX='no'
+if test "x${GCC}" = 'xyes'; then
+    GCC_OR_GXX='yes'
+fi
+if test "x${GXX}" = 'xyes'; then
+    GCC_OR_GXX='yes'
+fi
+if test "x${GCC_OR_GXX}" = 'xyes' ; then
+# Explain and set common custom GCC flags once, here, and modify later to suit
+# since GCC has same base optimization and debugging flags on all architectures
 
-if test "${enable_debug_custom}" = 'yes'; then
-
-cat >>confdefs.h <<\_ACEOF
-#define ENABLE_DEBUG_CUSTOM 1
-_ACEOF
-
-# GCC has same base pedantic arguments on all architectures
-    if test "x${GCC}" = 'xyes' ; then
 # Compilation flags for numerical routines recommended by GSL 1.3 manual, p. 397
 # CFLAGS += -Werror -Wall -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -g -O4
-# fxm: Use -Werror once all warnings de-linted
-	CC="${CC} -std=c99 -pedantic -D_BSD_SOURCE"
-	CFLAGS="${CFLAGS} -Wall -Wunused -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -g -O4"
+    GCC_CMD_ARGS='-std=c99 -pedantic -D_BSD_SOURCE'
+    GCC_CFLAGS='-Werror -Wall -Wunused -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -g -O4'
+    GCC_CXXFLAGS="${GCC_CFLAGS}"
 # Compilation flags recommended by GSL that I like and use:
 # -pedantic: Disallow non-ISO constructs (including type long long) (sometimes useful)
 # -Werror: Consider warnings as errors
@@ -25248,8 +25243,30 @@ _ACEOF
 # -Wstrict-prototypes: Warn if inconsistent prototypes. C only?
 # -Wtraditional: Warn if constructs differ between traditional and ANSI C. C only?
 # -Dinline=: inline is not an ANSI keyword, must undefine inline to work with -ansi
+fi
+# End custom GCC switches
+
+# Begin enable_debug_custom
+# Custom debug: Activate all known, helpful compile-time and run-time debugging checks
+# Check whether --enable-debug-custom or --disable-debug-custom was given.
+if test "${enable_debug_custom+set}" = set; then
+  enableval="$enable_debug_custom"
+  enable_debug_custom=${enableval}
+else
+  enable_debug_custom=no
+fi;
+if test "${enable_debug_custom}" = 'yes'; then
+
+cat >>confdefs.h <<\_ACEOF
+#define ENABLE_DEBUG_CUSTOM 1
+_ACEOF
+
+    if test "x${GCC}" = 'xyes' ; then
+	CC="${CC} ${GCC_CMD_ARGS}"
+# fxm: What to do with default -g -O2 flags? Be redundant for now...
+	CFLAGS="${CFLAGS} ${GCC_CFLAGS}"
 	if test "x${GXX}" = 'xyes' ; then
-	    CXXFLAGS="-Werror ${CFLAGS}"
+	    CXXFLAGS="${GCC_CXXFLAGS}"
 	fi
     fi
 # Other switches are compiler-specific
@@ -25477,14 +25494,13 @@ cat >>confdefs.h <<\_ACEOF
 #define ENABLE_OPTIMIZE_CUSTOM 1
 _ACEOF
 
-# GCC has same base optimization arguments on all architectures
-# Compilation flags for numerical routines recommended by GSL 0.9 manual, p. 370
     if test "x${GCC}" = 'xyes' ; then
-	CC="${CC} -std=c99 -pedantic -D_BSD_SOURCE"
-	CFLAGS="${CFLAGS} -Wall -Wunused -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -g -O4"
-# fxm: go through GCC manual and add more speedy flags
+# fxm: TODO #303 go through GCC manual and add more speedy flags
+# Until then, GCC has interesting property that --enable-optimize-custom flags equal --enable-optimize-debug flags!
+	CC="${CC} ${GCC_CMD_ARGS}"
+	CFLAGS="${CFLAGS} ${GCC_CFLAGS}"
 	if test "x${GXX}" = 'xyes' ; then
-	    CXXFLAGS="-Werror ${CFLAGS}"
+	    CXXFLAGS="${GCC_CXXFLAGS}"
 	fi
     fi
     case ${host} in

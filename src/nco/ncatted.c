@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.65 2004-01-10 04:30:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.66 2004-01-12 18:11:07 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -112,12 +112,12 @@
 #endif /* HAVE_GETOPT_LONG */
 
 /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
-#include "nco.h" /* NCO definitions */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "libnco.h" /* netCDF Operator (NCO) library */
 
 int 
@@ -142,8 +142,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.65 2004-01-10 04:30:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.65 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.66 2004-01-12 18:11:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.66 $";
   const char * const opt_sng="Aa:D:hl:Op:Rr-:";
   
   extern char *optarg;

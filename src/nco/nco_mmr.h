@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.12 2004-01-10 04:30:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.13 2004-01-12 18:11:07 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -19,11 +19,11 @@
 #include <string.h> /* strcmp. . . */
 
 /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* Personal headers */
-#include "nco.h" /* NCO definitions */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
 
 #ifdef __cplusplus

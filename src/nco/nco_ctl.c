@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.34 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.35 2004-01-12 18:11:07 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -96,12 +96,7 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
   (void)fprintf(stdout,"User's Guide: http://nco.sf.net/nco.html\n");
   /* TKN2YESNO is insufficient when TKN is undefined */
 #define TKN2YESNO(x) ((x+0) ? ("No"):("Yes"))
-  (void)fprintf(stderr,"Configuration Option:\tActive?\tReference:\nDODS/OpenDAP clients\t%s\thttp://nco.sf.net/nco.html#DODS\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n\nOpenMP Multi-threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
-#if defined(ENABLE_DODS) && (ENABLE_DODS)
-		"Yes",
-#else /* !ENABLE_DODS */
-		"No",
-#endif /* !ENABLE_DODS */
+  (void)fprintf(stderr,"Configuration Option:\tActive?\tReference:\nDebugging: Custom\t%s\tPedantic, bounds checking (slowest execution)\nDebugging: Symbols\t%s\tProduce symbols for debuggers (e.g., dbx, gdb)\nDODS/OpenDAP clients\t%s\thttp://nco.sf.net/nco.html#DODS\nInternationalization\t%s\thttp://nco.sf.net/nco.html#i18n\nOpenMP Multi-threading\t%s\thttp://nco.sf.net/nco.html#omp\nOptimization: run-time\t%s\tFastest execution possible (slowest compilation)\nUDUnits conversions\t%s\thttp://nco.sf.net/nco.html#UDUnits\nWildcarding (regex)\t%s\thttp://nco.sf.net/nco.html#rx\n%s",
 #if defined(ENABLE_DEBUG_CUSTOM) && (ENABLE_DEBUG_CUSTOM)
 		"Yes",
 #else /* !ENABLE_DEBUG_CUSTOM */
@@ -112,6 +107,11 @@ nco_lbr_vrs_prn(void) /* [fnc] Print netCDF library version */
 #else /* !ENABLE_DEBUG_SYMBOLS */
 		"No",
 #endif /* !ENABLE_DEBUG_SYMBOLS */
+#if defined(ENABLE_DODS) && (ENABLE_DODS)
+		"Yes",
+#else /* !ENABLE_DODS */
+		"No",
+#endif /* !ENABLE_DODS */
 #if defined(I18N) && (I18N)
 		"Yes",
 #else /* !I18N */

@@ -1,11 +1,14 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.50 2004-01-10 04:30:27 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.51 2004-01-12 18:11:06 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.6 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-This release...
+This is a paper bag release to correct some platform-specific build
+problems introduced in 2.8.5. Custom GCC builds are now warning free
+will no longer build when any compiler warnings are encountered.
+This will help ensure that fewer bugs burrow into future code.
 
 Enjoy,
 Charlie
@@ -20,4 +23,5 @@ Other user-visible changes:
 1. 
 
 User-invisible changes:
-1. Ever closer to warning-free builds with --enable-debug-custom
+1. GCC builds are warning-free with --enable-debug-custom
+2. All prototypes correctly pre-declared

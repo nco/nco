@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.36 2004-01-10 04:30:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.37 2004-01-12 18:11:07 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -9,7 +9,8 @@
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* nco_netcdf.h is completely independent of NCO and does not depend on nco.h 
-   nco_netcdf.h is an abstraction layer for netcdf.h, plus a few convenience routines:
+   nco_netcdf.h is an abstraction layer for netcdf.h, plus a few convenience routines
+   A similar abstraction layer must exist for each NCO storage backend, e.g., nco_hdf.h
 
    1. Utility routines, e.g., nco_typ_lng() (routines with no netCDF library counterpart)
    2. File-routine wrappers, e.g., nco_open()

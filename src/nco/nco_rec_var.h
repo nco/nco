@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.h,v 1.5 2004-01-10 04:30:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.h,v 1.6 2004-01-12 18:11:07 zender Exp $ */
 
 /* Purpose: Record variable utilities */
 
@@ -16,11 +16,11 @@
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 
 /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* Personal headers */
-#include "nco.h" /* NCO definitions */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.65 2004-01-10 04:30:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.66 2004-01-12 18:11:07 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -50,7 +50,7 @@
 #endif /* HAVE_GETOPT_LONG */
 
 /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
 
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.65 2004-01-10 04:30:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.65 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.66 2004-01-12 18:11:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.66 $";
   const char * const opt_sng="ACcD:d:Fhl:n:Op:rRv:x-:";
 
   dmn_sct *rec_dmn;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.10 2004-01-10 04:30:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.h,v 1.11 2004-01-12 18:11:07 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -7,10 +7,10 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
-   #include "nco_var_utl.h" *//* Multi-slabbing algorithm */
+   #include "nco_msa.h" *//* Multi-slabbing algorithm */
 
-#ifndef NCO_VAR_UTL_H
-#define NCO_VAR_UTL_H
+#ifndef NCO_MSA_H
+#define NCO_MSA_H
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -21,11 +21,11 @@
 #include <limits.h> /* need LONG_MAX */
 
 /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* Personal headers */
-#include "nco.h" /* NCO definitions */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_bnr.h" /* Binary write utilities */
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
@@ -107,4 +107,4 @@ extern "C" {
 } /* end extern "C" */
 #endif /* __cplusplus */
 
-#endif /* NCO_VAR_UTL_H */
+#endif /* NCO_MSA_H */

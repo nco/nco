@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.66 2004-01-10 04:30:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.67 2004-01-12 18:11:07 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -59,7 +59,7 @@
 #endif /* HAVE_GETOPT_LONG */
 
 /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 /* #define MAIN_PROGRAM_FILE MUST precede #include libnco.h */
 #define MAIN_PROGRAM_FILE
@@ -100,8 +100,8 @@ main(int argc,char **argv)
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
 
-  const char * const CVS_Id="$Id: ncflint.c,v 1.66 2004-01-10 04:30:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.66 $";
+  const char * const CVS_Id="$Id: ncflint.c,v 1.67 2004-01-12 18:11:07 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.67 $";
   const char * const opt_sng="ACcD:d:Fhi:l:Op:rRv:xw:-:";
   
   dmn_sct **dim;

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.15 2004-01-10 04:30:28 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.16 2004-01-12 18:11:07 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -42,16 +42,17 @@
 #include <assert.h> /* assert() debugging macro */
 #include <limits.h> /* Integer representation, INT_MIN, INT_MAX... */
 #include <math.h> /* sin cos cos sin 3.14159 */
+#include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strdup */
 
   /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
+#include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
   /* Headers specific to this program */
-#include "nco.h" /* NCO definitions */
-#include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
-#include "ncap.h" /* Symbol table definition */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
+#include "ncap.h" /* netCDF arithmetic processor-specific definitions (symbol table, ...) */
 #include "ncap_yacc.h" /* Symbol definitions from parser */
 
   /* We want yylex() errors to skip current line rather than stop execution
@@ -61,8 +62,37 @@
      This causes yyerror to print current error and skip next error
      fxm: Hackish, but I see no other way */ 
 
-  /* Re-prototype yylex() to accept re-entrant arguments (Flex p. 12, Bison p. 60) */
+/* NCO prototypes yylex() in three separate places---Ensure that all prototypes agree!
+   The alternative, prototyping yylex() once in ncap.h, requires YYSTYPE (ncap_yacc.h) too
+   That is unappealing since we want ncap.h segregable from parser and scanner dependencies
+   1. Top of ncap_lex.l via YY*DECL token
+      Define YY*DECL token so yylex() accepts re-entrant arguments (Flex p. 12, Bison p. 60) 
+      Use YY*DECL on line following it definition to make prototype visible ncap_lex.c
+      This quiets a compiler warning
+   2. Top of ncap_yacc.y via YY*DECL token
+      Required to quiet compiler warning (see additional comments in ncap_yacc.y)
+   3. In ncap_lex.l ncap_ntl_scn() declaration
+      Required for ncap_ntl_scn() call to yylex() (see additional comments in ncap_ntl_scn()) */
 #define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
+  YY_DECL;
+
+  /* CEWI fxm 20040110 Prototype functions that cause warnings with pedantic GCC compiling
+     Portability of this entire section is questionable
+     We already assume lexer is flex since AT&T lex does not understand <EOF> rules
+     Thus prototyping following flex-specific functions adds no additional assumptions */
+  FILE *yyget_in(void); /* fixes: warning: no previous prototype for `yyget_in' */
+  FILE *yyget_out(void); /* fixes: warning: no previous prototype for `yyget_out' */
+  char *yyget_text(void); /* fixes: warning: no previous prototype for `yyget_text' */
+  int fileno(FILE *); /* fixes: warning: implicit declaration of function `fileno' */
+  int yy_flex_realloc(void *,size_t); /* fixes: warning: implicit declaration of function `yy_flex_realloc'. Is this obsolete? */
+  int yyget_debug(void); /* fixes: warning: no previous prototype for `yyget_debug' */
+  int yyget_leng(void); /* fixes: warning: no previous prototype for `yyget_leng' */
+  int yyget_lineno(void); /* fixes: warning: no previous prototype for `yyget_lineno' */
+  int yylex_destroy(void); /* fixes: warning: no previous prototype for `yylex_destroy' */
+  void yyset_debug(int bdebug); /* fixes: warning: no previous prototype for `yyset_debug' */
+  void yyset_in(FILE *in_str); /* fixes: warning: no previous prototype for `yyset_in' */
+  void yyset_lineno(int line_number); /* fixes: warning: no previous prototype for `yyset_lineno' */
+  void yyset_out(FILE *out_str); /* fixes: warning: no previous prototype for `yyset_out' */
 
   /* Global variables */
   extern size_t ncap_ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
@@ -665,7 +695,7 @@ M_PI {return NAMED_CONSTANT;}
   if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Lexer creating LHS cast template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),prs_arg->var_LHS->nm,prs_arg->var_LHS->nbr_dim,prs_arg->var_LHS->sz);
   
   if(0){ /* Remove some compiler warning messages CEWI */
-    /* Following two statements remove "defined but not used" messages in lex.yy.c */
+    /* Following two statements remove "defined but not used" messages in ncap_lex.c (lex.yy.c) */
     (void)yyunput((int)NULL,(char *)NULL);
     (void)yy_flex_realloc((void *)NULL,(size_t)NULL);
     /* Remove warnings which only occur on SGI IRIX cc */
@@ -742,7 +772,7 @@ M_PI {return NAMED_CONSTANT;}
 
 %%
 
-/* Begin user subroutines section */
+/* Begin user functions section */
 
 bool
 yywrap(void)
@@ -774,8 +804,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
  int * const nbr_lst_d) /* O [nbr] Number of LHS dimensions in input file */
 {
   /* Purpose: Scan command script, construct I/O lists
-     Routine is called so that metadata contents of output file are known 
-     before arithmetic processing
+     Call routine to learn metadata contents of output file prior to arithmetic processing
      lst_a: RHS variables present in input file
      lst_b: LHS variables present in input file
      lst_c: Parent variables of LHS attributes in input file
@@ -800,7 +829,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
   extern int yy_scan_string(const char *);
 #endif /* NCAP_NTL_SCN_NOT_IN_NCAP_L */
 
-  bool match; /* [flg] Variable is defined in list already */
+  bool mch_flg; /* [flg] Variable is defined in list already */
   
   char *var_nm;  
 
@@ -844,19 +873,19 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
       /* Search for RHS variables in input file */
       var_nm=lval.var_nm_RHS;
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
-	match=False; /* [flg] Variable is defined in list already */
+	mch_flg=False; /* [flg] Variable is defined in list already */
 	/* Search RHS variables already known to be in input file... */
 	for(var_idx=0;var_idx<lst_a_nbr;var_idx++){
 	  /* ...if the new variable is found then... */
 	  if(!strcmp(lst_a[var_idx].nm,var_nm)){
 	    /* ...set flag and... */
-	    match=True; /* [flg] Variable is defined in list already */
+	    mch_flg=True; /* [flg] Variable is defined in list already */
 	    /* ...stop looking through list... */
 	    break;
 	  } /* end if */
 	} /* end loop over var */
 	/* If RHS variable information is already in list we are done */
-	if(match) break;
+	if(mch_flg) break;
 	/* Otherwise add new RHS variable to list */
 	if(lst_a_nbr==0) lst_a=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct)); else lst_a=(nm_id_sct *)nco_realloc(lst_a,((lst_a_nbr+1)*sizeof(nm_id_sct)));
 	lst_a[lst_a_nbr].nm=(char *)strdup(var_nm);
@@ -867,10 +896,10 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
       /* Search for LHS variables in input file */
       var_nm=lval.var_nm_LHS;
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
-	match=False;
+	mch_flg=False;
 	for(var_idx=0;var_idx<lst_b_nbr;var_idx++)
-	  if(!strcmp(lst_b[var_idx].nm,var_nm)){match=True; break;}
-	if(match) break;
+	  if(!strcmp(lst_b[var_idx].nm,var_nm)){mch_flg=True; break;}
+	if(mch_flg) break;
 	if(lst_b_nbr == 0) lst_b=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	else lst_b=(nm_id_sct *)nco_realloc(lst_b,((lst_b_nbr+1)*sizeof(nm_id_sct)));
 	lst_b[lst_b_nbr].nm=(char *)strdup(var_nm);
@@ -881,10 +910,10 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
       /* Search for LHS attribute's parent variable in input file */
       var_nm=lval.aed.var_nm;     
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
-	match=False;
+	mch_flg=False;
 	for(var_idx=0;var_idx<lst_c_nbr;var_idx++)
-	  if(!strcmp(lst_c[var_idx].nm,var_nm)){match=True;break;}
-	if(match) break;
+	  if(!strcmp(lst_c[var_idx].nm,var_nm)){mch_flg=True;break;}
+	if(mch_flg) break;
 	if(lst_c_nbr == 0) lst_c=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	else lst_c=(nm_id_sct *)nco_realloc(lst_c,((lst_c_nbr+1)*sizeof(nm_id_sct)));
 	lst_c[lst_c_nbr].nm=(char *)strdup(var_nm);
@@ -913,4 +942,4 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
   
 } /* end ncap_ntl_scn() */
 
-/* End user subroutines section */
+/* End user functions section */

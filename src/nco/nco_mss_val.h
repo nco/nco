@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.11 2004-01-10 04:30:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.12 2004-01-12 18:11:07 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -21,11 +21,11 @@
 #include <string.h> /* strcmp. . . */
 
 /* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions and C library */
 #include "nco_netcdf.h" /* NCO wrappers for netCDF C library */
 
 /* Personal headers */
-#include "nco.h" /* NCO definitions */
+#include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_cnf_typ.h" /* Conform variable types */
 #include "nco_mmr.h" /* Memory management */
 #if (!defined HAVE_STRCASECMP) || (!defined HAVE_STRDUP)
