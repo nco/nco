@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.3 1998-08-19 00:52:13 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.4 1998-08-19 05:26:51 zender Exp $
 
 MY_BLD_DIR := ../bld
 MY_DAT_DIR := ../data
@@ -407,13 +407,21 @@ clean:
 	rm -f $(NCO_OBJ)
 	cd $(MY_DOC_DIR); rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
 
-distclean: clean
-	rm -f $(NCO_BIN)
-	rm -f $(NCO_DAT)
-	rm -f $(MY_LIB_DIR)/libnco*
+docclean:
 	cd $(MY_DOC_DIR); rm -f nco.info* nco.dvi nco.html* nco.ps *~
-	cd $(MY_DAT_DIR); rm -f in.nc *~
+
+dataclean:
+	rm -f $(NCO_DAT)
+
+binclean:
+	rm -f $(NCO_BIN)
+
+libclean:
+	rm -f $(MY_LIB_DIR)/libnco*
+
+distclean: clean docclean dataclean binclean libclean
 	cd $(MY_BLD_DIR); rm -f *~
+	cd $(MY_DAT_DIR); rm -f in.nc *~
 
 debug:
 	printf "VPATH = $(VPATH)\n"
