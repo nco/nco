@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.138 2003-05-31 00:54:09 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.139 2003-06-23 22:18:23 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -175,7 +175,7 @@ capable of performing arbitrary arithmetic operations</li>
 <li>Many releases since 2.0.0 are not packaged (i.e., no tarballs or RPMs).
 Retrieve these versions <a name="#Download">using CVS</a> or from 
 <a href="http://dust.ess.uci.edu/nco">this anonymous FTP site</a>.
-<li><b>NCO 2.7.4</b>, Autotools build supported on AIX
+<li><b>NCO 2.7.4</b>, Autotools build support for AIX, fix UDUnits confusion with floating point hyperslab specifications
 <li><b>NCO 2.7.3</b>, Support <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (and some <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html">CF</a>) conventions, e.g., <tt>ncks -d wvl "1 picometer","1 furlong" -d time,"2001-03-19 06:00:0.0","2001-03-19 18:00:0.0"</tt> 
 <li><b>NCO 2.7.2</b>, Printing (<tt>ncks -H</tt>) plays well with multi-slabbing
 <li><b>NCO 2.7.1</b>, Fallback to B. Sittler's <tt>getopt</tt> for

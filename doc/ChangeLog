@@ -1,7 +1,12 @@
-2003-06-15  Charlie Zender  <zender@uci.edu>
+2003-06-23  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_7_4
-	Changes since nco-2_7_3: Better AIX autotools support
+	Changes since nco-2_7_3: Better AIX autotools support, UDUnits fix
+
+	* Rorik fixed UDUnits handling of hyperslab specifications in
+	floating point format, e.g., 1.23e-7. 
+
+2003-06-15  Charlie Zender  <zender@uci.edu>
 
 	* Update copyright headers
 

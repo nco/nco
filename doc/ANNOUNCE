@@ -1,13 +1,17 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.19 2003-05-30 21:02:57 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.20 2003-06-23 22:18:22 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.7.4 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco/nco.tar.gz (note new location)
 
-The only change since version 2.7.3 is the improvements to
-AIX support, especially autotools support contributed by
-Jim Edwards of NCAR. Thanks, Jim!
+There are two changes since version 2.7.3:
+
+1. Improvements to AIX support, especially autotools support.
+Contributed by Jim Edwards of NCAR. Thanks, Jim!
+2. Fix limit parsing so hyperslabs specified in floating point format
+do not confuse UDUnits interface layer. This resulted in core dumps
+(but not wrong answers) in 2.7.3. Fixed by Rorik Peterson.
 
 Enjoy,
 Charlie
