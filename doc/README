@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.7 2002-08-13 06:35:13 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.8 2002-09-06 20:28:59 rorik Exp $ -*-text-*-
 
 # Purpose: NCO README file
 
@@ -47,7 +47,9 @@ libraries, and executables.
 Documentation and Bug Reports:
 Please read the NCO manual before you submit a bug report!  The manual
 is supplied in five different formats: Postscript (nco.ps), Texinfo
-(nco.texi), Info (nco.info), HTML (nco.html), and DVI (nco.dvi).
+(nco.texi), Info (nco.info), HTML (nco.html), and DVI (nco.dvi).  If 
+you got this from a CVS snapshot, you will need to generate the format
+you want yourself with 'make nco.html', 'make nco.pdf', 'make nco.ps', etc.
 Sending me questions whose answers aren't in the manual is the best
 way to motivate me to write more documentation.  I would also like to
 accentuate the contrapositive of this statement.

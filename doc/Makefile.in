@@ -94,6 +94,11 @@ am__quote = @am__quote@
 install_sh = @install_sh@
 path_to_ncgen = @path_to_ncgen@
 info_TEXINFOS = nco.texi
+EXTRA_DIST = nco.pdf nco.ps nco.html
+
+# our own additions for NCO; they may be supported by automake later on
+html_docs = nco.html
+pdf_docs = nco.pdf
 subdir = doc
 mkinstalldirs = $(SHELL) $(top_srcdir)/autobld/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
@@ -109,7 +114,7 @@ DIST_COMMON = README ChangeLog Makefile.am Makefile.in NEWS TODO
 all: all-am
 
 .SUFFIXES:
-.SUFFIXES: .dvi .info .ps .texi
+.SUFFIXES: .dvi .html .info .pdf .ps .texi
 $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ Makefile.am  $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && \
 	  $(AUTOMAKE) --foreign  --ignore-deps doc/Makefile
@@ -327,6 +332,11 @@ uninstall-am: uninstall-info-am
 	mostlyclean-aminfo mostlyclean-generic mostlyclean-libtool \
 	uninstall uninstall-am uninstall-info-am
 
+.texi.html:
+	$(MAKEINFO) --html --no-split $<
+.PHONY: html_docs pdf_docs
+.texi.pdf:
+	$(TEXI2DVI) --pdf $<
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
