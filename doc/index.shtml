@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.94 2002-04-24 06:23:31 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.95 2002-04-26 16:23:02 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -285,7 +285,15 @@ please send your request to relevant system administrators, e.g.,
 or <a href="mailto:support@unidata.ucar.edu">Unidata Support</a>.
 </li>
 <li><i>Is there an easy way to keep up with new NCO releases?</i>
-Subscribe to the <a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a> mailing list.</li>
+Subscribe to the <a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a> mailing list (this list is for NCO-related announcements, not for questions) </li>
+<li><i>Where should I ask my questions on how to use NCO?</i>
+On the <a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help</a>
+or the <a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Discussion</a>
+sites.
+</li>
+<li><i>Where is NCO development discussed?</i>
+At the <a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developer</a>
+site.
 </ul>
 <hr></p>
 
