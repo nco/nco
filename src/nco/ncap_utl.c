@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.19 2001-11-16 12:31:01 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.20 2001-11-29 16:06:55 hmb Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -52,7 +52,6 @@
 #include "ncap.h"               /*include prs_arg */
 
 
-
 var_sct *
 ncap_var_init(char *var_nm,prs_sct *prs_arg)
 {
@@ -87,6 +86,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   (void)var_get(f_id,vara);
    /* (void)var_free(var_nm);*/
    /* free(var_nm->nm);*/
+  //vara=var_upk(vara);
    return vara;
 
 }
@@ -111,9 +111,12 @@ ncap_var_write(var_sct *var, prs_sct *prs_arg)
   /* define variable */   
 
   rcd=nco_def_var(prs_arg->out_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_out_id);
-  /* now write variable */
+/* now put missing value */  
+  if(var->has_mss_val)
+    (void)nco_put_att(prs_arg->out_id,var_out_id,"missing_value",var->type,1,var->mss_val.vp);
+  rcd = nco_enddef(prs_arg->out_id);
 
- rcd = nco_enddef(prs_arg->out_id);
+/* now write variable */ 
  if(var->nbr_dim == 0 ){
    (void)nco_put_var1(prs_arg->out_id,var_out_id,0L,var->val.vp,var->type);
    }else{
@@ -130,7 +133,9 @@ ncap_ptr_unn_2_attribute(nc_type type, ptr_unn val)
   /* Assumes theat val is initially cast to void */
   /* Note does not convert cp ( strings) as these */
   /* are not handled by parse_sct */
-  
+  /* Note: a netCDF attribute can contain MULTIPLE values */
+  /* only the FIRST value in the memory block is converted */
+
   parse_sct a;
   (void)cast_void_nctype(type,&val);
     switch(type) {
@@ -161,7 +166,7 @@ ncap_attribute_2_ptr_unn(parse_sct a)
   
   switch(type) {
      case NC_FLOAT: *val.fp = a.val.f; break;
-     case NC_DOUBLE:*val.dp = a.val.d; break;
+     case NC_DOUBLE: *val.dp = a.val.d; break;
      case NC_INT:   *val.lp = a.val.l; break;
      case NC_SHORT: *val.sp = a.val.s; break;
      case NC_BYTE:  *val.bp = a.val.b;  break;
@@ -188,9 +193,9 @@ ncap_var_var_add(var_sct *var_1,var_sct *var_2)
   /* Routine called by parser */
   var_sct *var_sum;
 
+  (void)ncap_var_retype(var_1,var_2);
   var_sum=var_dpl(var_2);
   var_sum=var_conform_dim(var_1,var_2,var_sum,MUST_CONFORM,&DO_CONFORM);
-  var_sum=var_conform_type(var_1->type,var_sum);
   (void)var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_sum->val);
    
   return var_sum;
@@ -210,9 +215,9 @@ ncap_var_var_sub(var_sct *var_2,var_sct *var_1)
   /* Routine called by parser */
   var_sct *var_sum;
 
+  (void)ncap_var_retype(var_1,var_2);
   var_sum=var_dpl(var_2);
   var_sum=var_conform_dim(var_1,var_2,var_sum,MUST_CONFORM,&DO_CONFORM);
-  var_sum=var_conform_type(var_1->type,var_sum);
   (void)var_subtract(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_sum->val);
    
   return var_sum;
@@ -231,10 +236,9 @@ ncap_var_var_multiply(var_sct *var_1,var_sct *var_2)
 
   /* Routine called by parser */
   var_sct *var_sum;
-
+  (void)ncap_var_retype(var_1,var_2);
   var_sum=var_dpl(var_2);
   var_sum=var_conform_dim(var_1,var_2,var_sum,MUST_CONFORM,&DO_CONFORM);
-  var_sum=var_conform_type(var_1->type,var_sum);
   (void)var_multiply(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_sum->val);
    
   return var_sum;
@@ -811,7 +815,18 @@ var_abs(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
 
 } /* end var_abs() */
 
-
+int 
+ncap_var_retype(var_sct* vara, var_sct* varb)
+{
+  if( vara->type == varb->type) return vara->type;
+  if (vara->type > varb->type){
+    varb = var_conform_type(vara->type,varb);
+    return vara->type;
+  }else{
+    vara=var_conform_type(varb->type,vara);
+    return varb->type;
+  }
+}
 
 int 
 ncap_retype(parse_sct *a,parse_sct *b)
@@ -1016,21 +1031,191 @@ ncap_attribute_minus(parse_sct *a)
    return a->type;
 }
 
-
-
-int yyerror(char *sng)
+nm_id_sct *
+var_lst_copy(nm_id_sct *xtr_lst,int n)
 {
-  /* Purpose: Process errors reported by the parser. 
-     The Bison parser detects a "parse error" or "syntax error" whenever
-     it reads a token which cannot satisfy any syntax rule.
-     Normally this function resides in liby.a but that library does not exist
-     on Linux systems so we supply it here.
-   */
-  (void)fprintf(stderr,"%s\n",sng);
-  /* I have no idea what yyerror() should return */
-  return 0;
-} /* end yyerror() */
+  int i;
+  nm_id_sct *xtr_new_lst;
 
+  if(n == 0 ) return NULL;
+    xtr_new_lst = (nm_id_sct*)nco_malloc(n*sizeof(nm_id_sct));
+    for (i =0 ; i< n ; i++){
+      xtr_new_lst[i].nm = strdup(xtr_lst[i].nm);
+      xtr_new_lst[i].id = xtr_lst[i].id;
+      }
+  return xtr_new_lst;            
+    
+
+}
+
+
+
+nm_id_sct *
+var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst_b)
+{
+  int i;
+  int j;
+  int n=0;
+
+  bool match;
+  nm_id_sct *xtr_new_lst=NULL;
+
+  if(*nbr_xtr == 0 ) return xtr_lst;
+
+   xtr_new_lst = (nm_id_sct*)nco_malloc((*nbr_xtr)*sizeof(nm_id_sct));  
+   for(i =0 ; i < *nbr_xtr ; i++) {
+     match = False;
+     for(j = 0; j < nbr_lst_b ; j++)
+       if(!strcmp(xtr_lst[i].nm,xtr_lst_b[j].nm)){ match = True ; break; }
+     if(match) continue;
+     xtr_new_lst[n].nm = strdup(xtr_lst[i].nm);
+     xtr_new_lst[n++].id = xtr_lst[i].id;
+     }
+  *nbr_xtr = n;
+  return xtr_new_lst;      
+      
+  }
+
+nm_id_sct *
+var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst_a)
+{
+  int i;
+  int j;
+  int n;
+  
+  nm_id_sct *xtr_new_lst;
+
+  bool match;
+
+  
+  if(*nbr_xtr >0 ){
+    xtr_new_lst = (nm_id_sct*)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
+    n = *nbr_xtr;
+    for (i =0 ; i< *nbr_xtr ; i++){
+      xtr_new_lst[i].nm = strdup(xtr_lst[i].nm);
+      xtr_new_lst[i].id = xtr_lst[i].id;
+      }
+    }else{
+      *nbr_xtr = nbr_lst_a;
+      return xtr_lst_a;
+    }/* end if */
+ 
+  
+  for( i = 0 ; i < nbr_lst_a ; i++) {
+    match = False;
+    for(j = 0 ; j < *nbr_xtr ;j++)
+      if(!strcmp(xtr_lst[j].nm,xtr_lst_a[i].nm)){ match = True ; break;}
+      if (match) continue;
+      xtr_new_lst = (nm_id_sct*)nco_realloc(xtr_new_lst,(n+1)*sizeof(nm_id_sct));
+      xtr_new_lst[n].nm = strdup(xtr_lst_a[i].nm);
+      xtr_new_lst[n++].id = xtr_lst_a[i].id;
+  }
+
+  *nbr_xtr = n;
+  return xtr_new_lst;            
+    
+
+}
+
+void 
+ncap_initial_scan(prs_sct *prs_arg,char *spt_arg_cat, nm_id_sct** xtr_lst_a,int *nbr_lst_a,
+nm_id_sct** xtr_lst_b,int *nbr_lst_b,nm_id_sct** xtr_lst_c, int *nbr_lst_c)
+{
+#include "ncap.tab.h"           /* TOKENS and YYSTYPE - produced by Bison */
+                                /* We need these because we are calling the scanner */
+  int i;                      
+  int itoken;
+  int n_lst_a=0;
+  int n_lst_b=0;
+  int n_lst_c=0;
+  int rcd;
+  int var_id;
+  bool match;
+  char *var_nm;  
+
+  nm_id_sct *lst_a;
+  nm_id_sct *lst_b;
+  nm_id_sct *lst_c;
+
+  YYSTYPE lvalp;
+  extern FILE *yyin;
+  extern int yylex(YYSTYPE*,prs_sct *);
+
+  if(spt_arg_cat) {
+    yy_scan_string(spt_arg_cat);
+    }else{
+    /* Open script file for reading */
+      if((yyin=fopen(prs_arg->fl_spt,"r")) == NULL){
+      (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),prs_arg->fl_spt);
+      exit(EXIT_FAILURE);
+      }
+  }
+   
+  itoken = yylex(&lvalp,prs_arg);
+
+  while(itoken != 0){
+  
+    switch (itoken) {
+
+    case IGNORE:      break; /* Do nothing  */
+    case ATTRIBUTE:   break; /* Do nothing  */
+    case EPROVOKE:    break; /* Do nothing */
+    case VAR: 
+                       var_nm = lvalp.vara;
+                       if( NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id) ){
+	                 match = False;
+                         for(i=0; i < n_lst_a ; i++)
+                           if(!strcmp(lst_a[i].nm,var_nm)){ match = True; break; }
+	                 if (match) break;
+                         if (n_lst_a==0) lst_a = (nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
+			   else lst_a = (nm_id_sct *)nco_realloc(lst_a,((n_lst_a+1)*sizeof(nm_id_sct)));
+           	         lst_a[n_lst_a].nm=strdup(var_nm);
+	                 lst_a[n_lst_a++].id=var_id;
+                       }
+                       break; 
+    case OUT_VAR: 
+                       var_nm = lvalp.output_var;
+                       
+                       if( NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id) ){
+	                 match = False;
+                         for(i=0; i < n_lst_b ; i++)
+                           if(!strcmp(lst_b[i].nm,var_nm)){ match = True; break; }
+	                 if (match) break;
+                         if (n_lst_b == 0) lst_b = (nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
+			   else lst_b = (nm_id_sct *)nco_realloc(lst_b,((n_lst_b+1)*sizeof(nm_id_sct)));
+           	         lst_b[n_lst_b].nm=strdup(var_nm);
+	                 lst_b[n_lst_b++].id=var_id;
+                       }
+                       break;
+    
+    case OUT_ATT:       var_nm = lvalp.att.var_nm;     
+                       
+                       if( NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id) ){
+	                 match = False;
+                         for(i=0; i < n_lst_c ; i++)
+                           if(!strcmp(lst_c[i].nm,var_nm)){ match = True; break; }
+	                 if (match) break;
+                         if (n_lst_c == 0) lst_c = (nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
+			   else lst_c = (nm_id_sct *)nco_realloc(lst_c,((n_lst_c+1)*sizeof(nm_id_sct)));
+           	         lst_c[n_lst_c].nm=strdup(var_nm);
+	                 lst_c[n_lst_c++].id=var_id;
+                       }
+                       break;
+
+                        
+
+
+    default: break;
+    }
+    itoken = yylex(&lvalp,prs_arg);
+    
+  }
+
+  if(n_lst_a >0) { *xtr_lst_a = lst_a ; *nbr_lst_a = n_lst_a ;}  
+  if(n_lst_b >0) { *xtr_lst_b = lst_b ; *nbr_lst_b = n_lst_b ;}  
+  if(n_lst_c >0) { *xtr_lst_c = lst_c ; *nbr_lst_c = n_lst_c ;}  
+  
+}
 
 
 
