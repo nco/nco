@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.17 2004-09-18 05:22:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.18 2004-09-24 00:54:14 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -65,7 +65,7 @@ nco_prn_att /* [fnc] Print all attributes of single variable */
     (void)cast_void_nctype(att[idx].type,&att[idx].val);
 
     (void)strcpy(dlm_sng,", ");
-    (void)sprintf(att_sng,"%s%%s\n",nco_typ_fmt_sng(att[idx].type));
+    (void)sprintf(att_sng,"%s%%s",nco_typ_fmt_sng(att[idx].type));
     switch(att[idx].type){
     case NC_FLOAT:
       for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,att_sng,att[idx].val.fp[att_lmn],(att_lmn != att_sz-1) ? dlm_sng : "");

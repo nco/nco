@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.126 2004-09-19 00:24:38 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.127 2004-09-24 00:54:12 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.9 are ready. 
 
@@ -33,6 +33,7 @@ Build changes:
 
 Other user-visible changes:
 1. ncks prints data to screen by default if only one filename specified
+2. Remove extra carriage returns from ncks global metadata printing
 
 User-invisible changes:
 1. None

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.108 2004-09-18 05:22:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.109 2004-09-24 00:54:14 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -80,9 +80,12 @@ main(int argc,char **argv)
   bool FORTRAN_IDX_CNV=False; /* Option F */
   bool HISTORY_APPEND=True; /* Option h */
   bool NCO_BNR_WRT=False; /* [flg] Write binary file */
-  bool PRN_VAR_DATA=False; /* flg] Print variable data Option H */
-  bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata Option m */
-  bool PRN_GLB_METADATA=False; /* [flg] Print global metadata Option M */
+  bool PRN_VAR_DATA=False; /* [flg] Print variable data */
+  bool PRN_VAR_METADATA=False; /* [flg] Print variable metadata */
+  bool PRN_GLB_METADATA=False; /* [flg] Print global metadata */
+  bool PRN_VAR_DATA_TGL=False; /* [flg] Toggle print variable data Option H */
+  bool PRN_VAR_METADATA_TGL=False; /* [flg] Toggle print variable metadata Option m */
+  bool PRN_GLB_METADATA_TGL=False; /* [flg] Toggle print global metadata Option M */
   bool PRN_DMN_UNITS=False; /* [flg] Print dimensional units Option u */
   bool PRN_DMN_IDX_CRD_VAL=True; /* [flg] Print leading dimension/coordinate indices/values Option q */
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
@@ -103,8 +106,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.108 2004-09-18 05:22:02 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.108 $";
+  const char * const CVS_Id="$Id: ncks.c,v 1.109 2004-09-24 00:54:14 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.109 $";
   const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qrRs:uv:x-:";
 
   extern char *optarg;
@@ -231,8 +234,8 @@ main(int argc,char **argv)
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
       lmt_nbr++;
       break;
-    case 'H': /* Print data to screen */
-      PRN_VAR_DATA=True;
+    case 'H': /* Toggle printing data to screen */
+      PRN_VAR_DATA_TGL=True;
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;
@@ -240,11 +243,11 @@ main(int argc,char **argv)
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
-    case 'm': /* Print variable metadata to screen */
-      PRN_VAR_METADATA=True;
+    case 'm': /* Toggle printing variable metadata to screen */
+      PRN_VAR_METADATA_TGL=True;
       break;
-    case 'M': /* Print global metadata to screen */
-      PRN_GLB_METADATA=True;
+    case 'M': /* Toggle printing global metadata to screen */
+      PRN_GLB_METADATA_TGL=True;
       break;
     case 'O': /* Toggle FORCE_OVERWRITE */
       FORCE_OVERWRITE=!FORCE_OVERWRITE;
@@ -393,11 +396,20 @@ main(int argc,char **argv)
   } /* end loop over dimensions */
   
   if(fl_out == NULL){
-    /* Print data to screen when only input file is specified */
-    PRN_VAR_DATA=True;
-    PRN_VAR_METADATA=True;
+    /* Default is to print data and metadata to screen if output file is not specified 
+       Default is not to print data and metadata to screen if output file is specified */
+    if(PRN_VAR_DATA_TGL) PRN_VAR_DATA=False; else PRN_VAR_DATA=True;
+    if(PRN_VAR_METADATA_TGL) PRN_VAR_METADATA=False; else PRN_VAR_METADATA=True;
     if(var_lst_in == NULL) PRN_GLB_METADATA=True;
+    if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=!PRN_VAR_METADATA;
   }else{
+    if(PRN_VAR_DATA_TGL) PRN_VAR_DATA=True; else PRN_VAR_DATA=False;
+    if(PRN_VAR_METADATA_TGL) PRN_VAR_METADATA=True; else PRN_VAR_METADATA=False;
+    if(var_lst_in == NULL) PRN_GLB_METADATA=True;
+    if(PRN_GLB_METADATA_TGL) PRN_GLB_METADATA=!PRN_VAR_METADATA;
+  } /* endelse */
+
+  if(fl_out != NULL){
     int out_id;  
     
     /* Open output file */

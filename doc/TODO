@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.429 2004-09-20 05:29:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.430 2004-09-24 00:54:12 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -273,6 +273,8 @@ nco464. ncpdq: convert missing_value to packed type
 nco465. Create UCI IP-compliant license/copyright notice for version 3.0+
 nco466. Change ncks -H -M -m switches to toggles?
 nco467. Keep track of CDO "Climate Data Operators" http://www.mpimet.mpg.de/~cdo/
+nco468. Make -H toggle variable printing so ncks -M only prints metadata 
+nco469. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -322,7 +324,9 @@ ncap -D 1 -O -v -s "foo=log(e_flt+0.01f)^1" ~/nco/data/in.nc ~/foo.nc
 ncap -D 1 -O -v -s "foo=log(e_dbl)^1" ~/nco/data/in.nc ~/foo.nc
 ncap -D 1 -O -v -s "foo=sin(e_dbl)^1" ~/nco/data/in.nc ~/foo.nc
 ncap58. Implement ncap test script in nco_tst.pl format so that errors are flagged at build-time.
-ncap59. 
+ncap59. ncap always gives points in first quadrant for
+ncap -O -v -s 'water_dir=(180/4*atan(1))*(atan(water_v/water_u) + 4 * atan(1) * ((water_u-abs(water_u))/(-2*water_u)))'
+ncap60. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.

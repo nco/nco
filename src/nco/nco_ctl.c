@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.76 2004-09-08 18:08:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.77 2004-09-24 00:54:14 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -351,7 +351,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-F")) (void)fprintf(stdout,"-F, --ftn, --fortran\tFortran indexing conventions (1-based) for I/O\n");
   if(strstr(opt_sng,"-f")) (void)fprintf(stdout,"-f, --fnc_tbl, --prn_fnc_tbl\tPrint function table\n");
   if(strstr(opt_sng,"-H")){
-    if(prg_lcl == ncks) (void)fprintf(stdout,"-H, --prn, --print\tPrint data\n");
+    if(prg_lcl == ncks) (void)fprintf(stdout,"-H, --prn, --print\tToggle printing data\n");
     if(nco_is_mlt_fl_opr(prg_lcl)) (void)fprintf(stdout,"-H, --fl_lst_in, --file_list\tDo not create \"input_file_list\" global attribute\n");
   } /* end if -H */
   if(strstr(opt_sng,"-h")) (void)fprintf(stdout,"-h, --hst, --history\tDo not append to \"history\" global attribute\n");
@@ -360,12 +360,12 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-l")) (void)fprintf(stdout,"-l, --lcl, --local path\tLocal storage path for remotely-retrieved files\n");
   if(strstr(opt_sng,"-M")){
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-M, --msk_val, --mask-value, --mask_value mask_val\tMasking value (default is 1.0)\n");
-    if(prg_lcl == ncks) (void)fprintf(stdout,"-M, --Mtd, --Metadata\tPrint global metadata\n");
+    if(prg_lcl == ncks) (void)fprintf(stdout,"-M, --Mtd, --Metadata\tToggle printing global metadata\n");
     if(prg_lcl == ncpdq) (void)fprintf(stdout,"-M, --pck_map, --map pck_map\tPack map [flt_sht,flt_byt,hgh_sht,hgh_byt,nxt_lsr]\n");
   } /* end if */
   if(strstr(opt_sng,"-m")){
     if(prg_lcl == ncwa) (void)fprintf(stdout,"-m, --msk_nm, --msk_var, --mask-variable, --mask_variable mask_var\tMasking variable name\n");
-    if(prg_lcl == ncks) (void)fprintf(stdout,"-m, --mtd, --metadata\tPrint variable metadata\n");
+    if(prg_lcl == ncks) (void)fprintf(stdout,"-m, --mtd, --metadata\tToggle printing variable metadata\n");
   } /* end if */
   if(strstr(opt_sng,"-N")) (void)fprintf(stdout,"-N, --nmr, --numerator\tNo normalization\n");
   if(strstr(opt_sng,"-n")){
