@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.224 2004-06-15 15:59:47 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.225 2004-06-15 16:46:39 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -294,19 +294,19 @@ Simply hit return when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>2.9.5</tt> (which is
-tagged as <tt>nco-2_9_5</tt> due to CVS rules) into local directory
-<tt>nco-2.9.5</tt>:   
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -r nco-2_9_5 -d nco-2.9.5 nco</tt></p>
+This command retrieves and places NCO version <tt>2.9.6</tt> (which is
+tagged as <tt>nco-2_9_6</tt> due to CVS rules) into local directory
+<tt>nco-2.9.6</tt>:   
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -r nco-2_9_6 -d nco-2.9.6 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@cvs.sf.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-2_9_5</tt>) and the development version is that the
+(e.g., <tt>nco-2_9_6</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>2.9.5</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>2.9.6</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -334,14 +334,14 @@ distribution by many months, if not years:
 
 <ul>
 <!--
-<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.9.5</a></li>
+<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.9.6</a></li>
 -->
 <a href="http://www.debian.org">Debian GNU/Linux</a>-compatible systems: 
-<li><a href="src/nco_2.9.5-1_i386.deb">nco_2.9.5-1_i386.deb</a> (<!--#fsize file="src/nco_2.9.5-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
-<li><a href="src/nco_2.9.5-1.dsc">nco_2.9.5-1.dsc</a> (<!--#fsize file="src/nco_2.9.5-1.dsc"-->): Description</li>
-<li><a href="src/nco_2.9.5-1.tar.gz">nco_2.9.5-1.tar.gz</a> (<!--#fsize file="src/nco_2.9.5-1.tar.gz"-->): Gzipped Source Tarball</li>
+<li><a href="src/nco_2.9.6-1_i386.deb">nco_2.9.6-1_i386.deb</a> (<!--#fsize file="src/nco_2.9.6-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
+<li><a href="src/nco_2.9.6-1.dsc">nco_2.9.6-1.dsc</a> (<!--#fsize file="src/nco_2.9.6-1.dsc"-->): Description</li>
+<li><a href="src/nco_2.9.6-1.tar.gz">nco_2.9.6-1.tar.gz</a> (<!--#fsize file="src/nco_2.9.6-1.tar.gz"-->): Gzipped Source Tarball</li>
 <li><a
-href="src/nco_2.9.5-1_i386.changes">nco_2.9.5-1_i386.changes</a> (<!--#fsize file="src/nco_2.9.5-1.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
+href="src/nco_2.9.6-1_i386.changes">nco_2.9.6-1_i386.changes</a> (<!--#fsize file="src/nco_2.9.6-1.changes"-->): Changes</li> (An SSI error here is expected since there are no changes between the official tarball and the Debian tarball so #fsize reports an error. Anyone know?)
 </ul>
 
 <ul>

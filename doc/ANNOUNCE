@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.89 2004-06-15 15:59:47 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.90 2004-06-15 16:46:39 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.5 are ready. 
 
@@ -8,15 +8,18 @@ http://dust.ess.uci.edu/nco (Homepage "mirror")
 This release implements a new way to specify output files to NCO.
 Output files may now be specified with -o (or --fl_out or --output),
 or as last positional argument (the traditional behavior). 
-This facilitates processing large numbers of files with multi-file
-operators (ncra, ncrcat, ncecat) using the xargs command.
+This facilitate processing of large numbers of files by multi-file
+operators (ncra, ncrcat, ncecat) by using the xargs command, e.g.,
+
+/bin/ls | grep day_after_tomorrow_????.nc | xargs ncra -o dat.nc
+
 Using xargs or perl to handle these situations is now documented in
 
 http://nco.sf.net/nco.html#lrg
 
 The new -o fl_out behavior works on all operators.
 ncwa was the only operator that previously used -o for anything.
-ncwa used -o switch for passing relational operator types for masking.
+It use the -o switch for passing relational operator types for masking.
 The new ncwa single-letter option for this is -t for "truth condition".
 The preferred ncwa switches are now --truth_condition or --msk_cmp_typ
 for "mask comparison type". 
@@ -25,7 +28,7 @@ removed to reduce the burgeoning number of synonyms.
 The other ncwa -o long-option synonym, --op_rlt, works as usual.
 Please modify ncwa scripts accordingly.
 Unmodified ncwa scripts which expect the old behavior of -o will fail
-with an error stating that too many input filenames are present.
+with a harmless error stating that too many input filenames are present.
 
 Enjoy,
 Charlie
