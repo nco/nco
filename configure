@@ -20570,7 +20570,7 @@ if test "${enable_regex+set}" = set; then
 else
   nco_have_regex=yes
 fi;
-if test x$nco_have_regex = xyes; then
+if test "x$nco_have_regex" = xyes; then
   if test "${ac_cv_header_regex_h+set}" = set; then
   echo "$as_me:$LINENO: checking for regex.h" >&5
 echo $ECHO_N "checking for regex.h... $ECHO_C" >&6
@@ -20701,7 +20701,7 @@ echo "${ECHO_T}$ac_cv_header_regex_h" >&6
 
 fi
 if test $ac_cv_header_regex_h = yes; then
-echo ""
+
 cat >>confdefs.h <<\_ACEOF
 #define HAVE_REGEX_H 1
 _ACEOF
@@ -21097,7 +21097,7 @@ else
 fi
 
 fi
-if test x$nco_have_regex = xyes; then
+if test "x$nco_have_regex" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define NCO_HAVE_REGEX_FUNCTIONALITY 1
