@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.14 2001-05-08 05:26:11 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.15 2002-02-05 07:11:04 zender Exp $
 
 Purpose: NCO news archive
 
@@ -24,6 +24,16 @@ scp -p ~/nco/doc/nco_news.shtml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs
 
 <dt><a name="News"></a></dt>
 <h2>NCO News</h2>
+
+<a name="20020203"></a>
+<p>2002/02/03: 
+NCO version 2.2 is released.
+Differences with version 2.0
+<ul>
+<li><tt>ncap</tt>, the netCDF Arithmetic Processor</li>
+<li><tt>libnco_c++</tt>, a C++ API for libnetcdf</li>
+<li>Various minor bugfixes introduced in 2.X releases</li>
+</ul>
 
 <a name="20010507"></a>
 <p>2001/05/07: 

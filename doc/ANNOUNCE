@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.12 2002-02-03 08:40:08 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.13 2002-02-05 07:11:04 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.2.0 are ready. 
 Changes since version 2.0.0 include bugfixes and a 
@@ -11,7 +11,7 @@ In the fine tradition of beta quality software, ncap
 is completely undocumented but see 
 nco/data/ncap.in for a sample run script. 
 NCO version >= 2.0.1 requires netCDF version >= 3.5.
-Get the new version of NCO and read the user's guide on
+Get the new version of NCO and read the User's guide on
 
 http://nco.sourceforge.net
 
@@ -23,16 +23,21 @@ Thanks Henry!
 Enjoy,
 Charlie
 
+P.S. ncap requires GNU flex and bison to build.
+For that reason it does not build by default and you must
+specifically build ncap with "make ncap".
+
 Summary of changes since 2.0.0:
 
-1. ncap: lexer/parser redefinition, I/O ability, wrappers for
+1. ncap: lexer/parser redefinition, I/O bookkeeping, wrappers for
 NCO arithmetic functions, attribute handling, type-specific intrinsic 
 arithmetic functions, string handling, test script (Butowsky)
 2. Fix ncks units printing bug introduced in 2.0 (Zender)
 3. Improved version information with, e.g., ncks -r (Zender)
-4. Use new NC_NAT token requires netCDF 3.5 (Zender)
+4. Use new NC_NAT token _requires_ netCDF 3.5 (Zender)
 5. ncap: global attribute handling, stretching mixed rank
 variables, exclusive state lexing, LHS casting (Zender)
+6. libnco_c++, a C++ API for libnetcdf (Zender)
 
 A few notes on the objective of ncap: 
 ncap's objective is to solve everyday needs of recurring tasks
@@ -55,20 +60,31 @@ result are simply specified on the LHS of an expression, e.g.,
 a[lat,lon,lev]=1.0; // a is created and stored as 3-dimensional array
 pressure[time,lat,lon,lev]=P0*hyam+hybm*PS; // No fuss, no muss
 
+To give you the flavor of how ncap may be used for day-to-day tasks,
+here are a few commands which illustrate how to add some typical derived
+fields to climate model output:
+
+ncap -O -s "wnd=sqrt(wnd_znl^2+wnd_mrd^2)" in.nc in.nc
+ncap -O -s "LWCF=FLNTC-FLNT" -s "SWCF=FSNT-FSNTC" in.nc in.nc
+ncap -O -s "DSTDPSTTL=DSTDPSTRB+DSTDPSGRV+DSTDPSWET" in.nc in.nc
+ncap -O -s "prs[time,lat,lon,lev]=P0*hyam+hybm*PS" -s "dns=prs/(287.05*tpt)" -s "cnc=mmr*dns" in.nc in.nc
+
 There are undoubtedly small bugs remaining in the parsing
 of expressions. We encourage you to stress the parser with complex
 expressions and send us any problems you find. Concurrently, we will
 steadily extend ncap functionality to include more powerful features. 
 
-Some of the most interesting ideas for for new features include:
+Some of the most interesting ideas for for new ncap features include:
 1. Standard procedural expressions, e.g., "if then else"
 2. Fortran-like index-based hyperslab specification, e.g., y=u(:,2:4,:)^2
-3. Coordinate value subscripting, e.g., y=u(-90.0:0.0,0.0:180.0)^2
+3. NCO Coordinate value subscripting, e.g., y=u(-90.0:0.0,0.0:180.0)^2
 4. Pre-defined functions to access NCO internals, e.g.,
 type_convert(variable,"double"), min/max/avg(variable,variable),...
 5. Linking with GNU Scientific Library (GSL)
-6. filename::variable@attribute notation for using multiple files
+6. filename::variable@attribute notation for accessing multiple files
+7. Loop over files performing identical operations on each
+8. Console mode for true interactive processing
 
-The list of ncap-specific features that we consider the top priority 
-appears at the top of the NCO TODO file.
+The list of ncap-specific features/bugs that we consider top
+priority appears at the top of the NCO TODO file.
 

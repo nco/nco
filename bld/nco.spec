@@ -1,21 +1,21 @@
-# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.17 2001-12-03 06:43:14 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.18 2002-02-05 07:11:03 zender Exp $
 # Purpose: RPM spec file for NCO
 # Usage: 
 # Before nco.spec is invoked (with 'rpm -ba nco.spec'), the source tarball 
-# nco-2.1.0 must be in the directory /usr/src/redhat/SOURCES
+# nco-2.2.0 must be in the directory /usr/src/redhat/SOURCES
 # After RPMs are built, upload them to RedHat's contrib area
-# ncftpput incoming.redhat.com /libc6 /usr/src/redhat/SRPMS/nco-2.1.0-1.src.rpm /usr/src/redhat/RPMS/i386/nco-2.1.0-1.i386.rpm 
-# ncftpput download.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.1.0-1.src.rpm /usr/src/redhat/RPMS/i386/nco-2.1.0-1.i386.rpm 
-# ncftpput dust.ps.uci.edu /pub/zender/nco /usr/src/redhat/SRPMS/nco-2.1.0-1.src.rpm /usr/src/redhat/RPMS/i386/nco-2.1.0-1.i386.rpm 
+# ncftpput incoming.redhat.com /libc6 /usr/src/redhat/SRPMS/nco-2.2.0-1.src.rpm /usr/src/redhat/RPMS/i386/nco-2.2.0-1.i386.rpm 
+# ncftpput download.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.2.0-1.src.rpm /usr/src/redhat/RPMS/i386/nco-2.2.0-1.i386.rpm 
+# ncftpput dust.ps.uci.edu /pub/zender/nco /usr/src/redhat/SRPMS/nco-2.2.0-1.src.rpm /usr/src/redhat/RPMS/i386/nco-2.2.0-1.i386.rpm 
 
 Summary: Arithmetic and metadata operators for netCDF and HDF4 files
 Name: nco
-Version: 2.1.0
+Version: 2.2.0
 # Release: refers to version of nco.spec for this version of NCO
 Release: 1
 Copyright: GPL
 Group: Applications/Scientific
-Source: ftp://nco.sourceforge.net/pub/nco/nco-2.1.0.tar.gz
+Source: ftp://nco.sourceforge.net/pub/nco/nco-2.2.0.tar.gz
 URL: http://nco.sourceforge.net
 # Distribution: None in particular
 Vendor: Charlie Zender
@@ -40,12 +40,12 @@ illustrates NCO use with examples from the field of climate modeling
 and analysis. The NCO homepage is http://nco.sourceforge.net
 
 %prep
-rm -rf $RPM_BUILD_DIR/nco-2.1.0
-tar xvzf $RPM_SOURCE_DIR/nco-2.1.0.tar.gz
+rm -rf $RPM_BUILD_DIR/nco-2.2.0
+tar xvzf $RPM_SOURCE_DIR/nco-2.2.0.tar.gz
 
 %build
-cd nco-2.1.0/bld
-/usr/bin/env MY_BIN_DIR=/usr/bin MY_DOC_DIR=/usr/doc/nco-2.1.0 make
+cd nco-2.2.0/bld
+/usr/bin/env MY_BIN_DIR=/usr/bin MY_DOC_DIR=/usr/doc/nco-2.2.0 make
 
 # make data
 # Use make tst only when connected to the Internet
@@ -72,4 +72,4 @@ cd nco-2.1.0/bld
 /usr/bin/ncwa
 
 %clean
-/bin/rm -r nco-2.1.0
+/bin/rm -r nco-2.2.0

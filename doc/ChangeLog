@@ -1,3 +1,12 @@
+2002-02-04  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_2_0:
+	Changes since nco-2_1_3: Henry made subscripts lexer tokens and
+	improved dimension list handling so LHS casting works regardless
+	of precedence or presence of LHS expressions.
+
+	* Documentation changes
+
 2002-02-02  Charlie Zender  <zender@uci.edu>
 
 	* Quieted output by removing verbose printing from debug level = 0
