@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.85 2000-12-07 17:35:28 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.86 2000-12-28 02:14:03 zender Exp $ 
 
 *************
 NCO Wish list
@@ -127,7 +127,7 @@ with nco_dst.pl
 sudo root screws up permissions in obj/bin directories of user
 178. Make _FillValue behave same as missing_value
 179. add netCDF to required packages list in RPM build
-181. Split nc_utl.c into smaller files
+181. Split nc_utl.c into smaller files (wait until 1.3 becomes stable branch)
 182. Add -L switch to print license terms
 187. Are OpenMP critical regions sufficient for netCDF or must all other threads stop completely?
 188. Make binary RPMS build with DODS option
@@ -141,11 +141,14 @@ ncdiff -O foo1.nc foo2.nc foo3.nc
 This may make sense, e.g., for 1-D record variables of different lengths, but not for multidimensional variables
 Former case should print warning, latter case should exit with error
 193. Convert dimension sizes from type "long int" to type "size_t"?
-194. ncwa core dump: 
+194. ncwa core dump under very specific conditions: 
 ncks -O -v DSTODXC,gw,date dstmch58_1998.nc bug.nc
 ncwa -O -a time -w gw bug.nc foo.nc
 Works fine without -w option
 Works fine with -D 5 option!!!
+Works fine when compiled without OPTS=D
+Perhaps this is a gcc-2.96 bug?
+195. Itanium builds
 ************************************************************************
 End NCO Wish list
 ************************************************************************

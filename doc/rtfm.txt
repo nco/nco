@@ -11,8 +11,9 @@ http://sourceforge.net/projects/nco
 NCO is administered at this location.
 By posting your question/bug here you will simplify life for me, and
 make it possible for others to learn from your experience.
-You must be a registered SourceForge user to post here.
-To register, goto http://sourceforge.net/account/register.php
+Anonymous postings are accepted, but you can also decide register,
+and thus receive automatic notices when your questions are responded
+to, by visiting http://sourceforge.net/account/register.php
 SourceForge is not commercial--they are not trying to sell you anything.
 To get a response to your NCO question, post to the NCO Help Forum at
 

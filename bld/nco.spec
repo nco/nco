@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.13 2000-10-02 06:05:12 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.14 2000-12-28 02:14:03 zender Exp $
 # Purpose: RPM spec file for NCO
 # Usage: 
 # Before nco.spec is invoked (with 'rpm -ba nco.spec'), the source tarball 
@@ -67,6 +67,7 @@ cd nco-1.2.1/bld
 /usr/bin/ncflint
 /usr/bin/ncks
 /usr/bin/ncra
+/usr/bin/ncrcat
 /usr/bin/ncrename
 /usr/bin/ncwa
 
