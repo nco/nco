@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.4 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_avg.c,v 1.5 2002-05-07 08:34:15 zender Exp $ */
 
 /* Purpose: Average variables */
 
@@ -282,9 +282,9 @@ var_avg_reduce_ttl /* [fnc] Sum blocks of op1 into each element of op2 */
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */
  const int has_mss_val, /* I [flg] Operand has missing values */
- const ptr_unn mss_val, /* I [sct] Missing value */
+ ptr_unn mss_val, /* I [sct] Missing value */
  long * const tally, /* I/O [nbr] Tally buffer */
- const ptr_unn op1, /* I [sct] Operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2)) */
+ ptr_unn op1, /* I [sct] Operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2)) */
  ptr_unn op2) /* O [sct] Sum of each block of op1 */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
@@ -553,8 +553,8 @@ var_avg_reduce_min /* [fnc] Place minimum of op1 blocks into each element of op2
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */
  const int has_mss_val, /* I [flg] Operand has missing values */
- const ptr_unn mss_val, /* I [sct] Missing value */
- const ptr_unn op1, /* I [sct] Operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2)) */
+ ptr_unn mss_val, /* I [sct] Missing value */
+ ptr_unn op1, /* I [sct] Operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2)) */
  ptr_unn op2) /* O [sct] Minimum of each block of op1 */
 {
   /* Purpose: Find minimum value of each contiguous block of first operand and place
@@ -836,9 +836,9 @@ var_avg_reduce_max /* [fnc] Place maximum of op1 blocks into each element of op2
  const long sz_op1, /* I [nbr] Size (in elements) of op1 */
  const long sz_op2, /* I [nbr] Size (in elements) of op2 */
  const int has_mss_val, /* I [flg] Operand has missing values */
- const ptr_unn mss_val, /* I [sct] Missing value */
- const ptr_unn op1, /* I [sct] Operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2)) */
- ptr_unn const op2) /* O [sct] Maximum of each block of op1 */
+ ptr_unn mss_val, /* I [sct] Missing value */
+ ptr_unn op1, /* I [sct] Operand (sz_op2 contiguous blocks of size (sz_op1/sz_op2)) */
+ ptr_unn op2) /* O [sct] Maximum of each block of op1 */
 {
   /* Purpose: Find maximum value of each contiguous block of first operand and place
      result in corresponding element in second operand. Operands are assumed to have

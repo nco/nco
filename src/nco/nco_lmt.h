@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.2 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.3 2002-05-07 08:34:15 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -43,7 +43,7 @@ lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
 lmt_sct * /* O [sct] Structure with user-specified strings for min and max limits */
 lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng elements */
 (const int lmt_nbr, /* I [nbr] number of dimensions with limits */
- const char ** const lmt_arg); /* I [sng] list of user-specified dimension limits */
+ char * const * const lmt_arg); /* I [sng] list of user-specified dimension limits */
 
 lmt_sct /* [sct] Limit structure for dimension */
 lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */

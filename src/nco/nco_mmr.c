@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.3 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.4 2002-05-07 08:34:15 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -69,7 +69,7 @@ nco_malloc /* [fnc] Wrapper for malloc() */
 
 void * /* O [ptr] Pointer to re-allocated memory */
 nco_realloc /* [fnc] Wrapper for realloc() */
-(const void *ptr, /* I/O [ptr] Buffer to reallocate */
+(void *ptr, /* I/O [ptr] Buffer to reallocate */
  const size_t size) /* I [nbr] Number of bytes required */
 {
   /* Purpose: Custom wrapper for realloc()

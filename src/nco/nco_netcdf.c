@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.20 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.21 2002-05-07 08:34:15 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -47,7 +47,7 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
   char sbr_nm[]="nco_err_exit()";
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"%s: ERROR %s\n%s\n",sbr_nm,msg,nc_strerror(rcd));
-    nco_exit(EXIT_FAILURE);
+    exit(EXIT_FAILURE);
   } /* endif error */
 } /* end nco_err_exit() */
 
@@ -187,7 +187,7 @@ nco_dfl_case_nctype_err(void) /* [fnc]   */
   char sbr_nm[]="nco_dfl_case_nctype_err()";
   (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal.\nNot handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype definition is braindead in netCDF2.x). Exiting...\n",sbr_nm);
   abort();
-  nco_exit(EXIT_FAILURE);
+  exit(EXIT_FAILURE);
 } /* end nco_dfl_case_nctype_err() */
 
 /* Begin file-level routines */
@@ -207,7 +207,7 @@ nco_create(const char *fl_nm,int cmode,int *nc_id)
 #endif /* HDF5 */
   }else{
     (void)fprintf(stderr,"nco_create() reports unknown fl_typ = %d\n",fl_in_typ);
-    nco_exit(EXIT_FAILURE);
+    exit(EXIT_FAILURE);
   } /* endelse */
   return rcd;
 } /* end nco_create */
@@ -228,7 +228,7 @@ nco_open(const char *fl_nm,int mode,int *nc_id)
 #endif /* HDF5 */
   }else{
     (void)fprintf(stderr,"nco_open() reports unknown fl_typ = %d\n",fl_in_typ);
-    nco_exit(EXIT_FAILURE);
+    exit(EXIT_FAILURE);
   } /* endelse */
   return rcd;
 } /* end nco_open */
@@ -299,7 +299,7 @@ nco_close(int nc_id)
 #endif /* HDF5 */
   }else{
     (void)fprintf(stderr,"Unknown fl_typ = %d in nco_close()\n",fl_in_typ);
-    nco_exit(EXIT_FAILURE);
+    exit(EXIT_FAILURE);
   } /* endelse */
   return rcd;
 } /* end nco_close */
@@ -374,7 +374,7 @@ nco_inq_dimid(int nc_id,char *dmn_nm,int *dmn_id)
   rcd=nc_inq_dimid(nc_id,dmn_nm,dmn_id);
   if(rcd == NC_EBADDIM){
     (void)fprintf(stdout,"ERROR nco_inq_dimid() reports requested dimension \"%s\" is not in input file\n",dmn_nm);
-    nco_exit(EXIT_FAILURE);
+    exit(EXIT_FAILURE);
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimid");
   return rcd;

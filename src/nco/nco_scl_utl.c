@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.4 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scl_utl.c,v 1.5 2002-05-07 08:34:15 zender Exp $ */
 
 /* Purpose: Scalar utilities */
 
@@ -37,7 +37,7 @@ scl_dbl_mk_var /* [fnc] Convert scalar double into netCDF variable */
 
 var_sct * /* O [sct] Output netCDF variable structure representing val */
 scl_mk_var /* [fnc] Convert scalar value of any type into NCO variable */
-(const val_unn val, /* I [frc] Scalar value to turn into netCDF variable */
+(val_unn val, /* I [frc] Scalar value to turn into netCDF variable */
  const nc_type val_typ) /* I [enm] netCDF type of value */
 {
   /* Purpose: Turn scalar value of any type into NCO variable
@@ -130,7 +130,7 @@ ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar dou
 scv_sct  /* O [sct] Scalar value structure representing val */
 ptr_unn_2_scv /* [fnc] Convert ptr_unn to scalar value structure */
 (const nc_type type, /* I [enm] netCDF type of value */
- const ptr_unn val) /* I [sct] Value to convert to scalar value structure */
+ ptr_unn val) /* I [sct] Value to convert to scalar value structure */
 {
   /* Purpose: Convert ptr_unn to scalar value structure
      Assumes that val is initially cast to void

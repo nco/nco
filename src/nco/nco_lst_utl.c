@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.5 2002-05-07 08:00:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.6 2002-05-07 08:34:15 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -10,7 +10,7 @@
 
 char * /* O [sng] Concatenated string formed by joining all input strings */
 sng_lst_prs /* [fnc] Join list of strings together into one string */
-(const char * const * const sng_lst, /* I [sng] List of pointers to strings to join together */
+(char * const * const sng_lst, /* I [sng] List of pointers to strings to join together */
  const long lmn_nbr, /* O [nbr] Number of strings in list */
  const char * const dlm_sng) /* I [sng] delimiter string to use as glue */
 {
@@ -168,7 +168,7 @@ indexx /* [fnc] Sort array of integers */
 void 
 index_alpha /* [fnc] Sort array of strings */
 (const int n, /* I [nbr] Number of elements */
- const char ** const arrin, /* I [sng] Strings to sort */
+ char * const * const arrin, /* I [sng] Strings to sort */
  int * const indx) /* O [idx] Indices to sorted array */
 {
 /* Purpose: Sort input array alphanumerically

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.h,v 1.2 2002-05-06 03:31:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.h,v 1.3 2002-05-07 08:34:15 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -22,6 +22,7 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_cnf_typ.h" /* Conform variable types */
 
 #ifdef __cplusplus
 extern "C" {
