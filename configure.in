@@ -223,6 +223,8 @@ if test "x$NETCDF_INC" = "x"; then
 else
   nco_udunits_dat="$NETCDF_INC/../etc/udunits.dat"
 fi
+dnl on MacOS X, we need libudport which has threaded functions
+AC_CHECK_FUNC(tdelete,,AC_CHECK_LIB([udport],[tdelete]))
 AC_CHECK_LIB([udunits], [utInit])
 dnl this must be DEFINE_UNQUOTED and then a quoted string so the quotes get
 dnl substituted into the source file correctly

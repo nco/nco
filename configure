@@ -1147,7 +1147,7 @@ ac_abs_top_srcdir=`cd "$ac_dir" && cd $ac_top_srcdir && pwd`
     else
       echo "$as_me: WARNING: no configuration information is in $ac_dir" >&2
     fi
-    cd $ac_popdir
+    cd "$ac_popdir"
   done
 fi
 
@@ -4545,6 +4545,7 @@ irix5* | irix6* | nonstopux*)
 
 # This must be Linux ELF.
 linux*)
+  # linux always uses pass_all now, this code is the old way (tm)
   case $host_cpu in
   alpha* | hppa* | i*86 | ia64* | m68* | mips* | powerpc* | sparc* | s390* | sh*)
     lt_cv_deplibs_check_method=pass_all ;;
@@ -4552,6 +4553,7 @@ linux*)
     # glibc up to 2.1.1 does not perform some relocations on ARM
     lt_cv_deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [LM]SB (shared object|dynamic lib )' ;;
   esac
+  lt_cv_deplibs_check_method=pass_all
   lt_cv_file_magic_test_file=`echo /lib/libc.so* /lib/libc-*.so`
   ;;
 
@@ -4675,7 +4677,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 4678 "configure"' > conftest.$ac_ext
+  echo '#line 4680 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5286,7 +5288,7 @@ fi
 
 
 # Provide some information about the compiler.
-echo "$as_me:5289:" \
+echo "$as_me:5291:" \
      "checking for Fortran 77 compiler version" >&5
 ac_compiler=`set X $ac_compile; echo $2`
 { (eval echo "$as_me:$LINENO: \"$ac_compiler --version </dev/null >&5\"") >&5
@@ -6298,11 +6300,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6301: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6303: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6305: \$? = $ac_status" >&5
+   echo "$as_me:6307: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6531,11 +6533,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6534: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6536: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6538: \$? = $ac_status" >&5
+   echo "$as_me:6540: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -6598,11 +6600,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6601: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6603: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:6605: \$? = $ac_status" >&5
+   echo "$as_me:6607: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -8658,7 +8660,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 8661 "configure"
+#line 8663 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -8756,7 +8758,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 8759 "configure"
+#line 8761 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -8947,7 +8949,8 @@ if test -f "$ltmain"; then
   # Now quote all the things that may contain metacharacters while being
   # careful not to overquote the AC_SUBSTed values.  We take copies of the
   # variables and quote the copies for generation of the libtool script.
-  for var in echo old_CC old_CFLAGS AR AR_FLAGS EGREP RANLIB LN_S LTCC NM SED SHELL \
+  for var in echo old_CC old_CFLAGS AR AR_FLAGS EGREP RANLIB LN_S LTCC NM \
+    SED SHELL STRIP \
     libname_spec library_names_spec soname_spec extract_expsyms_cmds \
     old_striplib striplib file_magic_cmd finish_cmds finish_eval \
     deplibs_check_method reload_flag reload_cmds need_locks \
@@ -9125,7 +9128,7 @@ LN_S=$lt_LN_S
 NM=$lt_NM
 
 # A symbol stripping program
-STRIP="$STRIP"
+STRIP=$lt_STRIP
 
 # Used to examine libraries when file_magic_cmd begins "file"
 MAGIC_CMD=$MAGIC_CMD
@@ -9398,7 +9401,10 @@ else
   # If there is no Makefile yet, we rely on a make rule to execute
   # `config.status --recheck' to rerun these tests and create the
   # libtool script then.
-  test -f Makefile && make "$ltmain"
+  ltmain_in=`echo $ltmain | sed -e 's/\.sh$/.in/'`
+  if test -f "$ltmain_in"; then
+    test -f Makefile && make "$ltmain"
+  fi
 fi
 
 
@@ -10911,11 +10917,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10914: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10920: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:10918: \$? = $ac_status" >&5
+   echo "$as_me:10924: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -10978,11 +10984,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:10981: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:10987: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:10985: \$? = $ac_status" >&5
+   echo "$as_me:10991: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -12235,7 +12241,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12238 "configure"
+#line 12244 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12333,7 +12339,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 12336 "configure"
+#line 12342 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -12450,7 +12456,8 @@ if test -f "$ltmain"; then
   # Now quote all the things that may contain metacharacters while being
   # careful not to overquote the AC_SUBSTed values.  We take copies of the
   # variables and quote the copies for generation of the libtool script.
-  for var in echo old_CC old_CFLAGS AR AR_FLAGS EGREP RANLIB LN_S LTCC NM SED SHELL \
+  for var in echo old_CC old_CFLAGS AR AR_FLAGS EGREP RANLIB LN_S LTCC NM \
+    SED SHELL STRIP \
     libname_spec library_names_spec soname_spec extract_expsyms_cmds \
     old_striplib striplib file_magic_cmd finish_cmds finish_eval \
     deplibs_check_method reload_flag reload_cmds need_locks \
@@ -12580,7 +12587,7 @@ LN_S=$lt_LN_S
 NM=$lt_NM
 
 # A symbol stripping program
-STRIP="$STRIP"
+STRIP=$lt_STRIP
 
 # Used to examine libraries when file_magic_cmd begins "file"
 MAGIC_CMD=$MAGIC_CMD
@@ -12828,7 +12835,10 @@ else
   # If there is no Makefile yet, we rely on a make rule to execute
   # `config.status --recheck' to rerun these tests and create the
   # libtool script then.
-  test -f Makefile && make "$ltmain"
+  ltmain_in=`echo $ltmain | sed -e 's/\.sh$/.in/'`
+  if test -f "$ltmain_in"; then
+    test -f Makefile && make "$ltmain"
+  fi
 fi
 
 
@@ -13156,11 +13166,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13159: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13169: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:13163: \$? = $ac_status" >&5
+   echo "$as_me:13173: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -13223,11 +13233,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:13226: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:13236: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:13230: \$? = $ac_status" >&5
+   echo "$as_me:13240: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -14757,7 +14767,8 @@ if test -f "$ltmain"; then
   # Now quote all the things that may contain metacharacters while being
   # careful not to overquote the AC_SUBSTed values.  We take copies of the
   # variables and quote the copies for generation of the libtool script.
-  for var in echo old_CC old_CFLAGS AR AR_FLAGS EGREP RANLIB LN_S LTCC NM SED SHELL \
+  for var in echo old_CC old_CFLAGS AR AR_FLAGS EGREP RANLIB LN_S LTCC NM \
+    SED SHELL STRIP \
     libname_spec library_names_spec soname_spec extract_expsyms_cmds \
     old_striplib striplib file_magic_cmd finish_cmds finish_eval \
     deplibs_check_method reload_flag reload_cmds need_locks \
@@ -14887,7 +14898,7 @@ LN_S=$lt_LN_S
 NM=$lt_NM
 
 # A symbol stripping program
-STRIP="$STRIP"
+STRIP=$lt_STRIP
 
 # Used to examine libraries when file_magic_cmd begins "file"
 MAGIC_CMD=$MAGIC_CMD
@@ -15135,7 +15146,10 @@ else
   # If there is no Makefile yet, we rely on a make rule to execute
   # `config.status --recheck' to rerun these tests and create the
   # libtool script then.
-  test -f Makefile && make "$ltmain"
+  ltmain_in=`echo $ltmain | sed -e 's/\.sh$/.in/'`
+  if test -f "$ltmain_in"; then
+    test -f Makefile && make "$ltmain"
+  fi
 fi
 
 
@@ -15213,11 +15227,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15216: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15230: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15220: \$? = $ac_status" >&5
+   echo "$as_me:15234: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -15446,11 +15460,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15449: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15463: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:15453: \$? = $ac_status" >&5
+   echo "$as_me:15467: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
@@ -15513,11 +15527,11 @@ else
    -e 's:.*FLAGS}? :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:15516: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:15530: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:15520: \$? = $ac_status" >&5
+   echo "$as_me:15534: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
@@ -17573,7 +17587,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 17576 "configure"
+#line 17590 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -17671,7 +17685,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 17674 "configure"
+#line 17688 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -17788,7 +17802,8 @@ if test -f "$ltmain"; then
   # Now quote all the things that may contain metacharacters while being
   # careful not to overquote the AC_SUBSTed values.  We take copies of the
   # variables and quote the copies for generation of the libtool script.
-  for var in echo old_CC old_CFLAGS AR AR_FLAGS EGREP RANLIB LN_S LTCC NM SED SHELL \
+  for var in echo old_CC old_CFLAGS AR AR_FLAGS EGREP RANLIB LN_S LTCC NM \
+    SED SHELL STRIP \
     libname_spec library_names_spec soname_spec extract_expsyms_cmds \
     old_striplib striplib file_magic_cmd finish_cmds finish_eval \
     deplibs_check_method reload_flag reload_cmds need_locks \
@@ -17918,7 +17933,7 @@ LN_S=$lt_LN_S
 NM=$lt_NM
 
 # A symbol stripping program
-STRIP="$STRIP"
+STRIP=$lt_STRIP
 
 # Used to examine libraries when file_magic_cmd begins "file"
 MAGIC_CMD=$MAGIC_CMD
@@ -18166,7 +18181,10 @@ else
   # If there is no Makefile yet, we rely on a make rule to execute
   # `config.status --recheck' to rerun these tests and create the
   # libtool script then.
-  test -f Makefile && make "$ltmain"
+  ltmain_in=`echo $ltmain | sed -e 's/\.sh$/.in/'`
+  if test -f "$ltmain_in"; then
+    test -f Makefile && make "$ltmain"
+  fi
 fi
 
 
@@ -18229,7 +18247,8 @@ if test -f "$ltmain"; then
   # Now quote all the things that may contain metacharacters while being
   # careful not to overquote the AC_SUBSTed values.  We take copies of the
   # variables and quote the copies for generation of the libtool script.
-  for var in echo old_CC old_CFLAGS AR AR_FLAGS EGREP RANLIB LN_S LTCC NM SED SHELL \
+  for var in echo old_CC old_CFLAGS AR AR_FLAGS EGREP RANLIB LN_S LTCC NM \
+    SED SHELL STRIP \
     libname_spec library_names_spec soname_spec extract_expsyms_cmds \
     old_striplib striplib file_magic_cmd finish_cmds finish_eval \
     deplibs_check_method reload_flag reload_cmds need_locks \
@@ -18359,7 +18378,7 @@ LN_S=$lt_LN_S
 NM=$lt_NM
 
 # A symbol stripping program
-STRIP="$STRIP"
+STRIP=$lt_STRIP
 
 # Used to examine libraries when file_magic_cmd begins "file"
 MAGIC_CMD=$MAGIC_CMD
@@ -18607,7 +18626,10 @@ else
   # If there is no Makefile yet, we rely on a make rule to execute
   # `config.status --recheck' to rerun these tests and create the
   # libtool script then.
-  test -f Makefile && make "$ltmain"
+  ltmain_in=`echo $ltmain | sed -e 's/\.sh$/.in/'`
+  if test -f "$ltmain_in"; then
+    test -f Makefile && make "$ltmain"
+  fi
 fi
 
 
@@ -22797,6 +22819,147 @@ if test "x$NETCDF_INC" = "x"; then
 else
   nco_udunits_dat="$NETCDF_INC/../etc/udunits.dat"
 fi
+echo "$as_me:$LINENO: checking for tdelete" >&5
+echo $ECHO_N "checking for tdelete... $ECHO_C" >&6
+if test "${ac_cv_func_tdelete+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+/* System header to define __stub macros and hopefully few prototypes,
+    which can conflict with char tdelete (); below.
+    Prefer <limits.h> to <assert.h> if __STDC__ is defined, since
+    <limits.h> exists even on freestanding compilers.  */
+#ifdef __STDC__
+# include <limits.h>
+#else
+# include <assert.h>
+#endif
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char tdelete ();
+/* The GNU C library defines this for functions which it implements
+    to always fail with ENOSYS.  Some functions are actually named
+    something starting with __ and the normal name is an alias.  */
+#if defined (__stub_tdelete) || defined (__stub___tdelete)
+choke me
+#else
+char (*f) () = tdelete;
+#endif
+#ifdef __cplusplus
+}
+#endif
+
+int
+main ()
+{
+return f != tdelete;
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_func_tdelete=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_func_tdelete=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+fi
+echo "$as_me:$LINENO: result: $ac_cv_func_tdelete" >&5
+echo "${ECHO_T}$ac_cv_func_tdelete" >&6
+if test $ac_cv_func_tdelete = yes; then
+  :
+else
+
+echo "$as_me:$LINENO: checking for tdelete in -ludport" >&5
+echo $ECHO_N "checking for tdelete in -ludport... $ECHO_C" >&6
+if test "${ac_cv_lib_udport_tdelete+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-ludport  $LIBS"
+cat >conftest.$ac_ext <<_ACEOF
+#line $LINENO "configure"
+/* confdefs.h.  */
+_ACEOF
+cat confdefs.h >>conftest.$ac_ext
+cat >>conftest.$ac_ext <<_ACEOF
+/* end confdefs.h.  */
+
+/* Override any gcc2 internal prototype to avoid an error.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+/* We use char because int might match the return type of a gcc2
+   builtin and then its argument prototype would still apply.  */
+char tdelete ();
+int
+main ()
+{
+tdelete ();
+  ;
+  return 0;
+}
+_ACEOF
+rm -f conftest.$ac_objext conftest$ac_exeext
+if { (eval echo "$as_me:$LINENO: \"$ac_link\"") >&5
+  (eval $ac_link) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); } &&
+         { ac_try='test -s conftest$ac_exeext'
+  { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
+  (eval $ac_try) 2>&5
+  ac_status=$?
+  echo "$as_me:$LINENO: \$? = $ac_status" >&5
+  (exit $ac_status); }; }; then
+  ac_cv_lib_udport_tdelete=yes
+else
+  echo "$as_me: failed program was:" >&5
+sed 's/^/| /' conftest.$ac_ext >&5
+
+ac_cv_lib_udport_tdelete=no
+fi
+rm -f conftest.$ac_objext conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+echo "$as_me:$LINENO: result: $ac_cv_lib_udport_tdelete" >&5
+echo "${ECHO_T}$ac_cv_lib_udport_tdelete" >&6
+if test $ac_cv_lib_udport_tdelete = yes; then
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBUDPORT 1
+_ACEOF
+
+  LIBS="-ludport $LIBS"
+
+fi
+
+fi
+
 
 echo "$as_me:$LINENO: checking for utInit in -ludunits" >&5
 echo $ECHO_N "checking for utInit in -ludunits... $ECHO_C" >&6

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.62 2003-10-14 01:04:19 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.63 2003-10-30 21:11:16 rorik Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -19,7 +19,7 @@ LINUX icc	Y	N/A				Y	Y
 LINUXALPHA	Y					Y	Y
 LINUXPPC	Y					Y	N(9)
 LINUXSPARC64	Y					Y	Y
-MACOSX		N(8)
+MACOSX		Y					Y(14)	Y(14)
 NECSX
 SGIMP64 cc/CC	Y	Y				Y	N(6)
 SGIMP64 gcc/g++	N(7)					Y
@@ -36,12 +36,12 @@ ild: (undefined symbol) void __Crun::register_exit_code(void(*)()extern"C") -- r
 This is defined in /opt/SUNWspro/lib/libCrun.so but not found
 06. CC unable to link tst.o because -LANG:std flag not passed to crucial link CC
 07. Error making ncap_yacc.c
-08. I can't remember
 09. tst fails to find in.nc
 10. Major problems with configure script and permissions on installed files
 11. Comeau (correctly) insists strdup(), strcasecmp() are not ANSI standard (this should now be fixed, retry)
 12. C++ version problems in linking DODS libraries
 13. gcc 3.2.1 problem with /usr/include/sys/stat.h in nco_fl_utl.h
+14. g++ 2.95 (Darwin 5.5) does not have <valarray>, so the c++ library will not be built; g++ version 3.1 (Darwin 6.8) does. That is all we have tested.
 -----------------------------------------------------------------------
 
 Default installation procedure for system-wide installation,
@@ -374,9 +374,7 @@ End LINUXSPARC64
 
 ************************************************************************
 Start MACOSX
-Status: Fails to build ncap because configure is out of date
-Fails to build nco_c++ because g++ on MAC OS X is v 2.95.2
-ncap TODO#18
+Status: works.  rorik Thu Oct 30 12:09:15 AKST 2003
 ************************************************************************
 bash-2.05a$ ./pvmgetarch;uname -a;~/nco/autobld/config.guess
 UNKNOWN
