@@ -1,3 +1,10 @@
+2003-11-09  Charlie Zender  <zender@uci.edu>
+
+	* Applied nco_mss_val_cnf() to ncbo to fix TODO #274
+
+	* Wrote nco_mss_val_cnf() to change missing_value of var2, if any,
+	to missing_value of var2, if any, before arithmetic operation.
+
 2003-11-05  Charlie Zender  <zender@uci.edu>
 
 	* Remove ncap_lex.c, ncap_yacc.[ch] from .tar.gz file created by nco_dst.pl

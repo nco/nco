@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.9 2003-07-30 21:58:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.h,v 1.10 2003-11-10 06:45:59 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -32,8 +32,6 @@ extern "C" {
   void nco_var_abs(const nc_type,const long,const int,ptr_unn,ptr_unn);
   void nco_var_add_tll(const nc_type,const long,const int,ptr_unn,long *,ptr_unn,ptr_unn);
   void nco_var_mask(const nc_type,const long,const int,ptr_unn,const double,const int,ptr_unn,ptr_unn);
-  void nco_var_max_bnr(const nc_type,const long,const int,ptr_unn,ptr_unn,ptr_unn);
-  void nco_var_min_bnr(const nc_type,const long,const int,ptr_unn,ptr_unn,ptr_unn);
   void nco_var_nrm(const nc_type,const long,const int,ptr_unn,long *,ptr_unn);
   void nco_var_nrm_sdn(const nc_type,const long,const int,ptr_unn,long *,ptr_unn);
   void nco_var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,long *tally,ptr_unn op1,ptr_unn op2);
@@ -56,6 +54,24 @@ extern "C" {
    ptr_unn mss_val, /* I [flg] Value of missing value */
    ptr_unn op1, /* I [val] Values of first operand */
    ptr_unn op2); /* I/O [val] Values of second operand on input, values of quotient on output */
+
+  void
+  nco_var_max_bnr /* [fnc] Maximize two operands */
+  (const nc_type type, /* I [type] netCDF type of operands */
+   const long sz, /* I [nbr] Size (in elements) of operands */
+   const int has_mss_val, /* I [flg] Flag for missing values */
+   ptr_unn mss_val, /* I [flg] Value of missing value */
+   ptr_unn op1, /* I [val] Values of first operand */
+   ptr_unn op2); /* I/O [val] Values of second operand on input, values of maximum on output */
+
+void
+  nco_var_min_bnr /* [fnc] Minimize two operands */
+  (const nc_type type, /* I [type] netCDF type of operands */
+   const long sz, /* I [nbr] Size (in elements) of operands */
+   const int has_mss_val, /* I [flg] Flag for missing values */
+   ptr_unn mss_val, /* I [flg] Value of missing value */
+   ptr_unn op1, /* I [val] Values of first operand */
+   ptr_unn op2); /* I/O [val] Values of second operand on input, values of minimum on output */
 
   void
   nco_var_mlt /* [fnc] Multiply first operand by second operand */

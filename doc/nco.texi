@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.183 2003-10-12 05:14:36 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.184 2003-11-10 06:45:59 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2727,9 +2727,9 @@ straightforwardly compares each value of @var{var} to
 @var{missing_value} to determine which elements of @var{var} are to be
 treated as missing data. 
 @cindex C language
-If not, then @acronym{NCO} will internally convert @var{att_type} to
-@var{var_type} by using the implicit conversion rules @w{of C}, or, if   
-@var{att_type} is @code{NC_CHAR}
+If not, then @acronym{NCO} converts @var{missing_value} from
+@var{att_type} to @var{var_type} by using the implicit conversion rules
+@w{of C}, or, if @var{att_type} is @code{NC_CHAR}
 @footnote{For example, the @acronym{DOE} @acronym{ARM} program often
 uses @var{att_type} = @code{NC_CHAR} and @var{missing_value} =
 @samp{-99999.}. 
@@ -2785,6 +2785,26 @@ variable to the @var{missing_value} assigned to that variable in the
 current file). 
 Suffice it to say that, in all known cases, @acronym{NCO} does ``the
 right thing''. 
+
+It is impossible to determine and store the correct result of a binary  
+operation in a single variable.
+One such corner case occurs when both operands have differing
+@var{missing_value} attributes, i.e., attributes with different
+numerical values.
+Since the output (result) of the operation can only have one
+@var{missing_value}, some information may be lost.
+In this case, @acronym{NCO} always defines the output variable to have
+the same @var{missing_value} as the first input variable.
+Prior to performing the arithmetic operation, all values of the second
+operand equal to the second @var{missing_value} are replaced with the
+first @var{missing_value}.
+Then the arithmetic operation proceeds as normal, comparing each element 
+of each operand to a single @var{missing_value}.
+Comparing each element to two distinct @var{missing_value}'s would be
+much slower and would be no likelier to yield a more satisfactory
+answer. 
+In practice, judicious choice of @var{missing_value} values prevents any
+important information from being lost.
 
 @end enumerate
 
@@ -2903,8 +2923,8 @@ An input element $\xxx_{\idx}$ contributes to the output element
 $\xxx_{\jjj}$ except in two conditions:  
 @cindex missing values
 @enumerate
-@item $\xxx_{\idx}$ equals the @var{missing value} (@pxref{Missing
-values}) for the variable. 
+@item $\xxx_{\idx}$ equals the @var{missing value} 
+(@pxref{Missing values}) for the variable. 
 @item $\xxx_{\idx}$ is located at a point where the masking condition 
 (@pxref{Masking condition}) is false.
 @end enumerate
@@ -3382,9 +3402,9 @@ That is, any @code{time} values from files following the first file to
 be concatenated should be corrected to the @var{base_time} offset
 specified in the @code{units} attribute of @code{time} from the first
 file. 
-The analogous problem has been fixed in @acronym{ARM} files (@pxref{ARM
-Conventions}) and could be fixed for @acronym{CSM} files if there is
-sufficient lobbying, and if Unidata fixes the
+The analogous problem has been fixed in @acronym{ARM} files 
+(@pxref{ARM Conventions}) and could be fixed for @acronym{CSM} files if
+there is sufficient lobbying, and if Unidata fixes the
 @uref{http://www.unidata.ucar.edu/packages/udunits,UDUnits} package to
 build out of the box on Linux.
 }.
@@ -3567,12 +3587,13 @@ filename where (usually multiple) scripting commands are pre-stored.
 @command{ncap} was written to perform arbitrary albebraic
 transformations of data and archive the results as easily as possible.
 @cindex derived fields
+@xref{Missing values}, for treatment of missing values.
 The results of the algebraic manipulations are called 
 @dfn{derived fields}. 
 
 Unlike the other operators, @command{ncap} does not accept a list of
-variables to be operated on as an argument to @samp{-v} (@pxref{Variable 
-subsetting}).
+variables to be operated on as an argument to @samp{-v} 
+(@pxref{Variable subsetting}).
 Rather, the @samp{-v} switch takes no arguments and indicates
 that @command{ncap} should output @emph{only} user-defined variables.
 @command{ncap} does not accept or understand the @var{-x} switch.
@@ -3708,9 +3729,9 @@ variable name.
 @subsection Intrinsic functions
 @command{ncap} contains a small but growing library of intrinsic
 functions.
-In addition to the standard mathematical functions (@pxref{Intrinsic
-mathematical functions}), @command{ncap} currently supports packing
-and unpacking.
+In addition to the standard mathematical functions 
+(@pxref{Intrinsic mathematical functions}), @command{ncap} currently
+supports packing and unpacking.
 @unnumberedsubsec Packing and Unpacking Functions
 @cindex packing
 @cindex unpacking
@@ -4559,6 +4580,7 @@ and the corresponding variables (those with the same name) in
 @var{file_2} and stores the results in @var{file_3}. 
 The binary operation operates on the entire files (modulo any excluded
 variables). 
+@xref{Missing values}, for treatment of missing values.
 One of the four standard arithmetic binary operations currently
 supported must be selected with the @samp{-y @var{op_typ}} switch (or
 long options @samp{--op_typ} or @samp{--operation}).
@@ -4602,7 +4624,7 @@ Examples: @samp{ncbo --op_typ=/ 1.nc 2.nc 3.nc}, @samp{ncdivide 1.nc 2.nc 3.nc}@
 @end table
 @noindent
 Care should be taken when using the shortest form of key values,
-i.e., @samp{+}, @samp{-}, @samp{*}, @samp{/}.
+i.e., @samp{+}, @samp{-}, @samp{*}, @w{and @samp{/}}.
 Some of these single characters may have special meanings to the shell
 @cindex naked characters
 @footnote{@w{A naked} (i.e., unprotected or unquoted) @samp{*} is a

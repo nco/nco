@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.240 2003-11-07 04:12:40 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.241 2003-11-10 06:45:59 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -237,6 +237,10 @@ ncks -O -v mss_val_fst -p ~/nco/data in.nc ~/nco/data/out.nc
 ncrename -O -v mss_val_fst,mss_val ~/nco/data/out.nc
 ncbo -O -y '-' -v mss_val -p ~/nco/data in.nc out.nc ~/foo.nc
 ncks -m -C -H -v mss_val ~/foo.nc
+275. Use nco_mss_val_cnf() in ncflint
+276. Use nco_mss_val_cnf() in ncap
+277. Use nco_mss_val_cnf() in ncwa
+278.
 ************************************************************************
 End NCO Wish list
 ************************************************************************

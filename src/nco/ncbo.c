@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.7 2003-11-07 04:12:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.8 2003-11-10 06:45:59 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *opt_sng;
   char *time_bfr_srt;
-  char CVS_Id[]="$Id: ncbo.c,v 1.7 2003-11-07 04:12:40 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.7 $";
+  char CVS_Id[]="$Id: ncbo.c,v 1.8 2003-11-10 06:45:59 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.8 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -418,7 +418,7 @@ main(int argc,char **argv)
     has_mss_val=False;
 
     (void)nco_var_refresh(in_id_1,var_prc[idx]);
-    has_mss_val=has_mss_val || var_prc[idx]->has_mss_val; 
+    has_mss_val=var_prc[idx]->has_mss_val; 
     (void)nco_var_get(in_id_1,var_prc[idx]);
     
     /* Save output variable ID from being overwritten in refresh call */
@@ -478,12 +478,11 @@ main(int argc,char **argv)
     }  /* endif different type */
     var_prc_out[idx]=nco_var_cnf_typ(var_prc[idx]->type,var_prc_out[idx]);
 
+    /* Change missing_value of var_prc_out, if any, to missing_value of var_prc, if any */
+    has_mss_val=nco_mss_val_cnf(var_prc[idx],var_prc_out[idx]);
+    
     /* mss_val in fl_1, if any, overrides mss_val in fl_2 */
-    /* fxm: TODO #274 If both files have missing_value's and they differ,
-       must translate mss_val_2 to mss_val_1 before binary operation.
-       Otherwise mss_val_2 will be treated as regular value in var_2 */
     if(has_mss_val) mss_val=var_prc[idx]->mss_val; else mss_val=var_prc_out[idx]->mss_val;
-    has_mss_val=has_mss_val || var_prc_out[idx]->has_mss_val; 
     
     /* Default operation type depends on invocation name */
     if(nco_op_typ_sng == NULL) nco_op_typ=nco_op_typ_get(nco_op_typ_sng);

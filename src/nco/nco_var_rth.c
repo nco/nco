@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.14 2003-07-30 21:58:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.15 2003-11-10 06:45:59 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -104,9 +104,8 @@ nco_var_add_tll(const nc_type type,const long sz,const int has_mss_val,ptr_unn m
  */
 {
   /* Routine to add value of first operand to value of second operand 
-     and store result in second operand. Operands are assumed to have conforming
-     dimensions, and be of the specified type. Operands' values are 
-     assumed to be in memory already. */
+     and store result in second operand. 
+     Operands are assumed to conform, to be of same specified type, and to be in memory */
 
   /* Addition is currently defined as op2:=op1+op2 */
 
@@ -206,9 +205,8 @@ nco_var_add /* [fnc] Add first operand to second operand */
  ptr_unn op2) /* I/O [val] Values of second operand on input, values of sum on output */
 {
   /* Routine to add value of first operand to value of second operand 
-     and store result in second operand. Operands are assumed to have conforming
-     dimensions, and be of the specified type. Operands' values are 
-     assumed to be in memory already. */
+     and store result in second operand. 
+     Operands are assumed to conform, to be of same specified type, and to be in memory */
 
   /* Addition is currently defined as op2:=op1+op2 */
 
@@ -285,8 +283,7 @@ nco_var_sbt /* [fnc] Subtract first operand from second operand */
 {
   /* Purpose: Subtract value of first operand from value of second operand 
      and store result in second operand. 
-     Operands are assumed to have conforming dimensions, and be of specified type. 
-     Operands' values are assumed to be in memory already. */
+     Operands are assumed to conform, to be of same specified type, and to be in memory */
 
   /* Subtraction is currently defined as op2:=op2-op1 */
 
@@ -363,9 +360,8 @@ nco_var_mlt /* [fnc] Multiply first operand by second operand */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: multiply value of first operand by value of second operand 
-     and store result in second operand. Operands are assumed to have conforming
-     dimensions, and to both be of the specified type. Operands' values are 
-     assumed to be in memory already. */
+     and store result in second operand. 
+     Operands are assumed to conform, to be of same specified type, and to be in memory */
   
   /* Multiplication is currently defined as op2:=op1*op2 */  
   
@@ -442,9 +438,8 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Divide value of first operand by value of second operand 
-     and store result in second operand. Operands are assumed to have conforming
-     dimensions, and to both be of specified type. Operands' values are 
-     assumed to be in memory already. */
+     and store result in second operand. 
+     Operands are assumed to conform, to be of same specified type, and to be in memory */
 
   /* Division is currently defined as op2:=op2/op1 */  
 
@@ -511,19 +506,16 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
 } /* end nco_var_dvd() */
 
 void
-nco_var_min_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
-/* 
-  const nc_type type: I netCDF type of operands
-  const long sz: I size (in elements) of operands
-  const int has_mss_val: I flag for missing values
-  ptr_unn mss_val: I value of missing value
-  ptr_unn op1: I values of first operand
-  ptr_unn op2: I/O values of second operand on input, values of maximium on output
-*/
+nco_var_min_bnr /* [fnc] Minimize two operands */
+(const nc_type type, /* I [type] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of operands */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [flg] Value of missing value */
+ ptr_unn op1, /* I [val] Values of first operand */
+ ptr_unn op2) /* I/O [val] Values of second operand on input, values of minimum on output */
 {
   /* Purpose: Find minimium value(s) of two operands and store result in second operand 
-     Operands are assumed to have conforming dimensions, and to both be of the specified type
-     Operands' values are assumed to be in memory already */
+     Operands are assumed to conform, be of same specified type, and have values in memory */
   long idx;
   
   /* Typecast pointer to values before access */
@@ -603,21 +595,16 @@ nco_var_min_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn m
 } /* end nco_var_min_bnr() */
 
 void
-nco_var_max_bnr(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
-/* 
-   const nc_type type: I netCDF type of operands
-   const long sz: I size (in elements) of operands
-   const int has_mss_val: I flag for missing values
-   ptr_unn mss_val: I value of missing value
-   ptr_unn op1: I values of first operand
-   ptr_unn op2: I/O values of second operand on input, values of maximium on output
-*/
+nco_var_max_bnr /* [fnc] Maximize two operands */
+(const nc_type type, /* I [type] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of operands */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [flg] Value of missing value */
+ ptr_unn op1, /* I [val] Values of first operand */
+ ptr_unn op2) /* I/O [val] Values of second operand on input, values of maximum on output */
 {
-  /* Routine to find maximium value(s) of the two operands
-     and store result in second operand. Operands are assumed to have conforming
-     dimensions, and to both be of the specified type. Operands' values are 
-     assumed to be in memory already. */
-  
+  /* Purpose: Find minimium value(s) of two operands and store result in second operand 
+     Operands are assumed to conform, be of same specified type, and have values in memory */
   long idx;
   
   /* Typecast pointer to values before access */
@@ -709,8 +696,7 @@ nco_var_sqrt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
  */
 {
   /* Purpose: Place squareroot of first operand in value of second operand 
-     Operands are assumed to have conforming dimensions, and be of specified type 
-     Operands' values are assumed to be in memory already */
+     Operands are assumed to conform, to be of same specified type, and to be in memory */
 
   /* Square root is currently defined as op2:=sqrt(op1) */
 
@@ -958,7 +944,7 @@ nco_var_mask(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_
   /* Routine to mask third operand by second operand. Wherever second operand does not 
      equal first operand the third operand will be set to its missing value. */
 
-  /* Masking is currently defined as if(op2 !op_typ_rlt op1) then op3:=mss_val */  
+  /* Masking is currently defined as: if(op2 !op_typ_rlt op1) then op3:=mss_val */  
 
   long idx;
   double mss_val_dbl=double_CEWI;
