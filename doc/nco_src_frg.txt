@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.44 2002-12-02 16:23:10 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.45 2003-01-03 02:26:27 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -25,7 +25,8 @@ CVS:		    Anonymous check out:
 		    cvs -dzender@cvs1:/cvsroot/nco co -kk nco
 Daily tarballs of entire CVS tree for mirroring:
 		    http://cvs.sourceforge.net/cvstarballs/nco-cvsroot.tar.gz
-Compile Farm:       cf.sourceforge.net cf.sf.net
+Compile Farm:       ssh cf.sourceforge.net cf.sf.net
+HP Testdrive:       telnet 192.233.54.169
 
 # Create tarballs for uploading to sourceforge
 cd /data/zender/tmp
@@ -40,6 +41,13 @@ scp upload.sourceforge.net:/incoming/sf.tar.gz .
 # Copy docs from compile farm to NCO websites
 cd ~/nco/doc;scp -C nco.dvi nco.html nco.info* nco.pdf nco.ps* zender@nco.sourceforge.net:/home/groups/n/nc/nco/htdocs
 cd ~/nco/doc;scp -C nco.dvi nco.html nco.info* nco.pdf nco.ps* zender@dust.ess.uci.edu:/var/www/html/nco
+
+# Copy netCDF library to HP account
+ncftpput spe141.testdrive.compaq.com /house/zender /data/zender/tmp/netcdf-3.5.1-beta5.tar.Z
+cd ~/netcdf-3.5.1-beta5/src
+make distclean
+CPPFLAGS='-Df2cFortran' FC='g77' ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --libdir=${HOME}/lib/${GNU_TRP}
+make;make install
 
 # Copy netCDF library to NCO group account
 scp -C /data/zender/tmp/netcdf-3.5.0.tar.Z zender@nco.sourceforge.net:/home/groups/n/nc/nco

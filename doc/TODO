@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.195 2003-01-01 02:42:46 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.196 2003-01-03 02:26:10 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -226,6 +226,7 @@ nco_err_exit(): ERROR nco_inq_attid
 Attribute not found
 241. Add run-time switch which requests that output be missing_value where ANY of the input fields are missing_value. 
 242. Use getopt_long() from Sittler (BSD-licensed version with no problems) when system lacks it
+244. Get builds working on testdrive.hp.com
 ************************************************************************
 End NCO Wish list
 ************************************************************************
