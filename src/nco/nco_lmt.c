@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.19 2003-06-23 19:58:56 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.20 2003-11-16 22:01:59 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -858,7 +858,7 @@ nco_lmt_udu_cnv /* [fnc] convert from Unidata units to coordinate value */
   utUnit udu_sct_in, udu_sct_out; /* Unidata units structure */
   
 #ifndef UDUNITS_DAT
-  /* When empty, utInit() uses environment variable UDUNITS_PATH, if any.
+  /* When empty, utInit() uses environment variable UDUNITS_PATH, if any
      Otherwise it uses default initial location hardcoded when library was built */
   rcd=utInit("");
 #else

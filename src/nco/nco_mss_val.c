@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.13 2003-11-10 07:15:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.14 2003-11-16 22:01:59 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -44,11 +44,12 @@ nco_mss_val_cnf /* [fnc] Change missing_value of var2 to missing_value of var1 *
 (var_sct * const var1, /* I [sct] Variable with template missing value to copy */
  var_sct * const var2) /* I/O [sct] Variable with missing value to fill in/overwrite */
 {
+  /* Purpose: Change missing_value of var2 to missing_value of var1 */
   int has_mss_val=False; /* [flg] One or both operands have missing value */
   bool MSS_VAL_EQL=False; /* [flg] Missing values of input operands are identical */
   long idx;
   long var_sz=long_CEWI;
-  nc_type var_typ;
+  nc_type var_typ=NC_NAT; /* CEWI [enm] Type of input values */
   ptr_unn var_val;
 
   has_mss_val=var1->has_mss_val || var2->has_mss_val; 

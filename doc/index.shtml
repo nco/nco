@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.169 2003-11-16 20:13:23 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.170 2003-11-16 22:01:58 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -205,7 +205,7 @@ Tarballs are only uploaded to SourceForge, and RPMs are only
 generated, for those releases marked &ldquo;Packaged&rdquo;.
 Retrieve these versions <a name="#Download">using CVS</a> or from 
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
-<li><b>NCO 2.8.4</b> (<i>in progress</i>), 
+<li><b>NCO 2.8.4</b> (<i>in progress</i>), Support AMD Opteron x86-64 with <tt>LINUXAMD64</tt>
 <li><b>NCO 2.8.3</b> Fix big <tt>ncap</tt> memory leak, fix regressions, remove scary packing warnings, 
 <li><b>NCO 2.8.2</b>, <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly, improve error diagnostics
 <li><b>NCO 2.8.1</b>, <a href="./nco.html#wildcarding">&ldquo;Variable wildcarding&rdquo;</a>&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators
@@ -454,8 +454,8 @@ Moreover they may be compiled with debugging enabled and thus may be
 
 <ul>
 <li><b>Generic NCO build problems:</b>
-NCO requires recent versions of netCDF (version >= 3.5.0).
-NCO requires recent versions of GNU <tt>make</tt> (version >= 3.78.1).
+NCO requires netCDF version >=&nbsp;3.5.0 for support of <tt>nc_type NC_NAT</tt> in NCO source code.
+NCO requires GNU <tt>make</tt> version >=&nbsp;3.78.1 for support of target-specific variable values in <tt>bld/Makefile</tt>.
 </li>
 
 <li><b>Platform-dependent problems with <tt>./configure</tt>

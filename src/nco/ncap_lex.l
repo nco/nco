@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.11 2003-09-16 21:55:36 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.12 2003-11-16 22:01:58 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -32,7 +32,7 @@
      /data/zender/ora/lexyacc/ch3-05.l
      GCC lexer is hard-coded in C for speed, but is easy to read:
      ../src/gcc-3.x.x/c-lex.c
-     Unidata ${DATA}/tmp/netcdf-3.5.0/src/ncgen/ncgen.l */
+     Unidata ${DATA}/tmp/netcdf-3.5.1-beta10/src/ncgen/ncgen.l */
 
   /* Usage:
      flex ncap.l

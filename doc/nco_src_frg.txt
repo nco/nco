@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.57 2003-11-16 20:13:23 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.58 2003-11-16 22:01:58 zender Exp $ -*-text-*-
 
 # Purpose: Potpurri of Sourceforge information for NCO netCDF Operators project
 
@@ -31,7 +31,7 @@ HP Testdrive:       telnet 192.233.54.169
 # Create tarballs for uploading to sourceforge
 cd /data/zender/tmp
 mkdir sf
-cp /data/zender/tmp/netcdf-3.5.0.tar.Z /usr/local/lib/libnetcdf* /usr/local/include/netcdf* sf
+cp /data/zender/tmp/netcdf-3.5.1-beta10.tar.Z /usr/local/lib/libnetcdf* /usr/local/include/netcdf* sf
 tar cvzf sf.tar.gz ./sf
 mv sf.tar.gz /var/www/html/nco
 /bin/rm -r sf
@@ -53,14 +53,14 @@ CC='/bin/c89' CPPFLAGS='-D_HPUX_SOURCE' CXX='aCC' FC='/opt/fortran/bin/fort77' F
 make;make install
 
 # Copy netCDF library to NCO group account
-scp -C /data/zender/tmp/netcdf-3.5.0.tar.Z zender@nco.sf.net:/home/groups/n/nc/nco
-scp -C ~/nco/data/nco_tst.nc zender@nco.sf.net:/home/groups/n/nc/nco/nco/data
+scp -C /data/zender/tmp/netcdf-3.5.1-beta10.tar.Z zender@nco.sf.net:/home/groups/n/nc/nco
 # Copy netCDF library from NCO group account to compile farm
-scp -C nco.sf.net:/home/groups/n/nc/nco/netcdf-3.5.0.tar.Z ~
-scp -C nco.sf.net:/home/groups/n/nc/nco/nco/data/nco_tst.nc ~/nco/data
+scp -C nco.sf.net:/home/groups/n/nc/nco/netcdf-3.5.1-beta10.tar.Z ~
 # Build netCDF library on compile farm
-cd ~;tar xvzf netcdf-3.5.0.tar.Z
-cd ~/netcdf-3.5.0/src
+mkdir -f -p ${HOME}/bin/${GNU_TRP}
+mkdir -f -p ${HOME}/lib/${GNU_TRP}
+cd ~;tar xvzf netcdf-3.5.1-beta10.tar.Z
+cd ~/netcdf-3.5.1-beta10/src
 make distclean
 CPPFLAGS='-Df2cFortran' FC='g77' ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --libdir=${HOME}/lib/${GNU_TRP}
 make;make install
