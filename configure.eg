@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.32 2002-09-03 06:10:19 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.33 2002-09-04 04:40:15 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -62,6 +62,14 @@ AR='ar -X 64' CC='xlc -q64' CFLAGS='-q64' CXX='xlC' CXXFLAGS='-q64' LDFLAGS='-q6
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
+
+# Blue Horizon
+export GNU_TRP='powerpc-ibm-aix5.1.0.0'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+AR='ar -X 64' CC='xlc -q64' CFLAGS='-q64' CXX='xlC' CXXFLAGS='-q64' LDFLAGS='-q64' NM='nm -B -X 64' NETCDF_INC='/usr/local/apps/netcdf-3.5.0/include' NETCDF_LIB='/usr/local/apps/netcdf-3.5.0/lib' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo zender@dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
 
 For ABI=32:
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
