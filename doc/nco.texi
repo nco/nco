@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.293 2005-03-27 17:50:33 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.294 2005-03-27 19:42:46 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -33,7 +33,7 @@ Multiple files:
 M-x texinfo-multiple-files-update
 
 Usage: 
-cd ~/nco/doc;texi2dvi nco.texi; makeinfo --html --ifinfo --no-split --output=nco.html nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml --no-split --output=nco.xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
+cd ~/nco/doc;texi2dvi nco.texi; makeinfo --html --ifinfo --no-split --output=nco.html nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi;makeinfo --xml --ifinfo --no-split --output=nco.xml nco.texi;makeinfo --no-headers --output=nco.txt nco.texi
 dvips -o nco.ps nco.dvi 
 dvips -Ppdf -G0 -o nco.ps nco.dvi 
 makeinfo --html --ifinfo --no-split --output=nco.html nco.texi
@@ -309,6 +309,29 @@ Irvine, CA 92697-3100@*
 @top NCO User's Guide
 @c node format: node-name, next, previous, up
 
+@ifhtml
+@cartouche
+@html
+<p><b>Note to readers of the NCO User's Guide in HTML format</b>: 
+<b>The <a href="./nco.pdf">NCO User's Guide in PDF format</a> 
+(also on <a href="http://nco.sf.net/nco.pdf">SourceForge</a>)
+contains the complete NCO documentation.</b> 
+<br>This HTML documentation is equivalent except it refers you to the
+printed (i.e., DVI, PostScript, and PDF) documentation for description
+of complex mathematical expressions. 
+@end html
+@end cartouche
+@end ifhtml
+@ifnothtml
+@emph{Note to readers of the NCO User's Guide in Info format}: 
+@emph{The @uref{./nco.pdf,NCO User's Guide in PDF format}
+(also on @uref{http://nco.sf.net/nco.pdf,SourceForge})
+contains the complete @acronym{NCO} documentation.}
+This Info documentation is equivalent except it refers you to the 
+printed (i.e., DVI, PostScript, and PDF) documentation for description 
+of complex mathematical expressions. 
+@end ifnothtml
+
 The netCDF Operators, or @acronym{NCO}, are a suite of programs known as 
 operators. 
 The operators facilitate manipulation and analysis of self-describing
@@ -326,11 +349,11 @@ examples from the field of climate modeling and analysis.
 The @acronym{NCO} homepage is @uref{http://nco.sf.net}, and
 there is a mirror at @uref{http://dust.ess.uci.edu/nco}.
 
-This file documents @acronym{NCO} version @value{nco-edition}.
+This documentation is for @acronym{NCO} version @value{nco-edition}.
+Corrections, additions, and rewrites of this documentation are very
+welcome.
 
-NOTE: This documentation is evolving.
-Corrections, additions, and rewrites of sections are VERY WELCOME.
-
+Enjoy,@*
 Charlie Zender
 @end ifinfo
 

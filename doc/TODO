@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.458 2005-03-25 21:57:45 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.459 2005-03-27 19:42:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -287,8 +287,14 @@ nco488. ncatted: Deleting global attributes doesn't work unless 'global' specifi
         ncatted -O -a Conventions,,d,, ~/nco/data/in.nc ~/foo.nc (fails)
         ncks ~/foo.nc | m
         ncatted -a Conventions,global,d,, in.nc foo.nc (works)
-nco489. mmr: memory leak in nco_fl_lst_mk() with fl_lst_in
-nco490.  
+nco490. regression in ncwa:
+        ncwa -D 2 -O -a lat -w gw ~/nco/data/in.nc ~/foo.nc
+        part of regression symptom is that freeing var->nm in nco_var_free() fails
+nco491. Change lst_prs() to return true two-dimensional lists rather
+        than filling 1-d list with NULs. It's confusing.
+nco492. XML build fails with new cartouche in header:
+        makeinfo --xml --no-split --output=nco.xml nco.texi
+nco493. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

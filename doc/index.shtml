@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.279 2005-03-27 17:50:33 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.280 2005-03-27 19:42:45 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -49,8 +49,8 @@ Try to disable Spammers' machines:
 
 <td align="right" valign="top">
 [<a href="http://www.cgd.ucar.edu/csm/support">CCSM Support Network</a>]
-[<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
+[<a href="http://opendap.org">OPeNDAP</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
 </td></tr></table>
 
@@ -93,6 +93,8 @@ little money, click on the PayPal button:
 <h2>NCO News &amp; Announcements</h2>
 
 <ul>
+<li>March&nbsp;24, 2005: NCO 3.0.0 released</li>
+
 <li>September&nbsp;7, 2004: NCO 2.9.9 released&mdash;<tt>ncpdq</tt> now packs data quietly</li>
 
 <li>August&nbsp;21, 2004:
@@ -367,7 +369,7 @@ Instead, retrieve all recently tagged versions
 <tt>ncrename</tt> can now work on specific variables rather than whole file.
 <tt>ncks</tt> has <tt>-q</tt> option for cleaner printing</li>
 <li><b>NCO 1.2.1</b>: <a href="./nco_news.shtml#20000828">20000828</a>: Added type-conversion of integers to floating point before arithmetic, fixed broken <tt>-v</tt> option</li>
-<li><b>NCO 1.2</b>: <a href="./nco_news.shtml#20000730">20000730</a>: Added non-linear operations to <tt>ncra/ncea</tt> and <tt>ncwa</tt>: min,max,total,rms,rmssdn,sqrt. Added <a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> compliance.</li>
+<li><b>NCO 1.2</b>: <a href="./nco_news.shtml#20000730">20000730</a>: Added non-linear operations to <tt>ncra/ncea</tt> and <tt>ncwa</tt>: min,max,total,rms,rmssdn,sqrt. Added <a href="http://opendap.org">DODS</a> compliance.</li>
 <li><b>NCO 1.1.48</b>: <a href="./nco_news.shtml#20000515">20000515</a>: Potentially serious bugfix to <tt>ncdiff</tt>, recommend upgrade</li>
 <li><b>NCO 1.1.47</b>: <a href="./nco_news.shtml#20000510">20000510</a>: Improved <tt>ncra</tt> and <tt>ncrcat</tt> to allow lazier specifications of input files</li> 
 </ul>
@@ -505,6 +507,7 @@ The screen-oriented formats&mdash;<tt>nco.html</tt>,
 <tt>nco.info</tt>, <tt>nco.txt</tt>, and <tt>nco.xml</tt>&mdash;contain 
 all the documentation except the highly mathematical sections.
 
+<!-- This documentation went MIA sometime in 2004:
 <h3>Other documentation:</h3>
 This 
 <a href="http://www.cgd.ucar.edu/csm/support/Document/pdf/nco.pdf">pamphlet</a> and
@@ -512,6 +515,7 @@ This
 introduce and summarize the NCO operators.
 They were created by Sylvia Murphy of the NCAR 
 <a href="http://www.cgd.ucar.edu/csm/cmps/cmps_home.html">Community Climate System Model Support Network</a>.
+-->
 
 <hr></p>
 
@@ -617,7 +621,7 @@ However, this method does not support shared libraries and other nice
 features that come automagically with Autotools.
 So please send in the patches required to get the <tt>./configure</tt> 
 mechanism working properly for NCO, <tt>nco_c++</tt>, and
-<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> on your
+<a href="http://opendap.org">OPeNDAP</a> on your
 platform.  
 The gory details of the failed (and successful) builds are in the
 <a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>.
@@ -654,15 +658,15 @@ Please upgrade <tt>bison</tt> to the latest version (e.g., 1.875+)
 before reporting <tt>ncap</tt> build problems.
 </li>
 
-<a name="bld_DODS"></a>
+<a name="bld_DODS"></a><a name="bld_OPeNDAP"></a>
 <li><i>Build Problems with DODS/OPeNDAP:</i>
 NCO versions prior to 2.8.5 link with the
-<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> netCDF
+<a href="http://opendap.org">OPeNDAP</a> netCDF
 library when compiled with GCC&nbsp;2.95 (on Linux).
-NCO prior to 2.8.5 does not link to DODS when compiled with versions
+NCO prior to 2.8.5 does not link to OPeNDAP when compiled with versions
 greater than GCC&nbsp;3.1+.
-NCO versions 2.8.5 and greater support automatic building and linking
-for DODS versions 3.4+ and GCC versions 3.3+.
+NCO versions 2.8.5+ support automatic building and linking
+for OPeNDAP versions&nbsp;3.4+ and GCC versions&nbsp;3.3+.
 No other version combination is supported.
 </li>
 </ul>
@@ -790,16 +794,16 @@ This fixes both problems and is faster, to boot.
 NCO versions ???&mdash;2.9.0 have a bug that causes <tt>ncwa</tt>
 to fail (produce garbage answers) when processing packed
 <tt>NC_FLOAT</tt> data.  Version 2.9.1 fixes this problem.
-This problem may have been noticed most by DODS users since many
-netCDF climate datasets served by DODS are packed <tt>NC_FLOAT</tt>s.
-Upgrade to 2.9.1 if you use <tt>ncwa</tt> on packed data.
+This problem may have been noticed most by OPeNDAP users since many
+netCDF climate datasets served by OPeNDAP are packed <tt>NC_FLOAT</tt>s.
+Upgrade to&nbsp;2.9.1 if you use <tt>ncwa</tt> on packed data.
 </li>
 
 <a name="bug_pck"></a>
 <li><i>Packing problems with <tt>ncap</tt>:</i>
 NCO versions 2.8.4&mdash;2.8.6 have a bug that causes the <tt>ncap</tt>
 intrinsic packing function <tt>pack()</tt> to fail.
-Version 2.8.7 fixes this problem.
+Version&nbsp;2.8.7 fixes this problem.
 </li>
 </ul>
 
@@ -869,8 +873,8 @@ site.</li>
 
 <td align="right" valign="top">
 [<a href="http://www.cgd.ucar.edu/csm/support">CCSM Support Network</a>]
-[<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
+[<a href="http://opendap.org">OPeNDAP</a>] 
 [<a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a>] 
 </td></tr></table>
 

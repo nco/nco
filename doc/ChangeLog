@@ -1,5 +1,14 @@
 2005-03-26  charlie  <zender@uci.edu>
 
+	* Introduced unknown regression into ncwa nco_var_cnf_dmn()
+
+	* Pared ncpdq unfree'd memory down to three, final,
+	hard-to-understand, problem malloc's totaling ~150 B.
+
+	* Free dmn_rdr_lst_in() in ncpdq
+
+	* Fix inherent leak in prg_prs()
+
 	* Deep-copy nm in nco_var_dpl(); free nm in nco_var_free()
 	Ditto with dmn->nm, nco_dmn_dpl(), and nco_dmn_free()
 	
