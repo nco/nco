@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.28 1999-09-07 23:56:46 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.29 1999-09-13 00:42:17 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -207,16 +207,17 @@ endif
 ifeq ($(PVM_ARCH),AIX)
 NETCDF_INC := /usr/local/include
 NETCDF_LIB := /usr/local/lib
-#C++ := xlC
-C++ := g++
-CC := gcc -ansi
+#C++ := g++
+C++ := xlC
+#CC := gcc
+CC := cc
 CPP := gcc
 # NB: Hack to make AIX look like LINUX (g77 + gcc + g++)
 CPPFLAGS := -DLINUX $(CPP_PTH) -I$(NETCDF_INC)
-#FC := xlf
-FC := g77
-FFLAGS := -ffixed-line-length-132
-#FFLAGS := -qfixed=132
+FC := xlf
+#FC := g77
+#FFLAGS := -ffixed-line-length-132
+FFLAGS := -qfixed=132
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 #LDFLAGS += -lxlf90 -lxlf
@@ -227,15 +228,15 @@ ifeq ($(OPTS),O)
  CFLAGS := -O
  CPP := $(CPP) $(CPPFLAGS)
  PREPROCESS.F := $(CPP) $(CPPFLAGS)
- FFLAGS += -O
-# FFLAGS += -O -NS2000 -qfixed=132
+# FFLAGS += -O
+ FFLAGS += -O -NS2000 -qfixed=132
 endif
 ifeq ($(OPTS),D)
  CFLAGS := -g
  CPP := $(CPP) $(CPPFLAGS)
  PREPROCESS.F := $(CPP) $(CPPFLAGS)
- FFLAGS += -g
-# FFLAGS := -g -NS2000 -qfixed=132
+# FFLAGS += -g
+ FFLAGS := -g -NS2000 -qfixed=132
 endif
 $(MY_OBJ_DIR)/%.o : %.F
 	$(FC) -c $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<
