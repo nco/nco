@@ -1,12 +1,12 @@
-c     $Header: /data/zender/nco_20150216/nco/src/nco/nc_fortran.F,v 1.1.1.1 1998-08-18 05:35:00 zender Exp $
+c     $Header: /data/zender/nco_20150216/nco/src/nco/nc_fortran.F,v 1.2 1998-08-19 04:27:25 zender Exp $
 
 c     Fortran arithmetic utilities for netCDF operators
 
-c     (c) Copyright 1995 University Corporation for Atmospheric Research/
+c     (c) Copyright 1995--1998University Corporation for Atmospheric Research/
 c     National Center for Atmospheric Research/
 c     Climate and Global Dynamics Division
 c
-c     The file nc_copyright.txt contains the full copyright notice, or 
+c     The file LICENSE contains the full copyright notice, or 
 c     you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance.
 
 c     Define the Fortran specification required to obtain the same type of 

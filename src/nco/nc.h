@@ -1,12 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.2 1998-08-18 16:56:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.3 1998-08-19 04:27:25 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
-/* (c) Copyright 1995 University Corporation for Atmospheric Research/
+/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
    Climate and Global Dynamics Division
 
-   The file nc_copyright.txt contains the full copyright notice, or 
+   The file LICENSE contains the full copyright notice, or 
    you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
 
 #ifndef NC_H /* This include file has not yet been defined in the current source file */ 

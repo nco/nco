@@ -1,12 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.1.1.1 1998-08-18 05:35:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.2 1998-08-19 04:27:26 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
-/* (c) Copyright 1995 University Corporation for Atmospheric Research/
+/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
    Climate and Global Dynamics Division
 
-   The file nc_copyright.txt contains the full copyright notice, or 
+   The file LICENSE contains the full copyright notice, or 
    you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
 
 /* Purpose: Add, create, delete, or overwrite attributes in a netCDF file. */
@@ -99,8 +99,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncatted.c,v 1.1.1.1 1998-08-18 05:35:00 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.1.1.1 $";
+  char rcs_Id[]="$Id: ncatted.c,v 1.2 1998-08-19 04:27:26 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.2 $";
   
   aed_sct *aed_lst;
 

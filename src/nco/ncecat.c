@@ -1,12 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.1.1.1 1998-08-18 05:35:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.2 1998-08-19 04:27:26 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
-/* (c) Copyright 1995 University Corporation for Atmospheric Research/
+/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
    Climate and Global Dynamics Division
 
-   The file nc_copyright.txt contains the full copyright notice, or 
+   The file LICENSE contains the full copyright notice, or 
    you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
 
 /* Purpose: Join variables across files by attaching them to a new record variable */
@@ -54,8 +54,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncecat.c,v 1.1.1.1 1998-08-18 05:35:00 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.1.1.1 $";
+  char rcs_Id[]="$Id: ncecat.c,v 1.2 1998-08-19 04:27:26 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.2 $";
   
   dim_sct *rdim;
   dim_sct **dim;

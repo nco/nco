@@ -1,10 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.4 1998-08-19 00:52:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.5 1998-08-19 04:27:25 zender Exp $ */
 
-/* (c) Copyright 1995 University Corporation for Atmospheric Research/
+/* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
    Climate and Global Dynamics Division
 
-   The file nc_copyright.txt contains the full copyright notice, or 
+   The file LICENSE contains the full copyright notice, or 
    you may contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance. */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
@@ -785,15 +785,16 @@ cvs_vrs_prs()
     int mth;
     int day;
     int yr;
-    struct tm *gmt_tm;
+    struct tm *lcl_tm;
     time_t clock;
 
     clock=time((time_t *)NULL);
-    gmt_tm=gmtime(&clock);
+    lcl_tm=localtime(&clock);
+    /*    lcl_tm=gmtime(&clock);*//* Use gmtime for YYYYMMDD in GMT */ 
 
-    mth=gmt_tm->tm_mon+1;
-    day=gmt_tm->tm_mday;
-    yr=gmt_tm->tm_year+1900;
+    mth=lcl_tm->tm_mon+1;
+    day=lcl_tm->tm_mday;
+    yr=lcl_tm->tm_year+1900;
 
     cvs_vrs_sng_len=4+2+2;
     cvs_vrs_sng=(char *)malloc(cvs_vrs_sng_len+1);
