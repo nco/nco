@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.272 2004-09-06 18:00:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.273 2004-09-07 04:31:18 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6617,7 +6617,7 @@ SYNTAX
 @example
 ncpdq [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
-[-M @var{pck_map}] [-O] [-o @var{output-file}] [-P @var{pck_typ}] [-p @var{path}] 
+[-M @var{pck_map}] [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] 
 [-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-x]
 @var{input-file} [@var{output-file}]
 @end example
@@ -6641,30 +6641,30 @@ The @command{ncpdq} packing (and unpacking) algorithms are described
 @command{ncpdq} extends the functionality of these algorithms by 
 providing high level controls which allow users to pack (and unpack) 
 entire files.
-@cindex @code{-P @var{pck_typ}}
-@cindex @code{--pck_typ @var{pck_typ}}
-@cindex @code{--pack_type @var{pck_typ}}
+@cindex @code{-P @var{pck_plc}}
+@cindex @code{--pck_plc @var{pck_plc}}
+@cindex @code{--pack_policy @var{pck_plc}}
 For the finest-grained control, the user specifies the desired packing
 functionality with the @samp{-P} switch (or its long option equivalents,
-@samp{--pck_typ} and @samp{--pack_type}) and its @var{pck_typ} argument,
+@samp{--pck_plc} and @samp{--pack_policy}) and its @var{pck_plc} argument,
 which currently takes one of three values:@*  
 @table @dfn
 @item Packing (and Re-Packing) Variables
 Definition: Pack unpacked variables, re-pack packed variables@*
 Alternate invocation: @code{ncpack}@*
-@var{pck_typ} key values: @samp{all_new}, @samp{pck_all_new_att}@*
+@var{pck_plc} key values: @samp{all_new}, @samp{pck_all_new_att}@*
 @item Packing (and not Re-Packing) Variables
 Definition: Pack unpacked variables, copy packed variables@*
 Alternate invocation: none@*
-@var{pck_typ} key values: @samp{all_xst}, @samp{pck_all_xst_att}@*
+@var{pck_plc} key values: @samp{all_xst}, @samp{pck_all_xst_att}@*
 @item Re-Packing Variables
 Definition: Re-pack packed variables, copy unpacked variables@*
 Alternate invocation: none@*
-@var{pck_typ} key values: @samp{xst_new}, @samp{pck_xst_new_att}@*
+@var{pck_plc} key values: @samp{xst_new}, @samp{pck_xst_new_att}@*
 @item Unpacking
 Definition: Unpack packed variables, copy unpacked variables@*
 Alternate invocation: @code{ncunpack}@*
-@var{pck_typ} key values: @samp{upk}, @samp{unpack}, @samp{pck_upk}@*
+@var{pck_plc} key values: @samp{upk}, @samp{unpack}, @samp{pck_upk}@*
 @end table
 @noindent
 Equivalent key values are fully interchangeable.
@@ -6694,10 +6694,10 @@ It simply requests unpacking.
 Given the menagerie of synonyms, equivalent options, and implied
 options, a short list of some equivalent commands is appropriate.
 The following commands are equivalent for packing:
-@code{ncpdq -P all_new}, @code{ncpdq --pck_typ=all_new}, and
+@code{ncpdq -P all_new}, @code{ncpdq --pck_plc=all_new}, and
 @code{ncpack}.
 The following commands are equivalent for unpacking:
-@code{ncpdq -P upk}, @code{ncpdq --pck_typ=unpack}, @code{ncpdq -U},   
+@code{ncpdq -P upk}, @code{ncpdq --pck_plc=unpack}, @code{ncpdq -U},   
 and @code{ncunpack}.
 The user can determines equivalent commands for other packing
 request types, e.g., @samp{all_xst}, by analogy.

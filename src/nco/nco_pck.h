@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.29 2004-09-07 04:16:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.30 2004-09-07 04:31:19 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -31,15 +31,15 @@
 #include "nco_var_scv.h" /* Arithmetic between variables and scalar values */
 #include "nco_var_utl.h" /* Variable utilities */
 
-/* Packing types: 
-   Handle each packing type in nco_pck_mtd(), nco_pck_val(), nco_var_dfn(), and end of ncpdq */
-enum nco_pck_typ{ /* [enm] Packing type */
-  nco_pck_nil, /* 0 [enm] Do not think about packing */
-  nco_pck_all_xst_att, /* 1 [enm] Pack all variables, keep existing packing attributes if any */
-  nco_pck_all_new_att, /* 2 [enm] Pack all variables, always generate new packing attributes */
-  nco_pck_xst_new_att, /* 3 [enm] Pack existing packed variables, always generate new packing attributes */
-  nco_pck_upk /* 4 [enm] Unpack all packed variables */
-}; /* end nco_pck_typ enum */
+/* Packing policies: 
+   Handle each packing policy in nco_pck_mtd(), nco_pck_val(), nco_var_dfn(), and end of ncpdq */
+enum nco_pck_plc{ /* [enm] Packing policy */
+  nco_pck_plc_nil, /* 0 [enm] Do not think about packing */
+  nco_pck_plc_all_xst_att, /* 1 [enm] Pack all variables, keep existing packing attributes if any */
+  nco_pck_plc_all_new_att, /* 2 [enm] Pack all variables, always generate new packing attributes */
+  nco_pck_plc_xst_new_att, /* 3 [enm] Pack existing packed variables, always generate new packing attributes */
+  nco_pck_plc_upk /* 4 [enm] Unpack all packed variables */
+}; /* end nco_pck_plc enum */
 
 /* Packing conversions: */
 enum nco_pck_map{ /* [enm] Packing conversion map */
@@ -61,7 +61,7 @@ extern "C" {
 #endif /* __cplusplus */
 
 void 
-nco_dfl_case_pck_typ_err /* [fnc] Print error and exit for illegal switch(nco_pck_typ) case */
+nco_dfl_case_pck_plc_err /* [fnc] Print error and exit for illegal switch(nco_pck_plc) case */
 (void);
 
 bool /* O [flg] NCO will attempt to pack variable */
@@ -79,14 +79,14 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
 (const var_sct * const var_in, /* I [ptr] Variable in original disk state */
  var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be altered */
  const int nco_pck_map, /* I [enm] Packing map */
- const int nco_pck_typ); /* I [enm] Packing type */
+ const int nco_pck_plc); /* I [enm] Packing policy */
 
 void
 nco_pck_val /* [fnc] Pack variable according to packing specification */
 (var_sct * const var_in, /* I [ptr] Variable in original disk state */
  var_sct * var_out, /* I/O [ptr] Variable after packing/unpacking operation */
  const int nco_pck_map, /* I [enm] Packing map */
- const int nco_pck_typ, /* I [enm] Packing type */
+ const int nco_pck_plc, /* I [enm] Packing policy */
  aed_sct * const aed_lst_add_fst, /* O [enm] Attribute edit structure, add_offset */
  aed_sct * const aed_lst_scl_fct); /* O [enm] Attribute edit structure, scale_factor */
 
@@ -94,9 +94,9 @@ int /* O [enm] Packing map */
 nco_pck_map_get /* [fnc] Convert user-specified packing map to key */
 (const char *nco_pck_map_sng); /* [sng] User-specified packing map */
 
-int /* O [enm] Packing type */
-nco_pck_typ_get /* [fnc] Convert user-specified packing type to key */
-(const char *nco_pck_typ_sng); /* [sng] User-specified packing type */
+int /* O [enm] Packing policy */
+nco_pck_plc_get /* [fnc] Convert user-specified packing policy to key */
+(const char *nco_pck_plc_sng); /* [sng] User-specified packing policy */
   
 bool /* O [flg] Variable is packed on disk */
 nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
@@ -107,7 +107,7 @@ var_sct * /* O [sct] Packed variable */
 nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to disk */
 (const int out_id, /* I [id] netCDF output file ID */
  var_sct *var, /* I/O [sct] Variable to be packed */
- const int nco_pck_typ); /* [enm] Packing operation type */
+ const int nco_pck_plc); /* [enm] Packing operation type */
 
 var_sct * /* O [sct] Packed variable */
 nco_var_pck /* [fnc] Pack variable in memory */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.25 2004-09-07 04:16:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.26 2004-09-07 04:31:19 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -96,7 +96,7 @@ extern "C" {
    CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_ncl), /* I [sct] Dimensions included in output file */
    const int nbr_dmn_ncl, /* I [nbr] Number of dimensions in list */
    const int nco_pck_map, /* I [enm] Packing map */
-   const int nco_pck_typ); /* I [enm] Packing type */
+   const int nco_pck_plc); /* I [enm] Packing policy */
   
   var_sct * /* O [sct] Copy of input variable */
   nco_var_dpl /* [fnc] Duplicate input variable */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.63 2004-09-07 01:25:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.64 2004-09-07 04:31:19 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -775,7 +775,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_ncl), /* I [sct] Dimensions included in output file */
  const int nbr_dmn_ncl, /* I [nbr] Number of dimensions in list */
  const int nco_pck_map, /* I [enm] Packing map */
- const int nco_pck_typ) /* I [enm] Packing type */
+ const int nco_pck_plc) /* I [enm] Packing policy */
 {
   /* Purpose: Define variables in output file, copy their attributes */
 
@@ -930,8 +930,8 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       PCK_ATT_CPY=False;
 
     /* Do not copy packing attributres when unpacking variables 
-       ncpdq is currently only operator that passes values other than nco_pck_nil */
-    if(nco_pck_typ == nco_pck_upk) /* ...and variable will be _unpacked_ ... */
+       ncpdq is currently only operator that passes values other than nco_pck_plc_nil */
+    if(nco_pck_plc == nco_pck_plc_upk) /* ...and variable will be _unpacked_ ... */
       PCK_ATT_CPY=False;
     
     /* Recall that:
@@ -944,18 +944,18 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        Must apply nearly same logic at end of ncpdq when writing final attributes
        Recall ncap calls ncap_var_write() to define newly packed LHS variables 
        If operator will attempt to pack some variables... */
-    if(nco_pck_typ != nco_pck_nil && nco_pck_typ != nco_pck_upk){ 
+    if(nco_pck_plc != nco_pck_plc_nil && nco_pck_plc != nco_pck_plc_upk){ 
       bool nco_pck_plc_alw; /* O [flg] Packing policy allows packing nc_typ_in */
       /* ...and expanded variable is pack-able... */
       if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var[idx]->typ_upk,(nc_type *)NULL))){
 	/* ...and operator will pack this particular variable... */
 	if(
 	   /* ...either because operator newly packs all variables... */
-	   (nco_pck_typ == nco_pck_all_new_att) ||
+	   (nco_pck_plc == nco_pck_plc_all_new_att) ||
 	   /* ...or because operator newly packs un-packed variables like this one... */
-	   (nco_pck_typ == nco_pck_all_xst_att && !var[idx]->pck_ram) ||
+	   (nco_pck_plc == nco_pck_plc_all_xst_att && !var[idx]->pck_ram) ||
 	   /* ...or because operator re-packs packed variables like this one... */
-	   (nco_pck_typ == nco_pck_xst_new_att && var[idx]->pck_ram)
+	   (nco_pck_plc == nco_pck_plc_xst_new_att && var[idx]->pck_ram)
 	   ){
 	  
 	  /* ...then add/overwrite dummy scale_factor and add_offset attributes
@@ -976,7 +976,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	  zero_var=(var_sct *)nco_var_free(zero_var);
 	} /* endif this variable will be packed or re-packed */
       } /* endif nco_pck_plc_alw */
-    } /* endif nco_pck_typ involves packing */
+    } /* endif nco_pck_plc involves packing */
   } /* end loop over idx variables to define */
 } /* end nco_var_dfn() */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.122 2004-09-07 04:16:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.123 2004-09-07 04:31:19 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -112,11 +112,11 @@ main(int argc,char **argv)
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type Option y */
-  char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type Option P */
+  char *nco_pck_plc_sng=NULL_CEWI; /* [sng] Packing policy Option P */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.122 2004-09-07 04:16:36 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.122 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.123 2004-09-07 04:31:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.123 $";
   const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;
@@ -143,7 +143,7 @@ main(int argc,char **argv)
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nco_op_typ=nco_op_avg; /* [enm] Default operation is averaging */
-  int nco_pck_typ=nco_pck_nil; /* [enm] Default packing is none */
+  int nco_pck_plc=nco_pck_plc_nil; /* [enm] Default packing is none */
   int opt;
   int out_id;  
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -280,9 +280,9 @@ main(int argc,char **argv)
     case 'p': /* Common file path */
       fl_pth=optarg;
       break;
-    case 'P': /* Packing type */
-      nco_pck_typ_sng=(char *)strdup(optarg);
-      nco_pck_typ=nco_pck_typ_get(nco_pck_typ_sng);
+    case 'P': /* Packing policy */
+      nco_pck_plc_sng=(char *)strdup(optarg);
+      nco_pck_plc=nco_pck_plc_get(nco_pck_plc_sng);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
@@ -409,7 +409,7 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_nil,nco_pck_map_nil,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_plc_nil,nco_pck_map_nil,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* Open output file */
   fl_out_tmp=nco_fl_out_open(fl_out,FORCE_APPEND,FORCE_OVERWRITE,&out_id);
@@ -431,7 +431,7 @@ main(int argc,char **argv)
   (void)nco_dmn_dfn(fl_out,out_id,dmn_out,nbr_dmn_xtr);
 
   /* Define variables in output file, copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_nil,nco_pck_map_nil);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil);
 
   /* Turn off default filling behavior to enhance efficiency */
   (void)nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -634,7 +634,7 @@ main(int argc,char **argv)
       /* Revert any arithmetic promotion but leave unpacking (for now) */
       var_prc_out[idx]=nco_var_cnf_typ(var_prc_out[idx]->typ_upk,var_prc_out[idx]);
       /* Packing/Unpacking */
-      if(nco_pck_typ == nco_pck_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_typ);
+      if(nco_pck_plc == nco_pck_plc_all_new_att) var_prc_out[idx]=nco_put_var_pck(out_id,var_prc_out[idx],nco_pck_plc);
       if(var_prc_out[idx]->nbr_dim == 0){
 	(void)nco_put_var1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
       }else{ /* end if variable is a scalar */

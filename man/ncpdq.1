@@ -1,10 +1,10 @@
-.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.6 2004-09-06 18:00:53 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.7 2004-09-07 04:31:18 zender Exp $ -*-nroff-*-
 .\" Purpose: ROFF man page for ncpdq 
 .\" Usage:
 .\" nroff -man ~/nco/man/ncpdq.1
 .TH NCPDQ 1
 .SH NAME
-ncpdq \- netCDF Permute Dimensions Quickly
+ncpdq \- netCDF Permute Dimensions Quickly, Pack Data Quietly...
 .SH SYNTAX
 ncpdq [-A] [-a 
 .IR dim [,...]]
@@ -22,7 +22,7 @@ ncpdq [-A] [-a
 [-O] [-o 
 .IR output-file ]
 [-P 
-.IR pck_typ ]
+.IR pck_plc ]
 [-p 
 .IR path ]
 [-R] [-r] 
@@ -40,12 +40,12 @@ packs or re-shapes variables in
 and stores them in 
 .I output-file.
 The high level packing instructions are encoded in the 
-.IR pck_typ 
+.IR pck_plc 
 argument to the 
 .BR -P
 switch.
-The valid 
-.IR pck_typ 
+Valid 
+.IR pck_plc 
 options are
 .IR all_new, 
 .IR all_xst, 
@@ -81,7 +81,7 @@ The specified re-ordering will fail if it requires creating more than
 one record dimension amongst all the output variables.
 
 .\" NB: Append man_end.txt here
-.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.6 2004-09-06 18:00:53 zender Exp $ -*-nroff-*-
+.\" $Header: /data/zender/nco_20150216/nco/man/ncpdq.1,v 1.7 2004-09-07 04:31:18 zender Exp $ -*-nroff-*-
 .\" Purpose: Trailer file for common ending to NCO man pages
 .\" Usage: 
 .\" Append this file to end of NCO man pages immediately after marker
