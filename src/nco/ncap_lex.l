@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.34 2005-03-25 21:57:10 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.35 2005-03-28 00:12:50 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -602,7 +602,7 @@ M_PI {return NAMED_CONSTANT;}
   sbs_sng=(char *)nco_malloc(yyleng*sizeof(char));
   strcpy(sbs_sng,&yytext[1]);
   sbs_sng[yyleng-2]='\0';  
-  sbs_lst=lst_prs(sbs_sng,sbs_dlm,&dmn_nbr);
+  sbs_lst=lst_prs_old(sbs_sng,sbs_dlm,&dmn_nbr);
 
   dmn=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
   (void)nco_redef(prs_arg->out_id);
