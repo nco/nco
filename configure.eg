@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.18 2002-08-23 19:34:57 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.19 2002-08-23 21:09:34 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -12,7 +12,7 @@ LINUX		Y	N/A				Y	Y
 LINUXALPHA	Y					N(1)	Y
 NECSX
 OSF1		
-SGIMP64			N(4)
+SGIMP64			N(4)				N(5)
 SUNMP		Y					Y	N(3)
 WIN32		
 -----------------------------------------------------------------------
