@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.50 2002-01-25 07:58:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.51 2002-01-25 08:10:24 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.50 2002-01-25 07:58:36 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.50 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.51 2002-01-25 08:10:24 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.51 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -302,8 +302,8 @@ main(int argc,char **argv)
   sym_tbl[sym_idx++]=ncap_sym_init("log",log,logf);
   sym_tbl[sym_idx++]=ncap_sym_init("log10",log10,log10f);
   sym_tbl[sym_idx++]=ncap_sym_init("sqrt",sqrt,sqrtf);
-#ifndef SGIMP64
-  /* SGI does not define gammaf */
+#ifdef SGIMP64
+  /* 20020122: SGI does not define gammaf() */
   sym_tbl_nbr--;
 #else /* not SGIMP64 */
   sym_tbl[sym_idx++]=ncap_sym_init("gamma",gamma,gammaf);
