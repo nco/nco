@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.54 2002-05-06 03:34:43 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.55 2002-05-06 03:39:55 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -64,11 +64,11 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
+#include "nco_netcdf.h" /* Wrappers for netCDF 3.X C-library */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
 #include "nco.h" /* NCO definitions */
-#include "nco_netcdf.h" /* Wrappers for netCDF 3.X C-library */
 #include "libnco.h" /* netCDF operator library */
 
 int 
@@ -103,8 +103,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.54 2002-05-06 03:34:43 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.54 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.55 2002-05-06 03:39:55 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.55 $";
   
   extern char *optarg;
   

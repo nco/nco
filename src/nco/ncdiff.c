@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.44 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.45 2002-05-06 03:39:55 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -81,6 +81,7 @@
 /* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
 #include "nco.h" /* NCO definitions */
+#include "libnco.h" /* netCDF operator library */
 
 int 
 main(int argc,char **argv)
@@ -113,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.44 2002-05-06 02:17:56 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.44 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.45 2002-05-06 03:39:55 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.45 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

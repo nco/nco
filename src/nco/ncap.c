@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.66 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.67 2002-05-06 03:39:55 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -66,12 +66,13 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
+#include "nco_netcdf.h"  /* NCO wrappers for libnetcdf.a */
 
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
 #include "nco.h" /* NCO definitions */
-#include "nco_netcdf.h"  /* NCO wrappers for libnetcdf.a */
+#include "libnco.h" /* netCDF operator library */
 #include "ncap.h" /* ncap-specific definitions */
 
 /* Global variables */
@@ -116,8 +117,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.66 2002-05-06 02:17:56 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.66 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.67 2002-05-06 03:39:55 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.67 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;

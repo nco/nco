@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.40 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.41 2002-05-06 03:39:55 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -119,6 +119,7 @@
 /* #define MAIN_PROGRAM_FILE MUST precede #include nco.h */
 #define MAIN_PROGRAM_FILE
 #include "nco.h" /* NCO definitions */
+#include "libnco.h" /* netCDF operator library */
 
 int 
 main(int argc,char **argv)
@@ -142,8 +143,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.40 2002-05-06 02:17:56 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.40 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.41 2002-05-06 03:39:55 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.41 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
