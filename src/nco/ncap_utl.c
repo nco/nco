@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.39 2002-01-28 10:06:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.40 2002-01-29 08:40:19 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -78,10 +78,10 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
     }/* end else */
   } /* end else */
   
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"VAR: retrieving %s from disk\n",var_nm);  
+  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: parser VAR action called ncap_var_init() to retrieve %s from disk\n",prg_nm_get(),var_nm);
   vara=var_fll(fl_id,var_id,var_nm,prs_arg->dmn,prs_arg->nbr_dmn_xtr);
   vara->nm=nco_malloc((strlen(var_nm)+1)*sizeof(char)); strcpy(vara->nm,var_nm);
-  vara->tally=(long *)malloc(vara->sz*nco_typ_lng(NC_INT));
+  vara->tally=(long *)malloc(vara->sz*sizeof(long));
   (void)zero_long(vara->sz,vara->tally);
   vara->val.vp=(void *)malloc(vara->sz*nco_typ_lng(vara->type));
   /* Retrieve variable values from disk into memory */
@@ -179,13 +179,11 @@ ncap_attribute_2_ptr_unn(parse_sct a)
 
 var_sct *
 ncap_var_var_add(var_sct *var_1,var_sct *var_2)
-     /* 
-	var_sct *var_1: input variable structure containing first operand
-	var_sct *var_2: input variable structure containing second operand
-	var_sct *ncap_var_var_add(): output sum of input variables
-     */
+/* var_sct *var_1: input variable structure containing first operand
+   var_sct *var_2: input variable structure containing second operand
+   var_sct *ncap_var_var_add(): output sum of input variables */
 {
-  /* Routine called by parser */
+  /* Purpose: Add two variables */
   var_sct *var_nsw;
   
   (void)ncap_var_retype(var_1,var_2);
@@ -193,30 +191,30 @@ ncap_var_var_add(var_sct *var_1,var_sct *var_2)
   (void)ncap_var_conform_dim(&var_1,&var_nsw);
   /* fxm: bug in var_add. missing_value is not carried over to var_nsw in result when var_1->has_mss_val is true */
   if(var_1->has_mss_val){
-    (void)var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_nsw->val);
+    /*    (void)var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_nsw->val);*/
+    (void)var_add_no_tally(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
   }else{
-    (void)var_add(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->tally,var_1->val,var_nsw->val);
+    /*    (void)var_add(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->tally,var_1->val,var_nsw->val);*/
+    (void)var_add_no_tally(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
   } /* end if */
   return var_nsw;
 } /* end ncap_var_var_add() */
 
 var_sct *
 ncap_var_var_sub(var_sct *var_2,var_sct *var_1)
-     /* 
-	var_sct *var_1: input variable structure containing first operand
-	var_sct *var_2: input variable structure containing second operand
-	var_sct *ncap_var_var_sub(): output var_2 - var_1 of input variables
-     */
+/* var_sct *var_1: input variable structure containing first operand
+   var_sct *var_2: input variable structure containing second operand
+   var_sct *ncap_var_var_sub(): output var_2 - var_1 of input variables */
 {
-  /* Routine called by parser */
+  /* Purpose: Subtraction of variables */
   var_sct *var_nsw;
   
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=var_dpl(var_2);
   (void)ncap_var_conform_dim(&var_1,&var_nsw);
-  if( var_1->has_mss_val) {
+  if(var_1->has_mss_val){
     (void)var_subtract(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
-  } else {
+  }else{
     (void)var_subtract(var_1->type,var_1->sz,var_nsw->has_mss_val,var_nsw->mss_val,var_1->val,var_nsw->val);
   }/* end else */
   return var_nsw;
@@ -224,13 +222,11 @@ ncap_var_var_sub(var_sct *var_2,var_sct *var_1)
 
 var_sct *
 ncap_var_var_multiply(var_sct *var_1,var_sct *var_2)
-     /* 
-	var_sct *var_1: input variable structure containing first operand
-	var_sct *var_2: input variable structure containing second operand
-	var_sct *ncap_var_var_multiply(): output multiplication of individual elements
-     */
+/* var_sct *var_1: input variable structure containing first operand
+   var_sct *var_2: input variable structure containing second operand
+   var_sct *ncap_var_var_multiply(): output multiplication of individual elements */
 {
-  /* Routine called by parser */
+  /* Purpose: Multiplication of variables */
   var_sct *var_nsw;
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=var_dpl(var_2);
@@ -865,14 +861,14 @@ ncap_var_retype(var_sct* vara, var_sct* varb)
 {
   /* Purpose: Convert a variable if necessary so the vars are of the same type */
   
-  if( vara->type == varb->type) return vara->type;
+  if(vara->type == varb->type) return vara->type;
   if(vara->type > varb->type){
     varb=var_conform_type(vara->type,varb);
     return vara->type;
   }else{
     vara=var_conform_type(varb->type,vara);
     return varb->type;
-  }
+  } /* endif */
 } /* end ncap_var_retype */
 
 bool /* [flg] Do var_1 and var_2 conform after processing? */
@@ -881,7 +877,7 @@ ncap_var_conform_dim /* [fnc] Broadcast smaller variable into larger */
  var_sct **var_2) /* I/O [ptr] Second variable */
 {
   /* Purpose: Return conforming variables. If this is not possible then die. 
-     Routine is a wrapper for var_conform_dim() which does the hard work. */
+     Routine is a wrapper for var_conform_dim() which does the hard work */
 
   bool DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
   bool MUST_CONFORM=True; /* [flg] Must var_1 and var_2 conform? */
@@ -914,11 +910,10 @@ ncap_var_conform_dim /* [fnc] Broadcast smaller variable into larger */
 int 
 ncap_retype(parse_sct *a,parse_sct *b)
 {
-  /* Purpose: Convert an attribute if necessary so the attributes  are of the same type */
+  /* Purpose: Convert attribute type if necessary so attributes are of same type */
   if(a->type == b->type) return a->type;
-  if((a->type) > (b->type)){ (void)ncap_attribute_conform_type(a->type,b);}
-  else {(void)ncap_attribute_conform_type(b->type,a);}
-  
+  if((a->type) > (b->type)){(void)ncap_attribute_conform_type(a->type,b);}
+  else{(void)ncap_attribute_conform_type(b->type,a);}
   return a->type;    
 } /* end ncap_retype */
 
@@ -930,7 +925,6 @@ ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
   
   parse_sct b;
   switch (type_new){ 
-    
   case NC_BYTE:
     switch(type_old){
     case NC_FLOAT: b.val.b=(signed char)(a->val).f; break; 
@@ -941,7 +935,6 @@ ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
     case NC_CHAR: break;
     case NC_NAT:  break;    
     } break;
-    
   case NC_CHAR:
     /* Do nothing */
     break;
@@ -955,8 +948,6 @@ ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
     case NC_CHAR: break;
     case NC_NAT:  break;    
     } break;
-    
-    
   case NC_INT:
     switch(type_old){
     case NC_FLOAT: b.val.l=(long)(a->val).f; break; 
@@ -967,7 +958,6 @@ ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
     case NC_CHAR: break;
     case NC_NAT:  break;
     } break;
-    
   case NC_FLOAT:
     switch(type_old){
     case NC_FLOAT:  b.val.f=(a->val).f; break; 
@@ -978,7 +968,6 @@ ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
     case NC_CHAR: break;
     case NC_NAT:  break;    
     } break;
-    
   case NC_DOUBLE:
     switch(type_old){
     case NC_FLOAT:  b.val.d=(a->val).f; break; 
@@ -990,7 +979,6 @@ ncap_attribute_conform_type(nc_type type_new,parse_sct *a)
     case NC_NAT:  break;    
     } break;
   default: nco_dfl_case_nctype_err(); break;
-    
   } /* end switch */
   b.type=type_new;
   *a=b;
@@ -1004,7 +992,6 @@ ncap_attribute_calc(parse_sct a, char op, parse_sct b)
   parse_sct c;
   c.type=a.type;
   switch(c.type){ 
-    
   case NC_BYTE:
     switch(op){
       case'+': c.val.b=a.val.b + b.val.b;break;
@@ -1032,7 +1019,6 @@ ncap_attribute_calc(parse_sct a, char op, parse_sct b)
       case'*': c.val.l=a.val.l * b.val.l;break;
       case'%': c.val.l=a.val.l % b.val.l;break;
     } break;
-    
   case NC_FLOAT:
     switch(op){
       case'+': c.val.f=a.val.f + b.val.f;break;
@@ -1041,7 +1027,6 @@ ncap_attribute_calc(parse_sct a, char op, parse_sct b)
       case'*': c.val.f=a.val.f * b.val.f;break;
       case'%': c.val.f=fmodf(a.val.f, fabsf(b.val.f));break;
     } break;
-    
   case NC_DOUBLE:
     switch(op){
       case'+': c.val.d=a.val.d + b.val.d;break;
@@ -1139,6 +1124,7 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
   int n=0;
   
   bool match;
+
   nm_id_sct *xtr_new_lst=NULL;
   
   if(*nbr_xtr == 0 ) return xtr_lst;
@@ -1154,14 +1140,13 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
   }
   *nbr_xtr=n;
   return xtr_new_lst;      
-  
 }/* end var_lst_sub */
 
 nm_id_sct *
 var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst_a)
 {
-  /* Purpose: Add to xtr_lst any elements from xtr_lst_b which are not already present */
-  /* and return a new list */
+  /* Purpose: Add to xtr_lst any elements from xtr_lst_b which are not already present 
+     and return a new list */
   int i;
   int j;
   int n;
@@ -1205,7 +1190,6 @@ ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
  */
 {
   /* Purpose: Make list co-ordinate dimensions from list of ordinary and co-ordinate variables */
-
   char dmn_nm[NC_MAX_NAME];
 
   int crd_id;

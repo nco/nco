@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.127 2002-01-28 10:06:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.128 2002-01-29 08:40:19 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -1102,7 +1102,6 @@ dmn_fll(int nc_id,int dmn_id,char *dmn_nm)
   dim->srd=1L;
   
   return dim;
-  
 } /* end dmn_fll() */
 
 void
@@ -5136,6 +5135,82 @@ var_subtract(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,pt
      because we have only operated on local copies of them. */
   
 } /* end var_subtract() */
+
+void
+var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2)
+/* nc_type type: I [type] netCDF type of operands
+  long sz: I [nbr] Size (in elements) of operands
+  int has_mss_val: I [flg] Flag for missing values
+  ptr_unn mss_val: I [flg] Value of missing value
+  ptr_unn op1: I [val] Values of first operand
+  ptr_unn op2: I/O [val] Values of second operand on input, values of sum on output */
+{
+  /* Routine to add value of first operand to value of second operand 
+     and store result in second operand. Operands are assumed to have conforming
+     dimensions, and be of the specified type. Operands' values are 
+     assumed to be in memory already. */
+
+  /* Addition is currently defined as op2:=op1+op2 */
+
+  long idx;
+
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op1);
+  (void)cast_void_nctype(type,&op2);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+
+  switch(type){
+  case NC_FLOAT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.fp[idx]+=op1.fp[idx];
+    }else{
+      float mss_val_flt=*mss_val.fp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if((op2.fp[idx] != mss_val_flt) && (op1.fp[idx] != mss_val_flt)) op2.fp[idx]+=op1.fp[idx]; else op2.fp[idx]=mss_val_flt;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_DOUBLE:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.dp[idx]+=op1.dp[idx];
+    }else{
+      for(idx=0;idx<sz;idx++){
+	if((op2.dp[idx] != *mss_val.dp) && (op1.dp[idx] != *mss_val.dp)) op2.dp[idx]+=op1.dp[idx]; else op2.dp[idx]=*mss_val.dp;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_INT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.lp[idx]+=op1.lp[idx];
+    }else{
+      for(idx=0;idx<sz;idx++){
+	if((op2.lp[idx] != *mss_val.lp) && (op1.lp[idx] != *mss_val.lp)) op2.lp[idx]+=op1.lp[idx]; else op2.lp[idx]=*mss_val.lp;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_SHORT:
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.sp[idx]+=op1.sp[idx];
+    }else{
+      short mss_val_shrt=*mss_val.sp; /* Temporary variable reduces dereferencing */
+      for(idx=0;idx<sz;idx++){
+	if((op2.sp[idx] != mss_val_shrt) && (op1.sp[idx] != mss_val_shrt)) op2.sp[idx]+=op1.sp[idx]; else op2.sp[idx]=mss_val_shrt;
+      } /* end for */
+    } /* end else */
+    break;
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+    default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+  
+} /* end var_add_no_tally() */
 
 bool
 ncar_csm_inq(int nc_id)

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.33 2002-01-28 10:06:53 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.34 2002-01-29 08:40:19 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -49,11 +49,12 @@
      NB: flex with -Cf or -Cf not -I if this scanner will not be interactive */
 
   /* Standard header files */
+#include <assert.h>  /* assert() debugging macro */
 #include <limits.h> /* Integer representation, INT_MIN, INT_MAX... */
 #include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strdup */
-#include <assert.h>  /* assert() debugging macro */
+
   /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
 
@@ -86,10 +87,6 @@
      If on RHS then return attribute value or variable struture
      Initialize to false, change to true if token is '=', false is token is ';' */
   static bool RHS=False; /* [flg] Is lexer on RHS of '=' sign? */
-
-  /* Has a LHS-cast been requested on current input line?
-     If so, variables and attributes on RHS must be cast to LHS properties */
-  static bool LHS_cst=False; /* [flg] Cast RHS structures to LHS properties */
 %}
 
 /* Handle C comments LMB92 p. 172, p. 43
@@ -147,11 +144,11 @@
   /* Replace C-language escape codes with actual byte values */
   (void)sng_ascii_trn(bfr);
   lval_ptr->str=strdup(bfr);       
-  if(dbg_lvl_get() > 1){
+  if(dbg_lvl_get() > 3){
     printf("Lexing string: %s\n",yytext);
     printf("Made   string: %s\n",lval_ptr->str);
   } /* endif */
-  return(STRING);
+  return STRING;
 } /* end quoted strings */
 
 [0-9]*\.[0-9]*([eE][+-]?[0-9]+)?[LlDd]?|[0-9]*([eE][+-]?[0-9]+)[LlDd]? {
@@ -159,72 +156,72 @@
   /* NB: Tempted to prepend lexer expressions for floats and doubles with [+-]? 
      so that unary plus/minus is handled in lexer rather than parser.
      However, this has unintended side effects so let parser handle it for now */
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a double %s\n",yytext); 
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a double %s\n",yytext); 
   lval_ptr->attribute.val.d=strtod(yytext,(char **)NULL);
   lval_ptr->attribute.type=NC_DOUBLE;
-  return(ATTRIBUTE);
+  return ATTRIBUTE;
 } /* end double or long double */
 
 [0-9]*\.[0-9]*([eE][+-]?[0-9]+)?[Ff]|[0-9]*([eE][+-]?[0-9]+)[Ff] {
   /* Float */
   float flt_tkn;
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a float %s\n",yytext); 
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a float %s\n",yytext); 
   if (sscanf((char*)yytext,"%e",&flt_tkn) != 1){
     sprintf(err_sng,"#Bad float: %s",yytext);
     yyerror(err_sng);
-    return(EPROVOKE);
+    return EPROVOKE;
   } /* endif */
   lval_ptr->attribute.val.f=flt_tkn;
   lval_ptr->attribute.type=NC_FLOAT;
-  return(ATTRIBUTE);    
+  return ATTRIBUTE;
 } /* end float */
 
 [0-9]+[lL]? {
   /* Long */
   double dbl_tkn;
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing an integer %s\n",yytext); 
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing an integer %s\n",yytext); 
   dbl_tkn=strtod((char*)yytext, (char**)(NULL));
   if (dbl_tkn < INT_MIN || dbl_tkn > INT_MAX){
     lval_ptr->attribute.val.d=dbl_tkn;
     lval_ptr->attribute.type=NC_DOUBLE;
-    return(ATTRIBUTE);
+    return ATTRIBUTE;
   }else{
     lval_ptr->attribute.val.l=(nco_long)dbl_tkn;
     lval_ptr->attribute.type=NC_INT;
-    return(ATTRIBUTE);
+    return ATTRIBUTE;
   } /* end else */
 } /* end long */
 
 [0-9]+[sS] {
   /* Short */
   short sht_tkn;
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a short %s\n",yytext); 	
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a short %s\n",yytext); 	
   if(sscanf((char*)yytext,"%hd",&sht_tkn) != 1){
     sprintf(err_sng,"bad short constant: %s",(char*)yytext);
     yyerror(err_sng);
   }
   lval_ptr->attribute.val.s=sht_tkn;
   lval_ptr->attribute.type=NC_SHORT;
-  return(ATTRIBUTE);    
+  return ATTRIBUTE;
 } /* end short */
 
 [0-9]+[Bb] {
   /* Byte */
   int byt_tkn;
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing a byte %s\n",yytext); 
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing a byte %s\n",yytext); 
   if(sscanf((char*)yytext,"%d",&byt_tkn) != 1){
     sprintf(err_sng,"#Bad byte: %s",yytext);
     yyerror(err_sng);
-    return(EPROVOKE);
+    return EPROVOKE;
   }
-  if(byt_tkn < -128 || byt_tkn >127){
+  if(byt_tkn < -128 || byt_tkn > 127){
     lval_ptr->attribute.val.l=byt_tkn;
     lval_ptr->attribute.type=NC_INT;
-    return(ATTRIBUTE);    
+    return ATTRIBUTE;    
   }else{ 
     lval_ptr->attribute.val.b=byt_tkn;
     lval_ptr->attribute.type=NC_BYTE;
-    return(ATTRIBUTE);                    
+    return ATTRIBUTE;                    
   } /* end else */
 } /* end byte */
 
@@ -248,20 +245,20 @@ pow/[ ]*\( {return POWER;}
 
 [A-Za-z_][A-Za-z0-9_]*@[A-Za-z_][A-Za-z0-9_]* { 
   /* Recognize variable attributes, e.g., var_nm@att_nm */
-  int var_id;
-  int rcd=NC_NOERR; /* csz rcd may be used before it is defined */
-  int rcd_out;
-  int att_idx;
-  size_t sng_lng;
-  long att_sz;
-  char *var_nm;
-  char *att_nm;
+  aed_sct *ptr_aed;
   char *amp_ptr;
+  char *att_nm;
+  char *var_nm;
+  int att_idx;
+  int rcd=NC_NOERR;
+  int rcd_out;
+  int var_id;
+  long att_sz;
   nc_type type;
   ptr_unn val;
-  aed_sct *ptr_aed;
+  size_t sng_lng;
   
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing attribute %s\n",yytext);
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing attribute %s\n",yytext);
   amp_ptr=strchr(yytext,'@');
   sng_lng=amp_ptr-yytext;
   
@@ -274,14 +271,14 @@ pow/[ ]*\( {return POWER;}
   if(!strcmp(var_nm,"global")) var_id=NC_GLOBAL; else rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
   
   /* We are on RHS so return value of attribute (if available) to parser
-     For initial scan, just return attributes on RHS */
+     During initial scan, just return attributes on RHS */
   if(prs_arg->initial_scan){
     if(!RHS){
       lval_ptr->att.att_nm=strdup(att_nm);
       lval_ptr->att.var_nm=strdup(var_nm);
-      return(OUT_ATT);
+      return OUT_ATT;
     }else{
-      return(IGNORE);
+      return IGNORE;
     } /* endelse */
   } /* endif */
   
@@ -301,10 +298,10 @@ pow/[ ]*\( {return POWER;}
 	lval_ptr->str=(char *)nco_malloc((ptr_aed->sz+1)*nco_typ_lng(NC_CHAR));
 	strncpy(lval_ptr->str,(char *)(ptr_aed->val.cp),ptr_aed->sz);
 	lval_ptr->str[ptr_aed->sz]='\0';
-	return(STRING);
+	return STRING;
       } else {
 	lval_ptr->attribute=ncap_ptr_unn_2_attribute(ptr_aed->type,ptr_aed->val);
-	return(ATTRIBUTE);  
+	return ATTRIBUTE;  
       } /* end else */        
     } /* end if */
     if(rcd == NC_NOERR){  
@@ -314,7 +311,7 @@ pow/[ ]*\( {return POWER;}
 	(void)yyerror(err_sng);
 	lval_ptr->attribute.val.b=0;
 	lval_ptr->attribute.type=NC_BYTE;
-	return(ATTRIBUTE);
+	return ATTRIBUTE;
       } /* end if */
       if(rcd == NC_NOERR){ 
 	val.vp=(void *)nco_malloc(att_sz*nco_typ_lng(type));
@@ -324,10 +321,10 @@ pow/[ ]*\( {return POWER;}
 	  lval_ptr->str=(char *)nco_malloc((att_sz+1)*sizeof(char));
 	  strncpy(lval_ptr->str,(char *)val.cp,att_sz);
 	  lval_ptr->str[att_sz]='\0'; 
-	  return(STRING);
+	  return STRING;
 	}else{
 	  lval_ptr->attribute=ncap_ptr_unn_2_attribute(type,val);
-	  return(ATTRIBUTE);   
+	  return ATTRIBUTE;   
 	} /* end else */ 
       } /* end if */
     }else{ /* ...else rcd reported an error */
@@ -336,7 +333,7 @@ pow/[ ]*\( {return POWER;}
       (void)yyerror(err_sng);
       lval_ptr->attribute.val.b=0;
       lval_ptr->attribute.type=NC_BYTE;
-      return(ATTRIBUTE);
+      return ATTRIBUTE;
     } /* end if */
   }/* end if RHS */
   
@@ -347,11 +344,11 @@ pow/[ ]*\( {return POWER;}
     if(rcd == NC_NOERR || rcd_out == NC_NOERR){
       lval_ptr->att.att_nm=strdup(att_nm);
       lval_ptr->att.var_nm=strdup(var_nm);
-      return(OUT_ATT);
+      return OUT_ATT;
     }else{
       (void)sprintf(err_sng,"#Warning: unable to locate variable %s. So cannot create attribute %s",var_nm,yytext);
       (void)yyerror(err_sng);
-      return(EPROVOKE); 
+      return EPROVOKE; 
     } /* end else */
   } /* end if */
   
@@ -389,7 +386,7 @@ pow/[ ]*\( {return POWER;}
   var_nm=strdup(yytext); /* [sng] Variable name */
   (void)sprintf(err_sng,"Warning: Token %s may contain subscript, hyperslab, or convolution information. This information is not yet correctly handled and results will be unpredictable",var_nm);
   (void)yyerror(err_sng);       
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing subscripted variable %s\n",var_nm);
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing subscripted variable %s\n",var_nm);
 
   /* Locate subscript brackets */
   sbs_LHS_ptr=strstr(var_nm,sbs_LHS); /* [ptr] Location of sbs_LHS */
@@ -434,7 +431,7 @@ pow/[ ]*\( {return POWER;}
   if(RHS){
     (void)fprintf(stderr,"ERROR: Found hyperslab (subscripted) variable on RHS\n");
     lval_ptr->vara=var_nm;
-    return(VAR);
+    return VAR;
   }else{ 
     static char *tpl_nm="Internally generated template";
 
@@ -447,13 +444,15 @@ pow/[ ]*\( {return POWER;}
 
     /* Set ouput variable name as usual */
     lval_ptr->output_var=var_nm;
-    /* Enter LHS_cst mode, exit mode when semi-colon is read */
-    LHS_cst=True; /* [flg] Cast RHS structures to LHS properties */
-    /* Create template variable of specified LHS rank
-       Value of variable is arbitrary, use 1.0 for safety
+
+    /* Enter LHS_cst mode, exit mode when semi-colon is read
+       Test for mode by checking var_LHS != null
+       Create template variable of specified LHS rank
+       Value of variable is arbitrary (and perhaps unecessary), use 1.0 for safety
        Variable construction code is taken from scl_dbl_mk_var() and var_fll()
        Allocate and initialize variable structure */
     var=(var_sct *)nco_malloc(sizeof(var_sct));
+
     /* Set defaults */
     (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
     /* Overwrite with LHS information */
@@ -468,6 +467,7 @@ pow/[ ]*\( {return POWER;}
     if(var->nbr_dim > 0) var->end=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->end=(long *)NULL;
     if(var->nbr_dim > 0) var->srd=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srd=(long *)NULL;
 
+    /* Defensive programming */
     var->sz=1L; 
     /* Attach LHS dimensions to variable */
     for(idx=0;idx<var->nbr_dim;idx++){
@@ -489,8 +489,8 @@ pow/[ ]*\( {return POWER;}
 
     /* Copy arbitrary value into variable 
        Placing a uniform value in variable should be necessary since variable
-       is intended to be used solely as a template for var_conform_dim() 
-       Nevertheless, copy */
+       is intended for use solely as dimensional template for var_conform_dim() 
+       Nevertheless, copy 1.0 into value for safety */
     { /* Change scope to define convenience variables which reduce dereferencing */
       long var_sz; /* [nbr] Number of elements in variable */
       int var_type_sz; /* [B] Size of single element of variable */
@@ -502,9 +502,12 @@ pow/[ ]*\( {return POWER;}
       for(idx=0;idx<var_sz;idx++) (void)memcpy(var_val_cp+idx,(void *)(&val),var_type_sz);
     } /* end scope */
 
+    /* Link variable into yylex() argument for use in parser */
     prs_arg->var_LHS=var;
-    (void)fprintf(stderr,"%s: fxm LHS var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),prs_arg->var_LHS->nm,prs_arg->var_LHS->nbr_dim,prs_arg->var_LHS->sz);
-    return(OUT_VAR);
+
+    if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Lexer creating LHS cast template for %s: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),var_nm,prs_arg->var_LHS->nm,prs_arg->var_LHS->nbr_dim,prs_arg->var_LHS->sz);
+
+    return OUT_VAR;
   } /* end else */
 
   if(0){ /* Remove some compiler warning messages */
@@ -523,41 +526,31 @@ pow/[ ]*\( {return POWER;}
 
 [A-Za-z_][A-Za-z0-9_]* {
   /* Recognize variables */
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Lexing variable %s\n",yytext);
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable %s\n",yytext);
   if(RHS){
     lval_ptr->vara=strdup(yytext); 
-    return(VAR);
+    return VAR;
   }else{ 
     lval_ptr->output_var=strdup(yytext);
-    return(OUT_VAR);
+    return OUT_VAR;
   } /* end else */
-  
 } /* end variables */
 
 = {
   /* Equals */
-  RHS=True; return yytext[0];
+  RHS=True; 
+  return yytext[0];
 } /* end equals */
 
 ; { 
-  /* End-of-statement indicator */
+  /* semi-colon indicates end-of-statement */
   RHS=False;
-  if(LHS_cst){
-    int idx; /* [idx] Counter for dimensions */
-    /* var_free() intentionally does not free dimension structures because,
-       in most of NCO, dimension structures are shared.
-       Thus ncap must free dimension structures manually */
-    for(idx=0;idx<prs_arg->var_LHS->nbr_dim;idx++) prs_arg->var_LHS->dim[idx]=nco_free(prs_arg->var_LHS->dim[idx]);
-    /* Clean up from and exit LHS cast mode */
-    prs_arg->var_LHS=var_free(prs_arg->var_LHS);
-    /* fxm: dimension structures must be freed independently */
-    LHS_cst=False; /* [flg] Cast RHS structures to LHS properties */
-  } /* end LHS_cst */
   return yytext[0]; 
 } /* end semi-colon */
 
 . {
   /* Everything not parsed by above falls through to here */
+  if(dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: Following token reached last lexer rule: %s\n",prg_nm_get(),yytext);
   return yytext[0];
 } /* end trickle down */
 

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.36 2002-01-28 10:06:53 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.37 2002-01-29 08:40:19 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -49,9 +49,9 @@
 
 /* Standard header files */
 #include <math.h> /* sin cos cos sin 3.14159 */
+#include <stdio.h> /* stderr, FILE, NULL, etc. */
 #include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strcmp. . . */
-#include <stdio.h> /* stderr, FILE, NULL, etc. */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -63,7 +63,7 @@
 
 /* Turn on parser debugging option (Bison manual p. 85) */
 #define YYDEBUG 1
-int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
+int yydebug=1; /* 0: Normal operation. 1: Print parser rules during execution */
 
 /* Turns on more verbose errors than just plain "parse error" when yyerror() is called by parser */
 #define YYERROR_VERBOSE 1
@@ -140,13 +140,29 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 program: statement_list
 ;
 
-statement_list: statement_list statement ';'
+statement_list: 
+statement_list statement ';' {
+  /* Purpose: Actions to be performed at end-of-statement go here */
+  if(((prs_sct *)prs_arg)->var_LHS != NULL){
+    /* Clean up from and exit LHS_cst mode
+       Perform cleanup after semi-colon ending statement is parsed
+       var_free() intentionally does not free dimension structures because,
+       in most of NCO, dimension structures are shared.
+       Thus ncap must free dimension structures manually */
+    int idx; /* [idx] Counter for dimensions */
+    if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Freeing var_LHS\n",prg_nm_get());
+    for(idx=0;idx<((prs_sct *)prs_arg)->var_LHS->nbr_dim;idx++) ((prs_sct *)prs_arg)->var_LHS->dim[idx]=nco_free(((prs_sct *)prs_arg)->var_LHS->dim[idx]);
+    ((prs_sct *)prs_arg)->var_LHS=var_free(((prs_sct *)prs_arg)->var_LHS);
+  } /* end LHS_cst */
+} /* end statement ';' */
 | statement_list error ';'
 | statement ';'
-| error ';' /* Catches most errors then reads up to next semicolon */
+| error ';' /* Catch most errors then read up to next semi-colon */
 ; /* end statement_list */
 
-statement: 
+statement: /* statement is definition of out_att_exp or out_var_exp (LHS tokens)
+	      in terms of att_exp, var_exp, and string_exp (RHS tokens). 
+	      All permutations are valid so this rule has 6 possible actions */
 out_att_exp '=' att_exp { 
   int aed_idx; 
   aed_sct *ptr_aed;
@@ -197,7 +213,7 @@ out_att_exp '=' att_exp {
 } /* end out_att_exp '=' string_exp */
 | out_att_exp '=' var_exp
 { 
-  /* It is OK to store 0 dimensional variables in an attribute */ 
+  /* Storing 0-dimensional variables in attribute is OK */ 
   int aed_idx;
   aed_sct *ptr_aed;
   
@@ -243,22 +259,37 @@ out_att_exp '=' att_exp {
   int var_id;
   var_sct *var;
   rcd=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$1,&var_id);
+  if(dbg_lvl_get() > 5) (void)fprintf(stderr,"%s: DEBUG out_var_exp = att_exp rule for %s\n",prg_nm_get(),$1);
   if(rcd == NC_NOERR){
     (void)sprintf(err_sng,"Warning: Variable %s has aleady been saved in %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   }else{  
-    var=(var_sct *)nco_calloc((size_t)1,sizeof(var_sct));
+    /* Turn attribute into temporary variable for writing */
+    var=(var_sct *)nco_malloc(sizeof(var_sct));
+    /* Set defaults */
+    (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
+    /* Overwrite with attribute expression information */
     var->nm=strdup($1);
     var->nbr_dim=0;
-    var->dmn_id=(int *)NULL;
     var->sz=1;
     var->val=ncap_attribute_2_ptr_unn($3);
     var->type=$3.type;
+
+    if(((prs_sct *)prs_arg)->var_LHS != NULL){
+      /* User intends LHS to cast RHS to same dimensionality
+	 Stretch newly initialized variable to size of LHS template */
+      /*    (void)ncap_var_conform_dim(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
+      (void)ncap_var_stretch(&var,&(((prs_sct *)prs_arg)->var_LHS));
+      
+      if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching former att_exp defining %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$1,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
+      
+    } /* endif LHS_cst */
+    
     (void)ncap_var_write(var,(prs_sct *)prs_arg);
     (void)var_free(var);
     (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
-  }
+  } /* endif */
   $1=nco_free($1);
 } /* end out_var_exp '=' att_exp */
 | out_var_exp '=' string_exp
@@ -289,7 +320,8 @@ out_att_exp '=' att_exp {
 } /* end out_var_exp '=' string_exp */
 ; /* end statement */
 
-att_exp: 
+att_exp: /* att_exp results from RHS action which involves only att_exp's
+	    One action exists for each binary and unary attribute-valid operator */
 att_exp '+' att_exp {
   (void)ncap_retype(&$1,&$3);
   $$=ncap_attribute_calc($1,'+',$3);                                
@@ -368,7 +400,7 @@ out_var_exp: OUT_VAR {$$=$1;}
 out_att_exp: OUT_ATT {$$=$1;}
 ;
       
-string_exp: 
+string_exp: /* string_exp is any combination of string_exp or attribute */
 string_exp '+' string_exp {
   size_t sng_lng;
   sng_lng=strlen($1)+strlen($3);
@@ -381,11 +413,11 @@ string_exp '+' string_exp {
 | ATOSTR '(' att_exp ')' {
   char bfr[50];
   switch ($3.type){
-  case  NC_DOUBLE: sprintf(bfr,"%.10G",$3.val.d); break;
-  case  NC_FLOAT:  sprintf(bfr,"%G",$3.val.f); break;
-  case  NC_INT:    sprintf(bfr,"%ld",$3.val.l); break;
-  case  NC_SHORT:  sprintf(bfr,"%d",$3.val.s); break;
-  case  NC_BYTE:   sprintf(bfr,"%d",$3.val.b); break;
+  case NC_DOUBLE: sprintf(bfr,"%.10G",$3.val.d); break;
+  case NC_FLOAT:  sprintf(bfr,"%G",$3.val.f); break;
+  case NC_INT:    sprintf(bfr,"%ld",$3.val.l); break;
+  case NC_SHORT:  sprintf(bfr,"%d",$3.val.s); break;
+  case NC_BYTE:   sprintf(bfr,"%d",$3.val.b); break;
   default:  break;
   } /* end switch */
   $$=strdup(bfr);      
@@ -395,11 +427,11 @@ string_exp '+' string_exp {
   /* Format string according to string expression */
   /* User decides which format corresponds to which type */
   switch ($3.type){
-  case  NC_DOUBLE: sprintf(bfr,$5,$3.val.d); break;
-  case  NC_FLOAT:  sprintf(bfr,$5,$3.val.f); break;
-  case  NC_INT:    sprintf(bfr,$5,$3.val.l); break;
-  case  NC_SHORT:  sprintf(bfr,$5,$3.val.s); break;
-  case  NC_BYTE:   sprintf(bfr,$5,$3.val.b); break;
+  case NC_DOUBLE: sprintf(bfr,$5,$3.val.d); break;
+  case NC_FLOAT:  sprintf(bfr,$5,$3.val.f); break;
+  case NC_INT:    sprintf(bfr,$5,$3.val.l); break;
+  case NC_SHORT:  sprintf(bfr,$5,$3.val.s); break;
+  case NC_BYTE:   sprintf(bfr,$5,$3.val.b); break;
   default:  break;
   } /* end switch */
   $5=nco_free($5);
@@ -408,7 +440,8 @@ string_exp '+' string_exp {
 | STRING {$$=$1;}
 ; /* end string_exp */
 
-var_exp:
+var_exp: /* var_exp results from RHS action which involves a var_exp, i.e.,
+	    OP var, var OP var, var OP att, att OP var */
 var_exp '+' var_exp { 
   $$=ncap_var_var_add($1,$3); 
   var_free($1); var_free($3);
@@ -499,12 +532,12 @@ var_exp '+' var_exp {
 
   if((((prs_sct *)prs_arg)->var_LHS) != NULL){
     /* User intends LHS to cast RHS to same dimensionality
-       We accomplish this in two stages:
-       1. Create variable of appropriate rank when LHS_cst mode entered
-       2. Stretch newly initialized variable to this rank */
+       Stretch newly initialized variable to size of LHS template */
     /*    (void)ncap_var_conform_dim(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
     (void)ncap_var_stretch(&$$,&(((prs_sct *)prs_arg)->var_LHS));
-    (void)fprintf(stderr,"%s: fxm LHS var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$$->nm,$$->nbr_dim,$$->sz);
+
+    if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: Stretching variable %s with LHS template: Template var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$$->nm,((prs_sct *)prs_arg)->var_LHS->nm,((prs_sct *)prs_arg)->var_LHS->nbr_dim,((prs_sct *)prs_arg)->var_LHS->sz);
+
   } /* endif LHS_cst */
 
   /* Sanity check */

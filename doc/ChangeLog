@@ -1,4 +1,34 @@
+2002-01-29  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_1_3
+	Changes since nco-2_1_2: LHS casting really works as long as
+	dimensions are already in output file. Replaced var_add() in ncap,
+	no known parser bugs, just missing features. 
+
+	* Created var_add_no_tally() by copying var_subtract() and
+	changing minuses to pluses. This routine does not use tally,
+	and does handle missing values appropriately.
+	Changed ncap_var_var_add() to use var_add_no_tally() rather than
+	var_add(). This fixed segfaults with prs_mdp definition,
+	which now works as expected.
+
+	* ncap variable addition scripts break in var_add()
+	Possibly because not all ncap routines malloc() tally array
+	Possibly because missing values handling is not failsafe in
+	var_add() (although I believe it is fine for other NCO operators)
+
+	* Allocate tally using sizeof(long) rather than
+	nco_typ_lng(NC_INT)
+
 2002-01-28  Charlie Zender  <zender@uci.edu>
+
+	* Move LHS_cst cleanup to statement_list rule so cleanup does
+	not occur before last expression in statement is evaluated
+
+	* Added ncap_var_stretch() to out_var_exp = att_exp action
+
+	* Spread out debug levels to create more uniform distribution
+	of diagnostics as dbg_lvl increases
 
 	* LHS casting is semi-working, semi-broken. Seems to work when all
 	required dimensions are already in input file and RHS is variable,

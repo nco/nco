@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.81 2002-01-28 10:06:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.82 2002-01-29 08:40:19 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -1041,10 +1041,8 @@ cvs_vrs_prs()
 
 void
 copyright_prn(char *CVS_Id,char *CVS_Revision)
-/* 
-   char *CVS_Id: I [sng] CVS identification string
-   char *CVS_Revision: I [sng] CVS revision string
- */
+/* char *CVS_Id: I [sng] CVS identification string
+   char *CVS_Revision: I [sng] CVS revision string */
 {
   char *date_cvs; /* Date this file was last modified */
   char *vrs_rcs; /* Version of this file, e.g., 1.213 */
@@ -1108,20 +1106,17 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
 
 void
 fl_cp(char *fl_src,char *fl_dst)
-/* 
-   char *fl_src: I [sng] Name of the source file to copy
-   char *fl_dst: I [sng] Name of the destination file
- */
+/* char *fl_src: I [sng] Name of source file to copy
+   char *fl_dst: I [sng] Name of destination file */
 {
-  /* Routine to copy the first file to the second */
-
+  /* Purpose: Copy first file to second */
   char *cp_cmd;
   char cp_cmd_fmt[]="cp %s %s";
 
   int rcd;
   int nbr_fmt_char=4;
   
-  /* Construct and execute the copy command */
+  /* Construct and execute copy command */
   cp_cmd=(char *)nco_malloc((strlen(cp_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1)*sizeof(char));
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"Copying %s to %s...",fl_src,fl_dst);
   (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
@@ -1132,18 +1127,14 @@ fl_cp(char *fl_src,char *fl_dst)
   } /* end if */
   cp_cmd=nco_free(cp_cmd);
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
-  
 } /* end fl_cp() */
 
 void
 fl_mv(char *fl_src,char *fl_dst)
-/* 
-   char *fl_src: I name of file to move
-   char *fl_dst: I name of the destination file
- */
+/* char *fl_src: I name of file to move
+   char *fl_dst: I name of destination file */
 {
-  /* Routine to move the first file to the second */
-
+  /* Purpose: Move first file to second */
   char *mv_cmd;
   char mv_cmd_fmt[]="mv -f %s %s";
 
@@ -1161,17 +1152,13 @@ fl_mv(char *fl_src,char *fl_dst)
   } /* end if */
   mv_cmd=nco_free(mv_cmd);
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
-  
 } /* end fl_mv() */
 
 void 
 fl_rm(char *fl_nm)
-/* 
-   char *fl_nm: I file to be removed
- */
+/* char *fl_nm: I file to be removed */
 {
   /* Purpose: Remove specified file from local system */
-
   int rcd;
   char rm_cmd_sys_dep[]="rm -f";
   char *rm_cmd;
@@ -1185,30 +1172,26 @@ fl_rm(char *fl_nm)
   if(rcd == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",prg_nm_get(),fl_nm);
 
   rm_cmd=nco_free(rm_cmd);
-
 } /* end fl_rm() */
 
 int
 sng_ascii_trn(char *sng)
-     /* 
-	char *sng: I/O [sng] String to process
-	int sng_ascii_trn: O [nbr] Number of escape sequences translated
-     */
+/* char *sng: I/O [sng] String to process
+   int sng_ascii_trn: O [nbr] Number of escape sequences translated */
 {
-  /* Purpose: Replace any C language '\X' escape codes in a string into ASCII bytes 
+  /* Purpose: Replace any C language '\X' escape codes in string with ASCII bytes 
      Return number of escape sequences found and actually translated
-     This should be the same as number of bytes by which the string length has shrunk
-     For example, the consecutive characters "\n" are translated into ASCII '\n' = 10 which diminishes the string length by 1
-     Function works for an arbitrary number of escape codes in the input string
+     This should be same as number of bytes by which string length has shrunk
+     For example, consecutive characters "\n" are translated into ASCII '\n' = 10 which diminishes string length by 1
+     Function works for arbitrary number of escape codes in input string
      The escape sequence for NUL itself, \0, causes a warning and is not translated
      Input string must be NUL-terminated or NULL
-     Translation is done in place, so if the original string is required, it should be copied prior to calling sng_ascii_trn()
-     This procedure can only diminish, not lengthen, the size of the input string
-     Therefore it may safely be performed in place without the need to operate on a copy of the string
-     The address pointed to by sng does not change, but the memory at that address is altered
+     Translation is done in place, so if original string is required, it should be copied prior to calling sng_ascii_trn()
+     This procedure can only diminish, not lengthen, size of input string
+     Therefore it may be performed in place safely without the need to operate on a copy of the string
+     Address pointed to by sng does not change, but memory at that address is altered
      when characters are "moved to the left" if C language escape sequences are embedded.
-     Thus the length of the string may shrink
-   */
+     Thus string length may shrink */
 
   bool trn_flg; /* Translate this escape sequence */
 
@@ -1267,10 +1250,9 @@ sng_ascii_trn(char *sng)
   } /* end if */
 
   /* Usually there are no escape codes and sng still equals input value */
-  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG sng_ascii_trn() Found %d C-language escape sequences, translated %d of them\n",prg_nm_get(),esc_sqn_nbr,trn_nbr);
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"%s: DEBUG sng_ascii_trn() Found %d C-language escape sequences, translated %d of them\n",prg_nm_get(),esc_sqn_nbr,trn_nbr);
 
   return trn_nbr;
-
 } /* end sng_ascii_trn() */
 
 void *nco_malloc(size_t size)
