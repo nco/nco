@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.8 2002-09-03 01:19:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.9 2002-09-17 15:59:37 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -31,6 +31,9 @@
 #include "nco_ctl.h" /* Program flow control functions */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_mss_val.h" /* Missing value utilities */
+#if (!defined HAVE_STRCASECMP) || (!defined HAVE_STRDUP)
+#include "nco_sng_utl.h" /* String utilities */
+#endif /* HAVE_STRCASECMP || HAVE_STRDUP */
 
 #ifdef __cplusplus
 extern "C" {

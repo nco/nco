@@ -1,3 +1,9 @@
+2002-09-17  Charlie Zender  <zender@uci.edu>
+
+	* Correct some dependencies for string compatibility functions
+
+	* Adapt for missing <cstdlib> with SGI CC
+
 2002-09-14  Charlie Zender  <zender@uci.edu>
 
 	* Added esoteric math functions to MACOSX using float<-->double

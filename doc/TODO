@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.189 2002-09-15 02:01:10 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.190 2002-09-17 15:59:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -223,6 +223,7 @@ Command executes but in.hdf is full of screwy values
 233. Makefile.old rule for make tst appears broken for long ftp rule
 237. Break down nco.texi into bite-size chunks, e.g., one file per section
 238. Replace y=(typ *)malloc(nbr*sizeof(typ)) with y=(typ *)malloc(nbr*sizeof(*y))?
+239. Create one global compatibility file (nco_xpf.[ch]?) activated by HAVE_ or NEED_ actions so do not have multiple platform dependent #includes as is case now with HAVE_STRCASECMP, HAVE_STRDUP requiring nco_sng_utl.h
 ************************************************************************
 End NCO Wish list
 ************************************************************************
