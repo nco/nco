@@ -1,3 +1,9 @@
+2001-10-28  Charlie Zender  <zender@uci.edu>
+
+	* Fix netCDF3 migration bug that could cause core dumps because
+	non-coordinate dimensions where being interpreted as coordinate
+	dimensions in ncks due to changed nature of nc_inq_varid returns
+
 2001-10-15  Charlie Zender  <zender@uci.edu>
 
 	* Added VERSION infrastructure for recording build information in executable

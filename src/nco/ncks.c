@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.43 2001-10-08 07:25:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.44 2001-10-28 09:29:51 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.43 2001-10-08 07:25:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.43 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.44 2001-10-28 09:29:51 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.44 $";
   
   extern char *optarg;
   
@@ -1230,6 +1230,8 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
     rcd=nco_inq_varid_flg(in_id,dim[idx].nm,&dim[idx].cid);
     /* Read in coordinate dimensions */
     if(rcd == NC_NOERR){
+      dim[idx].is_crd_dmn=True;
+
       /* Find out what type of variable coordinate is */
       (void)nco_inq_vartype(in_id,dim[idx].cid,&dim[idx].type);
       
@@ -1242,7 +1244,10 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
       /* Typecast pointer to values before access */
       (void)cast_void_nctype(dim[idx].type,&dim[idx].val);
 
-    } /* end if dimension is coordinate */     
+    }else{ /* end if dimension is coordinate */   
+      dim[idx].is_crd_dmn=False;
+      dim[idx].cid=-1;
+    }  /* end if dimension is not a coordinate */
     
   } /* end loop over dim */
   
@@ -1419,7 +1424,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
 	  
 	  /* Format and print dimension part of output string for non-coordinate variables */
 	  if(dim[dmn_idx].cid != var.id){ /* If variable is not a coordinate... */
-	    if(dim[dmn_idx].cid != -1){ /* If dimension is a coordinate... */
+	    if(dim[dmn_idx].is_crd_dmn){ /* If dimension is a coordinate... */
 	      (void)sprintf(dmn_sng,"%%s%c%%li%c=%s ",arr_lft_dlm,arr_rgt_dlm,type_fmt_sng(dim[dmn_idx].type));
 	      /* Account for hyperslab offset in coordinate values*/
 	      crd_idx_crr=dmn_sbs_ram[dmn_idx];
