@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.113 2004-03-01 01:20:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.114 2004-05-06 04:45:19 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -106,8 +106,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *wgt_nm=NULL;
 
-  const char * const CVS_Id="$Id: ncwa.c,v 1.113 2004-03-01 01:20:17 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.113 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.114 2004-05-06 04:45:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.114 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:Ww:xy:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -359,7 +359,7 @@ main(int argc,char **argv)
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
   
-  /* Form initial extraction list from user input */
+  /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
 
   /* Change included variables to excluded variables */

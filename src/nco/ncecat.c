@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.67 2004-02-09 07:54:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.68 2004-05-06 04:45:19 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.67 2004-02-09 07:54:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.67 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.68 2004-05-06 04:45:19 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.68 $";
   const char * const opt_sng="ACcD:d:Fhl:n:Op:rRv:x-:";
 
   dmn_sct *rec_dmn;
@@ -260,7 +260,7 @@ main(int argc,char **argv)
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
   
-  /* Form initial extraction list from user input */
+  /* Form initial extraction list which may include extended regular expressions */
   xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
 
   /* Change included variables to excluded variables */
