@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.9 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.10 2001-11-16 12:30:10 hmb Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -39,7 +39,6 @@
 
 #ifndef NCAP_H /* Header file has not yet been defined in current source file */
 
-#define SYM_NBR_MAX 20 /* maximum number of symbols (should make table a linked list) */
 
 /* Define symbol table */
 /* YACC seems to initialize all user-defined pointers (like those in symbol table) to NULL
@@ -47,22 +46,68 @@
    This technique is frequently used in Pigeon book */
 typedef struct {
   char *nm;
-  var_sct *var;
   double (*fnc)();
-  double val;
 } sym_sct;
-sym_sct sym_tbl[SYM_NBR_MAX];
+
+typedef struct {
+  val_unn val;
+  nc_type type;
+} parse_sct;      
+ 
+
+typedef struct{
+    char *fl_in;
+    int in_id;  
+    char *fl_out;
+    int out_id;  
+    char *fl_spt; /* Instruction file to be parsed */
+    aed_sct  **att_lst;
+    int *nbr_att;
+    dmn_sct **dim;
+    int nbr_dmn_xtr;
+} prs_sct;
 
 /* These funtions are kept either in ncap.y or ncap_utl.c */
 extern sym_sct *sym_look(char *sym_nm);
 extern void fnc_add(char *nm, double (*fnc)());
 extern sym_sct *scalar_mk_sym(double val);
-extern var_sct *ncap_var_add(var_sct *var_1,var_sct *var_2);
-extern int ncap_write_var(int,var_sct *);
+extern var_sct *ncap_var_init(char*,prs_sct*);
+extern int ncap_var_write(var_sct *, prs_sct*);
+extern var_sct *ncap_var_var_add(var_sct *var_1,var_sct *var_2);
+extern var_sct *ncap_var_var_sub(var_sct *var_1,var_sct *var_2);
+extern var_sct *ncap_var_var_multiply(var_sct *var_1,var_sct *var_2);
+extern var_sct *ncap_var_attribute_multiply(var_sct * ,parse_sct);
+extern var_sct *ncap_var_attribute_add(var_sct * ,parse_sct);
+extern var_sct *ncap_var_attribute_sub(var_sct *, parse_sct);
+extern var_sct *ncap_var_attribute_divide(var_sct *, parse_sct);
+extern var_sct *ncap_var_attribute_power(var_sct *,parse_sct);
+extern var_sct *ncap_var_attribute_modulus(var_sct *,parse_sct);
+extern var_sct *ncap_var_function(var_sct *,double (*fnc)( ));
+extern var_sct *ncap_var_abs(var_sct *);
+extern int ncap_retype(parse_sct *, parse_sct *);
+extern int ncap_attribute_conform_type(nc_type, parse_sct *);
+extern int ncap_attribute_minus(parse_sct *);
+extern parse_sct ncap_attribute_abs(parse_sct);
+extern parse_sct ncap_attribute_calc(parse_sct, char, parse_sct);
+extern parse_sct ncap_ptr_unn_2_attribute(nc_type, ptr_unn);
+extern ptr_unn ncap_attribute_2_ptr_unn(parse_sct); 
+extern sym_sct * ncap_sym_init(char * ,double (*fnc)());
+
+extern void var_attribute_multiply(nc_type ,long ,int ,ptr_unn ,ptr_unn ,parse_sct *);
+extern void var_attribute_add(nc_type ,long ,int ,ptr_unn ,ptr_unn ,parse_sct *);
+extern void var_attribute_divide(nc_type ,long ,int ,ptr_unn ,ptr_unn ,parse_sct *);
+extern void var_attribute_modulus(nc_type ,long ,int ,ptr_unn ,ptr_unn ,parse_sct *);
+extern void var_abs(nc_type ,long ,int ,ptr_unn ,ptr_unn);
+extern int ncap_aed_lookup(char *,char *,aed_sct **,int *,bool);
+
 extern int yyerror(char *sng);
 extern void nco_lib_vrs_prn();
 
 #endif /* NCAP_H */
+
+
+
+
 
 
 
