@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.46 2004-08-04 19:14:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.47 2004-08-04 19:43:03 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -796,10 +796,13 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
   int dmn_id_vec[NC_MAX_DIMS];
   int idx;
   int dmn_idx;
+  int prg_id; /* [enm] Program ID */
   int rcd=NC_NOERR; /* [rcd] Return code */
 
   nc_type typ_out; /* [enm] Type in output file */
   
+  prg_id=prg_get(); /* [enm] Program ID */
+
   for(idx=0;idx<nbr_var;idx++){
 
     /* Assume arithmetic operators store values as unpacked pck_dbg
@@ -815,7 +818,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        4. Tentative solution 20030119: 
        If other operators ever require this capability, we can change the ncap-specific
        condition to a generic FIXED_KEEP_PACKED flag passed into nco_var_dfn() */
-    if(nco_is_rth_opr(prg_get()) && prg_get() != ncap) typ_out=var[idx]->typ_upk; else typ_out=var[idx]->type;
+    if(nco_is_rth_opr(prg_id) && prg_id != ncap) typ_out=var[idx]->typ_upk; else typ_out=var[idx]->type;
 
     /* Is requested variable already in output file? */
     rcd=nco_inq_varid_flg(out_id,var[idx]->nm,&var[idx]->id);
@@ -824,7 +827,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     if(rcd != NC_NOERR){
       
       /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of output dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, nco_var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, nco_var_dfn() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
-      if(dmn_ncl != NULL || prg_get() == ncwa){
+      if(dmn_ncl != NULL || prg_id == ncwa){
 	/* ...operator is ncwa and/or changes variable rank... */
 	int idx_ncl;
 	/* Initialize number of dimensions for current variable */
@@ -832,6 +835,10 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	for(dmn_idx=0;dmn_idx<var[idx]->nbr_dim;dmn_idx++){
 	  /* Is dimension allowed in output file? */
 	  for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
+	    /* All I can say about this line, is...Yikes! 
+	       No, really, it indicates poor program design
+	       fxm: TODO nco374: re-write ncwa so, like ncpdq, ncwa re-arranges output metadata 
+	       prior to calling nco_var_dfn() */
 	    if(var[idx]->xrf->dim[dmn_idx]->id == dmn_ncl[idx_ncl]->xrf->id) break;
 	  } /* end loop over idx_ncl */
 	  if(idx_ncl != nbr_dmn_ncl) dmn_id_vec[dmn_nbr++]=var[idx]->dim[dmn_idx]->id;
@@ -845,10 +852,11 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       } /* end else */
       (void)nco_def_var(out_id,var[idx]->nm,typ_out,dmn_nbr,dmn_id_vec,&var[idx]->id);
       
-      if(dbg_lvl_get() == 3){
-	(void)fprintf(stdout,"%s: DEBUG %s defining variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,ID): " : "");
+      if(dbg_lvl_get() == 3 && prg_id != ncwa){
+	/* fxm TODO nco374 diagnostic information fails for ncwa since var[idx]->dim[dmn_idx]->nm
+	   contains _wrong name_ when variables will be averaged. */
+	(void)fprintf(stdout,"%s: DEBUG %s defined variable %s with %d dimension%s%s",prg_nm_get(),fnc_nm,var[idx]->nm,dmn_nbr,(dmn_nbr == 1) ? "" : "s",(dmn_nbr > 0) ? " (ordinal,output ID): " : "");
 	for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-	  /* fxm: nco373 var[idx]->dim[dmn_idx]->nm is NULL for ncwa -D 3 -N -O -v three_dmn_var -C -a lat,lon -w gw in.nc foo.nc */
 	  (void)fprintf(stdout,"%s (%d,%d)%s",var[idx]->dim[dmn_idx]->nm,dmn_idx,dmn_id_vec[dmn_idx],(dmn_idx < dmn_nbr-1) ? ", " : "");
 	} /* end loop over dmn */
 	(void)fprintf(stdout,"\n");
@@ -879,7 +887,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        if variable is packed in input file but unpacked in output file 
        However, arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
        Currently ncap only calls nco_var_dfn() for fixed variables, so handle exception with ncap-specific condition */
-    PCK_ATT_CPY=(nco_is_rth_opr(prg_get()) && prg_get() != ncap && var[idx]->xrf->pck_dsk) ? False : True;
+    PCK_ATT_CPY=(nco_is_rth_opr(prg_id) && prg_id != ncap && var[idx]->xrf->pck_dsk) ? False : True;
     (void)nco_att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id,PCK_ATT_CPY);
 
 #undef FALSE
