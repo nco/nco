@@ -1,0 +1,347 @@
+# Process this file with autoconf to produce a configure script.
+# (package name, version, bug-report-address, tarball name)
+AC_INIT([NCO],[2.0.0],[help@nco.sourceforge.net],[nco.tar])
+
+#require a recent version of autoconf
+AC_PREREQ(2.53)
+# print GNU copyright in configure script
+AC_COPYRIGHT
+
+#safety check that the correct --srcdir was specified
+AC_CONFIG_SRCDIR([src/nco/ncks.c])
+# put helper scripts here to reduce clutter in the top level
+AC_CONFIG_AUX_DIR(autobld)
+
+# get build system parameters, need config.guess and config.sub to use these
+AC_CANONICAL_BUILD
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
+
+# use automake to create Makefiles
+AM_INIT_AUTOMAKE
+
+# put all the preprocessor symbols in config.h
+AM_CONFIG_HEADER(config.h)
+
+## Checks for programs.  CC has a prefered list
+AC_PROG_CC(xlc_r xlc gcc c89 cc acc icc)
+AC_PROG_CXX
+AC_PROG_CPP
+AC_PROG_CXXCPP
+AC_PROG_CC_STDC
+AM_PROG_LEX
+AC_PROG_YACC
+AC_PROG_INSTALL
+AC_PROG_LN_S
+AC_PROG_LIBTOOL
+
+# disable maintainer-only options in generated Makefiles unless the flag
+# --enable-maintainer-mode is given at configure time
+#AM_MAINTAINER_MODE
+
+# Checks for library functions; DEFINE's put in config.h
+AC_FUNC_MALLOC
+AC_FUNC_MEMCMP
+AC_FUNC_STAT
+AC_FUNC_STRTOD
+AC_CHECK_FUNCS([gethostname memchr memmove pow setlocale sqrt strcasecmp strchr strdup strrchr strstr strtol])
+
+# Checks for header files.
+AC_HEADER_STDC
+AC_CHECK_HEADERS([libintl.h limits.h locale.h netinet/in.h stdlib.h string.h unistd.h getopt.h netcdf.h])
+
+# Checks for typedefs, structures, and compiler characteristics.
+# allow for wanton use of 'const' dispite the compiler
+AC_C_CONST
+AC_C_INLINE
+AC_TYPE_PID_T
+AC_TYPE_SIZE_T
+AC_STRUCT_TM
+AC_TYPE_UID_T
+AC_CHECK_TYPES([ptrdiff_t])
+AC_CHECK_SIZEOF(int*)
+
+#############################################
+# standard additions to compilers and preprocessors
+# do this before testing anyting
+case $host in
+  *-*-aix*)
+    CFLAGS="$CFLAGS -qmaxmem=8192 -qlanglvl=extended"
+    CPPFLAGS="$CPPFLAGS -qlanglvl" 
+    ;;
+  rs6000-*-lynxos*)
+    CFLAGS="$CFLAGS -ansi"
+    ;;
+  *-cygwin*)
+    CFLAGS="$CFLAGS -ansi"
+    ;;
+esac
+#############################################
+# now we can do link test with libnetcdf.a
+#
+# first lets add /usr/local/ since libnetcdf.a is often installed there
+if test -d "/usr/local/lib"; then
+  LDFLAGS="-L/usr/local/lib $LDFLAGS"
+fi
+if test -d "/usr/local/include"; then
+  CPPFLAGS="-I/usr/local/include $CPPFLAGS"
+fi
+# First check for 'ncopen' using default compiler flags.  If it fails, add
+# 64-bit flags if we know them and check for 'ncclose' (ncopen is cached, 
+# so checking for it again will not work)
+AC_MSG_NOTICE([checking default compiler flags])
+AC_CHECK_LIB([netcdf], [ncopen],[
+LIBS="-lnetcdf $LIBS"
+AC_MSG_NOTICE([libnetCDF links with default compiler flags]) ],[
+# linking failed, so add 64-bit compiler flags and try again
+AC_MSG_NOTICE([initial linking failed.  Adding 64-bit flags (if known)])
+case $host in
+  *-*-aix*)  CFLAGS="$CFLAGS -q64"
+             LDFLAGS="LDFLAGS -q64"
+             AR_FLAGS="AR_FLAGS -X 64"
+	     ;;
+  sparc-*-*) CFLAGS="CFLAGS -xarch=v9"
+             ;;
+esac	     
+
+AC_CHECK_LIB([netcdf], [ncclose], AC_MSG_NOTICE([adding 64-bit compiler flags]),[
+echo "*********************"
+echo "I cannot link with \"libnetcdf.a\" when LDFLAGS=$LDFLAGS. "
+echo "Maybe adjust LDFLAGS, or perhaps you do not have libnetcdf, in"
+echo "which case it can be retrieved from http://www.unidata.ucar.edu."
+echo "Otherwise, I found that CC=\"$CC\" and CFLAGS=\"$CFLAGS\" still "
+echo "fails.  You can override my choices by explicitly setting these as "
+echo "environment variables and then using ./configure again."
+echo "*********************"
+AC_MSG_ERROR([all netCDF linking failed.]) ] ) ]
+)
+#############################################
+  
+# Checks for libraries,they are added to the link path if found
+AC_CHECK_LIB([C], [cosf])
+AC_CHECK_LIB([m], [sin])
+AC_CHECK_LIB([intl], [gettext])
+AC_CHECK_LIB([resolv], [res_init])
+AC_CHECK_LIB([sunmath], [sinf])
+AC_CHECK_LIB([socket], [main])
+AC_CHECK_LIB([thread], [main])
+#AC_CHECK_LIB([nsl], [main])
+AC_CHECK_LIB([nco], [nco_open])
+
+#############################################
+# HDF5 support
+AC_ARG_VAR([HDF5_ROOT],location of HDF5 libraries)
+AC_ARG_ENABLE(hdf5,AC_HELP_STRING([--enable-hdf5],[use hdf5 support (default is YES)]),enable_hdf5=$enableval, enable_hdf5=yes)
+
+# check for HDF5 libraries unless told not to
+if test "$enable_hdf5" != "no"; then
+  #add $HDF5_ROOT to search path if present
+  if test "$HDF5_ROOT"; then
+    LDFLAGS="$LDFLAGS -L$HDF5_ROOT"
+  fi 
+  # these must all be present for HDF5 to work.  If all present, enable_hdf5=yes
+   AC_CHECK_LIB([mfhdf],[main],,enable_hdf5=no)
+#  AC_CHECK_LIB([df],[main],,enable_hdf5=no)
+#  AC_CHECK_LIB([jpeg],[main],,enable_hdf5=no)
+#  AC_CHECK_LIB([z],[main],,enable_hdf5=no)
+  AC_CHECK_LIB([hdf5], [H5Fcreate],,enable_hdf5=no)
+#  AC_CHECK_LIB([f],[main],,enable_hdf5=no)
+#  AC_CHECK_LIB([ftn],[main],,enable_hdf5=no)
+
+  if test "$enable_hdf5" = "no"; then
+    AC_MSG_WARN([HDF5 support disabled (missing libraries)])
+  elif test "$enable_hdf5" = "yes"; then
+     AC_DEFINE(HDF5, 1, have HDF5 support)
+     AC_MSG_NOTICE([HDF5 support enabled])
+  fi
+fi
+#############################################
+# DODS support
+AC_ARG_VAR([DODS_ROOT],[root of DODS stuff])
+AC_ARG_ENABLE(dods,AC_HELP_STRING([--enable-dods],[use DODS (default is YES)]),enable_dods=$enableval, enable_dods=yes)
+
+# check for DODS libraries unless told not to
+if test "$enable_dods" != "no"; then
+  #add $DODS_ROOT to search path if present
+  if test "$DODS_ROOT"; then
+    LDFLAGS="$LDFLAGS -L$DODS_ROOT/lib"
+  fi 
+  # these must all be present for DODS to work.  If all present, enable_dods=yes
+  # nc-dods requires dap++ to link with success
+  AC_CHECK_LIB([stdc++], [cerr],,enable_dods=no)
+#  AC_CHECK_LIB([z], [main],,enable_dods=no)
+  AC_CHECK_LIB([www], [HTLibInit],,enable_dods=no)
+  AC_CHECK_LIB([rx], [main],,enable_dods=no)
+  AC_CHECK_LIB([dap++],[main],,enable_dods=no)
+  AC_CHECK_LIB([nc-dods],[main],,enable_dods=no,[-ldap++])
+  # this is called again to resolve nc-dods <-> dap++ interdependancy
+  AC_CHECK_LIB([dap++],[main],,enable_dods=no)
+
+  if test "$enable_dods" = "no"; then
+    AC_MSG_WARN([DODS support disabled (missing libraries)])
+  else
+    AC_DEFINE(ENABLE_DODS, 1, have DODS support)
+    AC_MSG_NOTICE([DODS support enabled])
+  fi
+fi
+#############################################
+# if --enable-fortran define USE_FORTRAN_ARITHMATIC
+# is this really even used anymore?
+AC_ARG_ENABLE(fortran,AC_HELP_STRING([--enable-fortran],[use fortran arithmetic (default is NO)]), enable_fortran=$enableval, enable_fortran=no)
+
+if test "$enable_fortran" = "yes"; then
+  AC_DEFINE(USE_FORTRAN_ARITHMATIC,1,use fortran arithmatic)
+fi
+
+#############################################
+# if --enable-debug, add these compiler flags
+AC_ARG_ENABLE(debug,AC_HELP_STRING([--enable-debug],[more debugging info (default is NO)]),enable_debug=$enableval, enable_debug=no)
+
+if test "$enable_debug" = "yes"; then
+  case $host in
+    *-*-aix*)
+      CFLAGS="$CFLAGS -g" 
+      ;;
+    alpha*-*-*) 
+      CFLAGS="$CFLAGS -g -check_bounds -check -check_omp"
+      ;;
+    i[3456]86-*-linux-*)
+      CFLAGS="$DFLAGS -g Wall"
+      ;;
+    *-nec-*)
+      CFLAGS="$CFLAGS -g"
+      ;;
+    rs6000-*-lynxos*)
+      CFLAGS="$CFLAGS -g"
+      ;; 
+    mips*-sgi-irix*)
+      CFLAGS="$CFLAgS -g"
+      ;;
+    sparc-*-*)
+      CFLAGS="$CFLAGS -g"
+      ;;
+  *-cygwin*)
+      CFLAGS="$CFLAGS -g"
+      ;;
+  esac
+fi
+
+#############################################
+# if --enable-extreme, add these compiler flags
+AC_ARG_ENABLE(extreme,AC_HELP_STRING([--enable-extreme],[extreme debugging (default is NO)]),enable_extreme=$enableval, enable_extreme=no)
+
+if test "$enable_extreme" = "yes"; then
+  case $host in
+    *-*-aix*)
+      CFLAGS="$CFLAGS -g -qflttrap -qidirfirst -qlonglong -qwarn64 -qcheck=all -qhalt=s" 
+      ;;
+    alpha*-*-*)
+      CFLAGS="$CFLAGS -N 132" 
+      ;;
+    i[3456]86-*-linux-*)
+      CFLAGS="$CFLAGS -g -Wall"
+      ;;
+    *-nec-*)
+      CFLAGS="$CFLAGS -h0 -g  -hstack=nan"
+      ;;
+    rs6000-*-lynxos*)
+      CFLAGS="$CFLAGS -g"
+      ;; 
+    mips*-sgi-irix*)
+      CFLAGS="$CFLAgS -g"
+      ;;
+    sparc-*-*)
+      CFLAGS="$CFLAGS -g"
+      ;;
+  *-cygwin*)
+      CFLAGS="$CFLAGS -g"
+      ;;
+  esac
+
+# now check for some debugging libraries
+  AC_CHECK_LIB([ccmalloc],[main],,AC_MSG_WARN([cannot find ccmalloc library]) )
+  AC_CHECK_LIB([dl],[main],,AC_MSG_WARN([cannot find dl library]) )  
+  
+fi
+
+#############################################
+# if --enable-optimize, add these compiler flags
+AC_ARG_ENABLE(optimize,AC_HELP_STRING([--enable-optimize],[optimize (default is NO)]),enable_optimze=$enableval, enable_optimize=no)
+
+if test "$enable_optimize" = "yes"; then
+  case $host in
+    *-*-aix*)
+      CFLAGS="$CFLAGS -O"
+      ;;
+    alpha*-*-*)
+      CFLAGS="$CFLAGS -O2 -ansi-alias"
+      ;;
+    i[3456]86-*-linux-*)
+      CFLAGS="$CFLAGS -O2"
+      ;;
+    *-nec-*)
+      CFLAGS="$CFLAGS  -h2 -hmath vector -hxint"
+      ;;   
+    rs6000-*-lynxos*)
+      CFLAGS="$CFLAGS -O"
+      ;; 
+    mips*-sgi-irix*)
+      CFLAGS="$CFLAgS -mp -mpio -O2"
+      ;;
+    sparc-*-*)
+      CFLAGS="$CFLAGS -O2"
+      ;;
+  *-cygwin*)
+      CFLAGS="$CFLAGS -O"
+      ;;
+  esac
+
+fi
+
+#############################################
+# make defines that are currently used in nco programs based on $host_os
+case $host in
+  *-*-aix*)
+    AC_DEFINE(AIX,1,OS type)
+    ;;
+  alpha*-*-*)
+    ;;   
+  i[3456]86-*-linux*)
+    AC_DEFINE(LINUX,1,Linux OS)
+    ;;
+  *-nec-*)
+    ;;   
+  rs6000-*-lynxos*)
+    ;;
+  mips*-sgi-irix*)
+    ;;
+  cygwin*)
+    AC_DEFINE(WIN32,1, Windows OS)
+    ;;
+  sparc-*-*)
+    AC_DEFINE(SUN4SOL2,1,Solaris 2.* OS)
+    ;;  
+  cygwin*)
+    AC_DEFINE(WIN32,1, Windows OS)
+    ;;
+esac
+
+#############################################
+
+AC_CONFIG_FILES([Makefile src/Makefile src/nco/Makefile  man/Makefile doc/Makefile])
+if test "$CXX" ; then
+  AC_CONFIG_FILES(src/nco_c++/Makefile)
+fi
+AC_OUTPUT
+#############################################
+# echo build parameters for debugging
+echo "----- Configuration Parameters -----"
+echo "	host	=	$host "
+echo "	CC 	= 	$CC "
+echo "	CFLAGS	=	$CFLAGS "
+echo "	CXX	=	$CXX "
+echo "	CXXFLAGS=	$CXXFLAGS "
+echo "	CPP	=	$CPP "
+echo "	CPPFLAGS=	$CPPFLAGS "
+echo "	LDFLAGS = 	$LDFLAGS "
+echo "	AR_FLAGS=	$AR_FLAGS "

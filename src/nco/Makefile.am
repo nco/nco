@@ -1,0 +1,40 @@
+
+bin_PROGRAMS = ncap ncatted ncdiff ncecat ncflint ncks ncra ncrename ncwa
+
+AM_YFLAGS = -d
+
+ncap_SOURCES = ncap_utl.c ncap.c ncap_yacc.y ncap_lex.l 
+ncap_LDADD = libnco.la
+
+ncatted_SOURCES = ncatted.c
+ncatted_LDADD = libnco.la
+
+ncdiff_SOURCES = ncdiff.c
+ncdiff_LDADD = libnco.la
+
+ncecat_SOURCES = ncecat.c
+ncecat_LDADD = libnco.la
+
+ncflint_SOURCES = ncflint.c
+ncflint_LDADD = libnco.la
+
+ncks_SOURCES = ncks.c
+ncks_LDADD = libnco.la
+
+ncra_SOURCES = ncra.c
+ncra_LDADD = libnco.la
+
+ncrename_SOURCES = ncrename.c
+ncrename_LDADD = libnco.la
+
+ncwa_SOURCES = ncwa.c
+ncwa_LDADD = libnco.la
+
+lib_LTLIBRARIES = libnco.la
+libnco_la_SOURCES = nco_att_utl.c nco_bnr.c nco_cln_utl.c nco_cnf_dmn.c \
+nco_cnf_typ.c nco_cnv_arm.c \
+nco_cnv_csm.c nco_ctl.c nco_dbg.c nco_dmn_utl.c nco_fl_utl.c nco_lmt.c \
+nco_lst_utl.c nco_mmr.c nco_mss_val.c nco_netcdf.c nco_omp.c nco_pck.c \
+nco_prn.c nco_rec_var.c nco_rth_utl.c nco_scl_utl.c nco_scm.c nco_sng_utl.c \
+nco_var_avg.c nco_var_lst.c nco_var_rth.c nco_var_scv.c nco_var_utl.c
+
