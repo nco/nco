@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.149 2003-03-17 19:28:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.150 2003-03-18 18:15:28 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -98,12 +98,12 @@ http://www.gnu.ai.mit.edu/copyleft/fdl.html
 @clear smallbook
 
 @c Define edition, date, ...
-@set nco-edition 2.7.1
-@set doc-edition 2.7.1
+@set nco-edition 2.7.2
+@set doc-edition 2.7.2
 @set copyright-years 1995--2003
 @set update-year 2003
-@set update-date 27 January 2003
-@set update-month January 2003
+@set update-date 20 March 2003
+@set update-month March 2003
 
 @tex
 % fxm: Try to get thumbnails working with texinfo --pdf -generated PDF files
@@ -3401,6 +3401,12 @@ time means.
 Symbolically, the covariance 
 @set flg
 @tex
+\def\dfr{d} % [frc] Math differential
+\def\me{e} % [frc] Math e
+\def\mi{i} % [frc] Math i
+\def\mpi{\pi} % [frc] Math pi
+\def\tm{t} % [s] Time
+\def\xxx{x} % [ltr] x
 $[u^{\prime} v^{\prime}] = [uv]-[u][v]$ where $[\xxx]$ denotes the 
 time-average of~$\xxx$,
 $[x] \equiv {1 \over \tau} \int_{\tm=0}^{\tm=\tau}
@@ -5176,7 +5182,7 @@ the masking condition is
 @end ifinfo
 @ifset flg
 @c texi2html does not like @math{}
-@var{mask(i)} @var{condition} @var{mask_val}.
+@var{mask}(@var{i}) @var{condition} @var{mask_val}.
 @clear flg
 @end ifset
 
