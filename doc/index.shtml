@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.12 1999-04-20 22:15:45 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.13 1999-04-27 16:36:50 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
@@ -284,28 +284,28 @@ As a result, NCO operators, especially <TT>ncwa</TT>, may core dump unless you u
 NCAR's Winterpark has been upgraded to netCDF3.4.
 All users of NCO on SGI64 machines at other institutions are urged to upgrade to netCDF3.4.x which is available from URL <A HREF="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z</A>.</P>
 
-<P>Intermittent problems with NCO on IRIX have reappeared on NCAR's Winterpark since about May 8, 1998.  
-Because these problems do not occur on any architecture besides IRIX, I feel it is likely that this is a symptom of a bug with IRIX, not with netCDF or NCO.
-These problems are known to occur with NCO (based on netCDF 2.x) as well as other, independent, netCDF 3.x applications (at least since July 28, 1998).
-These problems generally occur with the averagers (e.g.,<TT>ncwa</TT>,
-<TT>ncra</TT>) and will occasionally produce incorrect answers without
-any warning.
-Such data corruption might be very hard to notice, so please be very
-cautious using netCDF on IRIX until these problems are resolved.
-</P>
+<!--  <P>Intermittent problems with NCO on IRIX have reappeared on NCAR's Winterpark since about May 8, 1998.   -->
+<!--  Because these problems do not occur on any architecture besides IRIX, I feel it is likely that this is a symptom of a bug with IRIX, not with netCDF or NCO. -->
+<!--  These problems are known to occur with NCO (based on netCDF 2.x) as well as other, independent, netCDF 3.x applications (at least since July 28, 1998). -->
+<!--  These problems generally occur with the averagers (e.g.,<TT>ncwa</TT>, -->
+<!--  <TT>ncra</TT>) and will occasionally produce incorrect answers without -->
+<!--  any warning. -->
+<!--  Such data corruption might be very hard to notice, so please be very -->
+<!--  cautious using netCDF on IRIX until these problems are resolved. -->
+<!--  </P> -->
 
-<P>Try the following workarounds:
-If your file on the IRIX machine is accesible from another machine,
-e.g., a Sun or Cray, then use NCO from the Sun or Cray, rather than
-the IRIX machine, to process the file. 
-Some problems are compilation dependent, and disappear or lessen when
-NCO is compiled with the `-g' option (rather than `-O2').
-Compiling NCO with `C_ONLY=Y' replaces Fortran routines with C
-routines.
-We have not yet tested whether this alleviates IRIX problems.
-If you try either of these workarounds, let me know whether they
-worked (or not) for you.
-This will help us identify the problem.
+<!--  <P>Try the following workarounds: -->
+<!--  If your file on the IRIX machine is accesible from another machine, -->
+<!--  e.g., a Sun or Cray, then use NCO from the Sun or Cray, rather than -->
+<!--  the IRIX machine, to process the file.  -->
+<!--  Some problems are compilation dependent, and disappear or lessen when -->
+<!--  NCO is compiled with the `-g' option (rather than `-O2'). -->
+<!--  Compiling NCO with `C_ONLY=Y' replaces Fortran routines with C -->
+<!--  routines. -->
+<!--  We have not yet tested whether this alleviates IRIX problems. -->
+<!--  If you try either of these workarounds, let me know whether they -->
+<!--  worked (or not) for you. -->
+<!--  This will help us identify the problem. -->
 <HR></P>
 
 <TABLE WIDTH="100%" >

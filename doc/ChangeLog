@@ -1,3 +1,17 @@
+1999-04-27  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
+
+	* Tagged and released this as nco1_1_27
+
+	* Isolated build procedure in nco_dst.pl with --bld option, off by
+	default
+
+	* Added --dat_cnt to nco_dst.pl to support dataproc.ucar.edu
+
+	* Added SGIMP64 architecture to Makefile to support
+	dataproc.ucar.edu. Default netCDF lib is r4i4 rather than r4i8 as
+	on winterpark so I am avoiding the whole issue by using C_ONLY
+	defaults and spoofing SGI64. nco_tst.sh executed without errors.
+
 1999-04-20  Charlie Zender  <zender@flagstaff.cgd.ucar.edu>
 
 	* Tagged and released this as nco1_1_26
