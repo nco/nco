@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.2 2002-05-02 06:44:19 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -25,6 +25,16 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+void
+cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
+(const nc_type type, /* I [enm] netCDF type to cast void pointer to */
+ ptr_unn const *ptr); /* I/O [ptr] Pointer to pointer union whose vp element will be cast to type type*/
+
+void
+cast_nctype_void /* [fnc] Cast generic pointer in ptr_unn structure from type type to type void */
+(const nc_type type, /* I [enm] netCDF type of pointer */
+ ptr_unn const *ptr); /* I/O pointer to pointer union which to cast from type type to type void */
 
 var_sct * /* O [var] Variable after (possible) conversion */
 nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */

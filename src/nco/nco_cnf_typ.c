@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.2 2002-05-02 06:44:19 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -7,6 +7,64 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_cnf_typ.h" /* Conform variable types */
+
+void
+cast_void_nctype /* [fnc] Cast generic pointer to netCDF type */
+(const nc_type type, /* I [enm] netCDF type to cast void pointer to*/
+ ptr_unn const *ptr) /* I/O [ptr] Pointer to pointer union whose vp element will be cast to type type*/
+{
+  /* Purpose: Cast generic pointer in ptr_unn structure from type void to output netCDF type */
+  switch(type){
+  case NC_FLOAT:
+    ptr->fp=(float *)ptr->vp;
+    break;
+  case NC_DOUBLE:
+    ptr->dp=(double *)ptr->vp;
+    break;
+  case NC_INT:
+    ptr->lp=(nco_long *)ptr->vp;
+    break;
+  case NC_SHORT:
+    ptr->sp=(short *)ptr->vp;
+    break;
+  case NC_CHAR:
+    ptr->cp=(unsigned char *)ptr->vp;
+    break;
+  case NC_BYTE:
+    ptr->bp=(signed char *)ptr->vp;
+    break;
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+} /* end cast_void_nctype() */
+
+void
+cast_nctype_void /* [fnc] Cast generic pointer in ptr_unn structure from type type to type void */
+(const nc_type type, /* I [enm] netCDF type of pointer */
+ ptr_unn const *ptr) /* I/O pointer to pointer union which to cast from type type to type void */
+{
+  /* Cast generic pointer in ptr_unn structure from type type to type void */
+  switch(type){
+  case NC_FLOAT:
+    ptr->vp=(void *)ptr->fp;
+    break;
+  case NC_DOUBLE:
+    ptr->vp=(void *)ptr->dp;
+    break;
+  case NC_INT:
+    ptr->vp=(void *)ptr->lp;
+    break;
+  case NC_SHORT:
+    ptr->vp=(void *)ptr->sp;
+    break;
+  case NC_CHAR:
+    ptr->vp=(void *)ptr->cp;
+    break;
+  case NC_BYTE:
+    ptr->vp=(void *)ptr->bp;
+    break;
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+} /* end cast_nctype_void() */
 
 var_sct * /* O [var] Variable after (possible) conversion */
 nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */

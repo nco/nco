@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_csz.c,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_csz.c,v 1.2 2002-05-02 06:44:19 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -7,36 +7,14 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Standard C headers */
-#include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
-#include <stdlib.h> /* atof, atoi, malloc, getopt */
 #include <string.h> /* strcmp. . . */
-#include <sys/stat.h> /* stat() */
 #include <time.h> /* machine time */
-#include <unistd.h> /* all sorts of POSIX stuff */
-/* #include <assert.h> */ /* assert() debugging macro */
-/* #include <errno.h> */ /* errno */
-/* #include <malloc.h> */ /* malloc() stuff */
-
-#include <sys/types.h> /* needed for _res */
-#include <netinet/in.h> /* needed for _res */
-#include <pwd.h> /* password structures for getpwuid() */
-#ifndef WIN32
-#include <arpa/nameser.h> /* needed for _res */
-#include <resolv.h> /* Internet structures for _res */
-#endif
 
 /* 3rd party vendors */
 #ifdef _OPENMP
 #include <omp.h> /* OpenMP pragmas */
 #endif /* not _OPENMP */
-
-/* I'm only keeping these netCDF include files around because I'm worried that 
-   function prototypes in nco.h are needed here. Eventually prototypes for these
-   routines should be broken into separate files, like csz.h... */
-#include <netcdf.h> /* netCDF definitions */
-#include "nco_netcdf.h" /* netCDF3.0 wrapper functions */
-#include "nco.h" /* netCDF operator definitions */
 
 #ifndef bool
 #define bool int
