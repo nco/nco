@@ -436,7 +436,7 @@ else
 fi
 #############################################
 
-AC_CONFIG_FILES([Makefile src/Makefile src/nco/Makefile  man/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile src/nco/Makefile  man/Makefile doc/Makefile])
 if  test "$ac_cv_cxx_have_valarray" = "yes"; then
   AC_CONFIG_FILES(src/nco_c++/Makefile)
   NCO_CXX="nco_c++"
