@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.126 2002-05-02 06:56:40 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.127 2002-05-06 05:14:48 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -36,8 +36,8 @@ endif
 MY_DAT_DIR := ../data
 MY_DOC_DIR := ../doc
 MY_DPN_DIR := ${MY_OBJ_DIR}
-MY_INC_DIR := 
 MY_SRC_DIR := ../src/nco
+MY_INC_DIR := ${MY_SRC_DIR}
 
 # Primary tokens which determine build options
 # Specify non-default when invoking make, e.g. make DODS=Y
@@ -167,6 +167,14 @@ MDL_BIN_SYM_LNK := ncea ncrcat # Symbolic links
 MDL_BIN_STB := ${MDL_BIN_TRG} ${MDL_BIN_SYM_LNK} # All NCO files in MY_BIN_DIR
 MDL_BIN := $(addprefix ${MY_BIN_DIR}/,${MDL_BIN_STB}) # distclean removes these files
 
+# Variables having to do with header files created by module
+# List header targets alphabetically by "category":
+MDL_INC_TRG := # Raw (no functions)
+MDL_INC_TRG += libnco.h # libnco
+MDL_INC_SYM_LNK := # Symbolic links
+MDL_INC_STB = ${MDL_INC_TRG} ${MDL_INC_SYM_LNK} # All header files in ${MY_INC_DIR}
+MDL_INC = $(addprefix ${MY_INC_DIR}/,${MDL_INC_STB}) # dst_cln removes these files
+
 # Variables having to do with NCO data
 MDL_DAT_STB := 85 86 87 88 89 h0001 h0002 h0003 # Symbolic links to in.nc
 MDL_DAT_STB := $(addsuffix .nc,$(MDL_DAT_STB)) # `make data' creates these files
@@ -196,6 +204,12 @@ ${MY_OBJ_DIR}/%.o : %.F
 	${FC} ${CPPFLAGS} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 ${MY_OBJ_DIR}/%.o : %.f
 	${FC} -c ${FFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
+
+# Rules for installing header files
+#${MY_INC_DIR}/%.h : %.h
+#	cp -f -p $(notdir $@) $@
+${MY_INC_DIR}/%.hh : %.hh
+	cp -f -p $(notdir $@) $@
 
 # Rules for installing i18n files
 %.po : %.cc
@@ -807,37 +821,37 @@ obj_dir:
 # Targets in bin
 .PHONY:  ncra ncatted ncks ncwa ncecat ncdiff ncflint ncrename
 ncra:   ${MY_BIN_DIR}/ncra
-${MY_BIN_DIR}/ncra:	${MY_OBJ_DIR}/ncra.o ${libnco}.a
+${MY_BIN_DIR}/ncra:	${libnco}.a ${MY_OBJ_DIR}/ncra.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 	cd ${MY_BIN_DIR}; rm -f ncea; ln -f -s ncra ncea
 	cd ${MY_BIN_DIR}; rm -f ncrcat; ln -f -s ncra ncrcat
 ncatted:   ${MY_BIN_DIR}/ncatted
-${MY_BIN_DIR}/ncatted:	${MY_OBJ_DIR}/ncatted.o ${libnco}.a
+${MY_BIN_DIR}/ncatted:	${libnco}.a ${MY_OBJ_DIR}/ncatted.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncks:   ${MY_BIN_DIR}/ncks
-${MY_BIN_DIR}/ncks:	${MY_OBJ_DIR}/ncks.o ${libnco}.a
+${MY_BIN_DIR}/ncks:	${libnco}.a ${MY_OBJ_DIR}/ncks.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncwa:   ${MY_BIN_DIR}/ncwa
-${MY_BIN_DIR}/ncwa:	${MY_OBJ_DIR}/ncwa.o ${libnco}.a
+${MY_BIN_DIR}/ncwa:	${libnco}.a ${MY_OBJ_DIR}/ncwa.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncecat:   ${MY_BIN_DIR}/ncecat
-${MY_BIN_DIR}/ncecat:	${MY_OBJ_DIR}/ncecat.o ${libnco}.a
+${MY_BIN_DIR}/ncecat:	${libnco}.a ${MY_OBJ_DIR}/ncecat.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncdiff:   ${MY_BIN_DIR}/ncdiff
-${MY_BIN_DIR}/ncdiff:	${MY_OBJ_DIR}/ncdiff.o ${libnco}.a
+${MY_BIN_DIR}/ncdiff:	${libnco}.a ${MY_OBJ_DIR}/ncdiff.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncflint:   ${MY_BIN_DIR}/ncflint
-${MY_BIN_DIR}/ncflint:	${MY_OBJ_DIR}/ncflint.o ${libnco}.a
+${MY_BIN_DIR}/ncflint:	${libnco}.a ${MY_OBJ_DIR}/ncflint.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 ncrename:   ${MY_BIN_DIR}/ncrename
-${MY_BIN_DIR}/ncrename:	${MY_OBJ_DIR}/ncrename.o ${libnco}.a
+${MY_BIN_DIR}/ncrename:	${libnco}.a ${MY_OBJ_DIR}/ncrename.o
 	${CC} -o $@ $< ${LDFLAGS}
 	chmod 755 $@
 bin: ${MDL_BIN_TRG}
@@ -917,7 +931,7 @@ inc_cln:
 	rm -f ${MDL_INC}
 # Targets in lib
 library: lib
-lib: inc ${libnco}.a
+lib : inc ${libnco}.a
 ${libnco}.a: $(libnco.a(${MY_OBJ_DIR}/nco_att_utl.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_cln_utl.c) \
 	$(libnco.a(${MY_OBJ_DIR}/nco_cnf_dmn.c) \
