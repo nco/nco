@@ -1,3 +1,10 @@
+2002-09-20  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_6_5
+	Changes since nco-2_6_4: CRAY and SUN builds
+
+	* Fix SunOS builds in bld/Makefile
+
 2002-09-19  Charlie Zender  <zender@uci.edu>
 
 	* Patches from Len Makin for CRAY
