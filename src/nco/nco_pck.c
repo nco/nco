@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.33 2004-09-05 06:37:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.34 2004-09-05 20:13:50 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -198,7 +198,7 @@ nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
     var->pck_dsk=True; /* [flg] Variable is packed on disk */
     /* If variable is packed on disk and is in memory then variable is packed in memory */
     var->pck_ram=True; /* [flg] Variable is packed in memory */
-    var->typ_upk=scl_fct_typ; /* [enm] Type of variable when unpacked (expanded) (in memory) */
+    var->typ_upk=(var->has_scl_fct) ? scl_fct_typ : add_fst_typ; /* [enm] Type of variable when unpacked (expanded) (in memory) */
     if(nco_is_rth_opr(prg_get()) && dbg_lvl_get() > 2){
       (void)fprintf(stderr,"%s: PACKING Variable %s is type %s packed into type %s\n",prg_nm_get(),var->nm,nco_typ_sng(var->typ_upk),nco_typ_sng(var->typ_dsk));
       (void)fprintf(stderr,"%s: DEBUG Packed variables processed by all arithmetic operators are unpacked automatically, and then stored unpacked in the output file. If you wish to repack them in the output file, use, e.g., ncap -O -s \"foo=pack(foo);\" out.nc out.nc. If you wish to pack all the variables in a file, use, e.g., ncpdq -P all_new in.nc out.nc.\n",prg_nm_get());

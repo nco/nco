@@ -273,9 +273,9 @@ $expected= 11 ;
 
 $test[0]='ncpdq -O -P all_new -v upk in.nc foo.nc';
 $test[1]='ncpdq -O -P upk -v upk foo.nc foo.nc';
-$test[2]='ncks -C -H -s "%f" -v upk foo.nc';
-$description=" Pack and then unpack scalar";
-$expected= 11 ; 
+$test[2]='ncks -C -H -s "%g" -v upk foo.nc';
+$description=" Pack and then unpack scalar (uses only add_offset)";
+$expected= 3 ; 
 &go();
 
 ####################

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.395 2004-09-05 20:02:19 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.396 2004-09-05 20:13:50 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -266,9 +266,12 @@ nco430. Implement ncpdq -U
 nco431. Implement ncpdq -P optional options
 nco433. ncpdq: Use gotos to reduce co-repeats in switch statements
 nco434. ncpdq: add packing tests to nco_tst.pl
-nco435. ncpdq: bug in packing variables with only add_offset
+nco435. ncpdq: bug in unpacking variables with only add_offset
 ncpdq -O -P all_new -v upk ~/nco/data/in.nc ~/nco/data/foo.nc
 ncpdq -O -P upk -v upk ~/nco/data/foo.nc ~/nco/data/foo2.nc
+RROR: program exiting through nco_err_exit() which will now call abort()
+nco_err_exit(): ERROR nco_def_var
+Not a netCDF data type or _FillValue type mismatch
 nco436. 
 
 ncap-specific items:
