@@ -80,3 +80,6 @@ install-exec-hook:
 
 uninstall-hook:
 	cd $(DESTDIR)$(bindir) && rm -f ncdiff ncea ncrcat
+
+CLEANFILES=ncdiff ncea ncrcat
+

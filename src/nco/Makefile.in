@@ -222,6 +222,8 @@ TESTS = test1.sh ${DODS_TESTS}
 EXTRA_DIST = nco_getopt.c
 
 DISTCLEANFILES = ncap_lex.c ncap_yacc.c ncap_yacc.h
+
+CLEANFILES = ncdiff ncea ncrcat
 subdir = src/nco
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/autobld/mkinstalldirs
@@ -760,6 +762,7 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f $(CONFIG_CLEAN_FILES)
