@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.80 2000-09-26 01:14:40 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.81 2000-09-26 01:32:01 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires: GNU Make. AT&T Make will not understand this.
@@ -285,7 +285,7 @@ endif
 
 ifeq ($(PVM_ARCH),LINUX)
 C++ := g++
-# 1998/05/17 As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
+# 19980517: As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
 #CC := gcc -ansi
 CC := gcc
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
@@ -382,10 +382,7 @@ endif
 ifneq (,$(findstring SGI,$(PVM_ARCH)))
 C++ := c++
 CC := cc
-# spoof SGI64
-# OpenMP compliant compilers define _OPENMP=YYYYMM = year and month of specification
-#CPPFLAGS += -D_OPENMP=200001 -DSGI64 -I$(NETCDF_INC)
-CPPFLAGS += -DSGI64 -I$(NETCDF_INC)
+CPPFLAGS += -D$(PVM_ARCH) -I$(NETCDF_INC)
 # SGIs like dataproc keep omp.h in special location determined by module MIPSpro
 ifdef $(MIPSPRO_SGI)
  CPPFLAGS := -I$(MIPSPRO_SGI)/usr/include $(CPPFLAGS)

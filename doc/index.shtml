@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.61 2000-09-22 23:43:31 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.62 2000-09-26 01:32:07 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -302,7 +302,7 @@ on SGI machines (possibly related to NFS-mounted partitions).
 As a result, NCO operators, especially <b>ncwa</b>, may core dump
 unless you upgrade to the new netCDF3.4.x distribution. 
 NCAR machines have all been upgraded to netCDF3.4+.
-All users of NCO on SGI64 machines at other institutions are urged to
+All users of NCO on SGI machines at other institutions are urged to
 upgrade to netCDF3.4.x which is available from URL 
 <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z</a>.</li>
 <li>NCO may not build correctly on SGI machines unless the latest
