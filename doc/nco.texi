@@ -4,31 +4,17 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.154 2003-03-29 01:51:38 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.155 2003-03-31 06:52:20 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
-NB: texi2dvi nco.texi does not work on RHL 7.2
-
-Legend (defined in "highlighting" section of TeXInfo manual):
-@code{}: Program text, e.g., @code{if(foo) x=y;}
-@command{}: Commands, e.g., @command{ncra}
-@dfn{}: Define use of term, e.g., @dfn{supercalifragilisticexpialidocious}
-@email{}: E-mail address, e.g., @email{zender@uci.edu}
-@env{}: Environment variable, e.g., @env{HOME}
-@file{}: Filename, e.g., @url{in.nc}
-@kbd{}: Keyboard input, e.g., @kbd{ncra in.nc out.nc}
-@key{}: Key name, e.g., @key{ESC} (rarely needed)
-@option{}: Command-line option, e.g., @option{}
-@samp{}: Extended commands, character sequences, e.g., @samp{ncra in.nc out.nc}
-@uref{}: URL with alternate text, e.g., @uref{http://nco.sf.net,NCO homepage}
-@url{}: Uniform resource locator, e.g., @url{http://nco.sf.net}
-@var{}: Metasyntactic variable, e.g., @var{}
-@w{}: Unbreakable text, e.g., @w{of 1}
-
-Use '@:', after periods, questions marks, exclamation marks, or colons
-that do not end sentences
-Use '@.', '@!', and `@?' to end sentences that end with single capital letters
+Copyright (C) 1995--2003 Charlie Zender
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.1
+or any later version published by the Free Software Foundation;
+with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
+Texts. The license is available online at 
+http://www.gnu.ai.mit.edu/copyleft/fdl.html
 
 After editing any hyperlink locations, use 
 C-c C-u C-a	texinfo-all-menus-update
@@ -56,17 +42,29 @@ cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco
 /usr/bin/scp nco.sf.net:/home/groups/n/nc/nco/nco/doc/nco.dvi ~/nco/doc
 /usr/bin/scp /home/groups/n/nc/nco/nco/doc/nco.dvi dust.ess.uci.edu:nco/doc
 
+Legend (defined in "highlighting" section of TeXInfo manual):
+@code{}: Program text, e.g., @code{if(foo) x=y;}
+@command{}: Commands, e.g., @command{ncra}
+@dfn{}: Define use of term, e.g., @dfn{supercalifragilisticexpialidocious}
+@email{}: E-mail address, e.g., @email{zender@uci.edu}
+@env{}: Environment variable, e.g., @env{HOME}
+@file{}: Filename, e.g., @url{in.nc}
+@kbd{}: Keyboard input, e.g., @kbd{ncra in.nc out.nc}
+@key{}: Key name, e.g., @key{ESC} (rarely needed)
+@option{}: Command-line option, e.g., @option{}
+@samp{}: Extended commands, character sequences, e.g., @samp{ncra in.nc out.nc}
+@uref{}: URL with alternate text, e.g., @uref{http://nco.sf.net,NCO homepage}
+@url{}: Uniform resource locator, e.g., @url{http://nco.sf.net}
+@var{}: Metasyntactic variable, e.g., @var{}
+@w{}: Unbreakable text, e.g., @w{of 1}
+
+Use '@:', after periods, questions marks, exclamation marks, or colons
+that do not end sentences
+Use '@.', '@!', and `@?' to end sentences that end with single capital letters (e.g., initials)
+
 Resources:
 Octave TeXInfo manual is a good example of clean TeXInfo structure
 /usr/share/doc/octave-2.1.34/interpreter/octave.texi
-
-Copyright (C) 1995--2003 Charlie Zender
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.1
-or any later version published by the Free Software Foundation;
-with no Invariant Sections, no Front-Cover Texts, and no Back-Cover
-Texts. The license is available online at 
-http://www.gnu.ai.mit.edu/copyleft/fdl.html
 @end ignore
 
 @c Start of header
@@ -127,18 +125,18 @@ x
 @tolerance 10000
 @end iftex
 
-@c Set smallbook if printing in smallbook format so example of
-@c smallbook font is actually written using smallbook. 
+@c Set smallbook if printing in smallbook format
+@c Example of smallbook font is actually written using smallbook
 @c In bigbook, a kludge is used for TeX output
 @c set smallbook
 @clear smallbook
 
 @c Define edition, date, ...
-@set nco-edition 2.7.2
-@set doc-edition 2.7.2
+@set nco-edition 2.7.3
+@set doc-edition 2.7.3
 @set copyright-years 1995--2003
 @set update-year 2003
-@set update-date 20 March 2003
+@set update-date 30 March 2003
 @set update-month March 2003
 
 @tex
@@ -247,23 +245,23 @@ Texts. The license is available online at
 @top NCO User's Guide
 @c node format: node-name, next, previous, up
 
-The netCDF Operators, or NCO, are a suite of programs known as
+The netCDF Operators, or @acronym{NCO}, are a suite of programs known as
 operators. 
 The operators facilitate manipulation and analysis of self-describing
 data stored in the netCDF or HDF4 formats, which are freely available
 (@uref{http://www.unidata.ucar.edu/packages/netcdf} and
 @uref{http://hdf.ncsa.uiuc.edu}, respectively). 
-Each NCO operator (e.g., ncks) takes netCDF or HDF input file(s),
+Each @acronym{NCO} operator (e.g., ncks) takes netCDF or HDF input file(s),
 performs an operation (e.g., averaging, hyperslabbing, or renaming),
 and outputs a processed netCDF file. 
 Although most users of netCDF and HDF data are involved in scientific
-research, these data formats, and thus NCO, are generic and are
+research, these data formats, and thus @acronym{NCO}, are generic and are
 equally useful in fields like finance. 
-The NCO User's Guide illustrates NCO use with examples from the field
+The @acronym{NCO} User's Guide illustrates @acronym{NCO} use with examples from the field
 of climate modeling and analysis. 
-The NCO homepage is @uref{http://nco.sourceforge.org}.
+The @acronym{NCO} homepage is @uref{http://nco.sourceforge.org}.
 
-This file documents NCO version @value{nco-edition}.
+This file documents @acronym{NCO} version @value{nco-edition}.
 
 NOTE: This documentation is evolving.
 Corrections, additions, and rewrites of sections are VERY WELCOME.
@@ -799,7 +797,7 @@ Once you have read the manual, if you are still unable to get
 Follow the same procedure as described below for reporting bugs
 (after all, it might be a bug).
 That is, describe what you are trying to do, and include the complete
-commands (with @samp{-D 5}), error messages, and version of NCO.
+commands (with @samp{-D 5}), error messages, and version of @acronym{NCO}.
 Post your help request to the 
 @uref{http://sourceforge.net/forum/forum.php?forum_id=9830, NCO Help forum}.
 
@@ -2024,8 +2022,7 @@ This is because @acronym{NCO} employs a novel multislab algorithm to
 minimize the number of I/O operations when retrieving irregularly spaced
 data from disk.
 
-Nothing prevents users from specifying redundant ranges of indices in
-multislab, e.g., 
+Users may specify redundant ranges of indices in a multislab, e.g., 
 @example
 ncks -d lon,0,4 -d lon,2,9,2 in.nc out.nc
 @end example
@@ -2037,8 +2034,8 @@ this is redundant) but will count only once if an arithmetic operation
 is being performed.  
 The @acronym{NCO} multislab algorithm retrieves each element from disk
 once and only once.
-Thus users may be somewhat sloppy in specifying multislabs and the
-algorithm should obtain the intended values.
+Thus users may take some shortcuts in specifying multislabs and the
+algorithm will obtain the intended values.
 Specifying redundant ranges is not encouraged, but may be useful on
 occasion and will not result in unintended consequences.
 
@@ -2083,10 +2080,131 @@ The @uref{http://www.unidata.ucar.edu/packages/udunits,UDUnits} package
 provides a library which, if present, @acronym{NCO} uses to translate
 user-specified physical dimensions into the physical dimensions of data
 stored in netCDF files.
-Unidata provides UDUnits under the same terms as netCDF, so there is no
-reason not to install both.
-The use of UDUnits in NCO is currently optional but may become required
-in a future version of NCO.
+Unidata provides UDUnits under the same terms as netCDF, so sites should
+install both.
+Compiling @acronym{NCO} with UDUnits support is currently optional but may become
+required in a future version of @acronym{NCO}.
+
+Two examples suffice to demonstrate the power and convenience of UDUnits
+support. 
+@cindex MKS units
+First, consider extraction of a variable containing non-record
+coordinates with physical dimensions stored in MKS units.
+In the following example, the user extracts all wavelengths
+in the visible portion of the spectrum in terms of the units
+very frequently used in visible spectroscopy, microns:
+@example
+% ncks -O -C -H -u -v wvl -d wvl,"0.4 micron","0.7 micron" in.nc
+wvl[0]=5e-07 meter
+@end example
+@noindent
+@cindex @code{units} attribute
+The hyperslab returns the correct values because the @var{wvl} variable
+is stored on disk with a length dimension that UDUnits recognizes in the 
+@code{units} attribute.
+The automagical algorithm that implements this functionality is worth
+describing since understanding it helps one avoid some potential
+pitfalls. 
+First, the user includes the physical units of the hyperslab dimensions 
+she supplies, separated by a simple space from the numerical values of
+the hyperslab limits.
+She encloses each coordinate specifications in quotes so that the shell
+does not break the @emph{value-space-unit} string into separate
+arguments before passing them to @acronym{NCO}. 
+Double quotes (@kbd{"foo"}) or single quotes (@kbd{'foo'}) are equally
+valid for this purpose. 
+Second, @acronym{NCO} recognizes that units translation is requested because each
+hyperslab argument contains text characters and non-initial spaces. 
+Third, @acronym{NCO} determines whether the @var{wvl} is dimensioned with a
+coordinate variable that has a @code{units} attribute. 
+@cindex coordinate variable 
+In this case, @var{wvl} itself is a coordinate variable.
+The value of its @code{units} attribute is @code{meter}. 
+Thus @var{wvl} passes this test so a UDUnits conversion will be attempted.
+If the coordinate associated with the variable does not contain a 
+@code{units} attribute, then @acronym{NCO} aborts.
+Fourth, @acronym{NCO} passes the specified and desired dimension strings  
+(microns are specified by the user, meters are required by
+@acronym{NCO}) to the UDUnits library.
+Fifth, the UDUnits library that these dimension are commensurate
+and it returns the appropriate linear scaling factors to convert from 
+microns to meters to @acronym{NCO}.
+If the units are incommensurate (i.e., not expressible in the same
+fundamental MKS units), or are not listed in the UDUnits database, then 
+NCO aborts since it cannot determine the user's intent.
+Finally, @acronym{NCO} uses the scaling information to convert the user-specified 
+hyperslab limits into the same physical dimensions as those of the
+corresponding cooridinate variable on disk.
+At this point, @acronym{NCO} can perform a coordinate hyperslab using the same
+algorithm as if the user had specified the hyperslab without requesting
+units conversion.
+
+@cindex @code{units} attribute
+@cindex @code{time} 
+The translation and dimennterpretation of time coordinates shows a more
+powerful, and probably more common, application of the UDUnits feature. 
+In this example, the user prints all data between the eighth and ninth
+of December, 1999, from a variable whose time dimension is hours
+since the year 1900:
+@example
+% ncks -O -C -H -u -v time_udunits -d time_udunits,"1999-12-08 \
+12:00:0.0","1999-12-09 00:00:0.0",2 in.nc foo2.nc
+% time_udunits[1]=876018 hours since 1900-01-01 00:00:0.0
+@end example
+@noindent
+@cindex stride
+@cindex whitespace
+Here, the user invokes the stride (@pxref{Stride}) capability to obtain
+every other timeslice.
+This is possible because the UDUnits feature is additive, not
+exclusive---it works in conjunction with all other hyperslabbing
+(@pxref{Hyperslabs}) options and in all operators which support
+hyperslabbing.
+The following example shows how one might average data in a 
+time period spread across multiple input files
+@example
+ncra -O -d time,"1939-09-09 12:00:0.0","1945-05-08 00:00:0.0" \
+in1.nc in2.nc in3.nc out.nc
+@end example
+@noindent
+Note that there is no excess whitespace before or after the individual
+elements of the @samp{-d} argument.
+@cindex shell 
+This is important since, as far as the shell knows, @samp{-d} takes
+only @emph{one} command-line argument.
+Parsing this argument into its component
+@code{@var{dim},[@var{min}],[@var{max}],@var{stride}} elements 
+(@pxref{Hyperslabs}) is the job of @acronym{NCO}.
+When unquoted whitespace is present between these elements, the shell
+passes @acronym{NCO} arugment fragments which will not parse as
+intended. 
+
+The @uref{http://www.unidata.ucar.edu/packages/udunits,UDUnits}
+package documentation describes the supported formats of time
+dimensions. 
+The following @samp{-d arguments} extract the same data using 
+commonly encountered time dimension formats: 
+@c fxm add more formats here
+@example
+-d time,"1918-11-11 11:00:0.0","1939-09-09 00:00:0.0"
+@end example
+@noindent
+All of these formats include at least one dash @kbd{-} in a
+non-leading character position (a dash in a leading character position
+is a negative sign). 
+@acronym{NCO} assumes that a non-leading dash in a limit string
+indicates that a UDUnits date conversion is requested.
+
+netCDF variables should always be stored with MKS units, so that
+application programs may assume MKS dimensions apply to all input
+variables. 
+The UDUnits feature is intended to alleviate some of the @acronym{NCO} user's pain
+when handling MKS units.
+It connects users who think in human-friendly units (e.g.,
+miles, millibars, days) to extract data which are always stored in God's
+units, MKS (e.g., meters, Pascals, seconds). 
+The feature is not intended to encourage writers to store data in 
+esoteric units (e.g., furlongs, pounds per square inch, fortnights). 
 
 @node Wrapped coordinates, Stride, UDUnits Support, Common features
 @section Wrapped coordinates
@@ -3078,8 +3196,11 @@ documentation for recent capabilities is the @file{ChangeLog} file.
 
 @command{ncap} arithmetically processes a netCDF file.
 @cindex script file
-The processing instructions are contained either in the NCO script file 
-@file{fl.nco} or in a sequence of command line arguments.  The options @samp{-s} or @samp{--script} are used for in-line scripts and @samp{-S} or @samp{--file} are used to indicate the filename containing the scripting commands.
+The processing instructions are contained either in the @acronym{NCO}
+script file @file{fl.nco} or in a sequence of command line arguments.
+The options @samp{-s} or @samp{--script} are used for in-line scripts
+and @samp{-S} or @samp{--file} are used to provide the filename
+where (usually multiple) scripting commands are pre-stored. 
 @command{ncap} was written to perform arbitrary albebraic
 transformations of data and archive the results as easily as possible.
 @cindex derived fields

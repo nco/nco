@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.10 2003-03-26 00:55:59 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.11 2003-03-31 06:52:20 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -40,7 +40,7 @@ extern "C" {
 enum lmt_typ{ /* [enm] Limit type */
  lmt_crd_val, /* 0, Coordinate value limit */
  lmt_dmn_idx, /* 1, Dimension index limit */
- lmt_udu_str /* 2, UDUnits string */
+ lmt_udu_sng /* 2, UDUnits string */
 }; /* end lmt_typ enum */
   
 void
