@@ -1,3 +1,26 @@
+2005-03-26  charlie  <zender@uci.edu>
+
+	* Planning to eliminate all remaining memory leaks from NCO
+	Un-free'd strings cause the most memory leaks (I think)
+	When NCO originated in 1993-1994 I was zealous about memory usage. 
+	I chose to use the system memory allocated to optarg rather than
+	duplicate that memory in NCO. As NCO grew and became more
+	object-oriented, being able to create structures (e.g., variables)
+	dynamically but not able to free all their elements (e.g., names),
+	some of which referenced system memory (from optarg), lead to today.
+
+	Here are four examples (from ncks.c) of memory that NCO cannot free():
+	fl_pth_lcl=optarg;
+	fl_pth=optarg;
+        dlm_sng=optarg;
+        var_lst_in=lst_prs(optarg,",",&nbr_xtr);
+
+	Strategy:
+	1. Replace all such fragments in NCO by strdup()'d memory
+	2. Follow their code paths and free() these strings when possible
+	3. Add block to free all pointers at end of code (already in ncpdq)	
+	4. Modify destructors (e.g., nco_var_free()) to free strings
+	
 2005-03-25  charlie  <zender@uci.edu>
 
 	* Documented and fixed some small ncap memory leaks with valgrind
