@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.65 2002-06-10 04:48:19 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.66 2002-06-13 11:07:05 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -120,7 +120,8 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
    Format is rule: action
    Comments OK in space between C code but must be indented */
 
-program: stmt_lst
+program: 
+stmt_lst
 ; /* end program */
 
 stmt_lst: 
