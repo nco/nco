@@ -26236,7 +26236,7 @@ else
 fi
 # End netCDF test data
 
-# make sure we use 99 standards
+# Tell gcc to use C99 standard (older gcc versions default to C89)
 echo "$as_me:$LINENO: checking CFLAGS for gcc -std=c99" >&5
 echo $ECHO_N "checking CFLAGS for gcc -std=c99... $ECHO_C" >&6
 if test "${ac_cv_cflags_gcc_option__std_c99+set}" = set; then
