@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.20 2003-11-16 22:01:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.21 2003-11-25 19:14:18 rorik Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -207,7 +207,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* min_sng and max_sng are not both NULL */
     /* Limit is coordinate value if string contains decimal point or is in exponential format 
        Otherwise limit is interpreted as zero-based dimension offset */
-    if(lmt.max_sng != NULL) min_lmt_typ=nco_lmt_typ(lmt.min_sng);
+    if(lmt.min_sng != NULL) min_lmt_typ=nco_lmt_typ(lmt.min_sng);
     if(lmt.max_sng != NULL) max_lmt_typ=nco_lmt_typ(lmt.max_sng);
     
     /* Copy lmt_typ from defined limit to undefined */
