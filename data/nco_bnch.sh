@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/data/nco_bnch.sh,v 1.3 2004-07-20 00:40:51 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/data/nco_bnch.sh,v 1.4 2004-07-20 02:16:46 zender Exp $
 
 # Purpose: Benchmark NCO performance
 
@@ -39,7 +39,7 @@ date;ncwa -O -a wvl_1e8 -v wvl_1e8 ${DATA}/tmp/big.nc ${DATA}/tmp/foo.nc;date;nc
 # 10^9=1000000000
 # 10^8= 100000000
 
-# Benchmarks for ncra:
+# Benchmarks for ncra
 # Create file with multiple long record arrays
 ncap -D 3 -O \
 -s "one[wvl_1e7]=1.0f" \
@@ -47,7 +47,15 @@ ncap -D 3 -O \
 -s "three[wvl_1e7]=3.0f" \
 -s "four[wvl_1e7]=4.0f" \
 ~/nco/data/big.nc ${DATA}/tmp/big.nc
+
+# ncra_b1:
 # Running average with one thread
-date;ncra -O -t 1 ${DATA}/tmp/big.nc ${DATA}/tmp/foo.nc;date
-# Running average with four threads
-date;ncra -O -t 1 ${DATA}/tmp/big.nc ${DATA}/tmp/foo.nc;date
+date;ncra -O -t 1 -p ${DATA}/tmp big.nc ${DATA}/tmp/foo.nc;date
+# Running average with multiple threads
+date;ncra -O -t 4 -p ${DATA}/tmp big.nc ${DATA}/tmp/foo.nc;date
+
+# ncea_b1:
+# Running average with one thread
+date;ncea -O -t 1 -p ${DATA}/tmp big.nc big.nc big.nc big.nc ${DATA}/tmp/foo.nc;date
+# Running average with multiple threads
+date;ncea -O -t 4 -p ${DATA}/tmp big.nc big.nc big.nc big.nc ${DATA}/tmp/foo.nc;date
