@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.35 2004-08-16 04:38:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.36 2004-08-17 05:03:54 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.35 2004-08-16 04:38:24 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.35 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.36 2004-08-17 05:03:54 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.36 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:P:p:Rrt:v:x-:";
 
   
@@ -786,21 +786,25 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
   /* Purpose: Alter metadata according to packing specification */
   const char fnc_nm[]="nco_pck_mtd()"; /* [sng] Function name */
   nc_type nc_typ_pck_out=NC_NAT; /* [enm] Type to pack to */
-  bool USE_EXISTING_PCK=False; /* I [flg] Use existing packing scale_factor and add_offset */
 
-  nc_typ_pck_out=nco_typ_pck_get(var_in->type); /* [enm] Type to pack to */
+  nc_typ_pck_out=nco_typ_pck_get(var_in->type);
   switch(nco_pck_typ){
   case nco_pck_xst_xst_att:
   case nco_pck_all_xst_att:
-    USE_EXISTING_PCK=True;
     break;
   case nco_pck_xst_new_att:
   case nco_pck_all_new_att:
-    USE_EXISTING_PCK=False;
-    /* Major problem?: ncp_pck_var() expects var->type to be input (packed) type */
-    var_out->type=nc_typ_pck_out;
-    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s will pack variable metadata %s from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
-   break;
+    if(var_in->pck_ram){
+      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s reports variable %s is already packed\n",prg_nm_get(),fnc_nm,var_in->nm);
+      /* If variable is already packed, we will first unpack it, and then re-pack it 
+	 The final packing type may differ from the original */
+      var_out->type=nco_typ_pck_get(var_in->typ_upk);
+    }else{
+      /* If variable is not yet packed then pack to default type */
+      var_out->type=nc_typ_pck_out;
+      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s will pack variable metadata %s from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
+    } /* endif */
+    break;
   case nco_pck_upk:
   default:
     break;
@@ -831,9 +835,15 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
   case nco_pck_xst_new_att:
   case nco_pck_all_new_att:
     USE_EXISTING_PCK=False;
-    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s packing variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
-    /* Recall that nco_var_pck() expects to alter var_out->type itself */
-    var_out->type=var_in->typ_dsk;
+    /* If variable is already packed then unpack and re-pack it */
+    if(var_in->pck_ram){
+      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s unpacking variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_pck),nco_typ_sng(var_out->typ_upk));
+      var_out=nco_var_upk(var_out); 
+    }else{
+      /* Recall that nco_var_pck() expects to alter var_out->type itself */
+      var_out->type=var_in->typ_dsk;
+    } /* endif */
+    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s packing variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk),nco_typ_sng(var_out->type));
     var_out=nco_var_pck(var_out,typ_out,USE_EXISTING_PCK);
    break;
   case nco_pck_upk:

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.55 2004-08-16 04:13:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.56 2004-08-17 05:03:54 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -918,11 +918,11 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     /* Do not copy packing attributes "scale_factor" and "add_offset" 
        if variable is packed in input file and unpacked in output file 
        However, arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
-       Currently ncap only calls nco_var_dfn() for fixed variables, so handle exception with ncap-specific condition */
+       Currently ncap calls nco_var_dfn() only for fixed variables, so handle exception with ncap-specific condition */
     /* Copy exising packing attributes, if any, unless... */
     if(nco_is_rth_opr(prg_id) && /* ...operator is arithmetic... */
        prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
-       var[idx]->xrf->pck_dsk) /* ...and variable is not packed in input file... */
+       var[idx]->xrf->pck_dsk) /* ...and variable is packed in input file... */
       PCK_ATT_CPY=False;
 
     /* Recall that:

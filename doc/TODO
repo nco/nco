@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.379 2004-08-16 04:13:32 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.380 2004-08-17 05:03:51 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -247,7 +247,8 @@ nco400. ncpdq: modify nco_var_dfn() to make room for scale factor and add offset
 nco401. ncpdq: fix "use ncpdq fxm" hint in nco_pck_dsk_inq() message
 nco402. Leave alone [un-]packing of fixed variables in arithmetic operators
         See notes about this in nco_var_dfn()
-nco403. 
+nco403. ncpdq: Do not pack already packed variables
+nco404. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
