@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.80 2000-07-29 05:43:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.81 2000-07-31 00:29:18 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -38,9 +38,9 @@
 #include <string.h>             /* strcmp. . . */
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
-#include <unistd.h>             /* all sorts of POSIX stuff */ 
+#include <unistd.h>             /* POSIX stuff */ 
 
-#include <netcdf.h>             /* netCDF def'ns */
+#include <netcdf.h>             /* netCDF definitions */
 #include "nc.h"                 /* netCDF operator universal def'ns */
 /* #include <errno.h> */             /* errno */
 /* #include <malloc.h>    */         /* malloc() stuff */

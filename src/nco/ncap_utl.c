@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.9 2000-04-05 21:41:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.10 2000-07-31 00:29:18 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */ 
 
@@ -37,9 +37,9 @@
 #include <stdlib.h>             /* atof, atoi, malloc, getopt */ 
 #include <string.h>             /* strcmp. . . */
 #include <time.h>               /* machine time */
-#include <unistd.h>             /* all sorts of POSIX stuff */ 
+#include <unistd.h>             /* POSIX stuff */ 
 
-#include <netcdf.h>             /* netCDF def'ns */
+#include <netcdf.h>             /* netCDF definitions */
 #include "nc.h"                 /* netCDF operator universal def'ns */
 
 var_sct *

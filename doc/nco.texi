@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.50 2000-07-28 23:54:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.51 2000-07-31 00:29:18 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -25,11 +25,12 @@ Example TeXinfo files:
 
 @end ignore
 
-@c start of header
+@c Start of header
 @setfilename nco.info
 @settitle NCO @value{nco-edition} User's Guide
-@smallbook
-@c Merge the function index into the concept index
+@c Uncomment following line to produce guide in smallbook format
+@c @smallbook
+@c Merge function index into concept index
 @syncodeindex fn cp
 @c end of header
 
@@ -43,9 +44,9 @@ END-INFO-DIR-ENTRY
 @end ifinfo
 @end ignore
 
-@c Set smallbook if printing in smallbook format so the example of the
-@c smallbook font is actually written using smallbook; in bigbook, a kludge
-@c is used for TeX output.
+@c Set smallbook if printing in smallbook format so example of
+@c smallbook font is actually written using smallbook. 
+@c In bigbook, a kludge is used for TeX output
 @c set smallbook
 @clear smallbook
 
@@ -53,17 +54,17 @@ END-INFO-DIR-ENTRY
 @set doc-edition 1.2
 @set copyright-years 1995--2000
 @set update-year 2000
-@set update-date 28 July 2000
-@set update-month July 2000
+@set update-date 1 August 2000
+@set update-month August 2000
 
-@c Experiment with smaller amounts of whitespace between chapters and sections.
+@c Experiment with smaller amounts of whitespace between chapters and sections
 @tex
 \global\chapheadingskip = 15pt plus 4pt minus 2pt 
 \global\secheadingskip = 12pt plus 3pt minus 2pt
 \global\subsecheadingskip = 9pt plus 2pt minus 2pt
 @end tex
 
-@c Experiment with smaller amounts of whitespace between paragraphs in the 8.5 by 11 inch format.
+@c Experiment with smaller amounts of whitespace between paragraphs in the 8.5 by 11 inch format
 @ifclear smallbook
 @tex
 \global\parskip 6pt plus 1pt
@@ -224,6 +225,10 @@ Features common to most operators
 * ARM Conventions::             
 * Operation Types::             
 
+Accessing files stored remotely
+
+* DODS::                        
+
 Reference manual for all operators
 
 * ncatted netCDF Attribute Editor::  
@@ -249,7 +254,7 @@ Reference manual for all operators
 @unnumbered Foreword
 @cindex foreword
 @ifhtml
-<BODY TEXT="#000000" BGCOLOR="#FFF8DC" LINK="#0000EF" VLINK="#008080" ALINK="#FF0000">
+<body text="#000000" link="#0000EF" vlink="#008080" alink="#FF0000">
 @end ifhtml
 NCO is the result of software needs that arose while I worked on
 projects funded by NCAR, NASA, and ARM.
@@ -380,6 +385,20 @@ The netCDF homepage is
 @code{http://www.unidata.ucar.edu/packages/netcdf}.
 @end ifclear
 
+New NCO releases are announced on the netCDF list and on the 
+@code{nco-announce} mailing list 
+@ifhtml
+<a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce">http://lists.sourceforge.net/mailman/listinfo/nco-announce</a>.
+@end ifhtml
+@ifclear html
+@code{http://lists.sourceforge.net/mailman/listinfo/nco-announce}.
+@end ifclear
+
+@ignore
+This tests incorporates an image using the @code{@@image} command.
+@image{/data/zender/ps/odxc,6in,}
+@end ignore
+
 @node Compatability, Libraries, Availability, Introduction
 @section Operating systems compatible with NCO
 @cindex OS
@@ -425,6 +444,19 @@ This allows NCO to compile on any machine with an ANSI C compiler.
 Furthermore, NCO automatically takes advantage of extensions to ANSI C  
 when compiled with the GNU compiler collection, GNU CC.
 
+As of July 2000 and NCO version 1.2, NCO no longer supports performing 
+arithmetic operations in Fortran to improve speed.
+Supporting Fortran involves maintaining two sets of routines for every
+arithmetic operation. 
+The @code{USE_FORTRAN_ARITHMETIC} flag is retained in the Makefile and 
+the file containing the Fortran code, @file{nc_fortran.F}, is still
+distributed with NCO in case a volunteer decides to resurrect them.
+If you would like to volunteer to maintain @file{nc_fortran.F} please 
+contact me. 
+Otherwise the Fortran hooks will be completely removed in the next major
+release. 
+
+@ignore
 It is still possible to request Fortran routines to perform arithmetic
 operations, however.
 @cindex preprocessor tokens
@@ -444,6 +476,7 @@ with @code{USE_FORTRAN_ARITHMETIC} versus the default C averagers I would be mos
 interested to hear the results.
 Please E-mail me the results including the size of the datasets, the
 platform, and the change in the wallclock time for execution.}.
+@end ignore
 
 @menu
 * Windows NT::                  
@@ -492,6 +525,7 @@ Internet protocols (e.g., @code{ftp}, @code{rcp}, @code{scp},
 @cindex @code{ftp}
 @cindex @code{rcp}
 @cindex @code{scp}
+@cindex SSH
 @cindex remote files
 Fortunately, these UNIXy calls are only invoked by the single NCO
 subroutine which is responsible for retrieving files stored on remote
@@ -1246,20 +1280,24 @@ Otherwise NCO attempts to retrieve the MSS file through the
 (asynchronous) Masnet Interface Gateway System (MIGS) using the
 @code{nrnet} command. 
 
-The following examples show how one might analyzed files stored on  
+The following examples show how one might analyze files stored on  
 remote systems.
 @example
 ncks -H -l ./ ftp://ftp.cgd.ucar.edu/pub/zender/nc/in.nc
 ncks -H -l ./ dust.ps.uci.edu:/home/zender/nc/in.nc
 ncks -H -l ./ /ZENDER/nc/in.nc 
+ncks -H -l ./ mss:/ZENDER/nc/in.nc
+ncks -H -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc
 @end example
 @noindent
-The first example should work verbatim on your system if your system is
+The first example will work verbatim on your system if your system is
 connected to the Internet and is not behind a firewall.
-The second example should fail on your system unless you have @code{rcp}
-or @code{scp} priveleges on the machine @code{dust.ps.uci.edu}.
-The third example should work from NCAR computers with local access to 
+The second example will work on your system if you have @code{rcp}
+or @code{scp} access to the machine @code{dust.ps.uci.edu}.
+The third example will work from NCAR computers with local access to 
 the @code{msrcp}, @code{msread}, or @code{nrnet} commands.
+The fourth command will work if your local version of NCO was built with
+DODS capability (@pxref{DODS}).
 The above commands can be rewritten using the @samp{-p @var{input-path}}
 option as follows: 
 @cindex @code{-p @var{input-path}}
@@ -1270,6 +1308,7 @@ option as follows:
 ncks -H -p ftp://ftp.cgd.ucar.edu/pub/zender/nc -l ./ in.nc
 ncks -H -p dust.ps.uci.edu:/home/zender/nc -l ./ in.nc
 ncks -H -p /ZENDER/nc -l ./ in.nc 
+ncks -H -p mss:/ZENDER/nc -l ./ in.nc
 @end example
 @noindent
 Using @samp{-p} is recommended because it clearly separates the
@@ -1296,8 +1335,46 @@ remotely retrieved file and the output file in the current directory.
 Note that @samp{-l .} is equivalent to @samp{-l ./} though the latter is
 syntactically more clear.
 
-Note that this remote retrieval feature can easily be used to retrieve
-@emph{any} file, including non-netCDF files, via anonymous FTP.
+@menu
+* DODS::                        
+@end menu
+
+@node DODS,  , Remote storage, Remote storage
+@subsection DODS
+@cindex DODS
+@cindex HTTP protocol
+@cindex @code{DODS_ROOT}
+@cindex Distributed Oceanographic Data System
+The Distributed Oceanographic Data System (DODS) provides replacements
+for common data interface libraries like netCDF.
+The DODS versions of these libraries implement network transparent
+access to data using the HTTP protocol.
+NCO may be DODS-enabled by linking NCO to the DODS libraries.
+Examples of how to do this are given in the DODS documentation and 
+in the @file{Makefile} distributed with NCO.
+Building NCO with @code{make DODS=Y} adds the (non-intuitive) commands
+to link to the DODS libraries installed in the @code{$DODS_ROOT}
+directory. 
+
+Once NCO is DODS-enabled the operators are DODS clients. 
+All DODS clients have network transparent access to any files controlled
+by a DODS server. 
+Simply specify the path to the file in URL notation
+@example
+ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc
+@end example
+@noindent
+NCO operates on these remote files without having to transfer the
+files to the local disk.  
+DODS causes all the I/O to appear to NCO as if the files were local.
+The advantage to this is that only the required data (e.g., the variable
+or hyperslab specified) are transferred over the network.
+The advantages of this are obvious if you are examining small parts of
+large files stored at remote locations.
+
+Note that the remote retrieval features of NCO can be used to retrieve  
+@emph{any} file, including non-netCDF files, via SSH, anonymous FTP, 
+or @code{msrcp}.
 Often this method is quicker than using a browser, or running an FTP
 session from a shell window yourself.
 For example, say you want to obtain a JPEG file from a weather server.
@@ -1842,7 +1919,7 @@ Availability: @code{ncdiff}, @code{ncea}, @code{ncecat}, @code{ncflint},
 @code{ncra}, @code{ncwa}@*
 Key switches: None@*
 @end cartouche
-NCO has been programmed to recognize NCAR CSM history tapes.
+NCO recognizes NCAR CSM history tapes, and treats them specially.
 If you do not work with NCAR CSM data then you may skip this section.
 The CSM netCDF convention is described at
 @ifhtml
@@ -1996,8 +2073,9 @@ Sum of values
 
 If an operations type is not specified with @samp{-y} then the operator
 will perform an arithmetic average by default.
-Please note that at this time the weighted average option @samp{-w}
-should not be given to @code{ncwa} at the same time as @samp{-y}.
+At this time the weighted average option @samp{-w} does not work with
+the non-linear arithemtic operations (@code{rms}, @code{sqrt}, @dots{})  
+and @code{ncwa} will simply exit with an error if this is attempted.
 @comment fxm: why not?
 
 @noindent
@@ -2066,16 +2144,18 @@ than the number of time samples.
 The procedure to compute the spatial standard deviation of a field
 in a single file @file{in.nc} involves three steps.
 @example
-ncwa -O -v prs_sfc -a lat,lon -w gw in.nc out.nc
+ncwa -O -v prs_sfc -a lat,lon in.nc out.nc
 ncdiff -O -v prs_sfc in.nc out.nc out.nc
-ncwa -O -y rmssdn -v prs_sfc -a lat,lon -w gw out.nc out.nc
+ncwa -O -y rmssdn -v prs_sfc -a lat,lon out.nc out.nc
 @end example
-First the appropriately weighted (with @samp{-w}) spatial mean values
-are written to the output file. 
+First the spatial mean values are written to the output file. 
 This output file is then overwritten with the gridpoint deviations from 
 the spatial mean.
-Finally the appropriately weighted (with @samp{-w}) root-mean-square of
-the spatial deviations is taken. 
+Finally the root-mean-square of the spatial deviations is taken. 
+Note that this procedure only works if none of the dimensions are on an
+irregular grid such that require weighting (e.g., @code{-w gw}).
+Irregular grids would require appropriate weighting in steps one and
+three, but @code{ncwa} does currently support that.
 
 The procedure to compute the standard deviation of a time-series across
 multiple files involves one extra step since all the input must first be
@@ -3922,11 +4002,11 @@ The NCO project homepage at
 @code{https://sourceforge.net/@-projects/@-nco}
 @end ifclear
 contains more information on how to contribute. 
-@table @samp
+@table @asis
 @item Charlie Zender
 Concept, design and implementation of NCO from 1995--2000
 @item Henry Butowsky
-Min, max, and total operations
+Min, max, total, non-linear operations
 @item Bill Kocik
 Memory management
 @item Juliana Rew

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.64 2000-07-28 23:54:24 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.65 2000-07-31 00:29:18 zender Exp $ 
 
 *************
 NCO Wish list
@@ -15,7 +15,7 @@ NCO Wish list
 60. Make something that can mask a field without having to average over a dimension
 66. Make history attribute get appended, rather than overwritten, when in append mode
 69. ncks option for file/field summary: var name list,var min,max,avg,mss_val,# mss_val,
-70. ncxx with no options should do a usg_prn() without an error msg (like ncwa does)
+70. ncxx with no options should do usg_prn() without error msg (like ncwa does)
 75. Add warning to ncwa triggered by averaging over lat without weighting by gw with NCAR_CSM_FORMAT
 79. Allow ncrename .$var_nm syntax to work on all operators (so variables not present cause warning, not error)
 81. Convert long,short,byte,char data to double precision before arithmetic, then convert back after arithmetic. This is the only way to sensibly handle byte data, and #116 below
@@ -34,21 +34,19 @@ In general, adding large rank variable to small rank file does work, e.g.,
 ncks -C -O -v one_dmn_rec_var in.nc foo.nc
 ncks -C -A -v three_dmn_rec_var in.nc foo.nc
 ncdump foo.nc
-105. Add an easy-to-read tabular display option for file contents for ncks
+105. Add easy-to-read tabular display option for file contents for ncks
 106. Add switch to keep degenerate dimensions with ncwa
 107. Migrate to netCDF 3.x
 109. Change copyright printing so order is NCO vrs, netCDF vrs, URL, Copyright
 111. Investigate whether using ncwa to average files where variables of type 
 NC_CHAR have a record dimension causes core dumps or other problems.
 i.e., LSM variable timecom caused subtle ncra problems for a while.
-112. Use (int)strtol() instead of atoi()
 113. Rethink normalization switch options in ncwa
 114. Fix var_conform_dim() so that the returned weight always has the same size tally array as the template variable
-115. When the sum of the denominator in ncwa (i.e., the sum of the weight) is zero, SIGFPE will result. 
-This is not an NCO bug---user's should not be doing weighted averages
-when the denominator sums to zero. 
-The desired fix here is a graceful exit instead of a core dump.
-116. Weighting an integer by a float causes weight to be converted to integer first, so that weighting, e.g., nlons by gw, will cause zero in denominator since all gw's convert to integer value of 0. This causes core dumps with, e.g., 
+115. When sum of denominator in ncwa (i.e., sum of weight) is zero, SIGFPE results 
+Users should not be doing weighted averages if denominator sums to zero, but...
+Desired fix here is a graceful exit instead of a core dump
+116. Weighting integer by float causes weight to be converted to integer first, so that weighting, e.g., nlons by gw, will cause zero in denominator since all gw's convert to integer value of 0. This causes core dumps with, e.g., 
 ncwa -O -a lat -w gw foo.nc foo2.nc
 Thus the best fix for #116 is to implement #81 ASAP
 121. Problem reported when mss_val = 0.0 in averagers. C and Fortran 
@@ -93,7 +91,7 @@ Perhaps double quotes around former and single quotes around latter
 may be specified for "date" even though "time" is the coordinate. 
 Proxies must be one dimensional and monotonic, of course.
 147. Use builtin tempnam() or tmpnam() so file is built in fast
-directory rather than, say, an NFS-mounted directory like /fs/cgd
+directory rather than, say, NFS-mounted directory like /fs/cgd
 148. Put in more useful error diagnostics for Schweitzer's data holes
 These only appear in ncra/ncrcat because ncks treats same hyperslab as a wrap!
 Must define a consistent convention here
@@ -134,10 +132,11 @@ with nco_dst.pl
 170. rgn.sh appears to cause core dump over some ocean basins?
 171. Add DODS options to all NCAR architectures (buja?)
 172. Create NCO announce list
-173. Add switch to ncra which allows user to remove degenerate time
-dimension from result
+173. Add switch to ncra which allows user to remove degenerate time dimension from result
 174. Setup ncra,ncea,ncwa to do standard deviations sdn
-175. Change weights in ncwa to work correctly with all averages (avg,avgsqr,rms)
+175. Perform arithmetic before reduction, weighting, (perhaps masking) in ncwa.
+This will allow ncwa to work correctly with all averages (avg,avgsqr,rms)
+176. Replace Bison, Flex components of ncap with smaller C++ parser
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.48 2000-07-29 05:43:13 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.49 2000-07-31 00:29:18 zender Exp $
 
 Purpose: NCO homepage
 
@@ -12,227 +12,242 @@ scp -p ~/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml
 scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.shtml
 -->
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-   <TITLE>NCO Homepage</TITLE>
-   <META NAME="GENERATOR" CONTENT="Mozilla/3.04Gold (X11; I; Linux 2.0.0 i686) [Netscape]">
-   <META NAME="Author" CONTENT="Charles S. Zender">
-   <META NAME="Keywords" CONTENT="NCO Homepage, netCDF, netCDF
+<!doctype html public "-//W3C//DTD HTML 3.2//EN">
+<html>
+<head>
+   <title>NCO Homepage</title>
+   <meta name="GENERATOR" content="Mozilla/3.04Gold (X11; I; Linux 2.0.0 i686) [Netscape]">
+   <meta name="Author" content="Charles S. Zender">
+   <meta name="Keywords" content="NCO Homepage, netCDF, netCDF
    operator, GCM, HDF, scientific data">
-</HEAD>
-<BODY TEXT="#000000" BGCOLOR="#FFF8DC" LINK="#0000FF" VLINK="#008080" ALINK="#FF0000">
+</head>
+<body text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
-<TABLE WIDTH="100%" >
-<TR>
-<TD align="left" valign="top">/ <A HREF="http://www.ucar.edu/metapage.html">NCAR</A>
-/ <A HREF="http://www.cgd.ucar.edu/">CGD</A> / <A HREF="http://www.cgd.ucar.edu/cms">CMS</A>
-/ <A HREF="http://www.cgd.ucar.edu/cms/ccm3">CCM3</A> / </TD>
+<table width="100%" >
+<tr>
+<td align="left" valign="top">/ <a href="http://www.ucar.edu/metapage.html">NCAR</a>
+/ <a href="http://www.cgd.ucar.edu/">CGD</a> / <a href="http://www.cgd.ucar.edu/cms">CMS</a>
+/ <a href="http://www.cgd.ucar.edu/cms/ccm3">CCM3</a> / </td>
 
-<TD align="right" valign="top">[ <A HREF="http://www.cgd.ucar.edu/cms/ccm3">CCM3
-</A>] [ <A HREF="http://www.cgd.ucar.edu/cms/ccm3/processor.html">Processor
-</A>] [ <A HREF="http://www.cgd.ucar.edu/cms/ccm3/lsm">LSM
-</A>] [ <A HREF="http://www.cgd.ucar.edu/csm">CSM </A>] </TD>
-</TR>
-</TABLE>
+<td align="right" valign="top">[ <a href="http://www.cgd.ucar.edu/cms/ccm3">CCM3
+</a>] [ <a href="http://www.cgd.ucar.edu/cms/ccm3/processor.html">Processor
+</a>] [ <a href="http://www.cgd.ucar.edu/cms/ccm3/lsm">LSM
+</a>] [ <a href="http://www.cgd.ucar.edu/csm">CSM </a>] </td>
+</tr>
+</table>
 
-<P>
-<HR WIDTH="100%"></P>
+<p>
+<hr width="100%"></p>
 
-<H1 ALIGN=CENTER>Welcome to the NCO Homepage</H1>
+<h1 align=CENTER>Welcome to the NCO Homepage</h1>
 
-<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#Definition">What is NCO?</A> </DD>
-<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#News">NCO News</A> </DD>
-<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#Contribute">How to Contribute to NCO</A> </DD>
-<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#Download">Download NCO software</A> </DD>
-<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#RTFM">NCO User's Guide</A> </DD>
-<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#README">README</A> </DD>
-<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#ChangeLog">ChangeLog</A> </DD>
-<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#Version">Version Info</A> </DD>
-<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#NCAR">Using NCO at NCAR</A> </DD>
-<DD><IMG SRC="../bullets/redball.gif" HEIGHT=14 WIDTH=14> <A HREF="#Bugs">Known Problems</A> </DD>
+<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#Definition">What is NCO?</a> </dd>
+<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#News">NCO News</a> </dd>
+<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#Contribute">How to Contribute to NCO</a> </dd>
+<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#Download">Download NCO software</a> </dd>
+<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#RTFM">NCO User's Guide</a> </dd>
+<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#README">README</a> </dd>
+<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#ChangeLog">ChangeLog</a> </dd>
+<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#Version">Version Info</a> </dd>
+<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#NCAR">Using NCO at NCAR</a> </dd>
+<dd><img src="../bullets/redball.gif" height=14 width=14> <a href="#Bugs">Known Problems</a> </dd>
 
-<HR>
+<hr>
 
-<DT><A NAME="Definition"></A></DT>
-<H2>What is NCO?</H2>
+<dt><a name="Definition"></a></dt>
+<h2>What is NCO?</h2>
 
-<P>The <a
+<p>The <a
 href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>
 Operators, or NCO, are a suite of programs known as <B>operators</B>. 
 Each operator is a standalone, command line program which is executed at
 the UNIX (or NT) shell-level like, e.g., <TT>ls</TT> or <TT>mkdir</TT>.
 The operators take <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> 
-or <a href="http://hdf.ncsa.uiuc.edu">HDF</a> files as input, then
+or <a href="http://hdf.ncsa.uiuc.edu">HDF4</a> files as input, then
 perform an operation (e.g., averaging, hyperslabbing, or metadata
 manipulation) and produce a 
 <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> file
 as output. The operators are primarily designed to aid manipulation and analysis of
-gridded scientific data, and the <A HREF="./nco.html">NCO User's Guide</A> 
+gridded scientific data, and the <a href="./nco.html">NCO User's Guide</a> 
 illustrates their use with examples from the field of climate modeling
-and analysis.</P> 
+and analysis.</p> 
 
-<P>The operators are as general as <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> itself: there are no restrictions
+<p>The operators are as general as <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> itself: there are no restrictions
 on the contents of the <a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a> file(s) used as input.
 The internal routines of NCO are completely dynamic which means that
 NCO imposes no limit on the number of dimensions, sizes of variables,
 files etc. 
 NCO is designed to be used both interactively and with large batch jobs.
 There are plenty of command line (i.e., runtime) options, but the defaults
-settings are often sufficient for everyday needs.</P>
+settings are often sufficient for everyday needs.</p>
 
-<p>NCO also works on <a href="http://hdf.ncsa.uiuc.edu">HDF</a> files.
-See the <A HREF="./nco.html">NCO User's
-Guide</A> for details.</p> 
+<p>NCO also works on <a href="http://hdf.ncsa.uiuc.edu">HDF4</a> files.
+See the <a href="./nco.html">NCO User's
+Guide</a> for details.</p> 
 
-<P>NCO has probably already been built and tested on your operating system
-(AIX, IRIX, Linux, SunOS, Solaris, Tru64, UNICOS, and Windows NT).
+<p>NCO has probably already been built and tested on your operating system
+(AIX, IRIX, Linux, SunOS, Solaris, tru64, UNICOS, and Windows NT).
 The current set of operators is given below. For a thorough
 description of each operator, please read the 
-<A HREF="./nco.html">NCO User's Guide</A>. </P>
+<a href="./nco.html">NCO User's Guide</a>. </p>
 
-<TABLE BORDER=1 CELLSPACING=10 CELLPADDING=0 >
+<table BORDER=1 CELLSPACING=10 CELLPADDING=0 >
 <CAPTION></CAPTION>
 
-<TR>
-<TD><TT>ncatted</TT></TD>
+<tr>
+<td><tt>ncatted</tt></td>
 
-<TD>netCDF Attribute Editor</TD>
-</TR>
+<td>netCDF Attribute Editor</td>
+</tr>
 
-<TR>
-<TD><TT>ncdiff</TT></TD>
+<tr>
+<td><tt>ncdiff</tt></td>
 
-<TD VALIGN=BASELINE>netCDF Differencer</TD>
-</TR>
+<td valign=baseline>netCDF Differencer</td>
+</tr>
 
-<TR>
-<TD><TT>ncea</TT></TD>
+<tr>
+<td><tt>ncea</tt></td>
 
-<TD>netCDF Ensemble Averager</TD>
-</TR>
+<td>netCDF Ensemble Averager</td>
+</tr>
 
-<TR>
-<TD><TT>ncecat</TT></TD>
+<tr>
+<td><tt>ncecat</tt></td>
 
-<TD>netCDF Ensemble Concatenator</TD>
-</TR>
+<td>netCDF Ensemble Concatenator</td>
+</tr>
 
-<TR>
-<TD><TT>ncflint</TT></TD>
+<tr>
+<td><tt>ncflint</tt></td>
 
-<TD>netCDF File Interpolator</TD>
-</TR>
+<td>netCDF File Interpolator</td>
+</tr>
 
-<TR>
-<TD><TT>ncks</TT></TD>
+<tr>
+<td><tt>ncks</tt></td>
 
-<TD>netCDF Kitchen Sink</TD>
-</TR>
+<td>netCDF Kitchen Sink</td>
+</tr>
 
-<TR>
-<TD><TT>ncra</TT></TD>
+<tr>
+<td><tt>ncra</tt></td>
 
-<TD>netCDF Record Averager</TD>
-</TR>
+<td>netCDF Record Averager</td>
+</tr>
 
-<TR>
-<TD><TT>ncrcat</TT></TD>
+<tr>
+<td><tt>ncrcat</tt></td>
 
-<TD>netCDF Record Concatenator</TD>
-</TR>
+<td>netCDF Record Concatenator</td>
+</tr>
 
-<TR>
-<TD><TT>ncrename</TT></TD>
+<tr>
+<td><tt>ncrename</tt></td>
 
-<TD>netCDF Renamer</TD>
-</TR>
+<td>netCDF Renamer</td>
+</tr>
 
-<TR>
-<TD><TT>ncwa</TT></TD>
+<tr>
+<td><tt>ncwa</tt></td>
 
-<TD>netCDF Weighted Averager</TD>
-</TR>
-</TABLE>
+<td>netCDF Weighted Averager</td>
+</tr>
+</table>
 
-<P>
-<HR WIDTH="100%"></P>
+<p>
+<hr width="100%"></p>
 
-<DT><A NAME="News"></A></DT>
-<H2>NCO News</H2>
+<dt><a name="News"></a></dt>
+<h2>NCO News</h2>
 
-<P>2000/07/30: 
+<p>2000/07/30: 
 nco-1.2 is released. 
-This new release includes substantial improvements to the functionality
-of NCO as well as to the administration.
+This new release includes two new features and many administrative
+changes. First, the features.
 
-First, the names of three of the operators have been made obsolete
+The names of three of the operators have been made somewhat obsolete
 because they are no longer just arithmetic averagers.
-<TT>ncra</TT>, <TT>ncea</TT>, and <TT>ncwa</TT> have all been given
+<tt>ncra</tt>, <tt>ncea</tt>, and <tt>ncwa</tt> have all been given
 brain transplants so that the type of operation they perform may be
 specified on the command line. 
 The following operations are now supported by the new 
-<TT>-y</TT> switch: average (default), total, minimum, maximum,
+<tt>-y</tt> switch: average (default), total, minimum, maximum,
 root-mean-square, square of the mean, mean of the squares, square
 root.
+<p><tt>ncra -O -y rms -n 12,4,1 h0001.nc 2000_rms.nc</tt></p>
+<p><tt>ncea -O -y min -n 12,4,1 h0001.nc 2000_min.nc</tt></p>
+<p><tt>ncwa -O -y max -a lon,lat h0001.nc 200001_max_x.nc</tt></p>
 Averaging is still the default so no existing usage needs to be modified.
 It is also possible to compute spatial and temporal standard
 deviations using combinations of three or four NCO commands.
 
-Second, all operators may be built to be 
-<a HREF="http://www.unidata.ucar.edu/packages/dods">DODS</a></dd> compliant.
-DODS enables network transparent data access for NCO.
-This means that you can operate on remote files accessible through any
+<p>
+All operators may now be 
+<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a></dd> clients.
+DODS enables network transparent data access to any DODS server.
+This means NCO that you can operate on remote files accessible through any
 DODS server without transferring the files.
 Only the required data (e.g., the variable or hyperslab specified) are
 transferred.
-See the <A HREF="./nco.html">User's Guide</A> for complete details.
+See the <a href="./nco.html">User's Guide</a> for complete details.
 
-Third, Fortran compatibility has been dropped.
+<p>
+Fortran compatibility has been dropped.
 If a volunteer wants to continue to maintain the option to perform
 arithmetic in Fortran for reasons of speed, contact me.
 
-Fourth, NCO is now an Open Source project licensed under the GPL
+<p>
+NCO is now an Open Source project licensed under the GPL.
 These new capabilities are the result of contributions from Henry
-Butowki, Bill Kocik, and Roland Schweitzer.
+Butowski, Bill Kocik, and Roland Schweitzer.
 For more information on how to contribute to NCO,
 visit the <a href="http://sourceforge.net/projects/nco">NCO
 administration homepage</a>.
 
-Fifth, There will be no more announcements on the CCM mailing list
-NCO releases will be announced on the netCDF list and on the new
-NCO mailing list. To join this list send a message with "help" in it to 
-nco-announce-request@lists.sourceforge.net
+<p>
+New NCO releases and important announcements will be made on the
+netCDF list and on the new <tt>nco-announce</tt> mailing list. 
+To join this list send a message with "help" anywhere in it to
+<aDDRESS>
+<a href="mailto:nco-announce-request@lists.sourceforge.net">nco-announce-request@lists.sourceforge.net</a> 
+</ADDRESS>
 The archive of this list is viewable at
-http://lists.sourceforge.net/mailman/listinfo/nco-announce
+<a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce">
+http://lists.sourceforge.net/mailman/listinfo/nco-announce</a>
 
-Sixth, questions, suggestions, and requests for help should be posted to 
-the appropriate discussion forum on SourceForge instead of directly to me. 
-Open Discussion: 
-http://sourceforge.net/forum/forum.php?forum_id=9829 
-General discussion, inevitably some overlap with Developer's forum 
-Discussion of ambitious plans, future directions 
-Help: 
-http://sourceforge.net/forum/forum.php?forum_id=9830 
-Installation problems, user's questions (e.g., how do I average x and y....?) 
-Developers: 
-http://sourceforge.net/forum/forum.php?forum_id=9831 
-Patches, technical questions related to modifying NCO, 
-discussion of specific items on TODO list and how best
-to address them 
+<p>
+Questions, suggestions, ideas, and pleas for help should be posted to 
+the appropriate discussion forum at the NCO administration site.
+NCO developers monitor these open forums, and your message will get a
+quicker response if it is posted for all to see.
 
-<P>2000/05/15: 
+<p>
+<a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Open
+Discussion Forum</a>: General discussion, discussion of tips, tricks,
+future directions for NCO.
+
+<a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help
+Forum</a>: Installation problems, user's questions (e.g., "How do I
+average x and y...?")
+
+<a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developers
+forum</a>: Discussion of patches, technical questions related to
+modifying NCO, and discussion of specific items on the 
+<a href="">TODO list</a> and how best to address them   
+
+<p>2000/05/15: 
 nco-1.1.48 fixes a bug introduced in nco-1.1.15 (November 1998) with
-<TT>ncdiff</TT> version 1.5.
+<tt>ncdiff</tt> version 1.5.
 That bug could cause incorrect answers when the broadcast feature was
 used and dimensions were defined in a certain order (that appears to
 be favored by oceanographers).
 All NCO users are urged to upgrade NCO in order to avoid the potential 
-<TT>ncdiff</TT> bug as well as to take advantage of the new features
-in <TT>ncra</TT> and <TT>ncrcat</TT>. 
+<tt>ncdiff</tt> bug as well as to take advantage of the new features
+in <tt>ncra</tt> and <tt>ncrcat</tt>. 
 
-<P>2000/05/10: 
-nco-1.1.47 adds capability of <TT>ncra</TT>, and <TT>ncrcat</TT> to handle
+<p>2000/05/10: 
+nco-1.1.47 adds capability of <tt>ncra</tt>, and <tt>ncrcat</tt> to handle
 superfluous initial files. These multifile operators used to require
 that hyperslabs along the record dimension contain valid points in the
 first input file, although superfluous trailing files were allowed.
@@ -262,12 +277,12 @@ and
 <a href="http://www.cgd.ucar.edu/csm/cmps/Workshop/nco">slide presentation</a> 
 she developed to introduce and to summarize the NCO operators. 
 The pamphlet is an excellent primer on NCO's capabilities, though not
-as definitive as the <A HREF="./nco.html">User's Guide</A>.
+as definitive as the <a href="./nco.html">User's Guide</a>.
 
-<P>2000/03/05: 
-Source and prebuilt binary executable <a href="http://www.rpm.org">RPM</a>s for NCO are now available for  <A HREF="#Download">download</A>. 
+<p>2000/03/05: 
+Source and prebuilt binary executable <a href="http://www.rpm.org">RPM</a>s for NCO are now available for  <a href="#Download">download</a>. 
 
-<P>2000/01/26: 
+<p>2000/01/26: 
 Fixed longstanding NCO bug which caused infrequent but unpredictable
 core dumps on machines with PIDs longer than 6 digits, e.g., all
 recent SGI machines.
@@ -279,61 +294,61 @@ It is recommended that all users upgrade to the the new version.
 NCO is now distributed under the terms of the GNU General Public
 License (GPL).
 
-<P>1999/12/26: 
-Added support for printing character arrays as strings in <TT>ncks</TT>.
-Added documentation and examples of stride capability to <TT>ncks</TT>,
-<TT>ncra</TT>, and <TT>ncrcat</TT> portions of User's Guide.
+<p>1999/12/26: 
+Added support for printing character arrays as strings in <tt>ncks</tt>.
+Added documentation and examples of stride capability to <tt>ncks</tt>,
+<tt>ncra</tt>, and <tt>ncrcat</tt> portions of User's Guide.
 
-<P>1999/12/14: 
-Added feature to <TT>ncatted</TT> so that C-language escape sequences
+<p>1999/12/14: 
+Added feature to <tt>ncatted</tt> so that C-language escape sequences
 may be used in editing character attributes. 
-Text formatting of attributes now supports <TT>\n</TT>, <TT>\t</TT>,
-and most other <TT>printf</TT>-style sequences.
-See the <A HREF="./nco.html">User's Guide</A> for details. 
+Text formatting of attributes now supports <tt>\n</tt>, <tt>\t</tt>,
+and most other <tt>printf</tt>-style sequences.
+See the <a href="./nco.html">User's Guide</a> for details. 
 
-<P>1999/12/06: 
-Fixed bug in <TT>ncatted</TT> so that character-valued attributes
+<p>1999/12/06: 
+Fixed bug in <tt>ncatted</tt> so that character-valued attributes
 (strings) may contain commas, and be of zero length.
-Formerly <TT>ncatted</TT> would drop all text after the first comma.
+Formerly <tt>ncatted</tt> would drop all text after the first comma.
 
-<P>1999/10/04: 
+<p>1999/10/04: 
 The build configuration has been simplified and made more robust.
-Now typing <TT>make test</TT> will invoke a self-test where NCO
+Now typing <tt>make test</tt> will invoke a self-test where NCO
 attempts to download a small (~65 kb) file on which to perform a
 battery of NCO tests. 
-If the equations output by the <TT>make test</TT> command are
+If the equations output by the <tt>make test</tt> command are
 numerically accurate, then you can have high confidence that NCO is
 installed and working correctly. 
 
-<P>1999/08/31: 
-A bug involving <TT>ncwa</TT>, weights, and missing values has been
+<p>1999/08/31: 
+A bug involving <tt>ncwa</tt>, weights, and missing values has been
 identified and fixed.
-When <TT>ncwa</TT> was used to average variables with user-specified
+When <tt>ncwa</tt> was used to average variables with user-specified
 weights (i.e., <IT>-w wgt</IT> was used) and <IT>every</IT> value in a
 target hyperslab was the missing value (i.e., <IT>missing_value</IT>),
-then <TT>ncwa</TT> would erroneously set the average value of the
+then <tt>ncwa</tt> would erroneously set the average value of the
 target hyperslab to 0.0 rather than to <IT>missing_value</IT>. 
 Thus some values which should have been <IT>missing_value</IT> in the
 output file were, instead, set to 0.0. 
-No operators besides <TT>ncwa</TT> were affected by this bug.
+No operators besides <tt>ncwa</tt> were affected by this bug.
 This bug is fixed in nco-1.1.38.
 
-A new feature has been implemented in <TT>ncwa</TT>.
-<TT>ncwa</TT> used to exit with an error whenever it was called
+A new feature has been implemented in <tt>ncwa</tt>.
+<tt>ncwa</tt> used to exit with an error whenever it was called
 without any user-specified dimensions to average, i.e., when the
-<TT>-a</TT> was not invoked. 
-Now when <TT>ncwa</TT> is invoked without any user-specified
+<tt>-a</tt> was not invoked. 
+Now when <tt>ncwa</tt> is invoked without any user-specified
 dimensions, it averages over all dimensions.
-Thus the behavior of <TT>-a</TT> is now analogous to that of
-<TT>-d</TT> and of <TT>-v</TT>.
-See the <A HREF="./nco.html">User's Guide</A> for details.
+Thus the behavior of <tt>-a</tt> is now analogous to that of
+<tt>-d</tt> and of <tt>-v</tt>.
+See the <a href="./nco.html">User's Guide</a> for details.
 
-<P>
-<A HREF="./nco_news.shtml"> Older NCO news</A>  
-<HR></P>
+<p>
+<a href="./nco_news.shtml"> Older NCO news</a>  
+<hr></p>
 
-<DT><A NAME="Contribute"></A></DT>
-<H2>How to Contribute to NCO</H2>
+<dt><a name="Contribute"></a></dt>
+<h2>How to Contribute to NCO</h2>
 
 In March, 2000 NCO became an Open Source project hosted by
 SourceForge.net in order to facilitate collaboration and code
@@ -348,10 +363,10 @@ The <a href="http://sourceforge.net/projects/nco">NCO project
 homepage</a> contains mailing lists, discussion forums, and
 instructions for helping the NCO project.
 
-<HR></P>
+<hr></p>
 
-<DT><A NAME="Download"></A></DT>
-<H2>Download NCO distributions</H2>
+<dt><a name="Download"></a></dt>
+<h2>Download NCO distributions</h2>
 
 <p>Complete source and documentation in tarball format: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco.tar.gz">nco.tar.gz</a> (430 Kb compressed tar-file)
 <p>Complete source and documentation in <a href="http://www.rpm.org">RPM</a> format: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco-1.1.46-1.src.rpm">nco-1.1.46-1.src.rpm</a> (492 Kb SRPM)
@@ -361,120 +376,121 @@ tarball by a few months:
 
 <p>Those running GNU/Linux on Redhat 6.1-compatible Intel systems, should try the prebuilt binary executable <a href="http://www.rpm.org">RPM</a>: <a href="ftp://ftp.cgd.ucar.edu/pub/zender/nco/nco-1.1.46-1.i386.rpm">nco-1.1.46-1.i386.rpm</a> (526 Kb RPM)
 
-<p>Those running GNU/Linux on Debian compatible Intel systems, should try the prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://www.debian.org/Packages/unstable/math/nco.html">nco-1.1.48-1</a>
+<p>Those running GNU/Linux on Debian compatible Intel systems, should try the prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://www.debian.org/packages/unstable/math/nco.html">nco-1.1.48-1</a>
 
-<P>Source distributions include complete NCO documentation (<I>User's
+<p>Source distributions include complete NCO documentation (<I>User's
 Guide</I>) in Postscript, HTML, DVI, TeXinfo, and Info formats. These formats
-are included in the source distribution in the files <TT>`nco.ps'</TT>,
-<TT>`nco.html'</TT>, <TT>`nco.dvi'</TT>, <TT>`nco.texi'</TT>, and <TT>`nco.info*'</TT>,
+are included in the source distribution in the files <tt>`nco.ps'</tt>,
+<tt>`nco.html'</tt>, <tt>`nco.dvi'</tt>, <tt>`nco.texi'</tt>, and <tt>`nco.info*'</tt>,
 respectively. 
-<HR></P>
+<hr></p>
 
-<DT><A NAME="RTFM"></A></DT>
-<H2>Browse the online <A HREF="./nco.html">NCO
-User's Guide</A></H2>
+<dt><a name="RTFM"></a></dt>
+<h2>Browse the online <a href="./nco.html">NCO
+User's Guide</a></h2>
 
-<H2>Download the <A
-HREF="http://www.cgd.ucar.edu/cms/zender/ps.gz.html">
-gzipped Postscript</A>  
-<A HREF="./nco.ps.gz">
-NCO User's Guide</A></H2> 
+<h2>Download the <a
+href="http://www.cgd.ucar.edu/cms/zender/ps.gz.html">
+gzipped Postscript</a>  
+<a href="./nco.ps.gz">
+NCO User's Guide</a></h2> 
 
-<P>The <I>User's Guide</I> contains all the documentation for NCO. It explains
+<p>The <I>User's Guide</I> contains all the documentation for NCO. It explains
 the most efficient strategies for using the operators and includes numerous
 specific examples. The online and Postscript versions of the <I>User's
 Guide</I> are in the source distribution in the files
-<TT>`doc/nco.html'</TT> and <TT>`doc/nco.ps'</TT>, respectively.
-<HR></P>
+<tt>`doc/nco.html'</tt> and <tt>`doc/nco.ps'</tt>, respectively.
+<hr></p>
 
-<DT><A NAME="README"></A></DT>
-<H2>See the <TT><FONT SIZE=+4><A HREF="./README">README</A></FONT></TT>
-file.</H2>
+<dt><a name="README"></a></dt>
+<h2>See the <tt><FONT SIZE=+4><a href="./README">README</a></FONT></tt>
+file.</h2>
 
-<P><TT>`README'</TT> describes the platforms and software requirements
+<p><tt>`README'</tt> describes the platforms and software requirements
 for a successful NCO installation. More information on installation is
-contained in the online <A HREF="./nco.html">NCO
-User's Guide</A>. 
-<HR></P>
+contained in the online <a href="./nco.html">NCO
+User's Guide</a>. 
+<hr></p>
 
-<DT><A NAME="ChangeLog"></A></DT>
-<H2>See the <FONT SIZE=+4><TT><A HREF="./ChangeLog">ChangeLog</A></TT>
-</FONT>file.</H2>
+<dt><a name="ChangeLog"></a></dt>
+<h2>See the <FONT SIZE=+4><tt><a href="./ChangeLog">ChangeLog</a></tt>
+</FONT>file.</h2>
 
-<P><TT>`ChangeLog'</TT> contains the most up-to-date information on the
+<p><tt>`ChangeLog'</tt> contains the most up-to-date information on the
 latest NCO improvements. There is no need to install minor, unannounced
-upgrades to NCO unless a problem you are having with NCO is listed in <TT>`ChangeLog'</TT>
+upgrades to NCO unless a problem you are having with NCO is listed in <tt>`ChangeLog'</tt>
 as having been fixed in the latest revision. 
-<HR></P>
+<hr></p>
 
-<DT><A NAME="Version"></A></DT>
-<H2>Current release of NCO is <!--#include virtual="VERSION"--> </H2>
+<dt><a name="Version"></a></dt>
+<h2>Current release of NCO is <!--#include virtual="VERSION"--> </h2>
 
-<P>You easily can tell whether you have the most recent version by
-typing <TT>ncks -r</TT>. 
-Decide whether to upgrade by reading the most recent <TT><A HREF="./ChangeLog">ChangeLog</A></TT>.
+<p>You easily can tell whether you have the most recent version by
+typing <tt>ncks -r</tt>. 
+Decide whether to upgrade by reading the most recent <tt><a href="./ChangeLog">ChangeLog</a></tt>.
 
-<HR></P>
+<hr></p>
 
-<DT><A NAME="NCAR"></A></DT>
-<H2>Using NCO at NCAR</H2>
-<P>NCO is built at UC Irvine and distributed from NCAR.
+<dt><a name="NCAR"></a></dt>
+<h2>Using NCO at NCAR</h2>
+<p>NCO is built at UC Irvine and distributed from NCAR.
 User's of UCI and NCAR machines should take advantage of pre-built,
 up-to-date NCO executables. 
 The NCO executables are maintained in many different locations at NCAR:
-<DD>ACD dust.acd.ucar.edu (Linux 2.2.5): /gs/zender/bin/LINUX</DD>
-<DD>ACD garcia.acd.ucar.edu (Compaq Tru64): /usr/local/bin</DD>
-<DD>CGD network (Solaris 2.6): /contrib/bin</DD>
-<DD>CGD/SCD Dataproc (IRIX 6.5): /contrib/bin</DD>
-<DD>SCD Blackforest (AIX 4.0): /home/blackforest/zender/bin/AIX</DD>
-<DD>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</DD>
-<DD>SCD Ute and Utefe (IRIX 6.5): /home/ute/zender/bin/SGIMP64</DD>
+<dd>ACD dust.acd.ucar.edu (Linux 2.2.5): /gs/zender/bin/LINUX</dd>
+<dd>ACD garcia.acd.ucar.edu (Compaq tru64): /usr/local/bin</dd>
+<dd>CGD network (Solaris 2.6): /contrib/bin</dd>
+<dd>CGD/SCD Dataproc (IRIX 6.5): /contrib/bin</dd>
+<dd>SCD Blackforest (AIX 4.0): /home/blackforest/zender/bin/AIX</dd>
+<dd>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</dd>
+<dd>SCD Ute and Utefe (IRIX 6.5): /home/ute/zender/bin/SGIMP64</dd>
 <br>and at two locations at UCI:
-<DD>ESS dust.ps.uci.edu (Linux 2.2.5): /home/zender/bin/LINUX</DD>
-<DD>ESS krein.math.uci.edu (IRIX 6.5): /home/zender/zender/bin/SGIMP64</DD>
+<dd>ESS dust.ps.uci.edu (Linux 2.2.5): /home/zender/bin/LINUX</dd>
+<dd>ESS krein.math.uci.edu (IRIX 6.5):
+/home/zender/zender/bin/SGIMP64</dd>
 
-<HR></P>
+<hr></p>
 
-<DT><A NAME="Bugs"></A></DT>
-<H2>Known Problems with NCO and/or netCDF:</H2>
+<dt><a name="Bugs"></a></dt>
+<h2>Known Problems with NCO and/or netCDF:</h2>
 
-<H1>NCO problems on SGI machines?</H1>
-<P>The netCDF 3.3.x distribution suffers from unpredictable behavior on SGI machines (possibly related to NFS-mounted partitions).
-As a result, NCO operators, especially <TT>ncwa</TT>, may core dump unless you upgrade to the new netCDF3.4.x distribution.
+<h1>NCO problems on SGI machines?</h1>
+<p>The netCDF 3.3.x distribution suffers from unpredictable behavior on SGI machines (possibly related to NFS-mounted partitions).
+As a result, NCO operators, especially <tt>ncwa</tt>, may core dump unless you upgrade to the new netCDF3.4.x distribution.
 NCAR machines have all been upgraded to netCDF3.4+.
-All users of NCO on SGI64 machines at other institutions are urged to upgrade to netCDF3.4.x which is available from URL <A HREF="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z</A>.</P>
+All users of NCO on SGI64 machines at other institutions are urged to upgrade to netCDF3.4.x which is available from URL <a href="ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z">ftp://ftp.unidata.ucar.edu/pub/netcdf/netcdf.tar.Z</a>.</p>
 
-<P>NCO may not build correctly on SGI machines unless the latest
-version of GNU make (version 3.78.1) is installed.</P>
+<p>NCO may not build correctly on SGI machines unless the latest
+version of GNU make (version 3.78.1) is installed.</p>
 
-<H1>NCO on the Cray T90</H1>
-<P>NCO should be compiled with the <TT>-DC_ONLY</TT> flag on the Cray
+<h1>NCO on the Cray T90</h1>
+<p>NCO should be compiled with the <tt>-DC_ONLY</tt> flag on the Cray
 T90 to avoid C-Fortran interface problems; otherwise incorrect answers
 may result. 
 As of NCO 1.1.38, this is the default.
-</P>
+</p>
 
-<HR></P>
+<hr></p>
 
-<TABLE WIDTH="100%" >
-<TR>
-<TD align="left" valign="bottom">/ <A HREF="http://www.ucar.edu/metapage.html">NCAR</A>
-/ <A HREF="http://www.cgd.ucar.edu/">CGD</A> / <A HREF="http://www.cgd.ucar.edu/cms">CMS</A>
-/ <A HREF="http://www.cgd.ucar.edu/cms/ccm3">CCM3</A> / </TD>
+<table width="100%" >
+<tr>
+<td align="left" valign="bottom">/ <a href="http://www.ucar.edu/metapage.html">NCAR</a>
+/ <a href="http://www.cgd.ucar.edu/">CGD</a> / <a href="http://www.cgd.ucar.edu/cms">CMS</a>
+/ <a href="http://www.cgd.ucar.edu/cms/ccm3">CCM3</a> / </td>
 
-<TD align="right" valign="top">[ <A HREF="http://www.cgd.ucar.edu/cms/ccm3">CCM3
-</A>] [ <A HREF="http://www.cgd.ucar.edu/cms/ccm3/processor.html">Processor
-</A>] [ <A HREF="http://www.cgd.ucar.edu/cms/ccm3/lsm">LSM
-</A>] [ <A HREF="http://www.cgd.ucar.edu/csm">CSM </A>] </TD>
-</TR>
-</TABLE>
+<td align="right" valign="top">[ <a href="http://www.cgd.ucar.edu/cms/ccm3">CCM3
+</a>] [ <a href="http://www.cgd.ucar.edu/cms/ccm3/processor.html">Processor
+</a>] [ <a href="http://www.cgd.ucar.edu/cms/ccm3/lsm">LSM
+</a>] [ <a href="http://www.cgd.ucar.edu/csm">CSM </a>] </td>
+</tr>
+</table>
 
-<P>
-<HR></P>
+<p>
+<hr></p>
 Address questions and comments about NCO to Charlie Zender, 
-<ADDRESS>
-<A HREF="mailto:zender@uci.edu">zender@uci.edu</A>
-</ADDRESS>
+<address>
+<a href="mailto:zender@uci.edu">zender@uci.edu</a>
+</address>
 
-</BODY>
-</HTML>
+</body>
+</html>

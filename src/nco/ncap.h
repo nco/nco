@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.4 2000-01-17 01:53:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.5 2000-07-31 00:29:18 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */ 
 
@@ -31,14 +31,14 @@
    Irvine, CA 92697-3100
  */
 
-#ifndef NCAP_H /* This include file has not yet been defined in the current source file */ 
+#ifndef NCAP_H /* Header file has not yet been defined in current source file */
 
 #define SYM_NBR_MAX 20 /* maximum number of symbols (should make table a linked list) */ 
 
-/* Define a symbol table */ 
-/* NB: YACC seems to initialize all user-defined pointers (like those in the symbol table) to NULL. 
-   A symbol's type may, therefore, safely be determined by testing for non-NULL members.
-   This technique is frequently used in the pigeon book. */
+/* Define symbol table */ 
+/* YACC seems to initialize all user-defined pointers (like those in symbol table) to NULL
+   Symbol type may, therefore, safely be determined by testing for non-NULL members
+   This technique is frequently used in Pigeon book */
 typedef struct {
   char *nm;
   var_sct *var;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.21 2000-06-30 22:22:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.22 2000-07-31 00:29:18 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -96,20 +96,20 @@
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
-#include <netcdf.h>             /* netCDF def'ns */
+#include <netcdf.h>             /* netCDF definitions */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
 #include <stdlib.h>             /* atof, atoi, malloc, getopt */ 
 #include <string.h>             /* strcmp. . . */
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
-#include <unistd.h>             /* all sorts of POSIX stuff */ 
+#include <unistd.h>             /* POSIX stuff */ 
 /* #include <assert.h> */            /* assert() debugging macro */ 
 /* #include <errno.h> */             /* errno */
 /* #include <malloc.h>    */         /* malloc() stuff */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
-#include "nc.h"                 /* global definitions */
+#include "nc.h"                 /* NCO definitions */
 
 int 
 main(int argc,char **argv)
@@ -134,8 +134,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.21 2000-06-30 22:22:23 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.21 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.22 2000-07-31 00:29:18 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.22 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -174,7 +174,7 @@ main(int argc,char **argv)
       nbr_aed++;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=atoi(optarg);
+      dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
     case 'h': /* Toggle appending to history global attribute */
       HISTORY_APPEND=!HISTORY_APPEND;

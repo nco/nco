@@ -1,7 +1,7 @@
 %{
 /* Begin C declarations section */ 
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.6 2000-04-06 00:52:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.7 2000-07-31 00:29:18 zender Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */ 
 
@@ -48,8 +48,8 @@
 #include <string.h>             /* strcmp. . . */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
 
-#include <netcdf.h>             /* netCDF def'ns */
-#include "nc.h"                 /* global definitions */
+#include <netcdf.h>             /* netCDF definitions */
+#include "nc.h"                 /* NCO definitions */
 #include "ncap.h"               /* symbol table definition */ 
 
 /* Turn on parser debugging option (bison man p. 85) */ 
@@ -64,7 +64,7 @@ int yydebug=0;
 
 /* Bison manual p. 60 describes how to call yyparse() with arguments */ 
 /* prs_sct must be consistent between ncap.y and ncap.c 
-   DBG XXX: Is there a way to define prs_sct in only one place? */ 
+   fxm: Is there a way to define prs_sct in only one place? */ 
 typedef struct{
     char *fl_in;
     int in_id;  
@@ -76,16 +76,16 @@ typedef struct{
 } prs_sct;
 #define YYPARSE_PARAM prs_arg
 
- int rcd; /* return value for function calls */ 
+ int rcd; /* [enm] Return value for function calls */ 
 
 /* End C declarations section */ 
 %}
 /* Begin parser declaration section */ 
 
-/* Request a pure, reentrant parser, so we can pass the parser a structure */ 
+/* Request pure, reentrant parser, so we can pass a structure to parser */ 
 %pure_parser
 
-/* NB: A "terminal symbol" is just a fancy name for a token produced by lexer 
+/* NB: "terminal symbol" is just a fancy name for token produced by lexer 
    Symbols defined on LHS of rules are called "non-terminal symbols" or "non-terminals" 
    Examples of non-terminals are xpr, stt, stt_lst
    Examples of terminal symbols, or tokens, are NAME, NUMBER
@@ -93,8 +93,8 @@ typedef struct{
 
 /* Define YYSTYPE union (type of lex variable yylval) */
 %union{
-  double val_double; /* store input in double precision */ 
-  sym_sct *sym; /* pointer to entry in symbol table */ 
+  double val_double; /* Store input in double precision */ 
+  sym_sct *sym; /* Pointer to entry in symbol table */ 
   var_sct var;
 }
 
@@ -102,14 +102,14 @@ typedef struct{
 %token <val_double> NUMBER
 %token <sym> NAME
 
-/* Set the precedence and associativity of the arithmetic expressions, the "literal tokens".
+/* Set precedence and associativity of arithmetic expressions, "literal tokens".
    Precedence levels are declared lowest to highest. */
 %left '-' '+'
 %left '*' '/'
 %left '^'
 %nonassoc UMINUS
 
-/* The type declaration sets the type for non-terminal symbols which otherwise need no declaration */ 
+/* "type" declaration sets type for non-terminal symbols which otherwise need no declaration */
 /*%type <val_double> xpr*/
 %type <sym> xpr
 /*%type <var> xpr*/
@@ -119,12 +119,12 @@ typedef struct{
 /* Begin Rules section */
 /* Format is rule: action */ 
 
-/* NB: yacc automatically dereferences correct member of each token's structure
+/* yacc automatically dereferences correct member of each token's structure
    Thus, if third symbol is a NUMBER, a reference to $3 acts like $3.val_double */
 
-/* NB: $$ symbol refers to value for symbol to left of colon */
+/* $$ symbol refers to value for symbol to left of colon */
 
-/* A statement list can be a single line or a collection of statements separated by newlines */
+/* Statement list can be single line or collection of statements separated by newlines */
  stt_lst: stt '\n'
 | stt_lst stt '\n'
 ;
@@ -183,7 +183,7 @@ typedef struct{
   } /* endif */ 
 } 
 /*| NAME '(' xpr ')' {*/
-  /* Assume a name followed by a parenthesized expression is a function */ 
+  /* Assume name followed by parenthesized expression is function */ 
 /*  if($1->fnc){*/
 /*    $$=($1->fnc)($3); */
 /*  }else{*/
@@ -200,7 +200,7 @@ typedef struct{
 sym_sct *
 scalar_mk_sym(double val)
 {
-  /* Routine to turn a scalar into a netCDF variable */ 
+  /* Purpose: Turn scalar into netCDF variable */ 
   sym_sct *sym;
 
   sym=(sym_sct *)malloc(sizeof(sym_sct));
@@ -211,12 +211,13 @@ scalar_mk_sym(double val)
 int 
 yyprint(FILE *file,int type,YYSTYPE value)
 {
-  /* Add descriptive info to parser debugging output (bison man p. 86) */ 
+  /* Purpose: Add descriptive info to parser debugging output (bison man p. 86) */ 
   if(type == NAME){
     fprintf(file," %s",value.sym->nm);
   }else if(type == NUMBER){
-    fprintf(file," %d",value.val_double);
+    fprintf(file," %f",value.val_double);
   } /* end else */ 
+  return 1; /* Return an int or compiler will complain */
 } /* end yyprint() */ 
 
 sym_sct *
@@ -226,10 +227,9 @@ sym_look(char *sym_nm)
    sym_sct *sym_look(): output pointer to symbol
  */ 
 {
-  /* Routine to look up a symbol table entry. 
-     If the symbol is present, the routine returns a pointer to the entry. 
-     If the symbol is not present then it is added to the end of the symbol table. 
-  */
+  /* Purpose: Look up symbol table entry 
+     If symbol is present, routine returns pointer to entry 
+     If symbol is not present then add it to end of symbol table */
 
   sym_sct *sym;
   
@@ -237,8 +237,8 @@ sym_look(char *sym_nm)
     /* Is the requested symbol already in the symbol table? */
     if(sym->nm && !strcmp(sym->nm,sym_nm)) return sym;
     
-    /* Is the current entry in the symbol table empty? i.e., Are we at the end of the valid entries?
-       If so, enter the new symbol in the current slot. */
+    /* Is current entry in symbol table empty? i.e., are we at end of valid entries?
+       If so, enter new symbol in current slot */
     if(!sym->nm){
       sym->nm=(char *)strdup(sym_nm);
       return sym;
@@ -249,13 +249,11 @@ sym_look(char *sym_nm)
 } /* end sym_look() */
 
 void
-fnc_add(char *nm, double (*fnc)())
-/* 
-   char *nm: input name of function to add to symbol table
-   double (*fnc)(): entry point of function
- */ 
+fnc_add  /* [fnd] Add function to symbol table */
+(char *nm, /* I [sng] Name of function to add to symbol table */
+ double (*fnc)()) /* I [fnc] Entry point of function */ 
 {
-  /* Routine to add a function to the symbol table */ 
+  /* Purpose: Add function to symbol table */
 
   sym_sct *sym;
 
@@ -264,7 +262,3 @@ fnc_add(char *nm, double (*fnc)())
 } /* end fnc_add() */ 
 
 /* End User Subroutines section */
-
-
-
-

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.19 2000-06-25 19:31:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.20 2000-07-31 00:29:18 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -36,9 +36,19 @@
 /* Usage:
    ncap -O -D 1 -S ncap.in in.nc foo.nc
    ncap -O -D 1 -s a=b+c -s "b=c-d/2." -S ncap.in in.nc foo.nc
-   ncap -O -D 1 -S ncap.in in.nc foo.nc
    ncap -O -D 1 -s two=one+two in.nc foo.nc
    */
+
+/* fxm 20000730:
+   I currently get four compiler warnings I do not understand on Linux
+   Two are in bison.simple and occur when compiling ../src/nco/ncap.tab.c:
+/usr/lib/bison.simple:432: warning: implicit declaration of function `yylex'
+/usr/lib/bison.simple:458: warning: implicit declaration of function `yyprint'
+   One occurs when compiling the lexer lex.yy.c = ncap_lex.c:
+lex.yy.c:1060: warning: `yyunput' defined but not used
+   Once occurs when compiling ncap.c which calls the parser:
+../src/nco/ncap.c:423: warning: implicit declaration of function `yyparse'
+ */
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
@@ -47,12 +57,13 @@
 #include <string.h>             /* strcmp. . . */
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
-#include <unistd.h>             /* all sorts of POSIX stuff */ 
+#include <unistd.h>             /* POSIX stuff */ 
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
-#include <netcdf.h>             /* netCDF def'ns */
-#include "nc.h"                 /* global definitions */
+#include <netcdf.h>             /* netCDF definitions */
+#include "nc.h"                 /* NCO definitions */
+#include "ncap.h"               /* ncap-specific definitions */
 
 #ifdef LINUX
 #include <getopt.h> /* GNU getopt() is standard on Linux */
@@ -65,13 +76,15 @@
 int 
 main(int argc,char **argv)
 {
-  /* rank reducers: min max stddev */ 
+  extern int yyparse (void *); /* Prototype here as in bison.simple to avoid compiler warning */
+
+  /* rank reducers: min max sdn */ 
   /* binary math functions: pow atan2 mod */
   /* relational operators: > >= < <= == != */ 
-  /* don't return floats: abs */ 
-  /* can't find on cray: expm1,lgamma,log1p */ 
+  /* do not return floats: abs */ 
+  /* can not find on cray: expm1,lgamma,log1p */ 
 
-  /* Place function names and entry points in the symbol table before processing input tokens */
+  /* Place function names and entry points in symbol table before processing input tokens */
   extern double acos();
   extern double asin();
   extern double atan();
@@ -111,8 +124,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.19 2000-06-25 19:31:47 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.19 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.20 2000-07-31 00:29:18 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.20 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -153,7 +166,7 @@ main(int argc,char **argv)
   var_sct **var_prc_out;
   
   /* prs_sct must be consistent between ncap.y and ncap.c
-   DBG XXX: Is there a way to define prs_sct in only one place? */ 
+     fxm: Is there a way to define prs_sct in only one place? */ 
   typedef struct{
     char *fl_in;
     int in_id;  
@@ -208,7 +221,7 @@ main(int argc,char **argv)
       (void)fprintf(stderr,"\n");
 
       if(!strcmp(opt_long[opt_idx].name,"debug")){
-	if(optarg) dbg_lvl=(unsigned short int)atoi(optarg);
+	if(optarg) dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
 	 (void)fprintf(stderr,"dbg_lvl = %d\n",dbg_lvl);
        } /* end if */ 
       break;
@@ -222,7 +235,7 @@ main(int argc,char **argv)
       PROCESS_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=atoi(optarg);
+      dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
     case 'd': /* Copy argument for later processing */ 
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);
@@ -400,7 +413,7 @@ main(int argc,char **argv)
   (void)fnc_add("sqrt",sqrt);
   (void)fnc_add("tan",tan);
 
-  /* Set the arguments to the parser */ 
+  /* Set arguments to parser */ 
   prs_arg.fl_in=fl_in;
   prs_arg.in_id=in_id;
   prs_arg.fl_out=fl_out;
@@ -416,19 +429,19 @@ main(int argc,char **argv)
     } /* end if */ 
     for(idx=0;idx<nbr_spt;idx++){
       if(dbg_lvl > 0) (void)fprintf(stderr,"spt_arg[%d]= %s\n",idx,spt_arg[idx]);
-      /* Invoke the parser on the current script string */ 
+      /* Invoke parser on current script string */ 
       prs_arg.sng=spt_arg[idx];
-      /* NB: Compiling ncap.y with Bison currently requires commenting out the prototype for yyparse() in bison.simple. 
-	 This probably indicates a flaw in my understanding of Bison. */ 
+      /* fxm: Compiling ncap.y with Bison currently may require commenting out prototype for yyparse() in bison.simple
+	 This probably indicates a flaw in my understanding of Bison */ 
       rcd=yyparse((void *)&prs_arg);
     } /* end for */ 
   }else{
-    /* Open the script file for reading */ 
+    /* Open script file for reading */ 
     if((yyin=fopen(fl_spt,"r")) == NULL){
       (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt);
       exit(EXIT_FAILURE);
     } /* end if */ 
-    /* Invoke the parser on the script file */ 
+    /* Invoke parser on script file */ 
     rcd=yyparse((void *)&prs_arg);
   } /* end else */
   
@@ -442,6 +455,7 @@ main(int argc,char **argv)
   (void)fl_out_cls(fl_out,fl_out_tmp,out_id);
 
   Exit_gracefully();
+  return EXIT_SUCCESS;
 
 } /* end main() */ 
 

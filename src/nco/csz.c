@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.47 2000-06-25 19:31:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.48 2000-07-31 00:29:18 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
 
@@ -38,7 +38,7 @@
 #include <string.h>             /* strcmp. . . */
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
-#include <unistd.h>             /* all sorts of POSIX stuff */ 
+#include <unistd.h>             /* POSIX stuff */ 
 /* #include <errno.h> */             /* errno */
 /* #include <malloc.h>    */         /* malloc() stuff */
 /* #include <assert.h> */            /* assert() debugging macro */ 
@@ -54,7 +54,7 @@
 /* I'm only keeping these netCDF include files around because I'm worried that 
    function prototypes in nc.h are needed here. Eventually prototypes for these
    routines should be broken into separate files, like csz.h... */ 
-#include <netcdf.h>             /* netCDF def'ns */
+#include <netcdf.h>             /* netCDF definitions */
 #include "nc.h"                 /* netCDF operator universal def'ns */
 
 #ifndef bool
@@ -666,7 +666,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     } /* end if */
     
     if(rmt_cmd == NULL){
-      /* Does the msrcp command exist on the local system? */ 
+      /* Does msrcp command exist on local system? */ 
       rcd=stat("/usr/local/bin/msrcp",&stat_sct); /* SCD Dataproc, Ouray */
       if(rcd != 0) rcd=stat("/usr/bin/msrcp",&stat_sct); /* ACD Linux */
       if(rcd != 0) rcd=stat("/opt/local/bin/msrcp",&stat_sct); /* CGD */
@@ -675,19 +675,19 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     } /* end if */
 	
     if(rmt_cmd == NULL){
-      /* Does the msread command exist on the local system? */ 
+      /* Does msread command exist on local system? */ 
       rcd=stat("/usr/local/bin/msread",&stat_sct);
       if(rcd == 0) rmt_cmd=&msread;
     } /* end if */
 	
     if(rmt_cmd == NULL){
-      /* Does the nrnet command exist on the local system? */ 
+      /* Does nrnet command exist on local system? */ 
       rcd=stat("/usr/local/bin/nrnet",&stat_sct);
       if(rcd == 0) rmt_cmd=&nrnet;
     } /* end if */
 
-    /* Before we look on the remote system for the filename, make sure 
-       the filename has the correct syntax to exist on the remote system */
+    /* Before we look for file on remote system, make sure 
+       filename has correct syntax to exist on remote system */
     if(rmt_cmd == &msread || rmt_cmd == &nrnet || rmt_cmd == &msrcp){
       if (fl_nm_rmt[0] != '/' || fl_nm_rmt[1] < 'A' || fl_nm_rmt[1] > 'Z'){
 	(void)fprintf(stderr,"%s: ERROR %s is not on local filesystem and is not a syntactically valid filename on remote file system\n",prg_nm_get(),fl_nm_rmt);

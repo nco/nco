@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.18 2000-06-25 19:31:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.19 2000-07-31 00:29:18 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -35,20 +35,20 @@
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
-#include <netcdf.h>             /* netCDF def'ns */
+#include <netcdf.h>             /* netCDF definitions */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
 #include <stdlib.h>             /* atof, atoi, malloc, getopt */ 
 #include <string.h>             /* strcmp. . . */
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
-#include <unistd.h>             /* all sorts of POSIX stuff */ 
+#include <unistd.h>             /* POSIX stuff */ 
 /* #include <assert.h> */            /* assert() debugging macro */ 
 /* #include <errno.h> */             /* errno */
 /* #include <malloc.h>    */         /* malloc() stuff */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
-#include "nc.h"                 /* global definitions */
+#include "nc.h"                 /* NCO definitions */
 
 int 
 main(int argc,char **argv)
@@ -76,8 +76,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.18 2000-06-25 19:31:47 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.18 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.19 2000-07-31 00:29:18 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.19 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -141,7 +141,7 @@ main(int argc,char **argv)
       PROCESS_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
-      dbg_lvl=atoi(optarg);
+      dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
     case 'd': /* Copy argument for later processing */ 
       lmt_arg[lmt_nbr]=(char *)strdup(optarg);

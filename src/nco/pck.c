@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.2 2000-06-25 19:31:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.3 2000-07-31 00:29:18 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -35,9 +35,9 @@
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
 #include <stdlib.h>             /* atof, atoi, malloc, getopt */ 
 #include <string.h>             /* strcmp. . . */
-#include <unistd.h>             /* all sorts of POSIX stuff */ 
+#include <unistd.h>             /* POSIX stuff */ 
 
-#include <netcdf.h>             /* netCDF def'ns */
+#include <netcdf.h>             /* netCDF definitions */
 #include "nc.h"                 /* netCDF operator universal def'ns */
 #include <assert.h>             /* assert() debugging macro */ 
 

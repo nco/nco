@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.41 2000-07-29 05:43:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.42 2000-07-31 00:29:18 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -46,13 +46,13 @@
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
-#include <netcdf.h>             /* netCDF def'ns */
+#include <netcdf.h>             /* netCDF definitions */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
 #include <stdlib.h>             /* atof, atoi, malloc, getopt */ 
 #include <string.h>             /* strcmp. . . */
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
-#include <unistd.h>             /* all sorts of POSIX stuff */ 
+#include <unistd.h>             /* POSIX stuff */ 
 /* #include <assert.h> */            /* assert() debugging macro */ 
 /* #include <errno.h> */             /* errno */
 /* #include <malloc.h>    */         /* malloc() stuff */
@@ -64,7 +64,7 @@
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
-#include "nc.h"                 /* global definitions */
+#include "nc.h"                 /* NCO definitions */
 
 int 
 main(int argc,char **argv)
@@ -82,7 +82,7 @@ main(int argc,char **argv)
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */ 
-  bool NRM_BY_DNM=True; /* Option N */ 
+  bool NRM_BY_DNM=True; /* Option N Normalize by denominator */ 
   bool MULTIPLY_BY_TALLY=False; /* Not currently implemented */ 
   bool NORMALIZE_BY_TALLY=True; /* Not currently implemented */ 
   bool NORMALIZE_BY_WEIGHT=True; /* Not currently implemented */ 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.41 2000-07-29 05:43:13 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.41 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.42 2000-07-31 00:29:18 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.42 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -195,7 +195,7 @@ main(int argc,char **argv)
       break;
     case 'D':
       /* Debugging level. Default is 0. */
-      dbg_lvl=atoi(optarg);
+      dbg_lvl=(unsigned short)strtol(optarg,(char **)NULL,10);
       break;
     case 'd':
       /* Copy argument for later processing */ 
@@ -283,6 +283,12 @@ main(int argc,char **argv)
       break;
     } /* end switch */
   } /* end while loop */
+
+  /* Be it known weighted averages do not work with non-linear arithmetic */
+  if(wgt_nm != NULL && (nco_op_typ != nco_op_avg) && (nco_op_typ != nco_op_min) && (nco_op_typ != nco_op_max) && (nco_op_typ != nco_op_ttl)){
+    (void)fprintf(stdout,"%s: ERROR Weighting (-w) does not yet work with non-linear arithmetic (-y)\n",prg_nm);
+    exit(EXIT_FAILURE);
+  } /* endif */
 
   /* If called without arguments, print usage and exit successfully */ 
   if(arg_cnt == 0){
