@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.102 2001-10-16 00:36:39 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.103 2001-10-26 07:02:58 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -138,7 +138,7 @@ MY_OBJ_DIR_RX := $(subst ${slash},${slash_rx},${MY_OBJ_DIR})
 MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
 
 # Directories to search for source files
-MDL_PTH := $(MY_SRC_DIR)
+MDL_PTH := ${MY_SRC_DIR}
 # Find all C++, C, and Fortran files in a given directory
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c ${dir}/*.F) # Compile Fortran only if necessary
@@ -178,9 +178,9 @@ MDL_DOC := $(addprefix ${MY_DOC_DIR}/,$(MDL_DOC_TRG)) # `make distclean' removes
 MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,Makefile nco_dst.pl nco_tst.sh) # `make tags' includes these files
 
 # Variables having to do with ncap
-MDL_NCAP_SRC := $(addprefix $(MY_SRC_DIR)/,ncap.y ncap.l ncap.h) # `make tags' includes these files
+MDL_NCAP_SRC := $(addprefix ${MY_SRC_DIR}/,ncap.y ncap.l ncap.h) # `make tags' includes these files
 MDL_NCAP_TRG := ncap.tab.c ncap.tab.h ncap_lex.c # `make ncap' creates these files
-MDL_NCAP := $(addprefix $(MY_SRC_DIR)/,$(MDL_NCAP_TRG)) # `make distclean' removes these files
+MDL_NCAP := $(addprefix ${MY_SRC_DIR}/,$(MDL_NCAP_TRG)) # `make distclean' removes these files
 
 # Redefine default C and C++ pattern rules
 ${MY_OBJ_DIR}/%.o : %.c
@@ -908,7 +908,7 @@ dst_cln: cln bin_cln doc_cln dat_cln
 	cd ${MY_BLD_DIR}; rm -f *~
 	cd ${MY_DAT_DIR}; rm -f in.nc *~
 tags: 
-	etags $(MY_SRC_DIR)/*.h $(SRC_LST) $(MDL_DOC_SRC) $(MDL_BLD_SRC) $(MDL_NCAP_SRC)
+	etags ${MY_SRC_DIR}/*.h $(SRC_LST) $(MDL_DOC_SRC) $(MDL_BLD_SRC) $(MDL_NCAP_SRC)
 
 # Reset internal YACC and LEX patterns
 %.c : %.y
@@ -919,7 +919,7 @@ tags:
 # NB: Bison has a problem when bison.simple declares yyparse() as int yyparse (void);
 # The solution is to comment out that definition in bison.simple
 ifeq ($(YACC),bison)
-$(MY_SRC_DIR)/%.tab.c $(MY_SRC_DIR)/%.tab.h : $(MY_SRC_DIR)/%.y
+${MY_SRC_DIR}/%.tab.c ${MY_SRC_DIR}/%.tab.h : ${MY_SRC_DIR}/%.y
 	$(YACC) -d $<
 endif
 ifeq ($(YACC),yacc)
