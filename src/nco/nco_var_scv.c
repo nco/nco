@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.1 2002-04-27 00:04:27 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.2 2002-04-27 00:15:36 zender Exp $ */
 
 /* Purpose: NCO utilities for arithmetic involving var and scv types */
 
@@ -38,9 +38,14 @@
  */
 
 /* Standard header files */
+#include <math.h> /* sin cos cos sin 3.14159 */
 #include <stdio.h> /* stderr, FILE, NULL, etc. */
 
+/* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
+#include "nco_netcdf.h" /* netCDF wrapper functions */
+
+/* Personal headers */
 #include "nco.h" /* netCDF operator universal def'ns */
 
 void
@@ -381,28 +386,6 @@ var_scv_divide(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,
   
 } /* end var_scv_divide() */
 
-ncap_var_scv_modulus(var_sct *var,scv_sct scv)
-{
-  /* Purpose: var % scv, take modulus of each element of var with value in scv */
-  
-  var_sct *var_nsw;
-  (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
-  var_nsw=var_dpl(var);
-  (void)var_scv_modulus(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val,&scv);
-  
-  return var_nsw;
-} /* ncap_var_scv_modulus */
-
-var_sct *
-ncap_var_abs(var_sct *var)
-{
-  /* Purpose: Find absolute value of each element of var */
-  var_sct *var_nsw;
-  var_nsw=var_dpl(var);
-  (void)var_abs(var->type,var->sz,var->has_mss_val,var->mss_val,var_nsw->val);
-  return var_nsw;
-} /* end ncap_var_abs */
-
 void 
 var_scv_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
      /* 
@@ -573,55 +556,3 @@ var_abs(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1)
      because we have only operated on local copies of them. */
   
 } /* end var_abs() */
-
-var_sct *
-ncap_var_scv_power(var_sct *var_in,scv_sct scv)
-{
-  /* Purpose: Raise var to the power in scv
-     All values converted to type double before operation */
-  long idx;
-  long sz;
-  ptr_unn op1;
-  var_sct *var;
-
-  /* Promote scv and var to NC_FLOAT */
-  if(var_in->type < NC_FLOAT) var_in=var_conform_type(NC_FLOAT,var_in);
-  var=var_dpl(var_in);
-  (void)scv_conform_type(var->type,&scv);
-  
-  op1=var->val;
-  sz=var->sz;
-  (void)cast_void_nctype(var->type,&op1);
-  if(var->has_mss_val) (void)cast_void_nctype(var->type,&(var->mss_val));
-  
-  switch(var->type){ 
-  case NC_DOUBLE: {
-    double scv_dpl=scv.val.d;
-    if(!var->has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.dp[idx]=pow(op1.dp[idx],scv_dpl);
-    }else{
-      double mss_val_dbl=*(var->mss_val.dp); /* Temporary variable reduces dereferencing */
-      for(idx=0;idx<sz;idx++){
-        if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=pow(op1.dp[idx],scv_dpl);
-      } /* end for */
-    } /* end else */
-   break;
-  }
-  case NC_FLOAT: {
-    float scv_flt=scv.val.f;
-    if(!var->has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.fp[idx]=powf(op1.fp[idx],scv_flt);
-    }else{
-      float mss_val_flt=*(var->mss_val.fp); /* Temporary variable reduces dereferencing */
-      for(idx=0;idx<sz;idx++){
-        if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=powf(op1.fp[idx],scv_flt);
-      } /* end for */
-    } /* end else */
-   break;
-  }
-  default: nco_dfl_case_nctype_err(); break;
-  }/* end switch */
-
-  if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
-  return var;
-} /* end ncap_var_scv_power */

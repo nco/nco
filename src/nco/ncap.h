@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.29 2002-04-26 23:20:08 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.30 2002-04-27 00:15:36 zender Exp $ */
 
 /* Header file for netCDF arithmetic processor */
 
@@ -110,12 +110,6 @@ extern var_sct *ncap_var_var_sub(var_sct *var_1,var_sct *var_2);
 extern void fnc_add(char *nm, double (*fnc)());
 extern void ncap_initial_scan(prs_sct*,char *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *,nm_id_sct**,int *);
 extern void nco_lib_vrs_prn();
-extern void var_abs(nc_type,long,int,ptr_unn,ptr_unn);
-extern void var_scv_add(nc_type,long,int,ptr_unn,ptr_unn,scv_sct *);
-extern void var_scv_sub(nc_type,long,int,ptr_unn,ptr_unn,scv_sct *);
-extern void var_scv_divide(nc_type,long,int,ptr_unn,ptr_unn,scv_sct *);
-extern void var_scv_modulus(nc_type,long,int,ptr_unn,ptr_unn,scv_sct *);
-extern void var_scv_multiply(nc_type,long,int,ptr_unn,ptr_unn,scv_sct *);
 
 extern nc_type /* [enm] Highest precision of arguments */
 ncap_var_scv_cnf_typ_hgh_prc /* [fnc] Promote arguments to higher precision if necessary */
