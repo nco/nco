@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.32 1999-08-30 17:08:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.33 1999-08-31 15:42:27 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -4226,30 +4226,30 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
 
   /* DBG XXX: remove the ncap exception when we finish the ncap list processing */ 
   if(*nbr_var_prc==0 && prg != ncap){
-    (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing.\n",prg_nm_get());
+    (void)fprintf(stdout,"%s: ERROR no variables fit criteria for processing\n",prg_nm_get());
     switch(prg_get()){
     case ncap:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain some derived fields.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain some derived fields\n",prg_nm_get());
     case ncra:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain record variables that are not NC_CHAR or NC_BYTE in order to perform a running average.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain record variables that are not NC_CHAR or NC_BYTE in order to perform a running average\n",prg_nm_get());
       break;
     case ncea:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables that are not NC_CHAR or NC_BYTE in order to perform an ensemble average.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables that are not NC_CHAR or NC_BYTE in order to perform an ensemble average\n",prg_nm_get());
       break;
     case ncdiff:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables that are not NC_CHAR or NC_BYTE in order to subtract.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables that are not NC_CHAR or NC_BYTE in order to subtract\n",prg_nm_get());
       break;
     case ncflint:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain variables that are not NC_CHAR or NC_BYTE in order to interpolate.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain variables that are not NC_CHAR or NC_BYTE in order to interpolate\n",prg_nm_get());
       break;
     case ncwa:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain variables that contain an averaging dimension in order to perform an average.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain variables that contain an averaging dimension in order to perform an average\n",prg_nm_get());
       break;
     case ncrcat:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain record variables in order to perform a record concatenation.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain record variables in order to perform a record concatenation\n",prg_nm_get());
       break;
     case ncecat:
-      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables in order to perform an ensemble concatenation.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: HINT Extraction list must contain non-coordinate variables in order to perform an ensemble concatenation\n",prg_nm_get());
       break;
     } /* end switch */ 
     exit(EXIT_FAILURE);
@@ -4651,7 +4651,6 @@ nclong newdate(nclong date,int day_srt)
   int day_nbr_2_eom; /* Days to end of month */
   int day_crr; /* Day of date */
   int day_ncr; /* Running count of days to increment date by */
-  int int_foo; /* Dummy variable for do nothing statement after label */
   int mth_crr; /* Month of date */
   int mth_idx; /* Index */
   int mth_srt; /* Save the initial value of month */
@@ -4688,14 +4687,13 @@ nclong newdate(nclong date,int day_srt)
 	} /* end if */
 	day_crr=1;
 	day_ncr-=day_nbr_2_eom+1;
-	if(day_ncr == 0) goto end_day_srt_gt0_lbl;
+	if(day_ncr == 0) break;
       }else{
 	day_crr=day_crr+day_ncr;
-	goto end_day_srt_gt0_lbl;
+	break;
       } /* end if */
-    } /* end loop over */
-  end_day_srt_gt0_lbl: /* label */
-    int_foo++; /* Some compilers, e.g., SGI cc require statements after labels */
+    } /* end loop over mth */
+    /* Previous two breaks continue execution here */
   }else if(day_srt < 0){
     day_ncr=-day_srt;
     yr_crr=yr_crr-day_ncr/365;
@@ -4710,14 +4708,13 @@ nclong newdate(nclong date,int day_srt)
 	} /* end if */
 	day_ncr-=day_crr;
 	day_crr=mth_day_nbr[mth_crr-1];
-	if(day_ncr == 0) goto end_day_srt_lt0_lbl;
+	if(day_ncr == 0) break;
       }else{
 	day_crr-=day_ncr;
-	goto end_day_srt_lt0_lbl;
+	break;
       } /* end if */
-    } /* end loop over */
-  end_day_srt_lt0_lbl: /* label */
-    int_foo++; /* Some compilers, e.g., SGI cc require statements after labels */
+    } /* end loop over mth */
+    /* Previous two breaks continue execution here */
   } /* end if */
 
   if(yr_crr >= 0){
@@ -4729,3 +4726,4 @@ nclong newdate(nclong date,int day_srt)
 
   return newdate_YYMMDD;
 } /* end newdate() */
+

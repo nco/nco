@@ -69,10 +69,8 @@ exactly the same way. C versions test both operands agains mss_val,
 Fortran tests only op1. Since running averages are initialized to 0.0 before
 entry, problems arise in C version when missing_value = 0.0. Only fix seems
 to be checking whether tally == 0 before checking whether op2 == mss_val
-122. Filenames with colons are legal in UNIX, but cause core dumps because 
-they cause fl_mk_lcl() to try to rcp them. Change fl_mk_lcl() to die
-gracefully, rather than core dump, in this case.
-123. Add msrcp functionality to remote retrieval methods
+122. ncwa should either print error or default to averaging all dimensions
+when it is called without any -a argument
 ************************************************************************
 End NCO Wish list
 ************************************************************************
