@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.23 2002-05-05 03:53:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.24 2002-05-05 17:13:46 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -375,7 +375,6 @@ extern "C" {
   extern void cast_void_nctype(nc_type,ptr_unn *);
   extern void copyright_prn(char *,char *);
   extern void hst_att_cat(int,char *);
-  extern void rec_crd_chk(var_sct *,char *,char *,long,long);
   extern void val_conform_type(nc_type,ptr_unn,nc_type,ptr_unn);
   extern void var_add(nc_type,long,int,ptr_unn,long *,ptr_unn,ptr_unn);
   extern void var_add_no_tally(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,ptr_unn op2);

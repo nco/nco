@@ -1,9 +1,17 @@
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rec_var.c,v 1.2 2002-05-05 17:13:46 zender Exp $ */
+
+/* Purpose: Record variable utilities */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_rec_var.h" /* Record variable utilities */
+
 void
-rec_var_dbg(int nc_id,char *dbg_sng)
-/* 
-   int nc_id: I netCDF file ID
-   char *dbg_sng: I debugging message to print
-*/
+rec_var_dbg /* [fnc] Aid in debugging problems with record dimension */
+(const int nc_id, /* I [id] netCDF file ID */
+ const char * const dbg_sng) /* I [sng] Debugging message to print */
 {
   /* Purpose: Aid in debugging problems with record dimension */
   /* Usage: if(dbg_lvl == 73) rec_var_dbg(out_id,"After ncvarput()"); */
@@ -24,14 +32,12 @@ rec_var_dbg(int nc_id,char *dbg_sng)
 } /* end rec_var_dbg() */
 
 void
-rec_crd_chk(var_sct *var,char *fl_in,char *fl_out,long idx_rec,long idx_rec_out)
-/* 
-   var_sct *var: I variable structure of coordinate to check for monotonicity
-   char *fl_in: I current input filename
-   char *fl_out: I current output filename
-   int idx_rec: I current index or record coordinate in input file
-   int idx_rec_out: I current index or record coordinate in output file
- */
+rec_crd_chk /* Check for monotonicity of coordinate values */
+(const var_sct * const var, /* I [sct] Coordinate to check for monotonicity */
+ const char * const fl_in, /* I [sng] Input filename */
+ const char * const fl_out, /* I [sng] Output filename */
+ const long idx_rec, /* I [idx] Index of record coordinate in input file */
+ const long idx_rec_out) /* I [idx] Index of record coordinate in output file */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Check for monotonicity of coordinate values */

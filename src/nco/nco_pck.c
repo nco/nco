@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.2 2002-05-05 17:13:46 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -20,8 +20,9 @@
    add_offset: If present for a variable, this number is to be added to the data after is is read by the application that acceses the data. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. 
    When scale_factor and add_offset are used for packing, the associated variable (containing the packed data) is typically of type byte or short, whereas the unpacked values are intended to be of type float or double. Attribute's scale_factor and add_offset should both be of type intended for the unpacked data, e.g., float or double. */     
 
-int
-nco_pck_typ_get(char *nco_pck_sng)
+int /* O [enm] Packing type */
+nco_pck_typ_get /* [fnc] Convert user-specified packing type to key */
+(const char *nco_pck_sng) /* [sng] User-specified packing type */
 {
   /* Purpose: Process '-P' command line argument
      Convert user-specified string to packing operation type 
@@ -34,8 +35,8 @@ nco_pck_typ_get(char *nco_pck_sng)
 
 bool /* O [flg] Variable is packed on disk */
 pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
-(int nc_id, /* I [idx] netCDF file ID */
- var_sct *var) /* I/O [sct] Variable */
+(const int nc_id, /* I [idx] netCDF file ID */
+ var_sct * const var) /* I/O [sct] Variable */
 {
   /* Purpose: Check whether variable is packed on disk and set variable members 
      pck_dsk, has_scl_fct, has_add_fst, and typ_upk accordingly
@@ -109,7 +110,7 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 
 var_sct * /* O [sct] Unpacked variable */
 var_upk /* [fnc] Unpack variable in memory */
-(var_sct *var) /* I/O [sct] Variable to be unpacked */
+(var_sct * const var) /* I/O [sct] Variable to be unpacked */
 {
   /* Threads: Routine is thread-unsafe */
   /* Purpose: Unpack variable
@@ -170,9 +171,9 @@ var_upk /* [fnc] Unpack variable in memory */
 
 var_sct * /* O [sct] Packed variable */
 var_pck /* [fnc] Pack variable in memory */
-(var_sct *var, /* I/O [sct] Variable to be packed */
- nc_type typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
- bool USE_EXISTING_PCK) /* I [flg] Use existing packing scale_factor and add_offset */
+(var_sct * const var, /* I/O [sct] Variable to be packed */
+ const nc_type typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+ const bool USE_EXISTING_PCK) /* I [flg] Use existing packing scale_factor and add_offset */
 {
   /* Purpose: Pack variable 
      Routine is inverse of var_upk(): var_pck[var_upk(var)]=var 
@@ -378,8 +379,8 @@ var_pck /* [fnc] Pack variable in memory */
 
 var_sct * /* O [sct] Packed variable */
 nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to disk */
-(var_sct *var, /* I/O [sct] Variable to be packed */
- int nco_pck_typ) /* [enm] Packing operation type */
+(var_sct * const var, /* I/O [sct] Variable to be packed */
+ const int nco_pck_typ) /* [enm] Packing operation type */
 {
   /* Purpose: Pack variable in memory and write packing attributes to disk */
   
