@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.3 2002-08-30 14:23:05 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.4 2002-09-24 12:17:20 hmb Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -76,6 +76,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
   var_sct *var; /* [sct] Variable */
   nm_lst_sct *sbs_lst; /* [sct] Subscript list */
   int nco_rlt_opr; /* [enm] Comparison operator type */
+  nc_type cnv_type;  /* [enm] used for type conversion functions */
 } /* end YYSTYPE union (type of yylval value) */
 
 /* Tell parser which kind of values each token takes
@@ -89,6 +90,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 %token <sym> FUNCTION
 %token <var_nm_LHS> OUT_VAR
 %token <var_nm_RHS> VAR
+%token <cnv_type> CNV_TYPE
 %token ABS ATOSTR EPROVOKE IGNORE NAMED_CONSTANT PACK POWER RDC UNPACK
 %token IF PRINT
 
@@ -377,6 +379,10 @@ scv_xpr '+' scv_xpr {
     $$.type=NC_DOUBLE;
   } /* end else */
 } /* end FUNCTION '(' scv_xpr ')' */
+| CNV_TYPE '(' scv_xpr ')' {
+  (void)scv_conform_type( $1,&$3);
+  $$=$3;
+}
 | '(' scv_xpr ')' {$$=$2;}
 | SCV {$$=$1;}
 ; /* end scv_xpr */
@@ -542,6 +548,11 @@ var_xpr '+' var_xpr {
 | '(' var_xpr ')' {
   $$=$2;
 }
+| CNV_TYPE '(' var_xpr ')' {
+  $$=nco_var_cnf_typ($1,$3);
+}
+
+
 | NAMED_CONSTANT { /* Terminal symbol action */
   /* fxm: Allow commands like a=M_PI*rds^2; to work */
 }
