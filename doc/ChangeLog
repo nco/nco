@@ -1,5 +1,8 @@
 2002-10-25  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_6_6
+	Changes since nco-2_6_5: ncrename fixes
+
 	* Use '.' consistently in .var@.att renaming
 
 	* Changed variable-attribute delimiter in ncrename from ":" to "@"
