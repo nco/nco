@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.264 2004-11-05 23:56:26 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.265 2005-01-08 00:01:05 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -177,13 +177,16 @@ ifndef LINUX_CC
 endif # endif LINUX_CC
 ifndef LINUX_FC
 # Fortran compiler for Linux
- #LINUX_FC := g95 # NB: g95 will not work until .F90 -> .f90 pre-processing rules work
+ LINUX_FC := g95
  #LINUX_FC := gfortran
- LINUX_FC := lf95
+ #LINUX_FC := lf95
  #LINUX_FC := ifort
  #LINUX_FC := pgf90
 ifeq (${PVM_ARCH},LINUXAMD64)
- LINUX_FC := pgf90
+# GCC 3.3 fails in atomicity.h with -O, -O0, and -O2 so use 3.4 instead 
+ LINUX_CXX := g++-3.4
+ LINUX_CC := gcc-3.4
+ LINUX_FC := g95
 endif # endif LINUXAMD64
 ifeq (${PVM_ARCH},LINUXALPHA)
  LINUX_FC := g77
