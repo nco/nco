@@ -245,8 +245,8 @@ The NCO executables are maintained in four different locations at NCAR:
 <DD>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</DD>
 <DD>SCD Ute (IRIX 6.5): /fs/cgd/home0/zender/bin/SGI64*
 
-*The executables in /fs/cgd/home0/zender/bin/SGI64 are built on
-winterpark but are accessible from Ute and should work correctly.
+</P>*The executables in /fs/cgd/home0/zender/bin/SGI64 are built on
+winterpark but are accessible from Ute and should work correctly there.
 These executables are my development executables, but they are usually
 in sync with those in winterpark:/contrib/bin (which are not accessible
 from Ute).
