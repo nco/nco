@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.111 2002-09-06 07:24:50 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.112 2002-09-06 07:54:15 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -16,8 +16,6 @@ C-c C-u C-e	texinfo-every-node-update
 
 Multiple files:
 M-x texinfo-multiple-files-update
-C-u M-x texinfo-multiple-files-update
-C-u 8 M-x texinfo-multiple-files-update
 
 Usage: 
 cd ~/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi;texi2dvi --pdf nco.texi
@@ -2755,9 +2753,10 @@ pck = (upk-add_offset)/scale_factor = (upk-0.5*(min+max))*ndrv/(max-min)
 $$
 @end tex
 @ifnottex
-scale_factor = (max-min)/ndrv
-add_offset = 0.5*(min+max)
-pck = (upk-add_offset)/scale_factor = (upk-0.5*(min+max))*ndrv/(max-min)
+@var{scale_factor} = (@var{max}-@var{min})/@var{ndrv}
+@var{add_offset} = 0.5*(@var{min}+@var{max})
+@var{pck} = (@var{upk}-@var{add_offset})/@var{scale_factor} = 
+(@var{upk}-0.5*(@var{min}+@var{max}))*@var{ndrv}/(@var{max}-@var{min})
 @end ifnottex
 where @var{ndrv} is the number of discrete representable values for
 given type of packed variable.
@@ -2792,7 +2791,7 @@ upk = scale_factor*pck + add_offset = (max-min)*pck/ndrv + 0.5*(min+max)
 $$
 @end tex
 @ifnottex
-upk = scale_factor*pck + add_offset = (max-min)*pck/ndrv + 0.5*(min+max) 
+@var{upk} = @var{scale_factor}*@var{pck} + @var{add_offset} = (@var{max}-@var{min})*@var{pck}/@var{ndrv} + 0.5*(@var{min}+@var{max}) 
 @end ifnottex
 When @code{scale_factor} and @code{add_offset} are used for packing, the
 associated variable (containing the packed data) is typically of type
