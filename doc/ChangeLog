@@ -1,5 +1,7 @@
 1999-05-10  Charlie Zender  <zender@z.ppp.ucar.edu>
 
+	* Tagged and released this as nco1_1_29
+
 	* Cleaned up files for a clean compile with gcc -Wall
 
 1999-05-09  Charlie Zender  <zender@z.ppp.ucar.edu>

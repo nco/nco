@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.24 1999-05-10 06:36:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.25 1999-05-10 06:46:58 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -518,7 +518,7 @@ lim_evl(int nc_id,lim_sct *lim_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	 argument in multi-file operators.
 	 Note, however, that this implementation is recent and possibly incomplete
 	 Stride is not officially supported on any operator besides ncks */
-      if(lim.srd != 1L && prg_get() != ncks) (void)fprintf(stderr,"%s: WARNING Stride argument is not supported in any operator except ncks, use at your own risk...\n",prg_nm_get());
+      if(lim.srd != 1L && prg_get() != ncks && !lim.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument is not supported in any operator except ncks, use at your own risk...\n",prg_nm_get());
 	/* Total number of records remaining to be read depends on the stride */
       if(lim.srd == 1L){
 	cnt_rmn_ttl=lim.max_idx-lim.min_idx+1L-cnt_crr;
