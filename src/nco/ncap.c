@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.62 2002-02-24 18:49:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.63 2002-03-26 03:45:55 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.62 2002-02-24 18:49:34 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.62 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.63 2002-03-26 03:45:55 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.63 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -487,7 +487,7 @@ main(int argc,char **argv)
     } /* endif debug */
 
     /* Run parser on command line scripts */
-    fl_spt_glb="Command-line arguments";
+    fl_spt_glb="Command-line scripts";
     yy_scan_string(spt_arg_cat);
 
   }else{ /* ...endif command-line scripts, begin script file... */
