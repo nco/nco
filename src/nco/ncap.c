@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.83 2002-07-08 20:42:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.84 2002-08-13 08:00:37 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -27,7 +27,7 @@
 #if ( defined LINUX || defined LINUXALPHA )
 #include <getopt.h> /* GNU getopt() is standard on Linux */
 #else /* not LINUX || SUN */
-#if ( !defined AIX ) && ( !defined CRAY ) && ( !defined NEC ) && ( !defined SUNMP ) && ( !defined SUN4SOL2 ) /* getopt() is in <unistd.h> or <stdlib.h> */
+#if ( !defined AIX ) && ( !defined CRAY ) && ( !defined NECSX ) && ( !defined SUNMP ) && ( !defined SUN4SOL2 ) /* getopt() is in <unistd.h> or <stdlib.h> */
 #include "getopt.h" /* GNU getopt() */
 #endif /* not AIX */
 #endif /* not LINUX */
@@ -85,8 +85,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.83 2002-07-08 20:42:50 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.83 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.84 2002-08-13 08:00:37 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.84 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;

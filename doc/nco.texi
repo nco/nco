@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.106 2002-07-04 02:28:20 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.107 2002-08-13 08:00:37 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -413,10 +413,11 @@ This tests incorporates an image using the @code{@@image} command.
 @cindex compatability
 @cindex portability
 @cindex installation
-@acronym{NCO} has been successfully ported and tested on the following platforms: 
+@acronym{NCO} has been successfully ported and tested and is known to
+work on the following platforms: 
 @acronym{GNU}/Linux, SunOS 4.1.x, Solaris 2.x, @acronym{IRIX} 5.x and
 6.x (including 64-bit architectures), @acronym{UNICOS} 8.x--10.x,
-@acronym{AIX} 4.x, @acronym{DEC OSF}, and Windows @acronym{NT4}. 
+@acronym{AIX} 4.x, @acronym{DEC OSF}, NEC Super-UX 10.x, all MS Windows.
 If you port the code to a new operating system, please send me a note
 and any patches you required.
 
@@ -4910,8 +4911,12 @@ Type conversion for arithmetic.
 Migration to netCDF3 API.
 @command{ncap} parser, lexer, and I/O.
 Various hacks.
+@item Rorik Peterson
+Autotool build support
 @item Bill Kocik
 Memory management
+@item Len Makin
+NECSX architecture support
 @item Juliana Rew
 Compatibility with large PIDs
 @item Keith Lindsay

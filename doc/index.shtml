@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.107 2002-08-13 06:35:13 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.108 2002-08-13 08:00:37 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -143,14 +143,14 @@ instructions for helping the NCO project.
 <dt><a name="News"></a></dt>
 <h2>NCO News & Announcements</h2>
 <ul>
-<li><b>libnco_c++</b> reads into and writes from type <b>long double</b></li>
-<li>Developer code has fully integrated <b>autoconf</b>/<b>libtool</b>
+<li><tt>libnco_c++</tt> reads into and writes from type <tt>long double</tt></li>
+<li>Developer code has fully integrated <tt>autoconf</tt>/<tt>libtool</tt>
 build procedure</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS
-Repository</a> code allows <b>ncap</b> to unpack variables stored
+Repository</a> code allows <tt>ncap</tt> to unpack variables stored
 with <tt>scale_factor</tt> and <tt>add_offset</tt> convention</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS
-Repository</a> code includes <b>ncap</b>, a scriptable operator
+Repository</a> code includes <tt>ncap</tt>, a scriptable operator
 capable of performing arbitrary arithmetic operations</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code includes libnco_c++, a new C++ interface to netCDF</li>
 <li><a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> code now supports multithreading with OpenMP-compliant compilers</li>
@@ -162,11 +162,13 @@ capable of performing arbitrary arithmetic operations</li>
 <dt><a name="Version"></a></dt>
 <h2>Version Summary</h2>
 <ul>
-<li>Many releases since 2.0.0 are not packaged (e.g., with
+<li>Most releases since 2.0.0 are not packaged (e.g., with
 tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>, 
 fails on my development system (due to antiquated RedHat
 <tt>texinfo</tt> software, of all things!)
 Retrieve these versions <a name="#Download">using CVS</a>.
+<li><b>NCO 2.5.4</b>, Not packaged: Add support NEC-SX support,
+update Cray support, small build changes
 <li><b>NCO 2.5.3</b>, Not packaged: Fix native builds under MS Windows with Cygwin
 <tt>ncap</tt>, hint to <tt>ncwa</tt>
 <li><b>NCO 2.5.2</b>, Not packaged: Add math functions to
