@@ -1,70 +1,27 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.107 2004-07-06 20:59:22 zender Exp $ -*-text-*-
-
-fxm: delayed until 2.9.8: First, AIX NCO installations should upgrade to this version to get the
-AIX-specific ncap bug-fix. 
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.108 2004-07-06 22:44:50 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.7 are ready. 
 
 http://nco.sf.net (Homepage)
 http://dust.ess.uci.edu/nco (Homepage "mirror")
 
-First, Large File support (LFS) is now enabled by default.
-Subject to physical memory limitations, this allows 32-bit OSs
-files > 2 GB. Compile libnetcdf.a with LFS too, for this to work.
-Disable this with ./configure --disable-largefile
-See nco/data/big.cdl for sample LFS tests
-
-Second, multi-file operations are more user friendly.
-Multi-file operators (nc[re]a, nc[re]cat) now take input file lists from stdin.
-The old method, passing input file names through the shell, fails on
-many OSs (e.g., AIX) when the filelist is 25k characters or more.  
-Use this new capability to pipe long lists of input file names
-directly to NCO multi-file operators, e.g.,  
-
-/bin/ls | grep ${CASEID}_'......'.nc | ncra -O -o output.nc
-
-This avoids all shell limitations.
-When the input file names are specified via stdin, NCO multi-file
-operators will store the number of input files in the
-"nco_input_file_number" global attribute and the input file names in the  
-"nco_input_file_list" global attribute (unless you pass it -H).
-
-This preserves the data processing "chain of evidence".
-
-Read more about it in 
-
-http://nco.sf.net/nco.html#stdin
-http://nco.sf.net/nco.html#fl_lst_in
+First, AIX NCO installations should upgrade to this version to get the 
+AIX-specific ncap bug-fix. 
 
 Enjoy,
 Charlie
 
 Feature changes:
-1. Multi-file operators accept input filenames from stdin
-2. Multi-file operators add nco_input_file_list, nco_input_file_number 
-   global attributes by default for input file names from stdin.
-3. Add nco_openmp_thread_number global attribute when threaded
-4. Add -t, --thr_nbr, --omp_num_threads switch to specify threads
+1. None
 
 Bug-fixes:
-1. Fix segfaults since 2.9.6 when no input filename present for
-   non-multi-file-operators 
+1. AIX use NCO-supplied float-valued functions (e.g., cosf()) on AIX
 
 Build changes:
-1. LFS enabled by default
-2. Fix nco_tst.pl test script hangs waiting for interactive responses
-3. Change prototype source of fabsf(), sqrtf() to help HP-UX builds
-4. Try to use NCO-supplied float-valued functions (e.g., cosf()) on AIX
+1. None
 
 Other user-visible changes:
-1. Add nco_put_att<int,short,long> functions to libnco_c++
-2. Reworked stdin to avoid mixing string and character input.
-   Interactive responses to "overwrite (o/a/e)?" questions must now be
-   terminated with carriage return (and are case-insensitive)
-3. ln works in ncap as natural logarithm (synonym for log())
-4. Changed old ncwa -t to ncwa -T so can use -t for threads
-5. size_t type correctly printed on platforms without %zu support
+1. None
 
 User-invisible changes:
-1. Added additional file diagnostics to debugging output
-2. Added $dbg_lvl variable to print nco_tst.pl tests during execution
+1. None
