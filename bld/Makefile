@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.240 2004-05-06 05:37:24 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.241 2004-05-06 06:04:08 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -368,7 +368,7 @@ ifeq (${DODS},Y)
  CPP_TKN_OS += -DENABLE_DODS
 endif # !DODS
 ifeq (${UDUNITS},Y)
- CPP_TKN_OS += -DHAVE_LIBUDUNITS -DHAVE_UDUNITS_H
+ CPP_TKN_OS += -DENABLE_UDUNITS -DHAVE_UDUNITS_H
 endif # !UDUNITS
 # Assume strcasecmp() and strdup() routines are present (Comeau is exception)
 CPP_TKN_OS += -DHAVE_STRCASECMP -DHAVE_STRDUP
