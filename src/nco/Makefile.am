@@ -74,9 +74,9 @@ EXTRA_DIST = nco_getopt.c
 DISTCLEANFILES = ncap_lex.c ncap_yacc.c ncap_yacc.h
 
 install-exec-hook:
-	cd $(DESTDIR)$(bindir) && ln -sf ncbo ncdiff
-	cd $(DESTDIR)$(bindir) && ln -sf ncra ncea
-	cd $(DESTDIR)$(bindir) && ln -sf ncra ncrcat
+	cd $(DESTDIR)$(bindir) && (test -e ncdiff && rm -f ncdiff) && ln -sf ncbo ncdiff
+	cd $(DESTDIR)$(bindir) && (test -e ncea && rm -f ncea) && ln -sf ncra ncea
+	cd $(DESTDIR)$(bindir) && (test -e ncrcat && rm -f ncrcat) && ln -sf ncra ncrcat
 
 uninstall-hook:
 	cd $(DESTDIR)$(bindir) && rm -f ncdiff ncea ncrcat
