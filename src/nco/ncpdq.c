@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.10 2004-07-29 21:56:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.11 2004-07-29 22:57:01 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -95,8 +95,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.10 2004-07-29 21:56:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.10 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.11 2004-07-29 22:57:01 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.11 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:Rrt:v:xz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -115,6 +115,7 @@ main(int argc,char **argv)
 
   int abb_arg_nbr=0;
   int dmn_rdr_nbr=0; /* [nbr] Number of dimension to re-order */
+  int dmn_rdr_nbr_utl=0; /* [nbr] Number of dimension to re-order, utilized */
   int fl_idx=int_CEWI;
   int fl_nbr=0;
   int fll_md_old; /* [enm] Old fill mode */
@@ -382,21 +383,18 @@ main(int argc,char **argv)
 
     /* Form list of re-ordering dimensions from extracted input dimensions */
     dmn_rdr=(dmn_sct **)nco_malloc(dmn_rdr_nbr*sizeof(dmn_sct *));
+    /* Loop over original number of re-order dimensions */
     for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
       for(idx=0;idx<nbr_dmn_xtr;idx++){
 	if(!strcmp(dmn_rdr_lst[idx_rdr].nm,dim[idx]->nm)) break;
       } /* end loop over idx_rdr */
-      if(idx != nbr_dmn_xtr){
-	dmn_rdr[idx_rdr]=dim[idx];
-      }else{
-	(void)fprintf(stderr,"%s: WARNING re-ordering dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_rdr_lst[idx_rdr].nm);
-	/* Collapse dimension re-order list by omitting irrelevent dimensions */
-	(void)memmove(dmn_rdr_lst+idx_rdr*sizeof(nm_id_sct),dmn_rdr_lst+(idx_rdr+1)*sizeof(nm_id_sct),(dmn_rdr_nbr-idx_rdr+1)*sizeof(nm_id_sct));
-	--dmn_rdr_nbr;
-	dmn_rdr_lst=(nm_id_sct *)nco_realloc(dmn_rdr_lst,dmn_rdr_nbr*sizeof(nm_id_sct));
-	dmn_rdr=(dmn_sct **)nco_realloc(dmn_rdr,dmn_rdr_nbr*sizeof(dmn_sct *));
-      } /* end else */
+      if(idx != nbr_dmn_xtr) dmn_rdr[dmn_rdr_nbr_utl++]=dim[idx]; else (void)fprintf(stderr,"%s: WARNING re-ordering dimension \"%s\" is not contained in any variable in extraction list\n",prg_nm,dmn_rdr_lst[idx_rdr].nm);
     } /* end loop over idx_rdr */
+    dmn_rdr_nbr=dmn_rdr_nbr_utl;
+    /* Collapse extra dimension structure space to prevent accidentally using it */
+    dmn_rdr=(dmn_sct **)nco_realloc(dmn_rdr,dmn_rdr_nbr*sizeof(dmn_sct *));
+    /* Dimension list space now refers to requested rather than utilized dimensions */
+    dmn_rdr_lst=(nm_id_sct *)nco_free(dmn_rdr_lst);
 
     /* Make sure no re-ordering dimension is specified more than once */
     for(idx=0;idx<dmn_rdr_nbr;idx++){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.22 2004-07-29 20:37:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.c,v 1.23 2004-07-29 22:57:01 zender Exp $ */
 
 /* Purpose: Conform dimensions between variables */
 
@@ -499,7 +499,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
     dmn_idx_in_out[dmn_nbr_ass_crr++]=dmn_idx_rdr_in[dmn_rdr_idx];
   } /* end loop over dmn_rdr */
   
-    /* Create reverse correspondence */
+  /* Create reverse correspondence */
   for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++)
     dmn_idx_out_in[dmn_idx_in_out[dmn_in_idx]]=dmn_in_idx;
   
@@ -566,7 +566,7 @@ nco_var_dmn_rdr_mtd /* [fnc] Change dimension ordering of variable metadata */
 
   if(dbg_lvl_get() > 2){
     for(dmn_in_idx=0;dmn_in_idx<dmn_in_nbr;dmn_in_idx++){
-      (void)fprintf(stdout,"%s: DEBUG %s re-ordering metadata for variable %s maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,%d)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
+      (void)fprintf(stdout,"%s: DEBUG %s re-ordering metadata for variable %s maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,unknown)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx]);
     } /* end loop over dmn_in */
   } /* endif dbg */
   
@@ -646,6 +646,18 @@ nco_var_dmn_rdr_val /* [fnc] Change dimension ordering of variable values */
     var_out->end[dmn_out_idx]=dmn_out[dmn_out_idx]->end;
     var_out->srd[dmn_out_idx]=dmn_out[dmn_out_idx]->srd;
   } /* end loop over dmn_out */
+  
+  /* Report full metadata re-order, if requested */
+  if(dbg_lvl_get() > 2){
+    int dmn_idx_in_out[NC_MAX_DIMS]; /* [idx] Dimension correspondence, input->output */
+    /* Create reverse correspondence */
+    for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++)
+      dmn_idx_in_out[dmn_idx_out_in[dmn_out_idx]]=dmn_out_idx;
+  
+    for(dmn_in_idx=0;dmn_in_idx<dmn_out_nbr;dmn_in_idx++){
+      (void)fprintf(stdout,"%s: DEBUG %s re-ordering metadata for variable %s maps dimension %s from (ordinal,ID)=(%d,%d) to (%d,%d)\n",prg_nm_get(),fnc_nm,var_in->nm,var_in->dim[dmn_in_idx]->nm,dmn_in_idx,var_in->dmn_id[dmn_in_idx],dmn_idx_in_out[dmn_in_idx],var_out->dmn_id[dmn_idx_in_out[dmn_in_idx]]);
+    } /* end loop over dmn_in */
+  } /* endif dbg */
   
   /* Is identity re-ordering requested? */
   for(dmn_out_idx=0;dmn_out_idx<dmn_out_nbr;dmn_out_idx++){
