@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.223 2003-07-04 20:08:44 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.224 2003-07-04 20:21:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -219,14 +219,15 @@ Command executes but in.hdf is full of screwy values
 ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 251. Does ncks -B correctly write packed variables in binary format?
 253. Sift through numerous files in ~/nco/nco-2.7.3/debian, edit important ones
-254. Use ncap to create T42 fields in nco_tst.nc, remove dependence of make tst on FTP
+254. Use ncap to create T42 fields in nco_tst.nc, remove make tst dependence on FTP
 255. Desktop icon for NCO
 256. Turn udunits into .deb
 257. Put hybrid_sigma_pressure etc. definitions into in.cdl
 258. Develop syntax/procedure for specifying lists of hyperslabs for single pass, low memory consumption MSA jobs like Martin Schultz's in Discussion forum on 20030506
 259. Variadic function extension to nco_malloc() to support printing debugging messages?
 260. Warn (but work) when coordinate variable has more than two dimensions
-261. Remove RPM warnings emitted by Makefile on non-RedHat machines
+261. Switch from toggling defaults to --no-option format for all Booleans. e.g., --abc should ensure alphabetization is True, and --no-abc should ensure it is false, rather than toggling.
+262. Remove RPM warnings emitted by Makefile on non-RedHat machines
 ************************************************************************
 End NCO Wish list
 ************************************************************************

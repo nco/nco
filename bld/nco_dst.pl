@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 				
 # Purpose: Perform NCO distributions
-# Script relies heavily on SSH connectivity between $HOST, $CVSROOT, and $ftp_mch
+# Script relies heavily on SSH connectivity between $HOST, $CVSROOT, and $www_mch
 
 # Usage:
 # Export tagged, public versions
@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.101 2003-07-04 20:07:09 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.102 2003-07-04 20:16:24 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -66,9 +66,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2003-07-04 20:07:09 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.101 2003-07-04 20:07:09 zender Exp $';
-my $CVS_Revision='$Revision: 1.101 $';
+my $CVS_Date='$Date: 2003-07-04 20:16:24 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.102 2003-07-04 20:16:24 zender Exp $';
+my $CVS_Revision='$Revision: 1.102 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -77,10 +77,6 @@ my $bld=$False; # Option bld; Whether to rebuild netCDF distribution
 my $cp_cmd='cp -p -f'; # Command that behaves like cp
 my $cvs_cmd='cvs'; # Command that behaves like cvs (Use cvs -t for verbose output)
 my $data_nm=$ENV{'DATA'};
-my $ftp_drc='/var/ftp/pub/zender/nco'; # Directory on FTP machine where repository resides
-my $ftp_drc_mrr='/home/groups/ftp/pub/nco'; # Directory on FTP mirror machine where repository resides
-my $ftp_mch='dust.ess.uci.edu'; # Machine where FTP repository resides
-my $ftp_mch_mrr='nco.sourceforge.net'; # Machine where FTP repository mirror resides
 my $main_trunk_tag='nco';
 my $mkdir_cmd='mkdir -p'; # Command that behaves like mkdir
 my $mdl_sng='nco'; # Base of module name
@@ -243,17 +239,8 @@ if($bld){
 #    cmd_prc("$mk_cmd doc"); 
     cmd_prc("$mk_cmd clean"); 
     
-# Set up FTP server
-    chdir $dst_pth_pfx or die "$prg_nm: ERROR unable to chdir to $dst_pth_pfx: $!\n"; # $! is system error string
-    cmd_prc("$tar_cmd -cvzf $dst_fl ./$dst_vrs"); # Create gzipped tarfile
-    cmd_prc("$rsh_cmd $ftp_mch $rm_cmd $ftp_drc/$dst_fl"); # Remove any distribution with same name
-    if($dly_snp){cmd_prc("$rsh_cmd $ftp_mch $rm_cmd -r $ftp_drc/nco-????????.tar.gz");} # Remove previous daily snapshots from FTP server
-    cmd_prc("$rcp_cmd $dst_fl $ftp_mch:$ftp_drc"); # Copy local tarfile to FTP server
-    
 # Full release procedure (public releases only) includes update Web pages
     if(!$dly_snp){
-	cmd_prc("$rsh_cmd $ftp_mch $rm_cmd $ftp_drc/nco.tar.gz");
-	cmd_prc("$rsh_cmd $ftp_mch \"cd $ftp_drc; ln -s $dst_fl nco.tar.gz\"");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/index.shtml $www_mch:$www_drc");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco_news.shtml $www_mch:$www_drc");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco.html $dst_pth_bld/doc/nco.info* $dst_pth_bld/doc/nco.dvi $dst_pth_bld/doc/nco.pdf $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.texi $www_mch:$www_drc");
@@ -268,9 +255,6 @@ if($bld){
 # Usually scp_cmd includes -p switch to preserve permissions and times, but sourceforge server does not allow this
 # Hence it generates warnings when used with -p, and is not properly updated
     if($True){
-	cmd_prc("$rcp_cmd_no_prs_prm $dst_fl $ftp_mch_mrr:$ftp_drc_mrr"); # Copy local tarfile to FTP server
-	cmd_prc("$rsh_cmd $ftp_mch_mrr $rm_cmd $ftp_drc_mrr/nco.tar.gz");
-	cmd_prc("$rsh_cmd $ftp_mch_mrr \"cd $ftp_drc_mrr; ln -s $dst_fl nco.tar.gz\"");
 	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_bld/doc/index.shtml $dst_pth_bld/doc/nco_news.shtml $dst_pth_bld/doc/README $dst_pth_bld/doc/TODO $dst_pth_bld/doc/VERSION $dst_pth_bld/doc/ChangeLog $www_mch_mrr:$www_drc_mrr");
 	cmd_prc("$rcp_cmd_no_prs_prm $dst_pth_bld/doc/nco.html $dst_pth_bld/doc/nco.info* $dst_pth_bld/doc/nco.dvi $dst_pth_bld/doc/nco.pdf $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.texi $www_mch_mrr:$www_drc_mrr");
     } # endif SourceForge
@@ -280,7 +264,7 @@ if($bld){
     if($dst_cln){cmd_prc("$rm_cmd -r $dst_pth_bld");} # Remove local distribution
 
 # Sanity check
-    cmd_prc("$rsh_cmd $ftp_mch ls -l $ftp_drc");
+    cmd_prc("$rsh_cmd $www_mch ls -l $www_drc");
 } # endif bld
 
 if($acd_prs){
@@ -309,7 +293,6 @@ if($cgd_cnt){
     print STDOUT "\n$prg_nm: Updating contrib NCO on $rmt_mch...\n";
     cmd_prc("$rsh_cmd $rmt_mch \"$rm_cmd -r /usr/tmp/$usr_nm/nco*\"");
     cmd_prc("$rsh_cmd $rmt_mch \"$mkdir_cmd /usr/tmp/$usr_nm/$dst_vrs/obj\"");
-    cmd_prc("$rcp_cmd $ftp_mch:$ftp_drc/nco.tar.gz $rmt_mch:/usr/tmp/$usr_nm");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm;gtar -xvzf nco.tar.gz;rm nco.tar.gz\"");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm/$dst_vrs/bld; setenv MY_BIN_DIR /contrib/nco-1.1/bin; setenv MY_LIB_DIR /contrib/nco-1.1/lib; setenv MY_OBJ_DIR /usr/tmp/$usr_nm/$dst_vrs/obj; gmake cln all test\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
@@ -321,7 +304,6 @@ if($dat_cnt){
     print STDOUT "\n$prg_nm: Updating contrib NCO on $rmt_mch...\n";
     cmd_prc("$rsh_cmd $rmt_mch \"$rm_cmd -r /usr/tmp/$usr_nm/nco*\"");
     cmd_prc("$rsh_cmd $rmt_mch \"$mkdir_cmd /usr/tmp/$usr_nm/$dst_vrs/obj\"");
-    cmd_prc("$rcp_cmd $ftp_mch:$ftp_drc/nco.tar.gz $rmt_mch:/usr/tmp/$usr_nm");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm;tar -xvzf nco.tar.gz;rm nco.tar.gz\"");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm/$dst_vrs/bld; setenv MY_BIN_DIR /contrib/nco-1.1/bin; setenv MY_LIB_DIR /contrib/nco-1.1/lib; setenv MY_OBJ_DIR /usr/tmp/$usr_nm/$dst_vrs/obj; gmake cln all tst\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
@@ -333,7 +315,6 @@ if($bbl_cnt){
     print STDOUT "\n$prg_nm: Updating contrib NCO on $rmt_mch...\n";
     cmd_prc("$rsh_cmd $rmt_mch \"$rm_cmd -r /usr/tmp/$usr_nm/nco*\"");
     cmd_prc("$rsh_cmd $rmt_mch \"$mkdir_cmd /usr/tmp/$usr_nm/$dst_vrs/obj\"");
-    cmd_prc("$rcp_cmd $ftp_mch:$ftp_drc/nco.tar.gz $rmt_mch:/usr/tmp/$usr_nm");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm;gunzip nco.tar.gz;tar -xvf nco.tar;rm nco.tar\"");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm/$dst_vrs/bld; setenv MY_BIN_DIR /home/blackforest/$usr_nm/bin/AIX; setenv MY_LIB_DIR /home/blackforest/$usr_nm/lib/AIX; setenv MY_OBJ_DIR /home/blackforest/$usr_nm/obj/AIX; setenv NETCDF_INC /usr/local/include; setenv NETCDF_LIB /usr/local/lib32/r4i4; gmake cln all tst\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
@@ -345,7 +326,6 @@ if($blk_cnt){
     print STDOUT "\n$prg_nm: Updating contrib NCO on $rmt_mch...\n";
     cmd_prc("$rsh_cmd $rmt_mch \"$rm_cmd -r /usr/tmp/$usr_nm/nco*\"");
     cmd_prc("$rsh_cmd $rmt_mch \"$mkdir_cmd /usr/tmp/$usr_nm/$dst_vrs/obj\"");
-    cmd_prc("$rcp_cmd $ftp_mch:$ftp_drc/nco.tar.gz $rmt_mch:/usr/tmp/$usr_nm");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm;gunzip nco.tar.gz;tar -xvf nco.tar;rm nco.tar\"");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm/$dst_vrs/bld; setenv MY_BIN_DIR /home/blackforest/$usr_nm/bin/AIX; setenv MY_LIB_DIR /home/blackforest/$usr_nm/lib/AIX; setenv MY_OBJ_DIR /home/blackforest/$usr_nm/obj/AIX; setenv NETCDF_INC /usr/local/include; setenv NETCDF_LIB /usr/local/lib32/r4i4; gmake cln all tst\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
@@ -357,7 +337,6 @@ if($ute_prs){
     print STDOUT "\n$prg_nm: Updating personal NCO on $rmt_mch...\n";
     cmd_prc("$rsh_cmd $rmt_mch \"$rm_cmd -r /usr/tmp/$usr_nm/nco*\"");
     cmd_prc("$rsh_cmd $rmt_mch \"$mkdir_cmd /usr/tmp/$usr_nm/$dst_vrs/obj\"");
-    cmd_prc("$rcp_cmd $ftp_mch:$ftp_drc/nco.tar.gz $rmt_mch:/usr/tmp/$usr_nm");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm;tar -xvzf nco.tar.gz;rm nco.tar.gz\"");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm/$dst_vrs/bld; setenv MY_BIN_DIR /home/ute/$usr_nm/bin/SGIMP64/bin; setenv MY_LIB_DIR /home/ute/$usr_nm/bin/SGIMP64/lib; setenv MY_OBJ_DIR /usr/tmp/$usr_nm/$dst_vrs/obj; gmake cln all tst\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
@@ -368,7 +347,6 @@ if($cray_prs){
     print STDOUT "\n$prg_nm: Updating private NCO on $rmt_mch...\n";
     cmd_prc("$rsh_cmd $rmt_mch \"$rm_cmd -r /usr/tmp/$usr_nm/nco*\"");
     cmd_prc("$rsh_cmd $rmt_mch \"$mkdir_cmd /usr/tmp/$usr_nm/$dst_vrs/obj\"");
-    cmd_prc("rcp -p $ftp_mch:$ftp_drc/nco.tar.gz $rmt_mch:/usr/tmp/$usr_nm");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm;gunzip nco.tar.gz;tar -xvf nco.tar;rm nco.tar*\"");
     cmd_prc("$rsh_cmd $rmt_mch \"cd /usr/tmp/$usr_nm/$dst_vrs/bld; setenv MY_BIN_DIR /home/ouray0/$usr_nm/bin/CRAY; setenv MY_LIB_DIR /usr/tmp/$usr_nm/$dst_vrs/lib; setenv MY_OBJ_DIR /usr/tmp/$usr_nm/$dst_vrs/obj; gnumake cln all tst\"");
     print STDOUT "$prg_nm: Done updating contrib NCO on $rmt_mch\n\n";
