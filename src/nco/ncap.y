@@ -1,7 +1,7 @@
  %{
 /* Begin C declarations section */
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.14 2001-11-16 12:28:59 hmb Exp $ -*-C-*- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.15 2001-11-29 16:05:30 hmb Exp $ -*-C-*- */
 
 /* Purpose: Grammar parser for ncap */
 
@@ -53,7 +53,6 @@
 #include <stdlib.h>             /* atof, atoi, malloc, getopt */
 #include <string.h>             /* strcmp. . . */
 #include <stdio.h>              /* stderr, FILE, NULL, etc. */
-
 #include <netcdf.h>             /* netCDF definitions */
 #include "nco.h"                 /* NCO definitions */
 #include "nco_netcdf.h"         /* netCDF3 wrapper calls */
@@ -64,7 +63,7 @@
 
 /* Turn on parser debugging option (bison man p. 85) */
 #define YYDEBUG 1
-int yydebug=1;
+int yydebug=0;
 
 
 /* Turns on more verbose errors than just plain "parse error" when yyerror() is called by parser */
@@ -80,6 +79,10 @@ int yydebug=1;
 #define YYLEX_PARAM prs_arg 
  int rcd; /* [enm] Return value for function calls */
 
+extern long int line_number;        /* Current line number. Incremented in ncap.l */
+extern char *fl_spt_global;        /* Global vaiable for the instruction file */
+
+char errstr[200];                  /* Error string for short error messages */
 /* End C declarations section */
 %}
 /* Begin parser declaration section */
@@ -111,9 +114,9 @@ int yydebug=1;
 %token <output_var> OUT_VAR
 %token <att> OUT_ATT
 %token <sym> FUNCTION
-%token POWER ABS ITOSTR
+%token POWER ABS ATOSTR IGNORE EPROVOKE
 
-%type <attribute> a_exp
+%type <attribute> att_exp
 %type <str> string_exp
 %type <var> var_exp
 %type <output_var> out_var_exp
@@ -138,28 +141,33 @@ program:           statement_list
                    ;
 
 statement_list:     statement_list statement ';'
+                  | statement_list error ';'
                   | statement ';'
+                  | error ';'  /* catches most errors then reads up to the next ; */ 
                   ;
 
 
-statement:     out_att_exp '=' a_exp
+
+statement:     out_att_exp '=' att_exp
                 { 
 		  int index; 
                   aed_sct *ptr_aed;
                   
 		  index=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
                   ptr_aed=((prs_sct*)prs_arg)->att_lst[index];                               
-                  ptr_aed->val=ncap_attribute_2_ptr_unn($3);
+                  ptr_aed->val = ncap_attribute_2_ptr_unn($3);
                   ptr_aed->type=$3.type;
-                  ptr_aed->sz = (long)nco_typ_lng($3.type);
-                  (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
-                  
+		  ptr_aed->sz = 1L;
+		  (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
+                  (void)sprintf(errstr,"Saving attribute %s:%s to %s",$1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->fl_out);
+		  (void)yyerror(errstr);
                  if(dbg_lvl_get() > 1) {
                   (void)fprintf(stderr,"Saving in array attribute %s:%s=",$1.var_nm,$1.att_nm);
+                  
                   switch($3.type){
                     case NC_BYTE:  (void)fprintf(stderr,"%d\n",$3.val.b); break;
                     case NC_SHORT: (void)fprintf(stderr,"%d\n",$3.val.s); break;
-                    case NC_INT:   (void)fprintf(stderr,"%d\n",$3.val.l); break;
+                    case NC_INT:   (void)fprintf(stderr,"%ld\n",$3.val.l); break;
 		    case NC_FLOAT: (void)fprintf(stderr,"%G\n",$3.val.f); break;		  
     		    case NC_DOUBLE:  (void)fprintf(stderr,"%.5G\n",$3.val.d);break;
 		    default: break;
@@ -183,7 +191,8 @@ statement:     out_att_exp '=' a_exp
                   strcpy(ptr_aed->val.cp,$3);
                   (void)cast_nctype_void(NC_CHAR,&ptr_aed->val);    
 
-                 if(dbg_lvl_get() > 1) (void)fprintf(stderr,"Saving in array,attribute %s:%s=%s\n",$1.var_nm,$1.att_nm,$3);
+                 (void)sprintf(errstr,"Saving in attribute %s:%s=%s",$1.var_nm,$1.att_nm,$3);
+                 (void)yyerror(errstr);
                  (void)free($1.var_nm);
                  (void)free($1.att_nm);
                  (void)free($3);
@@ -197,14 +206,18 @@ statement:     out_att_exp '=' a_exp
                   if( $3->nbr_dim == 0  ){
                     index=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct*)prs_arg)->att_lst,((prs_sct*)prs_arg)->nbr_att,True);
                     ptr_aed=((prs_sct*)prs_arg)->att_lst[index];
-                    ptr_aed->sz = nco_typ_lng($3->type)*($3->sz);
+                    ptr_aed->sz = $3->sz;
                     ptr_aed->val.vp = (void*)nco_malloc(ptr_aed->sz);
-		    (void)var_copy($3->type,$3->sz,ptr_aed->val,$3->val);
-		    ptr_aed->type = $3->type;
-                    cast_nctype_void($3->type,&ptr_aed->val); 
+		    (void)var_copy($3->type,ptr_aed->sz,$3->val,ptr_aed->val);
+                    ptr_aed->type= $3->type;
+                    cast_nctype_void($3->type,&ptr_aed->val);
+                    (void)sprintf(errstr,"Saving in attribute %s:%s O dimensional variable",$1.var_nm,$1.att_nm);
+                    (void)yyerror(errstr); 
 		  }else{
-                   (void)fprintf(stderr,"Warning: Cannot store a multi-dimensional variable in attribute %s:%s\n",$1.var_nm,$1.att_nm );
+                   (void)sprintf(errstr,"Warning: Cannot store a multi-dimensional variable in attribute %s:%s",$1.var_nm,$1.att_nm );
+                  (void)yyerror(errstr);
                   }
+		  
 		  (void)free($1.var_nm);
                   (void)free($1.att_nm);
                   (void)var_free($3); 
@@ -217,22 +230,25 @@ statement:     out_att_exp '=' a_exp
                   /* check to see if variable is already in output file */
                   rcd = nco_inq_varid_flg(((prs_sct*)prs_arg)->out_id,$3->nm,&var_id);
                   if( rcd == NC_NOERR ) {
-                   (void)fprintf(stderr,"Warning: Variable %s has aleady been saved in %s\n", $3->nm,((prs_sct*)prs_arg)->fl_out);
+                   (void)sprintf(errstr,"Warning: Variable %s has aleady been saved in %s", $3->nm,((prs_sct*)prs_arg)->fl_out);
+                   (void)yyerror(errstr);                                   
                   }else{  
                     (void)ncap_var_write($3,(prs_sct*)prs_arg);
-                    (void)fprintf(stderr,"Saving variable %s to  %s\n", $3->nm,((prs_sct*)prs_arg)->fl_out);
+                    (void)sprintf(errstr,"Saving variable %s to %s", $3->nm,((prs_sct*)prs_arg)->fl_out);
+                    (void)yyerror(errstr);
 		  } /* end else */
 		  (void)free($1);
                   (void)var_free($3);
                  }
-              | out_var_exp '=' a_exp
+              | out_var_exp '=' att_exp
                  {
 		  int rcd;
                   int var_id;
                   var_sct *var;
                   rcd = nco_inq_varid_flg(((prs_sct*)prs_arg)->out_id,$1,&var_id);
                   if( rcd == NC_NOERR ) {
-                       (void)fprintf(stderr,"Warning: Variable %s has aleady been saved in %s\n", $1,((prs_sct*)prs_arg)->fl_out);
+                   (void)sprintf(errstr,"Warning: Variable %s has aleady been saved in %s", $1,((prs_sct*)prs_arg)->fl_out);
+		   (void)yyerror(errstr);
                   }else{  
 	    	   
                    var = (var_sct*)calloc(1,sizeof(var_sct));
@@ -244,7 +260,9 @@ statement:     out_att_exp '=' a_exp
                    var->type = $3.type;
                    (void)ncap_var_write(var,(prs_sct*)prs_arg);
                    (void)var_free(var);
-                   (void)fprintf(stderr,"Saving variable %s to  %s\n", $1,((prs_sct*)prs_arg)->fl_out);
+                   (void)sprintf(errstr,"Saving variable %s to %s", $1,((prs_sct*)prs_arg)->fl_out);
+
+                   (void)yyerror(errstr);
 		   }
 		  (void)free($1);
 
@@ -257,7 +275,9 @@ statement:     out_att_exp '=' a_exp
                   var_sct *var;
                   rcd = nco_inq_varid_flg(((prs_sct*)prs_arg)->out_id,$1,&var_id);
                   if( rcd == NC_NOERR ) {
-                       (void)fprintf(stderr,"Warning: Variable %s has aleady been saved in %s\n", $1,((prs_sct*)prs_arg)->fl_out);
+                              
+                  (void)sprintf(errstr,"Warning: Variable %s has aleady been saved in %s", $1,((prs_sct*)prs_arg)->fl_out);
+                  (void)yyerror(errstr);  
                   }else{  
                    var = (var_sct*)calloc(1,sizeof(var_sct));
 		   var->nm = strdup($1);
@@ -269,7 +289,8 @@ statement:     out_att_exp '=' a_exp
                    (void)cast_nctype_void(NC_CHAR,&var->val);
                    (void)ncap_var_write(var,(prs_sct*)prs_arg);
                    (void)var_free(var);
-                   (void)fprintf(stderr,"Saving variable %s to  %s\n", $1,((prs_sct*)prs_arg)->fl_out);
+                   (void)sprintf(errstr,"Saving variable %s to %s", $1,((prs_sct*)prs_arg)->fl_out);
+                   (void)yyerror(errstr);
 		   }
 		  (void)free($1);
                   (void)free($3);
@@ -277,55 +298,55 @@ statement:     out_att_exp '=' a_exp
               ;                    
 
 
-a_exp:                 a_exp '+' a_exp   {
+att_exp:                 att_exp '+' att_exp   {
                                   (void)ncap_retype(&$1,&$3);
                                   $$=ncap_attribute_calc($1,'+',$3);                                
                            }
-                     |  a_exp '-' a_exp        {
+                     |  att_exp '-' att_exp        {
                                  (void)ncap_retype(&$1,&$3); 
                                  $$=ncap_attribute_calc($1,'-',$3);
                            }
-                     | a_exp '*' a_exp        {
+                     | att_exp '*' att_exp        {
                                   (void)ncap_retype(&$1,&$3);
                                   $$=ncap_attribute_calc($1,'*',$3);
                                   }
-                    | a_exp '/' a_exp        {
+                    | att_exp '/' att_exp        {
 		                 (void)ncap_retype(&$1,&$3); 
                                  $$=ncap_attribute_calc($1,'/',$3);  
                                  }
-                    | a_exp '%' a_exp {
+                    | att_exp '%' att_exp {
                                  (void)ncap_retype(&$1,&$3);
                            
                                  $$=ncap_attribute_calc($1,'%',$3);  
 		                 }
-                    | '-' a_exp  %prec UMINUS        {
+                    | '-' att_exp  %prec UMINUS        {
 		                   (void)ncap_attribute_minus(&$2);
                                    $$=$2;
                          	}
-                    | a_exp '^' a_exp        {
+                    | att_exp '^' att_exp        {
 		                (void)ncap_attribute_conform_type(NC_DOUBLE,&$1);
 		                (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
                                 $$.val.d = pow($1.val.d,$3.val.d);
                                 $$.type = NC_DOUBLE; 
                                 }
-                    | POWER '(' a_exp ',' a_exp ')' {
+                    | POWER '(' att_exp ',' att_exp ')' {
 		                (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
 		                (void)ncap_attribute_conform_type(NC_DOUBLE,&$5);
                                 $$.val.d = pow($3.val.d,$5.val.d);
                                 $$.type = NC_DOUBLE; 
 		                }
 		    
-                    | ABS '(' a_exp ')' {
+                    | ABS '(' att_exp ')' {
 		               $$ = ncap_attribute_abs($3);
 		               }
-                    | FUNCTION '(' a_exp ')' {
+                    | FUNCTION '(' att_exp ')' {
 		               (void)ncap_attribute_conform_type(NC_DOUBLE,&$3);
                                $$.val.d = (*($1->fnc))($3.val.d);
                                $$.type = NC_DOUBLE;
                                (void)free($1->nm);
                                (void)free($1);
 		               }
-                    | '(' a_exp ')'   {$$ = $2;}
+                    | '(' att_exp ')'   {$$ = $2;}
                     | ATTRIBUTE   {$$ = $1; }
             ;
 
@@ -352,7 +373,7 @@ string_exp:    string_exp '+' string_exp {
                
                 } 
               
-              | ITOSTR '(' a_exp ')' {
+              | ATOSTR '(' att_exp ')' {
 
 		char buf[50];
 
@@ -360,7 +381,7 @@ string_exp:    string_exp '+' string_exp {
 
                  case  NC_DOUBLE: sprintf(buf,"%.10G",$3.val.d); break;
                  case  NC_FLOAT:  sprintf(buf,"%G",$3.val.f); break;
-                 case  NC_INT:    sprintf(buf,"%d",$3.val.l); break;
+                 case  NC_INT:    sprintf(buf,"%ld",$3.val.l); break;
                  case  NC_SHORT:  sprintf(buf,"%d",$3.val.s); break;
                  case  NC_BYTE:   sprintf(buf,"%d",$3.val.b); break;
                  default:  break;
@@ -368,7 +389,7 @@ string_exp:    string_exp '+' string_exp {
 	       $$ = strdup(buf);      
 	      }
 
-              | ITOSTR '(' a_exp ',' string_exp ')' {
+              | ATOSTR '(' att_exp ',' string_exp ')' {
 	       
                char buf[150];
               	      
@@ -394,11 +415,11 @@ var_exp:       var_exp '+' var_exp   {
                $$=ncap_var_var_add($1,$3); 
                var_free($1); var_free($3);
               }
-            | var_exp '+' a_exp {
+            | var_exp '+' att_exp {
                $$=ncap_var_attribute_add($1,$3);
                var_free($1);
               }            
-            | a_exp '+' var_exp {
+            | att_exp '+' var_exp {
                $$=ncap_var_attribute_add($3,$1);
                var_free($3);
               }            
@@ -407,7 +428,7 @@ var_exp:       var_exp '+' var_exp   {
                 var_free($1); 
                 var_free($3);
              }
-            | a_exp '-' var_exp { 
+            | att_exp '-' var_exp { 
                var_sct *var1 ;
                parse_sct minus;
                minus.val.b = -1;
@@ -418,7 +439,7 @@ var_exp:       var_exp '+' var_exp   {
                var_free(var1);
                var_free($3);
               }
-            | var_exp '-' a_exp {
+            | var_exp '-' att_exp {
                $$=ncap_var_attribute_sub($1,$3);
                var_free($1);
                }
@@ -426,27 +447,27 @@ var_exp:       var_exp '+' var_exp   {
                 $$ = ncap_var_var_multiply($1,$3); 
                 var_free($1); var_free($3); 
              }
-            | var_exp '*' a_exp {
+            | var_exp '*' att_exp {
                 $$ = ncap_var_attribute_multiply($1,$3);
                 var_free($1);
               }
-            | var_exp '%' a_exp {
+            | var_exp '%' att_exp {
               $$=ncap_var_attribute_modulus($1,$3);
               var_free($1);
 	    }
-            | a_exp '*' var_exp {
+            | att_exp '*' var_exp {
                 $$ = ncap_var_attribute_multiply($3,$1);
                 var_free($3);
               }
-            | var_exp '/' a_exp {
+            | var_exp '/' att_exp {
                 $$=ncap_var_attribute_divide($1,$3);
               var_free($1);
               }
-            | var_exp '^' a_exp {
+            | var_exp '^' att_exp {
                $$=ncap_var_attribute_power($1,$3);
 	       var_free($1);
               }
-            | POWER '(' var_exp ',' a_exp ')' {
+            | POWER '(' var_exp ',' att_exp ')' {
                $$=ncap_var_attribute_power($3,$5);
 	       var_free($3);
               }
@@ -475,7 +496,6 @@ var_exp:       var_exp '+' var_exp   {
             | VAR  { 
 	      $$=ncap_var_init($1,((prs_sct*)prs_arg));
               }
-	    
             ;
 /* End Rules section */
 %%
@@ -501,6 +521,26 @@ ncap_aed_lookup(char *var_nm,char *att_nm,aed_sct **att_lst,int *nbr_att, bool u
   return (*nbr_att)++;
 }
 
+
+
+int
+ yyerror(char *sng)
+{
+  
+  /* Use eprokoke_skip  to skip an error message after we have sent an error */
+  /* message from yylex --  stop the provoked error message from yyparse     */
+  /* being printed */                           
+
+
+  static bool eprovoke_skip;
+  
+  //if(eprovoke_skip) { eprovoke_skip = False ; return 0;} 
+  (void)fprintf(stderr,
+           "%s: %s line %ld  %s\n",prg_nm_get(), fl_spt_global,line_number,sng);
+  
+  if( sng[0]== '#' ) eprovoke_skip = True;
+  return 0;
+} /* end yyerror() */
 
 
 
