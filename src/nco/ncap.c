@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.90 2002-08-27 20:57:33 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.91 2002-08-28 13:18:27 hmb Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -71,6 +71,8 @@ main(int argc,char **argv)
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
   bool PROCESS_ALL_VARS=True;     /* option v */  
+  bool PRINT_FUNCTION_TABLE=False;
+
   char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
@@ -87,14 +89,13 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.90 2002-08-27 20:57:33 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.90 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.91 2002-08-28 13:18:27 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.91 $";
   
-  dmn_sct **dmn=NULL_CEWI;
-  dmn_sct **dmn_out;
-  dmn_sct **dmn_prc=NULL_CEWI;
-  dmn_sct **dmn_new=NULL_CEWI;
-  int nbr_dmn_out=0;
+  dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
+  dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
+  dmn_sct **dmn_new=NULL_CEWI; /* Temporary dim to reduce referencing */
+  int nbr_dmn_out=0;           /* Number of dims in list dmn_out */
     
   extern char *optarg;
   extern int optind;
@@ -142,18 +143,14 @@ main(int argc,char **argv)
   int nbr_dmn_fl;
   int lmt_nbr=0; /* Option d. NB: lmt_nbr gets incremented */
   int nbr_spt=0; /* Option s. NB: nbr_spt gets incremented */
-  int nbr_var_fl;
+  int nbr_var_fl;/* number of vars in a file */
   int nbr_var_fix; /* nbr_var_fix gets incremented */
   int nbr_var_prc; /* nbr_var_prc gets incremented */
   int nbr_xtr=0; /* nbr_xtr will not otherwise be set for -c with no -v */
-  int nbr_xtr_2=0;
-  int nbr_dmn_xtr=int_CEWI;
-  int nbr_dmn_xtr_2=int_CEWI;
+  int nbr_dmn_in=int_CEWI; /* number of dims in dim_in */
+  int nbr_dmn_ass=int_CEWI;/* number of dims in temporary list */
   int nbr_fl=0;
-  int nbr_lst_a=0;
-  int nbr_lst_b=0;
-  int nbr_lst_c=0;
-  int nbr_lst_d=0;
+  int nbr_lst_a=0; /* size of xtr_lst_a */
   int opt;
   int rec_dmn_id=NCO_REC_DMN_UNDEFINED;
   int rcd=NC_NOERR; /* [rcd] Return code */
@@ -165,18 +162,15 @@ main(int argc,char **argv)
   sym_sct **sym_tbl; /* [fnc] Symbol table for functions */
   int sym_tbl_nbr; /* [nbr] Size of symbol table */
   int sym_idx=0; /* [idx] Counter for symbols */
+
+
   
   lmt_sct *lmt=NULL_CEWI;
   
-  nm_id_sct *dmn_lst=NULL;
-  nm_id_sct *dmn_lst_2=NULL;
-  nm_id_sct *xtr_lst=NULL;
-  nm_id_sct *xtr_lst_2=NULL;
-  
-  nm_id_sct *xtr_lst_a=NULL;
-  nm_id_sct *xtr_lst_b=NULL;
-  nm_id_sct *xtr_lst_c=NULL;
-  nm_id_sct *xtr_lst_d=NULL;
+  nm_id_sct *dmn_lst=NULL;       
+  nm_id_sct *xtr_lst=NULL;   /* The list of non-processed variables which get copied to OUTPUT */
+  nm_id_sct *xtr_lst_a=NULL; /* initialized to ALL the vars in the OUTPUT file */
+
   time_t clock;
   
   var_sct **var;
@@ -249,7 +243,7 @@ main(int argc,char **argv)
     case 'r': /* Print CVS program information and copyright notice */
       (void)copyright_prn(CVS_Id,CVS_Revision);
       (void)nco_lib_vrs_prn();
-      nco_exit(EXIT_SUCCESS);
+      PRINT_FUNCTION_TABLE = True;
       break;
     case 's': /* Copy command script for later processing */
       spt_arg[nbr_spt++]=(char *)strdup(optarg);
@@ -350,7 +344,21 @@ main(int argc,char **argv)
   /* sym_tbl[sym_idx++]=ncap_sym_init("rint",rint,rintf); *//* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
 #endif /* not AIX || SGI* || WIN32 */
   assert(sym_idx == sym_tbl_nbr);
- 
+
+
+  if(PRINT_FUNCTION_TABLE){
+
+    printf("\n  Available Maths functions:\n");
+    printf("  ----------------------\n");
+    printf("  NAME    FLOAT   DOUBLE\n");          
+    for(idx = 0 ;idx < sym_tbl_nbr ; idx++)
+      printf("  %-7s %-7c %-7c\n", sym_tbl[idx]->nm, (sym_tbl[idx]->fnc_flt ? 'y' : 'n'), (sym_tbl[idx]->fnc_dbl ? 'y' : 'n'));
+     printf("  ----------------------\n");
+  nco_exit(EXIT_SUCCESS);
+
+  }
+
+
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&nbr_fl,&fl_out);
   
@@ -366,13 +374,13 @@ main(int argc,char **argv)
   
 
   /* Form list of ALL DIMENSIONS */  
-  dmn_lst=nco_dmn_lst(in_id,&nbr_dmn_xtr);
+  dmn_lst=nco_dmn_lst(in_id,&nbr_dmn_in);
 
-  dmn=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
-  for(idx=0;idx<nbr_dmn_xtr;idx++) dmn[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
+  dmn_in=(dmn_sct **)nco_malloc(nbr_dmn_in*sizeof(dmn_sct *));
+  for(idx=0;idx<nbr_dmn_in;idx++) dmn_in[idx]=nco_dmn_fll(in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
 
   /* Merge hyperslab limit information into dimension structures */
-    if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dmn,nbr_dmn_xtr,lmt,lmt_nbr);
+    if(lmt_nbr > 0) (void)nco_dmn_lmt_mrg(dmn_in,nbr_dmn_in,lmt,lmt_nbr);
 
 
     /* Open output file */
@@ -393,13 +401,13 @@ main(int argc,char **argv)
   prs_arg.out_id=out_id; /* [id] Output data file ID */
   prs_arg.att_lst=att_lst; /* [sct] Attributes in script */
   prs_arg.nbr_att=&nbr_att; /* [nbr] Number of attributes in script */
-  prs_arg.dmn=dmn; /* [dmn] List of extracted dimensions */
-  prs_arg.nbr_dmn_xtr=nbr_dmn_xtr; /* [nbr] Number of extracted dimensions */
-  prs_arg.dmn_out =&dmn_prc;
-  prs_arg.nbr_dmn_out = &nbr_dmn_out;
+  prs_arg.dmn_in=dmn_in; /* [dmn_in] List of all dimensions in input */
+  prs_arg.nbr_dmn_in=nbr_dmn_in; /* [nbr] Number of  dimensions in input */
+  prs_arg.dmn_out =&dmn_out;     /* pointer to list of dims in output */
+  prs_arg.nbr_dmn_out = &nbr_dmn_out; /* number of dims in above list */
   prs_arg.sym_tbl=sym_tbl; /* [fnc] Symbol table for functions */
   prs_arg.sym_tbl_nbr=sym_tbl_nbr; /* [nbr] Number of functions in table */
-  prs_arg.ntl_scn=False; /* [flg] Initial scan of script */
+  prs_arg.ntl_scn = False; /* No longer do an initial scan */
   prs_arg.var_LHS=NULL; /* [var] LHS cast variable */
   prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
   
@@ -420,7 +428,7 @@ main(int argc,char **argv)
     } /* endif debug */
 
     /* Run parser on command line scripts */
-    fl_spt_usr=(char *)strdup("Command-line scripts");
+    fl_spt_usr=(char *)strdup("Command-line script");
     yy_scan_string(spt_arg_cat);
 
   }else{ /* ...endif command-line scripts, begin script file... */
@@ -431,10 +439,12 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
-    /* Copy script file name to global variable */
-    fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1UL); 
-    fl_spt_glb[ncl_dpt_crr]=fl_spt_usr;
   } /* end else */
+  
+  /* Copy script file name to global variable */
+  fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1UL); 
+  fl_spt_glb[ncl_dpt_crr]=fl_spt_usr;
+  
 
   /* Invoke parser */
   rcd=yyparse((void *)&prs_arg);
@@ -486,18 +496,19 @@ main(int argc,char **argv)
 
    (void)nco_redef(out_id);
 
+   /* make a list of dims of the vars in xtr_lst */
     if(nbr_xtr > 0) 
-      dmn_lst_2 = nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr_2);
+      dmn_lst = nco_dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_ass);
   
     /* Find and add any new dims to output */
-    for(idx =0 ; idx < nbr_dmn_xtr_2; idx++ )
-      for(jdx =0 ; jdx < nbr_dmn_xtr ; jdx++){
+    for(idx =0 ; idx < nbr_dmn_ass; idx++ )
+      for(jdx =0 ; jdx < nbr_dmn_in ; jdx++){
         /* if dimension in list and it hasn't been defined yet */
-	if(!strcmp(dmn_lst_2[idx].nm, dmn[jdx]->nm) && !dmn[jdx]->xrf){     
+	if(!strcmp(dmn_lst[idx].nm, dmn_in[jdx]->nm) && !dmn_in[jdx]->xrf){     
           /* add dim to output list dmn_prc */
           dmn_new = nco_dmn_out_grow((void *)&prs_arg);
-          *dmn_new = nco_dmn_dpl(dmn[jdx]);
-          (void)nco_dmn_xrf(*dmn_new,dmn[jdx]);
+          *dmn_new = nco_dmn_dpl(dmn_in[jdx]);
+          (void)nco_dmn_xrf(*dmn_new,dmn_in[jdx]);
 	  /* write dim to output */
 	  (void)nco_dmn_dfn(fl_out,out_id,dmn_new,1);
 	  break;
@@ -508,27 +519,27 @@ main(int argc,char **argv)
     /* Need to add co-ordinate vars to extraction list */
     /* if PROCESS_ALL_COORDINATES then the associated DIM needs to written to output */
 
-    for(idx=0; idx <nbr_dmn_xtr ; idx++){
-      if(!dmn[idx]->is_crd_dmn) continue;
+    for(idx=0; idx <nbr_dmn_in ; idx++){
+      if(!dmn_in[idx]->is_crd_dmn) continue;
       
-      if(PROCESS_ALL_COORDINATES && !dmn[idx]->xrf) {
+      if(PROCESS_ALL_COORDINATES && !dmn_in[idx]->xrf) {
 
-        /* add dim to output list dmn_prc */
+        /* add dim to output list dmn_out */
         dmn_new = nco_dmn_out_grow((void *)&prs_arg);
-        *dmn_new = nco_dmn_dpl(dmn[idx]);
-        (void)nco_dmn_xrf(*dmn_new,dmn[idx]);
+        *dmn_new = nco_dmn_dpl(dmn_in[idx]);
+        (void)nco_dmn_xrf(*dmn_new,dmn_in[idx]);
 	/* write dim to output */
 	(void)nco_dmn_dfn(fl_out,out_id,dmn_new,1);
       }
       /* now add co-odinate var to the extraction list */
-      if((PROCESS_ALL_COORDINATES ||  PROCESS_ASSOCIATED_COORDINATES) && dmn[idx]->xrf){
+      if((PROCESS_ALL_COORDINATES ||  PROCESS_ASSOCIATED_COORDINATES) && dmn_in[idx]->xrf){
       
 	for(jdx =0 ; jdx < nbr_xtr ; jdx ++)
-	  if(!strcmp(xtr_lst[jdx].nm , dmn[idx]->nm)) break;
+	  if(!strcmp(xtr_lst[jdx].nm , dmn_in[idx]->nm)) break;
         if( jdx == nbr_xtr){
           xtr_lst =(nm_id_sct *)nco_realloc(xtr_lst, (nbr_xtr+1)*sizeof(nm_id_sct));     
-          xtr_lst[nbr_xtr].nm = strdup(dmn[idx]->nm);
-          xtr_lst[nbr_xtr++].id = dmn[idx]->cid;
+          xtr_lst[nbr_xtr].nm = strdup(dmn_in[idx]->nm);
+          xtr_lst[nbr_xtr++].id = dmn_in[idx]->cid;
         }
           
       }     
@@ -547,7 +558,7 @@ main(int argc,char **argv)
   var=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   var_out=(var_sct **)nco_malloc(nbr_xtr*sizeof(var_sct *));
   for(idx=0;idx<nbr_xtr;idx++){
-    var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dmn,nbr_dmn_xtr);
+    var[idx]=nco_var_fll(in_id,xtr_lst[idx].id,xtr_lst[idx].nm,dmn_in,nbr_dmn_in);
     var_out[idx]=nco_var_dpl(var[idx]);
     (void)nco_xrf_var(var[idx],var_out[idx]);
     (void)nco_xrf_dmn(var_out[idx]);
@@ -572,7 +583,7 @@ main(int argc,char **argv)
   nco_redef(out_id);
 
   /* Now write out new attributes possibly overwriting old ones */
-  for(idx=0;idx<nbr_att;idx++){
+  for(idx=0; idx < nbr_att ; idx++){
     rcd=nco_inq_varid_flg(out_id,att_lst[idx]->var_nm,&var_id);
     if(rcd == NC_NOERR){
       att_lst[idx]->mode=aed_overwrite;
