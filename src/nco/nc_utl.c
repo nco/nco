@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.35 1999-10-04 05:13:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.36 1999-10-04 17:28:52 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -3246,11 +3246,11 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 #ifndef USE_FORTRAN_ARITHMETIC
   double mss_val_double=double_CEWI;
   float mss_val_float=float_CEWI;
-  nclong mss_val_long=long_CEWI;
-  short mss_val_short=short_CEWI;
   signed char mss_val_char;
   unsigned char mss_val_byte;
 #endif /* USE_FORTRAN_ARITHMETIC */
+  nclong mss_val_long=long_CEWI;
+  short mss_val_short=short_CEWI;
 
   sz_blk=sz_op1/sz_op2;
 

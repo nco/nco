@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.35 1999-10-04 17:28:51 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.36 1999-10-04 17:32:34 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -28,7 +28,7 @@ ifndef OPTS
 endif
 ifndef USE_FORTRAN_ARITHMETIC
 # Whether or not to use Fortran arithmetic routines
- USE_FORTRAN_ARITHMETIC := Y
+ USE_FORTRAN_ARITHMETIC := N
 endif
 ifndef NETCDF_INC
  NETCDF_INC := /usr/local/include # Directory containing netcdf.h
