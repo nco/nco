@@ -1,0 +1,150 @@
+.TH NCFLINT 1
+.SH NAME
+ncflint \- netCDF File Interpolator
+.SH SYNTAX
+ncflint [-A] [-C] [-c] [-D 
+.IR dbg ]
+[-d 
+.IR dim ,[
+.IR "min" ][,[
+.IR max ]]]
+[-F]
+[-h] [-i
+.IR var, val3 ]
+[-l 
+.IR path ]
+[-O] [-p 
+.IR path ]
+[-R] [-r] [-v 
+.IR var [,...]]
+[-w 
+.IR wgt[,
+.IR wgt2 ]]
+[-x] 
+.I file1 file2 file3
+.SH DESCRIPTION
+.PP
+.B ncflint
+creates an output file that is a linear combination of the
+input files.  This linear combination can be a weighted average, a
+normalized weighted average, or an interpolation of the input files.
+Coordinate variables are not acted upon in any case, they are simply
+copied from
+.I file_1.
+ There are two conceptually distinct methods of using 
+.B ncflint.
+The first method is to specify the weight each input file is to have in the
+output file.  In this method, the value 
+.IR val3 
+of a variable in the
+output file 
+.IR file_3 
+is determined from its values 
+.IR val1 
+and 
+.IR val2 
+in the two input files according to
+.IR wgt1*val1 + wgt2*val2
+
+Here at least 
+.IR wgt1,
+and, optionally, 
+.IR wgt2, 
+are specified on the command line with the 
+.BR -w 
+(or 
+.BR --weight
+or 
+.BR --wgt_var
+) switch.  If only 
+IR wgt1 
+is specified then 
+.IR wgt2 
+is automatically computed as 
+.IR wgt2 = 1 - wgt1.  
+Note that weights larger than 1 are allowed.  Thus it is
+possible to specify 
+.IR wgt1 = 2 
+and 
+.IR wgt2 = -3.  
+One can use this functionality to multiply all the values in a given file by a constant.
+.PP
+The second method of using 
+.B ncflint
+is to specify the interpolation option with 
+.BR -i
+(or with the 
+.BR --ntp
+or 
+.BR --interpolate
+long options). This is really the inverse of the first method in the following sense.
+When the user specifies the weights directly, 
+.B ncflint
+has no work to do besides multiplying the input values by their respective weights and
+adding the results together to produce the output values.  This assumes
+it is the weights that are known a priori.  In another class of cases
+it is the "arrival value" (i.e., 
+.IR val3
+) of a particular variable 
+.IR var
+that is known a priori.  In this case, the implied weights can always
+be inferred by examining the values of 
+.IR var 
+in the input files.  This
+results in one equation in two unknowns, 
+.IR wgt1 
+and 
+.IR wgt2:
+.IR val3 = wgt1*val1 + wgt2*val2.
+.PP
+Unique determination of the weights requires imposing the
+additional constraint of normalization on the weights: 
+.IR wgt1 + wgt2 = 1.
+Thus, to use the interpolation option, the user specifies 
+.IR var 
+and 
+.IR val3
+with the 
+.BR -i 
+option.  
+.B ncflint
+will compute 
+.IR wgt1 
+and 
+.IR wgt2, 
+and use
+these weights on all variables to generate the output file.  Although
+.IR var 
+may have any number of dimensions in the input files, it must
+represent a single, scalar value.  Thus any dimensions associated with
+.IR var 
+must be "degenerate", i.e., of size one.
+.PP
+ If neither 
+.BR -i
+nor
+.BR -w
+is specified on the command line, 
+.B ncflint
+defaults to weighting each input file equally in the output file.  This
+is equivalent to specifying 
+.IR -w 0.5
+or 
+.IR -w 0.5,0.5.  
+Attempting to
+specify both .BR 
+.BR -i 
+and 
+.BR -w
+methods in the same command is an error.
+.PP
+.B ncflint
+is programmed not to interpolate variables of type
+.BR NC_CHAR
+and 
+.BR NC_BYTE.  
+This behavior is hardcoded.
+
+
+
+
