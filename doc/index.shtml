@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.89 2002-03-12 13:11:48 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.90 2002-03-13 05:21:42 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -160,7 +160,7 @@ tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>,
 fails on my development system (due to antiquated RedHat
 <tt>texinfo</tt> software, of all things!)
 The brave may retrieve these versions using CVS (tags are, e.g., <tt>nco-2_1_2</tt>).
-<li><b>NCO 2.2.1</b>, Not packaged: fix <tt>ncap</tt> division error
+<li><b>NCO 2.2.1</b>, Not packaged: fix <tt>ncap</tt> divide and fmodf bugs
 <li><b>NCO 2.2.0</b>, Tarball only<a
 href="./nco_news.shtml#20020203">20020203</a>: <tt>ncap</tt> public
 debut (has division error, please upgrade)
