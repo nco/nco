@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.74 2000-07-11 18:21:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.75 2000-07-12 22:07:02 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -4053,14 +4053,14 @@ mss_val_cp(var_sct *var1,var_sct *var2)
 } /* end mss_val_cp() */ 
   
 void
-var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_type,ptr_unn op2,ptr_unn op3)
+var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_typ,ptr_unn op2,ptr_unn op3)
 /* 
   nc_type type: I netCDF type of operand op3
   long sz: I size (in elements) of operand op3
   int has_mss_val: I flag for missing values (basically assumed to be true)
   ptr_unn mss_val: I value of missing value
   double op1: I Target value against which mask field will be compared (i.e., argument of -M)
-  int op_type: I type of relationship to test for between op2 and op1
+  int op_typ: I type of relationship to test for between op2 and op1
   ptr_unn op2: I Value of mask field
   ptr_unn op3: I/O values of second operand on input, masked values on output
  */ 
@@ -4068,7 +4068,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
   /* Routine to mask third operand by second operand. Wherever second operand does not 
      equal first operand the third operand will be set to its missing value. */
 
-  /* Masking is currently defined as if(op2 !op_type op1) then op3:=mss_val */   
+  /* Masking is currently defined as if(op2 !op_typ op1) then op3:=mss_val */   
 
   long idx;
 
@@ -4085,7 +4085,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
   /* NB: Explicit coercion when comparing op2 to op1 is necessary */ 
   switch(type){
   case NC_FLOAT:
-    switch(op_type){
+    switch(op_typ){
     case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.fp[idx] != (float)op1) op3.fp[idx]=*mss_val.fp; break;
     case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.fp[idx] == (float)op1) op3.fp[idx]=*mss_val.fp; break;
     case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.fp[idx] >= (float)op1) op3.fp[idx]=*mss_val.fp; break;
@@ -4095,7 +4095,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     } /* end switch */ 
     break;
   case NC_DOUBLE:
-    switch(op_type){
+    switch(op_typ){
     case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.dp[idx] != (double)op1) op3.dp[idx]=*mss_val.dp; break;
     case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.dp[idx] == (double)op1) op3.dp[idx]=*mss_val.dp; break;
     case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.dp[idx] >= (double)op1) op3.dp[idx]=*mss_val.dp; break;
@@ -4105,7 +4105,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     } /* end switch */ 
     break;
   case NC_LONG:
-    switch(op_type){
+    switch(op_typ){
     case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.lp[idx] != (long)op1) op3.lp[idx]=*mss_val.lp; break;
     case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.lp[idx] == (long)op1) op3.lp[idx]=*mss_val.lp; break;
     case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.lp[idx] >= (long)op1) op3.lp[idx]=*mss_val.lp; break;
@@ -4115,7 +4115,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     } /* end switch */ 
     break;
   case NC_SHORT:
-    switch(op_type){
+    switch(op_typ){
     case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.sp[idx] != (short)op1) op3.sp[idx]=*mss_val.sp; break;
     case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.sp[idx] == (short)op1) op3.sp[idx]=*mss_val.sp; break;
     case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.sp[idx] >= (short)op1) op3.sp[idx]=*mss_val.sp; break;
@@ -4125,7 +4125,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     } /* end switch */ 
     break;
   case NC_CHAR:
-    switch(op_type){
+    switch(op_typ){
     case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.cp[idx] != (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
     case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.cp[idx] == (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
     case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.cp[idx] >= (signed char)op1) op3.cp[idx]=*mss_val.cp; break;
@@ -4135,7 +4135,7 @@ var_mask(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,double op1,int op_
     } /* end switch */ 
     break;
   case NC_BYTE:
-    switch(op_type){
+    switch(op_typ){
     case nc_op_eq: for(idx=0;idx<sz;idx++) if(op2.bp[idx] != (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
     case nc_op_ne: for(idx=0;idx<sz;idx++) if(op2.bp[idx] == (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
     case nc_op_lt: for(idx=0;idx<sz;idx++) if(op2.bp[idx] >= (unsigned char)op1) op3.bp[idx]=*mss_val.bp; break;
@@ -4613,14 +4613,14 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
   int idx;
   int prg; /* Program key */
 
-  enum op_type{
+  enum op_typ{
     fix, /* 0 */ 
     prc /* 1 */ 
   };
 
   int idx_dim;
   int idx_xcl;
-  int var_op_type[MAX_NC_VARS];
+  int var_op_typ[MAX_NC_VARS];
 
   nc_type var_type;
 
@@ -4641,26 +4641,26 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
   for(idx=0;idx<nbr_var;idx++){
     
     /* Initialize operation type */
-    var_op_type[idx]=prc;
+    var_op_typ[idx]=prc;
     var_nm=var[idx]->nm;
     var_type=var[idx]->type;
 
     /* Override operation type based depending on both the variable type and program */ 
     switch(prg){
     case ncap:
-      var_op_type[idx]=fix;
+      var_op_typ[idx]=fix;
       break;
     case ncra:
-      if(!var[idx]->is_rec_var) var_op_type[idx]=fix;
+      if(!var[idx]->is_rec_var) var_op_typ[idx]=fix;
       break;
     case ncea:
-      if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_type[idx]=fix;
+      if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_typ[idx]=fix;
       break;
     case ncdiff:
-      if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_type[idx]=fix;
+      if((var[idx]->is_crd_var) || (var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_typ[idx]=fix;
       break;
     case ncflint:
-      if((var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_type[idx]=fix;
+      if((var_type == NC_CHAR) || (var_type == NC_BYTE)) var_op_typ[idx]=fix;
       break;
     case ncwa:
       /* Every variable containing an excluded (averaged) dimension must be processed */
@@ -4669,24 +4669,24 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
 	  if(var[idx]->dim[idx_dim]->id == dmn_xcl[idx_xcl]->id) break;
 	} /* end loop over idx_xcl */
 	if(idx_xcl != nbr_dmn_xcl){
-	  var_op_type[idx]=prc;
+	  var_op_typ[idx]=prc;
 	  break;
 	} /* end if */ 
       } /* end loop over idx_dim */
       /* If the variable does not contain an excluded (averaged) dimension, it must be fixed */
-      if(idx_dim == var[idx]->nbr_dim) var_op_type[idx]=fix;
+      if(idx_dim == var[idx]->nbr_dim) var_op_typ[idx]=fix;
       break;
     case ncrcat:
-      if(!var[idx]->is_rec_var) var_op_type[idx]=fix;
+      if(!var[idx]->is_rec_var) var_op_typ[idx]=fix;
       break;
     case ncecat:
-      if(var[idx]->is_crd_var) var_op_type[idx]=fix;
+      if(var[idx]->is_crd_var) var_op_typ[idx]=fix;
       break;
     } /* end switch */ 
     
     if(NCAR_CSM_FORMAT){
-      if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_type[idx]=fix;
-      if(prg == ncdiff && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec"))) var_op_type[idx]=fix;
+      if(!strcmp(var_nm,"ntrm") || !strcmp(var_nm,"ntrn") || !strcmp(var_nm,"ntrk") || !strcmp(var_nm,"ndbase") || !strcmp(var_nm,"nsbase") || !strcmp(var_nm,"nbdate") || !strcmp(var_nm,"nbsec") || !strcmp(var_nm,"mdt") || !strcmp(var_nm,"mhisf")) var_op_typ[idx]=fix;
+      if(prg == ncdiff && (!strcmp(var_nm,"hyam") || !strcmp(var_nm,"hybm") || !strcmp(var_nm,"hyai") || !strcmp(var_nm,"hybi") || !strcmp(var_nm,"gw") || !strcmp(var_nm,"ORO") || !strcmp(var_nm,"date") || !strcmp(var_nm,"datesec"))) var_op_typ[idx]=fix;
     } /* end if NCAR_CSM_FORMAT */ 
 
   } /* end loop over var */
@@ -4694,7 +4694,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
   /* Assign the list pointers based on the operation type for the variable */ 
   *nbr_var_prc=*nbr_var_fix=0;
   for(idx=0;idx<nbr_var;idx++){
-    if(var_op_type[idx] == fix){
+    if(var_op_typ[idx] == fix){
       var_fix[*nbr_var_fix]=var[idx];
       var_fix_out[*nbr_var_fix]=var_out[idx];
       ++*nbr_var_fix;
@@ -4977,7 +4977,7 @@ err_prn(char *err_msg)
 void 
 usg_prn(void)
 {
-/* Routine to print the correct command-line usage of the programs (currently to stdout) */ 
+  /* Purpose: Print correct command-line usage of host program (currently to stdout) */ 
 
   char *opt_sng=NULL_CEWI;
 
@@ -4988,6 +4988,8 @@ usg_prn(void)
   switch(prg){
   case ncra:
   case ncea:
+    opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-n ...] [-O] [-p path] [-R] [-r] [-v ...] [-x] [-y op_typ] in.nc [...] out.nc\n");
+    break;
   case ncrcat:
   case ncecat:
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-n ...] [-O] [-p path] [-R] [-r] [-v ...] [-x] in.nc [...] out.nc\n");
@@ -4999,10 +5001,10 @@ usg_prn(void)
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-i var,val] [-l path] [-n ...] [-O] [-p path] [-R] [-r] [-v ...] [-x] [-w wgt_1[,wgt_2]] in_1.nc in_2.nc out.nc\n");
     break;
   case ncwa:
-    opt_sng=(char *)strdup("[-A] [-a ...] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M val] [-N] [-O] [-o op_type] [-p path] [-R] [-r] [-v ...] [-w wgt] [-x] in.nc out.nc\n");
+    opt_sng=(char *)strdup("[-A] [-a ...] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-I] [-l path] [-m mask] [-M val] [-N] [-O] [-o op_typ] [-p path] [-R] [-r] [-v ...] [-w wgt] [-x] in.nc out.nc\n");
     break;
   case ncap:
-    opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-m mask] [-M val] [-o op_type] [-O] [-p path] [-R] [-r] [-s] [-S] [-v ...] [-w wgt] [-x] in.nc out.nc\n");
+    opt_sng=(char *)strdup("[-A] -a ... [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-m mask] [-M val] [-o op_typ] [-O] [-p path] [-R] [-r] [-s] [-S] [-v ...] [-w wgt] [-x] in.nc out.nc\n");
     break;
   case ncks:
     opt_sng=(char *)strdup("[-A] [-a] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-O] [-p path] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [out.nc]\n");
@@ -5058,7 +5060,7 @@ usg_prn(void)
     /*    if(prg == ncwa) (void)fprintf(stdout,"-n\t\tNormalize by tally but not weight\n");*/
     if(prg != ncwa) (void)fprintf(stdout,"-n nbr_files,[nbr_numeric_chars[,increment]] NINTAP-style abbreviation of file list\n");
   } /* end if */
-  if(strstr(opt_sng,"-o")) (void)fprintf(stdout,"-o op_type\tRelational operator for masking (eq,ne,ge,le,gt,lt)\n");
+  if(strstr(opt_sng,"-o")) (void)fprintf(stdout,"-o op_typ\tRelational operator for masking: eq,ne,ge,le,gt,lt\n");
   if(strstr(opt_sng,"-O")) (void)fprintf(stdout,"-O\t\tOverwrite existing output file, if any\n");
   if(strstr(opt_sng,"-p")) (void)fprintf(stdout,"-p path\t\tPath prefix for all input filenames\n");
   if(strstr(opt_sng,"-R")) (void)fprintf(stdout,"-R\t\tRetain remotely-retrieved files after use\n");
@@ -5079,6 +5081,7 @@ usg_prn(void)
     if(prg == ncflint) (void)fprintf(stdout,"-w wgt_1[,wgt_2] Weight(s) of file(s)\n");
   } /* end if */
   if(strstr(opt_sng,"-x")) (void)fprintf(stdout,"-x\t\tExtract all variables EXCEPT those specified with -v\n");
+  if(strstr(opt_sng,"-y")) (void)fprintf(stdout,"-y op_typ\tArithmetic operation: avg,min,max,ttl,avgsqr,avgsumsqr\n");
   if(strstr(opt_sng,"in.nc")) (void)fprintf(stdout,"in.nc\t\tInput file name(s)\n");
   if(strstr(opt_sng,"out.nc")) (void)fprintf(stdout,"out.nc\t\tOutput file name\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/
