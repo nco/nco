@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.10 2002-01-29 08:40:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.11 2002-01-30 08:24:11 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -321,13 +321,11 @@ extern "C" {
 #define FORTRAN_divide_real divide_real
 #define FORTRAN_divide_double_precision divide_double_precision
 #endif /* RS6K || AIX */
-  /* 
-     pgf90 subroutines have one underscore by default
+  /* pgf90 subroutines have one underscore by default
      pgf90 underscore behavior is altered by -Mnosecond_underscore
      g77 subroutines have two underscores by default
      g77 functions (e.g., newdate()) have one underscore by default 
-     g77 underscore behavior is altered by -fno-second-underscore 
-  */
+     g77 underscore behavior is altered by -fno-second-underscore */
 #ifdef LINUX 
 #define FORTRAN_add_real add_real_
 #define FORTRAN_add_double_precision add_double_precision_

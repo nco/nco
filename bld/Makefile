@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.117 2002-01-30 07:26:49 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.118 2002-01-30 08:24:10 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -141,7 +141,7 @@ MY_OBJ_DIR_RX := $(subst ${slash},${slash_rx},${MY_OBJ_DIR})
 MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
 
 # Directories to search for source files
-MDL_PTH := . ${MY_SRC_DIR}
+MDL_PTH := ./ ${MY_SRC_DIR}
 # Find all C++, C, and Fortran files in a given directory
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
  FIND_FNC = $(wildcard ${dir}/*.cc ${dir}/*.c ${dir}/*.F) # Compile Fortran only if necessary
@@ -371,9 +371,9 @@ ifndef ${CXX}
  C++ := g++
 endif 
 ifndef ${CC}
+# fxm: 19980517: As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
  CC := gcc
 endif 
-# 19980517: As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
 CPP := ${CC}
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
 CPPFLAGS := ${CPP_TKN} -Di386 -I${NETCDF_INC}

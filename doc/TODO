@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.119 2002-01-29 08:40:19 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.120 2002-01-30 08:24:11 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -9,7 +9,9 @@ About 15 high priority items are shown first, then another ~100 items
 ncap-specific items:
 4. Fix memory leak in ncap_var_conform_dim() or delete routine completely after replacing it with ncap_var_stretch()	
 7. Combine binary operations into binary_op_var_var and binary_op_var_att types to reduce number of functions
-8. Cure final few bothersome compilation warnings, mainly in bison.simple:
+8. Cure final few bothersome compilation warnings, mainly in bison.simple.
+Note that fixing these via hardcoded prototypes should allow for pure_parser
+to be turned off, since this apparently changes the prototypes.
 ncap.tab.c (warning with Linux):
 /usr/lib/bison.simple:432: warning: implicit declaration of function `yylex'
 This must be something like
@@ -30,9 +32,11 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 12. Ensure lexer does not perform un-necessary work during initial_scan (e.g., LHS casting...)
 13. Test that LHS casting works regardless of value of LHS template. If true, remove value initialization block
 14. If tally is superfluous in ncap then do not ever allocate it
+15. Link to GSL functions, especially gsl_sf_* (special functions)
+16. Get ncap build working with pure_parser turned off so lex/yacc builds work
 
-Top priority items You can help with:
-41. Use getopt_long() from FSF or Sittler (BSD version)
+Highest priority NCO-wide items that You can help with:
+41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
 83. Always build operators to link dynamically to libnco.so (autoconf/autotool?)
 95. Handle CCM "time since..." conversions in ncrcat (use Unidata udunits)?
@@ -192,22 +196,19 @@ that regression testing is easier. Perhaps nco_tst.sh should be rewritten in Per
 to accomplish this.
 203. Perform I/O timing tests with NCO 1.3.x vs NCO 1.2.x to see if netCDF3 interface really speeds up I/O
 204. Update user's guide to reflect new netCDF 3.x API
-205. Add .cvsignore files to all directories
 206. Add example NCO script, such as dst.sh, to doc directory
 207. Bug on Linux. Core dump converting datesec,date from NC_INT to NC_DOUBLE:
 ncwa -D 5 -O -a time,lat,lon -w gw $DATA/dstccm34/dstccm34_1990.nc $DATA/dstccm34/dstccm34_1990_xy.nc
 This is a subtle memory bug which disappears when -w gw removed,
 or variable list is made more specific, or MALLOC_CHECK_=1 is used
-208. Write improved C++ interface library based on netCDF3
 209. Add rules to make MANIFEST and automaticlally update Sourceforge download area
 210. Break nco.h into system-specific headers, csz.h, pck.h...
 211. Replace -1 by NC_GLOBAL where appropriate, especially in ncatted.c
 212. Ensure structures are always passed by reference (default is pass by value)
-213. Pass const values as const (may improve speed)
+213. Implement "const" types in all applicable headers (may improve speed)
 214. Disable threads > 1 on SGI temporarily because thread #0 is doing all the work, why?
 215. var_conform_dim() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
-216. Use %z for printing size_t rather than casting to long
-217. Replace all uses of free() with nco_free()
+216. Use %z for printing size_t rather than casting to long (is %z portable?)
 218. Fix all leaks etc. enumerated in insure.txt
 219. Sourceforge FTP nco.tar.gz link appears broken
 ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
