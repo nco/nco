@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.281 2004-10-16 04:34:58 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.282 2004-10-16 21:16:05 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -101,8 +101,8 @@ Octave TeXInfo manual shows clean TeXInfo structure
 @set doc-edition 2.9.9
 @set copyright-years 1995--2004
 @set update-year 2004
-@set update-date 17 September 2004
-@set update-month September 2004
+@set update-date 16 October 2004
+@set update-month October 2004
 
 @settitle @acronym{NCO} @value{nco-edition} User's Guide
 @c Uncomment following line to produce guide in smallbook format
@@ -1920,13 +1920,20 @@ This information is also useful for benchmarking.
 @section Large File Support
 @cindex LFS
 @cindex Large File Support
+@cindex @code{-Z}
+@cindex @code{--64-bit-offset}
 @cartouche
 Availability: All operators@*
-Short options: All@*
-Long options: All@*
+Short options: All, @samp{-Z}@*
+Long options: All, @samp{--64-bit-offset}@*
 @end cartouche
 @acronym{NCO} support for large files is in place and works but is not
 well documented yet. 
+@acronym{NCO} honors @acronym{LFS} capabilities on platforms which
+support them
+@footnote{
+Linux and @acronym{AIX} are know to support @acronym{LFS}.}.
+
 The netCDF large file support FAQ at
 @uref{http://my.unidata.ucar.edu/content/software/netcdf/faq-lfs.html}
 describes the various file size limitations imposed by different
@@ -1940,10 +1947,19 @@ or newer 64-bit offset file format file, examine it with the
 @cindex 32-bit offset file format
 @cindex 64-bit offset file format
 @example
-od -An -c -N4 foo.nc
+% od -An -c -N4 ~/nco/data/in.nc
+   C   D   F 001
 @end example
 Values of @samp{C D F 001} and @samp{C D F 002} indicate 32-bit
 (classic) and 64-bit formats, respectively.
+
+All operators write classic (32-bit offset) format files unless
+told otherwise by toggling the @samp{-Z} switch (or it long option
+equivalent @samp{--64-bit-offset}). 
+@acronym{NCO} must be built with @w{netCDF 3.6} or higher to honor  
+64-bit offset file formats. 
+Users are advised to use the default classic format until 
+@w{netCDF 3.6} is more widespread.
 
 @html
 <a name="cmd_ln"></a> <!-- http://nco.sf.net/nco.html#cmd_ln -->
@@ -4321,7 +4337,7 @@ SYNTAX
 ncap [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-f]
 [-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-s @var{algebra}] [-S @var{fl.nco}] [-v]
+[-s @var{algebra}] [-S @var{fl.nco}] [-v] [-Z]
 @var{input-file} [@var{output-file}]  
 @end example
  
@@ -5098,7 +5114,7 @@ Knowing when to use @command{ncwa -a time} rather than the default
 SYNTAX
 @example
 ncatted [-a @var{att_dsc}] [-a @dots{}] [-D @var{dbg}] [-h]
-[-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
+[-l @var{path}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-Z]
 @var{input-file} [[@var{output-file}]]
 @end example
  
@@ -5461,8 +5477,8 @@ SYNTAX
 @example 
 ncbo [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] 
-[-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] 
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
+[-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r]
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] [-Z]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -5793,7 +5809,7 @@ SYNTAX
 ncea [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] [-Z]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -5894,7 +5910,7 @@ SYNTAX
 ncecat [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-v @var{var}[,@dots{}]] [-x] [@var{input-files}] [@var{output-file}]
+[-v @var{var}[,@dots{}]] [-x] [-Z] [@var{input-files}] [@var{output-file}]
 @end example
 
 @noindent
@@ -6000,7 +6016,7 @@ SYNTAX
 ncflint [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-i @var{var},@var{val3}]
 [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] 
-[-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-x] 
+[-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-x] [-Z]
 @var{file_1} @var{file_2} [@var{file_3}]
 @end example
 
@@ -6233,7 +6249,7 @@ ncks [-A] [-a] [-B] [-b @var{binary-file}] [-C] [-c] [-D @var{dbg}]
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]]
 [-F] [-H] [-h] [-l @var{path}] [-M] [-m] [-O] [-o @var{output-file}] 
 [-p @var{path}] [-q] [-R] [-r] [-s @var{format}] [-u] 
-[-v @var{var}[,@dots{}]] [-x] @var{input-file} [[@var{output-file}]]
+[-v @var{var}[,@dots{}]] [-x] [-Z] @var{input-file} [[@var{output-file}]]
 @end example
 
 @noindent
@@ -6666,7 +6682,7 @@ SYNTAX
 ncpdq [-A] [-a [-]@var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-M @var{pck_map}] [-O] [-o @var{output-file}] [-P @var{pck_plc}] [-p @var{path}] 
-[-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-x]
+[-R] [-r] [-t @var{thr_nbr}] [-U] [-v @var{var}[,@dots{}]] [-x] [-Z]
 @var{input-file} [@var{output-file}]
 @end example
 
@@ -7112,7 +7128,7 @@ SYNTAX
 ncra [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] [-Z]
 [@var{input-files}] [@var{output-file}]
 @end example
 
@@ -7216,7 +7232,7 @@ SYNTAX
 ncrcat [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
-[-v @var{var}[,@dots{}]] [-x] [@var{input-files}] [@var{output-file}]
+[-v @var{var}[,@dots{}]] [-x] [-Z] [@var{input-files}] [@var{output-file}]
 @end example
 
 @noindent
@@ -7326,7 +7342,7 @@ SYNTAX
 ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D @var{dbg}] 
 [-d @var{old_name},@var{new_name}] [-d @dots{}] [-h] [-l @var{path}]
 [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-v @var{old_name},@var{new_name}] [-v @dots{}] 
+[-v @var{old_name},@var{new_name}] [-v @dots{}] [-Z]
 @var{input-file} [[@var{output-file}]]
 @end example
  
@@ -7487,7 +7503,7 @@ ncwa [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}]
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-I] [-l @var{path}] 
 [-M @var{mask_val}] [-m @var{mask_var}] [-N] [-n] [-O] 
 [-o @var{output-file}] [-p @var{path}] [-R] [-r] [-T @var{condition}]
-[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}] 
+[-t @var{thr_nbr}] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}] [-x] [-y @var{op_typ}] [-Z]
 @var{input-file} [@var{output-file}]
 @end example
 
