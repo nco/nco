@@ -1,39 +1,32 @@
-$Header: /data/zender/nco_20150216/nco/doc/README,v 1.2 1999-09-11 04:27:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/README,v 1.3 1999-10-04 06:15:32 zender Exp $ -*-text-*-
 
-These instructions supercede the instructions in INSTALL because
-./configure is not yet working properly.
-NCO will run on all major UNIX systems and Windows NT.
-All you need to build NCO is a C compiler, preferably gcc, although 
-using both a C and a Fortran compiler may result in faster executables.  
+First, note that NCO does not use ./configure to build.
+If you'd like to contribute to NCO, please consider writing the
+patches to get configure to work. NCO will run on all major UNIX
+systems and Windows NT, however. All you need to build NCO is a C
+compiler, preferably gcc, although using both a C and a Fortran
+compiler may result in faster executables.   
 
 The best way to build the operators currently is to type `make' in
-this directory. You must be using GNU make, which will default to
+the `bld' directory. You must be using GNU make, which will default to 
 using `Makefile' in this directory. I use `Makefile' to develop  
 the NCO operators at NCAR. Makefile has hardcoded switches which
 may be only valid at NCAR, but which can serve as a template for your
-environment. Within Makefile, locate the block of code which
-corresponds to your machine type as defined by $PVM_ARCH and the
-pvmgetarch command. Within this block you may need to edit the -I and
--L arguments so they include your netCDF library and include
-installation paths. This is also where to set the names of the
-compilers and linkers, if you are using different tools than I am. 
-If you are not using GNU C your C compiler may break on certain pieces
+environment. First, be sure to define NETCDF_INC and NETCDF_LIB
+variables either within your environment, or at the top of Makefile.
+Within Makefile, locate the block of code which corresponds to your
+machine type as defined by $PVM_ARCH and the pvmgetarch command. 
+Within this block you may need to edit the CC, CPPFLAGS, and LDFLAGS
+arguments so they reflect the names of the compilers and linkers.
+If you are not using GNU C your C compiler may break on certain pieces 
 of code ('cc' on Cray works fine, 'cc' on SunOS4.1.x may break but
 'acc' should work on all Suns, and 'cc' on SGIs may break).
 
-Read ./Makefile for useful switches you can set.  
+Read ../bld/Makefile for useful switches you can set.  
 Compile with `make OPTS=D' to build debugging versions.  
 Environment variables MY_OBJ_DIR, MY_INC_DIR, MY_LIB_DIR and
 MY_BIN_DIR control locations of object files, include files,
 libraries, and executables. 
-
-The ./configure method for building makefiles does not yet work.
-I have included the preliminary (i.e., not working) ./configure.in and
-./Makefile.in files so that someone can fix them and send me the
-patches. autoconf and fortran are too confusing for me. I repeat,
-the ./Makefile currently produced by ./configure does not build the
-executables correctly! It is only in the distribution in case someone 
-out there who knows autoconf wants to take the time to fix it.
 
 Please read the NCO manual before you submit a bug report!  The manual
 is supplied in five different formats: Postscript (nco.ps), Texinfo
