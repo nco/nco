@@ -1,3 +1,12 @@
+2001-08-10  Charlie Zender  <zender@uci.edu>
+
+	* Changed storage location of remotely accessible in.nc to
+	.../nco/in.nc 
+
+	* Various Makefile changes for exotic NCAR platforms
+
+	* Changed band to bnd in in.cdl
+
 2001-07-25  Charlie Zender  <zender@uci.edu>
 
 	* TODO: Rearranged TODO list and put ~15 high-priority

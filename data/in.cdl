@@ -3,16 +3,16 @@
 // Usage:
 // ncgen -b -o in.nc in.cdl
 // ncgen -b -o $HOME/nco/data/in.nc $HOME/nco/data/in.cdl
-// mswrite -t 365 in.nc /ZENDER/tmp/in.nc
-// mswrite -t 365 in.nc /ZENDER/tmp/h0001.nc
-// mswrite -t 365 in.nc /ZENDER/tmp/h0002.nc
-// mswrite -t 365 in.nc /ZENDER/tmp/h0003.nc
-// mswrite -t 365 in.nc /ZENDER/tmp/h0004.nc
-// msrcp -period 365 in.nc mss:/ZENDER/tmp/in.nc
-// msrcp -period 365 in.nc mss:/ZENDER/tmp/h0001.nc
-// msrcp -period 365 in.nc mss:/ZENDER/tmp/h0002.nc
-// msrcp -period 365 in.nc mss:/ZENDER/tmp/h0003.nc
-// msrcp -period 365 in.nc mss:/ZENDER/tmp/h0004.nc
+// mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/in.nc
+// mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/h0001.nc
+// mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/h0002.nc
+// mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/h0003.nc
+// mswrite -t 365 ~/nco/data/in.nc /ZENDER/tmp/h0004.nc
+// msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/in.nc
+// msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/h0001.nc
+// msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/h0002.nc
+// msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/h0003.nc
+// msrcp -period 365 ~/nco/data/in.nc mss:/ZENDER/tmp/h0004.nc
 
 // Changing the values of the variables below, especially the coordinate 
 // variables, will affect the outcome of the test script nco_tst.sh.
@@ -33,12 +33,12 @@
 
 netcdf in {
 dimensions:
-	band=2,lat=2,lev=3,rlev=3,lon=4,char_dmn_lng=80,char_dmn_sml=4,fl_dim=3,lsmlev=6,wvl=2,time=unlimited;
+	bnd=2,lat=2,lev=3,rlev=3,lon=4,char_dmn_lng=80,char_dmn_sml=4,fl_dim=3,lsmlev=6,wvl=2,time=unlimited;
 variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.30 2001-06-20 05:35:16 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.31 2001-08-10 17:09:08 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -219,7 +219,7 @@ variables:
 	rz:units = "meter";
 	rz:purpose = "Height stored with a monotonically decreasing coordinate";
 
-	float one_dmn_var(band);
+	float one_dmn_var(bnd);
 
 	float att_var;
 	att_var:byte_att = '\0';
@@ -229,13 +229,13 @@ variables:
 	att_var:float_att = 73.0f,72.0f,71.0f;
 	att_var:double_att = 73.0d;
 
-	int band_var(lev,band);
-	band_var:byte_att = '\0';
-	band_var:char_att = "Sentence one.\nSentence two.\n";
-	band_var:short_att = 37s;
-	band_var:int_att = 73;
-	band_var:float_att = 73.f;
-	band_var:double_att = 73.d;
+	int bnd_var(lev,bnd);
+	bnd_var:byte_att = '\0';
+	bnd_var:char_att = "Sentence one.\nSentence two.\n";
+	bnd_var:short_att = 37s;
+	bnd_var:int_att = 73;
+	bnd_var:float_att = 73.f;
+	bnd_var:double_att = 73.d;
 
 	float three_dmn_var(lat,lev,lon);
 	three_dmn_var:long_name = "three dimensional variable";
@@ -326,7 +326,7 @@ variables:
 data:
 	ORO=1.,1.,1.,1.,1.,1.,1.,1.;
 	att_var=10.;
-	band_var=1,2,3,4,5,6;
+	bnd_var=1,2,3,4,5,6;
 	byte_var='z';
 	char_var="z";
 	char_var_multinul="\b\n\0";
@@ -334,7 +334,7 @@ data:
 	char_var_space=" ";
 	double_var=10.;
 	fl_dim="a","b","3";
-	fl_nm="/home/zender/nc/nco/data/in.cdl";
+	fl_nm="/home/zender/nco/data/in.cdl";
 	float_var=10.;
 	g=9.8;
 	gw=10.,10.;

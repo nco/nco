@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.80 2001-05-31 08:32:51 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.81 2001-08-10 17:09:08 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1379,10 +1379,10 @@ through the (asynchronous) Masnet Interface Gateway System
 The following examples show how one might analyze files stored on  
 remote systems.
 @example
-ncks -H -l ./ ftp://ftp.cgd.ucar.edu/pub/zender/nc/in.nc
-ncks -H -l ./ dust.ps.uci.edu:/home/zender/nc/in.nc
-ncks -H -l ./ /ZENDER/nc/in.nc 
-ncks -H -l ./ mss:/ZENDER/nc/in.nc
+ncks -H -l ./ ftp://ftp.cgd.ucar.edu/pub/zender/nco/in.nc
+ncks -H -l ./ dust.ps.uci.edu:/home/zender/nco/in.nc
+ncks -H -l ./ /ZENDER/nco/in.nc 
+ncks -H -l ./ mss:/ZENDER/nco/in.nc
 ncks -H -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/-
 ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc
 @end example
@@ -1404,8 +1404,8 @@ option as follows:
 @example
 ncks -H -p ftp://ftp.cgd.ucar.edu/pub/zender/nc -l ./ in.nc
 ncks -H -p dust.ps.uci.edu:/home/zender/nc -l ./ in.nc
-ncks -H -p /ZENDER/nc -l ./ in.nc 
-ncks -H -p mss:/ZENDER/nc -l ./ in.nc
+ncks -H -p /ZENDER/nco -l ./ in.nc 
+ncks -H -p mss:/ZENDER/nco -l ./ in.nc
 @end example
 @noindent
 Using @samp{-p} is recommended because it clearly separates the
