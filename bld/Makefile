@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.215 2003-08-16 00:55:28 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.216 2003-08-16 16:57:25 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -323,9 +323,9 @@ ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32))
  CPP_TKN_OS += -DHAVE_GETOPT_H
 # UDUNITS_DAT OK to be empty for now
 endif # !LINUX
-ifeq (${PVM_ARCH},SGIMP64)
+ifneq (${null},$(findstring ${PVM_ARCH},AIXSGIMP64))
  CPP_TKN_OS += -DNEED_GETOPT_LONG
-endif # SGI
+endif # !(AIX || SGI)
 ifeq (${UDUNITS},Y)
  CPP_TKN_OS += -DHAVE_LIBUDUNITS -DHAVE_UDUNITS_H
 endif # !UDUNITS

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.148 2003-08-13 21:31:36 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.149 2003-08-16 16:57:26 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -117,7 +117,8 @@ files etc.
 NCO is designed to be used both interactively and with large batch jobs.
 There are plenty of command line (i.e., runtime) options, but the defaults
 settings are often sufficient for everyday needs.
-NCO works on AIX, IRIX, Linux, SunOS, Solaris, tru64, UNICOS, and Windows NT.
+NCO works on AIX, Alpha, ARM, *BSD, IRIX, Linux, NEC-SX, OSX, Solaris,
+tru64, UNICOS, and Windows. 
 
 The following operators are thoroughly described in the 
 <a href="./nco.html">NCO User's Guide</a>. 
@@ -126,8 +127,7 @@ non-linear operations as well, e.g., total, minimum, maximum, RMS:
 <ul>
 <li><b>ncap</b> netCDF Arithmetic Processor</li>
 <li><b>ncatted</b> netCDF Attribute Editor</li>
-<li><b>ncbo</b> netCDF Binary Operator</li>
-<li><b>ncdiff</b> netCDF Differencer</li>
+<li><b>ncbo</b> netCDF Binary Operator (includes <tt>ncadd</tt>, <tt>ncsubtract</tt>, <tt>ncmultiply</tt>, <tt>ncdivide</tt>)</li>
 <li><b>ncea</b> netCDF Ensemble Averager</li>
 <li><b>ncecat</b> netCDF Ensemble Concatenator</li>
 <li><b>ncflint</b> netCDF File Interpolator</li>
@@ -202,7 +202,8 @@ Tarballs are only uploaded to SourceForge, and RPMs are only
 generated, for those releases marked &ldquo;Packaged&rdquo;.
 Retrieve these versions <a name="#Download">using CVS</a> or from 
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
-<li><b>NCO 2.8.0</b>, New &ldquo;binary&rdquo; operator <tt>ncbo</tt>, obsolete <tt>ncdiff</tt>
+<li><b>NCO 2.8.1</b>, &ldquo;Variable wildcarding&rdquo;&mdash;regular expressions in <tt>-v var,...</tt> lists&mdash;supported by all operators
+<li><b>NCO 2.8.0</b>, New &ldquo;binary&rdquo; operator <tt>ncbo</tt>, obsoletes <tt>ncdiff</tt>, Debian integration
 <li><b>NCO 2.7.4</b>, Autotools build support for AIX, fix UDUnits confusion with floating point hyperslab specifications
 <li><b>NCO 2.7.3</b>, Support <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (and some <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html">CF</a>) conventions, e.g., <tt>ncks -d wvl "1 picometer","1 furlong" -d time,"2001-03-19 06:00:0.0","2001-03-19 18:00:0.0"</tt> 
 <li><b>NCO 2.7.2</b>, Printing (<tt>ncks -H</tt>) plays well with multi-slabbing
@@ -392,15 +393,15 @@ Otherwise, you are on your own.</li>
 latest, greatest version?</i>
 You must build them from source yourself. See next question.</li>
 <li><i>I thought NCAR developed NCO, so why doesn't NCAR support it?</i>
-I wrote NCO for fun while I was at NCAR, but not at NCAR's request.
+I wrote NCO for fun&mdash;not at NCAR's request&mdash;while I was at NCAR. 
 The primary reason NCAR does not support NCO may be because I actively
-maintained NCO there in the past, creating the impression that NCO
-was officially maintained. I will never make that mistake again!
-Few people have asked NCAR system administrators to support NCO.
-If you would like NCO installed and maintained on NCAR machines
-please send your request to relevant system administrators, e.g.,
-<a href="mailto:consult1@ncar.ucar.edu">NCAR User Support</a>
-or <a href="mailto:support@unidata.ucar.edu">Unidata Support</a>.
+maintained NCO there, inadvertently creating the impression that NCO
+was officially maintained. 
+NCAR system administrators have recently (2003) begun to support NCO
+like other community software packages such as <tt>lapack</tt>.
+If you notice problems with the NCO installation on NCAR machines
+please send a message to the relevant system administrators, e.g.,
+<a href="mailto:consult1@ncar.ucar.edu">NCAR User Support</a>.
 </li>
 <li><i>Is there an easy way to keep up with new NCO releases?</i>
 Subscribe to the <a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a> mailing list (this list is for NCO-related announcements, not for questions) </li>
@@ -431,14 +432,13 @@ Moreover they may be compiled with debugging enabled and thus may be
 <li>ESS <tt>dust.ess.uci.edu</tt> (Linux 2.4.7): <tt>/home/zender/bin/LINUX</tt></li>
 <li>ESS <tt>ess1.ess.uci.edu</tt> (Linux 2.2.15): <tt>/home/zender/bin/LINUXALPHA</tt></li>
 <li>ESS <tt>krein.math.uci.edu</tt> (IRIX 6.5): <tt>/home/zender/zender/bin/SGIMP64</tt></li>
-<li>CGD network (Solaris 2.6): <tt>/contrib/bin</tt>, <tt>/home/zender/bin/SUNMP</tt></li>
+<li>CGD network (Solaris 2.6): <tt>/home/zender/bin/SUNMP</tt></li>
 <li>CGD/SCD <tt>dataproc.ucar.edu</tt> (IRIX 6.5): <tt>/home/dataproc/zender/bin/SGIMP64</tt></li>
-<li>SCD <tt>babyblue.ucar.edu</tt> (AIX 4.0): <tt>/home/babyblue/zender/bin/AIX</tt></li>
-<li>SCD <tt>blackforest.ucar.edu</tt> (AIX 4.0): <tt>/home/blackforest/zender/bin/AIX</tt></li>
-<li>SCD <tt>bluesky.ucar.edu</tt> (AIX 5.0): <tt>/home/bluesky/zender/bin/AIX</tt></li>
+<li>SCD <tt>babyblue.ucar.edu</tt> (AIX 5.1.0.35): <tt>/home/babyblue/zender/bin/AIX</tt></li>
+<li>SCD <tt>blackforest.ucar.edu</tt> (AIX 5.1.0.35): <tt>/home/blackforest/zender/bin/AIX</tt></li>
+<li>SCD <tt>bluesky.ucar.edu</tt> (AIX 5.1.0.35): <tt>/home/bluesky/zender/bin/AIX</tt></li>
+<li>SCD <tt>dave.ucar.edu</tt> (AIX 5.1.0.35): <tt>/home/dave/zender/bin/AIX</tt></li>
 <li>SCD <tt>longs.ucar.edu</tt> (Linux 2.2.17): <tt>/fs/cgd/home0/zender/bin/LINUX</tt></li>
-<li>SCD <tt>ouray.ucar.edu</tt> (UNICOS 10.0.0): <tt>/home/ouray0/zender/bin/CRAY</tt></li>
-<li>SCD <tt>prospect.ucar.edu</tt> (OSF1 5.0): <tt>/home/prospect/zender/bin/ALPHA</tt></li>
 <li>SCD <tt>utefe.ucar.edu</tt> (IRIX 6.5): <tt>/home/ute/zender/bin/SGIMP64</tt></li>
 <li>SDSC <tt>horizon.npaci.edu</tt> (AIX 5.0): <tt>/paci/uci/ux453797/bin/AIX</tt></li>
 </ul>
