@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.128 2003-01-20 23:39:59 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.129 2003-01-22 00:58:19 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -173,7 +173,7 @@ capable of performing arbitrary arithmetic operations</li>
 <ul>
 <li>Many releases since 2.0.0 are not packaged (i.e., no tarballs or RPMs).
 Retrieve these versions <a name="#Download">using CVS</a>.
-<li><b>NCO 2.7.1</b>, Fallback to B.~Sittler's <tt>getopt</tt> for
+<li><b>NCO 2.7.1</b>, Fallback to B. Sittler's <tt>getopt</tt> for
 long option support. Store fixed, packed variables correctly with <tt>ncap</tt>.
 <li><b>NCO 2.7.0</b>, Support for GNU/POSIX long options,
 <tt>ncks</tt> introduces <i>multi-slabbing</i> (= multiple hyperslabs) capability
