@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.89 2002-02-28 06:51:59 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.90 2002-02-28 06:52:42 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2684,7 +2684,7 @@ ordering of the output expression inside square brackets on the
 left hand side (@acronym{LHS}) of the equals sign.
 This is called @dfn{left hand casting} because the user resolves the 
 dimensional ordering of the @acronym{RHS} of the expression by
-specifying the desired ordering on the @{LHS}.
+specifying the desired ordering on the @acronym{LHS}.
 @example
 ncap -O -s "lat_lon[lat,lon]=lat+lon" in.nc out.nc
 @end example
