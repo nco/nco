@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.92 2002-04-17 07:44:55 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.93 2002-04-19 06:07:15 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -161,6 +161,7 @@ tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>,
 fails on my development system (due to antiquated RedHat
 <tt>texinfo</tt> software, of all things!)
 The brave may retrieve these versions using CVS (tags are, e.g., <tt>nco-2_1_2</tt>).
+<li><b>NCO 2.2.2</b>, Not packaged: fix rare <tt>ncwa</tt> crash with weights
 <li><b>NCO 2.2.1</b>, Not packaged: fix <tt>ncap</tt> divide and fmodf bugs
 <li><b>NCO 2.2.0</b>, <a href="./nco_news.shtml#20020203">20020203</a>: <tt>ncap</tt> public debut (has division error, please upgrade)
 <li><b>NCO 2.1.3</b>, Not packaged: <tt>ncap</tt> implements LHS casting

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.82 2002-01-29 08:40:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.83 2002-04-19 06:10:13 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -102,7 +102,7 @@ char * /* O [sng] Mnemonic that describes current NCO version */
 nmn_get()
 { 
   /* Purpose: Return mnemonic that describes current NCO version */
-  return "RIP George Harrison";
+  return "Fern's song";
 } /* end nmn_get() */
 
 char * /* O [sng] Parsed command line */

@@ -1,5 +1,8 @@
 2002-04-18  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_2_2
+	Changes since nco-2_2_1: fix rare ncwa weight bug 
+
 	* make tst gets test file from dust.ps.uci.edu rather than CGD
 
 	* Avoid wgt portion of ncwa when DO_CONFORM_WGT = False
@@ -7,6 +10,8 @@
 	Avoiding it by testing for DO_CONFORM_WGT appears to fix
 	some hard to identify bug when lon was being averaged with gw as
 	weight. The two did not conform, but a problem occured anyway.
+	This appears to cure the three mysterious ncwa crashes present in
+	the TODO list so mark those as fixed too.
 
 2002-04-02  Charlie Zender  <zender@uci.edu>
 
