@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.23 2003-08-02 23:12:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.24 2003-11-07 04:12:40 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -43,7 +43,7 @@ nco_aed_prc /* [fnc] Process single attribute edit for single variable */
   if(aed.att_nm) rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
 
   /* Before changing metadata, change missing values to new missing value if warranted 
-     This capability is add-on feature not implemented very cleanly or efficiently
+     This capability is add-on feature not implemented too cleanly or efficiently
      If every variable has "missing_value" attribute and "missing_value" is changed
      globally, then algorithm goes into and out of define mode for each variable,
      rather than collecting all information in first pass and replacing all data in second pass.

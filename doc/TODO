@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.239 2003-11-06 07:15:07 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.240 2003-11-07 04:12:40 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -233,10 +233,10 @@ Permission denied
 268. ncbo: use ncap var_cnf_dmn() technique so fl_1 fl_2 broadcast interchangeably
 270. Automate uploading of tagged .deb builds to ftp://ftp.debian.org
 274. ncbo: ncdiff gives bogus answers when mss_val_1 != mss_val_2 ?
-ncks -O -v fll_val -p ~/nco/data in.nc ~/nco/data/out.nc
-ncrename -O -v fll_val,mss_val -a _FillValue,missing_value ~/nco/data/out.nc
+ncks -O -v mss_val_fst -p ~/nco/data in.nc ~/nco/data/out.nc
+ncrename -O -v mss_val_fst,mss_val ~/nco/data/out.nc
 ncbo -O -y '-' -v mss_val -p ~/nco/data in.nc out.nc ~/foo.nc
-ncks -C -H -v mss_val ~/foo.nc
+ncks -m -C -H -v mss_val ~/foo.nc
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.6 2003-08-26 15:14:47 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncbo.c,v 1.7 2003-11-07 04:12:40 zender Exp $ */
 
 /* ncbo -- netCDF binary operator */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL; /* [sng] Operation type */
   char *opt_sng;
   char *time_bfr_srt;
-  char CVS_Id[]="$Id: ncbo.c,v 1.6 2003-08-26 15:14:47 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.6 $";
+  char CVS_Id[]="$Id: ncbo.c,v 1.7 2003-11-07 04:12:40 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.7 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -384,11 +384,11 @@ main(int argc,char **argv)
      Order(2*maximum variable size) rather than Order(3*maximum record size) or
      Order(3*file size) 
      
-     The other unique "feature" to know about ncbo is that it tries too hard to save memory
-     For example, ncbo is a three file operator (input, input, output) but manages to get by 
-     with having only two lists of variable structures at any given time.
-     As a result, the logic it employs is fairly convoluted and hard to maintain
-     A re-write of this logic would be beneficial
+     ncbo tries hard (probably too hard) to save memory
+     ncbo is a three file operator (input, input, output) but manages to get by 
+     with only two lists of variable structures at any given time.
+     The resulting is fairly convoluted and hard to maintain
+     A re-write would be beneficial
      ncbo overwrites variable structure from file_2 with structure for file_3 (output file)
      but, at the same time, it writes value array for file_3 into value part of file_1
      variable structures. */
@@ -479,6 +479,9 @@ main(int argc,char **argv)
     var_prc_out[idx]=nco_var_cnf_typ(var_prc[idx]->type,var_prc_out[idx]);
 
     /* mss_val in fl_1, if any, overrides mss_val in fl_2 */
+    /* fxm: TODO #274 If both files have missing_value's and they differ,
+       must translate mss_val_2 to mss_val_1 before binary operation.
+       Otherwise mss_val_2 will be treated as regular value in var_2 */
     if(has_mss_val) mss_val=var_prc[idx]->mss_val; else mss_val=var_prc_out[idx]->mss_val;
     has_mss_val=has_mss_val || var_prc_out[idx]->has_mss_val; 
     

@@ -38,7 +38,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.44 2003-07-07 01:29:38 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.45 2003-11-07 04:12:39 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -100,6 +100,10 @@ variables:
 	float mss_val(lon);
 	mss_val:long_name = "partial missing value example";
 	mss_val:missing_value = 1.0e36f;
+
+	float mss_val_fst(lon);
+	mss_val_fst:long_name = "offset partial missing value example";
+	mss_val_fst:missing_value = -999.0f;
 
 	float fll_val(lon);
 	fll_val:long_name = "_FillValue example";
@@ -450,6 +454,7 @@ data:
 	msk_prt_mss_prt=0.5,1.0e36,1.5,1.0e36;
 	mss_val=73,1.0e36,73,1.0e36;
 	mss_val_all=1.0e36,1.0e36,1.0e36,1.0e36;
+	mss_val_fst=-999,73,-999,73;
 	negative_one=-1.;
 	no_mss_val=73,1.0e36,73,1.0e36;
 	non_nul_trm_char_one_dmn='a','b';

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.160 2003-11-05 05:00:33 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.161 2003-11-07 04:12:40 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -483,6 +483,22 @@ AT&T <tt>lex</tt> will not work because it does not understand
 and does not parse <tt>ncap_yacc.y</tt> correctly; previous and later
 versions of <tt>bison</tt> work correctly.
 </li>
+
+<li><b><tt>ncbo</tt> missing value problems:</b>
+If the input files have different <tt>missing_value</tt> values, then
+<tt>ncbo</tt> chooses the one from the first file.
+This causes incorrect answers at locations where the first file has
+valid data and the second file has a <tt>missing_value</tt>.
+In these locations, <tt>ncbo</tt> performs the binary operation
+instead of making the result of the binary operation a
+<tt>missing_value</tt>.
+The following script demonstrates this.
+The results should all be the <tt>missing_value</tt>, yet two of the
+elements are not:
+<tt>ncks -O -v mss_val_fst -p ~/nco/data in.nc ~/nco/data/out.nc;
+ncrename -O -v mss_val_fst,mss_val ~/nco/data/out.nc;
+ncbo -O -y '-' -v mss_val -p ~/nco/data in.nc out.nc ~/foo.nc;
+ncks -m -C -H -v mss_val ~/foo.nc</tt>
 
 <li><b>Build problems with DODS:</b>
 NCO links with the
