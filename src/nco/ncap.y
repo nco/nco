@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.59 2002-05-23 17:56:37 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.60 2002-06-07 04:25:19 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -41,8 +41,8 @@ int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 int rcd; /* [enm] Return value for function calls */
 
 /* Global variables */
-extern int ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
-extern long *ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
+extern size_t ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
+extern size_t *ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
 extern char **fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
 extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) */
 
@@ -157,9 +157,9 @@ out_att_xpr '=' scv_xpr {
 } /* end out_att_xpr '=' scv_xpr */
 | out_att_xpr '=' sng_xpr 
 {
-  int aed_idx; 
-  int sng_lng;
   aed_sct *ptr_aed;
+  int aed_idx; 
+  size_t sng_lng;
   
   sng_lng=strlen($3);
   aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->att_lst,((prs_sct *)prs_arg)->nbr_att,True);

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.52 2002-05-23 17:56:37 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.53 2002-06-07 04:25:19 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -44,8 +44,8 @@
 #define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
 
   /* Global variables */
-  extern int ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
-  extern long *ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
+  extern size_t ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
+  extern size_t *ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
   extern char **fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
 
   /* File scope variables */
@@ -87,20 +87,20 @@
 <INCLUDE>[^ \t\n]+ {
   /* Get include file name */
   if(ncl_dpt_crr >= NCO_MAX_NCL_DPT){
-    (void)fprintf(stderr,"%s: ERROR File %s nesting depth of %d is too deep",prg_nm_get(),yytext,ncl_dpt_crr);
+    (void)fprintf(stderr,"%s: ERROR File %s nesting depth of %ld is too deep",prg_nm_get(),yytext,ncl_dpt_crr);
     nco_exit(EXIT_FAILURE);
   } /* endif */
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO Will descend from file %s at nesting depth %d to #include'd file %s at depth %d\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,yytext,ncl_dpt_crr+1);
+  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO Will descend from file %s at nesting depth %ld to #include'd file %s at depth %ld\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,yytext,ncl_dpt_crr+1UL);
   /* Put current input buffer on stack */
   ncl_stk[ncl_dpt_crr]=YY_CURRENT_BUFFER; 
   /* Increment nesting level */
   ncl_dpt_crr++;
   /* Allocate another entry in line counter array */
-  ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
+  ln_nbr_crr=(size_t *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1UL); 
   /* Initialize line number counter for new file */
-  ln_nbr_crr[ncl_dpt_crr]=1;
+  ln_nbr_crr[ncl_dpt_crr]=1UL;
   /* Store file name for diagnostics */
-  fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1); 
+  fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1UL); 
   fl_spt_glb[ncl_dpt_crr]=(char *)strdup(yytext);
   if((yyin=fopen(fl_spt_glb[ncl_dpt_crr],"r")) == NULL){
     (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr]);
@@ -118,17 +118,17 @@
   /* NB: AT&T lex does not appear to have <EOF> rules */
   bool NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL=True;
   /* Emerge from #include file if nested, else exit lexer */
-  if(ncl_dpt_crr > 0){
+  if(ncl_dpt_crr > 0UL){
     /* If we are exiting a #include'd script, delete its buffers */
     NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL=False; /* [flg] */
-    if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from file %s at nesting depth %d to file %s at depth %d\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,fl_spt_glb[ncl_dpt_crr-1],ncl_dpt_crr-1);
+    if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from file %s at nesting depth %ld to file %s at depth %ld\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,fl_spt_glb[ncl_dpt_crr-1],ncl_dpt_crr-1UL);
     fl_spt_glb[ncl_dpt_crr]=(char *)nco_free(fl_spt_glb[ncl_dpt_crr]);
     /* Decrement depth of nesting */
     ncl_dpt_crr--; 
     /* De-allocate entry from line counter array */
-    ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
+    ln_nbr_crr=(size_t *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1UL); 
     /* De-allocate entry from script name array */
-    fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1); 
+    fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1UL); 
   } /* endif #include'd script */
   if(NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL){
     /* Emerged from zeroth level, exit lexer */
@@ -673,7 +673,7 @@ yywrap(void)
      been redirected to new source, e.g., yyin points to new file. 
      Returning true (non-zero) means scanning is complete, so scanner terminates and returns 0 to calling function
      Default is to return true (one) when called---this terminates scanner */
-  if(dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: DEBUG yywrap() called with ncl_dpt_crr = %d\n",prg_nm_get(),ncl_dpt_crr);
+  if(dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: DEBUG yywrap() called with ncl_dpt_crr = %ld\n",prg_nm_get(),ncl_dpt_crr);
   /* comp.compilers thread 20020523 yywrap() should always return 1, even when
      scanning a #include'd file
      return (ncl_dpt_crr <= 1) ? 1 : 0; */

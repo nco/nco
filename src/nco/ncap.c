@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.72 2002-05-23 17:56:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.73 2002-06-07 04:25:19 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -42,8 +42,8 @@
 #include "libnco.h" /* netCDF operator library */
 
 /* Global variables */
-int ncl_dpt_crr=0; /* [nbr] Depth of current #include file (incremented in ncap.l) */
-long *ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
+size_t ncl_dpt_crr=0UL; /* [nbr] Depth of current #include file (incremented in ncap.l) */
+size_t *ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
 char **fl_spt_glb; /* [fl] Script file */
 
 int 
@@ -84,8 +84,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.72 2002-05-23 17:56:37 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.72 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.73 2002-06-07 04:25:19 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.73 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -311,11 +311,10 @@ main(int argc,char **argv)
   prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
   
   /* Initialize line counter */
-  ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
-  ln_nbr_crr[ncl_dpt_crr]=1; /* [cnt] Line number incremented in ncap.l */
+  ln_nbr_crr=(size_t *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1UL); 
+  ln_nbr_crr[ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap.l */
   /* Copy script file name to global variable */
-  fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1); 
-  fl_spt_glb[ncl_dpt_crr]=
+  fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1UL); 
   fl_spt_glb[ncl_dpt_crr]=fl_spt_usr;
   /* Perform initial scan of input script to create three lists of variables:
      lst_a: RHS variables present in input file
@@ -449,8 +448,8 @@ main(int argc,char **argv)
   prs_arg.nco_op_typ=nco_op_nil; /* [enm] Operation type */
   
   /* Initialize line counter */
-  ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
-  ln_nbr_crr[ncl_dpt_crr]=1; /* [cnt] Line number incremented in ncap.l */
+  ln_nbr_crr=(size_t *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1UL); 
+  ln_nbr_crr[ncl_dpt_crr]=1UL; /* [cnt] Line number incremented in ncap.l */
   if(fl_spt_usr == NULL){
     /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0){
@@ -477,7 +476,7 @@ main(int argc,char **argv)
     } /* end if */
 
     /* Copy script file name to global variable */
-    fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1); 
+    fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1UL); 
     fl_spt_glb[ncl_dpt_crr]=fl_spt_usr;
   } /* end else */
 

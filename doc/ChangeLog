@@ -1,5 +1,20 @@
 2002-06-06  Charlie Zender  <zender@uci.edu>
 
+	* Noticed that GCC gives warnings when printf'ing size_t with %ld
+	format flag. This seems like a compiler warning. GCC offers
+	non-portable %z workaround.
+
+	* Worked on 64-bit clean issues identified by AIX -qwarn64 flag
+	The only possible non-functioning code found was date conversion
+	code which could break on YYYYMMDD dates.
+	Converted int's to longs where necessary to solve this.
+	Used size_t instead of int or long where possible.
+	Used ptrdiff_t instead of int where warranted.
+	Most of remaining warnings could be solved by using size_t instead
+	of int or long for counters, but mismatches are unavoidable at
+	some point since type nco_long variables (i.e., netCDF data) 
+	needs to interact with size_t variables on occasion.
+	
 	* cvs tag -c nco-2_4_4
 	* Changes since nco-2_4_3: Build system
 

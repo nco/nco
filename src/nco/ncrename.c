@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.35 2002-05-14 00:57:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.36 2002-06-07 04:25:19 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -89,8 +89,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.35 2002-05-14 00:57:45 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.35 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.36 2002-06-07 04:25:19 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.36 $";
   
   extern char *optarg;
   
@@ -389,10 +389,11 @@ prs_rnm_lst(int nbr_rnm,char **rnm_arg)
   rnm_sct *rnm_lst;
 
   int idx;
-  int len_arg_1;
-  int len_arg_2;
 
-  rnm_lst=(rnm_sct *)nco_malloc(nbr_rnm*sizeof(rnm_sct));
+  ptrdiff_t len_arg_1;
+  ptrdiff_t len_arg_2;
+
+  rnm_lst=(rnm_sct *)nco_malloc((size_t)nbr_rnm*sizeof(rnm_sct));
 
   for(idx=0;idx<nbr_rnm;idx++){
     char *comma_1_cp;
@@ -440,28 +441,30 @@ prs_rnm_lst(int nbr_rnm,char **rnm_arg)
 int
 prs_att(rnm_sct *rnm_att,char *var_nm)
 {
-  /* Purpose: Check if attribute name space contains variable name before attribute name of the form  var_nm:att_name
+  /* Purpose: Check if attribute name space contains variable name before attribute name of form var_nm:att_name
      Attribute name is then extracted from from old_nm and new_nm as necessary */
   
-  char *colon;
-  int len;
-  colon = strchr(rnm_att->old_nm,':');	
-  if( colon == NULL ) return 0;
+  char *colon_ptr;
+
+  size_t att_nm_lng;
+
+  colon_ptr=strchr(rnm_att->old_nm,':');	
+  if(colon_ptr == NULL) return 0;
   
-  len = strlen(rnm_att->old_nm);
+  att_nm_lng=strlen(rnm_att->old_nm);
   
-  if( len < 3 || colon == rnm_att->old_nm || colon == rnm_att->old_nm + len -1 ) return 0;
-  *colon = '\0';
-  /* now copy just variable name */
+  if(att_nm_lng < 3 || colon_ptr == rnm_att->old_nm || colon_ptr == rnm_att->old_nm+att_nm_lng-1) return 0;
+  *colon_ptr='\0';
+  /* Copy variable name only */
   strcpy(var_nm,rnm_att->old_nm);
-  /* now set to just attribute name */
-  rnm_att->old_nm = colon +1 ; 
+  /* Set to attribute name alone */
+  rnm_att->old_nm=colon_ptr+1; 
     
-  colon = strchr(rnm_att->new_nm,':');	
-  if( colon  ) {
-    len = strlen(rnm_att->new_nm);
-    if ( (colon - rnm_att->new_nm) < len ) rnm_att->new_nm = colon +1;
+  colon_ptr=strchr(rnm_att->new_nm,':');	
+  if(colon_ptr){
+    att_nm_lng=strlen(rnm_att->new_nm);
+    if((colon_ptr-rnm_att->new_nm) < att_nm_lng) rnm_att->new_nm=colon_ptr+1;
     else return 0;
-  } 
+  } /* endif */
   return 1;
 } /* end prs_att() */
