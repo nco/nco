@@ -1,14 +1,22 @@
-nm_id_sct *
-var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,int *nbr_xtr)
-/* 
-   int nc_id: I netCDF file ID
-   int nbr_var: I total number of variables in input file
-   char **var_lst_in: user specified list of variable names
-   bool PROCESS_ALL_COORDINATES: I whether to process all coordinates
-   int *nbr_xtr: I/O number of variables in current extraction list
-   nm_id_sct var_lst_mk(): O extraction list
- */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.3 2002-05-05 21:21:14 zender Exp $ */
+
+/* Purpose: Variable list utilities */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_var_lst.h" /* Variable list utilities */
+
+nm_id_sct * /* O [sct] Variable extraction list */
+var_lst_mk /* [fnc] Create variable extraction list */
+(const int nc_id, /* I [enm] netCDF file ID */
+ const int nbr_var, /* I [nbr] Number of variables in input file */
+ const char ** const var_lst_in, /* I [sng] User-specified list of variable names */
+ const bool PROCESS_ALL_COORDINATES, /* I [flg] Process all coordinates */
+ int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
 {
+  /* Purpose: Create variable extraction list */
   bool err_flg=False;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int idx;
@@ -50,20 +58,17 @@ var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,
 
 } /* end var_lst_mk() */
 
-nm_id_sct *
-var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
-/* 
-   int nc_id: I netCDF file ID
-   int nbr_var: I total number of variables in input file
-   nm_id_sct *xtr_lst: I/O current extraction list (destroyed)
-   int *nbr_xtr: I/O number of variables in current extraction list
-   nm_id_sct var_lst_xcl(): O extraction list
- */
+nm_id_sct * /* O [sct] Extraction list */
+var_lst_xcl /* [fnc] Convert exclusion list to extraction list */
+(const int nc_id, /* I netCDF file ID */
+ const int nbr_var, /* I [nbr] Number of variables in input file */
+ nm_id_sct *xtr_lst, /* I/O [sct] Current exclusion list (destroyed) */
+ int * const nbr_xtr) /* I/O [nbr] Number of variables in exclusion/extraction list */
 {
-  /* The user wants to extract all variables except the ones
-     currently in the list. Since it's hard to edit the existing
-     list, copy the existing extract list into the exclude list,
-     and construct a new list extract list from scratch. */
+  /* Purpose: Convert exclusion list to extraction list
+     User wants to extract all variables except those currently in list
+     Since it is hard to edit existing list, copy existing extraction list into 
+     exclusion list, then construct new extraction list from scratch. */
 
   char var_nm[NC_MAX_NAME];
 
@@ -103,18 +108,16 @@ var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
   return xtr_lst;
 } /* end var_lst_xcl() */
 
-nm_id_sct *
-var_lst_add_crd(int nc_id,int nbr_var,int nbr_dim,nm_id_sct *xtr_lst,int *nbr_xtr)
-/* 
-   int nc_id: I netCDF file ID
-   int nbr_var: I total number of variables in input file
-   int nbr_dim: I total number of dimensions in input file
-   nm_id_sct *xtr_lst: current extraction list (destroyed)
-   int *nbr_xtr: I/O number of variables in current extraction list
-   nm_id_sct var_lst_add_crd(): O extraction list
- */
+nm_id_sct * /* O [sct] Extraction list */
+var_lst_add_crd /* [fnc] Add all coordinates to extraction list */
+(const int nc_id, /* I [id] netCDF file ID */
+ const int nbr_var, /* I [nbr] Number of variables in input file */
+ const int nbr_dim, /* I [nbr] Number of dimensions in input file */
+ nm_id_sct *xtr_lst, /* I/O [sct] Current extraction list (destroyed) */
+ int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
 {
-  /* Find all coordinates (dimensions which are also variables) and
+  /* Purpose: Add all coordinates to extraction list
+     Find all coordinates (dimensions which are also variables) and
      add them to the list if they are not already there. */
   
   char crd_nm[NC_MAX_NAME];
@@ -152,20 +155,17 @@ var_lst_add_crd(int nc_id,int nbr_var,int nbr_dim,nm_id_sct *xtr_lst,int *nbr_xt
 } /* end var_lst_add_crd() */
 
 void
-var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dmn_sct **dim,int nbr_dmn_xtr,
-	   var_sct ***var_ptr,var_sct ***var_out_ptr)
-/*  
-   int nc_id: I netCDF file ID
-   nm_id_sct *xtr_lst: I current extraction list (destroyed)
-   int nbr_xtr: I total number of variables in input file
-   dmn_sct **dim: I list of pointers to dimension structures associated with input variable list
-   int nbr_dmn_xtr: I number of dimensions structures in list
-   var_sct ***var_ptr: O pointer to list of pointers to variable structures
-   var_sct ***var_out_ptr: O pointer to list of pointers to duplicates of variable structures
-*/
+var_lst_convert /* [fnc] Make variable structure list from variable name ID list */
+(const int nc_id, /* I [enm] netCDF file ID */
+ nm_id_sct *xtr_lst, /* I [sct] Current extraction list (destroyed) */
+ const int nbr_xtr, /* I [nbr] Number of variables in input file */
+ const dmn_sct ** const dim, /* I [sct] Dimensions associated with input variable list */
+ const int nbr_dmn_xtr, /* I [nbr] Number of dimensions in list  */
+ var_sct *** const var_ptr, /* O [sct] Variable list (for input file) */
+ var_sct *** const var_out_ptr) /* O [sct] Duplicate variable list (for output file) */
 {
-  /* Routine to make a var_sct list from a nm_id list. The var_sct lst is duplicated 
-     to be used for an output list. */
+  /* Purpose: Make var_sct list from nm_id list 
+     The var_sct lst is duplicated to be used for output list */
 
   int idx;
 
@@ -189,27 +189,21 @@ var_lst_convert(int nc_id,nm_id_sct *xtr_lst,int nbr_xtr,dmn_sct **dim,int nbr_d
 } /* end var_lst_convert() */
 
 void
-var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
-	       dmn_sct **dmn_xcl,int nbr_dmn_xcl,
-	       var_sct ***var_fix_ptr,var_sct ***var_fix_out_ptr,int *nbr_var_fix,
-	       var_sct ***var_prc_ptr,var_sct ***var_prc_out_ptr,int *nbr_var_prc)
-/*  
-   var_sct **var: I list of pointers to variable structures
-   var_sct **var_out: I list of pointers to duplicates of variable structures
-   int nbr_var: I number of variable structures in list
-   dmn_sct **dmn_xcl: I list of pointers to dimensions not allowed in fixed variables
-   int nbr_dmn_xcl: I number of dimension structures in list
-   bool NCAR_CSM_FORMAT: I whether file is an NCAR CSM history tape
-   var_sct ***var_fix_ptr: O pointer to list of pointers to fixed-variable structures
-   var_sct ***var_fix_out_ptr: O pointer to list of pointers to duplicates of fixed-variable structures
-   int *nbr_var_fix: O number of variable structures in list of fixed variables
-   var_sct ***var_prc_ptr: O pointer to list of pointers to processed-variable structures
-   var_sct ***var_prc_out_ptr: O pointer to list of pointers to duplicates of processed-variable structures
-   int *nbr_var_prc: O number of variable structures in list of processed variables
-*/
+var_lst_divide /* [fnc] Divide input lists into output lists */
+(const var_sct ** const var, /* I [sct] Variable list (input file) */
+ const var_sct ** const var_out, /* I [sct] Variable list (output file) */
+ const int nbr_var, /* I [nbr] Number of variables */
+ const bool NCAR_CSM_FORMAT, /* I [flg] File adheres to NCAR CSM conventions */
+ const dmn_sct ** const dmn_xcl, /* I [sct] Dimensions not allowed in fixed variables */
+ const int nbr_dmn_xcl, /* I [nbr] Number of excluded dimensions */
+ const var_sct ***var_fix_ptr, /* O [sct] Fixed-variables (input file) */
+ const var_sct ***var_fix_out_ptr, /* O [sct] Fixed-variables (output file) */
+ int * const nbr_var_fix, /* O [nbr] Number of fixed variables */
+ const var_sct ***var_prc_ptr, /* O [sct] Processed-variables (input file) */
+ const var_sct ***var_prc_out_ptr, /* O [sct] Processed-variables (output file) */
+ int * const nbr_var_prc) /* O [nbr] Number of processed variables */
 {
-  /* Routine to divide the two input lists of variables into four separate output lists, 
-     based on the program type */
+  /* Purpose: Divide two input lists into output lists based on program type */
 
   char *var_nm=NULL_CEWI;
 
