@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.79 2003-01-09 00:27:37 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.80 2003-02-18 19:41:15 hmb Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.79 2003-01-09 00:27:37 rorik Exp $"; 
-  char CVS_Revision[]="$Revision: 1.79 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.80 2003-02-18 19:41:15 hmb Exp $"; 
+  char CVS_Revision[]="$Revision: 1.80 $";
   
   extern char *optarg;
   
@@ -335,6 +335,9 @@ main(int argc,char **argv)
     lmt_tmp->lmt_dmn[0] = (lmt_sct *) nco_malloc(sizeof(lmt_sct));
     lmt_tmp->dmn_nm=strdup(dmn_nm);
     lmt_tmp->lmt_dmn_nbr=1;
+    lmt_tmp->dmn_sz_org = dmn_sz;
+    lmt_tmp->WRP = False;
+    lmt_tmp->BASIC_DMN = True;
     /* iniialize lmt struct */
     lmt_tmp->lmt_dmn[0]->nm=lmt_tmp->dmn_nm;
     lmt_tmp->lmt_dmn[0]->id = idx;
@@ -354,6 +357,7 @@ main(int argc,char **argv)
      for(jdx=0; jdx < nbr_dmn_fl ; jdx++) {
        if(!strcmp(lmt[idx].nm,lmt_lst[jdx].dmn_nm)){   
          lmt_tmp = &lmt_lst[jdx];
+         lmt_tmp->BASIC_DMN = False;
          if(lmt_tmp->lmt_dmn[0]->lmt_typ == -1) { 
 	   lmt_tmp->lmt_dmn[0]=lmt+idx; 
            }else{ 
@@ -372,10 +376,17 @@ main(int argc,char **argv)
   } /* end loop over idx */       
 
 
+  /* Split up any wrapped limits */
+ for(idx = 0 ; idx < nbr_dmn_fl ; idx++)
+   if( lmt_lst[idx].BASIC_DMN == False) 
+     (void)nco_msa_wrp_splt( lmt_lst+idx);
+   
+  
+
   /* Find and store the final size of each dimension */
   for(idx = 0 ; idx < nbr_dmn_fl ; idx++){
     (void)nco_msa_clc_cnt( lmt_lst+idx );
-    /* if( lmt_lst[idx].lmt_dmn_nbr >1 ) (void)nco_msa_prn_idx(&lmt_lst[idx]); */
+    /*   if( lmt_lst[idx].lmt_dmn_nbr >1 ) (void)nco_msa_prn_idx(&lmt_lst[idx]);  */
   }
   
 	 
@@ -449,9 +460,17 @@ main(int argc,char **argv)
       (void)nco_prn_att(in_id,xtr_lst[idx].id);
     } /* end loop over idx */
   } /* end if OUTPUT_VARIABLE_METADATA */
-  
+
+   
+  /*
   if(OUTPUT_DATA){
     for(idx=0;idx<nbr_xtr;idx++) (void)nco_prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_STYLE,PRINT_DIMENSIONAL_UNITS,PRN_DMN_IDX_CRD_VAL);
+  } 
+  
+  */
+
+  if(OUTPUT_DATA){
+    for(idx=0;idx<nbr_xtr;idx++) (void)nco_msa_prn_var_val(in_id,xtr_lst[idx].nm,lmt_lst,nbr_dmn_fl,dlm_sng,FORTRAN_STYLE,PRINT_DIMENSIONAL_UNITS,PRN_DMN_IDX_CRD_VAL);
   } /* end if OUTPUT_DATA */
   
   /* Close input netCDF file */
