@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.22 1999-04-27 16:11:25 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.23 1999-04-27 16:24:27 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -28,6 +28,9 @@ endif
 endif
 ifndef C_ONLY
  C_ONLY := N
+endif
+ifeq ($(C_ONLY),Y)
+ CPPFLAGS += -DC_ONLY
 endif
 
 # NB: Do NOT add comment lines, e.g., # This is a comma, to character definitions
