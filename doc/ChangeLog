@@ -1,3 +1,7 @@
+2003-11-21  Charlie Zender  <zender@uci.edu>
+
+	* Beefed up memory usage section in nco.texi
+
 2003-11-20  Charlie Zender  <zender@uci.edu>
 
 	* Implement nco_malloc_err_hnt_prn()

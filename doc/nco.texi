@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.186 2003-11-14 17:06:01 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.187 2003-11-21 18:53:53 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -69,7 +69,7 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @ifhtml: Text until @end ifhtml passed with translation
 @kbd{}: Keyboard input, e.g., @kbd{ncra in.nc out.nc}
 @key{}: Key name, e.g., @key{ESC} (rarely needed)
-@option{}: Command-line option, e.g., @option{}
+@option{}: Command-line option, e.g., @option{--dbg}
 @samp{}: Extended commands, character sequences, e.g., @samp{ncra in.nc out.nc}
 @uref{}: URL with alternate text, e.g., @uref{http://nco.sf.net,NCO homepage}
 @url{}: Uniform resource locator, e.g., @url{http://nco.sf.net}
@@ -653,10 +653,12 @@ platform, and the change in the wallclock time for execution.}.
 @subsection Compiling @acronym{NCO} for Microsoft Windows @acronym{OS}
 @cindex Windows
 @cindex Microsoft
+@cindex XP (Microsoft operating system)
+@cindex NT (Microsoft operating system)
 
 @cindex @code{USE_FORTRAN_ARITHMETIC}
 @acronym{NCO} has been successfully ported and tested on the Microsoft
-Windows (98/NT) operating systems.
+Windows (95/98/NT/2000/XP) operating systems.
 The switches necessary to accomplish this are included in the standard
 distribution of @acronym{NCO}.
 Using the freely available Cygwin (formerly gnu-win32) development
@@ -673,7 +675,7 @@ distribution itself.}, the compilation process is very similar to
 installing @acronym{NCO} on a @acronym{UNIX} system.  
 @cindex preprocessor tokens
 @cindex @code{USE_FORTRAN_ARITHMETIC}
-@cindex @code{Cygwin}
+@cindex Cygwin
 @cindex @code{gnu-win32}
 @cindex @code{WIN32}
 @cindex @file{GNUmakefile}
@@ -1364,15 +1366,49 @@ multi-file @acronym{NCO} operators consume is given in
 @node Memory usage, Operator limitations, Large files and Memory, Strategies
 @section Approximate @acronym{NCO} memory requirements
 @cindex memory requirements
+@cindex memory available
+@cindex RAM
+@cindex swap space
+@cindex peak memory usage
+
+Many people use @acronym{NCO} on gargantuan files which dwarf the
+memory available (free RAM plus swap space) even on today's powerful
+machines. 
+These users will want @acronym{NCO} to consume the absolute minimum 
+peak memory possible so that their scripts do not have to tediously cut
+files into smaller pieces that fit into memory.
+We commend these greedy users for pushing @acronym{NCO} to its limits!
+
+@cindex multiple threads
+@cindex threads
+@cindex shared memory machines
+This section describes the memory @acronym{NCO} requires during
+operation.
+The required memory is based on the underlying algorithms.
+The description below is the memory usage per thread.
+Users with shared memory machines may use the multi-threaded
+@acronym{NCO}.
+The peak and sustained memory usage will scale accordingly,
+i.e., by the number of threads.
+Memory consumption patterns of all operators are similar, with
+the exception of @command{ncap}.
+
+@menu
+* Memory Usage of Single and Multi-file Operators::  
+* Memory Usage of ncap::        
+@end menu
+
+@node Memory Usage of Single and Multi-file Operators, Memory Usage of ncap, Memory usage, Memory usage
+@subsection Memory Usage of Single and Multi-file Operators
 
 The multi-file operators currently comprise the record operators,
 @command{ncra} and @command{ncrcat}, and the ensemble operators,
 @command{ncea} and @command{ncecat}. 
 The record operators require @emph{much less} memory than the ensemble 
 operators. 
-This is because the record operators are designed to operate on a single 
-record of a file at a time, while the ensemble operators must retrieve
-an entire variable at a time into memory.
+This is because the record operators operate on one single record (i.e.,
+time-slice) at a time, wherease the ensemble operators retrieve the
+entire variable into memory. 
 Let @math{MS} be the peak sustained memory demand of an operator,
 @math{FT} be the memory required to store the entire contents of all the 
 variables to be processed in an input file,
@@ -1402,6 +1438,42 @@ Note that only variables which are processed, i.e., averaged or
 concatenated, contribute to @math{MS}.
 Memory is never allocated to hold variables which do not appear in the 
 output file (@pxref{Variable subsetting}). 
+
+@node Memory Usage of ncap,  , Memory Usage of Single and Multi-file Operators, Memory usage
+@subsection Memory Usage of @command{ncap}
+@cindex @command{ncap}
+@cindex binary operations
+@cindex unary operations
+@cindex memory leaks
+@cindex left hand casting
+@command{ncap} has unique memory requirements due its ability to process
+arbitrarily long scripts of any complexity.
+All script acceptable to @command{ncap} are ultimately processed as a
+sequence of binary or unary operations.
+@command{ncap} requires @math{MS <= 2VT} under most conditions.
+An exception to this is when left hand casting (@pxref{Left hand
+casting}) is used to stretch the size of derived variables beyond the
+size of any input variables.
+Let @math{VC} be the memory required to store the largest variable
+defined by left hand casting.
+In this case, @math{MS <= 2VC}.
+
+@findex malloc()
+@command{ncap} scripts are complete dynamic and may be of arbitrary
+length. 
+A script that contains many thousands of operations, may uncover a
+slow memory leak even though each single operation consumes little
+additional memory. 
+Memory leaks are usually identifiable by their memory usage signature.
+Leaks cause peak memory usage to increase monotonically with time
+regardless of script complexity. 
+Slow leaks are very difficult to find.
+Sometimes a @command{malloc()} failure is the only noticeable clue to
+their existance.
+If you have good reasons to believe that a @command{malloc()} failure
+is ultimately due to an @acronym{NCO} memory leak (rather than
+inadequate RAM on your system), then we would be very interested in
+receiving a detailed bug report. 
 
 @node Operator limitations,  , Memory usage, Strategies
 @section Performance limitations of the operators

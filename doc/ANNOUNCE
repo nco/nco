@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.39 2003-11-20 22:38:25 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.40 2003-11-21 18:53:53 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.4 are ready. 
 
@@ -11,14 +11,17 @@ Feature changes:
 1. Build support for AMD Opteron. 
 Compile netCDF with CFLAGS='-fPIC' or link fails.
 
-Other user-visible changes:
-1. Better memory related diagnostics
-
-Notable bug-fixes:
+Bug-fixes:
 1. None
 
+Other user-visible changes:
+1. Better memory related diagnostics
+2. Detail ncap memory usage in manual
+
 User-invisible changes:
-1. Test suite rewritten in perl (nco_tst.pl), thanks to Rorik.
+1. Test suite rewritten in perl (nco_tst.pl). Gracias Rorik.
+2. Reduced peak ncap memory usage to 2*sizeof(var) in binary
+   operations (merci beaucoups, Henri).
 
 Enjoy,
 Charlie
