@@ -1,0 +1,17 @@
+$Header: /data/zender/nco_20150216/nco/doc/i18n.txt,v 1.2 2001-05-08 01:38:22 zender Exp $
+
+Internationalization of NCO:
+
+Generate a *.po file for all NCO operators:
+cd ~/nco-1_3/src/nco
+xgettext --default-domain=nco --extract-all --output=nco.po nc*.c
+
+Search through source for translatable strings:
+cd ~/nco-1_3/src/nco
+etags *.[chly]
+Open the .po file
+Hit `,' (po-tags-search) to start searching through candidates
+`M-,' Marks last string with _()
+`M-.' Marks last string with preferred keyword, e.g., gettext()
+Compile PO (portable object) file to MO (message object or machine object) file:
+msgfmt --output-file=$HOME/share/locale/es/LC_MESSAGES/nco.mo --statistics $HOME/nco-1_3/src/nco/nco.po
