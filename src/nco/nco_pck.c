@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.10 2002-08-29 05:16:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.11 2002-08-30 07:22:04 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -435,3 +435,4 @@ nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to
   return var;
   
 } /* end nco_put_var_pck() */
+
