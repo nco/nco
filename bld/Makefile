@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.56 2000-03-06 08:13:49 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.57 2000-03-06 08:23:33 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -540,11 +540,6 @@ lib_dir:
 obj_dir:
 	-install -d $(MY_BIN_DIR)
 	-mkdir -p $(MY_OBJ_DIR)
-
-tst:	
-	- if test -f $(MY_DAT_DIR)/nco_tst.nc; then printf "" ; else $(MY_BIN_DIR)/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l $(MY_DAT_DIR) nco_tst.nc; fi
-	cd $(MY_BLD_DIR); nco_tst.sh
-
 # Targets in bin
 ncra:	$(MY_OBJ_DIR)/ncra.o $(libnco).a
 	$(CC) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(LDFLAGS)
