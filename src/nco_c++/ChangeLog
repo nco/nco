@@ -1,6 +1,6 @@
 2004-06-20  Charlie Zender  <zender@uci.edu>
 
-	* cvs tag -c nco_c++-0_1_6
+	* cvs tag -c nco_c++-0_1_6 mie c++ nco/src/nco_c++
 	Changes since nco_c++-0_1_5: Support more put_att attribute types
 
 	* Fix ambiguity in nco_put_att<float &>
