@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.186 2002-09-20 20:31:38 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.187 2002-09-20 20:34:24 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -83,6 +83,9 @@ ifndef ${OMP} # OpenMP
 endif # endif OMP
 ifndef OPTS
  OPTS := O
+endif
+ifndef UNAMES
+ UNAMES := $(shell uname -s)
 endif
 ifndef USE_FORTRAN_ARITHMETIC
 # Whether or not to use Fortran arithmetic routines
