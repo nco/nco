@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.20 2003-08-21 23:32:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.21 2003-08-26 14:46:48 hmb Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -64,7 +64,7 @@ nm_id_sct * /* O [sct] Variable extraction list */
 nco_var_lst_mk /* [fnc] Create variable extraction list using regular expressions*/
 (const int nc_id, /* I [enm] netCDF file ID */
  const int nbr_var, /* I [nbr] Number of variables in input file */
- CST_X_PTR_CST_PTR_CST_Y(char,var_lst_in), /* I [sng] User-specified list of variable names */
+ char ** var_lst_in, /* I [sng] User-specified list of variable names */
  const bool PROCESS_ALL_COORDINATES, /* I [flg] Process all coordinates */
  int * const nbr_xtr) /* I/O [nbr] Number of variables in current extraction list */
 {
@@ -120,6 +120,7 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
     *(srch_sng+srch_sng_lng-2)='\n';
     *(srch_sng+srch_sng_lng-1)='\0';
     }    /* end loop over idx */
+
   
 
   /* loop through var_lst_in */
@@ -127,8 +128,17 @@ nco_var_lst_mk /* [fnc] Create variable extraction list using regular expression
   for(idx=0 ; idx<*nbr_xtr ; idx++) {
   
      var_sng=var_lst_in[idx];
+
+     /* convert any #'s back to ' */
+     while(*var_sng) {
+       if (*var_sng=='#') *var_sng=',';
+       var_sng++;
+     }
+     var_sng=var_lst_in[idx];
+
+
      /* if var_sng is  a regular expressiom */
-     if ( strpbrk(var_sng,".*^$\\[]()<>+?|")  ) {
+     if ( strpbrk(var_sng,".*^$\\[]()<>+?|{}")  ) {
        
        /* Regular expression library present */
 #ifdef NCO_HAVE_REGEX_FUNCTIONALITY
