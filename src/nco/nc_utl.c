@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.109 2001-05-08 01:36:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.110 2001-08-27 16:33:56 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -51,7 +51,7 @@
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
-#include "nco_netcdf.h"			/* netcdf3.x wrappers */
+#include "nco_netcdf.h" /* netcdf3.x wrappers */
 #ifdef _OPENMP
 #include <omp.h> /* OpenMP pragmas */
 #endif /* not _OPENMP */
@@ -3874,11 +3874,10 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
      or var_divide() to divide the sum set in this routine by the tally set in this routine. */
 
   /* There is a GNUC, a non-GNUC, and a Fortran block for each operation
-     GNUC: Utilize (non-ANSI compliant) GNUC ability to dynamically declare multi-dimensional 
-     buffers with variable dimensions.
+     GNUC: Utilize (non-ANSI-compliant) compiler support for local automatic arrays
      This results in more elegent loop structure and, theoretically, in faster performance
-     non-GNUC: Fully ANSI compliant structure
-     Fortran: Same structure as GNUC blocks */
+     non-GNUC: Fully ANSI-compliant structure
+     Fortran: Same structure as GNUC blocks (g77 and all Fortran90 compilers support local autmatic arrays) */
 
 #ifndef __GNUC__
   long blk_off;
@@ -3923,7 +3922,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     (void)FORTRAN_avg_reduce_real(&sz_blk,&sz_op2,&has_mss_val,mss_val.fp,tally,op1.fp,op2.fp);
 #else /* !USE_FORTRAN_ARITHMETIC */
 #ifndef __GNUC__
-    /* ANSI compliant branch */
+    /* ANSI-compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -3944,7 +3943,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
       
@@ -3975,7 +3974,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     (void)FORTRAN_avg_reduce_double_precision(&sz_blk,&sz_op2,&has_mss_val,mss_val.dp,tally,op1.dp,op2.dp);
 #else /* !USE_FORTRAN_ARITHMETIC */
 #ifndef __GNUC__
-    /* ANSI compliant branch */
+    /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -3996,7 +3995,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
       
@@ -4024,7 +4023,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     break;
   case NC_INT:
 #ifndef __GNUC__
-    /* ANSI compliant branch */
+    /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4045,7 +4044,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
       
@@ -4072,7 +4071,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     break;
   case NC_SHORT:
 #ifndef __GNUC__
-    /* ANSI compliant branch */
+    /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4093,7 +4092,7 @@ var_avg_reduce_ttl(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       short op1_2D[sz_op2][sz_blk];
       
@@ -4195,7 +4194,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   case NC_FLOAT:
     
 #ifndef __GNUC__
-    /* ANSI compliant branch */
+    /* ANSI-compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4218,7 +4217,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
       
@@ -4249,7 +4248,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   case NC_DOUBLE:
     
 #ifndef __GNUC__
-    /* ANSI compliant branch */
+    /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4272,7 +4271,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
       
@@ -4301,7 +4300,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     break;
   case NC_INT:
 #ifndef __GNUC__
-    /* ANSI compliant branch */
+    /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4324,7 +4323,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
       
@@ -4353,7 +4352,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     break;
   case NC_SHORT:
 #ifndef __GNUC__
-    /* ANSI compliant branch */
+    /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4376,7 +4375,7 @@ var_avg_reduce_min(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       short op1_2D[sz_op2][sz_blk];
       
@@ -4481,7 +4480,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   case NC_FLOAT:
     
 #ifndef __GNUC__
-    /* ANSI compliant branch */
+    /* ANSI-compliant branch */
     if(!has_mss_val){ 
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4504,7 +4503,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       float op1_2D[sz_op2][sz_blk];
       
@@ -4535,7 +4534,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
   case NC_DOUBLE:
     
 #ifndef __GNUC__
-    /* ANSI compliant branch */
+    /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4558,7 +4557,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       double op1_2D[sz_op2][sz_blk];
       
@@ -4587,7 +4586,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     break;
   case NC_INT:
 #ifndef __GNUC__
-    /* ANSI compliant branch */
+    /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4610,7 +4609,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       long op1_2D[sz_op2][sz_blk];
       
@@ -4639,7 +4638,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
     break;
   case NC_SHORT:
 #ifndef __GNUC__
-    /* ANSI compliant branch */
+    /* ANSI-compliant branch */
     if(!has_mss_val){
       for(idx_op2=0;idx_op2<sz_op2;idx_op2++){
 	blk_off=idx_op2*sz_blk;
@@ -4662,7 +4661,7 @@ var_avg_reduce_max(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn 
       } /* end loop over idx_op2 */
     } /* end else */
 #else /* __GNUC__ */
-    /* Initializes variable-size array. Not ANSI compliant, but more elegant. */
+    /* Compiler supports local automatic arrays. Not ANSI-compliant, but more elegant. */
     if(True){
       short op1_2D[sz_op2][sz_blk];
       
