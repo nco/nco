@@ -1,7 +1,11 @@
 2002-06-07  Charlie Zender  <zender@uci.edu>
 
-	* Fixed bug where mss_val_sht was being initialized with long
-	in one arithemetic routine.
+	* cvs tag -c nco-2_4_5
+	* Changes since nco-2_4_4: Arithmetic routines use const.
+	More warning messages during compilation due to size_t printf
+
+	* Fixed bug where mss_val_sht was dereferenced into long
+	in one arithmetic routine.
 
 	* Made as many parts of arithmetic routines const as possible
 	and implemented const instantiaion outside of loops to reduce
