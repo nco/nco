@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.14 2004-02-09 07:54:42 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.15 2004-03-16 23:52:19 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -515,14 +515,14 @@ var_xpr '+' var_xpr { /* Begin Addition */
   $$=ncap_var_scv_mlt($3,$1);
 } /* End Multiplication */
 | var_xpr '/' var_xpr { /* Begin Division */
-  $$=ncap_var_var_dvd($3,$1); /* NB: Ordering is important */
+  $$=ncap_var_var_dvd($3,$1); /* NB: Order is important */
   nco_var_free($3); 
 }
-| var_xpr '/' scv_xpr {
+| var_xpr '/' scv_xpr { /* Division is non-commutative so use different functions for V/S and S/V */
   $$=ncap_var_scv_dvd($1,$3);
 }
-| scv_xpr '/' var_xpr {
-  $$=ncap_var_scv_dvd($3,$1);
+| scv_xpr '/' var_xpr { /* Division is non-commutative so use different functions for V/S and S/V */
+  $$=ncap_scv_var_dvd($1,$3);
 } /* End Division */
 | var_xpr '%' var_xpr { /* Begin Modulo */
   $$=ncap_var_var_mod($1,$3);
@@ -532,7 +532,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
   $$=ncap_var_scv_mod($1,$3);
 }
 | scv_xpr '%' var_xpr {
-  $$=ncap_var_scv_mod($3,$1);
+  $$=ncap_var_scv_mod($3,$1); /* fxm: S%V is broken */
 } /* End Modulo */
 | var_xpr '^' var_xpr { /* Begin Empowerment */
   $$=ncap_var_var_pwr($1,$3);
@@ -542,7 +542,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
   $$=ncap_var_scv_pwr($1,$3);
 }
 | scv_xpr '^' var_xpr {
-  $$=ncap_var_scv_pwr($3,$1);
+  $$=ncap_var_scv_pwr($3,$1); /* fxm: S^V is broken */
 }
 | POWER '(' var_xpr ',' var_xpr ')' {
   $$=ncap_var_var_pwr($3,$5);
@@ -551,7 +551,7 @@ var_xpr '+' var_xpr { /* Begin Addition */
 | POWER '(' var_xpr ',' scv_xpr ')' {
   $$=ncap_var_scv_pwr($3,$5);
 }
-| POWER '(' scv_xpr ',' var_xpr ')' {
+| POWER '(' scv_xpr ',' var_xpr ')' { /* fxm: S^V is broken */
   $$=ncap_var_scv_pwr($5,$3);
 } /* End Empowerment */
 | '-' var_xpr %prec UMINUS { /* Begin Unary Subtraction */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.20 2004-02-09 07:54:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.21 2004-03-16 23:52:19 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -93,7 +93,7 @@ nco_var_abs(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_v
 
 void
 nco_var_add /* [fnc] Add first operand to second operand */
-(const nc_type type, /* I [type] netCDF type of operands */
+(const nc_type type, /* I [enm] netCDF type of operands */
  const long sz, /* I [nbr] Size (in elements) of operands */
  const int has_mss_val, /* I [flg] Flag for missing values */
  ptr_unn mss_val, /* I [flg] Value of missing value */
@@ -290,7 +290,7 @@ nco_var_dvd /* [fnc] Divide second operand by first operand */
      and store result in second operand. 
      Assume operands conform, are same type, and are in memory */
 
-  /* Division is currently defined as op2:=op2/op1 */  
+  /* Variable-variable division is currently defined as op2:=op2/op1 */  
 
   long idx;
   

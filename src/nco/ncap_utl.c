@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.95 2004-02-09 07:54:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.96 2004-03-16 23:52:19 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -364,6 +364,15 @@ ncap_var_scv_dvd(var_sct *var,scv_sct scv)
   (void)var_scv_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,var->val,&scv);
   return var;
 } /* end ncap_var_scv_dvd */
+
+var_sct *
+ncap_scv_var_dvd(scv_sct scv,var_sct *var)
+{
+  /* Purpose: Divide scv by value of each element in var */
+  (void)ncap_var_scv_cnf_typ_hgh_prc(&var,&scv);
+  (void)scv_var_dvd(var->type,var->sz,var->has_mss_val,var->mss_val,&scv,var->val);
+  return var;
+} /* end ncap_scv_var_dvd */
 
 var_sct *
 ncap_var_scv_mod(var_sct *var,scv_sct scv)

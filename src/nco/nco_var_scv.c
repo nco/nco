@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.15 2004-02-09 07:54:42 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.16 2004-03-16 23:52:19 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -9,10 +9,10 @@
 #include "nco_var_scv.h" /* Arithmetic between variables and scalar values */
 
 void
-var_scv_add(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
-     /*	nc_type type: I netCDF type of operands
+var_scv_add(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
+     /*	const nc_type type: I netCDF type of operands
 	const long sz: I size (in elements) of operands
-	int has_mss_val: I flag for missing values
+	const int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
         scv_sct scv: I pointer to scalar value (second operand) */
@@ -43,13 +43,13 @@ var_scv_add(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
     break;
   } /* endif NC_FLOAT */
   case NC_DOUBLE:{
-    const double scv_dpl=scv->val.d;
+    const double scv_dbl=scv->val.d;
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.dp[idx]+=scv_dpl;
+      for(idx=0;idx<sz;idx++) op1.dp[idx]+=scv_dbl;
     }else{
       const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]+=scv_dpl;  
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]+=scv_dbl;  
       } /* end for */
     } /* end else */
     break;
@@ -93,10 +93,10 @@ var_scv_add(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
 } /* end var_scv_add() */
 
 void
-var_scv_sub(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
-     /*	nc_type type: I netCDF type of operands
+var_scv_sub(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
+     /*	const nc_type type: I netCDF type of operands
 	const long sz: I size (in elements) of operands
-	int has_mss_val: I flag for missing values
+	const int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
         scv_sct scv: I pointer to scalar value (second operand) */
@@ -127,13 +127,13 @@ var_scv_sub(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
     break;
   }
   case NC_DOUBLE:{
-    const double scv_dpl=scv->val.d;
+    const double scv_dbl=scv->val.d;
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.dp[idx]-=scv_dpl;
+      for(idx=0;idx<sz;idx++) op1.dp[idx]-=scv_dbl;
     }else{
       const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]-=scv_dpl;  
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]-=scv_dbl;  
       } /* end for */
     } /* end else */
     break;
@@ -177,11 +177,11 @@ var_scv_sub(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
 } /* end var_scv_sub() */
 
 void
-var_scv_mlt(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
+var_scv_mlt(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
      /* 
-	nc_type type: I netCDF type of operands
+	const nc_type type: I netCDF type of operands
 	const long sz: I size (in elements) of operands
-	int has_mss_val: I flag for missing values
+	const int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
         scv_sct scv: I pointer to scalar value (second operand) */
@@ -212,13 +212,13 @@ var_scv_mlt(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
     break;
   }
   case NC_DOUBLE:{
-    const double scv_dpl=scv->val.d;
+    const double scv_dbl=scv->val.d;
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.dp[idx]*=scv_dpl;
+      for(idx=0;idx<sz;idx++) op1.dp[idx]*=scv_dbl;
     }else{
       const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]*=scv_dpl;  
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]*=scv_dbl;  
       } /* end for */
     } /* end else */
     break;
@@ -262,20 +262,19 @@ var_scv_mlt(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
 } /* end var_scv_mlt() */
 
 void
-var_scv_dvd(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
-     /* 
-	nc_type type: I netCDF type of operands
-	const long sz: I size (in elements) of operands
-	int has_mss_val: I flag for missing values
-	ptr_unn mss_val: I value of missing value
-	ptr_unn op1: I values of first operand
-        scv_sct scv: I pointer to scalar value (second operand) */
+var_scv_dvd
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of array operands */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [flg] Value of missing value */
+ ptr_unn op1, /* I/O [val] Values of first operand */
+ scv_sct *scv) /* I [val] Pointer to scalar value (second operand) */
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Purpose: Divide all values in op1 by scv
      Store result in first operand */    
   
-  /* Division is currently defined as op1:=op1/scv */  
+  /* Variable-scalar division is currently defined as op1:=op1/scv */  
   
   long idx;
   
@@ -297,13 +296,13 @@ var_scv_dvd(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
     break;
   }
   case NC_DOUBLE:{
-    const double scv_dpl=scv->val.d;
+    const double scv_dbl=scv->val.d;
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.dp[idx]/=scv_dpl;
+      for(idx=0;idx<sz;idx++) op1.dp[idx]/=scv_dbl;
     }else{
       const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]/=scv_dpl;  
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]/=scv_dbl;  
       } /* end for */
     } /* end else */
     break;
@@ -346,12 +345,96 @@ var_scv_dvd(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
   
 } /* end var_scv_dvd() */
 
+void
+scv_var_dvd
+(const nc_type type, /* I [enm] netCDF type of operands */
+ const long sz, /* I [nbr] Size (in elements) of array operands */
+ const int has_mss_val, /* I [flg] Flag for missing values */
+ ptr_unn mss_val, /* I [flg] Value of missing value */
+ scv_sct *scv, /* I [val] Pointer to scalar value (first operand) */
+ ptr_unn op2) /* I/O [val] Values of second operand */
+{
+  /* Threads: Routine is thread safe and calls no unsafe routines */
+  /* Purpose: Divide all values in scv by op2
+     Store result in second operand */
+  
+  /* Scalar-variable division is currently defined as op2:=scv/op2 */  
+  
+  long idx;
+  
+  /* Typecast pointer to values before access */
+  (void)cast_void_nctype(type,&op2);
+  if(has_mss_val) (void)cast_void_nctype(type,&mss_val);
+  
+  switch(type){
+  case NC_FLOAT:{
+    const float scv_flt=scv->val.f;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.fp[idx]=scv_flt/op2.fp[idx];
+    }else{
+      const float mss_val_flt=*mss_val.fp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op2.fp[idx] != mss_val_flt) op2.fp[idx]=scv_flt/op2.fp[idx];
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_DOUBLE:{
+    const double scv_dbl=scv->val.d;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.dp[idx]=scv_dbl/op2.dp[idx];
+    }else{
+      const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op2.dp[idx] != mss_val_dbl) op2.dp[idx]=scv_dbl/op2.dp[idx];
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_INT:{
+    const nco_long scv_lng=scv->val.l;
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.lp[idx]=scv_lng/op2.lp[idx];
+    }else{
+      const long mss_val_lng=*mss_val.lp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op2.lp[idx] != mss_val_lng) op2.lp[idx]=scv_lng/op2.lp[idx];
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_SHORT:{
+    const short scv_sht=scv->val.s; 
+    if(!has_mss_val){
+      for(idx=0;idx<sz;idx++) op2.sp[idx]=scv_sht/op2.sp[idx];
+    }else{
+      const short mss_val_sht=*mss_val.sp; /* Temporary variable reduces de-referencing */
+      for(idx=0;idx<sz;idx++){
+	if(op2.sp[idx] != mss_val_sht) op2.sp[idx]=scv_sht/op2.sp[idx];
+      } /* end for */
+    } /* end else */
+    break;
+  }
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+  default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+  
+  /* NB: it is not neccessary to un-typecast pointers to values after access 
+     because we have only operated on local copies of them. */
+  
+} /* end scv_var_dvd() */
+
 void 
-var_scv_mod(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
+var_scv_mod(const nc_type type,const long sz,const int has_mss_val,ptr_unn mss_val,ptr_unn op1,scv_sct *scv)
      /* 
-	nc_type type: I netCDF type of operands
+	const nc_type type: I netCDF type of operands
 	const long sz: I size (in elements) of operands
-	int has_mss_val: I flag for missing values
+	const int has_mss_val: I flag for missing values
 	ptr_unn mss_val: I value of missing value
 	ptr_unn op1: I values of first operand
         scv_sct scv: I pointer to scalar value (second operand) */
@@ -391,13 +474,13 @@ var_scv_mod(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
   }
   break; 
   case NC_DOUBLE:{
-    const double scv_dpl=fabs(scv->val.d);
+    const double scv_dbl=fabs(scv->val.d);
     if(!has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.dp[idx]=fmod(op1.dp[idx],scv_dpl);
+      for(idx=0;idx<sz;idx++) op1.dp[idx]=fmod(op1.dp[idx],scv_dbl);
     }else{
       const double mss_val_dbl=*mss_val.dp; /* Temporary variable reduces de-referencing */
       for(idx=0;idx<sz;idx++){
-	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=fmod(op1.dp[idx],scv_dpl);  
+	if(op1.dp[idx] != mss_val_dbl) op1.dp[idx]=fmod(op1.dp[idx],scv_dbl);  
       } /* end for */
     } /* end else */
     break;

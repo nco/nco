@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.h,v 1.10 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.h,v 1.11 2004-03-16 23:52:19 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -28,12 +28,29 @@
 extern "C" {
 #endif /* __cplusplus */
 
-  void var_scv_add(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
-  void var_scv_dvd(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
-  void var_scv_mod(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
-  void var_scv_mlt(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
-  void var_scv_sub(nc_type,const long,int,ptr_unn,ptr_unn,scv_sct *);
+  void var_scv_add(const nc_type,const long,const int,ptr_unn,ptr_unn,scv_sct *);
+  void var_scv_mod(const nc_type,const long,const int,ptr_unn,ptr_unn,scv_sct *);
+  void var_scv_mlt(const nc_type,const long,const int,ptr_unn,ptr_unn,scv_sct *);
+  void var_scv_sub(const nc_type,const long,const int,ptr_unn,ptr_unn,scv_sct *);
 
+  void
+  var_scv_dvd
+  (const nc_type type, /* I [enm] netCDF type of operands */
+   const long sz, /* I [nbr] Size (in elements) of array operands */
+   const int has_mss_val, /* I [flg] Flag for missing values */
+   ptr_unn mss_val, /* I [flg] Value of missing value */
+   ptr_unn op1, /* I/O [val] Values of first operand */
+   scv_sct *scv); /* I [val] Pointer to scalar value (second operand) */
+  
+  void
+  scv_var_dvd
+  (const nc_type type, /* I [enm] netCDF type of operands */
+   const long sz, /* I [nbr] Size (in elements) of array operands */
+   const int has_mss_val, /* I [flg] Flag for missing values */
+   ptr_unn mss_val, /* I [flg] Value of missing value */
+   scv_sct *scv, /* I [val] Pointer to scalar value (first operand) */
+   ptr_unn op2); /* I/O [val] Values of second operand */
+       
 #ifdef __cplusplus
 } /* end extern "C" */
 #endif /* __cplusplus */
