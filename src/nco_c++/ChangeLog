@@ -26,6 +26,7 @@
 	export MY_DPN_DIR='.'
 	export MY_INC_DIR='.'
 	make -f Makefile.old 
+	make -f Makefile.old test
 	exit # exit new shell	
 
 2004-06-20  Charlie Zender  <zender@uci.edu>
