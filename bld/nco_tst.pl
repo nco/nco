@@ -29,6 +29,17 @@ $expected="ncap: WARNING Replacing missing value data in variable val_half_half"
 &go();
 
 ####################
+#### ncatted tests #
+####################
+$operator="ncatted";
+####################
+$test[0]='ncatted -O -a units,,m,c,"meter second-1" in.nc foo.nc';
+$test[1]='ncks -C -m -s "%s" -v lev foo.nc | grep units | cut -d " " -f 11-12';
+$description=" Modify all existing units attributes to meter second-1";
+$expected="meter second-1";
+&go();
+
+####################
 #### ncbo tests ####
 ####################
 $operator="ncbo";
@@ -606,7 +617,7 @@ $expected= 0;
 ####################
 sub initialize
 {
-  @all_operators = qw(ncap ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa);
+  @all_operators = qw(ncap ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa);
 if (scalar @ARGV > 0) 
 {
   @operators=@ARGV;

@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.248 2004-08-07 21:16:03 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.249 2004-08-08 05:34:48 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -364,9 +364,9 @@ href="src/nco_2.9.8-1_i386.changes">nco_2.9.8-1_i386.changes</a> (<!--#fsize fil
 <ul>
 <a href="http://mitgcm.org/eh3/packages">Fedora GNU/Linux-specific homepage for NCO</a>.
 <a href="http://www.rpm.org">RPMs</a> by Ed Hill:
-<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.7-0.fdr.2.i386.rpm</a>: Fedora Core&nbsp;2, i386 Binary RPM</li>
-<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.7-0.fdr.2.x86_64.rpm</a>: Fedora Core&nbsp;2, x86_64 Binary RPM</li>
-<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.7-0.fdr.2.src.rpm</a>: Fedora Core&nbsp;1, Source RPM</li>
+<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.8-0.fdr.0.i386.rpm</a>: Fedora Core&nbsp;2, i386 Binary RPM</li>
+<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.8-0.fdr.0.x86_64.rpm</a>: Fedora Core&nbsp;2, x86_64 Binary RPM</li>
+<li><a href="http://mitgcm.org/eh3/packages">nco-2.9.8-0.fdr.0.src.rpm</a>: Fedora Core&nbsp;1, Source RPM</li>
 </ul>
 
 <a name="gentoo"></a>

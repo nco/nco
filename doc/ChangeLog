@@ -1,5 +1,7 @@
 2004-08-07  Charlie Zender  <zender@uci.edu>
 
+	* Added first ncatted test to nco_tst.pl
+
 	* Added lots more yummy ncpdq documentation
 
 	* cvs tag -c nco-2_9_8
