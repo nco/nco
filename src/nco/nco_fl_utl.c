@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.50 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.51 2005-03-27 21:11:59 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -831,7 +831,8 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 {
   /* Purpose: Open output file subject to availability and user input 
      In accord with netCDF philosophy a temporary file (based on fl_out and process ID)
-     is actually opened, so that errors can not infect intended output file */
+     is actually opened, so that errors can not infect intended output file
+     Calling routine has responsibility to close and free fl_out_tmp */
 
   char *fl_out_tmp;
   char *pid_sng; /* String containing decimal representation of PID */
@@ -871,6 +872,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   pid_sng_lng=1L+(long)ceil(log10((double)pid));
   /* NCO temporary file name is user-specified file name + "." + tmp_sng_1 + PID + "." + prg_nm + "." + tmp_sng_2 + NUL */
   fl_out_tmp_lng=strlen(fl_out)+1UL+strlen(tmp_sng_1)+strlen(pid_sng)+1UL+strlen(prg_nm_get())+1UL+strlen(tmp_sng_2)+1UL;
+  /* NB: Calling routine has responsibility to free() this memory */
   fl_out_tmp=(char *)nco_malloc(fl_out_tmp_lng*sizeof(char));
   (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,prg_nm_get(),tmp_sng_2);
   if(dbg_lvl_get() > 5) (void)fprintf(stdout,"%s: nco_fl_out_open() reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
@@ -907,6 +909,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
 #endif /* !HAVE_MKSTEMP */
     fl_out_hnd=fl_out_hnd; /* Removes compiler warning on SGI */
     if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: nco_fl_out_open() reports strlen(fl_out_tmp_sys) = %ld, fl_out_tmp_sys = %s, \n",prg_nm_get(),(long)strlen(fl_out_tmp_sys),fl_out_tmp_sys);
+    fl_out_tmp_sys=(char *)nco_free(fl_out_tmp_sys);
   } /* endif dbg */
 
   /* If temporary file already exists, prompt user to remove temporary files and exit */

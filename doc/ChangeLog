@@ -1,3 +1,7 @@
+2005-03-27  Charlie Zender  <zender@uci.edu>
+
+	* More fixes to ncpdq memory management...only one leak remains!
+
 2005-03-26  charlie  <zender@uci.edu>
 
 	* Introduced unknown regression into ncwa nco_var_cnf_dmn()
@@ -12,7 +16,7 @@
 	* Deep-copy nm in nco_var_dpl(); free nm in nco_var_free()
 	Ditto with dmn->nm, nco_dmn_dpl(), and nco_dmn_free()
 	
-	* Implement nco_dmn_free() to handle free'ing dimensions
+	* Implement nco_dmn_free() to free dimensions
 
 	* Guaranteed system memory (optarg) reaches no further than
 	command-line parsing in all operators. This has side effect

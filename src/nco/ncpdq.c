@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.63 2005-03-27 20:35:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.64 2005-03-27 21:11:59 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.63 2005-03-27 20:35:16 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.63 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.64 2005-03-27 21:11:59 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.64 $";
   const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -424,7 +424,7 @@ main(int argc,char **argv)
     dmn_rdr_nbr=dmn_rdr_nbr_utl;
     /* Collapse extra dimension structure space to prevent accidentally using it */
     dmn_rdr=(dmn_sct **)nco_realloc(dmn_rdr,dmn_rdr_nbr*sizeof(dmn_sct *));
-    /* Dimension list space now refers to requested rather than utilized dimensions */
+    /* Dimension list in name-ID format is no longer needed */
     dmn_rdr_lst=nco_nm_id_lst_free(dmn_rdr_lst,dmn_rdr_nbr);
 
     /* Make sure no re-ordering dimension is specified more than once */
@@ -800,9 +800,9 @@ main(int argc,char **argv)
     if(dmn_rvr_in != NULL) dmn_rvr_in=(bool **)nco_free(dmn_rvr_in);
     if(dmn_rvr_rdr != NULL) dmn_rvr_rdr=(bool *)nco_free(dmn_rvr_rdr);
     if(dmn_rdr_lst_in != NULL) dmn_rdr_lst_in=(char **)nco_free(dmn_rdr_lst_in);
-    for(idx_rdr=0;idx_rdr<dmn_rdr_nbr;idx_rdr++){
-      dmn_rdr[idx_rdr]=nco_dmn_free(dmn_rdr[idx_rdr]);
-    } /* end loop over idx_rdr */
+    /* Free dimension list pointers */
+    dmn_rdr=(dmn_sct **)nco_free(dmn_rdr);
+    /* Dimension structures in dmn_rdr are owned by dmn and dmn_out, free'd later */
   } /* endif dmn_rdr_nbr > 0 */
   if(nco_pck_plc != nco_pck_plc_nil){
     if(nco_pck_plc_sng != NULL) nco_pck_plc_sng=(char *)nco_free(nco_pck_plc_sng);
@@ -822,8 +822,9 @@ main(int argc,char **argv)
   if(fl_lst_in != NULL) fl_lst_in=(char **)nco_free(fl_lst_in);
   if(var_lst_in != NULL) var_lst_in=(char **)nco_free(var_lst_in);
   /* Free individual strings */
-  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
   if(fl_in != NULL) fl_in=(char *)nco_free(fl_in);
+  if(fl_out != NULL) fl_out=(char *)nco_free(fl_out);
+  if(fl_out_tmp != NULL) fl_out_tmp=(char *)nco_free(fl_out_tmp);
   /* Free limits */
   for(idx=0;idx<lmt_nbr;idx++){
     lmt_arg[idx]=(char *)nco_free(lmt_arg[idx]);
@@ -842,7 +843,11 @@ main(int argc,char **argv)
     var_out[idx]=nco_var_free(var_out[idx]);
   } /* end loop over idx */
   var=(var_sct **)nco_free(var);
-  var_out=(var_sct **)nco_free(var);
+  var_out=(var_sct **)nco_free(var_out);
+  var_prc=(var_sct **)nco_free(var_prc);
+  var_prc_out=(var_sct **)nco_free(var_prc_out);
+  var_fix=(var_sct **)nco_free(var_fix);
+  var_fix_out=(var_sct **)nco_free(var_fix_out);
 
   nco_exit_gracefully();
   return EXIT_SUCCESS;
