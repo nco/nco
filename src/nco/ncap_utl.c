@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.31 2002-01-13 21:06:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.32 2002-01-14 18:04:39 hmb Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -72,7 +72,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
     if( rcd == NC_NOERR ){
       fl_id=prs_arg->in_id;
     }else{
-      (void)fprintf(stderr,"can't find %s in %s or %s\n",var_nm,prs_arg->fl_in,prs_arg->fl_out);     
+      (void)fprintf(stderr,"WARNING can't find %s in %s or %s\n",var_nm,prs_arg->fl_in,prs_arg->fl_out);     
       return (var_sct*)NULL;
     }/* end else */
   } /* end else */
