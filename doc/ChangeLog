@@ -1,7 +1,9 @@
 1999-01-13  Charlie Zender  <zender@garcia.acd.ucar.edu>
 
 	* Fixed bug in var_def() where wrong branch was executed when
-	called by ncwa for files with no output dimensions.
+	called by ncwa for files with no output dimensions. Symptom was a
+	core dump or "ncvardef: ncid 4: Invalid dimension id or name"
+	error. 
 
 Wed Jan  6 17:55:26 1999  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 

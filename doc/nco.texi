@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.12 1999-01-07 00:59:15 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.13 1999-01-13 21:53:01 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -384,7 +384,7 @@ The netCDF homepage is
 @cindex installation
 NCO has been successfully ported and tested on the following platforms: 
 GNU/Linux, SunOS 4.1.x, Solaris 2.x, IRIX 5.x and 6.x (including 64-bit
-architectures), UNICOS 8.x and 9.x, AIX 4.x, and Windows NT4.
+architectures), UNICOS 8.x and 9.x, AIX 4.x, DEC OSF, and Windows NT4.
 If you port the code to a new operating system, please send me a note
 and any patches you required.
 
