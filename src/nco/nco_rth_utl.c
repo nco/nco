@@ -1,5 +1,19 @@
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.2 2002-05-05 17:45:26 zender Exp $ */
+
+/* Purpose: Arithmetic controls and utilities */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_rth_utl.h" /* Arithmetic controls and utilities */
+
 void 
-nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
+nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea */
+(const int idx_rec, /* I [idx] Index of current record */
+ const int nco_op_typ, /* I [enm] Operation type */
+ var_sct * const var_prc_out, /* I/O [sct] Variable in output file */
+ const var_sct * const var_prc) /* I [sct] Variable in input file */
 {
   /* Purpose: Perform appropriate ncra/ncea operation (avg, min, max, ttl, ...) on operands
      nco_opr_drv() is called within the record loop of ncra, and within file loop of ncea
@@ -11,12 +25,12 @@ nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
   switch (nco_op_typ){
   case nco_op_min: /* Minimum */
     /* On first loop, simply copy variables from var_prc to var_prc_out */
-    if(cnt == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else	  
+    if(idx_rec == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else	  
       (void)var_min_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;
   case nco_op_max: /* Maximium */
     /* On first loop, simply copy variables from var_prc to var_prc_out */
-    if(cnt == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else
+    if(idx_rec == 0) (void)var_copy(var_prc->type,var_prc->sz,var_prc->val,var_prc_out->val); else
       (void)var_max_bnr(var_prc_out->type,var_prc_out->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc_out->val);
     break;	
   case nco_op_avg: /* Average */
@@ -36,8 +50,9 @@ nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
   } /* end switch */
 } /* end nco_opr_drv() */
 
-int
-nco_op_typ_get(char *nco_op_sng)
+int /* O [enm] Arithmetic operation */
+nco_op_typ_get /* [fnc] Convert user-specified operation into operation key */
+(const char * const nco_op_sng) /* I [sng] User-specified operation */
 {
   /* Purpose: Process '-y' command line argument
      Convert user-specified string to enumerated operation type 
@@ -54,14 +69,11 @@ nco_op_typ_get(char *nco_op_sng)
   return nco_op_avg;
 } /* end nco_op_typ_get() */
 
-int
-op_prs_rlt(char *op_sng)
-/* 
-   char *op_sng: I string containing Fortran representation of a reltional operator ("eq","lt"...)
- */
+int /* O [enm] Relational operation */
+op_prs_rlt /* [fnc] Convert Fortran abbreviation for relational operator into NCO operation key */
+(const char * const op_sng) /* I [sng] Fortran representation of relational operator */
 {
-  /* Routine to parse the Fortran abbreviation for a relational operator into a unique numeric value
-     representing that relation */
+  /* Purpose: Convert Fortran abbreviation for relational operator into NCO operation key */
 
   /* Classify the relation */
   if(!strcmp(op_sng,"eq")){
@@ -86,21 +98,17 @@ op_prs_rlt(char *op_sng)
 } /* end op_prs_rlt() */
 
 void
-vec_set(nc_type type,long sz,ptr_unn op1,double op2)
-/* 
-  nc_type type: I netCDF type of operand
-  long sz: I size (in elements) of operand
-  ptr_unn op1: I values of first operand
-  double op2: I value to fill vector with
- */
+vec_set /* [fnc] Fill every value of first operand with value of second operand */
+(const nc_type type, /* I [enm] netCDF type of operand */
+ const long sz, /* I [nbr] size (in elements) of operand */
+ ptr_unn op1, /* I [sct] Values of first operand */
+ const double op2) /* I [frc] Value to fill vector with */
 {
-  /* Routine to fill every value of first operand with value of second operand */
-
+  /* Purpose: Fill every value of first operand with value of second operand */
   long idx;
 
   /* Typecast pointer to values before access */
   (void)cast_void_nctype(type,&op1);
-
   switch(type){
   case NC_FLOAT:
     for(idx=0;idx<sz;idx++) op1.fp[idx]=op2;
@@ -129,13 +137,11 @@ vec_set(nc_type type,long sz,ptr_unn op1,double op2)
 } /* end vec_set() */
 
 void
-zero_long(long sz,long *op1)
-/* 
-  long sz: I size (in elements) of operand
-  long *op1: I values of first operand
- */
+zero_long /* [fnc] Zero all values of long array */
+(const long sz, /* I [nbr] Size (in elements) of operand */
+ long * const op1) /* I/O [nbr] Array to be zeroed */
 {
-  /* Routine to zero value of first operand and store result in first operand. */
+  /* Purpose: Zero all values of long array */
 
   long idx;
   if(op1 != NULL){

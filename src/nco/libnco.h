@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.9 2002-05-05 17:13:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/libnco.h,v 1.10 2002-05-05 17:45:26 zender Exp $ */
 
 /* Purpose: Prototypes, typedefs, and global variables for libcsm_c++ */
 
@@ -35,5 +35,6 @@
 #include "nco_omp.h" /* OpenMP utilities */
 #include "nco_pck.h" /* Packing and unpacking variables */
 #include "nco_rec_var.h" /* Record variable utilities */
+#include "nco_rth_utl.h" /* Arithmetic controls and utilities */
 
 #endif /* LIBNCO_H */

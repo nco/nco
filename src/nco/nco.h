@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.24 2002-05-05 17:13:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.25 2002-05-05 17:45:26 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -343,8 +343,6 @@ extern "C" {
   extern char *nmn_get(void);
   extern char *prg_nm_get(void);
   extern int sng_ascii_trn(char *);
-  extern int op_prs_rlt(char *);
-  extern int nco_op_typ_get(char *);
   extern int prg_get(void);
   extern nco_long FORTRAN_newdate(nco_long *,int *);
   extern nco_long newdate(nco_long,int);
@@ -392,7 +390,6 @@ extern "C" {
   extern void var_max_bnr(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
   extern void var_min_bnr(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
   extern void var_multiply(nc_type,long,int,ptr_unn,ptr_unn,ptr_unn);
-  extern void nco_opr_drv(int,int,var_sct *, var_sct * );
   extern void var_normalize(nc_type,long,int,ptr_unn,long *,ptr_unn);
   extern void var_normalize_sdn(nc_type,long,int,ptr_unn,long *,ptr_unn);
   extern void var_refresh(int,var_sct *);
@@ -408,8 +405,6 @@ extern "C" {
   extern void var_val_cpy(int,int,var_sct **,int);
   extern void var_xrf(var_sct *,var_sct *);
   extern void var_zero(nc_type,long,ptr_unn);
-  extern void vec_set(nc_type,long,ptr_unn,double);
-  extern void zero_long(long,long *op1);
   
   extern var_sct * /* O [var] Variable after (possible) conversion */
   nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
