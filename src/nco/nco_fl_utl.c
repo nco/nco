@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.35 2004-06-19 22:16:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.36 2004-06-20 06:54:27 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -7,6 +7,12 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_fl_utl.h" /* File manipulation */
+
+void
+nco_fl_cmp_err_chk(void) /* [fnc] Perform error checking on file */
+{
+  /* Purpose: Perform error checking on file */
+} /* end nco_fl_cmp_err_chk() */
 
 void
 nco_fl_cp /* [fnc] Copy first file to second */
@@ -33,50 +39,39 @@ nco_fl_cp /* [fnc] Copy first file to second */
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
 } /* end nco_fl_cp() */
 
-void
-nco_fl_mv /* [fnc] Move first file to second */
-(const char * const fl_src, /* I [sng] Name of source file to move */
- const char * const fl_dst) /* I [sng] Name of destination file */
+char * /* O [sng] Canonical file name*/
+nco_fl_info_get /* [fnc] Determine canonical filename and properties */
+(const char * const fl_nm_lcl) /* I [sng] Name of file */
 {
-  /* Purpose: Move first file to second */
-  char *mv_cmd;
-  const char mv_cmd_fmt[]="mv -f %s %s";
-
+  /* Purpose: Return canonical filename of by removing all symbolic links */
   int rcd;
-  const int nbr_fmt_char=4;
-  
-  /* Construct and execute copy command */
-  mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1UL)*sizeof(char));
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",prg_nm_get(),fl_src,fl_dst);
-  (void)sprintf(mv_cmd,mv_cmd_fmt,fl_src,fl_dst);
-  rcd=system(mv_cmd);
-  if(rcd == -1){
-    (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",prg_nm_get(),mv_cmd);
-    nco_exit(EXIT_FAILURE); 
-  } /* end if */
-  mv_cmd=(char *)nco_free(mv_cmd);
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
-} /* end nco_fl_mv() */
+  char *fl_nm_cnc=NULL; /* [sng] Canonical file name */
+  struct stat stat_sct;
 
-void 
-nco_fl_rm /* [fnc] Remove file */
-(char *fl_nm) /* I [sng] File to be removed */
-{
-  /* Purpose: Remove specified file from local system */
-  int rcd;
-  char *rm_cmd;
-  const char rm_cmd_sys_dep[]="rm -f";
-  
-  /* Remember to add one for the space and one for the terminating NUL character */
-  rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1UL+strlen(fl_nm)+1UL)*sizeof(char));
-  (void)sprintf(rm_cmd,"%s %s",rm_cmd_sys_dep,fl_nm);
+  /* Does file exist on local system? */
+  rcd=stat(fl_nm_lcl,&stat_sct);
+  if(rcd == -1) (void)fprintf(stderr,"%s: INFO File %s does not exist on local system\n",prg_nm_get(),fl_nm_lcl);
 
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG Removing %s with %s\n",prg_nm_get(),fl_nm,rm_cmd);
-  rcd=system(rm_cmd);
-  if(rcd == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",prg_nm_get(),fl_nm);
+  /* Is file a symbolic link? */
+  rcd=lstat(fl_nm_lcl,&stat_sct);
+  if(rcd != -1 && S_ISLNK(stat_sct.st_mode)){
+#if (defined HAVE_CANONICALIZE_FILE_NAME) && 0
+    /* 20040619: Function prototype is not found (perhaps due to aggressive standard switches) by NCO, althouth configure.in finds it */
+    /* Remember to free() fl_nm_cnc after using it */
+    fl_nm_cnc=(char *)canonicalize_file_name(fl_nm_lcl);
+    if(fl_nm_cnc){
+      (void)fprintf(stderr,"%s: INFO Local file %s is symbolic link to %s",prg_nm_get(),fl_nm_lcl,fl_nm_cnc);
+      fl_nm_cnc=(char *)nco_free(fl_nm_cnc);
+    }else{
+      (void)fprintf(stderr,"%s: INFO Local file %s is symbolic link but does not canonicalize",prg_nm_get(),fl_nm_lcl);
+    } /* endif link canonicalizes */
+#else /* !HAVE_CANONICALIZE_FILE_NAME */
+    (void)fprintf(stderr,"%s: INFO File %s is a symbolic link\n",prg_nm_get(),fl_nm_lcl);
+#endif /* !HAVE_CANONICALIZE_FILE_NAME */
+  } /* endif symbolic link */
 
-  rm_cmd=(char *)nco_free(rm_cmd);
-} /* end nco_fl_rm() */
+  return fl_nm_cnc;
+} /* end nco_fl_info_get() */
 
 char ** /* O [sng] List of user-specified filenames */
 nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments */
@@ -168,6 +163,7 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	char *fl_in=NULL; /* [sng] Input file name */
 	FILE *fp_in; /* [enm] Input file handle */
 	char *bfr_in; /* [sng] Temporary buffer for stdin filenames */
+	char chr_foo;
 	int cnv_nbr; /* [nbr] Number of scanf conversions performed this scan */
 	long fl_lst_in_lng; /* [nbr] Number of characters in input file name list */
 	size_t fl_nm_lng; /* [nbr] Filename length */
@@ -191,8 +187,13 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 #define FL_LST_IN_MAX_LNG 1000000 /* [nbr] Maximum length of input file list */
 	bfr_in=(char *)nco_malloc((FL_NM_IN_MAX_LNG+1L)*sizeof(char));
 	
-	/* Assume filenames are whitespace-separated */
-	while(((cnv_nbr=fscanf(fp_in,"%256s\n",bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){
+	/* Assume filenames are whitespace-separated
+	   Format string "%256s\n" tells scanf() to:
+	   1. Skip any initial whitespace
+	   2. Read first block of non-whitespace characters (up to 256 of them) into buffer
+	   3. */
+	/*	while(((cnv_nbr=fscanf(fp_in,"%256s\n",bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){ */
+	while(((cnv_nbr=fscanf(fp_in,"%256s",bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){
 	  if(cnv_nbr == 0){
 	    (void)fprintf(stdout,"%s: ERROR stdin input not convertable to filename. HINT: Maximum length for input filenames is %d characters. HINT: Separate filenames with whitespace. Carriage returns are automatically stripped out.\n",prg_nm_get(),FL_NM_IN_MAX_LNG);
 	    nco_exit(EXIT_FAILURE);
@@ -200,15 +201,18 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	  fl_nm_lng=strlen(bfr_in);
 	  fl_lst_in_lng+=fl_nm_lng;
 	  (*fl_nbr)++;
-	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG input file #%d is \"%s\", filename length=%li\n",prg_nm_get(),*fl_nbr,bfr_in,(long)fl_nm_lng);
+	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBIG input file #%d is \"%s\", filename length=%li\n",prg_nm_get(),*fl_nbr,bfr_in,(long)fl_nm_lng);
 	  /* Increment file number */
 	  fl_lst_in=(char **)nco_realloc(fl_lst_in,(*fl_nbr*sizeof(char *)));
 	  fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);
 	} /* end while */
-	/* Close input stream */
-	(void)fflush(stdin);
-	(void)fclose(fp_in);
-	(void)fflush(stdin);
+	/* comp.lang.c 20000212 and http://www.eskimo.com/~scs/C-faq/q12.18.html
+	   C FAQ Author Steve Summit explains why not to use fflush() 
+	   and how best to manually clean stdin of unwanted residue */
+	/* Discard characters remainining in stdin */
+	/*	while((chr_foo=getchar()) != '\n' && chr_foo != EOF) continue;*/
+	while((chr_foo=getchar()) != EOF) continue;
+
 	/* Free temporary buffer */
 	bfr_in=(char *)nco_free(bfr_in);
 	
@@ -296,8 +300,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
        Thus whether a colon signifies an rcp or scp request is somewhat ambiguous 
        NCO treats names with more than one colon as regular filenames
        In order for a colon to be interpreted as a machine name delimiter,
-       it must be preceded by a period within three or four spaces, e.g., uci.edu:
-    */
+       it must be preceded by a period within three or four spaces, e.g., uci.edu: */
     if(((cln_ptr-4 >= fl_nm_lcl) && *(cln_ptr-4) == '.') ||
        ((cln_ptr-3 >= fl_nm_lcl) && *(cln_ptr-3) == '.')){
       char *fl_nm_lcl_tmp;
@@ -584,12 +587,12 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
       int fl_sz_crr=-2;
       int fl_sz_ntl=-1;
-      int nbr_tm=100; /* Maximum number of sleep periods before error exit */
+      int tm_nbr=100; /* Maximum number of sleep periods before error exit */
       int tm_idx;
       int tm_sleep=10; /* Seconds per stat() check for successful return */
 
       /* Asynchronous retrieval uses a sleep and poll technique */
-      for(tm_idx=0;tm_idx<nbr_tm;tm_idx++){
+      for(tm_idx=0;tm_idx<tm_nbr;tm_idx++){
 	rcd=stat(fl_nm_lcl,&stat_sct);
 	if(rcd == 0){
 	  /* What is current size of file? */
@@ -606,8 +609,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	if(dbg_lvl_get() > 0) (void)fprintf(stderr,".");
 	(void)fflush(stderr);
       } /* end for */
-      if(tm_idx == nbr_tm){
-	(void)fprintf(stderr,"%s: ERROR Maximum time (%d seconds = %.1f minutes) for asynchronous file retrieval exceeded.\n",prg_nm_get(),nbr_tm*tm_sleep,nbr_tm*tm_sleep/60.);
+      if(tm_idx == tm_nbr){
+	(void)fprintf(stderr,"%s: ERROR Maximum time (%d seconds = %.1f minutes) for asynchronous file retrieval exceeded.\n",prg_nm_get(),tm_nbr*tm_sleep,tm_nbr*tm_sleep/60.);
 	nco_exit(EXIT_FAILURE);
       } /* end if */
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"\n%s Retrieval successful after %d sleeps of %d seconds each = %.1f minutes\n",prg_nm_get(),tm_idx,tm_sleep,tm_idx*tm_sleep/60.);
@@ -639,9 +642,11 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 
     /* For local files, perform optional file diagnostics */
     if(dbg_lvl_get() > 0){
-      rcd=stat(fl_nm_lcl,&stat_sct);
-      if(S_ISLNK(stat_sct.st_mode)) (void)fprintf(stderr,"%s: INFO Local file %s is symbolic link to ",prg_nm_get(),fl_nm_lcl);
-    } /* endif */
+      char *fl_nm_cnc=NULL; /* [sng] Canonical file name */
+      /* Determine canonical filename and properties */
+      fl_nm_cnc=nco_fl_info_get(fl_nm_lcl);
+      if(fl_nm_cnc != NULL) fl_nm_cnc=(char *)nco_free(fl_nm_cnc);
+    } /* endif dbg */
 
   } /* end if really a local file */
   
@@ -652,6 +657,31 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
   return(fl_nm_lcl);
   
 } /* end nco_fl_mk_lcl() */
+
+void
+nco_fl_mv /* [fnc] Move first file to second */
+(const char * const fl_src, /* I [sng] Name of source file to move */
+ const char * const fl_dst) /* I [sng] Name of destination file */
+{
+  /* Purpose: Move first file to second */
+  char *mv_cmd;
+  const char mv_cmd_fmt[]="mv -f %s %s";
+
+  int rcd;
+  const int nbr_fmt_char=4;
+  
+  /* Construct and execute copy command */
+  mv_cmd=(char *)nco_malloc((strlen(mv_cmd_fmt)+strlen(fl_src)+strlen(fl_dst)-nbr_fmt_char+1UL)*sizeof(char));
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Moving %s to %s...",prg_nm_get(),fl_src,fl_dst);
+  (void)sprintf(mv_cmd,mv_cmd_fmt,fl_src,fl_dst);
+  rcd=system(mv_cmd);
+  if(rcd == -1){
+    (void)fprintf(stdout,"%s: ERROR nco_fl_mv() unable to execute mv command \"%s\"\n",prg_nm_get(),mv_cmd);
+    nco_exit(EXIT_FAILURE); 
+  } /* end if */
+  mv_cmd=(char *)nco_free(mv_cmd);
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
+} /* end nco_fl_mv() */
 
 char * /* O [sng] Name of file to retrieve */
 nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
@@ -885,9 +915,16 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
   
   /* If permanent file already exists, query user whether to overwrite, append, or exit */
   if(rcd != -1){
-    char usr_reply='z';
+    char *rcd_fgets; /* Return code from fgets */
+#define USR_RPL_MAX_LNG 10 /* [nbr] Maximum length for user reply */
+#define USR_RPL_MAX_NBR 10 /* [nbr] Maximum number of chances for user to reply */
+    char usr_rpl[USR_RPL_MAX_LNG];
     short nbr_itr=0;
     
+    /* Initialize user reply string */
+    usr_rpl[0]='z';
+    usr_rpl[1]='\0';
+
     if(FORCE_APPEND){
       /* Incur expense of copying current file to temporary file */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
@@ -896,32 +933,41 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       return fl_out_tmp;
     } /* end if */
 
-    (void)fflush(stdin);
-
     /* Ensure one exit condition for each valid switch in following case statement */
-    while(usr_reply != 'o' && usr_reply != 'a' && usr_reply != 'e'){
+    while(strcasecmp(usr_rpl,"o") && strcasecmp(usr_rpl,"a") && strcasecmp(usr_rpl,"e")){
       nbr_itr++;
-      if(nbr_itr > 10){
+      if(nbr_itr > USR_RPL_MAX_NBR){
 	(void)fprintf(stdout,"\n%s: ERROR %hd failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
 	nco_exit(EXIT_FAILURE);
       } /* end if */
       if(nbr_itr > 1) (void)fprintf(stdout,"%s: ERROR Invalid response.\n",prg_nm_get());
       (void)fprintf(stdout,"%s: %s exists---`o'verwrite, `a'ppend/replace, or `e'xit (o/a/e)? ",prg_nm_get(),fl_out);
       (void)fflush(stdout);
-      usr_reply=(char)fgetc(stdin);
-      /* Allow one carriage return per response free of charge */
-      if(usr_reply == '\n') usr_reply=(char)fgetc(stdin);
+      /* fgets() reads (at most one less than USR_RPL_MAX_LNG) to first newline or EOF */
+      rcd_fgets=fgets(usr_rpl,USR_RPL_MAX_LNG,stdin);
+      /* Check that last character in input string is \n and replace that with \0 */
+      if(rcd_fgets != NULL){
+	size_t usr_rpl_lng;
+	usr_rpl_lng=strlen(usr_rpl);
+	if(usr_rpl_lng >= 1)
+	  if(usr_rpl[usr_rpl_lng-1] == '\n')
+	    usr_rpl[usr_rpl_lng-1]='\0';
+      } /* endif non-NULL input */
+      if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: INFO nco_fl_out_open() reports that fgets() read \"%s\" (after removing trailing newline) from stdin\n",prg_nm_get(),(rcd_fgets == NULL) ? "NULL" : usr_rpl);
     } /* end while */
     
     /* Ensure one case statement for each exit condition in preceding while loop */
-    switch(usr_reply){
+    switch(usr_rpl[0]){
+    case 'E':
     case 'e':
       nco_exit(EXIT_SUCCESS);
       break;
+    case 'O':
     case 'o':
       rcd=nco_create(fl_out_tmp,NC_CLOBBER,out_id);
       /*    rcd=nc_create(fl_out_tmp,NC_CLOBBER|NC_SHARE,out_id);*/
       break;
+    case 'A':
     case 'a':
       /* Incur expense of copying current file to temporary file */
       (void)nco_fl_cp(fl_out,fl_out_tmp);
@@ -959,9 +1005,23 @@ nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output
 
 } /* end nco_fl_out_cls() */
 
-void
-nco_fl_cmp_err_chk(void) /* [fnc] Perform error checking on file */
+void 
+nco_fl_rm /* [fnc] Remove file */
+(char *fl_nm) /* I [sng] File to be removed */
 {
-  /* Purpose: Perform error checking on file */
-} /* end nco_fl_cmp_err_chk() */
+  /* Purpose: Remove specified file from local system */
+  int rcd;
+  char *rm_cmd;
+  const char rm_cmd_sys_dep[]="rm -f";
+  
+  /* Remember to add one for the space and one for the terminating NUL character */
+  rm_cmd=(char *)nco_malloc((strlen(rm_cmd_sys_dep)+1UL+strlen(fl_nm)+1UL)*sizeof(char));
+  (void)sprintf(rm_cmd,"%s %s",rm_cmd_sys_dep,fl_nm);
+
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG Removing %s with %s\n",prg_nm_get(),fl_nm,rm_cmd);
+  rcd=system(rm_cmd);
+  if(rcd == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",prg_nm_get(),fl_nm);
+
+  rm_cmd=(char *)nco_free(rm_cmd);
+} /* end nco_fl_rm() */
 

@@ -48,6 +48,9 @@
 /* Define to 1 if compiler finds external `atanhf' function */
 #undef HAVE_ATANHF
 
+/* Define to 1 if you have the `canonicalize_file_name' function. */
+#undef HAVE_CANONICALIZE_FILE_NAME
+
 /* Define to 1 if compiler finds external `ceilf' function */
 #undef HAVE_CEILF
 
@@ -200,6 +203,12 @@
 
 /* Define to 1 if the system has the type `ptrdiff_t'. */
 #undef HAVE_PTRDIFF_T
+
+/* Define to 1 if you have the `readlink' function. */
+#undef HAVE_READLINK
+
+/* Define to 1 if you have the `realpath' function. */
+#undef HAVE_REALPATH
 
 /* Define to 1 if 'regcomp()' is present */
 #undef HAVE_REGCOMP

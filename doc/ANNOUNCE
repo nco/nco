@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.95 2004-06-19 00:49:26 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.96 2004-06-20 06:54:26 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.6 are ready. 
 
@@ -35,8 +35,8 @@ Charlie
 
 Feature changes:
 1. Multi-file operators accept input filenames from stdin
-2. Multi-file operators automatically add input_file_list global
-   attribute when reading names from stdin.
+2. Multi-file operators add input_file_list, input_file_number 
+   global attributes by default if input file names are from stdin.
 
 Bug-fixes:
 1. None
@@ -45,7 +45,10 @@ Build changes:
 1. None
 
 Other user-visible changes:
-1. None
+1. Add nco_put_att<int,short,long> functions to libnco_c++
+2. Reworked stdin to avoid mixing string and character input.
+   Interactive responses to "overwrite (o/a/e)?" questions must now be
+   terminated with carriage return (and are case-insensitive)
 
 User-invisible changes:
-1. None
+1. Added additional file diagnostics to debugging output

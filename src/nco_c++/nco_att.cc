@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.cc,v 1.7 2004-06-03 05:52:43 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.cc,v 1.8 2004-06-20 06:54:27 zender Exp $ 
 
 // Implementation (declaration) of C++ interface to netCDF attribute routines
 
@@ -34,7 +34,7 @@ nco_put_att // [fnc] Create attribute
 (const int &nc_id, // I [enm] netCDF file ID
  const int &var_id, // I [id] Variable ID
  const std::string &att_nm, // I [sng] Attribute name
- const size_t &att_sz, // I [sng] Attribute length
+ const size_t &att_sz, // I [nbr] Attribute length
  const float * const &att_val, // I [frc] Attribute value
  const nc_type &att_typ) // I [enm] Attribute type 
 {
@@ -54,6 +54,9 @@ nco_put_att // [fnc] Create attribute
 {
   // Purpose: Wrapper for nco_put_att<float>()
   const size_t att_sz(1);
+  /* fxm: NB: float is the source from which all other nco_put_att<type> functions should
+     be copied/templated, once the best method for handling single value puts is determined, 
+     that is */
   //  int rcd=nco_put_att(nc_id,var_id,att_nm,att_sz,&(const_cast<float &>(att_val)),att_typ);
   // float foo_val(att_val);
   // int rcd=nco_put_att(nc_id,var_id,att_nm,att_sz,&foo_val,att_typ);
@@ -66,7 +69,7 @@ nco_put_att // [fnc] Create attribute
 (const int &nc_id, // I [enm] netCDF file ID
  const int &var_id, // I [id] Variable ID
  const std::string &att_nm, // I [sng] Attribute name
- const size_t &att_sz, // I [sng] Attribute length
+ const size_t &att_sz, // I [nbr] Attribute length
  const double * const &att_val, // I [frc] Attribute value
  const nc_type &att_typ) // I [enm] Attribute type 
 {
@@ -88,6 +91,90 @@ nco_put_att // [fnc] Create attribute
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_att<std::string>");
   return rcd;
 } // end nco_put_att<std::string>()
+
+int // O [enm] Return success code
+nco_put_att // [fnc] Create attribute
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::string &att_nm, // I [sng] Attribute name
+ const size_t &att_sz, // I [nbr] Attribute length
+ const int * const &att_val, // I [frc] Attribute value
+ const nc_type &att_typ) // I [enm] Attribute type 
+{
+  // Purpose: Wrapper for nc_put_att_int()
+  int rcd=nc_put_att_int(nc_id,var_id,att_nm.c_str(),att_typ,att_sz,att_val);
+  return rcd;
+} // end nco_put_att<int>()
+
+int // O [enm] Return success code
+nco_put_att // [fnc] Create attribute
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::string &att_nm, // I [sng] Attribute name
+ const int &att_val, // I [frc] Attribute value
+ const nc_type &att_typ) // I [enm] Attribute type 
+{
+  // Purpose: Wrapper for nc_put_att_int()
+  const size_t att_sz(1);
+  int rcd=nc_put_att_int(nc_id,var_id,att_nm.c_str(),att_typ,att_sz,&(const_cast<int &>(att_val)));
+  return rcd;
+} // end nco_put_att<int>()
+
+int // O [enm] Return success code
+nco_put_att // [fnc] Create attribute
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::string &att_nm, // I [sng] Attribute name
+ const size_t &att_sz, // I [nbr] Attribute length
+ const short * const &att_val, // I [frc] Attribute value
+ const nc_type &att_typ) // I [enm] Attribute type 
+{
+  // Purpose: Wrapper for nc_put_att_short()
+  int rcd=nc_put_att_short(nc_id,var_id,att_nm.c_str(),att_typ,att_sz,att_val);
+  return rcd;
+} // end nco_put_att<short>()
+
+int // O [enm] Return success code
+nco_put_att // [fnc] Create attribute
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::string &att_nm, // I [sng] Attribute name
+ const short &att_val, // I [frc] Attribute value
+ const nc_type &att_typ) // I [enm] Attribute type 
+{
+  // Purpose: Wrapper for nc_put_att_short()
+  const size_t att_sz(1);
+  int rcd=nc_put_att_short(nc_id,var_id,att_nm.c_str(),att_typ,att_sz,&(const_cast<short &>(att_val)));
+  return rcd;
+} // end nco_put_att<short>()
+
+int // O [enm] Return success code
+nco_put_att // [fnc] Create attribute
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::string &att_nm, // I [sng] Attribute name
+ const size_t &att_sz, // I [nbr] Attribute length
+ const long * const &att_val, // I [frc] Attribute value
+ const nc_type &att_typ) // I [enm] Attribute type 
+{
+  // Purpose: Wrapper for nc_put_att_long()
+  int rcd=nc_put_att_long(nc_id,var_id,att_nm.c_str(),att_typ,att_sz,att_val);
+  return rcd;
+} // end nco_put_att<long>()
+
+int // O [enm] Return success code
+nco_put_att // [fnc] Create attribute
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::string &att_nm, // I [sng] Attribute name
+ const long &att_val, // I [frc] Attribute value
+ const nc_type &att_typ) // I [enm] Attribute type 
+{
+  // Purpose: Wrapper for nc_put_att_long()
+  const size_t att_sz(1);
+  int rcd=nc_put_att_long(nc_id,var_id,att_nm.c_str(),att_typ,att_sz,&(const_cast<long &>(att_val)));
+  return rcd;
+} // end nco_put_att<long>()
 
 int // O [enm] Return success code
 nco_put_att // [fnc] Create attribute

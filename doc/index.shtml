@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.227 2004-06-19 01:04:02 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.228 2004-06-20 06:54:27 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -209,7 +209,7 @@ Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> 
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
 <li><b>NCO 2.9.8</b>: (<i>In progress</i>)
-<li><b>NCO 2.9.7</b>: Multi-file operator read file lists from <tt>stdin</tt>, write <tt>input_file_list</tt> attributes
+<li><b>NCO 2.9.7</b>: Read input file lists from <tt>stdin</tt>, write <tt>input_file_list</tt> attributes, add <tt>nco_put_att&lt;int,short,long&gt;</tt> functions to libnco_c++
 <li><b>NCO 2.9.6</b>: Support <tt>-o fl_out</tt> syntax, 64-bit ABI for x86_64, Debian builds libnco_c++
 <li><b>NCO 2.9.5</b>: <tt>ncflint</tt> handles <tt>missing_value</tt> data better, is commutative when weights are equal
 <li><b>NCO 2.9.4</b>: <tt>ncecat</tt> works on pure scalar files, change to <tt>cvs.sf.net</tt>, AIX GCC builds

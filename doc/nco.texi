@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.239 2004-06-19 22:14:17 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.240 2004-06-20 06:54:27 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4451,12 +4451,29 @@ The available elementary mathematical functions are:
 @c fxm finish me
 @item abs(x)
 @dfn{Absolute value}
+@tex
+Absolute value of $x$, $|x|$.
+@end tex
+@ifinfo
 Absolute value of @var{x}.
-Example: @math{abs(-1) = 1}
+@end ifinfo
+Example: 
+@tex
+abs$(-1) = 1$
+@end tex
+@ifinfo
+@math{abs(-1) = 1}
+@end ifinfo
 @item acos(x)
 @dfn{Arc-cosine}
 Arc-cosine of @var{x} where @var{x} is specified in radians.
-Example: @math{acos(1.0) = 0.0}
+Example: 
+@tex
+acos$(1.0) = 0.0$
+@end tex
+@ifinfo
+@math{acos(1.0) = 0.0}
+@end ifinfo
 @item acosh(x)
 @dfn{Hyperbolic arc-cosine}
 Hyperbolic arc-cosine of @var{x} where @var{x} is specified in radians.
@@ -4534,7 +4551,7 @@ Example: @math{exp(1.0) = 2.71828182845904523536}
 @item floor(x)
 @dfn{Floor}
 Floor of @var{x}. Largest integral value not greater than argument.
-Example: @math{exp(1.0) = 2.71828182845904523536}
+Example: @math{floor(1.9) = 1}
 @item gamma(x)
 @dfn{Gamma function}
 Gamma function of @var{x},
@@ -4544,7 +4561,7 @@ $\Gamma(x)$.
 @ifinfo
 @math{Gamma(x)}.
 @end ifinfo
-largest integral value not greater than argument.
+The well-known and loved continuous factorial function.
 Example: @math{gamma(0.5) = sqrt(pi)}
 @item log(x)
 @dfn{Natural Logarithm}

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.320 2004-06-19 22:14:17 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.321 2004-06-20 06:54:27 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -198,7 +198,8 @@ nco337. When input file is a symbolic link, print name of linked-to-file as debu
 nco340. o/a/e stdin is overwritten when stdin input method used
 cd ~/nco/data;echo "in.nc" | ncecat -o foo.nc
 nco341. Add _FILE_OFFSET_BITS == 64 to all compiles? Otherwise stat() call in nco_fl_mk_lcl() may fail on large files on 32 bit systems
-nco342. 
+nco342. Get canonicalize_file_name() working in nco_fl_info_get()
+nco343. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

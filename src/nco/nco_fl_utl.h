@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.20 2004-06-18 23:56:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.h,v 1.21 2004-06-20 06:54:27 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -46,24 +46,16 @@ extern "C" {
 #endif /* __cplusplus */
 
 void
+nco_fl_cmp_err_chk(void); /* [fnc] Perform error checking on file */
+
+void
 nco_fl_cp /* [fnc] Copy first file to second */
 (const char * const fl_src, /* I [sng] Name of source file to copy */
  const char * const fl_dst); /* I [sng] Name of destination file */
 
-void
-nco_fl_mv /* [fnc] Move first file to second */
-(const char * const fl_src, /* I [sng] Name of source file to move */
- const char * const fl_dst); /* I [sng] Name of destination file */
-
-void 
-nco_fl_rm /* [fnc] Remove file */
-(char *fl_nm); /* I [sng] File to be removed */
-
-char * /* O [sng] Filename of locally available file */
-nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
-(char *fl_nm, /* I/O [sng] Current filename, if any (destroyed) */
- const char * const fl_pth_lcl, /* I [sng] Local storage area for files retrieved from remote locations */
- int * const FILE_RETRIEVED_FROM_REMOTE_LOCATION); /* O [flg] File was retrieved from remote location */
+char * /* O [sng] Canonical file name*/
+nco_fl_info_get /* [fnc] Determine canonical filename and properties */
+(const char const *fl_nm_lcl); /* I [sng] Name of file */
 
 char ** /* O [sng] List of user-specified filenames */
 nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments */
@@ -73,6 +65,17 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
  int * const fl_nbr, /* O [nbr] Number of files in input file list */
  char ** const fl_out, /* I/O [sng] Name of output file */
  bool *FL_LST_IN_FROM_STDIN); /* O [flg] fl_lst_in comes from stdin */
+
+char * /* O [sng] Filename of locally available file */
+nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
+(char *fl_nm, /* I/O [sng] Current filename, if any (destroyed) */
+ const char * const fl_pth_lcl, /* I [sng] Local storage area for files retrieved from remote locations */
+ int * const FILE_RETRIEVED_FROM_REMOTE_LOCATION); /* O [flg] File was retrieved from remote location */
+
+void
+nco_fl_mv /* [fnc] Move first file to second */
+(const char * const fl_src, /* I [sng] Name of source file to move */
+ const char * const fl_dst); /* I [sng] Name of destination file */
 
 char * /* O [sng] Name of file to retrieve */
 nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
@@ -97,8 +100,10 @@ nco_fl_out_cls /* [fnc] Close temporary output file, move it to permanent output
  const char * const fl_out_tmp, /* I [sng] Name of temporary output file to close and move to permanent output file */
  const int nc_id); /* I [id] file ID of fl_out_tmp */
 
-void
-nco_fl_cmp_err_chk(void); /* [fnc] Perform error checking on file */
+void 
+nco_fl_rm /* [fnc] Remove file */
+(char *fl_nm); /* I [sng] File to be removed */
+
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.hh,v 1.6 2004-06-03 05:52:43 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_att.hh,v 1.7 2004-06-20 06:54:27 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF attribute routines
 
@@ -39,7 +39,7 @@ nco_put_att // [fnc] Create attribute
 (const int &nc_id, // I [enm] netCDF file ID
  const int &var_id, // I [id] Variable ID
  const std::string &att_nm, // I [sng] Attribute name
- const size_t &att_sz, // I [sng] Attribute length
+ const size_t &att_sz, // I [nbr] Attribute length
  const float * const &att_val, // I [sng] Attribute value
  const nc_type &att_typ=NC_FLOAT); // I [enm] Attribute type 
 // end nco_put_att<float>() prototype
@@ -58,7 +58,7 @@ nco_put_att // [fnc] Create attribute
 (const int &nc_id, // I [enm] netCDF file ID
  const int &var_id, // I [id] Variable ID
  const std::string &att_nm, // I [sng] Attribute name
- const size_t &att_sz, // I [sng] Attribute length
+ const size_t &att_sz, // I [nbr] Attribute length
  const float * const &att_val, // I [frc] Attribute value
  const nc_type &att_typ); // I [enm] Attribute type 
 // end nco_put_att<float>() prototype
@@ -68,10 +68,64 @@ nco_put_att // [fnc] Create attribute
 (const int &nc_id, // I [enm] netCDF file ID
  const int &var_id, // I [id] Variable ID
  const std::string &att_nm, // I [sng] Attribute name
- const size_t &att_sz, // I [sng] Attribute length
+ const size_t &att_sz, // I [nbr] Attribute length
  const double * const &att_val, // I [sng] Attribute value
  const nc_type &att_typ=NC_DOUBLE); // I [enm] Attribute type 
 // end nco_put_att<double>() prototype
+
+int // O [enm] Return success code
+nco_put_att // [fnc] Create attribute
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::string &att_nm, // I [sng] Attribute name
+ const size_t &att_sz, // I [nbr] Attribute length
+ const int * const &att_val, // I [frc] Attribute value
+ const nc_type &att_typ=NC_INT); // I [enm] Attribute type 
+
+int // O [enm] Return success code
+nco_put_att // [fnc] Create attribute
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::string &att_nm, // I [sng] Attribute name
+ const int &att_val, // I [frc] Attribute value
+ const nc_type &att_typ=NC_INT); // I [enm] Attribute type 
+// end nco_put_att<int>() prototype
+
+int // O [enm] Return success code
+nco_put_att // [fnc] Create attribute
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::string &att_nm, // I [sng] Attribute name
+ const size_t &att_sz, // I [nbr] Attribute length
+ const short * const &att_val, // I [frc] Attribute value
+ const nc_type &att_typ=NC_SHORT); // I [enm] Attribute type 
+
+int // O [enm] Return success code
+nco_put_att // [fnc] Create attribute
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::string &att_nm, // I [sng] Attribute name
+ const short &att_val, // I [frc] Attribute value
+ const nc_type &att_typ=NC_SHORT); // I [enm] Attribute type 
+// end nco_put_att<short>() prototype
+
+int // O [enm] Return success code
+nco_put_att // [fnc] Create attribute
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::string &att_nm, // I [sng] Attribute name
+ const size_t &att_sz, // I [nbr] Attribute length
+ const long * const &att_val, // I [frc] Attribute value
+ const nc_type &att_typ=NC_INT); // I [enm] Attribute type 
+
+int // O [enm] Return success code
+nco_put_att // [fnc] Create attribute
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const std::string &att_nm, // I [sng] Attribute name
+ const long &att_val, // I [frc] Attribute value
+ const nc_type &att_typ=NC_INT); // I [enm] Attribute type 
+// end nco_put_att<long>() prototype
 
 int // O [enm] Return success code
 nco_put_att // [fnc] Create attribute

@@ -1,3 +1,15 @@
+2004-06-19  Charlie Zender  <zender@uci.edu>
+
+	* Reworked stdin to avoid mixing string and character input.
+	  Interactive responses to "overwrite (o/a/e)?" questions must now be
+	  terminated with carriage return (and are case-insensitive)
+
+	* Add nco_put_att<int,short,long> functions
+
+	* Add nco_fl_info_get() to nco_fl_mk_lcl()
+
+	* Add readfile, realpath, canonicalize_file_name to AC_CHECK_FUNCS
+
 2004-06-18  Charlie Zender  <zender@uci.edu>
 
 	* Added new -H section to documentation
