@@ -1053,6 +1053,7 @@ Optional Features:
   --enable-debug          more debugging info (default is NO)
   --enable-extreme        extreme debugging (default is NO)
   --enable-optimize       optimize (default is NO)
+  --enable-nco_cplusplus  build the c++ library (default is YES)
 
 Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
@@ -5436,7 +5437,7 @@ test "x$enable_libtool_lock" != xno && enable_libtool_lock=yes
 case $host in
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 5439 "configure"' > conftest.$ac_ext
+  echo '#line 5440 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -5965,7 +5966,7 @@ chmod -w .
 save_CFLAGS="$CFLAGS"
 CFLAGS="$CFLAGS -o out/conftest2.$ac_objext"
 compiler_c_o=no
-if { (eval echo configure:5968: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>out/conftest.err; } && test -s out/conftest2.$ac_objext; then
+if { (eval echo configure:5969: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>out/conftest.err; } && test -s out/conftest2.$ac_objext; then
   # The compiler can only warn and ignore the option if not recognized
   # So say no if there are warnings
   if test -s out/conftest.err; then
@@ -7810,7 +7811,7 @@ else
     lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7813 "configure"
+#line 7814 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -7908,7 +7909,7 @@ else
     lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 7911 "configure"
+#line 7912 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -13272,6 +13273,16 @@ if test "$enable_optimize" = "yes"; then
 fi
 
 #############################################
+# if --enable-nco_cplusplus, compile the c++ library
+# Check whether --enable-nco_cplusplus or --disable-nco_cplusplus was given.
+if test "${enable_nco_cplusplus+set}" = set; then
+  enableval="$enable_nco_cplusplus"
+  enable_nco_cxx=$enableval
+else
+  enable_nco_cxx=yes
+fi;
+
+#############################################
 # make defines that are currently used in nco programs based on $host_os
 case $host in
   *-*-aix*)
@@ -13421,7 +13432,8 @@ fi
 
                                                   ac_config_files="$ac_config_files Makefile src/Makefile src/nco/Makefile man/Makefile doc/Makefile"
 
-if  test "$ac_cv_cxx_have_valarray" = "yes"; then
+if  test "$ac_cv_cxx_have_valarray" = "yes" \
+ && test "$enable_nco_cxx" = "yes" ; then
             ac_config_files="$ac_config_files src/nco_c++/Makefile"
 
   NCO_CXX="nco_c++"
