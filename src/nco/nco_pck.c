@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.46 2004-09-07 05:04:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.47 2004-09-07 05:23:39 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -269,8 +269,8 @@ nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
   /* Vet scale_factor */
   rcd=nco_inq_att_flg(nc_id,var->id,scl_fct_sng,&scl_fct_typ,&scl_fct_lng);
   if(rcd != NC_ENOTATT){
-    if(scl_fct_typ != NC_FLOAT && scl_fct_typ != NC_DOUBLE){
-      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports scale_factor for %s is not NC_FLOAT or NC_DOUBLE. Will not attempt to unpack using scale_factor.\n",prg_nm_get(),var->nm); 
+    if(scl_fct_typ == NC_BYTE || scl_fct_typ == NC_CHAR){
+      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports scale_factor for %s is NC_BYTE or NC_CHAR. Will not attempt to unpack using scale_factor.\n",prg_nm_get(),var->nm); 
       return False;
     } /* endif */
     if(scl_fct_lng != 1){
@@ -284,8 +284,8 @@ nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
   /* Vet add_offset */
   rcd=nco_inq_att_flg(nc_id,var->id,add_fst_sng,&add_fst_typ,&add_fst_lng);
   if(rcd != NC_ENOTATT){
-    if(add_fst_typ != NC_FLOAT && add_fst_typ != NC_DOUBLE){
-      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports add_offset for %s is not NC_FLOAT or NC_DOUBLE. Will not attempt to unpack.\n",prg_nm_get(),var->nm); 
+    if(add_fst_typ == NC_BYTE || add_fst_typ == NC_CHAR){
+      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports add_offset for %s is NC_BYTE or NC_CHAR. Will not attempt to unpack using add_offset.\n",prg_nm_get(),var->nm); 
       return False;
     } /* endif */
     if(add_fst_lng != 1){
