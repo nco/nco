@@ -1,3 +1,11 @@
+2002-04-24  Charlie Zender  <zender@uci.edu>
+
+	* Put warnings on some arbitrary limits in ncap
+
+	* Modify ncap and Makefile to link to -lC AIX C++ library to
+	access float intrinsics cosf()... AIX does not support gammaf()
+	(nor does SGI).
+
 2002-04-23  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_2_3
@@ -1492,7 +1500,3 @@ Wed Mar 26 21:13:09 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
 Thu Feb  8 23:01:04 MST 1996  Charlie Zender  <zender@ncar.ucar.edu>
 
 	* First internal CGD release of operator set known as ncz-0.9
-
-
-
-	

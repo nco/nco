@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.46 2002-04-24 06:15:04 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.47 2002-04-26 02:32:56 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -584,5 +584,6 @@ yyerror(char *err_sng)
 
 void quick_free(var_sct **var)
 {
+  /* Purpose: Safely free variable */
   if(*var != NULL) *var=var_free(*var);
-}
+} /* end quick_free() */
