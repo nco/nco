@@ -1,8 +1,14 @@
+2000-01-27  Charlie Zender  <zender@uci.edu>
+
+	* Fix to PID length bug in fl_out_open() on SGIs
+	Now use dynamically allocated string to hold PID 
+	Kudos to Juliana Rew for this patch
+	
 2000-01-16  Charlie Zender  <zender@uci.edu>
 
 	* Changed all addresses except website to UCI ESS
 
-	* Changed license to GNU GPL
+	* Changed license to GNU GPL (!)
 
 2000-01-14  Charlie Zender  <zender@uci.edu>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.44 2000-01-17 01:53:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.45 2000-01-27 22:53:22 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -785,8 +785,8 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   if(dbg_lvl_get() == 5){
     (void)fprintf(stderr,"Dimension hyperslabber lmt_evl() diagnostics:\n");
     (void)fprintf(stderr,"Dimension name = %s\n",lmt.nm);
-    (void)fprintf(stderr,"Limit %s user-specified\n",(lmt.is_usr_spc_lmt) ? "is" : "is not ");
-    (void)fprintf(stderr,"Limit %s record dimension\n",(lmt.is_rec_dmn) ? "is" : "is not ");
+    (void)fprintf(stderr,"Limit %s user-specified\n",(lmt.is_usr_spc_lmt) ? "is" : "is not");
+    (void)fprintf(stderr,"Limit %s record dimension\n",(lmt.is_rec_dmn) ? "is" : "is not");
     if(lmt.is_rec_dmn) (void)fprintf(stderr,"Records read from previous files = %li\n",cnt_crr);
     if(cnt_rmn_ttl != -1L) (void)fprintf(stderr,"Total records to be read from this and all following files = %li\n",cnt_rmn_ttl);
     if(cnt_rmn_crr != -1L) (void)fprintf(stderr,"Records to be read from this file = %li\n",cnt_rmn_crr);
@@ -1049,12 +1049,12 @@ mss_val_get(int nc_id,var_sct *var)
     mss_tmp.vp=(void *)malloc(att_len);
     (void)ncattget(var->nc_id,var->id,att_nm,mss_tmp.vp);
     if(att_typ == NC_CHAR){
-      /* NUL-terminate the missing value string */
+      /* NUL-terminate missing value string */
       if(mss_tmp.cp[att_len-1] != '\0'){
 	att_len++;
 	mss_tmp.vp=(void *)realloc(mss_tmp.vp,att_len);
 	mss_tmp.cp[att_len-1]='\0';
-	/* Un-typecast the pointer to the values after access */
+	/* Un-typecast pointer to values after access */
 	(void)cast_nctype_void(att_typ,&mss_tmp);
       } /* end if */ 
     } /* end if */ 
@@ -1582,13 +1582,17 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
    char *fl_out_open(): O name of the temporary file actually opened
  */ 
 {
-  /* Open output file subject to availability and user input. 
-     In accordance with netCDF philosophy a temporary file (based on fl_out and the process ID)
-     is actually opened, so that a fatal error will not create the intended output file. */ 
+  /* Open output file subject to availability and user input 
+     In accord with netCDF philosophy a temporary file (based on fl_out and process ID)
+     is actually opened, so that errors can not infect intended output file */ 
 
   char *fl_out_tmp;
+  char tmp_sng_1[]="pid"; /* Extra string appended to temporary filenames */
+  char tmp_sng_2[]="tmp"; /* Extra string appended to temporary filenames */
 
   int rcd;
+
+  long fl_out_tmp_lng; /* [nbr] Length of temporary file name */
 
   struct stat stat_sct;
   
@@ -1597,11 +1601,40 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
     exit(EXIT_FAILURE);
   } /* end if */
 
-  fl_out_tmp=(char *)malloc((strlen(fl_out)+strlen(prg_nm_get())+12+1)*sizeof(char));
-  (void)sprintf(fl_out_tmp,"%s.%06d.%s.tmp",fl_out,(int)getpid(),prg_nm_get());
+  /* Generate unique temporary file name
+     System routines tempnam(), tmpname(), mktemp() perform a similar function, but are OS dependent
+     Maximum length of PID depends on pid_t
+     Until about 1995 most OSs set pid_t = short = 2 or 4 bytes 
+     Now some OSs have /usr/include/sys/types.h set pid_t = long = 4 or 8 bytes = 64 bits
+     20000126: Use sizeof(pid_t) rather than hardcoded size to fix longstanding bug on SGIs
+  */
+  /* NCO temporary file name is user-specified file name + "." + tmp_sng_1 + PID + "." + prg_nm + "." + tmp_sng_2 + NUL */
+  fl_out_tmp_lng=strlen(fl_out)+1+strlen(tmp_sng_1)+sizeof(pid_t)+1+strlen(prg_nm_get())+1+strlen(tmp_sng_2)+1;
+  fl_out_tmp=(char *)malloc(fl_out_tmp_lng*sizeof(char));
+  (void)sprintf(fl_out_tmp,"%s.%s%d.%s.%s",fl_out,tmp_sng_1,(int)getpid(),prg_nm_get(),tmp_sng_2);
+  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: fl_out_open() reports sizeof(pid_t) = %d bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %d, fl_out_tmp = %s, \n",prg_nm_get(),sizeof(pid_t),fl_out_tmp_lng,strlen(fl_out_tmp),fl_out_tmp);
   rcd=stat(fl_out_tmp,&stat_sct);
 
-  /* If the temporary file already exists, then prompt the user to remove the temporary files and exit */
+  if(dbg_lvl_get() == 8){
+  /* Use builtin system routines to generate temporary filename
+     This allows file to be built in fast directory like /tmp rather than local
+     directory which could be a slow, NFS-mounted directories like /fs/cgd
+
+     There are many options:
+     tmpnam() uses P_tmpdir, does not allow specfication of drc
+     tempnam(const char *drc, const char *pfx) uses writable $TMPDIR, else drc, else P_tmpdir, else /tmp and prefixes returned name with up to five characters from pfx, if supplied
+     mkstemp(char *tpl) generates a filename and creates the file in mode 0600
+
+     Many sysadmins do not make /tmp large enough for huge temporary data files 
+     tempnam(), however, allows $TMPDIR or drc to be set to override /tmp
+     Thus we use tempnam()
+   */
+    char *fl_out_tmp_sys; /* System-generated unique temporary filename */
+    fl_out_tmp_sys=tempnam(NULL,NULL);
+    if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: fl_out_open() reports strlen(fl_out_tmp_sys) = %d, fl_out_tmp_sys = %s, \n",prg_nm_get(),strlen(fl_out_tmp_sys),fl_out_tmp_sys);
+  } /* endif dbg */
+
+  /* If temporary file already exists, prompt user to remove temporary files and exit */
   if(rcd != -1){
     (void)fprintf(stdout,"%s: ERROR temporary file %s already exists, remove and try again\n",prg_nm_get(),fl_out_tmp);
     exit(EXIT_FAILURE);
@@ -1616,23 +1649,23 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
   if(False){
     if(prg_get() == ncrename){
       /* ncrename is different because a single filename is allowed without question */ 
-      /* Incur the expense of copying the current file to a temporary file */
+      /* Incur expense of copying current file to temporary file */
       (void)fl_cp(fl_out,fl_out_tmp);
       *out_id=ncopen(fl_out_tmp,NC_WRITE); 
       (void)ncredef(*out_id);
       return fl_out_tmp;
     } /* end if */
-  }
+  } /* end if false */
 
   rcd=stat(fl_out,&stat_sct);
   
-  /* If the permanent file already exists, then query the user whether to overwrite, append, or exit */
+  /* If permanent file already exists, query user whether to overwrite, append, or exit */
   if(rcd != -1){
     char usr_reply='z';
     short nbr_itr=0;
     
     if(FORCE_APPEND){
-      /* Incur the expense of copying the current file to a temporary file */
+      /* Incur expense of copying current file to temporary file */
       (void)fl_cp(fl_out,fl_out_tmp);
       *out_id=ncopen(fl_out_tmp,NC_WRITE); 
       (void)ncredef(*out_id);
@@ -1663,7 +1696,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
       /*    rcd=nc_create(fl_out_tmp,NC_CLOBBER|NC_SHARE,out_id);*/
       break;
     case 'a':
-      /* Incur the expense of copying the current file to a temporary file */
+      /* Incur expense of copying current file to temporary file */
       (void)fl_cp(fl_out,fl_out_tmp);
       *out_id=ncopen(fl_out_tmp,NC_WRITE); 
       (void)ncredef(*out_id);

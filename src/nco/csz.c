@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.35 2000-01-17 01:53:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.36 2000-01-27 22:53:22 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
 
@@ -303,7 +303,7 @@ lst_prs(char *sng_in,const char *dlm_sng,int *nbr_lst)
     if(strlen(lst[idx]) == 0) lst[idx]=NULL;
 
   if(dbg_lvl_get() == 5){
-    (void)fprintf(stderr,"%d elements in delimited list\n",*nbr_lst);
+    (void)fprintf(stderr,"%d elements in list delimited by \"%s\"\n",*nbr_lst,dlm_sng);
     for(idx=0;idx<*nbr_lst;idx++) 
       (void)fprintf(stderr,"lst[%d] = %s\n",idx,(lst[idx] == NULL) ? "NULL" : lst[idx]);
     (void)fprintf(stderr,"\n");
