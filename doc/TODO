@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.211 2003-03-27 08:14:12 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.212 2003-03-27 18:47:49 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -66,7 +66,6 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 
 Highest priority NCO-wide items that You can help with:
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
-95. Handle CCM "time since..." conversions in ncrcat (use Unidata udunits)?
 97. Add x_op=average... attributes to averagers for ncar_csm
 124. Use `install' program and mkdir -p in bld/Makefile method
 128. Ensure target 'dir' is made before *.d dependency files 
@@ -215,6 +214,7 @@ Command executes but in.hdf is full of screwy values
 ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 251. Does ncks -B correctly write packed variables in binary format?
 253. Sift through numerous files in ~/nco/nco-2.7.3/debian, edit important ones
+254. Use ncap to create T42 fields in nco_tst.nc, removing dependence of make tst on FTP
 255. Desktop icon for NCO
 256. Turn udunits into .deb
 ************************************************************************

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.54 2003-03-27 08:14:06 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.55 2003-03-27 18:47:47 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -146,11 +146,11 @@ echo "ncks 9: Hyperslab of a variable that has two identical dims 59.5 =?= ${avg
 
 ${MY_BIN_DIR}/ncks -O -C -d time_udunits,"1999-12-08 12:00:0.0","1999-12-09 00:00:0.0" in.nc foo2.nc
 avg=`${MY_BIN_DIR}/ncks -H -C -s "%6.0f" -d time_udunits,"1999-12-08 18:00:0.0","1999-12-09 12:00:0.0",2 -v time_udunits in.nc`
-echo "ncks 10: dimension slice using Unidata's udunits library: 876018 ?=? ${avg} (Will fail without udunits library support."
+echo "ncks 10: dimension slice using UDUnits library: 876018 ?=? ${avg} (will fail without UDUnits library support)"
 
 ${MY_BIN_DIR}/ncks -O -C -d wvl,"0.1 micron","1 micron" in.nc foo2.nc
 avg=`${MY_BIN_DIR}/ncks -H -C -d wvl,"0.6 micron","1 micron" -s "%3.1e" -v wvl in.nc`
-echo "ncks 11: dimension slice using UDunit conversion: 1.0e-06 ?=? ${avg} (Will fail without udunits library support."
+echo "ncks 11: dimension slice using UDunit conversion: 1.0e-06 ?=? ${avg} (will fail without UDUnits library support)"
 
 fi # end NCKS
 
@@ -248,7 +248,7 @@ echo "ncwa 23: Max flag on type float variable: 240 =?= ${avg}"
 ${MY_BIN_DIR}/ncwa -O -y max -v three_dmn_var_dbl -a lat,lon in.nc foo.nc 2>>foo.tst
 ${MY_BIN_DIR}/ncks -C -H -s "%f," -v three_dmn_var_dbl foo.nc >foo$$
 avg=`cut -d, -f 4 foo$$`
-echo "ncwa 24: Dimension reduction on type double  variable with max switch and missing values: -99 =?= ${avg}"
+echo "ncwa 24: Dimension reduction on type double variable with max switch and missing values: -99 =?= ${avg}"
 avg=`cut -d, -f 5 foo$$`
 echo "ncwa 25: Dimension reduction on type double variable: 40 =?= ${avg}"
 
@@ -288,7 +288,7 @@ echo "ncwa 34: min with weights: -900 =?= ${avg}"
 ${MY_BIN_DIR}/ncwa -O -y max -a lat -v lat -w gw in.nc foo.nc 2>>foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%g" -v lat foo.nc`
 echo "ncwa 35: max with weights: 900 =?= ${avg}" 
-fi  # end ncwa
+fi # end ncwa
 
 if [ "${NCRA}" = 1 ]; then
 ${MY_BIN_DIR}/ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc 2>> foo.tst
