@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.37 2000-10-23 22:57:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.38 2000-11-26 06:41:57 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -82,7 +82,7 @@ main(int argc,char **argv)
   void cpy_var_val_lmt(int,int,char *,lmt_sct *,int);
   void prn_att(int,int);
   void prn_var_dfn(int,char *);
-  void prn_var_val_lmt(int,char *,lmt_sct *,int,char *,bool,bool);
+  void prn_var_val_lmt(int,char *,lmt_sct *,int,char *,bool,bool,bool);
    
   bool ALPHABETIZE_OUTPUT=True; /* Option a */
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
@@ -95,6 +95,7 @@ main(int argc,char **argv)
   bool OUTPUT_VARIABLE_METADATA=False; /* Option m */
   bool OUTPUT_GLOBAL_METADATA=False; /* Option M */
   bool PRINT_DIMENSIONAL_UNITS=False; /* Option u */
+  bool PRN_DMN_IDX_CRD_VAL=True; /* Option q Print leading dimension/coordinate indices/values */
   bool PROCESS_ALL_COORDINATES=False; /* Option c */
   bool PROCESS_ASSOCIATED_COORDINATES=True; /* Option C */
   bool REMOVE_REMOTE_FILES_AFTER_PROCESSING=True; /* Option R */
@@ -112,8 +113,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.37 2000-10-23 22:57:34 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.37 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.38 2000-11-26 06:41:57 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.38 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -146,7 +147,7 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="aACcD:d:FHhl:MmOp:rRs:uv:x";
+  opt_sng="aACcD:d:FHhl:MmOp:qrRs:uv:x";
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
     switch(opt){
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */
@@ -191,6 +192,9 @@ main(int argc,char **argv)
       break;
     case 'p': /* Common file path */
       fl_pth=optarg;
+      break;
+    case 'q': /* Turn off printing of dimension indices and coordinate values */
+      PRN_DMN_IDX_CRD_VAL=!PRN_DMN_IDX_CRD_VAL;
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
@@ -325,7 +329,7 @@ main(int argc,char **argv)
   } /* end if OUTPUT_VARIABLE_METADATA */
   
   if(OUTPUT_DATA){
-    for(idx=0;idx<nbr_xtr;idx++) (void)prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_STYLE,PRINT_DIMENSIONAL_UNITS);
+    for(idx=0;idx<nbr_xtr;idx++) (void)prn_var_val_lmt(in_id,xtr_lst[idx].nm,lmt,lmt_nbr,dlm_sng,FORTRAN_STYLE,PRINT_DIMENSIONAL_UNITS,PRN_DMN_IDX_CRD_VAL);
   } /* end if OUTPUT_DATA */
   
   /* Close input netCDF file */
@@ -1120,7 +1124,7 @@ prn_var_dfn(int in_id,char *var_nm)
 } /* end prn_var_dfn() */
 
 void 
-prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bool FORTRAN_STYLE,bool PRINT_DIMENSIONAL_UNITS)
+prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bool FORTRAN_STYLE,bool PRINT_DIMENSIONAL_UNITS,bool PRN_DMN_IDX_CRD_VAL)
 /* 
    int in_id: input netCDF input-file ID
    char *var_nm: input variable name
@@ -1132,13 +1136,12 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
  */
 {
   /* Purpose: Print variable data 
-     Routine truncates dimensions of printed output variable
-     in accordance with user-specified limits
-     However, this routine is unable to correctly print hyperslabs which are wrapped, or which use the stride attribute
+     Routine truncates dimensions of printed output variable in accord with user-specified limits
+     fxm: routine does not correctly print hyperslabs which are wrapped, or which use a non-unity stride
   */
 
-  bool SRD=False;
-  bool WRP=False;
+  bool SRD=False; /* Stride is non-unity */
+  bool WRP=False; /* Coordinate is wrapped */
 
   char *type_fmt_sng(nc_type);
   char *unit_sng="";
@@ -1334,7 +1337,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   } /* end if variable is a scalar, byte, or character */
 
   if(var.nbr_dim > 0 && dlm_sng == NULL){ 
-    /* Generate a nicely formatted output for multidimensional arrays */
+    /* Generate nicely formatted output for multidimensional arrays */
 
     char arr_lft_dlm=char_CEWI;
     char arr_rgt_dlm=char_CEWI;
@@ -1354,7 +1357,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
 
     /* Variable is an array */
    
-    /* Figure out modulo masks for each index */
+    /* Determine modulo masks for each index */
     for(idx=0;idx<var.nbr_dim;idx++) dmn_mod[idx]=1L;
     for(idx=0;idx<var.nbr_dim-1;idx++)
       for(mod_idx=idx+1;mod_idx<var.nbr_dim;mod_idx++) 
@@ -1407,42 +1410,47 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
       /* Skip rest of loop unless element is first in string */
       if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] != 0L) continue;
       
-      /* Loop over dimensions whose coordinates are to be printed */
-      for(idx=dmn_idx_prn_srt;idx<dmn_nbr_prn;idx++){
-	
-	/* Reverse dimension ordering for Fortran convention */
-	if(FORTRAN_STYLE) dmn_idx=var.nbr_dim-1-idx; else dmn_idx=idx;
-	
-	/* Printed dimension subscript includes indexing convention (C or Fortran) */
-	dmn_sbs_prn=dmn_sbs_dsk[dmn_idx]+ftn_idx_off;
-
-	/* Format and print dimension part of output string for non-coordinate variables */
-	if(dim[dmn_idx].cid != var.id){ /* If variable is not a coordinate... */
-	  if(dim[dmn_idx].cid != -1){ /* If dimension is a coordinate... */
-	    (void)sprintf(dmn_sng,"%%s%c%%li%c=%s ",arr_lft_dlm,arr_rgt_dlm,type_fmt_sng(dim[dmn_idx].type));
-	    /* Account for hyperslab offset in coordinate values*/
-	    crd_idx_crr=dmn_sbs_ram[dmn_idx];
-	    switch(dim[dmn_idx].type){
-	    case NC_FLOAT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.fp[crd_idx_crr]); break;
-	    case NC_DOUBLE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.dp[crd_idx_crr]); break;
-	    case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sp[crd_idx_crr]); break;
-	    case NC_LONG: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.lp[crd_idx_crr]); break;
-	    case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]); break;
-	    case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.bp[crd_idx_crr]); break;
-	    } /* end switch */
-	  }else{ /* if dimension is not a coordinate... */
-	    (void)sprintf(dmn_sng,"%%s%c%%li%c ",arr_lft_dlm,arr_rgt_dlm);
-	    (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn);
-	  } /* end else */
-	} /* end if */
-      } /* end loop over dimensions */
+      /* Does user wish to print leading dimension/coordinate indices/values? */
+      if(PRN_DMN_IDX_CRD_VAL){
+      
+	/* Loop over dimensions whose coordinates are to be printed */
+	for(idx=dmn_idx_prn_srt;idx<dmn_nbr_prn;idx++){
+	  
+	  /* Reverse dimension ordering for Fortran convention */
+	  if(FORTRAN_STYLE) dmn_idx=var.nbr_dim-1-idx; else dmn_idx=idx;
+	  
+	  /* Printed dimension subscript includes indexing convention (C or Fortran) */
+	  dmn_sbs_prn=dmn_sbs_dsk[dmn_idx]+ftn_idx_off;
+	  
+	  /* Format and print dimension part of output string for non-coordinate variables */
+	  if(dim[dmn_idx].cid != var.id){ /* If variable is not a coordinate... */
+	    if(dim[dmn_idx].cid != -1){ /* If dimension is a coordinate... */
+	      (void)sprintf(dmn_sng,"%%s%c%%li%c=%s ",arr_lft_dlm,arr_rgt_dlm,type_fmt_sng(dim[dmn_idx].type));
+	      /* Account for hyperslab offset in coordinate values*/
+	      crd_idx_crr=dmn_sbs_ram[dmn_idx];
+	      switch(dim[dmn_idx].type){
+	      case NC_FLOAT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.fp[crd_idx_crr]); break;
+	      case NC_DOUBLE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.dp[crd_idx_crr]); break;
+	      case NC_SHORT: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.sp[crd_idx_crr]); break;
+	      case NC_LONG: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.lp[crd_idx_crr]); break;
+	      case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]); break;
+	      case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.bp[crd_idx_crr]); break;
+	      } /* end switch */
+	    }else{ /* if dimension is not a coordinate... */
+	      (void)sprintf(dmn_sng,"%%s%c%%li%c ",arr_lft_dlm,arr_rgt_dlm);
+	      (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn);
+	    } /* end else */
+	  } /* end if */
+	} /* end loop over dimensions */
+      } /* end if PRN_DMN_IDX_CRD_VAL */
       
       /* Finally, print value of current element of variable */	
       idx_crr=lmn+hyp_srt+ftn_idx_off; /* Current index into equivalent 1-D array */
       (void)sprintf(var_sng,"%%s%c%%li%c=%s %%s\n",arr_lft_dlm,arr_rgt_dlm,type_fmt_sng(var.type));
       
       if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] == 0L){
-	/* Print all characters in last dimension each time penultimate dimension subscript changes to its start value */
+	/* Print all characters in last dimension each time penultimate dimension subscript changes to its start value
+	   Ironic that printing characters is much more tedious than numbers */
 	/* Search for NUL-termination within size of last dimension */
 	if(memchr((void *)(var.val.cp+lmn),'\0',dmn_cnt[var.nbr_dim-1])){
 	  /* Memory region is NUL-terminated, i.e., a valid string */

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.73 2000-11-15 08:43:41 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.74 2000-11-26 06:41:56 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -3401,8 +3401,8 @@ SYNTAX
 @example
 ncks [-A] [-a] [-C] [-c] [-D] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]]
-[-F] [-H] [-h] [-l @var{path}] [-M] [-m] [-O] [-p @var{path}] [-R] 
-[-r] [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-x]
+[-F] [-H] [-h] [-l @var{path}] [-M] [-m] [-O] [-p @var{path}] [-q]
+[-R] [-r] [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-x]
 @var{input-file} [@var{output-file}] 
 @end example
 
@@ -3424,8 +3424,9 @@ dimension subscripts and coordinate values (if any) preceding the datum.
 Option @samp{-s} allows the user the format the data using C-style
 format strings.
 
-Options @samp{-a}, @samp{-M}, @samp{-m}, @samp{-H}, @samp{-F}, @samp{-s},
-and @samp{-u} control the formatted appearance of the data. 
+Options @samp{-a}, @samp{-F}, @samp{-H}, @samp{-M}, @samp{-m},
+@samp{-q}, @samp{-s}, and @samp{-u} control the formatted appearance of 
+the data.  
 
 @cindex global attributes
 @cindex attributes, global
@@ -3593,8 +3594,18 @@ This includes file summary information and global attributes.
 @cindex @code{-m}
 @item -m
 Print variable metadata to screen (similar to @code{ncdump -h}). 
-This displays all the metadata pertaining to each variable, one variable
-at at time.
+This displays all metadata pertaining to each variable, one variable
+at a time.
+
+@cindex @code{-q}
+@cindex @code{}
+@item -q 
+Toggle printing of dimension indices and coordinate values when printing
+arrays. 
+The name of each variable will appear flush left in the output.
+This is useful when trying to locate specific variables when displaying
+many variables with different dimensions.
+The mnemonic for this option is "quiet".
 
 @cindex @code{-s}
 @cindex @code{printf()}

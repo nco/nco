@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.69 2000-11-03 19:19:19 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.70 2000-11-26 06:41:56 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -141,6 +141,7 @@ capability to arithmetic-intensive operators <tt>ncwa</tt>, <tt>ncea</tt>, and <
 <li><b>NCO 1.2.2</b>, done, not released: Allow weights with
 <tt>ncwa</tt> in min/max/ttl operations. 
 <tt>ncrename</tt> can now work on specific variables rather than whole file</li>
+<tt>ncks</tt> has <tt>-q</tt> option for cleaner printing</li>
 <li><b>NCO 1.2.1</b>, <a href="./nco_news.shtml#20000828">20000828</a>: Added type-conversion of integers to floating point before
 arithmetic, fixed broken <tt>-v</tt> option</li>
 <li><b>NCO 1.2</b>, <a href="./nco_news.shtml#20000730">20000730</a>: Added non-linear operations <tt>ncra/ncea</tt> and <tt>ncwa</tt>:

@@ -1,3 +1,8 @@
+2000-11-25  Charlie Zender  <zender@uci.edu>
+
+	* Added -q ("quiet") switch to ncks to suppress printing of
+	dimension indices and coordinate values
+
 2000-10-29  Charlie Zender  <zender@uci.edu>
 
 	* Implemented new @command{}, @env{}, and @acronym{} keywords in
