@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.164 2003-11-10 18:00:52 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.165 2003-11-10 19:01:23 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -312,8 +312,9 @@ binaries on a variety of platforms (using, e.g.,
 <a href="http://sourceforge.net/docman/display_doc.php?docid=762&group_id=1">Compile Farm</a> or 
 <a href="http://www.testdrive.compaq.com">HP Testdrive</a> sites)
 would be very welcome to join the NCO team.
-Tarballs are usually up-to-date, but the binaries (e.g., RPM, .deb) 
-tend to lag the current distribution by many months, if not years: 
+Tarballs are usually up-to-date, as are binaries for x86 Debian
+systems (i.e., .debs), but RedHat RPMs tend to lag the current
+distribution by many months, if not years:  
 <ul>
 <li>Source and documentation in tarball format: 
 <a href="nco.tar.gz">nco.tar.gz</a> (<!--#fsize file="nco.tar.gz"--> compressed tar-file)</li>
@@ -483,22 +484,6 @@ AT&T <tt>lex</tt> will not work because it does not understand
 and does not parse <tt>ncap_yacc.y</tt> correctly; previous and later
 versions of <tt>bison</tt> work correctly.
 </li>
-
-<li><b><tt>ncbo</tt> missing value problems:</b>
-If the input files have different <tt>missing_value</tt> values, then
-<tt>ncbo</tt> chooses the one from the first file.
-This causes incorrect answers at locations where the first file has
-valid data and the second file has a <tt>missing_value</tt>.
-In these locations, <tt>ncbo</tt> performs the binary operation
-instead of making the result of the binary operation a
-<tt>missing_value</tt>.
-The following script demonstrates this.
-The results should all be the <tt>missing_value</tt>, yet two of the
-elements are not:
-<tt>ncks -O -v mss_val_fst -p ~/nco/data in.nc ~/nco/data/out.nc;
-ncrename -O -v mss_val_fst,mss_val ~/nco/data/out.nc;
-ncbo -O -y '-' -v mss_val -p ~/nco/data in.nc out.nc ~/foo.nc;
-ncks -m -C -H -v mss_val ~/foo.nc</tt>
 
 <li><b>Build problems with DODS:</b>
 NCO links with the
