@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.96 2002-05-20 15:27:42 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.97 2002-05-23 18:17:29 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2735,10 +2735,6 @@ ncap -O -s "prs_mdp[time,lat,lon,lev]=P0*hyam+PS*hybm" in.nc out.nc
 @node Syntax of @command{ncap} statements, Intrinsic mathematical functions , ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
 @cindex statement
 @cindex syntax
-@cindex semi-colon
-@cindex @code{;}
-@cindex @code{/*...*/}
-@cindex @code{//}
 Mastering @command{ncap} is relatively simple.
 Each valid statement @var{statement} consists of standard forward
 algebraic expression. 
@@ -2747,17 +2743,41 @@ whitespace, and comments.
 @cindex C language
 The syntax of statements is most like the computer language C.
 The following characteristics of C are preserved:
-Arrays are 0-based;
+@table @asis
+@item Array syntax
+@cindex array syntax
+@cindex @code{[]} (array delimiters)
 Arrays elements are placed within @code{[]} characters;
+@item Array indexing
+@cindex array indexing
+Arrays are 0-based;
+@item Array storage
+@cindex array storage
 Last dimension is most rapidly varying;
-Statements end with a semi-colon;
-Multi-line comments are enclosed within @code{/* */} characters;
-Single line comments are preceded by @code{//} characters;
-
-@cindex @code{@@} (attribute)
+@item Assignment statements
+@cindex assignment statement
+@cindex semi-colon
+@cindex @code{;} (end of statement)
+Assignment statements end with a semi-colon @samp{;}.
+@item Comments
+@cindex comments
+@cindex @code{/*...*/} (comment)
+@cindex @code{//} (comment)
+Multi-line comments are enclosed within @code{/* */} characters.
+Single line comments are preceded by @code{//} characters.
+@item Nesting
+@cindex including files
+@cindex nesting
+@cindex @code{#include}
+Files may be nested in scripts using @code{#include @var{filename}}.
+Note that the @code{#include} command is not followed by a semi-colon
+because it is a pre-processor directive, not an assignment statement.
+@item Attribute syntax
 @cindex attribute syntax
+@cindex @code{@@} (attribute)
 The at-sign @code{@@} is used to delineate an attribute name from a
 variable name.
+@end table 
 
 @node Intrinsic functions, Intrinsic mathematical functions , ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
 @command{ncap} contains a small but growing library of intrinsic
