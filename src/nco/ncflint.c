@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.39 2002-05-12 00:24:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.40 2002-06-07 05:53:44 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -100,8 +100,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.39 2002-05-12 00:24:16 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.39 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.40 2002-06-07 05:53:44 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.40 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -400,8 +400,8 @@ main(int argc,char **argv)
     (void)var_get(in_id_2,ntp_2);
 
     /* Weights must be NC_DOUBLE */
-    ntp_1=var_conform_type(NC_DOUBLE,ntp_1);
-    ntp_2=var_conform_type(NC_DOUBLE,ntp_2);
+    ntp_1=var_conform_type((nc_type)NC_DOUBLE,ntp_1);
+    ntp_2=var_conform_type((nc_type)NC_DOUBLE,ntp_2);
 
     /* Check for degenerate case */
     if(ntp_1->val.dp[0] == ntp_2->val.dp[0]){
@@ -454,8 +454,8 @@ main(int argc,char **argv)
     wgt_out_1=var_conform_dim(var_prc_1[idx],wgt_1,wgt_out_1,MUST_CONFORM,&DO_CONFORM);
     wgt_out_2=var_conform_dim(var_prc_2[idx],wgt_2,wgt_out_2,MUST_CONFORM,&DO_CONFORM);
 
-    var_prc_1[idx]=var_conform_type(NC_DOUBLE,var_prc_1[idx]);
-    var_prc_2[idx]=var_conform_type(NC_DOUBLE,var_prc_2[idx]);
+    var_prc_1[idx]=var_conform_type((nc_type)NC_DOUBLE,var_prc_1[idx]);
+    var_prc_2[idx]=var_conform_type((nc_type)NC_DOUBLE,var_prc_2[idx]);
 
     /* Allocate and, if necesssary, initialize space for processed variable */
     var_prc_out[idx]->sz=var_prc_1[idx]->sz;

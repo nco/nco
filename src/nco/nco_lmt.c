@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.4 2002-05-07 08:34:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.5 2002-06-07 05:53:44 zender Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -423,7 +423,7 @@ lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
     }  /* end else */
 
     /* Un-typecast pointer to values after access */
-    (void)cast_nctype_void(NC_DOUBLE,&dim.val);
+    (void)cast_nctype_void((nc_type)NC_DOUBLE,&dim.val);
   
     /* Free space allocated for dimension */
     dim.val.vp=nco_free(dim.val.vp);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.9 2002-05-12 01:01:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.10 2002-06-07 05:53:44 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -148,8 +148,8 @@ extern "C" {
   
   void
   nco_xrf_var /* [fnc] Make xrf elements of variable structures point to eachother */
-  (var_sct * const var, /* I/O [sct] Variable */
-   var_sct * const var_dpl); /* I/O [sct] Related variable */
+  (var_sct * const var_1, /* I/O [sct] Variable */
+   var_sct * const var_2); /* I/O [sct] Related variable */
   
 #ifdef __cplusplus
 } /* end extern "C" */

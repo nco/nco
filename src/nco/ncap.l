@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.53 2002-06-07 04:25:19 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.54 2002-06-07 05:53:44 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -817,7 +817,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
       /* Add dimensions defined in LHS subscripts */
       lst_t=lst_d;
       lst_t_nbr=lst_t_nbr;
-      lst_d=var_lst_add(prs_arg->in_id,lst_d,&lst_d_nbr,lval.sbs_lst->lst,lval.sbs_lst->nbr);          
+      lst_d=var_lst_add(lst_d,&lst_d_nbr,lval.sbs_lst->lst,lval.sbs_lst->nbr);          
       if(lst_t_nbr >0) (void)var_lst_free(lst_t,lst_t_nbr);
       break;
     default: 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.146 2002-06-05 22:39:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.147 2002-06-07 05:53:43 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -175,7 +175,6 @@ with nco_dst.pl
 173. Add switch to ncra which allows user to remove degenerate time dimension from result
 174. Setup ncra,ncea,ncwa to do standard deviations sdn with one call
 176. Replace Bison, Flex components of ncap with smaller C++ parser
-181. Split nc_utl.c into smaller files (wait until 1.3 becomes stable branch)
 182. Add -L switch to print license terms
 187. Are OpenMP critical regions sufficient for netCDF or must all other threads stop completely?
 188. Make binary RPMS build with DODS option
@@ -204,10 +203,8 @@ to accomplish this.
 204. Update User's guide to reflect new netCDF 3.x API
 206. Add example NCO script, such as dst.sh, to doc directory
 209. Add rules to make MANIFEST and automaticlally update Sourceforge download area
-210. Break nco.h into system-specific headers, csz.h, pck.h...
 214. Disable threads > 1 on SGI temporarily because thread #0 is doing all the work, why?
 215. var_conform_dim() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
-216. Use %z for printing size_t rather than casting to long (is %z portable?)
 218. Fix all leaks etc. enumerated in insure.txt
 219. Sourceforge FTP nco.tar.gz link appears broken
 ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
@@ -221,7 +218,6 @@ ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 227. Document binary write ability and -B switch for ncks
 228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
 229. Fix AIX -qwarn64 messages from converting long to size_t, etc.
-230. Create Make argument to specify 32/64 bit mode
 ************************************************************************
 End NCO Wish list
 ************************************************************************

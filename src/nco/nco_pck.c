@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.4 2002-05-20 06:11:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.5 2002-06-07 05:53:44 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -248,9 +248,9 @@ var_pck /* [fnc] Pack variable in memory */
 
     /* Convert to NC_DOUBLE before 0.5*(min+max) operation */
     min_var=scl_ptr_mk_var(ptr_unn_min,var->type);
-    min_var=var_conform_type(NC_DOUBLE,min_var);
+    min_var=var_conform_type((nc_type)NC_DOUBLE,min_var);
     max_var=scl_ptr_mk_var(ptr_unn_max,var->type);
-    max_var=var_conform_type(NC_DOUBLE,max_var);
+    max_var=var_conform_type((nc_type)NC_DOUBLE,max_var);
     /* Copy max_var for use in scale_factor computation */
     max_var_dpl=var_dpl(max_var);
     hlf_var=scl_mk_var(hlf_unn,NC_DOUBLE); /* [sct] NCO variable for value one half */
@@ -260,12 +260,12 @@ var_pck /* [fnc] Pack variable in memory */
     /* add_offset is 0.5*(min+max) */
     if(var->tally == NULL) (void)fprintf(stdout,"%s: ERROR var->tally==NULL in var_pck(), no room for incrementing tally while in var_add()\n",prg_nm_get());
     /* max_var->val is overridden with add_offset answers, no longer valid as max_var */
-    (void)var_add(NC_DOUBLE,1L,var->has_mss_val,var->mss_val,var->tally,min_var->val,max_var->val);
-    (void)var_multiply(NC_DOUBLE,1L,var->has_mss_val,var->mss_val,hlf_var->val,max_var->val);
+    (void)var_add((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,var->tally,min_var->val,max_var->val);
+    (void)var_multiply((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,hlf_var->val,max_var->val);
     /* Reset tally buffer to zero for any subsequent arithmetic */
     (void)zero_long(var->sz,var->tally);
     /* Contents of max_var are actually add_offset */
-    (void)val_conform_type(NC_DOUBLE,max_var->val,var->type,var->add_fst);
+    (void)val_conform_type((nc_type)NC_DOUBLE,max_var->val,var->type,var->add_fst);
 
     /* ndrv is 2^{bits per packed value} where bppv = 8 for NC_CHAR and bppv = 16 for NC_SHORT
        Subtract one to leave slop for rounding errors */
@@ -283,14 +283,14 @@ var_pck /* [fnc] Pack variable in memory */
        If max-min = 0 then variable is constant value so scale_factor=0.0 and add_offset=var
        If max-min > ndrv then precision is worse than 1.0
        If max-min < ndrv then precision is better than 1.0 */
-    (void)var_subtract(NC_DOUBLE,1L,var->has_mss_val,var->mss_val,min_var->val,max_var_dpl->val);
+    (void)var_subtract((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,min_var->val,max_var_dpl->val);
     /* max-min is currently stored in max_var_dpl */
     max_mns_min_dbl=ptr_unn_2_scl_dbl(max_var_dpl->val,max_var_dpl->type); 
 
     if(max_mns_min_dbl != 0.0){
-      (void)var_divide(NC_DOUBLE,1L,var->has_mss_val,var->mss_val,ndrv_var->val,max_var_dpl->val);
+      (void)var_divide((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,ndrv_var->val,max_var_dpl->val);
       /* Contents of max_var_dpl are actually scale_factor */
-      (void)val_conform_type(NC_DOUBLE,max_var_dpl->val,var->type,var->scl_fct);
+      (void)val_conform_type((nc_type)NC_DOUBLE,max_var_dpl->val,var->type,var->scl_fct);
     }else{
       /* Variable is a constant */
       zero_var=scl_mk_var(zero_unn,var->type); /* [sct] NCO variable for value 0.0 */

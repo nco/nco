@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.64 2002-06-07 02:15:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.65 2002-06-07 05:53:44 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -9,7 +9,7 @@
 #include "ncap.h" /* netCDF arithmetic processor */
 
 var_sct *
-ncap_var_init(char *var_nm,prs_sct *prs_arg)
+ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
 {
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */
@@ -35,7 +35,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   
   if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: parser VAR action called ncap_var_init() to retrieve %s from disk\n",prg_nm_get(),var_nm);
   var=var_fll(fl_id,var_id,var_nm,prs_arg->dmn,prs_arg->nbr_dmn_xtr);
-  var->nm=(char *)nco_malloc((strlen(var_nm)+1)*sizeof(char));
+  var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
   (void)strcpy(var->nm,var_nm);
   var->tally=(long *)nco_malloc(var->sz*sizeof(long));
   (void)zero_long(var->sz,var->tally);
@@ -46,7 +46,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   /* free(var_nm->nm);*/
   /* var=var_upk(var); */
   return var;
-} /* end ncap_var_init */
+} /* end ncap_var_init() */
 
 int 
 ncap_var_write(var_sct *var,prs_sct *prs_arg)
@@ -76,19 +76,19 @@ ncap_var_write(var_sct *var,prs_sct *prs_arg)
   } /* end else */
   
   return 1;
-} /* end ncap_var_write */
+} /* end ncap_var_write() */
 
 sym_sct *
-ncap_sym_init(char *name,double (*fnc_dbl)(double),float (*flt_flt)(float))
+ncap_sym_init(char *sym_nm,double (*fnc_dbl)(double),float (*fnc_flt)(float))
 { 
   /* Purpose: Allocate space for sym_sct then initialize */
   sym_sct *symbol;
   symbol=(sym_sct *)nco_malloc(sizeof(sym_sct));
-  symbol->nm=strdup(name);
+  symbol->nm=(char *)strdup(sym_nm);
   symbol->fnc_dbl=fnc_dbl;
-  symbol->flt_flt=flt_flt;
+  symbol->fnc_flt=fnc_flt;
   return symbol;
-} /* end ncap_sym_init */
+} /* end ncap_sym_init() */
 
 ptr_unn
 ncap_scv_2_ptr_unn(scv_sct scv)
@@ -112,7 +112,7 @@ ncap_scv_2_ptr_unn(scv_sct scv)
   } /* end switch */
   (void)cast_nctype_void(type,&val);
   return val;
-} /* end ncap_scv_2_ptr_unn */
+} /* end ncap_scv_2_ptr_unn() */
 
 var_sct *
 ncap_var_var_add(var_sct *var_1,var_sct *var_2)
@@ -177,9 +177,9 @@ ncap_var_var_multiply(var_sct *var_1,var_sct *var_2)
 } /* end ncap_var_var_multiply() */
 
 var_sct *
-ncap_var_function(var_sct *var_in, sym_sct *app)
+ncap_var_function(var_sct *var_in,sym_sct *app)
 {
-  /* Purpose: Evaluate fnc_dbl(var) or flt_flt(var) for each value in variable
+  /* Purpose: Evaluate fnc_dbl(var) or fnc_flt(var) for each value in variable
      Float and double functions are in app */
   long idx;
   long sz;
@@ -187,7 +187,7 @@ ncap_var_function(var_sct *var_in, sym_sct *app)
   var_sct *var;
 
   /* Promote variable to NC_FLOAT */
-  if(var_in->type < NC_FLOAT) var_in=var_conform_type(NC_FLOAT,var_in);
+  if(var_in->type < NC_FLOAT) var_in=var_conform_type((nc_type)NC_FLOAT,var_in);
   var=var_dpl(var_in);
  
   op1=var->val;
@@ -209,11 +209,11 @@ ncap_var_function(var_sct *var_in, sym_sct *app)
   }
   case NC_FLOAT: {
     if(!var->has_mss_val){
-      for(idx=0;idx<sz;idx++) op1.fp[idx]=(*(app->flt_flt))(op1.fp[idx]);
+      for(idx=0;idx<sz;idx++) op1.fp[idx]=(*(app->fnc_flt))(op1.fp[idx]);
     }else{
       float mss_val_flt=*(var->mss_val.fp); /* Temporary variable reduces dereferencing */
       for(idx=0;idx<sz;idx++){
-        if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=(*(app->flt_flt))(op1.fp[idx]);
+        if(op1.fp[idx] != mss_val_flt) op1.fp[idx]=(*(app->fnc_flt))(op1.fp[idx]);
       } /* end for */
     } /* end else */
    break;
@@ -223,7 +223,7 @@ ncap_var_function(var_sct *var_in, sym_sct *app)
 
   if(var->has_mss_val) (void)cast_nctype_void(var->type,&(var->mss_val));
   return var;
-} /* end ncap_var_function */
+} /* end ncap_var_function() */
 
 var_sct *
 ncap_var_var_divide(var_sct *var_1,var_sct *var_2)
@@ -329,7 +329,7 @@ ncap_var_scv_power(var_sct *var_in,scv_sct scv)
   var_sct *var;
 
   /* Promote scv and var to NC_FLOAT */
-  if(var_in->type < NC_FLOAT) var_in=var_conform_type(NC_FLOAT,var_in);
+  if(var_in->type < NC_FLOAT) var_in=var_conform_type((nc_type)NC_FLOAT,var_in);
   var=var_dpl(var_in);
   (void)scv_conform_type(var->type,&scv);
   
@@ -499,7 +499,7 @@ var_lst_copy(nm_id_sct *xtr_lst,int lst_nbr)
   if(lst_nbr == 0) return NULL;
   xtr_new_lst=(nm_id_sct *)nco_malloc(lst_nbr*sizeof(nm_id_sct));
   for(idx=0;idx<lst_nbr;idx++){
-    xtr_new_lst[idx].nm=strdup(xtr_lst[idx].nm);
+    xtr_new_lst[idx].nm=(char *)strdup(xtr_lst[idx].nm);
     xtr_new_lst[idx].id=xtr_lst[idx].id;
   } /* end loop over variable */
   return xtr_new_lst;            
@@ -518,7 +518,7 @@ var_lst_free(nm_id_sct *xtr_lst,int lst_nbr)
 } /* end var_lst_free() */
 
 nm_id_sct *
-var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst_b)
+var_lst_sub(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int nbr_lst_b)
 {
   /* Purpose: Subtract from xtr_lst any elements from xtr_lst_b which are present and return new list */
   int idx;
@@ -537,7 +537,7 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
     for(xtr_idx=0;xtr_idx<nbr_lst_b;xtr_idx++)
       if(!strcmp(xtr_lst[idx].nm,xtr_lst_b[xtr_idx].nm)){match=True;break;}
     if(match) continue;
-    xtr_new_lst[xtr_nbr_new].nm=strdup(xtr_lst[idx].nm);
+    xtr_new_lst[xtr_nbr_new].nm=(char *)strdup(xtr_lst[idx].nm);
     xtr_new_lst[xtr_nbr_new++].id=xtr_lst[idx].id;
   } /* end loop over idx */
   *nbr_xtr=xtr_nbr_new;
@@ -545,7 +545,7 @@ var_lst_sub(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_b,int n
 }/* end var_lst_sub */
 
 nm_id_sct *
-var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst_a)
+var_lst_add(nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int nbr_lst_a)
 {
   /* Purpose: Add to xtr_lst any elements from xtr_lst_a not already present and return new list */
   int idx;
@@ -560,7 +560,7 @@ var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int n
   if(nbr_xtr_crr > 0){
     xtr_new_lst=(nm_id_sct*)nco_malloc((size_t)(*nbr_xtr)*sizeof(nm_id_sct));
     for(idx=0;idx<nbr_xtr_crr;idx++){
-      xtr_new_lst[idx].nm=strdup(xtr_lst[idx].nm);
+      xtr_new_lst[idx].nm=(char *)strdup(xtr_lst[idx].nm);
       xtr_new_lst[idx].id=xtr_lst[idx].id;
     } /* end loop over variables */
   }else{
@@ -574,7 +574,7 @@ var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int n
       if(!strcmp(xtr_lst[xtr_idx].nm,xtr_lst_a[idx].nm)){match=True;break;}
     if(match) continue;
     xtr_new_lst=(nm_id_sct *)nco_realloc(xtr_new_lst,(size_t)(nbr_xtr_crr+1)*sizeof(nm_id_sct));
-    xtr_new_lst[nbr_xtr_crr].nm=strdup(xtr_lst_a[idx].nm);
+    xtr_new_lst[nbr_xtr_crr].nm=(char *)strdup(xtr_lst_a[idx].nm);
     xtr_new_lst[nbr_xtr_crr++].id=xtr_lst_a[idx].id;
   } /* end for */
   *nbr_xtr=nbr_xtr_crr;

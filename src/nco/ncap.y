@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.60 2002-06-07 04:25:19 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.61 2002-06-07 05:53:44 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -168,7 +168,7 @@ out_att_xpr '=' scv_xpr {
   ptr_aed->sz=(long)((sng_lng+1)*nco_typ_lng(NC_CHAR));
   ptr_aed->val.cp=(unsigned char *)nco_malloc((sng_lng+1)*nco_typ_lng(NC_CHAR));
   strcpy((char *)(ptr_aed->val.cp),$3);
-  (void)cast_nctype_void(NC_CHAR,&ptr_aed->val);    
+  (void)cast_nctype_void((nc_type)NC_CHAR,&ptr_aed->val);    
   
   if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
   (void)yyerror(err_sng);
@@ -274,7 +274,7 @@ out_att_xpr '=' scv_xpr {
     var->sz=strlen($3)+1;
     var->val.cp=(unsigned char *)strdup($3);
     var->type=NC_CHAR;
-    (void)cast_nctype_void(NC_CHAR,&var->val);
+    (void)cast_nctype_void((nc_type)NC_CHAR,&var->val);
     (void)ncap_var_write(var,(prs_sct *)prs_arg);
     (void)var_free(var);
     if(dbg_lvl_get() > 0) (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
@@ -317,26 +317,26 @@ scv_xpr '+' scv_xpr {
 }
 | scv_xpr '^' scv_xpr {
   if($1.type <= NC_FLOAT && $3.type <= NC_FLOAT) {
-    (void)scv_conform_type(NC_FLOAT,&$1);
-    (void)scv_conform_type(NC_FLOAT,&$3);
+    (void)scv_conform_type((nc_type)NC_FLOAT,&$1);
+    (void)scv_conform_type((nc_type)NC_FLOAT,&$3);
     $$.val.f=powf($1.val.f,$3.val.f);
     $$.type=NC_FLOAT;
   }else{
-    (void)scv_conform_type(NC_DOUBLE,&$1);
-    (void)scv_conform_type(NC_DOUBLE,&$3);
+    (void)scv_conform_type((nc_type)NC_DOUBLE,&$1);
+    (void)scv_conform_type((nc_type)NC_DOUBLE,&$3);
     $$.val.d=pow($1.val.d,$3.val.d);
     $$.type=NC_DOUBLE; 
   } /* end else */
 } /* end scv_xpr '^' scv_xpr */
 | POWER '(' scv_xpr ',' scv_xpr ')' { /* fxm: this is identical to previous clause except for argument numbering, should be functionalized to use common code */
   if($3.type <= NC_FLOAT && $5.type <= NC_FLOAT) {
-    (void)scv_conform_type(NC_FLOAT,&$3);
-    (void)scv_conform_type(NC_FLOAT,&$5);
+    (void)scv_conform_type((nc_type)NC_FLOAT,&$3);
+    (void)scv_conform_type((nc_type)NC_FLOAT,&$5);
     $$.val.f=powf($3.val.f,$5.val.f);
     $$.type=NC_FLOAT;
   }else{ 
-    (void)scv_conform_type(NC_DOUBLE,&$3);
-    (void)scv_conform_type(NC_DOUBLE,&$5);
+    (void)scv_conform_type((nc_type)NC_DOUBLE,&$3);
+    (void)scv_conform_type((nc_type)NC_DOUBLE,&$5);
     $$.val.d=pow($3.val.d,$5.val.d);
     $$.type=NC_DOUBLE; 
   } /* end else */
@@ -346,8 +346,8 @@ scv_xpr '+' scv_xpr {
 }
 | FUNCTION '(' scv_xpr ')' {
   if($3.type <= NC_FLOAT) {
-    (void)scv_conform_type(NC_FLOAT,&$3);
-    $$.val.f=(*($1->flt_flt))($3.val.f);
+    (void)scv_conform_type((nc_type)NC_FLOAT,&$3);
+    $$.val.f=(*($1->fnc_flt))($3.val.f);
     $$.type=NC_FLOAT;
   }else{
     $$.val.d=(*($1->fnc_dbl))($3.val.d);

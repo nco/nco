@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.40 2002-05-23 17:56:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.h,v 1.41 2002-06-07 05:53:44 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -40,7 +40,7 @@ extern "C" {
 typedef struct { /* sym_sct */
   char *nm;
   double (*fnc_dbl)(double);
-  float (*flt_flt)(float);
+  float (*fnc_flt)(float);
 } sym_sct;
 
 /* Name list structure (use to store subscript lists) */
@@ -101,19 +101,19 @@ int ncap_scv_minus(scv_sct *);
 int ncap_var_write(var_sct *,prs_sct*);
 int yyerror(char *sng);
 nm_id_sct *ncap_var_lst_crd_make(int,nm_id_sct *,int *);
-nm_id_sct *var_lst_add(int,nm_id_sct *,int *,nm_id_sct *,int);
+nm_id_sct *var_lst_add(nm_id_sct *,int *,nm_id_sct *,int);
 nm_id_sct *var_lst_copy(nm_id_sct *,int);
-nm_id_sct *var_lst_free(nm_id_sct *,int );
-nm_id_sct *var_lst_sub(int,nm_id_sct *,int *,nm_id_sct *,int);
+nm_id_sct *var_lst_free(nm_id_sct *,int);
+nm_id_sct *var_lst_sub(nm_id_sct *,int *,nm_id_sct *,int);
 ptr_unn ncap_scv_2_ptr_unn(scv_sct); 
 scv_sct ncap_scv_abs(scv_sct);
 scv_sct ncap_scv_calc(scv_sct,char,scv_sct);
-sym_sct *ncap_sym_init(char * ,double (*fnc_dbl)(double),float (*flt_flt)(float));
+sym_sct *ncap_sym_init(char *,double (*fnc_dbl)(double),float (*fnc_flt)(float));
 sym_sct *scalar_mk_sym(double val);
 sym_sct *sym_look(char *sym_nm);
 var_sct *ncap_var_abs(var_sct *);
 var_sct *ncap_var_function(var_sct *,sym_sct *);
-var_sct *ncap_var_init(char*,prs_sct *);
+var_sct *ncap_var_init(const char * const,prs_sct *);
 var_sct *ncap_var_scv_add(var_sct *,scv_sct);
 var_sct *ncap_var_scv_divide(var_sct *,scv_sct);
 var_sct *ncap_var_scv_modulus(var_sct *,scv_sct);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.10 2002-05-12 06:12:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.11 2002-06-07 05:53:44 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -549,66 +549,70 @@ var_dpl /* [fnc] Duplicate input variable */
   /* Purpose: nco_malloc() and return duplicate of input var_sct
      Duplicate is deep copy of original so original may always be free()'d */
 
-  var_sct *var_dpl;
+  var_sct *var_cpy;
 
-  var_dpl=(var_sct *)nco_malloc(sizeof(var_sct));
+  var_cpy=(var_sct *)nco_malloc(sizeof(var_sct));
 
   /* Shallow copy structure */
-  (void)memcpy((void *)var_dpl,(void *)var,sizeof(var_sct));
+  (void)memcpy((void *)var_cpy,(void *)var,sizeof(var_sct));
+
+  /* fxm: Should copy name as well, but var_free does not free it, and 
+     var_lists do not strdup() user input so must make all changes at once 
+     in order to avoid adding memory leak */
 
   /* Deep copy dyamically allocated arrays currently defined in original */
   if(var->val.vp != NULL){
-    if((var_dpl->val.vp=(void *)malloc(var_dpl->sz*nco_typ_lng(var_dpl->type))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in var_dpl()\n",prg_nm_get(),var_dpl->sz,nco_typ_lng(var_dpl->type),var_dpl->nm);
+    if((var_cpy->val.vp=(void *)malloc(var_cpy->sz*nco_typ_lng(var_cpy->type))) == NULL){
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for value buffer for variable %s in var_dpl()\n",prg_nm_get(),var_cpy->sz,nco_typ_lng(var_cpy->type),var_cpy->nm);
       nco_exit(EXIT_FAILURE); 
     } /* end if */
-    (void)memcpy((void *)(var_dpl->val.vp),(void *)(var->val.vp),var_dpl->sz*nco_typ_lng(var_dpl->type));
+    (void)memcpy((void *)(var_cpy->val.vp),(void *)(var->val.vp),var_cpy->sz*nco_typ_lng(var_cpy->type));
   } /* end if */
   if(var->mss_val.vp != NULL){
-    var_dpl->mss_val.vp=(void *)nco_malloc(nco_typ_lng(var_dpl->type));
-    (void)memcpy((void *)(var_dpl->mss_val.vp),(void *)(var->mss_val.vp),nco_typ_lng(var_dpl->type));
+    var_cpy->mss_val.vp=(void *)nco_malloc(nco_typ_lng(var_cpy->type));
+    (void)memcpy((void *)(var_cpy->mss_val.vp),(void *)(var->mss_val.vp),nco_typ_lng(var_cpy->type));
   } /* end if */
   if(var->tally != NULL){
-    if((var_dpl->tally=(long *)malloc(var_dpl->sz*sizeof(long))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in var_dpl()\n",prg_nm_get(),var_dpl->sz,(long)sizeof(long),var_dpl->nm);
+    if((var_cpy->tally=(long *)malloc(var_cpy->sz*sizeof(long))) == NULL){
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in var_cpy()\n",prg_nm_get(),var_cpy->sz,(long)sizeof(long),var_cpy->nm);
       nco_exit(EXIT_FAILURE); 
     } /* end if */
-    (void)memcpy((void *)(var_dpl->tally),(void *)(var->tally),var_dpl->sz*sizeof(long));
+    (void)memcpy((void *)(var_cpy->tally),(void *)(var->tally),var_cpy->sz*sizeof(long));
   } /* end if */
   if(var->dim != NULL){
-    var_dpl->dim=(dmn_sct **)nco_malloc(var_dpl->nbr_dim*sizeof(dmn_sct *));
-    (void)memcpy((void *)(var_dpl->dim),(void *)(var->dim),var_dpl->nbr_dim*sizeof(var->dim[0]));
+    var_cpy->dim=(dmn_sct **)nco_malloc(var_cpy->nbr_dim*sizeof(dmn_sct *));
+    (void)memcpy((void *)(var_cpy->dim),(void *)(var->dim),var_cpy->nbr_dim*sizeof(var->dim[0]));
   } /* end if */
   if(var->dmn_id != NULL){
-    var_dpl->dmn_id=(int *)nco_malloc(var_dpl->nbr_dim*sizeof(int));
-    (void)memcpy((void *)(var_dpl->dmn_id),(void *)(var->dmn_id),var_dpl->nbr_dim*sizeof(var->dmn_id[0]));
+    var_cpy->dmn_id=(int *)nco_malloc(var_cpy->nbr_dim*sizeof(int));
+    (void)memcpy((void *)(var_cpy->dmn_id),(void *)(var->dmn_id),var_cpy->nbr_dim*sizeof(var->dmn_id[0]));
   } /* end if */
   if(var->cnt != NULL){
-    var_dpl->cnt=(long *)nco_malloc(var_dpl->nbr_dim*sizeof(long));
-    (void)memcpy((void *)(var_dpl->cnt),(void *)(var->cnt),var_dpl->nbr_dim*sizeof(var->cnt[0]));
+    var_cpy->cnt=(long *)nco_malloc(var_cpy->nbr_dim*sizeof(long));
+    (void)memcpy((void *)(var_cpy->cnt),(void *)(var->cnt),var_cpy->nbr_dim*sizeof(var->cnt[0]));
   } /* end if */
   if(var->srt != NULL){
-    var_dpl->srt=(long *)nco_malloc(var_dpl->nbr_dim*sizeof(long));
-    (void)memcpy((void *)(var_dpl->srt),(void *)(var->srt),var_dpl->nbr_dim*sizeof(var->srt[0]));
+    var_cpy->srt=(long *)nco_malloc(var_cpy->nbr_dim*sizeof(long));
+    (void)memcpy((void *)(var_cpy->srt),(void *)(var->srt),var_cpy->nbr_dim*sizeof(var->srt[0]));
   } /* end if */
   if(var->end != NULL){
-    var_dpl->end=(long *)nco_malloc(var_dpl->nbr_dim*sizeof(long));
-    (void)memcpy((void *)(var_dpl->end),(void *)(var->end),var_dpl->nbr_dim*sizeof(var->end[0]));
+    var_cpy->end=(long *)nco_malloc(var_cpy->nbr_dim*sizeof(long));
+    (void)memcpy((void *)(var_cpy->end),(void *)(var->end),var_cpy->nbr_dim*sizeof(var->end[0]));
   } /* end if */
   if(var->srd != NULL){
-    var_dpl->srd=(long *)nco_malloc(var_dpl->nbr_dim*sizeof(long));
-    (void)memcpy((void *)(var_dpl->srd),(void *)(var->srd),var_dpl->nbr_dim*sizeof(var->srd[0]));
+    var_cpy->srd=(long *)nco_malloc(var_cpy->nbr_dim*sizeof(long));
+    (void)memcpy((void *)(var_cpy->srd),(void *)(var->srd),var_cpy->nbr_dim*sizeof(var->srd[0]));
   } /* end if */
   if(var->scl_fct.vp != NULL){
-    var_dpl->scl_fct.vp=(void *)nco_malloc(nco_typ_lng(var_dpl->typ_upk));
-    (void)memcpy((void *)(var_dpl->scl_fct.vp),(void *)(var->scl_fct.vp),nco_typ_lng(var_dpl->typ_upk));
+    var_cpy->scl_fct.vp=(void *)nco_malloc(nco_typ_lng(var_cpy->typ_upk));
+    (void)memcpy((void *)(var_cpy->scl_fct.vp),(void *)(var->scl_fct.vp),nco_typ_lng(var_cpy->typ_upk));
   } /* end if */
   if(var->add_fst.vp != NULL){
-    var_dpl->add_fst.vp=(void *)nco_malloc(nco_typ_lng(var_dpl->typ_upk));
-    (void)memcpy((void *)(var_dpl->add_fst.vp),(void *)(var->add_fst.vp),nco_typ_lng(var_dpl->typ_upk));
+    var_cpy->add_fst.vp=(void *)nco_malloc(nco_typ_lng(var_cpy->typ_upk));
+    (void)memcpy((void *)(var_cpy->add_fst.vp),(void *)(var->add_fst.vp),nco_typ_lng(var_cpy->typ_upk));
   } /* end if */
 
-  return var_dpl;
+  return var_cpy;
 
 } /* end var_dpl() */
 
@@ -671,13 +675,13 @@ nco_xrf_dmn /* [fnc] Switch pointers to dimension structures so var->dim points 
 
 void
 nco_xrf_var /* [fnc] Make xrf elements of variable structures point to eachother */
-(var_sct * const var, /* I/O [sct] Variable */
- var_sct * const var_dpl) /* I/O [sct] Related variable */
+(var_sct * const var_1, /* I/O [sct] Variable */
+ var_sct * const var_2) /* I/O [sct] Related variable */
 {
   /* Purpose: Make xrf elements of variable structures point to eachother */
 
-  var->xrf=var_dpl;
-  var_dpl->xrf=var;
+  var_1->xrf=var_2;
+  var_2->xrf=var_1;
 
 } /* end nco_xrf_var() */
 

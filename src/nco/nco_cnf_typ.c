@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.4 2002-05-07 08:00:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.5 2002-06-07 05:53:44 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -78,7 +78,7 @@ nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before
      This routine is usually called 
      Remember to convert back after weighting and arithmetic are complete! */
 
-  if(var->type != NC_FLOAT && var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=var_conform_type(NC_DOUBLE,var);
+  if(var->type != NC_FLOAT && var->type != NC_DOUBLE && nco_op_typ != nco_op_min && nco_op_typ != nco_op_max) var=var_conform_type((nc_type)NC_DOUBLE,var);
   
   return var;
 } /* nco_typ_cnv_rth() */
@@ -94,9 +94,9 @@ nco_cnv_var_typ_dsk  /* [fnc] Revert variable to on-disk type */
   return var;
 } /* nco_cnv_var_typ_dsk() */
 
-var_sct * /* O [sct] Pointer to variable structure of type var_out_type */
+var_sct * /* O [sct] Pointer to variable structure of type var_out_typ */
 var_conform_type /* [fnc] Return copy of input variable typecast to desired type */
-(const nc_type var_out_type, /* I [enm] Type to convert variable structure to */
+(const nc_type var_out_typ, /* I [enm] Type to convert variable structure to */
  var_sct *var_in) /* I/O [enm] Pointer to variable structure (may be destroyed) */
 {
   /* Threads: Routine is thread safe and makes no unsafe routines */
@@ -113,7 +113,7 @@ var_conform_type /* [fnc] Return copy of input variable typecast to desired type
   var_sct *var_out;
 
   /* Do types of variable AND its missing value already match? */
-  if(var_in->type == var_out_type) return var_in;
+  if(var_in->type == var_out_typ) return var_in;
 
   var_out=var_in;
   
@@ -121,14 +121,14 @@ var_conform_type /* [fnc] Return copy of input variable typecast to desired type
   
   /* Simple error-checking and diagnostics */
   if(dbg_lvl_get() > 2){
-    (void)fprintf(stderr,"%s: DEBUG %s variable %s from type %s to type %s\n",prg_nm_get(),var_out_type > var_in_type ? "Promoting" : "Demoting",var_in->nm,nco_typ_sng(var_in_type),nco_typ_sng(var_out_type));
+    (void)fprintf(stderr,"%s: DEBUG %s variable %s from type %s to type %s\n",prg_nm_get(),var_out_typ > var_in_type ? "Promoting" : "Demoting",var_in->nm,nco_typ_sng(var_in_type),nco_typ_sng(var_out_typ));
   } /* end if */
   
   /* Move the current var values to swap location */
   val_in=var_in->val;
   
   /* Allocate space for type-conforming values */
-  var_out->type=var_out_type;
+  var_out->type=var_out_typ;
   var_out->val.vp=(void *)nco_malloc(var_out->sz*nco_typ_lng(var_out->type));
   
   /* Define convenience variables to avoid repetitive indirect addressing */
@@ -142,7 +142,7 @@ var_conform_type /* [fnc] Return copy of input variable typecast to desired type
     /* Sequence of following commands is important (copy before overwriting!) */
     var_in_mss_val=var_out->mss_val;
     var_out->mss_val.vp=(void *)nco_malloc(nco_typ_lng(var_out->type));
-    (void)val_conform_type(var_in_type,var_in_mss_val,var_out_type,var_out->mss_val);
+    (void)val_conform_type(var_in_type,var_in_mss_val,var_out_typ,var_out->mss_val);
     /* Free original */
     var_in_mss_val.vp=nco_free(var_in_mss_val.vp);
   } /* end if */
@@ -152,7 +152,7 @@ var_conform_type /* [fnc] Return copy of input variable typecast to desired type
   (void)cast_void_nctype(var_out->type,&var_out->val);
   
   /* Copy and typecast entire array of values, using C implicit coercion */
-  switch(var_out_type){
+  switch(var_out_typ){
   case NC_FLOAT:
     switch(var_in_type){
     case NC_FLOAT: for(idx=0L;idx<sz;idx++) {val_out.fp[idx]=val_in.fp[idx];} break; 

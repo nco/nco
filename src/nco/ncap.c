@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.73 2002-06-07 04:25:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.74 2002-06-07 05:53:44 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -84,8 +84,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.73 2002-06-07 04:25:19 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.73 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.74 2002-06-07 05:53:44 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.74 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -329,7 +329,7 @@ main(int argc,char **argv)
   if(PROCESS_ALL_VARS){
     /* Form initial extraction list from user input */
     xtr_lst=var_lst_mk(in_id,nbr_var_fl,var_lst_in,PROCESS_ALL_COORDINATES,&nbr_xtr);
-    if(nbr_lst_b > 0) xtr_lst=var_lst_sub(in_id,xtr_lst,&nbr_xtr,xtr_lst_b,nbr_lst_b);
+    if(nbr_lst_b > 0) xtr_lst=var_lst_sub(xtr_lst,&nbr_xtr,xtr_lst_b,nbr_lst_b);
     /* Copy list for later */
     xtr_lst_2=var_lst_copy(xtr_lst,nbr_xtr);
     nbr_xtr_2=nbr_xtr;
@@ -344,10 +344,10 @@ main(int argc,char **argv)
        xtr_lst_2=list_c + coordinate variables - list_b */
     
     /* Add list c to extraction list */
-    if(nbr_lst_c > 0) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_c,nbr_lst_c);
+    if(nbr_lst_c > 0) xtr_lst=var_lst_add(xtr_lst,&nbr_xtr,xtr_lst_c,nbr_lst_c);
     
     /* Add list a to extraction list */
-    if(nbr_lst_a > 0) xtr_lst=var_lst_add(in_id,xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
+    if(nbr_lst_a > 0) xtr_lst=var_lst_add(xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
     
     /* Add all coordinate variables to extraction list */
     if(PROCESS_ALL_COORDINATES) xtr_lst=var_lst_add_crd(in_id,nbr_var_fl,nbr_dmn_fl,xtr_lst,&nbr_xtr);
@@ -361,17 +361,17 @@ main(int argc,char **argv)
       xtr_lst_2=var_lst_copy(xtr_lst,nbr_xtr);
       
       /* Add dimensions defined in LHS subscripts */
-      if(nbr_lst_d > 0) xtr_lst_2=var_lst_add(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_d,nbr_lst_d); 
+      if(nbr_lst_d > 0) xtr_lst_2=var_lst_add(xtr_lst_2,&nbr_xtr_2,xtr_lst_d,nbr_lst_d); 
       
       /* Creat list of coordinates only */
       xtr_lst_2=ncap_var_lst_crd_make(in_id,xtr_lst_2,&nbr_xtr_2);
     } /* endif */
     
     /* Add list_c to new list */
-    if(nbr_lst_c > 0) xtr_lst_2=var_lst_add(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_c,nbr_lst_c);
+    if(nbr_lst_c > 0) xtr_lst_2=var_lst_add(xtr_lst_2,&nbr_xtr_2,xtr_lst_c,nbr_lst_c);
     
     /* Subtract list_b from this list */   
-    if(nbr_lst_b > 0) xtr_lst_2=var_lst_sub(in_id,xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
+    if(nbr_lst_b > 0) xtr_lst_2=var_lst_sub(xtr_lst_2,&nbr_xtr_2,xtr_lst_b,nbr_lst_b);
   } /* end if PROCESS_ALL_VARS */
   
   /* Heapsort extraction lists by variable ID for fastest I/O */
@@ -385,7 +385,7 @@ main(int argc,char **argv)
   dmn_lst=dmn_lst_ass_var(in_id,xtr_lst,nbr_xtr,&nbr_dmn_xtr);
   
   /* Add list d */
-  if(nbr_lst_d > 0) dmn_lst=var_lst_add(in_id,dmn_lst,&nbr_dmn_xtr,xtr_lst_d,nbr_lst_d);  
+  if(nbr_lst_d > 0) dmn_lst=var_lst_add(dmn_lst,&nbr_dmn_xtr,xtr_lst_d,nbr_lst_d);  
   
   /* Fill in dimension structure for all extracted dimensions */
   dmn=(dmn_sct **)nco_malloc(nbr_dmn_xtr*sizeof(dmn_sct *));
