@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.81 2005-01-13 04:32:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.82 2005-02-14 02:14:26 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -7,6 +7,33 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 #include "nco_ctl.h" /* Program flow control functions */
+
+const char * /* O [sng] Compiler and version */
+nco_cmp_get(void) /* [fnc] Return compiler and version */
+{ 
+  /* Purpose: Return string containing compiler and version */
+  const char fnc_nm[]="nco_cmp_get()";
+#ifdef _AIX
+  static const char cmp_nm[]="xlc"; /* [sng] Compiler name */
+  static const char cmp_sng[]="Token _AIX_ defined in main(), probably compiled with xlc"; /* [sng] Compiler string */
+#endif /* !_AIX */
+#ifdef __GNUC__
+  static const char cmp_nm[]="gcc"; /* [sng] Compiler name */
+  static const char cmp_sng[]="Token __GNUC__ defined in main(), probably compiled with gcc"; /* [sng] Compiler string */
+#endif /* !__GNUC__ */
+#ifdef __INTEL_COMPILER
+  static const char cmp_nm[]="icc";
+  static const char cmp_sng[]="Token __INTEL_COMPILER defined in main(), probably compiled with icc"; /* [sng] Compiler string */
+#endif /* !__INTEL_COMPILER */
+  /* In case none of the above tokens matched */
+#if !defined(_AIX) && !defined(__GNUC__) && !defined(__INTEL_COMPILER)
+  /* Unknown compiler */
+  static const char cmp_nm[]="Unknown compiler tokens in nco_cmp_get(), compiler is unknown"; /* [sng] Compiler name */
+  static const char cmp_sng[]="unknown"; /* [sng] Compiler string */
+#endif /* !unknown */
+  if(dbg_lvl_get() > 4) (void)fprintf(stderr,"%s: INFO %s reports compiler name is %s, compiler string is %s\n",prg_nm_get(),fnc_nm,cmp_nm,cmp_sng);
+  return cmp_nm;
+} /* end nco_cmp_get() */
 
 void
 nco_exit /* [fnc] Wrapper for exit() */

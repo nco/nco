@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.16 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.17 2005-02-14 02:14:26 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -34,6 +34,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
+
+const char * /* O [sng] Compiler and version */
+nco_cmp_get(void); /* [fnc] Return compiler and version */
 
 void
 nco_exit /* [fnc] Wrapper for exit() */

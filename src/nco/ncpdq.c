@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.58 2005-01-07 23:54:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.59 2005-02-14 02:14:26 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -109,9 +109,9 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.58 2005-01-07 23:54:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.58 $";
-  const char * const opt_sng="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.59 2005-02-14 02:14:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.59 $";
+  const char * const opt_sht_lst="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:UxZ-:";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -229,7 +229,7 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
+  while((opt = getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

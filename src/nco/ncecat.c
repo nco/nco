@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.84 2005-01-07 23:54:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.85 2005-02-14 02:14:25 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -86,9 +86,9 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.84 2005-01-07 23:54:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.84 $";
-  const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.85 2005-02-14 02:14:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.85 $";
+  const char * const opt_sht_lst="ACcD:d:FHhl:n:Oo:p:rRv:xZ-:";
 
   dmn_sct *rec_dmn;
   dmn_sct **dim;
@@ -179,7 +179,7 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
+  while((opt = getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

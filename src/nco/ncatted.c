@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.74 2005-01-07 23:54:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.75 2005-02-14 02:14:25 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -143,9 +143,9 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.74 2005-01-07 23:54:56 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.74 $";
-  const char * const opt_sng="Aa:D:hl:Oo:p:RrZ-:";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.75 2005-02-14 02:14:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.75 $";
+  const char * const opt_sht_lst="Aa:D:hl:Oo:p:RrZ-:";
   
   extern char *optarg;
   extern int optind;
@@ -195,7 +195,7 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
+  while((opt = getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;

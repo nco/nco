@@ -1,3 +1,8 @@
+2005-02-13  Charlie Zender  <zender@uci.edu>
+
+	* Added --cmp, --compiler switch to ncks to report compiler name
+	with new function nco_cmp_get()
+
 2005-02-04  Charlie Zender  <zender@uci.edu>
 
 	* Polished up ncap intrinsic math function definition examples

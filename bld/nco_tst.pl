@@ -1,15 +1,63 @@
 #!/usr/bin/perl
 
-# Usage: 
-# ~/nco/bld/nco_tst.pl # Tests all operators
-# ~/nco/bld/nco_tst.pl ncra # Test one operator
+# Usage:  (see usage() below for more info)
+# <BUILD_ROOT>/nco/bld/nco_tst.pl # Tests all operators
+# <BUILD_ROOT>/nco/bld/nco_tst.pl ncra # Test one operator
 
 # NB: When adding tests, _be sure to use -O to overwrite files_
 # Otherwise, script hangs waiting for interactive response to overwrite queries
 
+# Changelog:
+# *   20050210 - hjm@tacgi.com
+#     -added the getopt & usage section
+#     -added the logging and more debug
 use Cwd 'abs_path';
+use IO::Socket;
+#use IO::Select;
+#use Socket;
+use Getopt::Long; #qw(:config no_ignore_case bundling);
+use Time::HiRes qw(usleep ualarm gettimeofday tv_interval);
+use strict;
 
-my $dbg_lvl=0; # [enm] Print tests during execution for debugging
+my %subbenchmarks;
+my %totbenchmarks;
+
+#declare vars for strict
+use vars qw($dbg_lvl $wantlog $usage $operator @test $description $expected
+@all_operators @operators $MY_BIN_DIR %sym_link %testnum %success %failure
+%testnum $result $server_name $server_ip $server_port $udp_report
+);
+
+$server_name = "ibonk";
+#$server_ip = "128.200.14.132";
+$server_ip = "68.5.247.102";
+$server_port = 29659;
+
+my $sock = IO::Socket::INET->new (
+     Proto    => 'udp',
+	  PeerAddr => $server_ip,
+	  PeerPort => $server_port
+	  ) or die "\ncan't get the socket!\n\n";
+
+
+
+$dbg_lvl = 0; # [enm] Print tests during execution for debugging
+$wantlog = 0;
+$usage   = 0;
+
+&GetOptions("debug=i"    => \$dbg_lvl,    # debug level
+				"log"        => \$wantlog,    # set if want output logged
+				"udpreport"  => \$udp_report,
+				"usage"      => \$usage,      # explains how to use this thang
+				"help"       => \$usage,      # explains how to use this thang
+				"h"          => \$usage,      # explains how to use this thang
+);
+
+if ($usage) { usage()};
+
+if ($wantlog) { 
+	open(LOG, ">nctest.log") or die "\nCan't open the log file 'nctest.log' - check permissions on it \nor the directory you're in.\n\n";
+}
 
 &initialize();
 &perform_tests();
@@ -19,6 +67,15 @@ sub perform_tests
 {
 # Tests are in alphabetical order by operator name
 
+# The following tests are organized and laid out as follows:
+# - $test[] holds the commandlines for each of the nco's being tested
+# - $description  holds the description line for the test
+# - $expected is the string or expression that is the result of
+#     executing the nco
+# - go() is the function that actually executes each test
+
+
+
 ####################
 #### ncap tests ####
 ####################
@@ -26,7 +83,7 @@ $operator="ncap";
 ####################
 $test[0]='ncap -O -v -S ncap.in in.nc foo.nc';
 $description=" running ncap.in script into nco_tst.pl";
-$expected="ncap: WARNING Replacing missing value data in variable val_half_half";
+$expected ="ncap: WARNING Replacing missing value data in variable val_half_half";
 &go();
 
 ####################
@@ -622,10 +679,52 @@ $expected= 0;
 &go();
 } # end of perform_test()
 
+# usage - infomational blurb for script
+
+sub usage {
+	print << 'USAGE';
+	
+Usage:
+nco_test.pl (options) [list of operators to test] (from the following list)
+
+ncap ncatted ncbo ncflint ncea ncecat
+ncks ncpdq ncra ncrcat ncrename ncwa          (default tests all)
+
+where (options) are:
+  --usage || -h ...dumps this help
+  --debug {1-3) ...puts the script into debug mode; emits more and (hopefully)
+                     more useful info.
+  --log ...........requests that the debug info is logged to 'nctest.log'
+                     as well as spat to STDOUT.
+
+nco_test.pl is a semi-automated script for testing the accuracy and
+robustness of the nco (netCDF Operators), typically after they are
+built, using the 'make test' command.  In this mode, a user should
+never have to see this message, so this is all I'll say about it.
+
+In nco debug/testing  mode, it tries to validate the nco's from both
+an accuracy and a robustness POV.
+
+NB: When adding tests, be sure to use -O to overwrite files.
+Otherwise, script hangs waiting for interactive response to
+overwrite queries.
+
+This script is part of the netCDF Operators package:
+  http://nco.sourceforge.net
+
+Copyright © 1994-2005 Charlie Zender zender@uci.edu
+
+USAGE
+	exit(0);
+}  # end of usage()
+
+
 ####################
 sub initialize
 {
-  @all_operators = qw(ncap ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa);
+  # list below enumerates the nco's to be tested; does not set up the tests for the
+  # operators.
+  @all_operators = qw( ncap ncatted ncbo ncflint ncea ncecat ncks ncpdq ncra ncrcat ncrename ncwa);
 if (scalar @ARGV > 0) 
 {
   @operators=@ARGV;
@@ -679,28 +778,57 @@ if (scalar @ARGV > 0)
     $failure{$_}=0;
     }
   print "***NCO Test Suite***\n";
-}
+} # end of initialize()
+
+####################
+sub verbosity {
+	my $ts = shift;
+	if($dbg_lvl > 0){printf ("$ts");}
+	if ($wantlog) {printf (LOG "$ts");}
+} # end of verbosity()
+
 
 ####################
 sub go {
+  &verbosity("\n\n=====\nResult Stanza for [$operator] ($description)\nsubtest $testnum{$operator} :\n===\n");
   # Only perform tests of requested operator; default is all
   if (!defined $testnum{$operator}) { 
     # Clear test array
     @test=();
     return; 
-    }
+  }
+  print STDERR "Test: [$operator], subtest [$testnum{$operator}]\n";
+  $subbenchmarks{$operator} = 0;
+
   $testnum{$operator}++;
+  my $testcnt = 0;
+  my $t = 0;
   foreach  (@test) {
+    &verbosity("## test cycle $testcnt ## \n");
+    my $opcnt = 0;
     # Add MY_BIN_DIR to NCO operator commands only, not things like 'cut'
-    foreach $op (@all_operators) {
+    foreach my $op (@all_operators) {
       if ($_ =~ m/^$op/) {
         $_ = "$MY_BIN_DIR/$_" ;
       }
     }
     # Perform an individual test
-    if($dbg_lvl > 0){printf ("$0: Executing following test operator $operator:\n$_\n");}
+	 &verbosity("Commandline for operator [$operator]:\n$_\n\n");
+	 # timing code using Time::HiRes
+	 my $t0 = [gettimeofday];
     $result=`$_` ;
+	 
+#	 my $elapsed = tv_interval($t0, [gettimeofday]);
+	 my $elapsed = tv_interval($t0, [gettimeofday]);
+#	 print "inter benchmark for $operator = $subbenchmarks{$operator} \n";
+	 $subbenchmarks{$operator} += $elapsed;
+	 $t = $testnum{$operator} - 1;
+    print "$operator [$t] took $elapsed seconds\n";
+	 &verbosity($result);
+	 $testcnt++;
   }
+  print STDERR "total time for $operator [$t] =  $subbenchmarks{$operator} s \n\n";
+  $totbenchmarks{$operator} += $subbenchmarks{$operator};
   
   # Remove trailing newline for easier regex comparison
   chomp $result;
@@ -711,9 +839,11 @@ sub go {
     if ($result == $expected)
     {
       $success{$operator}++;
-    } else { 
+	 	&verbosity("\nPASSED - Numeric output: [$operator]:\n");
+    } else {
       &failed($expected);
-    } 
+		&verbosity("\nFAILED - Numeric output: [$operator]:\n");
+    }
   }
   # Compare non-numeric tests
   elsif ($expected =~/\D/)
@@ -722,16 +852,20 @@ sub go {
     if (substr($result,0,length($expected)) eq $expected)
     {
       $success{$operator}++;
+		&verbosity("\nPASSED Alphabetic output: [$operator]:\n");
     } else {
       &failed($expected);
+		&verbosity("\nFAILED Alphabetic output: [$operator]\n");
     }
  }   
  # No result at all?
  else {
     &failed();
+	 &verbosity("\nFAILED - No result from [$operator]\n");
  }
  # Clear test
  @test=();
+ print Total $totbenchmarks{$operator}
 } # end &go()
 
 ####################
@@ -755,13 +889,19 @@ sub failed {
 
 ####################
 sub summarize_results 
-{
-  print "NCO Test Results:\n";
+{ my $reportstr = "";
+  my $idstring = `uname -a` . "using: " . `gcc --version |grep -i gcc`;
+  $reportstr .= "\n\nNCO Test Result Summary for:\n$idstring\n";
+  $reportstr .=  "      Test                            Total Time (s) \n";
   
   foreach(@operators) 
   {
     my $total = $success{$_}+$failure{$_};
-    print "$_:\tsuccess: $success{$_} of $total\n";
+    #printf "$_:\tsuccess: $success{$_} of $total\n";
+	 $reportstr .= sprintf "%10s:  success: %3d of %3d      %6.4f\n", $_, $success{$_}, $total, $totbenchmarks{$_};
   }
   chdir "../bld";
+  if ($dbg_lvl == 0) {print $reportstr;}
+  else { &verbosity($reportstr); }
+  if ($udp_report) {$sock->send($reportstr);}
 }

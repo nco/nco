@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.116 2005-01-13 04:32:32 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.117 2005-02-14 02:14:26 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -108,10 +108,11 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncks.c,v 1.116 2005-01-13 04:32:32 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.116 $";
-  const char * const opt_sng="aABb:CcD:d:FHhl:MmOo:p:qQrRs:uv:xZ-:";
+  const char * const CVS_Id="$Id: ncks.c,v 1.117 2005-02-14 02:14:26 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.117 $";
+  const char * const opt_sht_lst="aABb:CcD:d:FHhl:MmOo:p:qQrRs:uv:xZ-:";
 
+  char *opt_crr; /* [sng] String representation of current long-option name */
   extern char *optarg;
   extern int optind;
   
@@ -145,6 +146,10 @@ main(int argc,char **argv)
 
   static struct option opt_lng[]=
     { /* Structure ordered by short option key if possible */
+      /* Long options with argument */
+      {"cmp",no_argument,0,0},
+      {"compiler",no_argument,0,0},
+      /* Long options with short counterparts */
       {"abc",no_argument,0,'a'},
       {"alphabetize",no_argument,0,'a'},
       {"append",no_argument,0,'A'},
@@ -209,8 +214,23 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  while((opt = getopt_long(argc,argv,opt_sng,opt_lng,&opt_idx)) != EOF){
+  while(1){
+    /* getopt_long_only() allows a single dash '-' to prefix long options as well */
+    opt=getopt_long(argc,argv,opt_sht_lst,opt_lng,&opt_idx);
+    /* NB: access to opt_crr is only valid when long_opt was detected */
+    opt_crr=(char *)strdup(opt_lng[opt_idx].name);
+    if(opt == EOF) break; /* Parse positional arguments once getopt_long() returns EOF */
+
+    /* Process long options without short option counterparts */
+    if(opt == 0){
+      if(!strcmp(opt_crr,"cmp") || !strcmp(opt_crr,"compiler")){
+	(void)fprintf(stdout,"%s\n",nco_cmp_get());
+	nco_exit(EXIT_SUCCESS);
+      } /* endif "cmp" */
+    } /* opt != 0 */
     switch(opt){
+    case 0: /* Long options have already been processed, return */
+      break;
     case 'a': /* Toggle ALPHABETIZE_OUTPUT */
       ALPHABETIZE_OUTPUT=!ALPHABETIZE_OUTPUT;
       break;
@@ -311,7 +331,6 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
 
-  
   /* Process positional arguments and fill in filenames */
   fl_lst_in=nco_fl_lst_mk(argv,argc,optind,&fl_nbr,&fl_out,&FL_LST_IN_FROM_STDIN);
   
