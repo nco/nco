@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.55 2000-05-09 05:15:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.56 2000-05-09 05:20:41 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -220,16 +220,15 @@ cast_nctype_void(nc_type type,ptr_unn *ptr)
 void 
 lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 /* 
-   int nc_id: I netCDF file ID
-   lmt_sct *lmt_ptr: I/O structure from lmt_prs() or from lmt_dmn_mk() to hold dimension limit information
-   long cnt_crr: I number of records already processed (only used for record dimensions in multi-file operators)
-   bool FORTRAN_STYLE: I switch to determine syntactical interpretation of dimensional indices
+   int nc_id: I [idx] netCDF file ID
+   lmt_sct *lmt_ptr: I/O [sct] Structure from lmt_prs() or from lmt_dmn_mk() to hold dimension limit information
+   long cnt_crr: I [nbr] Number of records already processed (only used for record dimensions in multi-file operators)
+   bool FORTRAN_STYLE: I [flg] Switch to determine syntactical interpretation of dimensional indices
  */ 
 {
   /* Purpose: Take a parsed list of dimension names, minima, and
-     maxima strings and find the appropriate indices into the
-     dimensions for the correct formulation of dimension start and
-     count vectors, or fail trying. */ 
+     maxima strings and find appropriate indices into dimensions 
+     for formulation of dimension start and count vectors, or fail trying. */ 
 
   bool flg_no_data=False; /* True if file contains no data for hyperslab */
 
@@ -244,7 +243,9 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   int min_lmt_typ=int_CEWI;
   int max_lmt_typ=int_CEWI;
   int monotonic_direction;
-  
+  int prg_id; /* Program ID */
+  int rec_dmn_id; /* [idx] Variable ID of record dimension, if any */
+
   long idx;
   long dmn_sz;
   long cnt_rmn_crr=-1L; /* Records to extract from current file */
@@ -252,6 +253,8 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   long rec_skp_prv=-1L; /* Records skipped at end of previous file (diagnostic only) */
 
   lmt=*lmt_ptr;
+
+  prg_id=prg_get(); /* Program ID */
 
   /* Initialize limit structure */ 
   lmt.srd=1L;
@@ -266,7 +269,15 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",prg_nm_get(),lmt.nm);
     exit(EXIT_FAILURE);
   } /* endif */ 
-  
+
+  /* Logic on whether to allow skipping current file depends on whether limit
+     is specified for record dimension in multi-file operators.
+     This information is not used in single-file operators, but whether
+     the limit is a record limit may be tested.
+     Best to program defensively and define this flag in all cases. */
+  (void)ncinquire(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
+  if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
+
   /* Get dimension size */ 
   (void)ncdiminq(nc_id,lmt.id,(char *)NULL,&dim.sz);
   
@@ -414,10 +425,17 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
        /* User did not specify single level, coordinate is wrapped, and both extrema fall outside valid crd range */
        ((lmt.min_val > lmt.max_val) && ((lmt.min_val > dmn_max) && (lmt.max_val < dmn_min))) ||
        False){
-      (void)fprintf(stdout,"%s: ERROR User-specified coordinate value range %g <= %s <= %g does not fall within valid range %g <= %s <= %g\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val,dmn_min,lmt.nm,dmn_max);
-      exit(EXIT_FAILURE);
+      /* Allow for possibility that current file is superfluous */
+      if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)){
+	(void)fprintf(stdout,"%s: WARNING Current file is superfluous to specified hyperslab\n",prg_nm_get());
+	flg_no_data=True;
+	goto no_data;
+      }else{
+	(void)fprintf(stdout,"%s: ERROR User-specified coordinate value range %g <= %s <= %g does not fall within valid coordinate range %g <= %s <= %g\n",prg_nm_get(),lmt.min_val,lmt.nm,lmt.max_val,dmn_min,lmt.nm,dmn_max);
+	exit(EXIT_FAILURE);
+      } /* end else */
     } /* end if */
-    
+
     /* Armed with target coordinate minima and maxima, we are ready to bracket user-specified range */ 
     
     /* If min_sng or max_sng were omitted, use extrema */ 
@@ -509,8 +527,6 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   }else{ /* end if limit arguments were coordinate values */ 
     /* Convert limit strings to zero-based indicial offsets */
     
-    int rec_dmn_id;
-
     /* Specifying stride alone, but not min or max, is legal, e.g., -d time,,,2
        Thus is_usr_spc_lmt may be True, even though one or both of min_sng, max_sng is NULL
        Furthermore, both min_sng and max_sng are artifically created by lmt_dmn_mk()
@@ -556,11 +572,8 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       exit(EXIT_FAILURE);
     } /* end if */
     
-    /* Might this be the record dimension in a multi-file operation? */ 
-    (void)ncinquire(nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
-    if(lmt.id == rec_dmn_id) lmt.is_rec_dmn=True; else lmt.is_rec_dmn=False;
-
-    if(!lmt.is_rec_dmn || !lmt.is_usr_spc_lmt || ((prg_get() != ncra) && (prg_get() != ncrcat))){
+    /* Logic depends on whether this is record dimension in multi-file operator */
+    if(!lmt.is_rec_dmn || !lmt.is_usr_spc_lmt || ((prg_id != ncra) && (prg_id != ncrcat))){
       /* For non-record dimensions and for record dimensions where limit 
 	 was automatically generated (to include whole file), starting
 	 and ending indices are simply minimum and maximum indices already 
@@ -575,11 +588,11 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	 does not necessarily equal lmt.max_idx */ 
       /* Stride is officially supported for ncks (all dimensions)
 	 and for ncra and ncrcat (record dimension only) */
-      if(lmt.srd != 1L && prg_get() != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for a non-record dimension is only supported by ncks, use at your own risk...\n",prg_nm_get());
+      if(lmt.srd != 1L && prg_id != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for a non-record dimension is only supported by ncks, use at your own risk...\n",prg_nm_get());
 
       /* No records were skipped in previous files */
       /* Initialize rec_skp to 0L on first call to lmt_evl() 
-	 This is necessary due to the intrinsic hysterisis of rec_skp */
+	 This is necessary due to intrinsic hysterisis of rec_skp */
       if(cnt_crr == 0L) lmt.rec_skp=0L;
 	  
       if(lmt.is_usr_spc_min && lmt.is_usr_spc_max){
@@ -766,6 +779,9 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     exit(EXIT_FAILURE);
   } /* end if */
     
+  /* Coordinate-valued limits that bracket no values in current file jump here with goto
+     Index-valued limits with no values in current file flow here naturally */
+ no_data: /* end goto */
   if(flg_no_data){
     /* This file is superfluous to the specified hyperslab
        Set output parameters to a well-defined state
@@ -966,7 +982,7 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
 
     if(var->dmn_id[idx] == rec_dmn_id) var->is_rec_var=True; else var->sz_rec*=var->cnt[idx];
 
-    if(var->dim[idx]->is_crd_dim && var->id == var->dim[idx]->cid){
+    if(var->dim[idx]->is_crd_dmn && var->id == var->dim[idx]->cid){
       var->is_crd_var=True;
       var->cid=var->dmn_id[idx];
     } /* end if */
@@ -1098,22 +1114,22 @@ dmn_fll(int nc_id,int dmn_id,char *dmn_nm)
   dim->xrf=NULL;
   dim->val.vp=NULL;
 
-  dim->is_crd_dim=False;
+  dim->is_crd_dmn=False;
   (void)ncdiminq(dim->nc_id,dmn_id,(char *)NULL,&dim->sz);
   
   /* Get the record dimension ID */
   (void)ncinquire(dim->nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
   if(dim->id == rec_dmn_id){
-    dim->is_rec_dim=True;
+    dim->is_rec_dmn=True;
   }else{
-    dim->is_rec_dim=False;
+    dim->is_rec_dmn=False;
   } /* end if */
   
   ncopts=0; 
   dim->cid=ncvarid(dim->nc_id,dmn_nm);
   ncopts=NC_VERBOSE | NC_FATAL; 
   if(dim->cid != -1){
-    dim->is_crd_dim=True;
+    dim->is_crd_dmn=True;
     /* What type is the coordinate? */
     (void)ncvarinq(dim->nc_id,dim->cid,(char *)NULL,&dim->type,(int *)NULL,(int *)NULL,(int *)NULL);
   } /* end if */
@@ -1627,7 +1643,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
   fl_out_tmp_lng=strlen(fl_out)+1L+strlen(tmp_sng_1)+strlen(pid_sng)+1L+strlen(prg_nm_get())+1L+strlen(tmp_sng_2)+1L;
   fl_out_tmp=(char *)malloc(fl_out_tmp_lng*sizeof(char));
   (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,prg_nm_get(),tmp_sng_2);
-  if(dbg_lvl_get() > 3) (void)fprintf(stdout,"%s: fl_out_open() reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
+  if(dbg_lvl_get() > 5) (void)fprintf(stdout,"%s: fl_out_open() reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
   rcd=stat(fl_out_tmp,&stat_sct);
 
   /* Free temporary memory */ 
@@ -1812,9 +1828,9 @@ dmn_def(char *fl_nm,int nc_id,dmn_sct **dim,int nbr_dim)
     dim[idx]->id=ncdimid(nc_id,dim[idx]->nm);
     ncopts=NC_VERBOSE | NC_FATAL; 
 
-    /* If the dimension hasn't been defined, define it */
+    /* If dimension has not been defined yet, define it */
     if(dim[idx]->id == -1){
-      if(dim[idx]->is_rec_dim){
+      if(dim[idx]->is_rec_dmn){
 	dim[idx]->id=ncdimdef(nc_id,dim[idx]->nm,NC_UNLIMITED);
       }else{
 	dim[idx]->id=ncdimdef(nc_id,dim[idx]->nm,dim[idx]->cnt);
@@ -2811,12 +2827,12 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim)
   for(idx=0;idx<nbr_dmn_avg;idx++){
     avg_sz*=dmn_avg[idx]->cnt;
     fix->sz/=dmn_avg[idx]->cnt;
-    if(!dmn_avg[idx]->is_rec_dim) fix->sz_rec/=dmn_avg[idx]->cnt;
+    if(!dmn_avg[idx]->is_rec_dmn) fix->sz_rec/=dmn_avg[idx]->cnt;
   } /* end loop over idx */
 
   fix->is_rec_var=False;
   for(idx=0;idx<nbr_dmn_fix;idx++){
-    if(dmn_fix[idx]->is_rec_dim) fix->is_rec_var=True;
+    if(dmn_fix[idx]->is_rec_dmn) fix->is_rec_var=True;
     fix->dim[idx]=dmn_fix[idx];
     fix->dmn_id[idx]=dmn_fix[idx]->id;
     fix->srt[idx]=var->srt[idx_fix_var[idx]];
@@ -2826,7 +2842,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim)
   
   fix->is_crd_var=False;
   if(nbr_dmn_fix == 1)
-    if(dmn_fix[0]->is_crd_dim) 
+    if(dmn_fix[0]->is_crd_dmn) 
       fix->is_crd_var=True;
 
   /* Trim dimension arrays to their new sizes */ 
@@ -4285,7 +4301,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
   char *var_nm;
 
   int idx;
-  int prg;
+  int prg; /* Program key */
 
   enum op_type{
     fix, /* 0 */ 
@@ -4303,7 +4319,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
   var_sct **var_prc;
   var_sct **var_prc_out;
 
-  prg=prg_get();
+  prg=prg_get(); /* Program key */
 
   /* Allocate space for too many structures, then realloc() at the end, to avoid duplication. */ 
   var_fix=(var_sct **)malloc(MAX_NC_VARS*sizeof(var_sct *));

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.16 2000-04-05 21:41:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.17 2000-05-09 05:20:41 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -76,8 +76,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.16 2000-04-05 21:41:56 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.16 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.17 2000-05-09 05:20:41 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.17 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -285,8 +285,8 @@ main(int argc,char **argv)
     rdim->nc_id=-1;
     rdim->xrf=NULL;
     rdim->val.vp=NULL;
-    rdim->is_crd_dim=False;
-    rdim->is_crd_dim=True;
+    rdim->is_crd_dmn=False;
+    rdim->is_crd_dmn=True;
     rdim->sz=0L;
     rdim->cnt=0L;
     rdim->srt=0L;
@@ -295,8 +295,8 @@ main(int argc,char **argv)
     /* Change any existing record dimension to be a regular dimension */
     for(idx=0;idx<nbr_dmn_xtr;idx++){
       /* Is any input dimension a record dimension? */
-      if(dmn_out[idx]->is_rec_dim){
-	dmn_out[idx]->is_rec_dim=False;
+      if(dmn_out[idx]->is_rec_dmn){
+	dmn_out[idx]->is_rec_dmn=False;
 	break;
       } /* end if */
     } /* end loop over idx */

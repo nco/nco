@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.49 2000-04-14 01:29:31 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.50 2000-05-09 05:20:40 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -126,12 +126,15 @@ CDL files are copied below for convenience
 20000323 Problem may be in var_conform_dim()
 156. Builds with Electric Fence crash all over the place. 
 Appears to be related to NCO assumption that NULL=malloc(0)
-156. Irrelevant files at end can cause ncra to barf
+157. Irrelevent files at end can cause ncra to barf
 ncks -O -d time,,2.0 -v time in.nc foo1.nc
 ncks -O -d time,3.0, -v time in.nc foo2.nc
 ncra -O -D 3 -v time -d time,1.0,2.0 foo1.nc foo2.nc foo3.nc
-fails because 2nd file contains no timeslices. I though I already fixed this!
-Only fails when first file has more than one record
+fails because 2nd file contains no timeslices. I thought I already
+fixed this, but now I realize I never fixed this (because there is no
+simple complete fix) for the case of coordinate (not index-based)
+hyperslabs. I've now fixed this so superfluous files at the end
+are OK.
 ************************************************************************
 End NCO Wish list
 ************************************************************************

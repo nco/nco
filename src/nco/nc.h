@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.25 2000-04-10 07:16:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.26 2000-05-09 05:20:40 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -156,18 +156,18 @@ typedef struct {
   bool is_usr_spc_max; /* True if user-specified, else False */
   bool is_rec_dmn; /* True if record dimension, else False */
   long rec_skp; /* Records skipped at end of previous file (multi-file record dimension only) */
-  char *min_sng; /* user-specified string for dimension minimum */ 
-  char *max_sng; /* user-specified string for dimension maximum */ 
-  char *srd_sng; /* user-specified string for dimension stride */ 
-  int id; /* dimension ID */ 
-  long min_idx; /* index of minimum requested value in the dimension */ 
-  long max_idx; /* index of maximum requested value in the dimension */ 
-  double min_val; /* double precision representation of minimum value of coord requested or implied */ 
-  double max_val; /* double precision representation of maximum value of coord requested or implied */ 
-  long srt; /* index to start of hyperslab */ 
-  long end; /* index to end of hyperslab */ 
+  char *min_sng; /* User-specified string for dimension minimum */ 
+  char *max_sng; /* User-specified string for dimension maximum */ 
+  char *srd_sng; /* User-specified string for dimension stride */ 
+  int id; /* Dimension ID */ 
+  long min_idx; /* Index of minimum requested value in the dimension */ 
+  long max_idx; /* Index of maximum requested value in the dimension */ 
+  double min_val; /* Double precision representation of minimum value of coordinate requested or implied */ 
+  double max_val; /* Double precision representation of maximum value of coordinate requested or implied */ 
+  long srt; /* Index to start of hyperslab */ 
+  long end; /* Index to end of hyperslab */ 
   long cnt; /* # of valid elements in this dimension (including effects of stride and wrapping) */ 
-  long srd; /* stride of hyperslab */ 
+  long srd; /* Stride of hyperslab */ 
 } lmt_sct;
 
 typedef struct{
@@ -222,8 +222,8 @@ typedef struct dmn_sct_tag{
   int id; /* dimension ID */ 
   int nc_id; /* file ID */
   long sz; /* full size of dimension in file (NOT the hyperslabbed size) */ 
-  short is_rec_dim; /* is this the record dimension? */ 
-  short is_crd_dim; /* is this a coordinate dimension? */ 
+  short is_rec_dmn; /* is this the record dimension? */ 
+  short is_crd_dmn; /* is this a coordinate dimension? */ 
   int cid; /* Variable ID of the associated coordinate, if any */ 
   nc_type type; /* type of coordinate, if applicable */ 
   char fmt[5]; /* hint for printf()-style formatting */ 
