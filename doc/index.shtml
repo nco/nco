@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.51 2000-08-03 22:20:19 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.52 2000-08-04 00:34:57 zender Exp $
 
 Purpose: NCO homepage
 
@@ -24,8 +24,9 @@ scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.s
 <body text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
 <table width="100%"><tr><td align="left" valign="top">/
-<a href="#RTFM">NCO User's Guide</a> /
+<a href="http://nco.sourceforge.net">NCO Homepage</a> /
 <a href="http://sourceforge.net/projects/nco">Project</a> /
+<a href="#RTFM">User's Guide</a> /
 <a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Discussion</a> /
 <a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help</a> /
 <a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developer</a> /
@@ -195,7 +196,7 @@ See the <a href="./nco.html">User's Guide</a> for complete details.
 
 <p>Fortran compatibility has been dropped.
 If a volunteer wants to continue to maintain the option to perform
-arithmetic in Fortran for reasons of speed, contact me.
+arithmetic in Fortran for reasons of speed, contact the project.
 
 <p>NCO is now an Open Source project licensed under the GPL.
 These new capabilities are the result of contributions from Henry
@@ -205,14 +206,9 @@ visit the <a href="http://sourceforge.net/projects/nco">NCO
 administration homepage</a>.
 
 <p>New NCO releases and important announcements will be made on the
-netCDF list and on the new <tt>nco-announce</tt> mailing list. 
-To join this list send a message with "help" anywhere in it to
-<aDDRESS>
-<a href="mailto:nco-announce-request@lists.sourceforge.net">nco-announce-request@lists.sourceforge.net</a> 
-</ADDRESS>
-The archive of this list is viewable at
-<a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce">
-http://lists.sourceforge.net/mailman/listinfo/nco-announce</a>
+netCDF list and on the new 
+<a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce"><tt>nco-announce</tt></a>
+mailing list.  
 
 <p>Questions, suggestions, ideas, and pleas for help should be posted to 
 the appropriate discussion forum at the NCO administration site.
@@ -480,8 +476,9 @@ As of NCO 1.1.38, this is the default.
 <hr></p>
 
 <table width="100%"><tr><td align="left" valign="top">/
-<a href="#RTFM">NCO User's Guide</a> /
-<a href="http://sourceforge.net/projects/nco">NCO Project</a> /
+<a href="http://nco.sourceforge.net">NCO Homepage</a> /
+<a href="http://sourceforge.net/projects/nco">Project</a> /
+<a href="#RTFM">User's Guide</a> /
 <a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Discussion</a> /
 <a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help</a> /
 <a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developer</a> /
@@ -493,13 +490,6 @@ As of NCO 1.1.38, this is the default.
 [<a href="http://www.cgd.ucar.edu/csm/cmps">CMPS</a>]
 [<a href="http://www.cgd.ucar.edu/cas/ncl-csm">CSM Processor</a>]
 </td></tr></table>
-
-<p>
-<hr></p>
-Address questions and comments about NCO to Charlie Zender, 
-<address>
-<a href="mailto:zender@uci.edu">zender@uci.edu</a>
-</address>
 
 </body>
 </html>

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.54 2000-08-03 22:20:19 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.55 2000-08-04 00:34:57 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -21,6 +21,8 @@ makeinfo nco.texi
 texi2html -monolithic -verbose nco.texi 
 dvips -o nco.ps nco.dvi 
 ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
+cd ~/nco/doc;scp -p ChangeLog TODO README nco.html nco.dvi nco.ps nco.info* nco.ps nco.pdf nco.sourceforge.net:/home/groups/nco/htdocs;cd -
+cd ~/nco/doc;scp -p ChangeLog TODO README nco.html nco.dvi nco.ps nco.info* nco.ps nco.pdf www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 
 Example TeXinfo files: 
 
@@ -2255,11 +2257,24 @@ $$
 1}^{i = N} \mu_i m_i w_i} }
 $$
 The root mean square of $x$ with standard-deviation-like normalization
-(@code{-y rmssdn}) is 
+(@code{-y rmssdn}) is implemented as follows.
+When weights are not specified, the root mean square of $x$ is
 $$
-\bar x_j = \sqrt{ {\sum_{i = 1}^{i = N} \mu_i m_i w_i x^2_i \over -1 + \sum_{i =
-1}^{i = N} \mu_i m_i w_i} }
+\bar x_j = \sqrt{ {\sum_{i = 1}^{i = N} \mu_i m_i x^2_i \over -1 + \sum_{i =
+1}^{i = N} \mu_i m_i} }
 $$
+This is the classic formula where the number of degrees of freedom is
+one less than the sample size.
+However, when weights are specified it is unclear how to proceed.
+Weighting the numerator and denominator of the above by $w_i$ and
+subtracting one from the denominator is only appropriate when all the 
+weights are one.
+When the weights are arbitrary (e.g., Gaussian weights), subtracting one 
+from the sum in the denominator does not necessarily remove one degree
+of freedom. 
+Therefore when @code{-y rmssdn} is requested and weights are specified,
+@code{ncwa} actually implements the @code{rms} procedure.
+
 The square root of the mean of $x$ (@code{-y sqrt}) is 
 $$
 \bar x_j = \sqrt{ {\sum_{i = 1}^{i = N} \mu_i m_i w_i x_i \over \sum_{i =
