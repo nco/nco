@@ -1,0 +1,3257 @@
+\input texinfo @c -*-texinfo-*- 
+@c 98/08/17: texi2html and makeinfo do not require texinfo.tex anymore.
+@c Unfortunately, texi2dvi does seem to need it.
+
+@ignore
+
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.1.1.1 1998-08-18 05:35:00 zender Exp $
+
+Purpose: TeXinfo documentation for NCO suite
+
+Example usage: 
+texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o /data2/zender/ps/nco.ps nco.dvi; /bin/cp -f nco.html /src/web/web-data/cms/nco
+texi2html -monolithic -verbose nco.texi; /bin/cp -f nco.html /src/web/web-data/cms/nco
+texi2dvi nco.texi 
+makeinfo nco.texi 
+texi2html -monolithic -verbose nco.texi 
+dvips -o nco.ps nco.dvi 
+
+Example TeXinfo files: 
+/data2/zender/netcdf-2.4.2/src/doc/guide.tex
+/usr/local/src/netcdf-2.4.3/src/doc/guide.tex
+
+@end ignore
+
+@c start of header
+@setfilename nco.info
+@settitle NCO @value{nco-edition} User's Guide
+@smallbook
+@c Merge the function index into the concept index
+@syncodeindex fn cp
+@c end of header
+
+@ignore
+@ifinfo
+@format
+START-INFO-DIR-ENTRY
+* NCO: (nco.info).           User's Guide for the netCDF Operator suite
+END-INFO-DIR-ENTRY
+@end format
+@end ifinfo
+@end ignore
+
+@c Set smallbook if printing in smallbook format so the example of the
+@c smallbook font is actually written using smallbook; in bigbook, a kludge
+@c is used for TeX output.
+@c set smallbook
+@clear smallbook
+
+@set nco-edition 1.1
+@set doc-edition 1.14
+@set copyright-years 1995, 1996, 1997, 1998
+@set update-year 1998
+@set update-date 10 August 1998
+@set update-month August 1998
+
+@c Experiment with smaller amounts of whitespace between chapters and sections.
+@tex
+\global\chapheadingskip = 15pt plus 4pt minus 2pt 
+\global\secheadingskip = 12pt plus 3pt minus 2pt
+\global\subsecheadingskip = 9pt plus 2pt minus 2pt
+@end tex
+
+@c Experiment with smaller amounts of whitespace between paragraphs in the 8.5 by 11 inch format.
+@ifclear smallbook
+@tex
+\global\parskip 6pt plus 1pt
+@end tex
+@end ifclear
+
+@finalout
+
+@ifinfo
+This file documents NCO, a collection of utilities to manipulate and 
+analyze netCDF files.
+
+Copyright (c) @value{copyright_years} University Corporation for
+Atmospheric Research. 
+
+This is the first edition of the @cite{NCO User's Guide},@*
+and is consistent with version 2 of @file{texinfo.tex}.
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+@ignore
+Permission is granted to process this file through TeX and print the
+results, provided the printed document carries copying permission
+notice identical to this one except for the removal of this paragraph
+(this paragraph not being relevant to the printed manual).
+
+@end ignore
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation approved
+by the Free Software Foundation.
+
+Portions of this document were extracted verbatim from Unidata netCDF
+documentation, particularly ``NetCDF Operators and Utilities'' by Russ
+Rew and Steve Emmerson. 
+@end ifinfo
+
+@setchapternewpage odd
+
+@titlepage
+@ifhtml
+<META NAME="Author" CONTENT="Charles S. Zender">
+<META NAME="Keywords" CONTENT="NCO documentation, NCO User's Guide,
+netCDF, operator, GCM, CCM, scientific data, ncdiff, ncea, ncecat,
+ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
+@end ifhtml
+@title NCO User's Guide
+@subtitle A suite of netCDF operators
+@subtitle Edition @value{doc-edition}, for NCO Version @value{nco-edition}
+@subtitle @value{update-month}
+
+@author by Charles S. Zender
+@author NCAR ASP & CGD
+@ifhtml
+<P>WWW readers: Having trouble finding the section you want?</P> 
+<P>Search for keywords in the (hyper) index at the end of this page</P> 
+@end ifhtml
+
+@c Include the Distribution inside the titlepage so that headings are turned off. 
+@page
+@vskip 0pt plus 1filll
+Copyright @copyright{} @value{copyright-years} University Corporation
+for Atmospheric Research. 
+
+@sp 2
+This is the first edition of the @cite{NCO User's Guide},@*
+and is consistent with version 2 of @file{texinfo.tex}.
+@sp 2
+
+Published by the National Center for Atmospheric Research@*
+Climate and Global Dynamics Division@*
+P.O. Box 3000@*
+Boulder, CO 80307-3000 USA@*
+
+Permission is granted to make and distribute verbatim copies of
+this manual provided the copyright notice and this permission notice
+are preserved on all copies.
+
+Permission is granted to copy and distribute modified versions of this
+manual under the conditions for verbatim copying, provided that the entire
+resulting derived work is distributed under the terms of a permission
+notice identical to this one.
+
+Permission is granted to copy and distribute translations of this manual
+into another language, under the above conditions for modified versions,
+except that this permission notice may be stated in a translation approved
+by the Free Software Foundation.
+@sp 2
+@c Cover art by Robynn Rudel.
+@end titlepage
+
+@node  Top, Foreword, (dir), (dir)
+@comment node-name, next,     previous, up
+
+@menu
+* Foreword::                    Foreword
+* Summary::                     What is NCO?
+* Introduction::                Overview of NCO operators
+* Strategies::                  Operator Strategies
+* Common features::             Common Operator Features
+* Operators::                   Description of all NCO operators
+* General Index::               Index of concepts
+
+ --- The Detailed Node Listing ---
+
+Introduction
+
+* Availability::                
+* Compatability::               
+* Libraries::                   
+* netCDF 2.x vs. 3.x::          
+* Reporting bugs::              
+
+Operating systems compatible with NCO
+
+* Windows NT::                  
+
+Operator Strategies
+
+* Philosophy::                  
+* Climate model paradigm::      
+* Output files::                
+* Appending::                   
+* Averaging vs. Concatenating::  
+* Large numbers of input files::  
+* Large files and Memory::      
+* Memory usage::                
+* Operator limitations::        
+
+Differences between averagers and concatenators
+
+* Concatenation::               
+* Averaging::                   
+
+Features common to most operators
+
+* Specifying input files::      
+* Remote storage::              
+* File retention::              
+* Variable subsetting::         
+* Coordinate variables::        
+* Hyperslabs::                  
+* Stride::                      
+* Wrapped coordinates::         
+* Fortran indexing::            
+* Missing values::              
+* Suppressing interactive prompts::  
+* Operator version::            
+* History attribute::           
+* NCAR CSM Conventions::        
+* ARM Conventions::             
+
+Reference manual for all operators
+
+* ncatted netCDF Attribute Editor::  
+* ncdiff netCDF Differencer::   
+* ncea netCDF Ensemble Averager::  
+* ncecat netCDF Ensemble Concatenator::  
+* ncflint netCDF File Interpolator::  
+* ncks netCDF Kitchen Sink::    
+* ncra netCDF Record Averager::  
+* ncrcat netCDF Record Concatenator::  
+* ncrename netCDF Renamer::     
+* ncwa netCDF Weighted Averager  ::  
+
+@code{ncwa} netCDF Weighted Averager
+
+* Masking condition::           
+* Normalization::               
+@end menu
+
+@node Foreword, Summary, Top, Top
+@unnumbered Foreword
+@cindex foreword
+@ifhtml
+<BODY TEXT="#000000" BGCOLOR="#FFF8DC" LINK="#0000EF" VLINK="#008080" ALINK="#FF0000">
+@end ifhtml
+NCO is the result of software needs that arose while I worked on
+projects funded by the NASA EOS and NCAR ASP programs.  
+Thinking they might prove useful as tools or templates to others,  
+it is my pleasure to provide them freely to the scientific community.  
+Many users (most of whom I have never met) have encouraged the
+development of NCO.  
+Thanks espcially to Jan Polcher, Arlindo da Silva, John Sheldon, and
+William Weibel for stimulating suggestions and correspondence.
+Your encouragment motivated me to complete the @cite{NCO User's Guide}.
+So if you like NCO, send me a note!
+I should mention that NCO is not connected to or officially endorsed by
+Unidata, ASP, CGD, or Nike.
+@sp 1
+@noindent
+Charlie Zender
+@sp 1
+@noindent
+May 1997@*
+Boulder, Colorado@*
+
+@node Summary, Introduction, Foreword, Top
+@unnumbered Summary
+@cindex operators
+@cindex summary
+This manual describes NCO, which stands for netCDF Operators.
+NCO is a suite of programs known as @dfn{operators}.
+Each operator is a standalone, command line program which is executed at
+the UNIX (or NT) shell-level like, e.g., @code{ls} or @code{mkdir}.
+The operators take netCDF file(s) as input, perform an operation (e.g.,
+averaging or hyperslabbing), and produce a netCDF file as output.
+The operators are primarily designed to aid manipulation and analysis of
+data.
+The examples in this documentation are typical applications of the
+operators for processing climate model output. 
+This reflects their origin, but the operators are as general as netCDF
+itself.
+
+@node Introduction, Strategies, Summary, Top
+@chapter Introduction
+@cindex introduction
+
+@menu
+* Availability::                
+* Compatability::               
+* Libraries::                   
+* netCDF 2.x vs. 3.x::          
+* Reporting bugs::              
+@end menu
+
+@node Availability, Compatability, Introduction, Introduction
+@section Availability
+@cindex NCO availability
+@cindex source code
+The complete NCO source distribution is currently distributed as a
+@dfn{compressed tarfile} from
+@ifhtml
+<a href="ftp://ftp.cgd.ucar.edu/pub/zender/nc/nco.tar.gz"> ftp://ftp.cgd.ucar.edu/pub/zender/nc/nco.tar.gz</a>.
+@end ifhtml
+@ifclear html
+@code{ftp://ftp.cgd.ucar.edu/pub/zender/nc/nco.tar.gz}.
+@end ifclear
+The compressed tarfile must be uncompressed and untarred before building
+NCO.
+Uncompress the file with @samp{gunzip nco.tar.gz}. 
+Extract the source files from the resulting tarfile with @samp{tar -xvf
+nco.tar}.    
+GNU @code{tar} lets you perform both operations in one step with
+@samp{tar -xvzf nco.tar.gz}. 
+
+@cindex documentation 
+@cindex WWW documentation
+@cindex on-line documentation
+@cindex HTML
+@cindex @TeX{}info
+@cindex Info
+@cindex @cite{User's Guide}
+@cindex @cite{NCO User's Guide}
+The documentation for NCO is called the @cite{NCO User's Guide}.
+The @cite{User's Guide} is available in Postscript, HTML, DVI,
+@TeX{}info, and Info formats.
+These formats are included in the source distribution in the files
+@file{nco.ps}, @file{nco.html}, @file{nco.dvi}, @file{nco.texi}, and
+@file{nco.info*}, respectively.
+All the documentation descends from a single source file,
+@file{nco.texi}
+@footnote{   
+To produce these formats, @file{nco.texi} was simply run through the
+freely available programs @code{texi2dvi}, @code{dvips},
+@code{texi2html}, and @code{makeinfo}.    
+Due to a bug in @TeX{}, the resulting Postscript file, @file{nco.ps},
+contains the Table of Contents as the final pages. 
+Thus if you print @file{nco.ps}, remember to insert the Table of
+Contents after the cover sheet before you staple the manual.
+}.
+Hence the documentation in every format is very similar.
+However, some of the complex mathematical expressions needed to describe
+@code{ncwa} can only be displayed in the Postscript and DVI formats.
+
+@cindex NCO homepage
+If you want to quickly see what the latest improvements in NCO are
+(without downloading the entire source distribution), visit the NCO
+homepage at URL
+@ifhtml
+<a href="http://www.cgd.ucar.edu/cms/nco"> http://www.cgd.ucar.edu/cms/nco</a>.
+@end ifhtml
+@ifclear html
+@code{http://www.cgd.ucar.edu/cms/nco}.
+@end ifclear
+The HTML version of the @cite{User's Guide} is also available online through
+the World Wide Web at URL
+@ifhtml
+<a href="http://www.cgd.ucar.edu/cms/nco/nco.html"> http://www.cgd.ucar.edu/cms/nco/nco.html</a>.
+@end ifhtml
+@ifclear html
+@code{http://www.cgd.ucar.edu/cms/nco/nco.html}.
+@end ifclear
+@cindex netCDF
+To build and use NCO, you must have netCDF installed.
+The netCDF homepage is
+@ifhtml
+<a href="http://www.unidata.ucar.edu/packages/netcdf"> http://www.unidata.ucar.edu/packages/netcdf</a>.
+@end ifhtml
+@ifclear html
+@code{http://www.unidata.ucar.edu/packages/netcdf}.
+@end ifclear
+
+@node Compatability, Libraries, Availability, Introduction
+@section Operating systems compatible with NCO
+@cindex OS
+@cindex Windows NT
+@cindex compatability
+@cindex portability
+@cindex installation
+NCO has been successfully ported and tested on the following platforms: 
+GNU/Linux, SunOS 4.1.x, Solaris 2.x, IRIX 5.x and 6.x (including 64-bit
+architectures), UNICOS 8.x and 9.x, AIX, and Windows NT.
+If you port the code to a new operating system, please send me a note
+and any patches you required.
+
+@cindex UNIX
+The major prerequisite for installing NCO on a particular platform is
+the successful, prior installation of the netCDF libraries themselves.
+Unidata has shown a commitment to maintaining netCDF on all popular UNIX
+platforms, and is moving towards full support for Windows NT.
+Given this, the only difficulty in implementing NCO on a particular
+platform is standardization of various C and Fortran interface and
+system calls.
+The C-code has been tested for ANSI compliance by compiling with GNU 
+@code{gcc -ansi -pedantic}. 
+@cindex ANSI C
+Certain branches in the code were required to satisfy the native SGI and
+SunOS @code{cc} compilers, which are strictly ANSI compliant and do not
+allow variable-size arrays, a nice feature supported by GNU, UNICOS,
+Solaris, and AIX compilers. 
+
+Most of the arithmetic-intensive operations in NCO (e.g.,
+multiplication, averaging) are performed in Fortran by default. 
+This was a design decision based on the speed of Fortran-based object
+code vs. C-based object code in late 1994.
+Since this time native C compilers have improved their vectorization
+capabilities and it may be advantageous to replace all Fortran
+subroutines with C subroutines.
+@cindex preprocessor tokens
+@cindex @code{C_ONLY}
+This can be accomplished by defining the preprocessor token
+@code{C_ONLY} and rebuilding NCO.
+@cindex performance
+Although removing all Fortran calls enhances the portability and
+simplifies the maintenance of the NCO operators, it may also slow down
+the performance of the numeric operators.
+Presumably this will depend on your machine type, the quality of the C
+compiler, and the size of the data files
+@footnote{If you decide to test the efficiency of the averagers compiled
+with @code{C_ONLY} versus the default Fortran averagers I would be most
+interested to hear the results.
+Please E-mail me the results including the size of the datasets, the
+platform, and the change in the wallclock time for execution.}.
+
+@menu
+* Windows NT::                  
+@end menu
+
+@node Windows NT,  , Compatability, Compatability
+@subsection Compiling NCO for Windows NT
+@cindex Windows NT
+
+@cindex @code{C_ONLY}
+NCO has been successfully ported and tested on the Microsoft Windows NT
+4.0 operating system.
+The switches necessary to accomplish this are included in the standard
+distribution of NCO.
+Using the freely available Cygnus development tools
+@footnote{The gnuwin32 package is available from@*
+@code{http://www.cygnus.com/misc/gnu-win32}@*
+These tools will also build the C component of the netCDF distribution. 
+Currently, gnuwin32 does not come with a Fortran compiler.}, the
+compilation process is very similar to installing NCO on a UNIX system. 
+@cindex preprocessor tokens
+@cindex @code{C_ONLY}
+@cindex @code{gnuwin32}
+@cindex @code{cygwin32}
+@cindex @code{WIN32}
+@cindex @file{GNUmakefile}
+Make sure the preprocessor token @code{PVM_ARCH} is defined as
+@code{WIN32}, and, unless you have a Windows NT Fortran compiler
+available, also define the preprocessor token @code{C_ONLY} (the
+makefile which comes with NCO, @file{GNUmakefile}, should do this
+automatically). 
+
+@cindex @code{UNIX}
+The least portable section of the code is the use of standard UNIX and
+Internet protocols (e.g., @code{ftp}, @code{rcp}, @code{getuid},
+@code{gethostname}, and header files @file{<arpa/nameser.h>} and
+@file{<resolv.h>}). 
+@cindex @code{ftp}
+@cindex @code{rcp}
+@cindex remote files
+Fortunately, these UNIXy calls are only invoked by the single NCO
+subroutine which is responsible for retrieving files stored on remote
+systems (@pxref{Remote storage}).
+In order to support NCO on the Windows NT platforms, this single feature
+was disabled (on Windows NT only).
+The NCO operators should behave identically on Windows NT and UNIX
+platforms in all other respects.
+
+@node Libraries, netCDF 2.x vs. 3.x, Compatability, Introduction
+@section Libraries
+@cindex libraries
+@cindex @code{LD_LIBRARY_PATH}
+@cindex dynamic linking
+@cindex static linking
+Like all executables, the NCO operators can be built using dynamic
+linking. 
+@cindex performance
+@cindex operator speed
+@cindex speed
+@cindex execution time
+This reduces the size of the executable and can result in significant
+performance enhancements on multiuser systems.
+Unfortunately, if your library search path (usually the
+@code{LD_LIBRARY_PATH} environment variable) is not set correctly, or if
+the system libraries have been moved, renamed, or deleted since NCO was
+installed, it is possible an NCO operator will fail with a message that
+it cannot find a dynamically loaded (aka @dfn{shared object} or
+@samp{.so}) library. 
+This usually produces a distinctive error message, such as
+@samp{ld.so.1: /usr/local/bin/ncea: fatal: libsunmath.so.1: can't
+open file: errno=2}.   
+If you received an error message like this, ask your system 
+administrator to diagnose whether the library is truly missing
+@footnote{The @code{ldd} command, if it is available on your system,
+will tell you where the executable is looking for each dynamically
+loaded library. Use, e.g., @code{ldd `which ncea`}.}, or whether you
+simply need to alter your library search path.
+As a final remedy, you can reinstall NCO with all operators statically
+linked.  
+
+@node netCDF 2.x vs. 3.x, Reporting bugs, Libraries, Introduction
+@section netCDF 2.x vs. 3.x
+@cindex netCDF 2.x
+@cindex netCDF 3.x
+NCO was designed with netCDF 2.x.
+NCO began slow migration to the netCDF 3.x interface in January, 1998.
+Currently, nearly all of NCO still uses the netCDF 2.x interface, but
+NCO no longer builds with netCDF 2.x releases.
+NCO must be built with netCDF 3.x releases.
+We are eager to reap the performance advantages of newer netCDF
+versions. 
+
+@node Reporting bugs,  , netCDF 2.x vs. 3.x, Introduction
+@section Reporting bugs
+@cindex reporting bugs
+@cindex bugs, reporting
+Please read the manual before sending me any bug reports. 
+Sending me questions whose answers are not in the manual is the best
+way to motivate me to write more documentation.  
+I would also like to accentuate the contrapositive of this statement.  
+If you think you have found a real bug: simplify the problem 
+to a manageable size, document your run-time environment, and send me  
+the exact error messages (and run the operator with @samp{-D 5} 
+to increase the verbosity of the debugging output). 
+Send your bug report to @code{zender@@ncar.ucar.edu}.
+I will only investigate bugs which occur with the latest version of
+NCO. 
+
+@node Strategies, Common features, Introduction, Top
+@chapter Operator Strategies
+
+@menu
+* Philosophy::                  
+* Climate model paradigm::      
+* Output files::                
+* Appending::                   
+* Averaging vs. Concatenating::  
+* Large numbers of input files::  
+* Large files and Memory::      
+* Memory usage::                
+* Operator limitations::        
+@end menu
+
+@node Philosophy, Climate model paradigm, Strategies, Strategies
+@section NCO operator philosophy
+@cindex philosophy
+
+The main design goal has been to produce operators that can be invoked
+from the command line to perform useful operations on netCDF files. 
+Many scientists work with models and observations which produce too much
+data to analyze in tabular format.
+Thus, it is often natural to reduce and massage this raw or primary
+level data into summary, or second level data, e.g., temporal or spatial
+averages. 
+These second level data may become the inputs to graphical and
+statistical packages, and are often more suitable for archival and
+dissemination to the scientific community.
+NCO performs a suite of operations useful in manipulating data from the
+primary to the second level state.
+Higher level interpretive languages (e.g., IDL, Yorick, Matlab, NCL),
+and lower level compiled languages (e.g., C, Fortran) can always perform
+any task performed by NCO, but often with more overhead.
+NCO, on the other hand, is limited to a much smaller set of arithmetic
+and metadata operations than these full blown languages.
+
+Another goal has been to implement enough command line switches so that
+frequently used sequences of these operators can be executed from a
+shell script or batch file.
+Finally, NCO was written to consume the absolute minimum amount of
+system memory required to perform a given job.
+The arithmetic operators are extremely efficient; their exact memory
+usage is detailed in @ref{Memory usage}.
+
+@node Climate model paradigm, Output files, Philosophy, Strategies
+@section Climate model paradigm
+@cindex climate modeling
+@cindex NCAR
+@cindex GCM
+
+NCO was developed at NCAR to aid analysis and manipulation of
+datasets produced by General Circulation Models (GCMs). 
+Datasets produced by GCMs share many features with all gridded
+scientific datasets and so provide a useful paradigm for the explication
+of the NCO operator set.
+Examples in this manual use a GCM paradigm because latitude, longitude,
+time, temperature and other fields related to our natural environment
+are as easy to visualize for the layman as the expert.
+
+@node Output files, Appending, Climate model paradigm, Strategies
+@section Temporary output files 
+@cindex data safety
+@cindex error tolerance
+@cindex safeguards
+@cindex temporary output files
+NCO operators are designed to be reasonably fault tolerant, so that
+if there is a system failure or the user aborts the operation (e.g.,
+with @kbd{C-c}), then no data is lost. 
+The user-specified @var{output-file} is only created upon successful
+completion of the operation  
+@footnote{The @code{ncrename} operator is an exception to this rule.
+@xref{ncrename netCDF Renamer}.}.
+This is accomplished by performing all operations in a temporary copy
+of @var{output-file}.
+The name of the temporary output file is constructed by appending
+@code{@var{<process ID>}.@var{<operator name>}.tmp} to the
+user-specified @var{output-file} name.  
+When the operator completes its task with no fatal errors, the temporary
+output file is moved to the user-specified @var{output-file}.
+Note the construction of a temporary output file uses more disk space
+than just overwriting existing files ``in place'' (because there may be
+two copies of the same file on disk until the NCO operation successfully
+concludes and the temporary output file overwrites the existing
+@var{output-file}).  
+@cindex performance
+@cindex operator speed
+@cindex speed
+@cindex execution time
+Also, note this feature increases the execution time of the operator
+by approximately the time it takes to copy the @var{output-file}.
+Finally, note this feature allows the @var{output-file} to be the same
+as the @var{input-file} without any danger of ``overlap''.
+
+@cindex overwriting files
+@cindex appending to files
+Other safeguards exist to protect the user from inadvertently
+overwriting data.
+If the @var{output-file} specified for a command is a pre-existing file,
+then the operator will prompt the user whether to overwrite (erase) the
+existing @var{output-file}, attempt to append to it, or abort the
+operation. 
+However, in processing large amounts of data, too many interactive
+questions can be a curse to productivity.
+Therefore NCO also implements two ways to override its own safety
+features, the @samp{-O} and @samp{-A} switches.
+Specifying @samp{-O} tells the operator to overwrite any existing
+@var{output-file} without prompting the user interactively.
+Specifying @samp{-A} tells the operator to attempt to append to any
+existing @var{output-file} without prompting the user interactively.
+These switches are useful in batch environments because they suppress
+interactive keyboard input.
+
+@node Appending, Averaging vs. Concatenating, Output files, Strategies
+@section Appending variables to a file
+A frequently useful operation is adding variables from one file to
+another. 
+@cindex concatenation
+@cindex appending variables
+@cindex merging files
+@cindex pasting variables
+This is referred to as @dfn{appending}, although some prefer the
+terminology @dfn{merging} @footnote{The terminology @dfn{merging} is
+reserved for an (unwritten) operator which replaces hyperslabs of a
+variable in one file with hyperslabs of the same variable from another 
+file} or @dfn{pasting}. 
+Appending is often confused with what NCO calls @dfn{concatenation}.
+In NCO, concatenation refers to splicing a variable along the record
+dimension. 
+Appending, on the other hand, refers to adding variables from one file
+to another
+@footnote{Yes, the terminology is confusing. 
+By all means mail me if you think of a better nomenclature.
+Should NCO use @dfn{paste} instead of @dfn{append}?
+}. 
+In this sense, @code{ncks} can append variables from one file to another
+file. 
+This capability is invoked by naming two files on the command line,
+@var{input-file} and @var{output-file}. 
+When @var{output-file} already exists, the user is prompted whether to
+@dfn{overwrite}, @dfn{append/replace}, or @dfn{exit} from the command.
+Selecting @dfn{overwrite} tells the operator to erase the existing
+@var{output-file} and replace it with the results of the operation.
+Selecting @dfn{exit} causes the operator to exit---the @var{output-file}
+will not be touched in this case.
+Selecting @dfn{append/replace} causes the operator to attempt to place
+the results of the operation in the existing @var{output-file}.
+@xref{ncks netCDF Kitchen Sink} for more information.
+
+@node Averaging vs. Concatenating, Large numbers of input files, Appending, Strategies
+@section Differences between averagers and concatenators
+
+The most frequently used operators of NCO are probably the averagers and
+concatenators.
+Because there are so many permutations of averaging (e.g., across files,
+within a file, over the record dimension, over other dimensions, with or
+without weights and masks) and of concatenating (across files, along the
+record dimension, along other dimensions), there are currently no fewer
+than five operators which tackle these two purposes: @code{ncra},
+@code{ncea}, @code{ncwa}, @code{ncrcat}, and @code{ncecat}. 
+These operators do share many capabilities @footnote{Currently
+@code{ncea} and @code{ncrcat} are symbolically linked to the @code{ncra}
+executable, which behaves slightly differently based on its invocation
+name (i.e., @samp{argv[0]}). 
+These three operators share the same source code, but merely have
+different inner loops.}, but each has its unique specialty.
+Two of these operators, @code{ncrcat} and @code{ncecat}, are for
+concatenating hyperslabs across files. 
+The other two operators, @code{ncra} and @code{ncea}, are for averaging
+hyperslabs across files 
+@footnote{The third averaging operator, @code{ncwa}, is the most
+sophisticated averager in NCO. 
+However, @code{ncwa} is in a different class than @code{ncra} and
+@code{ncea} because it can only operate on a single file per invocation
+(as opposed to multiple files).   
+On that single file, however, @code{ncwa} provides a richer set of 
+averaging options---including weighting, masking, and broadcasting.}.  
+First, let's describe the concatenators, then the averagers. 
+
+@menu
+* Concatenation::               
+* Averaging::                   
+@end menu
+
+@node Concatenation, Averaging, Averaging vs. Concatenating, Averaging vs. Concatenating
+@subsection Concatenators @code{ncrcat} and @code{ncecat}
+@cindex @code{ncecat}
+@cindex @code{ncrcat}
+
+Joining independent files together along a record coordinate is called
+@dfn{concatenation}.    
+@code{ncrcat} is designed for concatenating record variables, while
+@code{ncecat} is designed for concatenating fixed length variables.
+Consider 5 files, @file{85.nc}, @file{86.nc}, @dots{}
+@file{89.nc} each containing a year's worth of data. 
+Say you wish to create from them a single file, @file{8589.nc}
+containing all the data, i.e., spanning all 5 years.
+If the annual files make use of the same record variable, then
+@code{ncrcat} will do the job nicely with, e.g., @code{ncrcat 8?.nc
+8589.nc}. 
+The number of records in the input files is arbitrary and can vary from
+file to file. 
+@xref{ncrcat netCDF Record Concatenator}, for a complete description of
+@code{ncrcat}. 
+
+However, suppose the annual files have no record variable, and thus
+their data is all fixed length. 
+@cindex ensemble
+For example, the files may not be conceptually sequential, but rather
+members of the same group, or @dfn{ensemble}. 
+Members of an ensemble may have no reason to contain a record dimension.
+@code{ncecat} will create a new record dimension (named @var{record} by
+default) with which to glue together the individual files into the single
+ensemble file.
+If @code{ncecat} is used on files which contain an existing record
+dimension, that record dimension will be converted into a fixed length
+dimension of the same name and a new record dimension will be created. 
+Consider five realizations, @file{85a.nc}, @file{85b.nc}, @dots{}
+@file{85e.nc} of 1985 predictions from the same climate model.
+Then @code{ncecat 85?.nc 85_ens.nc} glues the individual realizations
+together into the single file, @file{85_ens.nc}. 
+If an input variable was dimensioned [@code{lat},@code{lon}], it will have
+dimensions [@code{record},@code{lat},@code{lon}] in the output file.
+A restriction of @code{ncecat} is that the hyperslabs of the processed
+variables must be the same from file to file.
+Normally this means all the input files are the same size, and contain
+data on different realizations of the same variables.
+@xref{ncecat netCDF Ensemble Concatenator}, for a complete description of
+@code{ncecat}. 
+
+Note that @code{ncrcat} cannot concatenate fixed-length variables,
+whereas @code{ncecat} can concatenate both fixed-length and record
+variables.
+To conserve system memory, use @code{ncrcat} rather than
+@code{ncecat} when concatenating record variables.
+
+@node Averaging,  , Concatenation, Averaging vs. Concatenating
+@subsection Averagers @code{ncea}, @code{ncra}, and @code{ncwa} 
+@cindex @code{ncea}
+@cindex @code{ncra}
+@cindex @code{ncwa}
+
+The differences between the averagers @code{ncra} and @code{ncea} are
+analogous to the differences between the concatenators.
+@code{ncra} is designed for averaging record variables from at least one
+file, while @code{ncea} is designed for averaging fixed length variables
+from multiple files.
+@code{ncra} performs a simple arithmetic average over the record
+dimension of all the input files, with each record having an equal
+weight in the average. 
+@code{ncea} performs a simple arithmetic average of all the input files,
+with each file having an equal weight in the average. 
+Note that @code{ncra} cannot average fixed-length variables,
+but @code{ncea} can average both fixed-length and record variables.  
+To conserve system memory, use @code{ncra} rather than
+@code{ncea} where possible (e.g., if each @var{input-file} is one record
+long). 
+The file output from @code{ncea} will have the same dimensions (meaning 
+dimension names as well as sizes) as the input hyperslabs  
+(@pxref{ncea netCDF Ensemble Averager}, for a complete description of
+@code{ncea}).  
+The file output from @code{ncra} will have the same dimensions as
+the input hyperslabs except for the record dimension, which will have a 
+size of 1 (@pxref{ncra netCDF Record Averager}, for a complete
+description of @code{ncra}). 
+
+@node Large numbers of input files, Large files and Memory, Averaging vs. Concatenating, Strategies
+@section Working with large numbers of input files
+@cindex files, numerous input
+@cindex @code{-n @var{loop}}
+
+Occasionally one desires to digest (i.e., concatenate or average)
+hundreds or thousands of input files.
+One brave user, for example, recently created a five year timeseries of
+satellite observations by using @code{ncecat} to join thousands of daily
+data files together.
+Unfotunately, data archives (e.g., NASA EOSDIS) are unlikely to
+distribute netCDF files conveniently named in a format the @samp{-n
+@var{loop}} switch (which automatically generates arbitrary numbers of
+input filenames) understands. 
+If there is not a simple, arithmetic pattern to the input filenames
+(e.g., @file{h00001.nc}, @file{h00002.nc}, @dots{} @file{h90210.nc}) 
+then the @samp{-n @var{loop}} switch is useless.
+Moreover, when the input files are so numerous that the input filenames
+are too lengthy (when strung together as a single argument) to be passed
+by the calling shell to the NCO operator 
+@footnote{The exact length which exceeds the operating system internal
+limit for command line lengths varies from OS to OS and from shell to
+shell.  
+GNU @code{bash} may not have any arbitrary fixed limits to the size of
+command line arguments. 
+Many OSs cannot handle command line arguments longer than a few thousand
+characters.
+When this occurs, the ANSI C-standard @code{argc}-@code{argv} method of
+passing arguments from the calling shell to a C-program (i.e., an NCO
+operator) breaks down.},  
+then the following strategy has proven useful to specify the input
+filenames to NCO. 
+Write a script that creates symbolic links between the irregular input
+filenames and a set of regular, arithmetic filenames that @samp{-n
+@var{loop}} switch understands.
+The NCO operator will then succeed at automatically generating the
+filnames with the @samp{-n @var{loop}} option (which circumvents any OS
+and shell limits on command line size).
+You can remove the symbolic links once the operator completes its task. 
+
+@node Large files and Memory, Memory usage, Large numbers of input files, Strategies
+@section Working with large files
+@cindex large files
+
+@dfn{Large files} are those files that are comparable in size to the
+amount of memory (RAM) in your computer.
+Many users of NCO work with files larger than 100 Mb.
+Files this large not only push the current edge of storage technology, 
+they present special problems for programs which attempt to access the  
+entire file at once, such as @code{ncea}, and @code{ncecat}.
+@cindex swap space
+If you need to work with a 300 Mb file on a machine with only 32 Mb of
+memory then you will need large amounts of swap space (virtual
+memory on disk) and NCO will work slowly, or else NCO will fail.
+There is no easy solution for this and the best strategy is to work on a
+machine with massive amounts of memory and swap space.
+@cindex server
+@cindex UNICOS
+@cindex Cray
+That is, if your local machine has problems working with large files,
+try running NCO from a more powerful machine, such as a network server. 
+Certain machine architectures, e.g., Cray UNICOS, have special commands
+which allow one to increase the amount of interactive memory.
+@cindex @code{ilimit}
+If you get a core dump on a Cray system (e.g., @samp{Error exit (core
+dumped)}), try increasing the available memory by using the
+@code{ilimit} command. 
+
+@cindex speed
+The speed of the NCO operators also depends on file size.
+When processing large files the operators may appear to hang, or do
+nothing, for large periods of time.
+In order to see what the operator is actually doing, it is useful to
+activate a more verbose output mode.
+This is accomplished by supplying a number greater than 0 to the
+@samp{-D @var{debug_level}} switch.
+@cindex @var{debug_level}
+@cindex debugging
+When the @var{debug_level} is nonzero, the operators report their
+current status to the terminal through the @var{stderr} facility.
+Using @samp{-D} does not slow the operators down. 
+Choose a @var{debug_level} between 1 and 3 for most situations, e.g.,
+@code{ncea -D 2 85.nc 86.nc 8586.nc}.
+A full description of how to estimate the actual amount of memory the
+multi-file NCO operators consume is given in @ref{Memory usage}. 
+
+@node Memory usage, Operator limitations, Large files and Memory, Strategies
+@section Approximate NCO memory requirements
+@cindex memory requirements
+
+The multi-file operators currently comprise the record operators,
+@code{ncra} and @code{ncrcat}, and the ensemble operators, @code{ncea}
+and @code{ncecat}, 
+The record operators require @emph{much less} memory than the ensemble
+operators. 
+This is because the record operators are designed to operate on a single
+record of a file at a time, while the ensemble operators must retrieve
+an entire variable at a time into memory.
+Let @math{MS} be the peak sustained memory demand of an operator,
+@math{FT} be the memory required to store the entire contents of the
+variables to be processed in an input file,
+@math{FR} be the memory required to store the entire contents of a
+single record of the variables to be processed in an input file, 
+@math{VR} be the memory required to store a single record of the
+largest record variable to be processed in an input file, 
+@math{VT} be the memory required to store the largest variable 
+to be processed in an input file,
+@math{VI} be the memory required to store the largest variable 
+which is not processed, but is copied from the initial file to the
+output file. 
+All operators require @math{MI = VI} during the initial copying of
+variables from the first input file to the output file. 
+This is the @emph{initial} (and transient) memory demand.
+The @emph{sustained} memory demand is that memory required by the
+operators during the processing (i.e., averaging, concatenation)
+phase which lasts until all the input files have been processed.
+The operators have the following memory requirements: 
+@code{ncrcat} requires @math{MS <= VR}. 
+@code{ncecat} requires @math{MS <= VT}. 
+@code{ncra} requires @math{MS = 2FR + VR}. 
+@code{ncea} requires @math{MS = 2FT + VT}. 
+Note that only variables which are processed, i.e., averaged or
+concatenated, contribute to @math{MS}.
+Memory is never allocated to hold variables which do not appear in the
+output file (@pxref{Variable subsetting}). 
+
+@node Operator limitations,  , Memory usage, Strategies
+@section Performance limitations of the operators
+
+@enumerate
+@item 
+@cindex buffering
+No buffering of data is performed during @code{ncvarget} and
+@code{ncvarput} operations.  
+@cindex performance
+@cindex operator speed
+@cindex speed
+@cindex execution time
+Hyperslabs too large too hold in core memory will suffer substantial
+performance penalties because of this. 
+
+@item 
+@cindex monotonic coordinates
+Since coordinate variables are assumed to be monotonic, the search for
+bracketing the user-specified limits should employ a quicker algorithm,
+like bisection, than the two-sided incremental search currently
+implemented.  
+
+@item 
+@cindex @var{C_format}
+@cindex @var{FORTRAN_format}
+@cindex @var{signedness}
+@cindex @var{scale_format} 
+@cindex @var{add_offset} 
+@var{C_format}, @var{FORTRAN_format}, @var{signedness},
+@var{scale_format} and @var{add_offset} attributes are ignored by
+@code{ncks} when printing variables to screen. 
+
+@item
+@cindex Yorick
+Some random access operations on large files on certain architectures
+(e.g., 400 Mb on UNICOS) are @emph{much} slower with these operators
+than with similar operations performed using languages that bypass the
+netCDF interface (e.g., Yorick).  
+The cause for this is not understood at present.
+@end enumerate
+
+@node Common features, Operators, Strategies, Top
+@chapter Features common to most operators
+
+Many features have been implemented in more than one operator and are
+described here for brevity. 
+The description of each feature is preceded by a box listing the
+operators for which the feature is implemented. 
+Command line switches for a given feature are consistent across all
+operators wherever possible. 
+If no ``key switches'' are listed for a feature, then that particular
+feature is automatic and cannot be controlled by the user. 
+
+@menu
+* Specifying input files::      
+* Remote storage::              
+* File retention::              
+* Variable subsetting::         
+* Coordinate variables::        
+* Hyperslabs::                  
+* Stride::                      
+* Wrapped coordinates::         
+* Fortran indexing::            
+* Missing values::              
+* Suppressing interactive prompts::  
+* Operator version::            
+* History attribute::           
+* NCAR CSM Conventions::        
+* ARM Conventions::             
+@end menu
+
+@node Specifying input files, Remote storage, Common features, Common features
+@section Specifying input files
+@cindex globbing
+@cindex regular expressions
+@cindex @code{NINTAP}
+@cindex Processor, CCM
+@cindex CCM Processor
+@cindex @code{-n @var{loop}}
+@cindex @code{-p @var{input-path}}
+@cindex @var{input-path}
+@cartouche
+@noindent
+Availability: All operators@*
+Key switches: @samp{-n}, @samp{-p}@*
+@end cartouche
+It is important that the user be able to specify multiple input files
+without tediously typing in each by its full name. 
+@cindex UNIX
+There are four different ways of specifying input files to NCO:
+explicitly typing each, using UNIX shell wildcards, and using the NCO
+@samp{-n} and @samp{-p} switches.
+To illustrate these methods, consider the simple problem of using
+@code{ncra} to average five input files, @file{85.nc}, @file{86.nc},
+@dots{} @file{89.nc}, and store the results in @file{8589.nc}.
+Here are the four methods in order.
+They produce identical answers.
+@example
+ncra 85.nc 86.nc 87.nc 88.nc 89.nc 8589.nc
+ncra 8[56789].nc 8589.nc
+ncra -p @var{input-path} 85.nc 86.nc 87.nc 88.nc 89.nc 8589.nc
+ncra -n 5,2,1 85.nc 8589.nc
+@end example
+The first method (explicitly specifying all filenames) works by brute
+force. 
+The second method relies on the operating system shell to @dfn{glob}
+(expand) the @dfn{regular expression} @code{8[56789].nc}.
+The shell passes valid filenames which match the expansion to
+@code{ncra}.
+The third method uses the @samp{-p @var{input-path}} argument to specify
+the directory where all the input files reside.
+NCO prepends @var{input-path} (e.g., @file{/data/usrname/model}) to all
+@var{input-files} (but not to @var{output-file}). 
+Thus, using @samp{-p}, the path to any number of input files need only
+be specified once.
+Note @var{input-path} need not end with @samp{/}; the @samp{/} is
+automatically generated if necessary. 
+
+The last method passes (with @samp{-n}) syntax concisely describing 
+the entire set of filenames
+@footnote{The @samp{-n} option is a backward compatible superset of the
+@code{NINTAP} option from the NCAR CCM Processor.}. 
+@cindex multi-file operators
+@cindex files, multiple
+This option is only available with the @dfn{multi-file operators}:
+@code{ncra}, @code{ncrcat}, @code{ncea}, and @code{ncecat}.
+Multi-file operators process an arbitrary number of @var{input-files}. 
+The syntax of @code{-n 5,2,1 85.nc} tells NCO to construct five (5)
+filenames identical to @file{85.nc} except that the final two (2) digits
+are a numeric suffix to be incremented by one (1) for each successive file.  
+The @file{.nc} and @file{.cdf} suffixes, if present, are not counted
+toward the two digit numeric suffix.
+
+@cindex wrapped filenames
+Recently the @samp{-n} option has been extended to allow convenient
+specification of filenames with ``circular'' characteristics.
+This means it is now possible for NCO to automatically generate
+filenames which increment regularly until a specified maximum value, and
+then wrap back to begin again at a specified minimum value. 
+Consider, for example, the problem of specifying non-consecutive input
+files where the filename suffixes end with the month index.  
+In climate modeling it is common to create summertime and wintertime
+averages which contain the averages of the months June--July--August,
+and December--January--February, respectively:
+@example
+ncra -n 3,2,1 85_06.nc 85_0608.nc
+ncra -n 3,2,1,12 85_12.nc 85_1202.nc
+ncra -n 3,2,1,12,1 85_12.nc 85_1202.nc
+@end example
+The first example shows that three arguments to the @samp{-n} option
+suffice to specify consecutive months (@code{06, 07, 08}) which do not
+``wrap'' back to a minimum value.
+The second example shows how to use the optional fourth and fifth
+elements of the @samp{-n} option to specify a wrap value to NCO.
+The fourth argument to @samp{-n}, if present, specifies the maximum
+integer value of the numeric suffix. 
+In this case the maximum value is 12, and will be formatted as @file{12}
+in the filename string. 
+The fifth argument to @samp{-n}, if present, specifies the minimum
+integer value of the numeric suffix. 
+The default minimum filename suffix is 1, which is formatted as
+@file{01} in this case.   
+Thus the second and third examples have the same effect, that is, they
+automatically generate, in order, the filenames @file{85_12.nc},
+@file{85_01.nc}, and @file{85_02.nc} as input to NCO.
+
+@node Remote storage, File retention, Specifying input files, Common features
+@section Accessing files stored remotely
+@cindex @code{rcp}
+@cindex @file{.rhosts}
+@cindex NCAR MSS
+@cindex MSS
+@cindex Mass Store System
+@cindex URL
+@cindex @code{ftp}
+@cindex remote files
+@cindex synchronous file access
+@cindex asynchronous file access
+@cartouche
+@noindent
+Availability: All operators@*
+Key switches: @samp{-p}, @samp{-l}, @samp{-R}@*
+@end cartouche
+All NCO operators can retrieve files from remote sites as well as the
+local file system.
+A remote site can be an anonymous FTP server, a machine on which the
+user has @code{rcp(1)} privileges, or NCAR's Mass Storage System (MSS). 
+To access a file via an anonymous FTP server, supply the remote file's
+URL.
+To access a file using @code{rcp(1)}, specify the Internet address of
+the remote file.
+You must have @code{rcp(1)} privileges on the remote machine (e.g.,
+@file{.rhosts} should be set accordingly).
+To access a file on NCAR's MSS, specify the full MSS pathname of the
+remote file. 
+NCO will attempt to detect whether the local machine has direct
+(synchronous) MSS access. 
+Otherwise NCO will attempt to retrieve the MSS file through the
+(asynchronous) Masnet Interface Gateway System (MIGS). 
+@example
+ncks -H -l ./ ftp://ftp.cgd.ucar.edu/pub/zender/nc/in.nc
+ncks -H -l ./ odin.cgd.ucar.edu:/home/zender/nc/in.nc
+ncks -H -l ./ /ZENDER/nc/in.nc 
+@end example
+@noindent
+These commands can be rewritten using the @samp{-p @var{input-path}}
+option as follows: 
+@cindex @code{-p @var{input-path}}
+@cindex @var{input-path}
+@cindex @code{-l @var{output-path}}
+@cindex @var{output-path}
+@example
+ncks -H -p ftp://ftp.cgd.ucar.edu/pub/zender/nc -l ./ in.nc
+ncks -H -p odin.cgd.ucar.edu:/home/zender/nc -l ./ in.nc
+ncks -H -p /ZENDER/nc -l ./ in.nc 
+@end example
+@noindent
+Using @samp{-p} is recommended because it clearly separates the
+@var{input-path} from the filename itself, sometimes called the
+@dfn{stub}. 
+@cindex stub
+When @var{input-path} is not explicitly specified using @samp{-p}, NCO
+internally generates an @var{input-path} from the first input filename. 
+The automatically generated @var{input-path} is constructed by stripping
+the input filename of everything following the final @samp{/} character
+(i.e., removing the stub).
+The @samp{-l @var{output-path}} option tells NCO where to store the
+remotely retrieved file and the output file.
+Often the path to a remotely retrieved file is quite different than the
+path on the local machine where you would like to store the file.
+If @samp{-l} is not specified then NCO internally generates an
+@var{output-path} by simply setting @var{output-path} equal to
+@var{input-path} stripped of any machine names.
+If @samp{-l} is not specified and the remote file resides on the NCAR 
+MSS system, then the leading character of @var{input-path}, @samp{/}, is
+also stripped from @var{output-path}.
+Specifying @var{output-path} as @samp{-l ./} tells NCO to store the
+remotely retrieved file and the output file in the current directory.
+Note that @samp{-l .} is equivalent to @samp{-l ./} though the latter is
+syntactically more clear.
+
+Note that this remote retrieval feature can easily be used to retrieve
+@emph{any} file, including non-netCDF files, via anonymous FTP.
+Often this method is quicker than using a browser, or running an FTP
+session from a shell window yourself.
+For example, say you want to obtain a JPEG file from a weather server.
+@example
+ncks -p ftp://weather.edu/pub/pix/jpeg -l ./ storm.jpg
+@end example
+@noindent
+In this example, @code{ncks} automatically performs an anonymous FTP
+login to the remote machine and retrieves the specified file.
+When @code{ncks} attempts to read the local copy of @file{storm.nc}
+as a netCDF file, it fails and exits, leaving  @file{storm.nc} in
+the current directory.
+
+@node File retention, Variable subsetting, Remote storage, Common features
+@section Retention of remotely retrieved files
+@cindex file deletion
+@cindex file removal
+@cindex file retention
+@cindex @code{-R}
+@cartouche
+@noindent
+Availability: All operators@*
+Key switches: @samp{-R}@*
+@end cartouche
+In order to conserve local file system space, files retrieved from
+remote locations are automatically deleted from the local file system
+once they have been processed.
+Many NCO operators were constructed to work with numerous large (e.g.,
+200 Mb) files. 
+Retrieval of multiple files from remote locations is done serially. 
+Each file is retrieved, processed, then deleted before the cycle
+repeats.  
+In cases where it is useful to keep the remotely-retrieved files on the
+local file system after processing, the automatic removal feature may be
+disabled by specifying @samp{-R} on the command line.
+
+@node Variable subsetting, Coordinate variables, File retention, Common features
+@section Including/Excluding specific variables
+@cindex @code{-v @var{var}}
+@cindex @code{-x}
+@cartouche
+@noindent
+Availability: @code{ncdiff}, @code{ncea}, @code{ncecat}, @code{ncflint},
+@code{ncks},  @code{ncra}, @code{ncrcat}, @code{ncwa}@*
+Key switches: @samp{-v}, @samp{-x}@*
+@end cartouche
+Variable subsetting is implemented with the @samp{-v @var{var}[,@dots{}]} and
+@samp{-x} options. 
+A list of variables to extract is specified following the @samp{-v}
+option, e.g., @samp{-v time,lat,lon}.
+Not using the @samp{-v} option is equivalent to specifying all
+variables.  
+The @samp{-x} option causes the list of variables specified with
+@samp{-v} to be excluded rather than extracted.
+Thus @samp{-x} saves typing when you only want to extract fewer than
+half of the variables in a file.
+@cindex memory requirements
+Remember, if you are stretching the limits of your system's memory by
+averaging or concatenating large files, then the easiest solution is
+often to use the @samp{-v} option to retain only the variables you
+really need (@pxref{Memory usage}).
+
+@node Coordinate variables, Hyperslabs, Variable subsetting, Common features
+@section Including/Excluding coordinate variables
+@cindex @code{-C}
+@cindex @code{-c}
+@cartouche
+@noindent
+Availability: @code{ncdiff}, @code{ncea}, @code{ncecat}, @code{ncflint},
+@code{ncks},  @code{ncra}, @code{ncrcat}, @code{ncwa}@*
+Key switches: @samp{-C}, @samp{-c}@*
+@end cartouche
+By default, coordinates variables associated with any variable appearing
+in the @var{output-file} will also appear in the @var{output-file}, even
+if they are not explicitly specified, e.g., with the @samp{-v} switch.
+Thus variables with a latitude coordinate @code{lat} always carry the
+values of @code{lat} with them into the @var{output-file}.
+This feature can be disabled with @samp{-C}, which causes NCO to not
+automatically add coordinates to the variables appearing in the
+@var{output-file}. 
+However, using @samp{-C} does not preclude the user from including some
+coordinates in the output files simply by explicitly selecting the
+coordinates with the @var{-v} option.
+The @samp{-c} option, on the other hand, is a shorthand way of
+automatically specifying that @emph{all} coordinate variables in the
+@var{input-files} should appear in the @var{output-file}.
+Thus @samp{-c} allows the user to select all the coordinate variables
+without having to know their names.
+
+@node Hyperslabs, Stride, Coordinate variables, Common features
+@section Hyperslabs 
+@cindex hyperslab
+@cindex dimension limits
+@cindex coordinate limits
+@cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
+@cartouche
+@noindent
+Availability: @code{ncdiff}, @code{ncea}, @code{ncecat}, @code{ncflint},
+@code{ncks},  @code{ncra}, @code{ncrcat}, @code{ncwa}@*
+Key switches: @samp{-d}@*
+@end cartouche
+A @dfn{hyperslab} is a subset of a variable's data.
+The coordinates of a hyperslab are specified with the @code{-d
+@var{dim},[@var{min}][,[@var{max}]]} option.
+The bounds of the hyperslab to be extracted are specified by the
+associated @var{min} and @var{max} values. 
+A half-open range is specified by omitting either the @var{min} or
+@var{max} parameter but including the separating comma. 
+The limit is then then maximum or minimum possible in the unspecified 
+direction. 
+A cross-section at a specific coordinate is extracted by specifying only
+the @var{min} limit and omitting a trailing comma. 
+Dimensions not mentioned are passed with no reduction in range.
+The dimensionality of variables is not reduced (in the case of a
+cross-section, the size of the constant dimension will be one). 
+If values of a coordinate-variable are used to specify a range or
+cross-section, then the coordinate variable must be monotonic (values
+either increasing or decreasing). 
+In this case, command-line values need not exactly match coordinate
+values for the specified dimension. 
+Ranges are determined by seeking the first coordinate value to occur in
+the closed range [@var{min},@var{max}] and including all subsequent values until one
+falls outside the range. 
+The coordinate value for a cross-section is the coordinate-variable
+value closest to the specified value and must lie within the range or
+coordinate-variable values. 
+
+Coordinate values should be specified using real notation with a decimal
+point required in the value, whereas dimension indices are specified
+using integer notation without a decimal point. 
+Note that this convention is only to differentiate coordinate values
+from dimension indices, and is independent of the actual type of netCDF
+coordinate variables, if any. 
+For a given dimension, the specified limits must both be coordinate
+values (with decimal points) or dimension indices (no decimal points).
+
+@cindex @code{NC_BYTE}
+@cindex @code{NC_CHAR}
+User-specified coordinate limits are promoted to double precision values
+while searching for the indices which bracket the range. 
+Thus, hyperslabs on coordinates of type @code{NC_BYTE} and
+@code{NC_CHAR} are computed numerically rather than lexically, so the
+results are unpredictable. 
+
+Not specifying this option is equivalent to specifying full ranges of
+all dimensions. 
+This option may be specified more than once.
+
+@node Stride, Wrapped coordinates, Hyperslabs, Common features
+@section Stride 
+@cindex stride
+@cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
+@cartouche
+@noindent
+Availability: @code{ncks}@*
+Key switches: @samp{-d}@*
+@end cartouche
+@code{ncks} offers support for specifying a @dfn{stride} for any
+hyperslab 
+@footnote{Actually, the @var{stride} argument is valid for all operators
+which accept the @samp{-d} hyperslab option.
+However, using @var{stride} with operators besides @code{ncks} is not 
+supported, and may never be.}.  
+The @var{stride} is the spacing between consecutive points in a
+hyperslab. 
+A @var{stride} of 1 means pick all the elements of the hyperslab, but a
+@var{stride} of 2 means skip every other element, etc.
+
+The @var{stride} is specified as the optional third argument to the
+@samp{-d} hyperslab specification:  
+@code{-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]}.
+Specify @var{stride} as an integer (i.e., no decimal point) following
+the third comma in the @samp{-d} argument.  
+There is no default value for @var{stride}. 
+Thus using @samp{-d time,,2} is valid but @samp{-d time,,2.0} and
+@samp{-d time,,} are not.
+
+For example, consider a file @file{8501_8912.nc} which contains 60
+consecutive months of data. 
+Say you wish to obtain just the March data from this file.
+This data is stored in records 2, 14, @dots{} 50 so the desired
+@var{stride} is 12.
+Without the @var{stride} option, the procedure is very awkward.
+One could use @code{ncks} five times and then use @code{ncrcat} to
+concatenate the resulting files together:
+@example
+foreach idx (02 14 26 38 50) 
+ncks -d time,$idx 8501_8912.nc foo.$idx
+end
+ncrcat foo.?? 8589_03.nc
+rm foo.??
+@end example
+With the @var{stride} option, @code{ncks} performs this hyperslab
+extraction in one operation:
+@example
+ncks -d time,2,,12 8501_8912.nc 8589_03.nc
+@end example
+@xref{ncks netCDF Kitchen Sink} for more information on @code{ncks}.
+
+@node Wrapped coordinates, Fortran indexing, Stride, Common features
+@section Wrapped coordinates
+@cindex wrapped coordinates
+@cindex longitude
+@cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
+@cartouche
+@noindent
+Availability: @code{ncks}@*
+Key switches: @samp{-d}@*
+@end cartouche
+A @dfn{wrapped coordinate} is a coordinate whose values increase or
+decrease monotonically (nothing unusual so far), but which represents a
+dimension that ends where it began (i.e., wraps around on itself).
+Longitude (i.e., degrees on a circle) is a familiar example of a wrapped
+coordinate.
+Longitude increases to the East of Greenwich, England, where it is
+defined to be zero.
+Halfway around the globe, the longitude is 180 degrees East (or West). 
+Continuing eastward, longitude increases to 360 degrees East at
+Greenwich. 
+The longitude values of most geophysical data is either in the range
+[0,360), or [-180,180).
+In either case, the Westernmost and Easternmost longitudes are
+numerically separated by 360 degrees, but represent contiguous regions
+on the globe.
+For example, the Saharan desert stretches from roughly 340 to 50 degrees
+East.
+Extracting the hyperslab of data representing the Sahara from a global
+dataset presents special problems when the global dataset is stored
+consecutively in longitude from 0 to 360 degrees.
+This is because the data for the Sahara will not be contiguous in the
+@var{input-file} but is expected by the user to be contiguous in the
+@var{output-file}. 
+In this case, @code{ncks} must invoke special software routines to assemble
+the desired output hyperslab from multiple reads of the @var{input-file}.
+
+Assume the domain of the monotonically increasing longitude coordinate
+@code{lon} is @math{0 < @var{lon} < 360}. 
+@code{ncks} will extract a hyperslab which crosses the Greenwich
+meridian simply by specifying the westernmost longitude as @var{min} and
+the easternmost longitude as @var{max}.
+Thus, the following commands extract a hyperslab containing the Saharan desert:
+@example
+ncks -d lon,340.,50. in.nc out.nc
+ncks -d lon,340.,50. -d lat,10.,35. in.nc out.nc
+@end example
+@noindent
+The first example selects data in the same longitude range as the Sahara. 
+The second example further constrains the data to having the same
+latitude as the Sahara.
+The coordinate @code{lon} in the @var{output-file}, @file{out.nc}, will
+no longer be monotonic! 
+The values of @code{lon} will be, e.g., @samp{340, 350, 0, 10, 20, 30,
+40, 50}. 
+This can have serious implications should you run @file{out.nc} through
+another operation which expects the @code{lon} coordinate to be
+monotonically increasing.
+Fortunately, the chances of this happening are slim, since @code{lon}
+has already been hyperslabbed, there should be no reason to hyperslab
+@code{lon} again.
+Should you need to hyperslab @code{lon} again, be sure to give
+dimensional indices as the hyperslab arguments, rather than coordinate
+values (@pxref{Hyperslabs}).
+
+@node Fortran indexing, Missing values, Wrapped coordinates, Common features
+@section C & Fortran index conventions
+@cindex index conventions
+@cindex Fortran index convention
+@cindex C index convention
+@cindex @code{-F}
+@cartouche
+@noindent
+Availability: @code{ncdiff}, @code{ncea}, @code{ncecat}, @code{ncflint},
+@code{ncks},  @code{ncra}, @code{ncrcat}, @code{ncwa}@*
+Key switches: @samp{-F}@*
+@end cartouche
+By default, NCO uses C-style (0-based) indices for all I/O.
+The @samp{-F} switch tells NCO to switch to reading and writing with
+Fortran index conventions.
+In Fortran, indices begin counting from 1 (rather than 0), and
+dimensions are ordered from fastest varying to slowest varying.
+Consider a file @file{85.nc} containing 12 months of data in the record
+dimension @code{time}.
+The following hyperslab operations produce identical results, a
+June-July-August average of the data:
+@example
+ncra -d time,5,7 85.nc 85_JJA.nc
+ncra -F -d time,6,8 85.nc 85_JJA.nc
+@end example
+
+Printing variable @var{three_dim_var} in file @file{in.nc} first with C 
+indexing conventions, then with Fortran indexing conventions results in
+the following output formats: 
+@example
+% ncks -H -v three_dim_var in.nc
+% lat[0]=-90 lev[0]=1000 lon[0]=-180 three_dim_var[0]=0 
+@dots{}
+% ncks -F -H -v three_dim_var in.nc
+% lon(1)=-180 lev(1)=1000 lat(1)=-90 three_dim_var(1)=0 
+@end example
+
+@node Missing values, Suppressing interactive prompts, Fortran indexing, Common features
+@section Missing values
+@cindex missing values
+@cindex data, missing 
+@cindex averaging data
+@cindex @code{missing_value} attribute
+@cartouche
+@noindent
+Availability: @code{ncdiff}, @code{ncea}, @code{ncflint}, @code{ncra},
+@code{ncwa}@* 
+Key switches: None@*
+@end cartouche
+
+The phrase @dfn{missing data} refers to data points that are missing,
+invalid, or for any reason not intended to be arithmetically processed
+in the same fashion as valid data.  
+@cindex arithmetic operators
+The NCO arithmetic operators attempt to handle missing data in an
+intelligent fashion. 
+There are four steps in the NCO treatment of missing data:
+@enumerate
+@item 
+Identifying variables which may contain missing data. 
+
+NCO follows the convention that missing data should be stored
+with the @var{missing_value} specified in the variable's
+@code{missing_value} attribute.  
+The @emph{only} way NCO recognizes that a variable @emph{may} contain
+missing data is if the variable has a @code{missing_value} attribute.
+In this case, any elements of the variable which are numerically equal
+to the @var{missing_value} are treated as missing data.
+
+@item 
+Converting the @var{missing_value} to the type of the variable, if
+neccessary. 
+
+Consider a variable @var{var} of type @var{var_type} with a
+@code{missing_value} attribute of type @var{att_type} containing the
+value @var{missing_value}.  
+As a guideline, the type of the @code{missing_value} attribute should be
+the same as the type of the variable it is attached to.
+If @var{var_type} equals @var{att_type} then NCO straightforwardly 
+compares each value of @var{var} to @var{missing_value} to determine
+which elements of @var{var} are to be treated as missing data.
+If not, then NCO will internally convert @var{att_type} to
+@var{var_type} by using the implicit conversion rules of C, or, if  
+@var{att_type} is @code{NC_CHAR}
+@footnote{For example, the DOE ARM program often uses @var{att_type} = 
+@code{NC_CHAR} and @var{missing_value} = @samp{-99999.}.
+}, by typecasting the results of the C function
+@code{strtod(@var{missing_value})}. 
+
+@item 
+Identifying missing data during arithmetic operations.
+
+@cindex performance
+@cindex operator speed
+@cindex speed
+@cindex execution time
+@cindex arithmetic operators
+When an NCO arithmetic operator is processing a variable @var{var} with
+a @code{missing_value} attribute, it compares each value of @var{var}
+to @var{missing_value} before performing an operation.
+Note the @var{missing_value} comparison inflicts a performance penalty
+on the operator.
+Arithmetic processing of variables which contain the
+@code{missing_value} attribute always incurs this penalty, even when
+none of the data is missing.
+Conversely, arithmetic processing of variables which do not contain the
+@code{missing_value} attribute never incurs this penalty.
+In other words, do not attach a @code{missing_value} attribute to a
+variable which does not contain missing data.
+This exhortation can usually be obeyed for model generated data, but it
+may be harder to know in advance whether all observational data will be
+valid or not.
+
+@item 
+Treatment of any data identified as missing.
+
+@cindex @code{ncea}
+@cindex @code{ncra}
+@cindex @code{ncwa}
+@cindex @code{ncdiff}
+@cindex @code{ncflint}
+NCO averagers (@code{ncra}, @code{ncea}, @code{ncwa}) do not count any
+element with the value @var{missing_value} towards the average.
+@code{ncdiff} and @code{ncflint} define a @var{missing_value} result
+when either of the input values is a @var{missing_value}.
+
+@end enumerate
+
+@node  Suppressing interactive prompts, Operator version, Missing values, Common features
+@section Suppressing interactive prompts
+@cindex overwriting files
+@cindex appending to files
+@cindex force overwrite
+@cindex force append
+@cindex @code{-O}
+@cindex @code{-A}
+@cartouche
+@noindent
+Availability: All operators@*
+Key switches: @samp{-O}, @samp{-A}@*
+@end cartouche
+If the @var{output-file} specified for a command is a pre-existing file,
+then the operator will prompt the user whether to overwrite (erase) the
+existing @var{output-file}, attempt to append to it, or abort the
+operation. 
+However, in processing large amounts of data, too many interactive
+questions can be a curse to productivity.
+Therefore NCO also implements two ways to override its own safety
+features, the @samp{-O} and @samp{-A} switches.
+Specifying @samp{-O} tells the operator to overwrite any existing
+@var{output-file} without prompting the user interactively.
+Specifying @samp{-A} tells the operator to attempt to append to any
+existing @var{output-file} without prompting the user interactively.
+These switches are useful in batch environments because they suppress
+interactive keyboard input.
+
+@node Operator version, History attribute, Suppressing interactive prompts, Common features
+@section Operator version
+@cindex version
+@cindex RCS
+@cindex @code{-r}
+@cartouche
+@noindent
+Availability: All operators@*
+Key switches: @samp{-r}@*
+@end cartouche
+All operators can be told to print their internal version number and
+copyright notice and then quit with the @samp{-r} switch.
+The internal version number varies between operators, and indicates the
+most recent change to a particular operator's source code.
+This is useful in making sure you are working with the most recent
+operators.
+The version of NCO you are using might be, e.g., 1.0.
+However using @samp{-r} on, say, @code{ncks}, will produce something
+like @samp{ncks 3.24 (1997/05/06) Copyright 1995--1997 University
+Corporation for Atmospheric Research}.
+This tells you @code{ncks} contains all patches up to version 3.24,
+which dates from May 6, 1997. 
+
+@node History attribute, NCAR CSM Conventions, Operator version, Common features
+@section History attribute
+@cindex @code{history} attribute
+@cindex timestamp
+@cindex global attributes
+@cindex attributes, global
+@cindex @code{-h}
+@cartouche
+@noindent
+Availability: All operators@*
+Key switches: @samp{-h}@*
+@end cartouche
+All operators automatically append a @code{history} global attribute to
+any file they modify or create.
+The @code{history} attribute consists of a timestamp and the full string
+of the invocation command to the operator, e.g., @samp{Mon May 26 20:10:24
+1997: ncks in.nc foo.nc}.
+The full contents of an existing @code{history} attribute are copied
+from the first @var{input-file} to the @var{output-file}.
+The timestamps appear in reverse chronological order, with the most
+recent timestamp appearing first in the @code{history} attribute.
+Since NCO and many other netCDF operators adhere to the @code{history}
+convention, the entire data processing path of a given netCDF file may
+often be deduced from examination of its @code{history} attribute.
+@cindex @code{ncatted}
+To avoid information overkill, all operators have an optional switch
+(@samp{-h}) to override automatically appending the @code{history}
+attribute (@pxref{ncatted netCDF Attribute Editor}).  
+
+@node NCAR CSM Conventions, ARM Conventions, History attribute, Common features
+@section NCAR CSM Conventions
+@cindex NCAR CSM conventions
+@cindex CSM conventions
+@cindex @code{gw}
+@cindex @code{ORO}
+@cindex @code{date}
+@cindex @code{datesec}
+@cindex @code{time}
+@cartouche
+@noindent
+Availability: @code{ncdiff}, @code{ncea}, @code{ncecat}, @code{ncflint},
+@code{ncra}, @code{ncwa}@*
+Key switches: None@*
+@end cartouche
+NCO has been programmed to recognize NCAR CSM history tapes.
+If you do not work with NCAR CSM data then you may skip this section.
+The CSM netCDF convention is described at
+@ifhtml
+<a href="http://www.cgd.ucar.edu/csm/experiments/output.format.html"> http://www.cgd.ucar.edu/csm/experiments/output.format.html</a>.
+@end ifhtml
+@ifclear html
+@c DBG XXX: printed manual is not hyphenating this long web-page name.
+@code{http://www.cgd.ucar.edu/csm/experiments/output.format.html}.
+@end ifclear
+Most of the CSM netCDF convention is transparent to NCO
+@footnote{
+The exception is appending/altering the attributes @code{x_op},
+@code{y_op}, @code{z_op}, and @code{t_op} for variables which have been
+averaged across space and time dimensions.
+This feature is scheduled for future inclusion in NCO.
+}.
+There are no known pitfalls associated with using any NCO operator on
+files adhering to this convention
+@footnote{
+The CSM convention recommends @code{time} be stored in the format
+@var{time} since @var{base_time}, e.g., the @code{units} attribute of
+@code{time} might be @samp{days since 1992-10-8 15:15:42.5 -6:00}. 
+A problem with this format occurs when using @code{ncrcat} to
+concatenate multiple files together, each with a different
+@var{base_time}. 
+That is, any @code{time} values from files following the first file to
+be concatenated should be corrected to the @var{base_time} offset
+specified in the @code{units} attribute of @code{time} from the first
+file. 
+The analogous problem has been fixed in ARM files @xref{ARM Conventions}
+and could be fixed for CSM files if there is sufficient lobbying, and if
+Unidata fixes the UDUNITS package to build out of the box on Linux.
+}.
+However, to facilitate maximum user friendliness, NCO does treat certain
+variables in some CSM files specially. 
+The special functions are not required by the CSM netCDF convention,
+but experience has shown they do make life easier.
+
+Currently, NCO determines whether a datafile is a CSM output datafile
+simply by checking whether value of the global attribute
+@code{convention} (if it exists) equals @samp{NCAR-CSM}.  
+Should @code{convention} equal @samp{NCAR-CSM} in the (first)
+@var{input-file}, NCO will attempt to treat certain variables specially,
+because of their meaning in CSM files. 
+NCO will not average the following variables often found in CSM files:
+@code{ntrm}, @code{ntrn}, @code{ntrk}, @code{ndbase}, @code{nsbase},
+@code{nbdate}, @code{nbsec}, @code{mdt}, @code{mhisf}.
+These variables contain scalar metadata such as the resolution of the
+host CSM model and it makes no sense to change their values.
+Furthermore, the @code{ncdiff} operator will not attempt to difference
+the following variables: @code{gw}, @code{ORO}, @code{date},
+@code{datesec}, @code{hyam}, @code{hybm}, @code{hyai}, @code{hybi}.
+These variables represent the Gaussian weights, the orography field,
+time fields, and hybrid pressure coefficients.
+These are fields which you want to remain unaltered in the differenced
+file 99% of the time.
+If you decide you would like any of the above CSM fields processed, you
+must use @code{ncrename} to rename them first.
+
+@node ARM Conventions,  , NCAR CSM Conventions, Common features
+@section ARM Conventions
+@cindex ARM conventions
+@cindex @code{time_offset}
+@cindex @code{base_time}
+@cindex @code{time}
+@cartouche
+@noindent
+Availability: @code{ncrcat}@*
+Key switches: None@*
+@end cartouche
+@code{ncrcat} has been programmed to recognize ARM (Atmospheric
+Radiation Measurement Program) data files.
+If you do not work with ARM data then you may skip this section.
+ARM data files store time information in two variables, a scalar,
+@code{base_time}, and a record variable, @code{time_offset}.
+Subtle but serious problems can arise when these type of files are
+just blindly concatenated.
+Therefore @code{ncrcat} has been specially programmed to be able to
+chain together consecutive ARM @var{input-files} and produce and
+an @var{output-file} which contains the correct time information.
+Currently, @code{ncrcat} determines whether a datafile is an ARM
+datafile simply by testing for the existence of the variables
+@code{base_time}, @code{time_offset}, and the dimension @code{time}. 
+If these are found in the @var{input-file} then @code{ncrcat} will 
+automatically perform two non-standard, but hopefully useful,
+procedures. 
+First, @code{ncrcat} will ensure that values of @code{time_offset}
+appearing in the @var{output-file} are relative to the @code{base_time}
+appearing in the first @var{input-file} (and presumably, though not
+necessarily, also appearing in the @var{output-file}).
+Second, if a coordinate variable named @code{time} is not found in the
+@var{input-files}, then @code{ncrcat} automatically creates the
+@code{time} coordinate in the @var{output-file}.  
+The values of @code{time} are defined by the ARM convention
+@math{@var{time} = @var{base_time} + @var{time_offset}}.
+Thus, if @var{output-file} contains the @code{time_offset}
+variable, it will also contain the @code{time} coordinate.
+@cindex @code{history} attribute
+@cindex global attributes
+@cindex attributes, global
+A short message is added to the @code{history} global attribute whenever
+these ARM-specific procedures are executed.
+
+@node Operators, General Index, Common features, Top
+@chapter Reference manual for all operators
+
+This chapter presents reference pages for each of the operators
+individually. 
+The operators are presented in alphabetical order.
+All valid command line switches are included in the syntax statement.
+Recall that descriptions of many of these command line switches are
+provided only in @ref{Common features}, to avoid redundancy.
+Only options specific to, or most useful with, a particular operator are
+described in any detail in the sections below.  
+
+@menu
+* ncatted netCDF Attribute Editor::  
+* ncdiff netCDF Differencer::   
+* ncea netCDF Ensemble Averager::  
+* ncecat netCDF Ensemble Concatenator::  
+* ncflint netCDF File Interpolator::  
+* ncks netCDF Kitchen Sink::    
+* ncra netCDF Record Averager::  
+* ncrcat netCDF Record Concatenator::  
+* ncrename netCDF Renamer::     
+* ncwa netCDF Weighted Averager  ::  
+@end menu
+
+@page
+@node ncatted netCDF Attribute Editor, ncdiff netCDF Differencer, Operators, Operators
+@section @code{ncatted} netCDF Attribute Editor
+@cindex attributes
+@cindex attribute names
+@cindex editing attributes
+@findex ncatted
+
+@noindent
+SYNTAX
+@example
+ncatted [-a @var{att_dsc}] [-a @dots{}] [-D] [-h]
+[-l path] [-O] [-p path] [-R] [-r] 
+@var{input-file} [@var{output-file}]  
+@end example
+ 
+@noindent
+DESCRIPTION
+
+@code{ncatted} edits attributes in a netCDF file.  
+If you are editing attributes then you are spending too much time in the
+world of metadata, and @code{ncatted} was written to get you back out as
+quickly and painlessly as possible.
+@code{ncatted} can @dfn{append}, @dfn{create}, @dfn{delete},
+@dfn{modify}, and @dfn{overwrite} attributes (all explained below).  
+Furthermore, @code{ncatted} allows each editing operation to be applied
+to every variable in a file, thus saving you time when you want to
+change attribute conventions throughout a file.
+
+@cindex @code{history} attribute
+@cindex @code{-h}
+Because repeated use of @code{ncatted} can considerably increase the size
+of the @code{history} global attribute (@pxref{History attribute}), the
+@samp{-h} switch is provided to override automatically appending the
+command to the @code{history} global attribute in the @var{output-file}.
+
+The key to mastering @code{ncatted} is understanding the meaning of the
+structure describing the attribute modification, @var{att_dsc}.
+Each @var{att_dsc} contains five elements, which makes using
+@code{ncatted} somewhat complicated, but powerful.
+The @var{att_dsc} argument structure contains five arguments in the
+following order:@* 
+
+@var{att_dsc} = @var{att_nm}, @var{var_nm}, @var{mode}, @var{att_type},
+@var{att_val}@*
+
+@table @var
+@item att_nm
+Attribute name. 
+Example: @code{units}
+@item var_nm
+Variable name. 
+Example: @code{pressure}
+@item mode
+Edit mode abbreviation. 
+Example: @code{a}. 
+See below for complete listing of valid values of @var{mode}.
+@item att_type
+Attribute type abbreviation. Example: @code{c}. 
+See below for complete listing of valid values of @var{att_type}.
+@item att_val
+Attribute value. Example: @code{pascal}. 
+@end table
+@noindent
+There should be no empty space between these five consecutive
+arguments. 
+The description of these arguments follows in their order of
+appearance. 
+
+The value of @var{att_nm} is the name of the attribute you want to edit.
+This meaning of this should be clear to all users of the @code{ncatted}
+operator. 
+
+@cindex global attributes
+@cindex attributes, global
+The value of @var{var_nm} is the name of the variable containing the
+attribute (named @var{att_nm}) that you want to edit.
+There are two very important and useful exceptions to this rule.
+The value of @var{var_nm} can also be used to direct @code{ncatted} to
+edit global attributes, or to repeat the editing operation for every
+variable in a file.
+A value of @var{var_nm} of ``global'' indicates that @var{att_nm} refers
+to a global attribute, rather than a particular variable's attribute.
+This is the method @code{ncatted} supports for editing global
+attributes.
+If @var{var_nm} is left blank, on the other hand, then @code{ncatted} 
+attempts to perform the editing operation on every variable in the file.
+This option may be convenient to use if you decide to change the
+conventions you use for describing the data.
+
+The value of @var{mode} is a single character abbreviation (@code{a},
+@code{c}, @code{d}, @code{m}, or @code{o}) standing for one of
+five editing modes:@*
+@cindex attributes, appending
+@cindex attributes, creating
+@cindex attributes, deleting
+@cindex attributes, modifying
+@cindex attributes, editing
+@cindex attributes, overwriting
+@table @code
+@item a 
+@dfn{Append}.
+Append value @var{att_val} to current @var{var_nm} attribute
+@var{att_nm} value @var{att_val}, if any.  
+If @var{var_nm} does not have an attribute @var{att_nm}, there is no
+effect.
+@item c
+@dfn{Create}.
+Create variable @var{var_nm} attribute @var{att_nm} with @var{att_val}
+if @var{att_nm} does not yet exist.  
+If @var{var_nm} already has an attribute @var{att_nm}, there is no
+effect. 
+@item d
+@dfn{Delete}.
+Delete current @var{var_nm} attribute @var{att_nm}.
+If @var{var_nm} does not have an attribute @var{att_nm}, there is no
+effect. 
+When @dfn{Delete} mode is selected, the @var{att_type} and @var{att_val}
+arguments are superfluous and may be left blank.
+@item m
+@dfn{Modify}.
+Change value of current @var{var_nm} attribute @var{att_nm} to value
+@var{att_val}. 
+If @var{var_nm} does not have an attribute @var{att_nm}, there is no
+effect. 
+@item o
+@dfn{Overwrite}.
+Write attribute @var{att_nm} with value @var{att_val} to variable
+@var{var_nm}, overwriting existing attribute @var{att_nm}, if any. 
+This is the default mode.
+@end table
+
+The value of @var{att_type} is a single character abbreviation (@code{f},
+@code{d}, @code{l}, @code{s}, @code{c}, or @code{b}) standing for one of
+the six primitive netCDF data types:@* 
+@table @code
+@item f
+@dfn{Float}.
+Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
+type NC_FLOAT. 
+@item d
+@dfn{Double}.
+Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
+type NC_DOUBLE.
+@item l
+@dfn{Long}.
+Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
+type NC_LONG.
+@item s
+@dfn{Short}.
+Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
+type NC_SHORT.
+@item c
+@dfn{Char.} 
+Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
+type NC_CHAR.
+@item b
+@dfn{Byte}.
+Value(s) specified in @var{att_val} will be stored as netCDF intrinsic
+type NC_BYTE.
+@end table
+@noindent
+The specification of @var{att_type} is optional in @dfn{Delete} mode.
+
+The value of @var{att_val} is what you want to change attribute
+@var{att_nm} to contain.
+The specification of @var{att_val} is optional in @dfn{Delete} mode.
+@var{att_val} may be a single value or one-dimensional array of elements
+of type @code{att_type}.
+When specifying an array of values, enclose @var{att_val} in quotes,
+e.g., @code{-a levels,T,o,s,"1,2,3,4"}. 
+Quotes are unnecessary around @var{att_val} unless @var{att_val}
+contains characters which would confuse the calling shell, such as
+spaces, commas, and wildcard characters. 
+
+@noindent
+EXAMPLES
+
+Append the string "Data version 2.0.\n" to the global attribute
+@code{history}: 
+@example
+ncatted -O -a history,global,a,c,"Data version 2.0\n" in.nc 
+@end example
+
+Change the value of the @code{long_name} attribute for variable @code{T}
+from whatever it currently is to "temperature":
+@example
+ncatted -O -a long_name,T,o,c,temperature in.nc
+@end example
+
+Delete all existing @code{units} attributes:
+@example
+ncatted -O -a units,,d,, in.nc
+@end example
+@noindent
+The value of @var{var_nm} was left blank in order to select all
+variables in the file.
+The values of @var{att_type} and @var{att_val} were left blank because
+they are superfluous in @dfn{Delete} mode. 
+
+Modify all existing @code{units} attributes to "meter second-1"
+@example
+ncatted -O -a units,,m,c,"meter second-1" in.nc
+@end example
+
+Overwrite the @code{quanta} attribute of variable
+@code{energy} to an array of four integers. 
+@example
+ncatted -O -a quanta,energy,o,s,"010,101,111,121" in.nc
+@end example
+
+@page
+@node ncdiff netCDF Differencer, ncea netCDF Ensemble Averager, ncatted netCDF Attribute Editor, Operators
+@section @code{ncdiff} netCDF Differencer
+@cindex subtraction
+@cindex differencing data
+@cindex anomalies
+@findex ncdiff
+
+@noindent
+SYNTAX
+@example 
+ncdiff [-A] [-C] [-c] [-D @var{dbg}] 
+[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
+[-O] [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]] 
+[-x] @var{file_1} @var{file_2} @var{file_3}
+@end example
+
+@noindent
+DESCRIPTION
+
+@code{ncdiff} subtracts variables in @var{file_2} from the corresponding
+variables (those with the same name) in @var{file_1} and stores the
+results in @var{file_3}. 
+@cindex broadcasting variables
+Variables in @var{file_2} are @dfn{broadcast} to conform to the
+corresponding variable in @var{file_1} if necessary.  
+Broadcasting a variable means creating data in non-existing dimensions
+from the data in existing dimensions.
+For example, a two dimensional variable in @var{file_2} can be
+subtracted from a four, three, or two (but not one or zero)
+dimensional variable (of the same name) in @code{file_1}. 
+This functionality allows the user to compute anomalies from the mean.
+Note that variables in @var{file_1} are @emph{not} broadcast to conform
+to the dimensions in @var{file_2}. 
+@cindex rank
+Thus the number of dimensions, or @dfn{rank}, of any processed variable
+in @var{file_1} must be greater than or equal to the rank of the same
+variable in @var{file_2}. 
+Furthermore, the size of all dimensions common to both @var{file_1} and
+@var{file_2} must be equal. 
+
+When computing anomalies from the mean it is often the case that
+@var{file_2} was created by applying an averaging operator to a file
+with the same dimensions as @var{file_1}, if not @var{file_1} itself.
+In these cases, creating @var{file_2} with @code{ncra} rather than
+@code{ncwa} will cause the @code{ncdiff} operation to fail.
+For concreteness say the record dimension in @code{file_1} is
+@code{time}.  
+If @var{file_2} were created by averaging @var{file_1} over the
+@code{time} dimension with @code{ncra} operator rather than @code{ncwa},
+then @var{file_2} will have a @code{time} dimension of size 1 rather
+than having no @code{time} dimension at all 
+@cindex degenerate dimensions
+@footnote{This is because @code{ncra} collapses the record dimension
+to a size of 1 (making it a @dfn{degenerate} dimension), but does not
+remove it, while @code{ncwa} removes all dimensions it averages over. 
+In other words, @code{ncra} changes the size but not the rank of
+variables, while @code{ncwa} changes both the size and the rank of
+variables.}.   
+In this case the input files to @code{ncdiff}, @var{file_1} and
+@var{file_2}, will have unequally sized @code{time} dimensions which
+causes @code{ncdiff} to fail.
+To prevent this from occuring, use @code{ncwa} to remove the @code{time}
+dimension from @var{file_2}.
+An example is given below.
+
+@code{ncdiff} will never difference coordinate variables or variables of
+type @code{NC_CHAR} or @code{NC_BYTE}. 
+This ensures that coordinates like (e.g., latitude and longitude) are
+physically meaningful in the output file, @var{file_3}. 
+This behavior is hardcoded.
+@cindex NCAR CSM conventions
+@cindex CSM conventions
+@code{ncdiff} applies special rules to some NCAR CSM fields (e.g.,
+@code{ORO}).
+See @ref{NCAR CSM Conventions} for a complete description.
+
+@noindent
+EXAMPLES
+
+Say files @file{85_0112.nc} and @file{86_0112.nc} each contain 12 months
+of data.
+Compute the change in the monthly averages from 1985 to 1986:
+@example
+ncdiff 86_0112.nc 85_0112.nc 86m85_0112.nc
+@end example
+
+The following examples demonstrate the broadcasting feature of
+@code{ncdiff}.  
+Say we wish to compute the monthly anomalies of @code{T} from the yearly
+average of @code{T} for the year 1985.
+First we create the 1985 average from the monthly data, which is stored
+with the record dimension @code{time}.
+@example
+ncra 85_0112.nc 85.nc
+ncwa -O -a time 85.nc 85.nc
+@end example
+@noindent
+The second command, @code{ncwa}, gets rid of the @code{time} dimension
+of size 1 that @code{ncra} left in @file{85.nc}. 
+Now none of the variables in @file{85.nc} has a @code{time} dimension.
+A quicker way to accomplish this is to use @code{ncwa} from the
+beginning:  
+@example
+ncwa -a time 85_0112.nc 85.nc
+@end example
+@noindent
+We are now ready to use @code{ncdiff} to compute the anomalies for 1985:
+@example
+ncdiff -v T 85_0112.nc 85.nc t_anm_85_0112.nc
+@end example
+@noindent
+Each of the 12 records in @file{t_anm_85_0112.nc} now contains the
+monthly deviation of @code{T} from the annual mean of @code{T} for each
+gridpoint. 
+
+Say we wish to compute the monthly gridpoint anomalies from the zonal
+annual mean. 
+A @dfn{zonal mean} is a quantity that has been averaged over the
+longitudinal (or @var{x}) direction.
+First we use @code{ncwa} to average over longitudinal direction
+@code{lon}, creating @file{xavg_85.nc}, the zonal mean of @file{85.nc}. 
+Then we use @code{ncdiff} to subtract the zonal annual means from the
+monthly gridpoint data:
+@example
+ncwa -a lon 85.nc xavg_85.nc
+ncdiff 85_0112.nc xavg_85.nc tx_anm_85_0112.nc
+@end example
+@noindent
+Assuming @file{85_0112.nc} has dimensions @code{time} and @code{lon}, 
+this example only works if @file{xavg_85.nc} has no @code{time} or
+@code{lon} dimension.
+
+As a final example, say we have five years of monthly data (i.e., 60 
+months) stored in @file{8501_8912.nc} and we wish to create a file
+which contains the twelve month seasonal cycle of the average monthly
+anomaly from the five-year mean of this data. 
+The following method is just one permutation of many which will
+accomplish the same result.
+First use @code{ncwa} to create the file containing the five-year mean:
+@example
+ncwa -a time 8501_8912.nc 8589.nc
+@end example
+@noindent
+Next use @code{ncdiff} to create a file containing the difference of
+each month's data from the five-year mean:
+@example
+ncdiff 8501_8912.nc 8589.nc t_anm_8501_8912.nc
+@end example
+@noindent
+Now use @code{ncks} to group the five January anomalies together in one 
+file, and use @code{ncra} to create the average anomaly for all five
+Januarys. 
+These commands are embedded in a shell loop so they are repeated for all
+twelve months:
+@example
+foreach idx (01 02 03 04 05 06 07 08 09 10 11 12) 
+ncks -F -d time,$idx,,12 t_anm_8501_8912.nc foo.$idx
+ncra foo.$idx t_anm_8589_$idx.nc
+end
+@end example
+@noindent
+Finally, use @code{ncrcat} to concatenate the 12 average monthly anomaly
+files into one file which then contains the entire seasonal cycle of the
+monthly anomalies:
+@example
+ncrcat t_anm_8589_??.nc t_anm_8589_0112.nc
+@end example
+@noindent
+
+@page
+@node ncea netCDF Ensemble Averager, ncecat netCDF Ensemble Concatenator, ncdiff netCDF Differencer, Operators
+@section @code{ncea} netCDF Ensemble Averager
+@cindex averaging data
+@cindex ensemble average
+@findex ncea
+
+@noindent
+SYNTAX
+@example
+ncea [-A] [-C] [-c] [-D @var{dbg}] 
+[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
+[-n @var{loop}] [-O] [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]]
+[-x] @var{input-files} @var{output-file}   
+@end example
+
+@noindent
+DESCRIPTION
+
+@code{ncea} performs gridpoint averages of variables across an arbitrary
+number (an @dfn{ensemble}) of input files, with each file receiving an
+equal weight in the average.
+@cindex ensemble
+Each variable in the @var{output-file} will be the same size as the same
+variable in any one of the in the @var{input-files}, and all
+@var{input-files} must be the same size. 
+Whereas @code{ncra} only performs averages over the record dimension
+(e.g., time), and weights each record in the record dimension evenly, 
+@code{ncea} averages entire files, and weights each file evenly.
+All dimensions, including the record dimension, are treated identically
+and preserved in the @var{output-file}.
+@xref{Averaging vs. Concatenating}, for a description of the
+distinctions between the various averagers and concatenators. 
+
+The file is the logical unit of organization for the results of many
+scientific studies.
+Often one wishes to generate a file which is the gridpoint average of
+many separate files. 
+This may be to reduce statistical noise by combining the results of a
+large number of experiments, or it may simply be a step in a procedure
+whose goal is to compute anomalies from a mean state. 
+In any case, when one desires to generate a file whose properties are
+the mean of all the input files, then @code{ncea} is the operator to
+use. 
+@code{ncea} assumes coordinate variable are properties common to all of
+the experiments and so does not average them across files.
+Instead, @code{ncea} copies the values of the coordinate variables from
+the first input file to the output file.
+
+@noindent
+EXAMPLES
+
+Consider a model experiment which generated five realizations of one
+year of data, say 1985.
+You can imagine that the experimenter slightly perturbs the
+initial conditions of the problem before generating each new solution.  
+Assume each file contains all twelve months (a seasonal cycle) of data
+and we want to produce a single file containing the ensemble average
+(mean) seasonal cycle.  
+Here the numeric filename suffix denotes the experiment number
+(@emph{not} the month):
+@example
+ncea 85_01.nc 85_02.nc 85_03.nc 85_04.nc 85_05.nc 85.nc
+ncea 85_0[1-5].nc 85.nc
+ncea -n 5,2,1 85_01.nc 85.nc
+@end example
+@noindent
+These three commands produce identical answers.
+@xref{Specifying input files}, for an explanation of the distinctions
+between these methods.
+The output file, @file{85.nc}, is the same size as the inputs files.
+It contains 12 months of data (which might or might not be stored in the
+record dimension, depending on the input files), but each value in the
+output file is the average of the five values in the input files.
+
+In the previous example, the user could have obtained the ensemble
+average values in a particular spatio-temporal region by adding a 
+hyperslab argument to the command, e.g.,
+@example
+ncea -d time,0,2 -d lat,-23.5,23.5 85_??.nc 85.nc
+@end example
+@noindent
+In this case the output file would contain only three slices of data in
+the @var{time} dimension. 
+These three slices are the average of the first three slices from the
+input files.
+Additionally, only data inside the tropics is included.
+
+@page
+@node ncecat netCDF Ensemble Concatenator, ncflint netCDF File Interpolator, ncea netCDF Ensemble Averager, Operators
+@section @code{ncecat} netCDF Ensemble Concatenator
+@cindex concatenation
+@cindex ensemble concatenation
+@findex ncecat
+
+@noindent
+SYNTAX
+@example
+ncecat [-A] [-C] [-c] [-D @var{dbg}] 
+[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
+[-n @var{loop}] [-O] [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]]
+[-x] @var{input-files} @var{output-file}   
+@end example
+
+@noindent
+DESCRIPTION
+
+@code{ncecat} concatenates an arbitrary number of input files into a
+single output file.
+Input files are glued together by creating a record dimension in the
+output file. 
+Input files must be the same size.
+Each input file is stored consecutively as a single record in the output
+file.
+Thus, the size of the output file is the sum of the sizes of the input
+files. 
+@xref{Averaging vs. Concatenating}, for a description of the
+distinctions between the various averagers and concatenators. 
+
+Consider five realizations, @file{85a.nc}, @file{85b.nc}, @dots{}
+@file{85e.nc} of 1985 predictions from the same climate model.
+Then @code{ncecat 85?.nc 85_ens.nc} glues the individual realizations
+together into the single file, @file{85_ens.nc}. 
+If an input variable was dimensioned [@code{lat},@code{lon}], it will have
+dimensions [@code{record},@code{lat},@code{lon}] in the output file.
+A restriction of @code{ncecat} is that the hyperslabs of the processed
+variables must be the same from file to file.
+Normally this means all the input files are the same size, and contain
+data on different realizations of the same variables.
+
+@noindent
+EXAMPLES
+
+Consider a model experiment which generated five realizations of one
+year of data, say 1985.
+You can imagine that the experimenter slightly perturbs the
+initial conditions of the problem before generating each new solution.  
+Assume each file contains all twelve months (a seasonal cycle) of data
+and we want to produce a single file containing all the seasonal cycles.
+Here the numeric filename suffix denotes the experiment number
+(@emph{not} the month):
+@example
+ncecat 85_01.nc 85_02.nc 85_03.nc 85_04.nc 85_05.nc 85.nc
+ncecat 85_0[1-5].nc 85.nc
+ncecat -n 5,2,1 85_01.nc 85.nc
+@end example
+@noindent
+These three commands produce identical answers.
+@xref{Specifying input files}, for an explanation of the distinctions
+between these methods.
+The output file, @file{85.nc}, is five times the size as a single
+@var{input-file}. 
+It contains 60 months of data (which might or might not be stored in the
+record dimension, depending on the input files).
+
+@page
+@node ncflint netCDF File Interpolator, ncks netCDF Kitchen Sink, ncecat netCDF Ensemble Concatenator, Operators
+@section @code{ncflint} netCDF File Interpolator
+@cindex interpolation
+@findex ncflint
+
+@noindent
+SYNTAX
+@example
+ncflint [-A] [-C] [-c] [-D @var{dbg}] 
+[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h]
+[-i @var{var,val3}]  
+[-l @var{path}] [-O] [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]]  
+[-w @var{wgt1}[,@var{wgt2}]] [-x] @var{file_1} @var{file_2} @var{file_3}
+@end example
+
+@noindent
+DESCRIPTION
+
+@code{ncflint} creates an output file that is a linear combination of 
+the input files.
+This linear combination can be a weighted average, a normalized weighted
+average average, or an interpolation of the input files.
+Coordinate variables are not acted upon in any case, they are simply
+copied from @var{file_1}.
+
+There are two conceptually distinct methods of using @code{ncflint}.
+The first method is to specify the weight each input file is to have in 
+the output file.
+In this method, the value @var{val3} of a variable in the output file
+@var{file_3} is determined from its values @var{val1} and @var{val2} in the
+two input files according to 
+@set flg
+@tex
+$val3 = wgt1 \times val1 + wgt2 \times val2$
+@clear flg
+@end tex
+@ifinfo
+@math{@var{val3} = @var{wgt1}*@var{val1} + @var{wgt2}*@var{val2}} 
+@clear flg
+@end ifinfo
+@ifset flg
+@c texi2html doesn't like @math{}
+@var{val3} = @var{wgt1}*@var{val1} + @var{wgt2}*@var{val2} 
+@clear flg
+@end ifset
+.
+Here at least @var{wgt1}, and, optionally, @var{wgt2}, are specified on
+the command line with the @samp{-w} switch.
+If only @var{wgt1} is specified then @var{wgt2} is automatically
+computed as @math{@var{wgt2} = 1 - @var{wgt1}}.
+Note that weights larger than 1 are allowed. 
+Thus it is possible to specify @math{@var{wgt1} = 2} and
+@math{@var{wgt2} = -3}.
+
+The second method of using @code{ncflint} is specifying the
+interpolation option with @samp{-i}.
+This is really the inverse of the first method in the following sense.
+When the user specifies the weights directly, @code{ncflint} has no
+work to do besides multiplying the input values by their respective
+weights and adding the results together to produce the output values.  
+This assumes it is the weights that are known a priori.
+@cindex arrival value 
+In another class of cases it is the @dfn{arrival value} (i.e.,
+@var{val3}) of a particular variable @var{var} that is known a priori.
+In this case, the implied weights can always be inferred by examining
+the values of @var{var} in the input files. 
+This results in one equation in two unknowns, @var{wgt1} and @var{wgt2}:
+@set flg
+@tex
+$val3 = wgt1 \times val1 + wgt2 \times val2$
+@clear flg
+@end tex
+@ifinfo
+@math{@var{val3} = @var{wgt1}*@var{val1} + @var{wgt2}*@var{val2}} 
+@clear flg
+@end ifinfo
+@ifset flg
+@c texi2html doesn't like @math{}
+@var{val3} = @var{wgt1}*@var{val1} + @var{wgt2}*@var{val2} 
+@clear flg
+@end ifset
+.
+Unique determination of the weights requires imposing the additional
+constraint of normalization on the weights:
+@math{@var{wgt1} + @var{wgt2} = 1}.
+Thus, to use the interpolation option, the user specifies @var{var}
+and @var{val3} with the @samp{-i} option.
+@code{ncflint} will compute @var{wgt1} and @var{wgt2}, and use these
+weights on all variables to generate the output file.
+Although @var{var} may have any number of dimensions in the input
+files, it must represent a single, scalar value.  
+@cindex degenerate dimensions
+Thus any dimensions associated with @var{var} must be @dfn{degenerate},
+i.e., of size one.
+
+If neither @samp{-i} nor @samp{-w} is specified on the command line,
+@code{ncflint} defaults to weighting each input file equally in the
+output file.
+This is equivalent to specifying @samp{-w .5} or @samp{-w .5,.5}.
+Note that attempting to specify both methods with @samp{-i} and
+@samp{-w} will result in an error.
+
+@code{ncflint} is programmed not to interpolate variables of type
+@code{NC_CHAR} and @code{NC_BYTE}.
+This behavior is hardcoded.
+
+@noindent
+EXAMPLES
+
+Although it has other uses, the interpolation feature was designed 
+to interpolate @var{file_3} to a time between existing files.
+Consider input files @file{85.nc} and @file{87.nc} containing variables
+describing the state of a physical system at times @math{@code{time} =
+85} and @math{@code{time} = 87}.
+Assume each file contains its timestamp in the scalar variable
+@code{time}.  
+Then, to linearly interpolate to a file @file{86.nc} which describes
+the state of the system at time at @code{time} = 86, we would use
+@example
+ncflint -i time,86 85.nc 87.nc 86.nc
+@end example
+
+Say you have observational data covering January and April 1985 in two
+files named @file{85_01.nc} and @file{85_04.nc}, respectively.
+Then you can estimate the values for February and March by interpolating
+the existing data as follows.
+Combine @file{85_01.nc} and @file{85_04.nc} in a 2:1 ratio to make
+@file{85_02.nc}:  
+@example
+ncflint -w .667 85_01.nc 85_04.nc 85_02.nc
+ncflint -w .667,.333 85_01.nc 85_04.nc 85_02.nc
+@end example
+
+Multiply @file{85.nc} by 3 and by @minus{}2 and add them together to
+make @file{tst.nc}: 
+@example
+ncflint -w 3,-2 85.nc 85.nc tst.nc
+@end example
+@noindent
+This is an example of a null operation, so @file{tst.nc} should be
+identical (within machine precision) to @file{85.nc}.
+
+@page
+@node ncks netCDF Kitchen Sink, ncra netCDF Record Averager, ncflint netCDF File Interpolator, Operators
+@section @code{ncks} netCDF Kitchen Sink
+@cindex kitchen sink
+@cindex printing files contents
+@cindex printing variables
+@findex ncks
+
+@noindent
+SYNTAX
+@example
+ncks [-A] [-C] [-c] [-D] [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]]
+[-F] [-H] [-h] [-l @var{path}] [-M] [-m] [-O] [-p @var{path}] [-R] 
+[-r] [-s @var{format}] [-u] [-v @var{var}[,@dots{}]] [-x]
+@var{input-file} [@var{output-file}] 
+@end example
+
+@noindent
+DESCRIPTION
+
+@code{ncks} combines selected features of @code{ncdump(1)},
+@code{ncextr(1)}, and the nccut and ncpaste specifications into one
+versatile utility. 
+@code{ncks} extracts a subset of the data from @var{input-file} and
+either prints it as ASCII text to stdout, or writes (or pastes) it to
+@var{output-file}, or both. 
+
+@code{ncks} will print netCDF data in ASCII format to @code{stdout},
+like @code{ncdump(1)}, but with these differences: 
+@code{ncks} prints data in a tabular format intended to be easy to
+search for the data you want, one datum per screen line, with all
+dimension subscripts and coordinate values (if any) preceding the datum.
+Option @samp{-s} allows the user the format the data using C-style
+format strings.
+
+Options @samp{-M}, @samp{-m}, @samp{-H}, @samp{-F}, @samp{-s}, and @samp{-u}
+control the formatted appearance of the data. 
+
+@cindex global attributes
+@cindex attributes, global
+@code{ncks} will extract (and optionally create a new netCDF file
+comprised of) only selected variable from the input file, like
+@code{ncextr(1)} but with these differences: Only variables and
+coordinates may be specifically included or excluded---all global
+attributes and any attribute associated with an extracted variable will
+be copied to the screen and/or output netCDF file. 
+Options @samp{-c}, @samp{-C}, @samp{-v}, and @samp{-x} control which
+variables are extracted.
+
+@code{ncks} will extract hyperslabs from the specified variables.
+In fact @code{ncks} implements the nccut specification exactly.
+Option @samp{-d} controls the hyperslab specification.
+
+Input dimensions that are not associated with any output variable will
+not appear in the output netCDF.
+This feature removes superfluous dimensions from a netCDF file. 
+
+@cindex appending data
+@cindex merging files
+@code{ncks} will append variables and attributes from the
+@var{input-file} to @var{output-file} if @var{output-file} is a
+pre-existing netCDF file whose relevant dimensions conform to dimension
+sizes of @var{input-file}. 
+The append features of @code{ncks} are intended to provide a rudimentary
+means of adding data from one netCDF file to another, conforming, netCDF
+file. 
+When naming conflicts exists between the two files, data in
+@var{output-file} is usually overwritten by the corresponding data from
+@var{input-file}.  
+Thus it is recommended that the user backup @var{output-file} in case
+valuable data is accidentally overwritten.
+
+If @var{output-file} exists, the user will be queried whether to
+@dfn{overwrite}, @dfn{append}, or @dfn{exit} the @code{ncks} call
+completely.  
+Choosing @dfn{overwrite} destroys the existing @var{output-file} and
+create an entirely new one from the output of the @code{ncks} call.  
+Append has differing effects depending on the uniqueness of the
+variables and attributes output by @code{ncks}: If a variable or
+attribute extracted from @var{input-file} does not have a name conflict with
+the members of @var{output-file} then it will be added to @var{output-file}
+without overwriting any of the existing contents of @var{output-file}. 
+In this case the relevant dimensions must agree (conform) between the
+two files; new dimensions are created in @var{output-file} as required. 
+@cindex global attributes
+@cindex attributes, global
+When a name conflict occurs, a global attribute from @var{input-file}
+will overwrite the corresponding global attribute from
+@var{output-file}.  
+If the name conflict occurs for a non-record variable, then the
+dimensions and type of the variable (and of its coordinate dimensions,
+if any) must agree (conform) in both files. 
+Then the variable values (and it coordinate dimension values, if any)
+from @var{input-file} will overwrite the corresponding variable values (and
+its coordinate dimension values, if any) in @var{output-file} 
+@footnote{
+Those familiar with netCDF mechanics might wish to know what is
+happening here: @code{ncks} does not attempt to redefine the variable in
+@var{output-file} to match its definition in @var{input-file}, @code{ncks} merely
+copies the values of the variable and its coordinate dimensions, if any,
+from @var{input-file} to @var{output-file}.
+}.
+
+Since there can only be one record dimension in a file, the record
+dimension must have the same name (but not necessarily the same size) in
+both files if a record dimension variable is to be appended. 
+If the record dimensions are of differing sizes, the record dimension of
+@var{output-file} will become the greater of the two record dimension sizes,
+the record variable from @var{input-file} will overwrite any counterpart in
+@var{output-file} and fill values will be written to any gaps left in the
+rest of the record variables (I think). 
+In all cases variable attributes in @var{output-file} are superseded by
+attributes of the same name from @var{input-file}, and left alone if
+there is no name conflict. 
+
+Some users may wish to avoid interactive @code{ncks} queries about
+whether to overwrite existing data.
+For example, batch scripts will fail if @code{ncks} does not receive
+responses to its queries. 
+Options @samp{-O} and @samp{-A} are available to force overwriting
+existing files and variables, respectively. 
+
+@unnumberedsubsec Options specific to @code{ncks}:
+
+The following list provides a short summary of the features unique to
+@code{ncks}.  
+Features common to many operators are described in 
+@ref{Common features}. 
+
+@table @samp
+
+@cindex stride
+@item -d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]
+Add @dfn{stride} argument to hyperslabber. 
+@xref{Stride} for a complete description of the @var{stride} argument. 
+
+@cindex @code{-H}
+@item -H 
+Print data to screen.
+
+@cindex @code{-M}
+@item -M
+Print to screen the global metadata describing the file.
+This includes file summary information and global attributes. 
+
+@cindex @code{-m}
+@item -m
+Print variable metadata to screen (similar to @code{ncdump -h}). 
+This displays all the metadata pertaining to each variable, one variable
+at at time.
+
+@cindex @code{-s}
+@item -s @var{format}
+String format for text output. Accepts C @code{printf()} formats.
+
+@cindex @code{-u}
+@item -u 
+Accompany the printing of a variable's values with its units attribute,
+if it exists.  
+
+@end table
+
+@noindent
+EXAMPLES
+
+View all data in netCDF @file{in.nc}, printed with Fortran indexing
+conventions: 
+@example
+ncks -H -F in.nc
+@end example
+
+First, print variable @code{three_dim_var} from file @file{in.nc} with
+default notations. 
+Next print @code{three_dim_var} as an un-annotated text column.
+Then print @code{three_dim_var} signed with very high precision.
+Finally, print @code{three_dim_var} as a comma-separated list.
+@example
+ncks -H -C -v three_dim_var in.nc
+ncks -s "%f\n" -H -C -v three_dim_var in.nc
+ncks -s "%+16.10f\n" -H -C -v three_dim_var in.nc
+ncks -s "%f, " -H -C -v three_dim_var in.nc
+@end example
+@noindent
+The second and third options are useful when pasting data into text
+files like reports or papers.  
+
+Create netCDF @file{out.nc} containing all variables, and any associated
+coordinates, except variable @code{time}, from netCDF @file{in.nc}:
+@example
+ncks -x -v time in.nc out.nc
+@end example
+
+Extract variables @code{time} and @code{pressure} from netCDF @file{in.nc}. 
+If @file{out.nc} does not exist it will be created.
+Otherwise the you will be prompted whether to append to or to
+overwrite @file{out.nc}: 
+@example
+ncks -v time,pressure in.nc out.nc
+ncks -C -v time,pressure in.nc out.nc
+@end example
+@noindent
+The first version of the command creates an @file{out.nc} which contains
+@code{time}, @code{pressure}, and any coordinate variables associated
+with @var{pressure}. 
+The @file{out.nc} from the second version is guaranteed to contain only
+two variables @code{time} and @code{pressure}.  
+
+Create netCDF @file{out.nc} containing all variables from file @file{in.nc}. 
+Restrict the dimensions of these variables to a hyperslab. 
+Print the hyperslabs to the screen for good measure. 
+The specified hyperslab is: the fifth value in dimension @code{time}; the
+half-open range @math{@var{lat} > 0.} in coordinate @code{lat}; the
+half-open range @math{@var{lon} < 330.} in coordinate @code{lon}; the
+closed interval @math{.3 < @var{band} < .5} in coordinate @code{band}; and
+cross-section closest to 1000. in coordinate @code{lev}.  
+Note that limits applied to coordinate values are specified with a
+decimal point, and limits applied to dimension indices do not have a
+decimal point (@xref{Hyperslabs}): 
+@example
+ncks -d time,5 -d lat,,0. -d lon,330., -d band,.3,.5 
+-d lev,1000. in.nc out.nc 
+@end example
+
+@cindex wrapped coordinates
+Assume the domain of the monotonically increasing longitude coordinate
+@code{lon} is @math{0 < @var{lon} < 360}. 
+Here, @code{lon} is an example of a wrapped coordinate.
+@code{ncks} will extract a hyperslab which crosses the Greenwich
+meridian simply by specifying the westernmost longitude as @var{min} and
+the easternmost longitude as @var{max}, as follows:
+@example
+ncks -d lon,260.,45. in.nc out.nc
+@end example
+@xref{Wrapped coordinates} for more details.
+
+@page
+@node ncra netCDF Record Averager, ncrcat netCDF Record Concatenator, ncks netCDF Kitchen Sink, Operators
+@section @code{ncra} netCDF Record Averager
+@cindex averaging data
+@cindex record average
+@cindex running average
+@findex ncra
+
+@noindent
+SYNTAX
+@example
+ncra [-A] [-C] [-c] [-D @var{dbg}] 
+[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
+[-n @var{loop}] [-O] [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]]
+[-x] @var{input-files} @var{output-file}   
+@end example
+
+@noindent
+DESCRIPTION
+
+@code{ncra} averages record variables across an arbitrary number of
+input files.
+@cindex degenerate dimensions
+The record dimension is retained as a degenerate (size 1) dimension in
+the output variables.
+Input files may vary in size, but each must have a record dimension.
+The record coordinate, if any, should be monotonic (or else non-fatal
+warnings may be generated).
+@code{ncra} weights each record (e.g., time slice) in the
+@var{input-files} equally.
+@code{ncra} does not attempt to see if, say, the @code{time} coordinate
+is irregularly spaced and thus would require a weighted average in order
+to be a true time average.
+
+Hyperslabs of the record dimension which include more than one file are
+handled correctly.
+@xref{Averaging vs. Concatenating}, for a description of the
+distinctions between the various averagers and concatenators. 
+
+@noindent
+EXAMPLES
+
+Average files @file{85.nc}, @file{86.nc}, @dots{} @file{89.nc}
+along the record dimension, and store the results in @file{8589.nc}: 
+@cindex globbing
+@cindex @code{NINTAP}
+@cindex Processor
+@cindex CCM Processor
+@example
+ncra 85.nc 86.nc 87.nc 88.nc 89.nc 8589.nc
+ncra 8[56789].nc 8589.nc
+ncra -n 5,2,1 85.nc 8589.nc
+@end example
+These three methods produce identical answers.
+@xref{Specifying input files}, for an explanation of the distinctions
+between these methods.
+
+@cindex fortran
+Assume the files @file{85.nc}, @file{86.nc}, @dots{} @file{89.nc} each
+contain a record coordinate @var{time} of length 12 defined such that
+the third record in @file{86.nc} contains data from March 1986, etc.
+NCO knows how to hyperslab the record dimension across files.
+Thus, to average data from December, 1985 through February, 1986:
+@example
+ncra -d time,11,13 85.nc 86.nc 87.nc 8512_8602.nc
+ncra -F -d time,12,14 85.nc 86.nc 87.nc 8512_8602.nc
+@end example
+@noindent
+The file @file{87.nc} is superfluous, but does not cause an error.
+The @samp{-F} turns on the Fortran (1-based) indexing convention.
+
+Assume the @var{time} coordinate is incrementally numbered such that
+January, 1985 = 1 and December, 1989 = 60.
+Assuming @samp{??} only expands to the five desired files, the following
+averages June, 1985--June, 1989: 
+@example
+ncra -d time,6.,54. ??.nc 8506_8906.nc
+@end example
+
+@page
+@node ncrcat netCDF Record Concatenator, ncrename netCDF Renamer, ncra netCDF Record Averager, Operators
+@section @code{ncrcat} netCDF Record Concatenator
+@cindex concatenation
+@cindex record concatenation
+@findex ncrcat
+
+@noindent
+SYNTAX
+@example
+ncrcat [-A] [-C] [-c] [-D @var{dbg}] 
+[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
+[-n @var{loop}] [-O] [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]]
+[-x] @var{input-files} @var{output-file}   
+@end example
+
+@noindent
+DESCRIPTION
+
+@code{ncrcat} concatenates record variables across an arbitrary number
+of input files.
+The final record dimension is by default the sum of the lengths of the
+record dimensions in the input files.
+@xref{Averaging vs. Concatenating}, for a description of the
+distinctions between the various averagers and concatenators. 
+
+Input files may vary in size, but each must have a record dimension.
+The record coordinate, if any, should be monotonic (or else non-fatal
+warnings may be generated).
+Hyperslabs of the record dimension which include more than one file are 
+handled correctly.
+@cindex ARM conventions
+@code{ncrcat} applies special rules to ARM convention time fields (e.g.,
+@code{time_offset}).
+See @ref{ARM Conventions} for a complete description.
+
+@noindent
+EXAMPLES
+
+Concatenate files @file{85.nc}, @file{86.nc}, @dots{} @file{89.nc}
+along the record dimension, and store the results in @file{8589.nc}: 
+@cindex globbing
+@cindex @code{NINTAP}
+@cindex Processor
+@cindex CCM Processor
+@example
+ncrcat 85.nc 86.nc 87.nc 88.nc 89.nc 8589.nc
+ncrcat 8[56789].nc 8589.nc
+ncrcat -n 5,2,1 85.nc 8589.nc
+@end example
+@noindent
+These three methods produce identical answers.
+@xref{Specifying input files}, for an explanation of the distinctions
+between these methods.
+
+@cindex fortran
+Assume the files @file{85.nc}, @file{86.nc}, @dots{} @file{89.nc} each
+contain a record coordinate @var{time} of length 12 defined such that
+the third record in @file{86.nc} contains data from March 1986, etc.
+NCO knows how to hyperslab the record dimension across files.
+Thus, to concatenate data from December, 1985--February, 1986:
+@example
+ncrcat -d time,11,13 85.nc 86.nc 87.nc 8512_8602.nc
+ncrcat -F -d time,12,14 85.nc 86.nc 87.nc 8512_8602.nc
+@end example
+@noindent
+The file @file{87.nc} is superfluous, but does not cause an error.
+The @samp{-F} turns on the Fortran (1-based) indexing convention.
+
+Assume the @var{time} coordinate is incrementally numbered such that
+January, 1985 = 1 and December, 1989 = 60.
+Assuming @code{??} only expands to the five desired files, the following
+concatenates June, 1985--June, 1989: 
+@example
+ncrcat -d time,6.,54. ??.nc 8506_8906.nc
+@end example
+
+@page
+@node ncrename netCDF Renamer, ncwa netCDF Weighted Averager  , ncrcat netCDF Record Concatenator, Operators
+@section @code{ncrename} netCDF Renamer
+@cindex renaming variables
+@cindex renaming dimensions
+@cindex renaming attributes
+@cindex variable names
+@cindex dimension names
+@cindex attribute names
+@findex ncrename
+
+@noindent
+SYNTAX
+@example
+ncrename [-a @var{old_name},@var{new_name}] [-a @dots{}] [-D] 
+[-d @var{old_name},@var{new_name}] [-d @dots{}] [-h] [-l path] [-O] [-p path]
+[-R] [-r] [-v @var{old_name},@var{new_name}] [-v @dots{}]
+@var{input-file} [@var{output-file}]  
+@end example
+ 
+@noindent
+DESCRIPTION
+
+@code{ncrename} renames dimensions, variables, and attributes in a
+netCDF file.  
+Each object that has a name in the list of old names is renamed using
+the corresponding name in the list of new names. 
+All the new names must be unique. 
+Every old name must exist in the input file, unless the name is preceded
+by the character @samp{.}. 
+The validity of the old names is not checked prior to the renaming. 
+Thus, if an old name is specified without the the @samp{.} prefix and is
+not present in @var{input-file}, @code{ncrename} will abort. 
+
+@cindex data safety
+@cindex safeguards
+@cindex temporary output files
+@code{ncrename} is the exception to the normal rules that the user will
+be interactively prompted before an existing file is changed, and that a
+temporary copy of an output file is constructed during the operation.
+If only @var{input-file} is specified, then @code{ncrename} will change
+the names of the @var{input-file} in place without prompting and without
+creating a temporary copy of @code{input-file}.
+This is because the renaming operation is considered reversible, i.e.,
+the @var{new_name} can easily be changed back to @var{old_name} by using
+@code{ncrename} one more time.
+
+Note that renaming a dimension to the name of a dependent variable can
+be used to invert the relationship between an independent coordinate
+variable and a dependent variable. 
+In this case, the named dependent variable must be one-dimensional and
+should have no missing values. 
+Such a variable will become a coordinate variable.
+
+@cindex performance
+@cindex operator speed
+@cindex speed
+@cindex execution time
+According to the @cite{netCDF User's Guide}, renaming properties in
+netCDF files does not incur the penalty of recopying the entire file
+when the @var{new_name} is shorter than the @var{old_name}.
+
+@noindent
+OPTIONS
+
+@table @samp
+@item -a @var{old_name},@var{new_name}
+Attribute renaming. 
+The old and new names of the attribute are specified by the associated
+@var{old_name} and @var{new_name} values. 
+@cindex global attributes
+@cindex attributes, global
+Global attributes are treated no differently than variable attributes.
+This option may be specified more than once.
+
+@item -d @var{old_name},@var{new_name}
+Dimension renaming. 
+The old and new names of the dimension are specified by the associated
+@var{old_name} and @var{new_name} values. 
+This option may be specified more than once.
+ 
+@item -v @var{old_name},@var{new_name}
+Variable renaming. 
+The old and new names of the variable are specified by the associated
+@var{old_name} and @var{new_name} values. 
+This option may be specified more than once.
+
+@c @cindex interactive prompting
+@c @item -i 
+@c Interactive. 
+@c @code{ncrename} will prompt for confirmation before overwriting an
+@c existing file. 
+@end table
+
+@noindent
+EXAMPLES
+
+Rename the variable @code{p} to @code{pressure} and @code{t} to
+@code{temperature} in netCDF @file{in.nc}. 
+In this case @code{p} must exist in the input file (or @code{ncrename} will
+abort), but the presence of @code{t} is optional:
+@example
+ncrename -v p,pressure -v .t,temperature in.nc
+@end example
+ 
+@cindex global attributes
+@cindex attributes, global
+Create netCDF @file{out.nc} identical to @file{in.nc} except the attribute
+@code{long_name} is changed to @code{title} (in all variables for
+which it appears) and the global attribute @code{Zaire} is changed to
+@code{Congo}:  
+@example
+ncrename -a long_name,title -a Zaire,Congo in.nc out.nc 
+@end example
+
+@page
+@node ncwa netCDF Weighted Averager  ,  , ncrename netCDF Renamer, Operators
+@section @code{ncwa} netCDF Weighted Averager
+@cindex averaging data
+@cindex weighted average
+@cindex masked average
+@cindex broadcasting variables
+@findex ncwa
+
+@noindent
+SYNTAX
+@example
+ncwa [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
+[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
+[-M @var{val}] [-m @var{var}] [-N] [-n] [-O] [-o @var{condition}] 
+[-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}]
+[-x] @var{input-file} @var{output-file} 
+@end example
+
+@noindent
+DESCRIPTION
+
+@code{ncwa} averages variables in a single file over arbitrary
+dimensions, with options to specify weights, masks, and normalization.   
+@xref{Averaging vs. Concatenating}, for a description of the
+distinctions between the various averagers and concatenators. 
+
+@var{mask} and @var{weight}, if specified, are broadcast to conform to
+the variables being averaged. 
+@cindex rank
+The rank of variables is reduced by the number of dimensions which they
+are averaged over.  
+The averaging dimensions are retained as simple scalars in the output
+file. 
+This allows the user to infer which dimensions may have been averaged
+into the existing data.
+@ifhtml
+Note for HTML user's: The documentation for <CODE>ncwa</CODE> relies
+heavily on mathematical expressions which cannot be easily represented
+in HTML.
+The printed manual contains much better documentation on
+<CODE>ncwa</CODE>. 
+@end ifhtml
+@ifinfo
+Note for Info user's: The documentation for @code{ncwa} relies heavily
+on mathematical expressions which cannot be easily represented in
+Info. 
+The printed manual contains much better documentation on @code{ncwa}.
+@end ifinfo
+
+@cindex normalization
+@tex
+Given no @var{mask} or @var{weight}, the average of $x$ is defined as:  
+$$
+\bar x_j = {\sum_{i = 1}^{i = N} x_i \over N } 
+$$
+$N$ is the number of input elements contributing to each element in the
+output. 
+In this example $N$ is simply the product of the sizes of all dimensions
+which are averaged over (i.e., dimensions specified with @samp{-a}).
+The total sum in the numerator is, by default, normalized by the
+@dfn{tally}.
+In this case the tally is $N$, since there is no masking condition. 
+In general the tally counts only the number of $x$'s which contribute to
+the output average.
+This may differ from $N$ when there is a condition, such as a
+@dfn{masking condition}, on the average.  
+Note that $\bar x_j$ represents just the $j$'th element of the output  
+hyperslab.
+The size $J$ of the output hyperslab for a given variable is the product
+of all the dimensions of the input variable which are not averaged over.
+
+Given a @var{weight} $w$ (specified with @samp{-w}), but no @var{mask},
+the average of $x$ generalizes to:  
+$$
+\bar x_j = {\sum_{i = 1}^{i = N} w_i x_i \over N \sum_{i = 1}^{i = N} w_i} 
+$$
+As in the previous example, the tally is the product of the sizes of the
+averaging dimensions (i.e., the dimensions specified with @samp{-a}).  
+Notice the total sum in the numerator is, by default, normalized by both
+the tally, $N$, and the sum of the @var{weights}, $\sum w_i$.
+
+Given a @var{mask} (specified with @samp{-m}), but no @var{weight}
+$w$, the average of $x$ is defined as: 
+$$
+\bar x_j = {\sum_{i = 1}^{i = N} m_i x_i \over \sum_{i = 1}^{i = N} m_i} 
+$$
+Here the tally, $\sum m_i$, is not necessarily equal to $N$.
+The $m_i$ are the Boolean results of the @dfn{masking condition} for
+points $x_i$. 
+Thus $m_i = 1$ when the masking condition is @dfn{true} and $m_i = 0$
+otherwise.   
+The definition of the masking condition is given below.
+
+The total sum in the numerator is, by default, normalized by the tally,
+$\sum m_i$. 
+When a @var{mask} is specified (with @samp{-m}), the tally is less than
+the product of the sizes of the averaging dimensions whenever the
+masking condition is false for at least one of the $N$ elements of the
+input hyperslab.   
+For each point where masking condition is @dfn{true}, the tally is
+incremented by one.
+But elements which do not meet the masking condition do not contribute
+to the output average, and hence do not contribute to the tally.
+
+Given a @var{mask} $m$ (specified with @samp{-m}), and @var{weight} $w$
+(specified with @samp{-w}), the average of $x$ is defined as:  
+$$
+\bar x_j = {\sum_{i = 1}^{i = N} m_i w_i x_i \over \sum_{i = 1}^{i = N} m_i
+\sum_{i = 1}^{i = N} m_i w_i} 
+$$
+This is the most general case handled by @code{ncwa}.
+This case reduces to the simplest case when $w$ is 1 and the masking
+condition is always true so $m_i = 1$. 
+The total sum in the numerator is, by default, normalized by both the
+tally, $\sum m_i$, and the sum of the weights contributing to the output
+average, $\sum m_i w_i$. 
+@end tex
+
+@menu
+* Masking condition::           
+* Normalization::               
+@end menu
+
+@node Masking condition, Normalization, ncwa netCDF Weighted Averager  , ncwa netCDF Weighted Averager
+@unnumberedsubsec Masking condition
+@cindex masking condition
+The @dfn{masking condition} has the syntax @math{@var{mask}}
+@math{@var{condition}} @math{@var{val}}. 
+Here @var{mask} is the name of the masking variable (specified with
+@samp{-m}). 
+The @var{condition} argument to @samp{-o} may be any one of the six
+arithmetic comparatives: @kbd{eq}, @kbd{ne}, @kbd{gt}, @kbd{lt},
+@kbd{ge}, @kbd{le}. 
+@set flg
+@tex
+These are the Fortran-style character abbreviations for the logical 
+operations $=$, $\neq$, $>$, $<$, $\ge$, $\le$. 
+@clear flg
+@end tex
+@ifinfo
+These are the Fortran-style character abbreviations for the logical 
+operations @math{==}, @math{!=}, @math{>}, @math{<}, @math{>=},
+@math{<=}. 
+@clear flg
+@end ifinfo
+@ifset flg
+@c texi2html doesn't like @math{}
+These are the Fortran-style character abbreviations for the logical 
+operations @kbd{==}, @kbd{!=}, @kbd{>}, @kbd{<}, @kbd{>=},
+@clear flg
+@end ifset
+The masking condition defaults to @kbd{eq} (equality).
+The @var{val} argument to @samp{-M} is the right hand side of the
+@dfn{masking condition}.
+Thus for the @var{i}'th element of the hyperslab to be averaged,
+the masking condition is 
+@math{@var{mask_i}} @var{condition} @var{val}.
+
+@node Normalization,  , Masking condition, ncwa netCDF Weighted Averager
+@unnumberedsubsec Normalization
+@cindex normalization
+@code{ncwa} has three switches which control the normalization of the
+averages appearing in the @var{output-file}.
+Option @samp{-N} turns off all normalization (tally and weight). 
+This causes the numerators in the above expressions to appear in the
+output files.
+Option @samp{-n} normalizes by tally but not by weight. 
+Option @samp{-W} normalizes by weight but not by tally.
+Various sums and integrals can be computed by disabling the default
+normalizations. 
+
+@noindent
+EXAMPLES
+
+Given file @file{85_0112.nc}:
+@example
+netcdf 85_0112 @{
+dimensions:
+        lat = 64 ;
+        lev = 18 ;
+        lon = 128 ;
+        time = UNLIMITED ; // (12 currently)
+variables:
+        float lat(lat) ;
+        float lev(lev) ;
+        float lon(lon) ;
+        float time(time) ;
+        float scalar_var ;
+        float three_dim_var(lat, lev, lon) ;
+        float two_dim_var(lat, lev) ;
+        float mask(lat, lon) ;
+        float gw(lat) ;
+@} 
+@end example
+
+Store the zonal (longitudinal) average of @file{in.nc} in @file{out.nc}:
+@example
+ncwa -a lon in.nc out.nc
+@end example
+@noindent
+Here the tally is simply the size of @code{lon}, or 128.
+
+@cindex @code{gw}
+@cindex Gaussian weights
+Compute the meridional (latitudinal) average, with values weighted by
+the corresponding element of @var{gw}
+@footnote{@code{gw} stands for @dfn{Gaussian weight} in the NCAR climate
+model.}: 
+@example
+ncwa -w gw -a lat in.nc out.nc
+@end example
+@noindent
+Here the tally is simply the size of @code{lat}, or 64.
+The sum of the Gaussian weights is 2.
+
+Compute the area average over the tropical Pacific:
+@example
+ncwa -w gw -a lat,lon -d lat,-20.,20. -d lon,120.,270. in.nc out.nc
+@end example
+@noindent
+Here the tally is 
+@set flg
+@tex
+$64 \times 128 = 8192$.
+@clear flg
+@end tex
+@ifset flg
+64 times 128 = 8192.
+@clear flg
+@end ifset
+
+@cindex @code{ORO}
+Compute the area average over the globe, but include only points for
+which 
+@set flg
+@tex
+$ORO < .5$
+@clear flg
+@end tex
+@ifset flg
+@var{ORO} < .5
+@clear flg
+@end ifset
+@footnote{@code{ORO} stands for @dfn{Orography} in the NCAR climate model.
+@math{@var{ORO} < .5} selects the gridpoints which are covered by ocean.}:
+@example
+ncwa -m ORO -M .5 -o lt -w gw -a lat,lon in.nc out.nc
+@end example
+@noindent
+Assuming 70% of the gridpoints are maritime, then here the tally is
+@set flg
+@tex
+$.70 \times 8192 \approx 5734$.
+@clear flg
+@end tex
+@ifset flg
+.70 times 8192 = 5734.
+@clear flg
+@end ifset
+
+Compute the global annual average over the maritime tropical Pacific:
+@example
+ncwa -m ORO -M .5 -o lt -w gw -a lat,lon,time -d lat,-20.,20. 
+-d lon,120.,270. in.nc out.nc
+@end example
+
+@c @ignore
+@c @node CSM Example, General Index, Operators, Top
+@c @chapter Example: Analyzing a CSM run
+
+@c This chapter presents an in depth example of using NCO to analyze the
+@c results of a CSM run.
+@c @end ignore
+
+@c @node Name Index, General Index, Operators, Top
+@c @unnumbered Function and Variable Index
+
+@c @printindex fn
+
+@node General Index,  , Operators, Top
+@unnumbered General Index
+
+@printindex cp
+
+@c Print the tables of contents
+@contents
+
+@c That's all
+@bye

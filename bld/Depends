@@ -1,0 +1,15 @@
+../obj/cal_util.o : cal_util.F 
+../obj/csz.o : csz.c nc.h
+../obj/nc_fortran.o : nc_fortran.F 
+../obj/nc_utl.o : nc_utl.c nc.h
+../obj/ncap.o : ncap.c nc.h
+../obj/ncap_utl.o : ncap_utl.c nc.h
+../obj/ncatted.o : ncatted.c nc.h
+../obj/ncdiff.o : ncdiff.c nc.h
+../obj/ncecat.o : ncecat.c nc.h
+../obj/ncflint.o : ncflint.c nc.h
+../obj/ncks.o : ncks.c nc.h
+../obj/ncra.o : ncra.c nc.h
+../obj/ncrename.o : ncrename.c nc.h
+../obj/ncwa.o : ncwa.c nc.h
+../obj/.o :  

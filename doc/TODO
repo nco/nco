@@ -1,0 +1,117 @@
+************************************************************************
+NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
+************************************************************************
+06. Add error checking to catch file1=(lon,lat) vs. file2=(lat,lon) errors
+28. Use var.nc_id as file ID from now on and rewrite old routines to do so
+32. scale_factor and add_offset
+41. Use GNU getopt_long(). 'nuff said.
+50. Allow user-specified scalar weights to ncwa
+51. Make getopt() a shared subroutine
+52. Setup ncra,ncea,ncwa to do min,max,ttl,sd,sdn as well as averages
+53. Add -t wall clock timer option? (then again, users can always use, e.g., timex())
+54. ncwa needs better fix/prc list processing, and testing.
+55. var_conform_dim() should be able to expand a (x,64,128) array into an (nx,64,128) array (maybe)
+56. var_conform_dim() should maybe check dimension names which are fixed, rather than IDs, which can change
+58. Add -o fl_out switch to supercede positional argument (GNU style)
+59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
+60. Make something that can mask a field without having to average over a dimension
+66. Make history attribute get appended, rather than overwritten, when in append mode
+67. Build robust test suite nc_tst.sh
+68. ncwa -a lat -a lon should produce an error msg (should be ncwa -a lat,lon)
+69. ncks option for file/field summary: var name list,var min,max,avg,mss_val,# mss_val,
+70. ncxx with no options should do a usg_prn() without an error msg
+73. ia.sh contains example of numerically unstable ncwa operations that show need for IEEE trapping/warning
+75. Add warning to ncwa triggered by averaging over lat without weighting by gw with NCAR_CSM_FORMAT
+79. Allow ncrename .$var_nm syntax to work on all operators (so variables not present cause warning, not error)
+80. ncrcat should print warning not exit with error when a file does not contain record variable within specified hyperslab (maybe the valid hyperslab begins within the next file)
+81. Make all averagers convert to double precision before arithmetic, then convert back after arithmetic. this is the only way to sensibly handle byte data.
+82. Make libnco namespace-safe by prefixing all possibly dynamically loaded subroutines with, e.g., nco_
+83. Always build operators to link dynamically to libnco.so
+84. Check malloc() and realloc() for failure instead of mysteriously dumping core later.
+86. Extend stride/wraparound capability to all operators possible.
+88. ncks is slow on large files on Crays: ncks -H -v time,date,datesec /tmp/eaton/pcw101/h0009.nc will this be fixed when move beyond netcdf2.4.2 cray libs?
+90. -d wvl,200e-6 is interpreted as dim_idx, not as -d wvl,200.e-6
+92. ncrcat -O -v base_time,time_offset arm.cdf arm.cdf foo.nc;ncks -H -C -h foo.nc | m gives bad time_offset on LINUX not SUNMP (problem with LINUX adding record coordinate to open file?)
+93. ncrename -v one,uno foo.nc dumps core on LINUX not SUNMP (w. 92, does this signify problem w/ my LINUX netcdf?)
+94. ~/bin/sh/texi2html -monolithic nco.texi has started dumping core. adding -verbose switch fixes problem, though I've no idea why.
+95. Can udunits accomplish CCM "time since..." conversions for ncrcat.
+97. Add x_op=average... attributes to averagers for ncar_csm
+99. Allow ncatted to print out a file in ncatted format
+100. Write replacement for BEE's date() functions that works with C_ONLY flag
+101. Change tokens so g77 will work with OSs besides LINUX, e.g., SUNMP
+103. Implement trapezoidal rule option in ncra, ncea.
+104. Investigate/Document reliability of -A operator when appending from large rank variables to small rank files. Add error message when variables are same size but one has a degenerate dimension.
+In general, adding large rank variable to small rank file seems to work, e.g.,
+ncks -C -O -v one_dim_rec_var in.nc foo.nc
+ncks -C -A -v three_dim_rec_var in.nc foo.nc
+ncdump foo.nc
+105. Add an easy-to-read tabular display option for file contents for ncks
+106. Add switch to keep degenerate dimensions with ncwa
+107. Migrate to netCDF3.x calls. 
+108. Find concise way to reproduce flaky IRIX problems: 
+ncdiff -O -v float_var in.nc in.nc foo.nc; ncks -H foo.nc
+************************************************************************
+End NCO Wish list
+************************************************************************
+
+************************************************************************
+Machine-specific problems
+************************************************************************
+SUN4SOL2/SUNMP:
+Solaris requires explicit casting output of strdup() to char * even though string.h is #include'd
+
+SUN4/SUN4SOL2/SUNMP:
+Including (void)ncsetfill(out_id,NC_NOFILL); causes crashes on Solaris 2.4 and SunOS
+(but not AIX, IRIX, or UNICOS) when the next ncendef() statement is called
+	
+SUN4:
+acc will not do pointer arithmetic with void *, must use char * instead, see var_avg(), e.g.
+
+realloc(NULL,sz) does not act like malloc(sz), contrary to ANSI specs.
+cannot link the fortran externals under SunOS with gcc,
+i have to use acc to get rid of a __lib_version external reference. With gcc
+i have to link with -lansi to get rid of an ___ansi_fflush unresolved external reference.
+ unfortunately, acc doesn't dynamically allocate arrays like if(...){float foo[nbr_x][nbr_y]; ...;}
+
+foreach lib (`ls lib*.a`)
+echo "searching $lib"; nm $lib | grep lib_version
+echo "searching $lib"; nm $lib | grep cg92_used
+end
+
+assert causes inscrutable crashes (because it's a macro?) during compilation under sunos.
+#ifndef SUN4
+(void)assert(argc > 0);
+(void)assert(argv != 0);
+#end if
+  
+current makefile doesn't build library correctly, gives non-fatal errors like
+ld: /u2/zender/lib/SUN4/libnc.a: warning: archive has no table of contents; add one using ranlib(1)
+
+SGI5:
+gcc or as assembler crashes on an enum allocated in a header file, unless it is somehow defined as an extern
+workaround is to use #defines instead.
+unable to compile in debug mode with same symptoms, e.g., this doesn't work:
+gcc -ansi -g -DSGI5 -I/opt/netcdf-2.3.2/include -c ncwa.c -o /u2/zender/obj/SGI5/ncwa.o 
+but this does:
+gcc -ansi -DSGI5 -I/opt/netcdf-2.3.2/include -c ncwa.c -o /u2/zender/obj/SGI5/ncwa.o
+
+SGI64:
+Problems arise in treatment on long int's on this machine. Make sure to
+define long data as nclong, and be careful that fortran uses integer*8
+when receiving all longs.
+
+AIX:
+realloc(NULL,sz) does not act like malloc(sz), contrary to ANSI specs.
+getopt() is (re-)declared in stdlib.h
+is text trashed in history global attribute in optimized executables?
+
+UNICOS:
+alloca(), needed by getopt(), is missing.
+
+LINUX:
+no liby.a library, meaning yyerror() is undefined
+item 92.: problem with LINUX adding record coordinate to open file?
+************************************************************************
+End machine-specific problems
+************************************************************************
+

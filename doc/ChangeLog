@@ -1,0 +1,233 @@
+Mon Aug 10 21:53:34 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
+
+	* Split ncks -m option into -m and -M so now global metadata can
+	be avoided if desired.
+
+	* Fixed bug in ncrename where fl_in could be free()'d before it
+	was malloc()'d in fl_nm_prs(). 
+
+	* Fixed bug in ncdiff where variables of same rank but different
+	types would cause core dump when being subtracted. Improved
+	diagnostics for failures with ncdiff. 
+	
+1998-07-07  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Added -h option (suppresses history concatentation) to all
+	operators. Changed existing ncks -h option to -m (for metadata). 
+
+Sun Jun  7 17:45:20 1998  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
+
+	* Added more descriptive error diagnostics to ncvarid() calls 
+	to var_lst_mk() ncks to report the names of user-specified
+	variables which do not exist in input files. 
+
+1998-05-16  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
+
+	* Improved nc_lib_vers_prn()
+
+1998-05-08  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
+
+	* Added improved error diagnostics to ncks when -A fails.
+	Added improved error diagnostics to fl_out_close() and fl_mv(). 
+	-r now prints library version for all operators.
+	-r and usg_prn() now prints NCO homepage URL.
+
+Wed Mar 11 11:16:39 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
+
+	* Removed warning message for processed text fields in ncecat.
+
+Mon Mar  2 22:00:59 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
+
+	* Added nc_inq_libvers() call to ncwa to diagnose SGI
+	problems. This is the first netCDF 3.x call in NCO. There's no
+	stopping the avalanche now, so user's must install netCDF3.x
+
+Mon Feb  9 09:50:26 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
+
+	* Merged all three ncwa loops that access output and tally buffers
+	so that these buffers can be allocated and deleted inside the main
+	loop over variables. This reduces peak memory consumption by a
+	factor of three and sustained memory by a factor of two to three.
+	ncwa performance should be noticeably enhanced by this.	This
+	problem affected, and this fix improves, only the ncwa operator. 
+	
+Sun Feb  8 21:50:32 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
+
+	* Downloaded and altered pvmgetarch from pvm3.4b6. This version
+	was returning SGI instead of CRAY on Ouray (=Cray J90 Unicos
+	10.0.0) because pvmgetarch thinks machines with /bin/4D are SGI. 
+	Distributing this customized version of pvmgetarch with NCO.
+	Also changed new pvmgetarch so it returns SUNMP on any Sun
+	multiprocessor, regardless of whether PVM_SHMEM is set to ON.
+
+Mon Jan 19 13:13:08 1998  Charlie Zender  <zender@odin.cgd.ucar.edu>
+
+	* Added HTML keywords and section on large numbers of files to the
+	NCO User's Guide.
+
+	* Eliminated compiler warnings caused by type--format mismatches
+	from all source code. Should now compile without warnings on SGI.
+
+	* Removed -ansi switch from Linux CFLAGS in order to support
+	glibc2. glibc2 considers resolv.h non ANSI so that using the -ansi
+	swithc results in unresolved tokens in system #include files.
+
+Tue Dec  2 21:35:19 1997  Charlie Zender  <zender@odin.cgd.ucar.edu>
+
+	* Added fl_nm_nbr_max and fl_nm_nbr_min as optional arguments 4
+	and 5, respectively, to the -n switch on the multi-file
+	operators. This allows the NINTAP automatic filename generation
+	feature to handle input sets of cyclic filenames whose suffixes
+	grow to fl_nm_nbr_max and then wrap back to fl_nm_nbr_min.
+	Now, e.g., DJF files may be specified with -n 3,2,1,12,1.
+
+Fri Nov 14 14:20:23 1997  Charlie Zender  <zender@odin.cgd.ucar.edu>
+
+	* Added additional diagnostics concerning record dimensions to
+	ncra and ncrcat. ncra and ncrcat now exit when called to operate
+	on files without record dimensions.
+
+	* Made ncar_csm_date() more fault tolerant for files which do not
+	adhere to de facto atmospheric model time conventions involving
+	date, time, nbdate.
+
+1997-11-04  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Added error diagnostics for large malloc()'s in ncwa and var_dup
+	in nc_utl.c. These should aid in identifying causes for core dumps
+	when running with extremely large files or insufficient memory.
+
+Fri Oct 17 12:53:54 1997  Charlie Zender  <zender@odin.cgd.ucar.edu>
+
+	* Deprecated checking for "gw" for NCAR CSM conformance and
+	replaced it with comparing global attribute "convention"'s value
+	to "NCAR-CSM". Fixed up ncar_csm_date accordingly and rewrote
+	warning messages.
+
+	* Improved usg_prn for ncatted.
+
+1997-10-12  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Fixed fl_out_open() to abort after receiving more than 10
+	incorrect user responses. This fixes a bug where NCO would
+	crash in non-interactive shells when the -O or -A options were
+	omitted. 
+
+1997-10-07  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Finished ncatted documentation. Cleaned up code to avoid
+	compilation errors with SGI on memcpy(). Touched up manual.
+	Releasing this as NCO Version 1.1.
+	
+Sun Sep 21 15:08:49 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Merged WIN32 modifications into distribution. Added WIN32 and
+	C_ONLY 	tokens to code. Relinked with netCDF 3.3.1, had no
+	problems. 
+
+Tue Sep 16 23:53:44 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Wrote ncatted.
+
+	* Fixed ncks to omit trailing commas after printing scalar
+	attribute values.
+
+Thu Aug 28 17:07:50 1997  Charlie Zender  <zender@heinlein.cgd.ucar.edu>
+
+	* Rewrote ncdiff documention, which had many errors and
+	omissions. 
+
+Sat Jun 28 23:26:40 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Fixed bug in cpy_var_val_lim() in ncks.c which caused core dumps
+	when hyperslabbing on multiple coordinates where at least one of
+	the coordinates was wrapped.
+
+Tue Jun 17 14:15:53 1997  Charlie Zender  <zender@heinlein.cgd.ucar.edu>
+
+	* Changed Makefile compile rules for f90 on CRAY to explicitly
+ 	preprocess *.F files. This had stopped working, perhaps when I
+	switched CRAY default from f77 to f90.
+
+Fri May 30 13:12:25 1997  Charlie Zender  <zender@heinlein.cgd.ucar.edu>
+
+	* Improved mss_val_get to allow any NC_TYPE for missing_value
+	attribute. This was needed for ARM files which store missing_value
+	as an NCCHAR. Converting NCCHAR to short, long, float, or double
+	now uses strdod() instead of implicit type conversion.
+
+	* Added routines to process time variables in ARM files.
+
+	* Added hyam,hybm,hyai,hybi to list of variables which will not 
+	be differenced by ncdiff.
+
+	* ncdiff now chooses mss_val from either file where it's valid,
+	and from fl_1 when it's valid in both. This fixed the last known
+	bug in NCO.
+
+Tue May 27 00:08:23 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Moved var_refresh() out of inner loop to file loop level in
+	ncra.c. This should speed things up a little because var_refresh()
+	can be an expensive call since it calls mss_val_get().
+
+	* Altered mss_val_get to accomodate missing_value attributes whose
+	type did not match their variable's type. Also made allowance for
+	missing_value's of type NC_CHAR, as in ARM data files. Added three
+	routines, arm_inq(), arm_time_mk(), and arm_time_install(), which
+	implemente the ARM convention time=base_time+time_offset
+	convention in ncrcat.
+
+Fri May 16 16:28:02 1997  Charlie Zender  <zender@heinlein.cgd.ucar.edu>
+
+	* Fixed bug in srt vector in ncdiff. Now ncdiff should be working
+	with hyperslabs.
+
+Mon May  5 17:55:00 1997  Charlie Zender  <zender@heinlein.cgd.ucar.edu>
+
+	* Implemented nclong fix for SGI64. This involved very slight
+	changes: made defs.h:ptr_unn->lp point to nclong rather than long
+	cast_void_nctype():ptr->lp evaluates to (nclong *).
+
+Sun Mar 30 15:26:10 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* added and removed some return() statements to nc_utl.c to stop
+	compiler warnings from SGI cc.
+
+	* fixed small memory leak and bug in var_srt_zero() where var->srt
+	was being allocated twice, and the xrf sct was pointing to the
+	copy that had not been zeroed.
+
+Thu Mar 27 15:13:18 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Removed ncap from target all in Makefile
+
+	* Added section describing differences between ncra, ncea, ncrcat,
+	and ncecat to nco.texi.
+
+	* Fixed memory leak in ncecat in which memory never seemed
+	to be deallocated until the end of the file loop.
+
+Wed Mar 26 21:13:09 1997  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Added nco.ps, nco.dvi, nco.html, texi2html, texi2dvi to
+	distribution
+
+	* Changed ncks -s option to accept full printf() style format
+	strings 
+
+	* Fixed memory leak in var_get() in nc_utl.c which caused memory
+	to be allocated twice. This also fixed longstanding performance
+	problem where ncrcat() allocated memory for entire array not just
+	current record. Thanks to jps@GFDL.GOV (John Sheldon) for
+	discovering this bug.
+
+	* General release of nco-0.9 on netCDF and CCM mailing lists 
+
+Thu Feb  8 23:01:04 MST 1996  Charlie Zender  <zender@ncar.ucar.edu>
+
+	* First internal CGD release of operator set known as ncz-0.9
+
+
+
+	

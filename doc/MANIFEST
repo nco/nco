@@ -1,0 +1,39 @@
+# Legal, bookkeeping and installation files
+COPYING		Copying restrictions
+INSTALL		Installation instructions
+README
+MANIFEST	This file
+TODO
+NEWS
+VERSION		Nothing but the version number
+ChangeLog
+configure.in	autoconf(1) used this input to generate ./configure
+configure	Script to generate machine-specific ./Makefile
+Makefile.in	used by ./configure to generate machine-specific ./Makefile
+GNUmakefile	Same as Makefile.alt 
+Makefile.alt	Alternative makefile (in case you overwrite the working ./Makefile)
+
+# Supporting GNU software:
+mkinstalldirs
+install-sh
+texi2dvi	creates nco.dvi from nco.texi
+texi2html	creates nco*.html from nco.texi
+texinfo.tex	sometimes needed by TeXInfo or makeinfo
+getopt.c
+getopt.h
+getopt1.c
+alloca.c
+
+# Supporting PVM software:
+pvmgetarch	determines machine type
+
+# Documentation
+nco.texi	TeXInfo documention (use texi2dvi to make .dvi file)
+nco.info	Info documentation
+nco.dvi		DVI documentation
+nco.ps		DVI documentation
+
+# Source Code
+nc.h csz.c ncks.c ncrename.c nc_utl.c nc.h nc_fortran.F cal_util.F ncra.c
+ncwa.c ncdiff.c ncecat.c ncflint.c ncatted.c
+
