@@ -1,3 +1,13 @@
+2003-11-25  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_8_4
+	Changes since nco-2_8_3: Fix index-based hyperslab bug, reduce
+	ncap memory usage to 2*sizeof(var) for binary operations
+
+	* Rorik fixed index-based hyperslabbing bug introduced near 2.7.4
+	
+	* Patch ncap test 
+
 2003-11-24  Charlie Zender  <zender@uci.edu>
 
 	* Add ncks test 14 to check for hyperslabbing problems

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.90 2003-11-25 19:22:58 rorik Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.91 2003-11-25 21:01:46 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -215,7 +215,6 @@ ncap_var_var_mlt /* [fnc] Multiply two variables */
  var_sct *var_2) /* I [sct] Variable structure containing second operand */
 {
   /* Purpose: Multiply two variables variables (var_1*var_2) */
-  var_sct *var_nsw;
   (void)ncap_var_retype(var_1,var_2);
   (void)ncap_var_cnf_dmn(&var_1,&var_2);
   if(var_1->has_mss_val){

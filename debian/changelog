@@ -1,3 +1,9 @@
+nco (2.8.4-1) unstable; urgency=high
+
+  * Fix bug with index-based hyperslabs introduced near 2.7.4
+
+ -- Charlie Zender <zender@ashes.ess.uci.edu>  Tue, 25 Nov 2003 11:53:04 -0800
+
 nco (2.8.3.5-1) unstable; urgency=low
 
   * Special version halfway to 2.8.4 for ncap bugtesting

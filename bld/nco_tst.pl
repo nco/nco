@@ -17,9 +17,10 @@ $operator="ncks";
 ####################
 $test[0]='ncks -O -v lat_T42,lon_T42,gw_T42 in.nc foo_T42.nc';
 $test[1]='ncrename -O -d lat_T42,lat -d lon_T42,lon -v lat_T42,lat -v gw_T42,gw -v lon_T42,lon foo_T42.nc';
-$test[2]='ncap -O -D 1 -s "one[lat,lon]=lat*lon*0.0+1.0" -s "zero[lat,lon]=lat*lon*0.0" foo_T42.nc foo_T42.nc';
-$expected="";
-$description="T42-size test field named one, which is identically 1.0 in foo_T42.nc";
+$test[2]='ncap -O -s "one[lat,lon]=lat*lon*0.0+1.0" -s "zero[lat,lon]=lat*lon*0.0" foo_T42.nc foo_T42.nc';
+$test[3]='ncks -H -C -s "%g" -v one -F -d lon,128 -d lat,64 foo_T42.nc';
+$expected="1";
+$description="Create T42 variable named one, uniformly 1.0 over globe in foo_T42.nc";
 &go();
 ####################
 $test[0]='ncks -C -H -s "%c" -v fl_nm in.nc';

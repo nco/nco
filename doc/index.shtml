@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.176 2003-11-23 16:43:46 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.177 2003-11-25 21:01:42 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -197,7 +197,8 @@ Tarballs and RPMs are only rarely uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.8.4</b>: (<i>in progress</i>) More significant reduction in <tt>ncap</tt> peak memory usage, support for AMD Opteron x86-64 architecture
+<li><b>NCO 2.8.5</b>: (<i>in progress</i>)
+<li><b>NCO 2.8.4</b>: Index-based hyperslabs work again (broke in 2.7.3, <b>upgrade highly recommended</b>), <tt>ncap</tt> peak memory usage reduced still more, support for AMD Opteron x86-64 architecture
 <li><b>NCO 2.8.3</b>: Fix big <tt>ncap</tt> memory leak, fix regressions, remove scary packing warnings</li>
 <li><b>NCO 2.8.2</b>: <tt>ncbo</tt> handles distinct <tt>missing_value</tt>s correctly, improve error diagnostics</li>
 <li><b>NCO 2.8.1</b>: <a href="./nco.html#wildcarding">&ldquo;Variable wildcarding&rdquo;</a>&mdash;extended regular expressions in <tt>-v var,...</tt> lists&mdash;support in all operators</li>
@@ -271,18 +272,18 @@ Simply hit return when asked for the CVS password.
 This login procedure is only required the first time you access the CVS server.
 Then you may retrieve any NCO distribution you wish.
 Usually you wish to retrieve a recent tagged (i.e., released) version.
-This command retrieves and places NCO version <tt>2.8.3</tt> into a
-local directory named <tt>nco-2.8.3</tt>: 
-<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2_8_3 -d nco-2.8.3 nco</tt></p>
+This command retrieves and places NCO version <tt>2.8.4</tt> into a
+local directory named <tt>nco-2.8.4</tt>: 
+<p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -r nco-2.8.4 -d nco-2.8.4 nco</tt></p>
 This command retrieves the current (&ldquo;bleeding edge&rdquo;)
 development version of NCO into a local directory named <tt>nco</tt>:
 <p><tt>cvs -z3 -d:pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco co -kk nco</tt></p>
 Track changes to the development version using
 <p><tt>cd nco;cvs update -kk</tt></p>
 One difference between running a "tagged" release 
-(e.g., <tt>nco-2_8_3</tt>) and the development version is that the
+(e.g., <tt>nco-2_8_4</tt>) and the development version is that the
 tagged release operators will print a valid version number (e.g.,
-<tt>2.8.3</tt>) when asked to do so with the <tt>-r</tt> flag
+<tt>2.8.4</tt>) when asked to do so with the <tt>-r</tt> flag
 (e.g., <tt>ncks -r</tt>).
 The development version simply places today's date in place of the
 version.
@@ -310,13 +311,13 @@ distribution by many months, if not years:
 
 <ul>
 <!--
-<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.8.3</a></li>
+<li>Debian GNU/Linux compatible Intel systems, prebuilt binary executable <a href="http://www.debian.org">deb</a>: <a href="http://packages.debian.org/testing/math/nco.html">nco-2.8.4</a></li>
 -->
 <a href="http://www.debian.org">Debian GNU/Linux</a>-compatible systems: 
-<li><a href="src/nco_2.8.3-1_i386.deb">nco_2.8.3-1_i386.deb</a> (<!--#fsize file="src/nco_2.8.3-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
-<li><a href="src/nco_2.8.3-1.dsc">nco_2.8.3-1.dsc</a> (<!--#fsize file="src/nco_2.8.3-1.dsc"-->): Description</li>
-<li><a href="src/nco_2.8.3-1.tar.gz">nco_2.8.3-1.tar.gz</a> (<!--#fsize file="src/nco_2.8.3-1.tar.gz"-->): Gzipped Source Tarball</li>
-<li><a href="src/nco_2.8.3-1_i386.changes">nco_2.8.3-1_i386.changes</a> (<!--#fsize file="src/nco_2.8.3-1.changes"-->): Changes</li>
+<li><a href="src/nco_2.8.4-1_i386.deb">nco_2.8.4-1_i386.deb</a> (<!--#fsize file="src/nco_2.8.4-1_i386.deb"-->): Pre-built executables and libraries, Intel i386-compatible, HTML documentation (install with <tt>apt-get install nco</tt>)</li>
+<li><a href="src/nco_2.8.4-1.dsc">nco_2.8.4-1.dsc</a> (<!--#fsize file="src/nco_2.8.4-1.dsc"-->): Description</li>
+<li><a href="src/nco_2.8.4-1.tar.gz">nco_2.8.4-1.tar.gz</a> (<!--#fsize file="src/nco_2.8.4-1.tar.gz"-->): Gzipped Source Tarball</li>
+<li><a href="src/nco_2.8.4-1_i386.changes">nco_2.8.4-1_i386.changes</a> (<!--#fsize file="src/nco_2.8.4-1.changes"-->): Changes</li>
 </ul>
 
 <ul>
