@@ -148,14 +148,14 @@ target_alias = @target_alias@
 target_cpu = @target_cpu@
 target_os = @target_os@
 target_vendor = @target_vendor@
-@BUILD_NCAP_FALSE@NCAP = 
 @BUILD_NCAP_TRUE@NCAP = ncap
+@BUILD_NCAP_FALSE@NCAP = 
 @TEST_DODS_FALSE@DODS_TESTS = 
 
 @TEST_DODS_TRUE@DODS_TESTS = test2.sh
+@NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT = 
 
 @NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT = nco_getopt.c
-@NCO_NEED_GETOPT_LONG_FALSE@NCO_GETOPT = 
 
 bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncra ncrename ncwa
 
@@ -760,9 +760,9 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-	-rm -f ncap_yacc.c
 	-rm -f ncap_lex.c
 	-rm -f ncap_yacc.h
+	-rm -f ncap_yacc.c
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \

@@ -329,6 +329,9 @@
 /* Define to 1 if you need the `gammaf' function. */
 #undef NEED_GAMMAF
 
+/* Define to 1 if you need the `getopt_long' function. */
+#undef NEED_GETOPT_LONG
+
 /* Define to 1 if you need the `log10f' function. */
 #undef NEED_LOG10F
 
