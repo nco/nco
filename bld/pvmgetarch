@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# $Id: pvmgetarch,v 1.5 2002-09-10 04:37:03 zender Exp $
+# $Id: pvmgetarch,v 1.6 2002-09-18 05:02:51 zender Exp $
 #
 # pvmgetarch.sh
 #
@@ -76,7 +76,7 @@ if [ -f /bin/uname -o -f /usr/bin/uname \
 # csz--
 # 20020812 csz++ deprecate SX3 in favor of NECSX
 #	SUPER-UX,SX-3 )         ARCH=SX3 ;;
-	SUPER-UX,SX-3 )         ARCH=NECSX ;;
+	SUPER-UX,SX-* )         ARCH=NECSX ;;
 # csz--
 	uts,* )                 ARCH=UTS2 ;;
 	realix,M88* )           ARCH=M88K ;;

@@ -1,5 +1,10 @@
 2002-09-17  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_6_4
+	Changes since nco-2_6_3: MACOSX builds, SGI, NEC tweaks
+
+	* Match SX-* with NECSX architecture in pvmgetarch
+
 	* Correct some dependencies for string compatibility functions
 
 	* Adapt for missing <cstdlib> with SGI CC
