@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.44 2000-05-09 05:15:04 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.45 2000-05-12 07:03:18 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -49,12 +49,12 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.1.45
-@set doc-edition 1.1.45
+@set nco-edition 1.1.47
+@set doc-edition 1.1.47
 @set copyright-years 1995--2000
 @set update-year 2000
-@set update-date 15 January 2000
-@set update-month January 2000
+@set update-date 11 May 2000
+@set update-month May 2000
 
 @c Experiment with smaller amounts of whitespace between chapters and sections.
 @tex
@@ -256,8 +256,8 @@ Thinking they might prove useful as tools or templates to others,
 it is my pleasure to provide them freely to the scientific community.  
 Many users (most of whom I have never met) have encouraged the
 development of NCO.  
-Thanks espcially to Jan Polcher, Arlindo da Silva, John Sheldon, and
-William Weibel for stimulating suggestions and correspondence.
+Thanks espcially to Jan Polcher, Keith Lindsay, Arlindo da Silva, John
+Sheldon, and William Weibel for stimulating suggestions and correspondence.
 Your encouragment motivated me to complete the @cite{NCO User's Guide}.
 So if you like NCO, send me a note!
 I should mention that NCO is not connected to or officially endorsed by
@@ -677,7 +677,7 @@ completion of the operation
 This is accomplished by performing all operations in a temporary copy
 of @var{output-file}.
 The name of the temporary output file is constructed by appending
-@code{@var{<process ID>}.@var{<operator name>}.tmp} to the
+@code{.pid@var{<process ID>}.@var{<operator name>}.tmp} to the
 user-specified @var{output-file} name.  
 When the operator completes its task with no fatal errors, the temporary
 output file is moved to the user-specified @var{output-file}.

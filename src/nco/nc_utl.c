@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.63 2000-05-12 04:51:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.64 2000-05-12 07:03:19 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -251,7 +251,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   long dmn_sz;
   long cnt_rmn_crr=-1L; /* Records to extract from current file */
   long cnt_rmn_ttl=-1L; /* Total records remaining to be read from this and all remaining files */
-  long rec_skp_prv=-1L; /* Records skipped at end of previous valid file (diagnostic only) */
+  long rec_skp_vld_prv_dgn=-1L; /* Records skipped at end of previous valid file (diagnostic only) */
 
   lmt=*lmt_ptr;
 
@@ -589,9 +589,6 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       exit(EXIT_FAILURE);
     } /* end if */
     
-    /* Allow for possibility initial files are superfluous in multi-file hyperslab */
-    if(rec_dmn_and_mlt_fl_opr && cnt_crr == 0L && lmt.min_idx >= dmn_sz+lmt.rec_skp_nsh) flg_no_data=True;
-
     /* Logic depends on whether this is record dimension in multi-file operator */
     if(!rec_dmn_and_mlt_fl_opr || !lmt.is_usr_spc_lmt){
       /* For non-record dimensions and for record dimensions where limit 
@@ -601,153 +598,169 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       lmt.srt=lmt.min_idx;
       lmt.end=lmt.max_idx;
     }else{
-      /* For record dimensions with user-specified limit, allow for possibility 
-	 that limit pertains to record dimension of a multi-file operator.
-	 Then user-specified maximum index may exceed number of records in any one file
-	 Thus lmt.srt does not necessarily equal lmt.min_idx and 
-	 lmt.end does not necessarily equal lmt.max_idx */
-      /* Stride is officially supported for ncks (all dimensions)
-	 and for ncra and ncrcat (record dimension only) */
-      if(lmt.srd != 1L && prg_id != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for a non-record dimension is only supported by ncks, use at your own risk...\n",prg_nm_get());
 
-      /* Initialize rec_skp to 0L on first call to lmt_evl() 
-	 This is necessary due to intrinsic hysterisis of rec_skp
-	 cnt_crr and rec_skp_nsh are both zero only for first file
+      /* Allow for possibility initial files are superfluous in multi-file hyperslab */
+      if(rec_dmn_and_mlt_fl_opr && cnt_crr == 0L && lmt.min_idx >= dmn_sz+lmt.rec_skp_nsh_spf) flg_no_data=True;
+      
+      /* Initialize rec_skp_vld_prv to 0L on first call to lmt_evl() 
+	 This is necessary due to intrinsic hysterisis of rec_skp_vld_prv
+	 rec_skp_vld_prv is used only by multi-file operators
+	 rec_skp_vld_prv counts records skipped at end of previous valid file
+	 cnt_crr and rec_skp_nsh_spf are both zero only for first file
 	 No records were skipped in previous files */
-      if(cnt_crr == 0L && lmt.rec_skp_nsh == 0L) lmt.rec_skp=0L;
-	  
-      if(lmt.is_usr_spc_min && lmt.is_usr_spc_max){
-	/* cnt_rmn_ttl is determined only when both min and max are known */
-	cnt_rmn_ttl=-cnt_crr+1L+(lmt.max_idx-lmt.min_idx)/lmt.srd;
-	if(cnt_rmn_ttl == 0L) flg_no_data=True;
-	if(cnt_crr == 0L){
-	  /* Start index is min_idx adjusted for any skipped initial files */
-	  lmt.srt=lmt.min_idx-lmt.rec_skp_nsh;
-	  if(lmt.srd == 1L){
-	    /* With unity stride, end index is lesser of number of remaining records to read and number of records in this file */
-	    /* 20000510: fxm problem here with ncrcat -O -d time,2,2 -v time -p ~/nc/nco/data foo1.nc foo1.nc ~/nc/nco/data/foo3.nc */
-	    /* lmt.end must depend on rec_skp_nsh */
-	    /* lmt.end=(lmt.max_idx < dmn_sz) ? lmt.max_idx : dmn_sz-1L; old version */
-	    lmt.end=(lmt.max_idx < rec_skp_nsh+dmn_sz) ? lmt.max_idx-rec_skp_nsh : dmn_sz-1L;
+      if(cnt_crr == 0L && lmt.rec_skp_nsh_spf == 0L) lmt.rec_skp_vld_prv=0L;
+      
+      /* This if statement is required to avoid an ugly goto statment */
+      if(!flg_no_data){
+	
+	/* For record dimensions with user-specified limit, allow for possibility 
+	   that limit pertains to record dimension of a multi-file operator.
+	   Then user-specified maximum index may exceed number of records in any one file
+	   Thus lmt.srt does not necessarily equal lmt.min_idx and 
+	   lmt.end does not necessarily equal lmt.max_idx */
+	/* Stride is officially supported for ncks (all dimensions)
+	   and for ncra and ncrcat (record dimension only) */
+	if(lmt.srd != 1L && prg_id != ncks && !lmt.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument for a non-record dimension is only supported by ncks, use at your own risk...\n",prg_nm_get());
+	
+	/* Note that following block assumes flg_no_data is false
+	   Harm would be done if this block were entered while flg_no_data were true
+	   What would happen is lmt.end would be set, causing lmt.rec_skp_vld_prv 
+	   to be incorrectly set at the end of this block 
+	   Note, however, that flg_no_data may be set in two place within this block
+	   These occurances are safe because they indicate all data have been read (all following files will be superfluous)
+	   Therefore any hinky exit values will not affect future reads
+	*/
+	if(lmt.is_usr_spc_min && lmt.is_usr_spc_max){
+	  /* cnt_rmn_ttl is determined only when both min and max are known */
+	  cnt_rmn_ttl=-cnt_crr+1L+(lmt.max_idx-lmt.min_idx)/lmt.srd;
+	  if(cnt_rmn_ttl == 0L) flg_no_data=True; /* Safe since all data have been read */
+	  if(cnt_crr == 0L){
+	    /* Start index is min_idx adjusted for any skipped initial superfluous files */
+	    lmt.srt=lmt.min_idx-lmt.rec_skp_nsh_spf;
+	    if(lmt.srd == 1L){
+	      /* With unity stride, end index is lesser of number of remaining records to read and number of records in this file */
+	      lmt.end=(lmt.max_idx < lmt.rec_skp_nsh_spf+dmn_sz) ? lmt.max_idx-lmt.rec_skp_nsh_spf : dmn_sz-1L;
+	    }else{
+	      cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
+	      cnt_rmn_crr=(cnt_rmn_ttl < cnt_rmn_crr) ? cnt_rmn_ttl : cnt_rmn_crr;
+	      lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
+	    } /* end else */
 	  }else{
-	    /* fxm: must depend on dmn_sz AND rec_skp_nsh */
-	    cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
-	    cnt_rmn_crr=(cnt_rmn_ttl < cnt_rmn_crr) ? cnt_rmn_ttl : cnt_rmn_crr;
-	    /* lmt.end must depend on rec_skp_nsh */
-	    lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
-	  } /* end else */
-	}else{
-	  /* Records have been read from previous file(s) */
-	  if(lmt.srd == 1L){
-	    /* Start index is zero since contiguous records are requested */
-	    lmt.srt=0L;
-	    /* End index is lesser of number of records to read from all remaining files (including this one) and number of records in this file */
-	    lmt.end=(cnt_rmn_ttl < dmn_sz) ? cnt_rmn_ttl-1L : dmn_sz-1L;
+	    /* Records have been read from previous file(s) */
+	    if(lmt.srd == 1L){
+	      /* Start index is zero since contiguous records are requested */
+	      lmt.srt=0L;
+	      /* End index is lesser of number of records to read from all remaining files (including this one) and number of records in this file */
+	      lmt.end=(cnt_rmn_ttl < dmn_sz) ? cnt_rmn_ttl-1L : dmn_sz-1L;
+	    }else{
+	      /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
+	      lmt.srt=lmt.srd-lmt.rec_skp_vld_prv-1L;
+	      cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
+	      cnt_rmn_crr=(cnt_rmn_ttl < cnt_rmn_crr) ? cnt_rmn_ttl : cnt_rmn_crr;
+	      lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
+	    } /* end else */
+	  } /* endif user-specified records have already been read */
+	}else if(lmt.is_usr_spc_min){
+	  /* If min was user specified but max was not, then we know which record to 
+	     start with and we read every subsequent file */
+	  if(cnt_crr == 0L){
+	    /* Start index is min_idx adjusted for any skipped initial superfluous files */
+	    lmt.srt=lmt.min_idx-lmt.rec_skp_nsh_spf;
+	    if(lmt.srd == 1L){
+	      lmt.end=dmn_sz-1L;
+	    }else{
+	      cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
+	      lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
+	    } /* end else */
 	  }else{
-	    /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
-	    lmt.srt=lmt.srd-lmt.rec_skp-1L;
-	    cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
-	    cnt_rmn_crr=(cnt_rmn_ttl < cnt_rmn_crr) ? cnt_rmn_ttl : cnt_rmn_crr;
-	    lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
-	  } /* end else */
-	} /* endif user-specified records have already been read */
-      }else if(lmt.is_usr_spc_min){
-	/* If min was user specified but max was not, then we know which record to 
-	   start with and we read every subsequent file */
-	if(cnt_crr == 0L){
-	  /* Start index is min_idx adjusted for any skipped initial files */
-	  lmt.srt=lmt.min_idx-lmt.rec_skp_nsh;
-	  if(lmt.srd == 1L){
-	    lmt.end=dmn_sz-1L;
+	    /* Records have been read from previous file(s) */
+	    if(lmt.srd == 1L){
+	      /* Start index is zero since contiguous records are requested */
+	      lmt.srt=0L;
+	      lmt.end=dmn_sz-1L;
+	    }else{
+	      /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
+	      lmt.srt=lmt.srd-lmt.rec_skp_vld_prv-1L;
+	      cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
+	      lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
+	    } /* end else */
+	  } /* endif user-specified records have already been read */
+	}else if(lmt.is_usr_spc_max){
+	  /* If max was user specified but min was not, then we know which index to 
+	     end with and we read record (modulo srd) until we get there */
+	  if(cnt_crr == 0L){
+	    /* Start index is min_idx = 0L for first file (no initial files are skipped in this case)*/
+	    lmt.srt=lmt.min_idx;
+	    if(lmt.srd == 1L){
+	      /* With unity stride, end index is lesser of number of remaining records to read and number of records in this file */
+	      lmt.end=(lmt.max_idx < dmn_sz) ? lmt.max_idx : dmn_sz-1L;
+	    }else{
+	      /* Record indices in the first file are global record indices */
+	      lmt.end=(dmn_sz-(dmn_sz%lmt.srd));
+	      lmt.end=(lmt.max_idx < lmt.end) ? lmt.max_idx : lmt.end;
+	    } /* end else */
 	  }else{
-	    cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
-	    lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
-	  } /* end else */
-	}else{
-	  /* Records have been read from previous file(s) */
-	  if(lmt.srd == 1L){
-	    /* Start index is zero since contiguous records are requested */
-	    lmt.srt=0L;
-	    lmt.end=dmn_sz-1L;
+	    /* Records have been read from previous file(s) 
+	       We must now account for "index shift" from previous files */
+	    
+	    long rec_idx_glb_off; /* Global index of first record in this file */
+	    long max_idx_lcl; /* User-specified max index in "local" file */
+	    
+	    /* Global index of first record in this file */
+	    rec_idx_glb_off=(cnt_crr-1L)*lmt.srd+lmt.rec_skp_vld_prv+1L;
+	    /* Convert user-specified max index to "local" index in current file */
+	    max_idx_lcl=lmt.max_idx-rec_idx_glb_off;
+	    if(max_idx_lcl < 0) flg_no_data=True; /* Safe since all data have been read */
+	    if(lmt.srd == 1L){
+	      /* Start index is zero since contiguous records are requested */
+	      lmt.srt=0L;
+	      lmt.end=(max_idx_lcl < dmn_sz) ? max_idx_lcl : dmn_sz-1L;
+	    }else{
+	      /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
+	      lmt.srt=lmt.srd-lmt.rec_skp_vld_prv-1L;
+	      lmt.end=lmt.srt;
+	      while(lmt.end < dmn_sz-lmt.srd && lmt.end < max_idx_lcl-lmt.srd){
+		lmt.end+=lmt.srd;
+	      } /* end while */
+	    } /* end else */
+	  } /* endif user-specified records have already been read */
+	}else if(!lmt.is_usr_spc_min && !lmt.is_usr_spc_max){
+	  /* If stride was specified without min or max, then we read in all records
+	     (modulo the stride) from every file */
+	  if(cnt_crr == 0L){
+	    /* Start index is min_idx = 0L for first file (no initial files are skipped in this case)*/
+	    lmt.srt=lmt.min_idx;
+	    if(lmt.srd == 1L){
+	      lmt.end=dmn_sz-1L;
+	    }else{
+	      lmt.end=(dmn_sz > lmt.srd) ? dmn_sz-1L-(dmn_sz-1L)%lmt.srd : 0L;
+	    } /* end else */
 	  }else{
-	    /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
-	    lmt.srt=lmt.srd-lmt.rec_skp-1L;
-	    cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
-	    lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
-	  } /* end else */
-	} /* endif user-specified records have already been read */
-      }else if(lmt.is_usr_spc_max){
-	/* If max was user specified but min was not, then we know which index to 
-	   end with and we read record (modulo srd) until we get there */
-	if(cnt_crr == 0L){
-	  /* Start index is min_idx = 0L for first file (no initial files are skipped in this case)*/
-	  lmt.srt=lmt.min_idx;
-	  if(lmt.srd == 1L){
-	    /* With unity stride, end index is lesser of number of remaining records to read and number of records in this file */
-	    lmt.end=(lmt.max_idx < dmn_sz) ? lmt.max_idx : dmn_sz-1L;
-	  }else{
-	    /* Record indices in the first file are global record indices */
-	    lmt.end=(dmn_sz-(dmn_sz%lmt.srd));
-	    lmt.end=(lmt.max_idx < lmt.end) ? lmt.max_idx : lmt.end;
-	  } /* end else */
-	}else{
-	  /* Records have been read from previous file(s) 
-	     We must now account for "index shift" from previous files */
-
-	  long rec_idx_glb_off; /* Global index of first record in this file */
-	  long max_idx_lcl; /* User-specified max index in "local" file */
-
-	  /* Global index of first record in this file */
-	  rec_idx_glb_off=(cnt_crr-1L)*lmt.srd+lmt.rec_skp+1L;
-	  /* Convert user-specified max index to "local" index in current file */
-	  max_idx_lcl=lmt.max_idx-rec_idx_glb_off;
-	  if(max_idx_lcl < 0) flg_no_data=True;
-	  if(lmt.srd == 1L){
-	    /* Start index is zero since contiguous records are requested */
-	    lmt.srt=0L;
-	    lmt.end=(max_idx_lcl < dmn_sz) ? max_idx_lcl : dmn_sz-1L;
-	  }else{
-	    /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
-	    lmt.srt=lmt.srd-lmt.rec_skp-1L;
-	    lmt.end=lmt.srt;
-	    while(lmt.end < dmn_sz-lmt.srd && lmt.end < max_idx_lcl-lmt.srd){
-	      lmt.end+=lmt.srd;
-	    } /* end while */
-	  } /* end else */
-	} /* endif user-specified records have already been read */
-      }else if(!lmt.is_usr_spc_min && !lmt.is_usr_spc_max){
-	/* If stride was specified without min or max, then we read in all records
-	   (modulo the stride) from every file */
-	if(cnt_crr == 0L){
-	  /* Start index is min_idx = 0L for first file (no initial files are skipped in this case)*/
-	  lmt.srt=lmt.min_idx;
-	  if(lmt.srd == 1L){
-	    lmt.end=dmn_sz-1L;
-	  }else{
-	    lmt.end=(dmn_sz-(dmn_sz%lmt.srd));
-	  } /* end else */
-	}else{
-	  /* Records have been read from previous file(s) */
-	  if(lmt.srd == 1L){
-	    /* Start index is zero since contiguous records are requested */
-	    lmt.srt=0L;
-	    lmt.end=dmn_sz-1L;
-	  }else{
-	    /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
-	    lmt.srt=lmt.srd-lmt.rec_skp-1L;
-	    cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
-	    lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
-	  } /* end else */
-	} /* endif user-specified records have already been read */
-      } /* end if srd but not min or max was user-specified */
-      /* Compute diagnostic count for this file only */
-      cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
-      /* Save current rec_skp for diagnostics */
-      rec_skp_prv=lmt.rec_skp;
-      /* rec_skp for next file is stride minus number of unused records
-	 at end of this file (dmn_sz-1L-lmt.end) minus one */
-      lmt.rec_skp=dmn_sz-1L-lmt.end;
-      /*      assert(lmt.rec_skp >= 0);*/
+	    /* Records have been read from previous file(s) */
+	    if(lmt.srd == 1L){
+	      /* Start index is zero since contiguous records are requested */
+	      lmt.srt=0L;
+	      lmt.end=dmn_sz-1L;
+	    }else{
+	      /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
+	      lmt.srt=lmt.srd-lmt.rec_skp_vld_prv-1L;
+	      cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
+	      lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
+	    } /* end else */
+	  } /* endif user-specified records have already been read */
+	} /* end if srd but not min or max was user-specified */
+	
+	/* Compute diagnostic count for this file only */
+	cnt_rmn_crr=1L+(lmt.end-lmt.srt)/lmt.srd;
+	/* Save current rec_skp_vld_prv for diagnostics */
+	rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv;
+	/* rec_skp_vld_prv for next file is stride minus number of unused records
+	   at end of this file (dmn_sz-1L-lmt.end) minus one */
+	lmt.rec_skp_vld_prv=dmn_sz-1L-lmt.end;
+	/*      assert(lmt.rec_skp_vld_prv >= 0);*/
+	
+      } /* endif !flg_no_data */
+      
     } /* endif user-specified limits to record dimension */
     
   } /* end else limit arguments are hyperslab indices */
@@ -809,11 +822,13 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
        Since ncra and ncrcat use loops for the record dimension, this
        may be accomplished by returning loop control values that cause
        loop always to be skipped, never entered, e.g., lmt_rec.srt > lmt_rec.end */
-    lmt.srt=-1;
-    lmt.end=lmt.srt-1;
-    lmt.cnt=-1;
-    /* Keep track of number of records skipped in initial files */
-    if(cnt_crr == 0L) lmt.rec_skp_nsh+=dmn_sz;
+    lmt.srt=-1L;
+    lmt.end=lmt.srt-1L;
+    lmt.cnt=-1L;
+    /* Keep track of number of records skipped in initial superfluous files */
+    if(cnt_crr == 0L) lmt.rec_skp_nsh_spf+=dmn_sz;
+    /* Set variables to preserve utility of diagnostic routines at end of routine */
+    cnt_rmn_crr=rec_skp_vld_prv_dgn=lmt.rec_skp_vld_prv=0L;
   } /* endif */
   
   /* Place contents of working structure in location of returned structure */
@@ -826,12 +841,12 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     (void)fprintf(stderr,"Limit %s user-specified\n",(lmt.is_usr_spc_lmt) ? "is" : "is not");
     (void)fprintf(stderr,"Limit %s record dimension\n",(lmt.is_rec_dmn) ? "is" : "is not");
     (void)fprintf(stderr,"Current file %s superfluous to specified hyperslab, data %s be read\n",(flg_no_data) ? "is" : "is not",(flg_no_data) ? "will not" : "will");
-    if(rec_dmn_and_mlt_fl_opr) (void)fprintf(stderr,"Records skipped in initial superfluous files = %li \n",lmt.rec_skp_nsh);
+    if(rec_dmn_and_mlt_fl_opr) (void)fprintf(stderr,"Records skipped in initial superfluous files = %li \n",lmt.rec_skp_nsh_spf);
     if(rec_dmn_and_mlt_fl_opr) (void)fprintf(stderr,"Records read from previous files = %li\n",cnt_crr);
     if(cnt_rmn_ttl != -1L) (void)fprintf(stderr,"Total records to be read from this and all following files = %li\n",cnt_rmn_ttl);
     if(cnt_rmn_crr != -1L) (void)fprintf(stderr,"Records to be read from this file = %li\n",cnt_rmn_crr);
-    if(rec_skp_prv != -1L) (void)fprintf(stderr,"rec_skp_prv (previous file, if any) = %li \n",rec_skp_prv);
-    if(rec_skp_prv != -1L) (void)fprintf(stderr,"rec_skp (this file) = %li \n",lmt.rec_skp);
+    if(rec_skp_vld_prv_dgn != -1L) (void)fprintf(stderr,"rec_skp_vld_prv_dgn (previous file, if any) = %li \n",rec_skp_vld_prv_dgn);
+    if(rec_skp_vld_prv_dgn != -1L) (void)fprintf(stderr,"rec_skp_vld_prv (this file) = %li \n",lmt.rec_skp_vld_prv);
     (void)fprintf(stderr,"min_sng = %s\n",lmt.min_sng == NULL ? "NULL" : lmt.min_sng);
     (void)fprintf(stderr,"max_sng = %s\n",lmt.max_sng == NULL ? "NULL" : lmt.max_sng);
     (void)fprintf(stderr,"srd_sng = %s\n",lmt.srd_sng == NULL ? "NULL" : lmt.srd_sng);
@@ -1376,8 +1391,8 @@ lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
   lmt_dim.is_usr_spc_lmt=False; /* True if any part of limit is user-specified, else False */
   lmt_dim.is_usr_spc_max=False; /* True if user-specified, else False */
   lmt_dim.is_usr_spc_min=False; /* True if user-specified, else False */
-  /* rec_skp_nsh is used for record dimension in multi-file operators */
-  lmt_dim.rec_skp_nsh=0L; /* Number of records skipped in initial files */
+  /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
+  lmt_dim.rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
 
   for(idx=0;idx<lmt_nbr;idx++){
     /* Copy user-specified limits, if any */ 

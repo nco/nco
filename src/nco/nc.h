@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.27 2000-05-10 07:15:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.28 2000-05-12 07:03:19 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -155,8 +155,8 @@ typedef struct {
   bool is_usr_spc_min; /* True if user-specified, else False */
   bool is_usr_spc_max; /* True if user-specified, else False */
   bool is_rec_dmn; /* True if record dimension, else False */
-  long rec_skp; /* Records skipped at end of previous valid file (multi-file record dimension only) */
-  long rec_skp_nsh; /* Number of records skipped in initial files (multi-file record dimension only) */
+  long rec_skp_vld_prv; /* Records skipped at end of previous valid file (multi-file record dimension only) */
+  long rec_skp_nsh_spf; /* Number of records skipped in initial superfluous files (multi-file record dimension only) */
   char *min_sng; /* User-specified string for dimension minimum */ 
   char *max_sng; /* User-specified string for dimension maximum */ 
   char *srd_sng; /* User-specified string for dimension stride */ 

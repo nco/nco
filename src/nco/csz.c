@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.44 2000-05-10 17:16:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.45 2000-05-12 07:03:18 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */ 
 
@@ -182,8 +182,8 @@ lmt_prs(int lmt_nbr,char **lmt_arg)
     lmt[idx].min_sng=NULL;
     lmt[idx].max_sng=NULL;
     lmt[idx].srd_sng=NULL;
-    /* rec_skp_nsh is used for record dimension in multi-file operators */
-    lmt[idx].rec_skp_nsh=0L; /* Number of records skipped in initial files */
+    /* rec_skp_nsh_spf is used for record dimension in multi-file operators */
+    lmt[idx].rec_skp_nsh_spf=0L; /* Number of records skipped in initial superfluous files */
 
     /* Fill in structure */ 
     lmt[idx].nm=arg_lst[0];

@@ -1,6 +1,8 @@
-2000-05-10  Charlie Zender  <zender@uci.edu>
+2000-05-12  Charlie Zender  <zender@uci.edu>
 
-	* Tagged and released this as nco1_1_47
+	* Fixed bug in -d dmn,,,srd case where lmt.end was incorrect
+
+2000-05-10  Charlie Zender  <zender@uci.edu>
 
 	* Finished testing of feature allowing skipping of initial files
 	when lmt_typ = dim_idx. Seems to work. Now dim_idx and crd_val
