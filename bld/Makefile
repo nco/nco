@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.185 2002-09-20 05:34:37 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.186 2002-09-20 20:31:38 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -18,8 +18,8 @@
 # cd ~/nco/bld;make DODS=Y;cd -
 # HDF5 version of netCDF libraries:
 # cd ~/nco/bld;make cln bin_cln all HDF5=Y;cd -
-# 64-bit ABI on NCAR AIX systems:
-# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 make lib_cln cln all ABI=64;cd -
+# 64-bit ABI on NCAR AIX and IRIX systems:
+# cd ~/nco/bld;NETCDF_LIB=/usr/local/lib64/r4i4 make --jobs=1 lib_cln cln all ABI=64;cd -
 
 # Top-level tokens defining directory structure
 # These tokens may be over-ridden by environment variables or when invoking make, e.g. make DODS=Y
@@ -368,7 +368,7 @@ C++ := cxx
 CC := cc
 CFLAGS := ${OMP_FLG}
 CPP := cpp
-CPPFLAGS := ${CPP_PTH} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 FFLAGS := -r8 -i4 -c ${OMP_FLG} -automatic
 FIXEDFLAGS := -extend_source ${OMP_FLG} -automatic
@@ -405,7 +405,7 @@ ifeq (${PVM_ARCH},CRAY)
 C++ := CC
 CC := cc
 CPP := cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -454,7 +454,8 @@ CC := gcc -std=c99 -ansi -pedantic -D_BSD_SOURCE
 #CC := insure
 CPP := ${CC}
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -Di386 -I${NETCDF_INC}
+CPP_TKN_OS += -Di386
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := g77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -603,7 +604,7 @@ C++ := c++
 CC := cc
 CFLAGS := -Wall
 CPP := ${CC}
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -641,7 +642,7 @@ C++ := c++
 CC := cc
 CPP := c++ -E
 #CPP := /usr/lib/cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -675,7 +676,7 @@ ifeq (${PVM_ARCH},RS6K)
 C++ := g++
 CC := gcc -ansi
 CPP := /lib/cpp -P
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := xlf
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -715,7 +716,7 @@ CC := cc
 # 20000302: -w suppresses warnings which will swamp linker
 #C++ := g++ -w
 #CC := gcc
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 ifdef $(MIPSPRO_SGI)
 # SGIs like dataproc keep omp.h in special location determined by module MIPSpro
  CPPFLAGS := -I$(MIPSPRO_SGI)/usr/include ${CPPFLAGS}
@@ -797,7 +798,7 @@ C++ := g++
 CC := gcc
 CFLAGS := -Wall
 CPP := cpp
-CPPFLAGS := ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC} 
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f90 -DHIDE_SHR_MSG
 #FFLAGS := -xs -stackvar -e -Qoption f90comp -r8const
 FFLAGS := -xs -stackvar -e 
@@ -831,7 +832,8 @@ ifeq (${PVM_ARCH},WIN32)
 C++ := g++
 CC := gcc -ansi
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -Di386 -I/usr/include -I${NETCDF_INC}
+CPP_TKN_OS += -Di386 -I/usr/include
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := g77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
