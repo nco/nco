@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.30 2003-08-02 23:26:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.31 2003-11-20 21:36:47 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -368,10 +368,6 @@ nco_cpy_var_val_lmt /* [fnc] Copy variable data from input to output file, simpl
       
   /* Allocate enough space to hold variable */
   void_ptr=(void *)nco_malloc_flg(var_sz*nco_typ_lng(var_type));
-  if(void_ptr == NULL){
-    (void)fprintf(stderr,"%s: ERROR unable to malloc() %ld bytes for %s\n",prg_nm_get(),var_sz*nco_typ_lng(var_type),var_nm);
-    nco_exit(EXIT_FAILURE);
-  } /* end if */
 
   /* Copy variable */
   if(nbr_dim==0){ /* Copy scalar */
@@ -549,6 +545,7 @@ nco_var_dpl /* [fnc] Duplicate input variable */
   /* Purpose: nco_malloc() and return duplicate of input var_sct
      Duplicate is deep copy of original so original may always be free()'d */
 
+  char fnc_nm[]="nco_var_dpl()"; /* [sng] Function name */
   var_sct *var_cpy;
 
   var_cpy=(var_sct *)nco_malloc(sizeof(var_sct));
@@ -562,10 +559,7 @@ nco_var_dpl /* [fnc] Duplicate input variable */
 
   /* Deep copy dyamically allocated arrays currently defined in original */
   if(var->val.vp != NULL){
-    if((var_cpy->val.vp=(void *)nco_malloc_flg(var_cpy->sz*nco_typ_lng(var_cpy->type))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes for value buffer for variable %s in nco_var_dpl()\n",prg_nm_get(),var_cpy->sz,nco_typ_lng(var_cpy->type),var_cpy->nm);
-      nco_exit(EXIT_FAILURE); 
-    } /* end if */
+    var_cpy->val.vp=(void *)nco_malloc_dbg(var_cpy->sz*nco_typ_lng(var_cpy->type),"Unable to malloc() value buffer in variable deep copy",fnc_nm);
     (void)memcpy((void *)(var_cpy->val.vp),(void *)(var->val.vp),var_cpy->sz*nco_typ_lng(var_cpy->type));
   } /* end if */
   if(var->mss_val.vp != NULL){
@@ -573,10 +567,7 @@ nco_var_dpl /* [fnc] Duplicate input variable */
     (void)memcpy((void *)(var_cpy->mss_val.vp),(void *)(var->mss_val.vp),nco_typ_lng(var_cpy->type));
   } /* end if */
   if(var->tally != NULL){
-    if((var_cpy->tally=(long *)nco_malloc_flg(var_cpy->sz*sizeof(long))) == NULL){
-      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in var_cpy()\n",prg_nm_get(),var_cpy->sz,(long)sizeof(long),var_cpy->nm);
-      nco_exit(EXIT_FAILURE); 
-    } /* end if */
+    var_cpy->tally=(long *)nco_malloc_dbg(var_cpy->sz*sizeof(long),"Unable to malloc() tally buffer in variable deep copy",fnc_nm);
     (void)memcpy((void *)(var_cpy->tally),(void *)(var->tally),var_cpy->sz*sizeof(long));
   } /* end if */
   if(var->dim != NULL){

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.7 2003-11-11 18:04:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.8 2003-11-20 21:36:47 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -51,8 +51,14 @@ nco_malloc /* [fnc] Wrapper for malloc() */
 (const size_t size); /* I [B] Bytes to allocate */
 
 void * /* O [ptr] Pointer to allocated memory */
-nco_malloc_flg /* [fnc] Wrapper for malloc(), but more forgiving */
+nco_malloc_flg /* [fnc] Wrapper for malloc(), forgives ENOMEM errors */
 (const size_t size); /* I [B] Bytes to allocate */
+
+void * /* O [ptr] Pointer to allocated memory */
+nco_malloc_dbg /* [fnc] Wrapper for malloc(), receives and prints more diagnostics */
+(const size_t sz, /* I [B] Bytes to allocate */
+ const char *fnc_nm, /* I [sng] Function name */
+ const char *msg); /* I [sng] Supplemental error message */
 
 long /* O [nbr] Net memory currently allocated */
 nco_mmr_stt /* [fnc] Track memory statistics */

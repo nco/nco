@@ -1,3 +1,7 @@
+2003-11-20  Charlie Zender  <zender@uci.edu>
+
+	* Remove another overly dire packing warning that scares people
+
 2003-11-19  Charlie Zender  <zender@uci.edu>
 
 	* Rorik replaced nco_tst.sh with nco_tst.pl, completing TODO #202

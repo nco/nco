@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.32 2003-11-11 18:04:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.33 2003-11-20 21:36:47 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -36,20 +36,20 @@
 /* Utility routines not defined by netCDF library, but useful in working with it */
 void 
 nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
-(int rcd, /* I [enm] netCDF error code */ 
- char *msg) /* I [sng] supplemental error message */
+(const int rcd, /* I [enm] netCDF error code */ 
+ const char *msg) /* I [sng] Supplemental error message */
 {
   /* Purpose: Print netCDF error message, routine name, then exit
      Routine is called by all wrappers when a fatal error is encountered
      msg variable allows wrapper to pass more descriptive information than 
      is contained in the netCDF-defined error message.
      Use msg to print, e.g., the name of variable which caused the error */
-  char sbr_nm[]="nco_err_exit()";
+  char fnc_nm[]="nco_err_exit()";
   switch(rcd){
   case NC_ERANGE: (void)fprintf(stdout,"ERROR Result not representable in output file\nHINT: This may occur when an arithmetic operation results in a value not representible by the output variable type and NCO attempts to write that variable to an output file, with, e.g., nc_put_var*(). For more details, see\nhttp://nco.sf.net/nco.html#typ_cnv\n\nPossible workaround: Permanently promote the variable before attempting the arithmetic operation. For example,\nncap -O -s \'foo=double(foo);\' in.nc in.nc\n"); break;
   } /* end switch */
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"%s: ERROR %s\n%s\n",sbr_nm,msg,nc_strerror(rcd));
+    (void)fprintf(stderr,"%s: ERROR %s\n%s\n",fnc_nm,msg,nc_strerror(rcd));
     exit(EXIT_FAILURE);
   } /* endif error */
 } /* end nco_err_exit() */
@@ -199,8 +199,8 @@ nco_dfl_case_nc_type_err(void) /* [fnc] Print error and exit for illegal case */
 
      Placing this in its own routine also has the virtue of saving many lines 
      of code since this function is used in many many switch() statements. */
-  char sbr_nm[]="nco_dfl_case_nc_type_err()";
-  (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal.\nNot handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype definition is braindead in netCDF2.x). Exiting...\n",sbr_nm);
+  char fnc_nm[]="nco_dfl_case_nc_type_err()";
+  (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal.\nNot handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype definition is braindead in netCDF2.x). Exiting...\n",fnc_nm);
   abort();
   exit(EXIT_FAILURE);
 } /* end nco_dfl_case_nc_type_err() */

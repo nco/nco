@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.87 2003-11-14 13:24:27 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.88 2003-11-20 21:36:47 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -13,8 +13,10 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
 {
   /* Purpose: Initialize variable structure, retrieve variable values from disk
      Parser calls ncap_var_init() when it encounters a new RHS variable */
-  int i;
-  int j;
+  char fnc_nm[]="ncap_var_init()"; /* [sng] Function name */
+
+  int idx;
+  int jdx;
   int nbr_dmn_var;
   int *dim_id=NULL;
   int var_id;
@@ -34,13 +36,14 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
     /* Check input file for ID */
     rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
     if(rcd != NC_NOERR){
-      /* return null if var not in input or output file */
+      /* Return NULL if variable not in input or output file */
       (void)fprintf(stderr,"WARNING unable to find %s in %s or %s\n",var_nm,prs_arg->fl_in,prs_arg->fl_out);    
       return (var_sct *)NULL;
     } /* end if */
     
-    /* Find dimensions used in var and add any new ones not already in
-       output list prs_arg->dmn_out and output file */
+    /* Find dimensions used in var
+       Learn which are not already in output list prs_arg->dmn_out and output file
+       Add these to output list and output file */
     (void)nco_redef(prs_arg->out_id);
     fl_id=prs_arg->in_id;
     
@@ -49,24 +52,24 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
       dim_id=(int *)nco_malloc(nbr_dmn_var*sizeof(int));
       
       (void)nco_inq_vardimid(fl_id,var_id,dim_id);
-      for(i=0;i<nbr_dmn_var;i++) 
-	for(j=0;j<prs_arg->nbr_dmn_in;j++){
+      for(idx=0;idx<nbr_dmn_var;idx++) 
+	for(jdx=0;jdx<prs_arg->nbr_dmn_in;jdx++){
 	  
-	  /* de-reference */
-	  dmn_in=prs_arg->dmn_in[j];
-	  if(dim_id[i] != dmn_in->id || dmn_in->xrf) continue;
+	  /* De-reference */
+	  dmn_in=prs_arg->dmn_in[jdx];
+	  if(dim_id[idx] != dmn_in->id || dmn_in->xrf) continue;
 	  
-	  /* define dimension  in (prs_arg->dmn_out) */ 
+	  /* Define new dimension in (prs_arg->dmn_out) */ 
 	  dim_new=nco_dmn_out_grow(prs_arg);
 	  *dim_new=nco_dmn_dpl(dmn_in);
 	  (void)nco_dmn_xrf(*dim_new,dmn_in);
-	  /* write dimension to output file */
+	  /* Write new dimension to output file */
 	  (void)nco_dmn_dfn(prs_arg->fl_out,prs_arg->out_id,dim_new,1);
-	  /* printf("Dimension %s defined\n",(*dim_new)->nm); */
+	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Found new dimension %s in input variable %s in file %s. Defining dimension %s in output file %s\n",prg_nm_get(),(*dim_new)->nm,var_nm,prs_arg->fl_in,(*dim_new)->nm,prs_arg->fl_out);
 	  break;
-	} /* end for j */
+	} /* end loop over dimensions in current output dimension list */
       (void)nco_free(dim_id);
-    } 
+    } /* end loop over dimension in current input variable */
     (void)nco_enddef(prs_arg->out_id); 
     
   } /* end else */
@@ -75,9 +78,8 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
   var=nco_var_fll(fl_id,var_id,var_nm,*(prs_arg->dmn_out),*(prs_arg->nbr_dmn_out));
   var->nm=(char *)nco_malloc((strlen(var_nm)+1UL)*sizeof(char));
   (void)strcpy(var->nm,var_nm);
-  var->tally=(long *)nco_malloc(var->sz*sizeof(long));
+  var->tally=(long *)nco_malloc_dbg(var->sz*sizeof(long),"Unable to malloc() tally buffer in variable initialization",fnc_nm);
   (void)nco_zero_long(var->sz,var->tally);
-  /* var->val.vp=(void *)nco_malloc(var->sz*nco_typ_lng(var->type));  variable malloced later in nco_var_get */
   /* Retrieve variable values from disk into memory */
   (void)nco_var_get(fl_id,var);
   /* (void)nco_var_free(var_nm);*/
@@ -895,6 +897,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
   
   if(var_lsr_out == NULL){
     /* Expand lesser variable (var_lsr) to match size of greater variable */
+    char fnc_nm[]="ncap_var_stretch()"; /* [sng] Function name */
     char *var_lsr_cp;
     char *var_lsr_out_cp;
     
@@ -916,20 +919,18 @@ ncap_var_stretch /* [fnc] Stretch variables */
     var_lsr_out=nco_var_dpl(var_gtr);
     (void)nco_xrf_var(var_lsr,var_lsr_out);
     
-    /* Modify a few elements of lesser variable array */
+    /* Modify elements of lesser variable array */
     var_lsr_out->nm=var_lsr->nm;
     var_lsr_out->id=var_lsr->id;
     var_lsr_out->type=var_lsr->type;
-    var_lsr_out->val.vp=(void *)nco_malloc(var_lsr_out->sz*nco_typ_lng(var_lsr_out->type));
+    var_lsr_out->val.vp=(void *)nco_malloc_dbg(var_lsr_out->sz*nco_typ_lng(var_lsr_out->type),"Unable to malloc() value buffer in variable stretching",fnc_nm);
     var_lsr_cp=(char *)var_lsr->val.vp;
     var_lsr_out_cp=(char *)var_lsr_out->val.vp;
     var_lsr_typ_sz=nco_typ_lng(var_lsr_out->type);
     
     if(var_lsr_out->nbr_dim == 0){
       /* Variables are scalars, not arrays */
-      
       (void)memcpy(var_lsr_out_cp,var_lsr_cp,var_lsr_typ_sz);
-      
     }else{
       /* Variables are arrays, not scalars */
       

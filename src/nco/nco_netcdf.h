@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.16 2003-11-11 18:04:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.h,v 1.17 2003-11-20 21:36:47 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -49,8 +49,8 @@ nco_dfl_case_nc_type_err /* [fnc] Print error and exit for illegal case */
 
 void 
 nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
-(int rcd, /* I [enm] netCDF error code */ 
- char *msg); /* I [sng] supplemental error message */
+(const int rcd, /* I [enm] netCDF error code */ 
+ const char *msg); /* I [sng] Supplemental error message */
 
 size_t /* O [B] Native type size */
 nco_typ_lng /* [fnc] Convert netCDF type enum to native type size */

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.37 2003-11-16 22:45:43 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.38 2003-11-20 21:36:46 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.8.4 are ready. 
 
@@ -16,6 +16,9 @@ Other user-visible changes:
 
 Notable bug-fixes:
 1. None
+
+User-invisible changes:
+1. Test suite rewritten in perl (nco_tst.pl), thanks to Rorik.
 
 Enjoy,
 Charlie

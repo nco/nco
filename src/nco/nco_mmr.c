@@ -1,10 +1,29 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.9 2003-11-11 18:04:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.10 2003-11-20 21:36:47 zender Exp $ */
 
 /* Purpose: Memory management */
 
 /* Copyright (C) 1995--2003 Charlie Zender
    This software is distributed under the terms of the GNU General Public License
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+/* Usage of NCO memory allocation routines nco_malloc(), nco_malloc_flg(), and nco_malloc_dbg():
+   nco_malloc(): Use this for small memory requests
+   nco_malloc() dies and exits with generic malloc() error for all error conditions
+   nco_malloc() plug-in replacements are malloc() and nco_malloc_flg() 
+   
+   nco_malloc_flg(): Use this for large memory requests when it is useful for calling routine 
+   to handle ENOMEM errors (e.g., calling routine has important debug information).
+   nco_malloc_flg() dies and exits with generic malloc() error unless error is ENOMEM
+   nco_malloc_flg() prints warning for ENOMEM errors, then returns control to calling routine
+   nco_malloc_flg() plug-in replacements are malloc() and nco_malloc() 
+   
+   nco_malloc_dbg(): Use this for large memory requests when calling routine supplies
+   its name and a useful supplemental error message
+   nco_malloc_dbg() prints name of calling function, supplemental error message, and then 
+   dies and exits for all error conditions.
+   nco_malloc_dbg() has no plug-in replacements (since it requires two extra arguments)
+   
+   None of these routines call malloc() when sz == 0 */
 
 #include "nco_mmr.h" /* Memory management */
 
@@ -23,7 +42,7 @@ nco_mmr_typ_sng /* [fnc] Convert netCDF type enum to string */
     return "nco_mmr_realloc";
   default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
-
+  
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
   return (char *)NULL;
 } /* end nco_mmr_typ_sng() */
@@ -72,10 +91,9 @@ void * /* O [ptr] Pointer to allocated memory */
 nco_malloc /* [fnc] Wrapper for malloc() */
 (const size_t sz) /* I [B] Bytes to allocate */
 {
-  /* Purpose: Custom wrapper for malloc()
-     Routine prints error and calls exit() when malloc() returns a NULL pointer 
-     Routine does not call malloc() when sz == 0 */
-  
+  /* Purpose: Custom plugin wrapper for malloc()
+     Top of nco_mmr.c explains usage of nco_malloc(), nco_malloc_flg(), and nco_malloc_dbg() */
+
   void *ptr; /* [ptr] Pointer to new buffer */
   
   /* malloc(0) is ANSI-legal, albeit unnecessary
@@ -97,16 +115,12 @@ nco_malloc /* [fnc] Wrapper for malloc() */
 } /* nco_malloc() */
 
 void * /* O [ptr] Pointer to allocated memory */
-nco_malloc_flg /* [fnc] Wrapper for malloc(), but more forgiving */
+nco_malloc_flg /* [fnc] Wrapper for malloc(), forgives ENOMEM errors */
 (const size_t sz) /* I [B] Bytes to allocate */
 {
-  /* Purpose: Custom wrapper for malloc() that allows ENOMEM errors
-     Routine should be used when calling program wants to provide additional failure
-     diagnostics unavailable to malloc(), e.g., variable and function name.
-     nco_malloc() should be used in most cases, with nco_malloc_flg() for special uses
-     Routine prints error and exits when malloc() returns a NULL pointer, except that
-     control is handed back to calling routine for further processing when error is ENOMEM
-     Routine does not call malloc() when sz == 0 */
+  /* Purpose: Custom plugin wrapper for malloc() that allows ENOMEM errors
+     Top of nco_mmr.c explains usage of nco_malloc(), nco_malloc_flg(), and nco_malloc_dbg() */
+
   extern int errno; /* [enm] Error code in errno.h */
 
   void *ptr; /* [ptr] Pointer to new buffer */
@@ -130,6 +144,38 @@ nco_malloc_flg /* [fnc] Wrapper for malloc(), but more forgiving */
 #endif /* !NCO_MMR_DBG */
   return ptr; /* [ptr] Pointer to new buffer */
 } /* nco_malloc_flg() */
+
+void * /* O [ptr] Pointer to allocated memory */
+nco_malloc_dbg /* [fnc] Wrapper for malloc(), receives and prints more diagnostics */
+(const size_t sz, /* I [B] Bytes to allocate */
+ const char *fnc_nm, /* I [sng] Function name */
+ const char *msg) /* I [sng] Supplemental error message */
+{
+  /* Purpose: Custom wrapper for malloc(), non-plugin, receives and prints more diagnostics
+     Top of nco_mmr.c explains usage of nco_malloc(), nco_malloc_flg(), and nco_malloc_dbg() */
+
+  extern int errno; /* [enm] Error code in errno.h */
+
+  void *ptr; /* [ptr] Pointer to new buffer */
+  
+  /* malloc(0) is ANSI-legal, albeit unnecessary
+     NCO sometimes employs this degenerate case behavior of malloc() to simplify code
+     Some debugging tools like Electric Fence consider any NULL returned by malloc() to be an error
+     So circumvent malloc() calls when sz == 0 */
+  if(sz == 0) return NULL;
+  
+  ptr=malloc(sz); /* [ptr] Pointer to new buffer */
+  if(ptr == NULL){
+    (void)fprintf(stdout,"%s: ERROR malloc() returns error on %s request for %li bytes\n",prg_nm_get(),fnc_nm,(long)sz);
+    (void)fprintf(stdout,"%s: malloc() error is \"%s\"\n",prg_nm_get(),strerror(errno));
+    (void)fprintf(stdout,"%s: User-supplied supplemental error message is \"%s\"\n",prg_nm_get(),msg);
+    nco_exit(EXIT_FAILURE);
+  } /* endif */
+#ifdef NCO_MMR_DBG
+  (void)nco_mmr_stt(nco_mmr_malloc,sz); /* fxm dbg */
+#endif /* !NCO_MMR_DBG */
+  return ptr; /* [ptr] Pointer to new buffer */
+} /* nco_malloc_dbg() */
 
 void * /* O [ptr] Pointer to re-allocated memory */
 nco_realloc /* [fnc] Wrapper for realloc() */
