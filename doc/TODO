@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.457 2005-03-25 21:57:08 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.458 2005-03-25 21:57:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -349,7 +349,6 @@ ncap62. Does LHS-casting still work? Following results in only three dimensions:
 ncap63. mmr: memory leak in ncap with var_nm_RHS
 ncap65. mmr: memory leak in ncap with var->nm
 ncap66. make ncap errors fatal, either in yyerror(), or call nco_error_exit()
-ncap67. mmr: memory leak in ncap with dmn_lst
 ncap68. 
 
 Build items:

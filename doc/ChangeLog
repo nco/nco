@@ -1,3 +1,6 @@
+2005-03-25  charlie  <zender@uci.edu>
+
+	* Documented and fixed some small ncap memory leaks with valgrind
 
 2005-03-24  Harry Mangalam  <hjm@tacgi.com>
 
@@ -10,7 +13,6 @@
         sml_stl.cdl       template for a small sat data file
         stl_5km.cdl       template for ~300MB sat data file
         stl_5km.sh        script to generate and ncap the above file
-
     
 2005-03-24  Charlie Zender  <zender@uci.edu>
 
