@@ -1,3 +1,11 @@
+2004-08-06  Charlie Zender  <zender@uci.edu>
+
+	* Handling situations where re-order list caused non-record
+	variables to become record variables was completely broken.
+	Inserted mucho logic which implements new policies:
+	1. First record variable change request is honored
+	2. All subsequent requests are ignored and produce warnings
+
 2004-08-04  Charlie Zender  <zender@uci.edu>
 
 	* Fix ncpdq bug where record coordinate matching was done with
