@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.54 2000-11-15 08:43:41 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.55 2000-12-30 02:23:03 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -396,6 +396,7 @@ extern var_sct *var_conform_type(nc_type,var_sct *);
 extern var_sct *var_dpl(var_sct *);
 extern var_sct *var_fll(int,int,char *,dmn_sct **,int);
 extern var_sct *var_free(var_sct *);
+extern void dfl_case_nctype_err(void);
 extern void Exit_gracefully(void);
 extern void FORTRAN_add_double_precision(long *,int *,double *,long *,double *,double *);
 extern void FORTRAN_add_real(long *,int *,float *,long *,float *,float *);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.29 2000-10-27 11:07:27 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.30 2000-12-30 02:23:03 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -142,8 +142,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.29 2000-10-27 11:07:27 hmb Exp $"; 
-  char CVS_Revision[]="$Revision: 1.29 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.30 2000-12-30 02:23:03 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.30 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -488,6 +488,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 	case NC_SHORT: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.sp[lmn]=val_arg_dbl[lmn];} break; 
 	case NC_CHAR: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.cp[lmn]=val_arg_dbl[lmn];} break; 
 	case NC_BYTE: for(lmn=0L;lmn<aed_lst[idx].sz;lmn++) {aed_lst[idx].val.bp[lmn]=val_arg_dbl[lmn];} break; 
+	default: dfl_case_nctype_err(); break;
 	} /* end switch */
 	
 	/* Free array used to hold double values */
@@ -651,6 +652,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     case NC_SHORT: for(idx=0L;idx<var_sz;idx++) {if(var_val.sp[idx] == *mss_val_crr.sp) var_val.sp[idx]=*mss_val_new.sp;} break;
     case NC_CHAR: for(idx=0L;idx<var_sz;idx++) {if(var_val.cp[idx] == *mss_val_crr.cp) var_val.cp[idx]=*mss_val_new.cp;} break;
     case NC_BYTE: for(idx=0L;idx<var_sz;idx++) {if(var_val.bp[idx] == *mss_val_crr.bp) var_val.bp[idx]=*mss_val_new.bp;} break;
+    default: dfl_case_nctype_err(); break;
     } /* end switch */
 
     /* Un-typecast the pointer to values after access */

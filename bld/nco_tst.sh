@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.33 2000-11-03 19:11:21 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.34 2000-12-30 02:23:03 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -157,7 +157,7 @@ echo "ncwa 14: average masked variable with some missing values: 0.5 =?= $avg"
 
 ncwa -O -y min -v rec_var_flt_mss_val_dbl in.nc foo.nc 2>>foo.tst
 avg=`ncks -C -H -s "%e" -v rec_var_flt_mss_val_dbl foo.nc`
-echo "ncwa 15: min swich on type double, some missing values: 2 =?= $avg" 
+echo "ncwa 15: min switch on type double, some missing values: 2 =?= $avg" 
 
 ncwa  -O -y min -v three_dmn_var_dbl -a lon in.nc foo.nc 2>>foo.tst
 ncks -C -H -s "%f," -v three_dmn_var_dbl foo.nc >foo$$
@@ -167,14 +167,14 @@ avg=`cut -d, -f 20 foo$$`
 echo "ncwa 17: Dimension reduction with min switch : 77 =?= $avg"
 
 ncwa -O -y min -v three_dmn_var_lng -a lon in.nc foo.nc 2>>foo.tst
-ncks -C -H -s "%d," -v three_dmn_var_lng foo.nc>foo$$
+ncks -C -H -s "%d," -v three_dmn_var_lng foo.nc >foo$$
 avg=`cut -d, -f 5 foo$$`
 echo "ncwa 18: Dimension reduction on type long  with min switch and missing values: -99 =?= $avg"
 avg=`cut -d, -f 7 foo$$`
 echo "ncwa 19: Dimension reduction on type long variable: 25 =?= $avg"
 
 ncwa -O -y min -v three_dmn_var_sht -a lon in.nc foo.nc 2>>foo.tst
-ncks -C -H -s "%d," -v three_dmn_var_sht foo.nc>foo$$
+ncks -C -H -s "%d," -v three_dmn_var_sht foo.nc >foo$$
 avg=`cut -d, -f 20 foo$$`
 echo "ncwa 20: Dimension reduction on type short variable with min switch and missing values: -99 =?= $avg"
 avg=`cut -d, -f 8 foo$$`
@@ -189,21 +189,21 @@ avg=`ncks -C -H -s "%f" -v four_dmn_rec_var foo.nc`
 echo "ncwa 23: Max flag on type float variable: 240 =?= $avg"
 
 ncwa -O -y max  -v three_dmn_var_dbl  -a lat,lon in.nc foo.nc 2>>foo.tst
-ncks -C -H -s "%f," -v three_dmn_var_dbl foo.nc>foo$$
+ncks -C -H -s "%f," -v three_dmn_var_dbl foo.nc >foo$$
 avg=`cut -d, -f 4 foo$$`
 echo "ncwa 24: Dimension reduction on type double  variable with max switch and missing values: -99 =?= $avg"
 avg=`cut -d, -f 5 foo$$`
 echo "ncwa 25: Dimension reduction on type double variable: 40 =?= $avg"
 
 ncwa -O -y max -v three_dmn_var_lng -a lat in.nc foo.nc 2>>foo.tst
-ncks -C -H -s "%d," -v three_dmn_var_lng foo.nc>foo$$
+ncks -C -H -s "%d," -v three_dmn_var_lng foo.nc >foo$$
 avg=`cut -d, -f 9 foo$$`
 echo "ncwa 26: Dimension reduction on type long variable with min switch and missing values: -99 =?= $avg"
 avg=`cut -d, -f 13 foo$$`
 echo "ncwa 27: Dimension reduction on type long variable: 29 =?= $avg"
 
 ncwa -O -y max -v three_dmn_var_sht -a lat in.nc foo.nc 2>>foo.tst
-ncks -C -H -s "%d," -v three_dmn_var_sht foo.nc>foo$$
+ncks -C -H -s "%d," -v three_dmn_var_sht foo.nc >foo$$
 avg=`cut -d, -f 37 foo$$`
 echo "ncwa 28: Dimension reduction on type short variable with max switch and missing values: -99 =?= $avg"
 avg=`cut -d, -f 33 foo$$`

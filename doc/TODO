@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.86 2000-12-28 02:14:03 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.87 2000-12-30 02:23:03 zender Exp $ 
 
 *************
 NCO Wish list
@@ -149,6 +149,7 @@ Works fine with -D 5 option!!!
 Works fine when compiled without OPTS=D
 Perhaps this is a gcc-2.96 bug?
 195. Itanium builds
+196. nco_tst.sh has errors in ncwa tests 15--29 when built with NETCDF2_ONLY
 ************************************************************************
 End NCO Wish list
 ************************************************************************

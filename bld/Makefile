@@ -1,12 +1,22 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.84 2000-11-03 19:19:19 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.85 2000-12-30 02:23:03 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
-# Requires: GNU Make. AT&T Make will not understand this.
+# Requires GNU make. AT&T make will not process this file.
 
 # Usage: 
 # make
 # If this fails, try
 # make dir all
+# Clean all dependencies for fresh build
+# cd ~/nco/bld;make cln bin_cln;cd -
+# Print make diagnostics
+# cd ~/nco/bld;make dbg;cd -
+# Enable symbols for debugging
+# cd ~/nco/bld;make OPTS=D;cd -
+# DODS support:
+# cd ~/nco/bld;make DODS=Y;cd -
+# HDF4 version of netCDF libraries:
+# cd ~/nco/bld;make HDF4=Y;cd -
 
 MY_BLD_DIR := ../bld
 ifndef PVM_ARCH
@@ -54,8 +64,22 @@ ifndef NETCDF_LIB
  NETCDF_LIB := /usr/local/lib # Directory containing libnetcdf.a
 endif
 
+ifdef HDF4
+ HDF4 := Y
+else
+ HDF4 := N
+endif # endif HDF4
+ifeq ($(HDF4),Y)
+# Build NCO using HDF4 netCDF interface
+ HDF4_ROOT := /usr/local/hdf4
+ NETCDF_INC := $(HDF4_ROOT)/include  # Directory containing HDF4 version of netcdf.h
+ NETCDF_LIB := $(HDF4_ROOT)/lib -lmfhdf -ldf -ljpeg -lz # Directory containing HDF4 version of libnetcdf.a routines, order of library linkage is significant
+endif # endif HDF4
+
 ifdef DODS
  DODS := Y
+else
+ DODS := N
 endif
 ifeq ($(DODS),Y)
 # Build NCO as DODS-enabled clients
@@ -562,6 +586,14 @@ endif
 endif
 # endif DODS
 
+# If intended to use for HDF files, remove all netCDF3 calls
+ifeq ($(HDF4),Y)
+ CPPFLAGS := $(CPPFLAGS) -DNETCDF2_ONLY
+# No need to link to libnetcdf.a since libmfhdf.a has all netCDF2 calls
+ LDFLAGS := $(filter-out -lnetcdf,$(LDFLAGS))
+endif
+# endif HDF4
+
 # Link to Electric Fence library, see man efence
 ifeq ($(PVM_ARCH),LINUX)
 ifneq (,$(findstring $(OPTS),DX))
@@ -667,6 +699,10 @@ dat:	$(MY_DAT_DIR)/in.nc
 	-for fl in $(MDL_DAT_STB); do cd $(MY_DAT_DIR); ln -f -s in.nc $$fl; done
 $(MY_DAT_DIR)/in.nc: $(MY_DAT_DIR)/in.cdl
 	cd $(MY_DAT_DIR); ncgen -b -o in.nc in.cdl
+dataclean: dat_cln
+dat_cln:
+	rm -f $(MDL_DAT)
+	cd $(MY_DAT_DIR); rm -f foo*
 test:	tst
 tst:	$(MY_DAT_DIR)/in.nc
 	- if test -f $(MY_DAT_DIR)/nco_tst.nc; then printf "" ; else $(MY_BIN_DIR)/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l $(MY_DAT_DIR) nco_tst.nc; fi
@@ -674,10 +710,6 @@ tst:	$(MY_DAT_DIR)/in.nc
 testclean: tst_cln
 tst_cln:
 	cd $(MY_DAT_DIR); rm -f foo* nco_tst.nc
-dataclean: dat_cln
-dat_cln:
-	rm -f $(MDL_DAT)
-	cd $(MY_DAT_DIR); rm -f foo*
 # Targets in doc
 # Each make directive line spawns a separate shell so must use `cd dir;cmd' format
 doc:	$(MY_DOC_DIR)/nco.dvi $(MY_DOC_DIR)/nco.ps $(MY_DOC_DIR)/nco.pdf $(MY_DOC_DIR)/nco.html $(MY_DOC_DIR)/nco.info   
@@ -737,22 +769,27 @@ cln: lib_cln dpn_cln obj_cln tst_cln
 	cd $(MY_DOC_DIR); rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
 debug: dbg
 dbg:
-	printf "PVM_ARCH = $(PVM_ARCH)\n"
-	printf "LDFLAGS = $(LDFLAGS)\n"
-	printf "CFLAGS = $(CFLAGS)\n"
-	printf "MDL_PTH = $(MDL_PTH)\n"
-	printf "VPATH = $(VPATH)\n"
-	printf "SRC_LST = $(SRC_LST)\n"
-	printf "MDL_SRC = $(MDL_SRC)\n"
-	printf "MDL_OBJ = $(MDL_OBJ)\n"
-	printf "MDL_DPN = $(MDL_DPN)\n"
-	printf "YACC = $(YACC)\n"
-	printf "LEX = $(LEX)\n"
-	printf "USE_FORTRAN_ARITHMETIC = $(USE_FORTRAN_ARITHMETIC)\n"
-	printf "NCO_VRS = $(NCO_VRS)\n"
-	printf "DODS = $(DODS)\n"
-	printf "DODS_ROOT = $(DODS_ROOT)\n"
-	printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
+	@printf "CFLAGS = $(CFLAGS)\n"
+	@printf "CPPFLAGS = $(CPPFLAGS)\n"
+	@printf "C++FLAGS = $(C++FLAGS)\n"
+	@printf "DODS = $(DODS)\n"
+	@printf "DODS_ROOT = $(DODS_ROOT)\n"
+	@printf "HDF4 = $(HDF4)\n"
+	@printf "LDFLAGS = $(LDFLAGS)\n"
+	@printf "LEX = $(LEX)\n"
+	@printf "MDL_DPN = $(MDL_DPN)\n"
+	@printf "MDL_OBJ = $(MDL_OBJ)\n"
+	@printf "MDL_PTH = $(MDL_PTH)\n"
+	@printf "MDL_RPM_NST_NM = $(MDL_RPM_NST_NM)\n"
+	@printf "MDL_SRC = $(MDL_SRC)\n"
+	@printf "NCO_VRS = $(NCO_VRS)\n"
+	@printf "NETCDF_INC = $(NETCDF_INC)\n"
+	@printf "NETCDF_LIB = $(NETCDF_LIB)\n"
+	@printf "PVM_ARCH = $(PVM_ARCH)\n"
+	@printf "SRC_LST = $(SRC_LST)\n"
+	@printf "USE_FORTRAN_ARITHMETIC = $(USE_FORTRAN_ARITHMETIC)\n"
+	@printf "VPATH = $(VPATH)\n"
+	@printf "YACC = $(YACC)\n"
 distclean: dst_cln
 dst_cln: cln bin_cln doc_cln dat_cln
 	cd $(MY_BLD_DIR); rm -f *~

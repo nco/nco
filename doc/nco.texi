@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.74 2000-11-26 06:41:56 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.75 2000-12-30 02:23:03 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -570,6 +570,7 @@ linked.
 @section netCDF 2.x vs. 3.x
 @cindex netCDF 2.x
 @cindex netCDF 3.x
+netCDF version 2.x was released in 1993.
 @acronym{NCO} began with netCDF 2.x in 1994.
 netCDF 3.0 was released in 1996, and we are eager to reap the
 performance advantages of the newer netCDF implementation.
@@ -583,33 +584,46 @@ with netCDF 2.x releases.
 @cindex @acronym{HDF}
 @cindex Hierarchical Data Format
 However, the ability to compile @acronym{NCO} with only netCDF 2.x calls is worth 
-maintaining because @acronym{HDF}
+maintaining because @acronym{HDF} version 4
 @footnote{The Hierarchical Data Format, or @acronym{HDF}, is another
 self-describing data format similar to, but more elaborate than, netCDF.}
 (available from @uref{http://hdf.ncsa.uiuc.edu, HDF})
-) supports only the netCDF 2.x library calls.  
-If @acronym{NCO} is built with only netCDF 2.x calls then some @acronym{NCO} operators will
-work with @acronym{HDF} files as well as netCDF files 
-@footnote{I have never tried this but other @acronym{NCO} users have confirmed
-this is true---it has something to do with linking to the MFHDF
-library in addition to or instead of the usual netCDF library. 
-Apparently MFHDF only supports netCDF 2.x calls.
-Thus I will try to keep this capability in @acronym{NCO} as long as it is not too
-much trouble.
-If you know which @acronym{NCO} operations should/should not work with @acronym{HDF} files,
-please let me know.}.
+supports only the netCDF 2.x library calls
+(see @uref{http://hdf.ncsa.uiuc.edu/UG41r3_html/SDS_SD.fm12.html#47784}).
+If @acronym{NCO} is built with only netCDF 2.x calls then all
+@acronym{NCO} operators should work with @acronym{HDF} files as well as 
+netCDF files
+@footnote{One must link the @acronym{NCO} code to the @acronym{HDF4}
+@acronym{MFHDF} library instead of the usual netCDF library. 
+However, the @acronym{MFHDF} library only supports netCDF 2.x calls.
+Thus I will try to keep this capability in @acronym{NCO} as long as it
+is not too much trouble.}.
 @cindex @code{NETCDF2_ONLY}
 Therefore, the preprocessor token @code{NETCDF2_ONLY} has been
 implemented in @acronym{NCO} to eliminate all netCDF 3.x calls. 
 If, at compilation time, @code{NETCDF2_ONLY} is defined, then @acronym{NCO} will
-not use any netCDF 3.x calls and the resulting @acronym{NCO} operators should work
-with @acronym{HDF} files. 
+not use any netCDF 3.x calls and, if linked properly, the resulting
+@acronym{NCO} operators will work with @acronym{HDF4} files. 
+The @file{Makefile} supplied with @acronym{NCO} has been written to 
+simplify building in this @acronym{HDF} capability.
+When @acronym{NCO} is built with @code{make HDF4=Y}, the @file{Makefile}
+will set all required preprocessor flags and library links to build 
+with the @acronym{HDF} libraries (which are assumed to reside under
+@code{/usr/local/hdf4}, edit the @file{Makefile} to suit your
+installation).  
+
 Note that there are multiple versions of @acronym{HDF}.
-Currently @acronym{HDF} version 4.x supports netCDF 2.x and thus @acronym{NCO}.
-@acronym{HDF} version 5.x became available in 1999, but did not support netCDF
-(or, for that matter, Fortran) as of December 1999.
-Support for netCDF 3.x in @acronym{HDF} 5.x is being worked on and we will attempt
-to convert @acronym{NCO} to netCDF 3.x once this is complete.
+Currently @acronym{HDF} version 4.x supports netCDF 2.x and thus
+@acronym{NCO}. 
+@acronym{HDF} version 5.x became available in 1999, but did not support
+netCDF (or, for that matter, Fortran) as of December 1999.
+Support for netCDF 3.x in @acronym{HDF} 5.x is being worked on and we
+will attempt to convert @acronym{NCO} to netCDF 3.x once this is
+complete. 
+Work is mostly complete on this interface, however, and it may be
+separately downloaded from the
+@uref{http://hdf.ncsa.uiuc.edu/HDF5/papers/netcdfh5.html, HDF5-netCDF}
+website. 
 
 @node Help and Bug reports,  , netCDF 2.x vs. 3.x, Introduction
 @section Help and Bug reports

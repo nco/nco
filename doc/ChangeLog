@@ -1,3 +1,23 @@
+2000-12-29  Charlie Zender  <zender@uci.edu>
+
+	* Added default statements to switch(type) constructs which
+	emitted warnings when compiled with -DNETCDF2_ONLY since,
+	apparently, there are a whole bunch of things besides numeric
+	types in the old nctype enum and gcc warns about enums that are
+	not exhaustively considered in switch() statements. 
+	All these default statements can be removed with netCDF3 interface
+	so perhaps these should be surrounded with #ifdef NETCDF2_ONLY
+	constructs, but they actually do make sense for netCDF3 as well
+	so I have implemented a uniform error function, dfl_case_nctype_err(), 
+        to be called by all routines which emit errors only when compiled with
+        NETCDF2_ONLY.
+        This makes the behavior easy to modify or remove in the future.
+
+	* Fixed echoing of Makefile diagnostics
+
+	* Added HDF4 option to Makefile to facilitate compiling with HDF
+	version of netCDF libraries
+
 2000-11-25  Charlie Zender  <zender@uci.edu>
 
 	* Added -q ("quiet") switch to ncks to suppress printing of

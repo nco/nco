@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.66 2000-10-23 22:57:34 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.67 2000-12-30 02:23:03 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.66 2000-10-23 22:57:34 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.66 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.67 2000-12-30 02:23:03 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.67 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -660,6 +660,7 @@ main(int argc,char **argv)
 	  case NC_SHORT: mss_val_dbl=wgt_avg->mss_val.sp[0]; break;
 	  case NC_CHAR: mss_val_dbl=wgt_avg->mss_val.cp[0]; break;
 	  case NC_BYTE: mss_val_dbl=wgt_avg->mss_val.bp[0]; break;
+	  default: dfl_case_nctype_err(); break;
 	  } /* end switch */
 	  /* Second mask wgt_avg where variable is missing value */
 	  (void)var_mask(wgt_avg->type,wgt_avg->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,mss_val_dbl,nco_op_ne,var_prc[idx]->val,wgt_avg->val);

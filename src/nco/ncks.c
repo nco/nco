@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.38 2000-11-26 06:41:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.39 2000-12-30 02:23:03 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.38 2000-11-26 06:41:57 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.38 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.39 2000-12-30 02:23:03 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.39 $";
   
   extern char *optarg;
   extern int ncopts;
@@ -362,6 +362,7 @@ type_fmt_sng(nc_type type)
     return "%c";
   case NC_BYTE:
     return "%c";
+  default: dfl_case_nctype_err(); break;
   } /* end switch */
 
   /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
@@ -470,6 +471,7 @@ prn_att(int in_id,int var_id)
     case NC_BYTE:
       for(att_lmn=0;att_lmn<att_sz;att_lmn++) (void)fprintf(stdout,"%c",att[idx].val.bp[att_lmn]);
       break;
+    default: dfl_case_nctype_err(); break;
     } /* end switch */
     (void)fprintf(stdout,"\n");
     
@@ -1314,6 +1316,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
       case NC_LONG: (void)fprintf(stdout,dlm_sng,var.val.lp[lmn]); break;
       case NC_CHAR: (void)fprintf(stdout,dlm_sng,var.val.cp[lmn]); break;
       case NC_BYTE: (void)fprintf(stdout,dlm_sng,var.val.bp[lmn]); break;
+      default: dfl_case_nctype_err(); break;
       } /* end switch */
     } /* end loop over element */
 
@@ -1333,6 +1336,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
       (void)fprintf(stdout,var_sng,var_nm,var.val.cp[lmn],unit_sng);
       break;
     case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,var.val.bp[lmn],unit_sng); break;
+    default: dfl_case_nctype_err(); break;
     } /* end switch */
   } /* end if variable is a scalar, byte, or character */
 
@@ -1435,6 +1439,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
 	      case NC_LONG: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.lp[crd_idx_crr]); break;
 	      case NC_CHAR: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.cp[crd_idx_crr]); break;
 	      case NC_BYTE: (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn,dim[dmn_idx].val.bp[crd_idx_crr]); break;
+	      default: dfl_case_nctype_err(); break;
 	      } /* end switch */
 	    }else{ /* if dimension is not a coordinate... */
 	      (void)sprintf(dmn_sng,"%%s%c%%li%c ",arr_lft_dlm,arr_rgt_dlm);
@@ -1481,6 +1486,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
       case NC_LONG: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.lp[lmn],unit_sng); break;
       case NC_CHAR: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.cp[lmn],unit_sng); break;
       case NC_BYTE: (void)fprintf(stdout,var_sng,var_nm,idx_crr,var.val.bp[lmn],unit_sng); break;
+      default: dfl_case_nctype_err(); break;
       } /* end switch */
     } /* end loop over element */
   } /* end if variable is an array, not a scalar */

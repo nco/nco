@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.65 2000-11-27 18:33:33 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.66 2000-12-30 02:23:03 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -1047,6 +1047,7 @@ nc_lib_vrs_prn()
 {
   /* Purpose: Print netCDF library version */
 
+#ifndef NETCDF2_ONLY
   char *lib_sng;
   char *nst_sng;
   char *vrs_sng;
@@ -1055,10 +1056,13 @@ nc_lib_vrs_prn()
 
   int vrs_sng_len;
   int nst_sng_len;
+#endif /* NETCDF2_ONLY */
 
   /* Ability to compile without netCDF 3.x calls is still valuable because
      HDF 4.x only supports netCDF 2.x library. */     
-#ifndef NETCDF2_ONLY
+#ifdef NETCDF2_ONLY
+  (void)fprintf(stderr,"Compiled with netCDF library version 2.x\n");
+#else /* not NETCDF2_ONLY */
   /* As of netCDF 3.4, nc_inq_libvers() returned strings such as "3.4 of May 16 1998 14:06:16 $" */  
   lib_sng=(char *)strdup(nc_inq_libvers());
   of_ptr=strstr(lib_sng," of ");
@@ -1079,7 +1083,7 @@ nc_lib_vrs_prn()
   (void)free(vrs_sng);
   (void)free(lib_sng);
   (void)free(nst_sng);
-#endif /* NETCDF2_ONLY */
+#endif /* not NETCDF2_ONLY */
   (void)fprintf(stdout,"NCO homepage URL is http://nco.sourceforge.net\n");
 } /* end nc_lib_vrs_prn() */
 
