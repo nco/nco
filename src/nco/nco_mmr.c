@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.18 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.c,v 1.19 2005-03-23 03:02:00 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -291,3 +291,36 @@ nco_mmr_stt /* [fnc] Track memory statistics */
 
   return mmr_net_crr; /* [B] Net memory currently allocated */
 } /* nco_mmr_stt() */
+
+long /* O [B] Maximum resident set size */
+nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
+(const int rusage_who) /* [enm] RUSAGE_SELF, RUSAGE_CHILDREN, RUSAGE_LWP */
+{
+  /* Purpose: Track memory statistics */
+  /* NB: As of kernel 2.6.9, Linux only maintains the fields ru_utime, ru_stime, ru_minflt, ru_majflt, and ru_nswap */
+  int rcd;
+  int sz_pg; /* [B] Page size in Bytes */
+  struct rusage usg;
+
+  sz_pg=getpagesize(); /* [B] Page size in Bytes */
+  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports: page size = %d B\n",prg_nm_get(),sz_pg);
+
+  /* fxm: use input argument instead or RUSAGE_SELF */
+  rcd=getrusage(RUSAGE_SELF,&usg);
+  
+  /* rusage reports size and time in OS-dependent units:
+     AIX uses kilobytes [kB] for size and seconds [s] for time:
+     ru_maxrss [kB], ru_ixrss [kB s], ru_idrss [kB], ru_idrss [kB]
+     http://publib.boulder.ibm.com/infocenter/pseries/index.jsp?topic=/com.ibm.aix.doc/libs/basetrf1/getrusage_64.htm
+
+     Linux does not implement these fields yet
+     ru_maxrss [], ru_ixrss [], ru_idrss [], ru_idrss []
+
+     Solaris uses pages [pg] for size and ticks [tck] for time: 
+     ru_maxrss [pg], ru_ixrss [pg tck], ru_idrss [pg], ru_idrss [pg]
+     http://docs.sun.com/app/docs/doc/816-5168/6mbb3hr9o?a=view */
+
+  (void)fprintf(stdout,"%s: INFO nco_mmr_rusage_prn() reports: rusage.ru_utime.tv_sec = user time used = %li s, rusage.ru_utime.tv_usec = user time used = %li us, rusage.ru_stime.tv_sec = system time used = %li s, rusage.ru_stime.tv_usec = system time used = %li us, rusage.ru_maxrss = maximum resident set size = %li [sz], rusage.ru_ixrss = integral shared memory size =  %li [sz tm], rusage.ru_idrss = integral unshared data size = %li [sz], rusage.ru_isrss = integral unshared stack size = %li [sz], rusage.ru_minflt = page reclaims = %li, rusage.ru_majflt = page faults = %li, rusage.ru_nswap = swaps = %li\n",prg_nm_get(),usg.ru_utime.tv_sec,usg.ru_utime.tv_usec,usg.ru_stime.tv_sec,usg.ru_stime.tv_usec,usg.ru_maxrss,usg.ru_ixrss,usg.ru_idrss,usg.ru_isrss,usg.ru_minflt,usg.ru_majflt,usg.ru_nswap);
+
+  return (long)usg.ru_maxrss; /* [B] Maximum resident set size */
+} /* nco_mmr_rusage_prn() */

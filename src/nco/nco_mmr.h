@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.14 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mmr.h,v 1.15 2005-03-23 03:02:00 zender Exp $ */
 
 /* Purpose: Memory management */
 
@@ -17,6 +17,7 @@
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp. . . */
+#include <sys/resource.h> /* Resource usage and limits */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions and C library */
@@ -63,6 +64,10 @@ nco_malloc_dbg /* [fnc] Wrapper for malloc(), receives and prints more diagnosti
 void
 nco_malloc_err_hnt_prn /* [fnc] Explain meaning and workarounds for malloc() failures */
 (void);
+
+long /* O [B] Maximum resident set size */
+nco_mmr_rusage_prn /* [fnc] Print rusage memory usage statistics */
+(const int rusage_who); /* [enm] RUSAGE_SELF, RUSAGE_CHILDREN, RUSAGE_LWP */
 
 long /* O [nbr] Net memory currently allocated */
 nco_mmr_stt /* [fnc] Track memory statistics */
