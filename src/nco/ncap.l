@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.36 2002-02-03 08:40:08 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.37 2002-02-03 11:27:19 hmb Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -400,12 +400,14 @@ pow/[ ]*\( {return POWER;}
   int idx; /* [idx] Counter */
   int jdx; /* [idx] Counter */
   int rcd;
+  int out_nbr=0;
   
   double val=1.0; /* [frc] Value of template */
   
   var_sct *var; /* [sct] Variable */
   
   nm_id_sct *dmn_lst; /* [sng] Dimension name-ID list */
+  nm_id_sct *out_lst; /* [sng] Dimension name-ID list */
   dmn_sct **dmn; /* [dmn] Dimension structure list */
   
   /* Valid subscripts must contain alphanumeric string */
@@ -419,6 +421,7 @@ pow/[ ]*\( {return POWER;}
 
   /* Use dimension names to populate list of dimension structures */
   dmn_lst=(nm_id_sct *)nco_malloc(dmn_nbr*sizeof(nm_id_sct));
+  out_lst=(nm_id_sct *)nco_malloc(dmn_nbr*sizeof(nm_id_sct));
   for(idx=0;idx<dmn_nbr;idx++){
     rcd=nco_inq_dimid_flg(prs_arg->in_id,sbs_lst[idx],&dmn_id);
     if(rcd != NC_NOERR) {
@@ -428,13 +431,18 @@ pow/[ ]*\( {return POWER;}
     } /* endif err */
     dmn_lst[idx].nm=sbs_lst[idx];
     dmn_lst[idx].id=dmn_id;
+
+    /* make another list without any double entries */
+    for(jdx = 0; jdx < out_nbr  ; jdx++)
+      if(!strcmp(dmn_lst[idx].nm,out_lst[jdx].nm)) break;
+    if (jdx == 0 || jdx == out_nbr ) out_lst[out_nbr++]=dmn_lst[idx];
   } /* end loop over dimensions */
   
   /* Build subscript list only once, during initial scan */
   if(prs_arg->initial_scan){
     lval_ptr->sbs_lst=(nm_lst_sct *)nco_malloc(sizeof(nm_lst_sct));
-    lval_ptr->sbs_lst->list=dmn_lst;
-    lval_ptr->sbs_lst->nbr=dmn_nbr;
+    lval_ptr->sbs_lst->list=out_lst;
+    lval_ptr->sbs_lst->nbr=out_nbr;
     /* Return to default state, known as INITIAL state or 0 state LMB92 p. 43 */    
     BEGIN INITIAL;
     return LHS_SBS;
