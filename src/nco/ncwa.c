@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.13 1999-01-07 00:59:17 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.14 1999-02-26 01:52:11 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -75,8 +75,8 @@ main(int argc,char **argv)
   char *msk_nm=NULL;
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncwa.c,v 1.13 1999-01-07 00:59:17 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.13 $";
+  char rcs_Id[]="$Id: ncwa.c,v 1.14 1999-02-26 01:52:11 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.14 $";
   
   dim_sct **dim;
   dim_sct **dim_out;
@@ -571,6 +571,10 @@ main(int argc,char **argv)
 	  (void)var_normalize(wgt_out->type,wgt_out->sz,wgt_out->has_mss_val,wgt_out->mss_val,wgt_out->tally,wgt_out->val);
 	} /* endif */ 
 	/* Divide by denominator */ 
+	/* Diagnose problem #116 before it core dumps */ 
+	if(var_prc_out[idx]->sz == 1 && var_prc_out[idx]->type == NC_LONG && var_prc_out[idx]->val.lp[0] == 0){
+	  (void)fprintf(stdout,"%s: ERROR Denominator weight = 0. Problem described in TODO #116\n%s: HINT A possible workaround is to remove variable \"%s\" from file\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
+	} /* end if */ 
 	/* This constructs the default weighted average */ 
 	(void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_out->val,var_prc_out[idx]->val);
       }else if(NRM_BY_DNM){
