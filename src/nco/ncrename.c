@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.67 2004-07-02 23:01:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.68 2004-08-05 08:18:25 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -85,8 +85,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncrename.c,v 1.67 2004-07-02 23:01:13 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.67 $";
+  const char * const CVS_Id="$Id: ncrename.c,v 1.68 2004-08-05 08:18:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.68 $";
   const char * const opt_sng="a:D:d:hl:Oo:p:rv:-:";
 
   extern char *optarg;
@@ -188,7 +188,7 @@ main(int argc,char **argv)
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
+      nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
       (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());

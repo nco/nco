@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.31 2004-07-29 20:37:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_lst.c,v 1.32 2004-08-05 08:18:25 zender Exp $ */
 
 /* Purpose: Variable list utilities */
 
@@ -367,7 +367,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
  const int nbr_var, /* I [nbr] Number of variables */
  const bool NCAR_CCSM_FORMAT, /* I [flg] File adheres to NCAR CCSM conventions */
  CST_X_PTR_CST_PTR_CST_Y(dmn_sct,dmn_xcl), /* I [sct] Dimensions not allowed in fixed variables */
- const int nbr_dmn_xcl, /* I [nbr] Number of excluded dimensions */
+ const int nbr_dmn_xcl, /* I [nbr] Number of altered dimensions */
  var_sct *** const var_fix_ptr, /* O [sct] Fixed-variables (input file) */
  var_sct *** const var_fix_out_ptr, /* O [sct] Fixed-variables (output file) */
  int * const nbr_var_fix, /* O [nbr] Number of fixed variables */
@@ -437,17 +437,18 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
     case ncks:
       /* Do nothing */
       break;
-    case ncpdq:
-      /* Do nothing */
-      break;
     case ncra:
       if(!var[idx]->is_rec_var) var_op_typ[idx]=fix;
       break;
     case ncrcat:
       if(!var[idx]->is_rec_var) var_op_typ[idx]=fix;
       break;
+    case ncpdq:
+      /* fxm: TODO nco377 test for un-altered dimensions and make them var->fix like ncwa */
+      /* Do nothing */
+      break;
     case ncwa:
-      /* Process every variable containing an excluded (averaged) dimension */
+      /* Process every variable containing an altered (averaged, re-ordered, reversed) dimension */
       for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
 	for(idx_xcl=0;idx_xcl<nbr_dmn_xcl;idx_xcl++){
 	  if(var[idx]->dim[idx_dmn]->id == dmn_xcl[idx_xcl]->id) break;
@@ -457,7 +458,7 @@ nco_var_lst_dvd /* [fnc] Divide input lists into output lists */
 	  break;
 	} /* end if */
       } /* end loop over idx_dmn */
-      /* Variables which do not contain an excluded (averaged) dimension must be fixed */
+      /* Variables with no altered (averaged, re-ordered, reversed) dimensions are fixed */
       if(idx_dmn == var[idx]->nbr_dim) var_op_typ[idx]=fix;
       break;
     default: nco_dfl_case_prg_id_err(); break;

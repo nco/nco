@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.251 2004-08-05 06:05:29 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.252 2004-08-05 08:18:24 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -6504,9 +6504,10 @@ Reorder file @file{in.nc} so that the dimension @code{lon} always
 precedes the dimension @code{lat} and store the results in
 @file{out.nc}:  
 @example
-ncpdq -O -z lon,lat in.nc out.nc
-ncpdq -O -v three_dmn_var -z lon,lat in.nc out.nc
+ncpdq -O -a lon,lat in.nc out.nc
+ncpdq -O -v three_dmn_var -a lon,lat in.nc out.nc
 @end example
+The first command re-orders every variable in the input file.
 The second command extracts and re-orders only the variable
 @code{three_dmn_var}. 
 

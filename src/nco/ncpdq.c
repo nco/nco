@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.18 2004-08-05 05:27:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.19 2004-08-05 08:18:25 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -98,8 +98,8 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.18 2004-08-05 05:27:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.18 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.19 2004-08-05 08:18:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.19 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:p:Rrt:v:x-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -269,7 +269,7 @@ main(int argc,char **argv)
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
+      nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
       (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
@@ -350,10 +350,10 @@ main(int argc,char **argv)
   } /* end loop over idx */
 
   /* Divide variable lists into lists of fixed variables and variables to be processed */
-  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,NULL,0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
+  (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,dmn_rdr,dmn_rdr_nbr,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
 
   /* We now have final list of variables to extract. Phew. */
-  if(dbg_lvl > 0){
+  if(dbg_lvl > 2){
     for(idx=0;idx<nbr_xtr;idx++) (void)fprintf(stderr,"var[%d]->nm = %s, ->id=[%d]\n",idx,var[idx]->nm,var[idx]->id);
     for(idx=0;idx<nbr_var_fix;idx++) (void)fprintf(stderr,"var_fix[%d]->nm = %s, ->id=[%d]\n",idx,var_fix[idx]->nm,var_fix[idx]->id);
     for(idx=0;idx<nbr_var_prc;idx++) (void)fprintf(stderr,"var_prc[%d]->nm = %s, ->id=[%d]\n",idx,var_prc[idx]->nm,var_prc[idx]->id);
@@ -372,7 +372,7 @@ main(int argc,char **argv)
   /* Initialize thread information */
   thr_nbr=nco_openmp_ini(thr_nbr);
   if(thr_nbr > 0 && HISTORY_APPEND) (void)nco_thr_att_cat(out_id,thr_nbr);
-  
+
   if(dmn_rdr_nbr > 0){
     /* NB: Same logic as in ncwa, perhaps combine into single function, nco_dmn_avg_rdr_prp()? */
     /* Make list of user-specified dimension re-orders */
@@ -457,7 +457,7 @@ main(int argc,char **argv)
 	/* ...and current output record dimension already differs from input record dimension... */
 	if(REDEFINED_RECORD_DIMENSION){
 	  /* ...then requested re-order requires multiple record dimensions... */
-	  (void)fprintf(fp_stdout,"%s: ERROR Requested re-order requires multiple record dimensions\n. Record dimensions involved (original,first change request,second change request)=(%s,%s,%s)\n",prg_nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
+	  (void)fprintf(fp_stdout,"%s: ERROR Requested re-order requires multiple record dimensions\n. Record dimensions involved (original,first change request,change request by variable %s)=(%s,%s,%s)\n",prg_nm,var_prc[idx]->nm,rec_dmn_nm_in,rec_dmn_nm_out,rec_dmn_nm_out_crr);
 	  nco_exit(EXIT_FAILURE);
 	} /* end if REDEFINED_RECORD_DIMENSION */
 	/* ...otherwise, update output record dimension name... */

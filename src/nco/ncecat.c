@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.76 2004-08-05 00:01:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.77 2004-08-05 08:18:25 zender Exp $ */
 
 /* ncecat -- netCDF ensemble concatenator */
 
@@ -85,8 +85,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncecat.c,v 1.76 2004-08-05 00:01:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.76 $";
+  const char * const CVS_Id="$Id: ncecat.c,v 1.77 2004-08-05 08:18:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.77 $";
   const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:rRv:x-:";
 
   dmn_sct *rec_dmn;
@@ -242,7 +242,7 @@ main(int argc,char **argv)
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
+      nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
       (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());

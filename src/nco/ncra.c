@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.116 2004-08-05 00:01:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.117 2004-08-05 08:18:25 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type Option y */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type Option P */
   
-  const char * const CVS_Id="$Id: ncra.c,v 1.116 2004-08-05 00:01:51 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.116 $";
+  const char * const CVS_Id="$Id: ncra.c,v 1.117 2004-08-05 08:18:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.117 $";
   const char * const opt_sng="ACcD:d:FHhl:n:Oo:p:P:rRt:v:xY:y:-:";
 
   dmn_sct **dim;
@@ -313,7 +313,7 @@ main(int argc,char **argv)
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
+      nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
       (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());

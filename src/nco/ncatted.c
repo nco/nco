@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.70 2004-07-27 01:50:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.71 2004-08-05 08:18:25 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.70 2004-07-27 01:50:03 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.70 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.71 2004-08-05 08:18:25 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.71 $";
   const char * const opt_sng="Aa:D:hl:Oo:p:Rr-:";
   
   extern char *optarg;
@@ -232,7 +232,7 @@ main(int argc,char **argv)
       break;
     case '?': /* Print proper usage */
       (void)nco_usg_prn();
-      nco_exit(EXIT_FAILURE);
+      nco_exit(EXIT_SUCCESS);
       break;
     case '-': /* Long options are not allowed */
       (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());

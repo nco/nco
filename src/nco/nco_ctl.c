@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.58 2004-08-05 05:12:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.59 2004-08-05 08:18:25 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -23,7 +23,7 @@ nco_exit /* [fnc] Wrapper for exit() */
   if(rcd == EXIT_SUCCESS){
     exit(rcd);
   }else{
-    (void)fprintf(stdout,"%s: ERROR: program exiting through %s which will now call %s\n",prg_nm_get(),fnc_nm,exit_nm);
+    if(dbg_lvl_get() > 1) (void)fprintf(stdout,"%s: ERROR exiting through %s which will now call %s\n",prg_nm_get(),fnc_nm,exit_nm);
 #ifdef NCO_ABORT_ON_ERROR
     abort();
 #else /* !NCO_ABORT_ON_ERROR */
