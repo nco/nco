@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.268 2005-01-10 06:11:01 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.269 2005-03-12 21:46:54 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -678,6 +678,7 @@ ifneq (${null},$(findstring gcc,${CC}))
 # -Wwrite-strings: Apply const-qualifier to string constants, die if overwritten
 # -fno-common: Prevent global variables from being simultaneously defined in different files
 # -g: Put debugging symbols in executable
+# -pg: Enable profiling, generate gmon.out output files (also needed by linker)
 # -O4: Turn on optimization so unitialized variables are flagged
 # Compilation flags recommended by GSL that I do not like and do not use:
 # -ansi: Support only strict ANSI C. Equivalent to -std=c89, conflicts with -std=c99
@@ -699,8 +700,9 @@ ifeq (${OPTS},R)
  CFLAGS += 
 endif
 ifeq (${OPTS},X)
- CFLAGS += -g -O
- LDFLAGS += /usr/local/lib/ccmalloc-gcc.o -L/usr/local/lib -lccmalloc -ldl
+ CFLAGS += -g -O -pg -fno-inline
+ LDFLAGS += -pg
+# LDFLAGS += /usr/local/lib/ccmalloc-gcc.o -L/usr/local/lib -lccmalloc -ldl
 endif
 ifneq (${null},$(findstring AMD64,${PVM_ARCH}))
 ifeq (${ABI},64)
