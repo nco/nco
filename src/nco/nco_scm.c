@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.3 2002-05-12 06:12:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_scm.c,v 1.4 2002-05-12 16:35:04 zender Exp $ */
 
 /* Purpose: Software configuration management */
 
@@ -203,6 +203,6 @@ char * /* O [sng] Mnemonic that describes current NCO version */
 nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic that describes current NCO version */
-  return "Templeton's song";
+  return "Lard";
 } /* end nmn_get() */
 

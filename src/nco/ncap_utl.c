@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.58 2002-05-12 00:24:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.59 2002-05-12 16:32:06 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -686,6 +686,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
   /* Initialize flag to false. Overwrite by true after successful conformance */
   DO_CONFORM=False;
   
+  /* Determine which variable is greater and which lesser rank */
   if((*var_1)->nbr_dim >= (*var_2)->nbr_dim){
     var_gtr=*var_1; 
     var_lsr=*var_2; 
@@ -763,7 +764,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
   if(var_lsr_out == NULL && CONVOLVE){
     /* Convolve variables by returned stretched variables with minimum possible number of dimensions */
     int dmn_nbr; /* Number of dimensions in convolution */
-    if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: WARNING Convolution not yet implented, results of operation between %s and %s are unpredictable\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+    if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: WARNING Convolution not yet implemented, results of operation between %s and %s are unpredictable\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
     /* Dimensions in convolution are union of dimensions in variables */
     dmn_nbr=var_lsr->nbr_dim+var_gtr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr; /* Number of dimensions in convolution */
     /* fxm: these should go away soon */

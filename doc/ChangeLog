@@ -1,5 +1,9 @@
 2002-05-11  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_3_1
+	Changes since nco-2_3_0: New design, same functionality
+	Appears to work on Linux, IRIX but compile problems on AIX
+
 	* gcc compiles with spurious errors but links and tests fine
 
 	* g++ compiles fine but unable to link with fabsf fmodf

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.45 2002-05-12 01:01:36 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.46 2002-05-12 16:32:06 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -229,6 +229,7 @@ foo/[ ]*\( {return ABS;} /* TOKEN whitespace (: Token followed any amount of whi
 This disambiguates variable and functional namespaces. */
 abs/[ ]*\( {return ABS;}
 atostr/[ ]*\( {return ATOSTR;}
+min/[ ]*\( {return RDC;}
 pck/[ ]*\( {return PACK;}
 pack/[ ]*\( {return PACK;}
 pow/[ ]*\( {return POWER;}
@@ -361,7 +362,7 @@ unpack/[ ]*\( {return UNPACK;}
 
 [A-Za-z_][A-Za-z0-9_]*/\[ {
   /* Recognize variables with subscripts */
-  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable with subscripts%s\n",yytext);
+  if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable with subscripts %s\n",yytext);
   if(RHS){
     lval_ptr->var_nm_RHS=strdup(yytext);
     BEGIN RHS_SUBSCRIPT;
@@ -398,13 +399,13 @@ unpack/[ ]*\( {return UNPACK;}
   static char *tpl_nm="Internally generated template";
   
   char **sbs_lst; /* [sng] Array of dimension subscripts */
-  char *sbs_sng;
+  char *sbs_sng; /* [sng] Subscript */
   
   int dmn_nbr; /* [nbr] Number of dimensions */
   int dmn_id; /* [id] Dimension ID */
   int idx; /* [idx] Counter */
   int jdx; /* [idx] Counter */
-  int rcd;
+  int rcd; /* [enm] Return code */
   int out_nbr=0;
   
   double val=1.0; /* [frc] Value of template */
@@ -429,7 +430,7 @@ unpack/[ ]*\( {return UNPACK;}
   out_lst=(nm_id_sct *)nco_malloc(dmn_nbr*sizeof(nm_id_sct));
   for(idx=0;idx<dmn_nbr;idx++){
     rcd=nco_inq_dimid_flg(prs_arg->in_id,sbs_lst[idx],&dmn_id);
-    if(rcd != NC_NOERR) {
+    if(rcd != NC_NOERR){
       (void)sprintf(err_sng,"Warning: Lexer does not recognize user-specified LHS dimension %s\n",sbs_lst[idx]);
       (void)yyerror(err_sng);
       goto end_LHS_sbs;                 
@@ -438,7 +439,7 @@ unpack/[ ]*\( {return UNPACK;}
     dmn_lst[idx].id=dmn_id;
 
     /* Make another list without any double entries */
-    for(jdx=0;jdx<out_nbr;jdx++)
+    for(jdx=0;jdx<out_nbr;jdx++) /* fxm: What does this do? Is it necessary? */
       if(!strcmp(dmn_lst[idx].nm,out_lst[jdx].nm)) break;
     if(jdx == 0 || jdx == out_nbr) out_lst[out_nbr++]=dmn_lst[idx];
   } /* end loop over dimensions */
@@ -505,7 +506,7 @@ unpack/[ ]*\( {return UNPACK;}
   } /* end if */
   
   /* Copy arbitrary value into variable 
-     Placing a uniform value in variable should be necessary since variable
+     Placing a uniform value in variable should be unnecessary since variable
      is intended for use solely as dimensional template for var_conform_dim() 
      Nevertheless, copy 1.0 into value for safety */
   { /* Change scope to define convenience variables which reduce dereferencing */
@@ -699,7 +700,7 @@ ncap_initial_scan
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
 	for(var_idx=0;var_idx<n_lst_c;var_idx++)
-	  if(!strcmp(lst_c[var_idx].nm,var_nm)){match=True; break;}
+	  if(!strcmp(lst_c[var_idx].nm,var_nm)){match=True;break;}
 	if(match) break;
 	if(n_lst_c == 0) lst_c=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	else lst_c=(nm_id_sct *)nco_realloc(lst_c,((n_lst_c+1)*sizeof(nm_id_sct)));
@@ -707,13 +708,15 @@ ncap_initial_scan
 	lst_c[n_lst_c++].id=var_id;
       } /* endif LHS attribute's parent variable is in input file  */
       break;
-   case LHS_SBS:
-     /* Add dimensions defined in LHS subscripts */
-     lst_t=lst_d;n_lst_t=n_lst_t;
-     lst_d=var_lst_add(prs_arg->in_id,lst_d,&n_lst_d,lval.sbs_lst->list,lval.sbs_lst->nbr);          
-     if(n_lst_t >0) (void)var_lst_free(lst_t,n_lst_t);
-   break;
-    default: break;
+    case LHS_SBS:
+      /* Add dimensions defined in LHS subscripts */
+      lst_t=lst_d;n_lst_t=n_lst_t;
+      lst_d=var_lst_add(prs_arg->in_id,lst_d,&n_lst_d,lval.sbs_lst->list,lval.sbs_lst->nbr);          
+      if(n_lst_t >0) (void)var_lst_free(lst_t,n_lst_t);
+      break;
+    default: 
+      (void)fprintf(stderr,"%s: WARNING Token type %d not handled in ncap_initial_scan()\n",prg_nm_get(),tkn_crr);
+      break;
     } /* end switch */
   } /* end while */
   

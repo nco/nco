@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.53 2002-05-12 06:12:26 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.54 2002-05-12 16:32:06 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -103,7 +103,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
   sym_sct *sym; /* [sct] Intrinsic function name */
   scv_sct scv; /* [sct] Scalar value */
   var_sct *var; /* [sct] Variable */
-  nm_lst_sct *sbs_lst; /* [sct] LHS subscripts */
+  nm_lst_sct *sbs_lst; /* [sct] Subscript list */
 } /* end YYSTYPE union (type of yylval value) */
 
 /* Tell parser which kind of values each token takes
@@ -116,7 +116,7 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) 
 %token <aed> OUT_ATT
 %token <sym> FUNCTION
 %token <sbs_lst> LHS_SBS
-%token ABS ATOSTR EPROVOKE IGNORE PACK POWER UNPACK
+%token ABS ATOSTR EPROVOKE IGNORE RDC PACK POWER UNPACK
 
 /* "type" declaration sets type for non-terminal symbols which otherwise need no declaration
    Format of "type" declaration is
@@ -515,6 +515,14 @@ var_xpr '+' var_xpr {
   $$=ncap_var_abs($3);
   var_free($3);
 } /* end ABS */
+| RDC '(' var_xpr ')' {
+  $$=ncap_var_abs($3);
+  /* fxm Finish avg,min,max,ttl */
+  /* int nco_op_typ=nco_op_avg; *//* [enm] Operation type */
+  /* $$=var_avg($3,dim,dmn_nbr,nco_op_typ); */
+  (void)fprintf(stderr,"%s: WARNING RDC tokens not implemented yet\n",prg_nm_get());
+  /* $3 is freed in var_avg() */
+} /* end ABS */
 | PACK '(' var_xpr ')' {
   /* Packing variable does not create duplicate so DO NOT free $3 */
   $$=var_pck($3,NC_SHORT,False);
@@ -532,7 +540,6 @@ var_xpr '+' var_xpr {
 }
 | VAR { 
   $$=ncap_var_init($1,(prs_sct *)prs_arg);
-  if ($$==(var_sct *)NULL) YYERROR;
 
   if((((prs_sct *)prs_arg)->var_LHS) != NULL){
     /* User intends LHS to cast RHS to same dimensionality
