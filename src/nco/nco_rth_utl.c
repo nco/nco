@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.6 2002-06-17 00:06:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_rth_utl.c,v 1.7 2002-08-14 19:45:01 zender Exp $ */
 
 /* Purpose: Arithmetic controls and utilities */
 
@@ -17,7 +17,7 @@ nco_opr_drv /* [fnc] Intermediate control of arithmetic operations for ncra/ncea
 {
   /* Purpose: Perform appropriate ncra/ncea operation (avg, min, max, ttl, ...) on operands
      nco_opr_drv() is called within the record loop of ncra, and within file loop of ncea
-     These operations perform part, but not all, of the necessary operations for each procedure
+     These operations perform some, but not all, of necessary operations for each procedure
      Most arithmetic operations require additional procedures such as normalization be performed after all files/records have been processed */
   
   /* var_prc_out->type and var_prc->type should be equal and thus interchangeable

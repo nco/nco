@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.12 2002-08-14 15:18:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.13 2002-08-14 19:45:01 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -110,7 +110,7 @@ nco_aed_prc /* [fnc] Process a single attribute edit on a single variable */
     
     /* Get current missing value attribute */
     var->mss_val.vp=NULL;
-    var->has_mss_val=mss_val_get(var->nc_id,var);
+    var->has_mss_val=nco_mss_val_get(var->nc_id,var);
 
     /* Sanity check */
     if(var->has_mss_val == False){

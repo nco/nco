@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.155 2002-08-13 08:00:35 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.156 2002-08-14 19:44:58 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -984,7 +984,7 @@ rpm_cln:
 	rpm --erase $(MDL_RPM_NST_NM)
 # Targets in dat
 data:	dat
-dat:	${MY_DAT_DIR}/in.nc 
+dat:	${MY_DAT_DIR}/in.nc
 	-for fl in $(MDL_DAT_STB); do cd ${MY_DAT_DIR}; ln -f -s in.nc $$fl; done
 ${MY_DAT_DIR}/in.nc: ${MY_DAT_DIR}/in.cdl
 	cd ${MY_DAT_DIR}; ncgen -b -o in.nc in.cdl
@@ -993,7 +993,7 @@ dat_cln:
 	rm -f $(MDL_DAT)
 	cd ${MY_DAT_DIR}; rm -f foo*
 test:	tst
-tst:	${MY_DAT_DIR}/in.nc
+tst:	dat
 	- if test -f ${MY_DAT_DIR}/nco_tst.nc; then printf "" ; else ${MY_BIN_DIR}/ncks -R -p ftp://dust.ps.uci.edu/pub/zender/nco -l ${MY_DAT_DIR} nco_tst.nc; if [ $? != 0 ]; then printf "WARNING: Unable to retrieve ftp://dust.ps.uci.edu/pub/zender/nco/nco_tst.nc required for self-test, possible problem with getting through your firewall? Manually download and install in directory ../data to continue self test...\n"; fi; fi
 	cd ${MY_BLD_DIR}; ./nco_tst.sh
 testclean: tst_cln

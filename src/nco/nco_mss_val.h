@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.3 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.h,v 1.4 2002-08-14 19:45:01 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -34,12 +34,12 @@ nco_mss_val_mk /* [fnc] Return default missing value for type type */
 (const nc_type type); /* I [enm] netCDF type of operand */
 
 void
-mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
+nco_mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
 (const var_sct * const var1, /* I [sct] Variable with template missing value to copy */
  var_sct * const var2); /* I/O [sct] Variable with missing value to fill in/overwrite */
 
 int /* O [flg] Variable has missing value on output */
-mss_val_get /* [fnc] Update number of attributes, missing_value of variable */
+nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable */
 (const int nc_id, /* I [id] netCDF input-file ID */
  var_sct * const var); /* I/O [sct] Variable with missing_value to update */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.7 2002-06-17 00:06:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.c,v 1.8 2002-08-14 19:45:01 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -136,6 +136,7 @@ nco_var_cnf_typ /* [fnc] Return copy of input variable typecast to desired type 
   val_out=var_out->val;
   
   /* Copy and typecast missing_value attribute, if any */
+  /* fxm: 20020814: ncra bug here since this tries to re-convert missing values that have already been promoted to double during arithmetic */
   if(var_out->has_mss_val){
     ptr_unn var_in_mss_val;
 
@@ -235,7 +236,7 @@ val_conform_type /* [fnc] Copy val_in and typecast from typ_in to typ_out */
  ptr_unn val_out) /* I [ptr] Pointer to output value */
 {
   /* Threads: Routine is thread safe and makes no unsafe routines */
-  /* Purpose: Fill val_out with a copy of val_in that has been typecast from typ_in to typ_out
+  /* Purpose: Fill val_out with copy of val_in that has been typecast from typ_in to typ_out
      Last-referenced state of both value pointers is assumed to be .vp, and the val_out union is returned in that state */
 
   /* val_out must hold enough space (one element of type typ_out) to hold output */

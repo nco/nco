@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.157 2002-07-09 22:21:19 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.158 2002-08-14 19:45:01 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -222,6 +222,20 @@ ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 225. Pass aed by reference in nco_aed_prc()
 226. See if xrf in nco_var_cnf_dmn() is really necessary, if not, remove it and make wgt arg const var_sct * const
 228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
+229. nco_tst.sh test ncra 2.5,2.6,2.7 fails: ${MY_BIN_DIR}/ncra -O -v rec_var_flt_mss_val_int in.nc foo.nc It appears that missing value of input variable
+gets set to zero after first record is processed, although missing value
+in var_prc_out is sticky and is always correct and does not change:
+Breakpoint 1, main (argc=5, argv=0xbfffef04) at ../src/nco/ncra.c:405
+(gdb) print (var_prc[idx])->mss_val.dp[0]
+$9 = -999
+(gdb) print (var_prc[idx])->mss_val.dp[0]
+$8 = 0
+(gdb) run
+Problem is that missing values are only refreshed once per file for
+each variable but that type conversion for arithmetic occurs each
+record and nco_var_cnf_typ() is trying to re-convert missing values
+each timestep. So either need to pass flag to nco_var_cnf_typ(), or
+keep mss_val type field in var_sct, or ...
 ************************************************************************
 End NCO Wish list
 ************************************************************************

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.3 2002-06-16 05:12:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_mss_val.c,v 1.4 2002-08-14 19:45:01 zender Exp $ */
 
 /* Purpose: Missing value utilities */
 
@@ -40,7 +40,7 @@ nco_mss_val_mk /* [fnc] Return default missing value for type type */
 } /* end nco_mss_val_mk() */
   
 void
-mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
+nco_mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
 (const var_sct * const var1, /* I [sct] Variable with template missing value to copy */
  var_sct * const var2) /* I/O [sct] Variable with missing value to fill in/overwrite */
 {
@@ -61,17 +61,16 @@ mss_val_cp /* [fnc] Copy missing value from var1 to var2 */
     var2->has_mss_val=True;
   } /* endif var1 has mss_val */
 
-} /* end mss_val_cp() */
+} /* end nco_mss_val_cp() */
   
 int /* O [flg] Variable has missing value on output */
-mss_val_get /* [fnc] Update number of attributes, missing_value of variable */
+nco_mss_val_get /* [fnc] Update number of attributes, missing_value of variable */
 (const int nc_id, /* I [id] netCDF input-file ID */
  var_sct * const var) /* I/O [sct] Variable with missing_value to update */
 {
   /* Purpose: Update number of attributes and missing_value attribute of variable
-     No matter what type of missing_value is as stored on disk, this routine
-     ensures that the copy in mss_val in the var_sct is stored in type as
-     the host variable.
+     No matter what type missing_value is on disk, this routine ensures that 
+     copy of mss_val in var_sct is stored as same type as host variable.
      Routine does not allow output missing_value to have more than one element */
 
   /* has_mss_val is defined typed as int not bool because it is often sent to Fortran routines */
@@ -131,5 +130,5 @@ mss_val_get /* [fnc] Update number of attributes, missing_value of variable */
 
   return var->has_mss_val;
 
-} /* end mss_val_get() */
+} /* end nco_mss_val_get() */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.85 2002-07-03 20:37:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.86 2002-08-14 19:45:02 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.85 2002-07-03 20:37:24 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.85 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.86 2002-08-14 19:45:02 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.86 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -636,7 +636,7 @@ main(int argc,char **argv)
 	     then weight must not be reused by next variable (which might conform but have missing values in different locations)
 	     This is one good reason to copy wgt_out into disposable wgt_avg for each new variable */
 	  /* First make sure wgt_avg has same missing value as variable */
-	  (void)mss_val_cp(var_prc[idx],wgt_avg);
+	  (void)nco_mss_val_cp(var_prc[idx],wgt_avg);
 	  /* Copy missing value into double precision variable */
 	  switch(wgt_avg->type){
 	  case NC_FLOAT: mss_val_dbl=wgt_avg->mss_val.fp[0]; break; 

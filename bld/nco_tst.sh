@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.42 2002-08-14 15:18:39 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.43 2002-08-14 19:44:59 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -264,6 +264,18 @@ ${MY_BIN_DIR}/ncra -O -v rec_var_flt_mss_val_dbl in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
 echo "ncra 2: record mean of float with double missing values: 5 =?= $avg" 
 
+${MY_BIN_DIR}/ncra -O -v rec_var_flt_mss_val_int in.nc foo.nc 2>> foo.tst
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_flt_mss_val_int foo.nc`
+echo "ncra 2.5: record mean of float with integer missing values: 5 =?= $avg" 
+
+${MY_BIN_DIR}/ncra -O -v rec_var_int_mss_val_int in.nc foo.nc 2>> foo.tst
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_int_mss_val_int foo.nc`
+echo "ncra 2.6: record mean of integer with integer missing values: 5 =?= $avg" 
+
+${MY_BIN_DIR}/ncra -O -v rec_var_int_mss_val_flt in.nc foo.nc 2>> foo.tst
+avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_int_mss_val_flt foo.nc`
+echo "ncra 2.7: record mean of integer with float missing values: 5 =?= $avg" 
+
 ${MY_BIN_DIR}/ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc 2>> foo.tst
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
 echo "ncra 3: record mean of float with double missing values across two files: 5 =?= $avg" 
@@ -306,9 +318,10 @@ ${MY_BIN_DIR}/ncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 in.nc in.nc fo
 avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v rec_var_flt_mss_val_dbl foo.nc`
 echo "ncea 3: ensemble min of float across two files: 2 =?= $avg" 
 
-${MY_BIN_DIR}/ncea -O -C -v pck in.nc foo.nc 2>> foo.tst
-avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v pck foo.nc`
-echo "ncea 4: scale factor + add_offset packing/unpacking (expect breakage here use ncap instead): 3 =?= $avg" 
+# fxm: Use ncea to prototype packing support in non-ncap arithmetic operators
+# ${MY_BIN_DIR}/ncea -O -C -v pck in.nc foo.nc 2>> foo.tst
+# avg=`${MY_BIN_DIR}/ncks -C -H -s "%e" -v pck foo.nc`
+# echo "ncea 4: scale factor + add_offset packing/unpacking (expect breakage here use ncap instead): 3 =?= $avg" 
 fi # end ncea
 
 if [ "$NCDIFF" = 1 ]; then

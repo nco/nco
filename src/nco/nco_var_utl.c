@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.15 2002-07-03 20:37:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.16 2002-08-14 19:45:01 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -627,7 +627,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
 
   if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->typ_dsk))) == NULL){
     (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%zu bytes in nco_var_get()\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
-    nco_exit(EXIT_FAILURE); 
+    nco_exit(EXIT_FAILURE);
   } /* end if */
 
 #ifdef _OPENMP
@@ -727,8 +727,8 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->nm=NULL;
   var->id=-1;
   var->nc_id=-1;
-  var->type=NC_NAT; /* Type of variable in RAM */ /* fxm: should use nc_type enum */
-  var->typ_dsk=NC_NAT; /* Type of variable on disk */ /* fxm: should use nc_type enum */
+  var->type=NC_NAT; /* Type of variable in RAM */
+  var->typ_dsk=NC_NAT; /* Type of variable on disk */
   var->typ_pck=NC_NAT; /* Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
   var->typ_upk=NC_NAT; /* Type of variable when unpacked (expanded) (in memory) */
   var->is_rec_var=False;
@@ -1068,12 +1068,12 @@ nco_var_fll /* [fnc] Allocate variable structure and fill with metadata */
   (void)nco_inq_vardimid(var->nc_id,var->id,var->dmn_id);
   
   /* Type in memory begins as same type as on disk */
-  var->type=var->typ_dsk; /* Type of variable in RAM */
+  var->type=var->typ_dsk; /* [enm] Type of variable in RAM */
   /* Type of packed data on disk */
-  var->typ_pck=var->type;  /* Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
+  var->typ_pck=var->type;  /* [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
 
   /* Refresh number of attributes and missing value attribute, if any */
-  var->has_mss_val=mss_val_get(var->nc_id,var);
+  var->has_mss_val=nco_mss_val_get(var->nc_id,var);
 
   /* Size defaults to 1 in var_dfl_set(), but set to 1 here for safety */
   var->sz=1L; 
@@ -1152,7 +1152,7 @@ nco_var_refresh /* [fnc] Update variable metadata (var ID, dmn_nbr, mss_val) */
     (void)nco_inq_varndims(var->nc_id,var->id,&var->nbr_dim);
     
     /* Refresh number of attributes and missing value attribute, if any */
-    var->has_mss_val=mss_val_get(var->nc_id,var);
+    var->has_mss_val=nco_mss_val_get(var->nc_id,var);
   } /* end OpenMP critical */
 
 } /* end nco_var_refresh() */
