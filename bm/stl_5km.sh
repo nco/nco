@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# $Header: /data/zender/nco_20150216/nco/bm/stl_5km.sh,v 1.2 2005-03-23 18:28:16 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/stl_5km.sh,v 1.3 2005-03-24 22:17:22 mangalam Exp $
 # top section is all the shell cruft to set DATA dir and testing to see if
 # we can use the GNU time command to test various things.  
 # The guts of the script start at ~line 100.
@@ -98,24 +98,28 @@ echo
 echo "Creating ${DATA}/nco/stl_5km.nc file from template"
 echo "This step takes ~6.5s on a 900MHz/512MB RAM Thinkpad" 
 echo "                ~1.5s on a 2.8GHz/2GB Xeon."
+echo "                ~1.3s on a 1.8GHz/4GB Opteron."
 echo "                ~1.2s on the ESMF."
+echo ""
 mkdir -p ${DATA}/nco
 
 $TIMER ncgen -b -o ${DATA}/nco/stl_5km.nc stl_5km.cdl
 
 echo ""
 echo "Populating stl_5km file with floats"
-echo "This takes ~5.5m on the Thinkpad"
+echo "This takes ~5m-5.5m on the Thinkpad"
 echo "           ~2m on the 2.8GHz Xeon"
+echo "           ~43s on the 1.8GHz Opteron"
 echo "           ~1.2m on the ESMF - YMMV"
 echo ""
 
-echo "ncapping 8 2D vars"
+echo "ncapping 8 2D vars";echo ""
+
 $TIMER ncap -O -s "d2_00[lat,lon]=2.8f;d2_01[lat,lon]=2.8f;d2_02[lat,lon]=2.8f;d2_03[lat,lon]=2.8f;d2_04[lat,lon]=2.8f;d2_05[lat,lon]=2.8f;d2_06[lat,lon]=2.8f;d2_07[lat,lon]=2.8f;"  ${DATA}/nco/stl_5km.nc ${DATA}/nco/stl_5km.nc 
 
 echo ""; echo ""
-echo "ncks has this to say about the test file: [stl_5km.nc]"
+echo "ncks has this to say about the test file: [${DATA}/nco/stl_5km.nc]"
 echo ""; echo ""
 
-ncks stl_5km.nc |head -60
+ncks ${DATA}/nco/stl_5km.nc |head -60
 

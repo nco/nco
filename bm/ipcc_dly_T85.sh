@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# $Header: /data/zender/nco_20150216/nco/bm/ipcc_dly_T85.sh,v 1.2 2005-03-23 18:28:14 mangalam Exp $
+# $Header: /data/zender/nco_20150216/nco/bm/ipcc_dly_T85.sh,v 1.3 2005-03-24 22:17:22 mangalam Exp $
 # top section is all the shell cruft to set DATA dir and testing to see if
 # we can use the GNU time command to test various things.  
 # The guts of the script start at ~line 100.
@@ -100,10 +100,11 @@ echo
 echo "Creating ${DATA}/nco/ipcc_dly_T85.nc file from template"
 echo "This stage takes ~6.3s on the ESMF"
 echo "                 ~1m36s on a 2.8GHz/2GB Xeon"
-
+echo "                 ~1m s on a 1.8GHz/4GB Opteron"
+echo ""
 mkdir -p ${DATA}/nco
 
-$TIMER ncgen -b -o ${DATA}/nco/ipcc_dly_T85.nc ${HOME}/nco/data/ipcc_dly_T85.cdl
+$TIMER ncgen -b -o ${DATA}/nco/ipcc_dly_T85.nc ipcc_dly_T85.cdl
 
 echo ""
 echo "Populating ${DATA}/nco/ipcc_dly_T85.nc file with floats"
