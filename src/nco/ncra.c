@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.24 2000-05-10 07:15:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.25 2000-05-12 04:51:59 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.24 2000-05-10 07:15:37 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.24 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.25 2000-05-12 04:51:59 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.25 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -408,7 +408,7 @@ main(int argc,char **argv)
 	rec_nbr_rqs=1L+(lmt_rec.max_idx-lmt_rec.min_idx)/lmt_rec.srd;
 	if(idx_fl == nbr_fl-1 && rec_nbr_rqs != idx_rec_out) (void)fprintf(stdout,"%s: WARNING User requested %li records but only %li were found\n",prg_nm_get(),rec_nbr_rqs,idx_rec_out);
       } /* end if */
-      /* Warn if no records were read and final file has been processed */ 
+      /* Error if no records were read and final file has been processed */ 
       if(idx_rec_out <= 0 && idx_fl == nbr_fl-1){
 	(void)fprintf(stdout,"%s: ERROR No records lay within specified hyperslab\n",prg_nm_get());
 	exit(EXIT_FAILURE);

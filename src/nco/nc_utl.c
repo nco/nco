@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.62 2000-05-10 07:15:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.63 2000-05-12 04:51:58 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -625,10 +625,15 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	  lmt.srt=lmt.min_idx-lmt.rec_skp_nsh;
 	  if(lmt.srd == 1L){
 	    /* With unity stride, end index is lesser of number of remaining records to read and number of records in this file */
-	    lmt.end=(lmt.max_idx < dmn_sz) ? lmt.max_idx : dmn_sz-1L;
+	    /* 20000510: fxm problem here with ncrcat -O -d time,2,2 -v time -p ~/nc/nco/data foo1.nc foo1.nc ~/nc/nco/data/foo3.nc */
+	    /* lmt.end must depend on rec_skp_nsh */
+	    /* lmt.end=(lmt.max_idx < dmn_sz) ? lmt.max_idx : dmn_sz-1L; old version */
+	    lmt.end=(lmt.max_idx < rec_skp_nsh+dmn_sz) ? lmt.max_idx-rec_skp_nsh : dmn_sz-1L;
 	  }else{
+	    /* fxm: must depend on dmn_sz AND rec_skp_nsh */
 	    cnt_rmn_crr=1L+(dmn_sz-1L-lmt.srt)/lmt.srd;
 	    cnt_rmn_crr=(cnt_rmn_ttl < cnt_rmn_crr) ? cnt_rmn_ttl : cnt_rmn_crr;
+	    /* lmt.end must depend on rec_skp_nsh */
 	    lmt.end=lmt.srt+lmt.srd*(cnt_rmn_crr-1L);
 	  } /* end else */
 	}else{
