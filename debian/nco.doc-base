@@ -1,22 +1,14 @@
 Document: nco
 Title: Debian nco Manual
-Author: <insert document author here>
+Author: rorik@users.sourceforge.net
 Abstract: This manual describes what nco is
  and how it can be used to
  manage online manuals on Debian systems.
-Section: unknown
-
-#Format: debiandoc-sgml
-#Files: /usr/share/doc/nco/nco.sgml.gz
-
-Format: postscript
-Files: /usr/share/doc/nco/nco.ps.gz
-
-#Format: text
-#Files: /usr/share/doc/nco/nco.text.gz
+Section: math
 
 Format: HTML
-Index: /usr/share/doc/nco/html/index.html
-Files: /usr/share/doc/nco/html/*.html
+Index: /usr/share/doc/nco/nco.html
+Files: /usr/share/doc/nco/nco.html
+
 
   

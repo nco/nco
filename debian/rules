@@ -40,20 +40,15 @@ config.status: configure
 
 
 #Architecture 
-build: build-arch build-indep
+build: build-arch
 
 build-arch: build-arch-stamp
 build-arch-stamp:  config.status
 	
 	# Add here commands to compile the arch part of the package.
 	$(MAKE) 
-
-build-indep: build-indep-stamp
-build-indep-stamp:  config.status
-	
-	# Add here commands to compile the indep part of the package.
 	cd doc && $(MAKE) nco.info
-	cd doc && $(MAKE) nco.ps
+#	cd doc && $(MAKE) nco.ps
 	cd doc && $(MAKE) nco.html
 
 clean:
@@ -73,19 +68,13 @@ endif
 	
 	dh_clean
 
-install: install-indep install-arch
-install-indep:
-	dh_testdir
-	dh_testroot
-	dh_clean -k -i
-	dh_installdirs -i
-	
-	dh_install -i
+
+install: install-arch
 
 install-arch:
 	dh_testdir
 	dh_testroot
-	dh_clean -k -a
+	dh_clean -a
 	dh_installdirs -a
 
 	# Add here commands to install the arch part of the package into 
@@ -100,7 +89,9 @@ binary-common:
 	dh_testdir
 	dh_testroot
 	dh_installchangelogs 
-	dh_installdocs
+# fix changelog name, see Policy 12.7
+	cd doc && test -e changelog || mv ChangeLog changelog
+	dh_installdocs doc/*.html
 	dh_installexamples
 #	dh_installmenu
 #	dh_installdebconf	
@@ -110,7 +101,7 @@ binary-common:
 #	dh_installmime
 #	dh_installinit
 #	dh_installcron
-	dh_installinfo
+	dh_installinfo -a
 	dh_installman
 	dh_link
 	dh_strip
@@ -125,13 +116,10 @@ binary-common:
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
-# Build architecture independant packages using the common target.
-binary-indep: build-indep install-indep
-	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
 
 # Build architecture dependant packages using the common target.
 binary-arch: build-arch install-arch
 	$(MAKE) -f debian/rules DH_OPTIONS=-a binary-common
 
-binary: binary-arch binary-indep
-.PHONY: build clean binary-indep binary-arch binary install install-indep install-arch 
+binary: binary-arch 
+.PHONY: build clean binary-arch binary install install-arch 
