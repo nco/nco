@@ -1,0 +1,64 @@
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.1 2002-08-19 19:14:33 zender Exp $ -*-Fundamental-*-
+
+Purpose(s): 
+Track status of autobuild features for NCO
+Develop recommend ./configure invocations for each architecture
+
+Summary table: Y: feature works, N feature broken, blank: not yet tested
+Architecture	build?	ABI64	DODS	I18N	OpenMP	nco_c++	check
+LINUX		Y	N/A				Y
+LINUXALPHA	N					N(1)
+SGIMP64		N
+SUNMP		Y
+AIX		
+OSF1		
+-----------------------------------------------------------------------
+Footnotes to summary table:
+01. Try with CXX that supports valarray
+02. 
+-----------------------------------------------------------------------
+
+Recommended ./configure invocation by architecture:
+************************************************************************
+Start LINUX
+General comments on LINUX:
+************************************************************************
+zender@dust:~/nco$ pvmgetarch;uname -a
+LINUX
+Linux dust.ps.uci.edu 2.4.19-pre8 #1 SMP Wed May 8 10:16:29 PDT 2002 i686 unknown
+zender@dust:~/nco$ ./configure
+
+Old build example:
+gcc  -DLINUX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='dust.ps.uci.edu' -DUSER='zender' -Di386 -I/usr/local/include -U_OPENMP -Wall -O -c ../src/nco/nco_att_utl.c -o /home/zender/obj/LINUX/nco_att_utl.o
+New build example:
+gcc -DHAVE_CONFIG_H -I. -I. -I../.. -I/usr/local/include -g -O2 -c nco_att_utl.c  -fPIC -DPIC -o .libs/nco_att_utl.lo
+************************************************************************
+End LINUX
+************************************************************************
+
+************************************************************************
+End SGIMP64
+General comments on SGIMP64:
+************************************************************************
+zender@krein:~/nco$ pvmgetarch;uname -a
+SGIMP64
+IRIX64 krein 6.5 10100655 IP27 mips
+CC='cc' ./configure 
+configure: error: all netCDF linking failed.
+************************************************************************
+End SGIMP64
+************************************************************************
+
+************************************************************************
+Start LINUXALPHA
+General comments on LINUXALPHA: 
+************************************************************************
+zender@ess1:/usr/home/zender/nco$ pvmgetarch;uname -a
+LINUXALPHA
+Linux ess1.ps.uci.edu 2.2.15 #1 Thu May 18 17:22:29 EDT 2000 alpha unknown
+************************************************************************
+End LINUXALPHA
+************************************************************************
+
+Architecture-specific breakage:
+

@@ -1,5 +1,9 @@
 2002-08-19  Charlie Zender  <zender@uci.edu>
 
+	* Added autoconf-specific list to doc/TODO
+
+	* Added configure.eg to keep track of autoconf problems
+
 	* Changed bld/Makefile to work with ncap_lex.l and ncap_yacc.y
 	Removed ncap.l and ncap.y.
 

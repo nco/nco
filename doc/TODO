@@ -1,15 +1,22 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.159 2002-08-19 06:44:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.160 2002-08-19 19:14:35 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
 Numbers were assigned in chronological order
-About 15 high priority items are shown first, then another ~100 items
+Organization:
+Autoconf build items: Items specifically related to building and installation
+ncap-specific items: These items do not affect rest of NCO
+NCO-wide items: 15 high priority items are shown first, then another ~100 items
 ******************************************************************************
 
+Autoconf-build items:
+01. Do not build nco_c++ (and thus fail) unless CXX supports valarray class
+02. 
+
 ncap-specific items:
-4. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()	
-7. Combine binary operations into binary_op_var_var and binary_op_var_att types to reduce number of functions
-8. Cure final few bothersome compilation warnings, mainly in bison.simple.
+04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
+07. Combine binary operations into binary_op_var_var and binary_op_var_att types to reduce number of functions
+08. Cure final few bothersome compilation warnings, mainly in bison.simple.
 Note that fixing these via hardcoded prototypes should allow for pure_parser
 to be turned off, since this apparently changes the prototypes.
 ncap.tab.c (warning with Linux when compiling parser):
@@ -26,7 +33,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 334
 cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
   The indicated argument is incompatible with the corresponding formal parameter.
         __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
-9. Add outer loop over files so script may apply to each file
+09. Add outer loop over files so script may apply to each file
 12. Ensure lexer does not perform un-necessary work during initial_scan (e.g., LHS casting...)
 13. Test that LHS casting works regardless of value of LHS template. If true, remove value initialization block
 14. If tally is superfluous in ncap then do not ever allocate it
@@ -46,7 +53,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 30. Allow -S to specify multiple input scripts to be sequentially parsed
 31. Put globals fl_spt_crr,ncl_dpt_crr,ln_nbr_crr in prs_arg or remove fl_spt from it
 32. Need filename expander and $NCO_DATA_PATH handling so #include's may be generic
-33. Document new math/roundig functions (acosh, floor...)
+33. Document new math/rounding functions (acosh, floor...)
 34. Make parse errors always print current line to terminal rather than silently failing
 36. cygwin builds of ncap.l and netcdf fail because of dependence on syslimits.h. non-kludge fix may require updated gcc and mingw packages
 
@@ -219,8 +226,7 @@ to accomplish this.
 225. Pass aed by reference in nco_aed_prc()
 226. See if xrf in nco_var_cnf_dmn() is really necessary, if not, remove it and make wgt arg const var_sct * const
 228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
-230. Keep track of type of missing_value field in variable structure
-for reasons described in nco_cnf_var_typ()/nco_cnv_mss_val_typ_upk()
+230. Keep track of type of missing_value field in variable structure for reasons described in nco_cnf_var_typ()/nco_cnv_mss_val_typ_upk()
 ************************************************************************
 End NCO Wish list
 ************************************************************************
