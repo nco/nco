@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.115 2002-09-06 17:32:29 rorik Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.116 2002-09-06 18:42:05 rorik Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2234,16 +2234,20 @@ For example, the average of the two @code{NC_SHORT}s @code{17000s} and
 holds their sum is also of type @code{NC_SHORT} and thus cannot
 represent values greater than 32,767
 @footnote{
+@set flg
 @tex
 $32767 = 2^{15}-1$
+@clear flg
 @end tex
 @ifinfo
 @math{32767 = 2^15-1}
+@clear flg
 @end ifinfo
-@ifhtml
+@ifset flg
 @c texi2html does not like @math{}
-@math{32767 = 2^15-1}
-@end ifhtml
+32767 = 2^15-1
+@clear flg
+@end ifset
 }.
 There are valid reasons for expecting this operation to succeed and 
 the @acronym{NCO} philosophy is to make operators do what you want, not what is
