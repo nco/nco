@@ -1,50 +1,69 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.8 2002-01-14 08:58:59 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.9 2002-01-14 19:52:27 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.2.0 are ready. 
 Changes since version 2.0.0 include bugfixes and a 
-rough but working (and powerful!) ncap implementation.
+working (and powerful!) ncap implementation.
 ncap is the netCDF arithmetic processor, an operator
 which uses a built-in lexer/parser to perform arbitrary
 arithmetic commands on netCDF variables and attributes.
-ncap is completely undocumented but see
+In the fine tradition of beta quality software, ncap 
+is completely undocumented but see 
 nco/data/ncap.in for a sample run script. 
 NCO version >= 2.0.1 requires netCDF version >= 3.5.
 Get the new version of NCO and read the user's guide on
 
 http://nco.sourceforge.net
 
-A few notes on ncap: the capabilities of ncap are midway 
-between those of a regular NCO operator, and those of a
-full-featured high-level language such as IDL, Matlab, or
-NCL. There are undoubtedly small bugs remaining in the parsing 
-of expressions. We encourage you to stress the parser with complex
-expressions and send us any problems you find. Concurrently, we will
-steadily extend ncap functionality to include more powerful features.
-
-Some of the next features slated for development include:
-1. Fortran-like hyperslab specification, e.g., y=u(:,2:4,:)^2+v(:,2:4,:)^2
-2. Pre-defined functions, e.g., type_convert(wind,"float"), 
-svp=saturation_vapor_pressure(temperature)
-3. filename::variable@attribute notation for using multiple files
-4. LHS-casting of ambiguous RHS expressions, e.g., 
-pressure_midpoint(lat,lev,lon)=hyam*PO+hybm*PS
-instead of awkward workarounds like 
-pressure_midpoint=hyam*PO*(T-T+1)+hybm*PS*(T-T+1)
-
-I would like to thank Henry Butowsky for picking up the
-dormant ncap project, and doing the lion's share of the
-work in completing it.
+I would to acknowledge the tremendous contribution of
+Henry Butowsky to NCO. Henry picked up the dormant ncap 
+project, and did the lion's share of the work in completing it.
+Thanks Henry!
 
 Enjoy,
 Charlie
 
-Summary of changes:
+Summary of changes since 2.0.0:
 
 1. ncap: lexer/parser redefinition, I/O ability, wrappers for
-NCO arithmetic functions, attribute handling, type-specific intrinsic
+NCO arithmetic functions, attribute handling, type-specific intrinsic 
 arithmetic functions, string handling, test script (Butowsky)
 2. Fix ncks units printing bug introduced in 2.0 (Zender)
 3. Improved version information with, e.g., ncks -r (Zender)
 4. Use new NC_NAT token requires netCDF 3.5 (Zender)
 5. ncap: cleanup, global attribute handling, stretching mixed rank
 variables (Zender) 
+
+A few notes on the future of ncap: 
+The objective of ncap is to fit the everyday needs
+of scientific data analysis. The capabilities of ncap today 
+are midway between those of a regular NCO operator, and 
+those of a full-featured high-level language such as IDL, 
+Matlab, or NCL. Now that ncap has a rudimentary language 
+parser, there is no real limit to what syntactic features
+could be added. Of course the only features that will be
+added are those the developers care about, so your
+feedback is encouraged: What is the highest priority 
+feature for you?
+
+ncap is best suited now to compute simple derived variables, e.g.,
+x=sqrt(u^2+v^2). Hyperslabs (subscripting) are not yet supported, 
+but broadcasting (unambiguous array expansion) is fully supported. 
+There are undoubtedly small bugs remaining in the parsing
+of expressions. We encourage you to stress the parser with complex
+expressions and send us any problems you find. Concurrently, we will
+steadily extend ncap functionality to include more powerful features. 
+
+Some of the most interesting ideas for for new features include:
+1. Standard procedural expressions, e.g., "if then else"
+2. Fortran-like index-based hyperslab specification, e.g., y=u(:,2:4,:)^2
+3. Coordinate value subscripting, e.g., y=u(-90.0:0.0,0.0:180.0)^2
+4. Pre-defined functions to access NCO internals, e.g.,
+type_convert(variable,"double"), min(variable,variable),...
+5. Linking with GNU Scientific Library (GSL)
+6. filename::variable@attribute notation for using multiple files
+7. LHS-casting of ambiguous RHS expressions, e.g., 
+pressure_midpoint(lat,lev,lon)=hyam*PO+hybm*PS
+
+The list of ncap-specific features that we consider the top priority 
+appears at the top of the NCO TODO file.
+
