@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.18 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.19 2004-01-13 19:41:44 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -105,7 +105,9 @@ nco_var_add_tll(const nc_type type,const long sz,const int has_mss_val,ptr_unn m
 {
   /* Routine to add value of first operand to value of second operand 
      and store result in second operand. 
-     Operands are assumed to conform, to be of same specified type, and to be in memory */
+     Operands are assumed to conform, to be of same specified type, and to be in memory
+     nco_var_add() does not increment a tally counter
+     nco_var_add_tll() does increment a tally counter */
 
   /* Addition is currently defined as op2:=op1+op2 */
 
@@ -206,7 +208,9 @@ nco_var_add /* [fnc] Add first operand to second operand */
 {
   /* Routine to add value of first operand to value of second operand 
      and store result in second operand. 
-     Operands are assumed to conform, to be of same specified type, and to be in memory */
+     Operands are assumed to conform, to be of same specified type, and to be in memory
+     nco_var_add() does not increment a tally counter
+     nco_var_add_tll() does increment a tally counter */
 
   /* Addition is currently defined as op2:=op1+op2 */
 

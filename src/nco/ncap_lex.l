@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.18 2004-01-12 19:53:39 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.19 2004-01-13 19:41:44 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -39,7 +39,7 @@
      scp ~/nco/src/nco/ncap_lex.l krein.math.uci.edu:nco/src/nco
 
      flex --stdout ~/nco/src/nco/ncap_lex.l > ~/nco/src/nco/ncap_lex.c
-     flex --header-file=foo.h --stdout ~/nco/src/nco/ncap_lex.l > ~/nco/src/nco/ncap_lex.c
+     flex --header-file=${HOME}/nco/src/nco/ncap_lex.h --stdout ~/nco/src/nco/ncap_lex.l > ~/nco/src/nco/ncap_lex.c
      NB: flex with -Cf or -CF not -I if this scanner will not be interactive */
 
   /* Standard header files */
@@ -77,20 +77,23 @@
    2. Top of ncap_yacc.y via YY*DECL token
       Required to quiet compiler warning (see additional comments in ncap_yacc.y)
    3. In ncap_lex.l ncap_ntl_scn() declaration
-      Required for ncap_ntl_scn() call to yylex() (see additional comments in ncap_ntl_scn()) */
+      Required for ncap_ntl_scn() call to yylex() (additional comments in ncap_ntl_scn()) */
 #define YY_DECL int yylex(YYSTYPE *lval_ptr,prs_sct *prs_arg)
   YY_DECL;
 
-#ifdef __GNUC__
+#if defined(__GNUC__) && (defined(ENABLE_DEBUG_CUSTOM) || defined(ENABLE_OPTIMIZE_CUSTOM))
   /* CEWI fxm 20040110 Prototype functions that cause warnings with pedantic GCC compiling
      Portability of this entire section is questionable, so enclose in ifdef GCC
      We already assume lexer is flex since AT&T lex does not understand <EOF> rules
-     Thus prototyping following flex-specific functions adds no additional assumptions */
+     Thus prototyping following flex-specific functions adds no additional assumptions
+     See also 20040112 thread in comp.compilers */
+  /* Implicit declaration warnings: fileno warning may be avoided with -D_POSIX_SOURCE ? */
+  int fileno(FILE *); /* fixes: warning: implicit declaration of function `fileno' */
+  int yy_flex_realloc(void *,size_t); /* fixes: warning: implicit declaration of function `yy_flex_realloc'. Is this obsolete? */
+  /* Missing prototypes warnings: Triggered by -Wmissing-prototypes */
   FILE *yyget_in(void); /* fixes: warning: no previous prototype for `yyget_in' */
   FILE *yyget_out(void); /* fixes: warning: no previous prototype for `yyget_out' */
   char *yyget_text(void); /* fixes: warning: no previous prototype for `yyget_text' */
-  int fileno(FILE *); /* fixes: warning: implicit declaration of function `fileno' */
-  int yy_flex_realloc(void *,size_t); /* fixes: warning: implicit declaration of function `yy_flex_realloc'. Is this obsolete? */
   int yyget_debug(void); /* fixes: warning: no previous prototype for `yyget_debug' */
   int yyget_leng(void); /* fixes: warning: no previous prototype for `yyget_leng' */
   int yyget_lineno(void); /* fixes: warning: no previous prototype for `yyget_lineno' */

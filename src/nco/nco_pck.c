@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.19 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.20 2004-01-13 19:41:44 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -271,12 +271,9 @@ nco_var_pck /* [fnc] Pack variable in memory */
     if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: %s: min_var = %g, max_var = %g\n",prg_nm_get(),var->nm,min_var->val.dp[0],max_var->val.dp[0]);
 
     /* add_offset is 0.5*(min+max) */
-    if(var->tally == NULL) (void)fprintf(stdout,"%s: ERROR var->tally==NULL in nco_var_pck(), no room for incrementing tally while in nco_var_add_tll()\n",prg_nm_get());
     /* max_var->val is overridden with add_offset answers, no longer valid as max_var */
-    (void)nco_var_add_tll((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,var->tally,min_var->val,max_var->val);
+    (void)nco_var_add((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,min_var->val,max_var->val);
     (void)nco_var_mlt((nc_type)NC_DOUBLE,1L,var->has_mss_val,var->mss_val,hlf_var->val,max_var->val);
-    /* Reset tally buffer to zero for any subsequent arithmetic */
-    (void)nco_zero_long(var->sz,var->tally);
     /* Contents of max_var are actually add_offset */
     (void)val_cnf_typ((nc_type)NC_DOUBLE,max_var->val,var->type,var->add_fst);
 
