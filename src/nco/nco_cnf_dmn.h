@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.h,v 1.21 2004-08-03 17:06:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.h,v 1.22 2004-08-05 04:27:24 zender Exp $ */
 
 /* Purpose: Conform dimensions */
 
@@ -14,6 +14,7 @@
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
+#include <stdlib.h> /* strtod, strtol, malloc, getopt, qsort */
 #include <string.h> /* strcmp. . . */
 
 /* 3rd party vendors */
@@ -23,6 +24,7 @@
 /* Personal headers */
 #include "nco.h" /* netCDF Operator (NCO) definitions */
 #include "nco_ctl.h" /* Program flow control functions */
+#include "nco_lst_utl.h" /* List utilities */
 #include "nco_mmr.h" /* Memory management */
 #include "nco_rth_utl.h" /* Arithmetic controls and utilities */
 #include "nco_var_utl.h" /* Variable utilities */

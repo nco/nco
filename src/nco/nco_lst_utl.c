@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.19 2004-08-05 00:01:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.c,v 1.20 2004-08-05 04:27:37 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -85,7 +85,6 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
     xtr_id=(int *)nco_malloc(nbr_lst*sizeof(int));
     for(idx=0;idx<nbr_lst;idx++) xtr_id[idx]=lst[idx].id;
     /* Replace with free (speech) indexx() replacement */
-    /* fxm: Replace with system qsort() */
     /* (void)indexx(nbr_lst,xtr_id-1,srt_idx-1);*/
     xtr_id=(int *)nco_free(xtr_id);
   } /* end else */

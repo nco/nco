@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.14 2004-08-05 00:01:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lst_utl.h,v 1.15 2004-08-05 04:27:37 zender Exp $ */
 
 /* Purpose: List utilities */
 
@@ -14,6 +14,7 @@
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
+#include <stdlib.h> /* strtod, strtol, malloc, getopt, qsort */
 #include <string.h> /* strcmp. . . */
 
 /* 3rd party vendors */
