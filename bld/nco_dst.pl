@@ -1,16 +1,16 @@
 #!/contrib/bin/perl
 				
-my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.1 1999-01-29 19:14:49 zender Exp $';
+my $RCS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.2 1999-01-29 19:24:06 zender Exp $';
 
 # Purpose: Perform NCO distributions
 
 # Usage:
 # Export tagged, public versions
-# /home/zender/nc/nco_dst.pl --dbg=2 --cln nco1_1_20
-# /home/zender/nc/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_20
-# /home/zender/nc/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_20
-# /home/zender/nc/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_20
-# /home/zender/nc/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_20
+# /home/zender/nc/nco_dst.pl --dbg=2 --cln nco1_1_21
+# /home/zender/nc/nco_dst.pl --dbg=2 --cln --cgd_cnt nco1_1_21
+# /home/zender/nc/nco_dst.pl --dbg=2 --cln --wnt_cnt nco1_1_21
+# /home/zender/nc/nco_dst.pl --dbg=2 --cln --cray_prs nco1_1_21
+# /home/zender/nc/nco_dst.pl --dbg=2 --cln --nst_all nco1_1_21
 
 # Export daily snapshot
 # /home/zender/nc/nco_dst.pl --dbg=2 
@@ -48,9 +48,9 @@ my $True=1;
 
 my $CVSROOT='/home/zender/cvs';
 my $PVM_ARCH=$ENV{'PVM_ARCH'};
-my $RCS_Date='$Date: 1999-01-29 19:14:49 $';
-my $RCS_Id='$Id: nco_dst.pl,v 1.1 1999-01-29 19:14:49 zender Exp $';
-my $RCS_Revision='$Revision: 1.1 $';
+my $RCS_Date='$Date: 1999-01-29 19:24:06 $';
+my $RCS_Id='$Id: nco_dst.pl,v 1.2 1999-01-29 19:24:06 zender Exp $';
+my $RCS_Revision='$Revision: 1.2 $';
 my $cln=$True; # GNU standard Makefile option `clean'
 my $dbg_lvl=0;
 my $dst_cln=$False; # GNU standard Makefile option `distclean'
@@ -183,6 +183,7 @@ if($dly_snp){&cmd_prc("rsh ftp.cgd.ucar.edu /bin/rm -r -f /ftp/pub/zender/nco/nc
 if(!$dly_snp){
     &cmd_prc("rsh ftp.cgd.ucar.edu /bin/rm -f /ftp/pub/zender/nco/nco.tar.gz");
     &cmd_prc("rsh ftp.cgd.ucar.edu \"cd /ftp/pub/zender/nco; ln -s $dst_fl nco.tar.gz\"");
+    &cmd_prc("/bin/cp -f $dst_pth/$dst_vrs/doc/index.shtml $www_drc/index.shtml");
     &cmd_prc("/bin/cp -f $dst_pth/$dst_vrs/doc/README $www_drc/README");
 #    &cmd_prc("/bin/cp -f $dst_pth/$dst_vrs/doc/INSTALL $www_drc/INSTALL");
     &cmd_prc("/bin/cp -f $dst_pth/$dst_vrs/doc/VERSION $www_drc/VERSION");

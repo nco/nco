@@ -195,6 +195,12 @@ respectively. (430 Kb compressed tar-file)
 <H2>Browse the online <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">NCO
 User's Guide</A></H2>
 
+<H2>Download the <A
+HREF="http://www.cgd.ucar.edu/cms/zender/ps.gz.html">
+gzipped Postscript</A>  
+<A HREF="http://www.cgd.ucar.edu/cms/nco/nco.ps.pz">
+NCO User's Guide</A></H2> 
+
 <P>The <I>User's Guide</I> contains all the documentation for NCO. It explains
 the most efficient strategies for using the operators and includes numerous
 specific examples. The online <I>User's Guide</I> is also in the source

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.12 1999-01-21 22:31:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.13 1999-01-29 19:24:06 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -912,26 +912,27 @@ copyright_prn(char *rcs_Id,char *rcs_Revision)
  */ 
 {
   char *date_sng;
-  char *ver_sng;
+  char *vrs_sng;
   char *cvs_vrs_sng;
 
   int date_sng_len;
-  int ver_sng_len;
+  int vrs_sng_len;
   
   date_sng_len=10;
   date_sng=(char *)malloc((date_sng_len+1)*sizeof(char));
   (void)strncpy(date_sng,strchr(rcs_Id,'/')-4,date_sng_len);
   date_sng[date_sng_len]='\0';
 
-  ver_sng_len=strrchr(rcs_Revision,'$')-strchr(rcs_Revision,':')-3;
-  ver_sng=(char *)malloc((ver_sng_len+1)*sizeof(char));
-  (void)strncpy(ver_sng,strchr(rcs_Revision,':')+2,ver_sng_len);
-  ver_sng[ver_sng_len]='\0';
+  vrs_sng_len=strrchr(rcs_Revision,'$')-strchr(rcs_Revision,':')-3;
+  vrs_sng=(char *)malloc((vrs_sng_len+1)*sizeof(char));
+  (void)strncpy(vrs_sng,strchr(rcs_Revision,':')+2,vrs_sng_len);
+  vrs_sng[vrs_sng_len]='\0';
 
   cvs_vrs_sng=cvs_vrs_prs();
 
-  (void)fprintf(stderr,"NCO version %s %s version %s (%s)\nCopyright 1995--1999 University Corporation for Atmospheric Research\n",cvs_vrs_sng,prg_nm_get(),ver_sng,date_sng);
-  (void)free(ver_sng);
+  (void)fprintf(stderr,"NCO netCDF Operators version %s by Charlie Zender\n",cvs_vrs_sng);
+  (void)fprintf(stderr,"%s version %s (%s)\nCopyright 1995--1999 University Corporation for Atmospheric Research\n",prg_nm_get(),vrs_sng,date_sng);
+  (void)free(vrs_sng);
   (void)free(cvs_vrs_sng);
 } /* end copyright_prn() */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.16 1999-01-14 05:11:18 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.17 1999-01-29 19:24:06 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -2992,7 +2992,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 #ifndef C_ONLY
     (void)FORTRAN_avg_reduce_real(&sz_blk,&sz_op2,&has_mss_val,mss_val.fp,tally,op1.fp,op2.fp);
 #else
-#if ( defined SUN4 ) || ( defined SGI64 )
+#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 )
     /* NB: ANSI compliant branch */ 
     if(True){
       long blk_off;
@@ -3047,7 +3047,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 #ifndef C_ONLY
     (void)FORTRAN_avg_reduce_double_precision(&sz_blk,&sz_op2,&has_mss_val,mss_val.dp,tally,op1.dp,op2.dp);
 #else
-#if ( defined SUN4 ) || ( defined SGI64 )
+#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 )
     /* NB: ANSI compliant branch */ 
     if(True){
       long blk_off;
@@ -3099,7 +3099,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 #endif /* !F77 */
     break;
   case NC_LONG:
-#if ( defined SUN4 ) || ( defined SGI64 )
+#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 )
     /* NB: ANSI compliant branch */ 
     if(True){
       long blk_off;
@@ -3150,7 +3150,7 @@ var_avg_reduce(nc_type type,long sz_op1,long sz_op2,int has_mss_val,ptr_unn mss_
 #endif /* !SUN4 */ 
     break;
   case NC_SHORT:
-#if ( defined SUN4 ) || ( defined SGI64 )
+#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SGI64 )
     /* NB: ANSI compliant branch */ 
     if(True){
       long blk_off;

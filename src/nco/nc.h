@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.6 1998-12-04 22:22:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.7 1999-01-29 19:24:06 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -258,7 +258,7 @@ typedef struct var_sct_tag{
 #define FORTRAN_divide_double_precision divide_double_precision__
 #define FORTRAN_foo foo__
 #endif /* LINUX */ 
-#if ( defined SUN4 ) || ( defined SUN4SOL2 ) || ( defined SUNMP ) || ( defined SGI5 ) || ( defined SGI64 )
+#if ( defined ALPHA ) || ( defined SUN4 ) || ( defined SUN4SOL2 ) || ( defined SUNMP ) || ( defined SGI5 ) || ( defined SGI64 )
 #define FORTRAN_add_real add_real_
 #define FORTRAN_add_double_precision add_double_precision_
 #define FORTRAN_avg_reduce_real avg_reduce_real_

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.2 1998-08-20 20:55:54 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.3 1999-01-29 19:24:06 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -17,10 +17,11 @@ nco/bin/README		Description of binary directory
 Build directory:
 nco/bld/Depends		Dependencies of each object file
 nco/bld/Filepath	Directory location and order of all source files
-nco/bld/Makefile	Makefile used by GNU make to create NCO executable
+nco/bld/Makefile	Makefile used by GNU make to create NCO executables
 nco/bld/Srcfiles	Source stubs of each source file
 nco/bld/makdep		Perl script needed by `make depends' command
-nco/bld/nco_tst.sh	Shell script to test NCO executables (not yet used)
+nco/bld/nco_tst.pl	Perl script to build NCO distributions (works at NCAR only)
+nco/bld/nco_tst.sh	Shell script to test NCO executables (works at NCAR only)
 nco/bld/pvmgetarch	Script used by Makefile to determine your native machine type
 
 Data Directory:
@@ -29,16 +30,17 @@ nco/data/ncap.in	Text input for ncap (not yet used)
 
 Documentation directory:
 nco/doc/ANNOUNCE	Announcement to accompany release notifications
-nco/doc/FAQ		Frequently Asked Questions about the NCO
+nco/doc/FAQ		Frequently Asked Questions about NCO
 nco/doc/INSTALL		Installation instructions
 nco/doc/LICENSE		License and legal information
 nco/doc/MANIFEST	This file. Describes all files in distribution
-nco/doc/README		Description of the NCO
+nco/doc/README		Description of NCO
 nco/doc/TAG		CVS tag for this version 
 nco/doc/TODO		List of tasks for future releases
 nco/doc/VERSION		NCO version 
 nco/doc/ChangeLog	Chronological log of NCO changes
 nco/doc/dir		Example Info file to load nco.info
+nco/doc/index.shtml	NCO Website homepage
 nco/doc/ncap.txt	Description of the ncap operator (not yet used)
 nco/doc/nco.texi	NCO User's Guide: TeXInfo format
 nco/doc/nco.info	NCO User's Guide: Info format
@@ -71,4 +73,8 @@ nco/src/nco/ncks.c
 nco/src/nco/ncra.c
 nco/src/nco/ncrename.c
 nco/src/nco/ncwa.c
+
+
+
+
 

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.15 1999-01-23 17:08:34 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.16 1999-01-29 19:24:06 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -50,10 +50,10 @@ END-INFO-DIR-ENTRY
 
 @set nco-edition 1.1.20
 @set doc-edition 1.1.20
-@set copyright-years 1995, 1996, 1997, 1998
-@set update-year 1998
-@set update-date 1 December 1998
-@set update-month December 1998
+@set copyright-years 1995, 1996, 1997, 1998, 1999
+@set update-year 1999
+@set update-date 23 January 1999
+@set update-month January 1999
 
 @c Experiment with smaller amounts of whitespace between chapters and sections.
 @tex
@@ -462,13 +462,13 @@ One netCDF 3.x interface call (@code{nc_inq_libvers}) was added to NCO in
 January, 1998, to aid in maintainance and debugging. 
 To support this call, NCO must be built with netCDF 3.x releases.
 Currently, the rest of NCO still uses the netCDF 2.x interface, but,
-because of single @code{nc_inq_libvers} call, NCO no longer builds with
-netCDF 2.x releases. 
+because of the single @code{nc_inq_libvers} call, NCO no longer builds
+with netCDF 2.x releases. 
 
 @cindex HDF
 @cindex Hierarchical Data Format
 However, the ability to compile NCO with only netCDF 2.x calls is worth 
-maintaining valuable because HDF
+maintaining because HDF
 @footnote{The Hierarchical Data Format, or HDF, is another
 self-describing data format similar to, but more elaborate than, netCDF.}
 (available from 
@@ -508,9 +508,8 @@ If you think you have found a real bug: simplify the problem
 to a manageable size, document your run-time environment, and send me  
 the exact error messages (and run the operator with @samp{-D 5} 
 to increase the verbosity of the debugging output). 
-Send your bug report to @code{zender@@ncar.ucar.edu}.
-I will only investigate bugs which occur with the latest version of
-NCO. 
+Write a bug report based on the latest version of NCO. 
+Send the bug report to @code{zender@@ncar.ucar.edu}.
 
 @node Strategies, Common features, Introduction, Top
 @chapter Operator Strategies

@@ -1,3 +1,16 @@
+1999-01-29  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Added nco_dst.pl to distribution
+
+	* Changed ALPHA makefile to support native compilers (untested)
+
+	* Added NETCDF2_ONLY option to circumvent ncdiff nc_inq_vartype()
+	call.
+
+1999-01-24  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Moved index.shtml to NCO doc directory
+
 Thu Jan 21 15:23:02 1999  Charlie Zender  <zender@sanitas-e0.cgd.ucar.edu>
 
 	* Tagged and released this as nco1_1_20
