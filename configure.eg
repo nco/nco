@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.21 2002-08-24 07:27:41 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.22 2002-08-24 07:58:58 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -6,15 +6,15 @@ Develop recommend ./configure invocations for each architecture
 
 Summary table: Y: feature works, N feature broken, blank: not yet tested
 Architecture	ABI32	ABI64	DODS	I18N	OpenMP	nco_c++	check
-AIX		Y	N(2)				N(5)	Y
+AIX		Y	N(2)				N(5)	
 CRAY
 LINUX gcc/g++	Y	N/A				Y	Y
-LINUX icc	Y	N/A				Y	N(8)
+LINUX icc	Y	N/A				Y	Y
 LINUXALPHA	Y					N(1)	Y
 NECSX
 OSF1		
 SGIMP64 cc/CC	Y	Y				Y	N(6)
-SGIMP64 gcc/g++	N(7)					
+SGIMP64 gcc/g++	N(7)					Y
 SUNMP cc/CC	Y					Y	N(3)
 SUNMP gcc/g++
 WIN32		
@@ -24,11 +24,12 @@ Footnotes to summary table:
 02. Invocation of nm needs -X 64 flag and final (linking) invocation of 
 xlc _may_ need an ABI64 flag, but may just fail because nm is failing.
 I do not know how to pass flags to nm.
-03. Does not like nco_var.hh:270, same as SGI, taking address of non-lvalue
+03. Does not link tst.o
 05. xlC fails valarray test, but I believe xlC does support valarray. Hmm.
-06. CC fails to compile tst.cc, taking address of non-lvalue
+    Libtool is breaking
+    Unable to link library
+06. CC unable to link tst.o, unresolved text symbols
 07. Error making ncap_yacc.c
-08. Same as 03 and 06CC fails to compile tst.cc, taking address of non-lvalue
 -----------------------------------------------------------------------
 
 Default installation procedure for system-wide installation,
@@ -38,15 +39,23 @@ Recommended/current custom ./configure invocation, alphabetized by pvmgetarch:
 
 ************************************************************************
 Start AIX
-Status: Link problems for ABI64
+Status: Link problems for ABI64, libtool is breaking
 ************************************************************************
 zender@bb0001en:/fs/cgd/home0/zender/nco$ pvmgetarch;uname -a
 AIX
 AIX bb0001en 3 4 000117924C00
 
+For ABI=64:
 export GNU_TRP='powerpc-ibm-aix4.3.3.0'
 cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
-CC='xlc' CXX='xlC' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+CC='xlc' CFLAGS='-q64' CXX='xlC' CXXFLAGS='-q64' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib64/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
+
+For ABI=32:
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+CC='xlc' CXX='xlC' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib32/r4i4' ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
 /bin/cp -f config.log config.log.${GNU_TRP}.foo
 make clean;make > make.${GNU_TRP}.foo 2>&1
 scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
@@ -59,35 +68,26 @@ xlc  -DAIX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='bb0001en' -DUSER='zend
 ar -X 64 rv /home/babyblue/zender/lib/AIX/libnco.a /home/babyblue/zender/obj/AIX/nco_var_lst.o
 xlc -o /home/babyblue/zender/bin/AIX/ncflint /home/babyblue/zender/obj/AIX/ncflint.o -L/home/babyblue/zender/lib/AIX -L/usr/local/lib64/r4i4 -lnco -lnetcdf -lm -lC -q64
 
+Status:
+When ABI=64, nm utility requires "-X 64" argument, e.g., nm -X 64
+libtool is now breaking....
+
+generating symbol list for `libnco.la'
 /bin/nm -B  nco_att_utl.o nco_bnr.o nco_cln_utl.o nco_cnf_dmn.o nco_cnf_typ.o nc
 o_cnv_arm.o nco_cnv_csm.o nco_ctl.o nco_dbg.o nco_dmn_utl.o nco_fl_utl.o nco_lmt
 .o nco_lst_utl.o nco_mmr.o nco_mss_val.o nco_netcdf.o nco_omp.o nco_pck.o nco_pr
 n.o nco_rec_var.o nco_rth_utl.o nco_scl_utl.o nco_scm.o nco_sng_utl.o nco_var_av
-g.o nco_var_lst.o nco_var_rth.o nco_var_scv.o nco_var_utl.o   | sed -n -e 's/^.*
-[       ]\([BCDT][BCDT]*\)[     ][      ]*\(\)\([_A-Za-z][_A-Za-z0-9]*\)$/\1 \2\
-3 \3/p' | sed 's/.* //' | sort | uniq > .libs/libnco.exp
-0654-210 nco_att_utl.o is not valid in the current object file mode.
-        Use the -X option to specify the desired object mode.
-0654-210 nco_bnr.o is not valid in the current object file mode.
-        Use the -X option to specify the desired object mode.
-0654-210 nco_cln_utl.o is not valid in the current object file mode.
-        Use the -X option to specify the desired object mode.
-0654-210 nco_cnf_dmn.o is not valid in the current object file mode.
-        Use the -X option to specify the desired object mode.
-0654-210 nco_cnf_typ.o is not valid in the current object file mode.
-        Use the -X option to specify the desired object mode.
-0654-210 nco_cnv_arm.o is not valid in the current object file mode.
-        Use the -X option to specify the desired object mode.
-0654-210 nco_cnv_csm.o is not valid in the current object file mode.
-        Use the -X option to specify the desired object mode.
-0654-210 nco_ctl.o is not valid in the current object file mode.
-        Use the -X option to specify the desired object mode.
-0654-210 nco_dbg.o is not valid in the current object file mode.
-        Use the -X option to specify the desired object mode.
+g.o nco_var_lst.o nco_var_rth.o nco_var_scv.o nco_var_utl.o   |  | sed 's/.* //'
+ | sort | uniq > .libs/libnco.exp
+../../libtool[3162]: syntax error at line 1 : `|' unexpected
+make[3]: *** [libnco.la] Error 2
+make[3]: Leaving directory `/fs/cgd/home0/zender/nco/src/nco'
+make[2]: *** [all-recursive] Error 1
+make[2]: Leaving directory `/fs/cgd/home0/zender/nco/src'
+make[1]: *** [all-recursive] Error 1
+make[1]: Leaving directory `/fs/cgd/home0/zender/nco'
+make: *** [all-recursive-am] Error 2
 
-Status:
-When ABI=64,
-nm utility requires "-X 64" argument, e.g., nm -X 64
 ************************************************************************
 End AIX
 ************************************************************************
