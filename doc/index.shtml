@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.49 2000-07-31 00:29:18 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.50 2000-08-03 20:38:34 zender Exp $
 
 Purpose: NCO homepage
 
@@ -23,21 +23,22 @@ scp -p ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/nco/htdocs/index.s
 </head>
 <body text="#000000" link="#0000FF" vlink="#008080" alink="#FF0000">
 
-<table width="100%" >
-<tr>
-<td align="left" valign="top">/ <a href="http://www.ucar.edu/metapage.html">NCAR</a>
-/ <a href="http://www.cgd.ucar.edu/">CGD</a> / <a href="http://www.cgd.ucar.edu/cms">CMS</a>
-/ <a href="http://www.cgd.ucar.edu/cms/ccm3">CCM3</a> / </td>
+<table width="100%"><tr><td align="left" valign="top">/
+<a href="#RTFM">NCO User's Guide</a> /
+<a href="http://sourceforge.net/projects/nco">Project</a> /
+<a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Discussion</a> /
+<a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help</a> /
+<a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developer</a> /
+<a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce">nco-announce</a> /
+</td>
 
-<td align="right" valign="top">[ <a href="http://www.cgd.ucar.edu/cms/ccm3">CCM3
-</a>] [ <a href="http://www.cgd.ucar.edu/cms/ccm3/processor.html">Processor
-</a>] [ <a href="http://www.cgd.ucar.edu/cms/ccm3/lsm">LSM
-</a>] [ <a href="http://www.cgd.ucar.edu/csm">CSM </a>] </td>
-</tr>
-</table>
+<td align="right" valign="top">
+[<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
+[<a href="http://www.cgd.ucar.edu/csm/cmps">CMPS</a>]
+[<a href="http://www.cgd.ucar.edu/cas/ncl-csm">CSM Processor</a>]
+</td></tr></table>
 
-<p>
-<hr width="100%"></p>
+<p><hr width="100%"></p>
 
 <h1 align=CENTER>Welcome to the NCO Homepage</h1>
 
@@ -182,31 +183,27 @@ Averaging is still the default so no existing usage needs to be modified.
 It is also possible to compute spatial and temporal standard
 deviations using combinations of three or four NCO commands.
 
-<p>
-All operators may now be 
+<p>All operators may now be 
 <a href="http://www.unidata.ucar.edu/packages/dods">DODS</a></dd> clients.
 DODS enables network transparent data access to any DODS server.
-This means NCO that you can operate on remote files accessible through any
-DODS server without transferring the files.
+Thus DODS-enabled NCO can operate on remote files accessible through
+any DODS server without transferring the files.
 Only the required data (e.g., the variable or hyperslab specified) are
 transferred.
 See the <a href="./nco.html">User's Guide</a> for complete details.
 
-<p>
-Fortran compatibility has been dropped.
+<p>Fortran compatibility has been dropped.
 If a volunteer wants to continue to maintain the option to perform
 arithmetic in Fortran for reasons of speed, contact me.
 
-<p>
-NCO is now an Open Source project licensed under the GPL.
+<p>NCO is now an Open Source project licensed under the GPL.
 These new capabilities are the result of contributions from Henry
 Butowski, Bill Kocik, and Roland Schweitzer.
 For more information on how to contribute to NCO,
 visit the <a href="http://sourceforge.net/projects/nco">NCO
 administration homepage</a>.
 
-<p>
-New NCO releases and important announcements will be made on the
+<p>New NCO releases and important announcements will be made on the
 netCDF list and on the new <tt>nco-announce</tt> mailing list. 
 To join this list send a message with "help" anywhere in it to
 <aDDRESS>
@@ -216,14 +213,12 @@ The archive of this list is viewable at
 <a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce">
 http://lists.sourceforge.net/mailman/listinfo/nco-announce</a>
 
-<p>
-Questions, suggestions, ideas, and pleas for help should be posted to 
+<p>Questions, suggestions, ideas, and pleas for help should be posted to 
 the appropriate discussion forum at the NCO administration site.
 NCO developers monitor these open forums, and your message will get a
 quicker response if it is posted for all to see.
 
-<p>
-<a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Open
+<p><a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Open
 Discussion Forum</a>: General discussion, discussion of tips, tricks,
 future directions for NCO.
 
@@ -386,20 +381,22 @@ respectively.
 <hr></p>
 
 <dt><a name="RTFM"></a></dt>
-<h2>Browse the online <a href="./nco.html">NCO
-User's Guide</a></h2>
+<h2>NCO User's Guide</h2> 
 
-<h2>Download the <a
-href="http://www.cgd.ucar.edu/cms/zender/ps.gz.html">
-gzipped Postscript</a>  
-<a href="./nco.ps.gz">
-NCO User's Guide</a></h2> 
+<p>View the NCO User's Guide in any of these formats
+<a href="./nco.dvi">DVI</a>,
+<a href="./nco.html">HTML</a>,
+<a href="./nco.info">Info</a>,
+<a href="./nco.pdf">PDF</a>,
+<a href="./nco.ps">Postscript</a>,
+<a href="./nco.texi">TeXInfo</a></h2> 
 
-<p>The <I>User's Guide</I> contains all the documentation for NCO. It explains
-the most efficient strategies for using the operators and includes numerous
-specific examples. The online and Postscript versions of the <I>User's
-Guide</I> are in the source distribution in the files
-<tt>`doc/nco.html'</tt> and <tt>`doc/nco.ps'</tt>, respectively.
+<p>The <I>User's Guide</I> contains all the documentation for NCO. 
+It explains the most efficient strategies for using the operators and
+includes numerous specific examples. 
+The HTML and Postscript versions of the <I>User's Guide</I> are in
+the source distribution in the files <tt>`doc/nco.html'</tt> and
+<tt>`doc/nco.ps'</tt>, respectively. 
 <hr></p>
 
 <dt><a name="README"></a></dt>
@@ -472,18 +469,20 @@ As of NCO 1.1.38, this is the default.
 
 <hr></p>
 
-<table width="100%" >
-<tr>
-<td align="left" valign="bottom">/ <a href="http://www.ucar.edu/metapage.html">NCAR</a>
-/ <a href="http://www.cgd.ucar.edu/">CGD</a> / <a href="http://www.cgd.ucar.edu/cms">CMS</a>
-/ <a href="http://www.cgd.ucar.edu/cms/ccm3">CCM3</a> / </td>
+<table width="100%"><tr><td align="left" valign="top">/
+<a href="#RTFM">NCO User's Guide</a> /
+<a href="http://sourceforge.net/projects/nco">NCO Project</a> /
+<a href="http://sourceforge.net/forum/forum.php?forum_id=9829">Discussion</a> /
+<a href="http://sourceforge.net/forum/forum.php?forum_id=9830">Help</a> /
+<a href="http://sourceforge.net/forum/forum.php?forum_id=9831">Developer</a> /
+<a href="http://lists.sourceforge.net/mailman/listinfo/nco-announce">nco-announce</a> /
+</td>
 
-<td align="right" valign="top">[ <a href="http://www.cgd.ucar.edu/cms/ccm3">CCM3
-</a>] [ <a href="http://www.cgd.ucar.edu/cms/ccm3/processor.html">Processor
-</a>] [ <a href="http://www.cgd.ucar.edu/cms/ccm3/lsm">LSM
-</a>] [ <a href="http://www.cgd.ucar.edu/csm">CSM </a>] </td>
-</tr>
-</table>
+<td align="right" valign="top">
+[<a href="http://www.unidata.ucar.edu/packages/netcdf">netCDF</a>] 
+[<a href="http://www.cgd.ucar.edu/csm/cmps">CMPS</a>]
+[<a href="http://www.cgd.ucar.edu/cas/ncl-csm">CSM Processor</a>]
+</td></tr></table>
 
 <p>
 <hr></p>

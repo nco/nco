@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.69 2000-06-30 22:04:44 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.70 2000-08-03 20:38:33 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -113,7 +113,7 @@ MDL_DAT := $(addprefix $(MY_DAT_DIR)/,$(MDL_DAT_STB)) # `make distclean' removes
 
 # Variables having to do with NCO documentation
 MDL_DOC_SRC := $(addprefix $(MY_DOC_DIR)/,nco.texi MANIFEST README NEWS TODO index.shtml ncap.txt nco_news.shtml) # `make tags' includes these files
-MDL_DOC_TRG := nco.dvi nco.ps nco.html nco.info # `make doc' creates these files
+MDL_DOC_TRG := nco.dvi nco.ps nco.pdf nco.html nco.info # `make doc' creates these files
 MDL_DOC := $(addprefix $(MY_DOC_DIR)/,$(MDL_DOC_TRG)) # `make distclean' removes these files
 
 # Variables having to do with NCO build
@@ -648,7 +648,7 @@ dat_cln:
 	cd $(MY_DAT_DIR); rm -f foo*
 # Targets in doc
 # Each make directive line spawns a separate shell so must use `cd dir;cmd' format
-doc:	$(MY_DOC_DIR)/nco.dvi $(MY_DOC_DIR)/nco.ps $(MY_DOC_DIR)/nco.html $(MY_DOC_DIR)/nco.info   
+doc:	$(MY_DOC_DIR)/nco.dvi $(MY_DOC_DIR)/nco.ps $(MY_DOC_DIR)/nco.pdf $(MY_DOC_DIR)/nco.html $(MY_DOC_DIR)/nco.info   
 $(MY_DOC_DIR)/nco.ps: $(MY_DOC_DIR)/nco.texi
 	cd $(MY_DOC_DIR); dvips -o nco.ps nco.dvi
 $(MY_DOC_DIR)/nco.dvi: $(MY_DOC_DIR)/nco.texi
@@ -657,9 +657,11 @@ $(MY_DOC_DIR)/nco.info: $(MY_DOC_DIR)/nco.texi
 	cd $(MY_DOC_DIR); makeinfo nco.texi
 $(MY_DOC_DIR)/nco.html: $(MY_DOC_DIR)/nco.texi
 	cd $(MY_DOC_DIR); texi2html -monolithic -verbose nco.texi
+$(MY_DOC_DIR)/nco.pdf: $(MY_DOC_DIR)/nco.ps
+	cd $(MY_DOC_DIR); ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
 docclean: doc_cln
 doc_cln:
-	cd $(MY_DOC_DIR); rm -f nco.info* nco.dvi nco.html* nco.ps *~
+	cd $(MY_DOC_DIR); rm -f nco.info* nco.dvi nco.html* nco.ps nco.pdf *~
 # Targets in dpn
 depend: dpn
 dpn: $(MDL_DPN)

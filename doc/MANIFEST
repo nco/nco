@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.6 2000-04-03 22:58:13 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/MANIFEST,v 1.7 2000-08-03 20:38:34 zender Exp $ -*-text-*-
 
 This file enumerates the files in the NCO distribution and, where
 appropriate, describes the purpose of the file.
@@ -40,6 +40,7 @@ nco/doc/ncap.txt	Description of the ncap operator (not yet used)
 nco/doc/nco.texi	NCO User's Guide: TeXInfo format
 nco/doc/nco.info	NCO User's Guide: Info format
 nco/doc/nco.dvi		NCO User's Guide: DVI format
+nco/doc/nco.pdf		NCO User's Guide: Portable Document Format
 nco/doc/nco.ps		NCO User's Guide: Postscript format
 nco/doc/nco.html	NCO User's Guide: HTML format
 

@@ -29,7 +29,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.62 2000-07-27 23:27:07 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.63 2000-08-03 20:38:34 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -65,9 +65,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2000-07-27 23:27:07 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.62 2000-07-27 23:27:07 zender Exp $';
-my $CVS_Revision='$Revision: 1.62 $';
+my $CVS_Date='$Date: 2000-08-03 20:38:34 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.63 2000-08-03 20:38:34 zender Exp $';
+my $CVS_Revision='$Revision: 1.63 $';
 my $CVSROOT=':pserver:anonymous@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -259,8 +259,7 @@ if($bld){
 	cmd_prc("$rsh_cmd $ftp_mch \"cd $ftp_drc; ln -s $dst_fl nco.tar.gz\"");
 	cmd_prc("/bin/cp $dst_pth_bld/doc/index.shtml $www_drc/index.shtml");
 	cmd_prc("/bin/cp $dst_pth_bld/doc/nco_news.shtml $www_drc/nco_news.shtml");
-	cmd_prc("/bin/cp $dst_pth_bld/doc/nco.ps $www_drc/nco.ps");
-	cmd_prc("gzip --force $www_drc/nco.ps");
+	cmd_prc("/bin/cp $dst_pth_bld/doc/nco.html $dst_pth_bld/doc/nco.info* $dst_pth_bld/doc/nco.dvi $dst_pth_bld/doc/nco.pdf $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.texi $www_drc");
 	cmd_prc("/bin/cp $dst_pth_bld/doc/README $www_drc/README");
 #    cmd_prc("/bin/cp $dst_pth_bld/doc/INSTALL $www_drc/INSTALL");
 	cmd_prc("/bin/cp $dst_pth_bld/doc/VERSION $www_drc/VERSION");
@@ -274,9 +273,7 @@ if($bld){
 	cmd_prc("$rsh_cmd $ftp_mch_mrr \"cd $ftp_drc_mrr; ln -s $dst_fl nco.tar.gz\"");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/index.shtml $www_mch_mrr:$www_drc_mrr/index.shtml");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco_news.shtml $www_mch_mrr:$www_drc_mrr/nco_news.shtml");
-	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco.ps $www_mch_mrr:$www_drc_mrr/nco.ps");
-	cmd_prc("$rsh_cmd $www_mch_mrr gzip --force $www_drc_mrr/nco.ps");
-	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco.html $www_mch_mrr:$www_drc_mrr/nco.html");
+	cmd_prc("$rcp_cmd $dst_pth_bld/doc/nco.html $dst_pth_bld/doc/nco.info* $dst_pth_bld/doc/nco.dvi $dst_pth_bld/doc/nco.pdf $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.ps $dst_pth_bld/doc/nco.texi $www_mch_mrr:$www_drc_mrr");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/README $www_mch_mrr:$www_drc_mrr/README");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/VERSION $www_mch_mrr:$www_drc_mrr/VERSION");
 	cmd_prc("$rcp_cmd $dst_pth_bld/doc/ChangeLog $www_mch_mrr:$www_drc_mrr/ChangeLog");

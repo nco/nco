@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.52 2000-07-31 05:36:26 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.53 2000-08-03 20:38:34 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -13,13 +13,14 @@ C-c C-u C-a	texinfo-all-menus-update
 C-c C-u C-e	texinfo-every-node-update
 
 Usage: 
-cd ~/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o $DATA/ps/nco.ps nco.dvi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
+cd ~/nco/doc;texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o nco.ps nco.dvi; ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf;scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 texi2html -monolithic -verbose nco.texi; scp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco
 cd $DATA/ps;gzip --force nco.ps;scp -p nco.ps.gz www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 texi2dvi nco.texi 
 makeinfo nco.texi 
 texi2html -monolithic -verbose nco.texi 
 dvips -o nco.ps nco.dvi 
+ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
 
 Example TeXinfo files: 
 
@@ -624,16 +625,41 @@ to convert NCO to netCDF 3.x once this is complete.
 @section Reporting bugs
 @cindex reporting bugs
 @cindex bugs, reporting
-Please read the manual before sending me any bug reports. 
-Sending me questions whose answers are not in the manual is the best
-way to motivate me to write more documentation.  
-I would also like to accentuate the contrapositive of this statement.  
-If you think you have found a real bug: simplify the problem 
-to a manageable size, document your run-time environment, and send me  
-the exact error messages (and run the operator with @samp{-D 5} 
-to increase the verbosity of the debugging output). 
-Write a bug report based on the latest version of NCO. 
-Send the bug report to @code{zender@@uci.edu}.
+@cindex core dump
+We consider the following to be bugs:
+@list
+@item Incorrect numerical results
+@item Aything that causes a core dump
+@item Operators not performing as advertised
+@end list
+
+Please read the manual before reporting a bug or posting a request for
+help. 
+Sending questions whose answers are not in the manual is the best
+way to motivate us to write more documentation.  
+We would also like to accentuate the contrapositive of this statement.  
+If you think you have found a real bug @emph{the most helpful thing you
+can do is simplify the problem to a manageable size and report it}.
+The first thing to do is to make sure you are running the latest
+publicly released version of NCO.  
+
+How do you simplify a problem that may be revealing a bug?
+Cut out extraneous variables, dimensions, and metadata from the
+offending files and re-run the command until it no longer breaks.  
+Then back up one step and report the problem.
+Usually the file(s) will be very small, i.e., one variable with one or
+two small dimensions ought to suffice.
+Include in the report your run-time environment, the exact error
+messages (and run the operator with @samp{-D 5} to increase the
+verbosity of the debugging output), and a copy, or the publically
+accessible location, of the file(s).
+Post the bug report to NCO project at
+@ifhtml
+<a href="http://sourceforge.net/bugs/?group_id=3331"> http://sourceforge.net/bugs/?group_id=3331</a>.
+@end ifhtml
+@ifclear html
+@code{http://sourceforge.net/bugs/?group_id=3331}.
+@end ifclear
 
 @node Strategies, Common features, Introduction, Top
 @chapter Operator Strategies
@@ -969,6 +995,7 @@ try running NCO from a more powerful machine, such as a network server.
 Certain machine architectures, e.g., Cray UNICOS, have special commands
 which allow one to increase the amount of interactive memory.
 @cindex @code{ilimit}
+@cindex @code{core dump}
 If you get a core dump on a Cray system (e.g., @samp{Error exit (core
 dumped)}), try increasing the available memory by using the
 @code{ilimit} command. 
@@ -2097,7 +2124,8 @@ See the printed manual for complete documentation.
 @end ifinfo
 
 @tex
-NCO defines the masked, weighted average of a variable $x$ to be
+The masked, weighted average of a variable $x$ can be generally
+represented as
 $$
 \bar x_j = {\sum_{i = 1}^{i = N} \mu_i m_i w_i x_i \over \sum_{i =
 1}^{i = N} \mu_i m_i w_i} 
@@ -2189,6 +2217,10 @@ $$
 1}^{i = N} \mu_i m_i w_i} }
 $$
 @end tex
+The definitions of some of these operations are not universally useful.
+Mostly they were chosen to facilitate standard statistical
+computations within the NCO framework.
+We are open to redefining and or adding to the above. 
 
 At this time the weighted average option @samp{-w} does not work with
 the arithemtic operations @code{ttl}, @code{min}, and @code{max}.
@@ -2261,18 +2293,20 @@ than the number of time samples.
 The procedure to compute the spatial standard deviation of a field
 in a single file @file{in.nc} involves three steps.
 @example
-ncwa -O -v prs_sfc -a lat,lon in.nc out.nc
-ncdiff -O -v prs_sfc in.nc out.nc out.nc
-ncwa -O -y rmssdn -v prs_sfc -a lat,lon out.nc out.nc
+ncwa -O -v prs_sfc,gw -a lat,lon -w gw in.nc out.nc
+ncdiff -O -v prs_sfc,gw in.nc out.nc out.nc
+ncwa -O -y rmssdn -v prs_sfc -a lat,lon -w gw out.nc out.nc
 @end example
-First the spatial mean values are written to the output file. 
-This output file is then overwritten with the gridpoint deviations from 
+First the appropriately weighted (with @code{-w gw}) spatial mean values
+are written to the output file.  
+This example includes the use of a weighted variable specified with
+@code{-w gw}. 
+When using weights variables to compute standard deviations one must
+remember to include the weights in the output file.
+The output file is then overwritten with the gridpoint deviations from 
 the spatial mean.
-Finally the root-mean-square of the spatial deviations is taken. 
-Note that this procedure only works if none of the dimensions are on an
-irregular grid such that require weighting (e.g., @code{-w gw}).
-Irregular grids would require appropriate weighting in steps one and
-three, but @code{ncwa} does currently support that.
+Finally the root-mean-square of the appropriately weighted spatial
+deviations is taken.  
 
 The procedure to compute the standard deviation of a time-series across
 multiple files involves one extra step since all the input must first be
@@ -3382,6 +3416,7 @@ multidimensional arrays of characters representing fixed length strings
 ncks -H -s "%c" -v fl_nm_arr in.nc
 @end example
 @noindent
+@cindex @code{core dump}
 Using the @code{%s} format code on strings which are not NUL-terminated 
 (and thus not technically strings) is likely to result in a core dump.
 
@@ -3928,7 +3963,7 @@ Option @samp{-N} prevents @code{ncwa} from dividing the weighted sum of
 the variable (the numerator in the averaging expression) by the weighted
 sum of the weights (the denominator in the averaging expression). 
 Thus @samp{-N} tells @code{ncwa} to return just the numerator of the
-above expression. 
+arithmetic expression defining the operation (@pxref{Operation Types}). 
 
 @ignore
 The second normalization option tells @code{ncwa} to multiply the
