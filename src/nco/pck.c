@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.9 2000-09-05 20:40:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.10 2000-09-20 16:13:05 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -136,7 +136,7 @@ pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 
   return var->pck_dsk;
   
-} /* end pck_dsk_inq */
+} /* end pck_dsk_inq() */
 
 var_sct * /* O [sct] Unpacked variable */
 var_upk /* [fnc] Unpack variable in memory */
@@ -170,7 +170,7 @@ var_upk /* [fnc] Unpack variable in memory */
     var=var_conform_type(scl_fct->type,var);
     /* Multiply var by scale_factor */
     (void)var_multiply(scl_fct->type,var->sz,var->has_mss_val,var->mss_val,scl_fct->val,var->val);
-  } /* endif */
+  } /* endif has_scl_fct */
 
   if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
     var->add_fst.vp=(void *)nco_malloc(nctypelen(var->typ_upk));
@@ -183,7 +183,7 @@ var_upk /* [fnc] Unpack variable in memory */
     (void)var_add(add_fst->type,var->sz,var->has_mss_val,var->mss_val,var->tally,add_fst->val,var->val);
     /* Reset tally buffer to zero for any subsequent arithmetic */
     (void)zero_long(var->sz,var->tally);
-  } /* endif */
+  } /* endif has_add_fst */
 
   if((var->has_scl_fct || var->has_add_fst) && (var->sz == 1L && var->type == NC_DOUBLE)){
     (void)fprintf(stdout,"%s: DEBUG var_upk() reports unpacked var->val.dp[0]=%g\n",prg_nm_get(),var->val.dp[0]);
@@ -201,7 +201,7 @@ var_upk /* [fnc] Unpack variable in memory */
 
   return var;
   
-} /* end var_upk */
+} /* end var_upk() */
 
 var_sct * /* O [sct] Packed variable */
 var_pck /* [fnc] Pack variable in memory */
@@ -405,4 +405,46 @@ var_pck /* [fnc] Pack variable in memory */
 
   return var;
   
-} /* end var_pck */
+} /* end var_pck() */
+
+var_sct * /* O [sct] Packed variable */
+nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to disk */
+(var_sct *var, /* I/O [sct] Variable to be packed */
+ int nco_pck_typ) /* [enm] Packing operation type */
+{
+  /* Purpose: Pack variable in memory and write packing attributes to disk */
+  
+  char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
+  char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
+
+  bool USE_EXISTING_PCK=False; /* I [flg] Use existing packing scale_factor and add_offset */
+
+  switch(nco_pck_typ){
+  case nco_pck_xst_xst_att:
+  case nco_pck_all_xst_att:
+    USE_EXISTING_PCK=True; /* I [flg] Use existing packing scale_factor and add_offset */
+    break;
+  case nco_pck_xst_new_att:
+  case nco_pck_all_new_att:
+    USE_EXISTING_PCK=False; /* I [flg] Use existing packing scale_factor and add_offset */
+    break;
+  case nco_pck_upk:
+  default:
+    break;
+  } /* end switch */
+
+  /* Pack variable */
+  if(var->xrf->pck_dsk && !var->xrf->pck_ram) var=var_pck(var,var->typ_pck,USE_EXISTING_PCK);
+
+  /* Write/overwrite scale_factor and add_offset attributes */
+  if(var->has_scl_fct){ /* [flg] Valid scale_factor attribute exists */
+    ;
+  } /* endif has_scl_fct */
+
+  if(var->has_add_fst){ /* [flg] Valid add_offset attribute exists */
+    ;
+  } /* endif has_add_fst */
+  
+  return var;
+  
+} /* end nco_put_var_pck() */

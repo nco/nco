@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.42 2000-09-05 20:40:09 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.43 2000-09-20 16:13:05 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -98,9 +98,10 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.42 2000-09-05 20:40:09 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.42 $";
-  char *nco_op_typ_sng=NULL_CEWI; /* Operation type */
+  char CVS_Id[]="$Id: ncra.c,v 1.43 2000-09-20 16:13:05 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.43 $";
+  char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
+  char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -123,8 +124,10 @@ main(int argc,char **argv)
   int nbr_dmn_xtr;
   int nbr_fl=0;
   int opt;
+  int rcd=0; /* [rcd] Return code */
   int rec_dmn_id=-1;
-  int nco_op_typ=nco_op_avg; /* Default operation is averaging */
+  int nco_op_typ=nco_op_avg; /* [enm] Default operation is averaging */
+  int nco_pck_typ=nco_pck_nil; /* [enm] Default packing is none */
   
   lmt_sct *lmt=NULL_CEWI;
   lmt_sct lmt_rec;
@@ -156,7 +159,7 @@ main(int argc,char **argv)
   prg_nm=prg_prs(argv[0],&prg);
 
   /* Parse command line arguments */
-  opt_sng="ACcD:d:Fhl:n:Op:rRv:xy:";
+  opt_sng="ACcD:d:Fhl:n:Op:P:rRv:xy:";
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
@@ -197,6 +200,10 @@ main(int argc,char **argv)
       break;
     case 'p': /* Common file path */
       fl_pth=optarg;
+      break;
+    case 'P': /* Packing type */
+      nco_pck_typ_sng=(char *)strdup(optarg);
+      nco_pck_typ=nco_pck_typ_get(nco_pck_typ_sng);
       break;
     case 'R': /* Toggle removal of remotely-retrieved-files. Default is True. */
       REMOVE_REMOTE_FILES_AFTER_PROCESSING=!REMOVE_REMOTE_FILES_AFTER_PROCESSING;
@@ -358,6 +365,9 @@ main(int argc,char **argv)
     } /* end if */
   } /* end loop over idx */
   
+  /* Print introductory thread information */
+  if(dbg_lvl > 0) rcd+=nco_omp_ini();
+  
   /* Loop over input files */
   for(idx_fl=0;idx_fl<nbr_fl;idx_fl++){
     /* Parse filename */
@@ -386,8 +396,11 @@ main(int argc,char **argv)
       for(idx_rec=lmt_rec.srt;idx_rec<=lmt_rec.end;idx_rec+=lmt_rec.srd){
 	/* Process all variables in current record */
 	if(dbg_lvl > 1) (void)fprintf(stderr,"Record %ld of %s is input record %ld\n",idx_rec,fl_in,idx_rec_out);
+#ifdef OMP /* OpenMP */
+#pragma omp parallel for private(idx) shared(nbr_var_prc,dbg_lvl,var_prc,idx_rec,in_id,prg,nco_op_typ,var_prc_out,idx_rec_out,rcd,ARM_FORMAT,out_id,fl_in,fl_out)
+#endif /* not OpenMP */
 	for(idx=0;idx<nbr_var_prc;idx++){
-	  if(dbg_lvl > 2) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
+	  if(dbg_lvl > 2) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	  if(dbg_lvl > 0) (void)fflush(stderr);
 	  /* Update hyperslab start indices to current record for each variable */
 	  var_prc[idx]->srt[0]=idx_rec;
@@ -420,7 +433,7 @@ main(int argc,char **argv)
 	  if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,idx_rec_out);
 	  /* Free current input buffer */
 	  (void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
-	} /* end loop over variables */
+	} /* end (multithreaded) loop over variables */
 	idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
 	if(dbg_lvl > 2) (void)fprintf(stderr,"\n");
       } /* end loop over idx_rec */
@@ -437,9 +450,11 @@ main(int argc,char **argv)
       } /* end if */
       /* End of ncra, ncrcat section */
     }else{ /* ncea */
-      /* Process all variables in current file */
-      for(idx=0;idx<nbr_var_prc;idx++){
-	if(dbg_lvl > 2) (void)fprintf(stderr,"%s, ",var[idx]->nm);
+#ifdef OMP /* OpenMP */
+#pragma omp parallel for private(idx) shared(nbr_var_prc,dbg_lvl,var_prc,in_id,nco_op_typ,var_prc_out,idx_fl,rcd)
+#endif /* not OpenMP */
+      for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
+	if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
 	if(dbg_lvl > 0) (void)fflush(stderr);
 	/* Retrieve variable from disk into memory */
 	(void)var_get(in_id,var_prc[idx]);
@@ -447,7 +462,7 @@ main(int argc,char **argv)
 	/* Convert char, short, long, int types to doubles before arithmetic */
 	var_prc[idx]=nco_typ_cnv_rth(var_prc[idx],nco_op_typ);
 	/* Output variable type is "sticky" so only convert on first record */
-	if(idx_rec_out == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
+	if(idx_fl == 0) var_prc_out[idx]=nco_typ_cnv_rth(var_prc_out[idx],nco_op_typ);
 	/* Convert var_prc to type of var_prc_out in case type of variable on disk has changed */
 	var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
 	/* Perform arithmetic operations: avg, min, max, ttl, ... */ /* Note: idx_fl not idx_rec_out! */
@@ -455,7 +470,7 @@ main(int argc,char **argv)
 	
 	/* Free current input buffer */
 	(void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
-      } /* end loop over idx */
+      } /* end (multithreaded) loop over idx */
     } /* end else */
 
     if(dbg_lvl > 1) (void)fprintf(stderr,"\n");
@@ -516,11 +531,8 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_var_prc;idx++){
       /* Revert to original type if required */
       var_prc_out[idx]=nco_cnv_var_typ_dsk(var_prc_out[idx]);
-      if(dbg_lvl_get() == 3){
-	/* Packing/Unpacking */
-	if(var_prc_out[idx]->xrf->pck_dsk && !var_prc_out[idx]->xrf->pck_ram) var_prc_out[idx]=var_pck(var_prc_out[idx],NC_SHORT,False);
-	/* fxm: must write/overwrite scale_factor and add_offset attributes */
-      } /* endif debug */
+      /* Packing/Unpacking */
+      if(nco_pck_typ == nco_pck_all_new_att) var_prc_out[idx]=nco_put_var_pck(var_prc_out[idx],nco_pck_typ);
       if(var_prc_out[idx]->nbr_dim == 0){
 	(void)ncvarput1(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->val.vp);
       }else{ /* end if variable is a scalar */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.57 2000-09-19 22:47:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.58 2000-09-20 16:13:05 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.57 2000-09-19 22:47:01 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.57 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.58 2000-09-20 16:13:05 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.58 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -143,6 +143,7 @@ main(int argc,char **argv)
   int nco_op_typ=nco_op_avg; /* Operation type */
   int opt;
   int op_typ_rlt=0; /* Option o */
+  int rcd=0; /* [rcd] Return code */
   int rec_dmn_id=-1;
   
   lmt_sct *lmt;
@@ -540,17 +541,8 @@ main(int argc,char **argv)
       (void)var_get(in_id,msk);
     } /* end if */
 
-  if(dbg_lvl > 0){
-#ifdef OMP /* OpenMP */
-#pragma omp parallel
-    { /* begin OpenMP parallel */
-#pragma omp master 
-      (void)fprintf(stderr,"%s: INFO OpenMP multi-threading using %d threads\n",prg_nm_get(),omp_get_num_threads());
-    } /* end OpenMP parallel */
-#else /* not OpenMP */
-    (void)fprintf(stderr,"%s: INFO Not attempting OpenMP multi-threading\n",prg_nm_get());
-#endif /* not OpenMP */
-  } /* endif debug */
+    /* Print introductory thread information */
+    if(dbg_lvl > 0) rcd+=nco_omp_ini();
 
   /* 
      cd ~/nco/bld;make OPTS=D OMP=1;cd -
@@ -581,16 +573,14 @@ main(int argc,char **argv)
   */
 #ifdef OMP /* OpenMP */
 /* Adding a default(none) clause causes a weird error: "Error: Variable __iob used without scope declaration in a parallel region with DEFAULT(NONE) scope". This appears to be a compiler bug. */
-#pragma omp parallel for firstprivate(msk,msk_out,wgt,wgt_out,wgt_avg) private(idx,DO_CONFORM_MSK,DO_CONFORM_WGT) shared(nbr_var_prc,dbg_lvl,var_prc,var_prc_out,in_id,nco_op_typ,msk_nm,WGT_MSK_CRD_VAR,MUST_CONFORM,msk_val,op_typ_rlt,wgt_nm,dmn_avg,nbr_dmn_avg,NRM_BY_DNM,out_id)
+  /* OpenMP notes:
+     firstprivate(): msk_out and wgt_out must be NULL on first call to var_conform_dim()
+     shared(): msk and wgt are not altered within loop
+     private(): wgt_avg does not need initialization */
+#pragma omp parallel for firstprivate(msk_out,wgt_out) private(idx,DO_CONFORM_MSK,DO_CONFORM_WGT,wgt_avg) shared(nbr_var_prc,dbg_lvl,var_prc,var_prc_out,in_id,nco_op_typ,msk_nm,WGT_MSK_CRD_VAR,MUST_CONFORM,msk_val,op_typ_rlt,wgt_nm,dmn_avg,nbr_dmn_avg,NRM_BY_DNM,out_id,wgt,msk,MULTIPLY_BY_TALLY,prg_nm rcd)
 #endif /* not OpenMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
-      if(dbg_lvl > 0){
-#ifdef OMP /* OpenMP */
-	(void)fprintf(stderr,"%s: INFO Thread #%d processing var_prc[%d] = \"%s\"\n",prg_nm_get(),omp_get_thread_num(),idx,var_prc[idx]->nm);
-#else /* not OpenMP */
-	(void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
-#endif /* not OpenMP */
-      } /* endif debug */
+      if(dbg_lvl > 0) rcd+=nco_var_prc_crr_prn(idx,var_prc[idx]->nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
       
       /* Allocate and, if necesssary, initialize accumulation space for all processed variables */
@@ -645,11 +635,7 @@ main(int argc,char **argv)
 	   for weights that do already conform to var_prc. TODO #114. */
 	wgt_out=var_conform_dim(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
 	wgt_out=var_conform_type(var_prc[idx]->type,wgt_out);
-	/* fxm: can weighting be performed after avg,sqravg,rms etc.? 
-	   Unless weighting is done last then weights will screw up on non-linear
-	   transformations like rms, sqrt, which should be applied to the variables
-	   before weighting and reduction. Until this is fixed sdn on spatial regions
-	   is basically worthless because, e.g., gaussian weights cannot be applied */
+	/* Weight after any initial non-linear operation so, e.g., variable is squared but not weights */
 	/* Weight variable by taking product of weight and variable */
 	(void)var_multiply(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,wgt_out->val,var_prc[idx]->val);
       } /* end if */
@@ -718,7 +704,7 @@ main(int argc,char **argv)
 	} /* endif */
 	/* Divide numerator by denominator */
 	/* Diagnose common PEBCAK before it occurs core dumps */
-	if(var_prc_out[idx]->sz == 1 && var_prc_out[idx]->type == NC_LONG && var_prc_out[idx]->val.lp[0] == 0){
+	if(var_prc_out[idx]->sz == 1L && var_prc_out[idx]->type == NC_LONG && var_prc_out[idx]->val.lp[0] == 0){
 	  (void)fprintf(stdout,"%s: ERROR Weight in denominator weight = 0.0, will cause SIGFPE\n%s: HINT Sum of masked, averaged weights must be non-zero\n%s: HINT A possible workaround is to remove variable \"%s\" from output file using \"%s -x -v %s ...\"\n%s: Expecting core dump...now!\n",prg_nm,prg_nm,prg_nm,var_prc_out[idx]->nm,prg_nm,var_prc_out[idx]->nm,prg_nm);
 	} /* end if */
 	/* Divide numerator by masked, averaged, weights */
@@ -781,13 +767,13 @@ main(int argc,char **argv)
       default:
 	break;
       } /* end switch */
-      /* Free tallying buffer */
+      /* Free tallying buffer: Do not check if == NULL so will SIGSEGV on bugs */
       (void)free(var_prc_out[idx]->tally); var_prc_out[idx]->tally=NULL;
       
       /* Revert to original type if required */
       var_prc_out[idx]=nco_cnv_var_typ_dsk(var_prc_out[idx]);
       
-      /* Free current input buffer */
+      /* Free current input buffer: Do not check if == NULL so will SIGSEGV on bugs */
       (void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;	
       /* Copy average to output file and free averaging buffer */
       if(var_prc_out[idx]->nbr_dim == 0){
@@ -795,8 +781,7 @@ main(int argc,char **argv)
       }else{ /* end if variable is scalar */
 	(void)ncvarput(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp);
       } /* end if variable is array */
-      (void)free(var_prc_out[idx]->val.vp);
-      var_prc_out[idx]->val.vp=NULL;
+      (void)free(var_prc_out[idx]->val.vp); var_prc_out[idx]->val.vp=NULL;
       
     } /* end (multi-threaded) loop over idx */
     

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.47 2000-09-18 16:33:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.48 2000-09-20 16:13:05 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -123,7 +123,8 @@ enum nco_pck_typ{
   nco_pck_all_new_att, /* 1, Pack all variables, always generating new packing attributes */
   nco_pck_xst_xst_att, /* 2, Pack existing packed variables, keeping existing packing attributes if any */
   nco_pck_xst_new_att, /* 3, Pack existing packed variables, always generating new packing attributes */
-  nco_pck_upk /* 4, Unpack all packed variables */
+  nco_pck_upk, /* 4, Unpack all packed variables */
+  nco_pck_nil /* 5, Do not think about packing */
 }; /* end nco_pck_typ enum */
 
 enum nco_op_typ{
@@ -412,6 +413,7 @@ extern int mss_val_get(int,var_sct *);
 extern int nd2endm(int,int);
 extern int op_prs_rlt(char *);
 extern int nco_op_typ_get(char *);
+extern int nco_pck_typ_get(char *);
 extern int prg_get(void);
 extern lmt_sct *lmt_prs(int,char **);
 extern lmt_sct lmt_sct_mk(int,int,lmt_sct *,int,bool);
@@ -552,6 +554,19 @@ double /* O [frc] Double precision representation of var->val.?p[0] */
 ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar double */
 (ptr_unn val, /* I [sct] Pointer union to variable values */
  nc_type type); /* I [enm] Type of values pointed to by pointer union */
+
+int /* O [enm] Return code */
+nco_omp_ini(); /* [fnc] Print introductory thread information */
+
+int /* O [enm] Return code */
+nco_var_prc_crr_prn /* [fnc] Print name of current variable */
+(int idx, /* I [idx] Index of current variable */
+ char *var_nm); /* I [sng] Variable name */
+
+var_sct * /* O [sct] Packed variable */
+nco_put_var_pck /* [fnc] Pack variable in memory and write packing attributes to disk */
+(var_sct *var, /* I/O [sct] Variable to be packed */
+ int nco_pck_typ); /* [enm] Packing operation type */
 
 #endif /* NC_H */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.54 2000-08-29 20:57:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.55 2000-09-20 16:13:05 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -56,6 +56,11 @@
 #include <arpa/nameser.h>       /* needed for _res */
 #include <resolv.h>             /* Internet structures for _res */
 #endif
+
+/* 3rd party vendors */
+#ifdef OMP /* OpenMP */
+#include <omp.h> /* OpenMP pragmas */
+#endif /* not OpenMP */
 
 /* I'm only keeping these netCDF include files around because I'm worried that 
    function prototypes in nc.h are needed here. Eventually prototypes for these
@@ -363,28 +368,28 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
       int fl_nm_sfx_len=0;
       
       /* Parse abbreviation list analogously to CCM Processor ICP "NINTAP" */
-      if(nbr_fl != NULL) *nbr_fl=atoi(fl_lst_abb[0]);
+      if(nbr_fl != NULL) *nbr_fl=(int)strtol(fl_lst_abb[0],(char **)NULL,10);
       
       if(nbr_abb_arg > 1){
-	fl_nm_nbr_dgt=atoi(fl_lst_abb[1]);
+	fl_nm_nbr_dgt=(int)strtol(fl_lst_abb[1],(char **)NULL,10);
       }else{
 	fl_nm_nbr_dgt=3;
       }/* end if */
       
       if(nbr_abb_arg > 2){
-	fl_nm_nbr_ncr=atoi(fl_lst_abb[2]);
+	fl_nm_nbr_ncr=(int)strtol(fl_lst_abb[2],(char **)NULL,10);
       }else{
 	fl_nm_nbr_ncr=1;
       } /* end if */
       
       if(nbr_abb_arg > 3){
-	fl_nm_nbr_max=atoi(fl_lst_abb[3]);
+	fl_nm_nbr_max=(int)strtol(fl_lst_abb[3],(char **)NULL,10);
       }else{
 	fl_nm_nbr_max=0;
       } /* end if */
       
       if(nbr_abb_arg > 4){
-	fl_nm_nbr_min=atoi(fl_lst_abb[4]);
+	fl_nm_nbr_min=(int)strtol(fl_lst_abb[4],(char **)NULL,10);
       }else{
 	fl_nm_nbr_min=1;
       } /* end if */
@@ -404,7 +409,7 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
       fl_nm_nbr_sng=(char *)nco_malloc((fl_nm_nbr_dgt+1)*sizeof(char));
       fl_nm_nbr_sng=strncpy(fl_nm_nbr_sng,fl_nm_1st_dgt,fl_nm_nbr_dgt);
       fl_nm_nbr_sng[fl_nm_nbr_dgt]='\0';
-      fl_nm_nbr_crr=atoi(fl_nm_nbr_sng);
+      fl_nm_nbr_crr=(int)strtol(fl_nm_nbr_sng,(char **)NULL,10);
       (void)sprintf(fl_nm_nbr_sng_fmt,"%%0%dd",fl_nm_nbr_dgt);
 
       /* First filename is always specified on command line anyway... */
@@ -1343,3 +1348,39 @@ void *nco_realloc(void *ptr,size_t size)
   } /* endif */
   return new_ptr; /* [ptr] Pointer to new buffer */
 } /* nco_realloc() */
+
+int /* O [enm] Return code */
+nco_omp_ini() /* [fnc] Print introductory thread information */
+{
+  /* Purpose: Print introductory thread information */
+  int rcd=0; /* [rcd] Return code */
+
+#ifdef OMP /* OpenMP */
+#pragma omp parallel
+  { /* begin OpenMP parallel */
+#pragma omp master 
+    (void)fprintf(stderr,"%s: INFO OpenMP multi-threading using %d threads\n",prg_nm_get(),omp_get_num_threads());
+  } /* end OpenMP parallel */
+#else /* not OpenMP */
+  (void)fprintf(stderr,"%s: INFO Not attempting OpenMP multi-threading\n",prg_nm_get());
+#endif /* not OpenMP */
+
+  return rcd;
+} /* end nco_omp_ini() */
+
+int /* O [enm] Return code */
+nco_var_prc_crr_prn /* [fnc] Print name of current variable */
+(int idx, /* I [idx] Index of current variable */
+ char *var_nm) /* I [sng] Variable name */
+{
+  /* Purpose: Print name of current variable */
+  int rcd=0; /* [rcd] Return code */
+
+#ifdef OMP /* OpenMP */
+  (void)fprintf(stderr,"%s: INFO Thread #%d processing var_prc[%d] = \"%s\"\n",prg_nm_get(),omp_get_thread_num(),idx,var_nm);
+#else /* not OpenMP */
+  (void)fprintf(stderr,"%s, ",var_nm);
+#endif /* not OpenMP */
+
+  return rcd;
+} /* end nco_var_prc_crr_prn() */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.93 2000-09-18 16:33:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.94 2000-09-20 16:13:05 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -45,12 +45,15 @@
 #include <sys/stat.h>           /* stat() */
 #include <time.h>               /* machine time */
 #include <unistd.h>             /* POSIX stuff */
-
-#include <netcdf.h>             /* netCDF definitions */
-#include "nc.h"                 /* netCDF operator universal def'ns */
 /* #include <errno.h> */            /* errno */
 /* #include <malloc.h>    */        /* malloc() stuff */
 #include <assert.h>             /* assert() debugging macro */
+
+/* 3rd party vendors */
+#include <netcdf.h>             /* netCDF definitions */
+
+/* Personal headers */
+#include "nc.h"                 /* netCDF operator universal def'ns */
 
 void 
 nc_err_exit(int rcd,char *msg)
@@ -1958,7 +1961,7 @@ var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
 
 	/* Rank of output variable may have to be reduced */
 	for(idx_dim=0;idx_dim<var[idx]->nbr_dim;idx_dim++){
-	  /* Is this dimension allowed in the output file? */
+	  /* Is dimension allowed in output file? */
 	  for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
 	    if(var[idx]->xrf->dim[idx_dim]->id == dmn_ncl[idx_ncl]->xrf->id) break;
 	  } /* end loop over idx_ncl */
@@ -1995,6 +1998,23 @@ var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
     */
 
 #ifdef FALSE
+    /* Set nco_pck_typ based on program */
+    switch(prg){
+    case ncea:
+      nco_pck_typ=nco_pck_all_new_att;
+      break;
+    case ncap:
+    case ncra:
+    case ncdiff:
+    case ncflint:
+    case ncwa:
+    case ncrcat:
+    case ncecat:
+    default:
+      nco_pck_typ=nco_pck_nil;
+      break;
+    } /* end switch */
+
     switch(nco_pck_typ){
     case nco_pck_all_xst_att:
     case nco_pck_all_new_att:
@@ -2311,16 +2331,16 @@ var_get(int nc_id,var_sct *var)
 
 } /* end var_get() */
 
-var_sct *
+var_sct * /* O [sct] wgt_out that conforms to var  */
 var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,bool *DO_CONFORM)
      /* fxm: TODO #114. Fix var_conform_dim() so returned weight always has same size tally array as template variable */
 /*  
    var_sct *var: I [ptr] Pointer to variable structure to serve as template
    var_sct *wgt: I [ptr] Pointer to variable structure to make conform to var
-   var_sct *wgt_crr: I/O [ptr] pointer to existing conforming variable structure (if any) (may be destroyed)
+   var_sct *wgt_crr: I/O [ptr] pointer to existing conforming variable structure, if any (destroyed when does not conform to var)
    bool MUST_CONFORM; I [flg] Must wgt and var must conform?
    bool *DO_CONFORM; O [flg] Did wgt and var conform?
-   var_sct *var_conform_dim(): O [ptr] Pointer to conforming variable structure
+   wgt_out var_sct *var_conform_dim(): O [sct] Pointer to conforming variable structure
 */
 {
   /* Purpose: Stretch second variable to match dimensions of first variable
@@ -2450,7 +2470,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
 	} /* endif */
       } /* end if */
       if(USE_DUMMY_WGT){
-	/* Variables do not truly conform, but this might be OK, depending on the application, so set the conform flag to false and ... */
+	/* Variables do not truly conform, but this might be OK, depending on the application, so set DO_CONFORM flag to false and ... */
 	*DO_CONFORM=False;
 	/* ... return a dummy weight of 1.0, which allows program logic to pretend variable is weighted, but does not change answers */ 
 	wgt_out=var_dpl(var);
@@ -5966,6 +5986,18 @@ nco_op_typ_get(char *nco_op_sng)
 } /* end nco_op_typ_get() */
 
 int
+nco_pck_typ_get(char *nco_pck_sng)
+{
+  /* Purpose: Process '-P' command line argument
+     Convert user-specified string to packing operation type 
+     Return nco_pck_nil by default */
+  /* fxm: add the rest of the types */
+  if(!strcmp(nco_pck_sng,"all")) return nco_pck_all_xst_att;
+
+  return nco_pck_nil;
+} /* end nco_pck_typ_get() */
+
+int
 op_prs_rlt(char *op_sng)
 /* 
    char *op_sng: I string containing Fortran representation of a reltional operator ("eq","lt"...)
@@ -6341,5 +6373,4 @@ ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar dou
   return scl_dbl;
 
 } /* end ptr_unn_2_scl_dbl() */
-
 

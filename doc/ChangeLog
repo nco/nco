@@ -1,4 +1,13 @@
+2000-09-20  Charlie Zender  <zender@uci.edu>
+
+	* Jim Rosinski and Stacy Walters have both pointed out that netCDF
+	is not thread-safe. Therefore the OpenMP implementation is bound
+	to fail until critical locks are added.
+
 2000-09-19  Charlie Zender  <zender@uci.edu>
+
+	* Added OpenMP pragmas to ncea,ncra,ncrcat. They probably don't
+	work either.
 
 	* Multi-threaded version of ncwa averages variables in T42 file
 	correctly sometimes, but also incorrectly. Currently unpredictable 
