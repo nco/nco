@@ -4,7 +4,7 @@
    cd ~/nco/bld
 
    Linux:
-   gcc -I../src/nco -o libnco_tst libnco_tst.c -L${MY_LIB_DIR} -lnco-2.9.6
+   gcc -I../src/nco -o libnco_tst libnco_tst.c -L${MY_LIB_DIR} -lnco
 
    AIX:
    All at once:
@@ -26,8 +26,8 @@
 #include "libnco.h" /* netCDF Operator (NCO) library */
 int main()
 {
-  const char * const CVS_Id="$Id: libnco_tst.c,v 1.1 2004-06-16 22:34:42 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.1 $";
+  const char * const CVS_Id="$Id: libnco_tst.c,v 1.2 2004-06-16 22:39:44 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.2 $";
   (void)copyright_prn(CVS_Id,CVS_Revision);
 }
 
