@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.142 2002-05-14 00:57:45 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.143 2002-05-23 17:56:37 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -43,6 +43,8 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 27. Write and implement ncap_var_var_pow(), currently only ncap_var_att_pow() and ncap_att_att_pow work
 28. Make provision for pack() and unpack() to copy all attributes except scale_factor and add_offset from disk into new variable on disk?
 29. Rewrite var_pck() to use var_scv() arithmetic operations
+30. Allow -S to specify multiple input scripts to be sequentially parsed
+31. Put globals fl_spt_crr,ncl_dpt_crr,ln_nbr_crr in prs_arg or remove fl_spt from it
 
 Highest priority NCO-wide items that You can help with:
 41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.24 2002-05-19 16:06:11 zender Exp $ -*-C-*-
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.25 2002-05-23 17:56:37 zender Exp $ -*-C-*-
 
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 
@@ -9,7 +9,7 @@
    Command-line definitions should omit semi-colons, e.g., -s "foo=bar"
    Whitespace (blank lines, tabs) is ignored
    Nested files allowed with #include "file.nco" syntax */
-//#include /home/zender/nco/data/foo.in
+#include /home/zender/nco/data/foo.in
 
 /* Usage:
    ncap -O -D 1 -v -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc

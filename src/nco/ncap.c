@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.71 2002-05-20 06:11:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.72 2002-05-23 17:56:37 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -44,7 +44,7 @@
 /* Global variables */
 int ncl_dpt_crr=0; /* [nbr] Depth of current #include file (incremented in ncap.l) */
 long *ln_nbr_crr; /* [cnt] Line number (incremented in ncap.l) */
-char *fl_spt_glb; /* [fl] Script file */
+char **fl_spt_glb; /* [fl] Script file */
 
 int 
 main(int argc,char **argv)
@@ -71,7 +71,7 @@ main(int argc,char **argv)
   char **var_lst_in=NULL_CEWI;
   char **fl_lst_abb=NULL; /* Option n */
   char **fl_lst_in;
-  char *fl_spt=NULL; /* Option s */
+  char *fl_spt_usr=NULL; /* Option s */
   char *fl_in=NULL;
   char *fl_pth_lcl=NULL; /* Option l */
   char *lmt_arg[NC_MAX_DIMS];
@@ -84,8 +84,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.71 2002-05-20 06:11:10 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.71 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.72 2002-05-23 17:56:37 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.72 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -222,11 +222,11 @@ main(int argc,char **argv)
       nco_exit(EXIT_SUCCESS);
       break;
     case 's': /* Copy command script for later processing */
-      spt_arg[nbr_spt++]=strdup(optarg);
+      spt_arg[nbr_spt++]=(char *)strdup(optarg);
       if(nbr_spt == NCAP_SPT_NBR_MAX-1) (void)fprintf(stderr,"%s: WARNING No more than %d script arguments allowed. TODO #24\n",prg_nm_get(),NCAP_SPT_NBR_MAX);
       break;
     case 'S': /* Read command script from file rather than from command line */
-      fl_spt=optarg;
+      fl_spt_usr=(char *)strdup(optarg);
       break;
     case 'v': /* Variables to extract/exclude */
       PROCESS_ALL_VARS=False;
@@ -300,7 +300,6 @@ main(int argc,char **argv)
   prs_arg.in_id=in_id; /* [id] Input data file ID */
   prs_arg.fl_out=NULL; /* [sng] Output data file */
   prs_arg.out_id=-1; /* [id] Output data file ID */
-  prs_arg.fl_spt=fl_spt; /* [fl] Instruction file to be parsed */
   prs_arg.att_lst=att_lst; /* [sct] Attributes in script */
   prs_arg.nbr_att=&nbr_att; /* [nbr] Number of attributes in script */
   prs_arg.dmn=dmn; /* [dmn] List of extracted dimensions */
@@ -314,11 +313,15 @@ main(int argc,char **argv)
   /* Initialize line counter */
   ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
   ln_nbr_crr[ncl_dpt_crr]=1; /* [cnt] Line number incremented in ncap.l */
+  /* Copy script file name to global variable */
+  fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1); 
+  fl_spt_glb[ncl_dpt_crr]=
+  fl_spt_glb[ncl_dpt_crr]=fl_spt_usr;
   /* Perform initial scan of input script to create three lists of variables:
-     list a: RHS variables present in input file
-     list b: LHS variables present in input file
-     list c: Variables of attributes on LHS which are present in input file 
-     list d: Dimensions defined in LHS subscripts */
+     lst_a: RHS variables present in input file
+     lst_b: LHS variables present in input file
+     lst_c: Variables of attributes on LHS which are present in input file 
+     lst_d: Dimensions defined in LHS subscripts */
   (void)ncap_ntl_scn(&prs_arg,spt_arg_cat,&xtr_lst_a,&nbr_lst_a,&xtr_lst_b,&nbr_lst_b,&xtr_lst_c,&nbr_lst_c,&xtr_lst_d,&nbr_lst_d);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
@@ -435,7 +438,6 @@ main(int argc,char **argv)
   prs_arg.in_id=in_id; /* [id] Input data file ID */
   prs_arg.fl_out=fl_out; /* [sng] Output data file */
   prs_arg.out_id=out_id; /* [id] Output data file ID */
-  prs_arg.fl_spt=fl_spt; /* [fl] Instruction file to be parsed */
   prs_arg.att_lst=att_lst; /* [sct] Attributes in script */
   prs_arg.nbr_att=&nbr_att; /* [nbr] Number of attributes in script */
   prs_arg.dmn=dmn_out; /* [dmn] List of extracted dimensions */
@@ -449,7 +451,7 @@ main(int argc,char **argv)
   /* Initialize line counter */
   ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
   ln_nbr_crr[ncl_dpt_crr]=1; /* [cnt] Line number incremented in ncap.l */
-  if(fl_spt == NULL){
+  if(fl_spt_usr == NULL){
     /* No script file specified, look for command-line scripts */
     if(nbr_spt == 0){
       (void)fprintf(stderr,"%s: ERROR no script file or command line scripts specified\n",prg_nm_get());
@@ -458,24 +460,25 @@ main(int argc,char **argv)
     } /* end if */
     
     /* Print all command line scripts */
-    if(dbg_lvl > 0){
+    if(dbg_lvl_get() > 0){
       for(idx=0;idx<nbr_spt;idx++) (void)fprintf(stderr,"spt_arg[%d] = %s\n",idx,spt_arg[idx]);
     } /* endif debug */
 
     /* Run parser on command line scripts */
-    fl_spt_glb="Command-line scripts";
+    fl_spt_usr=(char *)strdup("Command-line scripts");
     yy_scan_string(spt_arg_cat);
 
   }else{ /* ...endif command-line scripts, begin script file... */
 
     /* Open script file for reading */
-    if((yyin=fopen(fl_spt,"r")) == NULL){
-      (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt);
+    if((yyin=fopen(fl_spt_usr,"r")) == NULL){
+      (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt_usr);
       nco_exit(EXIT_FAILURE);
     } /* end if */
 
     /* Copy script file name to global variable */
-    fl_spt_glb=fl_spt;
+    fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1); 
+    fl_spt_glb[ncl_dpt_crr]=fl_spt_usr;
   } /* end else */
 
   /* Invoke parser */

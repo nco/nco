@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.139 2002-05-18 20:16:49 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.140 2002-05-23 17:56:36 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -270,14 +270,20 @@ FFLAGS := ${OMP_FLG} -qmaxmem=-1 -qarch=auto -qspillsize=2500
 FIXEDFLAGS := -qsuffix=f=f:cpp=F -qfixed=132
 FREEFLAGS := -qsuffix=f=f90:cpp=F90
 LD := ld
-# 20040422: -lC links to AIX C++ library which contains float intrinsics cosf()...
+# 20020422: -lC links to AIX C++ library which contains float intrinsics cosf()...
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm -lC
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 #LDFLAGS += -lxlf90 -lxlf
 endif
+ifneq (${null},$(findstring ux,${USER}))
+# 20020522: NPACI has GNU toolchain
+LEX := flex
+YACC := bison
+else
 LEX := lex
-LINT := lint
 YACC := yacc
+endif
+LINT := lint
 ifeq (${OPTS},O)
  CFLAGS += -O
  FFLAGS += -O -NS2000 -qfixed=132

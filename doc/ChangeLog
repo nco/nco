@@ -1,3 +1,18 @@
+2002-05-23  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_4_2
+	Changes since nco-2_4_1: #include file mechanism works,
+	AT&T lex-compatibility broken by using flex <EOF> rules
+
+	* Fixed #including file mechanism, generalized line counting and
+	file name storage
+
+2002-05-22  Charlie Zender  <zender@uci.edu>
+
+	* Realized that AIX lex does not support <EOF> like flex
+
+	* Ported to NPACI environment
+
 2002-05-20  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_4_1

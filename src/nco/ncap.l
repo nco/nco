@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.51 2002-05-20 06:11:10 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.52 2002-05-23 17:56:37 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -46,6 +46,7 @@
   /* Global variables */
   extern int ncl_dpt_crr; /* [nbr] Depth of current #include file (declared in ncap.c) */
   extern long *ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
+  extern char **fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
 
   /* File scope variables */
   /* fxm: turn arbitrary size into pre-processor token */
@@ -89,15 +90,20 @@
     (void)fprintf(stderr,"%s: ERROR File %s nesting depth of %d is too deep",prg_nm_get(),yytext,ncl_dpt_crr);
     nco_exit(EXIT_FAILURE);
   } /* endif */
-  if(dbg_lvl_get() >= 0) (void)fprintf(stderr,"%s: WARNING Reading #include'd file %s, descending from nesting depth %d to depth %d\n",prg_nm_get(),yytext,ncl_dpt_crr,ncl_dpt_crr+1);
+  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO Will descend from file %s at nesting depth %d to #include'd file %s at depth %d\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,yytext,ncl_dpt_crr+1);
   /* Put current input buffer on stack */
   ncl_stk[ncl_dpt_crr]=YY_CURRENT_BUFFER; 
   /* Increment nesting level */
   ncl_dpt_crr++;
   /* Allocate another entry in line counter array */
   ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
-  if((yyin=fopen(yytext,"r")) == NULL){
-    (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),yytext);
+  /* Initialize line number counter for new file */
+  ln_nbr_crr[ncl_dpt_crr]=1;
+  /* Store file name for diagnostics */
+  fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1); 
+  fl_spt_glb[ncl_dpt_crr]=(char *)strdup(yytext);
+  if((yyin=fopen(fl_spt_glb[ncl_dpt_crr],"r")) == NULL){
+    (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr]);
     nco_exit(EXIT_FAILURE);
   } /* endif error */
 
@@ -109,14 +115,23 @@
 } /* end enter #include file */
 
 <<EOF>> {
+  /* NB: AT&T lex does not appear to have <EOF> rules */
+  bool NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL=True;
   /* Emerge from #include file if nested, else exit lexer */
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from nesting depth %d to depth %d\n",prg_nm_get(),ncl_dpt_crr,ncl_dpt_crr-1);
-  /* Decrement depth of nesting */
-  if(ncl_dpt_crr > 0) ncl_dpt_crr--; 
-  /* De-allocate entry from line counter array */
-  ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
-  if(ncl_dpt_crr == 0){
-    /* Emerged from first level, exit lexer */
+  if(ncl_dpt_crr > 0){
+    /* If we are exiting a #include'd script, delete its buffers */
+    NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL=False; /* [flg] */
+    if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from file %s at nesting depth %d to file %s at depth %d\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr],ncl_dpt_crr,fl_spt_glb[ncl_dpt_crr-1],ncl_dpt_crr-1);
+    fl_spt_glb[ncl_dpt_crr]=(char *)nco_free(fl_spt_glb[ncl_dpt_crr]);
+    /* Decrement depth of nesting */
+    ncl_dpt_crr--; 
+    /* De-allocate entry from line counter array */
+    ln_nbr_crr=(long *)nco_realloc(ln_nbr_crr,ncl_dpt_crr+1); 
+    /* De-allocate entry from script name array */
+    fl_spt_glb=(char **)nco_realloc(fl_spt_glb,ncl_dpt_crr+1); 
+  } /* endif #include'd script */
+  if(NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL){
+    /* Emerged from zeroth level, exit lexer */
     yyterminate();
   }else{
     /* Reclaim storage used by buffer just exited */
@@ -576,7 +591,7 @@ unpack/[ ]*\( {return UNPACK;}
   /* Allocate space for variable values 
      fxm: more efficient and safer to use calloc() and not fill with values? */
   if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type))) == NULL){
-    (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for var_LHS() in lexer\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
+    (void)fprintf(stderr,"%s: ERROR Unable to malloc() %ld*%d bytes for var_LHS() in lexer\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
     nco_exit(EXIT_FAILURE); 
   } /* end if */
   
@@ -658,9 +673,11 @@ yywrap(void)
      been redirected to new source, e.g., yyin points to new file. 
      Returning true (non-zero) means scanning is complete, so scanner terminates and returns 0 to calling function
      Default is to return true (one) when called---this terminates scanner */
-  /*  return (ncl_dpt_crr > 0) ? 0 : 1;*/
   if(dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: DEBUG yywrap() called with ncl_dpt_crr = %d\n",prg_nm_get(),ncl_dpt_crr);
-  return (ncl_dpt_crr <= 1) ? 1 : 0; 
+  /* comp.compilers thread 20020523 yywrap() should always return 1, even when
+     scanning a #include'd file
+     return (ncl_dpt_crr <= 1) ? 1 : 0; */
+  return 1;
 } /* end yywrap() */
 
 void 
@@ -679,10 +696,10 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
   /* Purpose: Scan command script, construct I/O lists
      Routine is called so that metadata contents of output file are known 
      before arithmetic processing
-     list a: RHS variables present in input file
-     list b: LHS variables present in input file
-     list c: Parent variables of LHS attributes in input file
-     list d: Dimensions required by LHS subscripts (casting) */
+     lst_a: RHS variables present in input file
+     lst_b: LHS variables present in input file
+     lst_c: Parent variables of LHS attributes in input file
+     lst_d: Dimensions required by LHS subscripts (casting) */
   
   /* 20020510: ncap_ntl_scn() was in ncap_utl.c but g++ (not gcc) would barf
      g++ complains that since YYSTYPE is defined in ncap.tab.h,
@@ -709,11 +726,11 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
   
   char *var_nm;  
 
-  int n_lst_a=0; /* [nbr] Number of elements in list a */
-  int n_lst_b=0;
-  int n_lst_c=0;
-  int n_lst_d=0;
-  int n_lst_t=0;
+  int lst_a_nbr=0; /* [nbr] Number of elements in list a */
+  int lst_b_nbr=0;
+  int lst_c_nbr=0;
+  int lst_d_nbr=0;
+  int lst_t_nbr=0;
   int tkn_crr=-1; /* [tkn] Current token, must initialize to non-zero value */
   int var_id;
   int var_idx;
@@ -730,8 +747,8 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
     yy_scan_string(spt_arg_cat);
   }else{
     /* Open script file for reading */
-    if((yyin=fopen(prs_arg->fl_spt,"r")) == NULL){
-      (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),prs_arg->fl_spt);
+    if((yyin=fopen(fl_spt_glb[ncl_dpt_crr],"r")) == NULL){
+      (void)fprintf(stderr,"%s: ERROR Unable to open script file %s\n",prg_nm_get(),fl_spt_glb[ncl_dpt_crr]);
       nco_exit(EXIT_FAILURE);
     } /* endif error */
   } /* endif input from script */
@@ -751,7 +768,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False; /* [flg] Variable is defined in list already */
 	/* Search RHS variables already known to be in input file... */
-	for(var_idx=0;var_idx<n_lst_a;var_idx++){
+	for(var_idx=0;var_idx<lst_a_nbr;var_idx++){
 	  /* ...if the new variable is found then... */
 	  if(!strcmp(lst_a[var_idx].nm,var_nm)){
 	    /* ...set the flag and... */
@@ -763,9 +780,9 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
 	/* If RHS variable information is already in list we are done */
 	if(match) break;
 	/* Otherwise add new RHS variable to list */
-	if(n_lst_a==0) lst_a=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct)); else lst_a=(nm_id_sct *)nco_realloc(lst_a,((n_lst_a+1)*sizeof(nm_id_sct)));
-	lst_a[n_lst_a].nm=strdup(var_nm);
-	lst_a[n_lst_a++].id=var_id;
+	if(lst_a_nbr==0) lst_a=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct)); else lst_a=(nm_id_sct *)nco_realloc(lst_a,((lst_a_nbr+1)*sizeof(nm_id_sct)));
+	lst_a[lst_a_nbr].nm=strdup(var_nm);
+	lst_a[lst_a_nbr++].id=var_id;
       } /* endif RHS variable is in input file */
       break; 
     case OUT_VAR: 
@@ -773,13 +790,13 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
       var_nm=lval.var_nm_LHS;
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
-	for(var_idx=0;var_idx<n_lst_b;var_idx++)
+	for(var_idx=0;var_idx<lst_b_nbr;var_idx++)
 	  if(!strcmp(lst_b[var_idx].nm,var_nm)){match=True; break;}
 	if(match) break;
-	if(n_lst_b == 0) lst_b=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
-	else lst_b=(nm_id_sct *)nco_realloc(lst_b,((n_lst_b+1)*sizeof(nm_id_sct)));
-	lst_b[n_lst_b].nm=strdup(var_nm);
-	lst_b[n_lst_b++].id=var_id;
+	if(lst_b_nbr == 0) lst_b=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
+	else lst_b=(nm_id_sct *)nco_realloc(lst_b,((lst_b_nbr+1)*sizeof(nm_id_sct)));
+	lst_b[lst_b_nbr].nm=strdup(var_nm);
+	lst_b[lst_b_nbr++].id=var_id;
       } /* endif LHS variable is in input file */
       break;
     case OUT_ATT:
@@ -787,21 +804,21 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
       var_nm=lval.aed.var_nm;     
       if(NC_NOERR == nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id)){
 	match=False;
-	for(var_idx=0;var_idx<n_lst_c;var_idx++)
+	for(var_idx=0;var_idx<lst_c_nbr;var_idx++)
 	  if(!strcmp(lst_c[var_idx].nm,var_nm)){match=True;break;}
 	if(match) break;
-	if(n_lst_c == 0) lst_c=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
-	else lst_c=(nm_id_sct *)nco_realloc(lst_c,((n_lst_c+1)*sizeof(nm_id_sct)));
-	lst_c[n_lst_c].nm=strdup(var_nm);
-	lst_c[n_lst_c++].id=var_id;
+	if(lst_c_nbr == 0) lst_c=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
+	else lst_c=(nm_id_sct *)nco_realloc(lst_c,((lst_c_nbr+1)*sizeof(nm_id_sct)));
+	lst_c[lst_c_nbr].nm=strdup(var_nm);
+	lst_c[lst_c_nbr++].id=var_id;
       } /* endif LHS attribute's parent variable is in input file  */
       break;
     case LHS_SBS:
       /* Add dimensions defined in LHS subscripts */
       lst_t=lst_d;
-      n_lst_t=n_lst_t;
-      lst_d=var_lst_add(prs_arg->in_id,lst_d,&n_lst_d,lval.sbs_lst->lst,lval.sbs_lst->nbr);          
-      if(n_lst_t >0) (void)var_lst_free(lst_t,n_lst_t);
+      lst_t_nbr=lst_t_nbr;
+      lst_d=var_lst_add(prs_arg->in_id,lst_d,&lst_d_nbr,lval.sbs_lst->lst,lval.sbs_lst->nbr);          
+      if(lst_t_nbr >0) (void)var_lst_free(lst_t,lst_t_nbr);
       break;
     default: 
       /* Tokens that fall through are perfectly safe and normal
@@ -811,10 +828,10 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
     } /* end switch */
   } /* end while */
   
-  if(n_lst_a>0){*xtr_lst_a=lst_a;*nbr_lst_a=n_lst_a;}
-  if(n_lst_b>0){*xtr_lst_b=lst_b;*nbr_lst_b=n_lst_b;}
-  if(n_lst_c>0){*xtr_lst_c=lst_c;*nbr_lst_c=n_lst_c;}
-  if(n_lst_d>0){*xtr_lst_d=lst_d;*nbr_lst_d=n_lst_d;}
+  if(lst_a_nbr > 0){*xtr_lst_a=lst_a;*nbr_lst_a=lst_a_nbr;}
+  if(lst_b_nbr > 0){*xtr_lst_b=lst_b;*nbr_lst_b=lst_b_nbr;}
+  if(lst_c_nbr > 0){*xtr_lst_c=lst_c;*nbr_lst_c=lst_c_nbr;}
+  if(lst_d_nbr > 0){*xtr_lst_d=lst_d;*nbr_lst_d=lst_d_nbr;}
   
 } /* end ncap_ntl_scn() */
 
