@@ -1,6 +1,6 @@
 2002-08-22  Charlie Zender  <zender@uci.edu>
 
-	* Began using HAVE_CONFIG_H, config.h in source files (nco_scm.[ch])
+	* Began using HAVE_CONFIG_H, config.h in source files (nco_scm.[ch],tst.cc)
 
 2002-08-21  Charlie Zender  <zender@uci.edu>
 

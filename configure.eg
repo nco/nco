@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.10 2002-08-22 20:16:51 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.11 2002-08-22 22:04:14 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -22,7 +22,7 @@ Footnotes to summary table:
 -----------------------------------------------------------------------
 
 Default installation procedure for system-wide installation,
-./configure;make;sudo make install
+cd ~/nco;cvs update -kk;make distclean;./configure;make;sudo make install
 
 Recommended/current custom ./configure invocation, alphabetized by pvmgetarch:
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.12 2002-08-13 08:00:37 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.13 2002-08-22 22:04:15 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -320,7 +320,8 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     /* The remote filename is input filename by definition */
     fl_nm_rmt=fl_nm;
     
-    /* A URL specifier in filename unambiguously signals to use anonymous ftp */    if(rmt_cmd == NULL){
+    /* A URL specifier in filename unambiguously signals to use anonymous ftp */    
+    if(rmt_cmd == NULL){
       if(strstr(fl_nm_rmt,"ftp://") == fl_nm_rmt){
 #ifdef WIN32
       /* I have no idea how networking calls work in NT, so just exit */
