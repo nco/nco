@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.14 2002-02-05 07:34:36 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.15 2002-02-05 07:49:40 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.2.0 are ready. 
 Changes since version 2.0.0 include bugfixes and a 
@@ -23,12 +23,12 @@ Thanks Henry!
 Enjoy,
 Charlie
 
-P.S. ncap requires GNU flex and bison to build, as well as
-an ANSI C implementation of float math functions (e.g., tanf).
+P.S. Building ncap requires a good lexer and parser (flex, bison)
+and ANSI C implementation with float math functions (e.g., tanf).
 For that reason it does not build by default and you must
 specifically build ncap with "make ncap".
-ncap has only been built successfully on IRIX and Linux systems.
-ncap has not yet been built on Solaris or AIX systems.
+ncap builds successfully on our IRIX, Solaris, and Linux platforms.
+ncap does not yet build on AIX (math float functions do not link).
 
 Summary of changes since 2.0.0:
 

@@ -5,6 +5,11 @@
 	improved dimension list handling so LHS casting works regardless
 	of precedence or presence of LHS expressions.
 
+	* Small ANSI fixes in ncap.c for AIX
+
+	* Replace math float prototypes required for AIX, Solaris builds
+	These are not required on Linux or IRIX, which keep them in math.h
+
 	* Documentation changes
 
 2002-02-02  Charlie Zender  <zender@uci.edu>
