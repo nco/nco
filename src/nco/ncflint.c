@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.31 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.32 2001-10-08 07:25:39 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -102,8 +102,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.31 2001-10-01 23:09:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.31 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.32 2001-10-08 07:25:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.32 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -132,6 +132,7 @@ main(int argc,char **argv)
   int nbr_dmn_xtr;
   int nbr_fl=0;
   int opt;
+  int rcd=NC_NOERR; /* [rcd] Return code */
     
   lmt_sct *lmt;
   
@@ -260,7 +261,6 @@ main(int argc,char **argv)
   
   /* Make uniform list of user-specified dimension limits */
   lmt=lmt_prs(lmt_nbr,lmt_arg);
-  
     
   /* Parse filename */
   idx_fl=0;
@@ -269,9 +269,9 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
-  in_id=nco_open(fl_in,NC_NOWRITE);
+  rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
-  /* Get the number of variables and dimensions in the file */
+  /* Get number of variables and dimensions in file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,(int *)NULL);
   
   /* Form initial extraction list from user input */
@@ -286,7 +286,7 @@ main(int argc,char **argv)
   /* Make sure coordinates associated extracted variables are also on extraction list */
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
-  /* Finally, heapsort the extraction list by variable ID for fastest I/O */
+  /* Finally, heapsort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
     
   /* We now have final list of variables to extract. Phew. */
@@ -366,14 +366,14 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
-  in_id_2=nco_open(fl_in,NC_NOWRITE);
+  rcd=nco_open(fl_in,NC_NOWRITE,&in_id_2);
   fl_in_2=fl_in;
   
   /* Perform various error-checks on input file */
   if(False) (void)fl_cmp_err_chk();
 
   /* ncflint-specific stuff: */
-  /* Find the weighting variable in the input file */
+  /* Find the weighting variable in input file */
   if(CMD_LN_NTP_VAR){
     int ntp_id_1;
     int ntp_id_2;
@@ -386,8 +386,8 @@ main(int argc,char **argv)
     val_gnr_unn.d=ntp_val_out; /* Generic container for arrival point or weight */
     ntp_var_out=scl_mk_var(val_gnr_unn,NC_DOUBLE);
 
-    ntp_id_1=nco_inq_varid(in_id_1,ntp_nm);
-    ntp_id_2=nco_inq_varid(in_id_2,ntp_nm);
+    rcd=nco_inq_varid(in_id_1,ntp_nm,&ntp_id_1);
+    rcd=nco_inq_varid(in_id_2,ntp_nm,&ntp_id_2);
 
     ntp_1=var_fll(in_id_1,ntp_id_1,ntp_nm,dim,nbr_dmn_xtr);
     ntp_2=var_fll(in_id_2,ntp_id_2,ntp_nm,dim,nbr_dmn_xtr);

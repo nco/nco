@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.73 2001-05-08 05:26:11 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.74 2001-10-08 07:25:37 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -42,7 +42,7 @@ use DBG; # Debugging constants
 require 'csz.pl'; # Contains date_time()
 
 # Set output flushing to help debugging on hard crashes 
-# These options update the filehandle after every output statement
+# These options update filehandle after every output statement
 select((select(STDOUT),$|=1)[0]); # Camel book, p. 110
 select((select(STDERR),$|=1)[0]); # Camel book, p. 110
 
@@ -66,9 +66,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2001-05-08 05:26:11 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.73 2001-05-08 05:26:11 zender Exp $';
-my $CVS_Revision='$Revision: 1.73 $';
+my $CVS_Date='$Date: 2001-10-08 07:25:37 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.74 2001-10-08 07:25:37 zender Exp $';
+my $CVS_Revision='$Revision: 1.74 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};

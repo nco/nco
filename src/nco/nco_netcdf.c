@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.6 2001-10-02 17:06:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.7 2001-10-08 07:25:39 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -52,7 +52,18 @@
    except nc_ is replaced by nco_
 
    Argument Ordering Convention: Routines follow same argument order as netCDF C-library 
-   Additional arguments, such as nc_type, are appended to the end of the argument list */
+   Additional arguments, such as nc_type, are appended to the end of the argument list 
+
+   Return value convention: Functions return a success/failure code
+   Errors in netCDF functions cause NCO wrapper to abort, except *_flg() wrappers
+   *_flg() wrappers allow limited, pre-defined, netCDF errors to be non-fatal
+
+   Circularity convention: It is important that none of the error diagnostics
+   in these functions call other nco_??? routines because if everything
+   starts failing then errors will produce circular diagnostics.
+   To ensure this is the case, it is only safe to print diagnostics on
+   variables which are supposed to be valid on input.
+*/
 
 /* Utility routines not defined by netCDF library, but useful in working with it */
 void 
@@ -64,7 +75,7 @@ nco_err_exit
      Routine is called by all wrappers when a fatal error is encountered
      msg variable allows wrapper to pass more descriptive information than 
      is contained in the netCDF-defined error message.
-     Use msg to print, e.g., the name of the variable which caused the error */
+     Use msg to print, e.g., the name of variable which caused the error */
   char sbr_nm[]="nco_err_exit()";
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"%s: ERROR %s\n%s\n",sbr_nm,msg,nc_strerror(rcd));
@@ -97,6 +108,87 @@ nco_typ_lng(nc_type nco_typ)
   return (int)-1;
 } /* end nco_typ_lng() */ 
 
+char *
+nco_typ_sng(nc_type type)
+/*  
+   nc_type type: I [enm] netCDF type
+   char *nco_typ_sng(): O [sng] string describing type
+*/
+{
+  switch(type){
+  case NC_FLOAT:
+    return "NC_FLOAT";
+  case NC_DOUBLE:
+    return "NC_DOUBLE";
+  case NC_INT:
+    return "NC_INT";
+  case NC_SHORT:
+    return "NC_SHORT";
+  case NC_CHAR:
+    return "NC_CHAR";
+  case NC_BYTE:
+    return "NC_BYTE";
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+
+  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
+  return (char *)NULL;
+} /* end nco_typ_sng() */
+
+char *
+c_type_nm(nc_type type)
+/*  
+   nc_type type: I netCDF type
+   char *c_type_nm(): O string describing type
+*/
+{
+  switch(type){
+  case NC_FLOAT:
+    return "float";
+  case NC_DOUBLE:
+    return "double";
+  case NC_INT:
+    return "long";
+  case NC_SHORT:
+    return "short";
+  case NC_CHAR:
+    return "unsigned char";
+  case NC_BYTE:
+    return "signed char";
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+
+  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
+  return (char *)NULL;
+} /* end c_type_nm() */
+
+char *
+fortran_type_nm(nc_type type)
+/*  
+   nc_type type: I netCDF type
+   char *fortran_type_nm(): O string describing type
+*/
+{
+  switch(type){
+  case NC_FLOAT:
+    return "real";
+  case NC_DOUBLE:
+    return "double precision";
+  case NC_INT:
+    return "integer";
+  case NC_SHORT:
+    return "integer*2";
+  case NC_CHAR:
+    return "character";
+  case NC_BYTE:
+    return "char";
+  default: nco_dfl_case_nctype_err(); break;
+  } /* end switch */
+
+  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
+  return (char *)NULL;
+} /* end fortran_type_nm() */
+
 void 
 nco_dfl_case_nctype_err(void)
 {
@@ -123,14 +215,13 @@ nco_dfl_case_nctype_err(void)
 
 /* Begin file-level routines */
 int
-nco_create(const char *fl_nm,int cmode)
+nco_create(const char *fl_nm,int cmode,int *nc_id)
 {
   /* Purpose: Wrapper for nc_create() */
   int rcd=NC_NOERR ;
-  int nc_id;
   int fl_in_typ=nco_fl_typ_nc; /* [enm] File format */
   if(fl_in_typ == nco_fl_typ_nc){
-    rcd=nc_create(fl_nm,cmode,&nc_id);
+    rcd=nc_create(fl_nm,cmode,nc_id);
     if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_create");
 #ifdef HDF5
   }else if(fl_in_typ == nco_fl_typ_hdf5){
@@ -141,18 +232,17 @@ nco_create(const char *fl_nm,int cmode)
     (void)fprintf(stderr,"nco_create() reports unknown fl_typ = %d\n",fl_in_typ);
     exit(EXIT_FAILURE);
   } /* endelse */
-  return nc_id;
+  return rcd;
 } /* end nco_create */
 
 int
-nco_open(const char *fl_nm,int mode)
+nco_open(const char *fl_nm,int mode,int *nc_id)
 {
   /* Purpose: Wrapper for nc_open() */
   int rcd=NC_NOERR;
-  int nc_id;
   int fl_in_typ=nco_fl_typ_nc; /* [enm] File format */
   if(fl_in_typ == nco_fl_typ_nc){
-    rcd=nc_open(fl_nm,mode,&nc_id);
+    rcd=nc_open(fl_nm,mode,nc_id);
     if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_open");
 #ifdef HDF5
   }else if(fl_in_typ == nco_fl_typ_hdf5){
@@ -163,7 +253,7 @@ nco_open(const char *fl_nm,int mode)
     (void)fprintf(stderr,"nco_open() reports unknown fl_typ = %d\n",fl_in_typ);
     exit(EXIT_FAILURE);
   } /* endelse */
-  return nc_id;
+  return rcd;
 } /* end nco_open */
 
 int
@@ -268,11 +358,11 @@ nco_inq_natts(int nc_id,int *nbr_glb_att)
 }/* end nco_inq_natts */
 
 int
-nco_inq_unlimdim(int nc_id,int *rec_dim_id)
+nco_inq_unlimdim(int nc_id,int *rec_dmn_id)
 {
   /* Purpose: Wrapper for nc_inq_unlimdim() */
   int rcd=NC_NOERR ;
-  rcd=nc_inq_unlimdim(nc_id,rec_dim_id);
+  rcd=nc_inq_unlimdim(nc_id,rec_dmn_id);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_unlimdim");
   return rcd;
 }/* end nco_inq_unlimdim */
@@ -290,80 +380,77 @@ nco_def_dim(int nc_id,const char *dmn_nm,long dmn_sz,int *dmn_id)
 } /* end nco_def_dim */
 
 int
-nco_inq_dimid(int nc_id,char *dmn_nm)
+nco_inq_dimid(int nc_id,char *dmn_nm,int *dmn_id)
 {
   /* Purpose: Wrapper for nc_inq_dimid() */
   int rcd=NC_NOERR ;
-  int dim_id;
-  rcd=nc_inq_dimid(nc_id,dmn_nm,&dim_id);
+  rcd=nc_inq_dimid(nc_id,dmn_nm,dmn_id);
   if(rcd == NC_EBADDIM){
     (void)fprintf(stdout,"ERROR nco_inq_dimid() reports requested dimension \"%s\" is not in input file\n",dmn_nm);
     exit(EXIT_FAILURE);
   } /* endif */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimid");
-  return dim_id;
+  return rcd;
 } /* end nco_inq_dimid */
 
 int
-nco_inq_dimid_flg(int nc_id,char *dmn_nm)
+nco_inq_dimid_flg(int nc_id,char *dmn_nm,int *dmn_id)
 {
   /* Purpose: Wrapper for nc_inq_dimid() which does not require success */
   int rcd=NC_NOERR ;
-  int dim_id;
-  rcd=nc_inq_dimid(nc_id,dmn_nm,&dim_id);
-  if(rcd == NC_EBADDIM) return -1;
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimid");
-  return dim_id;
+  rcd=nc_inq_dimid(nc_id,dmn_nm,dmn_id);
+  if(rcd == NC_EBADDIM) return rcd;
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimid_flg");
+  return rcd;
 } /* end nco_inq_dimid */
 
-
 int
-nco_inq_dim(int nc_id,int dim_id,char *dmn_nm,long *dmn_sz)
+nco_inq_dim(int nc_id,int dmn_id,char *dmn_nm,long *dmn_sz)
 {
   /* Purpose: Wrapper for nc_inq_dim() */
   int rcd=NC_NOERR ;
-  rcd=nc_inq_dim(nc_id,dim_id,dmn_nm,(size_t *)dmn_sz);
+  rcd=nc_inq_dim(nc_id,dmn_id,dmn_nm,(size_t *)dmn_sz);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dim");
   return rcd;
 }/* end nco_inq_dim */
 
 int
-nco_inq_dim_flg(int nc_id,int dim_id,char *dmn_nm,long *dmn_sz)
+nco_inq_dim_flg(int nc_id,int dmn_id,char *dmn_nm,long *dmn_sz)
 {
   /* Purpose: Wrapper for nc_inq_dim_flg() which does not require success */
   int rcd=NC_NOERR ;
-  rcd=nc_inq_dim(nc_id,dim_id,dmn_nm,(size_t *)dmn_sz);
+  rcd=nc_inq_dim(nc_id,dmn_id,dmn_nm,(size_t *)dmn_sz);
   if(rcd == NC_EBADDIM) return rcd;
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dim");
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dim_flg");
   return rcd;
 }/* end nco_inq_dim */
 
 int
-nco_inq_dimname(int nc_id,int dim_id,char *dmn_nm)
+nco_inq_dimname(int nc_id,int dmn_id,char *dmn_nm)
 {
   /* Purpose: Wrapper for nc_inq_dimname() */
   int rcd=NC_NOERR ;
-  rcd=nc_inq_dimname(nc_id,dim_id,dmn_nm);
+  rcd=nc_inq_dimname(nc_id,dmn_id,dmn_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimname");
   return rcd;
 } /* end nco_inq_dimname */
 
 int
-nco_inq_dimlen(int nc_id,int dim_id,long *dmn_sz)
+nco_inq_dimlen(int nc_id,int dmn_id,long *dmn_sz)
 {
   /* Purpose: Wrapper for nc_inq_dimlen() */
   int rcd=NC_NOERR;
-  rcd=nc_inq_dimlen(nc_id,dim_id,(size_t *)dmn_sz);
+  rcd=nc_inq_dimlen(nc_id,dmn_id,(size_t *)dmn_sz);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_dimlen");
   return rcd;
 } /* end nco_inq_dimlen */
 
 int
-nco_rename_dim(int nc_id,int dim_id,const char *dmn_nm)
+nco_rename_dim(int nc_id,int dmn_id,const char *dmn_nm)
 {
   /* Purpose: Wrapper for nc_rename_dim() */
   int rcd=NC_NOERR;
-  rcd=nc_rename_dim(nc_id,dim_id,dmn_nm);
+  rcd=nc_rename_dim(nc_id,dmn_id,dmn_nm);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_rename_dim");
   return rcd;
 }  /* end nco_inq_rename_dim */
@@ -392,30 +479,28 @@ nco_inq_var(int nc_id,int var_id,char *var_nm,nc_type *var_type,int *nbr_dmn,int
 } /* end nco_inq_var */
 
 int 
-nco_inq_varid(int nc_id,char *var_nm)
+nco_inq_varid(int nc_id,char *var_nm,int *var_id)
 {
   /* Purpose: Wrapper for nc_inq_varid() */
   int rcd=NC_NOERR;
-  int var_id;
-  rcd=nc_inq_varid(nc_id,var_nm,&var_id);
-  if(rcd == NC_ENOTVAR) {
+  rcd=nc_inq_varid(nc_id,var_nm,var_id);
+  if(rcd == NC_ENOTVAR){
     (void)fprintf(stdout,"ERROR nco_inq_varid() reports requested variable \"%s\" is not in input file\n",var_nm);
     exit(EXIT_FAILURE);
   }
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varid");
-  return var_id;
+  return rcd;
 } /* end nco_inq_varid */
 
 int 
-nco_inq_varid_flg(int nc_id,char *var_nm)
+nco_inq_varid_flg(int nc_id,char *var_nm,int *var_id)
 {
   /* Purpose: Wrapper for nc_inq_varid_flg() which does not require success */
   int rcd=NC_NOERR;
-  int var_id;
-  rcd=nc_inq_varid(nc_id,var_nm,&var_id);
-  if(rcd == NC_ENOTVAR) return -1;
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varid");
-  return var_id;
+  rcd=nc_inq_varid(nc_id,var_nm,var_id);
+  if(rcd == NC_ENOTVAR) return rcd;
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_varid_flg");
+  return rcd;
 } /* end nco_inq_varid */
 
 int 
@@ -603,28 +688,31 @@ nco_put_varm(int nc_id,int var_id,const long *srt,const long *cnt,const long *sr
 
 /* Begin Attribute routines (_att) */
 int 
-nco_inq_att(int nc_id,int var_id,const char *att_nm,nc_type *att_type,long *att_sz)
+nco_inq_att(int nc_id,int var_id,const char *att_nm,nc_type *att_typ,long *att_sz)
 {
   /* Purpose: Wrapper for nc_inq_att() */
   int rcd=NC_NOERR;
-  rcd=nc_inq_att(nc_id,var_id,att_nm,att_type,(size_t *)att_sz);
+  rcd=nc_inq_att(nc_id,var_id,att_nm,att_typ,(size_t *)att_sz);
   if(rcd != NC_NOERR){
-    (void)fprintf(stderr,"var_id: %d,att_nm: %s\n",var_id,att_nm);
+    (void)fprintf(stderr,"var_id: %d, att_nm: %s\n",var_id,att_nm);
     nco_err_exit(rcd,"nco_inq_att");
   } /* endif */
   return rcd;
 } /* end nco_inq_att */
 
 int 
-nco_inq_att_flg(int nc_id,int var_id,const char *att_nm,nc_type *att_type,long *att_sz) 
+nco_inq_att_flg(int nc_id,int var_id,const char *att_nm,nc_type *att_typ,long *att_sz) 
 {
   /* Purpose: Wrapper for nc_inq_att_flg() */
   int rcd=NC_NOERR;
-  rcd=nc_inq_att(nc_id,var_id,att_nm,att_type,(size_t *)att_sz);
-  if(rcd == NC_ENOTATT) return NC_ENOTATT;
-  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_att");
+  rcd=nc_inq_att(nc_id,var_id,att_nm,att_typ,(size_t *)att_sz);
+  if(rcd == NC_ENOTATT) return rcd;
+  if(rcd != NC_NOERR){
+    (void)fprintf(stderr,"var_id: %d, att_nm: %s\n",var_id,att_nm);
+    nco_err_exit(rcd,"nco_inq_att_flg");
+  } /* endif */
   return rcd;
-} /* end nco_inq_att */
+} /* end nco_inq_att_flg */
 
 int 
 nco_inq_attid(int nc_id,int var_id,const char *att_nm,int *att_id) 
@@ -637,11 +725,11 @@ nco_inq_attid(int nc_id,int var_id,const char *att_nm,int *att_id)
 } /* end nco_inq_attid */
 
 int 
-nco_inq_atttype(int nc_id,int var_id,const char *att_nm,nc_type *att_type) 
+nco_inq_atttype(int nc_id,int var_id,const char *att_nm,nc_type *att_typ) 
 {
   /* Purpose: Wrapper for nc_inq_atttype() */
   int rcd=NC_NOERR;
-  rcd=nc_inq_atttype(nc_id,var_id,att_nm,att_type);
+  rcd=nc_inq_atttype(nc_id,var_id,att_nm,att_typ);
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_inq_atttype");
   return rcd;
 } /* end nco_inq_atttype */
@@ -697,17 +785,17 @@ nco_del_att(int nc_id,int var_id,const char *att_nm)
 } /* end nco_del_att */
 
 int 
-nco_put_att(int nc_id,int var_id,const char *att_nm,nc_type att_type,long att_len,void *vp)
+nco_put_att(int nc_id,int var_id,const char *att_nm,nc_type att_typ,long att_len,void *vp)
 {
   /* Purpose: Wrapper for nc_put_att_*() */
   int rcd=NC_NOERR;
-  switch(att_type){
-  case NC_FLOAT: rcd=nc_put_att_float(nc_id,var_id,att_nm,att_type,(size_t)att_len,(float *)vp); break;
-  case NC_DOUBLE: rcd=nc_put_att_double(nc_id,var_id,att_nm,att_type,(size_t)att_len,(double *)vp); break;
-  case NC_INT: rcd=nc_put_att_long(nc_id,var_id,att_nm,att_type,(size_t)att_len,(long *)vp); break;
-  case NC_SHORT: rcd=nc_put_att_short(nc_id,var_id,att_nm,att_type,(size_t)att_len,(short *)vp); break;
+  switch(att_typ){
+  case NC_FLOAT: rcd=nc_put_att_float(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(float *)vp); break;
+  case NC_DOUBLE: rcd=nc_put_att_double(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(double *)vp); break;
+  case NC_INT: rcd=nc_put_att_long(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(long *)vp); break;
+  case NC_SHORT: rcd=nc_put_att_short(nc_id,var_id,att_nm,att_typ,(size_t)att_len,(short *)vp); break;
   case NC_CHAR: rcd=nc_put_att_text(nc_id,var_id,att_nm,(size_t)att_len,(const char *)vp); break;
-  case NC_BYTE: rcd=nc_put_att_schar(nc_id,var_id,att_nm,att_type,(size_t) att_len,(signed char *)vp); break;
+  case NC_BYTE: rcd=nc_put_att_schar(nc_id,var_id,att_nm,att_typ,(size_t) att_len,(signed char *)vp); break;
   default: nco_dfl_case_nctype_err(); break;
   } /* end switch */
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_att");
@@ -715,11 +803,11 @@ nco_put_att(int nc_id,int var_id,const char *att_nm,nc_type att_type,long att_le
 } /* end nco_put_att */
 
 int 
-nco_get_att(int nc_id,int var_id,const char *att_nm,void *vp,nc_type att_type)
+nco_get_att(int nc_id,int var_id,const char *att_nm,void *vp,nc_type att_typ)
 {
   /* Purpose: Wrapper for nc_get_att_*() */
   int rcd=NC_NOERR;
-  switch(att_type){
+  switch(att_typ){
   case NC_FLOAT: rcd=nc_get_att_float(nc_id,var_id,att_nm,(float *)vp); break;
   case NC_DOUBLE: rcd=nc_get_att_double(nc_id,var_id,att_nm,(double *)vp); break;
   case NC_INT: rcd=nc_get_att_long(nc_id,var_id,att_nm,(long *)vp); break;

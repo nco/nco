@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.100 2001-10-02 17:06:20 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.101 2001-10-08 07:25:37 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -895,7 +895,7 @@ dst_cln: cln bin_cln doc_cln dat_cln
 	cd ${MY_BLD_DIR}; rm -f *~
 	cd ${MY_DAT_DIR}; rm -f in.nc *~
 tags: 
-	etags $(MY_SRC_DIR)/nc.h $(SRC_LST) $(MDL_DOC_SRC) $(MDL_BLD_SRC) $(MDL_NCAP_SRC)
+	etags $(MY_SRC_DIR)/*.h $(SRC_LST) $(MDL_DOC_SRC) $(MDL_BLD_SRC) $(MDL_NCAP_SRC)
 
 # Reset internal YACC and LEX patterns
 %.c : %.y

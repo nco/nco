@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.2 2001-10-02 06:02:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.3 2001-10-08 07:25:39 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -41,6 +41,7 @@
 #define NCO_H
 
 #ifdef __cplusplus
+/* Use C-bindings so C++-compiled and C-compiled libraries are compatible */
 extern "C" {
 #endif /* __cplusplus */
 
@@ -168,8 +169,8 @@ typedef struct { /* lmt_sct */
   char *max_sng; /* User-specified string for dimension maximum */
   char *srd_sng; /* User-specified string for dimension stride */
   int id; /* Dimension ID */
-  long min_idx; /* Index of minimum requested value in the dimension */
-  long max_idx; /* Index of maximum requested value in the dimension */
+  long min_idx; /* Index of minimum requested value in dimension */
+  long max_idx; /* Index of maximum requested value in dimension */
   double min_val; /* Double precision representation of minimum value of coordinate requested or implied */
   double max_val; /* Double precision representation of maximum value of coordinate requested or implied */
   long srt; /* Index to start of hyperslab */
@@ -241,7 +242,7 @@ typedef struct dmn_sct_tag{ /* dmn_sct */
   long cnt; /* Number of valid elements in this dimension (including effects of stride and wrapping) */
   long srd; /* Stride of hyperslab */
   ptr_unn val; /* Buffer to hold hyperslab */
-  struct dmn_sct_tag *xrf; /* Cross-reference to associated dimension structure (usually the structure for the dimension on output) */
+  struct dmn_sct_tag *xrf; /* Cross-reference to associated dimension structure (usually the structure for dimension on output) */
 } dmn_sct;
 
 /* Each member of var_sct structure should be initialized to default in var_dfl_set()
@@ -271,7 +272,7 @@ typedef struct var_sct_tag{ /* var_sct */
   long *srd; /* Contiguous vector of stride of hyperslab */
   ptr_unn val; /* Buffer to hold hyperslab */
   long *tally; /* Number of valid operations performed so far */
-  struct var_sct_tag *xrf; /* Cross-reference to associated variable structure (usually the structure for the variable on output) */
+  struct var_sct_tag *xrf; /* Cross-reference to associated variable structure (usually the structure for variable on output) */
   int pck_dsk; /* Variable is packed on disk (valid scale_factor, add_offset, or both attributes exist) */
   int pck_ram; /* Variable is packed in memory (valid scale_factor, add_offset, or both attributes exist) */
   int has_scl_fct; /* Valid scale_factor attribute exists */
@@ -362,14 +363,11 @@ extern bool arm_inq(int);
 extern bool ncar_csm_inq(int);
 extern char **fl_lst_mk(char **,int,int,int *,char **);
 extern char **lst_prs(char *,const char *,int *);
-extern char *c_type_nm(nc_type);
 extern char *cmd_ln_sng(int,char **);
 extern char *cvs_vrs_prs();
 extern char *fl_mk_lcl(char *,char *,int *);
 extern char *fl_nm_prs(char *,int,int *,char **,int,char **,char *);
 extern char *fl_out_open(char *,bool,bool,int *);
-extern char *fortran_type_nm(nc_type);
-extern char *nco_typ_sng(nc_type);
 extern char *nmn_get(void);
 extern char *prg_nm_get(void);
 extern char *prg_prs(char *,int *);

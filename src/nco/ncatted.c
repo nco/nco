@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.33 2001-10-02 06:02:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.34 2001-10-08 07:25:39 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.33 2001-10-02 06:02:20 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.33 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.34 2001-10-08 07:25:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.34 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -159,6 +159,7 @@ main(int argc,char **argv)
   int nbr_aed=0; /* Option a. NB: nbr_var_aed gets incremented */
   int nbr_fl=0;
   int opt;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   time_t clock;
 
@@ -239,7 +240,7 @@ main(int argc,char **argv)
       
       rcd=stat(fl_out,&stat_sct);
 
-      /* If the file already exists, then query the user whether to overwrite */
+      /* If file already exists, then query the user whether to overwrite */
       if(rcd != -1){
         char usr_reply;
         
@@ -263,11 +264,11 @@ main(int argc,char **argv)
   } /* end if */
 
   
-  /* Open the file. Writing must be enabled and the file should be in define mode for renaming */
-  nc_id=nco_open(fl_out,NC_WRITE);
+  /* Open file. Writing must be enabled and file should be in define mode for renaming */
+  rcd=nco_open(fl_out,NC_WRITE,&nc_id);
   (void)nco_redef(nc_id);
 
-  /* Get the number of variables in the file */
+  /* Get number of variables in file */
   (void)nco_inq(nc_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
 
   for(idx=0;idx<nbr_aed;idx++){
@@ -275,15 +276,15 @@ main(int argc,char **argv)
     if(aed_lst[idx].var_nm != NULL){
 
       /* Is this a global attribute? */
-      if(!strcmp(aed_lst[idx].var_nm,"global")) aed_lst[idx].id=NC_GLOBAL; else aed_lst[idx].id=nco_inq_varid(nc_id,aed_lst[idx].var_nm);
+      if(!strcmp(aed_lst[idx].var_nm,"global")) aed_lst[idx].id=NC_GLOBAL; else (void)nco_inq_varid(nc_id,aed_lst[idx].var_nm,&aed_lst[idx].id);
 
-      /* Edit the attribute */
+      /* Edit attribute */
       (void)aed_prc(nc_id,aed_lst[idx].id,aed_lst[idx]);
 
     }else{ /* var_nm == NULL */
       /* Perform operation for every variable for which it makes sense */
       
-      /* Edit the attribute for every variable */
+      /* Edit attribute for every variable */
       for(idx_var=0;idx_var<nbr_var_fl;idx_var++) (void)aed_prc(nc_id,idx_var,aed_lst[idx]);
 
     } /* end else var_nm == NULL */
@@ -293,7 +294,7 @@ main(int argc,char **argv)
   /* Catenate the timestamped command line to the "history" global attribute */
   if(HISTORY_APPEND) (void)hst_att_cat(nc_id,cmd_ln);
   
-  /* Take the file out of define mode */
+  /* Take file out of define mode */
   (void)nco_enddef(nc_id);
     
   /* Close the open netCDF file */
@@ -320,11 +321,11 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
   /* Options are:
      -a att_nm,var_nm,mode,att_typ,att_val (modifies attribute att_nm for the single variable var_nm)
 
-     -a att_nm,,mode,att_typ,att_val (modifies attribute att_nm for every variable in the file)
-     If option -a is given with var_nm = NULL, then var_nm is expanded into every variable name in the file
-     Thus the attribute editing operation is performed on every variable in the file.
+     -a att_nm,,mode,att_typ,att_val (modifies attribute att_nm for every variable in file)
+     If option -a is given with var_nm = NULL, then var_nm is expanded into every variable name in file
+     Thus attribute editing operation is performed on every variable in file.
 
-     mode,att_nm,att_typ,att_val (modifies global attribute att_nm for the file)
+     mode,att_nm,att_typ,att_val (modifies global attribute att_nm for file)
      This option may be combined with modes -a, -c, -d, or -o to specify 
      appending to, changing, deleting, or overwriting, any existing global attribute named att_nm
 
@@ -361,7 +362,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
   int idx;
   int arg_nbr;
 
-  long idx_att_val_arg=4L; /* Number of required delimiters preceding the attribute values in -a argument list */
+  long idx_att_val_arg=4L; /* Number of required delimiters preceding attribute values in -a argument list */
 
   aed_lst=(aed_sct *)nco_malloc(nbr_aed*sizeof(aed_sct));
 
@@ -533,7 +534,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
   
   /* fxm: netCDF 2 specifies att_sz should be type int, netCDF 3 uses size_t */
   int nbr_att;
-  int rcd;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   long att_sz;
   
   nc_type att_typ;
@@ -541,19 +542,15 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
   void *att_val_new=NULL;
   
   if(var_id == NC_GLOBAL){
-    /* Get the number of global attributes for the file */
+    /* Get number of global attributes in file */
     (void)nco_inq(nc_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
     (void)strcpy(var_nm,"Global");
   }else{
-    /* Get the name and number of attributes for the variable */
+    /* Get name and number of attributes for variable */
     (void)nco_inq_var(nc_id,var_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
   } /* end else */
 
-  
   rcd=nco_inq_att_flg(nc_id,var_id,aed.att_nm,&att_typ,&att_sz);
-  if (rcd == NC_ENOTATT) rcd = -1;
-  
-
   /* Before changing metadata, change missing values to new missing value if warranted 
      This capability is an add on feature and is not implemented very cleanly or efficiently
      If, for example, every variable has a "missing_value" attribute and it is changed
@@ -561,13 +558,13 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
      rather than collecting all the information in one pass and then replacing all the 
      data in a second pass.
      This is because ncatted was originally designed to change only metadata and so was
-     architected differently from the other NCO operators.
+     architected differently from other NCO operators.
    */
   if(
      strcmp(aed.att_nm,"missing_value") == 0 /* Current attribute is "missing_value" */
      && var_id != NC_GLOBAL /* Current attribute is not global */
      && (aed.mode == aed_modify || aed.mode == aed_overwrite)  /* Modifying or overwriting existing value */
-     && rcd != -1 /* Only when existing missing_value attribute is modified */
+     && rcd == NC_NOERR /* Only when existing missing_value attribute is modified */
      && att_sz == 1L /* Old missing_value attribute must be of size 1 */
      && aed.sz == 1L /* New missing_value attribute must be of size 1 */
      ){
@@ -587,7 +584,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     /* Take file out of define mode */
     (void)nco_enddef(nc_id);
   
-    /* Initialize (partially) the variable structure */
+    /* Initialize (partially) variable structure */
     var=(var_sct *)nco_malloc(sizeof(var_sct));
     var->nc_id=nc_id;
     var->id=var_id;
@@ -598,11 +595,11 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     dmn_id=(int *)nco_malloc(var->nbr_dim*sizeof(int));
     dmn_sz=(long *)nco_malloc(var->nbr_dim*sizeof(long));
     dmn_srt=(long *)nco_malloc(var->nbr_dim*sizeof(long));
-    (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
+    (void)nco_inq_vardimid(var->nc_id,var->id,dmn_id);
 
     /* Get dimension sizes and construct variable size */
     for(idx=0;idx<var->nbr_dim;idx++){
-      (void)nco_inq_dim(var->nc_id,dmn_id[idx],(char *)NULL,dmn_sz+idx);
+      (void)nco_inq_dimlen(var->nc_id,dmn_id[idx],dmn_sz+idx);
       var->sz*=dmn_sz[idx];
       dmn_srt[idx]=0L;
     } /* end loop over dim */
@@ -684,7 +681,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
   /* Change metadata (as written, this must be done after missing_value data is replaced) */
   switch(aed.mode){
   case aed_append:	
-    if(rcd != -1){
+    if(rcd == NC_NOERR){
       /* Append to existing attribute value */
       if(aed.type != att_typ){
 	(void)fprintf(stdout,"%s: ERROR %s attribute %s is of type %s not %s, unable to append\n",prg_nm_get(),var_nm,aed.att_nm,nco_typ_sng(att_typ),nco_typ_sng(aed.type));
@@ -704,13 +701,13 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     } /* end else */
     break;
   case aed_create:	
-    if(rcd == -1) (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
+    if(rcd != NC_NOERR) (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  
     break;
   case aed_delete:	
-    if(rcd != -1) (void)nco_del_att(nc_id,var_id,aed.att_nm);
+    if(rcd == NC_NOERR) (void)nco_del_att(nc_id,var_id,aed.att_nm);
     break;
   case aed_modify:	
-    if(rcd != -1) (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
+    if(rcd == NC_NOERR) (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
     break;
   case aed_overwrite:	
     (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);  

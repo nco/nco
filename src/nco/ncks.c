@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.42 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.43 2001-10-08 07:25:39 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.42 2001-10-01 23:09:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.42 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.43 2001-10-08 07:25:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.43 $";
   
   extern char *optarg;
   
@@ -131,6 +131,7 @@ main(int argc,char **argv)
   int nbr_xtr=0; /* nbr_xtr won't otherwise be set for -c with no -v */
   int nbr_fl=0;
   int opt;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id;
     
   lmt_sct *lmt;
@@ -160,7 +161,7 @@ main(int argc,char **argv)
     case 'C': /* Extraction list should include all coordinates associated with extracted variables? */
       PROCESS_ASSOCIATED_COORDINATES=False;
       break;
-    case 'c': /* Add all coordinates to the extraction list? */
+    case 'c': /* Add all coordinates to extraction list? */
       PROCESS_ALL_COORDINATES=True;
       break;
     case 'D': /* Debugging level. Default is 0. */
@@ -230,15 +231,14 @@ main(int argc,char **argv)
   /* Make uniform list of user-specified dimension limits */
   lmt=lmt_prs(lmt_nbr,lmt_arg);
   
-  
   /* Parse filename */
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-  /* Open the file for reading */
-  in_id=nco_open(fl_in,NC_NOWRITE);
+  /* Open file for reading */
+  rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
-  /* Get the number of variables, dimensions, and global attributes in the file */
+  /* Get number of variables, dimensions, and global attributes in file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,&nbr_glb_att,&rec_dmn_id);
   
   /* Form initial extraction list from user input */
@@ -276,9 +276,9 @@ main(int argc,char **argv)
     for(idx=0;idx<nbr_xtr;idx++){
       int var_out_id;
       
-      /* Define the variable in the output file */
+      /* Define variable in output file */
       if(lmt_nbr > 0) var_out_id=cpy_var_dfn_lmt(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm,lmt,lmt_nbr); else var_out_id=cpy_var_dfn(in_id,out_id,rec_dmn_id,xtr_lst[idx].nm);
-      /* Copy the variable's attributes */
+      /* Copy variable's attributes */
       (void)att_cpy(in_id,out_id,xtr_lst[idx].id,var_out_id);
     } /* end loop over idx */
 
@@ -290,7 +290,7 @@ main(int argc,char **argv)
     /* Take output file out of define mode */
     (void)nco_enddef(out_id);
     
-    /* Copy the variable data */
+    /* Copy variable data */
     for(idx=0;idx<nbr_xtr;idx++){
       if(dbg_lvl > 2) (void)fprintf(stderr,"%s, ",xtr_lst[idx].nm);
       if(dbg_lvl > 0) (void)fflush(stderr);
@@ -318,9 +318,9 @@ main(int argc,char **argv)
   
   if(OUTPUT_VARIABLE_METADATA){
     for(idx=0;idx<nbr_xtr;idx++){
-      /* Print the variable's definition */
+      /* Print variable's definition */
       (void)prn_var_dfn(in_id,xtr_lst[idx].nm);
-      /* Print the variable's attributes */
+      /* Print variable's attributes */
       (void)prn_att(in_id,xtr_lst[idx].id);
     } /* end loop over idx */
   } /* end if OUTPUT_VARIABLE_METADATA */
@@ -372,7 +372,7 @@ type_fmt_sng(nc_type type)
 } /* end type_fmt_sng() */
 
 /* The other printout method must use a recursive call to step
-   through the dimensions, because the number of dimensions,
+   through dimensions, because number of dimensions,
    and thus of loops, is not known in advance. */
 void recursive_prn
 (int *min_dmn_idx, /* input var: array of minimum dimension values */
@@ -404,9 +404,9 @@ prn_att(int in_id,int var_id)
  */
 {
   /* Routine to print all the global attributes in a netCDF file,
-     or all the attributes for a particular netCDF variable. 
+     or all attributes for a particular netCDF variable. 
      If var_id == NC_GLOBAL ( = -1) the global attributes are printed,
-     otherwise the variable's attributes are printed. */
+     otherwise variable's attributes are printed. */
 
   att_sct *att=NULL_CEWI;
 
@@ -420,18 +420,18 @@ prn_att(int in_id,int var_id)
   int nbr_att;
 
   if(var_id == NC_GLOBAL){
-    /* Get the number of global attributes for the file */
+    /* Get number of global attributes in file */
     (void)nco_inq(in_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
     (void)strcpy(src_sng,"Global");
   }else{
-    /* Get the name and number of attributes for the variable */
+    /* Get name and number of attributes for variable */
     (void)nco_inq_var(in_id,var_id,src_sng,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
   } /* end else */
 
-  /* Allocate space for the attribute names and types */
+  /* Allocate space for attribute names and types */
   if(nbr_att > 0) att=(att_sct *)nco_malloc(nbr_att*sizeof(att_sct));
     
-  /* Get the attributes' names, types, lengths, and values */
+  /* Get attributes' names, types, lengths, and values */
   for(idx=0;idx<nbr_att;idx++){
 
     att[idx].nm=(char *)nco_malloc(NC_MAX_NAME*sizeof(char));
@@ -482,7 +482,7 @@ prn_att(int in_id,int var_id)
   (void)fprintf(stdout,"\n");
   (void)fflush(stdout);
   
-  /* Free the space holding the attribute values */
+  /* Free the space holding attribute values */
   for(idx=0;idx<nbr_att;idx++){
     (void)free(att[idx].val.vp);
     (void)free(att[idx].nm);
@@ -503,7 +503,7 @@ cpy_var_dfn(int in_id,int out_id,int rec_dmn_id,char *var_nm)
    int cpy_var_dfn(): output output-file variable ID
  */
 {
-  /* Routine to copy the variable metadata from an input netCDF file
+  /* Routine to copy variable metadata from an input netCDF file
      to an output netCDF file. This routine does not take into 
      account any user-specified limits, it just copies what it finds. */
 
@@ -511,64 +511,60 @@ cpy_var_dfn(int in_id,int out_id,int rec_dmn_id,char *var_nm)
   int *dmn_out_id;
   int idx;
   int nbr_dim;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int var_in_id;
   int var_out_id;
-
-  
   
   nc_type var_type;
-
   
-  /* See if the requested variable is already in the output file. */
-  var_out_id=nco_inq_varid_flg(out_id,var_nm);
-  if(var_out_id != -1) return var_out_id;
-  /* See if the requested variable is in the input file. */
-  var_in_id=nco_inq_varid_flg(in_id,var_nm);
-  if(var_in_id == -1) (void)fprintf(stdout,"%s: ERROR unable to find variable \"%s\"\n",prg_nm_get(),var_nm);
+  /* See if requested variable is already in output file */
+  rcd=nco_inq_varid_flg(out_id,var_nm,&var_out_id);
+  if(rcd == NC_NOERR) return var_out_id;
+  /* See if requested variable is in input file */
+  rcd=nco_inq_varid_flg(in_id,var_nm,&var_in_id);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: ERROR unable to find variable \"%s\"\n",prg_nm_get(),var_nm);
   
-  
-  /* Get the type of the variable and the number of dimensions. */
+  /* Get type of variable and number of dimensions */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,(int *)NULL);
   
   /* Recall:
-     1. The dimensions must be defined before the variable.
-     2. The variable must be defined before the attributes. */
+     1. Dimensions must be defined before variables
+     2. Variables must be defined before attributes */
 
-  /* Allocate space to hold the dimension IDs */
+  /* Allocate space to hold dimension IDs */
   dmn_in_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   dmn_out_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   
-  /* Get the dimension IDs */
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_in_id,(int *)NULL);
+  /* Get dimension IDs */
+  (void)nco_inq_vardimid(in_id,var_in_id,dmn_in_id);
   
-  /* Get the dimension sizes and names */
+  /* Get dimension sizes and names */
   for(idx=0;idx<nbr_dim;idx++){
     char dmn_nm[NC_MAX_NAME];
     long dmn_sz;
+    int rcd; /* [rcd] Return code */
     
     (void)nco_inq_dim(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
     
-    /* See if the dimension has already been defined */
-    /* ncopts=0; */
-    dmn_out_id[idx]=nco_inq_dimid_flg(out_id,dmn_nm);
-    /* ncopts=NC_VERBOSE | NC_FATAL; */
+    /* Has dimension been defined in output file? */
+    rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
     
-    /* If the dimension hasn't been defined, copy it */
-    if(dmn_out_id[idx] == -1){
+    /* If dimension has not been defined, copy it */
+    if(rcd != NC_NOERR){
       if(dmn_in_id[idx] != rec_dmn_id){
 	/* dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,dmn_sz); */
-	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,&dmn_out_id[idx]);
+	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx);
       }else{
 	/* dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,NC_UNLIMITED); */
-	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,&dmn_out_id[idx]);
+	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx);
       } /* end else */
     } /* end if */
   } /* end loop over dim */
   
-  /* Define the variable in the output file */
+  /* Define variable in output file */
   (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
   
-  /* Free the space holding the dimension IDs */
+  /* Free the space holding dimension IDs */
   (void)free(dmn_in_id);
   (void)free(dmn_out_id);
   
@@ -587,59 +583,55 @@ cpy_var_dfn_lmt(int in_id,int out_id,int rec_dmn_id,char *var_nm,lmt_sct *lmt,in
    int cpy_var_dfn_lmt(): output output-file variable ID
  */
 {
-  /* Routine to copy the variable metadata from an input netCDF file
-     to an output netCDF file. This routine truncates the dimensions
-     in the variable definition in the output file according to any
+  /* Routine to copy variable metadata from an input netCDF file
+     to an output netCDF file. This routine truncates dimensions
+     in variable definition in output file according to any
      user-specified limits. */
 
   int *dmn_in_id;
   int *dmn_out_id;
   int idx;
   int nbr_dim;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int var_in_id;
   int var_out_id;
-
-  
   
   nc_type var_type;
 
-  /* See if requested variable is already in output file. */
+  /* Is requested variable already in output file? */
+  rcd=nco_inq_varid_flg(out_id,var_nm,&var_out_id);
+  if(rcd == NC_NOERR) return var_out_id;
+  /* Is requested variable already in input file? */
+  rcd=nco_inq_varid_flg(in_id,var_nm,&var_in_id);
+  if(rcd != NC_NOERR) (void)fprintf(stdout,"%s: ERROR unable to find variable \"%s\"\n",prg_nm_get(),var_nm);
   
-  var_out_id=nco_inq_varid_flg(out_id,var_nm);
-  if(var_out_id != -1) return var_out_id;
-  /* See if requested variable is in input file. */
-  var_in_id=nco_inq_varid_flg(in_id,var_nm);
-  if(var_in_id == -1) (void)fprintf(stdout,"%s: ERROR unable to find variable \"%s\"\n",prg_nm_get(),var_nm);
-  
-  
-  /* Get type of variable and number of dimensions. */
+  /* Get type of variable and number of dimensions */
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,(int *)NULL);
   
   /* Recall:
-     1. Dimensions must be defined before variable.
-     2. Variable must be defined before attributes. */
+     1. Dimensions must be defined before variable
+     2. Variable must be defined before attributes */
      
   /* Allocate space to hold dimension IDs */
   dmn_in_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   dmn_out_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   
   /* Get dimension IDs */
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_in_id,(int *)NULL);
+  (void)nco_inq_vardimid(in_id,var_in_id,dmn_in_id);
   
   /* Get dimension sizes and names */
   for(idx=0;idx<nbr_dim;idx++){
     char dmn_nm[NC_MAX_NAME];
     long dmn_sz;
+    int rcd; /* [rcd] Return code */
     
     (void)nco_inq_dim(in_id,dmn_in_id[idx],dmn_nm,&dmn_sz);
     
-    /* See if dimension has already been defined */
+    /* Has dimension been defined in output file? */
+    rcd=nco_inq_dimid_flg(out_id,dmn_nm,dmn_out_id+idx);
     
-    dmn_out_id[idx]=nco_inq_dimid_flg(out_id,dmn_nm);
-    
-    
-    /* If dimension hasn't been defined, copy it */
-    if(dmn_out_id[idx] == -1){
+    /* If dimension has not been defined, copy it */
+    if(rcd != NC_NOERR){
       if(dmn_in_id[idx] != rec_dmn_id){
 	int lmt_idx;
 
@@ -650,11 +642,8 @@ cpy_var_dfn_lmt(int in_id,int out_id,int rec_dmn_id,char *var_nm,lmt_sct *lmt,in
 	    break;
 	  } /* end if */
 	} /* end loop over lmt_idx */
-	
-	/* dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,dmn_sz); */
 	(void)nco_def_dim(out_id,dmn_nm,dmn_sz,dmn_out_id+idx );
       }else{
-	/* dmn_out_id[idx]=ncdimdef(out_id,dmn_nm,NC_UNLIMITED); */
 	(void)nco_def_dim(out_id,dmn_nm,NC_UNLIMITED,dmn_out_id+idx );
       } /* end else */
     } /* end if */
@@ -678,7 +667,7 @@ cpy_var_val(int in_id,int out_id,char *var_nm)
    char *var_nm: input variable name
  */
 {
-  /* Routine to copy the variable data from an input netCDF file
+  /* Routine to copy variable data from an input netCDF file
      to an output netCDF file. This routine does not take into 
      account any user-specified limits, it just copies what it finds. */
 
@@ -700,10 +689,10 @@ cpy_var_val(int in_id,int out_id,char *var_nm)
   void *void_ptr;
 
   /* Get var_id for requested variable from both files */
-  var_in_id=nco_inq_varid(in_id,var_nm);
-  var_out_id=nco_inq_varid(out_id,var_nm);
+  (void)nco_inq_varid(in_id,var_nm,&var_in_id);
+  (void)nco_inq_varid(out_id,var_nm,&var_out_id);
   
-  /* Get number of dimensions for variable. */
+  /* Get type and number of dimensions for variable */
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
@@ -712,39 +701,39 @@ cpy_var_val(int in_id,int out_id,char *var_nm)
   } /* endif */
   nbr_dim=nbr_dmn_out;
   
-  /* Allocate space to hold the dimension IDs */
+  /* Allocate space to hold dimension IDs */
   dmn_cnt=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_id=(int *)nco_malloc(nbr_dim*sizeof(int));
   dmn_sz=(long *)nco_malloc(nbr_dim*sizeof(long));
   dmn_srt=(long *)nco_malloc(nbr_dim*sizeof(long));
   
-  /* Get the dimension IDs from the input file */
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
+  /* Get dimension IDs from input file */
+  (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
   
-  /* Get the dimension sizes from the input file */
+  /* Get dimension sizes from input file */
   for(idx=0;idx<nbr_dim;idx++){
   /* NB: For the record dimension, ncdiminq() returns the maximum 
      value used so far in writing data for that dimension.
-     Thus if you read the dimension sizes from the output file, then
+     Thus if you read dimension sizes from output file, then
      the ncdiminq() returns dmn_sz=0 for the record dimension
      until a variable has been written with that dimension. This is
-     the reason for always reading the input file for the dimension
+     the reason for always reading input file for dimension
      sizes. */
-    (void)nco_inq_dim(in_id,dmn_id[idx],(char *)NULL,dmn_cnt+idx);
+    (void)nco_inq_dimlen(in_id,dmn_id[idx],dmn_cnt+idx);
 
     /* Initialize the indicial offset and stride arrays */
     dmn_srt[idx]=0L;
     var_sz*=dmn_cnt[idx];
   } /* end loop over dim */
       
-  /* Allocate enough space to hold the variable */
+  /* Allocate enough space to hold variable */
   void_ptr=(void *)malloc(var_sz*nco_typ_lng(var_type));
   if(void_ptr == NULL){
     (void)fprintf(stderr,"%s: ERROR unable to malloc() %ld bytes for %s\n",prg_nm_get(),var_sz*nco_typ_lng(var_type),var_nm);
     exit(EXIT_FAILURE);
   } /* end if */
 
-  /* Get the variable */
+  /* Get variable */
   if(nbr_dim==0){
     nco_get_var1(in_id,var_in_id,0L,void_ptr,var_type);
     nco_put_var1(out_id,var_out_id,0L,void_ptr,var_type);
@@ -753,13 +742,13 @@ cpy_var_val(int in_id,int out_id,char *var_nm)
     nco_put_vara(out_id,var_out_id,dmn_srt,dmn_cnt,void_ptr,var_type);
   } /* end if variable is an array */
 
-  /* Free the space that held the dimension IDs */
+  /* Free the space that held dimension IDs */
   (void)free(dmn_cnt);
   (void)free(dmn_id);
   (void)free(dmn_sz);
   (void)free(dmn_srt);
 
-  /* Free the space that held the variable */
+  /* Free the space that held variable */
   (void)free(void_ptr);
 
 } /* end cpy_var_val() */
@@ -787,6 +776,7 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
   int nbr_dim;
   int nbr_dmn_in;
   int nbr_dmn_out;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int var_in_id;
   int var_out_id;
 
@@ -804,11 +794,11 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
 
   void *void_ptr;
 
-  /* Get var_id for requested variable from both files. */
-  var_in_id=nco_inq_varid(in_id,var_nm);
-  var_out_id=nco_inq_varid(out_id,var_nm);
+  /* Get var_id for requested variable from both files */
+  rcd=nco_inq_varid(in_id,var_nm,&var_in_id);
+  rcd=nco_inq_varid(out_id,var_nm,&var_out_id);
   
-  /* Get number of dimensions for variable. */
+  /* Get type and number of dimensions for variable */
   (void)nco_inq_var(out_id,var_out_id,(char *)NULL,&var_type,&nbr_dmn_out,(int *)NULL,(int *)NULL);
   (void)nco_inq_var(in_id,var_in_id,(char *)NULL,&var_type,&nbr_dmn_in,(int *)NULL,(int *)NULL);
   if(nbr_dmn_out != nbr_dmn_in){
@@ -827,7 +817,7 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
   dmn_sz=(long *)nco_malloc(nbr_dim*sizeof(long));
   
   /* Get dimension IDs from input file */
-  (void)nco_inq_var(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
+  (void)nco_inq_vardimid(in_id,var_in_id,dmn_id);
   
   /* Get dimension sizes from input file */
   for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
@@ -837,11 +827,11 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
        Thus if you read dimension sizes from output file, then
        ncdiminq() returns dmn_sz=0 for the record dimension
        until a variable has been written with that dimension. This is
-       the reason for always reading the input file for dimension
+       the reason for always reading input file for dimension
        sizes. */
 
     /* dmn_cnt may be overwritten by user-specified limits */
-    (void)nco_inq_dim(in_id,dmn_id[dmn_idx],(char *)NULL,dmn_sz+dmn_idx);
+    (void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
 
     /* Set default start vectors: dmn_in_srt may be overwritten by user-specified limits */
     dmn_cnt[dmn_idx]=dmn_sz[dmn_idx];
@@ -903,7 +893,7 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
       
       /* dmn_cnt may be overwritten by user-specified limits */
-      (void)nco_inq_dim(in_id,dmn_id[dmn_idx],(char *)NULL,dmn_sz+dmn_idx);
+      (void)nco_inq_dimlen(in_id,dmn_id[dmn_idx],dmn_sz+dmn_idx);
       
       /* Set default vectors */
       dmn_cnt[dmn_idx]=dmn_cnt_1[dmn_idx]=dmn_cnt_2[dmn_idx]=dmn_sz[dmn_idx];
@@ -969,7 +959,7 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
       if(nbr_dim == 1){
 	char dmn_nm[NC_MAX_NAME];
 	
-	(void)nco_inq_dim(in_id,dmn_id[0],dmn_nm,(long *)NULL);
+	(void)nco_inq_dimname(in_id,dmn_id[0],dmn_nm);
 	if(!strcmp(dmn_nm,var_nm)) CRD=True; else CRD=False;
       } /* end if */      
       
@@ -1040,7 +1030,7 @@ prn_var_dfn(int in_id,char *var_nm)
    char *var_nm: input variable name
  */
 {
-/* Routine to print the variable metadata. This routine does not take into 
+/* Routine to print variable metadata. This routine does not take into 
    account any user-specified limits, it just prints what it finds. */
 
   
@@ -1048,6 +1038,7 @@ prn_var_dfn(int in_id,char *var_nm)
   int idx;
   int nbr_dim;
   int nbr_att;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id;
   int var_id;
   
@@ -1055,16 +1046,16 @@ prn_var_dfn(int in_id,char *var_nm)
   
   dmn_sct *dim=NULL_CEWI;
 
-  /* See if the requested variable is in the input file. */
-  var_id=nco_inq_varid(in_id,var_nm);
+  /* Is requested variable in input file? */
+  rcd=nco_inq_varid(in_id,var_nm,&var_id);
 
-  /* Get the number of dimensions, type, and number of attributes for the variable. */
+  /* Get number of dimensions, type, and number of attributes for variable */
   (void)nco_inq_var(in_id,var_id,(char *)NULL,&var_type,&nbr_dim,(int *)NULL,&nbr_att);
 
   /* Get the ID of the record dimension, if any */
   (void)nco_inq(in_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
 
-  /* Print the header for the variable */
+  /* Print the header for variable */
   (void)fprintf(stdout,"%s: # dim. = %i, %s, # att. = %i, ID = %i\n",var_nm,nbr_dim,nco_typ_sng(var_type),nbr_att,var_id);
 
   if(nbr_dim > 0){
@@ -1074,7 +1065,7 @@ prn_var_dfn(int in_id,char *var_nm)
   } /* end if nbr_dim > 0 */
   
   /* Get dimension IDs */
-  (void)nco_inq_var(in_id,var_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
+  (void)nco_inq_vardimid(in_id,var_id,dmn_id);
   
   /* Get dimension sizes and names */
   for(idx=0;idx<nbr_dim;idx++){
@@ -1084,13 +1075,10 @@ prn_var_dfn(int in_id,char *var_nm)
     (void)nco_inq_dim(in_id,dim[idx].id,dim[idx].nm,&dim[idx].sz);
     
     /* Is dimension a coordinate, i.e., stored as a variable? */
-    
-    dim[idx].cid=nco_inq_varid_flg(in_id,dim[idx].nm);
-    
-    
-    if(dim[idx].cid != -1){
+    rcd=nco_inq_varid_flg(in_id,dim[idx].nm,&dim[idx].cid);
+    if(rcd == NC_NOERR){
       /* Find out what type of variable the coordinate is */
-      (void)nco_inq_var(in_id,dim[idx].cid,(char *)NULL,&dim[idx].type,(int *)NULL,(int *)NULL,(int *)NULL);
+      (void)nco_inq_vartype(in_id,dim[idx].cid,&dim[idx].type);
       (void)fprintf(stdout,"%s dimension %i: %s, size = %li %s, dim. ID = %d (CRD)",var_nm,idx,dim[idx].nm,dim[idx].sz,nco_typ_sng(dim[idx].type),dim[idx].id);
     }else{
       (void)fprintf(stdout,"%s dimension %i: %s, size = %li, dim. ID = %d",var_nm,idx,dim[idx].nm,dim[idx].sz,dim[idx].id);
@@ -1100,7 +1088,7 @@ prn_var_dfn(int in_id,char *var_nm)
     
   } /* end loop over dim */
   
-  /* Find the total size of the variable array */
+  /* Find the total size of variable array */
   if(nbr_dim>0){
     long var_sz=1L;
     char sz_sng[100];
@@ -1153,12 +1141,12 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
 
   char *type_fmt_sng(nc_type);
   char *unit_sng="";
-  /* fxm: strings statically allocated with MAX_LEN_FMT_SNG chars are not safe */
-  /* Length could be computed at run time but is a pain */
+  /* fxm: strings statically allocated with MAX_LEN_FMT_SNG chars are susceptible to buffer overflow attacks */
+  /* Length should be computed at run time but is a pain */
 #define MAX_LEN_FMT_SNG 100
   char var_sng[MAX_LEN_FMT_SNG];
-
   
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int *dmn_id=NULL_CEWI;
   int idx;
   
@@ -1180,10 +1168,10 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
      continue to use var_nm for output just to be safe. */
   var.nm=(char *)strdup(var_nm);
 
-  /* See if requested variable is in input file. */
-  var.id=nco_inq_varid(in_id,var_nm);
+  /* Is requested variable in input file? */
+  rcd=nco_inq_varid(in_id,var_nm,&var.id);
 
-  /* Get number of dimensions and type for variable. */
+  /* Get number of dimensions and type for variable */
   (void)nco_inq_var(in_id,var.id,(char *)NULL,&var.type,&var.nbr_dim,(int *)NULL,(int *)NULL);
 
   if(var.nbr_dim > 0){
@@ -1203,7 +1191,7 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   } /* end if var.nbr_dim > 0 */
   
   /* Get dimension IDs */
-  (void)nco_inq_var(in_id,var.id,(char *)NULL,(nc_type *)NULL,(int *)NULL,dmn_id,(int *)NULL);
+  (void)nco_inq_vardimid(in_id,var.id,dmn_id);
   
   /* Get dimension sizes and names */
   for(idx=0;idx<var.nbr_dim;idx++){
@@ -1239,13 +1227,11 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
     /* Is dimension a coordinate, i.e., stored as a variable? */
     dim[idx].val.vp=NULL;
      
-    dim[idx].cid=nco_inq_varid_flg(in_id,dim[idx].nm);
-    
-    
+    rcd=nco_inq_varid_flg(in_id,dim[idx].nm,&dim[idx].cid);
     /* Read in coordinate dimensions */
-    if(dim[idx].cid != -1){
+    if(rcd == NC_NOERR){
       /* Find out what type of variable coordinate is */
-      (void)nco_inq_var(in_id,dim[idx].cid,(char *)NULL,&dim[idx].type,(int *)NULL,(int *)NULL,(int *)NULL);
+      (void)nco_inq_vartype(in_id,dim[idx].cid,&dim[idx].type);
       
       /* Allocate enough space to hold coordinate */
       dim[idx].val.vp=(void *)nco_malloc(dmn_cnt[idx]*nco_typ_lng(dim[idx].type));
@@ -1284,19 +1270,16 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   (void)cast_void_nctype(var.type,&var.val);
 
   if(PRINT_DIMENSIONAL_UNITS){
-    int status;
+    int rcd; /* [rcd] Return code */
+    int att_id; /* [id] Attribute ID */
     long att_sz;
     nc_type att_typ;
 
-    /* Find if this variable has an attribute named "units" */
-    /* ncopts=0;
-	  status=ncattinq(in_id,var.id,"units",&att_typ,&att_sz);
-	  ncopts=NC_VERBOSE | NC_FATAL; */
-	  (void)nco_inq_attid(in_id,var.id,"units",&status);
-	  
-    if(status != -1){
-	  (void)nco_inq_att(in_id,var.id,"units",&att_typ,&att_sz);
-	   if(att_typ == NC_CHAR){
+    /* Does this variable have an attribute named "units"? */
+    rcd=nco_inq_attid(in_id,var.id,"units",&att_id);
+    if(rcd != NC_NOERR){
+      (void)nco_inq_att(in_id,var.id,"units",&att_typ,&att_sz);
+      if(att_typ == NC_CHAR){
 	unit_sng=(char *)nco_malloc((att_sz+1)*nco_typ_lng(att_typ));
 	(void)nco_get_att(in_id,var.id,"units",unit_sng,att_typ);
 	unit_sng[(att_sz+1)*nco_typ_lng(att_typ)-1]='\0';

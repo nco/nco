@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.30 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.31 2001-10-08 07:25:38 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -135,8 +135,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.30 2001-10-01 23:09:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.30 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.31 2001-10-08 07:25:38 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.31 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -160,7 +160,7 @@ main(int argc,char **argv)
   int nbr_fl=0;
   int opt;
   int rec_dmn_id=-1;
-  int rcd; /* Return code */
+  int rcd=NC_NOERR; /* [rcd] Return code */
   
   lmt_sct *lmt=NULL_CEWI;
   
@@ -321,8 +321,8 @@ main(int argc,char **argv)
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-  /* Open the file for reading */
-  in_id=nco_open(fl_in,NC_NOWRITE);
+  /* Open file for reading */
+  rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
 
   /* Get number of variables, dimensions, and record dimension ID of input file */
   rcd=nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
@@ -342,7 +342,7 @@ main(int argc,char **argv)
   /* Remove record coordinate, if any, from extraction list */
   if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
 
-  /* Finally, heapsort the extraction list by variable ID for fastest I/O */
+  /* Finally, heapsort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
     
   /* We now have final list of variables to extract. Phew. */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.69 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.70 2001-10-08 07:25:39 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.69 2001-10-01 23:09:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.69 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.70 2001-10-08 07:25:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.70 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -140,7 +140,7 @@ main(int argc,char **argv)
   int nco_op_typ=nco_op_avg; /* Operation type */
   int opt;
   int op_typ_rlt=0; /* Option o */
-  int rcd=0; /* [rcd] Return code */
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=-1;
   
   lmt_sct *lmt;
@@ -304,8 +304,8 @@ main(int argc,char **argv)
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-  /* Open the file for reading */
-  in_id=nco_open(fl_in,NC_NOWRITE);
+  /* Open file for reading */
+  rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
@@ -325,7 +325,7 @@ main(int argc,char **argv)
   /* Remove record coordinate, if any, from extraction list */
   if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
 
-  /* Finally, heapsort the extraction list by variable ID for fastest I/O */
+  /* Finally, heapsort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
     
   /* Find coordinate/dimension values associated with user-specified limits */
@@ -499,7 +499,7 @@ main(int argc,char **argv)
     /* Make sure file is on local system and is readable or die trying */
     if(idx_fl != 0) fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
     if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
-    in_id=nco_open(fl_in,NC_NOWRITE);
+    rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
     /* Perform various error-checks on input file */
     if(False) (void)fl_cmp_err_chk();
@@ -508,7 +508,7 @@ main(int argc,char **argv)
     if(wgt_nm != NULL){
       int wgt_id;
       
-      wgt_id=nco_inq_varid(in_id,wgt_nm);
+      rcd=nco_inq_varid(in_id,wgt_nm,&wgt_id);
       wgt=var_fll(in_id,wgt_id,wgt_nm,dim,nbr_dmn_fl);
       
       /* Retrieve weighting variable */
@@ -524,7 +524,7 @@ main(int argc,char **argv)
     if(msk_nm != NULL){
       int msk_id;
       
-      msk_id=nco_inq_varid(in_id,msk_nm);
+      rcd=nco_inq_varid(in_id,msk_nm,&msk_id);
       msk=var_fll(in_id,msk_id,msk_nm,dim,nbr_dmn_fl);
       
       /* Retrieve mask variable */

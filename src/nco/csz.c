@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.72 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.73 2001-10-08 07:25:38 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -523,7 +523,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     if(rcd == 0){
       char *fl_nm_lcl_tmp;
       
-      /* NB: simply adding one to the filename pointer is like deleting
+      /* NB: simply adding one to filename pointer is like deleting
 	 the initial slash on the filename. Without copying the new name
 	 into its own memory space, free(fl_nm_lcl) would not be able to free 
 	 the initial byte. */
@@ -554,12 +554,12 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       (void)free(fl_nm_lcl_tmp);
     } /* end if */
     
-    /* At last, check for the file in the local storage directory */
+    /* At last, check for file in the local storage directory */
     rcd=stat(fl_nm_lcl,&stat_sct);
     if (rcd != -1) (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",prg_nm_get(),fl_nm,fl_nm_lcl);
   } /* end if */
 
-  /* The file was not found locally, try to fetch it from the remote file system */
+  /* File was not found locally, try to fetch it from remote file system */
   if(rcd == -1){
 
     typedef struct{ /* [enm] Remote fetch command structure */
@@ -600,10 +600,10 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     /* Why did the stat() command fail? */
 /*    (void)perror(prg_nm_get());*/
     
-    /* The remote filename is the input filename by definition */
+    /* The remote filename is input filename by definition */
     fl_nm_rmt=fl_nm;
     
-    /* A URL specifier in the filename unambiguously signals to use anonymous ftp */    if(rmt_cmd == NULL){
+    /* A URL specifier in filename unambiguously signals to use anonymous ftp */    if(rmt_cmd == NULL){
       if(strstr(fl_nm_rmt,"ftp://") == fl_nm_rmt){
 #ifdef WIN32
       /* I have no idea how networking calls work in NT, so just exit */
@@ -645,7 +645,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 
 	/* The remote hostname begins directly after "ftp://" */
 	host_nm_rmt=fl_nm_rmt+6;
-	/* The filename begins right after the slash */
+	/* filename begins right after the slash */
 	fl_nm_rmt=strstr(fl_nm_rmt+6,"/")+1;
 	/* NUL-terminate the hostname */
 	*(fl_nm_rmt-1)='\0';
@@ -767,7 +767,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       } /* end if */
     }else{
       /* This is the appropriate place to insert a shell script invocation 
-	 of a command to retrieve the file asynchronously and return the 
+	 of a command to retrieve file asynchronously and return the 
 	 status to the NCO synchronously. */
 
       int fl_sz_crr=-2;
@@ -808,10 +808,11 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
   /* Make sure we have read permission on local file */
   if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
     /* Attempt ncopen() on HTTP protocol files. Success means DODS can find file. */
+    int in_id; /* [id] Temporary input file ID */
     
-    rcd=nco_open(fl_nm_lcl,NC_NOWRITE);
+    (void)nco_open(fl_nm_lcl,NC_NOWRITE,&in_id);
     
-    if(rcd < 0){
+    if(rcd < 0){ /* fxm: Should compare to NC_NOERR but that would mean needing to #include netcdf.h which I want to avoid */
       (void)fprintf(stderr,"%s: ERROR Attempted HTTP access protocol failed: DODS server is not responding, %s does not exist, or user does not have read permission for it\n",prg_nm_get(),fl_nm_lcl);
       exit(EXIT_FAILURE);
     } /* end if err */
@@ -1122,7 +1123,7 @@ fl_cp(char *fl_src,char *fl_dst)
 void
 fl_mv(char *fl_src,char *fl_dst)
 /* 
-   char *fl_src: I name of the file to move
+   char *fl_src: I name of file to move
    char *fl_dst: I name of the destination file
  */
 {
@@ -1180,8 +1181,8 @@ sng_ascii_trn(char *sng)
      */
 {
   /* Purpose: Replace any C language '\X' escape codes in a string into ASCII bytes 
-     Return the number of escape sequences found and actually translated
-     This should be the same as the number of bytes by which the string length has shrunk
+     Return number of escape sequences found and actually translated
+     This should be the same as number of bytes by which the string length has shrunk
      For example, the consecutive characters "\n" are translated into ASCII '\n' = 10 which diminishes the string length by 1
      Function works for an arbitrary number of escape codes in the input string
      The escape sequence for NUL itself, \0, causes a warning and is not translated

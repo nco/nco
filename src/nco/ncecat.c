@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.27 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.28 2001-10-08 07:25:39 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.27 2001-10-01 23:09:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.27 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.28 2001-10-08 07:25:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.28 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -107,9 +107,9 @@ main(int argc,char **argv)
   int nbr_dmn_xtr;
   int nbr_fl=0;
   int opt;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=-1;
-  
-  
+ 
   lmt_sct *lmt;
   
   long idx_rec_out=0L; /* idx_rec_out gets incremented */
@@ -209,8 +209,8 @@ main(int argc,char **argv)
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-  /* Open the file for reading */
-  in_id=nco_open(fl_in,NC_NOWRITE);
+  /* Open file for reading */
+  rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
@@ -230,7 +230,7 @@ main(int argc,char **argv)
   /* Remove record coordinate, if any, from extraction list */
   if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
 
-  /* Finally, heapsort the extraction list by variable ID for fastest I/O */
+  /* Finally, heapsort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
     
   /* We now have final list of variables to extract. Phew. */
@@ -306,7 +306,7 @@ main(int argc,char **argv)
       } /* end if */
     } /* end loop over idx */
 
-    /* Add the record dimension to the end of the dimension list */
+    /* Add the record dimension to the end of dimension list */
     nbr_dmn_xtr++;
     dmn_out=(dmn_sct **)nco_realloc(dmn_out,nbr_dmn_xtr*sizeof(dmn_sct **));
     dmn_out[nbr_dmn_xtr-1]=rdim;
@@ -323,7 +323,7 @@ main(int argc,char **argv)
       var_prc_out[idx]->is_rec_var=True;
       var_prc_out[idx]->sz_rec=var_prc_out[idx]->sz;
       
-      /* Allocate space to hold the dimension IDs */
+      /* Allocate space to hold dimension IDs */
       var_prc_out[idx]->dim=(dmn_sct **)nco_realloc(var_prc_out[idx]->dim,var_prc_out[idx]->nbr_dim*sizeof(dmn_sct *));
       var_prc_out[idx]->dmn_id=(int *)nco_realloc(var_prc_out[idx]->dmn_id,var_prc_out[idx]->nbr_dim*sizeof(int));
       var_prc_out[idx]->cnt=(long *)nco_realloc(var_prc_out[idx]->cnt,var_prc_out[idx]->nbr_dim*sizeof(long));
@@ -376,7 +376,7 @@ main(int argc,char **argv)
     /* Make sure file is on local system and is readable or die trying */
     if(idx_fl != 0) fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
     if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
-    in_id=nco_open(fl_in,NC_NOWRITE);
+    rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
     /* Perform various error-checks on input file */
     if(False) (void)fl_cmp_err_chk();

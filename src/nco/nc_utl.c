@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.112 2001-10-02 06:02:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.113 2001-10-08 07:25:38 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -58,96 +58,6 @@
 
 /* Personal headers */
 #include "nco.h" /* netCDF operator universal def'ns */
-
-char *
-nco_typ_sng(nc_type type)
-/*  
-   nc_type type: I [enm] netCDF type
-   char *nco_typ_sng(): O [sng] string describing type
-*/
-{
-  switch(type){
-  case NC_FLOAT:
-    return "NC_FLOAT";
-  case NC_DOUBLE:
-    return "NC_DOUBLE";
-  case NC_INT:
-    return "NC_INT";
-  case NC_SHORT:
-    return "NC_SHORT";
-  case NC_CHAR:
-    return "NC_CHAR";
-  case NC_BYTE:
-    return "NC_BYTE";
-  default:
-    (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in nco_typ_sng()\n",prg_nm_get(),type);
-    exit(EXIT_FAILURE);
-    break;
-  } /* end switch */
-
-  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
-  return (char *)NULL;
-} /* end nco_typ_sng() */
-
-char *
-c_type_nm(nc_type type)
-/*  
-   nc_type type: I netCDF type
-   char *c_type_nm(): O string describing type
-*/
-{
-  switch(type){
-  case NC_FLOAT:
-    return "float";
-  case NC_DOUBLE:
-    return "double";
-  case NC_INT:
-    return "long";
-  case NC_SHORT:
-    return "short";
-  case NC_CHAR:
-    return "char";
-  case NC_BYTE:
-    return "char";
-  default:
-    (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in c_type_nm()\n",prg_nm_get(),type);
-    exit(EXIT_FAILURE);
-    break;
-  } /* end switch */
-
-  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
-  return (char *)NULL;
-} /* end c_type_nm() */
-
-char *
-fortran_type_nm(nc_type type)
-/*  
-   nc_type type: I netCDF type
-   char *fortran_type_nm(): O string describing type
-*/
-{
-  switch(type){
-  case NC_FLOAT:
-    return "real";
-  case NC_DOUBLE:
-    return "double precision";
-  case NC_INT:
-    return "integer";
-  case NC_SHORT:
-    return "integer*2";
-  case NC_CHAR:
-    return "character";
-  case NC_BYTE:
-    return "char";
-  default:
-    (void)fprintf(stdout,"%s: ERROR Unknown nc_type %d in c_type_nm()\n",prg_nm_get(),type);
-    exit(EXIT_FAILURE);
-    break;
-  } /* end switch */
-
-  /* Some C compilers, e.g., SGI cc, need a return statement at the end of non-void functions */
-  return (char *)NULL;
-} /* end fortran_type_nm() */
 
 void
 cast_void_nctype(nc_type type,ptr_unn *ptr)
@@ -244,6 +154,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   int max_lmt_typ=int_CEWI;
   int monotonic_direction;
   int prg_id; /* Program ID */
+  int rcd=NC_NOERR; /* [enm] Return code */
   int rec_dmn_id; /* [idx] Variable ID of record dimension, if any */
 
   long idx;
@@ -262,8 +173,8 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   lmt.max_val=0.0;
 
   /* Get dimension ID */
-  lmt.id=nco_inq_dimid_flg(nc_id,lmt.nm);
-  if(lmt.id == -1){
+  rcd=nco_inq_dimid_flg(nc_id,lmt.nm,&lmt.id);
+  if(rcd != NC_NOERR){
     (void)fprintf(stdout,"%s: ERROR dimension %s is not in input file\n",prg_nm_get(),lmt.nm);
     exit(EXIT_FAILURE);
   } /* endif */
@@ -278,7 +189,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
   if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)) rec_dmn_and_mlt_fl_opr=True; else rec_dmn_and_mlt_fl_opr=False;
 
   /* Get dimension size */
-  (void)nco_inq_dim(nc_id,lmt.id,(char *)NULL,&dim.sz);
+  (void)nco_inq_dimlen(nc_id,lmt.id,&dim.sz);
   
   /* Shortcut to avoid indirection */
   dmn_sz=dim.sz;
@@ -342,10 +253,10 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     long dmn_srt=0L;
 
     /* Get variable ID of coordinate */
-    dim.cid=nco_inq_varid(nc_id,lmt.nm);
+    rcd=nco_inq_varid(nc_id,lmt.nm,&dim.cid);
     
     /* Get coordinate type */
-    (void)nco_inq_var(nc_id,dim.cid,(char *)NULL,&dim.type,(int *)NULL,(int *)NULL,(int *)NULL);
+    (void)nco_inq_vartype(nc_id,dim.cid,&dim.type);
     
     /* Warn when coordinate type is weird */
     if(dim.type == NC_BYTE || dim.type == NC_CHAR) (void)fprintf(stderr,"\nWARNING: Coordinate %s is type %s. Dimension truncation is unpredictable.\n",lmt.nm,nco_typ_sng(dim.type));
@@ -882,7 +793,7 @@ rec_var_dbg(int nc_id,char *dbg_sng)
   if(rec_dmn_id == -1){
     (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, no record dimension\n",prg_nm_get(),nbr_dmn_fl,nbr_var_fl);
   }else{
-    (void)nco_inq_dim(nc_id,rec_dmn_id,(char *)NULL,&dmn_sz);
+    (void)nco_inq_dimlen(nc_id,rec_dmn_id,&dmn_sz);
     (void)fprintf(stderr,"%s: DBG %d dimensions, %d variables, record dimension size is %li\n",prg_nm_get(),nbr_dmn_fl,nbr_var_fl,dmn_sz);
   } /* end else */
   (void)fflush(stderr);
@@ -897,19 +808,18 @@ att_cpy(int in_id,int out_id,int var_in_id,int var_out_id)
    int var_out_id: I netCDF output-variable ID
 */
 {
-  /* Routine to copy all the attributes from the input netCDF
-     file to the output netCDF file. If var_in_id == NC_GLOBAL, 
-     then the global attributes are copied. Otherwise the variable's
-     attributes are copied. */
+  /* Purpose: Copy attributes from input netCDF file to output netCDF file
+     If var_in_id == NC_GLOBAL, then global attributes are copied. 
+     Otherwise only indicated variable's attributes are copied */
 
   int idx;
   int nbr_att;
   int rcd; /* [enm] Return code */
 
   if(var_in_id == NC_GLOBAL){
-    (void)nco_inq(in_id,(int *)NULL,(int *)NULL,&nbr_att,(int *)NULL);
+    (void)nco_inq_natts(in_id,&nbr_att);
   }else{
-    (void)nco_inq_var(in_id,var_in_id,(char *)NULL,(nc_type *)NULL,(int *)NULL,(int *)NULL,&nbr_att);
+    (void)nco_inq_varnatts(in_id,var_in_id,&nbr_att);
   } /* end else */
   
   for(idx=0;idx<nbr_att;idx++){
@@ -919,13 +829,13 @@ att_cpy(int in_id,int out_id,int var_in_id,int var_out_id)
     rcd=nco_inq_att_flg(out_id,var_out_id,att_nm,(nc_type *)NULL,(long *)NULL);
       
     /* Are we about to overwrite an existing attribute? */
-    if(rcd != NC_ENOTATT){
+    if(rcd == NC_NOERR){
       if(var_out_id == -1){
 	(void)fprintf(stderr,"%s: WARNING Overwriting global attribute %s\n",prg_nm_get(),att_nm);
       }else{
 	char var_nm[NC_MAX_NAME];
 	
-	(void)nco_inq_var(out_id,var_out_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,(int *)NULL);
+	(void)nco_inq_varname(out_id,var_out_id,var_nm);
 	(void)fprintf(stderr,"%s: WARNING Overwriting attribute %s for output variable %s\n",prg_nm_get(),att_nm,var_nm);
       } /* end else */
     } /* end if */
@@ -980,7 +890,7 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
   if(var->nbr_dim > 0) var->srd=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srd=(long *)NULL;
 
   /* Get dimension IDs from input file */
-  (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,var->dmn_id,(int *)NULL);
+  (void)nco_inq_vardimid(var->nc_id,var->id,var->dmn_id);
   
   /* Type in memory begins as same type as on disk */
   var->type=var->typ_dsk; /* Type of variable in RAM */
@@ -993,7 +903,7 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
   for(idx=0;idx<var->nbr_dim;idx++){
 
     /* What is the name of this dimension? */
-    (void)nco_inq_dim(nc_id,var->dmn_id[idx],dmn_nm,(long *)NULL);
+    (void)nco_inq_dimname(nc_id,var->dmn_id[idx],dmn_nm);
 
     /* Search the input dimension list for a matching name */
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
@@ -1051,6 +961,7 @@ var_refresh(int nc_id,var_sct *var)
      NCO is one of the only tool I know of which makes all of this transparent to the user
      Thus this capability is very important to maintain
    */
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   /* Refresh variable ID */
   var->nc_id=nc_id;
@@ -1059,11 +970,11 @@ var_refresh(int nc_id,var_sct *var)
 #pragma omp critical
 #endif /* _OPENMP */
   { /* begin OpenMP critical */
-    var->id=nco_inq_varid(var->nc_id,var->nm);
+    rcd=nco_inq_varid(var->nc_id,var->nm,&var->id);
     
-    /* fxm: Not sure if/why it is necessary refresh the number of dimensions...but it should not hurt */
+    /* fxm: Not sure if/why it is necessary refresh number of dimensions...but it should not hurt */
     /* Refresh number of dimensions in variable */
-    (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,&var->nbr_dim,(int *)NULL,(int *)NULL);
+    (void)nco_inq_varndims(var->nc_id,var->id,&var->nbr_dim);
     
     /* Refresh number of attributes and missing value attribute, if any */
     var->has_mss_val=mss_val_get(var->nc_id,var);
@@ -1080,8 +991,8 @@ mss_val_get(int nc_id,var_sct *var)
  */
 {
   /* Purpose: Update number of attributes and missing_value attribute of variable
-     No matter what the type of missing_value is as stored on disk, this routine
-     ensures that the copy in mss_val in the var_sct is stored in the type as
+     No matter what type of missing_value is as stored on disk, this routine
+     ensures that the copy in mss_val in the var_sct is stored in type as
      the host variable.
      Routine does not allow output missing_value to have more than one element */
 
@@ -1106,7 +1017,7 @@ mss_val_get(int nc_id,var_sct *var)
   } /* end if */
 
   /* Refresh number of attributes for variable */
-  (void)nco_inq_var(var->nc_id,var->id,(char *)NULL,(nc_type *)NULL,(int *)NULL,(int *)NULL,&var->nbr_att);
+  (void)nco_inq_varnatts(var->nc_id,var->id,&var->nbr_att);
 
   for(idx=0;idx<var->nbr_att;idx++){
     (void)nco_inq_attname(var->nc_id,var->id,idx,att_nm);
@@ -1160,6 +1071,7 @@ dmn_fll(int nc_id,int dmn_id,char *dmn_nm)
 
   dmn_sct *dim;
   
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id;
   
   dim=(dmn_sct *)nco_malloc(sizeof(dmn_sct));
@@ -1171,7 +1083,7 @@ dmn_fll(int nc_id,int dmn_id,char *dmn_nm)
   dim->val.vp=NULL;
 
   dim->is_crd_dmn=False;
-  (void)nco_inq_dim(dim->nc_id,dmn_id,(char *)NULL,&dim->sz);
+  (void)nco_inq_dimlen(dim->nc_id,dmn_id,&dim->sz);
   
   /* Get the record dimension ID */
   (void)nco_inq(dim->nc_id,(int *)NULL,(int *)NULL,(int *)NULL,&rec_dmn_id);
@@ -1180,14 +1092,12 @@ dmn_fll(int nc_id,int dmn_id,char *dmn_nm)
   }else{
     dim->is_rec_dmn=False;
   } /* end if */
-  
    
-  dim->cid=nco_inq_varid_flg(dim->nc_id,dmn_nm);
-  
-  if(dim->cid != -1){
+  rcd=nco_inq_varid_flg(dim->nc_id,dmn_nm,&dim->cid);
+  if(rcd == NC_NOERR){
     dim->is_crd_dmn=True;
-    /* What type is the coordinate? */
-    (void)nco_inq_var(dim->nc_id,dim->cid,(char *)NULL,&dim->type,(int *)NULL,(int *)NULL,(int *)NULL);
+    /* What type is coordinate? */
+    (void)nco_inq_vartype(dim->nc_id,dim->cid,&dim->type);
   } /* end if */
   
   dim->cnt=dim->sz;
@@ -1208,7 +1118,7 @@ dmn_lmt_mrg(dmn_sct **dim,int nbr_dim,lmt_sct *lmt,int lmt_nbr)
    int lmt_nbr: I number of dimensions with user-specified limits
  */
 {
-  /* Routine to merge the limit structure information into the dimension structures */
+  /* Routine to merge the limit structure information into dimension structures */
 
   int idx;
   int lmt_idx;
@@ -1240,6 +1150,7 @@ var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,
  */
 {
   bool err_flg=False;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int idx;
 
   nm_id_sct *xtr_lst=NULL; /* xtr_lst can get realloc()'d from NULL with -c option */
@@ -1250,8 +1161,8 @@ var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,
      
     for(idx=0;idx<*nbr_xtr;idx++){
       xtr_lst[idx].nm=var_lst_in[idx];
-      xtr_lst[idx].id=nco_inq_varid_flg(nc_id,xtr_lst[idx].nm);
-      if(xtr_lst[idx].id == -1){
+      rcd=nco_inq_varid_flg(nc_id,xtr_lst[idx].nm,&xtr_lst[idx].id);
+      if(rcd != NC_NOERR){
 	(void)fprintf(stdout,"%s: ERROR var_lst_mk() reports user-specified variable \"%s\" is not in input file\n",prg_nm_get(),xtr_lst[idx].nm);
 	err_flg=True;
       } /* endif */
@@ -1261,15 +1172,15 @@ var_lst_mk(int nc_id,int nbr_var,char **var_lst_in,bool PROCESS_ALL_COORDINATES,
   }else if(!PROCESS_ALL_COORDINATES){
     /* If the user did not specify variables with the -v option,
        and the user did not request automatic processing of all coords,
-       then extract all the variables in the file. In this case
-       we can assume the variable IDs range from 0..nbr_var-1. */
+       then extract all variables in file. In this case
+       we can assume variable IDs range from 0..nbr_var-1. */
     char var_nm[NC_MAX_NAME];
     
     *nbr_xtr=nbr_var;
     xtr_lst=(nm_id_sct *)nco_malloc(*nbr_xtr*sizeof(nm_id_sct));
     for(idx=0;idx<nbr_var;idx++){
-      /* Get the name for each variable. */
-      (void)nco_inq_var(nc_id,idx,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,(int *)NULL);
+      /* Get name of each variable. */
+      (void)nco_inq_varname(nc_id,idx,var_nm);
       xtr_lst[idx].nm=(char *)strdup(var_nm);
       xtr_lst[idx].id=idx;
     } /* end loop over idx */
@@ -1289,7 +1200,7 @@ var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
    nm_id_sct var_lst_xcl(): O extraction list
  */
 {
-  /* The user wants to extract all the variables except the ones
+  /* The user wants to extract all variables except the ones
      currently in the list. Since it's hard to edit the existing
      list, copy the existing extract list into the exclude list,
      and construct a new list extract list from scratch. */
@@ -1310,12 +1221,12 @@ var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
   xtr_lst=(nm_id_sct *)nco_realloc((void *)xtr_lst,(nbr_var-nbr_xcl)*sizeof(nm_id_sct));
   
   for(idx=0;idx<nbr_var;idx++){
-    /* Get the name and ID for the variable. */
-    (void)nco_inq_var(nc_id,idx,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,(int *)NULL);
+    /* Get name and ID of variable */
+    (void)nco_inq_varname(nc_id,idx,var_nm);
     for(lst_idx=0;lst_idx<nbr_xcl;lst_idx++){
       if(idx == xcl_lst[lst_idx].id) break;
     } /* end loop over lst_idx */
-    /* If the variable was not found in the exclusion list then 
+    /* If variable was not found in the exclusion list then 
        add it to the new list. */
     if(lst_idx == nbr_xcl){
       xtr_lst[*nbr_xtr].nm=(char *)strdup(var_nm);
@@ -1351,16 +1262,15 @@ var_lst_add_crd(int nc_id,int nbr_var,int nbr_dim,nm_id_sct *xtr_lst,int *nbr_xt
 
   int crd_id;
   int idx;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   for(idx=0;idx<nbr_dim;idx++){
-    (void)nco_inq_dim(nc_id,idx,crd_nm,(long *)NULL);
+    (void)nco_inq_dimname(nc_id,idx,crd_nm);
     
-    /* Does a variable by the same name exist in the input file? */
-    
-    crd_id=nco_inq_varid_flg(nc_id,crd_nm);
-    
-    if(crd_id != -1){
-      /* Dimension is a coordinate. Is it already on the list? */
+    /* Does variable of same name exist in input file? */
+    rcd=nco_inq_varid_flg(nc_id,crd_nm,&crd_id);
+    if(rcd == NC_NOERR){
+      /* Dimension is coordinate. Is it already on list? */
       int lst_idx;
       
       for(lst_idx=0;lst_idx<*nbr_xtr;lst_idx++){
@@ -1386,7 +1296,7 @@ lmt_sct
 lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
 /* 
    int nc_id: I [idx] netCDF file ID
-   int dmn_id: I [idx] ID of the dimension for which to create a limit structure
+   int dmn_id: I [idx] ID of dimension for which to create a limit structure
    lmt_sct *lmt: I [sct] Array of limits structures from lmt_evl()
    int lmt_nbr: I [nbr] Number of limit structures in limit structure array
    bool FORTRAN_STYLE: I [flg] switch to determine syntactical interpretation of dimensional indices
@@ -1438,9 +1348,7 @@ lmt_sct_mk(int nc_id,int dmn_id,lmt_sct *lmt,int lmt_nbr,bool FORTRAN_STYLE)
     int max_sng_sz;
     
     /* Fill in limits with default parsing information */
-     
     rcd=nco_inq_dim_flg(nc_id,dmn_id,dmn_nm,&cnt);
-    
 
     if(rcd == NC_EBADDIM){
       (void)fprintf(stdout,"%s: ERROR attempting to find non-existent dimension with id = %d in lmt_sct_mk()\n",prg_nm_get(),dmn_id);
@@ -1492,28 +1400,27 @@ nm_id_sct *
 var_lst_crd_xcl(int nc_id,int dmn_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 /* 
    int nc_id: I netCDF file ID
-   int dmn_id: I dimension ID of the coordinate to eliminate from the extraction list
+   int dmn_id: I dimension ID of the coordinate to eliminate from extraction list
    nm_id_sct *xtr_lst: current extraction list (destroyed)
    int *nbr_xtr: I/O number of variables in current extraction list
    nm_id_sct var_lst_crd_xcl(): O extraction list
  */
 {
-  /* The following code modifies the extraction list to exclude the coordinate, 
+  /* The following code modifies extraction list to exclude the coordinate, 
      if any, associated with the given dimension ID */
   
   char crd_nm[NC_MAX_NAME];
 
   int idx;
   int crd_id=-1;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   
-  /* What is the variable ID of the record coordinate, if any? */
-  (void)nco_inq_dim(nc_id,dmn_id,crd_nm,(long *)NULL);
+  /* What is variable ID of record coordinate, if any? */
+  (void)nco_inq_dimname(nc_id,dmn_id,crd_nm);
    
-  crd_id=nco_inq_varid_flg(nc_id,crd_nm);
-  
-  
-  if(crd_id != -1){
-    /* Is the coordinate on the extraction list? */
+  rcd=nco_inq_varid_flg(nc_id,crd_nm,&crd_id);
+  if(rcd == NC_NOERR){
+    /* Is coordinate on extraction list? */
     for(idx=0;idx<*nbr_xtr;idx++){
       if(xtr_lst[idx].id == crd_id) break;
     } /* end loop over idx */
@@ -1548,7 +1455,7 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
    nm_id_sct var_lst_ass_crd_add(): O extraction list
  */
 {
-  /* Makes sure all coordinates associated with each of the variables
+  /* Makes sure all coordinates associated with each of variables
      to be extracted is also on the list. This helps with making concise
      nco_malloc() calls down the road. */
 
@@ -1561,26 +1468,26 @@ var_lst_ass_crd_add(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
   int idx_var;
   int nbr_dim;
   int nbr_var_dim;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
-  /* Get the number of dimensions */
+  /* Get number of dimensions */
   (void)nco_inq(nc_id,&nbr_dim,(int *)NULL,(int *)NULL,(int *)NULL);
 
-  /* ...for each dimension in the input file... */
+  /* ...for each dimension in input file... */
   for(idx_dim=0;idx_dim<nbr_dim;idx_dim++){
     /* ...see if it is a coordinate dimension... */
-    (void)nco_inq_dim(nc_id,idx_dim,dmn_nm,(long *)NULL);
+    (void)nco_inq_dimname(nc_id,idx_dim,dmn_nm);
      
-    crd_id=nco_inq_varid_flg(nc_id,dmn_nm);
-    
-    if(crd_id != -1){
-      /* Is this coordinate already on the extraction list? */
+    rcd=nco_inq_varid_flg(nc_id,dmn_nm,&crd_id);
+    if(rcd == NC_NOERR){
+      /* Is this coordinate already on extraction list? */
       for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
 	if(crd_id == xtr_lst[idx_var].id) break;
       } /* end loop over idx_var */
       if(idx_var == *nbr_xtr){
-	/* ...the coordinate is not on the list, is it associated with any of the variables?... */
+	/* ...the coordinate is not on the list, is it associated with any variables?... */
 	for(idx_var=0;idx_var<*nbr_xtr;idx_var++){
-	  /* Get number of dimensions and the dimension IDs for the variable. */
+	  /* Get number of dimensions and dimension IDs for variable. */
 	  (void)nco_inq_var(nc_id,xtr_lst[idx_var].id,(char *)NULL,(nc_type *)NULL,&nbr_var_dim,dmn_id,(int *)NULL);
 	  for(idx_var_dim=0;idx_var_dim<nbr_var_dim;idx_var_dim++){
 	    if(idx_dim == dmn_id[idx_var_dim]) break;
@@ -1657,7 +1564,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
    char *fl_out: I Name of file to open
    bool FORCE_APPEND: I Flag for appending to existing file, if any
    bool FORCE_OVERWRITE: I Flag for overwriting existing file, if any
-   int *nc_id: O File ID
+   int *out_id: O File ID
    char *fl_out_open(): O Name of temporary file actually opened
  */
 {
@@ -1717,7 +1624,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
      There are many options:
      tmpnam() uses P_tmpdir, does not allow specfication of drc
      tempnam(const char *drc, const char *pfx) uses writable $TMPDIR, else drc, else P_tmpdir, else /tmp and prefixes returned name with up to five characters from pfx, if supplied
-     mkstemp(char *tpl) generates a filename and creates the file in mode 0600
+     mkstemp(char *tpl) generates a filename and creates file in mode 0600
 
      Many sysadmins do not make /tmp large enough for huge temporary data files 
      tempnam(), however, allows $TMPDIR or drc to be set to override /tmp
@@ -1741,7 +1648,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
   } /* end if */
 
   if(FORCE_OVERWRITE){
-    *out_id=nco_create(fl_out_tmp,NC_CLOBBER);
+    rcd=nco_create(fl_out_tmp,NC_CLOBBER,out_id);
     /*    rcd=nc_create(fl_out_tmp,NC_CLOBBER|NC_SHARE,out_id);*/
     return fl_out_tmp;
   } /* end if */
@@ -1751,7 +1658,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
       /* ncrename is different because a single filename is allowed without question */
       /* Incur expense of copying current file to temporary file */
       (void)fl_cp(fl_out,fl_out_tmp);
-      *out_id=nco_open(fl_out_tmp,NC_WRITE); 
+      rcd=nco_open(fl_out_tmp,NC_WRITE,out_id); 
       (void)nco_redef(*out_id);
       return fl_out_tmp;
     } /* end if */
@@ -1767,7 +1674,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
     if(FORCE_APPEND){
       /* Incur expense of copying current file to temporary file */
       (void)fl_cp(fl_out,fl_out_tmp);
-      *out_id=nco_open(fl_out_tmp,NC_WRITE); 
+      rcd=nco_open(fl_out_tmp,NC_WRITE,out_id); 
       (void)nco_redef(*out_id);
       return fl_out_tmp;
     } /* end if */
@@ -1777,7 +1684,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
       if(nbr_itr > 10){
 	(void)fprintf(stdout,"\n%s: ERROR %hd failed attempts to obtain valid interactive input. Assuming non-interactive shell and exiting.\n",prg_nm_get(),nbr_itr-1);
 	exit(EXIT_FAILURE);
-      }; /* end if */
+      } /* end if */
       if(nbr_itr > 1) (void)fprintf(stdout,"%s: ERROR Invalid response.\n",prg_nm_get());
       (void)fprintf(stdout,"%s: %s exists---`o'verwrite, `a'ppend/replace, or `e'xit (o/a/e)? ",prg_nm_get(),fl_out);
       (void)fflush(stdout);
@@ -1792,19 +1699,19 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
       exit(EXIT_SUCCESS);
       break;
     case 'o':
-      *out_id=nco_create(fl_out_tmp,NC_CLOBBER);
+      rcd=nco_create(fl_out_tmp,NC_CLOBBER,out_id);
       /*    rcd=nc_create(fl_out_tmp,NC_CLOBBER|NC_SHARE,out_id);*/
       break;
     case 'a':
       /* Incur expense of copying current file to temporary file */
       (void)fl_cp(fl_out,fl_out_tmp);
-      *out_id=nco_open(fl_out_tmp,NC_WRITE); 
+      rcd=nco_open(fl_out_tmp,NC_WRITE,out_id); 
       (void)nco_redef(*out_id);
       break;
     } /* end switch */
     
   }else{ /* output file does not yet already exist */
-    *out_id=nco_create(fl_out_tmp,NC_NOCLOBBER);
+    rcd=nco_create(fl_out_tmp,NC_NOCLOBBER,out_id);
     /*    rcd=nc_create(fl_out_tmp,NC_NOCLOBBER|NC_SHARE,out_id);*/
   } /* end if output file does not already exist */
   
@@ -1852,8 +1759,8 @@ var_val_cpy(int in_id,int out_id,var_sct **var,int nbr_var)
    var_val_cpy():
 */
 {
-  /* Copy the variable data for every variable in the input variable structure list
-     from the input file to the output file */
+  /* Copy variable data for every variable in the input variable structure list
+     from input file to output file */
 
   int idx;
 
@@ -1874,23 +1781,22 @@ var_val_cpy(int in_id,int out_id,var_sct **var,int nbr_var)
 void
 dmn_dfn(char *fl_nm,int nc_id,dmn_sct **dim,int nbr_dim)
 /* 
-   char *fl_nm: I name of the output file
+   char *fl_nm: I name of output file
    int nc_id: I netCDF output-file ID
-   dmn_sct **dim: I list of pointers to dimension structures to be defined in the output file
+   dmn_sct **dim: I list of pointers to dimension structures to be defined in output file
    int nbr_dim: I number of dimension structures in structure list
 */
 {
   int idx;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   for(idx=0;idx<nbr_dim;idx++){
 
-    /* See if the dimension has already been defined */
-    
-    dim[idx]->id=nco_inq_dimid_flg(nc_id,dim[idx]->nm);
-    
+    /* Has dimension already been defined? */
+    rcd=nco_inq_dimid_flg(nc_id,dim[idx]->nm,&dim[idx]->id);
 
     /* If dimension has not been defined yet, define it */
-    if(dim[idx]->id == -1){
+    if(rcd != NC_NOERR){
       if(dim[idx]->is_rec_dmn){
 	(void)nco_def_dim(nc_id,dim[idx]->nm,NC_UNLIMITED,&(dim[idx]->id));
       }else{
@@ -1915,7 +1821,7 @@ void
 var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dmn_ncl,int nbr_dmn_ncl)
 /* 
    int in_id: I netCDF input-file ID
-   char *fl_out: I name of the output file
+   char *fl_out: I name of output file
    int out_id: I netCDF output-file ID
    var_sct **var: I list of pointers to variable structures to be defined in output file
    int nbr_var: I number of variable structures in structure list
@@ -1925,13 +1831,13 @@ var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
 {
   /* Define variables in output file, and copy their attributes */
 
-  /* This function is unusual (for me) in that the dimension arguments are only intended
+  /* This function is unusual (for me) in that dimension arguments are only intended
      to be used by certain programs, those that alter the rank of input variables. If a
      program does not alter the rank (dimensionality) of input variables then it should
      call this function with a NULL dimension list. Otherwise, this routine attempts
-     to define the variable correctly in the output file (allowing the variable to be
-     defined with only those dimensions that are in the dimension inclusion list) 
-     without altering the variable structures. 
+     to define variable correctly in output file (allowing variable to be
+     defined with only those dimensions that are in dimension inclusion list) 
+     without altering variable structures. 
 
      The other unusual thing about this function is that it is intended to be called with var_prc_out
      So the local variable var usually refers to var_prc_out in the calling function 
@@ -1940,18 +1846,17 @@ var_dfn(int in_id,char *fl_out,int out_id,var_sct **var,int nbr_var,dmn_sct **dm
   int idx_dim;
   int dmn_id_vec[NC_MAX_DIMS];
   int idx;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   
   for(idx=0;idx<nbr_var;idx++){
 
     /* Is requested variable already in output file? */
-     
-    var[idx]->id=nco_inq_varid_flg(out_id,var[idx]->nm);
-    
+    rcd=nco_inq_varid_flg(out_id,var[idx]->nm,&var[idx]->id);
 
     /* If variable has not been defined, define it */
-    if(var[idx]->id == -1){
+    if(rcd != NC_NOERR){
       
-      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of output dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_dfn() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in the output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
+      /* TODO #116: There is a problem here in that var_out[idx]->nbr_dim is never explicitly set to the actual number of output dimensions, rather, it is simply copied from var[idx]. When var_out[idx] actually has 0 dimensions, the loop executes once anyway, and an erroneous index into the dmn_out[idx] array is attempted. Fix is to explicitly define var_out[idx]->nbr_dim. Until this is done, anything in ncwa that explicitly depends on var_out[idx]->nbr_dim is suspect. The real problem is that, in ncwa, var_avg() expects var_out[idx]->nbr_dim to contain the input, rather than output, number of dimensions. The routine, var_dfn() was designed to call the simple branch when dmn_ncl == 0, i.e., for operators besides ncwa. However, when ncwa averages all dimensions in output file, nbr_dmn_ncl == 0 so the wrong branch would get called unless we specifically use this branch whenever ncwa is calling. */
       if(dmn_ncl != NULL || prg_get() == ncwa){
 	int nbr_var_dim=0;
 	int idx_ncl;
@@ -2142,7 +2047,7 @@ dmn_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
 
   *nbr_dim=0;
 
-  /* Get the number of dimensions */
+  /* Get number of dimensions */
   (void)nco_inq(nc_id,&nbr_dmn_in,(int *)NULL,(int *)NULL,(int *)NULL);
 
   /* Number of input dimensions is upper bound on number of output dimensions */
@@ -2167,7 +2072,7 @@ dmn_lst_ass_var(int nc_id,nm_id_sct *var,int nbr_var,int *nbr_dim)
 	  /* ...and if dimension was not found on output dimension list... */
 	  if(idx_dmn_lst == *nbr_dim){
 	    /* ...then add dimension to output dimension list... */
-	    (void)nco_inq_dim(nc_id,idx_dmn_in,dmn_nm,(long *)NULL);
+	    (void)nco_inq_dimname(nc_id,idx_dmn_in,dmn_nm);
 	    dim[*nbr_dim].id=idx_dmn_in;
 	    dim[*nbr_dim].nm=(char *)strdup(dmn_nm);
 	    (*nbr_dim)++;
@@ -2372,7 +2277,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
      weight array until it's the same size as the variable array, and then multiply the two
      together element-by-element in a highly vectorized loop, preferably in fortran. 
      To enhance speed, the (enlarged) weight-values array can be made static, and only destroyed 
-     (and then recreated) when the dimensions of one of the incoming variables change. */
+     (and then recreated) when dimensions of one of the incoming variables change. */
 
   /* Another method for the general case, though an expensive one, is to use C to 
      figure out the multidimensional indices into the one dimensional hyperslab, 
@@ -2386,12 +2291,12 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
      governement work, is to create fortran subroutines which expect variables of a given
      number of dimensions as input. Creating these functions for up to five dimensions would
      satisfy all foreseeable situations. The branch as to which function to call would be
-     done based on the number of dimensions, here in the C code. C++ function overloading
+     done based on number of dimensions, here in the C code. C++ function overloading
      could accomplish some of this interface more elegantly than fortran, probably at a
      sacrifice in performance. */
 
   /* An (untested) simplification to some of these methods would be to copy the 1-D array
-     value pointer of the variable and cast it to an N-D array pointer. Then C should be
+     value pointer of variable and cast it to an N-D array pointer. Then C should be
      able to handle the indexing for me. This method could speed development of a working,
      but non-general, code, and later be replaced by a general method. Still, implementation
      of this method would require ugly branches or hard-to-understand recursive function
@@ -2413,7 +2318,7 @@ var_conform_dim(var_sct *var,var_sct *wgt,var_sct *wgt_crr,bool MUST_CONFORM,boo
   /* Initialize flag to false to be overwritten by true */
   *DO_CONFORM=False;
   
-  /* Does the current weight (wgt_crr) conform to the variable's dimensions? */
+  /* Does the current weight (wgt_crr) conform to variable's dimensions? */
   if(wgt_crr != NULL){
     /* Test rank first because wgt_crr because of 19960218 bug (invalid dmn_id in old wgt_crr leads to match) */
     if(var->nbr_dim == wgt_crr->nbr_dim){
@@ -2920,7 +2825,7 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
 {
   /* Threads: Routine is thread safe and calls no unsafe routines */
   /* Routine to reduce given variable over specified dimensions. 
-     "Reduce" means to reduce the rank of the variable by performing an arithmetic operation
+     "Reduce" means to reduce the rank of variable by performing an arithmetic operation
      The default operation is to average, but nco_op_typ can also be min, max, etc.
      The input variable structure is destroyed and the routine returns the resized, partially reduced variable
      For some operations, such as min, max, ttl, the variable returned by var_avg() is complete and need not be further processed
@@ -3214,23 +3119,25 @@ bool
 arm_inq(int nc_id)
 /*  
    int nc_id: I netCDF file ID
-   bool arm_inq(): O whether the file is an ARM data file
+   bool arm_inq(): O whether file is an ARM data file
 */
 {
-  /* Routine to check whether the file adheres to ARM time format */
+  /* Routine to check whether file adheres to ARM time format */
   bool ARM_FORMAT;
 
   int time_dmn_id;
   int base_time_id;
   int time_offset_id;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   
   /* Look for the signature of an ARM file */
   
-  time_dmn_id=nco_inq_dimid_flg(nc_id,"time");
-  base_time_id=nco_inq_varid_flg(nc_id,"base_time");
-  time_offset_id=nco_inq_varid_flg(nc_id,"time_offset");
+  rcd+=nco_inq_dimid_flg(nc_id,"time",&time_dmn_id);
+  rcd+=nco_inq_varid_flg(nc_id,"base_time",&base_time_id);
+  rcd+=nco_inq_varid_flg(nc_id,"time_offset",&time_offset_id);
   
-  if(time_dmn_id == -1 || base_time_id == -1 || time_offset_id == -1){
+  /* All three IDs must be valid to handle ARM format */
+  if(rcd != NC_NOERR){
     ARM_FORMAT=False;
   }else{
     (void)fprintf(stderr,"%s: CONVENTION File convention is DOE ARM\n",prg_nm_get()); 
@@ -3247,13 +3154,13 @@ arm_base_time_get(int nc_id)
    nco_long arm_base_time_get: O value of base_time variable
 */
 {
-  /* Routine to check whether the file adheres to ARM time format */
-
+  /* Routine to check whether file adheres to ARM time format */
   int base_time_id;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   nco_long base_time;
 
-  base_time_id=nco_inq_varid(nc_id,"base_time");
+  rcd=nco_inq_varid(nc_id,"base_time",&base_time_id);
   (void)nco_get_var1(nc_id,base_time_id,0L,&base_time,NC_INT);
 
   return base_time;
@@ -4708,7 +4615,7 @@ void
 nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
 {
   /* Purpose: Perform appropriate ncra/ncea operation (avg, min, max, ttl, ...) on operands
-     nco_opr_drv() is called within the record loop of ncra, and within the file loop of ncea
+     nco_opr_drv() is called within the record loop of ncra, and within file loop of ncea
      These operations perform part, but not all, of the necessary operations for each procedure
      Most arithmetic operations require additional procedures such as normalization be performed after all files/records have been processed */
   
@@ -5296,6 +5203,7 @@ ncar_csm_date(int nc_id,var_sct **var,int nbr_var)
   int day;
   int date_idx;
   int idx;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int time_idx;
   
   int nbdate_id;
@@ -5312,18 +5220,16 @@ ncar_csm_date(int nc_id,var_sct **var,int nbr_var)
   if(idx == nbr_var) return; else date_idx=idx;
   if(var[date_idx]->type != NC_INT) return;
   
-  /* Find the scalar nbdate variable (NC_INT: base date date as 6 digit integer (YYMMDD)) */
-  
-  nbdate_id=nco_inq_varid_flg(nc_id,"nbdate");
-  
-  if(nbdate_id == -1){
+  /* Find scalar nbdate variable (NC_INT: base date date as 6 digit integer (YYMMDD)) */
+  rcd=nco_inq_varid_flg(nc_id,"nbdate",&nbdate_id);
+  if(rcd != NC_NOERR){
     (void)fprintf(stderr,"%s: WARNING NCAR CSM convention file output variable list contains \"date\" but not \"nbdate\"\n",prg_nm_get());
     (void)fprintf(stderr,"%s: %s",prg_nm_get(),wrn_sng);
     return;
   } /* endif */
   (void)nco_get_var1(nc_id,nbdate_id,0L,&nbdate,NC_INT);
   
-  /* Find the time variable (NC_DOUBLE: current day) */
+  /* Find time variable (NC_DOUBLE: current day) */
   for(idx=0;idx<nbr_var;idx++){
     if(!strcmp(var[idx]->nm,"time")) break;
   } /* end loop over idx */
@@ -5360,15 +5266,16 @@ arm_time_mk(int nc_id,double time_offset)
   double arm_time;
 
   int base_time_id;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   nco_long base_time;
 
   /* Find the base_time variable (NC_INT: base UNIX time of file) */
-  base_time_id=nco_inq_varid_flg(nc_id,"base_time");
-  if(base_time_id == -1){
+  rcd=nco_inq_varid_flg(nc_id,"base_time",&base_time_id);
+  if(rcd != NC_NOERR){
     (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"base_time\", exiting arm_time_mk()...\n",prg_nm_get());
     return -1;
-  }; /* end if */
+  } /* end if */
   (void)nco_get_var1(nc_id,base_time_id,0L,&base_time,NC_INT);
   arm_time=base_time+time_offset;
 
@@ -5389,6 +5296,7 @@ arm_time_install(int nc_id,nco_long base_time_srt)
 
   double *time_offset;
 
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int time_id;
   int time_dmn_id;
   int time_offset_id;
@@ -5401,27 +5309,27 @@ arm_time_install(int nc_id,nco_long base_time_srt)
   (void)nco_sync(nc_id);
 
   /* Find time_offset variable */
-  time_offset_id=nco_inq_varid_flg(nc_id,"time_offset");
-  if(time_offset_id == -1){
+  rcd=nco_inq_varid_flg(nc_id,"time_offset",&time_offset_id);
+  if(rcd != NC_NOERR){
     (void)fprintf(stderr,"%s: WARNING ARM file does not have variable \"time_offset\", exiting arm_time_install()...\n",prg_nm_get());
     return;
-  }; /* endif */
+  } /* endif */
 
-  /* See if the time variable already exists */
-  time_id=nco_inq_varid_flg(nc_id,"time");
-  if(time_id != -1){
+  /* See if time variable already exists */
+  rcd=nco_inq_varid_flg(nc_id,"time",&time_id);
+  if(rcd == NC_NOERR){
     (void)fprintf(stderr,"%s: WARNING ARM file already has variable \"time\"\n",prg_nm_get());
     return;
-  }; /* endif */
+  } /* endif */
 
-  /* See if the time dimension exists */
-  time_dmn_id=nco_inq_dimid_flg(nc_id,"time");
-  if(time_dmn_id == -1){
+  /* See if time dimension exists */
+  rcd=nco_inq_dimid_flg(nc_id,"time",&time_dmn_id);
+  if(rcd != NC_NOERR){
     (void)fprintf(stderr,"%s: WARNING ARM file does not have dimension \"time\"\n",prg_nm_get());
     return;
-  }; /* endif */
+  } /* endif */
   /* Get dimension size */
-  (void)nco_inq_dim(nc_id,time_dmn_id,(char *)NULL,&cnt);
+  (void)nco_inq_dimlen(nc_id,time_dmn_id,&cnt);
 
   /* If the time coordinate does not already exist, create it */
   time_offset=(double *)nco_malloc(cnt*nco_typ_lng(NC_DOUBLE));
@@ -5499,7 +5407,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
    int nbr_var: I number of variable structures in list
    dmn_sct **dmn_xcl: I list of pointers to dimensions not allowed in fixed variables
    int nbr_dmn_xcl: I number of dimension structures in list
-   bool NCAR_CSM_FORMAT: I whether the file is an NCAR CSM history tape
+   bool NCAR_CSM_FORMAT: I whether file is an NCAR CSM history tape
    var_sct ***var_fix_ptr: O pointer to list of pointers to fixed-variable structures
    var_sct ***var_fix_out_ptr: O pointer to list of pointers to duplicates of fixed-variable structures
    int *nbr_var_fix: O number of variable structures in list of fixed variables
@@ -5548,7 +5456,7 @@ var_lst_divide(var_sct **var,var_sct **var_out,int nbr_var,bool NCAR_CSM_FORMAT,
     var_nm=var[idx]->nm;
     var_type=var[idx]->type;
 
-    /* Override operation type based depending on both the variable type and program */
+    /* Override operation type based depending on both variable type and program */
     switch(prg){
     case ncap:
       var_op_typ[idx]=fix;
@@ -5670,18 +5578,18 @@ dmn_lst_mk(int nc_id,char **dmn_lst_in,int nbr_dim)
  */
 {
   int idx;
+  int rcd=NC_NOERR; /* [rcd] Return code */
 
   nm_id_sct *dmn_lst;
   
   dmn_lst=(nm_id_sct *)nco_malloc(nbr_dim*sizeof(nm_id_sct));
   for(idx=0;idx<nbr_dim;idx++){
-    /* See if the requested dimension is in the input file */
+    /* See if requested dimension is in input file */
     dmn_lst[idx].nm=dmn_lst_in[idx];
-    dmn_lst[idx].id=nco_inq_dimid(nc_id,dmn_lst[idx].nm);
+    rcd=nco_inq_dimid(nc_id,dmn_lst[idx].nm,&dmn_lst[idx].id);
   } /* end loop over idx */
   
   return dmn_lst;
-
 } /* end dmn_lst_mk() */
 
 void
@@ -5736,7 +5644,7 @@ fl_lst_mk(char **argv,int argc,int arg_crr,int *nbr_fl,char **fl_out)
    int argc: I argument count
    int arg_crr: I index of current argument
    int *nbr_fl: O number of files in input file list
-   char **fl_out: O name of the output file
+   char **fl_out: O name of output file
    char **fl_lst_mk(): O list of user-specified filenames
  */
 {
@@ -5808,7 +5716,7 @@ fl_lst_mk(char **argv,int argc,int arg_crr,int *nbr_fl,char **fl_out)
     break;
   } /* end switch */
 
-  /* Fill in the file list and output file */
+  /* Fill in file list and output file */
   fl_lst_in=(char **)nco_malloc((argc-arg_crr-1)*sizeof(char *));
   while(arg_crr < argc-1) fl_lst_in[(*nbr_fl)++]=argv[arg_crr++];
   if(*nbr_fl == 0){
@@ -6022,7 +5930,7 @@ nco_pck_typ_get(char *nco_pck_sng)
   /* Purpose: Process '-P' command line argument
      Convert user-specified string to packing operation type 
      Return nco_pck_nil by default */
-  /* fxm: add the rest of the types */
+  /* fxm: add the rest of types */
   if(!strcmp(nco_pck_sng,"all")) return nco_pck_all_xst_att;
 
   return nco_pck_nil;
@@ -6061,7 +5969,7 @@ op_prs_rlt(char *op_sng)
 
 int nd2endm(int mth,int day)
 {
-  /* Purpose: Returns the number of days to the end of the month  
+  /* Purpose: Returns number of days to the end of the month  
      This number added to the input arguement day gives the last day of month mth
      Original fortran: Brian Eaton cal_util.F:nd2endm()
      C version: Charlie Zender
@@ -6081,7 +5989,7 @@ int nd2endm(int mth,int day)
 
 nco_long newdate(nco_long date,int day_srt) 
 {
-  /* Purpose: Find the date a specified number of days (possibly negative) from the given date 
+  /* Purpose: Find date a specified number of days (possibly negative) from given date 
      Original fortran: Brian Eaton cal_util.F:newdate()
      C version: Charlie Zender
   */
@@ -6324,8 +6232,8 @@ scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO vari
   var->nm=(char *)strdup(var_nm);
   var->nbr_dim=0;
   var->type=val_typ;
-  /* It is necessary to allocate new space here so that the variable can eventually be deleted 
-     and the associated memory free()'d */
+  /* It is necessary to allocate new space here so that variable can eventually be deleted 
+     and associated memory free()'d */
   /* free(val_ptr_unn.vp) is unpredictable since val_ptr_unn may point to constant data, e.g.,
      a constant in scl_mk_var */
   var->val.vp=(void *)nco_malloc(nco_typ_lng(var->type));

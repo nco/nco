@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.55 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.56 2001-10-08 07:25:39 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.55 2001-10-01 23:09:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.55 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.56 2001-10-08 07:25:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.56 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -139,11 +139,10 @@ main(int argc,char **argv)
   int nbr_dmn_xtr;
   int nbr_fl=0;
   int opt;
-  int rcd=0; /* [rcd] Return code */
+  int rcd=NC_NOERR; /* [rcd] Return code */
   int rec_dmn_id=-1;
   int nco_op_typ=nco_op_avg; /* [enm] Default operation is averaging */
   int nco_pck_typ=nco_pck_nil; /* [enm] Default packing is none */
-  
   
   lmt_sct *lmt=NULL_CEWI;
   lmt_sct lmt_rec;
@@ -265,8 +264,8 @@ main(int argc,char **argv)
   fl_in=fl_nm_prs(fl_in,0,&nbr_fl,fl_lst_in,nbr_abb_arg,fl_lst_abb,fl_pth);
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
-  /* Open the file for reading */
-  in_id=nco_open(fl_in,NC_NOWRITE);
+  /* Open file for reading */
+  rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
   /* Get number of variables, dimensions, and record dimension ID of input file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,&rec_dmn_id);
@@ -286,7 +285,7 @@ main(int argc,char **argv)
   /* Remove record coordinate, if any, from extraction list */
   if(False) xtr_lst=var_lst_crd_xcl(in_id,rec_dmn_id,xtr_lst,&nbr_xtr);
 
-  /* Finally, heapsort the extraction list by variable ID for fastest I/O */
+  /* Finally, heapsort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
   
   /* We now have final list of variables to extract. Phew. */
@@ -398,7 +397,7 @@ main(int argc,char **argv)
     /* Make sure file is on local system and is readable or die trying */
     if(idx_fl != 0) fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_RETRIEVED_FROM_REMOTE_LOCATION);
     if(dbg_lvl > 0) (void)fprintf(stderr,gettext("local file %s:\n"),fl_in);
-    in_id=nco_open(fl_in,NC_NOWRITE);
+    rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
     /* Variables may have different IDs and missing_values in each file */
     for(idx=0;idx<nbr_var_prc;idx++) (void)var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */

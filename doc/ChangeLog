@@ -1,3 +1,31 @@
+2001-10-07  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_0_2
+	Changes since nco-2_0_1: No user-visible changes
+	All changes are in netCDF3 compliant function semantics
+	for the nco_netcdf wrappers, and rearrangement of some routines.
+
+	* Verified nco-2_0_2 passes test suite 
+
+	* nco_typ_sng(): NC_CHAR is unsigned char, moved nco_typ_sng(),
+	c_type_nm(), fortran_typ_nm() to nco_netcdf library so that
+	library may take advantage of these routines in printing useful
+	diagnostics, yet still be independent of the rest of NCO.
+
+	* Attempted to replace netCDF2-style use of -1 return codes
+	by rcd and comparison to NC_NOERR everywhere. This is not exactly
+	straightforward because there are many valid reasons to have
+	literal constant -1 in the code. I think I did this correctly.
+	However the use of -1, instead of NC_GLOBAL, for global attributes
+	and, for ncatted, to indicate that attribute changes should apply
+	to all variables, should be changed to NC_GLOBAL so code is more clear.
+
+	* Change functions to implement netCDF 3.X interface
+	Meaning pass answer holder as pointer and pass back return code
+	nco_open(), nco_create(), nco_inq_[var,dim,att]*()
+
+	* ncks.c prn_var_val_lmt(): Handle nco_inq_attid() correctly
+
 2001-10-01  Charlie Zender  <zender@uci.edu>
 
 	* Build is clean and successful with g++/Linux, xlC/AIX

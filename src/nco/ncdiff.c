@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.37 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.38 2001-10-08 07:25:39 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.37 2001-10-01 23:09:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.37 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.38 2001-10-08 07:25:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.38 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -140,7 +140,7 @@ main(int argc,char **argv)
   int nbr_dmn_xtr;
   int nbr_fl=0;
   int opt;
-  
+  int rcd=NC_NOERR; /* [rcd] Return code */
     
   lmt_sct *lmt;
   
@@ -238,9 +238,9 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_1_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
-  in_id=nco_open(fl_in,NC_NOWRITE);
+  rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
-  /* Get the number of variables and dimensions in the file */
+  /* Get number of variables and dimensions in file */
   (void)nco_inq(in_id,&nbr_dmn_fl,&nbr_var_fl,(int *)NULL,(int *)NULL);
   
   /* Form initial extraction list from user input */
@@ -255,7 +255,7 @@ main(int argc,char **argv)
   /* Make sure coordinates associated extracted variables are also on extraction list */
   if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
 
-  /* Finally, heapsort the extraction list by variable ID for fastest I/O */
+  /* Finally, heapsort extraction list by variable ID for fastest I/O */
   if(nbr_xtr > 1) xtr_lst=lst_heapsort(xtr_lst,nbr_xtr,False);
     
   /* We now have final list of variables to extract. Phew. */
@@ -332,9 +332,9 @@ main(int argc,char **argv)
   /* The code for ncdiff() has been similar to ncea() (and ncra()) wherever possible
      The major differences occur where performance would otherwise suffer
      From now on, however, the binary-file and binary-operation nature of ncdiff()
-     is too different from the ncea() paradigm to justify following ncea() style.
-     Instead, a symmetric nomenclature of file_1, file_2 is adopted, and the 
-     differences are performed variable by variable so that peak memory usage goes as
+     is too different from ncea() paradigm to justify following ncea() style.
+     Instead, symmetric nomenclature of file_1, file_2 is adopted, and 
+     differences are performed variable by variable so peak memory usage goes as
      Order(2*maximum variable size) rather than Order(3*maximum record size) or
      Order(3*file size) 
      
@@ -342,8 +342,8 @@ main(int argc,char **argv)
      For example, ncdiff is a three file operator (input, input, output) but manages to get by 
      with having only two lists of variable structures at any given time.
      As a result, the logic it employs is fairly convoluted
-     ncdiff overwrites the variable structure from file_2 with the structure for file_3 (the output file)
-     but, at the same time, it writes the value array for the file_3 into the value part of the file_1
+     ncdiff overwrites variable structure from file_2 with the structure for file_3 (output file)
+     but, at the same time, it writes value array for file_3 into value part of file_1
      variable structures. 
   */
 
@@ -357,7 +357,7 @@ main(int argc,char **argv)
   /* Make sure file is on local system and is readable or die trying */
   fl_in=fl_mk_lcl(fl_in,fl_pth_lcl,&FILE_2_RETRIEVED_FROM_REMOTE_LOCATION);
   if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
-  in_id_2=nco_open(fl_in,NC_NOWRITE);
+  rcd=nco_open(fl_in,NC_NOWRITE,&in_id_2);
   fl_in_2=fl_in;
   
   /* Perform various error-checks on input file */
@@ -384,7 +384,7 @@ main(int argc,char **argv)
       nc_type var_type;
       int var_id;
       /* Routine var_refresh() does not set type for var_prc_out, do so manually */
-      var_id=nco_inq_varid(in_id_2,var_prc_out[idx]->nm);
+      (void)nco_inq_varid(in_id_2,var_prc_out[idx]->nm,&var_id);
       (void)nco_inq_vartype(in_id_2,var_id,&var_type);
       var_prc_out[idx]->type=var_type;
 
@@ -407,10 +407,12 @@ main(int argc,char **argv)
       var_prc_out[idx]->srt=lp;
     }else{
       var_sct *var_tmp=NULL;
+      int var_id; /* [id] Variable ID */
       
       /* var1 and var2 have differing numbers of dimensions so make var2 conform to var1 */
       var_prc_out[idx]=var_free(var_prc_out[idx]);
-      var_prc_out[idx]=var_fll(in_id_2,nco_inq_varid(in_id_2,var_prc[idx]->nm),var_prc[idx]->nm,dim,nbr_dmn_xtr);
+      (void)nco_inq_varid(in_id_2,var_prc[idx]->nm,&var_id);
+      var_prc_out[idx]=var_fll(in_id_2,var_id,var_prc[idx]->nm,dim,nbr_dmn_xtr);
       (void)var_get(in_id_2,var_prc_out[idx]);
       
       /* Pass dummy pointer so we do not lose track of original */

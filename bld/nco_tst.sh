@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.36 2001-05-08 01:36:03 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.37 2001-10-08 07:25:37 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -8,7 +8,7 @@
 
 usage () {
     echo >&2 "Usage: ${basename $0} ncra | ncea | ncwa | ncflint | ncdiff | net" ;
-}
+} # end usage()
 
 START=0
 NCKS=0
@@ -29,44 +29,43 @@ if [ $# -eq 0 ]; then
     NCDIFF=1
     NET=1
 else 
-    
     while [ $# -gt 0 ]; do
-	case $1 in
-	ncks)
+    case $1 in
+	ncks )
 	    NCKS=1
 	    shift
-	    ;;
-	ncwa)
+	;;
+	ncwa )
 	    NCWA=1
 	    shift
-	    ;;
-	ncra)
+	;;
+	ncra )
 	    NCRA=1
 	    shift
-	    ;;
-	ncea)
+	;;
+	ncea )
 	    NCEA=1
 	    shift
-	    ;;
-	ncflint)
+	;;
+	ncflint )
 	    NCFLINT=1
 	    shift
-	    ;;
-	ncdiff)
+	;;
+	ncdiff )
 	    NCDIFF=1
 	    shift
-	    ;;
-	net)
+	;;
+	net )
 	    NET=1
 	    shift
-	    ;;
-	  *)
+	;;
+	  * )
 	    usage 
 	    exit 0
-	    ;;
-       esac
-    done 
-fi    
+	;; # endif default
+       esac # endcase $1
+    done # end loop over command line arguments
+fi # end if command line argument
 
 # T42-size test field named one, which is identically 1.0 in foo.nc
 cd ../data 2> foo.tst
@@ -94,9 +93,7 @@ ncrename -O -v negative_one,zero foo.nc 2>> foo.tst
 fi # end start
 
 # ncks testing
-if [ "$NCKS" = 1 ]
-then
-
+if [ "$NCKS" = 1 ]; then
 
 avg=`ncks -C -H -s "%c" -v fl_nm in.nc`
 echo "ncks 1: extract filename string: /home/zender/nc/nco/data/in.cdl =?= $avg"
@@ -116,8 +113,7 @@ echo "ncks 4: extract variable of type NC_INT 10 =?= $avg"
 fi # end NCKS
 
 # Average test field
-if [ "$NCWA" = 1 ]
-then
+if [ "$NCWA" = 1 ]; then
 ncwa -O -a lat,lon -w gw foo.nc foo2.nc
 avg=`ncks -C -H -s "%f" -v one foo2.nc`
 echo "ncwa 1: normalize by denominator: 1.0 =?= $avg" 
@@ -252,8 +248,7 @@ avg=`ncks -C -H -s "%g" -v lat foo.nc`
 echo "ncwa 35: max with weights: 900 =?= $avg" 
 fi  # end ncwa
 
-if [ "$NCRA" = 1 ]
-then
+if [ "$NCRA" = 1 ]; then
 ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
 echo "ncra 1: record mean of int across two files: 5 =?= $avg" 
@@ -293,9 +288,7 @@ avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo2.nc`
 echo "ncra 8: record sdn of float with double missing values across two files: 2 =?= $avg"
 fi #end ncra
 
-
-if [ "$NCEA" = 1 ]
-then
+if [ "$NCEA" = 1 ]; then
 ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
 echo "ncea 1: ensemble mean of int across two files: 5 =?= $avg" 
@@ -313,8 +306,7 @@ avg=`ncks -C -H -s "%e" -v pck foo.nc`
 echo "ncea 4: scale factor + add_offset packing/unpacking: 3 =?= $avg" 
 fi # end ncea
 
-if [ "$NCDIFF" = 1 ]
-then
+if [ "$NCDIFF" = 1 ]; then
 ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v mss_val foo.nc`
 echo "ncdiff 1: difference with missing value attribute: 1.0e36 =?= $avg" 
@@ -324,8 +316,7 @@ avg=`ncks -C -H -s "%f" -v no_mss_val foo.nc`
 echo "ncdiff 2: difference without missing value attribute: 0 =?= $avg" 
 fi # end ncdiff
 
-if [ "$NCFLINT" = 1 ]
-then
+if [ "$NCFLINT" = 1 ]; then
 ncflint -O -w 3,-2 -v one in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v one foo.nc`
 echo "ncflint 1: identity weighting: 1.0 =?= $avg" 
@@ -337,8 +328,7 @@ avg=`ncks -C -H -s "%e" -v two foo.nc`
 echo "ncflint 2: identity interpolation: 2.0 =?= $avg" 
 fi #end ncflint
 
-if [ "$NET" = 1 ]
-then
+if [ "$NET" = 1 ]; then
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
 ncks -O -v one -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v one foo.nc 2>> foo.tst`

@@ -1,10 +1,10 @@
 \input texinfo @c -*-texinfo-*- 
-@c 19980817: texi2html and makeinfo do not require texinfo.tex anymore
-@c Unfortunately, texi2dvi does seem to need it
+@c 19980817: TeX-based systems (texi2dvi, texi2dvi --pdf) require texinfo.tex
+@c Hypertext systems (texi2html, makeinfo) do not require texinfo.tex
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.82 2001-09-11 05:37:11 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.83 2001-10-08 07:25:38 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -21,12 +21,11 @@ makeinfo nco.texi
 texi2html -monolithic -verbose nco.texi 
 dvips -o nco.ps nco.dvi 
 ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
-cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
-cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
+cd ~/nco/doc;/usr/bin/scp index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf nco.texi nco.sourceforge.net:/home/groups/n/nc/nco/htdocs;cd -
+cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.info* nco.ps nco.pdf nco.texi www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 
 Resources:
 Octave TeXInfo manual is a good example of clean TeXInfo structure
-
 
 Copyright (C) 1995--2001 Charlie Zender
 Permission is granted to copy, distribute and/or modify this document
@@ -63,6 +62,7 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
+@c Define edition, date, ...
 @set nco-edition 2.0.0
 @set doc-edition 2.0.0
 @set copyright-years 1995--2001
@@ -119,16 +119,17 @@ Rew and Steve Emmerson.
 
 @titlepage
 @ifhtml
-<META NAME="Author" CONTENT="Charles S. Zender">
-<META NAME="Keywords" CONTENT="NCO documentation, NCO User's Guide,
+<meta name="Author" CONTENT="Charles S. Zender">
+<meta name="Keywords" CONTENT="NCO documentation, NCO User's Guide,
 netCDF, operator, GCM, CCM, scientific data, ncdiff, ncea, ncecat,
 ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @end ifhtml
-@ignore
-@c For some reason these direct HTML commands have no effect
+@c fxm: Direct HTML commands have no effect
 @ifhtml
 <body text="#000000" link="#0000EF" vlink="#008080" alink="#FF0000">
+<font face="Arial">
 @end ifhtml
+@ignore
 @end ignore
 @title NCO User's Guide
 @subtitle A suite of netCDF operators
@@ -139,8 +140,8 @@ ncflint, ncks, ncra, ncrcat, ncrename, ncwa">
 @author Department of Earth System Science
 @author University of California at Irvine
 @ifhtml
-<P>WWW readers: Having trouble finding the section you want?</P> 
-<P>Search for keywords in the (hyper) index at the end of this page</P> 
+<p>WWW readers: Having trouble finding the section you want?</p> 
+<p>Search for keywords in the (hyper) index at the end of this page</p> 
 @end ifhtml
 
 @c Include Distribution inside titlepage so that headings are turned off
@@ -193,7 +194,7 @@ Introduction
 
 Operating systems compatible with @acronym{NCO}
 
-* Windows NT::                  
+* Windows Operating System::    
 
 Operator Strategies
 
@@ -400,7 +401,8 @@ This tests incorporates an image using the @code{@@image} command.
 @node Compatability, Libraries, Availability, Introduction
 @section Operating systems compatible with @acronym{NCO}
 @cindex @acronym{OS}
-@cindex Windows @acronym{NT}
+@cindex Microsoft
+@cindex Windows
 @cindex compatability
 @cindex portability
 @cindex installation
@@ -415,7 +417,8 @@ and any patches you required.
 The major prerequisite for installing @acronym{NCO} on a particular platform is
 the successful, prior installation of the netCDF libraries themselves.
 Unidata has shown a commitment to maintaining netCDF on all popular @acronym{UNIX}
-platforms, and is moving towards full support for Windows @acronym{NT}.
+platforms, and is moving towards full support for the Microsoft Windows
+operating system (@acronym{OS}).
 Given this, the only difficulty in implementing @acronym{NCO} on a particular
 platform is standardization of various C and Fortran interface and
 system calls.
@@ -480,16 +483,17 @@ platform, and the change in the wallclock time for execution.}.
 @end ignore
 
 @menu
-* Windows NT::                  
+* Windows Operating System::    
 @end menu
 
-@node Windows NT,  , Compatability, Compatability
-@subsection Compiling @acronym{NCO} for Windows @acronym{NT}
-@cindex Windows @acronym{NT}
+@node Windows Operating System,  , Compatability, Compatability
+@subsection Compiling @acronym{NCO} for Microsoft Windows @acronym{OS}
+@cindex Windows
+@cindex Microsoft
 
 @cindex @code{USE_FORTRAN_ARITHMETIC}
-@acronym{NCO} has been successfully ported and tested on the Microsoft Windows @acronym{NT}
-4.0 operating system.
+@acronym{NCO} has been successfully ported and tested on the Microsoft
+Windows @acronym{NT} 4.0 operating system.
 The switches necessary to accomplish this are included in the standard
 distribution of @acronym{NCO}.
 Using the freely available Cygwin (formerly gnu-win32) development
@@ -531,12 +535,12 @@ Internet protocols (e.g., @code{ftp}, @code{rcp}, @code{scp},
 Fortunately, these @acronym{UNIX}y calls are only invoked by the single @acronym{NCO}
 subroutine which is responsible for retrieving files stored on remote
 systems (@pxref{Remote storage}).
-In order to support @acronym{NCO} on the Windows @acronym{NT} platforms, this single feature
-was disabled (on Windows @acronym{NT} only).
+In order to support @acronym{NCO} on the Microsoft Windows platforms,
+this single feature was disabled (on Windows @acronym{OS} only).
 This was required by Cygwin 18.x---newer versions of Cygwin may support
 these protocols (let me know if this is the case).
-The @acronym{NCO} operators should behave identically on Windows @acronym{NT} and @acronym{UNIX}
-platforms in all other respects.
+The @acronym{NCO} operators should behave identically on Windows and
+@acronym{UNIX} platforms in all other respects.
 
 @node Libraries, netCDF 2.x vs. 3.x, Compatability, Introduction
 @section Libraries

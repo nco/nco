@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.98 2001-10-01 23:09:50 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.99 2001-10-08 07:25:38 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -176,6 +176,7 @@ or variable list is made more specific, or MALLOC_CHECK_=1 is used
 208. Write improved C++ interface library based on netCDF3
 209. Add rules to make MANIFEST and automaticlally update Sourceforge download area
 210. Break nco.h into system-specific headers, csz.h, pck.h...
+211. Replace -1 by NC_GLOBAL where appropriate, especially in ncatted.c
 ************************************************************************
 End NCO Wish list
 ************************************************************************

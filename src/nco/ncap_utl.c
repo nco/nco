@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.16 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.17 2001-10-08 07:25:39 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -82,12 +82,12 @@ ncap_write_var(int nc_id,var_sct *var)
   int var_id;
   int rcd;
   
-  /* The file must be in define mode */
+  /* file must be in define mode */
   
   rcd = nco_redef(nc_id);
   
 
-  /* Define the variable */
+  /* Define variable */
   (void)fprintf(stderr,"ncap_write_var(): nm = %s\n",var->nm);
   rcd=nco_def_var(nc_id,var->nm,var->type,var->nbr_dim,var->dmn_id,&var_id);
   /* Take output file out of define mode */

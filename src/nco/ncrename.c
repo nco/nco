@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.28 2001-10-02 06:02:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncrename.c,v 1.29 2001-10-08 07:25:39 zender Exp $ */
 
 /* ncrename -- netCDF renaming operator */
 
@@ -93,13 +93,9 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncrename.c,v 1.28 2001-10-02 06:02:20 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.28 $";
+  char CVS_Id[]="$Id: ncrename.c,v 1.29 2001-10-08 07:25:39 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.29 $";
   
-  rnm_sct *var_rnm_lst=NULL_CEWI;
-  rnm_sct *dmn_rnm_lst=NULL_CEWI;
-  rnm_sct *att_rnm_lst=NULL_CEWI;
-
   extern char *optarg;
   
   extern int optind;
@@ -112,7 +108,12 @@ main(int argc,char **argv)
   int nbr_dmn_rnm=0; /* Option d. NB: nbr_dmn_rnm gets incremented */
   int nbr_fl=0;
   int opt;
+  int rcd=NC_NOERR; /* [rcd] Return code */
   
+  rnm_sct *var_rnm_lst=NULL_CEWI;
+  rnm_sct *dmn_rnm_lst=NULL_CEWI;
+  rnm_sct *att_rnm_lst=NULL_CEWI;
+
   time_t clock;
 
   /* Start the clock and save the command line */ 
@@ -217,7 +218,7 @@ main(int argc,char **argv)
       
       rcd=stat(fl_out,&stat_sct);
 
-      /* If the file already exists, then query the user whether to overwrite */
+      /* If file already exists, then query the user whether to overwrite */
       if(rcd != -1){
         char usr_reply;
         
@@ -238,23 +239,22 @@ main(int argc,char **argv)
       } /* end if */
     } /* end if */
     
-    /* Copy the input file to the output file and then search through
+    /* Copy input file to output file and then search through
        the output, changing names as you go. This avoids the possible XDR translation
        performance penalty of copying each variable with netCDF. */
     (void)fl_cp(fl_in,fl_out);
 
   } /* end if */
-
   
-  /* Open the file. Writing must be enabled and the file should be in define mode for renaming */
-  nc_id=nco_open(fl_out,NC_WRITE);
+  /* Open file. Writing must be enabled and file should be in define mode for renaming */
+  rcd=nco_open(fl_out,NC_WRITE,&nc_id);
   (void)nco_redef(nc_id);
 
   /* Without further ado, change the names */
   for(idx=0;idx<nbr_var_rnm;idx++){
     if(var_rnm_lst[idx].old_nm[0] == '.'){
-      var_rnm_lst[idx].id=nco_inq_varid_flg(nc_id,var_rnm_lst[idx].old_nm+1);
-      if(var_rnm_lst[idx].id != -1){
+      rcd=nco_inq_varid_flg(nc_id,var_rnm_lst[idx].old_nm+1,&var_rnm_lst[idx].id);
+      if(rcd == NC_NOERR){
 	(void)nco_rename_var(nc_id,var_rnm_lst[idx].id,var_rnm_lst[idx].new_nm);
 	if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed variable \"%s\" to \"%s\"\n",var_rnm_lst[idx].old_nm+1,var_rnm_lst[idx].new_nm);
       }else{
@@ -262,7 +262,7 @@ main(int argc,char **argv)
       } /* end if */
       
     }else{
-      var_rnm_lst[idx].id=nco_inq_varid(nc_id,var_rnm_lst[idx].old_nm);
+      rcd=nco_inq_varid(nc_id,var_rnm_lst[idx].old_nm,&var_rnm_lst[idx].id);
       (void)nco_rename_var(nc_id,var_rnm_lst[idx].id,var_rnm_lst[idx].new_nm);
       if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed variable \"%s\" to \"%s\"\n",var_rnm_lst[idx].old_nm,var_rnm_lst[idx].new_nm);
     } /* end else */
@@ -271,8 +271,8 @@ main(int argc,char **argv)
   for(idx=0;idx<nbr_dmn_rnm;idx++){
     if(dmn_rnm_lst[idx].old_nm[0] == '.'){
       
-      dmn_rnm_lst[idx].id=nco_inq_dimid_flg(nc_id,dmn_rnm_lst[idx].old_nm+1);
-      if(dmn_rnm_lst[idx].id != -1){
+      rcd=nco_inq_dimid_flg(nc_id,dmn_rnm_lst[idx].old_nm+1,&dmn_rnm_lst[idx].id);
+      if(rcd == NC_NOERR){
 	(void)nco_rename_dim(nc_id,dmn_rnm_lst[idx].id,dmn_rnm_lst[idx].new_nm);
 	if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed dimension \"%s\" to \"%s\"\n",dmn_rnm_lst[idx].old_nm+1,dmn_rnm_lst[idx].new_nm);
       }else{
@@ -280,7 +280,7 @@ main(int argc,char **argv)
       } /* end if */
       
     }else{
-      dmn_rnm_lst[idx].id=nco_inq_dimid(nc_id,dmn_rnm_lst[idx].old_nm);
+      rcd=nco_inq_dimid(nc_id,dmn_rnm_lst[idx].old_nm,&dmn_rnm_lst[idx].id);
       (void)nco_rename_dim(nc_id,dmn_rnm_lst[idx].id,dmn_rnm_lst[idx].new_nm);
       if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed dimension \"%s\" to \"%s\"\n",dmn_rnm_lst[idx].old_nm,dmn_rnm_lst[idx].new_nm);
     } /* end else */
@@ -289,32 +289,32 @@ main(int argc,char **argv)
   if(nbr_att_rnm > 0){
     int nbr_var_fl;
     
-    /* Get the number of variables in the file */
+    /* Get number of variables in file */
     (void)nco_inq(nc_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
 
     for(idx=0;idx<nbr_att_rnm;idx++){
       int var_id;
       int nbr_rnm=0;
       
-      /* Check if we are renaming the attribute of a single variable */
+      /* Check if we are renaming attribute of a single variable */
       if(strchr(att_rnm_lst[idx].old_nm,':')){
 	/* Get variable name from old name */
 	char var_nm[NC_MAX_NAME];
 	if(prs_att((att_rnm_lst+idx),var_nm)){
 	  /* Get var_id of variable */
-	  var_id=nco_inq_varid_flg(nc_id,var_nm);
-	  if(var_id != -1){
+	  rcd=nco_inq_varid_flg(nc_id,var_nm,&var_id);
+	  if(rcd == NC_NOERR){
 	    if(att_rnm_lst[idx].old_nm[0] == '.'){
 	      /* Preceding '.' means attribute may not be present */
-	      att_rnm_lst[idx].id=nco_inq_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1,(nc_type *)NULL,(long *)NULL);	  
-	      if(att_rnm_lst[idx].id != -1){
+	      rcd=nco_inq_attid(nc_id,var_id,att_rnm_lst[idx].old_nm+1,&att_rnm_lst[idx].id);	  
+	      if(rcd == NC_NOERR){
 		(void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);
 		nbr_rnm++;
 		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed attribute \"%s\" to \"%s\" for variable \"%s\"\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm,var_nm);
 	      } /* endif */
 	    }else{ 
-	      att_rnm_lst[idx].id=nco_inq_att(nc_id,var_id,att_rnm_lst[idx].old_nm,(nc_type *)NULL,(long *)NULL);
-	      if(att_rnm_lst[idx].id != -1){
+	      rcd=nco_inq_attid(nc_id,var_id,att_rnm_lst[idx].old_nm,&att_rnm_lst[idx].id);
+	      if(rcd == NC_NOERR){
 		(void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
 		nbr_rnm++;
 		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed attribute \"%s\" to \"%s\" for variable \"%s\"\n",att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm,var_nm);
@@ -328,8 +328,8 @@ main(int argc,char **argv)
 	for(var_id=-1;var_id<nbr_var_fl;var_id++){
 	  if(att_rnm_lst[idx].old_nm[0] == '.'){
 	    
-	    att_rnm_lst[idx].id=nco_inq_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1,(nc_type *)NULL,(long *)NULL);
-	    if(att_rnm_lst[idx].id != -1){
+	    rcd=nco_inq_attid(nc_id,var_id,att_rnm_lst[idx].old_nm+1,&att_rnm_lst[idx].id);
+	    if(rcd == NC_NOERR){
 	      (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);
 	      nbr_rnm++;
 	      
@@ -338,15 +338,15 @@ main(int argc,char **argv)
 	      if(var_id > -1){
 		char var_nm[NC_MAX_NAME];
 		
-		(void)nco_inq_var(nc_id,var_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,(int *)NULL);
+		(void)nco_inq_varname(nc_id,var_id,var_nm);
 		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed attribute \"%s\" to \"%s\" for variable \"%s\"\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm,var_nm);
 	      }else{
 		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed global attribute \"%s\" to \"%s\"\n",att_rnm_lst[idx].old_nm+1,att_rnm_lst[idx].new_nm);
 	      } /* end else */
 	    } /* end if */
 	  }else{
-	    att_rnm_lst[idx].id=nco_inq_att(nc_id,var_id,att_rnm_lst[idx].old_nm,(nc_type *)NULL,(long *)NULL);
-	    if(att_rnm_lst[idx].id != -1){
+	    rcd=nco_inq_attid(nc_id,var_id,att_rnm_lst[idx].old_nm,&att_rnm_lst[idx].id);
+	    if(rcd == NC_NOERR){
 	      (void)nco_rename_att(nc_id,var_id,att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
 	      nbr_rnm++;
 	      
@@ -355,7 +355,7 @@ main(int argc,char **argv)
 	      if(var_id > -1){
 		char var_nm[NC_MAX_NAME];
 		
-		(void)nco_inq_var(nc_id,var_id,var_nm,(nc_type *)NULL,(int *)NULL,(int *)NULL,(int *)NULL);
+		(void)nco_inq_varname(nc_id,var_id,var_nm);
 		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed attribute \"%s\" to \"%s\" for variable \"%s\"\n",att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm,var_nm);
 	      }else{
 		if(dbg_lvl > 0) (void)fprintf(stderr,"Renamed global attribute \"%s\" to \"%s\"\n",att_rnm_lst[idx].old_nm,att_rnm_lst[idx].new_nm);
@@ -381,7 +381,7 @@ main(int argc,char **argv)
   /* Catenate the timestamped command line to the "history" global attribute */
   if(HISTORY_APPEND) (void)hst_att_cat(nc_id,cmd_ln);
   
-  /* Take the file out of define mode */
+  /* Take file out of define mode */
   (void)nco_enddef(nc_id);
     
   /* Close the open netCDF file */
@@ -412,7 +412,7 @@ prs_rnm_lst(int nbr_rnm,char **rnm_arg)
   for(idx=0;idx<nbr_rnm;idx++){
     char *comma_1_cp;
 
-    /* Find the positions of the commas and the number of characters
+    /* Find the positions of the commas and number of characters
        between (non-inclusive) them */
     comma_1_cp=strchr(rnm_arg[idx],',');
     
@@ -467,9 +467,9 @@ prs_att(rnm_sct *rnm_att,char *var_nm)
   
   if( len < 3 || colon == rnm_att->old_nm || colon == rnm_att->old_nm + len -1 ) return 0;
   *colon = '\0';
-  /* now copy just the variable name */
+  /* now copy just variable name */
   strcpy(var_nm,rnm_att->old_nm);
-  /* now set to just the attribute name */
+  /* now set to just attribute name */
   rnm_att->old_nm = colon +1 ; 
     
   colon = strchr(rnm_att->new_nm,':');	
