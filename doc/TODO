@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.268 2004-01-05 17:29:05 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.269 2004-01-05 21:38:46 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -250,7 +250,11 @@ and returns thread-specific values for each, set with, e.g., prg_set().
 Make prg, prg_nm, and dbg_lvl local to main(), not global to main.c
 295. Understand/maintain re-entrant behavior of shared library.
 297. Fix fabsf() powf() etc warnings with --enable-debug-custom
-298. ncap has three globals: ncl_dpt_crr, ln_nbr_crr, fl_spt_glb
+     Warnings caused by -Wconversion
+298. Localize ncap's three globals: ncap_ncl_dpt_crr, ncap_ln_nbr_crr, ncap_fl_spt_glb?
+299. Prefix prg,prg_nm,dbg_lvl globals with nco_ for namespace cleanliness
+300. Activate ccmalloc libdl into configure.in for enable-debug-custom
+301. Unable to use DDD on autotools NCO executable with --enable-debug-custom
 ************************************************************************
 End NCO Wish list
 ************************************************************************
