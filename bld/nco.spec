@@ -1,76 +1,75 @@
-# $Header: /data/zender/nco_20150216/nco/bld/nco.spec,v 1.24 2004-07-19 07:35:53 zender Exp $
-# Purpose: RPM spec file for NCO
-# Usage: 
-# Before nco.spec is invoked (with 'rpm -ba nco.spec'), the source tarball 
-# nco-2.9.7 must be in the directory /usr/src/redhat/SOURCES
-# After RPMs are built, upload them to RedHat's contrib area
-# ncftpput incoming.redhat.com /libc6 /usr/src/redhat/SRPMS/nco-2.9.7-1.src.rpm /usr/src/redhat/RPMS/i386/nco-2.9.7-1.i386.rpm 
-# ncftpput download.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.9.7-1.src.rpm /usr/src/redhat/RPMS/i386/nco-2.9.7-1.i386.rpm 
-# ncftpput dust.ess.uci.edu /pub/zender/nco /usr/src/redhat/SRPMS/nco-2.9.7-1.src.rpm /usr/src/redhat/RPMS/i386/nco-2.9.7-1.i386.rpm 
+Name:           nco
+Version:        2.9.7
+Release:        0.fdr.2
+Epoch:          0
+Summary:        A suite of command line programs for manipulating NetCDF/HDF4 files.
 
-Summary: Arithmetic and metadata operators for netCDF and HDF4 files
-Name: nco
-Version: 2.9.7
-# Release: refers to version of nco.spec for this version of NCO
-Release: 1
-Copyright: GPL
-Group: Applications/Scientific
-Source: ftp://nco.sourceforge.net/pub/nco/nco-2.9.7.tar.gz
-URL: http://nco.sourceforge.net
-# Distribution: None in particular
-Vendor: Charlie Zender
-Requires: netcdf
-Packager: Charlie Zender <zender@uci.edu>
-# Prefix tag is required to allow installation to be relocatable
-Prefix: /usr
+Group:          Applications/Engineering
+License:        GPL
+URL:            http://nco.sourceforge.net/
+Source0:        http://nco.sourceforge.net/src/nco_2.9.7-1.tar.gz
+BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+
+BuildRequires:  netcdf
+
 
 %description
-The netCDF Operators, or NCO, are a suite of programs known as
-operators. The operators facilitate manipulation and analysis of
-self-describing data stored in the netCDF or HDF4 formats, which are
-freely available (http://www.unidata.ucar.edu/packages/netcdf and
-http://hdf.ncsa.uiuc.edu, respectively). Each NCO operator (e.g., 
-ncks) takes netCDF or HDF4 input file(s), performs an operation (e.g.,
+The netCDF Operators, NCO, are a suite of command line programs known
+as operators.  The operators facilitate manipulation and analysis of
+self-describing data stored in the freely available netCDF and HDF
+formats (http://www.unidata.ucar.edu/packages/netcdf and
+http://hdf.ncsa.uiuc.edu, respectively).  Each NCO operator (e.g.,
+ncks) takes netCDF or HDF input file(s), performs an operation (e.g.,
 averaging, hyperslabbing, or renaming), and outputs a processed netCDF
-file. Although most users of netCDF and HDF data are involved in
+file.  Although most users of netCDF and HDF data are involved in
 scientific research, these data formats, and thus NCO, are generic and
-are equally useful in fields like finance. The NCO User's Guide
-illustrates NCO use with examples from the field of climate modeling
-and analysis. The NCO homepage is http://nco.sourceforge.net
+are equally useful in fields from agriculture to zoology.  The NCO
+User's Guide illustrates NCO use with examples from the field of
+climate modeling and analysis.  The NCO homepage is
+http://www.cgd.ucar.edu/cms/nco.
+
 
 %prep
-rm -rf ${RPM_BUILD_DIR}/nco-2.9.7
-tar xvzf ${RPM_SOURCE_DIR}/nco-2.9.7.tar.gz
+%setup -q -n nco
+
 
 %build
-cd nco-2.9.7/bld
-mkdir ../obj
-/usr/bin/env MY_BIN_DIR=/usr/bin MY_DOC_DIR=/usr/doc/nco-2.9.7 make
-
-# make data
-# Use make tst only when connected to the Internet
-# make tst
+export CFLAGS="-fPIC $RPM_OPT_FLAGS"
+%configure
+make %{?_smp_mflags}
 
 %install
+rm -rf $RPM_BUILD_ROOT
+mkdir $RPM_BUILD_ROOT
+make install DESTDIR=$RPM_BUILD_ROOT
 
-%files
-#%doc README
-#%doc ChangeLog
-#%doc VERSION
-#%doc TODO
-#%doc index.shtml
-#%doc nco_news.shtml
-/usr/bin/ncap
-/usr/bin/ncatted
-/usr/bin/ncbo
-/usr/bin/ncea
-/usr/bin/ncecat
-/usr/bin/ncflint
-/usr/bin/ncks
-/usr/bin/ncra
-/usr/bin/ncrcat
-/usr/bin/ncrename
-/usr/bin/ncwa
 
 %clean
-/bin/rm -r nco-2.9.7
+rm -rf $RPM_BUILD_ROOT
+
+
+%post -p /sbin/ldconfig
+
+
+%postun -p /sbin/ldconfig
+
+
+%files
+%defattr(-,root,root,-)
+%doc doc/README doc/nco.pdf doc/nco.html doc/rtfm.txt doc/dods.sh
+%{_bindir}/*
+%{_includedir}/*
+%{_mandir}/*/*
+%{_libdir}/*.*
+
+
+%changelog
+* Sat Jul 17 2004 Ed Hill <eh3@mit.edu> - 0:2.9.7-0.fdr.2
+- removed unneeded %ifarch
+
+* Sat Jul 17 2004 Ed Hill <eh3@mit.edu> - 0:2.9.7-0.fdr.1
+- Add %post,%postun
+
+* Sat Jul 17 2004 Ed Hill <eh3@mit.edu> - 0:2.9.7-0.fdr.0
+- Initial working version
+
