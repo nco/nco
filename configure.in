@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.61 2004-01-05 17:29:04 zender Exp $ -*-Shell-script-*-
+# $Header: /data/zender/nco_20150216/nco/configure.in,v 1.62 2004-01-05 23:36:20 zender Exp $ -*-Shell-script-*-
 
 # Purpose: Template used by autoconf to generate ./configure script
 # More recent software calls this file configure.ac, older software calls it configure.in
@@ -382,18 +382,19 @@ if test "${enable_debug_custom}" = 'yes'; then
 # GCC has same base pedantic arguments on all architectures
     if test "x${GCC}" = 'xyes' ; then 
 # Compilation flags for numerical routines recommended by GSL 0.9 manual, p. 370
-# CFLAGS += -ansi -Werror -W -Wmissing-prototypes -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -Dinline= -g -O4
+# CFLAGS += -ansi -Werror -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings -fshort-enums -fno-common -Dinline= -g -O4
 # fxm: Use -Werror once all warnings de-linted
 	CC="${CC} -std=c99 -pedantic -D_BSD_SOURCE"
-	CFLAGS="${CFLAGS} -Wall -Wunused -W -Wmissing-prototypes -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings"
+	CFLAGS="${CFLAGS} -Wall -Wunused -W -Wmissing-prototypes -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wwrite-strings"
 # Compilation flags recommended by GSL that I do not like
 # -ansi: Equivalent to -std=c89, conflicts with -std=c99
+# --no-alias? -fstrict-aliasing
+# -pedantic: Disallow non-ISO constructs, including type long long
 # -Waggregate-return: Warn if functions return aggregates like structures or unions
-# -pedantic: Disallow non ISO constructs, including type long long
+# -Wconversion: Intended for obsolete, non-prototyped code. Triggers fabsf(), sqrtf(), warnings.
+# -Wnested-externs: C only?
 # -Wstrict-prototypes: C only?
 # -Wtraditional: C only?
-# -Wnested-externs: C only?
-# --no-alias? -fstrict-aliasing
 	if test "x${GXX}" = 'xyes' ; then 
 	    CXXFLAGS="-Werror ${CFLAGS}"
 	fi
@@ -419,7 +420,11 @@ if test "${enable_debug_custom}" = 'yes'; then
 	    ;;
 	powerpc-ibm-aix* ) 
 	    case ${CC} in 
-		xlc* ) CFLAGS="${CFLAGS} -qflttrap -qidirfirst -qlonglong -qwarn64 -qcheck=all -qhalt=s" ; ;;
+		xlc* ) CFLAGS="${CFLAGS} -qflttrap -qidirfirst -qlonglong -qwarn64 -qcheck=all -qhalt=s"
+		    case ${CXX} in 
+			xlC* ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
 	    esac
 	    ;;
 	rs6000-ibm-aix* ) 
@@ -490,7 +495,11 @@ if test "${enable_optimize_custom}" = 'yes'; then
 	    case ${CC} in 
 # -qstrict: Ensure that -O3 optimizations do not alter program semantics
 # -Q : Inline all appropriate subprograms
-		xlc* ) CFLAGS="${CFLAGS} -O5 -qstrict -Q" ; ;;
+		xlc* ) CFLAGS="${CFLAGS} -O5 -qstrict -Q"
+		    case ${CXX} in 
+			xlC* ) CXXFLAGS="${CFLAGS}"
+		    esac
+		    ;;
 	    esac
 	    ;;
 	rs6000-ibm-aix* ) 

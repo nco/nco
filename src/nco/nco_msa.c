@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.18 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_msa.c,v 1.19 2004-01-05 23:36:20 zender Exp $ */
 
 /* Purpose: Multi-slabbing algorithm */
 
@@ -361,7 +361,7 @@ nco_msa_clc_cnt(lmt_all_sct *lmt_lst)
       if(min[idx]){
 	indices[idx]+=lmt_lst->lmt_dmn[idx]->srd;
 	if(indices[idx] > lmt_lst->lmt_dmn[idx]->end) indices[idx]=-1;
-      }
+      } /* end if */
     } /* end loop over idx */
     cnt++;
   } /* end while */
@@ -383,51 +383,51 @@ nco_msa_wrp_splt /* [fnc] Split wrapped dimensions */
   lmt_sct *lmt_wrp;
 
   for(idx=0;idx<size;idx++){
-
+    
     if(lmt_lst->lmt_dmn[idx]->srt > lmt_lst->lmt_dmn[idx]->end){
-
+      
       lmt_wrp=(lmt_sct *)nco_malloc(2*sizeof(lmt_sct));
       srt=lmt_lst->lmt_dmn[idx]->srt;
       cnt=lmt_lst->lmt_dmn[idx]->cnt;
       srd=lmt_lst->lmt_dmn[idx]->srd;
-     
-    for(jdx=0;jdx<cnt;jdx++){
-      kdx=(srt+srd*jdx)%dmn_sz_org;
-      if(kdx<srt) break;
-    } /* end loop over jdx */
-    
-    lmt_wrp[0]=*(lmt_lst->lmt_dmn[idx]);
-    lmt_wrp[1]=*(lmt_lst->lmt_dmn[idx]);
-    lmt_wrp[0].srt=srt;
-    
-    if(jdx == 1){
-      lmt_wrp[0].end=srt;
-      lmt_wrp[0].cnt=1L;
-      lmt_wrp[0].srd=1L;
-    }else{
-      lmt_wrp[0].end=srt+srd*(jdx-1);
-      lmt_wrp[0].cnt=jdx;
-      lmt_wrp[0].srd=srd;
-    } /* end else */
-    
-    lmt_wrp[1].srt=kdx;
-    lmt_wrp[1].cnt=cnt-lmt_wrp[0].cnt;
-    if(lmt_wrp[1].cnt == 1L){
-      lmt_wrp[1].end=kdx;
-      lmt_wrp[1].srd=1L;
-    }else{
-      lmt_wrp[1].end=kdx+(lmt_wrp[1].cnt-1)*srd;
-      lmt_wrp[1].srd=srd;
-    } /* end else */
+      
+      for(jdx=0;jdx<cnt;jdx++){
+	kdx=(srt+srd*jdx)%dmn_sz_org;
+	if(kdx<srt) break;
+      } /* end loop over jdx */
+      
+      lmt_wrp[0]=*(lmt_lst->lmt_dmn[idx]);
+      lmt_wrp[1]=*(lmt_lst->lmt_dmn[idx]);
+      lmt_wrp[0].srt=srt;
+      
+      if(jdx == 1){
+	lmt_wrp[0].end=srt;
+	lmt_wrp[0].cnt=1L;
+	lmt_wrp[0].srd=1L;
+      }else{
+	lmt_wrp[0].end=srt+srd*(jdx-1);
+	lmt_wrp[0].cnt=jdx;
+	lmt_wrp[0].srd=srd;
+      } /* end else */
+      
+      lmt_wrp[1].srt=kdx;
+      lmt_wrp[1].cnt=cnt-lmt_wrp[0].cnt;
+      if(lmt_wrp[1].cnt == 1L){
+	lmt_wrp[1].end=kdx;
+	lmt_wrp[1].srd=1L;
+      }else{
+	lmt_wrp[1].end=kdx+(lmt_wrp[1].cnt-1)*srd;
+	lmt_wrp[1].srd=srd;
+      } /* end else */
+      
+      /* Insert new limits into array */
+      lmt_lst->lmt_dmn[idx]=lmt_wrp;
+      lmt_lst->lmt_dmn=(lmt_sct **)nco_realloc(lmt_lst->lmt_dmn,((lmt_lst->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
+      lmt_lst->lmt_dmn[(lmt_lst->lmt_dmn_nbr)++]=++lmt_wrp;
+    } /* endif srt > end */
+  } /* end loop over size */
 
-    /* Insert new limits into array */
-    lmt_lst->lmt_dmn[idx]=lmt_wrp;
-    lmt_lst->lmt_dmn=(lmt_sct **)nco_realloc(lmt_lst->lmt_dmn,((lmt_lst->lmt_dmn_nbr)+1)*sizeof(lmt_sct *));
-    lmt_lst->lmt_dmn[(lmt_lst->lmt_dmn_nbr)++]=++lmt_wrp;
-    }
-  }
-
-  /* Check if we have a genuine wrapped co-ordinate */
+  /* Check if genuine wrapped co-ordinate */
   if(size==1 && lmt_lst->lmt_dmn_nbr==2) lmt_lst->WRP=True;
 } /* end nco_msa_wrp_splt() */
 

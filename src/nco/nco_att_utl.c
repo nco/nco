@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.27 2004-01-05 17:29:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.28 2004-01-05 23:36:20 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -456,7 +456,7 @@ prs_aed_lst /* [fnc] Parse user-specified attribute edits into structure list */
   for(idx=0;idx<nbr_aed;idx++){
 
     /* Attribute edit specifications are processed as normal text list */
-    arg_lst=lst_prs(aed_arg[idx],dlm_sng,&arg_nbr);
+    arg_lst=lst_prs(aed_arg[idx],dlm_sng,&arg_nbr); /* Causes assignment makes pointer from integer without a cast warning, Operation between types "unsigned char**" and "int" is not allowed. */
 
     /* Check syntax */
     if(
