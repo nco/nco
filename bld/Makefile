@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.79 2000-09-21 21:48:49 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.80 2000-09-26 01:14:40 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires: GNU Make. AT&T Make will not understand this.
@@ -383,7 +383,9 @@ ifneq (,$(findstring SGI,$(PVM_ARCH)))
 C++ := c++
 CC := cc
 # spoof SGI64
-CPPFLAGS += -D_OPENMP -DSGI64 -I$(NETCDF_INC)
+# OpenMP compliant compilers define _OPENMP=YYYYMM = year and month of specification
+#CPPFLAGS += -D_OPENMP=200001 -DSGI64 -I$(NETCDF_INC)
+CPPFLAGS += -DSGI64 -I$(NETCDF_INC)
 # SGIs like dataproc keep omp.h in special location determined by module MIPSpro
 ifdef $(MIPSPRO_SGI)
  CPPFLAGS := -I$(MIPSPRO_SGI)/usr/include $(CPPFLAGS)
