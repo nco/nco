@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.27 2001-09-12 17:16:43 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.28 2001-09-19 06:45:09 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -92,7 +92,8 @@ S. Srinivasan <s.srinivasan@ematic.com>
 Gian Luca Bignardi <pac77@libero.it> GTK+ GUI wrapper?
 Jeff Turner <jturner@alum.rpi.edu> getopt, _FillValue?
 Igor Crane <igor_crane@hotmail.com> ncap?
-John Parish <gerbil@planetquake.com> http? netCDF C++ interface?
+John Parish <gerbil@planetquake.com> http? C++ interface?
+Mohan Thiyagarajah <mthiyagarajah@yahoo.com> C++ interface? namespace/nc_utl?
 
 How to help develop NCO:
 
