@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.5 2002-06-07 06:27:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.c,v 1.6 2002-06-07 06:33:38 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -213,7 +213,7 @@ prn_var_dfn /* [fnc] Print variable metadata */
   }else{
     long var_sz=1L;
 
-    (void)fprintf(stdout,"%s memory size is %li*nco_typ_lng(%s) = %li*%i = %li bytes\n",var_nm,var_sz,nco_typ_sng(var_type),var_sz,nco_typ_lng(var_type),var_sz*nco_typ_lng(var_type));
+    (void)fprintf(stdout,"%s memory size is %ld*nco_typ_lng(%s) = %ld*%lu = %ld bytes\n",var_nm,var_sz,nco_typ_sng(var_type),var_sz,nco_typ_lng(var_type),var_sz*nco_typ_lng(var_type));
   } /* end if variable is a scalar */
   (void)fflush(stdout);
   
@@ -530,7 +530,7 @@ prn_var_val_lmt /* [fnc] Print variable data */
 	  /* Format and print dimension part of output string for non-coordinate variables */
 	  if(dim[dmn_idx].cid != var.id){ /* If variable is not a coordinate... */
 	    if(dim[dmn_idx].is_crd_dmn){ /* If dimension is a coordinate... */
-	      (void)sprintf(dmn_sng,"%%s%c%%li%c=%s ",arr_lft_dlm,arr_rgt_dlm,type_fmt_sng(dim[dmn_idx].type));
+	      (void)sprintf(dmn_sng,"%%s%c%%ld%c=%s ",arr_lft_dlm,arr_rgt_dlm,type_fmt_sng(dim[dmn_idx].type));
 	      /* Account for hyperslab offset in coordinate values*/
 	      crd_idx_crr=dmn_sbs_ram[dmn_idx];
 	      switch(dim[dmn_idx].type){
@@ -543,7 +543,7 @@ prn_var_val_lmt /* [fnc] Print variable data */
 	      default: nco_dfl_case_nctype_err(); break;
 	      } /* end switch */
 	    }else{ /* if dimension is not a coordinate... */
-	      (void)sprintf(dmn_sng,"%%s%c%%li%c ",arr_lft_dlm,arr_rgt_dlm);
+	      (void)sprintf(dmn_sng,"%%s%c%%ld%c ",arr_lft_dlm,arr_rgt_dlm);
 	      (void)fprintf(stdout,dmn_sng,dim[dmn_idx].nm,dmn_sbs_prn);
 	    } /* end else */
 	  } /* end if */
@@ -552,7 +552,7 @@ prn_var_val_lmt /* [fnc] Print variable data */
       
       /* Finally, print value of current element of variable */	
       idx_crr=lmn+hyp_srt+ftn_idx_off; /* Current index into equivalent 1-D array */
-      (void)sprintf(var_sng,"%%s%c%%li%c=%s %%s\n",arr_lft_dlm,arr_rgt_dlm,type_fmt_sng(var.type));
+      (void)sprintf(var_sng,"%%s%c%%ld%c=%s %%s\n",arr_lft_dlm,arr_rgt_dlm,type_fmt_sng(var.type));
       
       if(var.type == NC_CHAR && dmn_sbs_ram[var.nbr_dim-1] == 0L){
 	/* Print all characters in last dimension each time penultimate dimension subscript changes to its start value
@@ -561,15 +561,15 @@ prn_var_val_lmt /* [fnc] Print variable data */
 	if(memchr((void *)(var.val.cp+lmn),'\0',dmn_cnt[var.nbr_dim-1])){
 	  /* Memory region is NUL-terminated, i.e., a valid string */
 	  /* Print strings inside double quotes */
-	  (void)sprintf(var_sng,"%%s%c%%li--%%li%c=\"%%s\" %%s",arr_lft_dlm,arr_rgt_dlm);
+	  (void)sprintf(var_sng,"%%s%c%%ld--%%ld%c=\"%%s\" %%s",arr_lft_dlm,arr_rgt_dlm);
 	  /* var.val.cp is unsigned char * but strlen() requires const char * */
 	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+strlen((char *)var.val.cp+lmn),(char *)var.val.cp+lmn,unit_sng);
 	}else{
 	  /* Memory region is not NUL-terminated, print block of chars instead */
 	  /* Print block of chars inside single quotes */
 	  /* Re-use dmn_sng for temporary format string */
-	  (void)sprintf(dmn_sng,"%%.%lic",dmn_cnt[var.nbr_dim-1]);
-	  (void)sprintf(var_sng,"%%s%c%%li--%%li%c='%s' %%s",arr_lft_dlm,arr_rgt_dlm,dmn_sng);
+	  (void)sprintf(dmn_sng,"%%.%ldc",dmn_cnt[var.nbr_dim-1]);
+	  (void)sprintf(var_sng,"%%s%c%%ld--%%ld%c='%s' %%s",arr_lft_dlm,arr_rgt_dlm,dmn_sng);
 	  (void)fprintf(stdout,var_sng,var_nm,idx_crr,idx_crr+dmn_cnt[var.nbr_dim-1]-1L,var.val.cp+lmn,unit_sng);
 	} /* endif */
 	if(dbg_lvl_get() >= 6)(void)fprintf(stdout,"DEBUG: format string used for chars is dmn_sng = %s, var_sng = %s\n",dmn_sng,var_sng); 
