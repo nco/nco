@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.35 2004-07-01 01:11:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.36 2004-07-01 02:57:52 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -777,7 +777,6 @@ nco_thr_att_cat /* [fnc] Add threading global attribute */
   /* Purpose: Write thread information to global metadata */
   aed_sct thr_nbr_aed;
   char att_nm_nbr[]="nco_openmp_thread_number";
-  char spc_sng[]=" "; /* [sng] Intervening space */
   nco_long thr_nbr_lng; /* [nbr] Thread number copy */
   ptr_unn att_val;
   
