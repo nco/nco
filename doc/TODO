@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.165 2002-08-20 05:58:38 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.166 2002-08-20 06:34:01 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -73,7 +73,6 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 Highest priority NCO-wide items that You can help with:
 41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)
 59. Add "averaged over dimension x from y to z" attribute to ncwa-processed variables
-83. Always build operators to link dynamically to libnco.so (autoconf/autotool?)
 95. Handle CCM "time since..." conversions in ncrcat (use Unidata udunits)?
 97. Add x_op=average... attributes to averagers for ncar_csm
 124. Use `install' program and mkdir -p
@@ -82,22 +81,21 @@ Highest priority NCO-wide items that You can help with:
 152. Change make or nco_dst.pl to add docs to /usr/doc in RPM
 164. Spiff up NCO homepage web page (Logo?)
 165. Create Makefile dependency to do 'make dir' if lib, obj, bin directories do not exist
-168. Implement autoconf/automake build environment?
-177. Make RPM production allowable by non-root, since building RPMs as 
-sudo root screws up permissions in obj/bin directories of user
+177. Make RPM production allowable by non-root, since building RPMs as sudo root screws up permissions in obj/bin directories of user
 178. Make _FillValue behave same as missing_value
 179. add netCDF to required packages list in RPM build
 191. Create short man pages for each operator which point user to info pages or online manual
 212. Ensure structures are always passed by reference (default is pass by value)
-213. Implement "const" in all applicable prototypes (will improve speed)
+213. Implement macro to spit out "const var_type * const var_nm" for C++ compilers and "const var_type *var_nm" (or "var_type * const var_nm") for ANSI-C compilers. This will remove compiler warning messages for ANSI-strict C99 conformance.
+220. Modify network code in nco_fl_utl.c so gcc -ansi works (obsolete resolv.h structures and use whatever is more standard these days) 
 
 Remaining items of lesser priority:
 28. Use var.nc_id as file ID from now on and rewrite old routines to do so
-32. Implement packing with scale_factor and add_offset
+32. Implement packing with scale_factor and add_offset in all pertinent operators
 50. Allow user-specified scalar weights to ncwa
-51. Make getopt() a shared subroutine
+51. Make getopt() a shared subroutine?
 53. Add -t wall clock timer option? (then again, users can always use, e.g., timex())
-55. nco_var_cnf_dmn() should be able to expand a (x,64,128) array into an (nx,64,128) array (maybe)
+55. nco_var_cnf_dmn() should be able to expand (x,64,128) array into (nx,64,128) array (maybe)
 58. Add -o fl_out switch to supercede positional argument (GNU style)
 60. Make something that can mask a field without having to average over a dimension
 66. Make history attribute get appended, rather than overwritten, when in append mode
@@ -105,10 +103,9 @@ Remaining items of lesser priority:
 70. ncxx with no options should do usg_prn() without error msg (like ncwa does)
 75. Add warning to ncwa triggered by averaging over lat without weighting by gw with NCAR_CSM_FORMAT
 79. Allow ncrename .$var_nm syntax to work on all operators (so variables not present cause warning, not error)
-82. Make libnco namespace-safe by prefixing all library subroutines in nc_utl.c, pck.c with nco_, and those in csz.c with csz_
+82. Make libnco namespace-safe by prefixing all library subroutines with nco_
 86. Extend stride/wraparound capability to all operators possible
 92. ncrcat -O -v base_time,time_offset arm.cdf arm.cdf foo.nc;ncks -H -C -h foo.nc | m gives bad time_offset on LINUX not SUNMP (problem with LINUX adding record coordinate to open file?)
-94. ~/bin/sh/texi2html -monolithic nco.texi has started dumping core. adding -verbose switch fixes problem, though I've no idea why.
 99. Allow ncatted to dump file in ncatted format
 103. Implement trapezoidal rule option in ncra, ncea
 104. Investigate/Document reliability of -A operator when appending from large rank variables to small rank files. Add error message when variables are same size but one has a degenerate dimension.
@@ -130,7 +127,7 @@ call to nco_var_fll() for gw requires that lat be in dmn_lst
 114. Fix nco_var_cnf_dmn() so that returned weight always has same size tally array as template variable
 115. When sum of denominator in ncwa (i.e., sum of weight) is zero, SIGFPE results 
 Users should not be doing weighted averages if denominator sums to zero, but...
-Desired fix here is a graceful exit instead of a core dump
+Desired fix here is a graceful exit instead of core dump
 121. Problem reported when mss_val = 0.0 in averagers. C and Fortran 
 versions of nco_var_add_real() etc. do not handle missing_value attributes in 
 exactly the same way. C versions test both operands agains mss_val,
@@ -145,8 +142,7 @@ ncra -O -C -v rec_var_flt_mss_val_dbl in.nc foo.nc;ncks -H foo.nc
 ncra -O -C -d time,0,1 -v rec_var_flt_mss_val_dbl in.nc foo.nc ; ncks -H foo.nc
 Not too worried about this since it is Cray specific, 
 Maybe 1.0e36d does not convert to 1.0e36f on Crays?
-138. If fastest varying dimension of NC_CHAR variable is of size one,
-then should not expect it to be NUL-terminated.
+138. If fastest varying dimension of NC_CHAR variable is of size one, then should not expect it to be NUL-terminated.
 139. ncks does not correctly print coordinate indices in hyperslabs with wrapping
 ncks -H -C -v one_dmn_rec_var -d time,9,6 ~/nco/data/in.nc
 Must compute dmn_ss using WRP information for each dimension
@@ -191,9 +187,7 @@ implemented for lmt_typ = crd_val. This is an issue only when stride
 is non-unity.
 160. Add documentation of ncra, ncrcat superfluous file capabilities to nco.texi
 162. Add GiNaC (Computer Algebra System) support to ncap www.ginac.de (maybe?)
-163. Figure out way to make doc/TAG and doc/VERSION change
-automagically. Currently must be updated manually unless distribute
-with nco_dst.pl
+163. Figure out way to make doc/TAG and doc/VERSION change automagically. Currently must be updated manually unless distribute with nco_dst.pl
 166. Document 'make test' so people know it exists and use it
 167. Improve/redesign test suite so it is more comprehensive and easier to add to
 169. Merge TODO into sourceforge Task manager and bug manager as appropriate
@@ -213,7 +207,7 @@ ncdiff -O foo1.nc foo2.nc foo3.nc
 This may make sense, e.g., for 1-D record variables of different lengths, but not for multidimensional variables
 Former case should print warning, latter case should exit with error
 193. Convert dimension sizes from type "long int" to type "size_t"?
-195. Itanium builds
+195. Itanium builds!
 196. ncwa errors in nco_tst.sh tests 15--29 when built with HDF4 libraries
 No ncwa problems when built with NETCDF2_ONLY with Unidata libraries
 197. Construct HDF format in.hdf from in.cdl for testing HDF-enabled NCO:
@@ -221,10 +215,7 @@ ncks -O in.nc in.hdf
 Command executes but in.hdf is full of screwy values
 198. HDF-enabled ncgen does not parse in.cdl
 199. Internationalize (i18n) NCO with gettext()
-201. Adopt new nc_type=undefined enum for nctype instantiation 
-202. Make nco_tst.sh somehow summarize its own errors, e.g., "Total errors reported = 12" so
-that regression testing is easier. Perhaps nco_tst.sh should be rewritten in Perl or Python 
-to accomplish this.
+202. Make nco_tst.sh somehow summarize its own errors, e.g., "Total errors reported = 12" so that regression testing is easier. Perhaps nco_tst.sh should be rewritten in Perl or Python to accomplish this.
 203. Perform I/O timing tests with NCO 1.3.x vs NCO 1.2.x to see if netCDF3 interface really speeds up I/O
 204. Update User's guide to reflect new netCDF 3.x API
 206. Add example NCO script, such as dst.sh, to doc directory
@@ -232,7 +223,6 @@ to accomplish this.
 214. Disable threads > 1 on SGI temporarily because thread #0 is doing all the work, why?
 215. nco_var_cnf_dmn() does not abort when variables do not conform because dimension list of one is subset of other but ORDER of dimensions differs, e.g., a(lat,lev,lon) !~ b(lon,lev). Attempting this will return incorrect answers!
 218. Fix all leaks etc. enumerated in insure.txt
-220. Modify network code in csz.c so gcc -ansi works (fix resolv.h structures) 
 222. Warn when ncea/ncra/ncrcat/ncecat operate on scaled variables ("Results will be meaningless if scale_factor and add_offset are not identical in each file")
 223. texi2dvi nco.texi works on old RHL not on RHL 7.2
 224. Copy var_nm from command line so program, not system, owns memory. Then modify nco_var_free() to release var_nm structure member, and nco_var_dpl() to copy it. Same for dimension names and nco_dmn_dpl()

@@ -16,19 +16,19 @@ SHELL = /bin/sh
 srcdir = .
 top_srcdir = ../..
 
-prefix = /usr/local
+prefix = /home/zender
 exec_prefix = ${prefix}
 
-bindir = ${exec_prefix}/bin
+bindir = /home/zender/bin/LINUX
 sbindir = ${exec_prefix}/sbin
 libexecdir = ${exec_prefix}/libexec
-datadir = ${prefix}/share
+datadir = /home/zender/nco/data
 sysconfdir = ${prefix}/etc
 sharedstatedir = ${prefix}/com
 localstatedir = ${prefix}/var
-libdir = ${exec_prefix}/lib
+libdir = /home/zender/lib/LINUX
 infodir = ${prefix}/info
-mandir = ${prefix}/man
+mandir = /usr/local/man
 includedir = ${prefix}/include
 oldincludedir = /usr/include
 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.3 2002-08-20 02:12:37 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.4 2002-08-20 06:34:01 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -187,8 +187,7 @@ General comments on LINUX:
 zender@dust:~/nco$ pvmgetarch;uname -a
 LINUX
 Linux dust.ps.uci.edu 2.4.19-pre8 #1 SMP Wed May 8 10:16:29 PDT 2002 i686 unknown
-zender@dust:~/nco$ ./configure
-
+zender@dust:~/nco$ ./configure --prefix=${HOME} --bindir=${MY_BIN_DIR} --datadir=${HOME}/nco/data --libdir=${MY_LIB_DIR} --mandir=/usr/local/man
 Old build example:
 gcc  -DLINUX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='dust.ps.uci.edu' -DUSER='zender' -Di386 -I/usr/local/include -U_OPENMP -Wall -O -c ../src/nco/nco_att_utl.c -o /home/zender/obj/LINUX/nco_att_utl.o
 New build example:
@@ -234,6 +233,7 @@ zender@krein:~/nco$ pvmgetarch;uname -a
 SGIMP64
 IRIX64 krein 6.5 10100655 IP27 mips
 zender@krein:~/nco$ CC='cc' CXX='CC -LANG:std' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' ./configure
+zender@krein:~/nco$ ./configure CC='cc' CXX='CC -LANG:std' NETCDF_INC='/usr/local/include' NETCDF_LIB='/usr/local/lib' 
 checking build system type... mips-sgi-irix6.5
 
 Old build example: (Default is ABI64 on this platform)
