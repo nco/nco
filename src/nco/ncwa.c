@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.54 2000-09-19 15:52:55 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.55 2000-09-19 20:54:04 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.54 2000-09-19 15:52:55 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.54 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.55 2000-09-19 20:54:04 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.55 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -124,7 +124,6 @@ main(int argc,char **argv)
   extern int ncopts;
   extern int optind;
   
-  int arg_cnt=0; /* arg_cnt get incremented */
   int idx;
   int idx_avg;
   int idx_fl;
@@ -181,7 +180,6 @@ main(int argc,char **argv)
   /* Parse command line arguments */
   opt_sng="Aa:CcD:d:FhIl:M:m:nNo:Op:rRv:xWw:y:";
   while((opt = getopt(argc,argv,opt_sng)) != EOF){
-    arg_cnt++;
     switch(opt){
     case 'A': /* Toggle FORCE_APPEND */
       FORCE_APPEND=!FORCE_APPEND;
@@ -299,12 +297,6 @@ main(int argc,char **argv)
     exit(EXIT_FAILURE);
   } /* endif */
 
-  /* If called without arguments, print usage and exit successfully */
-  if(arg_cnt == 0){
-    (void)usg_prn();
-    exit(EXIT_SUCCESS);
-  } /* endif */
-  
   /* Ensure we do not attempt to normalize by non-existent weight */
   if(wgt_nm == NULL) NORMALIZE_BY_WEIGHT=False;
 

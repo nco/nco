@@ -1,3 +1,8 @@
+2000-09-19  Charlie Zender  <zender@uci.edu>
+
+	* Removed arg_cnt from ncwa.c. ncwa.c now uses standard
+	fl_mk_lst() to diagnose incorrect argument counts
+
 2000-09-18  Charlie Zender  <zender@uci.edu>
 
 	* Got OpenMP compiling but not completely working on ncwa under IRIX
