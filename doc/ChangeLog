@@ -1,5 +1,10 @@
 2004-07-25  Charlie Zender  <zender@uci.edu>
 
+	* Installed hooks to call nco_var_dmn_rdr() in ncks
+	May need to create new operator to use this capability
+
+	* Added skeleton nco_prs_rdr_lst()
+
 	* First complete draft of nco_var_dmn_rdr() compiles warning-free
 
 2004-07-21  Charlie Zender  <zender@uci.edu>

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.12 2004-01-12 18:11:07 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dmn_utl.h,v 1.13 2004-07-26 17:45:49 zender Exp $ */
 
 /* Purpose: Dimension utilities */
 
@@ -36,7 +36,7 @@ void
 nco_dmn_dfn /* [fnc] Define dimensions in output file */
 (const char * const fl_nm, /* I [sng] Name of output file */
  const int nc_id, /* I [id] netCDF output file ID */
- dmn_sct ** const dmn, /* I [sct] Dimension structures to be defined in output file */
+ dmn_sct ** const dmn, /* I [sct] Dimension structures to define in output file */
  const int nbr_dmn); /* I [nbr] Number of dimension structures in structure list */
 
 dmn_sct * /* O [sct] copy of input dimension structure */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.39 2004-07-15 00:43:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.40 2004-07-26 17:45:49 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -245,13 +245,13 @@ nco_cpy_var_val /* [fnc] Copy variable from input to output file, no limits */
   /* Write unformatted binary data */
   if(NCO_BNR_WRT) nco_bnr_wrt(fp_bnr,var_nm,var_sz,var_type,void_ptr);
 
-  /* Free the space that held dimension IDs */
+  /* Free space that held dimension IDs */
   dmn_cnt=(long *)nco_free(dmn_cnt);
   dmn_id=(int *)nco_free(dmn_id);
   dmn_sz=(long *)nco_free(dmn_sz);
   dmn_srt=(long *)nco_free(dmn_srt);
 
-  /* Free the space that held variable */
+  /* Free space that held variable */
   void_ptr=nco_free(void_ptr);
 
 } /* end nco_cpy_var_val() */

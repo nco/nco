@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.h,v 1.14 2004-07-26 05:45:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_dmn.h,v 1.15 2004-07-26 17:45:49 zender Exp $ */
 
 /* Purpose: Conform dimensions */
 
@@ -43,6 +43,12 @@ bool /* [flg] var_1 and var_2 conform after processing */
 ncap_var_cnf_dmn /* [fnc] Broadcast smaller variable into larger */
 (var_sct **var_1, /* I/O [ptr] First variable */
  var_sct **var_2); /* I/O [ptr] Second variable */
+
+dmn_sct ** /* O [sct] Dimension structures to be re-ordered */
+nco_prs_rdr_lst /* [fnc] Convert re-order string list into dimension structure list */
+(dmn_sct ** const dmn_in, /* I [sct] Dimension list for input file */
+ char **dmn_rdr_lst, /* I [sng] Names of dimensions to be re-ordered */
+ const int dmn_rdr_nbr); /* I [nbr] Number of dimension structures in re-order list */
 
 var_sct * /* O [sct] Pointer to variable with re-ordered dimensions */
 nco_var_dmn_rdr /* [fnc] Change dimension ordering */
