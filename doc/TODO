@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.427 2004-09-17 06:32:51 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.428 2004-09-18 23:24:30 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -189,9 +189,6 @@ nco301. Unable to use DDD on autotools NCO executable with --enable-debug-custom
 nco302. Add speedy GCC optimization flags to --enable-optimize-custom
 nco303. Make test suite more comprehensive
 nco304. Use/improve flex --header-file=ncap_lex.h to de-lint compiler warnings instead of __GNUC__-specific hacks in ncap_lex.l (NB: probably requires upstream changes in flex)
-nco305. Transition ncks to print switches similar to ncdump by default, so
-ncks foo.nc prints all of foo.nc. People do not use ncks because its
-default action is non-intuitive.  
 nco309. Free memory allocated in nco_fl_utl.c: fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
 nco310. Add ENABLE_DEBUG_CUSTOM, ENABLE_OPTIMIZE_CUSTOM, ... to bld/Makefile
 nco311. Automatically convert int,short to float in nco_var_pwr()
@@ -274,7 +271,8 @@ nco464. ncpdq: convert missing_value to packed type
         ncpdq -O -C -U -v mss_val ~/foo.nc ~/foo_upk.nc
         ncks -C -m -H ~/foo_upk.nc
 nco465. Create UCI IP-compliant license/copyright notice for version 3.0+
-nco466. 
+nco466. Change ncks -H -M -m switches to toggles?
+nco467. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

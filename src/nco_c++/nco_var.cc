@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.15 2004-09-18 04:23:38 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.cc,v 1.16 2004-09-18 23:24:31 zender Exp $ 
 
 // Purpose: Implementation (declaration) of C++ interface to netCDF variable routines
 
@@ -285,7 +285,7 @@ nco_inq_vardimid // [fnc] Inquire variable dimension IDS
 // End nco_inq_var() overloads
 // Begin nco_put_vara() overloads
 
-// Overload 1:  Write array given ID
+// Overload 1:  Write array given ID, start, count vectors
 int // O [enm] Return success code
 nco_put_vara // [fnc] Write variable to netCDF file
 (const int &nc_id, // I [enm] netCDF file ID
@@ -327,6 +327,68 @@ nco_put_vara // [fnc] Write variable to netCDF file
   if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara<size_t *,size_t *,double *> failed with variable "+nco_inq_varname(nc_id,var_id));
   return rcd;
 } // end nco_put_vara<size_t *,size_t *,double *>()
+
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const long double * const &var_val) // I [frc] Variable value
+{
+  // Purpose: Wrapper for nc_put_vara_double()
+  const size_t var_sz(nco_inq_varsz(nc_id,var_id)); // [nbr] Number of elements
+  double *var_val_dbl=new double[var_sz]; // [frc] Double precision values
+  for(size_t lmn_idx=0;lmn_idx<var_sz;lmn_idx++){
+    var_val_dbl[lmn_idx]=var_val[lmn_idx];
+  } // end loop over idx
+  int rcd=nc_put_vara_double(nc_id,var_id,var_srt,var_cnt,var_val_dbl);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara<size_t *,size_t *,long double *> failed with variable "+nco_inq_varname(nc_id,var_id));
+  delete []var_val_dbl;
+  return rcd;
+} // end nco_put_vara<size_t *,size_t *,long double *>()
+
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const int * const &var_val) // I [frc] Variable value
+{
+  // Purpose: Wrapper for nc_put_vara_int()
+  int rcd=nc_put_vara_int(nc_id,var_id,var_srt,var_cnt,var_val);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara<size_t *,size_t *,int *> failed with variable "+nco_inq_varname(nc_id,var_id));
+  return rcd;
+} // end nco_put_vara<size_t *,size_t *,int *>()
+
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const long * const &var_val) // I [frc] Variable value
+{
+  // Purpose: Wrapper for nc_put_vara_long()
+  int rcd=nc_put_vara_long(nc_id,var_id,var_srt,var_cnt,var_val);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara<size_t *,size_t *,long *> failed with variable "+nco_inq_varname(nc_id,var_id));
+  return rcd;
+} // end nco_put_vara<size_t *,size_t *,long *>()
+
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const short * const &var_val) // I [frc] Variable value
+{
+  // Purpose: Wrapper for nc_put_vara_short()
+  int rcd=nc_put_vara_short(nc_id,var_id,var_srt,var_cnt,var_val);
+  if(rcd != NC_NOERR) nco_err_exit(rcd,"nco_put_vara<size_t *,size_t *,short *> failed with variable "+nco_inq_varname(nc_id,var_id));
+  return rcd;
+} // end nco_put_vara<size_t *,size_t *,short *>()
 
 // End nco_put_vara() overloads
 // Begin nco_put_var() overloads

@@ -1,4 +1,4 @@
-// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.11 2004-09-18 03:23:01 zender Exp $ 
+// $Header: /data/zender/nco_20150216/nco/src/nco_c++/nco_var.hh,v 1.12 2004-09-18 23:24:31 zender Exp $ 
 
 // Purpose: Description (definition) of C++ interface to netCDF variable routines
 
@@ -184,7 +184,7 @@ nco_inq_vardimid // [fnc] Inquire variable dimension IDS
 // End nco_inq_var() overloads
 // Begin nco_put_vara() overloads
 
-// Overload 1:  Write array given ID
+// Overload 1:  Write array given ID, start, count vectors
 int // O [enm] Return success code
 nco_put_vara // [fnc] Write variable to netCDF file
 (const int &nc_id, // I [enm] netCDF file ID
@@ -212,7 +212,43 @@ nco_put_vara // [fnc] Write variable to netCDF file
  const double * const &var_val); // I [frc] Variable value
 // end nco_put_vara<size_t *,size_t *,double *>() prototype
 
-// Overload 2: Write array given name
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const long double * const &var_val); // I [frc] Variable value
+// end nco_put_vara<size_t *,size_t *,long double *>() prototype
+
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const int * const &var_val); // I [frc] Variable value
+// end nco_put_vara<size_t *,size_t *,int *>() prototype
+
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const long * const &var_val); // I [frc] Variable value
+// end nco_put_vara<size_t *,size_t *,long *>() prototype
+
+int // O [enm] Return success code
+nco_put_vara // [fnc] Write variable to netCDF file
+(const int &nc_id, // I [enm] netCDF file ID
+ const int &var_id, // I [id] Variable ID
+ const size_t * const &var_srt, // I [idx] Start vector
+ const size_t * const &var_cnt, // I [nbr] Count vector
+ const short * const &var_val); // I [frc] Variable value
+// end nco_put_vara<size_t *,size_t *,short *>() prototype
+
+// Overload 2: Write array given name, start, count vectors
 template<typename typ_ntr>
 int // O [enm] Return success code
 nco_put_vara // [fnc] Write variable to netCDF file
