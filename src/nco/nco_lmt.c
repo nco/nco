@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.10 2003-02-06 07:36:53 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.11 2003-03-24 17:30:30 rorik Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -6,7 +6,13 @@
    This software is distributed under the terms of the GNU General Public License
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h> /* Autotools tokens */
+#endif /* !HAVE_CONFIG_H */
 #include "nco_lmt.h" /* Hyperslab limits */
+#ifdef HAVE_UDUNITS_H
+#include <udunits.h> /* unidata units library */
+#endif /* HAVE_UDUNITS_H */
 
 lmt_sct /* [sct] Limit structure for dimension */
 nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension */
@@ -202,9 +208,9 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     /* min_sng and max_sng are not both NULL */
     /* Limit is coordinate value if string contains decimal point or is in exponential format 
      Otherwise limit is interpreted as zero-based dimension offset */
-  
-    if(lmt.min_sng != NULL) min_lmt_typ=(strchr(lmt.min_sng,'.') || strchr(lmt.min_sng,'e') || strchr(lmt.min_sng,'E') || strchr(lmt.min_sng,'d') || strchr(lmt.min_sng,'D')) ? lmt_crd_val : lmt_dmn_idx;
-    if(lmt.max_sng != NULL) max_lmt_typ=(strchr(lmt.max_sng,'.') || strchr(lmt.max_sng,'e') || strchr(lmt.max_sng,'E') || strchr(lmt.max_sng,'d') || strchr(lmt.max_sng,'D')) ? lmt_crd_val : lmt_dmn_idx;
+
+    if(lmt.max_sng != NULL) min_lmt_typ = nco_lmt_typ(lmt.min_sng);
+    if(lmt.max_sng != NULL) max_lmt_typ = nco_lmt_typ(lmt.max_sng);
     
     /* Copy lmt_typ from defined limit to undefined */
     if(lmt.min_sng == NULL) min_lmt_typ=max_lmt_typ;
@@ -223,7 +229,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
   } /* end if */
   lmt.lmt_typ=min_lmt_typ;
   
-  if(lmt.lmt_typ == lmt_crd_val){
+  if( ( lmt.lmt_typ == lmt_crd_val) || (lmt.lmt_typ == lmt_udu_str) ){
     double *dmn_val_dp;
 
     double dmn_max;
@@ -233,7 +239,7 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     long min_idx;
     long tmp_idx;
     long dmn_srt=0L;
-
+    
     /* Get variable ID of coordinate */
     rcd=nco_inq_varid(nc_id,lmt.nm,&dim.cid);
     
@@ -302,10 +308,15 @@ nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications *
     dmn_min=dmn_val_dp[min_idx];
     dmn_max=dmn_val_dp[max_idx];
     
+  /* convert UDUnits strings if necessary */
+  if (lmt.lmt_typ == lmt_udu_str ) {
+    if (nco_lmt_udu_cnv(nc_id, dim.cid, &lmt) != 0) exit(EXIT_FAILURE);
+    }
+  else {
     /* Convert user-specified limits into double precision numeric values, or supply defaults */
     if(lmt.min_sng == NULL) lmt.min_val=dmn_val_dp[min_idx]; else lmt.min_val=strtod(lmt.min_sng,(char **)NULL);
     if(lmt.max_sng == NULL) lmt.max_val=dmn_val_dp[max_idx]; else lmt.max_val=strtod(lmt.max_sng,(char **)NULL);
-
+    }
     /* Warn when min_val > max_val (i.e., wrapped coordinate)*/
     if(dbg_lvl_get() > 0 && lmt.min_val > lmt.max_val) (void)fprintf(stderr,"%s: INFO Interpreting hyperslab specifications as wrapped coordinates [%s <= %g] and [%s >= %g]\n",prg_nm_get(),lmt.nm,lmt.max_val,lmt.nm,lmt.min_val);
     
@@ -827,3 +838,135 @@ nco_lmt_prs /* [fnc] Create limit structures with name, min_sng, max_sng element
 
 } /* end nco_lmt_prs() */
 
+int /* return 0 when a successful conversion occurs */
+nco_lmt_udu_cnv /* [fnc] convert from unidata units to coordinate value */
+(const int nc_id, /* I [idx] netCDF file ID */
+ const int dimid, /* I [idx] netCDF dimension ID */
+ lmt_sct *lmt) /* I/O [sct] limit structure */
+{
+  int rcd;	/* return code */
+  static const char* att_nm="units";
+  char* dt_str;	/* date/time string */
+  long att_sz;  /* "units" attribute size */
+  nc_type att_type; /* atttribute type, probably is NC_CHAR */
+
+#ifndef HAVE_LIBUDUNITS
+  (void)fprintf(stdout,"udunits library is not available.\n");
+  return 1;
+#else
+  utUnit unitstruct;  /* unidata units structure */
+
+#ifndef UDUNITS_DAT
+    /* when empty utInit uses the env var UDUNITS_PATH, and then a default */
+    /* location of its initial location hardcoded into the library when */
+    /* it was built initially */
+    rcd = utInit("");
+#else
+    /* the macro UDUNITS_DAT expands to where autoconf found the file */
+    rcd = utInit(UDUNITS_DAT);
+#endif /* HAVE_UDUNITS_DAT */
+    if (rcd != 0) {
+      (void)fprintf(stdout,"Failed to initialize the udunits library\n");
+      return 1;
+      }
+  
+  /* see if 'units' attribute exists */
+  if (nco_inq_att(nc_id, dimid, att_nm, &att_type, &att_sz) == NC_NOERR) {
+    /* allocate memory for attribute */
+    dt_str = (char *)nco_malloc((att_sz+1)*sizeof(char));
+    /* get 'units' attribute */
+    nco_get_att(nc_id, dimid, att_nm, dt_str, att_type);
+    }
+  
+  /* convert 'units' attribute into a utUnit structure */
+  rcd = utScan(dt_str, &unitstruct) ; 
+  if (rcd == UT_EINVALID) return 0; /* attribute is absent, so don't try */
+  if (rcd == UT_EUNKNOWN || rcd == UT_ESYNTAX) {
+    (void)fprintf(stderr,"WARNING unit attribute \"%s\" is not a valid udunits string",dt_str);
+    (void)utTerm(); /* free memory taken by udunits library */
+    return 1;
+    }
+    
+  /* continue if this is a 'time' variable we can work with */
+  if ( !(utIsTime(&unitstruct)) || !(utHasOrigin(&unitstruct)) ) {
+    (void)fprintf(stderr,"WARNING \"%s\" is not a valid time unit with an origin, so conversion will not occur\n\n",dt_str);
+    (void)utTerm(); /* free memory taken by udunits library */
+    return 1;
+    }
+  else {
+  
+    /* now parse the limits into years, months, day, etc */
+    char** arg_lst; /* array of date/time strings after parsing */
+    int arg_nbr;  /* [nbr] number of arguments parsed */
+    int year, month, day, hour, min;
+    double sec;
+    double *cur_val = &(lmt->min_val); /* pointer so we can set min/max val */
+    char *cur_sng; /* we need a copy because lst_prs() alters stuff */
+    int mm_idx=0; /* min/max counter, enables using the same lexer twice */
+    
+    /* allocate space for the limit string */
+    cur_sng=(char *)nco_malloc(((strlen(lmt->min_sng))+1)*sizeof(char));
+    /* make a copy to work with */
+    strcpy(cur_sng,lmt->min_sng);
+    for (mm_idx=0; mm_idx<2; mm_idx++) { /* loop twice for min and max */
+    /* clear the date and time */
+      year=0L; month=0L; day=0L; hour=0L; min=0L; sec=(double)0;
+      /* break up the date string copy delimited by dashes */
+      arg_lst=lst_prs(cur_sng,"-",&arg_nbr);
+      /* fill in the year, month and day */
+      if (arg_nbr > 0 ) year =strtol(arg_lst[0],(char **)NULL,10);
+      if (arg_nbr > 1 ) month=strtol(arg_lst[1],(char **)NULL,10);
+      if (arg_nbr > 2 ) day  =strtol(arg_lst[2],(char **)NULL,10);
+      /* advance the pointer past the date/time delimiting space */
+      arg_lst[arg_nbr-1]=strrchr(arg_lst[arg_nbr-1],' ');
+      /* step past last space */
+      if (arg_lst[arg_nbr-1] != NULL) arg_lst[arg_nbr-1]++;
+      /* break up the remaining time string delimited by colons */
+      if (arg_lst[arg_nbr-1] != NULL) {
+        arg_lst=lst_prs(arg_lst[arg_nbr-1],":",&arg_nbr);
+        /* fill in the hour, minute and second */
+        if ( (arg_nbr > 0) && strlen(arg_lst[0])>2) { /* HHMM spec */
+          hour=strtol(arg_lst[0],(char **)NULL,10);
+	  hour=(long)(hour/100);
+	  min =strtol(arg_lst[0],(char **)NULL,10);
+          min=(long)(min%100);
+	  }
+        else { /* HH:MM:S.S spec */
+          if (arg_nbr > 0 ) hour=strtol(arg_lst[0],(char **)NULL,10);
+          if (arg_nbr > 1 ) min =strtol(arg_lst[1],(char **)NULL,10);
+          if (arg_nbr > 2 ) sec =strtod(arg_lst[2],(char **)NULL);
+  	  }
+	} /* if arg_lst[] != NULL */
+      /* convert dates into "time since ..." value */
+      rcd=utInvCalendar(year,month,day,hour,min,sec,&unitstruct,cur_val);
+      /* switch to max and redo parsing */
+      cur_val = &(lmt->max_val);
+      /* make another copy for working with */
+      strcpy(cur_sng,lmt->max_sng);	    
+      }
+    } /* if/else utIsTime() ... */
+  (void)utTerm(); /* free memory taken by udunits library */
+  return 0; 
+#endif /* HAVE_LIBUDUNITS */
+  }  /* end nco_lmt_udu_cnv() */
+
+int
+ nco_lmt_typ /* [fnc] determine limit type */
+ (char* sng) /* I [ptr] pointer to the limit string */
+ {
+  /* first test for a UDUnits string */
+  /* a non-leading dash is used to specify dates */
+  if (strchr(sng,'-') && ((char*)strchr(sng,'-') != (char*)sng) ) {
+    return lmt_udu_str;
+  }
+  /* the following idicates coordinate values */
+  else if (strchr(sng,'E') || strchr(sng,'e') || /* exponential */
+           strchr(sng,'D') || strchr(sng,'d') || /* double */
+           strchr(sng,'.')  /* decimal point */
+      ) {
+    return lmt_crd_val;
+    }
+  else{ 
+    return lmt_dmn_idx;
+    }
+  }

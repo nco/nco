@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.49 2003-02-18 19:38:14 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.50 2003-03-24 17:30:31 rorik Exp $ */
 
 /* Purpose: netCDF operator definitions */
 
@@ -119,11 +119,6 @@ extern "C" {
     aed_modify,
     aed_overwrite
   }; /* end enum */
-  
-  enum lmt_typ{ /* [enm] Limit type */
-    lmt_crd_val, /* 0, Coordinate value limit */
-    lmt_dmn_idx /* 1, Dimension index limit */
-  }; /* end lmt_typ enum */
   
   enum nco_rlt_opr{ /* [enm] Arithmetic relations (comparisons) for masking */
     nco_op_eq, /* Equality */

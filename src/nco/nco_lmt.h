@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.6 2002-12-30 02:56:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.h,v 1.7 2003-03-24 17:30:31 rorik Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -37,6 +37,12 @@
 extern "C" {
 #endif /* __cplusplus */
 
+enum lmt_typ{ /* [enm] Limit type */
+ lmt_crd_val, /* 0, Coordinate value limit */
+ lmt_dmn_idx, /* 1, Dimension index limit */
+ lmt_udu_str /* 2, UDUnits string */
+}; /* end lmt_typ enum */
+  
 void
 nco_lmt_evl /* [fnc] Parse user-specified limits into hyperslab specifications */
 (int nc_id, /* I [idx] netCDF file ID */
@@ -56,6 +62,16 @@ nco_lmt_sct_mk /* [fnc] Create stand-alone limit structure for given dimension *
  const lmt_sct * const lmt, /* I [sct] Array of limit structures from nco_lmt_evl() */
  int lmt_nbr, /* I [nbr] Number of limit structures */
  const bool FORTRAN_STYLE); /* I [flg] Hyperslab indices obey Fortran convention */
+
+int /* O [nbr] returns zero when conversion succeeds */
+nco_lmt_udu_cnv /* [fnc] convert "time since..." string into double values */ 
+(const int ncid, /* I [idx] netCDF file ID */
+ const int dimid, /* I [idx] netCDF dimension ID */
+ lmt_sct *lmt); /* I/O [sct] Structure with user-specified strings for min and max limits */
+
+int /* 0 [enum] returns the limit type */
+nco_lmt_typ /* [fnc] determine limit type */
+(char* sng);/* I [ptr] pointer to the limit string */
 
 #ifdef __cplusplus
 } /* end extern "C" */

@@ -200,6 +200,19 @@ AC_CHECK_LIB([socket], [main])
 AC_CHECK_LIB([thread], [main])
 #AC_CHECK_LIB([nsl], [main])
 AC_CHECK_LIB([nco], [nco_open])
+#############################################
+
+# check for unidata's UDUNITS library and data files
+if test "x$NETCDF_INC" = "x"; then
+  nco_udunits_dat="/usr/local/etc/udunits.dat"
+else
+  nco_udunits_dat="$NETCDF_INC/../etc/udunits.dat"
+fi
+AC_CHECK_LIB([udunits], [utInit])
+dnl this must be DEFINE_UNQUOTED and then a quoted string so the quotes get
+dnl substituted into the source file correctly
+AC_CHECK_FILE([$nco_udunits_dat],[AC_DEFINE_UNQUOTED([UDUNITS_DAT],["$nco_udunits_dat"],[location of udunits data file])])
+AC_CHECK_HEADERS([udunits.h])
 
 #############################################
 # HDF5 support

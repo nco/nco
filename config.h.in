@@ -120,6 +120,9 @@
 /* Define to 1 if you have the `thread' library (-lthread). */
 #undef HAVE_LIBTHREAD
 
+/* Define to 1 if you have the `udunits' library (-ludunits). */
+#undef HAVE_LIBUDUNITS
+
 /* Define to 1 if you have the `www' library (-lwww). */
 #undef HAVE_LIBWWW
 
@@ -244,6 +247,9 @@
 
 /* Define to 1 if you have the `truncf' function. */
 #undef HAVE_TRUNCF
+
+/* Define to 1 if you have the <udunits.h> header file. */
+#undef HAVE_UDUNITS_H
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
@@ -398,6 +404,9 @@
 
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
+
+/* location of udunits data file */
+#undef UDUNITS_DAT
 
 /* User */
 #undef USER
