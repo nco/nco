@@ -1,57 +1,12 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.55 2002-05-06 03:31:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.56 2002-05-06 06:37:14 zender Exp $ */
 
-/* Purpose: Utilities for ncap operator */
+/* Purpose: netCDF arithmetic processor */
 
 /* Copyright (C) 1995--2002 Charlie Zender
-   
-   This program is free software; you can redistribute it and/or
-   modify it under the terms of the GNU General Public License
-   as published by the Free Software Foundation; either version 2
-   of the License, or (at your option) any later version.
-   
-   As a special exception to the terms of the GPL, you are permitted 
-   to link the NCO source code with the NetCDF and HDF libraries 
-   and distribute the resulting executables under the terms of the GPL, 
-   but in addition obeying the extra stipulations of the netCDF and 
-   HDF library licenses.
-   
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, write to the Free Software
-   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-   
-   The file LICENSE contains the GNU General Public License, version 2
-   It may be viewed interactively by typing, e.g., ncks -L
-   
-   The author of this software, Charlie Zender, would like to receive
-   your suggestions, improvements, bug-reports, and patches for NCO.
-   Please contact the project at http://sourceforge.net/projects/nco or by writing
-   
-   Charlie Zender
-   Department of Earth System Science
-   University of California at Irvine
-   Irvine, CA 92697-3100
-*/
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
-/* Standard header files */
-#include <math.h> /* sin cos cos sin 3.14159 */
-#include <stdio.h> /* stderr, FILE, NULL, etc. */
-#include <stdlib.h> /* atof, atoi, malloc, getopt */
-#include <string.h> /* strcmp. . . */
-#include <time.h> /* machine time */
-#include <unistd.h> /* POSIX stuff */
-
-/* 3rd party vendors */
-#include <netcdf.h> /* netCDF definitions */
-#include "nco_netcdf.h" /* netCDF wrapper functions */
-
-/* Personal headers */
-#include "nco.h" /* netCDF operator universal def'ns */
-#include "ncap.h" /* ncap functions, sym_sct, prs_sct, scv_sct */
+#include "ncap.h" /* netCDF arithmetic processor */
 
 var_sct *
 ncap_var_init(char *var_nm,prs_sct *prs_arg)

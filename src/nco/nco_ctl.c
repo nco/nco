@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.4 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.5 2002-05-06 06:37:14 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -106,21 +106,22 @@ prg_prs /* [fnc] Strip program name to stub and return program ID */
   char *nm_out;
 
   /* Get program name (use strrchr() first in case nm_in contains a path) */
-  if((nm_out=strrchr(nm_in,'/')) == NULL) nm_out=nm_in; else nm_out++;
+  nm_out=(char *)strdup(nm_in);
+  if(strrchr(nm_out,'/') != NULL) nm_out++;
 
   /* Classify calling program */
-  if(!strcmp(nm_out,"ncra")){*prg=ncra;
-  }else if(!strcmp(nm_out,"ncap")){*prg=ncap;
-  }else if(!strcmp(nm_out,"ncea")){*prg=ncea;
-  }else if(!strcmp(nm_out,"ncdiff")){*prg=ncdiff;
-  }else if(!strcmp(nm_out,"ncflint")){*prg=ncflint;
-  }else if(!strcmp(nm_out,"ncwa")){*prg=ncwa;
-  }else if(!strcmp(nm_out,"ncrcat")){*prg=ncrcat;
-  }else if(!strcmp(nm_out,"ncecat")){*prg=ncecat;
-  }else if(!strcmp(nm_out,"ncks")){*prg=ncks;
-  }else if(!strcmp(nm_out,"ncrename")){*prg=ncrename;
-  }else if(!strcmp(nm_out,"ncatted")){*prg=ncatted;
-  }else{
+  if(!strcmp(nm_out,"ncra")){*prg=ncra;}
+  else if(!strcmp(nm_out,"ncap")){*prg=ncap;}
+  else if(!strcmp(nm_out,"ncea")){*prg=ncea;}
+  else if(!strcmp(nm_out,"ncdiff")){*prg=ncdiff;}
+  else if(!strcmp(nm_out,"ncflint")){*prg=ncflint;}
+  else if(!strcmp(nm_out,"ncwa")){*prg=ncwa;}
+  else if(!strcmp(nm_out,"ncrcat")){*prg=ncrcat;}
+  else if(!strcmp(nm_out,"ncecat")){*prg=ncecat;}
+  else if(!strcmp(nm_out,"ncks")){*prg=ncks;}
+  else if(!strcmp(nm_out,"ncrename")){*prg=ncrename;}
+  else if(!strcmp(nm_out,"ncatted")){*prg=ncatted;}
+  else{
     (void)fprintf(stdout,"%s: ERROR %s not registered in prg_prs()\n",nm_out,nm_out);
     nco_exit(EXIT_FAILURE);
   } /* end else */

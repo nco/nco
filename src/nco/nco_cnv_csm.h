@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.h,v 1.2 2002-05-06 06:37:14 zender Exp $ */
 
 /* Purpose: CSM conventions */
 
@@ -22,6 +22,8 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_cln_utl.h" /* Calendar utilities */
+#include "nco_mmr.h" /* Memory management */
 
 #ifdef __cplusplus
 extern "C" {

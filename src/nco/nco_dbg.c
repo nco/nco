@@ -1,3 +1,13 @@
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_dbg.c,v 1.4 2002-05-06 06:37:14 zender Exp $ */
+
+/* Purpose: Debugging */
+
+/* Copyright (C) 1995--2002 Charlie Zender
+   This software is distributed under the terms of the GNU General Public License
+   See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
+
+#include "nco_dbg.h" /* Debugging */
+
 void
 err_prn /* [fnc] Print formatted error messages */
 (char *err_msg) /* I [sng] Formatted error message to print */

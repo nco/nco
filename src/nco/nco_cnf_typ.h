@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.4 2002-05-06 03:32:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnf_typ.h,v 1.5 2002-05-06 06:37:14 zender Exp $ */
 
 /* Purpose: Conform variable types */
 
@@ -7,7 +7,7 @@
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
 /* Usage:
-   #include "nco_cnf_typ.h" *//*  */
+   #include "nco_cnf_typ.h" *//* Conform variable types */
 
 #ifndef NCO_CNF_TYP_H
 #define NCO_CNF_TYP_H

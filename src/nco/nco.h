@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.33 2002-05-06 03:31:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.34 2002-05-06 06:37:14 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -8,6 +8,14 @@
 
 #ifndef NCO_H /* Contents have not yet been inserted in current source file */
 #define NCO_H
+
+/* Standard header files */
+#include <stdio.h> /* stderr, FILE, NULL, printf */
+
+/* 3rd party vendors */
+#include <netcdf.h> /* netCDF definitions */
+
+/* Personal headers */
 
 #ifdef __cplusplus
 /* Use C-bindings so C++-compiled and C-compiled libraries are compatible */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.2 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.h,v 1.3 2002-05-06 06:37:14 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -15,6 +15,7 @@
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
 #include <string.h> /* strcmp. . . */
+#include <time.h> /* machine time */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */
@@ -22,6 +23,10 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_ctl.h" /* Program flow control functions */
+#include "nco_mmr.h" /* Memory management */
+#include "nco_mss_val.h" /* Missing value utilities */
+#include "nco_cnf_typ.h" /* Conform variable types */
 
 #ifdef __cplusplus
 extern "C" {

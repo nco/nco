@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.1 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_prn.h,v 1.2 2002-05-06 06:37:14 zender Exp $ */
 
 /* Purpose: Printing variables, attributes, metadata */
 
@@ -14,9 +14,7 @@
 
 /* Standard header files */
 #include <stdio.h> /* stderr, FILE, NULL, printf */
-#include <stdlib.h> /* strtod, strtol, malloc, getopt, exit */
 #include <string.h> /* strcmp. . . */
-#include <unistd.h> /* POSIX stuff */
 
 /* 3rd party vendors */
 #include <netcdf.h> /* netCDF definitions */

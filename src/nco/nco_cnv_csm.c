@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.1 2002-05-02 06:10:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.2 2002-05-06 06:37:14 zender Exp $ */
 
 /* Purpose: CSM conventions */
 
@@ -6,11 +6,11 @@
    This software is distributed under the terms of the GNU General Public License
    See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text */
 
-#include "nco_cnv_arm.h" /* CSM conventions */
+#include "nco_cnv_csm.h" /* CSM conventions */
 
 bool /* O [flg] File obeys CSM conventions */
 ncar_csm_inq /* O [fnc] Check if file obeys CSM conventions */
-(const int nc_id); /* I [id] netCDF file ID */
+(const int nc_id) /* I [id] netCDF file ID */
 {
   /* Purpose: Check if file adheres to NCAR CSM history tape format */
 

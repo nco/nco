@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.4 2002-05-06 03:31:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.h,v 1.5 2002-05-06 06:37:14 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -91,7 +91,7 @@ extern "C" {
   (const int nc_id, /* I [id] netCDF file ID */
    const int var_id, /* I [id] variable ID */
    const char * const var_nm, /* I [sng] Variable name */
-   const dmn_sct ** const dim, /* I [sct] Dimensions available to variable */
+   dmn_sct * const * const dim, /* I [sct] Dimensions available to variable */
    const int nbr_dim); /* I [nbr] Number of dimensions in list */
   
   var_sct * /* O [sct] Pointer to free'd variable */

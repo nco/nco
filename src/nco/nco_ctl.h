@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.3 2002-05-06 02:17:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.h,v 1.4 2002-05-06 06:37:14 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -25,6 +25,7 @@
 
 /* Personal headers */
 #include "nco.h" /* NCO definitions */
+#include "nco_mmr.h" /* Memory management */
 
 #ifdef __cplusplus
 extern "C" {
