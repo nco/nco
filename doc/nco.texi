@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.279 2004-09-25 00:43:49 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.280 2004-09-27 07:15:45 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2310,9 +2310,9 @@ or @command{scp} access to the machine @code{dust.ess.uci.edu}.
 The third example will work from @acronym{NCAR} computers with local
 access to  the @command{msrcp}, @command{msread}, or @command{nrnet}
 commands. 
-The fourth command will work if your local version of @acronym{NCO} was 
-built with @acronym{DODS/OPeNDAP} capability (@pxref{DODS/OPeNDAP}).
-The above commands can be rewritten using the @samp{-p @var{input-path}}
+The fourth command will work if your local version of @acronym{NCO} was  
+built with @acronym{OPeNDAP} capability (@pxref{OPeNDAP}). 
+The above commands can be rewritten using the @samp{-p @var{input-path}} 
 option as follows: 
 @cindex @code{-p @var{input-path}}
 @cindex @var{input-path}
@@ -2352,7 +2352,7 @@ Note that @samp{-l .} is equivalent to @samp{-l ./} though the latter is
 recommended as it is syntactically more clear.
 
 @menu
-* DODS/OPeNDAP::                
+* OPeNDAP::                
 @end menu
 
 @html
@@ -2361,8 +2361,8 @@ recommended as it is syntactically more clear.
 <a name="dods"></a> <!-- http://nco.sf.net/nco.html#dods -->
 <a name="opendap"></a> <!-- http://nco.sf.net/nco.html#opendap -->
 @end html
-@node DODS/OPeNDAP,  , Remote storage, Remote storage
-@subsection @acronym{DODS}/@acronym{OPeNDAP}
+@node OPeNDAP,  , Remote storage, Remote storage
+@subsection @acronym{OPeNDAP}
 @cindex @acronym{DODS}
 @cindex @acronym{HTTP} protocol
 @cindex @env{DODS_ROOT}
@@ -2406,60 +2406,60 @@ maintains, develops, and promulgates the @acronym{DAP} standard.
 @acronym{OPeNDAP} and @acronym{DAP} really are interchangeable.
 Got it yet?}.
 
-@acronym{NCO} may be @acronym{DODS/OPeNDAP}-enabled by linking
-@acronym{NCO} to the @acronym{DODS/OPeNDAP} libraries. 
+@acronym{NCO} may be @acronym{OPeNDAP}-enabled by linking
+@acronym{NCO} to the @acronym{OPeNDAP} libraries. 
 @cindex @file{Makefile}
-This is described in the @acronym{DODS/OPeNDAP} documentation and
+This is described in the @acronym{OPeNDAP} documentation and
 automagically implemented in @acronym{NCO} build mechanisms
 @footnote{
-Automagic support for @acronym{DODS/OPeNDAP} version 3.2.x was deprecated in 
+Automagic support for @acronym{OPeNDAP} version 3.2.x was deprecated in 
 December, 2003 with @acronym{NCO} 2.8.4.
-@acronym{NCO} now supports @acronym{DODS/OPeNDAP} version 3.4.x.}.
+@acronym{NCO} now supports @acronym{OPeNDAP} version 3.4.x.}.
 The @file{./configure} mechanism automatically enables @acronym{NCO} as
-@acronym{DODS/OPeNDAP} clients if it can find the required
-@acronym{DODS/OPeNDAP} libraries
+@acronym{OPeNDAP} clients if it can find the required
+@acronym{OPeNDAP} libraries
 @footnote{
 The minimal set of libraries required to build @acronym{NCO} as
-@acronym{DODS/OPeNDAP} clients are 
+@acronym{OPeNDAP} clients are 
 @file{DODS-dap-3.4.x}, @file{DODS-nc3-dods-3.4.5}, and 
 @file{DODS-packages-3.4.x}.}.
  in the usual locations.
 The @env{$DODS_ROOT} environment variable may be used to override the 
-default @acronym{DODS/OPeNDAP} library location at @acronym{NCO}
+default @acronym{OPeNDAP} library location at @acronym{NCO}
 compile-time.  
 Building @acronym{NCO} with @file{bld/Makefile} and the command
 @code{make DODS=Y} adds the (non-intuitive) commands to link to the
-@acronym{DODS/OPeNDAP} libraries installed in the @env{$DODS_ROOT}
+@acronym{OPeNDAP} libraries installed in the @env{$DODS_ROOT}
 directory.  
 The file @file{doc/dods.sh} contains a generic script intended to help
-users install @acronym{DODS/OPeNDAP} before building @acronym{NCO}.
+users install @acronym{OPeNDAP} before building @acronym{NCO}.
 The documentation at the 
-@uref{http://www.unidata.ucar.edu/packages/dods, DODS Homepage}
+@uref{http://www.opendap.org, OPeNDAP Homepage}
 is voluminous.
 Check there and on the
 @uref{http://www.unidata.ucar.edu/packages/dods/home/mailLists/, DODS mail lists}.
-to learn more about the extensive capabilities of @acronym{DODS/OPeNDAP}
+to learn more about the extensive capabilities of @acronym{OPeNDAP}
 @footnote{
-We are most familiar with the @acronym{DODS/OPeNDAP} ability to enable 
+We are most familiar with the @acronym{OPeNDAP} ability to enable 
 network-transparent data access.
 @cindex constraint expressions
 @cindex server-side processing
-@acronym{DODS/OPeNDAP} has many other features, including sophisticated
+@acronym{OPeNDAP} has many other features, including sophisticated
 hyperslabbing and server-side processing via @dfn{constraint expressions}.
 If you know more about this, please consider writing a section
-on "@acronym{DODS/OPeNDAP} Capabilities of Interest to @acronym{NCO} Users"
+on "@acronym{OPeNDAP} Capabilities of Interest to @acronym{NCO} Users"
 for incorporation in the @cite{NCO User's Guide}.}.
 
-Once @acronym{NCO} is @acronym{DODS/OPeNDAP}-enabled the operators are
-@acronym{DODS/OPeNDAP} clients.  
-All @acronym{DODS/OPeNDAP} clients have network transparent access to
-any files controlled by a @acronym{DODS/OPeNDAP} server. 
+Once @acronym{NCO} is @acronym{OPeNDAP}-enabled the operators are
+@acronym{OPeNDAP} clients.  
+All @acronym{OPeNDAP} clients have network transparent access to
+any files controlled by a @acronym{OPeNDAP} server. 
 Simply specify the input file path(s) in @acronym{URL} notation and all 
 @acronym{NCO} operations may be performed on remote files made
-accessible by a @acronym{DODS/OPeNDAP} server. 
+accessible by a @acronym{OPeNDAP} server. 
 For example, this extracts (remotely) an equatorial hyperslab,
 from @acronym{NCEP daily reanalyses} data of the year 1969 made freely   
-available by a @acronym{NOAA} @acronym{DODS/OPeNDAP} server.
+available by a @acronym{NOAA} @acronym{OPeNDAP} server.
 Then it sends the hyperslab to the local @command{ncwa} client which
 computes and stores (locally) the regional mean surface pressure 
 @w{(in Pa)}. 
@@ -2477,10 +2477,10 @@ The data in this particular input file also happen to be packed
 to the user since @acronym{NCO} automatically unpacks them before
 attempting arithmetic. 
 
-@acronym{NCO} obtains remote files from the @acronym{DODS/OPeNDAP} server
+@acronym{NCO} obtains remote files from the @acronym{OPeNDAP} server
 (e.g., @file{www.cdc.noaa.gov}) rather than the local machine. 
 Input files are first copied to the local machine, then processed.
-The @acronym{DODS/OPeNDAP} server performs data access, hyperslabbing,
+The @acronym{OPeNDAP} server performs data access, hyperslabbing,
 and transfer to the local machine.
 @cindex I/O
 This allows the I/O to appear to @acronym{NCO} as if the input files
@@ -2543,9 +2543,9 @@ the current directory.
 
 @cindex @acronym{DODS}
 @cindex server
-If your @acronym{NCO} is @acronym{DODS}-enabled (@pxref{DODS/OPeNDAP}),
+If your @acronym{NCO} is @acronym{OPeNDAP}-enabled (@pxref{OPeNDAP}),
 then you may use @acronym{NCO} to retrieve any files (including netCDF,
-@acronym{HDF}, etc.) served by a @acronym{DODS} server to your local
+@acronym{HDF}, etc.) served by a @acronym{OPeNDAP} server to your local
 machine. 
 For example, 
 @example
