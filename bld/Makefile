@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.189 2002-09-20 20:39:17 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.190 2002-09-20 20:41:08 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -654,7 +654,7 @@ ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 endif
 LEX := lex
 LINT := lint
-YACC := yacc
+YACC := bison
 ifeq (${OPTS},O)
  CFLAGS += -h2 -hmath vector -hxint
 # CFLAGS += -Cvopt -math vector -xint
@@ -688,7 +688,7 @@ ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 endif
 LEX := lex
 LINT := lint
-YACC := yacc
+YACC := bison
 ifeq (${OPTS},O)
  CFLAGS += -O2
  CPP := ${CPP} ${CPPFLAGS}
@@ -809,7 +809,7 @@ LD := ld
 LDFLAGS += ${TMP_LDFLAGS} ${TMP_LIBS} -lsunmath -lsocket -lnsl
 LEX := lex
 LINT := lint
-YACC := yacc
+YACC := bison
 ifeq (${OPTS},O)
  CFLAGS += -O2
  FFLAGS += -fast
