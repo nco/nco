@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.104 2002-07-03 20:37:24 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.105 2002-07-03 20:44:04 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2802,6 +2802,7 @@ and unpacking.
 @cindex @code{add_offset}
 @cindex @code{scale_factor}
 @cindex @command{pack(x)}
+@table @code
 @item pack(x)
 @dfn{Packing}
 The standard packing algorithm is applied to variable @var{x}.
@@ -2868,6 +2869,7 @@ be of type @code{float} or @code{double}.
 An attribute's @code{scale_factor} and @code{add_offset} should both be
 of the type intended for the unpacked data, e.g., @code{float} or
 @code{double}. 
+@end table
 
 @node Intrinsic mathematical functions ,  , ncap netCDF Arithmetic Processor, ncap netCDF Arithmetic Processor
 @unnumberedsubsec @command{ncap} mathematical functions
