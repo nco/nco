@@ -1,11 +1,11 @@
-// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.6 2002-01-01 01:00:10 zender Exp $
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in,v 1.7 2002-01-11 06:18:14 zender Exp $
 // Purpose: ncap netCDF Arithmetic Processor Demonstration/Test Script
 // Format of a valid ncap script:
 // C++ comment syntax
 // Statements end with semi-colons
 // Usage:
 // ncap -O -D 1 -S ${HOME}/nco/data/ncap.in ${HOME}/nco/data/in.nc ${HOME}/nco/data/foo.nc
-// ncks -H -m ${HOME}/nco/data/foo.nc | m
+// ncks -H -v a5 -m ${HOME}/nco/data/foo.nc | m
 
 // Charlie's Tests:
 // p=hyam*PO + hybm*PS
@@ -14,7 +14,7 @@ a2 = P0;
 a3 = hybm;
 a4 = PS;
 a5 = hyam*P0;
-a6 = hybm*PS;
+//a6 = hybm*PS;
 a7 = 1.234e2-1.234e2;
 a1@a1 = global@history;
 a1@julian_day = global@julian_day;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.26 2002-01-04 16:05:15 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.27 2002-01-11 06:18:15 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -191,7 +191,7 @@ ncap_var_var_add(var_sct *var_1,var_sct *var_2)
   
   (void)ncap_var_retype(var_1,var_2);
   var_sum=var_dpl(var_2);
-  (void)ncap_var_conform_dim(var_1,var_sum);
+  (void)ncap_var_conform_dim(&var_1,&var_sum);
   (void)var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_sum->val);
   
   return var_sum;
@@ -210,7 +210,7 @@ ncap_var_var_sub(var_sct *var_2,var_sct *var_1)
   
   (void)ncap_var_retype(var_1,var_2);
   var_sum=var_dpl(var_2);
-  (void)ncap_var_conform_dim(var_1,var_sum);
+  (void)ncap_var_conform_dim(&var_1,&var_sum);
   (void)var_subtract(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_sum->val);
   
   return var_sum;
@@ -228,7 +228,7 @@ ncap_var_var_multiply(var_sct *var_1,var_sct *var_2)
   var_sct *var_sum;
   (void)ncap_var_retype(var_1,var_2);
   var_sum=var_dpl(var_2);
-  (void)ncap_var_conform_dim(var_1,var_sum);
+  (void)ncap_var_conform_dim(&var_1,&var_sum);
   (void)var_multiply(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_sum->val);
   
   return var_sum;
@@ -816,14 +816,12 @@ ncap_var_retype(var_sct* vara, var_sct* varb)
 } /* end ncap_var_retype */
 
 bool
-ncap_var_conform_dim(var_sct* vara,var_sct *varb)
+ncap_var_conform_dim(var_sct **vara,var_sct **varb)
 {
   /* Purpose: Make sure the vars have conforming variables. If this isn't possible then die */
   bool MUST_CONFORM=True;
   bool DO_CONFORM;
-  if(vara->nbr_dim > varb->nbr_dim) varb=var_conform_dim(vara,varb,vara,MUST_CONFORM,&DO_CONFORM);
-  else
-    vara=var_conform_dim(varb,vara,varb,MUST_CONFORM,&DO_CONFORM);
+  if((*vara)->nbr_dim > (*varb)->nbr_dim) *varb=var_conform_dim(*vara,*varb,NULL,MUST_CONFORM,&DO_CONFORM); else *vara=var_conform_dim(*varb,*vara,NULL,MUST_CONFORM,&DO_CONFORM);
   
   if(!DO_CONFORM){
     (void)fprintf(stderr,"%s: Variables don't have have conforming dimensions. Cannot proceed with operation\n",prg_nm_get());
