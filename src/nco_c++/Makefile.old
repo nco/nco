@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.15 2003-09-22 18:25:31 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile.old,v 1.16 2003-09-28 16:17:38 zender Exp $ -*-makefile-*-
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -458,10 +458,13 @@ ifeq (${OPTS},X)
 endif
  C++FLAGS := ${CFLAGS}
 endif # endif GNU Compiler Collection
-# Intel (Kai) C Compiler
+# Intel (Kai) C++ Compiler
 ifeq (${CC},icc)
- CFLAGS := 
- OMP_FLG := -openmp
+ CFLAGS := -Wall
+ CPPFLAGS += -I${IA32ROOT}/include
+ifdef OMP
+ OMP_FLG := -openmp -openmp_report0
+endif # endif OMP
 ifeq (${OPTS},O)
  CFLAGS += -O
 endif
@@ -475,7 +478,7 @@ ifeq (${OPTS},X)
  CFLAGS += -g
 endif
  C++FLAGS := ${CFLAGS}
-endif # endif Intel (Kai) C Compiler
+endif # endif Intel (Kai) C++ Compiler
 # Intel (Kai) Fortran Compiler
 ifeq (${FC},ifc)
 # -e95 issues warnings for non-standard fortran
