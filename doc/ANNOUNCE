@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.97 2004-06-25 22:36:40 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.98 2004-06-26 21:42:58 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.6 are ready. 
 
@@ -39,6 +39,7 @@ Feature changes:
 1. Multi-file operators accept input filenames from stdin
 2. Multi-file operators add input_file_list, input_file_number 
    global attributes by default if input file names are from stdin.
+3. ln works in ncap as natural logarithm (synonym for log())
 
 Bug-fixes:
 1. None

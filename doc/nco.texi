@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.240 2004-06-20 06:54:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.241 2004-06-26 21:42:58 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -4408,6 +4408,7 @@ The available elementary mathematical functions are:
 @cindex @var{exp}
 @cindex @var{floor}
 @cindex @var{gamma}
+@cindex @var{ln}
 @cindex @var{log10}
 @cindex @var{log}
 @cindex @var{nearbyint}
@@ -4563,6 +4564,16 @@ $\Gamma(x)$.
 @end ifinfo
 The well-known and loved continuous factorial function.
 Example: @math{gamma(0.5) = sqrt(pi)}
+@item ln(x)
+@dfn{Natural Logarithm}
+Natural logarithm of @var{x},
+@tex
+$\ln(x)$.
+@end tex
+@ifinfo
+@math{ln(x)}.
+@end ifinfo
+Example: @math{ln(2.71828182845904523536) = 1.0}
 @item log(x)
 @dfn{Natural Logarithm}
 Natural logarithm of @var{x},

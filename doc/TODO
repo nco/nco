@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.324 2004-06-23 20:20:00 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.325 2004-06-26 21:42:58 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -7,6 +7,7 @@ Building (bldXXX), ncap-related (ncapXXX), and generic NCO (ncoXXX):
 bldXXX: Items specifically related to building and installation.
 ncapXXX: These items do not affect rest of NCO
 ncoXXX: 15 high priority items are shown first, then another ~100 items
+Question marks indicate items or implementations are debatable
 Please help out wherever your experience allows.
 ******************************************************************************
 
@@ -208,7 +209,6 @@ ncap07. Combine binary operations into binary_op_var_var and binary_op_var_att t
 ncap09. Add outer loop over files so script may apply to each file
 ncap12. Ensure lexer does not perform un-necessary work during initial_scan (e.g., LHS casting...)
 ncap13. Test that LHS casting works regardless of value of LHS template. If true, remove value initialization block
-ncap14. If tally is superfluous in ncap then do not ever allocate it
 ncap15. Link to GSL functions, especially gsl_sf_* (special functions)
 ncap16. Get ncap build working with pure_parser turned off so lex/yacc builds work
 ncap17. Start in console mode if no script and no output file specified, e.g., nco> 
@@ -238,7 +238,9 @@ ncap53. Bug in ncap pack() on Alpha/Tru64: ncap -O -D 10 -s 'hsig=pack(hsig)' fo
 ncap54. Add option (true by default?) to retain variable attributes when variable re-defined or defined in terms of single other variable or perhaps always retain attributes of left-most variable on RHS of definition?
 ncap -v -O -s "one=one*1" -s "two=one*2" -s "pck=pack(upk)" ~/nco/data/in.nc ~/foo.nc
 ncks -m -H -v one,two,pck ~/foo.nc
-ncap55. 
+ncap55. Add pre-defined named_constants, e.g., nco_pi, nco_e, to make math easier
+ncap56. Introduce way of making function synonyms, e.g., ln=log, without growing symbol table?
+ncap57. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.

@@ -1,5 +1,7 @@
 2004-06-25  Charlie Zender  <zender@uci.edu>
 
+	* Added ln() as synonym for log() in ncap
+
 	* cvs tag -c nco-2_9_7
 	Changes since nco-2_9_6: Read MFO input files from stdin, add 
 	more attribute functionality to nco_c++
