@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.15 2001-12-29 05:52:50 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/pck.c,v 1.16 2002-01-28 10:06:54 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -274,8 +274,8 @@ var_pck /* [fnc] Pack variable in memory */
     zero_unn.d=0.0; /* Generic container for value 0.0 */
 
     /* Derive scalar values for scale_factor and add_offset */
-    if(var->scl_fct.vp != NULL){(void)free(var->scl_fct.vp); var->scl_fct.vp=NULL;}
-    if(var->add_fst.vp != NULL){(void)free(var->add_fst.vp); var->add_fst.vp=NULL;}
+    var->scl_fct.vp=nco_free(var->scl_fct.vp);
+    var->add_fst.vp=nco_free(var->add_fst.vp);
     var->scl_fct.vp=(void *)nco_malloc(nco_typ_lng(var->type));
     var->add_fst.vp=(void *)nco_malloc(nco_typ_lng(var->type));
     ptr_unn_min.vp=(void *)nco_malloc(nco_typ_lng(var->type));
@@ -336,8 +336,8 @@ var_pck /* [fnc] Pack variable in memory */
     } /* end else */
 
     /* Free minimum and maximum values */
-    if(ptr_unn_min.vp != NULL){(void)free(ptr_unn_min.vp); ptr_unn_min.vp=NULL;}
-    if(ptr_unn_max.vp != NULL){(void)free(ptr_unn_max.vp); ptr_unn_max.vp=NULL;}
+    ptr_unn_min.vp=nco_free(ptr_unn_min.vp);
+    ptr_unn_max.vp=nco_free(ptr_unn_max.vp);
 
     /* Free variables */
     if(min_var != NULL) min_var=var_free(min_var);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.38 2002-01-28 02:09:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.39 2002-01-28 10:06:53 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -56,7 +56,8 @@
 var_sct *
 ncap_var_init(char *var_nm,prs_sct *prs_arg)
 {
-  /* Purpose: Initialize variable structure, retrieve variable values from disk */
+  /* Purpose: Initialize variable structure, retrieve variable values from disk
+     Parser calls ncap_var_init() when it encounters a new RHS variable */
   int var_id;
   int rcd;
   int fl_id;
@@ -64,8 +65,7 @@ ncap_var_init(char *var_nm,prs_sct *prs_arg)
   
   /* Check output file for var */  
   rcd=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
-  
-  if(rcd == NC_NOERR ){
+  if(rcd == NC_NOERR){
     fl_id=prs_arg->out_id;
   }else{
     /* Check input file for ID */
@@ -191,8 +191,7 @@ ncap_var_var_add(var_sct *var_1,var_sct *var_2)
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=var_dpl(var_2);
   (void)ncap_var_conform_dim(&var_1,&var_nsw);
-  /* There is a bug in var_add. missing_value are not carried over to var_nsw 
-     in the result when var_1->has_mss_val is true */
+  /* fxm: bug in var_add. missing_value is not carried over to var_nsw in result when var_1->has_mss_val is true */
   if(var_1->has_mss_val){
     (void)var_add(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->tally,var_1->val,var_nsw->val);
   }else{

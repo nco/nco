@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.33 2002-01-28 02:09:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncecat.c,v 1.34 2002-01-28 10:06:54 zender Exp $ */
 
 /* ncecat -- netCDF running averager */
 
@@ -83,8 +83,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncecat.c,v 1.33 2002-01-28 02:09:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.33 $";
+  char CVS_Id[]="$Id: ncecat.c,v 1.34 2002-01-28 10:06:54 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.34 $";
   
   dmn_sct *rdim;
   dmn_sct **dim;
@@ -398,7 +398,7 @@ main(int argc,char **argv)
 	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
       } /* end if variable is array */
       /* Free current input buffer */
-      (void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
+      var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
     } /* end loop over idx */
     idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
     

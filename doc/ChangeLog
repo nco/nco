@@ -1,3 +1,11 @@
+2002-01-28  Charlie Zender  <zender@uci.edu>
+
+	* LHS casting is semi-working, semi-broken. Seems to work when all
+	required dimensions are already in input file and RHS is variable,
+	not attribute. Thus a3[lat,lon,lev] = one works but
+	a3[lat,lon,lev]=1.0 does not. 
+	Still thinking about how to stretch attributes.
+
 2002-01-27  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_1_2

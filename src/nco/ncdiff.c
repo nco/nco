@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.41 2002-01-22 08:54:46 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.42 2002-01-28 10:06:53 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.41 2002-01-22 08:54:46 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.41 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.42 2002-01-28 10:06:53 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.42 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -434,7 +434,7 @@ main(int argc,char **argv)
     
     (void)var_subtract(var_prc[idx]->type,var_prc[idx]->sz,has_mss_val,mss_val,var_prc_out[idx]->val,var_prc[idx]->val);
     
-    (void)free(var_prc_out[idx]->val.vp);
+    var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
     
     /* Copy differences to output file and free differencing buffer */
     if(var_prc[idx]->nbr_dim == 0){
@@ -442,7 +442,7 @@ main(int argc,char **argv)
     }else{ /* end if variable is a scalar */
       (void)nco_put_vara(out_id,var_prc[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc[idx]->val.vp,var_prc[idx]->type);
     } /* end else */
-    (void)free(var_prc[idx]->val.vp);
+    var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
     
   } /* end loop over idx */
   if(dbg_lvl > 0) (void)fprintf(stderr,"\n");

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.80 2002-01-23 09:24:13 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.81 2002-01-28 10:06:53 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -102,7 +102,7 @@ char * /* O [sng] Mnemonic that describes current NCO version */
 nmn_get()
 { 
   /* Purpose: Return mnemonic that describes current NCO version */
-  return "rocket science";
+  return "RIP George Harrison";
 } /* end nmn_get() */
 
 char * /* O [sng] Parsed command line */
@@ -356,7 +356,7 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
   static int fl_nm_nbr_min;
 
   /* Free any old filename space */
-  if(fl_nm != NULL) (void)free(fl_nm);
+  fl_nm=nco_free(fl_nm);
 
   /* Construct filename from NINTAP-style arguments and input name */
   if(fl_lst_abb != NULL){
@@ -441,7 +441,7 @@ fl_nm_prs(char *fl_nm,int fl_nbr,int *nbr_fl,char **fl_lst_in,int nbr_abb_arg,ch
     (void)strcat(fl_nm,fl_nm_stub);
 
     /* Free filestub space */
-    (void)free(fl_nm_stub);
+    fl_nm_stub=nco_free(fl_nm_stub);
   } /* end if */
 
   /* Return new filename */
@@ -481,7 +481,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     fl_nm_lcl_tmp=fl_nm_lcl;
     fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1);
     (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
-    (void)free(fl_nm_lcl_tmp);
+    fl_nm_lcl_tmp=nco_free(fl_nm_lcl_tmp);
   }else if(strstr(fl_nm_lcl,"http://") == fl_nm_lcl){
 
     /* If file is http protocol then pass file name on unaltered and let DODS deal with it */
@@ -505,7 +505,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       fl_nm_lcl_tmp=fl_nm_lcl;
       fl_nm_lcl=(char *)nco_malloc(strlen(fl_pth_lcl_tmp)+1);
       (void)strcpy(fl_nm_lcl,fl_pth_lcl_tmp);
-      (void)free(fl_nm_lcl_tmp);
+      fl_nm_lcl_tmp=nco_free(fl_nm_lcl_tmp);
     } /* endif period is three or four characters from colon */
   } /* end if */
   
@@ -528,7 +528,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 	 into its own memory space, free(fl_nm_lcl) would not be able to free 
 	 the initial byte. */
       fl_nm_lcl_tmp=(char *)strdup(fl_nm_lcl+1);
-      (void)free(fl_nm_lcl);
+      fl_nm_lcl=nco_free(fl_nm_lcl);
       fl_nm_lcl=fl_nm_lcl_tmp;
       (void)fprintf(stderr,"%s: WARNING not searching for %s on remote filesystem, using local file %s instead\n",prg_nm_get(),fl_nm,fl_nm_lcl+1);
     } /* end if */
@@ -551,7 +551,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       (void)strcat(fl_nm_lcl,"/");
       (void)strcat(fl_nm_lcl,fl_nm_stub);
       /* Free the old filename space */
-      (void)free(fl_nm_lcl_tmp);
+      fl_nm_lcl_tmp=nco_free(fl_nm_lcl_tmp);
     } /* end if */
     
     /* At last, check for file in the local storage directory */
@@ -641,7 +641,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 	usr_email=(char *)nco_malloc((strlen(usr_nm)+1+strlen(host_nm_lcl)+1)*sizeof(char));
 	(void)sprintf(usr_email,"%s@%s",usr_nm,host_nm_lcl);
 	/* Free the hostname space */
-	(void)free(host_nm_lcl);
+	host_nm_lcl=nco_free(host_nm_lcl);
 
 	/* The remote hostname begins directly after "ftp://" */
 	host_nm_rmt=fl_nm_rmt+6;
@@ -655,7 +655,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 	(void)sprintf(fmt,fmt_template,host_nm_rmt,usr_email,"%s","%s");
 	rmt_cmd->fmt=fmt;
 	/* Free the space holding the user's E-mail address */
-	(void)free(usr_email);
+	usr_email=nco_free(usr_email);
 #endif /* not WIN32 */
       } /* end if */
     } /* end if */
@@ -736,11 +736,11 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 	exit(EXIT_FAILURE);
       } /* end if */
       /* Free local command space */
-      (void)free(cmd_sys);
+      cmd_sys=nco_free(cmd_sys);
     } /* end if */
 
     /* Free local path space, if any */
-    if(fl_pth_lcl_tmp != NULL) (void)free(fl_pth_lcl_tmp);
+    fl_pth_lcl_tmp=nco_free(fl_pth_lcl_tmp);
 
     /* Allocate enough room for joining space ' ' and terminating NUL */
     cmd_sys=(char *)nco_malloc((strlen(rmt_cmd->fmt)-rmt_cmd->nbr_fmt_char+strlen(fl_nm_lcl)+strlen(fl_nm_rmt)+2)*sizeof(char));
@@ -754,10 +754,10 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
     /* Fetch file from remote file system */
     rcd=system(cmd_sys);
     /* Free local command space */
-    (void)free(cmd_sys);
+    cmd_sys=nco_free(cmd_sys);
 
     /* Free ftp script, which is the only dynamically allocated command */
-    if(rmt_cmd == &ftp) (void)free(rmt_cmd->fmt);
+    if(rmt_cmd == &ftp) rmt_cmd->fmt=nco_free(rmt_cmd->fmt);
    
     if(rmt_cmd->transfer_mode == synchronous){
       if(dbg_lvl_get() > 0) (void)fprintf(stderr,"\n");
@@ -827,7 +827,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
    } /* end if really a local file */
   
   /* Free input filename space */
-  (void)free(fl_nm);
+  fl_nm=nco_free(fl_nm);
 
   /* Return local filename */
   return(fl_nm_lcl);
@@ -1031,10 +1031,10 @@ cvs_vrs_prs()
     (void)fprintf(stderr,"cvs_pch_vrs %li\n",cvs_pch_vrs);
   } /* endif dbg */
 
-  (void)free(cvs_mjr_vrs_sng);
-  (void)free(cvs_mnr_vrs_sng);
-  (void)free(cvs_pch_vrs_sng);
-  (void)free(cvs_nm_sng);
+  cvs_mjr_vrs_sng=nco_free(cvs_mjr_vrs_sng);
+  cvs_mnr_vrs_sng=nco_free(cvs_mnr_vrs_sng);
+  cvs_pch_vrs_sng=nco_free(cvs_pch_vrs_sng);
+  cvs_nm_sng=nco_free(cvs_nm_sng);
 
   return cvs_vrs_sng;
 } /* end cvs_vrs_prs() */
@@ -1102,8 +1102,8 @@ copyright_prn(char *CVS_Id,char *CVS_Revision)
   (void)fprintf(stderr,"%s version %s (%s) \"%s\"\n",prg_nm_get(),vrs_rcs,date_cvs,nmn_get());
   (void)fprintf(stdout,"NCO is free software and comes with ABSOLUTELY NO WARRANTY\nNCO is distributed under the terms of the GNU General Public License\n");
 
-  (void)free(vrs_rcs);
-  (void)free(vrs_cvs);
+  vrs_rcs=nco_free(vrs_rcs);
+  vrs_cvs=nco_free(vrs_cvs);
 } /* end copyright_prn() */
 
 void
@@ -1130,7 +1130,7 @@ fl_cp(char *fl_src,char *fl_dst)
     (void)fprintf(stdout,"%s: ERROR fl_cp() is unable to execute cp command \"%s\"\n",prg_nm_get(),cp_cmd);
     exit(EXIT_FAILURE); 
   } /* end if */
-  (void)free(cp_cmd);
+  cp_cmd=nco_free(cp_cmd);
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
   
 } /* end fl_cp() */
@@ -1159,7 +1159,7 @@ fl_mv(char *fl_src,char *fl_dst)
     (void)fprintf(stdout,"%s: ERROR fl_mv() is unable to execute mv command \"%s\"\n",prg_nm_get(),mv_cmd);
     exit(EXIT_FAILURE); 
   } /* end if */
-  (void)free(mv_cmd);
+  mv_cmd=nco_free(mv_cmd);
   if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
   
 } /* end fl_mv() */
@@ -1184,7 +1184,7 @@ fl_rm(char *fl_nm)
   rcd=system(rm_cmd);
   if(rcd == -1) (void)fprintf(stderr,"%s: WARNING unable to remove %s, continuing anyway...\n",prg_nm_get(),fl_nm);
 
-  (void)free(rm_cmd);
+  rm_cmd=nco_free(rm_cmd);
 
 } /* end fl_rm() */
 
@@ -1337,7 +1337,7 @@ void *nco_realloc(void *ptr,size_t size)
      Performing realloc() call here would be ANSI-legal but would trigger Electric Fence */
   if(ptr == NULL && size == 0) return ptr;
   if(ptr != NULL && size == 0){
-    (void)free(ptr);
+    ptr=nco_free(ptr);
     ptr=NULL;
     return ptr;
   } /* endif */

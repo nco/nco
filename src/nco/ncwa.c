@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.72 2002-01-22 08:54:47 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.73 2002-01-28 10:06:54 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -109,8 +109,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.72 2002-01-22 08:54:47 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.72 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.73 2002-01-28 10:06:54 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.73 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -758,14 +758,14 @@ main(int argc,char **argv)
       default:
 	break;
       } /* end switch */
-      /* Free tallying buffer: Do not check if == NULL so will SIGSEGV on bugs */
-      (void)free(var_prc_out[idx]->tally); var_prc_out[idx]->tally=NULL;
+      /* Free tally buffer */
+      var_prc_out[idx]->tally=nco_free(var_prc_out[idx]->tally);
       
       /* Revert to original type if required */
       var_prc_out[idx]=nco_cnv_var_typ_dsk(var_prc_out[idx]);
       
-      /* Free current input buffer: Do not check if == NULL so will SIGSEGV on bugs */
-      (void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;	
+      /* Free current input buffer */
+      var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 
 #ifdef _OPENMP
 #pragma omp critical
@@ -778,7 +778,7 @@ main(int argc,char **argv)
 	  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	} /* end if variable is array */
       } /* end OpenMP critical */
-      (void)free(var_prc_out[idx]->val.vp); var_prc_out[idx]->val.vp=NULL;
+      var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
       
     } /* end (OpenMP parallel for) loop over idx */
     

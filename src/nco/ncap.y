@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.35 2002-01-28 02:09:39 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.y,v 1.36 2002-01-28 10:06:53 zender Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -69,9 +69,6 @@ int yydebug=0; /* 0: Normal operation. 1: Print parser rules during execution */
 #define YYERROR_VERBOSE 1
 
 /* Bison manual p. 60 describes how to call yyparse() with arguments */
-/* prs_sct must be consistent between ncap.y and ncap.c 
-   fxm: Is there a way to define prs_sct in only one place? */
-
 #define YYPARSE_PARAM prs_arg
 #define YYLEX_PARAM prs_arg 
 int rcd; /* [enm] Return value for function calls */
@@ -79,7 +76,7 @@ int rcd; /* [enm] Return value for function calls */
 /* Global variables */
 extern long ln_nbr_crr; /* [cnt] Line number (declared in ncap.c) */
 extern char *fl_spt_glb; /* [fl] Script file (declared in ncap.c) */
-extern char err_sng[200]; /* [sng] Buffer for error string (declared in ) */
+extern char err_sng[200]; /* [sng] Buffer for error string (declared in ncap.l) */
 
 /* End C declarations section */
 %}
@@ -119,7 +116,8 @@ extern char err_sng[200]; /* [sng] Buffer for error string (declared in ) */
 %token <sym> FUNCTION
 %token POWER ABS ATOSTR IGNORE EPROVOKE
 
-/* "type" declaration sets type for non-terminal symbols which otherwise need no declaration */
+/* "type" declaration sets type for non-terminal symbols which otherwise need no declaration
+   RHS expression type is same as YYSTYPE union member with name in <> */
 %type <attribute> att_exp
 %type <str> string_exp
 %type <var> var_exp
@@ -146,12 +144,13 @@ statement_list: statement_list statement ';'
 | statement_list error ';'
 | statement ';'
 | error ';' /* Catches most errors then reads up to next semicolon */
-;
+; /* end statement_list */
 
-statement: out_att_exp '=' att_exp { 
+statement: 
+out_att_exp '=' att_exp { 
   int aed_idx; 
   aed_sct *ptr_aed;
-  
+
   aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->att_lst,((prs_sct *)prs_arg)->nbr_att,True);
   ptr_aed=((prs_sct *)prs_arg)->att_lst[aed_idx];                               
   ptr_aed->val=ncap_attribute_2_ptr_unn($3);
@@ -160,9 +159,9 @@ statement: out_att_exp '=' att_exp {
   (void)cast_nctype_void(ptr_aed->type,&ptr_aed->val);    
   (void)sprintf(err_sng,"Saving attribute %s@%s to %s",$1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->fl_out);
   (void)yyerror(err_sng);
+
   if(dbg_lvl_get() > 1){
     (void)fprintf(stderr,"Saving in array attribute %s@%s=",$1.var_nm,$1.att_nm);
-    
     switch($3.type){
     case NC_BYTE: (void)fprintf(stderr,"%d\n",$3.val.b); break;
     case NC_SHORT: (void)fprintf(stderr,"%d\n",$3.val.s); break;
@@ -172,8 +171,8 @@ statement: out_att_exp '=' att_exp {
     default: break;
     } /* end switch */
   } /* end if */
-  (void)free($1.var_nm);
-  (void)free($1.att_nm);
+  $1.var_nm=nco_free($1.var_nm);
+  $1.att_nm=nco_free($1.att_nm);
 } /* end out_att_exp '=' att_exp */
 | out_att_exp '=' string_exp 
 {
@@ -192,9 +191,9 @@ statement: out_att_exp '=' att_exp {
   
   (void)sprintf(err_sng,"Saving attribute %s@%s=%s",$1.var_nm,$1.att_nm,$3);
   (void)yyerror(err_sng);
-  (void)free($1.var_nm);
-  (void)free($1.att_nm);
-  (void)free($3);
+  $1.var_nm=nco_free($1.var_nm);
+  $1.att_nm=nco_free($1.att_nm);
+  $3=nco_free($3);
 } /* end out_att_exp '=' string_exp */
 | out_att_exp '=' var_exp
 { 
@@ -216,8 +215,8 @@ statement: out_att_exp '=' att_exp {
     (void)sprintf(err_sng,"Warning: Cannot store in attribute %s@%s a variable with dimension %d",$1.var_nm,$1.att_nm,$3->nbr_dim);
     (void)yyerror(err_sng);
   } /* endif */
-  (void)free($1.var_nm);
-  (void)free($1.att_nm);
+  $1.var_nm=nco_free($1.var_nm);
+  $1.att_nm=nco_free($1.att_nm);
   (void)var_free($3); 
 } /* end out_att_exp '=' var_exp */
 | out_var_exp '=' var_exp 
@@ -225,7 +224,6 @@ statement: out_att_exp '=' att_exp {
   int rcd;
   int var_id;
   $3->nm=strdup($1);
-  /* fxm: If LHS was cast by user then must cast RHS to same dimensionality */
   /* Is variable already in output file? */
   rcd=nco_inq_varid_flg(((prs_sct *)prs_arg)->out_id,$3->nm,&var_id);
   if(rcd == NC_NOERR){
@@ -236,7 +234,7 @@ statement: out_att_exp '=' att_exp {
     (void)sprintf(err_sng,"Saving variable %s to %s",$3->nm,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   } /* end else */
-  (void)free($1);
+  $1=nco_free($1);
   (void)var_free($3);
 } /* end out_var_exp '=' var_exp */
 | out_var_exp '=' att_exp
@@ -261,7 +259,7 @@ statement: out_att_exp '=' att_exp {
     (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   }
-  (void)free($1);
+  $1=nco_free($1);
 } /* end out_var_exp '=' att_exp */
 | out_var_exp '=' string_exp
 {
@@ -286,16 +284,17 @@ statement: out_att_exp '=' att_exp {
     (void)sprintf(err_sng,"Saving variable %s to %s",$1,((prs_sct *)prs_arg)->fl_out);
     (void)yyerror(err_sng);
   }
-  (void)free($1);
-  (void)free($3);
+  $1=nco_free($1);
+  $3=nco_free($3);
 } /* end out_var_exp '=' string_exp */
-;                    
+; /* end statement */
 
-att_exp: att_exp '+' att_exp {
+att_exp: 
+att_exp '+' att_exp {
   (void)ncap_retype(&$1,&$3);
   $$=ncap_attribute_calc($1,'+',$3);                                
 }
-|  att_exp '-' att_exp {
+| att_exp '-' att_exp {
   (void)ncap_retype(&$1,&$3); 
   $$=ncap_attribute_calc($1,'-',$3);
 }
@@ -331,7 +330,7 @@ att_exp: att_exp '+' att_exp {
   $$.val.d=pow($1.val.d,$3.val.d);
   $$.type=NC_DOUBLE; 
   }
-}
+} /* end att_exp '^' att_exp */
 | POWER '(' att_exp ',' att_exp ')' {
   if($3.type <= NC_FLOAT && $5.type <= NC_FLOAT) {
     (void)ncap_attribute_conform_type(NC_FLOAT,&$3);
@@ -344,8 +343,7 @@ att_exp: att_exp '+' att_exp {
   $$.val.d=pow($3.val.d,$5.val.d);
   $$.type=NC_DOUBLE; 
   }
-}
-
+} /* end POWER '(' att_exp ',' att_exp ')' */
 | ABS '(' att_exp ')' {
   $$=ncap_attribute_abs($3);
 }
@@ -359,10 +357,10 @@ att_exp: att_exp '+' att_exp {
   $$.val.d=(*($1->fnc))($3.val.d);
   $$.type=NC_DOUBLE;
   }
-}
+} /* end FUNCTION '(' att_exp ')' */
 | '(' att_exp ')' {$$=$2;}
 | ATTRIBUTE {$$=$1;}
-;
+; /* end att_exp */
 
 out_var_exp: OUT_VAR {$$=$1;}
 ;
@@ -370,14 +368,15 @@ out_var_exp: OUT_VAR {$$=$1;}
 out_att_exp: OUT_ATT {$$=$1;}
 ;
       
-string_exp: string_exp '+' string_exp {
+string_exp: 
+string_exp '+' string_exp {
   size_t sng_lng;
   sng_lng=strlen($1)+strlen($3);
   $$=(char*)nco_malloc((sng_lng+1)*sizeof(char));
   strcpy($$,$1);
   strcat($$,$3);
-  (void)free($1);
-  (void)free($3);
+  $1=nco_free($1);
+  $3=nco_free($3);
 } 
 | ATOSTR '(' att_exp ')' {
   char bfr[50];
@@ -403,13 +402,14 @@ string_exp: string_exp '+' string_exp {
   case  NC_BYTE:   sprintf(bfr,$5,$3.val.b); break;
   default:  break;
   } /* end switch */
-  (void)free($5);
+  $5=nco_free($5);
   $$=strdup(bfr);      
 }
 | STRING {$$=$1;}
-;
+; /* end string_exp */
 
-var_exp: var_exp '+' var_exp { 
+var_exp:
+var_exp '+' var_exp { 
   $$=ncap_var_var_add($1,$3); 
   var_free($1); var_free($3);
 }
@@ -495,10 +495,23 @@ var_exp: var_exp '+' var_exp {
   $$=$2;
 }
 | VAR { 
-  $$=ncap_var_init($1,((prs_sct *)prs_arg));
-  if ( $$==(var_sct *)NULL ) YYERROR;
+  $$=ncap_var_init($1,(prs_sct *)prs_arg);
+
+  if((((prs_sct *)prs_arg)->var_LHS) != NULL){
+    /* User intends LHS to cast RHS to same dimensionality
+       We accomplish this in two stages:
+       1. Create variable of appropriate rank when LHS_cst mode entered
+       2. Stretch newly initialized variable to this rank */
+    /*    (void)ncap_var_conform_dim(&$$,&(((prs_sct *)prs_arg)->var_LHS));*/
+    (void)ncap_var_stretch(&$$,&(((prs_sct *)prs_arg)->var_LHS));
+    (void)fprintf(stderr,"%s: fxm LHS var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),$$->nm,$$->nbr_dim,$$->sz);
+  } /* endif LHS_cst */
+
+  /* Sanity check */
+  if ($$==(var_sct *)NULL) YYERROR;
 }
-;
+; /* end var_exp */
+
 /* End Rules section */
 %%
 /* Begin User Subroutines section */

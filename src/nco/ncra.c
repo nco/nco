@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.60 2002-01-28 02:09:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.61 2002-01-28 10:06:54 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.60 2002-01-28 02:09:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.60 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.61 2002-01-28 10:06:54 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.61 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   
@@ -210,7 +210,7 @@ main(int argc,char **argv)
     case 'l': /* Local path prefix for files retrieved from remote file system */
       fl_pth_lcl=optarg;
       break;
-    case 'n': /* NINTAP-style abbreviation of files to process */
+    case 'n': /* NINTAP-style abbreviation of files to average */
       fl_lst_abb=lst_prs(optarg,",",&nbr_abb_arg);
       if(nbr_abb_arg < 1 || nbr_abb_arg > 5){
 	(void)fprintf(stdout,gettext("%s: ERROR Incorrect abbreviation for file list\n"),prg_nm);
@@ -455,7 +455,7 @@ main(int argc,char **argv)
 	  /* Make sure record coordinate, if any, is monotonic */
 	  if(prg == ncrcat && var_prc[idx]->is_crd_var) (void)rec_crd_chk(var_prc[idx],fl_in,fl_out,idx_rec,idx_rec_out);
 	  /* Free current input buffer */
-	  (void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
+	  var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 	} /* end (OpenMP parallel for) loop over variables */
 	idx_rec_out++; /* [idx] Index of current record in output file (0 is first, ...) */
 	if(dbg_lvl > 2) (void)fprintf(stderr,"\n");
@@ -492,7 +492,7 @@ main(int argc,char **argv)
 	nco_opr_drv(idx_fl,nco_op_typ,var_prc_out[idx],var_prc[idx]);
 	
 	/* Free current input buffer */
-	(void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
+	var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
       } /* end (OpenMP parallel for) loop over idx */
     } /* end else */
 
@@ -542,7 +542,7 @@ main(int argc,char **argv)
       default:
 	break;
       } /* end switch */
-      (void)free(var_prc[idx]->tally); var_prc[idx]->tally=NULL;
+      var_prc[idx]->tally=nco_free(var_prc[idx]->tally);
     } /* end (OpenMP parallel for) loop over variables */
   } /* end if */
   
@@ -566,7 +566,7 @@ main(int argc,char **argv)
 	if(prg == ncra) var_prc_out[idx]->cnt[0]=1L;
 	(void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
       } /* end if variable is an array */
-      (void)free(var_prc_out[idx]->val.vp); var_prc_out[idx]->val.vp=NULL;
+      var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
     } /* end loop over idx */
   } /* end if */
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.38 2001-12-29 05:59:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.39 2002-01-28 10:06:53 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -142,8 +142,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.38 2001-12-29 05:59:26 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.38 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.39 2002-01-28 10:06:53 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.39 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -493,7 +493,7 @@ prs_aed_lst(int nbr_aed,char **aed_arg)
 	} /* end switch */
 	
 	/* Free array used to hold double values */
-	if(val_arg_dbl != NULL) (void)free(val_arg_dbl);
+	val_arg_dbl=nco_free(val_arg_dbl);
       } /* end else */
       /* Un-typecast pointer to values after access */
       (void)cast_nctype_void(aed_lst[idx].type,&aed_lst[idx].val);

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.50 2002-01-28 02:15:05 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.51 2002-01-28 10:06:54 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -114,8 +114,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.50 2002-01-28 02:15:05 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.50 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.51 2002-01-28 10:06:54 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.51 $";
   
   extern char *optarg;
   
@@ -482,12 +482,12 @@ prn_att(int in_id,int var_id)
   
   /* Free the space holding attribute values */
   for(idx=0;idx<nbr_att;idx++){
-    (void)free(att[idx].val.vp);
-    (void)free(att[idx].nm);
+    att[idx].val.vp=nco_free(att[idx].val.vp);
+    att[idx].nm=nco_free(att[idx].nm);
   } /* end loop over attributes */
 
   /* Free the rest of the space allocated for attribute info. */
-  if(nbr_att > 0) (void)free(att);
+  if(nbr_att > 0) att=nco_free(att);
 
 } /* end prn_att() */
 
@@ -563,8 +563,8 @@ cpy_var_dfn(int in_id,int out_id,int rec_dmn_id,char *var_nm)
   (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
   
   /* Free the space holding dimension IDs */
-  (void)free(dmn_in_id);
-  (void)free(dmn_out_id);
+  dmn_in_id=nco_free(dmn_in_id);
+  dmn_out_id=nco_free(dmn_out_id);
   
   return var_out_id;
 } /* end cpy_var_dfn() */
@@ -651,8 +651,8 @@ cpy_var_dfn_lmt(int in_id,int out_id,int rec_dmn_id,char *var_nm,lmt_sct *lmt,in
   (void)nco_def_var(out_id,var_nm,var_type,nbr_dim,dmn_out_id,&var_out_id);
   
   /* Free space holding dimension IDs */
-  (void)free(dmn_in_id);
-  (void)free(dmn_out_id);
+  dmn_in_id=nco_free(dmn_in_id);
+  dmn_out_id=nco_free(dmn_out_id);
   
   return var_out_id;
 } /* end cpy_var_dfn_lmt() */
@@ -741,13 +741,13 @@ cpy_var_val(int in_id,int out_id,char *var_nm)
   } /* end if variable is an array */
 
   /* Free the space that held dimension IDs */
-  (void)free(dmn_cnt);
-  (void)free(dmn_id);
-  (void)free(dmn_sz);
-  (void)free(dmn_srt);
+  dmn_cnt=nco_free(dmn_cnt);
+  dmn_id=nco_free(dmn_id);
+  dmn_sz=nco_free(dmn_sz);
+  dmn_srt=nco_free(dmn_srt);
 
   /* Free the space that held variable */
-  (void)free(void_ptr);
+  void_ptr=nco_free(void_ptr);
 
 } /* end cpy_var_val() */
 
@@ -997,26 +997,26 @@ cpy_var_val_lmt(int in_id,int out_id,char *var_nm,lmt_sct *lmt,int lmt_nbr)
       (void)nco_put_vara(out_id,var_out_id,dmn_out_srt_2,dmn_cnt_2,void_ptr,var_type);
     } /* end else */
     
-    (void)free(dmn_in_srt_1);
-    (void)free(dmn_in_srt_2);
-    (void)free(dmn_out_srt_1);
-    (void)free(dmn_out_srt_2);
-    (void)free(dmn_cnt_1);
-    (void)free(dmn_cnt_2);
+    dmn_in_srt_1=nco_free(dmn_in_srt_1);
+    dmn_in_srt_2=nco_free(dmn_in_srt_2);
+    dmn_out_srt_1=nco_free(dmn_out_srt_1);
+    dmn_out_srt_2=nco_free(dmn_out_srt_2);
+    dmn_cnt_1=nco_free(dmn_cnt_1);
+    dmn_cnt_2=nco_free(dmn_cnt_2);
 
   } /* end if WRP */
 
   /* Free space that held dimension IDs */
-  (void)free(dmn_map);
-  (void)free(dmn_srd);
-  (void)free(dmn_cnt);
-  (void)free(dmn_id);
-  (void)free(dmn_in_srt);
-  (void)free(dmn_out_srt);
-  (void)free(dmn_sz);
+  dmn_map=nco_free(dmn_map);
+  dmn_srd=nco_free(dmn_srd);
+  dmn_cnt=nco_free(dmn_cnt);
+  dmn_id=nco_free(dmn_id);
+  dmn_in_srt=nco_free(dmn_in_srt);
+  dmn_out_srt=nco_free(dmn_out_srt);
+  dmn_sz=nco_free(dmn_sz);
 
   /* Free space that held variable */
-  (void)free(void_ptr);
+  void_ptr=nco_free(void_ptr);
 
 } /* end cpy_var_val_lmt() */
 
@@ -1108,10 +1108,10 @@ prn_var_dfn(int in_id,char *var_nm)
   (void)fflush(stdout);
   
   /* Free the space allocated for dimension info. */
-  for(idx=0;idx<nbr_dim;idx++) (void)free(dim[idx].nm);
+  for(idx=0;idx<nbr_dim;idx++) dim[idx].nm=nco_free(dim[idx].nm);
   if(nbr_dim > 0){
-    (void)free(dim);
-    (void)free(dmn_id);
+    dim=nco_free(dim);
+    dmn_id=nco_free(dmn_id);
   } /* end if nbr_dim > 0*/
 
 } /* end prn_var_dfn() */
@@ -1492,26 +1492,26 @@ prn_var_val_lmt(int in_id,char *var_nm,lmt_sct *lmt,int lmt_nbr,char *dlm_sng,bo
   
   /* Free space allocated for dimension */
   for(idx=0;idx<var.nbr_dim;idx++){
-    (void)free(dim[idx].nm);
-    if(dim[idx].val.vp != NULL) (void)free(dim[idx].val.vp);
+    dim[idx].nm=nco_free(dim[idx].nm);
+    dim[idx].val.vp=nco_free(dim[idx].val.vp);
   } /* end loop over dimensions */
   if(var.nbr_dim > 0){
-    (void)free(dim);
-    (void)free(dmn_cnt);
-    (void)free(dmn_id);
-    (void)free(dmn_map);
-    (void)free(dmn_mod);
-    (void)free(dmn_sbs_ram);
-    (void)free(dmn_sbs_dsk);
-    (void)free(dmn_srd);
-    (void)free(dmn_srt);
-    (void)free(hyp_mod);
+    dim=nco_free(dim);
+    dmn_cnt=nco_free(dmn_cnt);
+    dmn_id=nco_free(dmn_id);
+    dmn_map=nco_free(dmn_map);
+    dmn_mod=nco_free(dmn_mod);
+    dmn_sbs_ram=nco_free(dmn_sbs_ram);
+    dmn_sbs_dsk=nco_free(dmn_sbs_dsk);
+    dmn_srd=nco_free(dmn_srd);
+    dmn_srt=nco_free(dmn_srt);
+    hyp_mod=nco_free(hyp_mod);
   } /* end if nbr_dim > 0*/
 
   /* Free space allocated for variable */
-  if(var.val.vp != NULL) (void)free(var.val.vp); var.val.vp=NULL;
-  (void)free(var.nm);
-  if(strlen(unit_sng) > 0) (void)free(unit_sng);
+  var.val.vp=nco_free(var.val.vp);
+  var.nm=nco_free(var.nm);
+  if(strlen(unit_sng) > 0) unit_sng=nco_free(unit_sng);
  
 } /* end prn_var_val_lmt() */
 

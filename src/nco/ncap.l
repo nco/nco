@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.32 2002-01-28 02:09:39 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.l,v 1.33 2002-01-28 10:06:53 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -89,12 +89,13 @@
 
   /* Has a LHS-cast been requested on current input line?
      If so, variables and attributes on RHS must be cast to LHS properties */
-  static bool LHS_cst; /* [flg] Cast RHS structures to LHS properties */
+  static bool LHS_cst=False; /* [flg] Cast RHS structures to LHS properties */
 %}
 
 /* Handle C comments LMB92 p. 172, p. 43
    The %x defines an exclusive start state for CCOMMENT
-   When CCOMMENT state is active, other rules do not match */
+   When CCOMMENT state is active, other rules do not match
+   NB: State names may not contain hyphens */
 %x CCOMMENT
 
 /* Following sections after %% are lexer rules
@@ -234,10 +235,10 @@ pow/[ ]*\( {return POWER;}
 [A-Za-z_][A-Za-z0-9_]*/[ ]*\( {
 /* Compare input with mathematical function names in table and return
    pointer to structure containing name, double function, float function */
-   int i;
-   for(i=0;i<prs_arg->sym_tbl_nbr;i++)
-     if(!strcmp(yytext,(prs_arg->sym_tbl[i]->nm))){ 
-        lval_ptr->sym=prs_arg->sym_tbl[i];
+   int idx;
+   for(idx=0;idx<prs_arg->sym_tbl_nbr;idx++)
+     if(!strcmp(yytext,(prs_arg->sym_tbl[idx]->nm))){ 
+        lval_ptr->sym=prs_arg->sym_tbl[idx];
         return FUNCTION;
      } /* endif */
    (void)sprintf(err_sng,"Warning: Unable to locate function %s. Is this really a variable ?",yytext);
@@ -339,8 +340,7 @@ pow/[ ]*\( {return POWER;}
     } /* end if */
   }/* end if RHS */
   
-  /* We are on LHS of = so simply save attribute information for
-     later processing by parser
+  /* We are on LHS so simply save information for later processing by parser
      Atrribute is valid if its associated variable is in input or output file */
   if(!RHS){
     rcd_out=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
@@ -380,9 +380,11 @@ pow/[ ]*\( {return POWER;}
   int dmn_nbr; /* [nbr] Number of dimensions */
   int dmn_idx; /* [idx] Counter for dimensions */
   int dmn_id; /* [id] Dimension ID */
+  int idx; /* [idx] Counter */
 
   nm_id_sct *dmn_lst; /* [sng] Dimension name-ID list */
   dmn_sct **dmn; /* [dmn] Dimension structure list */
+  dmn_sct **dmn_out; /* [dmn] Dimension structure list */
 
   var_nm=strdup(yytext); /* [sng] Variable name */
   (void)sprintf(err_sng,"Warning: Token %s may contain subscript, hyperslab, or convolution information. This information is not yet correctly handled and results will be unpredictable",var_nm);
@@ -405,14 +407,24 @@ pow/[ ]*\( {return POWER;}
   sbs_lst=lst_prs(sbs_LHS_ptr+1,sbs_dlm,&dmn_nbr);
   /* Translate dimension names into dimension structure list variables */
   dmn_lst=(nm_id_sct *)nco_malloc(dmn_nbr*sizeof(nm_id_sct));
-  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++){
-    (void)nco_inq_dimid(prs_arg->in_id,sbs_lst[dmn_idx],&dmn_id);
-    dmn_lst[dmn_idx].nm=sbs_lst[dmn_idx];
-    dmn_lst[dmn_idx].id=dmn_id;
+  for(idx=0;idx<dmn_nbr;idx++){
+    (void)nco_inq_dimid(prs_arg->in_id,sbs_lst[idx],&dmn_id);
+    dmn_lst[idx].nm=sbs_lst[idx];
+    dmn_lst[idx].id=dmn_id;
   } /* end loop over dimensions */
+
   /* Fill in dimension structure for all extracted dimensions */
   dmn=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
-  for(dmn_idx=0;dmn_idx<dmn_nbr;dmn_idx++) dmn[dmn_idx]=dmn_fll(prs_arg->in_id,dmn_lst[dmn_idx].id,dmn_lst[dmn_idx].nm);
+  for(idx=0;idx<dmn_nbr;idx++) dmn[idx]=dmn_fll(prs_arg->in_id,dmn_lst[idx].id,dmn_lst[idx].nm);
+  
+  /* fxm: Must include limit structure information */
+
+  /* Duplicate input dimension structures for output dimension structures */
+  dmn_out=(dmn_sct **)nco_malloc(dmn_nbr*sizeof(dmn_sct *));
+  for(idx=0;idx<dmn_nbr;idx++){
+    dmn_out[idx]=dmn_dpl(dmn[idx]);
+    (void)dmn_xrf(dmn[idx],dmn_out[idx]); 
+  } /* end loop over idx */
   
   /* This variable now has a private dimension list, dmn
      Dimension list holds, in order, dimensions user wants output to have
@@ -424,10 +436,74 @@ pow/[ ]*\( {return POWER;}
     lval_ptr->vara=var_nm;
     return(VAR);
   }else{ 
-    LHS_cst=True; /* [flg] Cast RHS structures to LHS properties */
+    static char *tpl_nm="Internally generated template";
+
+    double val=1.0;
+
+    int dmn_idx;
+    int idx;
+
+    var_sct *var; /* [sct] Variable */
+
+    /* Set ouput variable name as usual */
     lval_ptr->output_var=var_nm;
-    prs_arg->dmn_LHS_cst=dmn;
-    prs_arg->dmn_nbr_LHS=dmn_nbr;
+    /* Enter LHS_cst mode, exit mode when semi-colon is read */
+    LHS_cst=True; /* [flg] Cast RHS structures to LHS properties */
+    /* Create template variable of specified LHS rank
+       Value of variable is arbitrary, use 1.0 for safety
+       Variable construction code is taken from scl_dbl_mk_var() and var_fll()
+       Allocate and initialize variable structure */
+    var=(var_sct *)nco_malloc(sizeof(var_sct));
+    /* Set defaults */
+    (void)var_dfl_set(var); /* [fnc] Set defaults for each member of variable structure */
+    /* Overwrite with LHS information */
+    var->nm=(char *)strdup(tpl_nm);
+    var->type=NC_DOUBLE;
+    var->nbr_dim=dmn_nbr;
+    var->dim=dmn_out;
+    /* Allocate space for dimension structures */
+    if(var->nbr_dim > 0) var->dmn_id=(int *)nco_malloc(var->nbr_dim*sizeof(int)); else var->dmn_id=(int *)NULL;
+    if(var->nbr_dim > 0) var->cnt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->cnt=(long *)NULL;
+    if(var->nbr_dim > 0) var->srt=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srt=(long *)NULL;
+    if(var->nbr_dim > 0) var->end=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->end=(long *)NULL;
+    if(var->nbr_dim > 0) var->srd=(long *)nco_malloc(var->nbr_dim*sizeof(long)); else var->srd=(long *)NULL;
+
+    var->sz=1L; 
+    /* Attach LHS dimensions to variable */
+    for(idx=0;idx<var->nbr_dim;idx++){
+      var->dim[idx]=dmn_out[idx];
+      var->dmn_id[idx]=dmn_out[idx]->id;
+      var->cnt[idx]=dmn_out[idx]->cnt;
+      var->srt[idx]=dmn_out[idx]->srt;
+      var->end[idx]=dmn_out[idx]->end;
+      var->srd[idx]=dmn_out[idx]->srd;
+      var->sz*=var->cnt[idx];
+    } /* end loop over dim */
+
+    /* Allocate space for variable values 
+       fxm: more efficient and safer to use calloc() and not fill with values? */
+    if((var->val.vp=(void *)malloc(var->sz*nco_typ_lng(var->type))) == NULL){
+      (void)fprintf(stdout,"%s: ERROR Unable to malloc() %ld*%d bytes for var_LHS() in lexer\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
+      exit(EXIT_FAILURE); 
+    } /* end if */
+
+    /* Copy arbitrary value into variable 
+       Placing a uniform value in variable should be necessary since variable
+       is intended to be used solely as a template for var_conform_dim() 
+       Nevertheless, copy */
+    { /* Change scope to define convenience variables which reduce dereferencing */
+      long var_sz; /* [nbr] Number of elements in variable */
+      int var_type_sz; /* [B] Size of single element of variable */
+      char *var_val_cp; /* [ptr] Pointer to values */
+
+      var_sz=var->sz; /* [nbr] Number of elements in variable */
+      var_type_sz=nco_typ_lng(var->type);
+      var_val_cp=(char *)var->val.vp;
+      for(idx=0;idx<var_sz;idx++) (void)memcpy(var_val_cp+idx,(void *)(&val),var_type_sz);
+    } /* end scope */
+
+    prs_arg->var_LHS=var;
+    (void)fprintf(stderr,"%s: fxm LHS var->nm %s, var->nbr_dim %d, var->sz %li\n",prg_nm_get(),prs_arg->var_LHS->nm,prs_arg->var_LHS->nbr_dim,prs_arg->var_LHS->sz);
     return(OUT_VAR);
   } /* end else */
 
@@ -461,17 +537,29 @@ pow/[ ]*\( {return POWER;}
 = {
   /* Equals */
   RHS=True; return yytext[0];
-}
+} /* end equals */
 
 ; { 
-  /* End of statement indicator */
-  RHS=False; return yytext[0]; 
-}
+  /* End-of-statement indicator */
+  RHS=False;
+  if(LHS_cst){
+    int idx; /* [idx] Counter for dimensions */
+    /* var_free() intentionally does not free dimension structures because,
+       in most of NCO, dimension structures are shared.
+       Thus ncap must free dimension structures manually */
+    for(idx=0;idx<prs_arg->var_LHS->nbr_dim;idx++) prs_arg->var_LHS->dim[idx]=nco_free(prs_arg->var_LHS->dim[idx]);
+    /* Clean up from and exit LHS cast mode */
+    prs_arg->var_LHS=var_free(prs_arg->var_LHS);
+    /* fxm: dimension structures must be freed independently */
+    LHS_cst=False; /* [flg] Cast RHS structures to LHS properties */
+  } /* end LHS_cst */
+  return yytext[0]; 
+} /* end semi-colon */
 
 . {
   /* Everything not parsed by above falls through to here */
   return yytext[0];
-}
+} /* end trickle down */
 
 %%
 

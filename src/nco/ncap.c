@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.54 2002-01-28 02:09:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.55 2002-01-28 10:06:53 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -127,8 +127,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.54 2002-01-28 02:09:39 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.54 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.55 2002-01-28 10:06:53 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.55 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -335,7 +335,8 @@ main(int argc,char **argv)
   prs_arg.nbr_dmn_xtr=nbr_dmn_xtr; /* [nbr] Number of extracted dimensions */
   prs_arg.sym_tbl=sym_tbl; /* [fnc] Symbol table for functions */
   prs_arg.sym_tbl_nbr=sym_tbl_nbr; /* [nbr] Number of functions in table */
-  prs_arg.initial_scan=True;
+  prs_arg.initial_scan=True; /* [flg] Initial scan of script */
+  prs_arg.var_LHS=NULL; /* [var] LHS cast variable */
   
   /* Perform initial scan of input script to create three lists of variables:
      list a: RHS variables present in input file
@@ -375,7 +376,7 @@ main(int argc,char **argv)
   /* Make sure coordinates associated extracted variables are also on extraction list */
    if(PROCESS_ASSOCIATED_COORDINATES) xtr_lst=var_lst_ass_crd_add(in_id,xtr_lst,&nbr_xtr);
    
-   /* Create list coordinate vars */
+   /* Create list of coordinate variables */
    if(nbr_xtr > 0 && (PROCESS_ALL_COORDINATES || PROCESS_ASSOCIATED_COORDINATES)){
      nbr_xtr_2=nbr_xtr;
      xtr_lst_2=ncap_var_lst_crd_make(in_id,xtr_lst,&nbr_xtr_2);
@@ -456,8 +457,7 @@ main(int argc,char **argv)
   prs_arg.sym_tbl=sym_tbl; /* [fnc] Symbol table for functions */
   prs_arg.sym_tbl_nbr=sym_tbl_nbr; /* [nbr] Number of functions in table */
   prs_arg.initial_scan=False; /* [flg] Initial scan of script */
-  prs_arg.dmn_LHS_cst=NULL; /* [dmn] LHS cast dimensions */
-  prs_arg.dmn_nbr_LHS=0; /* [nbr] Number of LHS dimensions */
+  prs_arg.var_LHS=NULL; /* [var] LHS cast variable */
   
   /* Initialize line counter */
   ln_nbr_crr=1; /* [cnt] Line number incremented in ncap.l */

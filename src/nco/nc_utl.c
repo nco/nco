@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.126 2002-01-28 02:09:38 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.127 2002-01-28 10:06:53 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -288,7 +288,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       (void)cast_nctype_void(dim.type,&old_val);
     
       /* Free original space allocated for dimension */
-      (void)free(old_val.vp);
+      old_val.vp=nco_free(old_val.vp);
 
       /* Officially change type */
       dim.type=NC_DOUBLE;
@@ -440,7 +440,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
     (void)cast_nctype_void(NC_DOUBLE,&dim.val);
   
     /* Free space allocated for dimension */
-    (void)free(dim.val.vp);
+    dim.val.vp=nco_free(dim.val.vp);
     
   }else{ /* end if limit arguments were coordinate values */
     /* Convert limit strings to zero-based indicial offsets */
@@ -853,7 +853,6 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
  */
 {
   /* Purpose: nco_malloc() and return a completed var_sct */
-
   char dmn_nm[NC_MAX_NAME];
 
   int dmn_idx;
@@ -896,25 +895,23 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
   /* Refresh number of attributes and missing value attribute, if any */
   var->has_mss_val=mss_val_get(var->nc_id,var);
 
+  /* Size defaults to 1 in var_dfl_set(), but set to 1 here for safety */
+  var->sz=1L; 
   for(idx=0;idx<var->nbr_dim;idx++){
-
-    /* What is the name of this dimension? */
     (void)nco_inq_dimname(nc_id,var->dmn_id[idx],dmn_nm);
-
-    /* Search the input dimension list for a matching name */
+    /* Search input dimension list for matching name */
     for(dmn_idx=0;dmn_idx<nbr_dim;dmn_idx++){
       if(!strcmp(dmn_nm,dim[dmn_idx]->nm)) break;
     } /* end for */
-
     if(dmn_idx == nbr_dim){
       (void)fprintf(stdout,"%s: ERROR dimension %s is not in input dimension list\n",prg_nm_get(),dmn_nm);
       exit(EXIT_FAILURE);
     } /* end if */
 
     /* fxm: hmb, what is this for? */
-/* re-define dim_id so that if dim is the dimension list from the output file */
-/* then we get the correct dim_id. Should not affect normal running of the    */
-/* routine as most the time, dim is the dimension from the input file         */
+    /* re-define dim_id so that if dim is the dimension list from the output file
+       then we get the correct dim_id. Should not affect normal running of the
+       routine as most the time, dim is the dimension from the input file */
     var->dmn_id[idx]=dim[dmn_idx]->id;
 
     var->dim[idx]=dim[dmn_idx];
@@ -930,6 +927,7 @@ var_fll(int nc_id,int var_id,char *var_nm,dmn_sct **dim,int nbr_dim)
       var->cid=var->dmn_id[idx];
     } /* end if */
 
+    /* NB: This assumes default var->sz begins as 1 */
     var->sz*=var->cnt[idx];
   } /* end loop over dim */
 
@@ -1010,12 +1008,9 @@ mss_val_get(int nc_id,var_sct *var)
 
   ptr_unn mss_tmp;
   
-  /* Refresh the netCDF "mss_val" attribute for this variable */
+  /* Refresh netCDF "mss_val" attribute for this variable */
   var->has_mss_val=False;
-  if(var->mss_val.vp != NULL){
-    (void)free(var->mss_val.vp);
-    var->mss_val.vp=NULL;
-  } /* end if */
+  var->mss_val.vp=nco_free(var->mss_val.vp);
 
   /* Refresh number of attributes for variable */
   (void)nco_inq_varnatts(var->nc_id,var->id,&var->nbr_att);
@@ -1051,7 +1046,7 @@ mss_val_get(int nc_id,var_sct *var)
     (void)val_conform_type(att_typ,mss_tmp,var->type,var->mss_val);
 
     /* Release temporary memory */
-    (void)free(mss_tmp.vp);
+    mss_tmp.vp=nco_free(mss_tmp.vp);
     break;
   } /* end loop over att */
 
@@ -1236,13 +1231,12 @@ var_lst_xcl(int nc_id,int nbr_var,nm_id_sct *xtr_lst,int *nbr_xtr)
     } /* end if */
   } /* end loop over idx */
   
-  /* Free the memory for names in the exclude list before losing the pointers to the names */
-  /* NB: can't free the memory if the list points to names in argv[] */
-/*  for(idx=0;idx<nbr_xcl;idx++) (void)free(xcl_lst[idx].nm);*/
-  (void)free(xcl_lst);
+  /* Free memory for names in exclude list before losing pointers to names */
+  /* NB: cannot free memory if list points to names in argv[] */
+  /* for(idx=0;idx<nbr_xcl;idx++) xcl_lst[idx].nm=nco_free(xcl_lst[idx].nm);*/
+  xcl_lst=nco_free(xcl_lst);
   
   return xtr_lst;
-  
 } /* end var_lst_xcl() */
 
 nm_id_sct *
@@ -1438,8 +1432,8 @@ var_lst_crd_xcl(int nc_id,int dmn_id,nm_id_sct *xtr_lst,int *nbr_xtr)
       (void)memcpy((void *)xtr_lst,(void *)var_lst_tmp,idx*sizeof(nm_id_sct));
       (void)memcpy((void *)(xtr_lst+idx),(void *)(var_lst_tmp+idx+1),(*nbr_xtr-idx)*sizeof(nm_id_sct));
       /* Free the memory for coordinate name in the extract list before losing the pointer */
-      (void)free(var_lst_tmp[idx].nm);
-      (void)free(var_lst_tmp);
+      var_lst_tmp[idx].nm=nco_free(var_lst_tmp[idx].nm);
+      var_lst_tmp=nco_free(var_lst_tmp);
     } /* end if */
   } /* end if */
   
@@ -1535,7 +1529,7 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
     xtr_nm=(char **)nco_malloc(nbr_lst*sizeof(char *));
     for(idx=0;idx<nbr_lst;idx++) xtr_nm[idx]=lst[idx].nm;
     (void)index_alpha(nbr_lst,xtr_nm-1,srt_idx-1);
-    (void)free(xtr_nm);
+    xtr_nm=nco_free(xtr_nm);
   }else{
     /* Heapsort the list by variable ID 
        This theoretically allows the fastest I/O when creating output file */
@@ -1543,7 +1537,7 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
     xtr_id=(int *)nco_malloc(nbr_lst*sizeof(int));
     for(idx=0;idx<nbr_lst;idx++) xtr_id[idx]=lst[idx].id;
     (void)indexx(nbr_lst,xtr_id-1,srt_idx-1);
-    (void)free(xtr_id);
+    xtr_id=nco_free(xtr_id);
   } /* end else */
 
   /* indexx and relatives employ "one-based" arrays 
@@ -1552,8 +1546,8 @@ lst_heapsort /* [fnc] Heapsort input lists numerically or alphabetically */
     lst[idx].id=lst_tmp[srt_idx[idx]-1].id;
     lst[idx].nm=lst_tmp[srt_idx[idx]-1].nm;
   } /* end loop over idx */
-  (void)free(lst_tmp);
-  (void)free(srt_idx);
+  lst_tmp=nco_free(lst_tmp);
+  srt_idx=nco_free(srt_idx);
   
   return lst;
   
@@ -1615,7 +1609,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
   rcd=stat(fl_out_tmp,&stat_sct);
 
   /* Free temporary memory */
-  (void)free(pid_sng);
+  pid_sng=nco_free(pid_sng);
 
   if(dbg_lvl_get() == 8){
   /* Use builtin system routines to generate temporary filename
@@ -1774,7 +1768,7 @@ var_val_cpy(int in_id,int out_id,var_sct **var,int nbr_var)
       nco_get_vara(in_id,var[idx]->id,var[idx]->srt,var[idx]->cnt,var[idx]->val.vp,var[idx]->type);
       nco_put_vara(out_id,var[idx]->xrf->id,var[idx]->xrf->srt,var[idx]->xrf->cnt,var[idx]->xrf->val.vp,var[idx]->type);
     } /* end if variable is an array */
-    (void)free(var[idx]->val.vp); var[idx]->xrf->val.vp=var[idx]->val.vp=NULL;
+    var[idx]->val.vp=nco_free(var[idx]->val.vp); var[idx]->xrf->val.vp=var[idx]->val.vp=NULL;
   } /* end loop over idx */
 
 } /* end var_val_cpy() */
@@ -2012,8 +2006,8 @@ hst_att_cat(int out_id,char *hst_sng)
 
   (void)nco_put_att(out_id,NC_GLOBAL,"history",NC_CHAR,strlen(history_new)+1,(void *)history_new);
 
-  if(history_crr != NULL) (void)free(history_crr);
-  (void)free(history_new);
+  history_crr=nco_free(history_crr);
+  history_new=nco_free(history_new);
 
 } /* end hst_att_cat() */
 
@@ -2634,7 +2628,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
     var_out->mss_val.vp=(void *)nco_malloc(nco_typ_lng(var_out->type));
     (void)val_conform_type(var_in_type,var_in_mss_val,var_out_type,var_out->mss_val);
     /* Free original */
-    (void)free(var_in_mss_val.vp);
+    var_in_mss_val.vp=nco_free(var_in_mss_val.vp);
   } /* end if */
 
   /* Typecast pointer to values before access */
@@ -2711,7 +2705,7 @@ var_conform_type(nc_type var_out_type,var_sct *var_in)
   (void)cast_nctype_void(var_out->type,&var_out->val);
   
   /* Free input variable data */
-  (void)free(val_in.vp);
+  val_in.vp=nco_free(val_in.vp);
   
   return var_out;
   
@@ -3065,13 +3059,13 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
     } /* end case */
 
     /* Free dynamic memory that held rearranged input variable values */
-    (void)free(avg_val.vp);
+    avg_val.vp=nco_free(avg_val.vp);
   } /* end if avg_sz != 1 */
   
   /* Free input variable */
   var=var_free(var);
-  (void)free(dmn_avg);
-  (void)free(dmn_fix);
+  dmn_avg=nco_free(dmn_avg);
+  dmn_fix=nco_free(dmn_fix);
 
   /* Return averaged variable */
   return fix;
@@ -3090,20 +3084,20 @@ var_free(var_sct *var)
      the optarg list if available. This assumption needs to be changed before freeing 
      the name pointer. */
   
-  if(var->val.vp != NULL){(void)free(var->val.vp); var->val.vp=NULL;}
-  if(var->mss_val.vp != NULL){(void)free(var->mss_val.vp); var->mss_val.vp=NULL;}
-  if(var->tally != NULL){(void)free(var->tally); var->tally=NULL;}
-  if(var->dmn_id != NULL){(void)free(var->dmn_id); var->dmn_id=NULL;}
-  if(var->dim != NULL){(void)free(var->dim); var->dim=NULL;}
-  if(var->srt != NULL){(void)free(var->srt); var->srt=NULL;}
-  if(var->end != NULL){(void)free(var->end); var->end=NULL;}
-  if(var->cnt != NULL){(void)free(var->cnt); var->cnt=NULL;}
-  if(var->srd != NULL){(void)free(var->srd); var->srd=NULL;}
-  if(var->scl_fct.vp != NULL){(void)free(var->scl_fct.vp); var->scl_fct.vp=NULL;}
-  if(var->add_fst.vp != NULL){(void)free(var->add_fst.vp); var->add_fst.vp=NULL;}
+  var->val.vp=nco_free(var->val.vp);
+  var->mss_val.vp=nco_free(var->mss_val.vp);
+  var->tally=nco_free(var->tally);
+  var->dmn_id=nco_free(var->dmn_id);
+  var->dim=nco_free(var->dim);
+  var->srt=nco_free(var->srt);
+  var->end=nco_free(var->end);
+  var->cnt=nco_free(var->cnt);
+  var->srd=nco_free(var->srd);
+  var->scl_fct.vp=nco_free(var->scl_fct.vp);
+  var->add_fst.vp=nco_free(var->add_fst.vp);
 
   /* Free structure pointer only after all dynamic elements of structure have been freed */
-  (void)free(var);
+  var=nco_free(var);
 
   return NULL;
 
@@ -5175,7 +5169,7 @@ ncar_csm_inq(int nc_id)
     att_val[att_sz]='\0';
     if(strstr(att_val,"NCAR-CSM") != NULL) NCAR_CSM=True;
     if(NCAR_CSM) (void)fprintf(stderr,"%s: CONVENTION File convention is %s\n",prg_nm_get(),att_val);
-    if(att_val != NULL) (void)free(att_val);
+    att_val=nco_free(att_val);
   } /* endif */
 
   return NCAR_CSM;
@@ -5348,7 +5342,7 @@ arm_time_install(int nc_id,nco_long base_time_srt)
   (void)nco_put_vara(nc_id,time_id,&srt,&cnt,(void *)time_offset,NC_DOUBLE);
 
   /* Free time_offset buffer */
-  if(time_offset != NULL) (void)free(time_offset);
+  time_offset=nco_free(time_offset);
 
 } /* end arm_time_install */
 
@@ -5895,7 +5889,7 @@ usg_prn(void)
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/
 
   /* Free the space holding the string */
-  (void)free(opt_sng);
+  opt_sng=nco_free(opt_sng);
 
 } /* end usg_prn() */
 
@@ -6067,7 +6061,6 @@ nco_long newdate(nco_long date,int day_srt)
   return newdate_YYMMDD;
 } /* end newdate() */
 
-
 var_sct * /* O [var] Variable after (possible) conversion */
 nco_typ_cnv_rth  /* [fnc] Convert char, short, long, int types to doubles before arithmetic */
 (var_sct *var, /* I/O [var] Variable to be considered for conversion */
@@ -6114,6 +6107,7 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
   var->typ_upk=NC_NAT; /* Type of variable when unpacked (expanded) (in memory) */
   var->is_rec_var=False;
   var->is_crd_var=False;
+  /* Size of 1 is assumed in var_fll() */
   var->sz=1L;
   var->sz_rec=1L;
   var->cid=-1;
@@ -6144,10 +6138,8 @@ var_dfl_set /* [fnc] Set defaults for each member of variable structure */
 
 var_sct *
 scl_dbl_mk_var(double val)
-/* 
-   double val: input double precision value to turn into netCDF variable
-   scl_dbl_mk_var: output netCDF variable structure representing val
- */
+/* double val: I double precision value to turn into netCDF variable
+   scl_dbl_mk_var: O netCDF variable structure representing val */
 {
   /* Purpose: Turn a scalar double into a netCDF variable
      Routine duplicates most functions of var_fll() 
@@ -6225,7 +6217,7 @@ scl_ptr_mk_var /* [fnc] Convert void pointer to scalar of any type into NCO vari
   var->nm=(char *)strdup(var_nm);
   var->nbr_dim=0;
   var->type=val_typ;
-  /* It is necessary to allocate new space here so that variable can eventually be deleted 
+  /* Allocate new space here so that variable can eventually be deleted 
      and associated memory free()'d */
   /* free(val_ptr_unn.vp) is unpredictable since val_ptr_unn may point to constant data, e.g.,
      a constant in scl_mk_var */
@@ -6258,7 +6250,7 @@ ptr_unn_2_scl_dbl /* [fnc] Convert first element of NCO variable to a scalar dou
   ptr_unn_scl_dbl.vp=(void *)nco_malloc(nco_typ_lng(NC_DOUBLE)); /* [unn] Pointer union to double precision value of first element */
   (void)val_conform_type(type,val,NC_DOUBLE,ptr_unn_scl_dbl);
   scl_dbl=ptr_unn_scl_dbl.dp[0];
-  if(ptr_unn_scl_dbl.vp != NULL){(void)free(ptr_unn_scl_dbl.vp); ptr_unn_scl_dbl.vp=NULL;}
+  ptr_unn_scl_dbl.vp=nco_free(ptr_unn_scl_dbl.vp);
 
   return scl_dbl;
 
@@ -6295,9 +6287,9 @@ nco_lib_vrs_prn()
   nst_sng[nst_sng_len]='\0';
 
   (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",vrs_sng,nst_sng);
-  (void)free(vrs_sng);
-  (void)free(lib_sng);
-  (void)free(nst_sng);
+  vrs_sng=nco_free(vrs_sng);
+  lib_sng=nco_free(lib_sng);
+  nst_sng=nco_free(nst_sng);
   (void)fprintf(stdout,"NCO homepage URL is http://nco.sourceforge.net\n");
 } /* end nco_lib_vrs_prn() */
 
@@ -6449,13 +6441,13 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
     } /* end else */
 
     /* Free memory */
-    if(mss_val_crr.vp != NULL){(void)free(mss_val_crr.vp); mss_val_crr.vp=NULL;}
-    if(mss_val_new.vp != NULL){(void)free(mss_val_new.vp); mss_val_new.vp=NULL;}
-    if(var->mss_val.vp != NULL){(void)free(var->mss_val.vp); var->mss_val.vp=NULL;}
-    if(var->val.vp != NULL){(void)free(var->val.vp); var->val.vp=NULL;}
-    if(var->dmn_id != NULL){(void)free(var->dmn_id); var->dmn_id=NULL;}
-    if(var->srt != NULL){(void)free(var->srt); var->srt=NULL;}
-    if(var->cnt != NULL){(void)free(var->cnt); var->cnt=NULL;}
+    mss_val_crr.vp=nco_free(mss_val_crr.vp);
+    mss_val_new.vp=nco_free(mss_val_new.vp);
+    var->mss_val.vp=nco_free(var->mss_val.vp);
+    var->val.vp=nco_free(var->val.vp);
+    var->dmn_id=nco_free(var->dmn_id);
+    var->srt=nco_free(var->srt);
+    var->cnt=nco_free(var->cnt);
 
     /* Put file back in define mode */
     (void)nco_redef(nc_id);
@@ -6477,7 +6469,7 @@ aed_prc(int nc_id,int var_id,aed_sct aed)
 		   (void *)aed.val.vp,
 		   aed.sz*nco_typ_lng(aed.type));
       (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,att_sz+aed.sz,att_val_new);
-      if(att_val_new != NULL) (void)free(att_val_new);
+      att_val_new=nco_free(att_val_new);
     }else{
       /* Create new attribute */
       (void)nco_put_att(nc_id,var_id,aed.att_nm,aed.type,aed.sz,aed.val.vp);
