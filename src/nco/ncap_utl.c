@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.30 2002-01-13 09:23:40 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.31 2002-01-13 21:06:21 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -229,7 +229,7 @@ ncap_var_var_multiply(var_sct *var_1,var_sct *var_2)
   var_sct *var_nsw;
   (void)ncap_var_retype(var_1,var_2);
   var_nsw=var_dpl(var_2);
-  (void)ncap_var_stretch(&var_1,&var_nsw);
+  (void)ncap_var_conform_dim(&var_1,&var_nsw);
   (void)var_multiply(var_1->type,var_1->sz,var_1->has_mss_val,var_1->mss_val,var_1->val,var_nsw->val);
   
   return var_nsw;
@@ -879,23 +879,40 @@ ncap_var_retype(var_sct* vara, var_sct* varb)
   }
 } /* end ncap_var_retype */
 
-bool
-ncap_var_conform_dim(var_sct **var_1,var_sct **var_2)
+bool /* [flg] Do var_1 and var_2 conform after processing? */
+ncap_var_conform_dim /* [fnc] Broadcast smaller variable into larger */
+(var_sct **var_1, /* I/O [ptr] First variable */
+ var_sct **var_2) /* I/O [ptr] Second variable */
 {
-  /* Purpose: Make sure variables conform. If this is not possible then die. */
-  bool MUST_CONFORM=True;
-  bool DO_CONFORM;
-  /* fxm: Huge memory leak as implemented in ncap
-     Original var_1 or var_2 is overwritten and can never be freed. 
-     Must test for equality between pointers on entry and exit, and
-     var_free() calling variable if it changed */
-  if((*var_1)->nbr_dim > (*var_2)->nbr_dim) *var_2=var_conform_dim(*var_1,*var_2,NULL,MUST_CONFORM,&DO_CONFORM); else *var_1=var_conform_dim(*var_2,*var_1,NULL,MUST_CONFORM,&DO_CONFORM);
+  /* Purpose: Return conforming variables. If this is not possible then die. 
+     Routine is a wrapper for var_conform_dim() which does the hard work. */
+
+  bool DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
+  bool MUST_CONFORM=True; /* [flg] Must var_1 and var_2 conform? */
+  var_sct *var_1_org; /* [ptr] Original location of var_1 */
+  var_sct *var_2_org; /* [ptr] Original location of var_2 */
+
+  var_1_org=*var_1; /* [ptr] Original location of var_1 */
+  var_2_org=*var_2; /* [ptr] Original location of var_2 */
+
+  if(var_1_org->nbr_dim > var_2_org->nbr_dim) *var_2=var_conform_dim(var_1_org,var_2_org,NULL,MUST_CONFORM,&DO_CONFORM); else *var_1=var_conform_dim(var_2_org,var_1_org,NULL,MUST_CONFORM,&DO_CONFORM);
   
+  /* fxm: Memory leak?
+     var_conform_dim does not do its own memory handling
+     If original var_1 or var_2 was overwritten (replaced by conforming variable),
+     then original must be free()'d now before its location is lost.
+     Test for equality between pointers on entry and exit, and
+     var_free() calling variable if it changed 
+     20020114: Freeing variables here causes core dump, not sure why */
+  /*  if(*var_1 != var_1_org) var_1_org=var_free(var_1_org);*/
+  /*  if(*var_2 != var_2_org) var_2_org=var_free(var_2_org);*/
+
   if(!DO_CONFORM){
     (void)fprintf(stderr,"%s: Variables do not have have conforming dimensions. Cannot proceed with operation\n",prg_nm_get());
     exit(EXIT_FAILURE);
   } /* endif */
-  return DO_CONFORM;
+
+  return DO_CONFORM; /* [flg] Do var_1 and var_2 conform after processing? */
 } /* end ncap_var_conform_dim() */
 
 int 
@@ -1429,7 +1446,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	  (void)fprintf(stdout,"%s: ERROR %s and template %s share no dimensions\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
 	  exit(EXIT_FAILURE);
 	}else{
-	  if(dbg_lvl_get() >= 0) (void)fprintf(stdout,"\n%s: DEBUG %s and %s share no dimensions: Attempting to convolve...\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+	  if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: DEBUG %s and %s share no dimensions: Attempting to convolve...\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
 	  CONVOLVE=True;
 	} /* endif */
       }else if(var_lsr_var_gtr_dmn_shr_nbr > 0 && var_lsr_var_gtr_dmn_shr_nbr < var_lsr->nbr_dim){
@@ -1439,7 +1456,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
 	  (void)fprintf(stdout,"%s: ERROR %d dimensions of %s belong to template %s but %d dimensions do not\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr);
 	  exit(EXIT_FAILURE);
 	}else{
-	  if(dbg_lvl_get() >= 0) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s, could attempt stretching???\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm);
+	  if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: DEBUG %d dimensions of %s belong to template %s but %d dimensions do not: Not broadcasting %s to %s, could attempt stretching???\n",prg_nm_get(),var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm,var_lsr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr,var_lsr->nm,var_gtr->nm);
 	  CONVOLVE=True;
 	} /* endif */
       } /* end if */
@@ -1470,7 +1487,7 @@ ncap_var_stretch /* [fnc] Stretch variables */
   if(var_lsr_out == NULL && CONVOLVE){
     /* Convolve variables by returned stretched variables with minimum possible number of dimensions */
     int dmn_nbr; /* Number of dimensions in convolution */
-    if(dbg_lvl_get() >= 0) (void)fprintf(stdout,"\n%s: WARNING Convolution not yet implented, results of operation between %s and %s are unpredictable\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
+    if(dbg_lvl_get() >= 1) (void)fprintf(stdout,"\n%s: WARNING Convolution not yet implented, results of operation between %s and %s are unpredictable\n",prg_nm_get(),var_lsr->nm,var_gtr->nm);
     /* Dimensions in convolution are union of dimensions in variables */
     dmn_nbr=var_lsr->nbr_dim+var_gtr->nbr_dim-var_lsr_var_gtr_dmn_shr_nbr; /* Number of dimensions in convolution */
     /* fxm: these should go away soon */

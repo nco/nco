@@ -1,5 +1,8 @@
 2002-01-13  Charlie Zender  <zender@uci.edu>
 
+	* var_free() superceded variable in ncap_var_conform_dim()
+	causes core dump (why?), but not free'ing must cause memory leak 
+
 	* Realized var_conform_dim() has bug of omission: does not abort
 	when variables do not conform because dimension list of one is
 	subset of other but ORDER of dimensions differs, e.g.,

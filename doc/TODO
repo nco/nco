@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.106 2002-01-13 09:23:39 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.107 2002-01-13 21:06:21 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -7,7 +7,6 @@ About 15 high priority items are shown first, then another ~100 items
 ******************************************************************************
 
 ncap-specific items:
-2. Fix parsing of mixed-rank expressions
 3. Fix foloowing mixed unsigned char * and char * warnings in ncap.l, ncap.y:
 cc-1164 cc: WARNING File = ../src/nco/ncap.l, Line = 293
   Argument of type "unsigned char *" is incompatible with parameter of type
@@ -37,6 +36,7 @@ cc-1515 cc: WARNING File = ../src/nco/ncap.y, Line = 279
                                 ^
 4. fix memory leak in ncap_var_conform_dim() or delete routine completely 
 after replacing it with ncap_var_stretch()	
+5. Fix parsing of mixed-rank expressions
 
 Top priority items You can help with:
 41. Use GNU getopt_long()
