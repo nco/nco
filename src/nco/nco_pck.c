@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.47 2004-09-07 05:23:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.48 2004-09-07 05:46:37 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -85,12 +85,16 @@ nco_pck_map_get /* [fnc] Convert user-specified packing map to key */
   if(!strcmp(nco_pck_map_sng,"pck_map_hgh_sht")) return nco_pck_map_hgh_sht;
   if(!strcmp(nco_pck_map_sng,"hgh_chr")) return nco_pck_map_hgh_chr;
   if(!strcmp(nco_pck_map_sng,"pck_map_hgh_chr")) return nco_pck_map_hgh_chr;
+  if(!strcmp(nco_pck_map_sng,"hgh_byt")) return nco_pck_map_hgh_byt;
+  if(!strcmp(nco_pck_map_sng,"pck_map_hgh_byt")) return nco_pck_map_hgh_byt;
   if(!strcmp(nco_pck_map_sng,"dwn_one")) return nco_pck_map_dwn_one;
   if(!strcmp(nco_pck_map_sng,"pck_map_dwn_one")) return nco_pck_map_dwn_one;
   if(!strcmp(nco_pck_map_sng,"flt_sht")) return nco_pck_map_flt_sht;
   if(!strcmp(nco_pck_map_sng,"pck_map_flt_sht")) return nco_pck_map_flt_sht;
   if(!strcmp(nco_pck_map_sng,"flt_chr")) return nco_pck_map_flt_chr;
   if(!strcmp(nco_pck_map_sng,"pck_map_flt_chr")) return nco_pck_map_flt_chr;
+  if(!strcmp(nco_pck_map_sng,"flt_byt")) return nco_pck_map_flt_byt;
+  if(!strcmp(nco_pck_map_sng,"pck_map_flt_byt")) return nco_pck_map_flt_byt;
 
   (void)fprintf(stderr,"%s: ERROR %s reports unknown user-specified packing policy %s\n",prg_nm_get(),fnc_nm,nco_pck_map_sng);
   nco_exit(EXIT_FAILURE);
@@ -181,6 +185,19 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
     default: nco_dfl_case_nc_type_err(); break;
     } /* end nc_type switch */ 
     break;
+  case nco_pck_map_hgh_byt:
+    switch(nc_typ_in){ 
+    case NC_DOUBLE: 
+    case NC_FLOAT: 
+    case NC_INT: 
+    case NC_SHORT: 
+      nc_typ_pck_out_tmp=NC_BYTE; nco_pck_plc_alw=True; break;
+    case NC_CHAR: 
+    case NC_BYTE: 
+      nc_typ_pck_out_tmp=nc_typ_in; nco_pck_plc_alw=False; break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end nc_type switch */ 
+    break;
   case nco_pck_map_dwn_one:
     switch(nc_typ_in){ 
     case NC_DOUBLE: nc_typ_pck_out_tmp=NC_INT; nco_pck_plc_alw=True; break; 
@@ -212,6 +229,19 @@ nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */
     case NC_DOUBLE: 
     case NC_FLOAT: 
       nc_typ_pck_out_tmp=NC_CHAR; nco_pck_plc_alw=True; break;
+    case NC_INT:
+    case NC_SHORT:
+    case NC_CHAR:
+    case NC_BYTE:
+      nc_typ_pck_out_tmp=nc_typ_in; nco_pck_plc_alw=False; break;
+    default: nco_dfl_case_nc_type_err(); break;
+    } /* end nc_type switch */ 
+    break;
+  case nco_pck_map_flt_byt:
+    switch(nc_typ_in){ 
+    case NC_DOUBLE: 
+    case NC_FLOAT: 
+      nc_typ_pck_out_tmp=NC_BYTE; nco_pck_plc_alw=True; break;
     case NC_INT:
     case NC_SHORT:
     case NC_CHAR:
@@ -571,8 +601,8 @@ nco_var_pck /* [fnc] Pack variable in memory */
   /* Routine should be called with variable already in memory */
   if(var->val.vp == NULL) (void)fprintf(stdout,"%s: ERROR %s called with empty var->val.vp\n",prg_nm_get(),fnc_nm);
   
-  /* Packed type must be NC_CHAR or NC_SHORT or NC_INT */
-  if(nc_typ_pck != NC_CHAR && nc_typ_pck != NC_SHORT && nc_typ_pck != NC_INT){
+  /* Packed type must be NC_BYTE, NC_CHAR, NC_SHORT, or NC_INT */
+  if(nc_typ_pck == NC_FLOAT || nc_typ_pck == NC_DOUBLE){
     (void)fprintf(stdout,"%s: ERROR %s called to pack variable %s with invalid packed type nc_typ_pck = %s\n",prg_nm_get(),fnc_nm,var->nm,nco_typ_sng(nc_typ_pck));
     nco_exit(EXIT_FAILURE);
   } /* endif */
