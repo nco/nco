@@ -1,5 +1,5 @@
 
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.72 2002-08-28 07:07:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.73 2002-08-28 13:20:07 hmb Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -54,10 +54,10 @@ ncap_var_init(const char * const var_nm,prs_sct *prs_arg)
            
         (void)nco_inq_vardimid(fl_id,var_id,dim_id);
         for(i=0 ; i < nbr_dmn_var ; i++) 
-	  for(j=0 ;j < prs_arg->nbr_dmn_xtr ; j++){
+	  for(j=0 ;j < prs_arg->nbr_dmn_in ; j++){
             
             /* de-referenece */
-	    dmn_in = prs_arg->dmn[j]; 
+	    dmn_in = prs_arg->dmn_in[j]; 
 	    if( dim_id[i] != dmn_in->id || dmn_in->xrf ) continue;
       
             /* define dimension  in (prs_arg->dmn_out) */ 
