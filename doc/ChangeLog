@@ -1,3 +1,15 @@
+2004-07-28  Charlie Zender  <zender@uci.edu>
+
+	* Implement -DNCO_ABORT_ON_ERROR in nco_err_exit() so developers
+	can perform easy tracebacks
+
+        * Add AX_CFLAGS_GCC_OPTION(-D_BSD_SOURCE) so default build works
+
+	* Added ncpdq to autoconf build machinery
+
+	* Finish first theoretically working version of ncpdq. 
+	Of course, it crashes.
+
 2004-07-27  Charlie Zender  <zender@uci.edu>
 
 	* Merge ncwa dmn_avg list handling into ncpdq for dmn_rdr

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.348 2004-07-27 01:50:02 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.349 2004-07-29 00:40:57 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -231,7 +231,9 @@ nco358. Document ncwa -z switch
 nco359. Allow spaces in between variables names in -v var_lst arguments
 nco360. AX_CFLAGS_GCC_OPTION(-std=c99) adds -std=c99 to xlc_r not just gcc
 nco361. Create new operator or rewrite ncks to use new style
-nco362. 
+nco362. reduce memory during run by free()'ing var_fix[idx],var_fix_out[idx],var_prc[idx],var_prc_out[idx] after writes
+nco363. Document ncpdq in nco.texi
+nco364.
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -293,7 +295,10 @@ bld35. Add pgcc, pgCC switches to configure.in
 bld36. Improve precision/wording of nco_ctl.c tokens on shared/static libraries
 bld37. Ensure C99 used by compilers with AX_CFLAGS_SUN_OPTION AX_CFLAGS_HPUX_OPTION AX_CFLAGS_AIX_OPTION AX_CFLAGS_IRIX_OPTION
 bld38. Use OPeNDAP 3.4.4 opendap-config script to ease build process, e.g., `opendap-config --cxx --cflags --libs` -o sample sample.c
-bld39. 
+bld39. Fix autoconf build warnings (from including ncap_yacc in ncwa?):
+Makefile:472: warning: overriding commands for target `ncap_yacc.h'
+Makefile:440: warning: ignoring old commands for target `ncap_yacc.h'
+bld40.
 
 ************************************************************************
 End NCO Wish list

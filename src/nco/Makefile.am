@@ -16,7 +16,7 @@ else
   NCO_GETOPT=
 endif
 
-bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncra ncrename ncwa
+bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa
 
 AM_YFLAGS = -d
 
@@ -37,6 +37,9 @@ ncflint_LDADD = libnco.la
 
 ncks_SOURCES = ncks.c
 ncks_LDADD = libnco.la
+
+ncpdq_SOURCES = ncpdq.c
+ncpdq_LDADD = libnco.la
 
 ncra_SOURCES = ncra.c
 ncra_LDADD = libnco.la

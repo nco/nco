@@ -164,7 +164,7 @@ target_vendor = @target_vendor@
 
 @NCO_NEED_GETOPT_LONG_TRUE@NCO_GETOPT = nco_getopt.c
 
-bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncra ncrename ncwa
+bin_PROGRAMS = ${NCAP} ncatted ncbo ncecat ncflint ncks ncpdq ncra ncrename ncwa
 
 AM_YFLAGS = -d
 
@@ -185,6 +185,9 @@ ncflint_LDADD = libnco.la
 
 ncks_SOURCES = ncks.c
 ncks_LDADD = libnco.la
+
+ncpdq_SOURCES = ncpdq.c
+ncpdq_LDADD = libnco.la
 
 ncra_SOURCES = ncra.c
 ncra_LDADD = libnco.la
@@ -262,12 +265,12 @@ am_libnco_la_OBJECTS = nco_att_utl.lo nco_bnr.lo nco_cln_utl.lo \
 libnco_la_OBJECTS = $(am_libnco_la_OBJECTS)
 @BUILD_NCAP_TRUE@bin_PROGRAMS = ncap$(EXEEXT) ncatted$(EXEEXT) \
 @BUILD_NCAP_TRUE@	ncbo$(EXEEXT) ncecat$(EXEEXT) ncflint$(EXEEXT) \
-@BUILD_NCAP_TRUE@	ncks$(EXEEXT) ncra$(EXEEXT) ncrename$(EXEEXT) \
-@BUILD_NCAP_TRUE@	ncwa$(EXEEXT)
+@BUILD_NCAP_TRUE@	ncks$(EXEEXT) ncpdq$(EXEEXT) ncra$(EXEEXT) \
+@BUILD_NCAP_TRUE@	ncrename$(EXEEXT) ncwa$(EXEEXT)
 @BUILD_NCAP_FALSE@bin_PROGRAMS = ncatted$(EXEEXT) ncbo$(EXEEXT) \
 @BUILD_NCAP_FALSE@	ncecat$(EXEEXT) ncflint$(EXEEXT) \
-@BUILD_NCAP_FALSE@	ncks$(EXEEXT) ncra$(EXEEXT) ncrename$(EXEEXT) \
-@BUILD_NCAP_FALSE@	ncwa$(EXEEXT)
+@BUILD_NCAP_FALSE@	ncks$(EXEEXT) ncpdq$(EXEEXT) ncra$(EXEEXT) \
+@BUILD_NCAP_FALSE@	ncrename$(EXEEXT) ncwa$(EXEEXT)
 PROGRAMS = $(bin_PROGRAMS)
 
 am_ncap_OBJECTS = ncap_utl.$(OBJEXT) ncap.$(OBJEXT) ncap_yacc.$(OBJEXT) \
@@ -295,6 +298,10 @@ am_ncks_OBJECTS = ncks.$(OBJEXT)
 ncks_OBJECTS = $(am_ncks_OBJECTS)
 ncks_DEPENDENCIES = libnco.la
 ncks_LDFLAGS =
+am_ncpdq_OBJECTS = ncpdq.$(OBJEXT)
+ncpdq_OBJECTS = $(am_ncpdq_OBJECTS)
+ncpdq_DEPENDENCIES = libnco.la
+ncpdq_LDFLAGS =
 am_ncra_OBJECTS = ncra.$(OBJEXT)
 ncra_OBJECTS = $(am_ncra_OBJECTS)
 ncra_DEPENDENCIES = libnco.la
@@ -338,8 +345,9 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/nco_var_lst.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/nco_var_rth.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/nco_var_scv.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/nco_var_utl.Plo ./$(DEPDIR)/ncra.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/ncrename.Po ./$(DEPDIR)/ncwa.Po
+@AMDEP_TRUE@	./$(DEPDIR)/nco_var_utl.Plo ./$(DEPDIR)/ncpdq.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/ncra.Po ./$(DEPDIR)/ncrename.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/ncwa.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) \
@@ -354,11 +362,11 @@ YACCCOMPILE = $(YACC) $(YFLAGS) $(AM_YFLAGS)
 LTYACCCOMPILE = $(LIBTOOL) --mode=compile $(YACC) $(YFLAGS) $(AM_YFLAGS)
 DIST_SOURCES = $(am__libnco_la_SOURCES_DIST) $(ncap_SOURCES) \
 	$(ncatted_SOURCES) $(ncbo_SOURCES) $(ncecat_SOURCES) \
-	$(ncflint_SOURCES) $(ncks_SOURCES) $(ncra_SOURCES) \
-	$(ncrename_SOURCES) $(ncwa_SOURCES)
+	$(ncflint_SOURCES) $(ncks_SOURCES) $(ncpdq_SOURCES) \
+	$(ncra_SOURCES) $(ncrename_SOURCES) $(ncwa_SOURCES)
 DIST_COMMON = $(srcdir)/Makefile.in Makefile.am ncap_lex.c ncap_yacc.c \
 	ncap_yacc.h
-SOURCES = $(libnco_la_SOURCES) $(ncap_SOURCES) $(ncatted_SOURCES) $(ncbo_SOURCES) $(ncecat_SOURCES) $(ncflint_SOURCES) $(ncks_SOURCES) $(ncra_SOURCES) $(ncrename_SOURCES) $(ncwa_SOURCES)
+SOURCES = $(libnco_la_SOURCES) $(ncap_SOURCES) $(ncatted_SOURCES) $(ncbo_SOURCES) $(ncecat_SOURCES) $(ncflint_SOURCES) $(ncks_SOURCES) $(ncpdq_SOURCES) $(ncra_SOURCES) $(ncrename_SOURCES) $(ncwa_SOURCES)
 
 all: all-am
 
@@ -451,6 +459,9 @@ ncflint$(EXEEXT): $(ncflint_OBJECTS) $(ncflint_DEPENDENCIES)
 ncks$(EXEEXT): $(ncks_OBJECTS) $(ncks_DEPENDENCIES) 
 	@rm -f ncks$(EXEEXT)
 	$(LINK) $(ncks_LDFLAGS) $(ncks_OBJECTS) $(ncks_LDADD) $(LIBS)
+ncpdq$(EXEEXT): $(ncpdq_OBJECTS) $(ncpdq_DEPENDENCIES) 
+	@rm -f ncpdq$(EXEEXT)
+	$(LINK) $(ncpdq_LDFLAGS) $(ncpdq_OBJECTS) $(ncpdq_LDADD) $(LIBS)
 ncra$(EXEEXT): $(ncra_OBJECTS) $(ncra_DEPENDENCIES) 
 	@rm -f ncra$(EXEEXT)
 	$(LINK) $(ncra_LDFLAGS) $(ncra_OBJECTS) $(ncra_LDADD) $(LIBS)
@@ -513,6 +524,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_var_rth.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_var_scv.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/nco_var_utl.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncpdq.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncra.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncrename.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ncwa.Po@am__quote@

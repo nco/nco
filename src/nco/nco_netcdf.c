@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.39 2004-07-27 06:16:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.40 2004-07-29 00:40:57 zender Exp $ */
 
 /* Purpose: NCO wrappers for netCDF C library */
 
@@ -51,7 +51,18 @@ nco_err_exit /* [fnc] Print netCDF error message, routine name, then exit */
   } /* end switch */
   if(rcd != NC_NOERR){
     (void)fprintf(stderr,"%s: ERROR %s\n%s\n",fnc_nm,msg,nc_strerror(rcd));
+#ifdef NCO_ABORT_ON_ERROR
+    /* abort() produces core dump and traceback information
+       Most debuggers (e.g., gdb) use this information to print the calling tree that produced the abort()
+       This makes debugging much easier!
+       Hence we recommend developers compile NCO with -DNCO_ABORT_ON_ERROR */
+    abort();
+#else /* !NCO_ABORT_ON_ERROR */
+    /* exit() produces no core dump or useful debugger information
+       It is slightly more friendly to the end-user since it does not leave core files laying around
+       Hence we recommend installing NCO without -DNCO_ABORT_ON_ERROR for end users */
     exit(EXIT_FAILURE);
+#endif /* !NCO_ABORT_ON_ERROR */
   } /* endif error */
 } /* end nco_err_exit() */
 

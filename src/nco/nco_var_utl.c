@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.41 2004-07-27 06:16:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.42 2004-07-29 00:40:58 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -605,7 +605,7 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
 
   var->val.vp=(void *)nco_malloc_dbg(var->sz*nco_typ_lng(var->typ_dsk),"Unable to malloc() value buffer when retrieving variable from disk",fnc_nm);
 
-  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for variable %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.dp[0],nco_typ_sng(var->typ_dsk));
+  if(False) (void)fprintf(stdout,"%s: DEBUG: fxm TODO nco354. Calling nco_get_vara() for variable %s with nc_id=%d, var_id=%d, var_srt=%li, var_cnt = %li, var_val = %g, var_typ = %s\n",prg_nm_get(),var->nm,nc_id,var->id,var->srt[0],var->cnt[0],var->val.dp[0],nco_typ_sng(var->typ_dsk));
 #ifdef _OPENMP
 #pragma omp critical
 #endif /* _OPENMP */
@@ -785,7 +785,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
      So local variable var usually refers to var_prc_out in calling function 
      Hence names may look reversed in this function, and xrf is frequently used
 
-     FIXED_KEEP_PACKED was added specifically for ncap where it calls nco_var_dfn() to define the fixed vars
+     ncap exclusively uses FIXED_KEEP_PACKED in its call to nco_var_dfn() to define fixed vars
      We do not want to un-necessarily unpack variables that are fixed, not processed */
 
   bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
@@ -824,7 +824,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       if(dmn_ncl != NULL || prg_get() == ncwa){
 	int nbr_var_dim=0;
 	int idx_ncl;
-	/* Rank of output variable may need to be reduced */
+	/* May need to reduce rank of output variable */
 	for(idx_dmn=0;idx_dmn<var[idx]->nbr_dim;idx_dmn++){
 	  /* Is dimension allowed in output file? */
 	  for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
@@ -885,6 +885,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
     case ncpdq:
     case ncra:
     case ncrcat:
+    case ncrename:
     case ncwa:
       nco_pck_typ=nco_pck_nil;
       break;

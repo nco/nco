@@ -1,8 +1,8 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.3 2004-07-28 05:45:28 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.4 2004-07-29 00:40:58 zender Exp $ */
 
-/* ncpdq -- netCDF pack, dimension, questioner */
+/* ncpdq -- netCDF pack, re-dimension, query */
 
-/* Purpose: Pack, re-order, question single netCDF file and output to a single file */
+/* Purpose: Pack, re-dimension, query single netCDF file and output to a single file */
 
 /* Copyright (C) 1995--2004 Charlie Zender
 
@@ -30,12 +30,10 @@
    Irvine, CA 92697-3100 */
 
 /* Usage:
-   ncpdq -O ~/nco/data/in.nc foo.nc
-   ncpdq -O -R -p /ZENDER/tmp -l ~/nco/data in.nc foo.nc
-   ncpdq -O -a lat -w gw -d lev,17 -v T -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc
-
-   ncpdq -O -C -a lat,lon,time -w gw -v PS -p /fs/cgd/csm/input/atm SEP1.T42.0596.nc foo.nc;ncks -H foo.nc
- */
+   ncpdq -O ~/nco/data/in.nc ~/foo.nc
+   ncpdq -O -D 3 -z lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+   ncpdq -O -z lon,lev,lat -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
+*/
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -94,8 +92,8 @@ main(int argc,char **argv)
   char *lmt_arg[NC_MAX_DIMS];
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.3 2004-07-28 05:45:28 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.3 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.4 2004-07-29 00:40:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.4 $";
   const char * const opt_sng="ACcD:d:Fhl:Oo:p:Rrt:v:xz:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -408,23 +406,22 @@ main(int argc,char **argv)
   } /* dmn_rdr_nbr <= 0 */
 
   /* Make list of user-specified dimension re-orders */
+  /* fxm: dmn_rdr is already known, is nco_prs_rdr_lst() obsolete? */
   if(False) dmn_rdr=nco_prs_rdr_lst(dmn_rdr,dmn_rdr_lst_in,dmn_rdr_nbr);
 
   /* Determine and set new dimensionality for each processed variable */
   DO_DIMENSIONALITY_ONLY=True; /* I [flg] Determine and set new dimensionality then return */
   DO_REORDER_ONLY=False; /* I [flg] Re-order data (dimensionality already set) */
   DO_WHOLE_SHEBANG=False; /* I [flg] Determine and set new dimensionality then re-order data */
-  for(idx=0;idx<nbr_var_prc;idx++){
-    if(False) var_prc_out[idx]=nco_var_dmn_rdr(var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,DO_DIMENSIONALITY_ONLY,DO_REORDER_ONLY,DO_WHOLE_SHEBANG);
-  } /* end loop over idx */
+  for(idx=0;idx<nbr_var_prc;idx++) rcd=nco_var_dmn_rdr(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,DO_DIMENSIONALITY_ONLY,DO_REORDER_ONLY,DO_WHOLE_SHEBANG);
 
   /* Next call re-orders and stores each processed variable (and is threaded) */
   DO_DIMENSIONALITY_ONLY=False; /* I [flg] Determine and set new dimensionality then return */
-  DO_REORDER_ONLY=True; /* I [flg] Re-order data (dimensionality already set) */
-  DO_WHOLE_SHEBANG=False; /* I [flg] Determine and set new dimensionality then re-order data */
+  DO_REORDER_ONLY=False; /* I [flg] Re-order data (dimensionality already set) */
+  DO_WHOLE_SHEBANG=True; /* I [flg] Determine and set new dimensionality then re-order data */
 
   /* Define variables in output file, copy their attributes */
-  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,dmn_out,nbr_dmn_out);
+  (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0);
 
   /* Turn off default filling behavior to enhance efficiency */
   rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
@@ -451,9 +448,6 @@ main(int argc,char **argv)
     if(dbg_lvl > 0) (void)fprintf(stderr,"local file %s:\n",fl_in);
     rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
     
-    /* Perform various error-checks on input file */
-    if(False) (void)nco_fl_cmp_err_chk();
-
 #ifdef _OPENMP
   /* OpenMP notes:
      firstprivate(): 
@@ -468,13 +462,24 @@ main(int argc,char **argv)
       /* Retrieve variable from disk into memory */
       (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
       
-      /* Copy input variable buffer to processed variable buffer */
-      var_prc_out[idx]->val=var_prc[idx]->val;
+      if(True){
+	if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
+	  (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
+	  nco_exit(EXIT_FAILURE); 
+	} /* endif err */
+      }else{
+	/* ncpdq may, instead, one day, want to copy input data. That would be done here. */
+	/* Copy input variable buffer to processed variable buffer */
+	var_prc_out[idx]->val=var_prc[idx]->val;
+      } /* endif */
 
       if(dbg_lvl > 2) (void)fprintf(fp_stdout,"%s: DEBUG: nco329 About to nco_nco_var_dmn_rdr() %s\n",prg_nm,var_prc[idx]->nm);
 
       /* Change dimension ordering */
-      if(False) var_prc_out[idx]=nco_var_dmn_rdr(var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,DO_DIMENSIONALITY_ONLY,DO_REORDER_ONLY,DO_WHOLE_SHEBANG);
+      rcd=nco_var_dmn_rdr(var_prc[idx],var_prc_out[idx],dmn_rdr,dmn_rdr_nbr,DO_DIMENSIONALITY_ONLY,DO_REORDER_ONLY,DO_WHOLE_SHEBANG);
+
+      /* Free current input buffer */
+      var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
 
 #ifdef _OPENMP
 #pragma omp critical
@@ -487,6 +492,7 @@ main(int argc,char **argv)
 	  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	} /* end if variable is array */
       } /* end OpenMP critical */
+      /* Free current output buffer */
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
       
     } /* end (OpenMP parallel for) loop over idx */

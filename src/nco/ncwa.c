@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.133 2004-07-27 19:47:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.134 2004-07-29 00:40:58 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *wgt_nm=NULL;
   char *msk_sng=NULL; /* Mask string to be "parsed" and values given to msk_nm, msk_val, op_typ_rlt */
   
-  const char * const CVS_Id="$Id: ncwa.c,v 1.133 2004-07-27 19:47:31 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.133 $";
+  const char * const CVS_Id="$Id: ncwa.c,v 1.134 2004-07-29 00:40:58 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.134 $";
   const char * const opt_sng="Aa:CcD:d:FhIl:M:m:nNOo:p:rRT:t:v:Ww:xy:z:-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -672,12 +672,12 @@ main(int argc,char **argv)
       if((var_prc_out[idx]->tally=var_prc[idx]->tally=(long *)nco_malloc_flg(var_prc_out[idx]->sz*sizeof(long))) == NULL){
 	(void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%ld bytes for tally buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(long)sizeof(long),var_prc_out[idx]->nm);
 	nco_exit(EXIT_FAILURE); 
-      } /* end if */
+      } /* end if err */
       (void)nco_zero_long(var_prc_out[idx]->sz,var_prc_out[idx]->tally);
       if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
 	(void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
 	nco_exit(EXIT_FAILURE); 
-      } /* end if */
+      } /* end if err */
       (void)nco_var_zero(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->val);
       
       (void)nco_var_refresh(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
@@ -883,6 +883,7 @@ main(int argc,char **argv)
 	  (void)nco_put_vara(out_id,var_prc_out[idx]->id,var_prc_out[idx]->srt,var_prc_out[idx]->cnt,var_prc_out[idx]->val.vp,var_prc_out[idx]->type);
 	} /* end if variable is array */
       } /* end OpenMP critical */
+      /* Free current output buffer */
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
       
     } /* end (OpenMP parallel for) loop over idx */
