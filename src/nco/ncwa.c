@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.55 2000-09-19 20:54:04 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.56 2000-09-19 21:22:18 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -111,8 +111,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.55 2000-09-19 20:54:04 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.55 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.56 2000-09-19 21:22:18 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.56 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -547,17 +547,49 @@ main(int argc,char **argv)
 #pragma omp master 
       (void)fprintf(stderr,"%s: INFO OpenMP multi-threading using %d threads\n",prg_nm_get(),omp_get_num_threads());
     } /* end OpenMP parallel */
-#else 
+#else /* not OpenMP */
     (void)fprintf(stderr,"%s: INFO Not attempting OpenMP multi-threading\n",prg_nm_get());
 #endif /* not OpenMP */
   } /* endif debug */
 
+  /* 
+     cd ~/nco/bld;make OPTS=D OMP=1;cd -
+     cd ~/nco/data;ncwa -D 1 -O in.nc foo.nc 2>&1 | m;cd -
+
+     cd ~/nco/data
+     ncks -O -v one one.nc omp.nc
+
+     ncks -O -v one one.nc two.nc
+     ncrename -v one,two two.nc
+     ncflint -O -v two -w 2.0,0.0 two.nc two.nc two.nc
+     ncks -A -C -v two two.nc omp.nc
+     
+     ncks -O -v one one.nc three.nc
+     ncrename -v one,three three.nc
+     ncflint -O -v three -w 3.0,0.0 three.nc three.nc three.nc
+     ncks -A -C -v three three.nc omp.nc
+
+     ncks -O -v one one.nc four.nc
+     ncrename -v one,four four.nc
+     ncflint -O -v four -w 4.0,0.0 four.nc four.nc four.nc
+     ncks -A -C -v four four.nc omp.nc
+
+     ncks -H -C -v one,two,three,four omp.nc | m
+     ncwa -D 1 -O omp.nc foo.nc 2>&1 | m
+     ncks -H -C -v one,two,three,four foo.nc | m
+  */
 #ifdef OMP /* OpenMP */
 /* Adding a default(none) clause causes a weird error: "Error: Variable __iob used without scope declaration in a parallel region with DEFAULT(NONE) scope". This appears to be a compiler bug. */
 #pragma omp parallel for private(idx,msk_out,msk,DO_CONFORM_MSK,wgt_out,wgt,DO_CONFORM_WGT) shared(nbr_var_prc,dbg_lvl,var_prc,var_prc_out,in_id,nco_op_typ,msk_nm,WGT_MSK_CRD_VAR,MUST_CONFORM,msk_val,op_typ_rlt,wgt_nm,dmn_avg,nbr_dmn_avg,NRM_BY_DNM,wgt_avg,out_id)
 #endif /* not OpenMP */
     for(idx=0;idx<nbr_var_prc;idx++){ /* Process all variables in current file */
-      if(dbg_lvl > 0) (void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
+      if(dbg_lvl > 0){
+#ifdef OMP /* OpenMP */
+	(void)fprintf(stderr,"%s: INFO Thread #%d processing var_prc[%d] = \"%s\"\n",prg_nm_get(),omp_get_thread_num(),idx,var_prc[idx]->nm);
+#else /* not OpenMP */
+	(void)fprintf(stderr,"%s, ",var_prc[idx]->nm);
+#endif /* not OpenMP */
+      } /* endif debug */
       if(dbg_lvl > 0) (void)fflush(stderr);
       
       /* Allocate and, if necesssary, initialize accumulation space for all processed variables */
