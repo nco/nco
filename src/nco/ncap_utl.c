@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.41 2002-02-02 17:31:27 hmb Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.42 2002-03-12 20:27:43 zender Exp $ */
 
 /* Purpose: Utilities for ncap operator */
 
@@ -705,6 +705,8 @@ var_attribute_modulus(nc_type type,long sz,int has_mss_val,ptr_unn mss_val,ptr_u
   
   /* Modulus  is currently defined as op1:=op1%attribute */  
   
+  extern float fmodf(float,float); /* Cannot insert fmodf in ncap_sym_init() because it takes two arguments TODO #20 */
+
   long idx;
   
   /* Typecast pointer to values before access */
@@ -989,6 +991,9 @@ parse_sct
 ncap_attribute_calc(parse_sct a, char op, parse_sct b)
 {
   /* Purpose: Calculate (a op b) . n.b Attributes must be of the same type */
+
+  extern float fmodf(float,float); /* Cannot insert fmodf in ncap_sym_init() because it takes two arguments TODO #20 */
+
   parse_sct c;
   c.type=a.type;
   switch(c.type){ 

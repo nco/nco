@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.128 2002-02-25 08:03:12 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.129 2002-03-12 20:27:43 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -36,6 +36,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 18. Do not presume math float functions (e.g., tanf) exist, use double functions when they do not
 19. Make all binary operators handle ordering of operands consistently, e.g., divide(1,2)=1/2 not 2/1
 20. Print out contents of each non-comment statement when dbg_lvl==1
+21. Add two-argument functions like fmodf to ncap_sym_init()
 
 Highest priority NCO-wide items that You can help with:
 41. Use getopt_long() from FSF (has alloca()-dependency problems) or Sittler (BSD-licensed version with no problems)
