@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.96 2002-12-19 20:48:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.97 2002-12-29 08:59:48 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.96 2002-12-19 20:48:25 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.96 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.97 2002-12-29 08:59:48 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.97 $";
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -186,11 +186,16 @@ main(int argc,char **argv)
       {"ftn",no_argument,0,'F'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
-      {"here",no_argument,0,'H'},
       {"wgt_msk_crd_var",no_argument,0,'I'},
       {"local",required_argument,0,'l'},
       {"mask-variable",required_argument,0,'m'},
-      {"Mask-value",required_argument,0,'M'},
+      {"mask_variable",required_argument,0,'m'},
+      {"mask",required_argument,0,'m'},
+      {"msk_var",required_argument,0,'m'},
+      {"msk_nm",required_argument,0,'m'},
+      {"mask-value",required_argument,0,'M'},
+      {"mask_value",required_argument,0,'M'},
+      {"msk_val",required_argument,0,'M'},
       {"nintap",required_argument,0,'n'},
       {"numerator",no_argument,0,'N'},
       {"overwrite",no_argument,0,'O'},
@@ -199,9 +204,15 @@ main(int argc,char **argv)
       {"revision",no_argument,0,'r'},
       {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
+      {"vrs",no_argument,0,'r'},
       {"normalize-by-tally",no_argument,0,'W',},
       {"exclude",no_argument,0,'x'},
-      {"math",required_argument,0,'y'},
+      {"xcl",no_argument,0,'x'},
+      {"weight",no_argument,0,'w'},
+      {"wgt",no_argument,0,'w'},
+      {"wgt_var",no_argument,0,'w'},
+      {"operation",required_argument,0,'y'},
+      {"op_typ",required_argument,0,'y'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -322,7 +333,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     case '-': /* Long options are not allowed */
-      (void)fprintf(stderr,"Long options are not available in this build. Use single letter options instead.\n");
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */

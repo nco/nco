@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.17 2002-12-16 01:59:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.18 2002-12-29 08:59:48 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -195,7 +195,7 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-b")) (void)fprintf(stdout,"-b fl_bnr\tUnformatted binary file to write\n[--binary-file]\n");
   if(strstr(opt_sng,"-c")) (void)fprintf(stdout,"-c\t\tCoordinate variables will all be processed\n[--coords]\n");
   if(strstr(opt_sng,"-C")) (void)fprintf(stdout,"-C\t\tAssociated coordinate variables should not be processed\n[--nocoords]\n");
-  if(strstr(opt_sng,"-D")) (void)fprintf(stdout,"-D dbg_lvl\tDebugging level\n[--debug,--dbg_lvl]\n");
+  if(strstr(opt_sng,"-D")) (void)fprintf(stdout,"-D dbg_lvl\tDebugging level\n[--debug-level,--dbg_lvl]\n");
   if(strstr(opt_sng,"-d")){
     if(prg == ncrename) (void)fprintf(stdout,"-d old_dim,new_dim Dimension's old and new names\n[--dimension,--dmn]\n");
     else if(prg == ncks) (void)fprintf(stdout,"-d dim,[min][,[max]][,[stride]] Dimension's limits and stride in hyperslab\n[--dimension]\n");
@@ -203,17 +203,17 @@ nco_usg_prn(void)
     else (void)fprintf(stdout,"-d dim,[min][,[max]] Dimension's limits in hyperslab\n[--dimension]\n");
   } /* end if -d */
   if(strstr(opt_sng,"-F")) (void)fprintf(stdout,"-F\t\tFortran indexing conventions (1-based) for I/O\n[--fortran,--ftn]\n");
-  if(strstr(opt_sng,"-H")) (void)fprintf(stdout,"-H\t\tPrint data\n[--here]\n");
+  if(strstr(opt_sng,"-H")) (void)fprintf(stdout,"-H\t\tPrint data\n[--print]\n");
   if(strstr(opt_sng,"-h")) (void)fprintf(stdout,"-h\t\tDo not append to \"history\" global attribute\n[--history,--hst]\n");
   if(strstr(opt_sng,"-i")) (void)fprintf(stdout,"-i var,val\tInterpolant and value\n[--interpolate]\n");
   if(strstr(opt_sng,"-I")) (void)fprintf(stdout,"-I \t\tDo not weight or mask coordinate variables\n[--wgt_msk_crd_var]\n");
   if(strstr(opt_sng,"-l")) (void)fprintf(stdout,"-l path\t\tLocal storage path for remotely-retrieved files\n[--local]\n");
   if(strstr(opt_sng,"-M")){
-    if(prg == ncwa) (void)fprintf(stdout,"-M val\t\tMasking value (default is 1.0)\n[--mask-value]\n");
+    if(prg == ncwa) (void)fprintf(stdout,"-M mask_val\t\tMasking value (default is 1.0)\n[--mask-value,--mask_value,--msk_val]\n");
     if(prg == ncks) (void)fprintf(stdout,"-M\t\tPrint global metadata\n[--Meta]\n");
   } /* end if */
   if(strstr(opt_sng,"-m")){
-    if(prg == ncwa) (void)fprintf(stdout,"-m mask\t\tMasking variable name\n[--mask-variable]\n");
+    if(prg == ncwa) (void)fprintf(stdout,"-m mask_var\t\tMasking variable name\n[--mask-variable,--mask_variable,--msk_nm,--msk_var]\n");
     if(prg == ncks) (void)fprintf(stdout,"-m\t\tPrint variable metadata\n[--meta]\n");
   } /* end if */
   if(strstr(opt_sng,"-N")) (void)fprintf(stdout,"-N\t\tNo normalization\n[--numerator]\n");
@@ -226,9 +226,9 @@ nco_usg_prn(void)
   if(strstr(opt_sng,"-p")) (void)fprintf(stdout,"-p path\t\tPath prefix for all input filenames\n[--path]\n");
   if(strstr(opt_sng,"-q")) (void)fprintf(stdout,"-q\t\tToggle printing of dimension indices and coordinate values\n[--quiet]\n");
   if(strstr(opt_sng,"-R")) (void)fprintf(stdout,"-R\t\tRetain remotely-retrieved files after use\n[--retain]\n");
-  if(strstr(opt_sng,"-r")) (void)fprintf(stdout,"-r\t\tProgram version and copyright notice\n[--revision,--version]\n");
+  if(strstr(opt_sng,"-r")) (void)fprintf(stdout,"-r\t\tProgram version and copyright notice\n[--revision,--version,--vrs]\n");
   if(strstr(opt_sng,"-s")){
-    if(prg != ncap) (void)fprintf(stdout,"-s format\tString format for text output\n[--string]\n");
+    if(prg != ncap) (void)fprintf(stdout,"-s format\tString format for text output\n[--string,--format,--fmt]\n");
     if(prg == ncap) (void)fprintf(stdout,"-s algebra\tAlgebraic command defining single output variable\n[--script]\n");
   } /* end if */
   if(strstr(opt_sng,"-S")) (void)fprintf(stdout,"-S fl.nco\tScript file containing multiple algebraic commands\n[--file]\n");
@@ -240,11 +240,11 @@ nco_usg_prn(void)
   } /* end if */
   /*  if(strstr(opt_sng,"-W")) (void)fprintf(stdout,"-W\t\tNormalize by weight but not tally\n");*/
   if(strstr(opt_sng,"-w")){
-    if(prg == ncwa) (void)fprintf(stdout,"-w wgt\t\tWeighting variable name\n[--weight]\n");
-    if(prg == ncflint) (void)fprintf(stdout,"-w wgt_1[,wgt_2] Weight(s) of file(s)\n[--weight]\n");
+    if(prg == ncwa) (void)fprintf(stdout,"-w wgt\t\tWeighting variable name\n[--weight,--wgt_var]\n");
+    if(prg == ncflint) (void)fprintf(stdout,"-w wgt_1[,wgt_2] Weight(s) of file(s)\n[--weight,--wgt_var]\n");
   } /* end if */
-  if(strstr(opt_sng,"-x")) (void)fprintf(stdout,"-x\t\tExtract all variables EXCEPT those specified with -v\n[--exclude]\n");
-  if(strstr(opt_sng,"-y")) (void)fprintf(stdout,"-y op_typ\tArithmetic operation: avg,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n[--math]\n");
+  if(strstr(opt_sng,"-x")) (void)fprintf(stdout,"-x\t\tExtract all variables EXCEPT those specified with -v\n[--exclude,--xcl]\n");
+  if(strstr(opt_sng,"-y")) (void)fprintf(stdout,"-y op_typ\tArithmetic operation: avg,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n[--operation,--op_typ]\n");
   if(strstr(opt_sng,"in.nc")) (void)fprintf(stdout,"in.nc\t\tInput file name(s)\n");
   if(strstr(opt_sng,"out.nc")) (void)fprintf(stdout,"out.nc\t\tOutput file name\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/

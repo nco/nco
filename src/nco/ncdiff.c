@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.60 2002-12-19 20:48:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.61 2002-12-29 08:59:48 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -117,8 +117,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.60 2002-12-19 20:48:24 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.60 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.61 2002-12-29 08:59:48 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.61 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -186,7 +186,9 @@ main(int argc,char **argv)
       {"revision",no_argument,0,'r'},
       {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
+      {"vrs",no_argument,0,'r'},
       {"exclude",no_argument,0,'x'},
+      {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -259,7 +261,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     case '-': /* Long options are not allowed */
-      (void)fprintf(stderr,"Long options are not available in this build. Use single letter options instead.\n");
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */

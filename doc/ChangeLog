@@ -1,13 +1,19 @@
 2002-12-28  Charlie Zender  <zender@uci.edu>
 
+	* Document multislabbing in user's guide
+
+	* Document long options in user's guide
+
+	* Implement more long options in TLA format
+
 	* Henry changed arithmetic in nco_msa to char * arithmetic to
 	remove warnings
 
-	* Clean up ncap_utl.c some.
+	* Clean up ncap_utl.c some
 
 2002-12-27  Charlie Zender  <zender@uci.edu>
 
-	* Clean up nco_msa.[ch]. Still need to fix void * arithmetic.
+	* Clean up nco_msa.[ch]. Still need to fix void * arithmetic
 
 2002-12-19  Charlie Zender  <zender@uci.edu>
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.104 2002-12-20 17:59:49 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.105 2002-12-29 08:59:48 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -89,8 +89,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.104 2002-12-20 17:59:49 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.104 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.105 2002-12-29 08:59:48 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.105 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -209,7 +209,9 @@ main(int argc,char **argv)
       {"units",no_argument,0,'u'},
       {"variable",no_argument,0,'v'},
       {"version",no_argument,0,'r'},
+      {"vrs",no_argument,0,'r'},
       {"exclude",no_argument,0,'x'},
+      {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -303,8 +305,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     case '-': /* Long options are not allowed */
-      (void)printf("long options are not available in this build.\n");
-      (void)printf("use single-letter options instead.\n");
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */

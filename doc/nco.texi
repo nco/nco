@@ -4,19 +4,26 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.137 2002-12-19 04:59:48 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.138 2002-12-29 08:59:46 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
 NB: texi2dvi nco.texi does not work on RHL 7.2
 
-Legend:
-@env{}: Environment variable, e.g., @env{HOME}
-@var{}: Metasyntactic variable, e.g., @var{}
-@code{}: Program text, e.g., @code{}
+Legend (defined in "highlighting" section of TeXInfo manual):
+@code{}: Program text, e.g., @code{if(foo) x=y;}
 @command{}: Commands, e.g., @command{ncra}
+@dfn{}: Define use of term, e.g., @dfn{supercalifragilisticexpialidocious}
+@env{}: Environment variable, e.g., @env{HOME}
+@kbd{}: Keyboard input, e.g., @kbd{ncra in.nc out.nc}
+@key{}: Key name, e.g., @key{ESC} (rarely needed)
 @option{}: Command-line option, e.g., @option{}
 @samp{}: Extended commands, character sequences, e.g., @samp{ncra in.nc out.nc}
+@var{}: Metasyntactic variable, e.g., @var{}
+@uref{}: URL with alternate text, e.g., @uref{http://nco.sf.net,NCO homepage}
+@url{}: Uniform resource locator, e.g., @url{http://nco.sf.net}
+@file{}: Filename, e.g., @url{in.nc}
+@email{}: E-mail address, e.g., @email{zender@uci.edu}
 
 After editing any hyperlink locations, use 
 C-c C-u C-a	texinfo-all-menus-update
@@ -1077,13 +1084,18 @@ nothing, for large periods of time.
 In order to see what the operator is actually doing, it is useful to
 activate a more verbose output mode.
 This is accomplished by supplying a number greater than~0 to the
-@samp{-D @var{debug_level}} switch.
-@cindex @var{debug_level}
+@samp{-D @var{debug-level}} (or @samp{--debug-level}, or
+@samp{--dbg_lvl}) switch.
+@cindex @code{-D @var{debug-level}}
+@cindex @code{--debug-level @var{debug-level}}
+@cindex @code{--dbg_lvl @var{debug-level}}
+@cindex @var{debug-level}
+@cindex @var{dbg_lvl}
 @cindex debugging
-When the @var{debug_level} is nonzero, the operators report their
+When the @var{debug-level} is nonzero, the operators report their
 current status to the terminal through the @var{stderr} facility.
 Using @samp{-D} does not slow the operators down. 
-Choose a @var{debug_level} between~1 and~3 for most situations, e.g.,
+Choose a @var{debug-level} between~1 and~3 for most situations, e.g.,
 @code{ncea -D 2 85.nc 86.nc 8586.nc}.
 A full description of how to estimate the actual amount of memory the
 multi-file @acronym{NCO} operators consume is given in @ref{Memory usage}. 
@@ -1184,6 +1196,7 @@ If no ``key switches'' are listed for a feature, then that particular
 feature is automatic and cannot be controlled by the user. 
 
 @menu
+* Command line options::        
 * Specifying input files::      
 * Remote storage::              
 * File retention::              
@@ -1191,6 +1204,7 @@ feature is automatic and cannot be controlled by the user.
 * Coordinate variables::        
 * Fortran indexing::            
 * Hyperslabs::                  
+* Multislabs::                  
 * Wrapped coordinates::         
 * Stride::                      
 * Missing values::              
@@ -1203,7 +1217,116 @@ feature is automatic and cannot be controlled by the user.
 * Operator version::            
 @end menu
 
-@node Specifying input files, Remote storage, Common features, Common features
+@node Command line options, Specifying input files, Common features, Common features
+@section Command line options
+@cindex command line options
+@cartouche
+@noindent
+Availability: All operators@*
+Short options: All@*
+Long options: All@*
+@end cartouche
+@cindex POSIX
+@cindex UNIX
+@cindex GNU
+@cindex switches
+@acronym{NCO} achieves flexibility by using @dfn{command line options}.
+These options are implemented in all traditional @acronym{UNIX} commands 
+as single letter @dfn{switches}, e.g., @samp{ls -l}.
+For many years @acronym{NCO} used only single letter option names.
+In late 2002, we implemented @acronym{GNU}/@acronym{POSIX} extended
+or long option names for all options.
+This was done in a backward compatible way such that the full
+functionality of @acronym{NCO} is still available through the familiar 
+single letter options.
+In the future, however, some features of @acronym{NCO} may require the
+use of long options, simply because we have nearly run out of single
+letter options.
+More importantly, mnemonics for single letter options are often
+non-intuitive so that long options provide a more natural way of
+expressing intent.
+
+Extended options are implemented using the system-supplied
+@file{getopt.h} header file, if possible. 
+@cindex @code{BSD}
+@cindex @code{getopt}
+@cindex @code{getopt_long}
+@cindex @file{getopt.h}
+This provides the @command{getopt_long} function to @acronym{NCO}
+@footnote{
+If a @command{getopt_long} function cannot be found on the system, 
+@acronym{NCO} will use the @command{getopt_long} from the
+@command{my_getopt} package by Benjamin Sittler
+@email{bsittler@@iname.com}.
+This is @acronym{BSD}-licensed software available from  
+@uref{http://www.geocities.com/ResearchTriangle/Node/9405/#my_getopt}.}. 
+
+@cindex @code{-D @var{debug-level}}
+@cindex @code{--dbg_lvl @var{debug-level}}
+The syntax of @dfn{short options} (single letter options) is
+@kbd{-@var{key} @var{value}} (dash-key-space-value).
+Here, @var{key} is the single letter option name, e.g., 
+@samp{-D 2}.
+
+The syntax of @dfn{long options} (multi-letter options) is 
+@kbd{--@var{long_name} @var{value}}
+(dash-dash-key-space-value), e.g., @samp{--dbg_lvl 2} or
+@kbd{--@var{long_name}=@var{value}}
+(dash-dash-key-equal-value), e.g., @samp{--dbg_lvl=2}.
+Thus the following are all valid for the @samp{-D} (short version)
+or @samp{--dbg_lvl} (long version) command line option.
+@example
+ncks -D 3 in.nc        # Short option
+ncks --dbg_lvl 3 in.nc # Long option
+ncks --dbg_lvl=3 in.nc # Long option, preferred form
+@end example
+@noindent
+The last example is preferred for two reasons.
+First, @samp{--dbg_lvl} is more specific and less ambiguous than
+@samp{-D}.
+The long option form makes scripts more self documenting and less error
+prone.  
+Often long options are named after the source code variable whose value 
+they carry.
+Second, the equals sign @kbd{=} joins the key (i.e., @var{long_name}) to  
+the value in an uninterruptible text block. 
+Experience shows that users are less likely to mis-parse commands when
+restricted to this form.
+
+@acronym{GNU} implements a superset of the @acronym{POSIX} standard 
+which allows any unambiguous truncation of a valid option to be used.
+@example
+ncks -D 3 in.nc        # Short option
+ncks --dbg_lvl=3 in.nc # Long option, full form
+ncks --dbg=3 in.nc     # Long option, unambiguous truncation
+ncks --db=3 in.nc      # Long option, unambiguous truncation
+ncks --d=3 in.nc       # Long option, ambiguous truncation
+@end example
+@noindent
+The first four examples are equivalent and will work as expected.
+The final example will exit with an error since @code{ncks} cannot
+disambiguate whether @samp{--d} is intended as a truncation of
+@samp{--dbg_lvl}, of @samp{--dimension}, or of some other long option. 
+
+@acronym{NCO} provides many long options for common switches.
+For example, the debugging level may be set in all operators with any
+of the switches @samp{-D}, @samp{--debug-level}, or @samp{--dbg_lvl}.
+This flexibility allows users to choose their favorite mnemonic.
+For some, it will be @samp{--debug} (an unambiguous truncation of
+@samp{--debug-level}, and other will prefer @samp{--dbg}.
+Interactive users usually prefer the minimal amount of typing, i.e.,
+@samp{-D}.
+We recommend that scripts which are re-usable employ some form of 
+the long options for future maintainability.
+
+This manual generally uses the short option syntax.
+This is for historical reasons and to conserve space.
+The remainder of this manual specifies the full @var{long_name} of
+each option.
+Users are expected to pick the unambiguous truncation of each option
+name that most suits their taste.
+
+@node Specifying input files, Remote storage, Command line options, Common features
 @section Specifying input files
 @cindex globbing
 @cindex regular expressions
@@ -1218,15 +1341,15 @@ feature is automatic and cannot be controlled by the user.
 @cartouche
 @noindent
 Availability: All operators@*
-Key switches: @samp{-n}, @samp{-p}@*
+Short options: @samp{-n}, @samp{-p}@*
 Long options: @samp{--nintap}, @samp{--path}@*
 @end cartouche
 It is important that the user be able to specify multiple input files
 without tediously typing in each by its full name. 
 @cindex @acronym{UNIX}
 There are four different ways of specifying input files to @acronym{NCO}:
-explicitly typing each, using @acronym{UNIX} shell wildcards, and using the @acronym{NCO}
-@samp{-n} and @samp{-p} switches.
+explicitly typing each, using @acronym{UNIX} shell wildcards, and using
+the @acronym{NCO} @samp{-n} and @samp{-p} switches.
 To illustrate these methods, consider the simple problem of using
 @command{ncra} to average five input files, @file{85.nc}, @file{86.nc},
 @dots{} @file{89.nc}, and store the results in @file{8589.nc}.
@@ -1354,7 +1477,7 @@ automatically generate, in order, the filenames @file{85_12.nc},
 @cartouche
 @noindent
 Availability: All operators@*
-Key switches: @samp{-p}, @samp{-l}@*
+Short options: @samp{-p}, @samp{-l}@*
 Long options: @samp{--path}, @samp{--local}@*
 @end cartouche
 All @acronym{NCO} operators can retrieve files from remote sites as well 
@@ -1514,7 +1637,7 @@ the current directory.
 @cartouche
 @noindent
 Availability: All operators@*
-Key switches: @samp{-R}@*
+Short options: @samp{-R}@*
 Long options: @samp{--retain}@*
 @end cartouche
 In order to conserve local file system space, files retrieved from
@@ -1535,13 +1658,14 @@ disabled by specifying @samp{-R} on the command line.
 @cindex @code{--variable @var{var}}
 @cindex @code{-x}
 @cindex @code{--exclude}
+@cindex @code{--xcl}
 @cartouche
 @noindent
 Availability: (@command{ncap}), @command{ncdiff}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks}, @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
-Key switches: @samp{-v}, @samp{-x}@*
-Long options: @samp{--variable}, @samp{--exclude}@*
+Short options: @samp{-v}, @samp{-x}@*
+Long options: @samp{--variable}, @samp{--exclude} or @samp{--xcl}@*
 @end cartouche
 Variable subsetting is implemented with the @samp{-v @var{var}[,@dots{}]} and
 @samp{-x} options. 
@@ -1576,7 +1700,7 @@ that @emph{only} user-defined variables should be output.
 Availability: @command{ncap}, @command{ncdiff}, @command{ncea},
 @command{ncecat}, @command{ncflint}, @command{ncks},  @command{ncra},
 @command{ncrcat}, @command{ncwa}@* 
-Key switches: @samp{-C}, @samp{-c}@*
+Short options: @samp{-C}, @samp{-c}@*
 Long options: @samp{--nocoords}, @samp{--coords}@*
 @end cartouche
 By default, coordinates variables associated with any variable appearing
@@ -1608,7 +1732,7 @@ without having to know their names.
 Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
 @command{ncwa}@* 
-Key switches: @samp{-F}@*
+Short options: @samp{-F}@*
 Long options: @samp{--fortran}@*
 @end cartouche
 By default, @acronym{NCO} uses C-style (0-based) indices for all I/O.
@@ -1636,24 +1760,26 @@ the following output formats:
 % lon(1)=-180 lev(1)=1000 lat(1)=-90 three_dmn_var(1)=0 
 @end example
 
-@node Hyperslabs, Wrapped coordinates, Fortran indexing, Common features
+@node Hyperslabs, Multislabs, Fortran indexing, Common features
 @section Hyperslabs 
 @cindex hyperslab
 @cindex dimension limits
 @cindex coordinate limits
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
 @cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}]]}
+@cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}]]}
 @cartouche
 @noindent
 Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncks},  @command{ncra}, @command{ncrcat},
 @command{ncwa}@* 
-Key switches: @samp{-d}@*
-Long options: @samp{--dimension}@*
+Short options: @samp{-d}@*
+Long options: @samp{--dimension}, @samp{--dmn}@*
 @end cartouche
 A @dfn{hyperslab} is a subset of a variable's data.
 The coordinates of a hyperslab are specified with the @code{-d
-@var{dim},[@var{min}][,[@var{max}]]} option.
+@var{dim},[@var{min}][,[@var{max}]]} short option (or with the
+@samp{--dimension} or @samp{--dmn} long options). 
 The bounds of the hyperslab to be extracted are specified by the
 associated @var{min} and @var{max} values. 
 A half-open range is specified by omitting either the @var{min} or
@@ -1725,16 +1851,102 @@ ranges of all dimensions.
 This option may be specified more than once in a single command 
 (each hyperslabed dimension requires its own @code{-d} option).
 
-@node Wrapped coordinates, Stride, Hyperslabs, Common features
+@node Multislabs, Wrapped coordinates, Hyperslabs, Common features
+@section Multislabs 
+@cindex multislab
+@cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
+@cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}]]}
+@cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}]]}
+@cartouche
+@noindent
+Availability: @command{ncks}@*
+Short options: @samp{-d}@*
+Long options: @samp{--dimension}, @samp{--dmn}@*
+@end cartouche
+In late 2002, @command{ncks} added support for specifying a
+@dfn{multislab} for any variable.
+A multislab is a union of one or more hyperslabs 
+which is specified by chaining together hyperslab commands, i.e.,
+@kbd{-d} options (@pxref{Hyperslabs}).
+This allows multislabs to overcome some restraints which limit
+hyperslabs.
+
+A single @kbd{-d} option can only specify a contiguous and/or regularly
+spaced multi-dimensional array of data. 
+Multislabs are constructed from multiple @kbd{-d} options and may
+therefore have non-regularly spaced arrays.
+For example, suppose it is desired to operate on all longitudes
+between from 10.0--20.0 and from 80.0--90.0 degrees.
+The combined range of longitudes is not selectable in a single 
+hyperslab specfication of the form 
+@samp{-d @var{lon},@var{min},@var{max}} or  
+@samp{-d @var{lon},@var{min},@var{max},@var{stride}} because its
+elements are irregularly spaced in coordinate space (and presumably 
+in index space too). 
+The multislab specification for obtaining these values is simply
+the union of the hyperslabs specifications that comprise the multislab,
+i.e., 
+@example
+ncks -d lon,10.,20. -d lon,80.,90. in.nc out.nc
+ncks -d lon,10.,15. -d lon,15.,20. -d lon,80.,90. in.nc out.nc
+@end example
+@noindent
+Any number of hyperslabs specifications may be chained together
+to specify the multislab.
+Multislabs are more efficient than the alternative of sequentially
+performing hyperslab operations and concatenating the results.
+This is because @acronym{NCO} employs a novel multislab algorithm to
+minimize the number of I/O operations when retrieving irregularly spaced
+data from disk.
+
+Nothing prevents users from specifying redundant ranges of indices in
+multislab, e.g., 
+@example
+ncks -d lon,0,4 -d lon,2,9,2 in.nc out.nc
+@end example
+@noindent
+This command retrieves the first five longitudes, and then every other
+longitude value up to the tenth.
+Elements 0, 2, and~4 are specified by both hyperslab arguments (hence
+this is redundant) but will count only once if an arithmetic operation
+is being performed.  
+The @acronym{NCO} multislab algorithm retrieves each element from disk
+once and only once.
+Thus users may be somewhat sloppy in specifying multislabs and the
+algorithm should obtain the intended values.
+Specifying redundant ranges is not encouraged, but may be useful on
+occasion and will not result in unintended consequences.
+
+A final example shows the real power of multislabs.
+Suppose the @var{Q} variable contains three dimensional arrays of
+distinct chemical constituents in no particular order.
+We are interested in the NOy species in a certain geographic range. 
+Say that NO, NO2, and N2O5 are elements~0, 1, and~5 of the
+@var{species} dimension of @var{Q}.
+The multislab specification might look something like
+@example
+ncks -d species,0,1 -d species,5 -d lon,0,4 -d lon,2,9,2 in.nc out.nc
+@end example
+@noindent
+Multislabs are powerful because they may be specified for every
+dimension at the same time.
+Thus multislabs obsolete the need to execute multiple @code{ncks}
+commands to gather the desired range of data.
+We envision adding multislab support to all arithmetic operators in the
+future. 
+
+@node Wrapped coordinates, Stride, Multislabs, Common features
 @section Wrapped coordinates
 @cindex wrapped coordinates
 @cindex longitude
 @cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
+@cindex @code{--dimension @var{dim},[@var{min}][,[@var{max}]]}
+@cindex @code{--dmn @var{dim},[@var{min}][,[@var{max}]]}
 @cartouche
 @noindent
 Availability: @command{ncks}@*
-Key switches: @samp{-d}@*
-Long options: @samp{--dimension}@*
+Short options: @samp{-d}@*
+Long options: @samp{--dimension}, @samp{--dmn}@*
 @end cartouche
 A @dfn{wrapped coordinate} is a coordinate whose values increase or
 decrease monotonically (nothing unusual so far), but which represents a
@@ -1793,16 +2005,18 @@ values (@pxref{Hyperslabs}).
 @node Stride, Missing values, Wrapped coordinates, Common features
 @section Stride 
 @cindex stride
-@cindex @code{-d @var{dim},[@var{min}][,[@var{max}]]}
+@cindex @code{-d @var{dim},[@var{min}],[@var{max}],@var{stride}}
+@cindex @code{--dimension @var{dim},[@var{min}],[@var{max}],@var{stride}}
+@cindex @code{--dmn @var{dim},[@var{min}],[@var{max}],@var{stride}}
 @cartouche
 @noindent
 Availability: @command{ncks}, @command{ncra}, @command{ncrcat}@*
-Key switches: @samp{-d}@*
-Long options: @samp{--dimension}@*
+Short options: @samp{-d}@*
+Long options: @samp{--dimension}, @samp{--dmn}@*
 @end cartouche
 @command{ncks} offers support for specifying a @dfn{stride} for any
-hyperslab, while @command{ncra} and @command{ncrcat} suport the @var{stride}
-argument only for the record dimension.
+hyperslab, while @command{ncra} and @command{ncrcat} suport the
+@var{stride} argument only for the record dimension.
 The @var{stride} is the spacing between consecutive points in a
 hyperslab. 
 A @var{stride} of~1 means pick all the elements of the hyperslab, but a
@@ -1873,15 +2087,15 @@ ncrcat -F -d time,3,,12 85.nc 86.nc 87.nc 88.nc 89.nc 8503_8903.nc
 @noindent
 Availability: @command{ncap}, @command{ncdiff}, @command{ncea},
 @command{ncflint}, @command{ncra}, @command{ncwa}@* 
-Key switches: None@*
+Short options: None@*
 @end cartouche
 
 The phrase @dfn{missing data} refers to data points that are missing,
 invalid, or for any reason not intended to be arithmetically processed
 in the same fashion as valid data.  
 @cindex arithmetic operators
-The @acronym{NCO} arithmetic operators attempt to handle missing data in an
-intelligent fashion. 
+The @acronym{NCO} arithmetic operators attempt to handle missing data in
+an intelligent fashion. 
 There are four steps in the @acronym{NCO} treatment of missing data:
 @enumerate
 @item 
@@ -1991,12 +2205,13 @@ Suffice it to say that, in all known cases, @acronym{NCO} does ``the right thing
 @cindex standard deviation
 @cindex variance
 @cindex @code{-y @var{op_typ}}
-@cindex @code{--math @var{op_typ}}
+@cindex @code{--operation @var{op_typ}}
+@cindex @code{--op_typ @var{op_typ}}
 @cartouche
 @noindent
 Availability: @command{ncra},@command{ncea},@command{ncwa}@*
-Key switches: @samp{-y}@*
-Long options: @samp{--math}@*
+Short options: @samp{-y}@*
+Long options: @samp{--operation}, @samp{--op_typ}@*
 @end cartouche
 @noindent
 The @samp{-y @var{op_typ}} switch allows specification of many different
@@ -2096,9 +2311,9 @@ All @acronym{NCO} arithmetic operators (@command{ncdiff}, @command{ncra},
 @command{ncea}, @command{ncflint}, @command{ncwa}) treat missing values
 analogously. 
 
-Besides (weighted) averaging, @command{ncwa}, @command{ncra}, and @command{ncea}
-also compute some common non-linear operations which may be specified
-with the @samp{-y} switch (@pxref{Operation Types}).
+Besides (weighted) averaging, @command{ncwa}, @command{ncra}, and
+@command{ncea} also compute some common non-linear operations which may
+be specified with the @samp{-y} switch (@pxref{Operation Types}).
 The other rank-reducing operations are simple variations of the generic
 weighted mean described above.
 The total value of $x$ (@code{-y ttl}) is 
@@ -2295,7 +2510,7 @@ required by the @command{ncdiff} operation in the fourth step.
 @noindent
 Availability: @command{ncap}, @command{ncdiff}, @command{ncea},
 @command{ncra}, @command{ncwa}@* 
-Key switches: None@*
+Short options: None@*
 @end cartouche
 Type conversion refers to the casting of one fundamental data type 
 to another, e.g., converting @code{NC_SHORT} (2 bytes) to
@@ -2433,7 +2648,7 @@ will have the value @var{n} when converted to an integer.
 @cartouche
 @noindent
 Availability: All operators@*
-Key switches: @samp{-O}, @samp{-A}@*
+Short options: @samp{-O}, @samp{-A}@*
 Long options: @samp{--overwrite}, @samp{--append}@*
 @end cartouche
 If the @var{output-file} specified for a command is a pre-existing file,
@@ -2463,7 +2678,7 @@ interactive keyboard input.
 @cartouche
 @noindent
 Availability: All operators@*
-Key switches: @samp{-h}@*
+Short options: @samp{-h}@*
 Long options: @samp{--history}, @samp{--hst}@*
 @end cartouche
 All operators automatically append a @code{history} global attribute to
@@ -2505,7 +2720,7 @@ attribute (@pxref{ncatted netCDF Attribute Editor}).
 @noindent
 Availability: @command{ncdiff}, @command{ncea}, @command{ncecat},
 @command{ncflint}, @command{ncra}, @command{ncwa}@*
-Key switches: None@*
+Short options: None@*
 @end cartouche
 @acronym{NCO} recognizes @acronym{NCAR CSM} history tapes, and treats
 them specially. 
@@ -2576,7 +2791,7 @@ processed, you must use @command{ncrename} to rename them first.
 @cartouche
 @noindent
 Availability: @command{ncrcat}@*
-Key switches: None@*
+Short options: None@*
 @end cartouche
 @command{ncrcat} has been programmed to recognize @acronym{ARM} (Atmospheric
 Radiation Measurement Program) data files.
@@ -2618,11 +2833,12 @@ these @acronym{ARM}-specific procedures are executed.
 @cindex @code{-r}
 @cindex @code{--revision}
 @cindex @code{--version}
+@cindex @code{--vrs}
 @cartouche
 @noindent
 Availability: All operators@*
-Key switches: @samp{-r}@*
-Long options: @samp{--revision} or @samp{--version}@*
+Short options: @samp{-r}@*
+Long options: @samp{--revision}, @samp{--version}, or @samp{--vrs}@*
 @end cartouche
 All operators can be told to print their internal version number and
 copyright notice and then quit with the @samp{-r} switch.
@@ -2944,18 +3160,18 @@ Converts @var{x} to external type @code{NC_SHORT}, a C-type @code{short}.
 @code{ncap} supports the standard mathematical functions supplied with
 most operating systems.
 @cindex mathematical functions
-@cindex @var{abs(x)}
-@cindex @var{acos(x)}
-@cindex @var{asin(x)}
-@cindex @var{atan(x)}
-@cindex @var{cos(x)}
-@cindex @var{exp(x)}
-@cindex @var{gamma(x)}
-@cindex @var{log(x)}
-@cindex @var{log10(x)}
-@cindex @var{sin(x)}
-@cindex @var{sqrt(x)}
-@cindex @var{tan(x)}
+@cindex @var{abs}
+@cindex @var{acos}
+@cindex @var{asin}
+@cindex @var{atan}
+@cindex @var{cos}
+@cindex @var{exp}
+@cindex @var{gamma}
+@cindex @var{log}
+@cindex @var{log10}
+@cindex @var{sin}
+@cindex @var{sqrt}
+@cindex @var{tan}
 @cindex absolute value
 @cindex arccosine function
 @cindex arcsine function
@@ -3820,7 +4036,11 @@ $val3 = wgt1 \times val1 + wgt2 \times val2$
 @end ifset
 .
 Here at least @var{wgt1}, and, optionally, @var{wgt2}, are specified on
-the command line with the @samp{-w} switch.
+the command line with the @samp{-w} (or @samp{--weight} or
+@samp{--wgt_var}) switch.
+@cindex @code{-w @var{wgt1}[,@var{wgt2}]}
+@cindex @code{--weight @var{wgt1}[,@var{wgt2}]}
+@cindex @code{--wgt_var @var{wgt1}[,@var{wgt2}]}
 If only @var{wgt1} is specified then @var{wgt2} is automatically
 computed as @math{@var{wgt2} = 1 - @var{wgt1}}.
 Note that weights larger than~1 are allowed. 
@@ -3976,8 +4196,8 @@ like @command{ncdump}, but with these differences:
 @command{ncks} prints data in a tabular format intended to be easy to
 search for the data you want, one datum per screen line, with all
 dimension subscripts and coordinate values (if any) preceding the datum.
-Option @samp{-s} or @samp{--string} allows the user the format the data using C-style
-format strings.
+Option @samp{-s} (or @samp{--string}, @samp{--format}, or @samp{--fmt})
+allows the user the format the data using C-style format strings.
 
 Options @samp{-a}, @samp{-F}, @samp{-H}, @samp{-M}, @samp{-m},
 @samp{-q}, @samp{-s}, and @samp{-u} control the formatted appearance of 
@@ -4108,8 +4328,11 @@ Add @dfn{stride} argument to hyperslabber.
 For a complete description of the @var{stride} argument, @xref{Stride}.
 
 @cindex @code{-H}
+@cindex @code{--print}
+@cindex @code{--prn}
 @item -H 
-Print data to screen, and is also activated using @samp{--here}.
+Print data to screen.
+Also activated using @samp{--print} or @samp{--prn}.
 Unless otherwise specified (with @code{-s}), each element of the data
 hyperslab is printed on a separate line containing the names, indices,
 and, values, if any, of all of the variables dimensions.
@@ -4173,14 +4396,18 @@ This is useful when trying to locate specific variables when displaying
 many variables with different dimensions.  Also @samp{--quiet}.
 
 @cindex @code{-s}
+@cindex @code{--string}
+@cindex @code{--fmt}
+@cindex @code{--format}
 @cindex @code{printf()}
 @cindex C language
 @item -s @var{format}
-String format for text output. Accepts C language escape sequences and
-@code{printf()} formats.   Also @samp{--string}.
+String format for text output. 
+Accepts C language escape sequences and @code{printf()} formats. 
+Equivalently @samp{--string}, @samp{--format}, or @samp{--fmt}. 
 
 @cindex @code{-u}
-@cindex @code{units}
+@cindex @code{--units}
 @item -u 
 Accompany the printing of a variable's values with its @code{units}
 attribute, if any.  Also @samp{--units}.
@@ -4661,7 +4888,7 @@ SYNTAX
 @example
 ncwa [-A] [-a @var{dim}[,@dots{}]] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-I] [-l @var{path}] 
-[-M @var{val}] [-m @var{mask}] [-N] [-n] [-O] [-o @var{condition}] 
+[-M @var{mask_val}] [-m @var{mask_var}] [-N] [-n] [-O] [-o @var{condition}] 
 [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]] [-W] [-w @var{weight}]
 [-x] [-y @var{op_typ}] @var{input-file} @var{output-file} 
 @end example
@@ -4691,7 +4918,15 @@ weights, masks, and normalization options.
 With these options, @command{ncwa} can compute sophisticated averages (and
 integrals) from the command line. 
 
-@var{mask} and @var{weight}, if specified, are broadcast to conform to
+@cindex @code{-w @var{weight}}
+@cindex @code{--weight @var{weight}}
+@cindex @code{--wgt_var @var{weight}}
+@cindex @code{-m @var{mask_var}}
+@cindex @code{--mask-variable @var{mask_var}}
+@cindex @code{--mask_variable @var{mask_var}}
+@cindex @code{--msk_nm @var{mask_var}}
+@cindex @code{--msk_var @var{mask_var}}
+@var{mask_var} and @var{weight}, if specified, are broadcast to conform to
 the variables being averaged. 
 @cindex rank
 The rank of variables is reduced by the number of dimensions which they
@@ -4700,12 +4935,12 @@ Thus arrays which are one dimensional in the @var{input-file} and are
 averaged by @command{ncwa} appear in the @var{output-file} as scalars.
 This allows the user to infer which dimensions may have been averaged.
 Note that that it is impossible for @command{ncwa} to make make a
-@var{weight} or @var{mask} of rank @var{W} conform to a @var{var} of
+@var{weight} or @var{mask_var} of rank @var{W} conform to a @var{var} of
 rank @var{V} if @var{W > V}.
 This situation often arises when coordinate variables (which, by
 definition, are one dimensional) are weighted and averaged.
 @command{ncwa} assumes you know this is impossible and so @command{ncwa} does
-not attempt to broadcast @var{weight} or @var{mask} to conform to
+not attempt to broadcast @var{weight} or @var{mask_var} to conform to
 @var{var} in this case, nor does @command{ncwa} print a warning message
 telling you this, because it is so common.  
 Specifying @var{dbg > 2} does cause @command{ncwa} to emit warnings in
@@ -4721,19 +4956,19 @@ coordinate variables like all other variables.
 This design decision was intended to be helpful but for some
 applications it may be preferable not to weight or mask coordinate
 variables just like all other variables.   
-Consider the following arguments to @command{ncwa}:  @code{-a latitude -w
+Consider the following arguments to @command{ncwa}: @code{-a latitude -w
 lat_wgt -d latitude,0.,90.} where @code{lat_wgt} is a weight in the
 @code{latitude} dimension.
 Since, by default @command{ncwa} weights coordinate variables, the
 value of @code{latitude} in the @var{output-file} depends on the weights 
-in @var{lat_wgt} and is not likely to be 45.---the midpoint latitude of
+in @var{lat_wgt} and is not likely to be 45.0---the midpoint latitude of
 the hyperslab.
 @cindex coordinate variable
 @cindex @code{-I}
 Option @samp{-I} overrides this default behavior and causes @command{ncwa}
 not to weight or mask coordinate variables.
 In the above case, this causes the value of @code{latitude} in the
-@var{output-file} to be 45.---which is a somewhat appealing result.
+@var{output-file} to be 45.0---which is a somewhat appealing result.
 Thus, @samp{-I} specifies simple arithmetic averages for the coordinate
 variables. 
 In the case of latitude, @samp{-I} specifies that you prefer to archive
@@ -4760,20 +4995,21 @@ is given above (@pxref{Operation Types}).
 @tex
 Each $x_{i}$ also has an associated masking weight $m_{i}$ whose value is 0
 or~1 (false or true).
-The value of $m_{i}$ is always~1 unless a @var{mask} is specified (with
+The value of $m_{i}$ is always~1 unless a @var{mask\_var} is specified (with
 @samp{-m}).
-As noted above, @var{mask} is broadcast, if possible, to conform 
+As noted above, @var{mask\_var} is broadcast, if possible, to conform 
 to the variable being averaged.  
 In this case, the value of $m_{i}$ depends on the @dfn{masking
 condition}. 
-As expected, $m_{i} = 1$ when the masking condition is @dfn{true} and $m_{i}
-= 0$ otherwise.   
+As expected, $m_{i} = 1$ when the masking condition is @dfn{true} and
+$m_{i} = 0$ otherwise.   
 @end tex
 
-The masking condition has the syntax @math{@var{mask}}
-@math{@var{condition}} @math{@var{val}}. 
-Here @var{mask} is the name of the masking variable (specified with
-@samp{-m}). 
+The masking condition has the syntax @math{@var{mask_var}}
+@math{@var{condition}} @math{@var{mask_val}}. 
+Here @var{mask_var} is the name of the masking variable (specified with 
+@samp{-m}, @samp{--mask-variable}, @samp{--mask_variable},
+@samp{--msk_nm}, or @samp{--msk_var}).  
 The @var{condition} argument to @samp{-o} may be any one of the six
 arithmetic comparatives: @kbd{eq}, @kbd{ne}, @kbd{gt}, @kbd{lt},
 @kbd{ge}, @kbd{le}. 
@@ -4796,27 +5032,45 @@ operations @kbd{==}, @kbd{!=}, @kbd{>}, @kbd{<}, @kbd{>=},
 @clear flg
 @end ifset
 The masking condition defaults to @kbd{eq} (equality).
-The @var{val} argument to @samp{-M} is the right hand side of the
+@cindex @code{--mask-value @var{mask_val}}
+@cindex @code{--mask_value @var{mask_val}}
+@cindex @code{--msk_val @var{mask_val}}
+The @var{mask_val} argument to @samp{-M} (or @samp{--mask-value}, or
+@samp{--msk_val}) is the right hand side of the
 @dfn{masking condition}.
 Thus for the @var{i}'th element of the hyperslab to be averaged,
 the masking condition is 
-@math{@var{mask_{i}}} @var{condition} @var{val}.
+@set flg
+@tex
+{\it mask$_{i}$ condition mask\_val}.
+@clear flg
+@end tex
+@ifinfo
+@math{mask(i)} @var{condition} @var{mask_val}.
+@clear flg
+@end ifinfo
+@ifset flg
+@c texi2html does not like @math{}
+@var{mask(i)} @var{condition} @var{mask_val}.
+@clear flg
+@end ifset
 
 @tex
 Each $x_{i}$ is also associated with an additional weight $w_{i}$ whose
 value may be user-specified.
 The value of $w_{i}$ is identically~1 unless the user specifies a
-@var{weight} (with @samp{-w}).
+weighting variable @var{weight} (with @samp{-w}, @samp{--weight}, or
+@samp{--wgt\_var}). 
 In this case, the value of $w_{i}$ is determined by the @var{weight}
-variable in the @var{input-files}. 
+variable in the @var{input-file}. 
 As noted above, @var{weight} is broadcast, if possible, to conform 
 to the variable being averaged.  
 
-$M$ is the number of input elements $x_{i}$ which @emph{actually}
-contribute to the output element $x_{j}$.
+$M$ is the number of input elements $x_{i}$ which actually
+contribute to output element $x_{j}$.
 $M$ is also known as the @dfn{tally} and is defined as 
 $$
-M = \sum_{i = 1}^{i = N} \mu_{i} m_{i} 
+M = \sum_{i=1}^{i=N} \mu_{i} m_{i} 
 $$
 $M$ is identical to the denominator of the generic averaging expression
 except for the omission of the weight $w_{i}$.
@@ -4824,12 +5078,12 @@ Thus $M = N$ whenever no input points are missing values or are masked.
 Whether an element contributes to the output, and thus increments
 $M$ by one, has more to do with the above two criteria (missing value
 and masking) than with the numeric value of the element per se.
-For example, $x_{i} = 0.0$ does contribute to $x_{j}$ (assuming the
+For example, $x_{i}=0.0$ does contribute to $x_{j}$ (assuming the
 @code{missing_value} attribute is not 0.0 and location $i$ is not
 masked). 
-The value $x_{i} = 0.0$ will not change the numerator of the generic
+The value $x_{i}=0.0$ will not change the numerator of the generic
 averaging expression, but it will change the denominator (unless its
-weight $w_{i} =0.0$ as well).
+weight $w_{i}=0.0$ as well).
 @end tex
 
 @node Normalization,  , Masking condition, ncwa netCDF Weighted Averager
@@ -4993,6 +5247,7 @@ Min, max, total, and non-linear operations in @code{ncra} and @code{ncwa}.
 Type conversion for arithmetic.
 Migration to netCDF3 API.
 @command{ncap} parser, lexer, and I/O.
+Multislabbing algorithm.
 Various hacks.
 @item Rorik Peterson
 Autotool build support, long options

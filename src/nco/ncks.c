@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.76 2002-12-28 07:07:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncks.c,v 1.77 2002-12-29 08:59:48 zender Exp $ */
 
 /* ncks -- netCDF Kitchen Sink */
 
@@ -113,8 +113,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncks.c,v 1.76 2002-12-28 07:07:21 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.76 $";
+  char CVS_Id[]="$Id: ncks.c,v 1.77 2002-12-29 08:59:48 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.77 $";
   
   extern char *optarg;
   
@@ -165,7 +165,8 @@ main(int argc,char **argv)
       {"ftn",no_argument,0,'F'},
       {"history",no_argument,0,'h'},
       {"hst",no_argument,0,'h'},
-      {"here",no_argument,0,'H'},
+      {"print",no_argument,0,'H'},
+      {"prn",no_argument,0,'H'},
       {"local",required_argument,0,'l'},
       {"meta",no_argument,0,'m'},
       {"Meta",no_argument,0,'M'},
@@ -175,10 +176,14 @@ main(int argc,char **argv)
       {"retain",no_argument,0,'R'},
       {"revision",no_argument,0,'r'},
       {"string",required_argument,0,'s'},
+      {"format",required_argument,0,'s'},
+      {"fmt",required_argument,0,'s'},
       {"units",no_argument,0,'u'},
       {"variable",required_argument,0,'v'},
       {"version",no_argument,0,'r'},
+      {"vrs",no_argument,0,'r'},
       {"exclude",no_argument,0,'x'},
+      {"xcl",no_argument,0,'x'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -280,8 +285,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     case '-': /* Long options are not allowed */
-      (void)printf("long options are not available in this build.\n");
-      (void)printf("use single-letter options instead.\n");
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */

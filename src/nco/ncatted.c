@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.54 2002-12-19 20:48:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.55 2002-12-29 08:59:48 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -147,8 +147,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncatted.c,v 1.54 2002-12-19 20:48:24 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.54 $";
+  char CVS_Id[]="$Id: ncatted.c,v 1.55 2002-12-29 08:59:48 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.55 $";
   
   aed_sct *aed_lst=NULL_CEWI;
 
@@ -181,6 +181,7 @@ main(int argc,char **argv)
       {"path",required_argument,0,'p'},
       {"retain",no_argument,0,'R'},
       {"version",no_argument,0,'r'},
+      {"vrs",no_argument,0,'r'},
       {"help",no_argument,0,'?'},
       {0,0,0,0}
     }; /* end opt_lng */
@@ -238,7 +239,7 @@ main(int argc,char **argv)
       nco_exit(EXIT_FAILURE);
       break;
     case '-': /* Long options are not allowed */
-      (void)fprintf(stderr,"Long options are not available in this build. Use single letter options instead.\n");
+      (void)fprintf(stderr,"%s: ERROR Long options are not available in this build. Use single letter options instead.\n",prg_nm_get());
       nco_exit(EXIT_FAILURE);
       break;
     default: /* Print proper usage */
