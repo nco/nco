@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.23 2004-02-09 07:54:42 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.24 2004-07-06 18:35:34 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -160,10 +160,10 @@ XPN [eE][+-]?[0-9]+
 <INCLUDE>[^ \t\n]+ {
   /* Get include file name */
   if(ncap_ncl_dpt_crr >= NCO_MAX_NCL_DPT){
-    (void)fprintf(stderr,"%s: ERROR File %s nesting depth of %zu is too deep",prg_nm_get(),yytext,ncap_ncl_dpt_crr);
+    (void)fprintf(stderr,"%s: ERROR File %s nesting depth of %lu is too deep",prg_nm_get(),yytext,(unsigned long)ncap_ncl_dpt_crr);
     nco_exit(EXIT_FAILURE);
   } /* endif */
-  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO Will descend from file %s at nesting depth %zu to #include'd file %s at depth %zu\n",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],ncap_ncl_dpt_crr,yytext,ncap_ncl_dpt_crr+(size_t)1UL);
+  if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: INFO Will descend from file %s at nesting depth %lu to #include'd file %s at depth %lu\n",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],(unsigned long)ncap_ncl_dpt_crr,yytext,(unsigned long)ncap_ncl_dpt_crr+1UL);
   /* Put current input buffer on stack */
   ncl_stk[ncap_ncl_dpt_crr]=YY_CURRENT_BUFFER; 
   /* Increment nesting level */
@@ -194,7 +194,7 @@ XPN [eE][+-]?[0-9]+
   if(ncap_ncl_dpt_crr > 0UL){
     /* If we are exiting a #include'd script, delete its buffers */
     NCO_SCRIPT_WITH_EOF_IS_TOPLEVEL=False; /* [flg] */
-    if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from file %s at nesting depth %zu to file %s at depth %zu\n",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],ncap_ncl_dpt_crr,ncap_fl_spt_glb[ncap_ncl_dpt_crr-1],ncap_ncl_dpt_crr-(size_t)1UL);
+    if(dbg_lvl_get() > 1) (void)fprintf(stderr,"%s: DEBUG Found EOF, emerging from file %s at nesting depth %lu to file %s at depth %lu\n",prg_nm_get(),ncap_fl_spt_glb[ncap_ncl_dpt_crr],(unsigned long)ncap_ncl_dpt_crr,ncap_fl_spt_glb[ncap_ncl_dpt_crr-1],(unsigned long)ncap_ncl_dpt_crr-1UL);
     ncap_fl_spt_glb[ncap_ncl_dpt_crr]=(char *)nco_free(ncap_fl_spt_glb[ncap_ncl_dpt_crr]);
     /* Decrement depth of nesting */
     ncap_ncl_dpt_crr--; 
@@ -680,7 +680,7 @@ M_PI {return NAMED_CONSTANT;}
   /* Allocate space for variable values 
      fxm: more efficient and safer to use nco_calloc() and not fill with values? */
   if((var->val.vp=(void *)nco_malloc_flg(var->sz*nco_typ_lng(var->type))) == NULL){
-    (void)fprintf(stderr,"%s: ERROR Unable to malloc() %ld*%zu bytes for var_LHS() in lexer\n",prg_nm_get(),var->sz,nco_typ_lng(var->type));
+    (void)fprintf(stderr,"%s: ERROR Unable to malloc() %ld*%lu bytes for var_LHS() in lexer\n",prg_nm_get(),var->sz,(unsigned long)nco_typ_lng(var->type));
     nco_exit(EXIT_FAILURE); 
   } /* end if */
   
@@ -793,7 +793,7 @@ yywrap(void)
      been redirected to new source, e.g., yyin points to new file. 
      Returning true (non-zero) means scanning is complete, so scanner terminates and returns 0 to calling function
      Default is to return true (one) when called---this terminates scanner */
-  if(dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: DEBUG yywrap() called with ncap_ncl_dpt_crr = %zu\n",prg_nm_get(),ncap_ncl_dpt_crr);
+  if(dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: DEBUG yywrap() called with ncap_ncl_dpt_crr = %lu\n",prg_nm_get(),(unsigned long)ncap_ncl_dpt_crr);
   /* comp.compilers thread 20020523 yywrap() should always return 1, even when
      scanning a #include'd file
      return (ncap_ncl_dpt_crr <= 1) ? 1 : 0; */
