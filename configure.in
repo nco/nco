@@ -47,7 +47,7 @@ AM_INIT_AUTOMAKE(nco,"$nco_version")
 # put all the preprocessor symbols in config.h
 AM_CONFIG_HEADER(config.h)
 
-## Checks for programs.  CC has a preferred list
+## Checks for programs. CC has a preferred list
 AC_PROG_CC(xlc_r xlc acc cc c89 icc gcc)
 AC_PROG_CXX
 AC_PROG_CPP
@@ -105,8 +105,8 @@ esac
 # now we can do link test with libnetcdf.a
 #
 # make precious variables for ./configure --help
-AC_ARG_VAR(NETCDF_LIB,location of netcdf library)
-AC_ARG_VAR(NETCDF_INC,location of netcdf header files)
+AC_ARG_VAR(NETCDF_LIB,location of netCDF library)
+AC_ARG_VAR(NETCDF_INC,location of netCDF header files)
 # add user-specified netCDF locations if specified
 # otherwise add /usr/local/ locations if they exist
 if test "$NETCDF_LIB"; then
@@ -131,15 +131,15 @@ else
     CPPFLAGS="-I/usr/local/include $CPPFLAGS"
   fi
 fi
-# NCO does not support netcdf2
-AC_DEFINE(NO_NETCDF_2,1,no netcdf version 2)
-# First check for 'ncopen' using default compiler flags.  If it fails, add
-# 64-bit flags if we know them and check for 'ncclose' (ncopen is cached, 
+# NCO does not support netCDF2
+AC_DEFINE(NO_NETCDF_2,1,No netCDF version 2)
+# First check for 'nc_open' using default compiler flags.  If it fails, add
+# 64-bit flags if we know them and check for 'ncclose' (nc_open is cached, 
 # so checking for it again will not work)
 AC_MSG_NOTICE([checking default compiler flags])
 AC_CHECK_LIB([netcdf], [nc_open],[
 LIBS="-lnetcdf $LIBS"
-AC_MSG_NOTICE([libnetCDF links with default compiler flags]) ],[
+AC_MSG_NOTICE([libnetcdf links with default compiler flags]) ],[
 # linking failed, so add 64-bit compiler flags and try again
 AC_MSG_NOTICE([initial linking failed.  Adding 64-bit flags (if known)])
 case $host in
