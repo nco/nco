@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.5 2002-05-06 06:37:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.6 2002-05-08 21:02:17 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -163,7 +163,7 @@ nco_usg_prn(void)
     opt_sng=(char *)strdup("[-A] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-h] [-l path] [-O] [-p path] [-R] [-r] [-s algebra] [-S fl.nco] [-v] in.nc out.nc\n");
     break;
   case ncks:
-    opt_sng=(char *)strdup("[-A] [-a] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-O] [-p path] [-q] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [out.nc]\n");
+    opt_sng=(char *)strdup("[-A] [-a] [-B] [-b fl_bnr] [-C] [-c] [-D dbg_lvl] [-d ...] [-F] [-H] [-h] [-l path] [-m] [-O] [-p path] [-q] [-R] [-r] [-s format] [-u] [-v ...] [-x] in.nc [out.nc]\n");
     break;
   case ncatted:
     opt_sng=(char *)strdup("[-a ...] [-D dbg_lvl] [-h] [-l path] [-O] [-p path] [-R] [-r] in.nc [out.nc]\n");
@@ -181,6 +181,8 @@ nco_usg_prn(void)
   (void)fprintf(stdout,"%s %s\n",prg_nm_get(),opt_sng);
 
   if(strstr(opt_sng,"-A")) (void)fprintf(stdout,"-A\t\tAppend to existing output file, if any\n");
+  if(strstr(opt_sng,"-B")) (void)fprintf(stdout,"-B\t\tWrite data to unformatted binary file\n");
+  if(strstr(opt_sng,"-b")) (void)fprintf(stdout,"-b fl_bnr\tUnformatted binary file to write\n");
   if(strstr(opt_sng,"-a")){
     if(prg == ncrename) (void)fprintf(stdout,"-a old_att,new_att Attribute's old and new names\n");
     if(prg == ncwa) (void)fprintf(stdout,"-a avg_dim1[,avg_dim2[...]] Averaging dimensions\n");
