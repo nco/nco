@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.40 2000-04-03 22:58:13 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.41 2000-05-09 23:52:26 zender Exp $
 
 Purpose: NCO homepage
 
@@ -160,6 +160,19 @@ description of each operator, please read the
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
 
+<P>2000/05/09: 
+Sylvia Murphy of the NCAR 
+<a href="http://www.cgd.ucar.edu/csm/cmps/cmps_home.html">Community 
+Climate System Model Support Network</a> organized a workshop in
+February, 2000 which devoted some time to NCO. 
+Here are links to the very useful 
+<a href="http://www.cgd.ucar.edu/csm/cmps/Workshop/nco/nco.pdf">pamphlet</a>
+and
+<a href="http://www.cgd.ucar.edu/csm/cmps/Workshop/nco">slide presentation</a> 
+she developed to introduce and to summarize the NCO operators. 
+If you are new to NCO I highly recommend reading the pamphlet before
+resorting to the more detailed <A HREF="./nco.html">User's Guide</A>. 
+
 <P>2000/03/05: 
 Source and prebuilt binary executable <a href="http://www.rpm.org">RPM</a>s for NCO are now available for  
 <A HREF="#Download">download</A>. 
@@ -186,8 +199,7 @@ Added feature to <TT>ncatted</TT> so that C-language escape sequences
 may be used in editing character attributes. 
 Text formatting of attributes now supports <TT>\n</TT>, <TT>\t</TT>,
 and most other <TT>printf</TT>-style sequences.
-See the <A HREF="./nco.html">User's
-Guide</A> for details. 
+See the <A HREF="./nco.html">User's Guide</A> for details. 
 
 <P>1999/12/06: 
 Fixed bug in <TT>ncatted</TT> so that character-valued attributes

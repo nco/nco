@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.59 2000-05-09 07:20:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.60 2000-05-09 23:52:27 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -441,7 +441,6 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
        False){
       /* Allow for possibility that current file is superfluous */
       if(lmt.is_rec_dmn && (prg_id == ncra || prg_id == ncrcat)){
-	(void)fprintf(stdout,"%s: WARNING Current file is superfluous to specified hyperslab\n",prg_nm_get());
 	flg_no_data=True;
 	goto no_data;
       }else{
@@ -624,10 +623,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
       if(lmt.is_usr_spc_min && lmt.is_usr_spc_max){
 	/* cnt_rmn_ttl is determined only when both min and max are known */
 	cnt_rmn_ttl=-cnt_crr+1L+(lmt.max_idx-lmt.min_idx)/lmt.srd;
-	if(cnt_rmn_ttl == 0){
-	  (void)fprintf(stdout,"%s: WARNING Current file is superfluous to specified hyperslab\n",prg_nm_get());
-	  flg_no_data=True;
-	} /* endif */
+	if(cnt_rmn_ttl == 0L) flg_no_data=True;
 	if(cnt_crr == 0L){
 	  /* Start index is min_idx for first file */
 	  lmt.srt=lmt.min_idx;
@@ -704,10 +700,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	  rec_idx_glb_off=(cnt_crr-1L)*lmt.srd+lmt.rec_skp+1L;
 	  /* Convert user-specified max index to "local" index in current file */
 	  max_idx_lcl=lmt.max_idx-rec_idx_glb_off;
-	  if(max_idx_lcl < 0){
-	    (void)fprintf(stdout,"%s: WARNING Current file is superfluous to specified hyperslab\n",prg_nm_get());
-	    flg_no_data=True;
-	  } /* endif */
+	  if(max_idx_lcl < 0) flg_no_data=True;
 	  if(lmt.srd == 1L){
 	    /* Start index is zero since contiguous records are requested */
 	    lmt.srt=0L;
@@ -809,7 +802,7 @@ lmt_evl(int nc_id,lmt_sct *lmt_ptr,long cnt_crr,bool FORTRAN_STYLE)
      Index-valued limits with no values in current file flow here naturally */
  no_data: /* end goto */
   if(flg_no_data){
-    /* This file is superfluous to the specified hyperslab
+    /* This file is superfluous (file contributes no data) to the specified hyperslab
        Set output parameters to a well-defined state
        This state must not cause ncra or ncrcat to retrieve any data
        Since ncra and ncrcat use loops for the record dimension, this
