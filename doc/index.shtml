@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.216 2004-05-14 01:21:38 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.217 2004-05-21 16:56:32 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -208,7 +208,8 @@ Tarballs and RPMs are no long uploaded to SourceForge.
 Instead, retrieve all recently tagged versions <a name="#Download">with CVS</a> or from   
 <a href="http://dust.ess.uci.edu/nco/src">this HTTP site</a>.
 <ul>
-<li><b>NCO 2.9.4</b>: (<i>In progress</i>) Change to <tt>cvs.sf.net</tt>, 
+<li><b>NCO 2.9.5</b>: (<i>In progress</i>) 
+<li><b>NCO 2.9.4</b>: <tt>ncecat</tt> works on pure scalar files, change to <tt>cvs.sf.net</tt>, 
 <li><b>NCO 2.9.3</b>: <tt>ncra</tt> and <tt>ncea</tt> now <a name="bug_mss_val_zro_ncra">work correctly</a> when <tt>missing_value</tt> equals zero or any intermediate sums
 <li><b>NCO 2.9.2</b>: <tt>ncap</tt> <tt>S/V</tt>, <tt>S%V</tt>, and <tt>S^V</tt> <a href="#bug_ncap_cmt">operations fixed</a> (<tt>S</tt> = scalar, <tt>V</tt> = variable)
 <li><b>NCO 2.9.1</b>: <tt>ncwa</tt> works again on packed <tt>NC_FLOAT</tt> data (<a href="#bug_pck_ncwa">broke when?</a>),

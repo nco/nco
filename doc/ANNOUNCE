@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.78 2004-05-20 14:16:28 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/ANNOUNCE,v 1.79 2004-05-21 16:56:31 zender Exp $ -*-text-*-
 
 The netCDF operators NCO version 2.9.3 are ready. 
 
@@ -15,14 +15,13 @@ Feature changes:
 1. None
 
 Bug-fixes:
-1. ncecat works on when catenated files have no dimensions (all scalar
-   variables) fxm
+1. ncecat concatenates files without dimensions (all scalar variables)
 
 Build changes:
-1. None
+1. Added ncecat, ncbo, ncea, ncflint tests to nco_tst.pl
 
 Other user-visible changes:
-1. -r reports correct version again
+1. -r reports correct version again, and with cleaner formatting
 
 User-invisible changes:
 1. Change cvs.nco.sourceforge.net to cvs.sf.net in accord

@@ -1,5 +1,8 @@
 #!/usr/bin/perl
 
+# Usage: 
+# ~/nco/bld/nco_tst.pl
+
 use File::Basename;
 
 &initialize();
@@ -8,7 +11,133 @@ use File::Basename;
 
 sub perform_tests
 {
+# Tests are in alphabetical order by operator name
 
+####################
+#### ncap tests ####
+####################
+$operator="ncap";
+####################
+$test[0]='ncap -O -D 1 -v -S ncap.in in.nc foo.nc 2> foo.tst';
+$expected="ncap: WARNING Replacing missing value data in variable val_half_half";
+&go();
+
+####################
+#### ncbo tests ####
+####################
+$operator="ncbo";
+####################
+$test[0]='ncbo -O --op_typ="-" -d lon,1 -v mss_val in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%e" -v mss_val foo.nc';
+$description=" difference with missing value attribute";
+$expected= 1.0e36 ; 
+&go();
+####################
+
+$test[0]='ncbo -O --op_typ="-" -d lon,0 -v no_mss_val in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%f" -v no_mss_val foo.nc';
+$description=" difference without missing value attribute";
+$expected= 0 ; 
+&go();
+####################
+
+$test[0]='ncks -O -v mss_val_fst in.nc foo.nc';
+$test[1]='ncrename -O -v mss_val_fst,mss_val foo.nc';
+$test[2]='ncbo -O -y '-' -v mss_val foo.nc in.nc foo.nc';
+$test[3]='ncks -C -H -s "%f," -v mss_val foo.nc';
+$description=" missing_values differ between files";
+$expected= "-999,-999,-999,-999" ; 
+&go();
+####################
+
+$test[0]='ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%e" -v mss_val foo.nc';
+$description=" ncdiff symbolically linked to ncbo";
+$expected= 1.0e36 ; 
+&go();
+####################
+
+$test[0]='ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%e" -v mss_val foo.nc';
+$description=" difference with missing value attribute";
+$expected= 1.0e36 ; 
+&go();
+####################
+
+$test[0]='ncdiff -O -d lon,0 -v no_mss_val in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%f" -v no_mss_val foo.nc';
+$description=" difference without missing value attribute";
+$expected= 0 ; 
+&go();
+####################
+
+####################
+#### ncea tests ####
+####################
+$operator="ncea";
+####################
+$test[0]='ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc';
+$description=" ensemble mean of int across two files";
+$expected= 5 ; 
+&go();
+####################
+
+$test[0]='ncea -O -v rec_var_flt_mss_val_flt -d time,0 in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%e" -v rec_var_flt_mss_val_flt foo.nc';
+$description=" ensemble mean with missing values across two files";
+$expected= 1.0e36 ; 
+&go();
+####################
+
+$test[0]='ncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%e" -v rec_var_flt_mss_val_dbl foo.nc';
+$description=" ensemble min of float across two files";
+$expected= 2 ; 
+&go();
+####################
+
+$test[0]='ncea -O -C -v pck in.nc foo.nc';
+$test[1]='ncks -C -H -s "%e" -v pck foo.nc';
+$description=" scale factor + add_offset packing/unpacking";
+$expected= 3 ; 
+&go();
+####################
+
+####################
+#### ncecat tests ####
+####################
+$operator="ncecat";
+####################
+$test[0]='ncks -O -v one in.nc foo1.nc';
+$test[1]='ncks -O -v one in.nc foo2.nc';
+$test[2]='ncecat -O foo1.nc foo2.nc foo.nc';
+$test[3]='ncks -C -H -s "%f, " -v one foo.nc';
+$description=" concatenate two files containing only scalar variables";
+$expected= "1, 1" ; 
+&go();
+####################
+
+####################
+## ncflint tests ###
+####################
+$operator="ncflint";
+####################
+$test[0]='ncflint -O -w 3,-2 -v one in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%e" -v one foo.nc';
+$description=" identity weighting";
+$expected= 1.0 ; 
+&go();
+####################
+
+$test[0]='ncrename -O -v zero,foo in.nc foo1.nc';
+$test[1]='ncrename -O -v one,foo in.nc foo.nc';
+$test[2]='ncflint -O -i foo,0.5 -v two foo1.nc foo.nc foo.nc';
+$test[3]='ncks -C -H -s "%e" -v two foo.nc';
+$description=" identity interpolation";
+$expected= 2.0 ; 
+&go();
+####################
 
 ####################
 #### ncks tests ####
@@ -121,6 +250,113 @@ $expected='ncks: ERROR User-specified dimension index range 2 <= time <=  does n
 ####################
 
 ####################
+#### ncra tests ####
+####################
+$operator="ncra";
+####################
+$test[0]='ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc';
+$description=" record mean of int across two files";
+$expected= 5 ; 
+&go();
+####################
+
+$test[0]='ncra -O -v rec_var_flt_mss_val_dbl in.nc foo.nc';
+$test[1]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc';
+$description=" record mean of float with double missing values";
+$expected= 5 ; 
+&go();
+####################
+
+$test[0]='ncra -O -v rec_var_flt_mss_val_int in.nc foo.nc';
+$test[1]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_int foo.nc';
+$description=" record mean of float with integer missing values";
+$expected= 5 ; 
+&go();
+####################
+
+$test[0]='ncra -O -v rec_var_int_mss_val_int in.nc foo.nc';
+$test[1]='ncks -C -H -s "%d" -v rec_var_int_mss_val_int foo.nc';
+$description=" record mean of integer with integer missing values";
+$expected= 5 ; 
+&go();
+####################
+
+$test[0]='ncra -O -v rec_var_int_mss_val_flt in.nc foo.nc';
+$test[1]='ncks -C -H -s "%d" -v rec_var_int_mss_val_flt foo.nc';
+$description=" record mean of integer with float missing values";
+$expected= 5 ; 
+&go();
+####################
+
+$test[0]='ncra -O -v rec_var_dbl_mss_val_dbl_pck in.nc foo.nc';
+$test[1]='ncks -C -H -s "%f" -v rec_var_dbl_mss_val_dbl_pck foo.nc';
+$description=" record mean of packed double with double missing values";
+$expected= 5 ;
+&go();
+####################
+
+$test[0]='ncra -O -v rec_var_dbl_pck in.nc foo.nc';
+$test[1]='ncks -C -H -s "%f" -v rec_var_dbl_pck foo.nc';
+$description=" record mean of packed double to test precision";
+$expected= 100.55 ;
+&go();
+####################
+
+$test[0]='ncra -O -v rec_var_flt_pck in.nc foo.nc';
+$test[1]='ncks -C -H -s "%3.2f" -v rec_var_flt_pck foo.nc';
+$description=" record mean of packed float to test precision";
+$expected= 100.55 ;
+&go();
+####################
+
+$test[0]='ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc';
+$description=" record mean of float with double missing values across two files";
+$expected= 5 ; 
+&go();
+####################
+
+$test[0]='ncra -O -y min -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc';
+$description=" record min of float with double missing values across two files";
+$expected= 2 ; 
+&go();
+####################
+
+$test[0]='ncra -O -y max -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc';
+$description=" record max of float with double missing values across two files";
+$expected= 8 ; 
+&go();
+####################
+
+$test[0]='ncra -O -y ttl -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc';
+$description=" record ttl of float with double missing values across two files";
+$expected= 70 ;
+&go();
+####################
+
+$test[0]='ncra -O -y rms -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc';
+$test[1]='ncks -C -H -s "%1.5f" -v rec_var_flt_mss_val_dbl foo.nc';
+$description=" record rms of float with double missing values across two files";
+$expected= 5.38516 ;
+&go();
+####################
+
+$test[0]='ncrcat -O -v rec_var_flt_mss_val_dbl in.nc in.nc foo1.nc 2>foo.tst';
+$test[1]='ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc';
+$test[2]='ncwa -O -a time foo.nc foo.nc';
+$test[3]='ncdiff -O -v rec_var_flt_mss_val_dbl foo1.nc foo.nc foo.nc';
+$test[4]='ncra -O -y rms -v rec_var_flt_mss_val_dbl foo.nc foo.nc';
+$test[5]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc';
+$description=" record sdn of float with double missing values across two files";
+$expected= 2 ;
+&go();
+####################
+
+####################
 #### ncwa tests ####
 ####################
 $operator="ncwa";
@@ -151,14 +387,14 @@ $expected= 50 ;
 &go();
 ####################
 
-$test[0]='ncwa -O -a lon -v mss_val in.nc foo.nc ';
+$test[0]='ncwa -O -a lon -v mss_val in.nc foo.nc';
 $test[1]='ncks -C -H -s "%f" -v mss_val foo.nc';
 $description=" average with missing value attribute";
 $expected= 73 ; 
 &go();
 ####################
 
-$test[0]='ncwa -O -a lon -v no_mss_val in.nc foo.nc ';
+$test[0]='ncwa -O -a lon -v no_mss_val in.nc foo.nc';
 $test[1]='ncks -C -H -s "%e" -v no_mss_val foo.nc';
 $description=" average without missing value attribute";
 $expected= 5.0e35 ; 
@@ -193,28 +429,28 @@ $expected= 666.6667 ;
 &go();
 ####################
 
-$test[0]='ncwa -O -v lat -a lat -w gw -d lat,0 in.nc foo.nc '; 
+$test[0]='ncwa -O -v lat -a lat -w gw -d lat,0 in.nc foo.nc'; 
 $test[1]='ncks -C -H -s "%e" -v lat foo.nc';
 $description=" weight conforms to var first time";
 $expected= -90.0 ; 
 &go();
 ####################
 
-$test[0]='ncwa -O -v mss_val_all -a lon -w lon in.nc foo.nc '; 
+$test[0]='ncwa -O -v mss_val_all -a lon -w lon in.nc foo.nc'; 
 $test[1]='ncks -C -H -s "%e" -v mss_val_all foo.nc';
 $description=" average all missing values with weights";
 $expected= 1.0e36 ; 
 &go();
 ####################
 
-$test[0]='ncwa -O -v val_one_mss -a lat -w wgt_one in.nc foo.nc '; 
+$test[0]='ncwa -O -v val_one_mss -a lat -w wgt_one in.nc foo.nc'; 
 $test[1]='ncks -C -H -s "%e" -v val_one_mss foo.nc';
 $description=" average some missing values with unity weights";
 $expected= 1.0 ; 
 &go();
 ####################
 
-$test[0]='ncwa -O -v msk_prt_mss_prt -m msk_prt_mss_prt -M 1.0 -o lt -a lon in.nc foo.nc '; 
+$test[0]='ncwa -O -v msk_prt_mss_prt -m msk_prt_mss_prt -M 1.0 -o lt -a lon in.nc foo.nc'; 
 $test[1]='ncks -C -H -s "%e" -v msk_prt_mss_prt foo.nc';
 $description=" average masked variable with some missing values";
 $expected= 0.5 ; 
@@ -228,7 +464,7 @@ $expected= 2 ;
 &go();
 ####################
 
-$test[0]='ncwa  -O -y min -v three_dmn_var_dbl -a lon in.nc foo.nc ';
+$test[0]='ncwa  -O -y min -v three_dmn_var_dbl -a lon in.nc foo.nc';
 $test[1]='ncks -C -H -s "%f," -v three_dmn_var_dbl foo.nc >foo';
 $test[2]='cut -d, -f 7 foo';
 $description=" Dimension reduction with min switch and missing values";
@@ -241,7 +477,7 @@ $expected= 77 ;
 &go();
 ####################
 
-$test[0]='ncwa -O -y min -v three_dmn_var_int -a lon in.nc foo.nc ';
+$test[0]='ncwa -O -y min -v three_dmn_var_int -a lon in.nc foo.nc';
 $test[1]='ncks -C -H -s "%d," -v three_dmn_var_int foo.nc >foo';
 $test[2]='cut -d, -f 5 foo';
 $description=" Dimension reduction on type int with min switch and missing values";
@@ -254,7 +490,7 @@ $expected= 25 ;
 &go();
 ####################
 
-$test[0]='ncwa -O -y min -v three_dmn_var_sht -a lon in.nc foo.nc ';
+$test[0]='ncwa -O -y min -v three_dmn_var_sht -a lon in.nc foo.nc';
 $test[1]='ncks -C -H -s "%d," -v three_dmn_var_sht foo.nc >foo';
 $test[2]='cut -d, -f 20 foo';
 $description=" Dimension reduction on type short variable with min switch and missing values";
@@ -281,7 +517,7 @@ $expected= 240 ;
 &go();
 ####################
 
-$test[0]='ncwa -O -y max -v three_dmn_var_dbl -a lat,lon in.nc foo.nc ';
+$test[0]='ncwa -O -y max -v three_dmn_var_dbl -a lat,lon in.nc foo.nc';
 $test[1]='ncks -C -H -s "%f," -v three_dmn_var_dbl foo.nc >foo';
 $test[2]='cut -d, -f 4 foo';
 $description=" Dimension reduction on type double variable with max switch and missing values";
@@ -294,7 +530,7 @@ $expected= 40 ;
 &go();
 ####################
 
-$test[0]='ncwa -O -y max -v three_dmn_var_int -a lat in.nc foo.nc ';
+$test[0]='ncwa -O -y max -v three_dmn_var_int -a lat in.nc foo.nc';
 $test[1]='ncks -C -H -s "%d," -v three_dmn_var_int foo.nc >foo';
 $test[2]='cut -d, -f 9 foo';
 $description=" Dimension reduction on type int variable with min switch and missing values";
@@ -307,7 +543,7 @@ $expected= 29 ;
 &go();
 ####################
 
-$test[0]='ncwa -O -y max -v three_dmn_var_sht -a lat in.nc foo.nc ';
+$test[0]='ncwa -O -y max -v three_dmn_var_sht -a lat in.nc foo.nc';
 $test[1]='ncks -C -H -s "%d," -v three_dmn_var_sht foo.nc >foo';
 $test[2]='cut -d, -f 37 foo';
 $description=" Dimension reduction on type short variable with max switch and missing values";
@@ -347,14 +583,14 @@ $description=" ttl would overflow without dbl_prc patch, wraps anyway so exact v
 $expected= -32768 ; 
 &go();
 ####################
-$test[0]='ncwa -O -y min -a lat -v lat -w gw in.nc foo.nc ';
+$test[0]='ncwa -O -y min -a lat -v lat -w gw in.nc foo.nc';
 $test[1]='ncks -C -H -s "%g" -v lat foo.nc';
 $description=" min with weights";
 $expected= -900 ; 
 &go();
 ####################
 
-$test[0]='ncwa -O -y max -a lat -v lat -w gw in.nc foo.nc ';
+$test[0]='ncwa -O -y max -a lat -v lat -w gw in.nc foo.nc';
 $test[1]='ncks -C -H -s "%g" -v lat foo.nc';
 $description=" max with weights";
 $expected= 900 ; 
@@ -362,244 +598,21 @@ $expected= 900 ;
 ####################
 
 ####################
-#### ncra tests ####
-####################
-$operator="ncra";
-####################
-$test[0]='ncra -O -v one_dmn_rec_var in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc';
-$description=" record mean of int across two files";
-$expected= 5 ; 
-&go();
-####################
-
-$test[0]='ncra -O -v rec_var_flt_mss_val_dbl in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc';
-$description=" record mean of float with double missing values";
-$expected= 5 ; 
-&go();
-####################
-
-$test[0]='ncra -O -v rec_var_flt_mss_val_int in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_int foo.nc';
-$description=" record mean of float with integer missing values";
-$expected= 5 ; 
-&go();
-####################
-
-$test[0]='ncra -O -v rec_var_int_mss_val_int in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%d" -v rec_var_int_mss_val_int foo.nc';
-$description=" record mean of integer with integer missing values";
-$expected= 5 ; 
-&go();
-####################
-
-$test[0]='ncra -O -v rec_var_int_mss_val_flt in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%d" -v rec_var_int_mss_val_flt foo.nc';
-$description=" record mean of integer with float missing values";
-$expected= 5 ; 
-&go();
-####################
-
-$test[0]='ncra -O -v rec_var_dbl_mss_val_dbl_pck in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%f" -v rec_var_dbl_mss_val_dbl_pck foo.nc';
-$description=" record mean of packed double with double missing values";
-$expected= 5 ;
-&go();
-####################
-
-$test[0]='ncra -O -v rec_var_dbl_pck in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%f" -v rec_var_dbl_pck foo.nc';
-$description=" record mean of packed double to test precision";
-$expected= 100.55 ;
-&go();
-####################
-
-$test[0]='ncra -O -v rec_var_flt_pck in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%3.2f" -v rec_var_flt_pck foo.nc';
-$description=" record mean of packed float to test precision";
-$expected= 100.55 ;
-&go();
-####################
-
-$test[0]='ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc';
-$description=" record mean of float with double missing values across two files";
-$expected= 5 ; 
-&go();
-####################
-
-$test[0]='ncra -O -y min -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc';
-$description=" record min of float with double missing values across two files";
-$expected= 2 ; 
-&go();
-####################
-
-$test[0]='ncra -O -y max -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc';
-$description=" record max of float with double missing values across two files";
-$expected= 8 ; 
-&go();
-####################
-
-$test[0]='ncra -O -y ttl -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc';
-$description=" record ttl of float with double missing values across two files";
-$expected= 70 ;
-&go();
-####################
-
-$test[0]='ncra -O -y rms -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%1.5f" -v rec_var_flt_mss_val_dbl foo.nc';
-$description=" record rms of float with double missing values across two files";
-$expected= 5.38516 ;
-&go();
-####################
-
-$test[0]='ncrcat -O -v rec_var_flt_mss_val_dbl in.nc in.nc foo1.nc 2>foo.tst ';
-$test[1]='ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc ';
-$test[2]='ncwa -O -a time foo.nc foo.nc ';
-$test[3]='ncdiff -O -v rec_var_flt_mss_val_dbl foo1.nc foo.nc foo.nc ';
-$test[4]='ncra -O -y rms -v rec_var_flt_mss_val_dbl foo.nc foo.nc ';
-$test[5]='ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc';
-$description=" record sdn of float with double missing values across two files";
-$expected= 2 ;
-&go();
-####################
-
-####################
-#### ncea tests ####
-####################
-$operator="ncea";
-####################
-$test[0]='ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc';
-$description=" ensemble mean of int across two files";
-$expected= 5 ; 
-&go();
-####################
-
-$test[0]='ncea -O -v rec_var_flt_mss_val_flt -d time,0 in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%e" -v rec_var_flt_mss_val_flt foo.nc';
-$description=" ensemble mean with missing values across two files";
-$expected= 1.0e36 ; 
-&go();
-####################
-
-$test[0]='ncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%e" -v rec_var_flt_mss_val_dbl foo.nc';
-$description=" ensemble min of float across two files";
-$expected= 2 ; 
-&go();
-####################
-
-$test[0]='ncea -O -C -v pck in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%e" -v pck foo.nc';
-$description=" scale factor + add_offset packing/unpacking";
-$expected= 3 ; 
-&go();
-####################
-
-####################
-#### ncbo tests ####
-####################
-$operator="ncbo";
-####################
-$test[0]='ncbo -O --op_typ="-" -d lon,1 -v mss_val in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%e" -v mss_val foo.nc';
-$description=" difference with missing value attribute";
-$expected= 1.0e36 ; 
-&go();
-####################
-
-$test[0]='ncbo -O --op_typ="-" -d lon,0 -v no_mss_val in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%f" -v no_mss_val foo.nc';
-$description=" difference without missing value attribute";
-$expected= 0 ; 
-&go();
-####################
-
-$test[0]='ncks -O -v mss_val_fst in.nc foo.nc ';
-$test[1]='ncrename -O -v mss_val_fst,mss_val foo.nc ';
-$test[2]='ncbo -O -y '-' -v mss_val foo.nc in.nc foo.nc ';
-$test[3]='ncks -C -H -s "%f," -v mss_val foo.nc';
-$description=" missing_values differ between files";
-$expected= "-999,-999,-999,-999" ; 
-&go();
-####################
-
-$test[0]='ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%e" -v mss_val foo.nc';
-$description=" ncdiff symbolically linked to ncbo";
-$expected= 1.0e36 ; 
-&go();
-####################
-
-####################
-### ncdiff tests ###
-####################
-$operator="ncdiff";
-####################
-$test[0]='ncdiff -O -d lon,1 -v mss_val in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%e" -v mss_val foo.nc';
-$description=" difference with missing value attribute";
-$expected= 1.0e36 ; 
-&go();
-####################
-
-$test[0]='ncdiff -O -d lon,0 -v no_mss_val in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%f" -v no_mss_val foo.nc';
-$description=" difference without missing value attribute";
-$expected= 0 ; 
-&go();
-####################
-
-####################
-## ncflint tests ###
-####################
-$operator="ncflint";
-####################
-$test[0]='ncflint -O -w 3,-2 -v one in.nc in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%e" -v one foo.nc';
-$description=" identity weighting";
-$expected= 1.0 ; 
-&go();
-####################
-
-$test[0]='ncrename -O -v zero,foo in.nc foo1.nc ';
-$test[1]='ncrename -O -v one,foo in.nc foo.nc ';
-$test[2]='ncflint -O -i foo,0.5 -v two foo1.nc foo.nc foo.nc ';
-$test[3]='ncks -C -H -s "%e" -v two foo.nc';
-$description=" identity interpolation";
-$expected= 2.0 ; 
-&go();
-####################
-
-####################
-#### ncap tests ####
-####################
-$operator="ncap";
-####################
-$test[0]='ncap -O -D 1 -v -S ncap.in in.nc foo.nc 2> foo.tst';
-$expected="ncap: WARNING Replacing missing value data in variable val_half_half";
-&go();
-####################
 ##### net tests ####
 ####################
 $operator="net";
 ####################
 $test[0]='/bin/rm -f foo.nc;mv in.nc in_tmp.nc';
-$test[1]='ncks -O -v one -p ftp://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc ';
-$test[2]='ncks -C -H -s "%e" -v one foo.nc ';
+$test[1]='ncks -O -v one -p ftp://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc';
+$test[2]='ncks -C -H -s "%e" -v one foo.nc';
 $test[3]='mv in_tmp.nc in.nc';
 $description="nco 1: FTP protocol (fails if unable to anonymous FTP to dust.ess.uci.edu)";
 $expected= 1;
 &go();
 ####################
 $test[0]='/bin/rm -f foo.nc;mv in.nc in_tmp.nc';
-$test[1]='ncks -O -v one -p goldhill.cgd.ucar.edu:/home/zender/nco/data -l ./ in.nc foo.nc ';
-$test[2]='ncks -C -H -s "%e" -v one foo.nc ';
+$test[1]='ncks -O -v one -p goldhill.cgd.ucar.edu:/home/zender/nco/data -l ./ in.nc foo.nc';
+$test[2]='ncks -C -H -s "%e" -v one foo.nc';
 $test[3]='mv in_tmp.nc in.nc';
 $description="nco 2: scp/rcp protocol(fails if no SSH/RSH access to goldhill.cgd.ucar.edu)";
 $expected= 1;
@@ -608,16 +621,16 @@ $expected= 1;
 ####################
 
 $test[0]='/bin/rm -f foo.nc;mv in.nc in_tmp.nc';
-$test[0]='ncks -O -v one -p mss:/ZENDER/nc -l ./ in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%e" -v one foo.nc ';
+$test[0]='ncks -O -v one -p mss:/ZENDER/nc -l ./ in.nc foo.nc';
+$test[1]='ncks -C -H -s "%e" -v one foo.nc';
 $test[3]='mv in_tmp.nc in.nc';
 $description="nco 3: msrcp protocol(fails if not at NCAR)";
 $expected= 1; 
 &go();
 ####################
 $test[0]='/bin/rm -f foo.nc;mv in.nc in_tmp.nc';
-$test[0]='ncks -O -v one -p http://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc ';
-$test[1]='ncks -C -H -s "%e" -v one foo.nc ';
+$test[0]='ncks -O -v one -p http://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc';
+$test[1]='ncks -C -H -s "%e" -v one foo.nc';
 $test[3]='mv in_tmp.nc in.nc';
 $description="nco 4: HTTP protocol (Will always fail until HTTP implemented in NCO) ";
 $expected= 1; 
@@ -625,23 +638,19 @@ $expected= 1;
 ####################
 
 $test[0]='/bin/rm -f foo.nc;mv in.nc in_tmp.nc';
-$test[0]='ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc ';
-$test[1]='ncks -C -H -s "%e" -v lon foo.nc ';
+$test[0]='ncks -C -d lon,0 -v lon -l ./ -p http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface air.sig995.1975.nc foo.nc';
+$test[1]='ncks -C -H -s "%e" -v lon foo.nc';
 $test[3]='mv in_tmp.nc in.nc';
 $description="nco 5: HTTP/DODS protocol (fails if not compiled on Linux with make DODS=Y)";
 $expected= 0;
 &go();
 ####################
-
-
-
 } # end of perform_test()
 
 ####################
 sub initialize
 {
-
-  @all_operators = qw(ncks ncwa ncra ncbo ncap);
+  @all_operators = qw(ncap ncbo ncflint ncea ncecat ncks ncra ncwa);
 if (scalar @ARGV > 0) 
 {
   @operators=@ARGV;

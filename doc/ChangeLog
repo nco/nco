@@ -1,7 +1,14 @@
+2004-05-21  Charlie Zender  <zender@uci.edu>
+
+	* cvs tag -c nco-2_9_4
+	Changes since nco-2_9_3: ncecat works on pure scalar files
+
+	* Rearranged nco_tst.pl, added ncecat test, activated ncbo,
+	ncea, ncflint tests
+
 2004-05-20  Charlie Zender  <zender@uci.edu>
 
 	* Patched ncecat to address scalar file concatenation problem
-	Still getting errors
 
 	* Set rec_dmn->is_rec_dmn=True; in ncecat.c
 	This appears to have been a bug that never triggered any failures
