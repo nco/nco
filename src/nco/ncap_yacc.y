@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.2 2002-08-29 14:42:19 hmb Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_yacc.y,v 1.3 2002-08-30 14:23:05 hmb Exp $ -*-C-*- */
 
 /* Begin C declarations section */
  
@@ -157,7 +157,6 @@ PRINT '(' var_xpr ')' ';' {
 | out_att_xpr '=' scv_xpr { 
   aed_sct *ptr_aed;
 
-  // aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->att_lst,((prs_sct *)prs_arg)->nbr_att,True);
   ptr_aed=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg),True);
 
   ptr_aed->val=ncap_scv_2_ptr_unn($3);
@@ -188,7 +187,6 @@ PRINT '(' var_xpr ')' ';' {
   size_t sng_lng;
   
   sng_lng=strlen($3);
-  //aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->att_lst,((prs_sct *)prs_arg)->nbr_att,True);
   ptr_aed=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg),True);
   ptr_aed->type=NC_CHAR;
   ptr_aed->sz=(long)((sng_lng+1)*nco_typ_lng(NC_CHAR));
@@ -209,8 +207,7 @@ PRINT '(' var_xpr ')' ';' {
   aed_sct *ptr_aed;
   
   if($3->nbr_dim < 2){
-    //aed_idx=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg)->att_lst,((prs_sct *)prs_arg)->nbr_att,True);
-    ptr_aed=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg),True);
+     ptr_aed=ncap_aed_lookup($1.var_nm,$1.att_nm,((prs_sct *)prs_arg),True);
     ptr_aed->sz=$3->sz;
     ptr_aed->type=$3->type;
     ptr_aed->val.vp=(void*)nco_malloc((ptr_aed->sz)*nco_typ_lng(ptr_aed->type));
