@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.3 2000-06-06 05:49:22 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/nco_news.shtml,v 1.4 2000-08-04 23:09:01 zender Exp $ >
 
 <! Purpose: NCO news archive >
 
@@ -21,28 +21,112 @@
 <DT><A NAME="News"></A></DT>
 <H2>NCO News</H2>
 
-<P>1999/08/31: 
-A bug involving <TT>ncwa</TT>, weights, and missing values has been
+<p>2000/05/15: 
+nco-1.1.48 fixes a bug introduced in nco-1.1.15 (November 1998) with
+<tt>ncdiff</tt> version 1.5.
+That bug could cause incorrect answers when the broadcast feature was
+used and dimensions were defined in a certain order (that appears to
+be favored by oceanographers).
+All NCO users are urged to upgrade NCO in order to avoid the potential 
+<tt>ncdiff</tt> bug as well as to take advantage of the new features
+in <tt>ncra</tt> and <tt>ncrcat</tt>. 
+
+<p>2000/05/10: 
+nco-1.1.47 adds capability of <tt>ncra</tt>, and <tt>ncrcat</tt> to handle
+superfluous initial files. These multifile operators used to require
+that hyperslabs along the record dimension contain valid points in the
+first input file, although superfluous trailing files were allowed.
+Now superfluous files are also allowed anywhere in the file argument
+list for coordinate value hyperslabs (e.g., <tt>-d time,2.0,3.0</tt>),
+and at the beginning and end of the file argument list for dimension
+index hyperslabs (e.g., <tt>-d time,2,3</tt>).
+This can dramatically simplify analysis of file collections when the
+location of certain record coordinates or indices is not known a
+priori, or is tedious to compute. 
+Users may now operate on specific segments of a timeseries 
+(e.g., February values) without knowing which files contain February. 
+Simply input the entire timeseries of files to the operators 
+and they will automagically find and operate on only the February
+values.
+For example, 
+<p><tt>ncra -O -d time,2.0,3.0 -n 1000,4,1 h0001.nc feb.nc</tt></p>
+<p><tt>ncrcat -O -F -d time,2,,12 -n 1000,4,1 h0037.nc feb.nc</tt></p>
+
+<p>Sylvia Murphy of the NCAR 
+<a href="http://www.cgd.ucar.edu/csm/cmps/cmps_home.html">Community 
+Climate System Model Support Network</a> organized a workshop in
+February, 2000 which devoted some time to NCO. 
+Here are links to the very useful 
+<a href="http://www.cgd.ucar.edu/csm/cmps/Workshop/nco.pdf">pamphlet</a>
+and
+<a href="http://www.cgd.ucar.edu/csm/cmps/Workshop/nco">slide presentation</a> 
+she developed to introduce and to summarize the NCO operators. 
+The pamphlet is an excellent primer on NCO's capabilities, though not
+as definitive as the <a href="./nco.html">User's Guide</a>.
+
+<p>2000/03/05: 
+Source and prebuilt binary executable <a href="http://www.rpm.org">RPM</a>s for NCO are now available for  <a href="#Download">download</a>. 
+
+<p>2000/01/26: 
+Fixed longstanding NCO bug which caused infrequent but unpredictable
+core dumps on machines with PIDs longer than 6 digits, e.g., all
+recent SGI machines.
+A core dump could occur on these machines when the PID was seven
+digits long and the filename length was one less than a multiple of
+eight. 
+Kudos to Juliana Rew and Brian Eaton for identifying this bug.
+It is recommended that all users upgrade to the the new version.
+NCO is now distributed under the terms of the GNU General Public
+License (GPL).
+
+<p>1999/12/26: 
+Added support for printing character arrays as strings in <tt>ncks</tt>.
+Added documentation and examples of stride capability to <tt>ncks</tt>,
+<tt>ncra</tt>, and <tt>ncrcat</tt> portions of User's Guide.
+
+<p>1999/12/14: 
+Added feature to <tt>ncatted</tt> so that C-language escape sequences
+may be used in editing character attributes. 
+Text formatting of attributes now supports <tt>\n</tt>, <tt>\t</tt>,
+and most other <tt>printf</tt>-style sequences.
+See the <a href="./nco.html">User's Guide</a> for details. 
+
+<p>1999/12/06: 
+Fixed bug in <tt>ncatted</tt> so that character-valued attributes
+(strings) may contain commas, and be of zero length.
+Formerly <tt>ncatted</tt> would drop all text after the first comma.
+
+<p>1999/10/04: 
+The build configuration has been simplified and made more robust.
+Now typing <tt>make test</tt> will invoke a self-test where NCO
+attempts to download a small (~65 kb) file on which to perform a
+battery of NCO tests. 
+If the equations output by the <tt>make test</tt> command are
+numerically accurate, then you can have high confidence that NCO is
+installed and working correctly. 
+
+<p>1999/08/31: 
+A bug involving <tt>ncwa</tt>, weights, and missing values has been
 identified and fixed.
-When <TT>ncwa</TT> was used to average variables with user-specified
+When <tt>ncwa</tt> was used to average variables with user-specified
 weights (i.e., <IT>-w wgt</IT> was used) and <IT>every</IT> value in a
 target hyperslab was the missing value (i.e., <IT>missing_value</IT>),
-then <TT>ncwa</TT> would erroneously set the average value of the
+then <tt>ncwa</tt> would erroneously set the average value of the
 target hyperslab to 0.0 rather than to <IT>missing_value</IT>. 
 Thus some values which should have been <IT>missing_value</IT> in the
 output file were, instead, set to 0.0. 
-No operators besides <TT>ncwa</TT> were affected by this bug.
+No operators besides <tt>ncwa</tt> were affected by this bug.
 This bug is fixed in nco-1.1.38.
 
-A new feature has been implemented in <TT>ncwa</TT>.
-<TT>ncwa</TT> used to exit with an error whenever it was called
+A new feature has been implemented in <tt>ncwa</tt>.
+<tt>ncwa</tt> used to exit with an error whenever it was called
 without any user-specified dimensions to average, i.e., when the
-<TT>-a</TT> was not invoked. 
-Now when <TT>ncwa</TT> is invoked without any user-specified
+<tt>-a</tt> was not invoked. 
+Now when <tt>ncwa</tt> is invoked without any user-specified
 dimensions, it averages over all dimensions.
-Thus the behavior of <TT>-a</TT> is now analogous to that of
-<TT>-d</TT> and of <TT>-v</TT>.
-See the <A HREF="http://www.cgd.ucar.edu/cms/nco/nco.html">User's Guide</A> for details.
+Thus the behavior of <tt>-a</tt> is now analogous to that of
+<tt>-d</tt> and of <tt>-v</tt>.
+See the <a href="./nco.html">User's Guide</a> for details.
 
 <P>1999/08/29: 
 NCO now builds completely with pure C source files by default.

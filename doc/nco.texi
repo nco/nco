@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.55 2000-08-04 00:34:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.56 2000-08-04 23:09:01 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -21,8 +21,8 @@ makeinfo nco.texi
 texi2html -monolithic -verbose nco.texi 
 dvips -o nco.ps nco.dvi 
 ps2pdf -dMaxSubsetPct=100 -dCompatibilityLevel=1.2 -dSubsetFonts=true -dEmbedAllFonts=true nco.ps nco.pdf
-cd ~/nco/doc;scp -p ChangeLog TODO README nco.html nco.dvi nco.ps nco.info* nco.ps nco.pdf nco.sourceforge.net:/home/groups/nco/htdocs;cd -
-cd ~/nco/doc;scp -p ChangeLog TODO README nco.html nco.dvi nco.ps nco.info* nco.ps nco.pdf www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
+cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.ps nco.info* nco.ps nco.pdf nco.sourceforge.net:/home/groups/nco/htdocs;cd -
+cd ~/nco/doc;scp -p index.shtml nco_news.shtml ChangeLog TODO README VERSION nco.html nco.dvi nco.ps nco.info* nco.ps nco.pdf www.cgd.ucar.edu:/web/web-data/cms/nco;cd -
 
 Example TeXinfo files: 
 
@@ -989,7 +989,7 @@ any data in a netCDF file, e.g., to convert between differing units.
 
 Occasionally one desires to digest (i.e., concatenate or average)
 hundreds or thousands of input files.
-One brave user, for example, recently created a five year timeseries of
+One brave user, for example, recently created a five year time-series of
 satellite observations by using @code{ncecat} to join thousands of daily
 data files together.
 Unfotunately, data archives (e.g., NASA EOSDIS) are unlikely to
@@ -2105,8 +2105,8 @@ these ARM-specific procedures are executed.
 @section Operation Types
 @cindex operation types
 @cindex @code{avg}
+@cindex @code{sqravg}
 @cindex @code{avgsqr}
-@cindex @code{avgsumsqr}
 @cindex @code{min}
 @cindex @code{max}
 @cindex @code{rmssdn}
@@ -2120,6 +2120,7 @@ these ARM-specific procedures are executed.
 @cindex maximum
 @cindex root-mean-square
 @cindex standard deviation
+@cindex variance
 @cindex @code{-y}
 @cartouche
 @noindent
@@ -2133,9 +2134,9 @@ Set @var{op_typ} to the abbreviated key for the corresponding operation:
 @table @code
 @item avg
 Mean value (default)
-@item avgsqr
+@item sqravg
 Square of the mean
-@item avgsumsqr
+@item avgsqr
 Mean of sum of squares
 @item max
 Maximium value
@@ -2229,24 +2230,32 @@ also compute some common non-linear operations which may be specified
 with the @samp{-y} switch (@pxref{Operation Types}).
 The other rank-reducing operations are simple variations of the generic
 weighted mean described above.
+The total value of $x$ (@code{-y ttl}) is 
+$$
+\bar x_j = \sum_{i = 1}^{i = N} \mu_i m_i w_i x_i 
+$$
+Note that the total is the same as the numerator of the mean
+of $x$, and may also be obtained in @code{ncwa} by using the @samp{-N}
+switch (@pxref{ncwa netCDF Weighted Averager}).
+
 The minimum value of $x$ (@code{-y min}) is 
 $$
 \bar x_j = \min [ \mu_1 m_1 x_1, \mu_2 m_2 x_2, \ldots, \mu_N m_N x_N ] 
 $$
-The maximum value of $x$ (@code{-y max}) is 
+Analogously, the maximum value of $x$ (@code{-y max}) is 
 $$
 \bar x_j = \max [ \mu_1 m_1 x_1, \mu_2 m_2 x_2, \ldots, \mu_N m_N x_N ] 
 $$
-The total value of $x$ (@code{-y ttl}) is 
-$$
-\bar x_j = \sum_{i = 1}^{i = N} \mu_i m_i x_i 
-$$
-The square of the mean value of $x$ (@code{-y avgsqr}) is 
+Minima and maxima do not depend on any weights, so @code{ncwa} issues an
+error if one attempts to specify weights (with @samp{-w}) while
+computing minima or maxima. 
+
+The square of the mean value of $x$ (@code{-y sqravg}) is 
 $$
 \bar x_j = \left( {\sum_{i = 1}^{i = N} \mu_i m_i w_i x_i \over \sum_{i =
 1}^{i = N} \mu_i m_i w_i} \right)^2
 $$
-The mean of the sum of squares of $x$ (@code{-y avgsumsqr}) is 
+The mean of the sum of squares of $x$ (@code{-y avgsqr}) is 
 $$
 \bar x_j = {\sum_{i = 1}^{i = N} \mu_i m_i w_i x^2_i \over \sum_{i =
 1}^{i = N} \mu_i m_i w_i}
@@ -2274,6 +2283,8 @@ from the sum in the denominator does not necessarily remove one degree
 of freedom. 
 Therefore when @code{-y rmssdn} is requested and weights are specified,
 @code{ncwa} actually implements the @code{rms} procedure.
+@code{ncea} and @code{ncra}, which do not allow weights to be specified,
+always implement the @code{rmssdn} procedure when asked.
 
 The square root of the mean of $x$ (@code{-y sqrt}) is 
 $$
@@ -2285,6 +2296,9 @@ The definitions of some of these operations are not universally useful.
 Mostly they were chosen to facilitate standard statistical
 computations within the NCO framework.
 We are open to redefining and or adding to the above. 
+If you are interested in having other statistical quantities
+defined in NCO please contact the NCO project (@pxref{Help and Bug
+reports}).  
 
 At this time the weighted average option @samp{-w} does not work with
 the arithemtic operations @code{ttl}, @code{min}, and @code{max}.
@@ -2298,19 +2312,19 @@ EXAMPLES
 Suppose you wish to examine the variable @code{prs_sfc(time,lat,lon)} 
 which contains a time series of the surface pressure as a function of
 latitude and longitude.
-Find the minimium value of @code{prs_sfc} over all dimensions.
+Find the minimium value of @code{prs_sfc} over all dimensions:
 @example
 ncwa -y min -v prs_sfc in.nc foo.nc 
 @end example
 @noindent
 Find the maximum value of @code{prs_sfc} at each time interval for each
-latitude. 
+latitude: 
 @example
 ncwa -y max -v prs_sfc -a lon in.nc foo.nc
 @end example
 @noindent
-Find the root-mean-square value of the timeseries of @code{prs_sfc} at
-every gridpoint.
+Find the root-mean-square value of the time-series of @code{prs_sfc} at
+every gridpoint:
 @example
 ncra -y rms -v prs_sfc in.nc foo.nc
 ncwa -y rms -v prs_sfc -a time in.nc foo.nc
@@ -2334,8 +2348,8 @@ ncea -y max -v prs_sfc jan.nc feb.nc march.nc out.nc
 
 @noindent
 It is possible to use a combination of these operations to compute
-the standard deviation of a field stored in a single file or across
-multiple files.
+the variance and standard deviation of a field stored in a single file
+or across multiple files.
 The procedure to compute the temporal standard deviation of the surface
 pressure at all points in a single file @file{in.nc} involves three
 steps. 
@@ -2353,6 +2367,8 @@ Note the use of @samp{-y rmssdn} (rather than @samp{-y rms}) in the
 final step. 
 This ensures the standard deviation is correctly normalized by one fewer
 than the number of time samples.
+The procedure to compute the variance is identical except for the use of
+@samp{-y var} instead of @samp{-y rmssdn} in the final step.
 
 The procedure to compute the spatial standard deviation of a field
 in a single file @file{in.nc} involves three steps.
@@ -2361,14 +2377,15 @@ ncwa -O -v prs_sfc,gw -a lat,lon -w gw in.nc out.nc
 ncdiff -O -v prs_sfc,gw in.nc out.nc out.nc
 ncwa -O -y rmssdn -v prs_sfc -a lat,lon -w gw out.nc out.nc
 @end example
-First the appropriately weighted (with @code{-w gw}) spatial mean values
+First the appropriately weighted (with @samp{-w gw}) spatial mean values
 are written to the output file.  
 This example includes the use of a weighted variable specified with
-@code{-w gw}. 
-When using weights variables to compute standard deviations one must
-remember to include the weights in the output file.
-The output file is then overwritten with the gridpoint deviations from 
-the spatial mean.
+@samp{-w gw}. 
+When using weights to compute standard deviations one must remember to
+include the weights in the initial output files so that they may be used
+again in the final step. 
+The initial output file is then overwritten with the gridpoint
+deviations from the spatial mean.
 Finally the root-mean-square of the appropriately weighted spatial
 deviations is taken.  
 

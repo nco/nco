@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.38 2000-07-31 05:36:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.39 2000-08-04 23:09:01 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */ 
 
@@ -117,8 +117,8 @@ enum nco_op_typ{
   nco_op_min,
   nco_op_max,
   nco_op_ttl,
+  nco_op_sqravg,
   nco_op_avgsqr,
-  nco_op_avgsumsqr,
   nco_op_sqrt,
   nco_op_rms,
   nco_op_rmssdn
@@ -161,8 +161,8 @@ enum nco_op_typ{
 #define nco_op_min 1
 #define nco_op_max 2
 #define nco_op_ttl 3
-#define nco_op_avgsqr 4
-#define nco_op_avgsumsqr 5
+#define nco_op_sqravg 4
+#define nco_op_avgsqr 5
 #define nco_op_sqrt 6
 #define nco_op_rms 7
 #define nco_op_rmssdn 8

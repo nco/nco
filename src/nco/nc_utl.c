@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.83 2000-08-03 22:20:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.84 2000-08-04 23:09:01 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -3036,8 +3036,8 @@ var_avg(var_sct *var,dmn_sct **dim,int nbr_dim,int nco_op_typ)
       (void)var_avg_reduce_min(fix->type,var_sz,fix_sz,fix->has_mss_val,fix->mss_val,fix->tally,avg_val,fix->val);
       break;
     case nco_op_avg: /* Operations: Previous=none, Current=sum, Next=normalize and root */
-    case nco_op_avgsqr: /* Operations: Previous=none, Current=sum, Next=normalize and square */
-    case nco_op_avgsumsqr: /* Operations: Previous=square, Current=sum, Next=normalize */
+    case nco_op_sqravg: /* Operations: Previous=none, Current=sum, Next=normalize and square */
+    case nco_op_avgsqr: /* Operations: Previous=square, Current=sum, Next=normalize */
     case nco_op_rms: /* Operations: Previous=square, Current=sum, Next=normalize and root */
     case nco_op_rmssdn: /* Operations: Previous=square, Current=sum, Next=normalize and root */
     case nco_op_ttl: /* Operations: Previous=none, Current=sum, Next=none */
@@ -4593,7 +4593,7 @@ nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
      These operations perform part, but not all, of the necessary operations for each procedure
      Most arithmetic operations require additional procedures such as normalization be performed after all files/records have been procesed */
   
-  /* fxm: combine ttl, avg, avgsqr and avgsumsqr into one operation like in ncra */
+  /* fxm: combine ttl, avg, sqravg and avgsqr into one operation like in ncra */
   switch (nco_op_typ){
   case nco_op_avg: /* Average */
   case nco_op_sqrt: /* Squareroot will produce the squareroot of the mean */
@@ -4612,12 +4612,12 @@ nco_opr_drv(int cnt,int nco_op_typ,var_sct *var_prc_out, var_sct *var_prc)
   case nco_op_ttl: /* Total */
     (void)var_add(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
-  case nco_op_avgsqr: /* Square of the mean */
+  case nco_op_sqravg: /* Square of the mean */
     (void)var_add(var_prc_out->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->tally,var_prc->val,var_prc_out->val);
     break;
   case nco_op_rms: /* Root mean square */
   case nco_op_rmssdn: /* Root mean square normalized by N-1 */
-  case nco_op_avgsumsqr: /* Mean square */
+  case nco_op_avgsqr: /* Mean square */
     /* Square values in var_prc first */
     var_multiply(var_prc->type,var_prc->sz,var_prc->has_mss_val,var_prc->mss_val,var_prc->val,var_prc->val);
     /* Sum the squares */
@@ -5860,7 +5860,7 @@ usg_prn(void)
     if(prg == ncflint) (void)fprintf(stdout,"-w wgt_1[,wgt_2] Weight(s) of file(s)\n");
   } /* end if */
   if(strstr(opt_sng,"-x")) (void)fprintf(stdout,"-x\t\tExtract all variables EXCEPT those specified with -v\n");
-  if(strstr(opt_sng,"-y")) (void)fprintf(stdout,"-y op_typ\tArithmetic operation: avg,min,max,ttl,avgsqr,avgsumsqr,sqrt,rms,rmssdn\n");
+  if(strstr(opt_sng,"-y")) (void)fprintf(stdout,"-y op_typ\tArithmetic operation: avg,min,max,ttl,sqravg,avgsqr,sqrt,rms,rmssdn\n");
   if(strstr(opt_sng,"in.nc")) (void)fprintf(stdout,"in.nc\t\tInput file name(s)\n");
   if(strstr(opt_sng,"out.nc")) (void)fprintf(stdout,"out.nc\t\tOutput file name\n");
 /*  if(strstr(opt_sng,"-")) (void)fprintf(stdout,"-\n");*/
@@ -5879,8 +5879,8 @@ nco_op_typ_get(char *nco_op_sng)
   if(!strcmp(nco_op_sng,"min")) return nco_op_min;
   if(!strcmp(nco_op_sng,"max")) return nco_op_max;
   if(!strcmp(nco_op_sng,"total") || !strcmp(nco_op_sng,"ttl")) return nco_op_ttl;
-  if(!strcmp(nco_op_sng,"avgsqr")) return nco_op_avgsqr;
-  if(!strcmp(nco_op_sng,"avgsumsqr")) return nco_op_avgsumsqr;  
+  if(!strcmp(nco_op_sng,"sqravg")) return nco_op_sqravg;
+  if(!strcmp(nco_op_sng,"avgsqr")) return nco_op_avgsqr;  
   if(!strcmp(nco_op_sng,"sqrt")) return nco_op_sqrt;
   if(!strcmp(nco_op_sng,"rms")) return nco_op_rms;
   if(!strcmp(nco_op_sng,"rmssdn")) return nco_op_rmssdn;

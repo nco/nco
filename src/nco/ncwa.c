@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.44 2000-08-03 22:20:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncwa.c,v 1.45 2000-08-04 23:09:01 zender Exp $ */
 
 /* ncwa -- netCDF weighted averager */
 
@@ -105,8 +105,8 @@ main(int argc,char **argv)
   char *nco_op_typ_sng; /* Operation type */
   char *wgt_nm=NULL;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncwa.c,v 1.44 2000-08-03 22:20:19 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.44 $";
+  char CVS_Id[]="$Id: ncwa.c,v 1.45 2000-08-04 23:09:01 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.45 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
@@ -284,8 +284,8 @@ main(int argc,char **argv)
     } /* end switch */
   } /* end while loop */
 
-  if(wgt_nm != NULL && (nco_op_typ == nco_op_min || nco_op_typ == nco_op_max || nco_op_typ == nco_op_ttl)){
-    (void)fprintf(stdout,"%s: ERROR Weighting (-w) is not allowed with minimum, maximum, and total operations\n",prg_nm);
+  if(wgt_nm != NULL && (nco_op_typ == nco_op_min || nco_op_typ == nco_op_max)){
+    (void)fprintf(stdout,"%s: ERROR Weighting (-w) is not appropriate for minima and maxima searches\n",prg_nm);
     exit(EXIT_FAILURE);
   } /* endif */ 
 
@@ -581,7 +581,7 @@ main(int argc,char **argv)
       } /* end if */
       /* Perform non-linear transformations before weighting */
       switch(nco_op_typ){
-      case nco_op_avgsumsqr: /* Square variable before weighting */
+      case nco_op_avgsqr: /* Square variable before weighting */
       case nco_op_rms: /* Square variable before weighting */
       case nco_op_rmssdn: /* Square variable before weighting */
 	(void)var_multiply(var_prc[idx]->type,var_prc[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->val,var_prc[idx]->val);
@@ -594,7 +594,7 @@ main(int argc,char **argv)
 	 for weights that do already conform to var_prc. TODO #114. */ 
 	wgt_out=var_conform_dim(var_prc[idx],wgt,wgt_out,MUST_CONFORM,&DO_CONFORM_WGT);
 	wgt_out=var_conform_type(var_prc[idx]->type,wgt_out);
-	/* fxm: can weighting be performed after avg,avgsqr,rms etc.? 
+	/* fxm: can weighting be performed after avg,sqravg,rms etc.? 
 	 Unless weighting is done last then weights will screw up on non-linear
 	 transformations like rms, sqrt, which should be applied to the variables
 	 before weighting and reduction. Until this is fixed sdn on spatial regions
@@ -677,15 +677,11 @@ main(int argc,char **argv)
 	/* Divide numerator by masked, averaged, weights */ 
 	switch(nco_op_typ){
 	case nco_op_avg: /* Normalize sum by weighted tally to create mean */
-	case nco_op_avgsqr: /* Normalize sum by weighted tally to create mean */ 
-	case nco_op_avgsumsqr: /* Normalize sum of squares by weighted tally to create mean square */
+	case nco_op_sqravg: /* Normalize sum by weighted tally to create mean */ 
+	case nco_op_avgsqr: /* Normalize sum of squares by weighted tally to create mean square */
 	case nco_op_rms: /* Normalize sum of squares by weighted tally to create mean square */
 	case nco_op_sqrt: /* Normalize sum by weighted tally to create mean */
-	  (void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
-	  break;
 	case nco_op_rmssdn: /* Normalize sum of squares by weighted tally-1 to create mean square for sdn */
-	  /* fxm: subtract one before dividing? */
-	  (void)fprintf(stdout,"%s: WARNING rmssdn with -w wgt normalization is ill-defined\n",prg_nm);
 	  (void)var_divide(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,wgt_avg->val,var_prc_out[idx]->val);
 	  break;
 	case nco_op_min: /* Minimum is already in buffer, do nothing */
@@ -703,8 +699,8 @@ main(int argc,char **argv)
 	   Normalization is just due to tally */
 	switch(nco_op_typ){
 	case nco_op_avg: /* Normalize sum by tally to create mean */
-	case nco_op_avgsqr: /* Normalize sum by tally to create mean */ 
-	case nco_op_avgsumsqr: /* Normalize sum of squares by tally to create mean square */
+	case nco_op_sqravg: /* Normalize sum by tally to create mean */ 
+	case nco_op_avgsqr: /* Normalize sum of squares by tally to create mean square */
 	case nco_op_rms: /* Normalize sum of squares by tally to create mean square */
 	case nco_op_sqrt: /* Normalize sum by tally to create mean */
 	  (void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->tally,var_prc_out[idx]->val);
@@ -719,7 +715,7 @@ main(int argc,char **argv)
 	  break;
 	} /* end switch */
       }else if(!NRM_BY_DNM){
-	/* No normalization required, we are done */ 
+	/* Normalization has been turned off by user, we are done */ 
 	;
       }else{
 	(void)fprintf(stdout,"%s: ERROR Unforeseen logical branch in main()\n",prg_nm);
@@ -727,7 +723,7 @@ main(int argc,char **argv)
       } /* end if */
       /* Some non-linear operations require additional processing */
       switch(nco_op_typ){
-      case nco_op_avgsqr: /* Square mean to create square of the mean (for sdn) */
+      case nco_op_sqravg: /* Square mean to create square of the mean (for sdn) */
 	(void)var_multiply(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
 	break;
       case nco_op_sqrt: /* Take root of mean to create root mean */
