@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.2 2002-08-19 21:03:23 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.3 2002-08-20 02:12:37 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -35,6 +35,9 @@ For ABI=32:
 xlc  -DAIX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='bb0001en' -DUSER='zender' -I./ -I../src/nco -I/usr/local/include -U_OPENMP -qmaxmem=8192 -qlanglvl=extended -O -c ../src/nco/nco_att_utl.c -o /home/babyblue/zender/obj/AIX/nco_att_utl.o
 For ABI=64:
 xlc  -DAIX -DNO_NETCDF_2 -DVERSION='20020819' -DHOSTNAME='bb0001en' -DUSER='zender' -I./ -I../src/nco -I/usr/local/include -U_OPENMP -qmaxmem=8192 -qlanglvl=extended -O -q64 -c ../src/nco/nco_att_utl.c -o /home/babyblue/zender/obj/AIX/nco_att_utl.o
+ar -X 64 rv /home/babyblue/zender/lib/AIX/libnco.a /home/babyblue/zender/obj/AIX/nco_var_lst.o
+xlc -o /home/babyblue/zender/bin/AIX/ncflint /home/babyblue/zender/obj/AIX/ncflint.o -L/home/babyblue/zender/lib/AIX -L/usr/local/lib64/r4i4 -lnco -lnetcdf -lm -lC -q64 
+
 New build example:
 zender@bb0001en:~/nco$ NETCDF_INC=/usr/local/include NETCDF_LIB=/usr/local/lib32/r4i4 ./configure
 checking build system type... powerpc-ibm-aix4.3.3.0

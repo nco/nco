@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.163 2002-08-19 21:12:16 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.164 2002-08-20 02:12:38 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -23,6 +23,7 @@ then ftp nco_tst.nc from remote server
 10. Pass -DUSER='${USER}' (see bld/Makefile for handling default)
 11. Use autoconf standard, if any, for VERSION, HOSTNAME, USER
 12. Pass the GNU architecture-OS "triplet", e.g., alphaev56-unknown-linux-gnu, as, e.g., -DGNU_TRP='${GNU_TRP}' so the executable can print $GNU_TRP as a diagnostic
+13. Have ./configure dump diagnostic information (i.e, last 10 lines of configure.in) when ./configure _fails_
 
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
