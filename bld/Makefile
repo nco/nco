@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.114 2002-01-28 10:06:52 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.115 2002-01-30 07:08:34 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -365,8 +365,8 @@ ${MY_OBJ_DIR}/%.o : %.f
 endif
 # endif CRAY
 
-# Works on LINUX and LINUXALPHA
-ifneq (${null},$(findstring LINUX,${PVM_ARCH}))
+# Works on LINUX and LINUXALPHA and FREEBSD
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXFREEBSD))
 #C++ := g++
 C++ := icc
 # 19980517: As of gcc-2.8.0 using -ansi switch breaks because resolv.h structure have changed
@@ -496,7 +496,7 @@ ifeq (${OMP},Y)
  LDFLAGS := ${OMP_FLG} ${LDFLAGS}
 endif # endif OMP
 endif
-# endif LINUX
+# endif LINUX or LINUXALPHA or FREEBSD
 
 ifeq (${PVM_ARCH},RS6K)
 C++ := g++
