@@ -1,0 +1,119 @@
+.TH NCRA 1
+.SH NAME
+ncra \- netCDF Record Averager
+.SH SYNTAX
+ncra [-A] [-C] [-c] [-D 
+.IR dbg ]
+[-d 
+.IR dim ,[
+.IR "min" ][,[
+.IR max ]][,[
+.IR stride ]]]
+[-F]
+[-h] [-l 
+.IR path ]
+[-n 
+.IR loop ]
+[-O] [-p 
+.IR path ]
+[-R] [-r] [-v 
+.IR var [,...]]
+[-x] [-y 
+.IR op_typ ]
+.I input-files
+.I output-file
+.SH DESCRIPTION
+.PP
+.B ncra
+averages record variables across an arbitrary number of
+input files.
+The record dimension is retained as a degenerate (size 1) dimension in
+the output variables.
+.PP
+Input files may vary in size, but each must have a record dimension.
+The record coordinate, if any, should be monotonic for (or else non-fatal
+warnings may be generated).
+Hyperslabs of the record dimension which include more than one file are
+handled correctly.
+.B ncra
+supports the 
+.I stride
+argument to the 
+.B -d
+hyperslab option for the record dimension only, 
+.I stride
+is not
+supported for non-record dimensions.
+.PP
+.B ncra
+weights each record (e.g., time slice) in the
+.I input-files
+equally.
+.B ncra
+does not attempt to see if, say, the 
+.B time
+coordinate
+is irregularly spaced and thus would require a weighted average in order
+to be a true time average.
+.SH EXAMPLES
+.PP
+Average files 
+.BR 85.nc ,
+.BR 86.nc ,
+... 
+.B 89.nc
+along the record dimension, and store the results in 
+.BR 8589.nc :
+.RS
+ncra 85.nc 86.nc 87.nc 88.nc 89.nc 8589.nc
+.br
+ncra 8[56789].nc 8589.nc
+.br
+ncra -n 5,2,1 85.nc 8589.nc
+.RE
+These three methods produce identical answers.
+.PP
+Assume the files 
+.BR 85.nc ,
+.BR 86.nc ,
+... 
+.B 89.nc
+each
+contain a record coordinate 
+.I time
+of length 12 defined such that
+the third record in 
+.B 86.nc
+contains data from March 1986, etc.
+NCO knows how to hyperslab the record dimension across files.
+Thus, to average data from December, 1985 through February, 1986:
+.RS
+ncra -d time,11,13 85.nc 86.nc 87.nc 8512_8602.nc
+.br
+ncra -F -d time,12,14 85.nc 86.nc 87.nc 8512_8602.nc
+.RE
+The file 
+.B 87.nc
+is superfluous, but does not cause an error.
+The 
+.B -F
+turns on the Fortran (1-based) indexing convention.
+The following uses the 
+.I stride
+option to average all the March
+temperature data from multiple input files into a single output file
+.RS
+ncra -F -d time,3,,12 -v temperature 85.nc 86.nc 87.nc 858687_03.nc
+.RE
+.PP
+Assume the 
+.I time
+coordinate is incrementally numbered such that
+January, 1985 = 1 and December, 1989 = 60.
+Assuming 
+.B ??
+only expands to the five desired files, the following
+averages June, 1985--June, 1989: 
+.RS
+ncra -d time,6.,54. ??.nc 8506_8906.nc
+.RE

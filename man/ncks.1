@@ -1,0 +1,550 @@
+.TH NCKS 1
+.SH NAME
+ncks \- netCDF Kitchen Sink
+.SH SYNTAX
+ncks [-A] [-a] [-C] [-c] [-D] 
+[-d 
+.IR dim ,[
+.IR "min" ][,[
+.IR max ]][,[
+.IR stride ]]]
+[-F] [-H] [-h] [-l 
+.IR path ]
+[-M] [-m] [-O] [-p 
+.IR path ]
+[-q]
+[-R] [-r] [-s 
+.IR format ]
+[-u] [-v 
+.IR var [,...]]
+[-x]
+.I input-file
+[
+.IR output-file ]
+.SH DESCRIPTION
+.PP
+.B ncks
+combines selected features of 
+.BR ncdump ,
+.BR ncextr ,
+and the nccut and ncpaste specifications into one
+versatile utility. 
+.B ncks
+extracts a subset of the data from 
+.I input-file
+and
+either prints it as ASCII text to stdout, or writes (or pastes) it to
+.IR output-file ,
+or both. 
+.PP
+.B ncks
+will print netCDF data in ASCII format to 
+.BR stdout ,
+like 
+.BR ncdump ,
+but with these differences: 
+.B ncks
+prints data in a tabular format intended to be easy to
+search for the data you want, one datum per screen line, with all
+dimension subscripts and coordinate values (if any) preceding the datum.
+Option 
+.B -s
+allows the user the format the data using C-style
+format strings.
+.PP
+Options 
+.BR -a ,
+.BR -F ,
+.BR -H ,
+.BR -M ,
+.IR -m ,
+.BR -q ,
+.BR -s ,
+and 
+.B -u
+control the formatted appearance of 
+the data.  
+.PP
+.B ncks
+will extract (and optionally create a new netCDF file
+comprised of) only selected variable from the input file, like
+.B ncextr
+but with these differences: Only variables and
+coordinates may be specifically included or excluded---all global
+attributes and any attribute associated with an extracted variable will
+be copied to the screen and/or output netCDF file. 
+Options 
+.BR -c ,
+.BR -C ,
+.BR -v ,
+and 
+.B -x
+control which
+variables are extracted.
+.PP
+.B ncks
+will extract hyperslabs from the specified variables.
+In fact 
+.B ncks
+implements the nccut specification exactly.
+Option 
+.B -d
+controls the hyperslab specification.
+.PP
+Input dimensions that are not associated with any output variable will
+not appear in the output netCDF.
+This feature removes superfluous dimensions from a netCDF file. 
+.PP
+.B ncks
+will append variables and attributes from the
+.I input-file
+to 
+.I output-file
+if 
+.I output-file
+is a
+pre-existing netCDF file whose relevant dimensions conform to dimension
+sizes of 
+.IR input-file .
+The append features of 
+.B ncks
+are intended to provide a rudimentary
+means of adding data from one netCDF file to another, conforming, netCDF
+file. 
+When naming conflicts exists between the two files, data in
+.I output-file
+is usually overwritten by the corresponding data from
+.IR input-file .
+Thus it is recommended that the user backup 
+.I output-file
+in case
+valuable data is accidentally overwritten.
+.PP
+If 
+.I output-file
+exists, the user will be queried whether to
+.IR overwrite ,
+.IR append ,
+or 
+.I exit
+the 
+.B ncks
+call
+completely.  
+Choosing 
+.I overwrite
+destroys the existing 
+.I output-file
+and
+create an entirely new one from the output of the 
+.B ncks
+call.  
+Append has differing effects depending on the uniqueness of the
+variables and attributes output by 
+.BR ncks :
+If a variable or
+attribute extracted from 
+.I input-file
+does not have a name conflict with
+the members of 
+.I output-file
+then it will be added to 
+.I "output-file"
+without overwriting any of the existing contents of 
+.IR output-file .
+In this case the relevant dimensions must agree (conform) between the
+two files; new dimensions are created in 
+.I output-file
+as required. 
+When a name conflict occurs, a global attribute from 
+.I "input-file"
+will overwrite the corresponding global attribute from
+.IR output-file .
+If the name conflict occurs for a non-record variable, then the
+dimensions and type of the variable (and of its coordinate dimensions,
+if any) must agree (conform) in both files. 
+Then the variable values (and any coordinate dimension values)
+from 
+.I input-file
+will overwrite the corresponding variable values (and
+coordinate dimension values, if any) in 
+.I output-file
+.PP
+Since there can only be one record dimension in a file, the record
+dimension must have the same name (but not necessarily the same size) in
+both files if a record dimension variable is to be appended. 
+If the record dimensions are of differing sizes, the record dimension of
+.I output-file
+will become the greater of the two record dimension sizes,
+the record variable from 
+.I input-file
+will overwrite any counterpart in
+.I output-file
+and fill values will be written to any gaps left in the
+rest of the record variables (I think). 
+In all cases variable attributes in 
+.I output-file
+are superseded by
+attributes of the same name from 
+.IR input-file ,
+and left alone if
+there is no name conflict. 
+.PP
+Some users may wish to avoid interactive 
+.B ncks
+queries about
+whether to overwrite existing data.
+For example, batch scripts will fail if 
+.B ncks
+does not receive
+responses to its queries. 
+Options 
+.B -O
+and 
+.B -A
+are available to force overwriting
+existing files and variables, respectively. 
+.PP
+Options specific to 
+.B ncks
+.PP
+The following list provides a short summary of the features unique to
+.BR ncks .
+.PP
+.PP
+.TP
+.B -a 
+Do not alphabetize extracted fields. 
+By default, the specified output variables are extracted, printed, and
+written to disk in alphabetical order.
+This tends to make long output lists easier to search for particular
+variables. 
+Specifying 
+.B -a
+results in the variables being extracted, printed,
+and written to disk in the order in which they were saved in the input
+file.
+Thus 
+.B -a
+retains the original ordering of the variables.
+.PP
+.TP
+.B -d 
+.IR dim ,[
+.IR "min" ][,[
+.IR max ]][,[
+.IR stride ]]
+Add 
+.I stride
+argument to hyperslabber. 
+.PP
+.TP
+.B -H 
+Print data to screen.
+Unless otherwise specified (with 
+.BR -s ),
+each element of the data
+hyperslab is printed on a separate line containing the names, indices,
+and, values, if any, of all of the variables dimensions.
+The dimension and variable indices refer to the location of the
+corresponding data element with respect to the variable as stored on
+disk (i.e., not the hyperslab).
+.RS
+% ncks -H -C -v three_dmn_var in.nc
+.br
+lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
+.br
+lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
+.br
+lat[0]=-90 lev[0]=100 lon[2]=180 three_dmn_var[2]=2 
+.br
+...
+lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
+.br
+lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
+.br
+lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
+.RE
+Printing the same variable with the 
+.B -F
+option shows the same
+variable indexed with Fortran conventions
+.RS
+% ncks -F -H -C -v three_dmn_var in.nc
+.br
+lon(1)=0 lev(1)=100 lat(1)=-90 three_dmn_var(1)=0 
+.br
+lon(2)=90 lev(1)=100 lat(1)=-90 three_dmn_var(2)=1 
+.br
+lon(3)=180 lev(1)=100 lat(1)=-90 three_dmn_var(3)=2 
+.br
+...
+.RE
+Printing a hyperslab does not affect the variable or dimension indices
+since these indices are relative to the full variable (as stored in the
+input file), and the input file has not changed.
+However, if the hypserslab is saved to an output file and those values
+are printed, the indices will change:
+.RS
+% ncks -H -d lat,90.0 -d lev,1000.0 -v three_dmn_var in.nc out.nc
+.br
+lat[1]=90 lev[2]=1000 lon[0]=0 three_dmn_var[20]=20 
+.br
+lat[1]=90 lev[2]=1000 lon[1]=90 three_dmn_var[21]=21 
+.br
+lat[1]=90 lev[2]=1000 lon[2]=180 three_dmn_var[22]=22 
+.br
+lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
+.br
+% ncks -H out.nc
+.br
+lat[0]=90 lev[0]=1000 lon[0]=0 three_dmn_var[0]=20 
+.br
+lat[0]=90 lev[0]=1000 lon[1]=90 three_dmn_var[1]=21 
+.br
+lat[0]=90 lev[0]=1000 lon[2]=180 three_dmn_var[2]=22 
+.br
+lat[0]=90 lev[0]=1000 lon[3]=270 three_dmn_var[3]=23 
+.RE
+.PP
+.TP
+.B -M
+Print to screen the global metadata describing the file.
+This includes file summary information and global attributes. 
+.PP
+.TP
+.B -m
+Print variable metadata to screen (similar to 
+.BR "ncdump -h" ).
+This displays all metadata pertaining to each variable, one variable
+at a time.
+.PP
+.TP
+.B -q 
+Toggle printing of dimension indices and coordinate values when printing
+arrays. 
+The name of each variable will appear flush left in the output.
+This is useful when trying to locate specific variables when displaying
+many variables with different dimensions.
+The mnemonic for this option is "quiet".
+.PP
+.TP
+.B -s 
+.I "format"
+String format for text output. Accepts C language escape sequences and
+.B printf()
+formats. 
+.PP
+.TP
+.B -u 
+Accompany the printing of a variable's values with its units attribute,
+if it exists.  
+.SH EXAMPLES
+.PP
+View all data in netCDF 
+.BR in.nc ,
+printed with Fortran indexing
+conventions: 
+.RS
+ncks -H -F in.nc
+.RE
+.PP
+Copy the netCDF file 
+.B in.nc
+to file 
+.BR out.nc .
+.RS
+ncks -O in.nc out.nc
+.RE
+Now the file 
+.B out.nc
+contains all the data from 
+.BR in.nc .
+There are, however, two differences between 
+.B in.nc
+and
+.BR out.nc .
+First, the 
+.B history
+global attribute
+will contain the command used to create 
+.BR out.nc .
+Second, the variables in 
+.B out.nc
+will be defined in alphabetical
+order.
+Of course the internal storage of variable in a netCDF file should be
+transparent to the user, but there are cases when alphabetizing a file 
+is useful (see description of 
+.B -a
+switch).
+.PP
+Print variable 
+.B three_dmn_var
+from file 
+.B in.nc
+with
+default notations. 
+Next print 
+.B three_dmn_var
+as an un-annotated text column.
+Then print 
+.B three_dmn_var
+signed with very high precision.
+Finally, print 
+.B three_dmn_var
+as a comma-separated list.
+.RS
+% ncks -H -C -v three_dmn_var in.nc
+.br
+lat[0]=-90 lev[0]=100 lon[0]=0 three_dmn_var[0]=0 
+.br
+lat[0]=-90 lev[0]=100 lon[1]=90 three_dmn_var[1]=1 
+.br
+...
+.br
+lat[1]=90 lev[2]=1000 lon[3]=270 three_dmn_var[23]=23 
+.br
+% ncks -s "%f\\n" -H -C -v three_dmn_var in.nc
+.br
+0.000000
+.br
+1.000000
+.br
+...
+.br
+23.000000
+.br
+% ncks -s "%+16.10f\\n" -H -C -v three_dmn_var in.nc
+.br
+   +0.0000000000
+.br
+   +1.0000000000
+.br
+...
+.br
+  +23.0000000000
+.br
+% ncks -s "%f, " -H -C -v three_dmn_var in.nc
+.br
+0.000000, 1.000000, ..., 23.000000,
+.RE
+The second and third options are useful when pasting data into text
+files like reports or papers.  
+.PP
+One dimensional arrays of characters stored as netCDF variables are 
+automatically printed as strings, whether or not they are
+NUL-terminated, e.g.,
+.RS
+ncks -v fl_nm in.nc
+.RE
+The 
+.B %c
+formatting code is useful for printing 
+multidimensional arrays of characters representing fixed length strings
+.RS
+ncks -H -s "%c" -v fl_nm_arr in.nc
+.RE
+Using the 
+.B %s
+format code on strings which are not NUL-terminated 
+(and thus not technically strings) is likely to result in a core dump.
+.PP
+Create netCDF 
+.B out.nc
+containing all variables, and any associated
+coordinates, except variable 
+.BR time ,
+from netCDF 
+.BR in.nc :
+.RS
+ncks -x -v time in.nc out.nc
+.RE
+.PP
+Extract variables 
+.B time
+and 
+.B pressure
+from netCDF 
+.BR in.nc .
+If 
+.B out.nc
+does not exist it will be created.
+Otherwise the you will be prompted whether to append to or to
+overwrite 
+.BR out.nc :
+.RS
+ncks -v time,pressure in.nc out.nc
+.br
+ncks -C -v time,pressure in.nc out.nc
+.RE
+The first version of the command creates an 
+.B out.nc
+which contains
+.BR time ,
+.BR pressure ,
+and any coordinate variables associated
+with 
+.IR pressure .
+The 
+.B out.nc
+from the second version is guaranteed to contain only
+two variables 
+.B time
+and 
+.BR pressure .
+.PP
+Create netCDF 
+.B out.nc
+containing all variables from file 
+.BR in.nc .
+Restrict the dimensions of these variables to a hyperslab. 
+Print (with 
+.BR -H )
+the hyperslabs to the screen for good measure.  
+The specified hyperslab is: the fifth value in dimension 
+.BR time ;
+the
+half-open range 
+.I lat
+> 0. in coordinate 
+.BR lat ;
+the
+half-open range
+.I lon
+< 330. in coordinate 
+.BR lon ;
+the
+closed interval .3 < 
+.I band
+< .5 in coordinate 
+.BR band ;
+and
+cross-section closest to 1000. in coordinate 
+.BR lev .
+Note that limits applied to coordinate values are specified with a
+decimal point, and limits applied to dimension indices do not have a
+decimal point.
+.RS
+ncks -H -d time,5 -d lat,,0. -d lon,330., -d band,.3,.5 -d lev,1000. in.nc out.nc 
+.RE
+.PP
+Assume the domain of the monotonically increasing longitude coordinate
+.B lon
+is 0 < 
+.I lon
+< 360. 
+Here, 
+.B lon
+is an example of a wrapped coordinate.
+.B ncks
+will extract a hyperslab which crosses the Greenwich
+meridian simply by specifying the westernmost longitude as 
+.I min
+and
+the easternmost longitude as 
+.IR max ,
+as follows:
+.RS
+ncks -d lon,260.,45. in.nc out.nc
+.RE

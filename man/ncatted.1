@@ -1,0 +1,475 @@
+.TH NCATTED 1
+.SH NAME
+ncatted \- netCDF Attribute Editor
+.SH SYNTAX
+ncatted [-a 
+.IR att_dsc ]
+[-a ...] [-D] [-h]
+[-l path] [-O] [-p path] [-R] [-r] 
+.I input-file
+[
+.IR output-file ]
+.SH DESCRIPTION
+.PP
+.B ncatted
+edits attributes in a netCDF file.  
+If you are editing attributes then you are spending too much time in the
+world of metadata, and 
+.B ncatted
+was written to get you back out as
+quickly and painlessly as possible.
+.B ncatted
+can 
+.IR append ,
+.IR create ,
+.IR delete ,
+.IR modify ,
+and 
+.I overwrite
+attributes (all explained below).  
+Furthermore, 
+.B ncatted
+allows each editing operation to be applied
+to every variable in a file, thus saving you time when you want to
+change attribute conventions throughout a file.
+.B ncatted
+interprets character attributes as strings.
+.PP
+Because repeated use of 
+.B ncatted
+can considerably increase the size
+of the 
+.B history
+global attribute, the
+.B -h
+switch is provided to override automatically appending the
+command to the 
+.B history
+global attribute in the 
+.IR output-file .
+.PP
+When 
+.B ncatted
+is used to change the 
+.B missing_value
+attribute,
+it changes the associated missing data self-consistently.
+If the internal floating point representation of a missing value, 
+e.g., 1.0e36, differs between two machines then netCDF files produced 
+on those machines will have incompatible missing values.
+This allows 
+.B ncatted
+to change the missing values in files from 
+different machines to a single value so that the files may then be 
+concatenated together, e.g., by 
+.BR ncrcat ,
+without losing any
+information.   
+.PP
+The key to mastering 
+.B ncatted
+is understanding the meaning of the
+structure describing the attribute modification, 
+.IR att_dsc .
+Each 
+.I att_dsc
+contains five elements, which makes using
+.B ncatted
+somewhat complicated, but powerful.
+The 
+.I att_dsc
+argument structure contains five arguments in the
+following order: 
+.PP
+.I att_dsc
+= 
+.IR att_nm ,
+.IR var_nm ,
+.IR mode ,
+.IR att_type ,
+.IR att_val 
+.PP
+.TP
+.B att_nm
+Attribute name. 
+Example: 
+.B units
+.TP
+.B var_nm
+Variable name. 
+Example: 
+.B pressure
+.TP
+.B mode
+Edit mode abbreviation. 
+Example: 
+.BR a .
+See below for complete listing of valid values of 
+.IR mode .
+.TP
+.B att_type
+Attribute type abbreviation. Example: 
+.BR c .
+See below for complete listing of valid values of 
+.IR att_type .
+.TP
+.B att_val
+Attribute value. Example: 
+.BR pascal .
+There should be no empty space between these five consecutive
+arguments. 
+The description of these arguments follows in their order of
+appearance. 
+.PP
+The value of 
+.I att_nm
+is the name of the attribute you want to edit.
+This meaning of this should be clear to all users of the 
+.B ncatted
+operator. 
+.PP
+The value of 
+.I var_nm
+is the name of the variable containing the
+attribute (named 
+.IR att_nm )
+that you want to edit.
+There are two very important and useful exceptions to this rule.
+The value of 
+.I var_nm
+can also be used to direct 
+.B ncatted
+to
+edit global attributes, or to repeat the editing operation for every
+variable in a file.
+A value of 
+.I var_nm
+of global\(rq indicates that 
+.I att_nm
+refers
+to a global attribute, rather than a particular variable's attribute.
+This is the method 
+.B ncatted
+supports for editing global
+attributes.
+If 
+.I var_nm
+is left blank, on the other hand, then 
+.B ncatted
+attempts to perform the editing operation on every variable in the file.
+This option may be convenient to use if you decide to change the
+conventions you use for describing the data.
+.PP
+The value of 
+.I mode
+is a single character abbreviation (
+.BR a ,
+.BR c ,
+.BR d ,
+.BR m ,
+or 
+.BR o )
+standing for one of
+five editing modes:
+.TP
+.B a 
+.IR Append .
+Append value 
+.I att_val
+to current 
+.I var_nm
+attribute
+.I att_nm
+value 
+.IR att_val ,
+if any.  
+If 
+.I var_nm
+does not have an attribute 
+.IR att_nm ,
+there is no
+effect.
+.TP
+.B c
+.IR Create .
+Create variable 
+.I var_nm
+attribute 
+.I att_nm
+with 
+.I "att_val"
+if 
+.I att_nm
+does not yet exist.  
+If 
+.I var_nm
+already has an attribute 
+.IR att_nm ,
+there is no
+effect. 
+.TP
+.B d
+.IR Delete .
+Delete current 
+.I var_nm
+attribute 
+.IR att_nm .
+If 
+.I var_nm
+does not have an attribute 
+.IR att_nm ,
+there is no
+effect. 
+When 
+.I Delete
+mode is selected, the 
+.I att_type
+and 
+.I "att_val"
+arguments are superfluous and may be left blank.
+.TP
+.B m
+.IR Modify .
+Change value of current 
+.I var_nm
+attribute 
+.I att_nm
+to value
+.IR att_val .
+If 
+.I var_nm
+does not have an attribute 
+.IR att_nm ,
+there is no
+effect. 
+.TP
+.B o
+.IR Overwrite .
+Write attribute 
+.I att_nm
+with value 
+.I att_val
+to variable
+.IR var_nm ,
+overwriting existing attribute 
+.IR att_nm ,
+if any. 
+This is the default mode.
+.PP
+The value of 
+.I att_type
+is a single character abbreviation (
+.BR f ,
+.BR d ,
+.BR l ,
+.BR s ,
+.BR c ,
+or 
+.BR b )
+standing for one of
+the six primitive netCDF data types: 
+.TP
+.B f
+.IR Float .
+Value(s) specified in 
+.I att_val
+will be stored as netCDF intrinsic
+type NC_FLOAT. 
+.TP
+.B d
+.IR Double .
+Value(s) specified in 
+.I att_val
+will be stored as netCDF intrinsic
+type NC_DOUBLE.
+.TP
+.B l
+.IR Long .
+Value(s) specified in 
+.I att_val
+will be stored as netCDF intrinsic
+type NC_LONG.
+.TP
+.B s
+.IR Short .
+Value(s) specified in 
+.I att_val
+will be stored as netCDF intrinsic
+type NC_SHORT.
+.TP
+.B c
+.I Char.
+Value(s) specified in 
+.I att_val
+will be stored as netCDF intrinsic
+type NC_CHAR.
+.TP
+.B b
+.IR Byte .
+Value(s) specified in 
+.I att_val
+will be stored as netCDF intrinsic
+type NC_BYTE.
+The specification of 
+.I att_type
+is optional in 
+.I Delete
+mode.
+.PP
+The value of 
+.I att_val
+is what you want to change attribute
+.I att_nm
+to contain.
+The specification of 
+.I att_val
+is optional in 
+.I Delete
+mode.
+Attribute values for all types besides NC_CHAR must have an attribute
+length of at least one.
+Thus 
+.I att_val
+may be a single value or one-dimensional array of
+elements of type 
+.BR att_type .
+If the 
+.I att_val
+is not set or is set to empty space,
+and the 
+.I att_type
+is NC_CHAR, e.g., 
+.B "-a units,T,o,c,"""""
+or 
+.BR "-a units,T,o,c," ,
+then the corresponding attribute is set to 
+have zero length.
+When specifying an array of values, it is safest to enclose
+.I att_val
+in double or single quotes, e.g., 
+.B "-a levels,T,o,s,""1,2,3,4"""
+or   
+.BR "-a levels,T,o,s,'1,2,3,4'" .
+The quotes are strictly unnecessary around 
+.I att_val
+except 
+when 
+.I att_val
+contains characters which would confuse the calling
+shell, such as spaces, commas, and wildcard characters. 
+.PP
+NCO processing of NC_CHAR attributes is a bit like Perl in that
+it attempts to do what you want by default (but this sometimes causes 
+unexpected results if you want unusual data storage).
+If the 
+.I att_type
+is NC_CHAR then the argument is interpreted as a
+string and it may contain C-language escape sequences,
+which NCO will interpret before writing anything to disk.
+NCO translates valid escape sequences and stores the
+appropriate ASCII code instead.
+Since two byte escape sequences
+represent one byte
+ASCII codes, e.g., ASCII 10 (decimal), the stored
+string attribute is one byte shorter than the input string length for
+each embedded escape sequence. 
+These sequences in particular allow convenient editing of formatted text
+attributes. 
+See ncks netCDF Kitchen Sink, for more examples of string formatting
+(with the 
+.B ncks
+.B -s
+option) with special characters. 
+.PP
+Analogous to 
+.BR printf ,
+other special characters are also allowed by
+.B ncatted
+if they are "protected" by a backslash.
+NCO simply strips away the leading backslash from these characters
+before editing the attribute.
+No other characters require protection by a backslash.
+Backslashes which precede any other character
+will not be filtered and will be included in the attribute.
+.PP
+Note that the NUL character 
+which terminates C language
+strings is assumed and need not be explicitly specified.
+If 
+NUL
+is input, it will not be translated (because it would
+terminate the string in an additional location).
+Because of these context-sensitive rules, if wish to use an attribute of
+type NC_CHAR to store data, rather than text strings, you should use
+.B ncatted
+with care.
+.PP
+.SH EXAMPLES
+.PP
+Append the string "Data version 2.0.\\n" to the global attribute
+.BR history :
+.RS
+ncatted -O -a history,global,a,c,"Data version 2.0\\n" in.nc 
+.RE
+Note the use of embedded C language 
+.BR printf() -style
+escape
+sequences. 
+.PP
+Change the value of the 
+.B long_name
+attribute for variable 
+.B T
+from whatever it currently is to "temperature":
+.RS
+ncatted -O -a long_name,T,o,c,temperature in.nc
+.RE
+.PP
+Delete all existing 
+.B units
+attributes:
+.RS
+ncatted -O -a units,,d,, in.nc
+.RE
+The value of 
+.I var_nm
+was left blank in order to select all
+variables in the file.
+The values of 
+.I att_type
+and 
+.I att_val
+were left blank because
+they are superfluous in 
+.I Delete
+mode. 
+.PP
+Modify all existing 
+.B units
+attributes to "meter second-1"
+.RS
+ncatted -O -a units,,m,c,"meter second-1" in.nc
+.RE
+.PP
+Overwrite the 
+.B quanta
+attribute of variable
+.B energy
+to an array of four integers. 
+.RS
+ncatted -O -a quanta,energy,o,s,"010,101,111,121" in.nc
+.RE
+.PP
+Demonstrate input of C-language escape sequences
+and
+other special characters
+.RS
+ncatted -h -a special,global,o,c,
+'\\nDouble quote: \\"\\nTwo consecutive double quotes: \\"\\"\\n
+Single quote: Beyond my shell abilities!\\nBackslash: \\\\n
+Two consecutive backslashes: \\\\\\nQuestion mark: \\?\\n' in.nc
+.RE
+Note that the entire attribute is protected from the shell by single
+quotes. 
+These outer single quotes are necessary for interactive use, but may be
+omitted in batch scripts.

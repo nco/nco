@@ -1,0 +1,89 @@
+.TH NCECAT 1
+.SH NAME
+ncecat \- netCDF Ensemble Concatenator
+.SH SYNTAX
+ncecat [-A] [-C] [-c] [-D 
+.IR dbg ]
+[-d 
+.IR dim ,[
+.IR "min" ][,[
+.IR max ]]]
+[-F]
+[-h] [-l 
+.IR path ]
+[-n 
+.IR loop ]
+[-O] [-p 
+.IR path ]
+[-R] [-r] [-v 
+.IR var [,...]]
+[-x] 
+.I input-files
+.I output-file
+.SH DESCRIPTION
+.PP
+.B ncecat
+concatenates an arbitrary number of input files into a
+single output file.
+Input files are glued together by creating a record dimension in the
+output file. 
+Input files must be the same size.
+Each input file is stored consecutively as a single record in the output
+file.
+Thus, the size of the output file is the sum of the sizes of the input
+files. 
+.PP
+Consider five realizations, 
+.BR 85a.nc ,
+.BR 85b.nc ,
+...
+.B 85e.nc
+of 1985 predictions from the same climate model.
+Then 
+.B "ncecat 85?.nc 85_ens.nc"
+glues the individual realizations
+together into the single file, 
+.BR 85_ens.nc .
+If an input variable was dimensioned [
+.BR lat ,
+.BR "lon" ],
+it
+will have
+dimensions [
+.BR record ,
+.BR "lat" ,
+.BR lon ]
+in
+the output file.
+A restriction of 
+.B ncecat
+is that the hyperslabs of the processed
+variables must be the same from file to file.
+Normally this means all the input files are the same size, and contain
+data on different realizations of the same variables.
+.SH EXAMPLES
+.PP
+Consider a model experiment which generated five realizations of one
+year of data, say 1985.
+You can imagine that the experimenter slightly perturbs the
+initial conditions of the problem before generating each new solution.  
+Assume each file contains all twelve months (a seasonal cycle) of data
+and we want to produce a single file containing all the seasonal cycles.
+Here the numeric filename suffix denotes the experiment number
+(\c
+.I not
+the month):
+.RS
+ncecat 85_01.nc 85_02.nc 85_03.nc 85_04.nc 85_05.nc 85.nc
+.br
+ncecat 85_0[1-5].nc 85.nc
+.br
+ncecat -n 5,2,1 85_01.nc 85.nc
+.RE
+These three commands produce identical answers.
+The output file, 
+.BR 85.nc ,
+is five times the size as a single
+.IR input-file .
+It contains 60 months of data (which might or might not be stored in the
+record dimension, depending on the input files).

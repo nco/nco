@@ -1,0 +1,93 @@
+.IR var [,...]]
+[-x] 
+.I input-files
+.I output-file
+.SH DESCRIPTION
+.PP
+.B ncrcat
+concatenates record variables across an arbitrary number
+of input files.
+The final record dimension is by default the sum of the lengths of the
+record dimensions in the input files.
+.PP
+Input files may vary in size, but each must have a record dimension.
+The record coordinate, if any, should be monotonic (or else non-fatal
+warnings may be generated).
+Hyperslabs of the record dimension which include more than one file are
+handled correctly.
+.B ncra
+supports the 
+.I stride
+argument to the 
+.B -d
+hyperslab option for the record dimension only, 
+.I stride
+is not
+supported for non-record dimensions.
+.PP
+.B ncrcat
+applies special rules to ARM convention time fields (e.g.,
+.BR time_offset ).
+.SH EXAMPLES
+.PP
+Concatenate files 
+.BR 85.nc ,
+.BR 86.nc ,
+... 
+.B 89.nc
+along the record dimension, and store the results in 
+.BR 8589.nc :
+.RS
+ncrcat 85.nc 86.nc 87.nc 88.nc 89.nc 8589.nc
+.br
+ncrcat 8[56789].nc 8589.nc
+.br
+ncrcat -n 5,2,1 85.nc 8589.nc
+.RE
+These three methods produce identical answers.
+.PP
+Assume the files 
+.BR 85.nc ,
+.BR 86.nc ,
+... 
+.B 89.nc
+each
+contain a record coordinate 
+.I time
+of length 12 defined such that
+the third record in 
+.B 86.nc
+contains data from March 1986, etc.
+NCO knows how to hyperslab the record dimension across files.
+Thus, to concatenate data from December, 1985--February, 1986:
+.RS
+ncrcat -d time,11,13 85.nc 86.nc 87.nc 8512_8602.nc
+.br
+ncrcat -F -d time,12,14 85.nc 86.nc 87.nc 8512_8602.nc
+.RE
+The file 
+.B 87.nc
+is superfluous, but does not cause an error.
+The 
+.B -F
+turns on the Fortran (1-based) indexing convention.
+.PP
+The following uses the 
+.I stride
+option to concatenate all the March
+temperature data from multiple input files into a single output file
+.RS
+ncrcat -F -d time,3,,12 -v temperature 85.nc 86.nc 87.nc 858687_03.nc
+.RE
+.PP
+Assume the 
+.I time
+coordinate is incrementally numbered such that
+January, 1985 = 1 and December, 1989 = 60.
+Assuming 
+.B ??
+only expands to the five desired files, the following
+concatenates June, 1985--June, 1989: 
+.RS
+ncrcat -d time,6.,54. ??.nc 8506_8906.nc
+.RE
