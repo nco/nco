@@ -49,7 +49,7 @@ AM_INIT_AUTOMAKE(nco,"$nco_version")
 AM_CONFIG_HEADER(config.h)
 
 ## Checks for programs. CC has a preferred list
-AC_PROG_CC(xlc_r xlc acc cc c89 icc gcc)
+AC_PROG_CC(xlc acc cc gcc icc c89)
 AC_PROG_CXX
 AC_PROG_CPP
 AC_PROG_CXXCPP

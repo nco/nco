@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.171 2002-08-22 06:10:19 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.172 2002-08-28 07:21:45 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -10,21 +10,18 @@ NCO-wide items: 15 high priority items are shown first, then another ~100 items
 ******************************************************************************
 
 Autoconf-build items:
-01. Do not build nco_c++ (and thus fail) unless CXX supports valarray class
-02. make check must do what old make tst did: build in.nc from in.cdl, and 
-then ftp nco_tst.nc from remote server
-03. Support environment variables NETCDF_INC, NETCDF_LIB to find netcdf.h, libnetcdf.a, respectively
-04. Rorik: improve/customize method of tracking autoconf build problems in configure.eg
 06. Track VERSION in ./configure, use doc/VERSION for now
-07. Pass -DNO_NETCDF_2. NB: For these -D tokens, it's up to you whether to pass them in config.h or in CFLAGS. 
-08. Pass -DVERSION='${VRS_SNG}' (see bld/Makefile for handling default)
-09. Pass -DHOSTNAME='${HOST}' (see bld/Makefile for handling default)
-10. Pass -DUSER='${USER}' (see bld/Makefile for handling default)
 11. Use autoconf standard for VERSION, HOSTNAME, USER
-12. Pass the GNU architecture-OS "triplet", e.g., alphaev56-unknown-linux-gnu, as, e.g., -DGNU_TRP='${GNU_TRP}' so the executable can print $GNU_TRP as a diagnostic
+12. Pass GNU architecture-OS "triplet", e.g., alphaev56-unknown-linux-gnu, as, e.g., -DGNU_TRP='${GNU_TRP}' so executable can print $GNU_TRP as diagnostic
 14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, I18N, _LIBINTL_H, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.
 15. Change libnco_cxx back to libnco_c++ once autotools allow +'s in names
-16. Add #if HAVE_CONFIG_H to source files possibly receiving tokens from config.h
+16. Convert nco_fl_utl.c code to use #ifdef HAVE_MKSTEMP...
+#ifndef CRAY
+    fl_out_hnd=mkstemp(fl_out_tmp_sys);
+#else
+    fl_out_hnd=creat(mktemp(fl_out_tmp_sys),0600);
+#endif /* !CRAY */
+17. Fix CXX valarray to work on AIX
 
 ncap-specific items:
 04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -53,7 +50,7 @@ cc-1177 cc: WARNING File = /usr/freeware/share/bison.simple, Line = 336
 15. Link to GSL functions, especially gsl_sf_* (special functions)
 16. Get ncap build working with pure_parser turned off so lex/yacc builds work
 17. Start in console mode if no script and no output file specified, e.g., nco> 
-18. Do not presume math float functions (e.g., tanf) exist, use double functions when they do not
+18. Do not presume math float functions (e.g., tanf) exist. Use HAVE_COSF from autoconf to search for each float function. Use double functions when float functions are unavailable.
 19. Make all binary operators handle ordering of operands consistently, e.g., divide(1,2)=1/2 not 2/1
 20. Print out contents of each non-comment statement when dbg_lvl==1
 21. Add two-argument functions like fmodf to ncap_sym_init()

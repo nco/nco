@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.26 2002-08-27 19:29:51 zender Exp $ -*-Fundamental-*-
+$Header: /data/zender/nco_20150216/nco/configure.eg,v 1.27 2002-08-28 07:21:45 zender Exp $ -*-Fundamental-*-
 
 Purpose(s): 
 Track status of autobuild features for NCO
@@ -9,10 +9,13 @@ Architecture	ABI32	ABI64	DODS	I18N	OpenMP	nco_c++	check
 AIX		Y	N(2)				N(5)	
 ALPHA
 CRAY
+FREEBSD		N(10)
 LINUX gcc/g++	Y	N/A				Y	Y
 LINUX icc	Y	N/A				Y	Y
 LINUXALPHA	Y					N(1)	Y
-MACOSX
+LINUXPPC	Y					Y	N(9)
+LINUXSPARC64	Y					Y	Y
+MACOSX		N(8)
 NECSX
 SGIMP64 cc/CC	Y	Y				Y	N(6)
 SGIMP64 gcc/g++	N(7)					Y
@@ -22,13 +25,14 @@ WIN32
 -----------------------------------------------------------------------
 Footnotes to summary table:
 01. Needs CXX that supports valarray
-02. Invocation of nm needs -X 64 flag and final (linking) invocation of 
-xlc _may_ need an ABI64 flag, but may just fail because nm is failing.
-I do not know how to pass flags to nm.
+02. After much environment variable passing, programs link but core dump
 03. Does not link tst.o
 05. xlC fails valarray test, but I believe xlC does support valarray. Hmm.
 06. CC unable to link tst.o, unresolved text symbols (missing library?)
 07. Error making ncap_yacc.c
+08. Fails to build ncap because cannot find float math functions ncap TODO#18
+09. tst fails to find in.nc
+10. Major problems with make script
 -----------------------------------------------------------------------
 
 Default installation procedure for system-wide installation,
@@ -99,6 +103,28 @@ End AIX
 ************************************************************************
 
 ************************************************************************
+Start FREEBSD
+Status: 
+************************************************************************
+bash-2.05a$ ./pvmgetarch;uname -a
+FREEBSD
+FreeBSD usf-cf-x86-freebsd-1 4.6-STABLE FreeBSD 4.6-STABLE #9: Tue Aug 20 12:33:16 PDT 2002     root@usf-cf-x86-freebsd-1:/usr/obj/usr/src/sys/GENERIC  i386
+
+gcc/g++:
+export GNU_TRP='i386-unknown-freebsd4.6'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
+
+Old build example:
+New build example:
+************************************************************************
+End FREEBSD
+************************************************************************
+
+************************************************************************
 Start LINUX
 Status: Appears to work
 ************************************************************************
@@ -149,6 +175,113 @@ scp configure.alphaev56-unknown-linux-gnu.foo config.log.alphaev56-unknown-linux
 Old build example:
 ************************************************************************
 End LINUXALPHA
+************************************************************************
+
+************************************************************************
+Start LINUXPPC
+Status: tst fails to find in.nc
+************************************************************************
+zender@usf-cf-ppc-linux-1:~/nco/bld$ ./pvmgetarch;uname -a
+UNKNOWN
+Linux usf-cf-ppc-linux-1 2.2.17-pre1 #2 SMP Fri Jun 16 12:39:25 MDT 2000 ppc unknown
+
+gcc/g++:
+export GNU_TRP='powerpc-unknown-linux-gnu'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
+
+Old build example:
+New build example:
+make[3]: Entering directory `/home/users/z/ze/zender/nco/src/nco_c++'
+libnco_c++ version "2.6.2" built Aug 27 2002 on usf-cf-ppc-1-1 by zender
+nco_err_exit(): ERROR netCDF library returned error code 2
+nco_err_exit(): ERROR nco_open
+No such file or directory
+nco_err_exit(): Failed to open in.nc
+FAIL: tst
+===================
+1 of 1 tests failed
+===================
+
+************************************************************************
+End LINUXPPC
+************************************************************************
+
+************************************************************************
+Start LINUXSPARC64
+Status: Appears to build correctly
+************************************************************************
+zender@usf-cf-sparc-linux-1:~/nco/bld$ ./pvmgetarch;uname -a
+UNKNOWN
+Linux usf-cf-sparc-linux-1 2.4.18 #2 Thu Apr 11 14:37:17 EDT 2002 sparc64 unknown
+
+gcc/g++:
+export GNU_TRP='sparc64-unknown-linux-gnu'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
+
+Old build example:
+New build example:
+************************************************************************
+End LINUXSPARC64
+************************************************************************
+
+************************************************************************
+Start MACOSX
+Status: Fails to build ncap because cannot find float math functions
+ncap TODO#18
+************************************************************************
+bash-2.05a$ ./pvmgetarch;uname -a
+UNKNOWN
+Darwin usf-cf-ppc-macosx-1 5.5 Darwin Kernel Version 5.5: Thu May 30 14:51:26 PDT 2002; root:xnu/xnu-201.42.3.obj~1/RELEASE_PPC  Power Macintosh powerpc
+
+gcc/g++:
+export GNU_TRP='powerpc-apple-darwin5.5'
+cd ~/nco;/bin/rm -f *.${GNU_TRP}.foo;make distclean
+NETCDF_INC=${HOME}/include NETCDF_LIB=${HOME}/lib/${GNU_TRP} ./configure --prefix=${HOME} --bindir=${HOME}/bin/${GNU_TRP} --datadir=${HOME}/nco/data --libdir=${HOME}/lib/${GNU_TRP} --mandir=${HOME}/nco/man > configure.${GNU_TRP}.foo 2>&1
+/bin/cp -f config.log config.log.${GNU_TRP}.foo
+make clean;make > make.${GNU_TRP}.foo 2>&1
+scp configure.${GNU_TRP}.foo config.log.${GNU_TRP}.foo make.${GNU_TRP}.foo dust.ps.uci.edu:/var/ftp/pub/zender/nco/rgr
+
+Old build example:
+
+Should not pass -lstdc++ to linker on C programs, 
+Do need float math library (where is it?)
+New build example:
+/bin/sh ../../libtool --mode=link cc  -g -O2  -L/home/users/z/ze/zender/lib -o ncap  ncap_utl.o ncap.o ncap_yacc.o ncap_lex.o libnco.la -lstdc++ -lm -lnetcdf 
+cc -g -O2 -o .libs/ncap ncap_utl.o ncap.o ncap_yacc.o ncap_lex.o  -L/home/users/z/ze/zender/lib -L./.libs -lnco -lstdc++ -lm -lnetcdf
+/usr/bin/ld: Undefined symbols:
+_fmodf
+_powf
+_acosf
+_acoshf
+_asinf
+_asinhf
+_atanf
+_atanhf
+_ceilf
+_cosf
+_coshf
+_erfcf
+_erff
+_expf
+_floorf
+_gammaf
+_log10f
+_logf
+_sinf
+_sinhf
+_sqrtf
+_tanf
+_tanhf
+************************************************************************
+End MACOSX
 ************************************************************************
 
 ************************************************************************
