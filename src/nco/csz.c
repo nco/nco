@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.61 2000-09-26 06:58:39 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.62 2000-09-26 21:55:56 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -101,7 +101,7 @@ char *
 nmn_get()
 { 
   /* Purpose: Return mnemonic that describes current NCO version */
-  return "Bolivia";
+  return "I70+I15 Roadtrip";
 } /* end nmn_get() */
 
 char *
@@ -1379,7 +1379,7 @@ nco_openmp_ini() /* [fnc] Set up OpenMP multi-threading environment */
     (void)omp_set_num_threads(thr_nbr_max_fsh); /* [nbr] Maximum number of threads system is allowed */
   } /* endif */      
   (void)omp_set_dynamic(dyn_thr); /* [flg] Allow system to dynamically set number of threads */
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Will allow dynamic threading if possible\n",prg_nm_get());
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO Allowing OS to utilize dynamic threading\n",prg_nm_get());
 #endif /* not _OPENMP */
 
   if(dbg_lvl_get() > 0){
