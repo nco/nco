@@ -1,107 +1,10 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.15 1999-01-13 21:46:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.16 1999-01-14 05:11:18 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
    Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
 
 /* Utilities for netCDF operators */ 
-
-/* Coding abbreviations:
-   abb = abbreviation
-   arg = argument
-   ass = associate
-   att = attribute
-   bool = Boolean
-   buf = buffer
-   cff = coefficient
-   chk = check
-   cmd = command
-   cmp = compare
-   cnt = count
-   cp = char *
-   cpy = copy
-   crd = coordinate
-   crr = current
-   dbg = debug
-   def = definition
-   dgt = digit
-   dlm = delimiter
-   dim = dimension
-   dp = double *
-   dst = distance
-   dup = duplicate
-   err = error
-   evl = evaluate
-   fl = file
-   fmt = format
-   fnl = final
-   fp = float *
-   glb = global
-   hst = history
-   id = identification
-   idx = index
-   in = input
-   inq = inquire
-   lcl = local
-   len = length
-   lft = left
-   lim = limit
-   lmn = element
-   ln = line
-   lp = long *
-   lst = list
-   lvl = level
-   max = maximum
-   min = minimum
-   mlc = molecule
-   mod = modulus
-   nbr = number
-   ncr = increment
-   nc = netCDF (file)
-   nm = name
-   nlm = unlimited
-   nlz = analyze
-   nrg = energy
-   ntl = initial
-   op = operation
-   out = output
-   prc = process
-   prg = program
-   prn = print
-   prs = parse
-   pth = path
-   ptr = pointer
-   rec = record
-   rmt = remote
-   rgt = right
-   sct = structure
-   sfx = suffix
-   sng = string
-   sp = short *
-   spec = specified
-   ss = subscript
-   srt = start/sort
-   str = strength
-   stt = status,statement
-   sys = system
-   sz = size
-   tm = time
-   tmp = temporary/volatile
-   unn = union
-   usg = usage
-   usr = user
-   val = value
-   var = variable
-   vec = vector
-   ver = version
-   vp = void *
-   xcl = exclude
-   xrf = cross reference
-   xpr = expression
-   xtr = extract
-   wgt = weight
-   wv = wave
-   */ 
 
 /* Standard header files */
 #include <math.h>               /* sin cos cos sin 3.14159 */
