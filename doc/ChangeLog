@@ -1,3 +1,10 @@
+2000-06-02  Charlie Zender  <zender@uci.edu>
+
+	* Had to re-tag nco1_1_48 because sourceforge CVS repository was
+	slightly out of sync with CGD repository
+
+	* Moved CVS repository to sourceforge
+
 2000-05-16  Charlie Zender  <zender@uci.edu>
 
 	* Tagged this as nco1_1_48
