@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.28 2000-07-01 20:58:36 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.29 2000-07-08 23:12:28 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -92,8 +92,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.28 2000-07-01 20:58:36 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.28 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.29 2000-07-08 23:12:28 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.29 $";
   char *nco_op_typ_sng=NULL_CEWI; /*  for average,  for minimium,  for maximium,  for total */
   
   dmn_sct **dim;
@@ -374,7 +374,7 @@ main(int argc,char **argv)
     /* Perform various error-checks on input file */ 
     if(False) (void)fl_cmp_err_chk();
 
-    if(prg == ncra || prg == ncrcat){
+    if(prg == ncra || prg == ncrcat){ /* ncea jumps to else branch */
       /* Loop over each record in current file */ 
       if(lmt_rec.srt > lmt_rec.end) (void)fprintf(stdout,"%s: WARNING %s (input file %d) is superfluous\n",prg_nm_get(),fl_in,idx_fl);
       for(idx_rec=lmt_rec.srt;idx_rec<=lmt_rec.end;idx_rec+=lmt_rec.srd){
@@ -390,10 +390,10 @@ main(int argc,char **argv)
 	  /* Retrieve the variable values from disk into memory */ 
 	  (void)var_get(in_id,var_prc[idx]);
 	  
-	  /* Perform y option min, max, total, or average */ 
+	  /* Perform arithmetic operations: min, max, total, or average */ 
 	  if(prg == ncra){
 	    var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
-	    var_nco_typ(idx_fl+idx,nco_op_typ,var_prc_out[idx],var_prc[idx]);
+	    nco_opr_drv(idx_rec_out,nco_op_typ,var_prc_out[idx],var_prc[idx]);
 	  } /* end if ncra */
 	  	  	  
 	  /* Append current record to output file */ 
@@ -423,6 +423,7 @@ main(int argc,char **argv)
 	(void)fprintf(stdout,"%s: ERROR No records lay within specified hyperslab\n",prg_nm_get());
 	exit(EXIT_FAILURE);
       } /* end if */
+      /* End of ncra, ncrcat section */
     }else{ /* ncea */ 
       /* Process all variables in current file */ 
       for(idx=0;idx<nbr_var_prc;idx++){
@@ -433,7 +434,7 @@ main(int argc,char **argv)
 	
 	/* Perform min max or add operations */ 
 	var_prc[idx]=var_conform_type(var_prc_out[idx]->type,var_prc[idx]);
-	var_nco_typ(idx_fl,nco_op_typ,var_prc_out[idx],var_prc[idx]);
+	nco_opr_drv(idx_fl,nco_op_typ,var_prc_out[idx],var_prc[idx]);
 	
 	/* Free current input buffer */
 	(void)free(var_prc[idx]->val.vp); var_prc[idx]->val.vp=NULL;
@@ -462,13 +463,15 @@ main(int argc,char **argv)
 	break;
       case nco_op_max:
 	break;
+      case nco_op_ttl:
+	break;
       case nco_op_avgsqr:
 	(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
 	/* Square the averages */
 	(void)var_multiply(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc_out[idx]->has_mss_val,var_prc_out[idx]->mss_val,var_prc_out[idx]->val,var_prc_out[idx]->val);
 	break;		
       case nco_op_avgsumsqr:
-	/* Normalize the sum of squares by the tally */
+	/* Normalize sum of squares by the tally */
 	(void)var_normalize(var_prc_out[idx]->type,var_prc_out[idx]->sz,var_prc[idx]->has_mss_val,var_prc[idx]->mss_val,var_prc[idx]->tally,var_prc_out[idx]->val);
 	break;
       default:

@@ -1,3 +1,18 @@
+2000-07-09  Charlie Zender  <zender@uci.edu>
+
+	* Fixed case when missing value is first in min and max operators
+
+	* Added min, max, ttl cases to nco_tst.sh
+
+	* Added temporary variable to all low-level arithmetic routines
+	(e.g., var_add()) to store missing value in order to reduce
+	dereferencing of pointers to missing values. This may result in
+	measurable speedups for all arithmetic operators. 
+
+2000-07-08  Charlie Zender  <zender@uci.edu>
+
+	* Applied minmaxttl03 patch
+
 2000-07-02  Charlie Zender  <zender@uci.edu>
 
 	* Added nco_op_typ to SGI enum section of nc.h

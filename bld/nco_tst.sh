@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.20 2000-07-01 01:13:38 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/nco_tst.sh,v 1.21 2000-07-08 23:12:28 zender Exp $
 
 # Purpose: NCO test battery
 
@@ -98,9 +98,21 @@ ncra -O -v rec_var_flt_mss_val_dbl in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
 echo "ncra 2: record mean of float with double missing values: 5 =?= $avg" 
 
-ncra -O -v rec_var_flt_mss_val_flt in.nc in.nc foo.nc 2>> foo.tst
-avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_flt foo.nc`
-echo "ncra 3: record mean with float missing values across two files: 5 =?= $avg" 
+ncra -O -y avg -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
+echo "ncra 3: record mean of float with double missing values across two files: 5 =?= $avg" 
+
+ncra -O -y min -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
+echo "ncra 4: record min of float with double missing values across two files: 2 =?= $avg" 
+
+ncra -O -y max -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
+echo "ncra 5: record max of float with double missing values across two files: 8 =?= $avg" 
+
+ncra -O -y ttl -v rec_var_flt_mss_val_dbl in.nc in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%f" -v rec_var_flt_mss_val_dbl foo.nc`
+echo "ncra 6: record ttl of float with double missing values across two files: 70 =?= $avg"
 
 ncea -O -v one_dmn_rec_var -d time,4 in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%d" -v one_dmn_rec_var foo.nc`
@@ -109,6 +121,10 @@ echo "ncea 1: ensemble mean across two files: 5 =?= $avg"
 ncea -O -v rec_var_flt_mss_val_flt -d time,0 in.nc in.nc foo.nc 2>> foo.tst
 avg=`ncks -C -H -s "%e" -v rec_var_flt_mss_val_flt foo.nc`
 echo "ncea 2: ensemble mean with missing values across two files: 1.0e36 =?= $avg" 
+
+ncea -O -y min -v rec_var_flt_mss_val_dbl -d time,1 in.nc in.nc foo.nc 2>> foo.tst
+avg=`ncks -C -H -s "%e" -v rec_var_flt_mss_val_dbl foo.nc`
+echo "ncea 3: ensemble min of float across two files: 2 =?= $avg" 
 
 /bin/rm -f foo.nc;mv in.nc in_tmp.nc;
 ncks -O -v one -p ftp://dust.ps.uci.edu/pub/zender/nco -l ./ in.nc foo.nc 2>> foo.tst
