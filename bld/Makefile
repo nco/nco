@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.253 2004-07-06 19:36:13 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.254 2004-07-06 22:38:55 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -54,6 +54,7 @@ MY_DOC_DIR := ../doc
 MY_DPN_DIR := ${MY_OBJ_DIR}
 MY_SRC_DIR := ../src/nco
 MY_INC_DIR := ${MY_SRC_DIR}
+NCO_CXX_SRC_DIR := ${MY_SRC_DIR}/../nco_c++
 
 # Primary tokens which determine build options
 # Specify non-default when invoking make, e.g. make DODS=Y
@@ -76,7 +77,7 @@ ifndef I18N
 endif
 ifndef MK_DPN
  MK_DPN = ${CPP} -M # NB: Recursive expansion required
- MK_DPN_C++ = ${C++} -M # NB: Recursive expansion required
+ MK_DPN_CXX = ${CXX} -M # NB: Recursive expansion required
 endif # endif MK_DPN
 ifndef NCO_VRS
 # Used for RPM building
@@ -232,11 +233,15 @@ null :=
 space := ${null} ${null}
 comma := ,
 newline := \n
-# We replace `/' by `cszzsc', call perl, then replace `cszzxc' by `/'
-# Unique character(s) to substitute for ${slash} before passing to perl regex
+# '/' and '+' appear in filenames ('/' is directory separator)
+# Operating on these with Perl is problematic since they are special Rx characters
+# We replace `/' and '+' by non-special Rx's, call perl, then demangle
+# Unique character(s) to substitute for '/' and '+' before passing to perl Rx
 slash_rx := cszzsc
+plus_rx := xdikmj
 # Unique character(s) to replace by ${slash_rx} before passing to perl regex
 slash := /
+plus := +
 MY_OBJ_DIR_RX := $(subst ${slash},${slash_rx},${MY_OBJ_DIR})
 MY_DPN_DIR_RX := $(subst ${slash},${slash_rx},${MY_DPN_DIR})
 
@@ -301,7 +306,7 @@ MDL_NCAP := $(addprefix ${MY_SRC_DIR}/,$(MDL_NCAP_TRG)) # `make distclean' remov
 ${MY_OBJ_DIR}/%.o : %.c
 	${CC} ${CPPFLAGS} ${CFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 ${MY_OBJ_DIR}/%.o : %.cc
-	${C++} ${CPPFLAGS} ${C++FLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
+	${CXX} ${CPPFLAGS} ${CXXFLAGS} -c $< -o ${MY_OBJ_DIR}/$(notdir $@)
 
 # Default Fortran pattern rules: CRAY and RS6K must override these rules
 ${MY_OBJ_DIR}/%.o : %.F
@@ -346,11 +351,13 @@ ${MY_DPN_DIR}/%.d : %.c
 	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
 
 ${MY_DPN_DIR}/%.d : %.cc
-#	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/$*.o $@/g;' > $@
-	${MK_DPN} ${CPPFLAGS} $< | perl -p -e 's/$*\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g' > $@
+# NB: Use ${CXX} rather than ${CPP} on C++ files for now because, e.g., SUNMP cpp does not pre-process .cc files quite correctly
+# Extra hack to allow C++ filenames to contain '+' character
+# $(subst ${plus},${plus_rx},${*}) is filename stub with an Rx in place of '+'
+	${MK_DPN_CXX} ${CXXCPPFLAGS} $< | perl -p -e 's/\${plus}/${plus_rx}/g;s/$(subst ${plus},${plus_rx},${*})\.o/${MY_OBJ_DIR_RX}\/$*.o ${MY_DPN_DIR_RX}\/$(notdir $@)/g;s/${slash_rx}/\${slash}/g;s/${plus_rx}/\${plus}/g' > $@
 
-# The first LDFLAGS is for typical C programs with netCDF, math, and networking
-# The second LDFLAGS enables C/Fortran linking
+# First LDFLAGS is for typical C programs with netCDF, math, and networking
+# Second LDFLAGS, when present, enables C/Fortran linking
 
 # Manually define autotools tokens normally defined in HAVE_CONFIG_H
 # Initialize OS-specific tokens to empty
@@ -380,8 +387,8 @@ ifneq (${null},$(findstring AIX,${PVM_ARCH}))
 # 20030804: Always use re-entrant (_r) compilers---Jim Edwards NCAR/IBM 
 CC := xlc_r -qlanglvl=extc99
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE
-C++ := xlC_r
-# C++ := g++
+CXX := xlC_r
+# CXX := g++
 # fxm: 20040311 should this be cpp? gcc -M?
 CPP := xlc -c -qlanglvl=extc99
 ifneq (${null},$(findstring xl,${CC}))
@@ -476,16 +483,16 @@ ifeq (${OPTS},X)
 endif
 ifeq (${ABI},64)
  CC += -maix64 
- C++ += -maix64 
+ CXX += -maix64 
 endif # endif ABI
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif # endif GNU Compiler Collection
 # -q64: Select 64-bit compiler mode (required for accessing large files)
 # -qwarn64: Warn on possible long-to-integer or pointer-to-integer truncation
-C++FLAGS := ${CFLAGS}
+CXXFLAGS := ${CFLAGS}
 ifeq (${OMP},Y)
  CFLAGS += ${OMP_FLG}
- C++FLAGS += ${OMP_FLG}
+ CXXFLAGS += ${OMP_FLG}
  FFLAGS += ${OMP_FLG}
  LDFLAGS := ${OMP_FLG} ${LDFLAGS}
 endif # endif OMP
@@ -496,7 +503,7 @@ ifeq (${PVM_ARCH},ALPHA)
 ifeq (${OMP},Y)
  OMP_FLG := -omp
 endif # endif OMP
-C++ := cxx
+CXX := cxx
 CC := cc
 CFLAGS := ${OMP_FLG}
 CPP := cpp
@@ -525,7 +532,7 @@ ifeq (${OPTS},X)
  CFLAGS := -g -N 132
  FFLAGS := -g -check bounds -check omp_bindings -check overflow -check underflow
 endif
-C++FLAGS := ${CFLAGS}
+CXXFLAGS := ${CFLAGS}
 ${MY_OBJ_DIR}/%.o : %.F90
 	${FC} -c ${FREEFLAGS} ${FFLAGS} ${CPPFLAGS} -o ${MY_OBJ_DIR}/$(notdir $@) $<
 ${MY_OBJ_DIR}/%.o : %.F
@@ -534,7 +541,7 @@ endif
 # endif ALPHA
 
 ifeq (${PVM_ARCH},CRAY)
-C++ := CC
+CXX := CC
 CC := cc
 CPP := cpp
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
@@ -575,7 +582,7 @@ endif
 # endif CRAY
 
 ifeq (${PVM_ARCH},HPPA)
-C++ := g++
+CXX := g++
 CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 FC := f77
@@ -605,7 +612,7 @@ endif
 
 # Works on LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, and FREEBSD
 ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHALINUXAMD64LINUXARMFREEBSD))
-C++ := ${LINUX_CXX}
+CXX := ${LINUX_CXX}
 CC := ${LINUX_CC}
 CPP := ${CC}
 # NB: nameser.h needs -Di386, but gcc sends -Di586 (on pentiums)
@@ -621,7 +628,7 @@ LEX := flex
 LINT := lint
 YACC := bison
 # Comeau C Compiler
-ifeq (${C++},como)
+ifeq (${CXX},como)
  CFLAGS := 
  CPPFLAGS += -DNEED_STRCASECMP
  CPPFLAGS += -DNEED_STRDUP
@@ -638,7 +645,7 @@ endif
 ifeq (${OPTS},X)
  CFLAGS += -g
 endif
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif # endif Comeau C Compiler
 # GNU Compiler Collection
 ifneq (${null},$(findstring gcc,${CC}))
@@ -692,7 +699,7 @@ ifeq (${ABI},64)
  LDFLAGS += -m64
 endif # endif ABI
 endif # endif LINUXAMD64
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif # endif GNU Compiler Collection
 # Intel (Kai) C Compiler
 ifeq (${CC},icc)
@@ -710,7 +717,7 @@ endif
 ifeq (${OPTS},X)
  CFLAGS += -g -inline_debug_info
 endif
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif # endif Intel (Kai) C Compiler
 # Intel (Kai) Fortran Compiler
 ifeq (${FC},ifc)
@@ -739,7 +746,7 @@ ifeq (${OPTS},X)
 endif
 endif # endif Intel (Kai) Fortran Compiler
 # Portland Group C++ Compiler
-ifeq (${C++},pgCC)
+ifeq (${CXX},pgCC)
 # Enable Large File Support (LFS) by default
  CFLAGS := -Mlfs
  LDFLAGS += -Mlfs
@@ -756,7 +763,7 @@ endif
 ifeq (${OPTS},X)
  CFLAGS += -g -Mbounds
 endif
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif # endif Portland Group C++ Compiler
 # Portland Group Fortran Compiler
 ifeq (${FC},pgf90)
@@ -803,7 +810,7 @@ endif
 # endif LINUX, LINUXALPHA, LINUXAMD64, LINUXARM, FREEBSD
 
 ifeq (${PVM_ARCH},MACOSX)
-C++ := c++
+CXX := c++
 CC := cc
 CFLAGS := -Wall
 CPP := ${CC}
@@ -827,7 +834,7 @@ ifeq (${OPTS},X)
  CFLAGS += -g -O
  LDFLAGS += /usr/local/lib/ccmalloc-gcc.o -L/usr/local/lib -lccmalloc -ldl
 endif
-C++FLAGS := ${CFLAGS}
+CXXFLAGS := ${CFLAGS}
 ifeq (${OMP},Y)
  CFLAGS += ${OMP_FLG}
  FFLAGS += ${OMP_FLG}
@@ -840,7 +847,7 @@ ifeq (${PVM_ARCH},NECSX)
 ifeq (${OMP},Y)
  OMP_FLG := -Popenmp
 endif # endif OMP
-C++ := c++
+CXX := c++
 #CC := c++ -Xa
 CC := cc
 CPP := c++ -E
@@ -876,7 +883,7 @@ endif
 # endif NECSX
 
 ifeq (${PVM_ARCH},RS6K)
-C++ := g++
+CXX := g++
 CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
 CPP := /lib/cpp -P
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
@@ -914,10 +921,10 @@ ifneq (${null},$(findstring SGI,${PVM_ARCH}))
 ifeq (${OMP},Y)
  OMP_FLG := -mp -mpio
 endif # endif OMP
-C++ := CC -LANG:std
+CXX := CC -LANG:std
 CC := cc
 # 20000302: -w suppresses warnings which will swamp linker
-#C++ := g++ -w
+#CXX := g++ -w
 #CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
 CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} ${CPP_PTH} -I${NETCDF_INC}
 ifdef $(MIPSPRO_SGI)
@@ -956,7 +963,7 @@ endif
 ifeq (${OPTS},X)
  CFLAGS += ${GCC_ABI_FLG} -g -O -Wall
 endif
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif
 # endif CC=gcc
 ifeq (${CC},cc)
@@ -997,7 +1004,7 @@ endif
 # endif SGI6, SGI64, SGIMP64
 
 ifeq (${UNAMES},SunOS) 
-C++ := g++
+CXX := g++
 CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
 CFLAGS := -Wall
 CPP := cpp
@@ -1026,12 +1033,12 @@ ifeq (${FC},f77)
  FFLAGS += -C
 endif
 endif
- C++FLAGS := ${CFLAGS}
+ CXXFLAGS := ${CFLAGS}
 endif
 # endif SunOS=SUN4SOL2,SUNMP
 
 ifeq (${PVM_ARCH},WIN32)
-C++ := g++
+CXX := g++
 CC := gcc -std=c99 -pedantic -D_BSD_SOURCE -D_POSIX_SOURCE
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
 CPP_TKN_OS += -Di386 -I/usr/include
@@ -1106,6 +1113,10 @@ endif # endif SGI
  CPPFLAGS += -U_OPENMP
 endif # endif OMP
 
+# Define CPPCXXFLAGS after making all possible modifications to CPPFLAGS
+# Add nco_c++ to directory search path
+CXXCPPFLAGS := ${CPPFLAGS} -I${NCO_CXX_SRC_DIR}
+
 # Define any remaining variables
 libnco := ${MY_LIB_DIR}/libnco
 
@@ -1179,6 +1190,16 @@ strip:
 buildclean: bld_cln
 bld_cln:
 	cd ${MY_BLD_DIR}; rm -f TAGS
+libtest:	libtst
+libtst:	libnco_tst libnco_c++_tst
+libnco_tst:   ${MY_BLD_DIR}/libnco_tst
+${MY_BLD_DIR}/libnco_tst:	${MY_BLD_DIR}/libnco_tst.o lib
+	${CC} -o $@ $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
+libnco_c++_tst:   ${MY_BLD_DIR}/libnco_c++_tst
+${MY_BLD_DIR}/libnco_c++_tst:	${MY_BLD_DIR}/libnco_c++_tst.o lib
+	${CXX} -o $@ $< ${LDFLAGS}
+	chmod 755 $@${BNR_SFX}
 rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.5.1 rpm
 	cd ${DATA}/tmp; \
 	/bin/rm -fr ${DATA}/tmp/nco*; \
@@ -1333,8 +1354,8 @@ dbg:
 	@printf "ABI = ${ABI}\n"
 	@printf "AR = ${AR}\n"
 	@printf "BNR_SFX = ${BNR_SFX}\n"
-	@printf "C++ = ${C++}\n"
-	@printf "C++FLAGS = ${C++FLAGS}\n"
+	@printf "CXX = ${CXX}\n"
+	@printf "CXXFLAGS = ${CXXFLAGS}\n"
 	@printf "CC = ${CC}\n"
 	@printf "CFLAGS = ${CFLAGS}\n"
 	@printf "CPP = ${CPP}\n"

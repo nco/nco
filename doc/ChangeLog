@@ -4,6 +4,13 @@
 	Changes since nco-2_9_6: Read MFO input files from stdin, add 
 	more attribute functionality to nco_c++, turn threading on in ncra
 
+	* Updated Makefile to use sophisticated make depends rules that
+	handle plusses and slashes in filenames better
+
+	* Added libtest, libtst targets to Makefile
+
+	* Change from C++ to CXX in Makefile
+
 	* Finished replacing %zu's with %lu's with casts to (unsigned long)
 
 	* Provide definitions of fabsf(), sqrtf() in nco_var_rth.c from

@@ -24,7 +24,7 @@
 #include <iostream> // Standard C++ I/O streams cout, cin
 #include <string> // Standard C++ string class
 #include <netcdf.h> // netCDF C interface
-#include "libnco_c++.hh" // C++ interface to netCDF C library
+#include <libnco_c++.hh> // C++ interface to netCDF C library
 int main()
 {
   const nc_type nco_xtyp(nco_get_xtype(static_cast<double>(1.0))); // [enm] External netCDF type

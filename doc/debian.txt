@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.26 2004-07-06 20:59:22 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/debian.txt,v 1.27 2004-07-06 22:38:56 zender Exp $ -*-text-*-
 
 # Purpose: Debian information for NCO netCDF Operators project
 # Notes describe procedure to manipulate Debian-specific distribution
@@ -75,7 +75,7 @@ patch -p0 < nco_X.Y.Z-3.diff # Patch destination with Debian diff
 # tags-query replace 2.9.7 with X.Y.Z+1
 # If tags-query replace does not work, be sure to manually change
 # versions in configure.in, debian/files, doc/ANNOUNCE, doc/debian.txt,
-# doc/index.shtml, doc/nco_dst.pl, doc/VERSION, 
+# doc/index.shtml, doc/nco.texi, doc/nco_dst.pl, doc/VERSION 
    cd ~/nco/debian
    dch -v 2.9.7-1 # Update changelog
 # For unknown reason rules file may lose its executable bit
