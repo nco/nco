@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.211 2004-03-01 01:20:16 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.212 2004-03-02 07:54:24 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -2096,21 +2096,25 @@ any files controlled by a @acronym{DODS/OPeNDAP} server.
 Simply specify the input file path(s) in @acronym{URL} notation and all 
 @acronym{NCO} operations may be performed on remote files made
 accessible by a @acronym{DODS/OPeNDAP} server. 
-For example, this computes (remotely) and stores (locally) the global
-mean surface pressure (in Pa) in an equatorial region from 
-@acronym{NCEP daily reanalyses} data of the year 1969 made freely 
-available by a @acronym{NOAA} @acronym{DODS/OPeNDAP} server:
+For example, this extracts (remotely) an equatorial hyperslab,
+from @acronym{NCEP daily reanalyses} data of the year 1969 made freely   
+available by a @acronym{NOAA} @acronym{DODS/OPeNDAP} server.
+Then it sends the hyperslab to the local @command{ncwa} client which
+computes and stores (locally) the regional mean surface pressure 
+@w{(in Pa)}. 
 @example
-ncks -O -C -d time,0 -d lon,0. -d lat,0. -l ./ -p \
-http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
-pres.sfc.1969.nc foo.nc
 ncwa -O -C -a lat,lon,time -d lon,-10.,10. -d lat,-10.,10. -l ./ -p \
 http://www.cdc.noaa.gov/cgi-bin/nph-nc/Datasets/ncep.reanalysis.dailyavgs/surface \
 pres.sfc.1969.nc foo.nc
 @end example
 @noindent
-The data in this particular input file are packed, although this is
-completely transparent to the user. 
+@cindex packing
+@cindex unpacking
+All with one command!
+The data in this particular input file also happen to be packed
+(@pxref{Intrinsic functions}), although this is completely transparent
+to the user since @acronym{NCO} automatically unpacks them before
+attempting arithmetic. 
 
 @acronym{NCO} obtains remote files from the @acronym{DODS/OPeNDAP} server
 (e.g., @file{www.cdc.noaa.gov}) rather than the local machine. 
