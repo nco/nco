@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.7 1999-05-10 06:36:24 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.8 1999-05-11 08:01:07 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -6,20 +6,21 @@
    The file LICENSE contains the full copyright notice 
    Contact NSF/UCAR/NCAR/CGD/CMS for copyright assistance */
 
-/* Purpose: Compute averages of specified hyperslabs of specfied variables
-   of multiple input netCDF files and output them to a single file. */
+/* Purpose: Compute averages or extract series of specified hyperslabs of 
+   specfied variables of multiple input netCDF files and output them 
+   to a single file. */
 
 /* Usage:
-   ncra -a 3,4,1 -p /data/zender/tmp h0001.nc foo.nc
-   ncra -a 3,4,1 -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
-   ncra -a 3,4,1 -p /ZENDER/tmp -l /data/zender/tmp h0001.nc foo.nc
-   ncra -a 3,4,1 -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc foo.nc
+   ncra -n 3,4,1 -p /data/zender/tmp h0001.nc foo.nc
+   ncra -n 3,4,1 -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
+   ncra -n 3,4,1 -p /ZENDER/tmp -l /data/zender/tmp h0001.nc foo.nc
+   ncra -n 3,4,1 -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc foo.nc
 
    ncea in.nc in.nc foo.nc
-   ncea -a 3,4,1 -p /data/zender/tmp h0001.nc foo.nc
-   ncea -a 3,4,1 -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
-   ncea -a 3,4,1 -p /ZENDER/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
-   ncea -a 3,4,1 -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc foo.nc
+   ncea -n 3,4,1 -p /data/zender/tmp h0001.nc foo.nc
+   ncea -n 3,4,1 -p /data/zender/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
+   ncea -n 3,4,1 -p /ZENDER/tmp -l /data/zender/tmp/rmt h0001.nc foo.nc
+   ncea -n 3,4,1 -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc foo.nc
  */ 
 
 /* Standard header files */
@@ -66,8 +67,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */ 
   char *time_buf_srt;
   char *cmd_ln;
-  char rcs_Id[]="$Id: ncra.c,v 1.7 1999-05-10 06:36:24 zender Exp $"; 
-  char rcs_Revision[]="$Revision: 1.7 $";
+  char rcs_Id[]="$Id: ncra.c,v 1.8 1999-05-11 08:01:07 zender Exp $"; 
+  char rcs_Revision[]="$Revision: 1.8 $";
   
   dim_sct **dim;
   dim_sct **dim_out;

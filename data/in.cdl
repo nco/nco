@@ -3,6 +3,11 @@
 // Usage:
 // ncgen -b -o in.nc in.cdl
 // ncgen -b -o /home/zender/nc/nco/data/in.nc /home/zender/nc/nco/data/in.cdl
+// mswrite -t 365 in.nc /ZENDER/tmp/in.nc
+// mswrite -t 365 in.nc /ZENDER/tmp/h0001.nc
+// mswrite -t 365 in.nc /ZENDER/tmp/h0002.nc
+// mswrite -t 365 in.nc /ZENDER/tmp/h0003.nc
+// mswrite -t 365 in.nc /ZENDER/tmp/h0004.nc
 
 // NB: Changing the values of the variables below, especially the coordinate 
 // variables, may affect the outcome of the test script nco_tst.sh.
@@ -19,7 +24,7 @@ variables:
 	:convention = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.6 1999-01-07 00:59:14 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.7 1999-05-11 08:01:06 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);

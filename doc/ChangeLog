@@ -1,6 +1,20 @@
+1999-05-11  Charlie Zender  <zender@z.ppp.ucar.edu>
+
+	* Tagged this as nco1_1_30
+
+	* Tentatively fixed record hyperslab problems introduced in 1_1_29
+	by extensively generalizing and rewriting lim_evl()
+
+	* Clarified in User's Guide that default behavior of stride is
+	that -d time,,,srd is syntactically equivalent to -d time,0,,srd
+
+	* Realized new record dimension features of nco1_1_29 were buggy
+	when min and max limits were not both user-specified because then
+	total number of records cannot be not known a priori
+
 1999-05-10  Charlie Zender  <zender@z.ppp.ucar.edu>
 
-	* Tagged and released this as nco1_1_29
+	* Tagged this as nco1_1_29
 
 	* Cleaned up files for a clean compile with gcc -Wall
 

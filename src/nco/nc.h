@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.9 1999-05-10 06:36:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.10 1999-05-11 08:01:06 zender Exp $ */
 
 /* Typedefs and global variables for netCDF operators */ 
 
@@ -105,9 +105,12 @@ enum{
 
 typedef struct {
   char *nm;
-  bool is_usr_spc_lmt; /* True if user-specified limit, else False (automatically generated limit) */
+  /* The following four flags are used only by the multi-file operators */
+  bool is_usr_spc_lmt; /* True if any part of limit is user-specified, else False */
+  bool is_usr_spc_min; /* True if user-specified, else False */
+  bool is_usr_spc_max; /* True if user-specified, else False */
   bool is_rec_dmn; /* True if record dimension, else False */
-  long srt_srd_off; /* Offset of starting index due to non-unity stride (multi-file record dimension only) */
+  long rec_skp; /* Records skipped at end of previous file (multi-file record dimension only) */
   char *min_sng; /* user-specified string for dimension minimum */ 
   char *max_sng; /* user-specified string for dimension maximum */ 
   char *srd_sng; /* user-specified string for dimension stride */ 

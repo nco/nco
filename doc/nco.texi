@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.20 1999-05-10 06:36:23 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.21 1999-05-11 08:01:06 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -1515,6 +1515,17 @@ the third comma in the @samp{-d} argument.
 There is no default value for @var{stride}. 
 Thus using @samp{-d time,,,2} is valid but @samp{-d time,,,2.0} and
 @samp{-d time,,,} are not.
+When @var{stride} is specified but @var{min} is not, there is an
+ambiguity as to whether the extracted hyperslab should begin with (using
+C-style, 0-based indexes) element 0 or element @samp{stride-1}.
+NCO resolves this by alway choosing element 0 to be the first element of
+the hyperslab.
+Thus @samp{-d time,,,@var{stride}} is syntactically equivalent to
+@samp{-d time,0,,@var{stride}}.
+This means, for example, that specifying the operation @samp{-d
+time,,,2} on the array @samp{1,2,3,4,5} selects the hyperslab @samp{1,3,5}.
+To obtain the hyperslab @samp{2,4} instead, simply explicitly specify
+the starting index as 1, i.e., @samp{-d time,1,,2}. 
 
 For example, consider a file @file{8501_8912.nc} which contains 60
 consecutive months of data. 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.15 1999-05-10 06:36:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.16 1999-05-11 08:01:06 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -139,8 +139,8 @@ lim_prs(int nbr_lim,char **lim_arg)
     } /* end if */ 
 
     /* Initialize structure */ 
-    /* lim strings which are not explicitly set by the user will remain as NULLs,
-       i.e., specifying the default setting will appear as if nothing at all was set.
+    /* lim strings which are not explicitly set by the user remain NULL, i.e., 
+       specifying the default setting will appear as if nothing at all was set.
        Hopefully, in the routines that follow, the branch followed by a dimension for which
        all the default settings were specified (e.g.,"-d foo,,,,") will yield the same answer
        as the branch for which no hyperslab along that dimension was set.

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.25 1999-05-10 06:46:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.26 1999-05-11 08:01:06 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -19,7 +19,7 @@
 #include "nc.h"                 /* netCDF operator universal def'ns */
 /* #include <errno.h> */             /* errno */
 /* #include <malloc.h>    */         /* malloc() stuff */
-/* #include <assert.h> */            /* assert() debugging macro */ 
+#include <assert.h>             /* assert() debugging macro */ 
 
 char *
 nc_type_nm(nc_type type)
@@ -189,6 +189,8 @@ lim_evl(int nc_id,lim_sct *lim_ptr,long cnt_crr,bool FORTRAN_STYLE)
      dimensions for the correct formulation of dimension start and
      count vectors, or fail trying. */ 
 
+  bool flg_no_data=False; /* True if file contains no data for hyperslab */
+
   dim_sct dim;
 
   enum lim_type{
@@ -206,9 +208,9 @@ lim_evl(int nc_id,lim_sct *lim_ptr,long cnt_crr,bool FORTRAN_STYLE)
   
   long idx;
   long dim_sz;
-  long cnt_rmn_crr; /* Records to extract from current file */
-  long cnt_rmn_ttl; /* Total records remaining to be read from this and all remaining files */
-  long srt_srd_off_prv; /* Starting offset applied to this file (diagnostic only) */
+  long cnt_rmn_crr=-1L; /* Records to extract from current file */
+  long cnt_rmn_ttl=-1L; /* Total records remaining to be read from this and all remaining files */
+  long rec_skp_prv=-1L; /* Records skipped at end of previous file (diagnostic only) */
 
   lim=*lim_ptr;
 
@@ -268,7 +270,7 @@ lim_evl(int nc_id,lim_sct *lim_ptr,long cnt_crr,bool FORTRAN_STYLE)
   } /* end else */ 
   
   /* Both min_lim_type and max_lim_type are now defined
-     Continue only if both limits are of the same type. */
+     Continue only if both limits are of the same type */
   if(min_lim_type != max_lim_type){
     (void)fprintf(stdout,"%s: ERROR -d %s,%s,%s\n",prg_nm_get(),lim.nm,lim.min_sng,lim.max_sng);
     (void)fprintf(stdout,"Limits on dimension \"%s\" must be of same numeric type:\n",lim.nm);
@@ -469,15 +471,35 @@ lim_evl(int nc_id,lim_sct *lim_ptr,long cnt_crr,bool FORTRAN_STYLE)
     
     int rec_dim_id;
 
-    /* Specifying stride, but not min or max is legal */
-    if(lim.min_sng == NULL){
+    /* Specifying stride alone, but not min or max, is legal, e.g., -d time,,,2
+       Thus is_usr_spc_lmt may be True, even though one or both of min_sng, max_sng is NULL
+       Furthermore, both min_sng and max_sng are artifically created by lim_dim_mk()
+       for record dimensions when the user does not explicitly specify limits.
+       In this case, min_sng_and max_sng are non-NULL though no limits were specified
+       In fact, min_sng and max_sng are set to the minimum and maximum string
+       values of the first file processed.
+       However, we can tell if these strings were artificially generated because 
+       lim_dim_mk() sets the is_usr_spc_lmt flag to False in such cases.
+       Subsequent files may have different numbers of records, but lim_dim_mk()
+       is only called once.
+       Thus we must update min_idx and max_idx here for each file
+       This causes min_idx and max_idx to be out of sync with min_sng and max_sng, 
+       which are only set in lim_dim_mk() for the first file.
+       In hindsight, artificially generating min_sng and max_sng is probably a bad idea.
+    */
+    /* Following logic is messy, but hard to simplify */ 
+    if(lim.min_sng == NULL || !lim.is_usr_spc_lmt){
+      /* No user-specified value available--generate minimal dimension index */
       if(FORTRAN_STYLE) lim.min_idx=1L; else lim.min_idx=0L;
     }else{
+      /* Use user-specified limit when available */
       lim.min_idx=atol(lim.min_sng);
     } /* end if */
-    if(lim.max_sng == NULL){
+    if(lim.max_sng == NULL || !lim.is_usr_spc_lmt){
+      /* No user-specified value available--generate maximal dimension index */
       if(FORTRAN_STYLE) lim.max_idx=dim_sz; else lim.max_idx=dim_sz-1L;
     }else{
+      /* Use user-specified limit when available */
       lim.max_idx=atol(lim.max_sng);
     } /* end if */
 
@@ -519,54 +541,152 @@ lim_evl(int nc_id,lim_sct *lim_ptr,long cnt_crr,bool FORTRAN_STYLE)
 	 Note, however, that this implementation is recent and possibly incomplete
 	 Stride is not officially supported on any operator besides ncks */
       if(lim.srd != 1L && prg_get() != ncks && !lim.is_rec_dmn) (void)fprintf(stderr,"%s: WARNING Stride argument is not supported in any operator except ncks, use at your own risk...\n",prg_nm_get());
-	/* Total number of records remaining to be read depends on the stride */
-      if(lim.srd == 1L){
-	cnt_rmn_ttl=lim.max_idx-lim.min_idx+1L-cnt_crr;
-      }else{
+
+      /* No records were skipped in previous files */
+      /* Initialize rec_skp to 0L on first call to lim_evl() 
+	 This is necessary due to the intrinsic hysterisis of rec_skp */
+      if(cnt_crr == 0L) lim.rec_skp=0L;
+	  
+      if(lim.is_usr_spc_min && lim.is_usr_spc_max){
+	/* cnt_rmn_ttl is determined only when both min and max are known */
 	cnt_rmn_ttl=-cnt_crr+1L+(lim.max_idx-lim.min_idx)/lim.srd;
-      } /* end else */
-      if(cnt_crr == 0L){
-	/* No records have been read from previous files */
-	/* Initialize srt_srd_off to 0L on first call to lim_evl() 
-	   This is necessary due to the intrinsic hysterisis srt_srd_off */
-	lim.srt_srd_off=0L;
-	/* Start index is min_idx for first file */
-	lim.srt=lim.min_idx;
-	if(lim.srd == 1L){
-	  /* With unity stride, the end index is lesser of number of remaining records to read and number of records in this file */
-	  lim.end=(lim.max_idx < dim_sz) ? lim.max_idx : dim_sz-1L;
+	if(cnt_rmn_ttl == 0){
+	  (void)fprintf(stdout,"%s: WARNING Current file is superfluous to specified hyperslab\n",prg_nm_get());
+	  flg_no_data=True;
+	} /* endif */
+	if(cnt_crr == 0L){
+	  /* Start index is min_idx for first file */
+	  lim.srt=lim.min_idx;
+	  if(lim.srd == 1L){
+	    /* With unity stride, the end index is lesser of number of remaining records to read and number of records in this file */
+	    lim.end=(lim.max_idx < dim_sz) ? lim.max_idx : dim_sz-1L;
+	  }else{
+	    cnt_rmn_crr=1L+(dim_sz-1L-lim.srt)/lim.srd;
+	    cnt_rmn_crr=(cnt_rmn_ttl < cnt_rmn_crr) ? cnt_rmn_ttl : cnt_rmn_crr;
+	    lim.end=lim.srt+lim.srd*(cnt_rmn_crr-1L);
+	  } /* end else */
 	}else{
-	  cnt_rmn_crr=1L+(dim_sz-1L-lim.srt)/lim.srd;
-	  cnt_rmn_crr=(cnt_rmn_ttl < cnt_rmn_crr) ? cnt_rmn_ttl : cnt_rmn_crr;
-	  lim.end=lim.srt+lim.srd*(cnt_rmn_crr-1L);
-	} /* end else */
-      }else{
-	/* Records have been read from previous file(s) */
-	if(lim.srd == 1L){
-	  /* Start index is zero since continguous records are requested */
-	  lim.srt=0L;
-	  /* End index is lesser of number of records to read from all remaining files (including this one) and number of records in this file */
-	  lim.end=(cnt_rmn_ttl < dim_sz) ? cnt_rmn_ttl-1L : dim_sz-1L;
+	  /* Records have been read from previous file(s) */
+	  if(lim.srd == 1L){
+	    /* Start index is zero since contiguous records are requested */
+	    lim.srt=0L;
+	    /* End index is lesser of number of records to read from all remaining files (including this one) and number of records in this file */
+	    lim.end=(cnt_rmn_ttl < dim_sz) ? cnt_rmn_ttl-1L : dim_sz-1L;
+	  }else{
+	    /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
+	    lim.srt=lim.srd-lim.rec_skp-1L;
+	    cnt_rmn_crr=1L+(dim_sz-1L-lim.srt)/lim.srd;
+	    cnt_rmn_crr=(cnt_rmn_ttl < cnt_rmn_crr) ? cnt_rmn_ttl : cnt_rmn_crr;
+	    lim.end=lim.srt+lim.srd*(cnt_rmn_crr-1L);
+	  } /* end else */
+	} /* endif user-specified records have already been read */
+      }else if(lim.is_usr_spc_min){
+	/* If min was user specified but max was not, then we know which record to 
+	   start with and we read every file subsequent file */
+	if(cnt_crr == 0L){
+	  /* Start index is min_idx for first file */
+	  lim.srt=lim.min_idx;
+	  if(lim.srd == 1L){
+	    lim.end=dim_sz-1L;
+	  }else{
+	    cnt_rmn_crr=1L+(dim_sz-1L-lim.srt)/lim.srd;
+	    lim.end=lim.srt+lim.srd*(cnt_rmn_crr-1L);
+	  } /* end else */
 	}else{
-	  /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
-	  lim.srt=lim.srt_srd_off;
-	  cnt_rmn_crr=1L+(dim_sz-1L-lim.srt)/lim.srd;
-	  cnt_rmn_crr=(cnt_rmn_ttl < cnt_rmn_crr) ? cnt_rmn_ttl : cnt_rmn_crr;
-	  lim.end=lim.srt+lim.srd*(cnt_rmn_crr-1L);
-	} /* end else */
-      } /* endif user-specified records have already been read */
-      /* Save current srt_srd_off for diagnostics */
-      srt_srd_off_prv=lim.srt_srd_off;
-      /* srt_srd_off for next file is the stride minus the number of unused records
+	  /* Records have been read from previous file(s) */
+	  if(lim.srd == 1L){
+	    /* Start index is zero since contiguous records are requested */
+	    lim.srt=0L;
+	    lim.end=dim_sz-1L;
+	  }else{
+	    /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
+	    lim.srt=lim.srd-lim.rec_skp-1L;
+	    cnt_rmn_crr=1L+(dim_sz-1L-lim.srt)/lim.srd;
+	    lim.end=lim.srt+lim.srd*(cnt_rmn_crr-1L);
+	  } /* end else */
+	} /* endif user-specified records have already been read */
+      }else if(lim.is_usr_spc_max){
+	/* If max was user specified but min was not, then we know which index to 
+	   end with and we read record (modulo srd) until we get there */
+	if(cnt_crr == 0L){
+	  /* Start index is min_idx = 0L for first file */
+	  lim.srt=lim.min_idx;
+	  if(lim.srd == 1L){
+	    /* With unity stride, the end index is lesser of number of remaining records to read and number of records in this file */
+	    lim.end=(lim.max_idx < dim_sz) ? lim.max_idx : dim_sz-1L;
+	  }else{
+	    /* Record indices in the first file are global record indices */
+	    lim.end=(dim_sz-(dim_sz%lim.srd));
+	    lim.end=(lim.max_idx < lim.end) ? lim.max_idx : lim.end;
+	  } /* end else */
+	}else{
+	  /* Records have been read from previous file(s) 
+	     We must now account for the "index shift" from previous files */
+
+	  long rec_idx_glb_off; /* Global index of first record in this file */
+	  long max_idx_lcl; /* User-specified max index in "local" file */
+
+	  /* Global index of first record in this file */
+	  rec_idx_glb_off=(cnt_crr-1L)*lim.srd+lim.rec_skp+1L;
+	  /* Convert user-specified max index to "local" index in current file */
+	  max_idx_lcl=lim.max_idx-rec_idx_glb_off;
+	  if(max_idx_lcl < 0){
+	    (void)fprintf(stdout,"%s: WARNING Current file is superfluous to specified hyperslab\n",prg_nm_get());
+	    flg_no_data=True;
+	  } /* endif */
+	  if(lim.srd == 1L){
+	    /* Start index is zero since contiguous records are requested */
+	    lim.srt=0L;
+	    lim.end=(max_idx_lcl < dim_sz) ? max_idx_lcl : dim_sz-1L;
+	  }else{
+	    /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
+	    lim.srt=lim.srd-lim.rec_skp-1L;
+	    lim.end=lim.srt;
+	    while(lim.end < dim_sz-lim.srd && lim.end < max_idx_lcl-lim.srd){
+	      lim.end+=lim.srd;
+	    } /* end while */
+	  } /* end else */
+	} /* endif user-specified records have already been read */
+      }else if(!lim.is_usr_spc_min && !lim.is_usr_spc_max){
+	/* If stride was specified without min or max, then we read in all records
+	   (modulo the stride) from every file */
+	if(cnt_crr == 0L){
+	  /* Start index is min_idx = 0L for first file */
+	  lim.srt=lim.min_idx;
+	  if(lim.srd == 1L){
+	    lim.end=dim_sz-1L;
+	  }else{
+	    lim.end=(dim_sz-(dim_sz%lim.srd));
+	  } /* end else */
+	}else{
+	  /* Records have been read from previous file(s) */
+	  if(lim.srd == 1L){
+	    /* Start index is zero since contiguous records are requested */
+	    lim.srt=0L;
+	    lim.end=dim_sz-1L;
+	  }else{
+	    /* Start index will be non-zero if all previous file sizes (in records) were not evenly divisible by stride */
+	    lim.srt=lim.srd-lim.rec_skp-1L;
+	    cnt_rmn_crr=1L+(dim_sz-1L-lim.srt)/lim.srd;
+	    lim.end=lim.srt+lim.srd*(cnt_rmn_crr-1L);
+	  } /* end else */
+	} /* endif user-specified records have already been read */
+      } /* end if srd but not min or max was user-specified */
+      /* Compute diagnostic count for this file only */
+      cnt_rmn_crr=1L+(lim.end-lim.srt)/lim.srd;
+      /* Save current rec_skp for diagnostics */
+      rec_skp_prv=lim.rec_skp;
+      /* rec_skp for next file is the stride minus the number of unused records
 	 at end of this file (dim_sz-1L-lim.end) minus one */
-      lim.srt_srd_off=lim.srd-(dim_sz-1L-lim.end)-1L;
+      lim.rec_skp=dim_sz-1L-lim.end;
+      /*      assert(lim.rec_skp >= 0);*/
     } /* endif user-specified limits to record dimension */
     
   } /* end else limit arguments are hyperslab indices */
   
-  /* Compute cnt from srt, end, and srd 
+  /* Compute cnt from srt, end, and srd
      This is fine for multi-file record dimensions since those operators read in one
-     record at a time and thus never actually use lim.cnt for the record dimension
+     record at a time and thus never actually use lim.cnt for the record dimension.
    */ 
   if(lim.srd == 1L){
     if(lim.srt <= lim.end) lim.cnt=lim.end-lim.srt+1L; else lim.cnt=dim_sz-lim.srt+lim.end+1L;
@@ -611,6 +731,18 @@ lim_evl(int nc_id,lim_sct *lim_ptr,long cnt_crr,bool FORTRAN_STYLE)
     exit(EXIT_FAILURE);
   } /* end if */
     
+  if(flg_no_data){
+    /* This file is superfluous to the specified hyperslab
+       Set the output parameters to a well-defined state
+       This state must not cause ncra or ncrcat to retrieve any data
+       Since ncra and ncrcat use loops for the record dimension, this
+       may be accomplished by returning loop control values that cause
+       the loop never to be entered, lim_rec.srt > lim_rec.end */
+    lim.srt=-1;
+    lim.end=lim.srt-1;
+    lim.cnt=-1;
+  } /* endif */
+  
   *lim_ptr=lim;
   
   if(dbg_lvl_get() == 5){
@@ -619,10 +751,10 @@ lim_evl(int nc_id,lim_sct *lim_ptr,long cnt_crr,bool FORTRAN_STYLE)
     (void)fprintf(stderr,"Limit %s user-specified\n",(lim.is_usr_spc_lmt) ? "is" : "is not ");
     (void)fprintf(stderr,"Limit %s record dimension\n",(lim.is_rec_dmn) ? "is" : "is not ");
     if(lim.is_rec_dmn) (void)fprintf(stderr,"Records read from previous files = %li\n",cnt_crr);
-    if(lim.is_rec_dmn && lim.is_usr_spc_lmt) (void)fprintf(stderr,"Total records to be read from this and all following files = %li\n",cnt_rmn_ttl);
-    if(lim.is_rec_dmn && lim.is_usr_spc_lmt) (void)fprintf(stderr,"Records to be read from this file = %li\n",cnt_rmn_crr);
-    if(lim.is_rec_dmn && lim.is_usr_spc_lmt) (void)fprintf(stderr,"srt_srd_off (this file) = %li \n",srt_srd_off_prv);
-    if(lim.is_rec_dmn && lim.is_usr_spc_lmt) (void)fprintf(stderr,"srt_srd_off (next file, if any) = %li \n",lim.srt_srd_off);
+    if(cnt_rmn_ttl != -1L) (void)fprintf(stderr,"Total records to be read from this and all following files = %li\n",cnt_rmn_ttl);
+    if(cnt_rmn_crr != -1L) (void)fprintf(stderr,"Records to be read from this file = %li\n",cnt_rmn_crr);
+    if(rec_skp_prv != -1L) (void)fprintf(stderr,"rec_skp_prv (previous file, if any) = %li \n",rec_skp_prv);
+    if(rec_skp_prv != -1L) (void)fprintf(stderr,"rec_skp (this file) = %li \n",lim.rec_skp);
     (void)fprintf(stderr,"min_sng = %s\n",lim.min_sng == NULL ? "NULL" : lim.min_sng);
     (void)fprintf(stderr,"max_sng = %s\n",lim.max_sng == NULL ? "NULL" : lim.max_sng);
     (void)fprintf(stderr,"srd_sng = %s\n",lim.srd_sng == NULL ? "NULL" : lim.srd_sng);
@@ -1153,18 +1285,34 @@ lim_dim_mk(int nc_id,int dim_id,lim_sct *lim,int nbr_lim,bool FORTRAN_STYLE)
   
   lim_sct lim_dim;
 
+  /* Initialize defaults to False, override later if warranted */
+  lim_dim.is_usr_spc_lmt=False; /* True if any part of limit is user-specified, else False */
+  lim_dim.is_usr_spc_max=False; /* True if user-specified, else False */
+  lim_dim.is_usr_spc_min=False; /* True if user-specified, else False */
+
   for(idx=0;idx<nbr_lim;idx++){
     /* Copy user-specified limits, if any */ 
     if(lim[idx].id == dim_id){
-      lim_dim.is_usr_spc_lmt=True; /* Flag needed by multi-file operators */
-      if(lim[idx].max_sng != NULL) lim_dim.max_sng=(char *)strdup(lim[idx].max_sng); else lim_dim.max_sng=NULL;
-      if(lim[idx].min_sng != NULL) lim_dim.min_sng=(char *)strdup(lim[idx].min_sng); else lim_dim.min_sng=NULL;
+      lim_dim.is_usr_spc_lmt=True; /* True if any part of limit is user-specified, else False */
+      if(lim[idx].max_sng == NULL){
+	lim_dim.max_sng=NULL;
+      }else{
+	lim_dim.max_sng=(char *)strdup(lim[idx].max_sng);
+	lim_dim.is_usr_spc_max=True; /* True if user-specified, else False */
+      } /* end if */
+      if(lim[idx].min_sng == NULL){
+	lim_dim.min_sng=NULL;
+      }else{
+	lim_dim.min_sng=(char *)strdup(lim[idx].min_sng);
+	lim_dim.is_usr_spc_min=True; /* True if user-specified, else False */
+      } /* end if */
       if(lim[idx].srd_sng != NULL) lim_dim.srd_sng=(char *)strdup(lim[idx].srd_sng); else lim_dim.srd_sng=NULL;
       lim_dim.nm=(char *)strdup(lim[idx].nm);
       break;
     } /* end if */
   } /* end loop over idx */
 
+  /* If this limit was not user-specified, then ... */
   if(idx == nbr_lim){
     /* Create default limits to look as though user-specified them */
     char dim_nm[MAX_NC_NAME];
@@ -1182,7 +1330,6 @@ lim_dim_mk(int nc_id,int dim_id,lim_sct *lim,int nbr_lim,bool FORTRAN_STYLE)
     } /* end if */ 
 
     lim_dim.nm=(char *)strdup(dim_nm);
-    lim_dim.is_usr_spc_lmt=False; /* True if user-specified limit, else False (automatically generated limit) */
     lim_dim.srd_sng=NULL;
     /* Generate min and max strings to look as if the user had specified them
        Adjust accordingly if FORTRAN_STYLE was requested for other dimensions
