@@ -29,7 +29,7 @@ variables:
 	:convention = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.10 1999-12-06 18:09:57 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.11 1999-12-08 23:40:54 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -131,8 +131,8 @@ variables:
 	att_var:char_att = "Sentence one.\nSentence two.\n";
 	att_var:short_att = 37s;
 	att_var:long_att = 73l;
-	att_var:float_att = 73.f,72.f,71.f;
-	att_var:double_att = 73.d;
+	att_var:float_att = 73.0f,72.0f,71.0f;
+	att_var:double_att = 73.0d;
 
 	long band_var(lev,band);
 	band_var:byte_att = '\0';
@@ -176,9 +176,13 @@ variables:
 	one_dim_rec_var:long_name = "one dimensional record variable";
 	one_dim_rec_var:units = "second";
 
-	float rec_var_flt_mss_val(time);
-	rec_var_flt_mss_val:long_name = "record variable, float, with missing values";
-	rec_var_flt_mss_val:missing_value = 1.0e36;
+	float rec_var_flt_mss_val_flt(time);
+	rec_var_flt_mss_val_flt:long_name = "record variable, float, with float missing values";
+	rec_var_flt_mss_val_flt:missing_value = 1.0e36f;
+
+	float rec_var_flt_mss_val_dbl(time);
+	rec_var_flt_mss_val_dbl:long_name = "record variable, float, with double missing values";
+	rec_var_flt_mss_val_dbl:missing_value = 1.0e36d;
 
 	char one_dim_rec_var_sng(time);
 	one_dim_rec_var_sng:long_name = "one dimensional record variable of string";
@@ -226,7 +230,8 @@ data:
 	no_mss_val=73,1.0e36,73,1.0e36;
 	one=1.;
 	one_dim_rec_var=1,2,3,4,5,6,7,8,9,10;
-	rec_var_flt_mss_val=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
+	rec_var_flt_mss_val_flt=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
+	rec_var_flt_mss_val_dbl=1.0e36,2.,3.,4.,5.,6.,7.,8.,1.0e36,1.0e36;
 	one_dim_rec_var_sng="Hello Wor";
 	one_dim_var=1.,10.;
 	rec_var_dbl=1.,2.,3.,4.,5.,6.,7.,8.,9.,10.;

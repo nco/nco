@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.36 1999-12-06 18:09:58 zender Exp $ -*-text-*-
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.37 1999-12-08 23:40:54 zender Exp $ -*-text-*-
 
 ************************************************************************
 NCO Wish list (or, improvements I could make while on airplanes if only I had a laptop...)
@@ -88,6 +88,9 @@ compiler residue in bld directory
 nc_utl.c:fl_out_open() line 1635 on ute.ucar.edu with command 
 ncrcat -O in.nc ho.F1.vegAS.moni01.nc
 This must be an IRIX error or a file name length malloc error
+133. nco_tst.sh sometimes fails when ftp'ing nco_tst.nc to blackforest but not babyblue, why?
+134. Noticed problem on CRAY with ncra test #2, averaging float whose
+missing value is double
 ************************************************************************
 End NCO Wish list
 ************************************************************************
