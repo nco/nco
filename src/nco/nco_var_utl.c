@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.65 2004-09-07 04:50:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.66 2004-09-07 06:09:46 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -627,8 +627,12 @@ nco_var_get /* [fnc] Allocate, retrieve variable hyperslab from disk to memory *
   /* fxm nco427: pck_dbg potential big bug on non-packed types in ncra here,
      due to potential double conversion of missing_value
      First conversion to typ_dsk occurs when nco_var_fll() reads in mss_val
-     Second conversion occurs here mss_val again converted to typ_dsk */
-  if(var->pck_dsk) var=nco_cnv_mss_val_typ(var,var->typ_dsk);
+     Second conversion occurs here mss_val again converted to typ_dsk
+     fxm nco457: Why not always convert missing_value to variable type, 
+     even when variable is not packed? Answer: because doing this appears
+     to break some ncra tests */
+    if(var->pck_dsk) var=nco_cnv_mss_val_typ(var,var->typ_dsk);
+    /*    var=nco_cnv_mss_val_typ(var,var->typ_dsk);*/
 
   /* Type of variable and missing value in memory are now same as type on disk */
   var->type=var->typ_dsk; /* [enm] Type of variable in RAM */

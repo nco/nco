@@ -3,13 +3,16 @@
 	* cvs tag -c nco-2_9_9
 	Changes since nco-2_9_8: 1. ncbo threading 2. ncpdq -P packing
 
+	* Verified that all packing except NC_XXX->NC_CHAR works pretty well
+
 	* Add new nco_pck_map types hgh_byt and flt_byt to nco_pck_plc_typ_get()
 
 	* Showed packing three_dmn_var_dbl to NC_BYTE works better than
 	packing to NC_CHAR
 
 	* Verified packing/unpacking for: NC_INT->NC_SHORT,
-	NC_DOUBLE->NC_INT  
+	NC_DOUBLE->NC_INT, NC_DOUBLE->NC_BYTE, NC_INT->NC_BYTE,
+	NC_SHORT->NC_BYTE, 
 
 	* Allow add_offset, scale_factor to be any type but NC_BYTE and
 	NC_CHAR in nco_pck_dsk_inq(). This fixes NC_INT->NC_SHORT unpacking.

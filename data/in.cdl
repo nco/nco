@@ -40,7 +40,7 @@ variables:
 	:Conventions = "NCAR-CSM";
 	:history = "History global attribute.\n";
 	:julian_day = 200000.04;
-	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.53 2004-09-04 05:22:21 zender Exp $";
+	:RCS_Header = "$Header: /data/zender/nco_20150216/nco/data/in.cdl,v 1.54 2004-09-07 06:09:43 zender Exp $";
 
 	float lat(lat);
 	float lat_var(lat);
@@ -406,7 +406,7 @@ variables:
 	double three_dmn_var_dbl(time,lat,lon);
 	three_dmn_var_dbl:long_name = "three dimensional record variable of type double";
 	three_dmn_var_dbl:units = "watt meter-2";
-	three_dmn_var_dbl:missing_value = -99 ;
+	three_dmn_var_dbl:missing_value = -99. ;
 
 	int three_dmn_var_int(time,lat,lon);
 	three_dmn_var_int:long_name = "three dimensional record variable of type int";
@@ -416,7 +416,7 @@ variables:
 	short three_dmn_var_sht(time,lat,lon);
 	three_dmn_var_sht:long_name = "three dimensional record variable";
 	three_dmn_var_sht:units = "watt meter-2";
-	three_dmn_var_sht:missing_value = -99 ;
+	three_dmn_var_sht:missing_value = -99s ;
 
 	float four_dmn_rec_var(time,lat,lev,lon);
 	four_dmn_rec_var:long_name = "four dimensional record variable";
