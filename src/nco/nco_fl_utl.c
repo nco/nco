@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.14 2002-08-28 07:07:21 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.15 2002-09-03 06:15:20 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -324,10 +324,11 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     if(rmt_cmd == NULL){
       if(strstr(fl_nm_rmt,"ftp://") == fl_nm_rmt){
 #ifdef WIN32
-      /* I have no idea how networking calls work in NT, so just exit */
-      (void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported for Microsoft Windows operating systems\n",prg_nm_get(),fl_nm_rmt);
-      nco_exit(EXIT_FAILURE);
-#else /* not WIN32 */
+/* #ifndef HAVE_NETWORK fxm */
+	/* I have no idea how networking calls work in NT, so just exit */
+	(void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported by this operating system\n",prg_nm_get(),fl_nm_rmt);
+	nco_exit(EXIT_FAILURE);
+#else /* !WIN32 */
 	char *fmt;
 	char *usr_nm;
 	char *host_nm_lcl;
@@ -349,10 +350,12 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	host_nm_lcl=(char *)nco_malloc((256+1)*sizeof(char));
 	(void)gethostname(host_nm_lcl,256+1);
 	if(strchr(host_nm_lcl,'.') == NULL){
-	  /* The returned hostname did not include the full Internet domain name */
+/* #ifdef HAVE_RES_ */
+	  /* Returned hostname did not include fully qualified Internet domain name (FQDN) */
 	  (void)res_init();
 	  (void)strcat(host_nm_lcl,".");
 	  (void)strcat(host_nm_lcl,_res.defdname);
+/* #endif HAVE_RES_ */
 	} /* end if */
 
 	/* Add one for the joining "@" and one for the NULL byte */
@@ -374,7 +377,7 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
 	rmt_cmd->fmt=fmt;
 	/* Free the space holding the user's E-mail address */
 	usr_email=(char *)nco_free(usr_email);
-#endif /* not WIN32 */
+#endif /* !WIN32 */
       } /* end if */
     } /* end if */
 

@@ -1,4 +1,4 @@
-%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.5 2002-09-03 01:50:52 zender Exp $ -*-C-*- */
+%{ /* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_lex.l,v 1.6 2002-09-03 06:15:20 zender Exp $ -*-C-*- */
   /* Everything from here to closing brace is placed at top of lexer */
 
   /* Purpose: Token generator for ncap parser */
@@ -382,7 +382,7 @@ M_PI {return NAMED_CONSTANT;}
   var_nm=(char *)nco_malloc((sng_lng+1)*sizeof(char));
   strncpy(var_nm,yytext,sng_lng);
   var_nm[sng_lng]='\0';
-  att_nm=strdup(++amp_ptr);
+  att_nm=(char *)strdup(++amp_ptr);
   
   /* Assume global attribute when variable name is "global" */
   if(!strcmp(var_nm,"global")) var_id=NC_GLOBAL; else rcd=nco_inq_varid_flg(prs_arg->in_id,var_nm,&var_id);
@@ -391,8 +391,8 @@ M_PI {return NAMED_CONSTANT;}
      During initial scan, just return attributes on RHS */
   if(prs_arg->ntl_scn){
     if(!RHS){
-      lval_ptr->aed.att_nm=strdup(att_nm);
-      lval_ptr->aed.var_nm=strdup(var_nm);
+      lval_ptr->aed.att_nm=(char *)strdup(att_nm);
+      lval_ptr->aed.var_nm=(char *)strdup(var_nm);
       return OUT_ATT;
     }else{
       return IGNORE;
@@ -457,8 +457,8 @@ M_PI {return NAMED_CONSTANT;}
   if(!RHS){
     rcd_out=nco_inq_varid_flg(prs_arg->out_id,var_nm,&var_id);
     if(rcd == NC_NOERR || rcd_out == NC_NOERR){
-      lval_ptr->aed.att_nm=strdup(att_nm);
-      lval_ptr->aed.var_nm=strdup(var_nm);
+      lval_ptr->aed.att_nm=(char *)strdup(att_nm);
+      lval_ptr->aed.var_nm=(char *)strdup(var_nm);
       return OUT_ATT;
     }else{
       (void)sprintf(err_sng,"#Warning: unable to locate variable %s. So cannot create attribute %s",var_nm,yytext);
@@ -473,11 +473,11 @@ M_PI {return NAMED_CONSTANT;}
   /* Recognize variables with subscripts */
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable with subscripts %s\n",yytext);
   if(RHS){
-    lval_ptr->var_nm_RHS=strdup(yytext);
+    lval_ptr->var_nm_RHS=(char *)strdup(yytext);
     BEGIN RHS_SUBSCRIPT;
     return VAR;
   }else{ 
-    lval_ptr->var_nm_LHS=strdup(yytext);
+    lval_ptr->var_nm_LHS=(char *)strdup(yytext);
     BEGIN LHS_SUBSCRIPT;
     return OUT_VAR;
   } /* end else */
@@ -487,10 +487,10 @@ M_PI {return NAMED_CONSTANT;}
   /* Recognize plain variables */
   if(dbg_lvl_get() > 3) (void)fprintf(stderr,"Lexing variable %s\n",yytext);
   if(RHS){
-    lval_ptr->var_nm_RHS=strdup(yytext); 
+    lval_ptr->var_nm_RHS=(char *)strdup(yytext); 
     return VAR;
   }else{ 
-    lval_ptr->var_nm_LHS=strdup(yytext);
+    lval_ptr->var_nm_LHS=(char *)strdup(yytext);
     return OUT_VAR;
   } /* end else */
 } /* end variables without subscripts */
@@ -836,7 +836,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
 	if(match) break;
 	/* Otherwise add new RHS variable to list */
 	if(lst_a_nbr==0) lst_a=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct)); else lst_a=(nm_id_sct *)nco_realloc(lst_a,((lst_a_nbr+1)*sizeof(nm_id_sct)));
-	lst_a[lst_a_nbr].nm=strdup(var_nm);
+	lst_a[lst_a_nbr].nm=(char *)strdup(var_nm);
 	lst_a[lst_a_nbr++].id=var_id;
       } /* endif RHS variable is in input file */
       break; 
@@ -850,7 +850,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
 	if(match) break;
 	if(lst_b_nbr == 0) lst_b=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	else lst_b=(nm_id_sct *)nco_realloc(lst_b,((lst_b_nbr+1)*sizeof(nm_id_sct)));
-	lst_b[lst_b_nbr].nm=strdup(var_nm);
+	lst_b[lst_b_nbr].nm=(char *)strdup(var_nm);
 	lst_b[lst_b_nbr++].id=var_id;
       } /* endif LHS variable is in input file */
       break;
@@ -864,7 +864,7 @@ ncap_ntl_scn /* [fnc] Scan command script, construct I/O lists */
 	if(match) break;
 	if(lst_c_nbr == 0) lst_c=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	else lst_c=(nm_id_sct *)nco_realloc(lst_c,((lst_c_nbr+1)*sizeof(nm_id_sct)));
-	lst_c[lst_c_nbr].nm=strdup(var_nm);
+	lst_c[lst_c_nbr].nm=(char *)strdup(var_nm);
 	lst_c[lst_c_nbr++].id=var_id;
       } /* endif LHS attribute's parent variable is in input file  */
       break;

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.93 2002-09-03 01:19:54 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.94 2002-09-03 06:15:20 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -90,8 +90,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.93 2002-09-03 01:19:54 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.93 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.94 2002-09-03 06:15:20 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.94 $";
   
   dmn_sct **dmn_in=NULL_CEWI;  /* holds ALL DIMS in the input file */
   dmn_sct **dmn_out=NULL_CEWI; /* Holds DIMS that have been written to OUTPUT */
@@ -537,7 +537,7 @@ main(int argc,char **argv)
          if( jdx != nbr_xtr) continue;
          /* if co-ords not on list then add it to extraction list */
          xtr_lst =(nm_id_sct *)nco_realloc(xtr_lst, (nbr_xtr+1)*sizeof(nm_id_sct));     
-         xtr_lst[nbr_xtr].nm = strdup(dmn_in[idx]->nm);
+         xtr_lst[nbr_xtr].nm =(char *)strdup(dmn_in[idx]->nm);
          xtr_lst[nbr_xtr++].id = dmn_in[idx]->cid;
        }  
       }/* for idx */	      
