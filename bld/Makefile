@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.19 1999-01-29 19:39:55 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.20 1999-04-05 00:32:12 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -177,7 +177,7 @@ CPP := /lib/cpp -P
 CPPFLAGS := -D$(PVM_ARCH) $(MY_INC_DIR) -I$(NETCDF_INC)
 FC := xlf
 LD := ld
-LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lncaru -lnetcdf -lm
+LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
 LDFLAGS += -lxlf90 -lxlf
 LEX := lex
 LINT := lint
