@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.144 2002-05-23 18:28:41 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.145 2002-06-05 19:06:32 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -220,6 +220,7 @@ ftp://nco.sourceforge.net/pub/nco/nco.tar.gz
 226. See if xrf in var_conform_dim() is really necessary, if not, remove it and make wgt arg const var_sct * const
 227. Document binary write ability and -B switch for ncks
 228. g++ linking requiring #ifndef GNUC++ around fabsf,fmodf defs in nco_var_scv.c
+229. Fix AIX -qwarn64 messages from converting long to size_t, etc.
 ************************************************************************
 End NCO Wish list
 ************************************************************************

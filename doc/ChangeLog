@@ -1,3 +1,8 @@
+2002-06-05  Charlie Zender  <zender@uci.edu>
+
+	* Change AIX default to 64 bit mode (addresses are all 64 bits)
+	This should allow NCO to work on files larger than 2--4 GB
+
 2002-06-04  Charlie Zender  <zender@uci.edu>
 
 	* Make flex/bison default on AIX

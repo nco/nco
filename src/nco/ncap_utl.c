@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.61 2002-05-21 03:53:29 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.62 2002-06-05 19:06:32 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -449,7 +449,7 @@ ncap_scv_abs(scv_sct scv)
     scv_out.val.s=((scv.val.s >= 0) ? scv.val.s : -scv.val.s) ;
     break;
   case NC_INT:
-    scv_out.val.l=abs(scv.val.l);
+    scv_out.val.l=(nco_long)abs(scv.val.l); /* abs() returns type signed int */
     break;            
   case NC_FLOAT:
     scv_out.val.f=fabsf(scv.val.f);
@@ -490,15 +490,15 @@ ncap_scv_minus(scv_sct *scv)
 }
 
 nm_id_sct *
-var_lst_copy(nm_id_sct *xtr_lst,int n)
+var_lst_copy(nm_id_sct *xtr_lst,int lst_nbr)
 {
-  /* Purpose: Copy xtr_lst and return the new list */
+  /* Purpose: Copy xtr_lst and return new list */
   int idx;
   nm_id_sct *xtr_new_lst;
   
-  if(n == 0) return NULL;
-  xtr_new_lst=(nm_id_sct*)nco_malloc(n*sizeof(nm_id_sct));
-  for(idx=0;idx<n;idx++){
+  if(lst_nbr == 0) return NULL;
+  xtr_new_lst=(nm_id_sct *)nco_malloc(lst_nbr*sizeof(nm_id_sct));
+  for(idx=0;idx<lst_nbr;idx++){
     xtr_new_lst[idx].nm=strdup(xtr_lst[idx].nm);
     xtr_new_lst[idx].id=xtr_lst[idx].id;
   } /* end loop over variable */
@@ -574,10 +574,10 @@ var_lst_add(int in_id,nm_id_sct *xtr_lst,int *nbr_xtr,nm_id_sct *xtr_lst_a,int n
     for(j=0;j<*nbr_xtr;j++)
       if(!strcmp(xtr_lst[j].nm,xtr_lst_a[idx].nm)){match=True;break;}
     if(match) continue;
-    xtr_new_lst=(nm_id_sct*)nco_realloc(xtr_new_lst,(n+1)*sizeof(nm_id_sct));
+    xtr_new_lst=(nm_id_sct *)nco_realloc(xtr_new_lst,(n+1)*sizeof(nm_id_sct));
     xtr_new_lst[n].nm=strdup(xtr_lst_a[idx].nm);
     xtr_new_lst[n++].id=xtr_lst_a[idx].id;
-  }
+  } /* end for */
   *nbr_xtr=n;
   return xtr_new_lst;            
 } /* var_lst_add */
@@ -617,7 +617,7 @@ ncap_var_lst_crd_make(int nc_id,nm_id_sct *xtr_lst,int *nbr_xtr)
 	  if(nbr_new_lst == 0) new_lst=(nm_id_sct *)nco_malloc(sizeof(nm_id_sct));
 	  else new_lst=(nm_id_sct *)nco_realloc((void *)new_lst,(nbr_new_lst+1)*sizeof(nm_id_sct));
 	  new_lst[nbr_new_lst].nm=(char *)strdup(dmn_nm);
-	  new_lst[nbr_new_lst++].id=crd_id;
+	  new_lst[nbr_new_lst++] .id=crd_id;
 	  break;
         } /* end if */
       } /* end for */

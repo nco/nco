@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.142 2002-06-04 16:40:32 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.143 2002-06-05 19:06:31 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -260,10 +260,14 @@ else
  CPP_DFN += -U_OPENMP
  FC := xlf95
 endif # endif OMP
+AR := ar -X 64
 C++ := xlC
 # -qmaxmem=num Limit amount of memory used by space intensive optimizations to <num> kilobytes
 # -qlanglvl=extended: Allow C++ constructs in C, keeps xlc from dying on type ** prototypes
-CFLAGS := -qmaxmem=8192 -qlanglvl=extended
+# 20020605: Change to 64 bit mode by default
+# -q64: Select 64-bit compiler mode (required for accessing large files)
+# -warn64: Warn on possible long-to-integer or pointer-to-integer truncation
+CFLAGS := -qmaxmem=8192 -qlanglvl=extended -q64 -qwarn64
 CPP := xlc -c -qlanglvl=extended
 CPPFLAGS := ${CPP_TKN} ${CPP_PTH} -I${NETCDF_INC}
 FFLAGS := ${OMP_FLG} -qmaxmem=-1 -qarch=auto -qspillsize=2500
@@ -271,7 +275,7 @@ FIXEDFLAGS := -qsuffix=f=f:cpp=F -qfixed=132
 FREEFLAGS := -qsuffix=f=f90:cpp=F90
 LD := ld
 # 20020422: -lC links to AIX C++ library which contains float intrinsics cosf()...
-LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm -lC
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -q64 -lm -lC
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
 #LDFLAGS += -lxlf90 -lxlf
 endif
@@ -993,6 +997,7 @@ cln: lib_cln dpn_cln obj_cln tst_cln
 	cd ${MY_DOC_DIR}; rm -f nco.aux nco.cp nco.cps nco.fn nco.ky nco.log nco.pg nco.toc nco.tp nco.vr 
 debug: dbg
 dbg:
+	@printf "AR = ${AR}\n"
 	@printf "C++ = ${C++}\n"
 	@printf "C++FLAGS = ${C++FLAGS}\n"
 	@printf "CC = ${CC}\n"
