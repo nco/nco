@@ -1,3 +1,7 @@
+2003-08-20 Henry Butowsky <henryb@ntlworld>
+	* Rolled out varriable wildcarding to all operators
+	  configure script checks for presence of regular
+	  expressions lib regex.h
 2003-08-16  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_8_1
