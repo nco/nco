@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.90 2002-02-28 06:52:42 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.91 2002-02-28 07:08:06 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -63,8 +63,8 @@ END-INFO-DIR-ENTRY
 @clear smallbook
 
 @c Define edition, date, ...
-@set nco-edition 2.2.0
-@set doc-edition 2.2.0
+@set nco-edition 2.2.1
+@set doc-edition 2.2.1
 @set copyright-years 1995--2002
 @set update-year 2002
 @set update-date 1 March 2002
@@ -2797,7 +2797,8 @@ Standard calculator notation is used for addition @kbd{+}, subtraction
 EXAMPLES
 
 Define new attribute @var{new} for existing variable @var{one}
-as twice the existing attribute @var{double_att} of variable @var{att_var}:
+as twice the existing attribute @var{double_att} of variable
+@var{att_var}: 
 @example
 ncap -O -s "one@@new=2*att_var@@double_att" in.nc out.nc
 @end example
