@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.32 2004-09-07 19:50:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.33 2004-09-07 20:55:08 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -68,12 +68,24 @@ extern "C" {
 #endif /* __cplusplus */
 
 void 
+nco_dfl_case_pck_map_err /* [fnc] Print error and exit for illegal switch(pck_map) case */
+(void);
+
+void 
 nco_dfl_case_pck_plc_err /* [fnc] Print error and exit for illegal switch(nco_pck_plc) case */
 (void);
 
 bool /* O [flg] NCO will attempt to pack variable */
 nco_is_packable /* [fnc] Will NCO attempt to pack variable? */
 (const nc_type nc_typ_in); /* I [enm] Type of input variable */
+
+const char * /* O [sng] Packing map string */
+nco_pck_map_sng_get /* [fnc] Convert packing map enum to string */
+(const int nco_pck_map); /* I [enm] Packing map */
+
+const char * /* O [sng] Packing policy string */
+nco_pck_plc_sng_get /* [fnc] Convert packing policy enum to string */
+(const int nco_pck_plc); /* I [enm] Packing policy */
 
 bool /* O [flg] Packing policy allows packing nc_typ_in */
 nco_pck_plc_typ_get /* [fnc] Determine type, if any, to pack input type to */

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.49 2004-09-07 19:50:14 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.50 2004-09-07 20:55:08 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -19,6 +19,69 @@
    scale_factor: If present for a variable, the data are to be multiplied by this factor after the data are read by the application that accesses the data
    add_offset: If present for a variable, this number is added to the data after the data are read by the application. If both scale_factor and add_offset attributes are present, the data are first scaled before the offset is added. 
    When scale_factor and add_offset are used for packing, the associated variable (containing the packed data) is typically of type byte or short, whereas the unpacked values are intended to be of type float or double. Attribute's scale_factor and add_offset should both be of type intended for the unpacked data, e.g., float or double. */
+
+const char * /* O [sng] Packing map string */
+nco_pck_map_sng_get /* [fnc] Convert packing map enum to string */
+(const int nco_pck_map) /* I [enm] Packing map */
+{
+  /* Purpose: Convert packing map enum to string */
+  switch(nco_pck_map){
+  case nco_pck_map_nil:
+    return "nil";
+  case nco_pck_map_hgh_sht:
+    return "hgh_sht";
+  case nco_pck_map_hgh_chr:
+    return "hgh_chr";
+  case nco_pck_map_hgh_byt:
+    return "hgh_byt";
+  case nco_pck_map_dwn_one:
+    return "dwn_one";
+  case nco_pck_map_flt_sht:
+    return "flt_sht";
+  case nco_pck_map_flt_chr:
+    return "flt_chr";
+  case nco_pck_map_flt_byt:
+    return "flt_byt";
+  default: nco_dfl_case_pck_map_err(); break;
+  } /* end switch */
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_pck_map_sng_get() */
+
+const char * /* O [sng] Packing policy string */
+nco_pck_plc_sng_get /* [fnc] Convert packing policy enum to string */
+(const int nco_pck_plc) /* I [enm] Packing policy */
+{
+  /* Purpose: Convert packing policy enum to string */
+  switch(nco_pck_plc){
+  case nco_pck_plc_nil:
+    return "nil";
+  case nco_pck_plc_all_xst_att: 
+    return "all_xst";
+  case nco_pck_plc_all_new_att: 
+    return "all_new";
+  case nco_pck_plc_xst_new_att: 
+    return "xst_new";
+  case nco_pck_plc_upk:
+    return "upk";
+  default: nco_dfl_case_pck_plc_err(); break;
+  } /* end switch */
+  /* Some compilers, e.g., SGI cc, need return statement to end non-void functions */
+  return (char *)NULL;
+} /* end nco_pck_plc_sng_get() */
+
+void 
+nco_dfl_case_pck_map_err(void) /* [fnc] Print error and exit for illegal switch(pck_map) case */
+{
+  /* Purpose: Convenience routine for printing error and exiting when
+     switch(pck_map) statement receives an illegal default case
+
+     Placing this in its own routine also has the virtue of saving many lines 
+     of code since this function is used in many many switch() statements. */
+  const char fnc_nm[]="nco_dfl_case_pck_map_err()";
+  (void)fprintf(stdout,"%s: ERROR switch(pck_map) statement fell through to default case, which is unsafe. This catch-all error handler ensures all switch(pck_map) statements are fully enumerated. Exiting...\n",fnc_nm);
+  nco_err_exit(0,fnc_nm);
+} /* end nco_dfl_case_pck_map_err() */
 
 void 
 nco_dfl_case_pck_plc_err(void) /* [fnc] Print error and exit for illegal switch(pck_plc) case */
@@ -300,11 +363,11 @@ nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
   rcd=nco_inq_att_flg(nc_id,var->id,scl_fct_sng,&scl_fct_typ,&scl_fct_lng);
   if(rcd != NC_ENOTATT){
     if(scl_fct_typ == NC_BYTE || scl_fct_typ == NC_CHAR){
-      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports scale_factor for %s is NC_BYTE or NC_CHAR. Will not attempt to unpack using scale_factor.\n",prg_nm_get(),var->nm); 
+      (void)fprintf(stdout,"%s: WARNING nco_pck_dsk_inq() reports scale_factor for %s is NC_BYTE or NC_CHAR. Will not attempt to unpack using scale_factor.\n",prg_nm_get(),var->nm); 
       return False;
     } /* endif */
     if(scl_fct_lng != 1){
-      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports %s has scale_factor of length %li. Will not attempt to unpack using scale_factor\n",prg_nm_get(),var->nm,scl_fct_lng); 
+      (void)fprintf(stdout,"%s: WARNING nco_pck_dsk_inq() reports %s has scale_factor of length %li. Will not attempt to unpack using scale_factor\n",prg_nm_get(),var->nm,scl_fct_lng); 
       return False;
     } /* endif */
     var->has_scl_fct=True; /* [flg] Valid scale_factor attribute exists */
@@ -315,11 +378,11 @@ nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
   rcd=nco_inq_att_flg(nc_id,var->id,add_fst_sng,&add_fst_typ,&add_fst_lng);
   if(rcd != NC_ENOTATT){
     if(add_fst_typ == NC_BYTE || add_fst_typ == NC_CHAR){
-      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports add_offset for %s is NC_BYTE or NC_CHAR. Will not attempt to unpack using add_offset.\n",prg_nm_get(),var->nm); 
+      (void)fprintf(stdout,"%s: WARNING nco_pck_dsk_inq() reports add_offset for %s is NC_BYTE or NC_CHAR. Will not attempt to unpack using add_offset.\n",prg_nm_get(),var->nm); 
       return False;
     } /* endif */
     if(add_fst_lng != 1){
-      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports %s has add_offset of length %li. Will not attempt to unpack.\n",prg_nm_get(),var->nm,add_fst_lng); 
+      (void)fprintf(stdout,"%s: WARNING nco_pck_dsk_inq() reports %s has add_offset of length %li. Will not attempt to unpack.\n",prg_nm_get(),var->nm,add_fst_lng); 
       return False;
     } /* endif */
     var->has_add_fst=True; /* [flg] Valid add_offset attribute exists */
@@ -328,7 +391,7 @@ nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
 
   if(var->has_scl_fct && var->has_add_fst){
     if(scl_fct_typ != add_fst_typ){
-      (void)fprintf(stderr,"%s: WARNING nco_pck_dsk_inq() reports type of scale_factor does not equal type of add_offset. Will not attempt to unpack.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: WARNING nco_pck_dsk_inq() reports type of scale_factor does not equal type of add_offset. Will not attempt to unpack.\n",prg_nm_get());
       return False;
     } /* endif */
   } /* endif */
@@ -340,8 +403,8 @@ nco_pck_dsk_inq /* [fnc] Check whether variable is packed on disk */
     var->pck_ram=True; /* [flg] Variable is packed in memory */
     var->typ_upk=(var->has_scl_fct) ? scl_fct_typ : add_fst_typ; /* [enm] Type of variable when unpacked (expanded) (in memory) */
     if(nco_is_rth_opr(prg_get()) && dbg_lvl_get() > 2){
-      (void)fprintf(stderr,"%s: PACKING Variable %s is type %s packed into type %s\n",prg_nm_get(),var->nm,nco_typ_sng(var->typ_upk),nco_typ_sng(var->typ_dsk));
-      (void)fprintf(stderr,"%s: DEBUG Packed variables processed by all arithmetic operators are unpacked automatically, and then stored unpacked in the output file. If you wish to repack them in the output file, use, e.g., ncap -O -s \"foo=pack(foo);\" out.nc out.nc. If you wish to pack all the variables in a file, use, e.g., ncpdq -P all_new in.nc out.nc.\n",prg_nm_get());
+      (void)fprintf(stdout,"%s: PACKING Variable %s is type %s packed into type %s\n",prg_nm_get(),var->nm,nco_typ_sng(var->typ_upk),nco_typ_sng(var->typ_dsk));
+      (void)fprintf(stdout,"%s: DEBUG Packed variables processed by all arithmetic operators are unpacked automatically, and then stored unpacked in the output file. If you wish to repack them in the output file, use, e.g., ncap -O -s \"foo=pack(foo);\" out.nc out.nc. If you wish to pack all variables in a file, use, e.g., ncpdq -P all_new in.nc out.nc.\n",prg_nm_get());
     } /* endif print packing information */
   }else{
     /* Variable is not packed since neither scale factor nor add_offset exist
@@ -370,7 +433,7 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
   case nco_pck_plc_all_xst_att:
     /* If variable is already packed do nothing otherwise pack to default type */
     if(var_in->pck_ram){
-      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s keeping existing packing parameters and type (%s) for %s\n",prg_nm_get(),fnc_nm,nco_typ_sng(var_in->type),var_in->nm);
+      if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: DEBUG %s keeping existing packing parameters and type (%s) for %s\n",prg_nm_get(),fnc_nm,nco_typ_sng(var_in->type),var_in->nm);
     }else{
       goto var_upk_try_to_pck;
     } /* endif */
@@ -381,7 +444,7 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
       goto var_pck_try_to_rpk;
     }else{
       /* Variable is not packed so do nothing */
-      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s leaving variable %s of type %s as unpacked\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk));
+      if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: INFO %s leaving variable %s of type %s as unpacked\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk));
     } /* endelse */
     break;
   case nco_pck_plc_all_new_att:
@@ -393,8 +456,8 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
     break;
   case nco_pck_plc_upk:
     var_out->type=var_in->typ_upk;
-    if(dbg_lvl_get() > 0){
-      if(var_in->pck_ram) (void)fprintf(stderr,"%s: DEBUG %s will unpack variable %s from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),nco_typ_sng(var_out->type)); else (void)fprintf(stderr,"%s: DEBUG %s variable %s is already unpacked and of type %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type)); 
+    if(dbg_lvl_get() > 3){
+      if(var_in->pck_ram) (void)fprintf(stdout,"%s: DEBUG %s will unpack variable %s from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),nco_typ_sng(var_out->type)); else (void)fprintf(stdout,"%s: DEBUG %s variable %s is already unpacked and of type %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type)); 
     } /* endif dbg */
     break;
   case nco_pck_plc_nil:
@@ -409,9 +472,9 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
   /* Variable is not yet packed---try to pack it */
   if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var_in->type,&nc_typ_pck_out))){
     var_out->type=nc_typ_pck_out;
-    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s will pack variable %s from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
+    if(dbg_lvl_get() > 3) (void)fprintf(stdout,"%s: DEBUG %s will pack variable %s from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
   }else{
-    (void)fprintf(stderr,"%s: WARNING %s Packing variable %s of expanded type %s is not supported---%s will remain unpacked as type %s.\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),var_in->nm,nco_typ_sng(var_out->type));
+    if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: INFO %s packing policy %s with packing map %s does not allow packing variable %s of type %s, skipping...\n",prg_nm_get(),fnc_nm,nco_pck_plc_sng_get(nco_pck_plc),nco_pck_map_sng_get(nco_pck_map),var_in->nm,nco_typ_sng(var_in->type));
   } /* endif nco_pck_plc_alw */
   return;
   
@@ -420,9 +483,9 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
      Final packed variable type may differ from original */
   if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var_in->typ_upk,&nc_typ_pck_out))){
     var_out->type=nc_typ_pck_out;
-    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s will re-pack variable %s of expanded type %s from current packing (type %s) into new packing of type %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->typ_upk),nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
+    if(dbg_lvl_get() > 3) (void)fprintf(stdout,"%s: DEBUG %s will re-pack variable %s of expanded type %s from current packing (type %s) into new packing of type %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->typ_upk),nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
   }else{
-    (void)fprintf(stderr,"%s: WARNING %s variable %s of expanded type %s is already packed into type %s and re-packing is requested but %s unable to re-pack variables of type %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->typ_upk),nco_typ_sng(var_in->type),prg_nm_get(),nco_typ_sng(var_in->typ_upk));
+    if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: WARNING %s variable %s of expanded type %s is already packed into type %s and re-packing is requested but packing policy %s and packing map %s does not allow re-packing variables of type %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->typ_upk),nco_typ_sng(var_in->type),nco_pck_plc_sng_get(nco_pck_plc),nco_pck_map_sng_get(nco_pck_map),nco_typ_sng(var_in->typ_upk));
   } /* endif nco_pck_plc_alw */
   return;
 
@@ -454,9 +517,9 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
     /* nco_var_pck() expects to alter var_out->type itself, if necessary */
     var_out->type=var_in->typ_dsk;
     if(var_in->pck_ram){
-      if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s keeping existing packing attributes for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
+      if(dbg_lvl_get() > 3) (void)fprintf(stdout,"%s: INFO %s keeping existing packing attributes for variable %s\n",prg_nm_get(),fnc_nm,var_in->nm);
       /* Warn if packing attribute values are in memory for pre-packed variables */
-      if(var_out->scl_fct.vp != NULL || var_out->add_fst.vp != NULL) (void)fprintf(stderr,"%s: WARNING %s reports variable %s has packing attribute values in memory. This is not supposed to happen through known code paths, but is not necessarily dangerous.\n",prg_nm_get(),fnc_nm,var_in->nm);
+      if(var_out->scl_fct.vp != NULL || var_out->add_fst.vp != NULL) (void)fprintf(stdout,"%s: WARNING %s reports variable %s has packing attribute values in memory. This is not supposed to happen through known code paths, but is not necessarily dangerous.\n",prg_nm_get(),fnc_nm,var_in->nm);
       /* Remove dangling pointer, see explanation below */
       var_in->val.vp=NULL; 
     }else{
@@ -496,10 +559,10 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
  var_upk_try_to_pck: /* end goto */
   /* Variable is not yet packed---try to pack it */
   if((nco_pck_plc_alw=nco_pck_plc_typ_get(nco_pck_map,var_out->type,(nc_type *)NULL))){
-    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s packing variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk),nco_typ_sng(typ_out));
+    if(dbg_lvl_get() > 3) (void)fprintf(stdout,"%s: INFO %s packing variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk),nco_typ_sng(typ_out));
     var_out=nco_var_pck(var_out,typ_out,&PCK_VAR_WITH_NEW_PCK_ATT);
   }else{
-    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: INFO %s skipping variable %s of type %s as unpackable\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_upk));
+    if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: INFO %s packing policy %s with packing map %s does not allow packing variable %s of type %s, skipping...\n",prg_nm_get(),fnc_nm,nco_pck_plc_sng_get(nco_pck_plc),nco_pck_map_sng_get(nco_pck_map),var_in->nm,nco_typ_sng(var_out->typ_upk));
   } /* endif nco_pck_plc_alw */ 
   /* Packing function nco_var_pck() usually free()'s var_out->val.vp 
      Hence var_in->val.vp is left with a dangling pointer
@@ -673,11 +736,6 @@ nco_var_pck /* [fnc] Pack variable in memory */
     (void)nco_var_avg_reduce_max(var->type,var->sz,1L,var->has_mss_val,var->mss_val,var->val,ptr_unn_min);
     (void)nco_var_avg_reduce_min(var->type,var->sz,1L,var->has_mss_val,var->mss_val,var->val,ptr_unn_max);
 
-    /* Field is pure missing_value iff either max or min equals missing_value */
-    if(var->has_mss_val)
-      if(!nco_cmp_ptr_unn(var->type,ptr_unn_min,var->mss_val))
-	PURE_MSS_VAL_FLD=True;
-
     /* Convert to NC_DOUBLE before 0.5*(min+max) operation */
     min_var=scl_ptr_mk_var(ptr_unn_min,var->type);
     min_var=nco_var_cnf_typ((nc_type)NC_DOUBLE,min_var);
@@ -687,7 +745,12 @@ nco_var_pck /* [fnc] Pack variable in memory */
     max_var_dpl=nco_var_dpl(max_var);
     hlf_var=scl_mk_var(hlf_unn,NC_DOUBLE); /* [sct] NCO variable for value one half */
 
-    if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: %s: min_var = %g, max_var = %g\n",prg_nm_get(),var->nm,min_var->val.dp[0],max_var->val.dp[0]);
+    /* Field is pure missing_value iff either extrema is missing_value */
+    if(var->has_mss_val)
+      if(min_var->val.dp[0] == ptr_unn_mss_val_dbl.dp[0]) 
+	PURE_MSS_VAL_FLD=True;
+
+    if(dbg_lvl_get() > 3) (void)fprintf(stdout,"%s: %s: min_var = %g, max_var = %g\n",prg_nm_get(),var->nm,min_var->val.dp[0],max_var->val.dp[0]);
 
     /* add_offset is 0.5*(min+max) */
     /* max_var->val is overridden with add_offset answers, no longer valid as max_var */
@@ -778,7 +841,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
     add_fst_dbl=ptr_unn_2_scl_dbl(var->add_fst,var->type);
   } /* endif */
   
-  if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: %s reports variable %s has scl_fct_dbl = %g, add_fst_dbl = %g\n",prg_nm_get(),fnc_nm,var->nm,scl_fct_dbl,add_fst_dbl);
+  if(dbg_lvl_get() > 3) (void)fprintf(stdout,"%s: %s reports variable %s has scl_fct_dbl = %g, add_fst_dbl = %g\n",prg_nm_get(),fnc_nm,var->nm,scl_fct_dbl,add_fst_dbl);
   
   /* Packing attributes now exist and are same type as variable in memory */
 
@@ -833,7 +896,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
      This is where var->type is changed from original to packed type */
   var=nco_var_cnf_typ(nc_typ_pck,var);
 
-  if(dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: PACKING Packed %s\n",prg_nm_get(),var->nm);
+  if(dbg_lvl_get() >= 3) (void)fprintf(stdout,"%s: PACKING %s packed %s into %s\n",prg_nm_get(),fnc_nm,var->nm,nco_typ_sng(var->type));
 
   return var;
 } /* end nco_var_pck() */
@@ -849,6 +912,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
      nco_var_cnf_typ() automatically converts missing_value, if any, to unpacked type
      This may need to change when nco427 is addressed */
 
+  const char fnc_nm[]="nco_var_upk()";
   const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
   const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
 
@@ -895,7 +959,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
   var->scl_fct.vp=nco_free(var->scl_fct.vp);
   var->add_fst.vp=nco_free(var->add_fst.vp);
 
-  if(dbg_lvl_get() >= 2) (void)fprintf(stderr,"%s: PACKING Unpacked %s\n",prg_nm_get(),var->nm);
+  if(dbg_lvl_get() > 2) (void)fprintf(stdout,"%s: PACKING %s unpacked %s into %s\n",prg_nm_get(),fnc_nm,var->nm,nco_typ_sng(var->type));
 
   return var;
 } /* end nco_var_upk() */
@@ -922,7 +986,7 @@ nco_var_upk_swp /* [fnc] Unpack var_in into var_out */
   var_sct *var_tmp; /* [sct] Temporary variable to be unpacked */
   
   if(var_in->pck_ram){
-    if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s unpacking variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_pck),nco_typ_sng(var_out->typ_upk));
+    if(dbg_lvl_get() > 3) (void)fprintf(stdout,"%s: DEBUG %s unpacking variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_out->typ_pck),nco_typ_sng(var_out->typ_upk));
   }else{
     (void)fprintf(stderr,"%s: ERROR %s variable %s is already unpacked\n",prg_nm_get(),fnc_nm,var_in->nm);
     nco_exit(EXIT_FAILURE);

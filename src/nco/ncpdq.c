@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.53 2004-09-07 04:31:19 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.54 2004-09-07 20:55:08 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -108,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.53 2004-09-07 04:31:19 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.53 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.54 2004-09-07 20:55:08 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.54 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
@@ -368,8 +368,7 @@ main(int argc,char **argv)
   /* No re-order dimensions specified implies packing request */
   if(dmn_rdr_nbr == 0){
     if(nco_pck_plc == nco_pck_plc_nil) nco_pck_plc=nco_pck_plc_get(nco_pck_plc_sng);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"%s: DEBUG Packing map %s enum %d requested\n",prg_nm_get(),nco_pck_map_sng,nco_pck_map);
-    if(dbg_lvl > 0) (void)fprintf(stderr,"%s: DEBUG Packing policy %s enum %d requested\n",prg_nm_get(),nco_pck_plc_sng,nco_pck_plc);
+    if(dbg_lvl > 0) (void)fprintf(stderr,"%s: DEBUG Packing map is %s and packing policy is %s\n",prg_nm_get(),nco_pck_map_sng_get(nco_pck_map),nco_pck_plc_sng_get(nco_pck_plc));
   } /* endif */
 
   /* From this point forward, assume ncpdq operator packs or re-orders, not both */
