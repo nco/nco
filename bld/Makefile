@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.16 1999-01-13 01:13:52 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.17 1999-01-21 22:31:37 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -405,7 +405,7 @@ endif
 ifeq ($(PVM_ARCH),WIN32)
 NETCDF_INC := /usr/local/include
 NETCDF_LIB := /usr/local/lib
-C_ONLY := Y
+C_ONLY := N
 C++ := g++
 CC := gcc -ansi
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)

@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.13 1999-01-13 21:53:01 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.14 1999-01-21 22:31:38 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -48,8 +48,8 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.1
-@set doc-edition 1.16
+@set nco-edition 1.1.20
+@set doc-edition 1.1.20
 @set copyright-years 1995, 1996, 1997, 1998
 @set update-year 1998
 @set update-date 1 December 1998
@@ -177,70 +177,6 @@ by the Free Software Foundation.
 
 Introduction
 
-* Availability::                
-* Compatability::               
-* Libraries::                   
-* netCDF 2.x vs. 3.x::          
-* Reporting bugs::              
-
-Operating systems compatible with NCO
-
-* Windows NT::                  
-
-Operator Strategies
-
-* Philosophy::                  
-* Climate model paradigm::      
-* Output files::                
-* Appending::                   
-* Averaging vs. Concatenating::  
-* Large numbers of input files::  
-* Large files and Memory::      
-* Memory usage::                
-* Operator limitations::        
-
-Differences between averagers and concatenators
-
-* Concatenation::               
-* Averaging::                   
-
-Features common to most operators
-
-* Specifying input files::      
-* Remote storage::              
-* File retention::              
-* Variable subsetting::         
-* Coordinate variables::        
-* Fortran indexing::            
-* Hyperslabs::                  
-* Wrapped coordinates::         
-* Stride::                      
-* Missing values::              
-* Suppressing interactive prompts::  
-* Operator version::            
-* History attribute::           
-* NCAR CSM Conventions::        
-* ARM Conventions::             
-
-Reference manual for all operators
-
-* ncatted netCDF Attribute Editor::  
-* ncdiff netCDF Differencer::   
-* ncea netCDF Ensemble Averager::  
-* ncecat netCDF Ensemble Concatenator::  
-* ncflint netCDF File Interpolator::  
-* ncks netCDF Kitchen Sink::    
-* ncra netCDF Record Averager::  
-* ncrcat netCDF Record Concatenator::  
-* ncrename netCDF Renamer::     
-* ncwa netCDF Weighted Averager  ::  
-
-@code{ncwa} netCDF Weighted Averager
-
-* Masking condition::           
-* Normalization::               
-
-@end detailmenu
 @end menu
 
 @node Foreword, Summary, Top, Top
@@ -408,14 +344,17 @@ Most of the arithmetic-intensive operations in NCO (e.g.,
 multiplication, averaging) are performed in Fortran by default. 
 This was a design decision based on the speed of Fortran-based object
 code vs. C-based object code in late 1994.
-Since this time native C compilers have improved their vectorization
+Since 1994 native C compilers have improved their vectorization
 capabilities and it may be advantageous to replace all Fortran
-subroutines with C subroutines.
+subroutines with C subroutines, (or it may just simplify the task of
+compiling on an unsupported platform).
 @cindex preprocessor tokens
 @cindex @code{C_ONLY}
 This can be accomplished by defining the preprocessor token
 @code{C_ONLY} and rebuilding NCO.
 @cindex performance
+As its name suggests, the @code{C_ONLY} token replaces all the Fortran
+calls in NCO with C calls.
 Although removing all Fortran calls enhances the portability and
 simplifies the maintenance of the NCO operators, it may also slow down
 the performance of the numeric operators.
@@ -440,23 +379,27 @@ NCO has been successfully ported and tested on the Microsoft Windows NT
 4.0 operating system.
 The switches necessary to accomplish this are included in the standard
 distribution of NCO.
-Using the freely available Cygnus development tools
-@footnote{The gnuwin32 package is available from@*
-@code{http://www.cygnus.com/misc/gnu-win32}@*
-These tools will also build the C component of the netCDF distribution. 
-Currently, gnuwin32 does not come with a Fortran compiler.}, the
-compilation process is very similar to installing NCO on a UNIX system. 
+Using the freely available Cygwin (formerly gnu-win32) development
+environment  
+@footnote{The Cygwin package is available from@*
+@code{http://sourceware.cygnus.com/cygwin}@*
+Currently, Cygwin 20.x comes with the GNU C/C++/Fortran compilers (gcc,
+g++, g77).
+These GNU compilers may be used to build the netCDF distribution
+itself.}, the compilation process is very similar to installing NCO on a
+UNIX system.  
 @cindex preprocessor tokens
 @cindex @code{C_ONLY}
-@cindex @code{gnuwin32}
-@cindex @code{cygwin32}
+@cindex @code{Cygwin}
 @cindex @code{WIN32}
 @cindex @file{GNUmakefile}
-Make sure the preprocessor token @code{PVM_ARCH} is defined as
-@code{WIN32}, and, unless you have a Windows NT Fortran compiler
-available, also define the preprocessor token @code{C_ONLY} (the
-makefile which comes with NCO, @file{GNUmakefile}, should do this
-automatically). 
+The preprocessor token @code{PVM_ARCH} should be set to @code{WIN32}.  
+Note that defining @code{WIN32} has the side effect of disabling
+Internet features of NCO (see below). 
+As mentioned above, unless you have a Fortran compiler (like g77)
+available, also define the preprocessor token @code{C_ONLY} in the 
+makefile which comes with NCO, @file{Makefile}, or in the compilation
+shell. 
 
 @cindex @code{UNIX}
 The least portable section of the code is the use of standard UNIX and
@@ -471,6 +414,8 @@ subroutine which is responsible for retrieving files stored on remote
 systems (@pxref{Remote storage}).
 In order to support NCO on the Windows NT platforms, this single feature
 was disabled (on Windows NT only).
+This was required by Cygwin 18.x---newer versions of Cygwin may support
+these protocols (let me know if this is the case).
 The NCO operators should behave identically on Windows NT and UNIX
 platforms in all other respects.
 
@@ -510,13 +455,45 @@ linked.
 @section netCDF 2.x vs. 3.x
 @cindex netCDF 2.x
 @cindex netCDF 3.x
-NCO was designed with netCDF 2.x.
-NCO began slow migration to the netCDF 3.x interface in January, 1998.
-Currently, nearly all of NCO still uses the netCDF 2.x interface, but
-NCO no longer builds with netCDF 2.x releases.
-NCO must be built with netCDF 3.x releases.
-We are eager to reap the performance advantages of newer netCDF
-versions. 
+NCO began with netCDF 2.x in 1994.
+netCDF 3.0 was released in 1996, and we are eager to reap the
+performance advantages of the newer netCDF implementation.
+One netCDF 3.x interface call (@code{nc_inq_libvers}) was added to NCO in
+January, 1998, to aid in maintainance and debugging. 
+To support this call, NCO must be built with netCDF 3.x releases.
+Currently, the rest of NCO still uses the netCDF 2.x interface, but,
+because of single @code{nc_inq_libvers} call, NCO no longer builds with
+netCDF 2.x releases. 
+
+@cindex HDF
+@cindex Hierarchical Data Format
+However, the ability to compile NCO with only netCDF 2.x calls is worth 
+maintaining valuable because HDF
+@footnote{The Hierarchical Data Format, or HDF, is another
+self-describing data format similar to, but more elaborate than, netCDF.}
+(available from 
+@ifhtml
+<a href="http://hdf.ncsa.uiuc.edu">HDF</a>.
+@end ifhtml
+@ifclear html
+@code{http://hdf.ncsa.uiuc.edu}.
+@end ifclear
+) supports only the netCDF 2.x library calls.  
+If NCO is built with only netCDF 2.x calls then some NCO operators will
+work with HDF files as well as netCDF files 
+@footnote{I have never tried this but other NCO users have confirmed
+this is true---it has something to do with linking to the MFHDF
+library in addition to or instead of the usual netCDF library. 
+Apparently MFHDF only supports netCDF 2.x calls.
+Thus I will try to keep this capability in NCO as long as it is not too
+much trouble.
+If you know which NCO operations should/should not work with HDF files,
+please let me know.}.
+Therefore, the preprocessor token @code{NETCDF2_ONLY} has been
+implemented in NCO to eliminate all netCDF 3.x calls. 
+If, at compilation time, @code{NETCDF2_ONLY} is defined, then NCO will
+not use any netCDF 3.x calls and the resulting NCO operators should work
+with HDF files. 
 
 @node Reporting bugs,  , netCDF 2.x vs. 3.x, Introduction
 @section Reporting bugs

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.11 1999-01-13 21:46:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.12 1999-01-21 22:31:40 zender Exp $ */
 
 /* (c) Copyright 1995--1999 University Corporation for Atmospheric Research 
    The file LICENSE contains the full copyright notice 
@@ -503,7 +503,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
       /* I have no idea how networking calls work in NT, so just exit */
       (void)fprintf(stdout,"%s: ERROR Networking required to obtain %s is not supported for Windows NT\n",prg_nm_get(),fl_nm_rmt);
       exit(EXIT_FAILURE);
-#else
+#else /* not WIN32 */ 
 	char *fmt;
 	char *usr_nm;
 	char *host_nm_lcl;
@@ -550,7 +550,7 @@ fl_mk_lcl(char *fl_nm,char *fl_pth_lcl,int *FILE_RETRIEVED_FROM_REMOTE_LOCATION)
 	rmt_cmd->fmt=fmt;
 	/* Free the space holding the user's E-mail address */ 
 	(void)free(usr_email);
-#endif /* !WIN32 */
+#endif /* not WIN32 */
       } /* end if */
     } /* end if */
 
@@ -876,9 +876,11 @@ nc_lib_vrs_prn()
   int vrs_sng_len;
   int nst_sng_len;
 
-  lib_sng=(char *)strdup(nc_inq_libvers());
-
+  /* Ability to compile without netCDF 3.x calls is still valuable because
+     HDF 4.x only supports netCDF 2.x library. */      
+#ifndef NETCDF2_ONLY
   /* As of netCDF 3.4, nc_inq_libvers() returned strings such as "3.4 of May 16 1998 14:06:16 $" */   
+  lib_sng=(char *)strdup(nc_inq_libvers());
   of_ptr=strstr(lib_sng," of ");
   if(of_ptr == NULL)(void)fprintf(stderr,"%s: WARNING nc_lib_vrs_prn() reports of_ptr == NULL\n",prg_nm_get());
   vrs_sng_len=(int)(of_ptr-lib_sng);
@@ -894,11 +896,12 @@ nc_lib_vrs_prn()
   nst_sng[nst_sng_len]='\0';
 
   (void)fprintf(stderr,"Linked to netCDF library version %s, compiled %s\n",vrs_sng,nst_sng);
-  (void)fprintf(stdout,"NCO homepage URL is http://www.cgd.ucar.edu/cms/nco\n");
-
   (void)free(vrs_sng);
   (void)free(lib_sng);
   (void)free(nst_sng);
+#endif /* NETCDF2_ONLY */ 
+  (void)fprintf(stdout,"NCO homepage URL is http://www.cgd.ucar.edu/cms/nco\n");
+
 } /* end nc_lib_vrs_prn() */
 
 void
