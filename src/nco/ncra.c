@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.50 2000-09-30 04:02:10 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncra.c,v 1.51 2000-10-20 23:16:43 zender Exp $ */
 
 /* ncra -- netCDF running averager */
 
@@ -54,20 +54,20 @@
    ncea -n 3,4,1 -p /ZENDER/tmp -l /usr/tmp/zender h0001.nc foo.nc
  */
 
-/* Standard header files */
-#include <math.h>               /* sin cos cos sin 3.14159 */
-#include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */
-#include <string.h>             /* strcmp. . . */
-#include <sys/stat.h>           /* stat() */
-#include <time.h>               /* machine time */
-#include <unistd.h>             /* POSIX stuff */
-/* #include <assert.h> */          /* assert() debugging macro */
-/* #include <errno.h> */           /* errno */
-/* #include <malloc.h>    */       /* malloc() stuff */
+/* Standard C headers */
+#include <math.h> /* sin cos cos sin 3.14159 */
+#include <stdio.h> /* stderr, FILE, NULL, etc. */
+#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <string.h> /* strcmp. . . */
+#include <sys/stat.h> /* stat() */
+#include <time.h> /* machine time */
+#include <unistd.h> /* all sorts of POSIX stuff */
+/* #include <assert.h> */ /* assert() debugging macro */
+/* #include <errno.h> */ /* errno */
+/* #include <malloc.h> */ /* malloc() stuff */
 
 /* 3rd party vendors */
-#include <netcdf.h>             /* netCDF definitions */
+#include <netcdf.h> /* netCDF definitions */
 #ifdef _OPENMP
 #include <omp.h> /* OpenMP pragmas */
 #endif /* not _OPENMP */
@@ -75,7 +75,7 @@
 /* Personal headers */
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
-#include "nc.h"                 /* NCO definitions */
+#include "nc.h" /* NCO definitions */
 
 int 
 main(int argc,char **argv)
@@ -104,8 +104,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncra.c,v 1.50 2000-09-30 04:02:10 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.50 $";
+  char CVS_Id[]="$Id: ncra.c,v 1.51 2000-10-20 23:16:43 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.51 $";
   char *nco_op_typ_sng=NULL_CEWI; /* [sng] Operation type */
   char *nco_pck_typ_sng=NULL_CEWI; /* [sng] Packing type */
   

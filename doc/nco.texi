@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.69 2000-10-16 07:07:01 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.70 2000-10-20 23:16:43 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -280,6 +280,8 @@ I suppose a major version change entitles me to write another Foreword.
 In the last five years a lot of work has been done refining NCO.
 NCO is now an honest-to-goodness open source project.
 It appears to be much healthier for it.
+The illustrious list of institutions which do not endorse NCO continues
+to grow, and now includes UCI.
 @sp 1
 @noindent
 Charlie Zender@*
@@ -2318,7 +2320,7 @@ $32767 = 2^{15}-1$
 @clear flg
 @end ifinfo
 @ifset flg
-@c texi2html doesn't like @math{}
+@c texi2html does not like @math{}
 @math{32767 = 2^15-1}
 @clear flg
 @end ifset
@@ -2388,9 +2390,23 @@ the results are the same as if it were.}.
 Thus no "rounding up" is performed. 
 The type conversion rules of C can be stated as follows:
 @c fxm: makeinfo reports misplaced {} near here
-If @var{n} is an integer then any floating point value @code{x}
-satisfying @math{@var{n} <= @var{x} < @var{n+1}} will have the value
-@var{n} when converted to an integer.
+If @var{n} is an integer then any floating point value @var{x}
+satisfying 
+@set flg
+@tex
+$n \le x < n+1$
+@clear flg
+@end tex
+@ifinfo
+@math{n <= x < n+1} 
+@clear flg
+@end ifinfo
+@ifset flg
+@c texi2html does not like @math{}
+@var{n} <= @var{x} < @var{n+1}
+@clear flg
+@end ifset
+will have the value @var{n} when converted to an integer.
 
 @node  Suppressing interactive prompts, History attribute, Type conversion, Common features
 @section Suppressing interactive prompts
@@ -3281,7 +3297,7 @@ SYNTAX
 @example
 ncflint [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h]
-[-i @var{var,val3}]  
+[-i @var{var},@var{val3}]  
 [-l @var{path}] [-O] [-p @var{path}] [-R] [-r] [-v @var{var}[,@dots{}]]  
 [-w @var{wgt1}[,@var{wgt2}]] [-x] @var{file_1} @var{file_2} @var{file_3}
 @end example
@@ -3312,7 +3328,7 @@ $val3 = wgt1 \times val1 + wgt2 \times val2$
 @clear flg
 @end ifinfo
 @ifset flg
-@c texi2html doesn't like @math{}
+@c texi2html does not like @math{}
 @var{val3} = @var{wgt1}*@var{val1} + @var{wgt2}*@var{val2} 
 @clear flg
 @end ifset
@@ -3350,7 +3366,7 @@ $val3 = wgt1 \times val1 + wgt2 \times val2$
 @clear flg
 @end ifinfo
 @ifset flg
-@c texi2html doesn't like @math{}
+@c texi2html does not like @math{}
 @var{val3} = @var{wgt1}*@var{val1} + @var{wgt2}*@var{val2} 
 @clear flg
 @end ifset
@@ -4248,7 +4264,7 @@ operations @math{==}, @math{!=}, @math{>}, @math{<}, @math{>=},
 @clear flg
 @end ifinfo
 @ifset flg
-@c texi2html doesn't like @math{}
+@c texi2html does not like @math{}
 These are the Fortran-style character abbreviations for the logical 
 operations @kbd{==}, @kbd{!=}, @kbd{>}, @kbd{<}, @kbd{>=},
 @clear flg

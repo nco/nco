@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.26 2000-09-20 18:03:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.27 2000-10-20 23:16:43 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -56,20 +56,25 @@ lex.yy.c:1060: warning: `yyunput' defined but not used
 ../src/nco/ncap.c:423: warning: implicit declaration of function `yyparse'
  */
 
-/* Standard header files */
-#include <math.h>               /* sin cos cos sin 3.14159 */
-#include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */
-#include <string.h>             /* strcmp. . . */
-#include <sys/stat.h>           /* stat() */
-#include <time.h>               /* machine time */
-#include <unistd.h>             /* POSIX stuff */
+/* Standard C headers */
+#include <math.h> /* sin cos cos sin 3.14159 */
+#include <stdio.h> /* stderr, FILE, NULL, etc. */
+#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <string.h> /* strcmp. . . */
+#include <sys/stat.h> /* stat() */
+#include <time.h> /* machine time */
+#include <unistd.h> /* all sorts of POSIX stuff */
+/* #include <assert.h> */ /* assert() debugging macro */
+/* #include <errno.h> */ /* errno */
+/* #include <malloc.h> */ /* malloc() stuff */
+
+/* 3rd party vendors */
+#include <netcdf.h> /* netCDF definitions */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
-#include <netcdf.h>             /* netCDF definitions */
-#include "nc.h"                 /* NCO definitions */
-#include "ncap.h"               /* ncap-specific definitions */
+#include "nc.h" /* NCO definitions */
+#include "ncap.h" /* ncap-specific definitions */
 
 #ifdef LINUX
 #include <getopt.h> /* GNU getopt() is standard on Linux */
@@ -130,8 +135,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.26 2000-09-20 18:03:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.26 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.27 2000-10-20 23:16:43 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.27 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

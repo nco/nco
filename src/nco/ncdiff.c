@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.33 2000-09-20 18:03:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncdiff.c,v 1.34 2000-10-20 23:16:43 zender Exp $ */
 
 /* ncdiff -- netCDF differencer */
 
@@ -63,22 +63,24 @@
    ncks -O -v scalar_var in.nc foo.nc ; ncrename -v scalar_var,four_dmn_rec_var foo.nc ; ncdiff -O -v four_dmn_rec_var in.nc foo.nc foo2.nc
  */
 
-/* Standard header files */
-#include <math.h>               /* sin cos cos sin 3.14159 */
-#include <netcdf.h>             /* netCDF definitions */
-#include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */
-#include <string.h>             /* strcmp. . . */
-#include <sys/stat.h>           /* stat() */
-#include <time.h>               /* machine time */
-#include <unistd.h>             /* POSIX stuff */
-/* #include <assert.h> */           /* assert() debugging macro */
-/* #include <errno.h> */            /* errno */
-/* #include <malloc.h>    */        /* malloc() stuff */
+/* Standard C headers */
+#include <math.h> /* sin cos cos sin 3.14159 */
+#include <stdio.h> /* stderr, FILE, NULL, etc. */
+#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <string.h> /* strcmp. . . */
+#include <sys/stat.h> /* stat() */
+#include <time.h> /* machine time */
+#include <unistd.h> /* all sorts of POSIX stuff */
+/* #include <assert.h> */ /* assert() debugging macro */
+/* #include <errno.h> */ /* errno */
+/* #include <malloc.h> */ /* malloc() stuff */
+
+/* 3rd party vendors */
+#include <netcdf.h> /* netCDF definitions */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
-#include "nc.h"                 /* NCO definitions */
+#include "nc.h" /* NCO definitions */
 
 int 
 main(int argc,char **argv)
@@ -111,8 +113,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncdiff.c,v 1.33 2000-09-20 18:03:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.33 $";
+  char CVS_Id[]="$Id: ncdiff.c,v 1.34 2000-10-20 23:16:43 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.34 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;

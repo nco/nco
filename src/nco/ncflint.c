@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.28 2000-09-20 18:03:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncflint.c,v 1.29 2000-10-20 23:17:26 zender Exp $ */
 
 /* ncflint -- netCDF file interpolator */
 
@@ -48,22 +48,24 @@
    ncdiff -O foo.nc /data/zender/arese/crm/951030_0900_arese_crm.nc foo2.nc;ncks -H foo2.nc | m
  */
 
-/* Standard header files */
-#include <math.h>               /* sin cos cos sin 3.14159 */
-#include <netcdf.h>             /* netCDF definitions */
-#include <stdio.h>              /* stderr, FILE, NULL, etc. */
-#include <stdlib.h>             /* atof, atoi, malloc, getopt */
-#include <string.h>             /* strcmp. . . */
-#include <sys/stat.h>           /* stat() */
-#include <time.h>               /* machine time */
-#include <unistd.h>             /* POSIX stuff */
-/* #include <assert.h> */           /* assert() debugging macro */
-/* #include <errno.h> */            /* errno */
-/* #include <malloc.h>    */        /* malloc() stuff */
+/* Standard C headers */
+#include <math.h> /* sin cos cos sin 3.14159 */
+#include <stdio.h> /* stderr, FILE, NULL, etc. */
+#include <stdlib.h> /* atof, atoi, malloc, getopt */
+#include <string.h> /* strcmp. . . */
+#include <sys/stat.h> /* stat() */
+#include <time.h> /* machine time */
+#include <unistd.h> /* all sorts of POSIX stuff */
+/* #include <assert.h> */ /* assert() debugging macro */
+/* #include <errno.h> */ /* errno */
+/* #include <malloc.h> */ /* malloc() stuff */
+
+/* 3rd party vendors */
+#include <netcdf.h> /* netCDF definitions */
 
 /* #define MAIN_PROGRAM_FILE MUST precede #include nc.h */
 #define MAIN_PROGRAM_FILE
-#include "nc.h"                 /* NCO definitions */
+#include "nc.h" /* NCO definitions */
 
 int 
 main(int argc,char **argv)
@@ -100,8 +102,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
   char *ntp_nm=NULL; /* Option i */
-  char CVS_Id[]="$Id: ncflint.c,v 1.28 2000-09-20 18:03:51 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.28 $";
+  char CVS_Id[]="$Id: ncflint.c,v 1.29 2000-10-20 23:17:26 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.29 $";
   
   dmn_sct **dim;
   dmn_sct **dmn_out;
