@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.10 2001-10-11 02:02:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_netcdf.c,v 1.11 2001-10-28 08:58:58 zender Exp $ */
 
 /* Purpose: Wrappers for netCDF 3.X C-library */
 
@@ -213,7 +213,7 @@ nco_dfl_case_nctype_err(void)
      Placing this in its own routine also has the virtue of saving many lines 
      of code since this function is used in many many switch() statements. */
   char sbr_nm[]="nco_dfl_case_nctype_err()";
-  (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal.\nNot handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype defintion is braindead in netCDF2). Exiting...",sbr_nm);
+  (void)fprintf(stdout,"%s: ERROR switch(nctype) statement fell through to default case, which is illegal.\nNot handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype definition is braindead in netCDF2.x). Exiting...\n",sbr_nm);
   exit(EXIT_FAILURE);
 } /* end nco_dfl_case_nctype_err() */
 
