@@ -1,5 +1,10 @@
 2002-08-27  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_6_2
+	Changes since nco-2_6_1: 
+	Improvements to autotools builds
+	Initial ncap handling of user-defined dimensions
+
 	* Replace PVM_ARCH token with HAVE_GETOPT_H for getopt.h handling
 
 	* Remove Fortran files nco_cal_utl.F,  nco_fortran.F,

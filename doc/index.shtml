@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.113 2002-08-22 06:40:54 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.114 2002-08-28 01:17:23 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -173,6 +173,8 @@ tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>,
 fails on my development system (due to antiquated RedHat
 <tt>texinfo</tt> software, of all things!)
 Retrieve these versions <a name="#Download">using CVS</a>.
+<li><b>NCO 2.6.2</b>, Not packaged: Major improvements in autotools
+support, <tt>ncap</tt> supports user-defined dimensions
 <li><b>NCO 2.6.1</b>, Not packaged: Minor fix to unpacking support
 <li><b>NCO 2.6.0</b>, Not packaged: All arithmetic operators (<tt>ncap</tt>, <tt>ncdiff</tt>, <tt>ncea</tt>, <tt>ncflint</tt>, <tt>ncra</tt>) support unpacking
 <li><b>NCO 2.5.6</b>, Not packaged: Handle <tt>missing_value</tt> 
