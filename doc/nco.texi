@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.22 1999-06-01 04:38:28 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.23 1999-06-29 19:00:35 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -13,7 +13,7 @@ C-c C-u C-a	texinfo-all-menus-update
 C-c C-u C-e	texinfo-every-node-update
 
 Usage: 
-texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o /data/zender/ps/nco.ps nco.dvi; /bin/cp -f nco.html /web/web-data/cms/nco
+texi2dvi nco.texi; texi2html -monolithic -verbose nco.texi; makeinfo nco.texi; dvips -o /data/zender/ps/nco.ps nco.dvi; rcp -p nco.html www.cgd.ucar.edu:/web/web-data/cms/nco
 texi2html -monolithic -verbose nco.texi; /bin/cp -f nco.html /web/web-data/cms/nco
 texi2dvi nco.texi 
 makeinfo nco.texi 
@@ -48,8 +48,8 @@ END-INFO-DIR-ENTRY
 @c set smallbook
 @clear smallbook
 
-@set nco-edition 1.1.23
-@set doc-edition 1.1.23
+@set nco-edition 1.1.33
+@set doc-edition 1.1.33
 @set copyright-years 1995, 1996, 1997, 1998, 1999
 @set update-year 1999
 @set update-date 4 April 1999
@@ -200,7 +200,7 @@ Operator Strategies
 * Memory usage::                
 * Operator limitations::        
 
-Differences between averagers and concatenators
+Averagers vs. Concatenators
 
 * Concatenation::               
 * Averaging::                   
@@ -385,7 +385,7 @@ The netCDF homepage is
 @cindex installation
 NCO has been successfully ported and tested on the following platforms: 
 GNU/Linux, SunOS 4.1.x, Solaris 2.x, IRIX 5.x and 6.x (including 64-bit
-architectures), UNICOS 8.x and 9.x, AIX 4.x, DEC OSF, and Windows NT4.
+architectures), UNICOS 8.x--10.x, AIX 4.x, DEC OSF, and Windows NT4.
 If you port the code to a new operating system, please send me a note
 and any patches you required.
 
@@ -722,8 +722,8 @@ Selecting @dfn{overwrite} tells the operator to erase the existing
 Selecting @dfn{exit} causes the operator to exit---the @var{output-file}
 will not be touched in this case.
 Selecting @dfn{append/replace} causes the operator to attempt to place
-the results of the operation in the existing @var{output-file}.
-@xref{ncks netCDF Kitchen Sink} for more information.
+the results of the operation in the existing @var{output-file}, 
+@xref{ncks netCDF Kitchen Sink}.
 
 @node Averaging vs. Concatenating, Large numbers of input files, Appending, Strategies
 @section Averagers vs. Concatenators
@@ -1548,7 +1548,7 @@ extraction in one operation:
 @example
 ncks -d time,2,,12 8501_8912.nc 8589_03.nc
 @end example
-@xref{ncks netCDF Kitchen Sink} for more information on @code{ncks}.
+For more information on @code{ncks} @xref{ncks netCDF Kitchen Sink}.
 
 @node Missing values, Suppressing interactive prompts, Stride, Common features
 @section Missing values
@@ -1766,7 +1766,7 @@ That is, any @code{time} values from files following the first file to
 be concatenated should be corrected to the @var{base_time} offset
 specified in the @code{units} attribute of @code{time} from the first
 file. 
-The analogous problem has been fixed in ARM files @xref{ARM Conventions}
+The analogous problem has been fixed in ARM files (@pxref{ARM Conventions})
 and could be fixed for CSM files if there is sufficient lobbying, and if
 Unidata fixes the UDUNITS package to build out of the box on Linux.
 }.
@@ -2693,7 +2693,7 @@ Thus @code{-a} retains the original ordering of the variables.
 @cindex stride
 @item -d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]
 Add @dfn{stride} argument to hyperslabber. 
-@xref{Stride} for a complete description of the @var{stride} argument. 
+For a complete description of the @var{stride} argument, @xref{Stride}.
 
 @cindex @code{-H}
 @item -H 
@@ -2776,7 +2776,7 @@ closed interval @math{.3 < @var{band} < .5} in coordinate @code{band}; and
 cross-section closest to 1000. in coordinate @code{lev}.  
 Note that limits applied to coordinate values are specified with a
 decimal point, and limits applied to dimension indices do not have a
-decimal point (@xref{Hyperslabs}): 
+decimal point @xref{Hyperslabs}. 
 @example
 ncks -H -d time,5 -d lat,,0. -d lon,330., -d band,.3,.5 
 -d lev,1000. in.nc out.nc 
@@ -2792,7 +2792,7 @@ the easternmost longitude as @var{max}, as follows:
 @example
 ncks -d lon,260.,45. in.nc out.nc
 @end example
-@xref{Wrapped coordinates} for more details.
+For more details @xref{Wrapped coordinates}.
 
 @page
 @node ncra netCDF Record Averager, ncrcat netCDF Record Concatenator, ncks netCDF Kitchen Sink, Operators

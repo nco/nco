@@ -1,4 +1,4 @@
-<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.16 1999-05-10 06:36:23 zender Exp $ >
+<! $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.17 1999-06-29 19:00:35 zender Exp $ >
 
 <! Purpose: NCO homepage >
 
@@ -6,6 +6,7 @@
 <! http://www.cgd.ucar.edu/cms/nco/index.shtml >
 <! file:/home/zender/nc/nco/doc/index.shtml >
 <! /bin/cp -f ~/nc/nco/doc/index.shtml /web/web-data/cms/nco/index.shtml >
+<! rcp -p ~/nc/nco/doc/index.shtml www.cgd.ucar.edu:/web/web-data/cms/nco/index.shtml >
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <HTML>
@@ -286,13 +287,13 @@ as having been fixed in the latest revision.
 <DT><A NAME="NCAR"></A></DT>
 <H2>Using NCO at NCAR</H2>
 <P>NCO is built and maintained at NCAR, and so user's of NCAR machines should take advantage of pre-built, up-to-date NCO executables.
-The NCO executables are maintained in four different locations at NCAR:
+The NCO executables are maintained in many different locations at NCAR:
 <DD>CGD network (Solaris 2.6): /contrib/bin</DD>
 <DD>CGD/SCD Dataproc (IRIX 6.5): /contrib/bin</DD>
 <DD>SCD Ouray (UNICOS 10.0.0): /home/ouray0/zender/bin/CRAY</DD>
 <DD>SCD Ute (IRIX 6.5): /home/ute/zender/bin/SGIMP64</DD>
 <DD>ACD garcia.acd.ucar.edu (Digital OSF1): /usr/local/bin</DD>
-<DD>ACD gss1.acd.ucar.edu (AIX 4.3): /l9/zender/bin/AIX</DD>
+<DD>ACD dust.acd.ucar.edu (Linux 2.2.5): /gs/zender/bin/LINUX</DD>
 
 <HR></P>
 
@@ -320,31 +321,9 @@ The only downside to using <TT>-DC_ONLY</TT> is that averaging
 performance may decrease somewhat since the C averaging code may need
 to perform more pointer arithmetic than the Fortran code (depending on
 the compiler).
-Due to problems such as this, 100% C code will probably be the default 
-in future versions of NCO.
+Due to problems such as this, future versions of NCO will probably
+eliminate the Fortran default in favor of 100% C code.
 </P>
-<!--  <P>Intermittent problems with NCO on IRIX have reappeared on NCAR's Winterpark since about May 8, 1998.   -->
-<!--  Because these problems do not occur on any architecture besides IRIX, I feel it is likely that this is a symptom of a bug with IRIX, not with netCDF or NCO. -->
-<!--  These problems are known to occur with NCO (based on netCDF 2.x) as well as other, independent, netCDF 3.x applications (at least since July 28, 1998). -->
-<!--  These problems generally occur with the averagers (e.g.,<TT>ncwa</TT>, -->
-<!--  <TT>ncra</TT>) and will occasionally produce incorrect answers without -->
-<!--  any warning. -->
-<!--  Such data corruption might be very hard to notice, so please be very -->
-<!--  cautious using netCDF on IRIX until these problems are resolved. -->
-<!--  </P> -->
-
-<!--  <P>Try the following workarounds: -->
-<!--  If your file on the IRIX machine is accesible from another machine, -->
-<!--  e.g., a Sun or Cray, then use NCO from the Sun or Cray, rather than -->
-<!--  the IRIX machine, to process the file.  -->
-<!--  Some problems are compilation dependent, and disappear or lessen when -->
-<!--  NCO is compiled with the `-g' option (rather than `-O2'). -->
-<!--  Compiling NCO with `C_ONLY=Y' replaces Fortran routines with C -->
-<!--  routines. -->
-<!--  We have not yet tested whether this alleviates IRIX problems. -->
-<!--  If you try either of these workarounds, let me know whether they -->
-<!--  worked (or not) for you. -->
-<!--  This will help us identify the problem. -->
 <HR></P>
 
 <TABLE WIDTH="100%" >
