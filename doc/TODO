@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.338 2004-07-06 05:22:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.339 2004-07-15 00:43:53 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -193,6 +193,7 @@ nco326. Add manual override of writing *tmp* file for intermediate results?
 nco328. Ability to reverse specified dimensions (use negative stride?)
 nco329. Ability to rearrange dimensions
 nco333. Clean up preprocessor symbols with cd ~/nco/src/nco;ifnames *.c
+nco334. Same as nco354. 
 nco335. ncflint: implement interpolation/mss_val algorithms two and three as options?
 nco336. Allow input file lists to be specified in a text file and to supercede command line arguments. This will be useful on platforms with limited buffers for command line arguments and globbing expansions (e.g., AIX)
 nco337. When input file is a symbolic link, print name of linked-to-file as debugging information
@@ -219,7 +220,6 @@ ncwa -D 5 -O -a wvl -v ss_co_alb ${DATA_MIE}/mie/mie_${wvl_nbr}.nc ${DATA_MIE}/m
 fails with 
 Segmentation fault (core dumped)
 ncwa -O -a wvl -w flx_slr_frc -v sca_cff_mss,ext_cff_mss,abs_cff_mss,ss_alb,ss_co_alb ${DATA_MIE}/mie/mie_${wvl_nbr}.nc ${DATA_MIE}/mie/mie_avg_${wvl_nbr}.nc
-
 nco355. 
 
 ncap-specific items:
