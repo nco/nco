@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.391 2004-09-03 23:58:56 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.392 2004-09-04 00:05:42 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -256,19 +256,11 @@ nco403. ncpdq: Do not pack already packed variables
 nco404. Does Ersoy's XML stylesheet nco.css work?
 nco406. Add advantages/disadvantages of NCO (compared to e.g., ANTS) description
 nco408. How to get new SDO tasks done? How to advertise pay-per-feature requests? How to evaluate responses? GNOME has something similar
-nco412. ncbo:
-zender@elnino:~/nco/bld$ ncbo ~/foo_upk.nc ~/nco/data/in.nc ~/foo_diff.nc
-ncbo: ERROR nco_op_typ_get() reports empty user-specified operation string in conjunction with unknown or ambiguous executable name ncbo
-Aborted
-nco413. ncbo:
-zender@elnino:~/nco/bld$ ncdiff ~/foo_upk.nc ~/nco/data/in.nc ~/foo_diff.nc
-nco_dfl_case_nc_type_err(): ERROR switch(nctype) statement fell through to default case,which is illegal.
-Not handling the default case causes gcc to emit warnings when compiling NCO with the NETCDF2_ONLY token (because nctype definition is braindead in netCDF2.x). Exiting...
-ERROR: program exiting through nco_err_exit() which will now call abort()
-Aborted
-nco418. Make packing play nice with missing values outside range
+nco418. ncpdq: Make packing play nice with missing values outside range
         ncpdq -D 3 -O -C -P all_new -v mss_val_scl ~/nco/data/in.nc ~/foo.nc
-nco420. 
+nco420. ncpdq: Make packing work with NC_INT->NC_SHORT
+        ncpdq -D 3 -O -C -P all_new -v bnd_var ~/nco/data/in.nc ~/foo.nc
+nco421. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
