@@ -1,5 +1,7 @@
 2002-07-03  Charlie Zender  <zender@uci.edu>
 
+	* cvs tag -c nco-2_5_2
+
 	* conditionally added acosh, asinh, atanh, cosh, sinh, tanh to ncap
 
 	* unconditionally added floor(), ceil() to ncap

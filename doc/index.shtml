@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.101 2002-07-04 03:40:35 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.102 2002-07-04 17:11:40 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -164,6 +164,8 @@ tarballs and RPMs) because the build script, <tt>nco_dst.pl</tt>,
 fails on my development system (due to antiquated RedHat
 <tt>texinfo</tt> software, of all things!)
 The brave may retrieve these versions using CVS (tags are, e.g., <tt>nco-2_1_2</tt>).
+<li><b>NCO 2.5.2</b>, Not packaged: Add math functions to
+<tt>ncap</tt>, hint to <tt>ncwa</tt>
 <li><b>NCO 2.5.1</b>, Not packaged: <tt>ncatted</tt> deletes all
 attributes of <i>att_var</i> when <i>att_nm</i> not specified
 <li><b>NCO 2.5.0</b>, Not packaged: man(1) pages from Debian distribution
