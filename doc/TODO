@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.375 2004-08-09 16:49:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.376 2004-08-11 01:30:42 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -227,21 +227,15 @@ ncwa -O -a wvl -w flx_slr_frc -v sca_cff_mss,ext_cff_mss,abs_cff_mss,ss_alb,ss_c
 nco357. Add OpenMP robustness test to nco_bnch.sh
 nco358. Document ncwa -z switch: Get rid of separate -M -m -T?
 nco359. Allow spaces between variables names in -v var_lst arguments (assuming list whitespace is quoted, of course)
-nco361. Create new operator or rewrite ncks to use new style
 nco362. reduce memory during run by free()'ing var_fix[idx],var_fix_out[idx],var_prc[idx],var_prc_out[idx] after writes
 nco363. Finish documenting ncpdq in nco.texi
-nco366. ncpdq: Use ncwa technique to put non-dmn_rdr variables in var_fix rather than var_prc?
 nco367. fix ncwa list collapse errors once bug found in pcpdq. Unfortunately ncwa uses dim_avg_lst after it is collapsed
-nco369. make sure strcmp is used for comparison, rather than strstr
-nco372. Update man pages for -o, -t, stdin features
 nco375. Do something more consistent with: nco_exit(EXIT_FAILURE)
-nco378. Make \dfr, \me, \mi upright characters in nco.texi
 nco379. ncpdq: Add packing/unpacking capabilities
 nco385. ncpdq: dynamically allocate arrays in nco_var_dmn_rdr_mtd(), nco_var_dmn_rdr_val()?
 nco386. Remove purely diagnostic arrays from nco_var_dmn_rdr_mtd(), nco_var_dmn_rdr_val()?
 nco389. ncpdq: Single dimension in re-order list with no negative sign is always identity transformation, warn? exit?
 nco390. ncpdq: make -a optional? (all switches are optional in all other operators)
-nco391. OpenMP: thread main loop of ncbo
 nco392. OpenMP: thread main loop of ncatted
 nco393. OpenMP: thread main loop of ncflint
 nco393. 

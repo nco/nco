@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.263 2004-08-10 17:33:27 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.264 2004-08-11 01:30:43 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -1827,7 +1827,9 @@ We hope to produce foreign language string catalogues in 2004.
 @section OpenMP threading
 @cindex OpenMP
 @cindex threads
-@cindex shared memory machines
+@cindex @acronym{SMP}
+@cindex shared memory parallelism
+@cindex parallelism
 @cindex @code{nco_openmp_thread_number}
 @cindex @code{--thr_nbr @var{thr_nbr}}
 @cindex @code{--threads @var{thr_nbr}}
@@ -1840,24 +1842,62 @@ Short options: @samp{-t}@*
 Long options: @samp{--thr_nbr}, @samp{--threads},
 @samp{--omp_num_threads}@* 
 @end cartouche
-@acronym{NCO} supports shared memory machines using the OpenMP
-standard. 
-Users may request a specific number of threads with the @samp{-t}
-switch (or its long option equivalents, @samp{--thr_nbr},
+@acronym{NCO} supports shared memory parallelism (@acronym{SMP}) when
+compiled with an OpenMP-enabled compiler.
+Threads requests and allocations occur in two stages.
+First, users may request a specific number of threads @var{thr_nbr} with
+the @samp{-t} switch (or its long option equivalents, @samp{--thr_nbr},
 @samp{--threads}, @samp{--omp_num_threads}).
-If not user-specified, @acronym{NCO} obtains @var{thr_nbr} from the
-environment or the @acronym{OS} and modifies it according to some
-internal settings.  
+If not user-specified, OpenMP obtains @var{thr_nbr} from the
+@code{OMP_NUM_THREADS} environment variable, if present, or from the
+@acronym{OS}, if not.
 
-Operators with thread support by default, attach one global
-attribute to any file they create or modify.
+@cindex @var{thr_nbr}
+@cindex @code{OMP_NUM_THREADS}
+@cindex @command{ncrcat}
+@cindex @command{ncwa}
+@cindex @command{ncpdq}
+@cindex large datasets
+@acronym{NCO} may modify @var{thr_nbr} according to its own internal
+settings before it requests any threads from the system.
+Certain operators contain hard-code limits to the number of threads they
+request.
+We base these limits on our experience and common sense, and to reduce
+potentially wasteful system usage by inexperienced users.
+For example, @code{ncrcat} is extremely I/O-intensive.
+No one has demonstrated that threading improves @code{ncrcat}
+performance so we restrict @math{@var{thr_nbr} <= 1} for @code{ncrcat}.
+Compute-intensive operators (@code{ncwa} and @code{ncpdq})
+are expected to benefit the most from threading.
+The greatest increases in throughput due to threading will occur on
+large dataset where each thread performs millions or more floating
+point operations.
+Otherwise, the system overhead of setting up threads may outweigh
+the theoretical speed enhancements due to @acronym{SMP} parallelism.
+However, no one has ever demonstrated that the @acronym{SMP} parallelism 
+scales well beyone four threads for these operators.
+Hence we restrict @math{@var{thr_nbr} <= 4} for all operators.
+We encourage users to play with these limits (edit file
+@file{nco_omp.c}) and send us their feedback.
+
+@cindex debugging
+@cindex @var{dbg_lvl}
+Once the initial @var{thr_nbr} has been modified for any
+operator-specific limits, @acronym{NCO} requests the system to allocate 
+a team of @var{thr_nbr} threads for the body of the code.
+The operating system then decides how many threads to allocate
+based on this request.
+Users may keep track of this information by running the operator with
+@math{@var{dbg_lvl} > 0}.
+
+By default, operators with thread attach one global attribute to any
+file they create or modify. 
 The @code{nco_openmp_thread_number} global attribute contains the
 number of threads the operator used to process the input files.
 This information helps to verify that the answers with threaded and
 non-threaded operators are equal to within machine precision.
 @cindex benchmarks
 This information is also useful for benchmarking.
-@c fxm: Work on this section
 
 @html
 <a name="lfs"></a> <!-- http://nco.sf.net/nco.html#lfs -->

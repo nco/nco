@@ -1,5 +1,7 @@
 2004-08-10  Charlie Zender  <zender@uci.edu>
 
+	* Finished thr_nbr documentation
+
 	* Threaded main variable loop of ncbo
 
 2004-08-08  Charlie Zender  <zender@uci.edu>
