@@ -4,6 +4,8 @@
 	Changes since nco-2_4_1: #include file mechanism works,
 	AT&T lex-compatibility broken by using flex <EOF> rules
 
+	* Documented ncap file insertion
+
 	* Fixed #including file mechanism, generalized line counting and
 	file name storage
 

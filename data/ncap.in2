@@ -1,0 +1,7 @@
+// $Header: /data/zender/nco_20150216/nco/data/ncap.in2,v 1.1 2002-05-23 18:16:45 zender Exp $ -*-C-*-
+
+// Purpose: ncap script #include'd by ncap.in to demonstrate file nesting
+
+a1 = one;
+a1@a1 = global@history;
+a1@julian_day = global@julian_day;
