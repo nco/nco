@@ -1,9 +1,10 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.42 1999-10-18 01:14:31 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.43 1999-10-22 16:32:33 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
 # Usage: 
 
+MY_BLD_DIR := ../bld
 ifndef PVM_ARCH
  PVM_ARCH := $(shell $(MY_BLD_DIR)/pvmgetarch)
 endif
@@ -19,7 +20,6 @@ endif
 ifndef PVM_ARCH
  PVM_ARCH := $(shell $(MY_BLD_DIR)/pvmgetarch)
 endif
-MY_BLD_DIR := ../bld
 MY_DAT_DIR := ../data
 MY_DOC_DIR := ../doc
 MY_INC_DIR := 

@@ -1,3 +1,7 @@
+1999-10-21  Charlie Zender  <zender@dust.ps.uci.edu>
+
+	* Defined MY_BLD_DIR in Makefile before it is used
+
 1999-10-17  Charlie Zender  <zender@dust.ps.uci.edu>
 
 	* Tagged this as nco1_1_41
