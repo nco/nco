@@ -10,15 +10,22 @@ Copyright \(co 1995-2002 Charlie Zender
 .br
 This is free software; see the source for copying conditions.  There is NO
 warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
 .SH "SEE ALSO"
 The full documentation for
-.B nco
+.B NCO
 is maintained as a Texinfo manual.  If the
 .B info
 and
-.B nco
+.B NCO
 programs are properly installed at your site, the command
 .IP
 .B info nco
 .PP
 should give you access to the complete manual.
+
+.SH HOMEPAGE
+The 
+.B NCO
+project homepage at <http://nco.sf.net>
+has the complete online User's Guide.

@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.150 2002-07-02 01:48:37 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.151 2002-07-03 18:20:00 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -32,6 +32,9 @@ ifndef MY_BIN_DIR
 endif
 ifndef MY_LIB_DIR
  MY_LIB_DIR := ../lib
+endif
+ifndef MY_MAN_DIR
+ MY_MAN_DIR := /usr/local/man
 endif
 ifndef MY_OBJ_DIR
  MY_OBJ_DIR := ../obj
@@ -195,6 +198,10 @@ MDL_DAT := $(addprefix ${MY_DAT_DIR}/,$(MDL_DAT_STB)) # `make distclean' removes
 MDL_DOC_SRC := $(addprefix ${MY_DOC_DIR}/,nco.texi MANIFEST README NEWS TODO index.shtml ncap.txt nco_news.shtml) # `make tags' includes these files
 MDL_DOC_TRG := nco.dvi nco.ps nco.pdf nco.html nco.info # `make doc' creates these files
 MDL_DOC := $(addprefix ${MY_DOC_DIR}/,$(MDL_DOC_TRG)) # `make distclean' removes these files
+
+MDL_MAN = $(wildcard ${MDL_MAN_DIR}/*.1)
+MDL_MAN := $(notdir $(MDL_MAN))
+MDL_MAN := $(addprefix ${MY_MAN_DIR}/,${MDL_MAN}) # distclean removes these files
 
 # Variables having to do with NCO build
 MDL_BLD_SRC := $(addprefix ${MY_BLD_DIR}/,Makefile nco_dst.pl nco_tst.sh) # `make tags' includes these files
@@ -1006,6 +1013,11 @@ ${libnco}.a: ${libnco}.a(${MY_OBJ_DIR}/ncap_utl.o) \
 libclean: lib_cln
 lib_cln:
 	rm -f ${libnco}.a
+# Targets in man
+man: ${MDL_MAN}
+	cd ../man;sudo cp -f *.1 ${MY_MAN_DIR}/man1
+man_cln:
+	rm -f ${MDL_MAN}
 # Targets in obj
 object: obj
 obj: ${MDL_OBJ}
