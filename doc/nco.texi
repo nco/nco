@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.113 2002-09-06 08:22:57 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.114 2002-09-06 17:15:40 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -2804,6 +2804,8 @@ of the type intended for the unpacked data, e.g., @code{float} or
 
 @node Intrinsic mathematical functions,  , Intrinsic functions, ncap netCDF Arithmetic Processor
 @subsection Intrinsic mathematical functions
+@code{ncap} supports the standard mathematical functions supplied with
+most operating systems.
 @unnumberedsubsec Mathematical functions
 @cindex mathematical functions
 @cindex @var{abs(x)}
