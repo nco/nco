@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.3 2002-06-07 02:42:35 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.c,v 1.4 2002-06-07 03:22:36 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -33,75 +33,75 @@ nd2endm /* [fnc] Compute number of days to end of month */
 nco_long /* O [YYMMDD] Date a specified number of days from input date */
 newdate /* [fnc] Compute date a specified number of days from input date */
 (const nco_long date, /* I [YYMMDD] Date */
- const int day_srt) /* I [day] Days ahead of input date */
+ const long day_srt) /* I [day] Days ahead of input date */
 {
   /* Purpose: Find date a specified number of days (possibly negative) from given date 
      Original fortran: Brian Eaton cal_util.F:newdate()
      C version: Charlie Zender */
 
   /* Local */
-  int day_nbr_2_eom; /* Days to end of month */
-  int day_crr; /* Day of date */
-  int day_ncr; /* Running count of days to increment date by */
-  int mth_crr; /* Month of date */
-  int mth_idx; /* Index */
-  int mth_srt; /* Save the initial value of month */
-  int mth_tmp; /* Current month as we increment date */
-  int yr_crr; /* Year of date */
-  int mth_day_nbr[]= /* Number of days in each month */
+  long day_nbr_2_eom; /* Days to end of month */
+  long day_crr; /* Day of date */
+  long day_ncr; /* Running count of days to increment date by */
+  long mth_crr; /* Month of date */
+  long mth_idx; /* Index */
+  long mth_srt; /* Save the initial value of month */
+  long mth_tmp; /* Current month as we increment date */
+  long yr_crr; /* Year of date */
+  long mth_day_nbr[]= /* Number of days in each month */
   { 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
     31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
   nco_long date_srt; /* Initial value of date (may change sign) */
   nco_long newdate_YYMMDD; /* New date in YYMMDD format */
 
-  if(day_srt == 0) return date;
+  if(day_srt == 0L) return date;
 
   date_srt=date;
-  yr_crr=date_srt/10000;
-  if(date_srt < 0) date_srt=-date_srt;
-  mth_crr=(date_srt%10000)/100;
+  yr_crr=date_srt/10000L;
+  if(date_srt < 0L) date_srt=-date_srt;
+  mth_crr=(date_srt%10000L)/100L;
   mth_srt=mth_crr;
-  day_crr=date_srt%100;
+  day_crr=date_srt%100L;
       
   if(day_srt > 0){
     day_ncr=day_srt;
-    yr_crr+=day_ncr/365;
-    day_ncr=day_ncr%365;
-    for(mth_idx=mth_srt;mth_idx<=mth_srt+12;mth_idx++){
+    yr_crr+=day_ncr/365L;
+    day_ncr=day_ncr%365L;
+    for(mth_idx=mth_srt;mth_idx<=mth_srt+12L;mth_idx++){
       mth_tmp=mth_idx;
-      if(mth_idx > 12) mth_tmp=mth_idx-12;
-      day_nbr_2_eom=nd2endm(mth_tmp,day_crr);
+      if(mth_idx > 12L) mth_tmp=mth_idx-12L;
+      day_nbr_2_eom=(long)nd2endm(mth_tmp,day_crr);
       if(day_ncr > day_nbr_2_eom){
 	mth_crr++;
-	if(mth_crr > 12){
-	  mth_crr=1;
+	if(mth_crr > 12L){
+	  mth_crr=1L;
 	  yr_crr++;
 	} /* end if */
-	day_crr=1;
-	day_ncr-=day_nbr_2_eom+1;
-	if(day_ncr == 0) break;
+	day_crr=1L;
+	day_ncr-=day_nbr_2_eom+1L;
+	if(day_ncr == 0L) break;
       }else{
 	day_crr=day_crr+day_ncr;
 	break;
       } /* end if */
     } /* end loop over mth */
     /* Previous two breaks continue execution here */
-  }else if(day_srt < 0){
+  }else if(day_srt < 0L){
     day_ncr=-day_srt;
-    yr_crr=yr_crr-day_ncr/365;
-    day_ncr=day_ncr%365;
+    yr_crr=yr_crr-day_ncr/365L;
+    day_ncr=day_ncr%365L;
     mth_srt=mth_crr;
-    for(mth_idx=mth_srt+12;mth_idx>=mth_srt;mth_idx--){
+    for(mth_idx=mth_srt+12L;mth_idx>=mth_srt;mth_idx--){
       if(day_ncr >= day_crr){
 	mth_crr--;
-	if(mth_crr < 1){
-	  mth_crr=12;
+	if(mth_crr < 1L){
+	  mth_crr=12L;
 	  yr_crr--;
 	} /* end if */
 	day_ncr-=day_crr;
-	day_crr=mth_day_nbr[mth_crr-1];
-	if(day_ncr == 0) break;
+	day_crr=mth_day_nbr[mth_crr-1L];
+	if(day_ncr == 0L) break;
       }else{
 	day_crr-=day_ncr;
 	break;
@@ -111,9 +111,9 @@ newdate /* [fnc] Compute date a specified number of days from input date */
   } /* end if */
 
   if(yr_crr >= 0){
-    newdate_YYMMDD=yr_crr*10000+mth_crr*100+day_crr;
+    newdate_YYMMDD=yr_crr*10000L+mth_crr*100L+day_crr;
   }else{
-    newdate_YYMMDD=-yr_crr*10000+mth_crr*100+day_crr;
+    newdate_YYMMDD=-yr_crr*10000L+mth_crr*100L+day_crr;
     newdate_YYMMDD=-newdate_YYMMDD;
   } /* end if */
 

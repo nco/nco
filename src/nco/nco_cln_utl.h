@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.3 2002-05-14 01:00:22 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cln_utl.h,v 1.4 2002-06-07 03:22:38 zender Exp $ */
 
 /* Purpose: Calendar utilities */
 
@@ -34,7 +34,7 @@ nd2endm /* [fnc] Compute number of days to end of month */
 nco_long /* O [YYMMDD] Date a specified number of days from input date */
 newdate /* [fnc] Compute date a specified number of days from input date */
 (const nco_long date, /* I [YYMMDD] Date */
- const int day_srt); /* I [day] Days ahead of input date */
+ const long day_srt); /* I [day] Days ahead of input date */
 
 #ifdef __cplusplus
 } /* end extern "C" */

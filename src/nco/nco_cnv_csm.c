@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.4 2002-05-12 06:12:26 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_cnv_csm.c,v 1.5 2002-06-07 03:22:38 zender Exp $ */
 
 /* Purpose: CSM conventions */
 
@@ -53,12 +53,13 @@ ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
   /* Purpose: Fix date variable in averaged CSM files */
   char wrn_sng[1000];
 
-  int day;
   int date_idx;
   int idx;
   int rcd=NC_NOERR; /* [rcd] Return code */
   int time_idx;
   
+  long day;
+
   int nbdate_id;
   
   nco_long nbdate;
@@ -95,7 +96,7 @@ ncar_csm_date /* [fnc] Fix date variable in averaged CSM files */
   } /* endif */
   
   /* Assign current day to averaged day number */
-  day=(int)(var[time_idx]->val.dp[0]);
+  day=(long)(var[time_idx]->val.dp[0]);
   
   /* Recompute date variable based on new (averaged) day number */
 #ifdef USE_FORTRAN_ARITHMETIC
