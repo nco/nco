@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.38 2004-08-03 17:06:45 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_att_utl.c,v 1.39 2004-08-16 04:13:33 zender Exp $ */
 
 /* Purpose: Attribute utilities */
 
@@ -12,7 +12,7 @@ void
 nco_aed_prc /* [fnc] Process single attribute edit for single variable */
 (const int nc_id, /* I [id] Input netCDF file ID */
  const int var_id, /* I [id] ID of variable on which to perform attribute editing */
- const aed_sct aed) /* I [id] Structure containing information necessary to edit */
+ const aed_sct aed) /* I [sct] Structure containing information necessary to edit */
 {
   /* Purpose: Process single attribute edit for single variable */
   

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.54 2004-08-15 07:08:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_utl.c,v 1.55 2004-08-16 04:13:33 zender Exp $ */
 
 /* Purpose: Variable utilities */
 
@@ -787,10 +787,11 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
      So local variable var usually refers to var_prc_out in calling function 
      Hence names may look reversed in this function, and xrf is frequently used
 
-     ncap exclusively uses FIXED_KEEP_PACKED in its call to nco_var_dfn() to define fixed vars
+     fxm TODO nco402:
+     Have ncap,ncra,ncbo call with FIXED_KEEP_PACKED to keep fixed variables unaltered
      We do not want to un-necessarily unpack variables that are fixed, not processed */
 
-  bool PCK_ATT_CPY; /* [flg] Copy attributes "scale_factor", "add_offset" */
+  bool PCK_ATT_CPY=True; /* [flg] Copy attributes "scale_factor", "add_offset" */
 
   const char fnc_nm[]="nco_var_dfn()"; /* [sng] Function name */
 
@@ -807,20 +808,38 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 
   for(idx=0;idx<nbr_var;idx++){
 
-    /* Assume arithmetic operators store values as unpacked pck_dbg
-       Problem here is that ncap is not unpacking "fixed" variables
-       Why change the type of "fixed" variables?
-       ncra does not average them, ncbo does not subtract them, etc.,
-       so it should be safe to leave them packed 
-       Thus checking only nco_is_rth_opr is too simplistic
-       The most important thing is to be consistent---
-       1. If all variables handled by arithmetic operators are to be unpacked then ensure this is done on reading
-       2. If "fixed variables" are to remain fixed, then nco_var_dfn() needs more information 
-       3. Complicating this, some "fixed" variables in ncap are on the RHS and thus are separately unpacked for operations involving LHS variables
-       4. Tentative solution 20030119: 
-       If other operators ever require this capability, we can change the ncap-specific
-       condition to a generic FIXED_KEEP_PACKED flag passed into nco_var_dfn() */
-    if(nco_is_rth_opr(prg_id) && prg_id != ncap) typ_out=var[idx]->typ_upk; else typ_out=var[idx]->type;
+    /* Checking only nco_is_rth_opr() is too simplistic
+       1. All variables handled by arithmetic operators are currently unpacked on reading
+       2. However "fixed variables" appear in many arithemetic operators
+          ncra, for instance, treats non-record variables as fixed (does not average them)
+	  ncbo treats coordinate variables as fixed  (does not subtract them)
+	  It would be best not to alter [un-]packing of arithmetic fixed variables
+       3. ncap, an arithmetic operator, also has "fixed variables", i.e., 
+          pre-existing non-LHS variables copied directly to output.
+	  These "fixed" ncap variables should remain unaltered
+	  However, this is not presently done
+	  nco_var_dfn() needs more information to handle "fixed" variables correctly because
+	  Some ncap "fixed" variables appear on RHS in definitions of LHS variables
+          These RHS fixed variable must be separately unpacked during RHS algebra
+	  Currently, ncap only calls nco_var_dfn() for fixed variables
+	  ncap uses its own routine, ncap_var_write(), for RHS variable definitions
+	  Tentative solution 20030119: fxm TODO nco402 implement this:
+	  Change ncap-specific condition to more generic FIXED_KEEP_PACKED flag 
+	  Pass this flag into nco_var_dfn()
+       4. All variables in non-arithmetic operators (except ncpdq) should remain un-altered
+       5. ncpdq is non-arithemetic operator
+          However, ncpdq specially handles fine-grained control [un-]packing options */
+    if(nco_is_rth_opr(prg_id)){
+      /* Arithmetic operators store values as unpacked... */
+      typ_out=var[idx]->typ_upk; 
+      /* ...with one exception...
+	 ncap [un-]packing precedes nco_var_dfn() call, sets var->type appropriately */
+      if(prg_id == ncap) typ_out=var[idx]->type;
+    }else{
+      /* Non-arithmetic operators leave things along by default
+	 ncpdq first modifies var_out->type, then calls nco_var_dfn(), then [un-]packs */
+      typ_out=var[idx]->type;
+    } /* endif arithmetic operator */
 
     /* Is requested variable already in output file? */
     rcd=nco_inq_varid_flg(out_id,var[idx]->nm,&var[idx]->id);
@@ -839,8 +858,8 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	  for(idx_ncl=0;idx_ncl<nbr_dmn_ncl;idx_ncl++){
 	    /* All I can say about this line, is...Yikes! 
 	       No, really, it indicates poor program design
-	       fxm: TODO nco374: re-write ncwa so, like ncpdq, ncwa re-arranges output metadata 
-	       prior to calling nco_var_dfn() */
+	       fxm: TODO nco374: have ncwa re-arrange output metadata prior to nco_var_dfn()
+	       Then delete this branch and use straightforward branch of code */
 	    if(var[idx]->xrf->dim[dmn_idx]->id == dmn_ncl[idx_ncl]->xrf->id) break;
 	  } /* end loop over idx_ncl */
 	  if(idx_ncl != nbr_dmn_ncl) dmn_id_vec[dmn_nbr++]=var[idx]->dim[dmn_idx]->id;
@@ -863,6 +882,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
 	(void)fprintf(stdout,"\n");
       } /* endif dbg */
 
+      /* The all-important variable definition call itself... */
       (void)nco_def_var(out_id,var[idx]->nm,typ_out,dmn_nbr,dmn_id_vec,&var[idx]->id);
       
       if(dbg_lvl_get() > 3 && prg_id != ncwa){
@@ -880,7 +900,7 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
       /* Variable is already in output file---use existing definition
 	 This branch is executed, e.g., by operators in append mode */
       (void)fprintf(stdout,"%s: WARNING Using existing definition of variable \"%s\" in %s\n",prg_nm_get(),var[idx]->nm,fl_out);
-    } /* end if */
+    } /* end if variable is already in output file */
 
     /* Copy all attributes except in cases where packing/unpacking is involved
        0. Variable is unpacked on input, unpacked on output
@@ -892,36 +912,44 @@ nco_var_dfn /* [fnc] Define variables and write their attributes to output file 
        3. Variable is packed on input, is unpacked for some reason, and will be packed on output (possibly with new packing attributes)
        --> Copy all attributes, but scale_factor and add_offset must be overwritten later with new values
        4. Variable is not packed on input, packing is performed, and output is packed
-       --> Copy all attributes, define scale_factor and add_offset now, write their values later
-    */
+       --> Copy all attributes, define dummy values for scale_factor and add_offset now, 
+           write real values later */
 
-    /* var refers to output variable structure, var->xrf refers to input variable structure */
     /* Do not copy packing attributes "scale_factor" and "add_offset" 
-       if variable is packed in input file but unpacked in output file 
+       if variable is packed in input file and unpacked in output file 
        However, arithmetic operators calling nco_var_dfn() with fixed variables should leave them fixed
        Currently ncap only calls nco_var_dfn() for fixed variables, so handle exception with ncap-specific condition */
-    PCK_ATT_CPY=(nco_is_rth_opr(prg_id) && prg_id != ncap && var[idx]->xrf->pck_dsk) ? False : True;
+    /* Copy exising packing attributes, if any, unless... */
+    if(nco_is_rth_opr(prg_id) && /* ...operator is arithmetic... */
+       prg_id != ncap && /* ...and is not ncap (hence it must be, e.g., ncra, ncbo)... */
+       var[idx]->xrf->pck_dsk) /* ...and variable is not packed in input file... */
+      PCK_ATT_CPY=False;
+
+    /* Recall that:
+       var      refers to output variable structure
+       var->xrf refers to input variable structure */ 
     (void)nco_att_cpy(in_id,out_id,var[idx]->xrf->id,var[idx]->id,PCK_ATT_CPY);
 
-    if(prg_id == ncpdq && False){ /*  */
-      /* If variable will be packed... */
+    /* Create dummy packing attributes for ncpdq if necessary 
+       Recall ncap calls ncap_var_write() to define newly packed LHS variables */
+    if(prg_id == ncpdq){
+      /* If ncpdq will pack variable... */
       if(typ_out != var[idx]->typ_dsk){
+	/* ...then add/overwrite dummy scale_factor and add_offset attributes
+	   Overwrite these with correct values once known
+	   Adding dummy attributes now reduces likelihood that netCDF layer
+	   will impose file copy penalties when final values are written */
 	const char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
 	const char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 	val_unn zero_unn; /* [frc] Generic container for value 0.0 */
 	var_sct *zero_var; /* [sct] NCO variable for value 0.0 */
 	zero_unn.d=0.0; /* [frc] Generic container for value 0.0 */
 	zero_var=scl_mk_var(zero_unn,typ_out); /* [sct] NCO variable for value 0.0 */
-  
-	/* ...then add/overwrite dummy scale_factor and add_offset attributes
-	 Overwrite these with correct values once known
-	 Adding the dummy attributes now reduces likelihood that netCDF layer
-	 will impose file copy penalties when final values are written */
 	(void)nco_put_att(out_id,var[idx]->id,scl_fct_sng,typ_out,1,zero_var->val.vp);
 	(void)nco_put_att(out_id,var[idx]->id,add_fst_sng,typ_out,1,zero_var->val.vp);
-	if(zero_var != NULL) zero_var=nco_var_free(zero_var);
-      } /* endif pck_ram */
-    } /* endif */
+	zero_var=(var_sct *)nco_var_free(zero_var);
+      } /* endif variable is newly packed */
+    } /* endif ncpdq */
 
   } /* end loop over idx variables to define */
   

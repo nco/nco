@@ -1,5 +1,7 @@
 2004-08-15  Charlie Zender  <zender@uci.edu>
 
+	* ncpdq all_new packing seems to work. Next need to get unpacking working.
+
 	* Alter nco_var_dfn() to define dummy scale_factor, add_offset for ncpdq
 
 2004-08-14  Charlie Zender  <zender@uci.edu>

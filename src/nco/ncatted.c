@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.71 2004-08-05 08:18:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncatted.c,v 1.72 2004-08-16 04:13:33 zender Exp $ */
 
 /* ncatted -- netCDF attribute editor */
 
@@ -143,8 +143,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncatted.c,v 1.71 2004-08-05 08:18:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.71 $";
+  const char * const CVS_Id="$Id: ncatted.c,v 1.72 2004-08-16 04:13:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.72 $";
   const char * const opt_sng="Aa:D:hl:Oo:p:Rr-:";
   
   extern char *optarg;
@@ -315,7 +315,8 @@ main(int argc,char **argv)
       /* Perform operation for every variable for which it makes sense */
       
       /* Edit attribute for every variable */
-      for(idx_var=0;idx_var<nbr_var_fl;idx_var++) (void)nco_aed_prc(nc_id,idx_var,aed_lst[idx]);
+      for(idx_var=0;idx_var<nbr_var_fl;idx_var++) 
+	(void)nco_aed_prc(nc_id,idx_var,aed_lst[idx]);
 
     } /* end else var_nm == NULL */
 

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.24 2004-08-15 07:08:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.25 2004-08-16 04:13:33 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -223,7 +223,7 @@ var_sct * /* O [sct] Packed variable */
 nco_var_pck /* [fnc] Pack variable in memory */
 (var_sct *var, /* I/O [sct] Variable to be packed */
  const nc_type nc_typ_pck, /* I [enm] Type of variable when packed (on disk). This should be same as typ_dsk except in cases where variable is packed in input file and unpacked in output file. */
- const bool USE_EXISTING_PCK) /* I [flg] Use existing packing scale_factor and add_offset */
+ const bool USE_EXISTING_PCK) /* I [flg] Use existing scale_factor and add_offset, if any */
 {
   /* Purpose: Pack variable 
      Routine is inverse of nco_var_upk(): nco_var_pck[nco_var_upk(var)]=var 
@@ -381,7 +381,7 @@ nco_var_pck /* [fnc] Pack variable in memory */
   
   if(dbg_lvl_get() == 3) (void)fprintf(stdout,"%s: %s: scl_fct_dbl = %g, add_fst_dbl = %g\n",prg_nm_get(),var->nm,scl_fct_dbl,add_fst_dbl);
   
-  /* Packing factors now exist and are guaranteed to be same type as variable in memory */
+  /* Packing factors now exist and are same type as variable in memory */
 
   /* Apply scale_factor and add_offset to reduce variable size
      add_offset and scale_factor are always scalars so use var_scv_* functions
@@ -415,12 +415,9 @@ nco_var_pck /* [fnc] Pack variable in memory */
      This is where var->type is changed from original to packed type */
   var=nco_var_cnf_typ(nc_typ_pck,var);
 
-  if(dbg_lvl_get() >=3){
-    (void)fprintf(stderr,"%s: PACKING Packed %s, and writing to disk.\n",prg_nm_get(),var->nm);
-  } /* endif dbg */
+  if(dbg_lvl_get() >= 3) (void)fprintf(stderr,"%s: PACKING Packed %s\n",prg_nm_get(),var->nm);
 
   return var;
-  
 } /* end nco_var_pck() */
 
 var_sct * /* O [sct] Packed variable */

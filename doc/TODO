@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.378 2004-08-15 07:08:49 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.379 2004-08-16 04:13:32 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -245,7 +245,9 @@ nco397. make ncpack symbolic link to ncpdq? Re-order/pack are completely indepen
 nco399. ncpdq: add scl_fct add_fst attributes in metadata loop or in single loop after writing variable values
 nco400. ncpdq: modify nco_var_dfn() to make room for scale factor and add offset
 nco401. ncpdq: fix "use ncpdq fxm" hint in nco_pck_dsk_inq() message
-nco402. 
+nco402. Leave alone [un-]packing of fixed variables in arithmetic operators
+        See notes about this in nco_var_dfn()
+nco403. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.66 2004-08-08 06:01:30 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.67 2004-08-16 04:13:33 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -82,10 +82,17 @@ bool /* [flg] Program does arithmetic */
 nco_is_rth_opr /* [fnc] Query whether program does arithmetic */
 (const int prg_id) /* [enm] Program ID */
 {
-  /* Purpose: Does operator do arithmetic?
-     Consequences are operator-specific
-     Currently, arithmetic operators automatically unpack variables by default 
-     Non-arithmetic operators do not unpack variables */
+  /* Purpose: Is operator arithmetic?
+     For purposes of this function, an arithmetic operator is one which changes values
+     Concatenators (ncrcat, ncecat) are not arithmetic because they just glue data
+     Permutor (ncpdq) is not arithmetic because it just re-arranges values
+     Packer (ncpdq) is not arithmetic because it re-represents values
+     Attributors (ncrename, ncatted) are not arithmetic because they change metadata, not data
+     nco_is_rth_opr() flag help control packing behavior
+     Clearly, arithmetic operators must operate on unpacked values
+     Hence, one use of nco_is_rth_opr() is to tell arithmetic operators to 
+     automatically unpack variables when reading them
+     Non-arithmetic operators do not need to unpack variables */
   switch(prg_id){
   case ncap: 
   case ncbo:

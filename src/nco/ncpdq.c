@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.32 2004-08-15 07:08:52 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.33 2004-08-16 04:13:33 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -64,6 +64,9 @@
 int 
 main(int argc,char **argv)
 {
+  aed_sct *aed_lst_add_fst=NULL_CEWI;
+  aed_sct *aed_lst_scl_fct=NULL_CEWI;
+
   bool EXCLUDE_INPUT_LIST=False; /* Option c */
   bool FILE_RETRIEVED_FROM_REMOTE_LOCATION;
   bool FL_LST_IN_FROM_STDIN=False; /* [flg] fl_lst_in comes from stdin */
@@ -98,9 +101,13 @@ main(int argc,char **argv)
   char *rec_dmn_nm_out_crr=NULL; /* [sng] Name of record dimension, if any, required by re-order */
   char *time_bfr_srt;
   
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.32 2004-08-15 07:08:52 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.32 $";
+  char * const add_fst_sng="add_offset"; /* [sng] Unidata standard string for add offset */
+  char * const scl_fct_sng="scale_factor"; /* [sng] Unidata standard string for scale factor */
+
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.33 2004-08-16 04:13:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.33 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:Oo:P:p:Rrt:v:x-:";
+
   
   dmn_sct **dim=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -598,8 +605,14 @@ main(int argc,char **argv)
   
   /* Alter metadata for variables that will be packed */
   if(nco_pck_typ != nco_pck_nil){
+    /* Create attribute edit lists */
+    aed_lst_add_fst=(aed_sct *)nco_malloc(nbr_var_prc*sizeof(aed_sct));
+    aed_lst_scl_fct=(aed_sct *)nco_malloc(nbr_var_prc*sizeof(aed_sct));
     for(idx=0;idx<nbr_var_prc;idx++){
       nco_pck_mtd(var_prc[idx],var_prc_out[idx],nco_pck_typ);
+      /* Use same copy of attribute name for all edits */
+      aed_lst_add_fst[idx].att_nm=add_fst_sng;
+      aed_lst_scl_fct[idx].att_nm=scl_fct_sng;
     } /* end loop over var_prc */
   } /* nco_pck_typ == nco_pck_nil */
   
@@ -645,25 +658,27 @@ main(int argc,char **argv)
       /* Retrieve variable from disk into memory */
       (void)nco_var_get(in_id,var_prc[idx]); /* Routine contains OpenMP critical regions */
       
-      if(True){
+      if(dmn_rdr_nbr > 0){
 	if((var_prc_out[idx]->val.vp=(void *)nco_malloc_flg(var_prc_out[idx]->sz*nco_typ_lng(var_prc_out[idx]->type))) == NULL){
 	  (void)fprintf(fp_stdout,"%s: ERROR Unable to malloc() %ld*%lu bytes for value buffer for variable %s in main()\n",prg_nm_get(),var_prc_out[idx]->sz,(unsigned long)nco_typ_lng(var_prc_out[idx]->type),var_prc_out[idx]->nm);
 	  nco_exit(EXIT_FAILURE); 
 	} /* endif err */
-      }else{
-	/* ncpdq may, instead, one day, want to copy input data. That would be done here. */
+
+	/* Change dimensionionality of values */
+	rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx],dmn_rvr_in[idx]);
+	/* Re-ordering required two value buffers, time to free input buffer */
+	var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+	/* Free current dimension correspondence */
+	dmn_idx_out_in[idx]=nco_free(dmn_idx_out_in[idx]);
+	dmn_rvr_in[idx]=nco_free(dmn_rvr_in[idx]);
+      } /* endif dmn_rdr_nbr > 0 */
+
+      if(nco_pck_typ != nco_pck_nil){
 	/* Copy input variable buffer to processed variable buffer */
 	var_prc_out[idx]->val=var_prc[idx]->val;
-      } /* endif */
-
-      /* Change dimensionionality of values */
-      if(dmn_rdr_nbr > 0) rcd=nco_var_dmn_rdr_val(var_prc[idx],var_prc_out[idx],dmn_idx_out_in[idx],dmn_rvr_in[idx]);
-
-      /* Pack variable according to packing specification */
-      if(nco_pck_typ != nco_pck_nil) nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_typ);
-
-      /* Free current input buffer */
-      var_prc[idx]->val.vp=nco_free(var_prc[idx]->val.vp);
+	/* Pack variable according to packing specification */
+	nco_pck_val(var_prc[idx],var_prc_out[idx],nco_pck_typ,aed_lst_add_fst+idx,aed_lst_scl_fct+idx);
+      } /* endif dmn_rdr_nbr > 0 */
 
 #ifdef _OPENMP
 #pragma omp critical
@@ -678,16 +693,21 @@ main(int argc,char **argv)
       } /* end OpenMP critical */
       /* Free current output buffer */
       var_prc_out[idx]->val.vp=nco_free(var_prc_out[idx]->val.vp);
-      /* Free current dimension correspondence */
-      if(dmn_rdr_nbr > 0){
-	dmn_idx_out_in[idx]=nco_free(dmn_idx_out_in[idx]);
-	dmn_rvr_in[idx]=nco_free(dmn_rvr_in[idx]);
-      } /* endif dmn_rdr_nbr > 0 */
       
     } /* end (OpenMP parallel for) loop over idx */
     
     if(dbg_lvl > 0) (void)fprintf(fp_stderr,"\n");
     
+    /* Replace dummy packing attributes with real thing */
+    if(nco_pck_typ != nco_pck_nil){
+      (void)nco_redef(out_id);
+      for(idx=0;idx<nbr_var_prc;idx++){
+	(void)nco_aed_prc(out_id,aed_lst_add_fst[idx].id,aed_lst_add_fst[idx]);	
+	(void)nco_aed_prc(out_id,aed_lst_scl_fct[idx].id,aed_lst_scl_fct[idx]);	
+      } /* end loop over var_prc */
+      (void)nco_enddef(out_id);
+    } /* nco_pck_typ == nco_pck_nil */
+
     /* Close input netCDF file */
     nco_close(in_id);
     
@@ -719,6 +739,11 @@ main(int argc,char **argv)
   } /* endif dmn_rdr_nbr > 0 */
   if(nco_pck_typ != nco_pck_nil){
     if(nco_pck_typ_sng != NULL) nco_pck_typ_sng=(char *)nco_free(nco_pck_typ_sng);
+    for(idx=0;idx<nbr_var_prc;idx++){
+      aed_lst_add_fst[idx].val.vp=nco_free(aed_lst_add_fst[idx].val.vp);
+    } /* end loop over idx */
+    aed_lst_add_fst=(aed_sct *)nco_free(aed_lst_add_fst);
+    aed_lst_add_fst=(aed_sct *)nco_free(aed_lst_scl_fct);
   } /* nco_pck_typ == nco_pck_nil */
 
   /* NCO-generic clean-up */
@@ -756,7 +781,7 @@ void
 nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
 (const var_sct * const var_in, /* I [ptr] Variable in original disk state */
  var_sct * const var_out, /* I/O [ptr] Variable whose metadata will be altered */
- const int nco_pck_typ) /* I [enm] Packing type */
+ const int nco_pck_typ)  /* I [enm] Packing type */
 {
   /* Purpose: Alter metadata according to packing specification */
   const char fnc_nm[]="nco_pck_mtd()"; /* [sng] Function name */
@@ -772,6 +797,7 @@ nco_pck_mtd /* [fnc] Alter metadata according to packing specification */
   case nco_pck_xst_new_att:
   case nco_pck_all_new_att:
     USE_EXISTING_PCK=False;
+    /* Major problem?: ncp_pck_var() expects var->type to be input (packed) type */
     var_out->type=nc_typ_pck_out;
     if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s will pack variable metadata %s from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
    break;
@@ -785,12 +811,18 @@ void
 nco_pck_val /* [fnc] Pack variable according to packing specification */
 (var_sct * const var_in, /* I [ptr] Variable in original disk state */
  var_sct * var_out, /* I/O [ptr] Variable after packing/unpacking operation */
- int nco_pck_typ) /* I [enm] Packing type */
+ const int nco_pck_typ, /* I [enm] Packing type */
+ aed_sct * const aed_lst_add_fst, /* O [enm] Attribute edit structure, add_offset */
+ aed_sct * const aed_lst_scl_fct) /* O [enm] Attribute edit structure, scale_factor */
 {
   /* Purpose: Alter metadata according to packing specification */
   /* fxm: Use (or delete) nco_put_var_pck() */
   const char fnc_nm[]="nco_pck_val()"; /* [sng] Function name */
   bool USE_EXISTING_PCK=False; /* I [flg] Use existing packing scale_factor and add_offset */
+  nc_type typ_out; /* [enm] Type in output file */
+
+  typ_out=var_out->type; /* [enm] Type in output file */
+
   switch(nco_pck_typ){
   case nco_pck_xst_xst_att:
   case nco_pck_all_xst_att:
@@ -800,7 +832,9 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
   case nco_pck_all_new_att:
     USE_EXISTING_PCK=False;
     if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s packing variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
-    var_out=nco_var_pck(var_in,var_out->type,False);
+    /* Recall that nco_var_pck() expects to alter var_out->type itself */
+    var_out->type=var_in->typ_dsk;
+    var_out=nco_var_pck(var_out,typ_out,USE_EXISTING_PCK);
    break;
   case nco_pck_upk:
     if(dbg_lvl_get() > 0) (void)fprintf(stderr,"%s: DEBUG %s unpacking variable %s values from %s to %s\n",prg_nm_get(),fnc_nm,var_in->nm,nco_typ_sng(var_in->type),nco_typ_sng(var_out->type));
@@ -808,5 +842,18 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
   default:
     break;
   } /* end case */
+
+  /* Fill attribute edit structures
+     Use values directly from variable structures rather than copying
+     Attribute structure dynamic memory will be free()'d in nco_var_free() call */
+  aed_lst_add_fst->var_nm=aed_lst_scl_fct->var_nm=var_out->nm;
+  aed_lst_add_fst->id=aed_lst_scl_fct->id=var_out->id;
+  aed_lst_add_fst->sz=aed_lst_scl_fct->sz=1L;
+  aed_lst_add_fst->type=aed_lst_scl_fct->type=var_out->typ_upk;
+  aed_lst_add_fst->mode=aed_lst_scl_fct->mode=aed_overwrite;
+  /* Insert values into attribute structures */
+  aed_lst_add_fst->val=var_out->add_fst;
+  aed_lst_scl_fct->val=var_out->scl_fct;
+
 } /* end nco_pck_val() */
 

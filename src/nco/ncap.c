@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.134 2004-08-14 21:00:00 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.135 2004-08-16 04:13:33 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -115,8 +115,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.134 2004-08-14 21:00:00 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.134 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.135 2004-08-16 04:13:33 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.135 $";
   const char * const opt_sng="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vx-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -574,7 +574,7 @@ main(int argc,char **argv)
   for(idx=0;idx<nbr_dmn_ass;idx++)
     for(jdx=0;jdx<nbr_dmn_in;jdx++){
       /* If dimension is in list and is not yet defined */
-      if(!strcmp(dmn_lst[idx].nm, dmn_in[jdx]->nm) && !dmn_in[jdx]->xrf){     
+      if(!strcmp(dmn_lst[idx].nm,dmn_in[jdx]->nm) && !dmn_in[jdx]->xrf){     
 	/* Add dimension to output list dmn_prc */
 	dmn_new=nco_dmn_out_grow((void *)&prs_arg);
 	*dmn_new=nco_dmn_dpl(dmn_in[jdx]);
@@ -636,7 +636,7 @@ main(int argc,char **argv)
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_nil,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
-  /* Why not call this with var_fix */
+  /* Why not call this with var_fix? */
   /* Define non-processed vars */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0);
   
