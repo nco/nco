@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.31 1999-10-04 05:18:55 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.32 1999-10-04 05:22:29 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -675,7 +675,7 @@ else
 	$(CC) $(CFLAGS) -o $(MY_BIN_DIR)/$@ $(MY_OBJ_DIR)/$@.o $(MY_OBJ_DIR)/ncap_utl.o $(MY_OBJ_DIR)/getopt.o $(MY_OBJ_DIR)/getopt1.o $(MY_OBJ_DIR)/$@.tab.o $(MY_OBJ_DIR)/$@_lex.o -ll -ly $(LDFLAGS)
 endif
 	chmod 755 $(MY_BIN_DIR)/$@
-	/bin/rm -f $@.tab.c $@.tab.h $@_lex.c $(MY_OBJ_DIR)/$@_lex.o
+	/bin/rm -f $(MDL_NCAP) $(MY_OBJ_DIR)/$@_lex.o
 
 GENNET_SRC := gennet.f
 GENNET_OBJ := $(MY_OBJ_DIR)/gennet.o
