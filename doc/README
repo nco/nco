@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.14 2003-11-05 05:00:32 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/README,v 1.15 2004-01-12 21:37:15 zender Exp $ -*-text-*-
 
 # Purpose: NCO README file
 
@@ -29,6 +29,14 @@ Try the newer ./configure mechanism first by using the configure
 command in the top-level NCO directory:
 
 `cd ~/nco;./configure;make;make install'
+
+or 
+
+`cd ~/nco;./configure;make;make install-strip'
+
+if you to strip the executables and libraries. In this case, NCO
+will run at the same speed, but consume less memory and only about
+half the disk space since all debugging information is "stripped". 
 
 If this does not work, please look at the slightly more complex
 (and realistic) examples that we use to test your machine architecture.
