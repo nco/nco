@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile,v 1.11 2002-06-22 00:54:56 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/src/nco_c++/Makefile,v 1.12 2002-07-08 06:22:26 zender Exp $
 
 # Purpose: Makefile for libnco_c++ module nco_c++
 
@@ -590,13 +590,12 @@ endif
 # endif SunOS=SUN4SOL2,SUNMP
 
 ifeq (${PVM_ARCH},WIN32)
-C_ONLY := Y
-C++ := g++
-CC := gcc -ansi
-CPP := cpp
+C++ := g++-2
+CC := gcc-2 -ansi
+CPP := cpp-2
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
 CPPFLAGS += ${CPP_TKN} -Di386 ${CPP_PTH} -I${NETCDF_INC}
-FC := g77
+FC := g77-2
 LD := ld
 LDFLAGS += -L${MY_LIB_DIR} -lnco_c++ -L${NETCDF_LIB} -lnetcdf
 LDFLAGS += 

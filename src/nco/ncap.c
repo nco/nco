@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.81 2002-07-04 03:51:56 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.82 2002-07-08 06:22:26 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -85,8 +85,8 @@ main(int argc,char **argv)
   char *fl_pth=NULL; /* Option p */
   char *time_bfr_srt;
   char *cmd_ln;
-  char CVS_Id[]="$Id: ncap.c,v 1.81 2002-07-04 03:51:56 zender Exp $"; 
-  char CVS_Revision[]="$Revision: 1.81 $";
+  char CVS_Id[]="$Id: ncap.c,v 1.82 2002-07-08 06:22:26 zender Exp $"; 
+  char CVS_Revision[]="$Revision: 1.82 $";
   
   dmn_sct **dmn=NULL_CEWI;
   dmn_sct **dmn_out;
@@ -309,15 +309,15 @@ main(int argc,char **argv)
   sym_tbl[sym_idx++]=ncap_sym_init("ceil",ceil,ceilf); /* Round up to nearest integer */
   sym_tbl[sym_idx++]=ncap_sym_init("floor",floor,floorf); /* Round down to nearest integer */
 
-#if (defined SGIMP64) || (defined AIX)
-  /* 20020122 and 20020422: SGI and AIX do not define erff(), erfcf(), gammaf() */
+#if (defined AIX) || (defined SGIMP64) || (defined WIN32)
+  /* 20020122 and 20020422: AIX, SGI, WIN32 do not define erff(), erfcf(), gammaf() */
   sym_tbl_nbr-=3; /* Advanced math: erf, erfc, gamma */
   /* sym_tbl_nbr-=2; *//* Basic Rounding: ceil, floor */
-  /* 20020703: SGI and AIX do not define rintf */
+  /* 20020703: AIX, SGI, WIN32 do not define rintf */
   sym_tbl_nbr-=4; /* Advanced Rounding: nearbyint, rintf, round, trunc */
-  /* 20020703: SGI and AIX do not define acoshf, asinhf, atanhf */
+  /* 20020703: AIX, SGI, WIN32 do not define acoshf, asinhf, atanhf */
   sym_tbl_nbr-=6; /* Hyperbolic trigonometric: acosh, asinh, atanh, cosh, sinh, tanh */
-#else /* not SGIMP64 || AIX */
+#else /* not AIX || SGIMP64 || WIN32 */
   /* Advanced math: erf, erfc, gamma */
   sym_tbl[sym_idx++]=ncap_sym_init("erf",erf,erff);
   sym_tbl[sym_idx++]=ncap_sym_init("erfc",erfc,erfcf);
@@ -337,7 +337,7 @@ main(int argc,char **argv)
   /* sym_tbl[sym_idx++]=ncap_sym_init("round",round,roundf); *//* Round to nearest integer away from zero */
   /* sym_tbl[sym_idx++]=ncap_sym_init("trunc",trunc,truncf); *//* Round to nearest integer not larger in absolute value */
   /* sym_tbl[sym_idx++]=ncap_sym_init("rint",rint,rintf); *//* Round to integer value in floating point format using current rounding direction, raise inexact exceptions */
-#endif /* not SGIMP64 || AIX */
+#endif /* not AIX || SGIMP64 || WIN32 */
   assert(sym_idx == sym_tbl_nbr);
  
   /* Process positional arguments and fill in filenames */

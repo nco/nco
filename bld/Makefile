@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.152 2002-07-08 03:09:23 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.153 2002-07-08 06:22:26 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -773,7 +773,7 @@ ifeq (${PVM_ARCH},WIN32)
 C++ := g++
 CC := gcc -ansi
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := ${CPP_TKN} -Di386 -I${NETCDF_INC}
+CPPFLAGS := ${CPP_TKN} -Di386 -I/usr/include -I${NETCDF_INC}
 FC := g77
 LD := ld
 LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
@@ -1108,13 +1108,13 @@ endif
 # For some reason, ncap_lex.c is not remade when I expect it to be, so I explicitly remove the object file every time
 ncap:	${MY_OBJ_DIR}/ncap.tab.o ncap.tab.h ${MY_OBJ_DIR}/ncap_lex.o ${MY_OBJ_DIR}/ncap.o ${MY_OBJ_DIR}/ncap_utl.o ${libnco}.a
 #        ${YACC} --name-prefix=nco_
-ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSD))
+ifneq (${null},$(findstring ${PVM_ARCH},LINUXALPHAFREEBSDWIN32))
 	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@.tab.o ${MY_OBJ_DIR}/$@_lex.o ${LDFLAGS}
 else	
 #	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/getopt.o ${MY_OBJ_DIR}/getopt1.o ${MY_OBJ_DIR}/$@.tab.o ${MY_OBJ_DIR}/$@_lex.o -ll -ly ${LDFLAGS}
 	${CC} ${CFLAGS} -o ${MY_BIN_DIR}/$@ ${MY_OBJ_DIR}/$@.o ${MY_OBJ_DIR}/ncap_utl.o ${MY_OBJ_DIR}/$@.tab.o ${MY_OBJ_DIR}/$@_lex.o -ll -ly ${LDFLAGS}
 endif
-	chmod 755 ${MY_BIN_DIR}/$@
+	chmod 755 ${MY_BIN_DIR}/$@${BNR_SFX}
 #	/bin/rm -f $(MDL_NCAP) ${MY_OBJ_DIR}/$@_lex.o ${MY_OBJ_DIR}/lex.yy.c ${MY_OBJ_DIR}/ncap.tab.h ${MY_OBJ_DIR}/ncap.tab.c
 
 # Create dependency files only if they will not be immediately deleted
