@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.192 2002-10-25 20:04:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.193 2002-12-13 19:53:02 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -227,7 +227,7 @@ Command executes but in.hdf is full of screwy values
 240. ncrename -a julian_day,julian in.nc out.nc
 nco_err_exit(): ERROR nco_inq_attid
 Attribute not found
-
+241. Add run-time switch which requests that output be missing_value where ANY of the input fields are missing_value. 
 ************************************************************************
 End NCO Wish list
 ************************************************************************
