@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.341 2004-07-19 23:25:31 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.342 2004-07-20 00:18:25 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -25,12 +25,20 @@ nco212. Ensure structures are always passed by reference (default is pass by val
 nco312. Make TODO list more legible (change to, e.g., Emacs list/outline mode, LaTeX, Wiki?) 
 nco313. Redo TODO subject categorization by discriminating based on skills required to tackle. Initial cateogorization might be e.g., autotools, bison, C, C++, Debian, flex, HTML, Perl, RPM, www, TeXInfo
 nco355. Adopt restricted pointers for all numerical arrays?
-nco356. big.nc "restrict" test with yields incorrect answers with xlc and gcc, why?
-zender@esmf04m:~/nco/bld$ date;ncwa -O -a wvl_1e8 -v wvl_1e8 ${DATA}/mie/big.nc ${DATA}/mie/foo.nc;date
-Mon Jul 19 15:57:30 PDT 2004
-Mon Jul 19 15:57:52 PDT 2004
-zender@esmf04m:~/nco/bld$ ncks -H ${DATA}/mie/foo.nc
-wvl_1e8 = 0.167772
+nco356. ncwa benchmark yields incorrect answers for arrays exceeding 10^7 elements with xlc and gcc, why?
+zender@esmf04m:~/nco/data$ date;ncwa -O ${DATA}/mie/big.nc ${DATA}/mie/foo.nc;date;ncks -H ${DATA}/mie/foo.nc
+Mon Jul 19 16:58:22 PDT 2004
+ncwa: INFO No dimensions specified with -a, therefore reducing (averaging, taking minimum, etc.) over all dimensions
+Mon Jul 19 16:58:47 PDT 2004
+wvl_1e0 = 1
+wvl_1e1 = 1
+wvl_1e2 = 1
+wvl_1e3 = 1
+wvl_1e4 = 1
+wvl_1e5 = 1
+wvl_1e6 = 1
+wvl_1e7 = 1
+wvl_1e8 = 0.167772 (NB: this is approximately 1/6)
 
 NCO-wide items of lesser priority:
 nco28. Use var.nc_id as file ID from now on and rewrite old routines to do so

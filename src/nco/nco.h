@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.62 2004-07-19 23:26:44 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.63 2004-07-20 00:18:25 zender Exp $ */
 
 /* Purpose: netCDF Operator (NCO) definitions */
 
@@ -41,7 +41,7 @@ extern "C" {
   typedef long nco_long;
   
 /* Uncomment next line to remove C99 restrict type qualifier from all source */
-#define restrict
+/*#define restrict*/
 
 /* Replace restrict by __restrict in g++ compiler
    Substitute whitespace for __restrict in all other C++ compilers */
