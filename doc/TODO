@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.439 2004-11-06 01:15:52 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.440 2004-11-19 01:53:20 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -274,9 +274,8 @@ nco467. Keep track of CDO "Climate Data Operators" http://www.mpimet.mpg.de/~cdo
 nco468. Make -H toggle variable printing so ncks -M only prints metadata 
 nco469. Use default _FillValue e.g., NC_FILL_FLOAT, or values from <limits.h>, <float.h>?
 nco474. Incorporate alternative "chunking" for ncrcat when data are one-dimensional, to avoid high disk/network access incurred by retrieving one float at a time
-nco475. NEC SX should use S_IFLNK not S_ISLNK in nco_fl_utl.c
 nco477. Make default to copy but not to print associated coordinate variables
-nco478. 
+nco478. netCDF/L  from Loci: http://loci.cs.utk.edu/modules.php?name=News&file=article&sid=40
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
