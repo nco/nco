@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.319 2004-06-19 00:49:26 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.320 2004-06-19 22:14:17 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -176,7 +176,6 @@ nco304. Use/improve flex --header-file=ncap_lex.h to de-lint compiler warnings i
 nco305. Transition ncks to print switches similar to ncdump by default, so
 ncks foo.nc prints all of foo.nc. People do not use ncks because its
 default action is non-intuitive.  
-nco308. Add shared library flag to nco_ctl.c flags
 nco309. Free memory allocated in nco_fl_utl.c: fl_lst_in=(char **)nco_malloc(sizeof(char *)); /* fxm: free() this memory sometime */
 nco310. Add ENABLE_DEBUG_CUSTOM, ENABLE_OPTIMIZE_CUSTOM, ... to bld/Makefile
 nco311. Automatically convert int,short to float in nco_var_pwr()
@@ -198,7 +197,8 @@ nco336. Allow input file lists to be specified in a text file and to supercede c
 nco337. When input file is a symbolic link, print name of linked-to-file as debugging information
 nco340. o/a/e stdin is overwritten when stdin input method used
 cd ~/nco/data;echo "in.nc" | ncecat -o foo.nc
-nco341. 
+nco341. Add _FILE_OFFSET_BITS == 64 to all compiles? Otherwise stat() call in nco_fl_mk_lcl() may fail on large files on 32 bit systems
+nco342. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
@@ -236,6 +236,7 @@ ncap53. Bug in ncap pack() on Alpha/Tru64: ncap -O -D 10 -s 'hsig=pack(hsig)' fo
 ncap54. Add option (true by default?) to retain variable attributes when variable re-defined or defined in terms of single other variable or perhaps always retain attributes of left-most variable on RHS of definition?
 ncap -v -O -s "one=one*1" -s "two=one*2" -s "pck=pack(upk)" ~/nco/data/in.nc ~/foo.nc
 ncks -m -H -v one,two,pck ~/foo.nc
+ncap55. 
 
 Build items:
 bld14. Replace #ifdef tokens in NCO code with autoconf-style tokens, e.g., #ifdef HDF5 -> #ifdef HAVE_HDF5, etc. Other tokens to consider are WIN32, _OPENMP, USE_FORTRAN_ARITHMETIC (deprecated). Of course must modify bld/Makefile to pass these style tokens as well so that config.h is not _required_, and that token use is consistent.

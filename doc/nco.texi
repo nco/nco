@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.238 2004-06-19 00:49:26 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.239 2004-06-19 22:14:17 zender Exp $
 
 Purpose: TeXInfo documentation for NCO suite
 
@@ -67,14 +67,14 @@ Legend (defined in "highlighting" section of TeXInfo manual):
 @dfn{}: Define use of term, e.g., @dfn{supercalifragilisticexpialidocious}
 @email{}: E-mail address, e.g., @email{zender at uci dot edu}
 @env{}: Environment variable, e.g., @env{HOME}
-@file{}: Filename, e.g., @url{in.nc}
+@file{}: Filename, e.g., @file{in.nc}
 @html: Text until @end html passed without translation
 @ifhtml: Text until @end ifhtml passed with translation
 @kbd{}: Keyboard input, e.g., @kbd{ncra in.nc out.nc}
 @key{}: Key name, e.g., @key{ESC} (rarely needed)
 @option{}: Command-line option, e.g., @option{--dbg}
 @samp{}: Extended commands, character sequences, e.g., @samp{ncra in.nc out.nc}
-@uref{}: URL with alternate text, e.g., @uref{http://nco.sf.net,NCO homepage}
+@uref{}: URL with optional alternate text, e.g., @uref{http://nco.sf.net,NCO homepage}
 @url{}: Uniform resource locator, e.g., @url{http://nco.sf.net}
 @var{}: Metasyntactic variable, e.g., @var{}
 @w{}: Unbreakable text, e.g., @w{of 1}
@@ -1303,8 +1303,8 @@ hundreds or thousands of input files.
 @cindex @acronym{NASA EOSDIS}
 Unfortunately, data archives (e.g., @acronym{NASA EOSDIS}) may not
 name netCDF files in a format understood by the @samp{-n @var{loop}}
-switch that automagically generates arbitrary numbers of input
-filenames. 
+switch (@pxref{Specifying input files}) that automagically generates
+arbitrary numbers of input filenames. 
 The @samp{-n @var{loop}} switch has the virtue of being concise,
 and of minimizing the command line.
 This helps keeps output file small since the command line is stored
@@ -1424,8 +1424,9 @@ If there are 999,999 netCDF files present, the links are named
 # Create enumerated symbolic links
 /bin/ls | grep \.nc | perl -e \
 '$idx=1;while(<STDIN>)@{chop;symlink $_,sprintf("%06d.nc",$idx++);@}'
-ncecat -O -n 999999,6,1 000001.nc foo.nc # Perform multi-file operation
-/bin/rm ??????.nc # Remove symbolic links when finished
+ncecat -O -n 999999,6,1 000001.nc foo.nc
+# Remove symbolic links when finished
+/bin/rm ??????.nc
 @end example
 The @samp{-n @var{loop}} option tells the @acronym{NCO} operator to
 automatically generate the filnames of the symbolic links.
@@ -1442,34 +1443,39 @@ This makes it difficult to determine the data provenance at a later date.
 @cindex large files
 
 @dfn{Large files} are those files that are comparable in size to the
-amount of memory (@acronym{RAM}) in your computer.
+amount of random access memory (@acronym{RAM}) in your computer.
 Many users of @acronym{NCO} work with files larger than @w{100 MB}.
 Files this large not only push the current edge of storage technology, 
 they present special problems for programs which attempt to access the  
-entire file at once, such as @command{ncea}, and @command{ncecat}.
+entire file at once, such as @command{ncea} and @command{ncecat}.
 @cindex swap space
 If you work with a @w{300 MB} files on a machine with only @w{32 MB} of
 memory then you will need large amounts of swap space (virtual memory on
-disk) and @acronym{NCO} will work slowly, or else @acronym{NCO} will fail. 
-There is no easy solution for this and the best strategy is to work on a 
-machine with sufficient amounts of memory and swap space.
+disk) and @acronym{NCO} will work slowly, or even fail. 
+There is no easy solution for this.
+The best strategy is to work on a machine with sufficient amounts of
+memory and swap space. 
+The next section will increase your familiarity with @acronym{NCO}'s
+memory requirements.
+With this knowledge you may re-design your data reduction approach to
+divide the problem into pieces solvable in memory-limited situations.   
+
 @cindex server
 @cindex @acronym{UNICOS}
 @cindex Cray
-That is, if your local machine has problems working with large files,
-try running @acronym{NCO} from a more powerful machine, such as a
-network server.  
+If your local machine has problems working with large files, try running
+@acronym{NCO} from a more powerful machine, such as a network server.  
 Certain machine architectures, e.g., Cray @acronym{UNICOS}, have special 
 commands which allow one to increase the amount of interactive memory.
-@cindex @acronym{GNU}/Linux
-@cindex @code{ulimit}
-If you get a memory-related core dump on @acronym{GNU}/Linux system
-(e.g., @samp{Error exit (core dumped)}), try to increase your process
-available memory with the @code{ulimit} command. 
 @cindex @code{ilimit}
-@cindex @code{core dump}
 On Cray systems, try to increase the available memory with the
 @code{ilimit} command.    
+@cindex @acronym{GNU}/Linux
+@cindex @code{ulimit}
+@cindex @code{core dump}
+If you get a memory-related core dump 
+(e.g., @samp{Error exit (core dumped)}) on a @acronym{GNU}/Linux system,
+try increasing the process-available memory with @code{ulimit}.
 
 @cindex speed
 The speed of the @acronym{NCO} operators also depends on file size.
@@ -1507,7 +1513,7 @@ multi-file @acronym{NCO} operators consume is given in
 @cindex peak memory usage
 
 Many people use @acronym{NCO} on gargantuan files which dwarf the
-memory available (free RAM plus swap space) even on today's powerful
+memory available (free @acronym{RAM} plus swap space) even on today's powerful
 machines. 
 These users will want @acronym{NCO} to consume the absolute minimum 
 peak memory possible so that their scripts do not have to tediously cut
@@ -1609,8 +1615,8 @@ Sometimes a @command{malloc()} failure is the only noticeable clue to
 their existance.
 If you have good reasons to believe that a @command{malloc()} failure
 is ultimately due to an @acronym{NCO} memory leak (rather than
-inadequate RAM on your system), then we would be very interested in
-receiving a detailed bug report. 
+inadequate @acronym{RAM} on your system), then we would be very
+interested in receiving a detailed bug report. 
 
 @node Operator limitations,  , Memory usage, Strategies
 @section Performance limitations of the operators
@@ -5496,26 +5502,35 @@ ncea [-A] [-C] [-c] [-D @var{dbg}]
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
 [-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
-@var{input-files} [@var{output-file}]
+[@var{input-files}] [@var{output-file}]
 @end example
 
 @noindent
 DESCRIPTION
 
 @command{ncea} performs gridpoint averages of variables across an
-arbitrary number (an @dfn{ensemble}) of input files, with each file
-receiving an equal weight in the average.
+arbitrary number (an @dfn{ensemble}) of @var{input-files}, with each
+file receiving an equal weight in the average.
 @cindex ensemble
 Each variable in the @var{output-file} will be the same size as the same 
 variable in any one of the in the @var{input-files}, and all
 @var{input-files} must be the same size. 
-Whereas @command{ncra} only performs averages over the record dimension
-(e.g., time), and weights each record in the record dimension evenly, 
 @command{ncea} averages entire files, and weights each file evenly.
+This is distinct from @command{ncra}, which only averages over the
+record dimension (e.g., time), and weights each record in the record
+dimension evenly,  
+@cindex record dimension
 All dimensions, including the record dimension, are treated identically
 and preserved in the @var{output-file}.
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 
+@cindex multi-file operators
+@cindex standard input
+@cindex @code{stdin}
+As a multi-file operator, @command{ncea} will read the list of
+@var{input-files} from @code{stdin} if they are not specified 
+as positional arguments on the command line 
+(@pxref{Large numbers of input files}).
 
 The file is the logical unit of organization for the results of many
 scientific studies.
@@ -5587,7 +5602,7 @@ SYNTAX
 ncecat [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r] 
-[-v @var{var}[,@dots{}]] [-x] @var{input-files} [@var{output-file}]
+[-v @var{var}[,@dots{}]] [-x] [@var{input-files}] [@var{output-file}]
 @end example
 
 @noindent
@@ -5595,15 +5610,25 @@ DESCRIPTION
 
 @command{ncecat} concatenates an arbitrary number of input files into a 
 single output file.
+@cindex record dimension
 Input files are glued together by creating a record dimension in the
 output file. 
-Input files must be the same size.
-Each input file is stored consecutively as a single record in the output 
-file.
-Thus, the size of the output file is the sum of the sizes of the input
-files. 
+All @var{input-files} must contain all extracted variables.
+Each extracted variable must be constant in size and rank across all
+@var{input-files}. 
+The @var{input-files} are stored consecutively as a single record in 
+@var{output file}.
+Thus, the @var{output file} size is the sum of the sizes of the
+extracted variable in the input files. 
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 
+@cindex multi-file operators
+@cindex standard input
+@cindex @code{stdin}
+As a multi-file operator, @command{ncecat} will read the list of
+@var{input-files} from @code{stdin} if they are not specified 
+as positional arguments on the command line 
+(@pxref{Large numbers of input files}).
 
 @cindex climate model
 Consider five realizations, @file{85a.nc}, @file{85b.nc}, 
@@ -5675,8 +5700,7 @@ The second step removes the degenerate record dimension.
 SYNTAX
 @example
 ncflint [-A] [-C] [-c] [-D @var{dbg}] 
-[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h]
-[-i @var{var},@var{val3}]  
+[-d @var{dim},[@var{min}][,[@var{max}]]] [-F] [-h] [-i @var{var},@var{val3}]
 [-l @var{path}] [-O] [-o @var{file_3}] [-p @var{path}] [-R] [-r] 
 [-v @var{var}[,@dots{}]] [-w @var{wgt1}[,@var{wgt2}]] [-x] 
 @var{file_1} @var{file_2} [@var{file_3}]
@@ -6316,6 +6340,7 @@ For more details @xref{Wrapped coordinates}.
 @section @command{ncra} netCDF Record Averager
 @cindex averaging data
 @cindex record average
+@cindex record dimension
 @cindex running average
 @findex ncra
 
@@ -6325,19 +6350,28 @@ SYNTAX
 ncra [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
-[-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] @var{input-files} [@var{output-file}]
+[-v @var{var}[,@dots{}]] [-x] [-y @var{op_typ}] 
+[@var{input-files}] [@var{output-file}]
 @end example
 
 @noindent
 DESCRIPTION
 
-@command{ncra} averages record variables across an arbitrary number of
-input files.
+@command{ncra} averages record variables across an arbitrary number of 
+@var{input-files}.
 @cindex degenerate dimension
+@cindex record dimension
 The record dimension is retained as a degenerate @w{(size 1)} dimension in
 the output variables.
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 
+@cindex multi-file operators
+@cindex standard input
+@cindex @code{stdin}
+As a multi-file operator, @command{ncra} will read the list of
+@var{input-files} from @code{stdin} if they are not specified 
+as positional arguments on the command line 
+(@pxref{Large numbers of input files}).
 
 Input files may vary in size, but each must have a record dimension.
 The record coordinate, if any, should be monotonic for (or else
@@ -6420,18 +6454,26 @@ SYNTAX
 ncrcat [-A] [-C] [-c] [-D @var{dbg}] 
 [-d @var{dim},[@var{min}][,[@var{max}]][,[@var{stride}]]] [-F] [-h] [-l @var{path}] 
 [-n @var{loop}] [-O] [-o @var{output-file}] [-p @var{path}] [-R] [-r]
-[-v @var{var}[,@dots{}]] [-x] @var{input-files} [@var{output-file}]
+[-v @var{var}[,@dots{}]] [-x] [@var{input-files}] [@var{output-file}]
 @end example
 
 @noindent
 DESCRIPTION
 
 @command{ncrcat} concatenates record variables across an arbitrary
-number of input files.
+number of @var{input-files}.
+@cindex record dimension
 The final record dimension is by default the sum of the lengths of the 
 record dimensions in the input files.
 @xref{Averaging vs. Concatenating}, for a description of the
 distinctions between the various averagers and concatenators. 
+@cindex multi-file operators
+@cindex standard input
+@cindex @code{stdin}
+As a multi-file operator, @command{ncrcat} will read the list of
+@var{input-files} from @code{stdin} if they are not specified 
+as positional arguments on the command line 
+(@pxref{Large numbers of input files}).
 
 Input files may vary in size, but each must have a record dimension.
 The record coordinate, if any, should be monotonic (or else non-fatal

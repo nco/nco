@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.33 2004-06-19 01:04:03 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_fl_utl.c,v 1.34 2004-06-19 22:14:18 zender Exp $ */
 
 /* Purpose: File manipulation */
 
@@ -169,13 +169,13 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	FILE *fp_in; /* [enm] Input file handle */
 	char *bfr_in; /* [sng] Temporary buffer for stdin filenames */
 	int cnv_nbr; /* [nbr] Number of scanf conversions performed this scan */
-	long chr_nbr; /* [nbr] Number of characters */
+	long fl_lst_in_lng; /* [nbr] Number of characters in input file name list */
 	size_t fl_nm_lng; /* [nbr] Filename length */
 	
 	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG nco_fl_lst_mk() reports input files not specified as positional arguments. Attempting to read from stdin instead...\n",prg_nm_get());
 	
 	/* Initialize information to read stdin */
-	chr_nbr=0L; /* [nbr] Number of characters */
+	fl_lst_in_lng=0L; /* [nbr] Number of characters in input file name list */
 	
 	if(fl_in == NULL){
 	  fp_in=stdin; /* [enm] Input file handle */
@@ -187,32 +187,37 @@ nco_fl_lst_mk /* [fnc] Create file list from command line positional arguments *
 	} /* endelse */
 
 	/* Allocate temporary space for input buffer */
-#define FL_NM_IN_MAX_LNG 256 /* [nbr] Maximum length of input filenames */
+#define FL_NM_IN_MAX_LNG 256 /* [nbr] Maximum length of input file name */
+#define FL_LST_IN_MAX_LNG 1000000 /* [nbr] Maximum length of input file list */
 	bfr_in=(char *)nco_malloc((FL_NM_IN_MAX_LNG+1L)*sizeof(char));
 	
 	/* Assume filenames are whitespace-separated */
-	while((cnv_nbr=fscanf(fp_in,"%256s\n",bfr_in)) != EOF){
+	while(((cnv_nbr=fscanf(fp_in,"%256s\n",bfr_in)) != EOF) && (fl_lst_in_lng < FL_LST_IN_MAX_LNG)){
 	  if(cnv_nbr == 0){
 	    (void)fprintf(stdout,"%s: ERROR stdin input not convertable to filename. HINT: Maximum length for input filenames is %d characters. HINT: Separate filenames with whitespace. Carriage returns are automatically stripped out.\n",prg_nm_get(),FL_NM_IN_MAX_LNG);
 	    nco_exit(EXIT_FAILURE);
 	  } /* endif err */
 	  fl_nm_lng=strlen(bfr_in);
-	  chr_nbr+=fl_nm_lng;
+	  fl_lst_in_lng+=fl_nm_lng;
 	  (*fl_nbr)++;
 	  if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG input file #%d is \"%s\", filename length=%li\n",prg_nm_get(),*fl_nbr,bfr_in,(long)fl_nm_lng);
 	  /* Increment file number */
 	  fl_lst_in=(char **)nco_realloc(fl_lst_in,(*fl_nbr*sizeof(char *)));
 	  fl_lst_in[(*fl_nbr)-1]=(char *)strdup(bfr_in);
 	} /* end while */
-	
 	/* Close input stream */
 	(void)fflush(stdin);
-	/*	(void)fclose(fp_in);*/
-
-	  /* Free temporary buffer */
+	(void)fclose(fp_in);
+	(void)fflush(stdin);
+	/* Free temporary buffer */
 	bfr_in=(char *)nco_free(bfr_in);
 	
-	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",prg_nm_get(),*fl_nbr,(long)chr_nbr);
+	if(fl_lst_in_lng >= FL_LST_IN_MAX_LNG){
+	  (void)fprintf(stdout,"%s: ERROR Total length of fl_lst_in from stdin exceeds %d characters. Possible misuse of feature. If your input file list is really this long, send request to help@nco.sf.net to expand FL_LST_IN_MAX_LNG\n",prg_nm_get(),FL_LST_IN_MAX_LNG);
+	  nco_exit(EXIT_FAILURE);
+	} /* endif err */
+	
+	if(dbg_lvl_get() > 2) (void)fprintf(stderr,"%s: DEBUG Read %d filenames in %li characters from stdin\n",prg_nm_get(),*fl_nbr,(long)fl_lst_in_lng);
 	if(*fl_nbr > 0) *FL_LST_IN_FROM_STDIN=True; else (void)fprintf(stderr,"%s: WARNING Tried but failed to get input filenames from stdin\n",prg_nm_get());
 	
       } /* endif multi-file operator without positional arguments for fl_in */
@@ -620,25 +625,32 @@ nco_fl_mk_lcl /* [fnc] Retrieve input file and return local filename */
     rcd=nco_open(fl_nm_lcl,NC_NOWRITE,&in_id);
     
     if(rcd != NC_NOERR){
-      (void)fprintf(stderr,"%s: ERROR Attempted HTTP access protocol failed: DODS server is not responding, %s does not exist, or user does not have read permission for it\n",prg_nm_get(),fl_nm_lcl);
+      (void)fprintf(stderr,"%s: ERROR Attempted HTTP access protocol failed: DODS server is not responding, %s does not exist, or user does not have read permission\n",prg_nm_get(),fl_nm_lcl);
       nco_exit(EXIT_FAILURE);
     } /* end if err */
+    
+  }else{
+    if((fp_in=fopen(fl_nm_lcl,"r")) == NULL){
+      (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s, or file does not exist\n",prg_nm_get(),fl_nm_lcl);
+      nco_exit(EXIT_FAILURE);
+    }else{
+      (void)fclose(fp_in);
+    } /* end else */
 
-   }else{
-     if((fp_in=fopen(fl_nm_lcl,"r")) == NULL){
-       (void)fprintf(stderr,"%s: ERROR User does not have read permission for %s, or file does not exist\n",prg_nm_get(),fl_nm_lcl);
-       nco_exit(EXIT_FAILURE);
-     }else{
-       (void)fclose(fp_in);
-     } /* end else */
-   } /* end if really a local file */
+    /* For local files, perform optional file diagnostics */
+    if(dbg_lvl_get() > 0){
+      rcd=stat(fl_nm_lcl,&stat_sct);
+      if(S_ISLNK(stat_sct.st_mode) (void)fprintf(stderr,"%s: INFO Local file %s is symbolic link to ",prg_nm_get(),fl_nm_lcl);
+    } /* endif */
+
+  } /* end if really a local file */
   
   /* Free input filename space */
   fl_nm=(char *)nco_free(fl_nm);
-
+  
   /* Return local filename */
   return(fl_nm_lcl);
-
+  
 } /* end nco_fl_mk_lcl() */
 
 char * /* O [sng] Name of file to retrieve */
@@ -654,13 +666,13 @@ nco_fl_nm_prs /* [fnc] Construct file name from input arguments */
   /* Purpose: Construct file name from various input arguments and switches.
      Routine implements NINTAP-style specification by using static
      memory to avoid repetition in construction of filename */
-
+  
   static short FIRST_INVOCATION=1;
-
+  
   static char *fl_nm_1st_dgt;
   static char *fl_nm_nbr_sng;
   static char fl_nm_nbr_sng_fmt[10];
-
+  
   static int fl_nm_nbr_crr;
   static int fl_nm_nbr_dgt;
   static int fl_nm_nbr_ncr;
@@ -884,6 +896,9 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       return fl_out_tmp;
     } /* end if */
 
+    (void)fflush(stdin);
+
+    /* Ensure one exit condition for each valid switch in following case statement */
     while(usr_reply != 'o' && usr_reply != 'a' && usr_reply != 'e'){
       nbr_itr++;
       if(nbr_itr > 10){
@@ -896,9 +911,9 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       usr_reply=(char)fgetc(stdin);
       /* Allow one carriage return per response free of charge */
       if(usr_reply == '\n') usr_reply=(char)fgetc(stdin);
-      (void)fflush(stdin);
     } /* end while */
     
+    /* Ensure one case statement for each exit condition in preceding while loop */
     switch(usr_reply){
     case 'e':
       nco_exit(EXIT_SUCCESS);
@@ -913,6 +928,7 @@ nco_fl_out_open /* [fnc] Open output file subject to availability and user input
       rcd=nco_open(fl_out_tmp,NC_WRITE,out_id); 
       (void)nco_redef(*out_id);
       break;
+    default: nco_dfl_case_nc_type_err(); break;
     } /* end switch */
     
   }else{ /* output file does not yet already exist */
