@@ -3,6 +3,9 @@
 	* cvs tag -c nco-2_9_9
 	Changes since nco-2_9_8: 1. ncbo threading 2. ncpdq -P packing
 
+	* Learned that NC_INT->NC_SHORT does not work. 
+	Presumably all non-floating point packing is suspect until verified
+
 	* Verified each pack map works without memory problems for all_new policy
 
 	* Allow packing to NC_INT in nco_var_pck()
