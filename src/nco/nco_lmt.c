@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.18 2003-03-31 06:52:20 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_lmt.c,v 1.19 2003-06-23 19:58:56 rorik Exp $ */
 
 /* Purpose: Hyperslab limits */
 
@@ -993,19 +993,21 @@ nco_lmt_typ /* [fnc] Determine limit type */
 {
   /* Purpose: Determine type of user-specified limit */
 
-  /* Test for UDUnits string, then for simple coordinate, else dimensional index */
-  if(strchr(sng,' ') || /* Space delimits user-specified units */
-     (strchr(sng,'-') && ((char*)strchr(sng,'-') != (char*)sng))){ /* Non-leading dash indicates dates */
+  /* Test for UDUnits unit string, then for simple coordinate, 
+     then date/time string (ie YYYY-mm-DD), else default to dimensional index */
+  if(strchr(sng,' ') ) /* Space delimits user-specified units */
     return lmt_udu_sng;
-    /* endif UDUnits string */
-  }else if(strchr(sng,'.') || /* Decimal point (most common so check first) */
-	   strchr(sng,'E') || strchr(sng,'e') || /* Exponential */
-	   strchr(sng,'D') || strchr(sng,'d')){ /* Double */
-    /* Limit is "simple" (non-UDUnits) coordinate value */
+  if(strchr(sng,'.') ) /* Decimal point (most common so check first) */
     return lmt_crd_val;
-  }else{ 
-    /* Limit is dimension index */
+  if(strchr(sng,'E') || strchr(sng,'e') || /* Exponential */
+     strchr(sng,'D') || strchr(sng,'d'))   /* Double */
+    /* Limit is "simple" (non-UDUnits) coordinate value */
+    return lmt_crd_val;   
+  if(strchr(sng,'-') && ((char*)strchr(sng,'-') != (char*)sng))
+     /* Non-leading dash indicates dates  */
+    return lmt_crd_val;
+     /* default: Limit is dimension index */
     return lmt_dmn_idx;
-  } /* end else */
+
 } /* end nco_lmt_typ() */
 
