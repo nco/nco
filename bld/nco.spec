@@ -1,13 +1,13 @@
 Name:           nco
-Version:        2.9.7
-Release:        0.fdr.2
+Version:        2.9.8
+Release:        0.fdr.0
 Epoch:          0
 Summary:        A suite of command line programs for manipulating NetCDF/HDF4 files.
 
 Group:          Applications/Engineering
 License:        GPL
 URL:            http://nco.sourceforge.net/
-Source0:        http://nco.sourceforge.net/src/nco_2.9.7-1.tar.gz
+Source0:        http://nco.sourceforge.net/src/nco_2.9.8-1.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  netcdf
@@ -34,7 +34,6 @@ http://www.cgd.ucar.edu/cms/nco.
 
 
 %build
-export CFLAGS="-fPIC $RPM_OPT_FLAGS"
 %configure
 make %{?_smp_mflags}
 
@@ -56,14 +55,18 @@ rm -rf $RPM_BUILD_ROOT
 
 %files
 %defattr(-,root,root,-)
-%doc doc/README doc/nco.pdf doc/nco.html doc/rtfm.txt doc/dods.sh
+%doc doc/README doc/rtfm.txt doc/dods.sh
 %{_bindir}/*
 %{_includedir}/*
 %{_mandir}/*/*
+%{_infodir}/*.*
 %{_libdir}/*.*
 
 
 %changelog
+* Sat Aug  7 2004 Ed Hill <eh3@mit.edu> - 0:2.9.8-0.fdr.0
+- updated to ver 2.9.8
+
 * Sat Jul 17 2004 Ed Hill <eh3@mit.edu> - 0:2.9.7-0.fdr.2
 - removed unneeded %ifarch
 
