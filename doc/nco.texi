@@ -4,7 +4,7 @@
 
 @ignore
 
-$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.16 1999-01-29 19:24:06 zender Exp $
+$Header: /data/zender/nco_20150216/nco/doc/nco.texi,v 1.17 1999-01-29 19:45:28 zender Exp $
 
 Purpose: TeXinfo documentation for NCO suite
 
@@ -173,10 +173,75 @@ by the Free Software Foundation.
 * Operators::                   Description of all NCO operators
 * General Index::               Index of concepts
 
-@detailmenu --- The Detailed Node Listing ---
+@detailmenu
+ --- The Detailed Node Listing ---
 
 Introduction
 
+* Availability::                
+* Compatability::               
+* Libraries::                   
+* netCDF 2.x vs. 3.x::          
+* Reporting bugs::              
+
+Operating systems compatible with NCO
+
+* Windows NT::                  
+
+Operator Strategies
+
+* Philosophy::                  
+* Climate model paradigm::      
+* Output files::                
+* Appending::                   
+* Averaging vs. Concatenating::  
+* Large numbers of input files::  
+* Large files and Memory::      
+* Memory usage::                
+* Operator limitations::        
+
+Differences between averagers and concatenators
+
+* Concatenation::               
+* Averaging::                   
+
+Features common to most operators
+
+* Specifying input files::      
+* Remote storage::              
+* File retention::              
+* Variable subsetting::         
+* Coordinate variables::        
+* Fortran indexing::            
+* Hyperslabs::                  
+* Wrapped coordinates::         
+* Stride::                      
+* Missing values::              
+* Suppressing interactive prompts::  
+* Operator version::            
+* History attribute::           
+* NCAR CSM Conventions::        
+* ARM Conventions::             
+
+Reference manual for all operators
+
+* ncatted netCDF Attribute Editor::  
+* ncdiff netCDF Differencer::   
+* ncea netCDF Ensemble Averager::  
+* ncecat netCDF Ensemble Concatenator::  
+* ncflint netCDF File Interpolator::  
+* ncks netCDF Kitchen Sink::    
+* ncra netCDF Record Averager::  
+* ncrcat netCDF Record Concatenator::  
+* ncrename netCDF Renamer::     
+* ncwa netCDF Weighted Averager  ::  
+
+@code{ncwa} netCDF Weighted Averager
+
+* Masking condition::           
+* Normalization::               
+
+@end detailmenu
 @end menu
 
 @node Foreword, Summary, Top, Top
