@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.18 1999-01-29 19:24:06 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.19 1999-01-29 19:39:55 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -148,7 +148,7 @@ C++ := g++
 #CC := gcc -ansi
 CC := gcc
 # NB: nameser.h needs -Di386, but gcc is sending -Di586 (on pentiums)
-CPPFLAGS := -DNETCDF2_ONLY -D$(PVM_ARCH) -Di386 $(MY_INC_DIR) -I$(NETCDF_INC)
+CPPFLAGS := -D$(PVM_ARCH) -Di386 $(MY_INC_DIR) -I$(NETCDF_INC)
 FC := g77
 LD := ld
 LDFLAGS := -L$(MY_LIB_DIR) -lnco -L$(NETCDF_LIB) -lnetcdf -lm
