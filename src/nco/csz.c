@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.59 2000-09-26 06:22:16 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.60 2000-09-26 06:24:37 zender Exp $ */
 
 /* Purpose: Standalone utilities for C programs (no netCDF required) */
 
@@ -1370,7 +1370,7 @@ nco_openmp_ini() /* [fnc] Set up OpenMP multi-threading environment */
 
   thr_nbr_max=omp_get_max_threads(); /* [nbr] Maximum number of threads system/user allow program to use */
   if(thr_nbr_max > thr_nbr_max_fsh){
-    (void)fprintf(stderr,"%s: INFO Reducing number of threads from %d to %d since %s is I/O intensive and does not scale well above %d threads\n",prg_nm_get(),thr_nbr_max,thr_nbr_max_fsh,prg_nm_get()thr_nbr_max_fsh);
+    (void)fprintf(stderr,"%s: INFO Reducing number of threads from %d to %d since %s is I/O intensive and does not scale well above %d threads\n",prg_nm_get(),thr_nbr_max,thr_nbr_max_fsh,prg_nm_get(),thr_nbr_max_fsh);
     (void)omp_set_num_threads(thr_nbr_max_fsh); /* [nbr] Maximum number of threads system is allowed */
   } /* endif */      
   (void)omp_set_dynamic(dyn_thr); /* [flg] Allow system to dynamically set number of threads */
