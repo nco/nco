@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.68 2000-06-20 17:52:08 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.69 2000-06-30 22:04:44 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -539,15 +539,6 @@ else
 endif
 endif
 # endif DODS
-
-ifeq ($(DODS),Y)
-# NB: Order is important here
-# LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -ltcl -lexpect -lz -lrx $(LDFLAGS)
- LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lstdc++ -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -ltcl -lexpect5.28 -lz -lrx $(LDFLAGS)
-# -lstdc++ automatically called when g++ used to link 
-# CC := g++
-# LDFLAGS := -L$(DODS_ROOT)/lib -L$(DODS_ROOT)/packages-3.1.1/lib -lnc-dods -ldap++ -lnc-dods -ldap++ -lwww -ltcl -lz -lrx $(LDFLAGS)
-endif
 
 # Link to Electric Fence library, see man efence
 ifeq ($(PVM_ARCH),LINUX)
