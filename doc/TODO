@@ -51,6 +51,12 @@ ncdump foo.nc
 108. Find concise way to reproduce flaky IRIX problems: 
 ncdiff -O -v float_var in.nc in.nc foo.nc; ncks -H foo.nc
 109. Change copyright printing so order is NCO vrs, netCDF vrs, URL, Copyright
+110. Another intermittent problem on SGI64: Core dumps.
+/contrib/bin/ncra -D 3 -O -p /fs/cgd/home0/zender/tmp in.nc foo.nc
+/contrib/bin/ncra -D 5 -O -v time -p /fs/cgd/home0/zender/tmp in.nc foo.nc
+This will not core dump when compiled with -g or -X, only with -O2
+The dump occurs in nc_fortran.F:add_var_real(), so using -DC_ONLY is a
+valid workaround.
 ************************************************************************
 End NCO Wish list
 ************************************************************************

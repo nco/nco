@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.9 1998-08-20 20:55:50 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.10 1998-08-20 23:21:47 zender Exp $
 
 # Purpose: Makefile for NCO module nco
 
@@ -15,11 +15,16 @@ endif
 ifndef MY_OBJ_DIR
  MY_OBJ_DIR := ../obj
 endif
-ifndef OPTS
- OPTS := O
-endif
 ifndef PVM_ARCH
  PVM_ARCH := $(shell $(MY_BLD_DIR)/pvmgetarch)
+endif
+ifndef OPTS
+ifneq ($(PVM_ARCH),SGI64)
+ OPTS := O
+else
+# 98/08/20: TODO #110 Winterpark NCO core dumps when compiled with -O2
+ OPTS := R
+endif
 endif
 ifndef C_ONLY
  C_ONLY := N
@@ -209,13 +214,19 @@ ifeq ($(OPTS),O)
  CFLAGS := -64 -mips4 -O2
  FFLAGS := -64 -mips4 -O2 -extend_source
 endif
-ifeq ($(OPTS),)
- CFLAGS := -64 -mips4 
+ifeq ($(OPTS),R)
+ CFLAGS := -64 -mips4
  FFLAGS := -64 -mips4 -extend_source
 endif
 ifeq ($(OPTS),D)
  CFLAGS := -64 -mips4 -g
  FFLAGS := -64 -mips4 -g -extend_source
+endif
+ifeq ($(OPTS),X)
+ CFLAGS := -64 -mips4 -g -trapuv
+ FFLAGS := -64 -mips4 -g -extend_source -check_bounds -trapuv
+# 98/08/20: Using range checking results in unresolved symbol errors unless linking to this library
+ LDFLAGS += -L/usr/lib64 -lftn
 endif
 $(MY_OBJ_DIR)/%.o : %.F
 	$(FC) -c $(FFLAGS) $(CPPFLAGS) -o $(MY_OBJ_DIR)/$(notdir $@) $<

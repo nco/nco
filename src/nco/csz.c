@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.8 1998-08-19 16:55:31 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/csz.c,v 1.9 1998-08-20 23:21:49 zender Exp $ */
 
 /* (c) Copyright 1995--1998University Corporation for Atmospheric Research/
    National Center for Atmospheric Research/
@@ -956,7 +956,7 @@ fl_cp(char *fl_src,char *fl_dst)
   (void)sprintf(cp_cmd,cp_cmd_fmt,fl_src,fl_dst);
   rcd=system(cp_cmd);
   (void)free(cp_cmd);
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done copying.\n");
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
   
 } /* end fl_cp() */ 
 
@@ -985,7 +985,7 @@ fl_mv(char *fl_src,char *fl_dst)
     exit(EXIT_FAILURE); 
   } /* end if */ 
   (void)free(mv_cmd);
-  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done moving.\n");
+  if(dbg_lvl_get() > 0) (void)fprintf(stderr,"done\n");
   
 } /* end fl_mv() */ 
 
