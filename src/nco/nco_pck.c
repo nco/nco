@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.52 2004-09-08 17:56:23 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.53 2004-09-13 18:13:39 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -755,6 +755,21 @@ nco_var_pck /* [fnc] Pack variable in memory */
       if(min_var->val.dp[0] == ptr_unn_mss_val_dbl.dp[0]) 
 	PURE_MSS_VAL_FLD=True;
 
+    /* Change value of missing value iff necessary to fit inside packed type */
+    if(var->has_mss_val && !PURE_MSS_VAL_FLD){
+      double mss_val_dfl_dbl;
+      switch(nc_typ_pck){ 
+      case NC_INT: mss_val_dfl_dbl=INT_MAX; break;
+      case NC_SHORT: mss_val_dfl_dbl=SHRT_MAX; break;
+      case NC_CHAR: mss_val_dfl_dbl=UCHAR_MAX; break;
+      case NC_BYTE: mss_val_dfl_dbl=CHAR_MAX; break;
+      case NC_FLOAT:
+      case NC_DOUBLE: 
+      default: nco_dfl_case_nc_type_err(); break;
+      } /* end switch */ 
+      if(dbg_lvl_get() > 3) (void)fprintf(stdout,"%s: %s mss_val_dfl = %g\n",prg_nm_get(),fnc_nm,mss_val_dfl_dbl);
+    } /* endif */
+
     if(dbg_lvl_get() > 3) (void)fprintf(stdout,"%s: %s: min_var = %g, max_var = %g\n",prg_nm_get(),var->nm,min_var->val.dp[0],max_var->val.dp[0]);
 
     /* add_offset is 0.5*(min+max) */
@@ -765,8 +780,9 @@ nco_var_pck /* [fnc] Pack variable in memory */
     (void)nco_val_cnf_typ((nc_type)NC_DOUBLE,max_var->val,var->type,var->add_fst);
 
     /* ndrv is 2^{bits per packed value} where bppv = 8 for NC_CHAR and bppv = 16 for NC_SHORT
-       Subtract one to leave slop for rounding errors */
-    if(nc_typ_pck == NC_CHAR){
+       Subtract one to leave slop for rounding errors
+       Subtract two to leave room for missing_value? */
+    if(nc_typ_pck == NC_BYTE || nc_typ_pck == NC_CHAR){
       ndrv_dbl=256.0-1.0; /* [sct] Double precision value of number of discrete representable values */
     }else if(nc_typ_pck == NC_SHORT){
       ndrv_dbl=65536.0-1.0; /* [sct] Double precision value of number of discrete representable values */

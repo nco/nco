@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.425 2004-09-10 16:08:34 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.426 2004-09-13 18:13:36 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -270,6 +270,9 @@ nco461. Always plenty of great ideas for new NCO functionality in http://tinyurl
 nco462. ncpdq: pack/unpack missing_data just like variable data? The reason I did not do this originally is because I did not want the missing_value to contribute to the dynamic range of values which need packing. Since my missing_values are always huge (1.0e36), packing missing_values would greatly diminish the precision of the valid packed data. Best solution appears to be to check if missing_value distorts valid_range, and, if so, pack missing_value to default value of packed type.
 nco463. add optional scale_factor, add_offset arguments to ncap pack()?
 nco464. ncpdq: convert missing_value to packed type
+        ncpdq -O -D 4 -C -P all_new -v mss_val ~/nco/data/in.nc ~/foo.nc
+        ncpdq -O -C -U -v mss_val ~/foo.nc ~/foo_upk.nc
+        ncks -C -m -H ~/foo_upk.nc
 nco465. 
 
 ncap-specific items:

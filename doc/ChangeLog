@@ -1,3 +1,9 @@
+2004-09-12  Charlie Zender  <zender@uci.edu>
+
+	* 
+
+	* Add NC_BYTE to types of variables with known ndrv in nco_var_pck()
+
 2004-09-08  Charlie Zender  <zender@uci.edu>
 
 	* cvs tag -c nco-2_9_9
