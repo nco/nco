@@ -1,3 +1,12 @@
+2000-10-01  Charlie Zender  <zender@uci.edu>
+
+	* Cast results of sqrt() to LHS type to eliminate new gcc 2.96
+	warnings. g++ 2.96 is less forgiving than gcc 2.96.
+
+	* Fixed some miscast missing values in arithmetic routines for
+	doubles, shorts, and longs. Odd that I had not noticed these
+	miscasts before. g++ 2.96 flagged them.
+
 2000-09-21  Charlie Zender  <zender@uci.edu>
 
 	* Fixed one-line bug where ncwa min,max,ttl cases fell
