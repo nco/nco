@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.26 2004-09-06 20:37:01 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.h,v 1.27 2004-09-07 00:03:56 zender Exp $ */
 
 /* Purpose: Description (definition) of packing/unpacking functions */
 
@@ -119,7 +119,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
 
 void
 nco_var_upk_swp /* [fnc] Unpack var_in into var_out */
-(const var_sct * const var_in, /* I [sct] Variable to unpack */
+(var_sct * const var_in, /* I/O [sct] Variable to unpack */
  var_sct * const var_out); /* I/O [sct] Variable to unpack into */
 
 #ifdef __cplusplus

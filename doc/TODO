@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.408 2004-09-06 22:48:45 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.409 2004-09-07 00:03:51 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -264,7 +264,8 @@ nco443. Verify packing NC_SHORT->NC_CHAR
 nco444. ncpdq: Split var_prc from var_fix in nco_var_lst_dvd()
 nco449. Incorporate pck_map into nco_is_packable()
 nco450. Run ncra on two multiple record files with packed variables and look for pck_dbg memory problems with valgrind
-nco451. 
+nco453. Re-think handling of dangling pointers in nco_pck_val()?
+nco454. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()

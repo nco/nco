@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.42 2004-09-06 22:48:48 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_pck.c,v 1.43 2004-09-07 00:03:56 zender Exp $ */
 
 /* Purpose: NCO utilities for packing and unpacking variables */
 
@@ -413,10 +413,12 @@ nco_pck_val /* [fnc] Pack variable according to packing specification */
     } /* endif input variable was not packed */
     break;
   case nco_pck_xst_new_att:
-    /* If necessary, unpack before re-packing */
     if(var_in->pck_ram){
       nco_var_upk_swp(var_in,var_out);
       goto var_upk_try_to_pck;
+    }else{
+      /* Remove dangling pointer, see explanation below */
+      var_in->val.vp=NULL; 
     } /* endif */
     break;
   case nco_pck_all_new_att:
@@ -848,7 +850,7 @@ nco_var_upk /* [fnc] Unpack variable in memory */
 
 void
 nco_var_upk_swp /* [fnc] Unpack var_in into var_out */
-(const var_sct * const var_in, /* I [sct] Variable to unpack */
+(var_sct * const var_in, /* I/O [sct] Variable to unpack */
  var_sct * const var_out) /* I/O [sct] Variable to unpack into */
 {
   /* Purpose: Unpack var_in into var_out
@@ -859,6 +861,7 @@ nco_var_upk_swp /* [fnc] Unpack var_in into var_out */
      Accomplish this by unpacking into temporary variable and copying 
      needed information from temporary (swap) variable to var_out.
      Routine hides gory details of swapped unpacking
+     var_in is untouched except var_in->val buffer is free()'d
 
      nco_pck_val() uses this routine for two purposes:
      1. Unpack already packed variable prior to re-packing them 
@@ -880,7 +883,11 @@ nco_var_upk_swp /* [fnc] Unpack var_in into var_out */
      Then delete the rest of var_tmp 
      Fields modified in nco_var_upk() must be explicitly updated in var_out */
   var_tmp=nco_var_dpl(var_in);
+  /* Free current input buffer */
+  var_in->val.vp=nco_free(var_in->val.vp);
+  /* Unpack temporary variable */
   var_tmp=nco_var_upk(var_tmp); 
+  /* Save relevent parts of temporary variable into output variable */
   var_out->type=var_tmp->type;
   var_out->val=var_tmp->val;
   var_out->pck_ram=var_tmp->pck_ram;
