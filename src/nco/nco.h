@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc.h,v 1.60 2001-10-01 23:09:51 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco.h,v 1.1 2001-10-01 23:17:44 zender Exp $ */
 
 /* Purpose: Typedefs and global variables for NCO netCDF operators */
 
@@ -131,11 +131,6 @@ enum nco_pck_typ{ /* [enm] Packing type */
   nco_pck_upk, /* 4, Unpack all packed variables */
   nco_pck_nil /* 5, Do not think about packing */
 }; /* end nco_pck_typ enum */
-
-enum nco_fl_typ{ /* [enm] File type */
-  nco_fl_typ_nc, /* 0, netCDF file */
-  nco_fl_typ_hd5 /* 1, HDF5 file */
-}; /* end nco_fl_typ enum */
 
 enum nco_op_typ{ /* [enm] Operation type */
   nco_op_avg, /* Average */
@@ -356,8 +351,8 @@ typedef struct var_sct_tag{ /* var_sct */
 
 /* Function prototypes 
    Prototypes without descriptive variable names were written before ANSI C compilers were widely available and should be migrated to include arguments names and comments
-   Specifying extern is redundant (functions are extern by default) but Emacs highlights the in a nice shade of lavender :-)
-*/
+   Specifying extern is redundant (functions are extern by default) but Emacs highlights them in a nice shade of lavender :-)
+   fxm: TODO 210 Break into sourcefile specific headers, e.g., csz.h, pck.h... */
 extern bool arm_inq(int);
 extern bool ncar_csm_inq(int);
 extern char **fl_lst_mk(char **,int,int,int *,char **);
