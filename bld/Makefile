@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.170 2002-09-10 04:37:02 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.171 2002-09-10 04:42:30 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
@@ -598,6 +598,40 @@ ifeq (${OMP},Y)
 endif # endif OMP
 endif
 # endif LINUX or LINUXALPHA or FREEBSD
+
+ifeq (${PVM_ARCH},MACOSX)
+C++ := c++
+CC := cc
+CFLAGS := -Wall
+CPP := ${CC}
+CPPFLAGS := ${CPP_TKN} ${CPP_TKN_OS} -I${NETCDF_INC}
+FC := f90
+LD := ld
+LDFLAGS += $(TMP_LDFLAGS) $(TMP_LIBS) -lm
+LEX := flex
+LINT := lint
+YACC := bison
+ifeq (${OPTS},O)
+ CFLAGS += -O
+endif
+ifeq (${OPTS},D)
+ CFLAGS += -g
+endif
+ifeq (${OPTS},R)
+ CFLAGS += 
+endif
+ifeq (${OPTS},X)
+ CFLAGS += -g -O
+ LDFLAGS += /usr/local/lib/ccmalloc-gcc.o -L/usr/local/lib -lccmalloc -ldl
+endif
+C++FLAGS := ${CFLAGS}
+ifeq (${OMP},Y)
+ CFLAGS += ${OMP_FLG}
+ FFLAGS += ${OMP_FLG}
+ LDFLAGS := ${OMP_FLG} ${LDFLAGS}
+endif # endif OMP
+endif
+# endif MACOSX
 
 ifeq (${PVM_ARCH},NECSX)
 ifeq (${OMP},Y)
