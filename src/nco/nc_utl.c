@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.49 2000-01-28 01:28:12 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nc_utl.c,v 1.50 2000-01-28 01:35:30 zender Exp $ */
 
 /* Purpose: netCDF-dependent utilities for NCO netCDF operators */
 
@@ -1623,7 +1623,7 @@ fl_out_open(char *fl_out,bool FORCE_APPEND,bool FORCE_OVERWRITE,int *out_id)
   /* NCO temporary file name is user-specified file name + "." + tmp_sng_1 + PID + "." + prg_nm + "." + tmp_sng_2 + NUL */
   fl_out_tmp_lng=strlen(fl_out)+1L+strlen(tmp_sng_1)+strlen(pid_sng)+1L+strlen(prg_nm_get())+1L+strlen(tmp_sng_2)+1L;
   fl_out_tmp=(char *)malloc(fl_out_tmp_lng*sizeof(char));
-  (void)sprintf(fl_out_tmp,"%s.%s%ld.%s.%s",fl_out,tmp_sng_1,(long)pid,prg_nm_get(),tmp_sng_2);
+  (void)sprintf(fl_out_tmp,"%s.%s%s.%s.%s",fl_out,tmp_sng_1,pid_sng,prg_nm_get(),tmp_sng_2);
   if(dbg_lvl_get() > 3) (void)fprintf(stdout,"%s: fl_out_open() reports sizeof(pid_t) = %d bytes, pid = %ld, pid_sng_lng = %ld bytes, strlen(pid_sng) = %ld bytes, fl_out_tmp_lng = %ld bytes, strlen(fl_out_tmp) = %ld, fl_out_tmp = %s\n",prg_nm_get(),(int)sizeof(pid_t),(long)pid,pid_sng_lng,(long)strlen(pid_sng),fl_out_tmp_lng,(long)strlen(fl_out_tmp),fl_out_tmp);
   rcd=stat(fl_out_tmp,&stat_sct);
 
