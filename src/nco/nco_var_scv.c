@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.11 2002-12-30 02:56:15 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_scv.c,v 1.12 2003-04-04 19:46:22 zender Exp $ */
 
 /* Purpose: Arithmetic between variables and scalar values */
 
@@ -362,6 +362,10 @@ var_scv_mod(nc_type type,const long sz,int has_mss_val,ptr_unn mss_val,ptr_unn o
   
   /* Modulus is currently defined as op1:=op1%scv */  
   
+  /* http://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
+     __GNUC__ : Defined by gcc 
+     __GNUG__ : Defined by g++, equivalent to (__GNUC__ && __cplusplus) */
+
 #ifndef __GNUG__
   float fmodf(float,float); /* Cannot insert fmodf in ncap_sym_init() because it takes two arguments TODO #20 */
   float fabsf(float); /* Sun math.h does not include fabsf() prototype */

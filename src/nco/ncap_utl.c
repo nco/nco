@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.83 2003-01-20 17:46:02 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap_utl.c,v 1.84 2003-04-04 19:46:22 zender Exp $ */
 
 /* Purpose: netCDF arithmetic processor */
 
@@ -426,8 +426,14 @@ ncap_scv_clc(scv_sct scv_1, char op, scv_sct scv_2)
 {
   /* Purpose: Calculate (scv_1 op scv_2) NB: Scalar values must be of same type */
   
+  /* http://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html
+     __GNUC__ : Defined by gcc 
+     __GNUG__ : Defined by g++, equivalent to (__GNUC__ && __cplusplus) */
+
+  /* #ifndef __GNUG__ */
   extern float fmodf(float,float); /* Cannot insert fmodf in ncap_sym_init() because it takes two arguments TODO #20 */
   extern float fabsf(float); /* Sun math.h does not include fabsf() prototype */
+  /* #endif */ /* __GNUG__ */
   
   scv_sct scv_out;
   scv_out.type=scv_1.type;
