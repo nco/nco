@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.42 2004-05-13 18:18:59 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_ctl.c,v 1.43 2004-05-14 01:21:40 zender Exp $ */
 
 /* Purpose: Program flow control functions */
 
@@ -154,7 +154,7 @@ const char * /* O [sng] Mnemonic that describes current NCO version */
 nco_nmn_get(void) /* [fnc] Return mnemonic that describes current NCO version */
 { 
   /* Purpose: Return mnemonic describing current NCO version */
-  return "NCO save you time? Want NCO to get institutional funding to implement the most requested features? Read NCO's first proposal for Institutional funding:\nhttp://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf\nEndorse the proposal by sending e-mail to surname@uci.edu (surname=zender) with Subject: \"NSF SEI(GEO) NCO/SDO Proposal Endorsement\". Put (at least) your Name, Title, and Institutional affiliation in the body. Add any additional comments. It is never too late to endorse this proposal, as it may be recycled at the next opportunity. The information in your endorsement will be used to create supplementary documents to NSF and NASA for future NCO proposal advocacy.\n";
+  return "NCO save you time? Want to help NCO get funded to implement new and frequenctly requested features? Peruse NCO's first proposal for Institutional funding:\nhttp://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf\nEndorse the proposal by sending e-mail to surname@uci.edu (surname=zender) with Subject: \"NSF SEI(GEO) NCO/SDO Proposal Endorsement\". Put (at least) your Name, Title, and Institutional affiliation in the body. Add any additional comments. It is never too late to endorse this proposal, as it may be recycled at the next opportunity. The information in your endorsement will be used to create supplementary documents to NSF and NASA for future NCO proposal advocacy.\n";
 } /* end nco_nmn_get() */
 
 char * /* O [sng] nm_in stripped of any path (i.e., program name stub) */ 
