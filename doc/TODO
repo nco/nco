@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.441 2004-11-23 06:52:07 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.442 2004-11-30 01:38:44 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -276,7 +276,8 @@ nco469. Use default _FillValue e.g., NC_FILL_FLOAT, or values from <limits.h>, <
 nco474. Incorporate alternative "chunking" for ncrcat when data are one-dimensional, to avoid high disk/network access incurred by retrieving one float at a time
 nco477. Make default to copy but not to print associated coordinate variables
 nco479. netCDF/L  from Loci: http://loci.cs.utk.edu/modules.php?name=News&file=article&sid=40
-nco480. 
+nco480. Add boxcar averaging option (average in groups of n records) to ncra
+nco481. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
