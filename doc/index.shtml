@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.208 2004-03-25 12:05:16 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.209 2004-04-07 00:46:22 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -184,11 +184,19 @@ donations on NCO development:
 <dt><a name="News"></a></dt>
 <h2>NCO News & Announcements</h2>
 <ul>
-<li>As of version&nbsp;2.8.3, <a href="./nco.html#ncap"><tt>ncap</tt></a> consumes significantly less memory than before.
-<li>New &ldquo;binary&rdquo; operator <a href="./nco.html#ncbo"><tt>ncbo</tt></a> does file addition, subtraction, multiplication, and division
-<li><tt>ncap</tt> adds user-invokable type conversion functions <tt>char()</tt>, <tt>short()</tt>, <tt>int()</tt>, <tt>float()</tt>, <tt>double()</tt>.</li>
-<li><tt>libnco_c++</tt> reads into and writes from type <tt>long double</tt></li>
-<li><a href="./nco_news.shtml"> Full text of past NCO announcements</a></li>
+<li>Read the first 
+<a href="http://dust.ess.uci.edu/prp/prp_sei/prp_sei.pdf">proposal</a>
+for Institutional funding NCO, submitted to NSF. 
+Endorse the proposal by sending e-mail to 
+<a href="mailto:surname@uci.edu">Charlie &ldquo;my surname is zender&rdquo; Zender</a>
+with Subject: &ldquo;NSF SEI(GEO) NCO/SDO Proposal Endorsement&rdquo;. 
+Put (at least) your Name, Title, and Institutional affiliation in the body.
+Add any additional comments. 
+It is never too late to endorse this proposal.
+If rejected, it will be recycled/expanded at the next opportunity.
+The information in your endorsement will be used to create supplementary documents to NSF and NASA for future NCO proposal advocacy.
+</li>
+<li><a href="./nco_news.shtml">Past NCO News & Announcements</a></li>
 </ul>
 <hr></p>
 
@@ -458,11 +466,101 @@ Users at NCAR should try the <i>supported</i> executables in
 <hr></p>
 
 <dt><a name="Bugs"></a></dt>
-<h2>Known Problems with NCO and/or netCDF:</h2>
+<h2>Known Problems with NCO:</h2>
 
-<ul>
+<ul><b>Generic Build Problems:</b>
+
+<li><i>Using <tt>./configure</tt> build mechanism:</i>
+The file <tt>configure.eg</tt> contains a table which describes the 
+success you can expect building NCO with the <tt>./configure</tt>
+mechanism. 
+Trouble-free installation with <tt>./configure;make;make check;make install</tt> is
+less common than we would like. 
+All platforms work continue to work fine with the <tt>bld/Makefile</tt> method. 
+However, this method does not support shared libraries and other nice
+features that come automagically with Autotools.
+So please send in the patches required to get the <tt>./configure</tt> 
+mechanism working properly for NCO, <tt>nco_c++</tt>, and
+<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> on your
+platform.  
+The gory details of the failed (and successful) builds are in the
+<a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>.
+</li>
+
+<li><i>Build Chain Version Incompatibilities:</i>
+NCO requires netCDF version &ge;&nbsp;3.5.0 for support of <tt>nc_type NC_NAT</tt> in NCO source code.
+NCO requires GNU <tt>make</tt> version &ge;&nbsp;3.78.1 for support of target-specific variable values in <tt>bld/Makefile</tt>.
+NCO often fails to build because <tt>ncap</tt> fails to build.
+The two most common reasons <tt>ncap</tt> fails to build are
+(1)&nbsp;GNU <tt>bison</tt> is out-of-date (upgrade <tt>bison</tt>)
+and (2)&nbsp;<tt>--enable-optimize-*</tt> is specified to 
+<tt>configure</tt> (do not specify it).
+</li>
+
+<a name="bld_ncap"></a>
+<li><i><tt>ncap</tt> build problems:</i>
+<tt>ncap</tt> requires <tt>flex</tt> to build correctly.
+AT&T <tt>lex</tt> will not work because it does not understand
+<tt>EOF</tt> rules that <tt>ncap_lex.l</tt> uses.
+<tt>bison</tt> version 1.29 (the default version on Mac OS X) is buggy
+and does not parse <tt>ncap_yacc.y</tt> correctly; previous and later
+versions of <tt>bison</tt> work correctly.
+<tt>bison</tt> version 1.25 will not build <tt>ncap</tt> on Solaris.
+Please upgrade <tt>bison</tt> to the latest version (e.g., 1.875+)
+before reporting <tt>ncap</tt> build problems.
+</li>
+
+<a name="bld_DODS"></a>
+<li><i>Build Problems with DODS/OPeNDAP:</i>
+NCO versions prior to 2.8.5 link with the
+<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> netCDF
+library when compiled with GCC&nbsp;2.95 (on Linux).
+NCO prior to 2.8.5 does not link to DODS when compiled with versions
+greater than GCC&nbsp;3.1+.
+NCO versions 2.8.5 and greater support automatic building and linking
+for DODS versions 3.4+ and GCC versions 3.3+.
+No other version combination is supported.
+</li>
+</ul>
+
+<ul><b>Platform-Specific Build Problems:</b>
+<a name="bld_aix"></a>
+<li><i>AIX build problems:</i>
+NCO versions 2.8.7+ do not build with autotools under AIX when
+<tt>--enable-optimize-*</tt> is selected.
+The workaround is to not use <tt>--enable-optimize-*</tt>.
+</li>
+
+<a name="bld_slr"></a>
+<li><i>Solaris build problems:</i>
+All recent NCO versions build with autotools on Solaris 2.7+.
+The most common problem with building on Solaris with
+<tt>cc</tt>/<tt>CC</tt> is that <tt>bison</tt> may be out-of-date.
+Install an up-to-date <tt>bison</tt> (e.g., 1.875+).
+</li>
+</ul>
+
+<ul><b>Generic Run-time Problems:</b>
+<a name="bug_idx_hyp"></a>
+<li><i>Index-based hyperslab problems:</i>
+NCO versions 2.7.3&mdash;2.8.3 have a nasty bug that cause
+index-based hyperslabs, e.g., <tt>-d lat,1,</tt> to 
+behave like value-based hyperslabs, e.g., <tt>-d lat,1.0</tt> under
+some conditions.
+Unfortunately, the incorrect answers generated may be hard to notice!
+This problem was most often enountered by users trying to assemble
+monthly averages using the stride feature of <tt>ncrcat</tt>.
+One common symptom is that the time-offset of the output file is
+incorrect. 
+<i>Versions 2.7.3&mdash;2.8.3 are buggy and should be upgraded ASAP</i>.
+Re-do any data-processing that used index-based hyperslabbing with
+these versions of NCO.
+</li>
+</ul>
+
+<ul><b>Operator-specific Run-time Problems:</b>
 <a name="bug_ncap_cmt"></a>
-<li><b>Arithmetic problems with <tt>ncap</tt> division, modulo, and exponentiation:</b>
+<li><i>Arithmetic problems with <tt>ncap</tt> division, modulo, and exponentiation:</i>
 <tt>ncap</tt> versions up to 2.9.1 incorrectly handles division,
 modulo, and exponentiation operations of the form <tt>S/V</tt>,
 <tt>S%V</tt>, and <tt>S^V</tt> where first operand (<tt>S</tt>) is 
@@ -482,7 +580,7 @@ We recommend that all <tt>ncap</tt> users upgrade to version 2.9.2.
 </li>
 
 <a name="bug_pck_ncwa"></a>
-<li><b>Packing problems with <tt>ncwa</tt>:</b>
+<li><i>Packing problems with <tt>ncwa</tt>:</i>
 NCO versions ???&mdash;2.9.0 have a bug that causes <tt>ncwa</tt>
 to fail (produce garbage answers) when processing packed
 <tt>NC_FLOAT</tt> data.  Version 2.9.1 fixes this problem.
@@ -492,95 +590,11 @@ Upgrade to 2.9.1 if you use <tt>ncwa</tt> on packed data.
 </li>
 
 <a name="bug_pck"></a>
-<li><b>Packing problems with <tt>ncap</tt>:</b>
+<li><i>Packing problems with <tt>ncap</tt>:</i>
 NCO versions 2.8.4&mdash;2.8.6 have a bug that causes the <tt>ncap</tt>
 intrinsic packing function <tt>pack()</tt> to fail.
 Version 2.8.7 fixes this problem.
 </li>
-
- <a name="bug_idx_hyp"></a>
-<li><b>Index-based hyperslab problems:</b>
-NCO versions 2.7.3&mdash;2.8.3 have a nasty bug that cause
-index-based hyperslabs, e.g., <tt>-d lat,1,</tt> to 
-behave like value-based hyperslabs, e.g., <tt>-d lat,1.0</tt> under
-some conditions.
-Unfortunately, the incorrect answers generated may be hard to notice!
-This problem was most often enountered by users trying to assemble
-monthly averages using the stride feature of <tt>ncrcat</tt>.
-One common symptom is that the time-offset of the output file is
-incorrect. 
-<i>Versions 2.7.3--2.8.3 are buggy and should be upgraded ASAP</i>.
-Re-do any data-processing that used index-based hyperslabbing with
-these versions of NCO.
-</li>
-
-<li><b>Generic NCO build problems:</b>
-NCO requires netCDF version >=&nbsp;3.5.0 for support of <tt>nc_type NC_NAT</tt> in NCO source code.
-NCO requires GNU <tt>make</tt> version >=&nbsp;3.78.1 for support of target-specific variable values in <tt>bld/Makefile</tt>.
-NCO often fails to build because <tt>ncap</tt> fails to build.
-The two most common reasons <tt>ncap</tt> fails to build are
-(1)&nbsp;GNU <tt>bison</tt> is out-of-date (upgrade <tt>bison</tt>)
-and (2)&nbsp;<tt>--enable-optimize-*</tt> is specified to 
-<tt>configure</tt> (do not specify it).
-</li>
-
-<a name="bld_ncap"></a>
-<li><b><tt>ncap</tt> build problems:</b>
-<tt>ncap</tt> requires <tt>flex</tt> to build correctly.
-AT&T <tt>lex</tt> will not work because it does not understand
-<tt>EOF</tt> rules that <tt>ncap_lex.l</tt> uses.
-<tt>bison</tt> version 1.29 (the default version on Mac OS X) is buggy
-and does not parse <tt>ncap_yacc.y</tt> correctly; previous and later
-versions of <tt>bison</tt> work correctly.
-<tt>bison</tt> version 1.25 will not build <tt>ncap</tt> on Solaris.
-Please upgrade <tt>bison</tt> to the latest version (e.g., 1.875+)
-before reporting <tt>ncap</tt> build problems.
-</li>
-
-<li><b>Platform-dependent problems with <tt>./configure</tt> build mechanism:</b>
-The file <tt>configure.eg</tt> contains a table which describes the 
-success you can expect building NCO with the <tt>./configure</tt>
-mechanism. 
-Trouble-free installation with <tt>./configure;make;make check;make install</tt> is
-less common than we would like. 
-All platforms work continue to work fine with the <tt>bld/Makefile</tt> method. 
-However, this method does not support shared libraries and other nice
-features that come automagically with Autotools.
-So please send in the patches required to get the <tt>./configure</tt> 
-mechanism working properly for NCO, <tt>nco_c++</tt>, and
-<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> on your
-platform.  
-The gory details of the failed (and successful) builds are in the
-<a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>.
-</li>
-
-<a name="bld_DODS"></a>
-<li><b>Build problems with DODS:</b>
-NCO versions prior to 2.8.5 link with the
-<a href="http://www.unidata.ucar.edu/packages/dods">DODS</a> netCDF
-library when compiled with GCC&nbsp;2.95 (on Linux).
-NCO prior to 2.8.5 does not link to DODS when compiled with versions
-greater than GCC&nbsp;3.1+.
-NCO versions 2.8.5 and greater support automatic building and linking
-for DODS versions 3.4+ and GCC versions 3.3+.
-No other version combination is supported.
-</li>
-
-<a name="bld_slr"></a>
-<li><b>Solaris build problems:</b>
-All recent NCO versions build with autotools on Solaris 2.7+.
-The most common problem with building on Solaris with
-<tt>cc</tt>/<tt>CC</tt> is that <tt>bison</tt> may be out-of-date.
-Install an up-to-date <tt>bison</tt> (e.g., 1.875+).
-</li>
-
-<a name="bld_aix"></a>
-<li><b>AIX build problems:</b>
-NCO versions 2.8.7+ do not build with autotools under AIX when
-<tt>--enable-optimize-*</tt> is selected.
-The workaround is to not use <tt>--enable-optimize-*</tt>.
-</li>
-
 </ul>
 <p><hr></p>
 

@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.294 2004-03-25 12:05:16 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.295 2004-04-07 00:46:22 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -194,7 +194,9 @@ nco318. Solve stack memory problem and benchmark vs. ANSI code branch
 nco320. How to do TeX-like hyphens in TeXInfo?
 nco321. Do not promote NC_FLOAT to NC_DOUBLE in ncra/ncea(?)
 nco322. Implement integer empowerment in var_scv_pwr() with, e.g., GSL
-nco323. 
+nco323. Collect all past ANNOUNCE files and place in reverse chronological order in ANNOUNCE file
+nco324. Add release date to "Version Summary" section on homepage
+nco325. 
 
 ncap-specific items:
 ncap04. Fix memory leak in ncap_var_cnf_dmn() or delete routine completely after replacing it with ncap_var_stretch()
