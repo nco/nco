@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.143 2005-02-26 02:24:25 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncap.c,v 1.144 2005-03-22 05:08:55 zender Exp $ */
 
 /* ncap -- netCDF arithmetic processor */
 
@@ -116,8 +116,8 @@ main(int argc,char **argv)
   char *time_bfr_srt;
   char *cmd_ln;
 
-  const char * const CVS_Id="$Id: ncap.c,v 1.143 2005-02-26 02:24:25 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.143 $";
+  const char * const CVS_Id="$Id: ncap.c,v 1.144 2005-03-22 05:08:55 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.144 $";
   const char * const opt_sht_lst="ACcD:d:Ffhl:n:Oo:p:Rrs:S:vxZ-:"; /* [sng] Single letter command line options */
 
   dmn_sct **dmn_in=NULL_CEWI;  /* [lst] Dimensions in input file */
@@ -462,7 +462,7 @@ main(int argc,char **argv)
   /* Open file for reading */
   rcd=nco_open(fl_in,NC_NOWRITE,&in_id);
   
-  /* Form list of ALL DIMENSIONS */  
+  /* Form list of all dimensions */  
   dmn_lst=nco_dmn_lst(in_id,&nbr_dmn_in);
   
   dmn_in=(dmn_sct **)nco_malloc(nbr_dmn_in*sizeof(dmn_sct *));
@@ -537,26 +537,27 @@ main(int argc,char **argv)
   /* Get number of variables in output file */
   rcd=nco_inq(out_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int*)NULL);
   
-  /* Make list of all NEW VARS in output_file */  
+  /* Make list of all new variables in output_file */  
   xtr_lst_a=nco_var_lst_mk(out_id,nbr_var_fl,var_lst_in,False,&nbr_lst_a);
   
   if(PROCESS_ALL_VARS){
     /* Get number of variables in input file */
     rcd=nco_inq(in_id,(int *)NULL,&nbr_var_fl,(int *)NULL,(int *)NULL);
     
-    /* Form initial list of ALL VARIABLES IN INPUT FILE */
+    /* Form initial list of all variables in input file */
     xtr_lst=nco_var_lst_mk(in_id,nbr_var_fl,var_lst_in,False,&nbr_xtr);
   } /* endif */
   
   if(!PROCESS_ALL_VARS){
-    /* Make list of variables of new attributes whose parent variable is ONLY in input file */
+    /* Make list of variables of new attributes whose parent variable is only in input file */
     xtr_lst=nco_att_lst_mk(in_id,out_id,att_lst,nbr_att,&nbr_xtr);
   } /* endif */
+
     /* Find dimensions associated with xtr_lst */
     /* Write to O only new dims
        Add apropriate coordinate variables to extraction list 
        options -c      -process all cordinates 
-       i.e add  co-ords to var list 
+       i.e., add coordinates to var list 
        Also add their dims
        
        options --none   -process associated co-ords
@@ -570,6 +571,7 @@ main(int argc,char **argv)
   /* Subtract list A */
   if(nbr_lst_a > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
   
+  /* Put file in define mode to allow metadata writing */
   (void)nco_redef(out_id);
   
   /* Make list of dimensions of variables in xtr_lst */
@@ -590,11 +592,11 @@ main(int argc,char **argv)
       } /* endif */
     } /* end loop over jdx */
   
-  /* All dimensions for all variables are now in output
+  /* Dimensions for manually specified extracted variables are now defined in output file
      Add coordinate variables to extraction list
      If EXTRACT_ALL_COORDINATES then write associated dimension to output */
   if(EXTRACT_ASSOCIATED_COORDINATES){
-    for(idx=0; idx <nbr_dmn_in; idx++){
+    for(idx=0;idx<nbr_dmn_in;idx++){
       if(!dmn_in[idx]->is_crd_dmn) continue;
       
       if(EXTRACT_ALL_COORDINATES && !dmn_in[idx]->xrf){
@@ -609,9 +611,10 @@ main(int argc,char **argv)
       if(dmn_in[idx]->xrf){
 	for(jdx=0;jdx<nbr_xtr;jdx++)
 	  if(!strcmp(xtr_lst[jdx].nm,dmn_in[idx]->nm)) break;
+
 	if(jdx != nbr_xtr) continue;
 	/* If coordinate is not on list then add it to extraction list */
-	xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(nbr_xtr+1)*sizeof(nm_id_sct));     
+	xtr_lst=(nm_id_sct *)nco_realloc(xtr_lst,(nbr_xtr+1)*sizeof(nm_id_sct));
 	xtr_lst[nbr_xtr].nm=(char *)strdup(dmn_in[idx]->nm);
 	xtr_lst[nbr_xtr++].id=dmn_in[idx]->cid;
       } /* endif */
@@ -619,7 +622,7 @@ main(int argc,char **argv)
   } /* end if */ 
   
   /* Subtract list A again (it may contain re-defined coordinates) */
-  if(nbr_xtr >0) xtr_lst=nco_var_lst_sub(xtr_lst, &nbr_xtr,xtr_lst_a,nbr_lst_a);
+  if(nbr_xtr > 0) xtr_lst=nco_var_lst_sub(xtr_lst,&nbr_xtr,xtr_lst_a,nbr_lst_a);
   
   /* Sort extraction list for faster I/O */
   if(nbr_xtr > 1) xtr_lst=nco_lst_srt_nm_id(xtr_lst,nbr_xtr,False);
@@ -641,29 +644,27 @@ main(int argc,char **argv)
   /* Divide variable lists into lists of fixed variables and variables to be processed */
   (void)nco_var_lst_dvd(var,var_out,nbr_xtr,NCAR_CCSM_FORMAT,nco_pck_plc_nil,nco_pck_map_nil,(dmn_sct **)NULL,(int)0,&var_fix,&var_fix_out,&nbr_var_fix,&var_prc,&var_prc_out,&nbr_var_prc);
   
-  /* Why not call this with var_fix? */
+  /* csz: Why not call this with var_fix? */
   /* Define non-processed vars */
   (void)nco_var_dfn(in_id,fl_out,out_id,var_out,nbr_xtr,(dmn_sct **)NULL,(int)0,nco_pck_plc_nil,nco_pck_map_nil);
   
-  (void)nco_enddef(out_id);
-  
-  rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
-  
-  /* Copy non-processed vars */
-  (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
-  
-  nco_redef(out_id);
-  
   /* Write out new attributes possibly overwriting old ones */
   for(idx=0;idx<nbr_att;idx++){
+    /* NB: These attributes should probably be written prior to last data mode */
     rcd=nco_inq_varid_flg(out_id,att_lst[idx]->var_nm,&var_id);
     if(rcd != NC_NOERR) continue;
     att_lst[idx]->mode=aed_overwrite;
     (void)nco_aed_prc(out_id,var_id,*att_lst[idx]);
   } /* end for */
   
+  /* Turn off default filling behavior to enhance efficiency */
+  rcd=nco_set_fill(out_id,NC_NOFILL,&fll_md_old);
+  
   /* Take output file out of define mode */
-  rcd=nco_enddef(out_id);
+  (void)nco_enddef(out_id);
+  
+  /* Copy non-processed vars */
+  (void)nco_var_val_cpy(in_id,out_id,var_fix,nbr_var_fix);
   
   /* Close input netCDF file */
   rcd=nco_close(in_id);

@@ -1,3 +1,22 @@
+2005-03-21  charlie  <zender@uci.edu>
+
+	* The call to nco_aed_prc() (a metadata writing call) was 
+	un-necessarily late in ncap.c. I moved it to just after
+	nco_var_dfn(). This takes advantage of the netCDF feature that
+	metadata (not data) can be manipulated before it is flushed to
+	disk (with nc_enddef()). You can learn/use a variable's ID 
+	before populating the variable's data section. 
+	Now ncap ends after writing in data mode and avoids the heavy disk
+	penalty of moving variables to accomodate  the increased metadata from
+	the nco_aed_prc() call. 
+
+	* Turns out the only NC_NOFILL in ncap.c was done in data mode 
+	after the variables were defined. 
+	Not sure why this did not cause an error.
+	ncap was probably doing redundant data filling for the non-processed
+	variables defined. 
+	Fixed that.
+
 2005-03-20  Charlie Zender  <zender@uci.edu>
 
 	* Apply same optimization to nco_var_cnf_dmn()
