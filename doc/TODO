@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.403 2004-09-06 06:46:56 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.404 2004-09-06 06:57:05 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -270,6 +270,8 @@ nco445. ncpdq: Fix xst_new
         ncpdq: ERROR nco_var_pck() called with invalid packed type nc_typ_pck = NC_FLOAT
         ncpdq: ERROR exiting through nco_exit() which will now call abort()
         Aborted
+nco446. ncpdq: Fix all_xst
+        valgrind ncpdq -D 3 -O -C -P all_xst -v three_dmn_var_sht ~/nco/data/in.nc ~/foo.nc > ~/foo.valgrind 2>&1
 nco446. 
 
 ncap-specific items:

@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.46 2004-09-06 06:46:58 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/ncpdq.c,v 1.47 2004-09-06 06:57:05 zender Exp $ */
 
 /* ncpdq -- netCDF pack, re-dimension, query */
 
@@ -33,7 +33,10 @@
    ncpdq -O -D 3 -a lat,lev,lon -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
    ncpdq -O -D 3 -a lon,lev,lat -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
    ncpdq -O -D 3 -a lon,time -x -v three_double_dmn ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc
-   ncpdq -O -D 3 -P all_new -v three_dmn_var ~/nco/data/in.nc ~/foo.nc;ncks -H ~/foo.nc */
+   ncpdq -O -D 3 -P all_new ~/nco/data/in.nc ~/foo.nc
+   ncpdq -O -D 3 -P all_xst ~/nco/data/in.nc ~/foo.nc
+   ncpdq -O -D 3 -P xst_new ~/nco/data/in.nc ~/foo.nc
+   ncpdq -O -D 3 -P upk ~/nco/data/in.nc ~/foo.nc */
 
 #ifdef HAVE_CONFIG_H
 #include <config.h> /* Autotools tokens */
@@ -105,8 +108,8 @@ main(int argc,char **argv)
   char add_fst_sng[]="add_offset"; /* [sng] Unidata standard string for add offset */
   char scl_fct_sng[]="scale_factor"; /* [sng] Unidata standard string for scale factor */
 
-  const char * const CVS_Id="$Id: ncpdq.c,v 1.46 2004-09-06 06:46:58 zender Exp $"; 
-  const char * const CVS_Revision="$Revision: 1.46 $";
+  const char * const CVS_Id="$Id: ncpdq.c,v 1.47 2004-09-06 06:57:05 zender Exp $"; 
+  const char * const CVS_Revision="$Revision: 1.47 $";
   const char * const opt_sng="Aa:CcD:d:Fhl:M:Oo:P:p:Rrt:v:Ux-:";
   
   dmn_sct **dim=NULL_CEWI;
