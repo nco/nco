@@ -1,5 +1,11 @@
 2005-03-21  charlie  <zender@uci.edu>
 
+	* Implemented Harry's suggestion to use memset(vp,0,size)
+	to initialize float and integer buffers to zero.
+	Previously, this was done in a loop over each index value
+	Presumably this old method was slower because of pointer de-referencing
+	New algorithm implemented in nco_var_zero() and nco_zero_long()
+
 	* Set NC_NOFILL in ncap_var_write()
 
 	* The call to nco_aed_prc() (a metadata writing call) was 

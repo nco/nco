@@ -1,4 +1,4 @@
-/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.29 2005-01-07 23:54:57 zender Exp $ */
+/* $Header: /data/zender/nco_20150216/nco/src/nco/nco_var_rth.c,v 1.30 2005-03-22 07:53:07 zender Exp $ */
 
 /* Purpose: Variable arithmetic */
 
@@ -1398,6 +1398,34 @@ nco_var_zero /* [fnc] Zero value of first operand */
 {
   /* Purpose: Zero value of first operand */
 
+  /* fxm: According to hjm, floats and ints all use same bit pattern for zero
+     ccc --tst=bnr --int_foo=0 
+     and
+     ccc --dbg=0 --tst=gsl --gsl_a=0.0 
+     confirm this.
+     Hence, it may be faster to use memset() system call to zero memory 
+     Same philosophy is used in nco_zero_long() */
+
+  size_t sz_byt; /* [B] Number of bytes in variable buffer */
+  sz_byt=(size_t)sz*nco_typ_lng(type);
+  switch(type){
+  case NC_FLOAT:
+  case NC_DOUBLE:
+  case NC_INT:
+  case NC_SHORT:
+    (void)memset(op1.vp,0,sz_byt);
+    break;
+  case NC_CHAR:
+    /* Do nothing */
+    break;
+  case NC_BYTE:
+    /* Do nothing */
+    break;
+    default: nco_dfl_case_nc_type_err(); break;
+  } /* end switch */
+
+#if 0
+  /* Presumably this old method used until 20050321 is slower because of pointer de-referencing */
   long idx;
 
   /* Typecast pointer to values before access */
@@ -1424,6 +1452,7 @@ nco_var_zero /* [fnc] Zero value of first operand */
     break;
     default: nco_dfl_case_nc_type_err(); break;
   } /* end switch */
+#endif /* !0 */
 
   /* NB: it is not neccessary to un-typecast pointers to values after access 
      because we have only operated on local copies of them. */
