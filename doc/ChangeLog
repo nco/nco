@@ -1,5 +1,7 @@
 2004-07-26  Charlie Zender  <zender@uci.edu>
 
+	* Require default clauses for switch(prg_id)
+
 	* Created ncpdq.c from stripped version of ncwa.c
 
 2004-07-25  Charlie Zender  <zender@uci.edu>
