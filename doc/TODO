@@ -1,4 +1,4 @@
-$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.222 2003-06-24 22:47:37 zender Exp $ 
+$Header: /data/zender/nco_20150216/nco/doc/TODO,v 1.223 2003-07-04 20:08:44 zender Exp $ 
 
 ******************************************************************************
 NCO Wish list:
@@ -226,6 +226,7 @@ ncks -C -H -s "%s" -v fl_nm ~/nco/data/in.nc
 258. Develop syntax/procedure for specifying lists of hyperslabs for single pass, low memory consumption MSA jobs like Martin Schultz's in Discussion forum on 20030506
 259. Variadic function extension to nco_malloc() to support printing debugging messages?
 260. Warn (but work) when coordinate variable has more than two dimensions
+261. Remove RPM warnings emitted by Makefile on non-RedHat machines
 ************************************************************************
 End NCO Wish list
 ************************************************************************
