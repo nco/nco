@@ -1,4 +1,4 @@
-<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.135 2003-03-27 08:14:12 zender Exp $
+<!-- $Header: /data/zender/nco_20150216/nco/doc/index.shtml,v 1.136 2003-05-27 18:16:16 zender Exp $
 Purpose: NCO homepage
 
 Usage:
@@ -6,7 +6,7 @@ http://www.ess.uci.edu/~zender/nco/index.shtml
 file:///home/zender/nco/doc/index.shtml
 
 /usr/bin/scp ~/nco/doc/index.shtml nco.sourceforge.net:/home/groups/n/nc/nco/htdocs/index.shtml
-scp -p ~/nco/doc/index.shtml www.ess.uci.edu:/home/zender/public_html/nco/index.shtml
+scp -p ~/nco/doc/index.shtml dust.ess.uci.edu:/var/www/html/nco/index.shtml
 -->
 
 <!--
@@ -174,7 +174,7 @@ capable of performing arbitrary arithmetic operations</li>
 <ul>
 <li>Many releases since 2.0.0 are not packaged (i.e., no tarballs or RPMs).
 Retrieve these versions <a name="#Download">using CVS</a> or from 
-<a href="ftp://dust.ess.uci.edu/pub/zender/nco">this anonymous FTP site</a>.
+<a href="http://dust.ess.uci.edu/nco">this anonymous FTP site</a>.
 <li><b>NCO 2.7.3</b>, Support <a href="http://www.unidata.ucar.edu/packages/udunits">UDUnits</a> (and some <a href="http://www.cgd.ucar.edu/cms/eaton/cf-metadata/CF-working.html">CF</a>) conventions, e.g., <tt>ncks -d wvl "1 picometer","1 furlong" -d time,"2001-03-19 06:00:0.0","2001-03-19 18:00:0.0"</tt> 
 <li><b>NCO 2.7.2</b>, Printing (<tt>ncks -H</tt>) plays well with multi-slabbing
 <li><b>NCO 2.7.1</b>, Fallback to B. Sittler's <tt>getopt</tt> for
@@ -237,7 +237,7 @@ specifications of input files</li>
 
 The best way to acquire NCO is with <a href="http://www.cvshome.org">CVS</a>.
 The second best way is to download the compressed tarfile 
-<a href="ftp://dust.ess.uci.edu/pub/zender/nco/nco.tar.gz">here</a>.
+<a href="http://dust.ess.uci.edu/nco/nco.tar.gz">here</a>.
 <p>The 
 <a href="http://sourceforge.net/cvs/?group_id=3331">NCO CVS Repository</a> 
 contains up-to-the-minute sources and is the easiest way to stay
@@ -283,7 +283,7 @@ Tarballs are usually up-to-date, but the binaries (e.g., RPM, .deb)
 tend to lag the current distribution by many months, if not years: 
 <ul>
 <li>Source and documentation in tarball format: 
-<a href="ftp://dust.ess.uci.edu/pub/zender/nco/nco.tar.gz">nco.tar.gz</a> (675 KB compressed tar-file)</li>
+<a href="http://dust.ess.uci.edu/nco/nco.tar.gz">nco.tar.gz</a> (675 KB compressed tar-file)</li>
 <!-- 
 <a href="http://prdownloads.sourceforge.net/nco/nco-2.2.0.tar.gz">nco-2.2.0.tar.gz</a> (901 Kb compressed tar-file)</li>
 -->
@@ -416,7 +416,7 @@ So please send in the patches required to get the <tt>./configure</tt>
 mechanism working properly for NCO, <tt>nco_c++</tt>, and DODS on your
 platform. 
 The gory details of the failed (and successful) builds are in the
-<a href="ftp://dust.ess.uci.edu/pub/zender/nco/rgr">regressions archive</a>.
+<a href="http://dust.ess.uci.edu/nco/rgr">regressions archive</a>.
 </li>
 
 <li><b><tt>ncap</tt> build problems:</b>

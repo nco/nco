@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.54 2003-03-15 06:17:49 zender Exp $ -*-text-*-
+# $Header: /data/zender/nco_20150216/nco/doc/nco_src_frg.txt,v 1.55 2003-05-27 18:16:16 zender Exp $ -*-text-*-
 
 # Purpose: Sourceforge information for NCO netCDF Operators project
 
@@ -33,9 +33,9 @@ cd /data/zender/tmp
 mkdir sf
 cp /data/zender/tmp/netcdf-3.5.0.tar.Z /usr/local/lib/libnetcdf* /usr/local/include/netcdf* sf
 tar cvzf sf.tar.gz ./sf
-mv sf.tar.gz /var/ftp/pub/zender/nco
+mv sf.tar.gz /var/www/html/nco
 /bin/rm -r sf
-ncftpput upload.sourceforge.net /incoming/var/ftp/pub/zender/nco/sf.tar.gz
+ncftpput upload.sourceforge.net /incoming /var/www/html/nco/sf.tar.gz
 scp upload.sourceforge.net:/incoming/sf.tar.gz .
 
 # Copy docs from compile farm to NCO websites
@@ -128,7 +128,7 @@ To build NCO on SourceForge,
 make NETCDF_LIB=/home/groups/n/nc/nco/lib/LINUX NETCDF_INC=/home/groups/n/nc/nco/include
 
 To make a new release of NCO on SourceForge:
-ncftpput upload.sourceforge.net /incoming /var/ftp/pub/zender/nco/nco-2.7.1.tar.gz
+ncftpput upload.sourceforge.net /incoming /var/www/html/nco/nco-2.7.1.tar.gz
 ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.2.0-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.2.0-*.i386.rpm /usr/src/redhat/SOURCES/nco-2.2.0.tar.gz
 
 To upload to RedHat for inclusion in, e.g., rpmfind.net:

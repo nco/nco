@@ -1,8 +1,12 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.208 2003-03-29 01:51:36 zender Exp $ -*-makefile-*-
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.209 2003-05-27 18:16:15 zender Exp $ -*-makefile-*-
 
 # Purpose: GNU Makefile for NCO module nco
 # Requires GNU Make. AT&T Make will not process this file.
 # scp ~/nco/bld/Makefile goldhill.cgd.ucar.edu:nco/bld
+
+# Copyright (C) 1994--2003 Charlie Zender
+# This software is distributed under the terms of the GNU General Public License
+# See http://www.gnu.ai.mit.edu/copyleft/gpl.html for full license text
 
 # Usage: 
 # make
@@ -1051,14 +1055,14 @@ rpm:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo 
 	cd /usr/src/redhat/SPECS; \
 	rpm -ba nco-${NCO_VRS}.spec;
 rpmnet:	${MY_BLD_DIR}/nco.spec # Building rpm requires root priveleges, e.g., sudo make NCO_VRS=2.5.1 rpmnet
-	- if test -f /usr/src/redhat/SOURCES/nco-${NCO_VRS}.tar.gz; then printf "Using existing nco-${NCO_VRS}.tar.gz\n" ; else ${MY_BIN_DIR}/ncks -R -p ftp://ftp.cgd.ucar.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-${NCO_VRS}.tar.gz; fi
+	- if test -f /usr/src/redhat/SOURCES/nco-${NCO_VRS}.tar.gz; then printf "Using existing nco-${NCO_VRS}.tar.gz\n" ; else ${MY_BIN_DIR}/ncks -R -p ftp://dust.ess.uci.edu/pub/zender/nco -l /usr/src/redhat/SOURCES nco-${NCO_VRS}.tar.gz; fi
 	/bin/rm -f /usr/src/redhat/SPECS/nco-${NCO_VRS}.spec; \
 	cd /usr/src/redhat/SOURCES; \
 	tar xvzf nco-${NCO_VRS}.tar.gz ./nco-${NCO_VRS}/bld/nco.spec; \
 	mv ./nco-${NCO_VRS}/bld/nco.spec /usr/src/redhat/SPECS/nco.spec; \
 	cd /usr/src/redhat/SPECS; \
 	rpm -ba nco.spec; \
-	scp /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm zender@ftp.cgd.ucar.edu:/ftp/pub/zender/nco
+	scp /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm zender@dust.ess.uci.edu:/var/www/html/nco
 	scp /usr/src/redhat/SRPMS/nco-${NCO_VRS}-*.src.rpm /usr/src/redhat/RPMS/i386/nco-${NCO_VRS}-*.i386.rpm zender@nco.sourceforge.net:/home/groups/ftp/pub/nco
 	ncftpput upload.sourceforge.net /incoming /usr/src/redhat/SRPMS/nco-2.5.1-*.src.rpm /usr/src/redhat/RPMS/i386/nco-2.5.1-*.i386.rpm /usr/src/redhat/SOURCES/nco-2.5.1.tar.gz
 rpm_cln:
