@@ -30,7 +30,7 @@ BEGIN{
     unshift @INC,$ENV{'HOME'}.'/perl'; # Location of csz.pl and DBG.pm HaS98 p. 170
 } # end BEGIN
 
-my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.102 2003-07-04 20:16:24 zender Exp $';
+my $CVS_Header='$Header: /data/zender/nco_20150216/nco/bld/nco_dst.pl,v 1.103 2003-07-04 20:28:27 zender Exp $';
 
 # Specify modules
 use strict; # Protect all namespaces
@@ -66,9 +66,9 @@ my ($rsh_cmd,$rcp_cmd,$cp_cmd,$rm_cmd,$mkdir_cmd,$cvs_cmd);
 my $False=0;
 my $True=1;
 
-my $CVS_Date='$Date: 2003-07-04 20:16:24 $';
-my $CVS_Id='$Id: nco_dst.pl,v 1.102 2003-07-04 20:16:24 zender Exp $';
-my $CVS_Revision='$Revision: 1.102 $';
+my $CVS_Date='$Date: 2003-07-04 20:28:27 $';
+my $CVS_Id='$Id: nco_dst.pl,v 1.103 2003-07-04 20:28:27 zender Exp $';
+my $CVS_Revision='$Revision: 1.103 $';
 my $CVSROOT='zender@cvs.nco.sourceforge.net:/cvsroot/nco'; # CVS repository
 my $HOME=$ENV{'HOME'};
 my $HOST=$ENV{'HOST'};
@@ -235,8 +235,7 @@ if($bld){
 # Make sure documentation files are up to date
     my $bld_pth=$dst_pth_pfx.'/'."$dst_vrs".'/bld';
     chdir $bld_pth or die "$prg_nm: ERROR unable to chdir to $bld_pth: $!\n"; # $! is system error string
-# fxm: 20020203 do not make doc
-#    cmd_prc("$mk_cmd doc"); 
+    cmd_prc("$mk_cmd doc"); 
     cmd_prc("$mk_cmd clean"); 
     
 # Full release procedure (public releases only) includes update Web pages
