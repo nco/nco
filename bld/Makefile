@@ -1,4 +1,4 @@
-# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.124 2002-04-27 00:15:30 zender Exp $
+# $Header: /data/zender/nco_20150216/nco/bld/Makefile,v 1.125 2002-05-02 06:19:32 zender Exp $
 
 # Purpose: GNUMakefile for NCO module nco
 # Requires GNU make. AT&T make will not process this file.
@@ -919,16 +919,42 @@ inc_cln:
 library: lib
 lib: inc $(libnco).a
 ifeq ($(USE_FORTRAN_ARITHMETIC),Y)
-$(libnco).a: $(libnco).a(${MY_OBJ_DIR}/nc_utl.o) \
-	$(libnco).a(${MY_OBJ_DIR}/nc_fortran.o) \
-	$(libnco).a(${MY_OBJ_DIR}/cal_util.o) \
-	$(libnco).a(${MY_OBJ_DIR}/csz.o)
+$(libnco).a: $(libnco).a(${MY_OBJ_DIR}/nco_utl.o) \
+	$(libnco).a(${MY_OBJ_DIR}/nco_fortran.o) \
+	$(libnco).a(${MY_OBJ_DIR}/nco_cal_utl.o) \
+	$(libnco).a(${MY_OBJ_DIR}/nco_csz.o)
 else
-$(libnco).a: $(libnco).a(${MY_OBJ_DIR}/nc_utl.o) \
-	$(libnco).a(${MY_OBJ_DIR}/nco_netcdf.o) \
-	$(libnco).a(${MY_OBJ_DIR}/csz.o) \
-	$(libnco).a(${MY_OBJ_DIR}/pck.o) \
-	$(libnco).a(${MY_OBJ_DIR}/nco_var_scv.o)
+$(libnco).a: $(libnco.a(${MY_OBJ_DIR}/nco_att_utl.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_cln_utl.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_cnf_dmn.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_cnf_typ.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_cnv_arm.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_cnv_csm.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_csz.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_dmn_utl.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_fl_utl.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_lmt.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_lst_utl.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_mss_val.c) \
+	$(libnco.a(${MY_OBJ_DIR}/ncap_utl.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_ctl.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_mmr.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_netcdf.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_var_scv.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_omp.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_pck.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_rec_var.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_rth_utl.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_scl_utl.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_scm.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_dbg.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_typ.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_scv_utl.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_sng_utl.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_var_avg.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_var_lst.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_var_rth.c) \
+	$(libnco.a(${MY_OBJ_DIR}/nco_var_utl.c)
 endif
 libclean: lib_cln
 lib_cln:
